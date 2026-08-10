@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.4
+HatchGrab Engineering Reference Manual · V11.5
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.4**
+**Version 11.5**
 
 August 2026
 
@@ -15,6 +15,59 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.5 — 7 August 2026
+
+**A LIVE MONEY INCIDENT on a trading truck, and the Stripe foundation.** The incident is the entry that matters and is written first. **No columns added on 7 August beyond `order_payments.livemode` (applied) and `stripe_webhook_events` (created by hand).** ⚠️ **The one-line fix for the incident was deliberately NOT deployed on the night** — see below for why that was the right call.
+
+### 🔴 THE PAYMENT INCIDENT — 7 August 2026, 14:24 to ~19:00
+
+**Commit `3a1d082`, 14:24.** In `lib/payments/ledger.ts` `readLedger`, a `livemode` filter was meant to be **ADDED** and instead **REPLACED** `.eq('order_key', orderKey)`. Every balance was therefore computed from the **ENTIRE `order_payments` table** — every order, every truck. `balanceMinor` went negative, and `recordCollectionPayment` short-circuited on its `balanceMinor <= 0` guard, **writing no row and raising no error**.
+
+**TWO SYMPTOMS, AND THE VISIBLE ONE WAS THE LESS SERIOUS:**
+
+- **On a paid-step-ON truck (Test Kitchen) — LOUD, and how it was found.** `mark_paid` recorded nothing, so the card stayed unpaid, `Collected` never appeared, and the order **could not leave the board**. Reported within minutes.
+- 🔴 **On Pizzeria Gusto (`show_paid_step` false) — SILENT, and the one that mattered.** Cards cleared normally and **every collection from 14:24 recorded £0, with no error and no warning**. Orders touched in the window were additionally written with `payment_status = 'refund_due'` and a whole-table `amount_paid`.
+
+**Rolled back to `6be1064` at approximately 19:00 by promoting the earlier Vercel build.** 🔴 **The one-line fix was NOT applied that evening, deliberately — deploying an unexercised change to money code is what caused the incident in the first place.** Restoring a known-good build is not the same act as shipping a new one.
+
+**RECOVERY — recorded so it does not have to be re-derived.** The bug **REMOVED rows rather than altering them**, so each shortfall is simply that order's own `total_minor`: the damage is **arithmetic, not forensic**. Seven read-only queries are in `docs/payments-damage-report.md`. **`action_audit_log` is the durable evidence** — append-only, no foreign keys, so it survives both an undo and a cascade delete — and **the bug's signature there is `charged_minor = 0` with `ledger_failed = false`**: a collection that charged nothing and reported no failure. ⚠️ **Two things destroy the evidence:** `undo_collected` clears **both** `paid_at` and `collected_at`, so an operator tapping Undo drops that order out of most of the queries; and the **demo-cleanup cron runs hourly** with `deleteTruckCascade`.
+
+**THE INVARIANT THIS ESTABLISHES — recorded in §35 in the strongest terms available.** `tsc`-clean and lint-baselines-holding are **NOT verification on the money path**. This change passed both. Cursor's own account: *"tsc and lint both passed clean on this change and could not have caught it — I reported that as verification when I had never exercised `readLedger` against a database."*
+
+### STRIPE — the foundation is proven, the product is not
+
+- **The webhook endpoint at `app/api/webhooks/stripe` is LIVE, VERIFYING AND RECORDING.** Proven end to end on 7 August: **four events forwarded, four 200s, four rows, `livemode` false on all four.**
+- **Hand-rolled HMAC verification from Stripe's documented manual procedure, NOT the SDK.** Consequence worth keeping: the route needs **no `STRIPE_SECRET_KEY`** — only `STRIPE_WEBHOOK_SECRET`, which is **comma-separated** because one production URL receives **both live and test events with different signing secrets**, and because secret rolls need it. Verified against **15 real-HMAC vectors** including forgery, tampering, replay, `v0` downgrade, secret roll and the re-serialised-body trap.
+- ⚠️ **CORRECTION — body-parsing-by-default is a PAGES Router behaviour.** This repo is **App Router**, where the trap is instead the **single-read stream** and **re-serialisation** (`JSON.stringify(JSON.parse(body))` is a different string, so the HMAC differs with a perfectly correct secret).
+- **Idempotency is `UNIQUE (stripe_event_id)` on `stripe_webhook_events`** — insert first, treat `23505` as already-seen. **NO payload column, deliberately:** a Stripe event carries customer email, name, phone and address, and **nothing sweeps JSONB for GDPR erasure** (the `action_audit_log` lesson).
+- **`order_payments.livemode` applied 7 Aug — 50 existing rows, all `true`, NOT NULL DEFAULT true.** **`stripe_webhook_events.livemode` is NOT NULL with NO DEFAULT — deliberately the opposite**, because it has no legacy rows to rescue and a default would let a writer that forgot record a **test** event as live.
+- 🔴 **CONNECT MODEL DECIDED: ONE connected account PER OPERATOR, not per truck.** Terminal readers are grouped by **Stripe Location, one per truck** — verified from Stripe's docs, so **terminals do NOT force separate accounts**. **Direct charges**; the connected account bears fees, refunds and chargebacks, matching the published terms. **Consequence: `charges_enabled` is an ACCOUNT property, so all of an operator's trucks go live together.**
+- 🔴 **Stripe's own embedded-onboarding quickstart sets `fees.payer`, `losses.payments` and `requirement_collection` all to `'application'` — the EXACT INVERSE of our model**, which would put HatchGrab on the hook for every chargeback. **We want the defaults:** `losses.payments` **stripe**, `fees.payer` **account**, `requirement_collection` **stripe**, `stripe_dashboard.type` **full**. **Following the quickstart verbatim is the trap.**
+- **The account id belongs on `operators`** (13 columns, **no `stripe_*` today**). **Readiness must resolve to `charges_enabled`, never to a row existing.**
+- **UNBUILT:** onboarding, PaymentIntents, the customer payment path, refunds, Terminal, Locations, subscription billing.
+
+### KDS PAYMENT STATE — fixed
+
+- **`ledgerRows` had NEVER been passed to the KDS `OrderCard` in any commit**, so every order resolved unpaid there. **Latent** because Gusto has `show_paid_step` false — **one tap on the per-event override would have made it live**, offering a money button on already-paid orders and removing `Collected` so nothing could clear the board. `/api/dashboard` already returned `payments` keyed by `order_key`; the KDS was **discarding it at `setState`**, so the fix was a **prop, not a query**.
+- **NEW per-device setting `hg_kds_payments_${token}`** — Capacitor Preferences, **default OFF**, **window view only**, visible **only when the truck's paid step is on**, **no plan gate**. It is a **LIFECYCLE toggle, not a display one**: OFF, `Ready` ends the ticket's life on that screen; ON, the ticket persists until marked paid and collected. **Two iPads on one truck may differ deliberately** — a window device and a grill device.
+- ⚠️ **The Done-today strip's hardcoded `✓ paid` is now DERIVED.** Another instance of **a label asserting a state nobody checked** — same class as `PrinterStatus.connected` hardcoding `true`.
+
+### STOCK DISPLAY — audited, NOT fixed
+
+- **`calcAddableRemaining` returns `{ addable, bound }`, where `bound` names WHICH constraint produced the number.** The customer page uses both and attributes correctly. 🔴 **The operator's Add Order panel destructures only `addable` and DISCARDS `bound` at both render sites**, so a pooled category ceiling of 1 renders as **"(1 left)" against all twenty pizzas** as though each had its own. **The number is arithmetically correct and unattributed.**
+- **Category stock is `event_category_stock.stock_count`, a pooled ceiling.** `catRem` is computed **once per category**, and the items **decrement together**.
+- **ELEVEN surfaces render a count**; only modifier options share a component, **which is how the badge drifted**. **The KDS renders none.**
+- ⚠️ **The operator has a flat threshold of 10 with no urgency tier**, so **10 and 1 render identically**; the customer page reddens at 3. **At zero both grey and disable** — neither is tappable-then-failing.
+- ⚠️ **"Only 1 pizzas left!" is a live pluralisation bug on the CUSTOMER page.**
+
+### LANDING COPY — the repetition pass
+
+- **The walk-up rewrite went 127 → 417 words across five sites**, with every tracked claim appearing **3–4 times**; cut back to **194**, then footnote 1 to **56**. **THE RULE: each fact appears ONCE, at the site that needs it; detail lives in footnote 1, and prose points at it.**
+- ⚠️ **`FOOTNOTES[1]` is NOT overridden on the landing page — only footnote 2 is.** So anything written there renders on **the landing page, the Billing tab AND admin**.
+- 🔴 **STANDING EDITORIAL RULE: landing copy describes the product AT LAUNCH, in the present tense.** *"Coming soon"* is used **ONLY** for things that are a **later addition to a shipped product** (Stripe walk-ups), **not** for things that ship at launch (the native apps). WhatsApp is present tense; Messenger and Instagram carry *"coming soon"* because they may not make launch. **This is one rule applied to different readiness, not an inconsistency.**
+- **The iPad recommendation was REMOVED from footnote 3** — a **preference stated as a finding**, with the full order flow **never having been run on hardware on either platform**, and on current evidence **Android is the better-validated of the two**.
+- 🔴 **`hide_pricing` masks footnote 2 ONLY, keyed on the magic string `f.number !== '2'`.** So **Gusto sees footnote 1's real card figures unmasked on their Billing tab**, and **renumbering the footnotes would silently unmask everything**. **OPEN.**
 
 ## V11.4 — 6 August 2026
 
@@ -2130,7 +2183,9 @@ if (plan === 'trial') {
 
 Trial and Tester columns take the same feature values as Max, with Pay-at-Hatch online ordering and a 0% walk-up fee. Their online-order fee shows Pay at Hatch, not 0.99% + card fee. The Trial column auto-follows Max (a 'trial' column value is derived as row.max), so any 'coming_soon' set on Max shows on Trial without extra work.
 
-Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders use the truck's own card terminal — HatchGrab charges 0%, terminal provider fees apply. (2) Online payments via Stripe Connect: 0.99% platform fee plus Stripe card processing ~1.5% + 20p in the UK. (3) Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer, neither supplied. (4) iPad not supplied; the kitchen app runs on any modern tablet browser, Apple iPad recommended. (5) Auto-replies require a Business account on each platform and respond with schedule and order link only.
+Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders use the truck's own card terminal — HatchGrab charges 0%, terminal provider fees apply. (2) Online payments via Stripe Connect: 0.99% platform fee plus Stripe card processing ~1.5% + 20p in the UK. (3) Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer, neither supplied. (4) iPad not supplied; the kitchen app runs on any modern tablet browser. (5) Auto-replies require a Business account on each platform and respond with schedule and order link only.
+
+⚠️ **[CORRECTED V11.5]** Footnote 4 previously ended *"Apple iPad recommended"*, and footnote 3 carried a matching recommendation. **Both removed** — it was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and on current evidence **Android is the better-validated of the two** (§36). See §44 for the standing landing-copy rules. ⚠️ The footnote **numbering above is load-bearing**: `hide_pricing` masks footnote **2** by the magic string `f.number !== '2'`, so renumbering this list silently unmasks the suppressed figures (§44, §27).
 
 > **NOTE (V6.5)** — footnote 6 ("Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.") was REMOVED. Footnotes 1–5 are unchanged and still referenced.
 
@@ -2686,6 +2741,25 @@ show_cooking_step lives per vehicle (truck_vans). It adds a "Cooking" step betwe
 The dashboard Menu & Stock tab edits category prep and batch inline on the category header. Prep time is a minutes input plus a 0s/30s seconds select; batch size is a number input that is blank when null (placeholder ∞). updateCategoryField saves on blur/change. The category rename, allow-notes toggle, and full category settings remain on the Manage page only.
 
 > **KDS pause badge note (V6.6)** — the KDS reads its pause indicator from `data.truck?.paused_until`, which is now null because pause moved to `truck_events` (Section 5). The KDS controls write correctly (event-scoped) but the badge can under-report the event pause. Event-source it like the dashboard badge (backlog, Section 27).
+
+## Payment state on the KDS (V11.5) — fixed
+
+🔴 **`ledgerRows` had NEVER been passed to the KDS `OrderCard` in any commit.** `git log -S` returns nothing for the file. So `getOrderBalance(order, undefined ?? [])` resolved **every** order on the kitchen screen to `{paidMinor: 0, status: 'unpaid'}` — a fully-paid online order included.
+
+**It was LATENT, not harmless.** Gusto has `show_paid_step` false, which gates the chip to `null` and pins the button to the constant *"Paid & collected"*, so nothing payment-derived rendered. 🔴 **One tap on the per-event override would have made it live** — and the consequence is not a mislabelled chip: with the paid step on, `Collected` only appears when `effectivePaid` is true, so the board would have offered a **money button on already-paid orders** and **removed the only route to `collected`**, stranding every ticket. The server's `balanceMinor <= 0` guard protects the *ledger* from a double charge; it does not protect the *till* from an operator asking a customer to pay twice.
+
+**The fix was a prop, not a query.** `/api/dashboard` already returned `payments` keyed by `order_key` — already van-scoped, one query, riding on the response the KDS was already fetching. The KDS was **discarding it at `setState`**.
+
+### "Take payments on this device" — a per-device LIFECYCLE toggle
+
+**`hg_kds_payments_${token}` in Capacitor Preferences.** Per **device**, not per truck and not per event: two iPads on one truck must be able to differ — a window device takes money, a grill device never shows a price it could be asked about. **Preferences rather than localStorage** (unlike the view/layout/sound prefs beside it) because it decides which orders **leave the board**, and a WKWebView can hand back a fresh localStorage after a cold kill.
+
+- **Default OFF. Window view only. Rendered only when the truck's paid step is on. NO plan gate.**
+- 🔴 **It is a LIFECYCLE toggle, not a display one.** **OFF:** the card offers `Ready`, and `Ready` is **terminal on that screen** — the ticket leaves the board, exactly as the cook screen has always behaved. **ON:** the ticket persists until marked paid and collected.
+- ⚠️ **The order is not finished — only that screen is finished with it.** `'ready'` is not terminal: it stays in the dashboard's `confirmedOrders` bucket and on any other KDS whose toggle is on. The filter is a **local render-time predicate over a shared status**; nothing is written, so two devices disagreeing about what they show costs no state and is the intended consequence.
+- **Cook view is unaffected in every combination** — it has never rendered a price or a payment action, and the toggle does not change that.
+
+⚠️ **The Done-today strip's `✓ paid` was a hardcoded literal**, printed for every collected order and derived from nothing — not the ledger, not `payment_status`, not even `show_paid_step`, which is why it was the one payment claim that survived the paid-step gate. **Now derived.** Same class as `PrinterStatus.connected` hardcoding `true`: **a label asserting a state nobody checked.**
 
 # 10. Add Order panel
 
@@ -3578,6 +3652,30 @@ truck_id   text  not null references trucks(id)        on delete cascade,
 - **`trucks.hide_pricing`** — `boolean`, **NOT NULL**, **DEFAULT `false`**. Per-truck pricing suppression, ANDed with `NEXT_PUBLIC_PRICING_PUBLISHED` (§4). **Pizzeria Gusto set to `true`.**
 - ⚠️ **NOT NULL DEFAULT false means a stored `false` is indistinguishable from "never set".** Nothing needs to tell those apart today — but do not build a "has an admin reviewed this truck" feature on this column; it cannot answer that question. Same shape as `qr_code_style` above.
 - 🔴 **`/api/admin`'s trucks query is a hand-maintained explicit select and had to be extended.** `/api/manage` uses `select('*')`. **The deploy order is therefore one-directional — see §4.**
+
+## Payments-mode columns (V11.5)
+
+### `order_payments.livemode` — APPLIED 7 August 2026
+
+**`boolean NOT NULL DEFAULT true`.** Applied 7 August; **50 existing rows, all `true`** — correct, because every row predating the column is a real cash or own-PDQ collection (`channel` is `in_person_other` on 100% of them; `'online'` has never been written).
+
+🔴 **Why it exists at all:** Stripe's documentation is explicit that *"your production webhook URLs receive BOTH live and test webhooks"*. A single production endpoint is a **mixed-mode firehose by design**, and **none of the other 14 columns can tell a test £25 from a real one** — `channel` cannot (a test online payment and a real one are both `'online'`, the exact value that says the platform fee applies), `external_ref` cannot (test and live PaymentIntent ids are indistinguishable by shape), `state`/`method`/`currency` cannot.
+
+**Why `DEFAULT true` and not NOT-NULL-no-default:** the strictest schema was rejected because it could not be applied in one step against a trading truck — the deployed writer did not name the column, so the migration would have `23502`-ed **every "Paid & collected" tap at Gusto's hatch** until the deploy caught up. **A guard that takes the hatch down mid-service is not a guard.** The omission hazard is closed **in the type system instead**: `recordPaymentEvent` takes `livemode` as a **required** parameter, so a writer that forgets **fails to compile**. ⚠️ **Phase two — `ALTER COLUMN livemode DROP DEFAULT` once the deploy is live everywhere — is recorded in the migration and NOT done.**
+
+**Exclusion is strict (`livemode === true`), and the direction is deliberate:** a consumer that forgets the filter **under-reports** (an order reads unpaid — visible, recoverable in one tap) rather than **over-reporting** (a test payment counts as real — invisible, unrecoverable). The filter lives at the **chokepoint**, `getOrderBalance`, which every money-meaning consumer already funnels through, plus at the three SQL readers.
+
+⚠️ **Two consumers deliberately do NOT filter, and both are correct:** `delete-truck`'s accounting guard and `execute-account-deletion`'s `paymentsIntact` are **physical row counts protecting retention**, not reports of money. Over-counting is their safe direction — a filtered count would let a truck holding only test rows be hard-deleted, and would be blind to test rows being destroyed.
+
+### `stripe_webhook_events` — created by hand, 7 August 2026
+
+**A receipt log, NOT a ledger.** One row per webhook event accepted by `app/api/webhooks/stripe` (signature verified). It records that an event **arrived**, never that money moved; `order_payments` remains the canonical money record and this table must never be summed or joined into a balance.
+
+- **`UNIQUE (stripe_event_id)` IS the idempotency mechanism** — insert first, treat `23505` as already-seen. Deliberately **not** read-then-write: two concurrent deliveries would both read "not seen".
+- 🔴 **`livemode` is `NOT NULL` with NO DEFAULT — deliberately the opposite of `order_payments.livemode`.** That column needed a default to classify 50 legacy rows; this table has **no legacy rows and no legacy writer**, so a default would rescue nothing and could hide everything — it would let a writer that forgot record a **test** event as live. No default ⇒ omission is a loud `23502`.
+- 🔴 **NO payload column.** A Stripe event carries `customer_details.email`, `.name`, `.phone` and a billing address, and **nothing sweeps JSONB for GDPR erasure** — the `action_audit_log` lesson, applied before it bit. `stripe_event_id` is the join key to Stripe's own Dashboard, which holds the payload and delivery history.
+- **No foreign keys** (following `action_audit_log`, not `order_payments`), RLS on with zero policies, service-role only.
+- ⚠️ **Created BY HAND in the SQL editor rather than by running the migration file** — see §35's *"run Cursor's migration file, never a retyped version"*: the retyped four-column version against a nine-column file cost an hour of 500s.
 
 ## Database maintenance and storage (V11.1) — OPERATIONAL
 
@@ -4960,6 +5058,18 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **Portal hardening (extended):** `p-5`/`px-6` scroll containers appear throughout `app/manage/[token]/page.tsx`; any with horizontal-only padding and a focusable first or last child has the clipped-focus-ring bug. **The class is understood (§35) but the sweep has not been done.**
 - **`DemoGetStarted`'s form labels, placeholders and error messages are still inline** rather than in the copy object. **Deliberate** — the bug was variant drift, not string location, and error messages belong next to the branches that raise them. Recorded so the decision isn't relitigated.
 - **`@capacitor/status-bar` is ONE PATCH BEHIND — look at that diff deliberately, don't discover it in a build.** Installed **8.0.2**, latest **8.0.3** (`npm view`, 28 July). The declared range is **`^8.0.2`**, so **a fresh `npm install` picks it up SILENTLY** — and `lib/native/statusBar.ts` is precisely the file carrying **three verified no-ops on modern Android** and the **unresolved null-window question** (§35's native-throw invariant: `StatusBar.java:42`, `:102` dereference `activity.getWindow()` inside an unprotected `executeOnMainThread` Runnable). **Whether 8.0.3 touches this area is UNDETERMINED** — **no changelog ships in `node_modules`** (both this package and `keep-awake` contain only `README.md`), so answering it needs the upstream repo. For contrast, `@capacitor-community/keep-awake` **is already on latest (8.0.1)** — nothing to chase there.
+### 🔴 Added V11.5 — the 7 August incident and the Stripe/stock work
+
+- 🔴 **THE `readLedger` ONE-LINE FIX — restore `.eq('order_key', orderKey)`** (§37). Production is on the rolled-back build `6be1064`, so the defect is **not live**, but the fix is **not applied either**. ⚠️ **It must be exercised against real rows before it deploys** — §35. Deploying it unexercised is what caused the incident.
+- 🔴 **RECONSTRUCT GUSTO'S 7 AUGUST COLLECTIONS.** Every collection between 14:24 and ~19:00 recorded £0. Each shortfall is that order's own `total_minor`; seven read-only queries are in `docs/payments-damage-report.md`. ⚠️ **Time-sensitive:** `undo_collected` clears `paid_at` **and** `collected_at`, so an operator tapping Undo removes that order from most of the queries, and the demo-cleanup cron runs hourly. `action_audit_log` is the durable backstop.
+- **The operator stock badge discards `bound`** (§30) — a pooled category ceiling renders as *"(1 left)"* against every item in the category. The customer page already uses the field.
+- **`"Only 1 pizzas left!"` — pluralisation bug on the CUSTOMER page** (§30). The noun is the raw category name lowercased.
+- **No urgency tier on the operator stock threshold** (§30) — flat `<= 10`, so 10 and 1 render identically. The customer page and the shared option badge redden at 3.
+- 🔴 **`hide_pricing` masks footnote 2 ONLY, keyed on the magic string `f.number !== '2'`** (§44). **Gusto sees footnote 1's real card figures unmasked on their Billing tab**, and **renumbering the footnotes would silently unmask everything**.
+- **Stripe Connect — onboarding, PaymentIntents, refunds, Terminal, Locations and subscription billing are ALL UNBUILT** (§37). Only the webhook endpoint exists. The model and the controller properties are decided; nothing else is.
+- **The collect idempotency key still swallows a legitimate second charge of the same amount.** `collect:{order_key}:{paidBefore}:{balance}` collides when the ledger returns to a previous position and the same amount is settled again — **true today with cash**, not merely a future Stripe concern. The complete answer is a client-minted per-tap key; a Stripe object id is one.
+- 🔴 **Apple Developer enrolment requested 7 Aug, awaiting confirmation.** ⚠️ **Xcode CANNOT BUILD until it completes** — a personal team cannot sign the Push Notifications capability.
+
 - **`app/dashboard/[token]/kds/page.tsx:245` calls `prepareKeepAwake()` UNCONDITIONALLY, ignoring `keepScreenOn`**; the separate `[keepScreenOn]` effect at `:253` then applies the real pref. So **mounting KDS with the pref OFF acquires the lock and immediately releases it.** Harmless in effect, but it is the **lying-toggle family** — for one render the published state is not what the pref says, and `lib/native/keepAwake.ts:8-13` exists specifically to publish the ACTUAL state rather than the intended one. Fix is to gate `:245` on the pref like the dashboard already does.
 
 # 28. Anti-scraping and rate limiting (V6.3)
@@ -5071,6 +5181,30 @@ The override can only **RESTRICT** — it can never re-enable an item the Settin
 ## Deal stock interaction
 
 A deal hides on the customer page when its slot's only item is sold out — and as of V6.5 that resolves **per-event** through the sparse-override read, not truck-wide (Section 8 / Section 17).
+
+## Stock DISPLAY — the pooled-ceiling attribution problem (audited V11.5, NOT fixed)
+
+**The resolution is correct everywhere. The attribution is not.**
+
+`lib/stock-utils.ts` `calcAddableRemaining` returns **`{ addable, bound }`** — `addable` is the number, and 🔴 **`bound` names WHICH constraint produced it** (`'item' | 'category' | null`). Its own docstring says `bound` exists *"for badge copy"*, and `/api/menu/[truckId]` ships the same distinction to the client as `stock_bound`, commented *"so a category countdown reads '3 pizzas left', not '3 left' against each of 18 pizzas"*.
+
+| Surface | Destructures | Result |
+|---|---|---|
+| **Customer** order page | `{ addable: stockAddable, bound: stockBoundEff }` | Phrases the badge against the category noun — **correct** |
+| 🔴 **Operator** Add Order — tile grid | `{ addable }` — **`bound` discarded** | *"(1 left)"* against every item |
+| 🔴 **Operator** Add Order — list rows | `{ addable }` — **`bound` discarded** | same |
+
+**Why twenty pizzas all read "(1 left)".** Category stock is a **pooled ceiling** — `event_category_stock.stock_count`, falling back to `menu_categories.default_stock`. `catRem` is computed **once per category** and is identical for every item in it, so when the category is the binding axis, `min()` hands the same number to all twenty tiles and each prints it as its own. **The number is arithmetically correct** — one more unit *is* all you can add — and `catBasketQty` is category-wide, so the badges **decrement together**. What is missing is any marker that the figure is **shared**.
+
+**An item may have BOTH ceilings.** `event_item_stock.no_item_cap = true` means *"follow category"* (item ceiling resolves to `null`); otherwise `stock_count` → `default_stock`. The **smaller binds**, ties to `'item'`. Both surfaces show the correct number; **only the customer page says which axis it came from.**
+
+**ELEVEN surfaces render a count**; the **KDS renders none**. Only **modifier options** share a component (`components/OptionStockBadge.tsx`, whose header states it is *"ONE source of truth for the thresholds + wording"*) — **item-level badges are duplicated inline on both surfaces, which is exactly how they drifted.**
+
+⚠️ **Thresholds differ.** The operator has a **flat `<= 10`** and **no urgency tier**, so **10 and 1 render identically** (same orange, same weight, only the digit differs). The customer page and the shared option badge both **redden at `<= 3`**. **14 renders nothing anywhere.**
+
+**At zero, neither path hides the item and neither is tappable-then-failing.** The operator tile is `disabled` **and** guarded in `onClick`, greyed, badge replaced by red `max`. The customer's `available` is flipped **server-side** by `stockRemaining <= 0`, giving a red `Sold out` pill. Behind both, `lib/stock-guard.ts` re-checks under the per-event mutex, so a race still fails closed with a 409.
+
+⚠️ **`"Only 1 pizzas left!"` is a live pluralisation bug on the CUSTOMER page** — the noun is the raw category name lowercased, with no singularisation. Backlog, §27.
 
 # 31. Slot & Capacity Engine — CANONICAL MODEL (AUTHORITATIVE — read before touching)
 
@@ -5497,6 +5631,16 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **WHEN FOLDING A VALUE INTO AN EXISTING DERIVED ONE, the check is not "does it compile" but "have I found every consumer of the thing I am shadowing".** `tsc` did not catch `effectivePaid` being declared **below three of its consumers** — the card would have shown a green PAID chip beside a live "Mark paid" button. A grep of every paid-ness consumer did.
 
+**🔴🔴 EXERCISE MONEY CODE AGAINST REAL DATABASE ROWS BEFORE IT DEPLOYS. `tsc`-CLEAN AND LINT-BASELINES-HOLDING ARE NOT VERIFICATION ON THE MONEY PATH.** The strongest invariant in this section, and it was bought expensively. On 7 August a one-line change to `readLedger` **replaced** `.eq('order_key', orderKey)` instead of adding a filter beside it, so every balance was computed from the whole `order_payments` table (§37). **It passed `tsc` and it passed lint rule-for-rule** — it had to, because the deleted filter left `orderKey` still referenced in the function's error message, so the parameter was never "unused". Cursor's own account: *"tsc and lint both passed clean on this change and could not have caught it — I reported that as verification when I had never exercised `readLedger` against a database."* **A type checker cannot see a missing `WHERE` clause.** The same session had verified a signature helper against 15 executed HMAC vectors; applying that discipline one file over would have caught this in a minute. **Any change under `lib/payments/` is unverified until it has been run against rows.**
+
+**🔴 A SILENT FAILURE ON A QUIET PATH IS MORE DANGEROUS THAN A LOUD ONE ON A BUSY PATH.** The same 7-August defect produced both at once, and the ranking is counter-intuitive. On the **paid-step-ON** truck it **stopped the board** — `Collected` was unreachable, orders could not clear, and it was **reported within minutes**. On **paid-step-OFF Gusto** the cards cleared normally, the operator saw a success toast, and **an afternoon's takings recorded £0 without a single error**. **The loud one gets fixed; the quiet one gets discovered by an accountant.** When assessing a defect's blast radius, ask which configuration **fails without complaining**, and weight that one higher — not the one generating the tickets.
+
+**🔴 FOLLOWING A VENDOR QUICKSTART VERBATIM CAN INVERT YOUR COMMERCIAL POSITION.** Stripe's embedded-onboarding sample sets `controller.fees.payer`, `controller.losses.payments` and `controller.requirement_collection` **all to `'application'`** — meaning **the PLATFORM** bears Stripe's fees, absorbs every chargeback, and takes on KYC collection. That is the **exact inverse** of HatchGrab's published terms, and it is one copy-paste away. **Read what a default MEANS, not just what it is** — and when a vendor's sample and your contract disagree, the contract is the specification. See §37.
+
+**WHEN ONE SURFACE IS RIGHT AND ANOTHER IS WRONG, THE FIX IS USUALLY THE FIELD THAT WAS DISCARDED, NOT A NEW DESIGN.** `calcAddableRemaining` returns `{ addable, bound }`; `bound` names which constraint produced the number and exists specifically for badge copy. The **customer** page destructures both and phrases the badge against the category. The **operator** panel destructures only `addable` at both of its render sites, which is the whole reason a pooled ceiling of 1 reads as *"(1 left)"* against twenty pizzas. **Before designing a fix for a divergence, diff the two call sites and look for the value one of them threw away.** See §30.
+
+**🔴 RUN CURSOR'S MIGRATION FILE, NEVER A RETYPED VERSION.** On 7 August the planning chat reconstructed a four-column `create table` from a **report summary** when the real file had **nine columns, a unique constraint, two indexes and RLS**. The webhook then verified signatures correctly and **500ed on every insert for an hour**, with zero rows to show for it — a failure that looked like a permissions or key problem and was neither. **Quote files; do not summarise them into SQL.** The report is a description of the migration; **the migration is the migration**.
+
 **🔴 A LOOSE RESTATEMENT WILL BE BELIEVED OVER THE AUTHORITATIVE ENTRY. Read the section, not the summary.** The V11.4 brief asserted four manual errors and **only one was real**. The `order_payments` cascade was recorded **correctly in §27 on 30 July** and restated ambiguously in a changelog line as *"no FK cascade concerns pending"* — and it was the ambiguous line that got believed and built on. **State provenance as read-from-the-manual, name the section you read, and verify anything load-bearing against the live schema.** The corollary for writing: a changelog restatement of a schema fact is a **liability**, because it will be read instead of the schema section.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
@@ -5586,7 +5730,82 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 > **STATUS UPDATE (V9.5) — PHASE 1 IS BUILT, DEPLOYED AND VERIFIED LIVE.** The payment ledger (`order_payments`), the rollup (`lib/payments/ledger.ts`), the audit log (`action_audit_log`), the paid step (`trucks.show_paid_step`) and the cash/card split (`trucks.takes_cash` + `order_payments.method`) all exist and are confirmed working against live data on `test-truck`. `payment_status` and `amount_paid` are **derived caches** written only by `recalcOrderPayment`. Everything below about STRIPE remains unbuilt and the blockquote that follows stands for that half.
 >
 > **What phase 1 deliberately proved without Stripe:** an order can be paid at placement or at collection, by cash or by the operator's own card machine; an order edited after payment produces a correct outstanding balance or refund-due state; every payment event is attributed to a named operator and recorded in an append-only log that survives deletion of its subject.
-> **STATUS: NOTHING IS BUILT.** There is no Stripe account, no Stripe SDK dependency, no `STRIPE_*` env var, no webhook route, and no `stripe_*` column anywhere in the schema (the two the manual claimed are corrected in §13). This section records **decisions**, so the build does not re-litigate them. Everything below is settled unless marked OPEN.
+> **[SUPERSEDED V11.5 — the line below read "STATUS: NOTHING IS BUILT … no Stripe SDK dependency, no `STRIPE_*` env var, no webhook route". That was true through V11.4 and is now false in part: see "Stripe — what is actually built" below. It is corrected here rather than deleted, because the *decisions* the sentence introduces are still the point of this section.]** There is still **no Stripe SDK dependency** and **no `stripe_*` column on `operators`**. This section records **decisions**, so the build does not re-litigate them. Everything below is settled unless marked OPEN.
+
+## 🔴 THE 7 AUGUST INCIDENT — read before touching `lib/payments/`
+
+**Commit `3a1d082`, 14:24 on 7 August 2026.** In `lib/payments/ledger.ts` `readLedger`, a `livemode` filter was meant to be **ADDED** and instead **REPLACED** `.eq('order_key', orderKey)`:
+
+```
+-    .select('kind, channel, amount_minor, state, external_ref')
+-    .eq('order_key', orderKey)
++    .select(LEDGER_ROW_COLUMNS)
++    .eq('livemode', true)
+```
+
+**Every balance was therefore computed from the ENTIRE `order_payments` table** — every order, every truck, Gusto's rows pooled with the demo trucks'. `paidMinor` became the whole-table sum, `balanceMinor` went negative, and `recordCollectionPayment` short-circuited on its `balanceMinor <= 0` guard — **inserting no row, raising no error, and returning `chargedMinor: 0` as a success**. Because it did not throw, the fail-open `catch` never fired and **no `paymentWarning` was set**.
+
+**The two symptoms, and the ranking that matters:**
+
+| Truck | `show_paid_step` | What the operator saw | Severity |
+|---|---|---|---|
+| Test Kitchen | **ON** | `mark_paid` recorded nothing → card stayed unpaid → **`Collected` never appeared** → order **could not leave the board** | **LOUD** — reported in minutes, and how it was found |
+| **Pizzeria Gusto** | **false** | Cards cleared normally, success toast every time — and **every collection from 14:24 recorded £0** | 🔴 **SILENT** — and the one that mattered |
+
+Orders touched in the window were **additionally corrupted**: `recalcOrderPayment` wrote `payment_status = 'refund_due'` and an `amount_paid` equal to the **whole-table total** onto whichever order was being collected.
+
+**Rolled back to `6be1064` at approximately 19:00** by promoting the earlier Vercel build. 🔴 **The one-line fix was NOT applied that evening, and that was deliberate: deploying an unexercised change to money code is precisely what caused the incident.** Promoting a known-good build and shipping a new one are different acts with different risk, and only the first was warranted at 19:00 on a trading day.
+
+### Recovery — established, so Monday does not re-derive it
+
+**The bug REMOVED rows rather than altering them**, which is the single most important recovery fact: each shortfall is simply **that order's own `total_minor`**, less anything genuinely recorded against it. The damage is **arithmetic, not forensic** — no apportionment, no inference.
+
+- **Seven read-only queries are in `docs/payments-damage-report.md`** — affected set, reconstruction list, corrupted-cache list, blast radius, truck scope, the single total, and the audit-log query.
+- 🔴 **`action_audit_log` is the durable evidence.** Append-only, **no foreign keys**, so it survives both an operator undo **and** a cascade delete. **The bug's signature there is `charged_minor = 0` with `ledger_failed = false`** — a collection that charged nothing and reported no failure.
+- ⚠️ **Two things destroy the evidence.** `undo_collected` clears **both `paid_at` and `collected_at`** (and nulls `status_before_collected`, and bumps `updated_at` to *now*), so **an operator tapping Undo drops that order out of most of the queries**. And the **demo-cleanup cron runs hourly** with `deleteTruckCascade`, which cascades `order_payments` away for `demo-` trucks.
+- **Detecting a wrongly-WRITTEN row** (worse than an absent one) uses the idempotency key's own shape: `collect:{order_key}:{paidBefore}:{balance}`. A healthy first collection encodes `paidBefore = 0`; during the incident it encoded the whole-table sum, so the key itself carries the fingerprint.
+
+**The invariant this establishes is recorded in §35** and is the strongest one there: **any change under `lib/payments/` must be exercised against real database rows before it deploys.** `tsc`-clean and lint-baselines-holding are not verification on this path — this change passed both.
+
+## Stripe — what is actually built (V11.5)
+
+**BUILT AND PROVEN END TO END on 7 August: the webhook endpoint only.** `app/api/webhooks/stripe` is live, verifying and recording — **four events forwarded, four 200s, four rows, `livemode` false on all four.**
+
+- **Hand-rolled HMAC verification from Stripe's documented manual procedure, NOT the SDK.** The SDK is still not a dependency. **Consequence worth preserving even after it lands:** `new Stripe(...)` requires an API key, so importing it would give the **most publicly-reachable route in the app** a `STRIPE_SECRET_KEY` purely to construct a client it never calls. As built, the route holds **no API key at all** — only `STRIPE_WEBHOOK_SECRET`, which is useless for anything but verifying signatures.
+- **`STRIPE_WEBHOOK_SECRET` is COMMA-SEPARATED, and that is required, not a convenience.** One production URL receives **both live and test events**, and registering the same URL in both modes yields **two different signing secrets**; secret rolls also need it (Stripe keeps the previous secret active up to 24h and signs with both).
+- **Verified against 15 real-HMAC vectors** — forgery, tampering, missing/garbage header, replay outside tolerance, `v0` downgrade, two-secret and secret-roll cases, and the **re-serialised-body trap**.
+- ⚠️ **CORRECTION: body-parsing-by-default is a PAGES Router behaviour.** This repo is **App Router**, where the body is an unparsed stream. The trap here is different and just as fatal: the stream is **single-read** (call `.json()` and `.text()` afterwards throws), and **re-serialising changes the bytes** — `JSON.stringify(JSON.parse(body))` differs in key order, whitespace and escaping, so the HMAC fails **100% of the time with a perfectly correct secret**. It presents as *"my signing secret must be wrong"*.
+- **Idempotency is `UNIQUE (stripe_event_id)`** — insert first, treat `23505` as already-seen, never read-then-write. Same idiom as the ledger's own idempotency key, deliberately, so there is one way to do this.
+- 🔴 **NO payload column on `stripe_webhook_events`, deliberately.** A Stripe event carries `customer_details.email`, `.name`, `.phone` and a billing address, and **nothing sweeps JSONB for GDPR erasure** — the `action_audit_log` lesson applied before it bit. The debugging need is met by `stripe_event_id`, which is the join key to Stripe's own Dashboard: **this table answers "did we receive it"; Stripe answers "what was in it".**
+
+### The Connect model — DECIDED (V11.5)
+
+🔴 **ONE connected account PER OPERATOR, not per truck.** An operator with several trucks has one account, one bank account, one KYC. **Terminal readers are grouped by Stripe Location, one per truck** — verified from Stripe's documentation, so **terminals do NOT force separate accounts**. Locations are child objects of an account, which makes account-per-operator the *enabling* choice rather than a constraint.
+
+**Consequence, stated because it will surprise someone:** `charges_enabled` is an **account** property, so **all of an operator's trucks go live together.** There is no per-truck readiness under this model.
+
+🔴 **THE QUICKSTART TRAP — the single most expensive mistake available in this build.** Stripe's embedded-onboarding sample sets:
+
+```
+controller[fees][payer]=application
+controller[losses][payments]=application
+controller[requirement_collection]=application
+```
+
+That is the **EXACT INVERSE** of our model. It makes **HatchGrab** pay Stripe's processing fees, **absorb every chargeback**, and take on KYC collection — contradicting the published terms, which tell operators *"Refunds, chargebacks and disputes are yours."* **We want the DEFAULTS:**
+
+| Property | Value | Effect |
+|---|---|---|
+| `controller.losses.payments` | **`stripe`** | The truck is debited first; **Stripe**, not HatchGrab, is the backstop |
+| `controller.fees.payer` | **`account`** | The connected account pays Stripe's fees **directly** — the platform never touches the card fee |
+| `controller.requirement_collection` | **`stripe`** | Stripe collects KYC; we never handle identity documents |
+| `controller.stripe_dashboard.type` | **`full`** | The truck gets a real Stripe Dashboard |
+
+⚠️ **The choice is forced, not free:** `requirement_collection = 'application'` is **incompatible** with both `losses.payments = 'stripe'` and `fees.payer = 'account'`, so deciding that the operator bears losses and fees **determines** the other two. **Direct charges** throughout — the connected account is always merchant of record.
+
+- **The account id belongs on `operators`** — 13 columns today and **no `stripe_*` column among them** (§13's correction stands; do not assume a column is waiting).
+- 🔴 **Readiness must resolve to `charges_enabled`, NEVER to a row existing.** An account can exist and be mid-verification for days. Keep it fresh from the `account.updated` webhook, and **guard that update on `livemode`** — a production endpoint receives both modes, and without the guard a **test** event could flip a **live** operator's readiness.
+- **UNBUILT:** onboarding, PaymentIntents, the customer payment path, refunds, Terminal, Locations, subscription billing.
 
 ## The commercial model — locked
 
@@ -6161,6 +6380,30 @@ The Settings card **no longer manufactures a connection**. ⚠️ The settings w
 
 ⚠️ **OPEN — literal price copies outside `PLAN_META`:** **13** copies of £29/£49 including `VAN_ADDON_PRICE` **as raw NUMBERS invisible to a grep**; **£1,500/£2,000 six times with no owner**; **0.99% nine times**. `findPlanParityViolations` guards **feature rows only**.
 
+## 🔴 hide_pricing masks footnote 2 ONLY — and it is keyed on a magic string (V11.5, OPEN)
+
+**The suppression is `f.number !== '2'`.** So `hide_pricing` hides the **online-payments** footnote and **nothing else**. 🔴 **Gusto has `hide_pricing = true` and therefore reads TBC for plan prices — while footnote 1's real card figures render unmasked on their Billing tab.**
+
+⚠️ **And the key is the footnote's NUMBER, as a string.** **Renumbering or reordering the footnotes would silently unmask everything** — no error, no type failure, no test. Same family as every other magic-string coupling in this manual: the guard names a position, not a meaning. **OPEN**, recorded in §27.
+
+## Landing copy — the repetition pass and the editorial rules (V11.5)
+
+**What happened:** the walk-up rewrite went **127 → 417 words across five sites**, with every tracked claim appearing **3–4 times**. Cut back to **194**, and footnote 1 to **56**.
+
+🔴 **THE RULE: each fact appears ONCE, at the site that needs it. Detail lives in footnote 1, and prose points at it.** Repetition on a pricing page does not reinforce a claim, it reads as anxiety about it — and it multiplies the number of places that have to change when the fact does.
+
+⚠️ **`FOOTNOTES[1]` is NOT overridden on the landing page — only footnote 2 is.** So **anything written into footnote 1 renders in three places: the landing page, the operator Billing tab, AND admin.** Write it for all three readers or override it for each.
+
+### 🔴 STANDING EDITORIAL RULE — landing copy describes the product AT LAUNCH, in the present tense
+
+*"Coming soon"* is reserved for things that are a **later addition to a shipped product** (Stripe walk-ups). It is **NOT** used for things that **ship at launch** — the native apps are described in the present tense because they are part of the launch, not an addition to it.
+
+Applied today: **WhatsApp is present tense; Messenger and Instagram carry "coming soon"** because they may not make launch. 🔴 **This is ONE rule applied to different readiness, not an inconsistency** — recorded because it reads like one, and someone will otherwise "fix" it into uniformity.
+
+### The iPad recommendation was REMOVED from footnote 3
+
+It was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and **on current evidence Android is the better-validated of the two** (§36). A recommendation carries the authority of a test result; there was no test.
+
 # 45. Offline payments and the conflict signal (V11.4)
 
 ## 🔴 A DESIGN DECISION WAS MADE AND REVERSED — the reversal is the record
@@ -6184,4 +6427,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **ALSO OPEN:** the **KDS renders `OrderCard` WITHOUT `ledgerRows`**, so **every order reads unpaid there**, online or offline. Pre-existing, on a live surface. **Drive payment tests from the Orders tab.**
 
 
-HatchGrab Engineering Reference Manual · V11.4
+HatchGrab Engineering Reference Manual · V11.5

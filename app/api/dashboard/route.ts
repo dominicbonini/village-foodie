@@ -246,9 +246,10 @@ export async function GET(req: NextRequest) {
     if (visibleKeys.length) {
       const { data: payRows, error: payErr } = await supabase
         .from('order_payments')
-        // `order_key` (to group by) + the shared LEDGER_ROW_COLUMNS list, so this select can never drift
-        // out of step with what getOrderBalance expects to receive. `livemode` rides in that list.
-        .select(`order_key, ${LEDGER_ROW_COLUMNS}`)
+        // The shared LEDGER_ROW_COLUMNS list, so this select can never drift out of step with what
+        // getOrderBalance expects to receive. `order_key` (which this route groups by) and `livemode`
+        // both ride in that list — do NOT re-add `order_key` here, it would be selected twice.
+        .select(LEDGER_ROW_COLUMNS)
         .in('order_key', visibleKeys)
         // 🔴 TEST ROWS DO NOT LEAVE THE DATABASE. This response is the ONLY route by which payment rows
         // reach a browser — the operator's dashboard, the KDS, and through mapOrderToTicket the printed

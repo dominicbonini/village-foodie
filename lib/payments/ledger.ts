@@ -86,7 +86,11 @@ export interface LedgerRow {
  *  cannot drift between call sites — a reader that omits `livemode` would hand getOrderBalance rows it
  *  cannot classify, and isLiveRow would (correctly, but unhelpfully) drop all of them. One list, one
  *  place, three readers: readLedger below, reverseCollectionPayment below, and /api/dashboard. */
-export const LEDGER_ROW_COLUMNS = 'kind, channel, amount_minor, state, external_ref, livemode'
+// 🔴 `order_key` IS LOAD-BEARING IN THIS LIST, NOT DECORATION. readLedger's scope assertion compares
+// every returned row's order_key against the one it asked for; without the column selected, that field
+// is `undefined` on every row and the assertion is INERT. Removing it from this string silently disarms
+// the only guard that can see the 7 August defect. If you shorten this list, do not shorten it here.
+export const LEDGER_ROW_COLUMNS = 'order_key, kind, channel, amount_minor, state, external_ref, livemode'
 
 /**
  * 🔴 THE SINGLE TEST FOR "THIS ROW IS REAL MONEY", AND THE DEFAULT IS EXCLUDE.
@@ -226,14 +230,49 @@ async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<L
   const { data, error } = await supabase
     .from('order_payments')
     .select(LEDGER_ROW_COLUMNS)
-    // 🔴 TEST ROWS ARE NOT PART OF THE BALANCE. This read feeds recalcOrderPayment (which WRITES
-    // orders.payment_status and amount_paid) and recordCollectionPayment (which decides how much to
-    // charge). A test row reaching either would put a fabricated figure into the derived caches every
-    // other surface trusts, and would tell an operator to collect less than they are owed.
-    // Filtered in SQL as well as in getOrderBalance — belt and braces on the path that writes.
+    // ── 🔴 TWO FILTERS. BOTH MANDATORY. NEITHER REPLACES THE OTHER. ─────────────────────────────────
+    // THIS IS THE 7 AUGUST INCIDENT, WRITTEN AT THE SCENE. On 7 August commit 3a1d082 added the
+    // `livemode` filter below by REPLACING the `order_key` filter above it. Every balance was then
+    // computed from the ENTIRE order_payments table — every order, every truck — so `paidMinor` became
+    // the whole-table sum, `balanceMinor` went negative, and recordCollectionPayment short-circuited on
+    // its `balanceMinor <= 0` guard: no row written, NO ERROR RAISED, `chargedMinor: 0` returned as a
+    // success. Pizzeria Gusto recorded £0 for an afternoon of real collections with nothing anywhere
+    // reporting a fault. It passed `tsc` and it passed lint, because the deleted filter left `orderKey`
+    // still referenced in the error string below, so the parameter was never "unused".
+    //
+    // They answer DIFFERENT questions and are not interchangeable:
+    //   .eq('order_key', orderKey) → WHOSE money is this?   Scope. Without it the sum is everyone's.
+    //   .eq('livemode', true)      → is this money REAL?    Mode.  Without it a test row counts as cash.
+    // If you are adding a third, ADD it. Do not edit either of these two lines to make room.
+    .eq('order_key', orderKey)
     .eq('livemode', true)
   if (error) throw new Error(`[ledger] could not read order_payments for ${orderKey}: ${error.message}`)
-  return (data ?? []) as unknown as LedgerRow[]
+
+  // ── 🔴 RUNTIME SCOPE ASSERTION — the guard for the class, not the instance ──────────────────────
+  // Every row this function returns MUST belong to the order it was asked about. A `WHERE` clause is
+  // invisible to every static check in this repo: `tsc` cannot see a missing filter, lint cannot see a
+  // missing filter, and the 7 August change proved both by passing them. This can see it, because it
+  // checks the RESULT rather than the query.
+  // It THROWS rather than filtering the stray rows out, deliberately: every caller of readLedger already
+  // fails safe on a throw — `collected` and `mark_paid` catch it and fail OPEN (the order still
+  // completes, a paymentWarning is set, the server log names the order_key), and `undo_collected` fails
+  // CLOSED. Silently correcting the data would hide the defect for exactly as long as it took someone to
+  // notice the money was wrong, which is the failure mode this exists to end.
+  // COST: one comparison per row, on a set that is single-digit for any real order. It is free.
+  // ⚠️ `!== orderKey`, with NO `!== undefined` escape. That escape was in the first draft of this guard
+  // and made it inert: `order_key` was not in LEDGER_ROW_COLUMNS, so every row's value was `undefined`
+  // and every row passed. Comparing strictly means a row whose order_key was not SELECTED also fails —
+  // so the guard catches its own precondition being removed, which is the only way it stays alive.
+  const rows = (data ?? []) as unknown as (LedgerRow & { order_key?: string })[]
+  const strays = rows.filter(r => r.order_key !== orderKey).length
+  if (strays > 0) {
+    throw new Error(
+      `[ledger] SCOPE VIOLATION reading order_payments for ${orderKey}: ${strays} of ${rows.length} rows ` +
+      `belong to a DIFFERENT order. The order_key filter is missing or wrong — every balance computed ` +
+      `from this read would be the sum of other orders' money. Refusing to return it.`,
+    )
+  }
+  return rows as LedgerRow[]
 }
 
 async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder> {

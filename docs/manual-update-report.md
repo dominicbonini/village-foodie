@@ -1,99 +1,145 @@
-# Reference manual update — V11.3 → V11.4
+# Reference manual update — V11.4 → V11.5
 
-**Date:** 6 August 2026. **Only `docs/reference-manual.md` was edited. No source file touched.** No `cap sync` / `next dev` / `next build`. No garbled spans in the brief.
+**Date:** 7 August 2026
+**File edited:** `docs/reference-manual.md` — **and no other file.** No source file was touched.
+**Not run, per the constraints:** `npx cap sync`, `next dev`, `next build`.
 
 ---
 
-# 🔴 THE HEADLINE — THREE OF THE FOUR ASSERTED MANUAL ERRORS DO NOT EXIST
+## 🔴 INTEGRITY GATE — PASSED
 
-The brief's highest-priority item was that **§16 records *"No FK cascade on `order_payments` — deliberate, surviving deletion of subject rows"*** and that this was false and load-bearing. **I checked before editing, and the premise does not hold.**
+### Version verification (before editing)
 
-| Asserted error | Reality |
+**On disk was V11.4**, as the brief expected — confirmed at three sites (`HatchGrab Engineering Reference Manual · V11.4` line 1, `**Version 11.4**` line 9, and the same title as the footer line 6187), with `## V11.4 — 6 August 2026` as the newest changelog entry. **V11.5 was therefore the correct next number and no entry was overwritten.**
+
+### Non-ASCII character census
+
+| | BEFORE | AFTER | Δ |
+|---|---|---|---|
+| Total non-ASCII characters | **6,292** | **6,589** | +297 |
+| Distinct non-ASCII characters | **71** | **71** | 0 |
+| Characters | 1,090,133 | 1,105,646 | +15,513 |
+| Bytes (UTF-8) | 1,102,189 | 1,118,891 | +16,702 |
+| Lines | 6,188 | 6,431 | +243 |
+| Numbered sections (`# N.`) | **44** | **44** | **0** |
+
+### 🔴 Characters that DROPPED
+
+```
+=== CHARACTERS THAT DROPPED (must be zero, or each named) ===
+NONE — no non-ASCII character decreased in count.
+
+=== unchanged: 60 distinct characters ===
+=== increased: 11 distinct characters ===
+```
+
+**Zero drops. Nothing to report as corruption.** All 71 distinct non-ASCII characters that existed before still exist, at the same count or higher.
+
+### The 11 characters that increased — all accounted for
+
+| Char | Codepoint | Before → After | Δ | Accounted for by |
+|---|---|---|---|---|
+| `—` | U+2014 EM DASH | 3,320 → 3,441 | **+121** | prose throughout the new entries |
+| `🔴` | U+1F534 | 188 → 228 | **+40** | incident, invariants, Connect trap, backlog |
+| `⚠` | U+26A0 | 202 → 226 | **+24** | caveats throughout |
+| `️` | U+FE0F VS-16 | 201 → 225 | **+24** | **exactly pairs the +24 `⚠`** — see below |
+| `§` | U+00A7 | 489 → 509 | **+20** | cross-references (§9, §16, §27, §30, §35, §36, §37, §44) |
+| `→` | U+2192 | 1,152 → 1,158 | +6 | `127 → 417`, `unpaid → Mark paid`, table arrows |
+| `£` | U+00A3 | 77 → 82 | +5 | `£0`, `£25`, `£29/£49`, `£1,500/£2,000` |
+| `–` | U+2013 EN DASH | 63 → 65 | +2 | `3–4 times`, `14:24 to ~19:00` ranges |
+| `✓` | U+2713 | 59 → 61 | +2 | the Done-strip `✓ paid` literal, quoted twice |
+| `…` | U+2026 | 61 → 62 | +1 | an elided quotation |
+| `⇒` | U+21D2 | 14 → 15 | +1 | `no default ⇒ omission is a loud 23502` |
+
+**Variation-selector integrity check:** VS-16 rose by exactly the same count as `⚠` (+24 each), and 219 of the 225 VS-16 occurrences directly follow U+26A0. The remaining 6 follow other emoji that take a selector (`✏ ⏸ ▶ ⚙ ❗ ↩`). **No orphaned or stripped selectors.**
+
+**Mojibake scan:** `â€`, `Ã©`, `Ã¢`, `ï¿½` and U+FFFD REPLACEMENT CHARACTER — **zero occurrences**, before and after. (U+FFFD does not appear in either census.)
+
+### Every deleted line, named
+
+The diff is **+248 / −5**. All five deletions are deliberate, and each is a replacement rather than a removal:
+
+| # | Deleted line | Why |
+|---|---|---|
+| 1 | `HatchGrab Engineering Reference Manual · V11.4` (line 1) | → V11.5, document header |
+| 2 | `**Version 11.4**` (line 9) | → V11.5 |
+| 3 | `HatchGrab Engineering Reference Manual · V11.4` (line 6187) | → V11.5, document footer |
+| 4 | `Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) …` | **fact corrected in place** — *"Apple iPad recommended"* removed from footnote 4, with a `[CORRECTED V11.5]` note stating why and preserving the original wording |
+| 5 | `> **STATUS: NOTHING IS BUILT.** There is no Stripe account, no Stripe SDK dependency, no `STRIPE_*` env var, no webhook route…` | **superseded in place** — replaced with a `[SUPERSEDED V11.5]` block that **quotes the old claim**, says which half is now false, and keeps the half that is still true (`no Stripe SDK dependency`, `no stripe_* column on operators`) |
+
+**No changelog entry was overwritten. No section was deleted. No section was created** — section count is 44 before and after.
+
+### ⚠️ Already-garbled spans found: NONE
+
+I looked for replacement characters, double-encoded UTF-8, orphaned variation selectors and truncated emoji sequences. **The file was clean before my edits and is clean after.** Nothing was silently repaired because there was nothing to repair.
+
+---
+
+## Placement — extended, never paralleled
+
+Every item went into an **existing** section. The brief's material mapped as follows:
+
+| Brief item | Placed in | Why there |
+|---|---|---|
+| **1. The payment incident** | **§37 Payments** — new subsections *"🔴 THE 7 AUGUST INCIDENT"* and *"Recovery"*, at the top of the section | §37 is the payments section; an incident post-mortem extends it. Also the lead entry in the V11.5 changelog. |
+| **1. The invariant** | **§35 Cross-cutting invariants** | Where the brief directed it |
+| **2. Stripe webhook + Connect model** | **§37** — new subsections *"Stripe — what is actually built"* and *"The Connect model — DECIDED"* | Same section; the old *"NOTHING IS BUILT"* line corrected in place directly above |
+| **2. `livemode` / `stripe_webhook_events`** | **§16 Database schema essentials** — new *"Payments-mode columns (V11.5)"* | Schema facts belong in the schema section, not a changelog restatement — §35's own lesson |
+| **3. KDS payment state** | **§9 KDS rules** — new *"Payment state on the KDS (V11.5) — fixed"* | §9 is the KDS section |
+| **4. Stock display** | **§30 Per-event stock** — new *"Stock DISPLAY — the pooled-ceiling attribution problem"* | §30 already owns the sparse-override model this sits on |
+| **5. Landing copy** | **§44 Commercial model** — new *"hide_pricing masks footnote 2 ONLY"* and *"Landing copy — the repetition pass and the editorial rules"*; **§4** footnote list corrected in place | §44 already holds `hide_pricing` and the fee/footnote material |
+| **6. §35 invariants** | **§35** — five new entries | As directed |
+| **7. §27 backlog** | **§27** — new *"🔴 Added V11.5"* block | As directed |
+
+**Two facts were corrected IN PLACE rather than appended**, per the brief: §37's *"NOTHING IS BUILT"* status line, and §4's footnote 4 iPad recommendation. Both retain the superseded wording so a reader can see what changed and why.
+
+---
+
+## What was written
+
+### §37 — the incident (written first, as instructed)
+
+The commit, the timestamp, the exact diff of the deleted `.eq('order_key', orderKey)`, and the mechanism: whole-table sum → negative `balanceMinor` → the `<= 0` short-circuit → **no row, no error, and `chargedMinor: 0` returned as success**, so the fail-open `catch` never fired and no `paymentWarning` was set.
+
+**The two symptoms are recorded in a table with the severity ranking explicit** — Test Kitchen LOUD (board stopped, reported in minutes) versus **Gusto SILENT (£0 recorded all afternoon, no error)** — and the brief's point that the visible one was the less serious is stated as the header of that comparison rather than buried.
+
+**The rollback and the non-deployment are both recorded as decisions**, including *why* not deploying the one-line fix that evening was correct: *"promoting a known-good build and shipping a new one are different acts with different risk."*
+
+**Recovery is recorded so Monday does not re-derive it:** rows were removed not altered ⇒ each shortfall is that order's own `total_minor` ⇒ **arithmetic, not forensic**; the seven queries in `docs/payments-damage-report.md`; `action_audit_log` as the durable evidence with its `charged_minor = 0` + `ledger_failed = false` signature; and both evidence-destroyers (`undo_collected` clearing `paid_at` **and** `collected_at`, the hourly demo-cleanup cron).
+
+### §35 — five new invariants
+
+1. 🔴🔴 **Exercise money code against real database rows** — the strongest, carrying Cursor's own quoted account and the specific reason `tsc`/lint could not catch it (the deleted filter left `orderKey` referenced in the error string, so it was never "unused").
+2. 🔴 **A silent failure on a quiet path beats a loud one on a busy path, in danger.**
+3. 🔴 **Following a vendor quickstart verbatim can invert your commercial position.**
+4. **When one surface is right and another wrong, the fix is usually the discarded field.**
+5. 🔴 **Run Cursor's migration file, never a retyped version** — with the four-vs-nine-column reconstruction and the hour of 500s.
+
+### Verified vs open — held to the brief's own labels
+
+Recorded as **proven**: the webhook endpoint (four events, four 200s, four rows, `livemode` false), the 15 HMAC vectors, `order_payments.livemode` applied with 50 rows all true, the KDS fix, the Stripe-Locations finding.
+
+Recorded as **decided but unbuilt**: the Connect model and its controller properties.
+
+Recorded as **open/unbuilt/awaiting**, never as done: the `readLedger` fix (**explicitly "not applied"**), Gusto's reconstruction, onboarding, PaymentIntents, refunds, Terminal, Locations, subscription billing, the stock-badge `bound` defect, the pluralisation bug, the operator threshold tier, `hide_pricing`'s magic string, the collect idempotency-key collision, and **Apple Developer enrolment ("requested, awaiting confirmation" — with the Xcode build block stated as a consequence, not as a completed step)**.
+
+**Nothing the brief labelled open, unconfirmed or unbuilt is recorded as verified.**
+
+---
+
+## Constraints — all held
+
+| Constraint | Status |
 |---|---|
-| **§16 records a "no FK cascade" claim** | 🔴 **§16 does not mention `order_payments` AT ALL.** `grep -c` over the whole section returns **0**. The attributed sentence is not there and never was |
-| **The manual was wrong about the cascade** | ✅ **§27 recorded the TRUTH on 30 July 2026** — *"`order_payments` cascades on order AND truck delete … A payment record that vanishes when someone deletes the order is not a record."* **The manual was right, and even flagged it as a problem** |
-| **The idempotency key was wrong in the manual** | ❌ **No.** V9.5 already records that `collectIdempotencyKey` returned a constant `collect:{order_key}`, that it swallowed every charge after the first, and that the fix is a **server-derived key plus a detector**. Correct as written |
-| **The 20260701 migrations were wrong** | ❌ **No.** V8.7 already carries the correction: *"recorded-as-pending, actually applied (verified 27 July)"* |
-| ✅ **The paired-op collapse** | ✅ **GENUINE — the one real error of four.** §27 stated *"The offline outbox collapses paired ops"*. **Refuted and corrected in place** |
+| Edit **only** `docs/reference-manual.md` | ✅ `git status` shows it as the only modified tracked source-of-record file; the other entries are this report and the two report files from earlier tasks today |
+| Touch no source file | ✅ zero files under `app/`, `lib/`, `components/`, `supabase/` |
+| Nothing open/unbuilt recorded as verified | ✅ see above |
+| No `cap sync`, `next dev`, `next build` | ✅ none run |
+| Extend existing sections, don't parallel them | ✅ section count 44 → 44 |
+| Correct wrong facts in place | ✅ two, both with superseded wording preserved |
+| Character census before and after | ✅ above — **zero drops** |
+| Flag garbled spans, don't fix | ✅ **none found** |
 
-## What IS defective, and it is a different thing
+## ⚠️ Nothing in the prompt arrived garbled
 
-**One ambiguous CHANGELOG phrase** in the V9.5 entry:
-
-> `order_payments` (integer minor units only, idempotency key, RLS-no-policy, **no FK cascade concerns pending — see §27**)
-
-That parses either as *"no FK-cascade concerns; pending"* or *"no FK cascade; concerns pending"*. **Corrected in place**, and it now states the two cascades explicitly.
-
-🔴 **So the lesson is NOT "the manual was wrong four times."** The manual held the correct fact in §27 and a loose restatement in the changelog, and **the loose restatement was believed without anyone reading the authoritative entry.** I recorded that as the §35 invariant rather than the sentence the brief asked for, because writing *"the manual was wrong four times"* into the manual — when three of the four are demonstrably not — would be doing the exact thing this version exists to correct.
-
-⚠️ **I have not softened the consequence.** The `order_payments` cascade genuinely did mean a hard delete of a real truck silently destroyed six years of accounting records and reported success. That is recorded in §16, in the strongest terms, with the `lib/delete-truck.ts` mechanism named.
-
----
-
-# 🔴 INTEGRITY GATE — BOTH CENSUSES
-
-| | Before | After |
-|---|---|---|
-| Total characters | 1,057,893 | 1,090,133 |
-| **Non-ASCII occurrences** | **6,033** | **6,292** |
-| **Distinct non-ASCII** | **69** | **71** |
-
-## ✅ ZERO CHARACTERS DROPPED
-
-**Every one of the 69 pre-existing characters is present at the same count or higher.** No repair was needed and none was performed.
-
-### The two new characters, both named and justified
-| | | Where |
-|---|---|---|
-| **U+274C ❌ CROSS MARK** | +2 | The correction table in the V11.4 changelog, marking the two asserted errors that are not real |
-| **U+26AA ⚪ MEDIUM WHITE CIRCLE** | +1 | The `.swift` vs `.entitlements` comparison table in §36, marking "optional" |
-
-### Counts on the characters most at risk
-```
-U+00A7 §  SECTION SIGN     466 ->  489   (+23)
-U+00A3 £  POUND SIGN        73 ->   77   (+4)
-U+2014 —  EM DASH         3211 -> 3320   (+109)
-U+00E9 é  E WITH ACUTE       3 ->    5   (+2)   ← "José" in §35 and §42
-U+1F534 🔴 LARGE RED CIRCLE  152 ->  188   (+36)
-U+26A0 ⚠  WARNING SIGN      179 ->  202   (+23)
-```
-
-### 🔴 The two specific watch items
-- **Curly quotes: ZERO before, ZERO after.** `U+2018 / U+2019 / U+201C / U+201D` appear in neither census. None introduced.
-- **Stray emoji: none.** The only new pictographs are the two above, both deliberate and both in tables.
-
-### Already-garbled spans
-**None found.** A sweep for mojibake signatures (`â€`, `Ã©`, `Ã¢`, `ï»¿`) returned nothing. Nothing was silently fixed.
-
----
-
-# ⚠️ VERSION ON DISK — CHECKED FIRST, AND IT MATCHED
-
-The file was at **V11.3** (title line, `**Version 11.3**`, and the `## V11.3 — 5 August 2026` changelog heading). **V11.4 was free**, so no entry was overwritten and no renumbering note was needed. The V11.3 entry's own warning — that it had to skip V11.2 because that number was already taken — is left standing.
-
----
-
-# WHAT WAS WRITTEN
-
-## Corrections made IN PLACE (both versions not left standing)
-1. **V9.5 changelog line** — the ambiguous `order_payments` FK phrase, now stating both cascades explicitly and pointing at §16 and §27.
-2. **§27's paired-op claim** — struck through and marked **REFUTED**, with the actual behaviour (`enqueue` coalesces `kind === 'stock'` only) and the consequence (a `mark_paid` / `undo_mark_paid` pair both queue and both replay, and FIFO makes that correct).
-
-## Sections extended, not duplicated
-- **§16 Database schema essentials** — the two `ON DELETE CASCADE` foreign keys with the SQL quoted; why it defeats the six-year commitment; `action_audit_log`'s zero FKs confirmed; the four applied columns; ⚠️ **`deletion_requested_by` and `deletion_last_notified_at` are on `operators`, not `trucks`** — with the note that this exact mistake was made and reported as a missing-column defect; and ⚠️ **`trucks.paused_until` recorded as DEAD**.
-- **§27 Open backlog** — eleven items added under "Added V11.4".
-- **§35 Cross-cutting invariants** — eleven invariants, including the unvalidated-instrument one and the read-the-section-not-the-summary one.
-- **§36** — the iOS push entitlement audit, the Debug/Release split, the `BadDeviceToken` token-wipe consequence, and the 🔴 **`.swift` vs `.entitlements` inversion** table.
-
-## New sections
-**§41** Account deletion · **§42** Kitchen ticket printing (Phase A) · **§43** Legal, email and domain · **§44** Commercial model · **§45** Offline payments and the conflict signal.
-
----
-
-# CONSTRAINT COMPLIANCE
-
-✅ **Only `docs/reference-manual.md` edited.** No source file touched.
-✅ **Nothing recorded as verified that the brief labelled open, unconfirmed or unbuilt.** Priming vs flush-on-connect, the amount-pinning gap, the KDS `ledgerRows` defect, ICO registration, Stripe in the provider table, the pending-deletion banner, the terms/export mismatch, and "nothing has been seen on paper" are all recorded **as open**, in the sections where a reader will meet them.
-✅ **Live-verified facts are labelled as such** and dated 6 August 2026 — the four columns, the two cascades, the 63 `action_audit_log` rows, `hide_pricing` on Gusto.
-
-⚠️ **One deliberate deviation, stated rather than hidden:** the brief's §35 invariant *"THE MANUAL WAS WRONG FOUR TIMES IN ONE SESSION"* was **not** written as given. Three of the four do not hold, and the invariant as drafted would itself have been a false provenance claim recorded in the manual. **The rule it points at is preserved and sharpened** — state provenance as read-from-the-manual, name the section you read, and verify anything load-bearing against the live schema — with the added corollary that **a changelog restatement of a schema fact is a liability, because it will be read instead of the schema section.**
+The brief was complete and internally consistent. One thing I resolved by judgement rather than instruction: *"§ wherever landing copy lives"* — landing copy has no dedicated section, so the material went to **§44** (which already owns `hide_pricing`, `CARD_FEES` and the footnote machinery) with the footnote-content correction made in **§4** where the footnote list itself is transcribed.
