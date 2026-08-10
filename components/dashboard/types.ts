@@ -123,6 +123,12 @@ export interface TruckData {
   auto_accept?: boolean
   /** V9.4 paid step. FALSE (the DB default) = today's behaviour exactly, everywhere. */
   show_paid_step?: boolean
+  /** One press ("Mark paid and collected") or two ("Mark paid" then "Collected") for an UNPAID order.
+   *  Truck-level, NO per-event override. Independent of show_paid_step, which owns the Add Order panel.
+   *  ⚠️ OPTIONAL AND NULLABLE ON PURPOSE — absent means "resolve it from show_paid_step", which is what
+   *  keeps a code-before-migration deploy behaving exactly as today. Resolved only by
+   *  lib/payments/paid-step.ts; never read this field directly. */
+  completion_presses?: 'one' | 'two' | null
   /** V9.4 cash/card split. FALSE (the DB default) = one payment button, exactly as now. Only
    *  meaningful when show_paid_step is also on. */
   takes_cash?: boolean
@@ -278,6 +284,13 @@ export interface TruckEvent {
   /** Per-event paid-step override. NULL = inherit trucks.show_paid_step. Resolved ONLY by
    *  lib/payments/paid-step.ts — never read directly. */
   show_paid_step_override?: boolean | null
+  /** Per-event completion override. NULL = inherit trucks.completion_presses. Resolved ONLY by
+   *  lib/payments/paid-step.ts — never read directly.
+   *  ⚠️ The dashboard reads the RAW value (not the resolved one) for one purpose only: to show whether
+   *  this event is overriding the truck default, and to offer "use my usual setting". That is a
+   *  question about the SETTING, not about payment behaviour, which is why it does not go through the
+   *  resolver. Nothing else may read it directly. */
+  completion_presses_override?: 'one' | 'two' | null
   /** Per-event cash/card override. NULL = inherit trucks.takes_cash. Resolved ONLY by
    *  lib/payments/paid-step.ts — never read directly. */
   takes_cash_override?: boolean | null

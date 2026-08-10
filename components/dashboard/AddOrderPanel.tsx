@@ -93,7 +93,11 @@ interface AddOrderPanelProps {
   todayEvent: EventRecord | null
   categoryOrder: string[]
   itemCategoryMap: Record<string, string>
-  showToast: (msg: string, type?: 'success' | 'error') => void
+  // WIDENED to accept the third `opts` argument (duration/action), never narrowed. The only caller
+  // (app/dashboard/[token]/page.tsx) already passes useToasts' own showToast, so this changes nothing at
+  // the call site — it stops the local type from hiding options the real function has always had.
+  // Needed by the PAYMENT NOT RECORDED toast below, which must outlive the 3.5s default.
+  showToast: (msg: string, type?: 'success' | 'error', opts?: { duration?: number }) => void
   onOrderPlaced: (optimistic?: Order) => void
   onOpenEvent?: (eventId: string) => void
   requestEventPickerOpen?: boolean
@@ -958,11 +962,20 @@ setItemModal({ item, modGroups, editCartKey })
         // orders.capacity_ack_at so an INFORMED over-capacity placement is later distinguishable from
         // one that arrived unattended (offline collision / sync race). Nothing reads it yet.
         capacityAcknowledged: capacityAck,
-        // V9.4 — the operator took the money as part of placing this order. Only ever sent when the
-        // truck has opted into the paid step; the server also re-checks show_paid_step before acting on
-        // it, so a stale client cannot book a payment on a truck that has not enabled the flow.
-        paymentTaken: showPaidStep ? takePaymentRef.current : false,
-        paymentMethod: showPaidStep && takePaymentRef.current ? paymentMethodRef.current : null,
+        // ── 🔴 THE `showPaidStep ? … : false` GATE IS GONE, AND ITS REMOVAL IS HALF THE FIX ──────────
+        // It read `paymentTaken: showPaidStep ? takePaymentRef.current : false`, which forced FALSE
+        // whenever "Take orders without payment" was OFF — so the one state that means "we ALWAYS take
+        // payment at order time" was the one state that could never record one. The button said
+        // `Confirm order · £X` and the payload said `paymentTaken: false`, and they agreed with each
+        // other while both contradicting the setting.
+        // 🔴 THE VALUE NOW COMES FROM THE BUTTON THE OPERATOR PRESSED, and nothing else. Both settings
+        // legitimately take payment here — OFF always, ON via the primary button — so there is no truck
+        // configuration under which a `true` from this panel should be refused. The server's matching
+        // re-check was removed for the same reason; see app/api/dashboard/action/route.ts.
+        // ⚠️ `takePaymentRef` is set by EVERY button in the confirm bar before it calls submitManual, so
+        // it can never carry a stale value from a previous press. The unpaid button sets it false.
+        paymentTaken: takePaymentRef.current,
+        paymentMethod: takePaymentRef.current ? paymentMethodRef.current : null,
       }
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
@@ -1034,7 +1047,21 @@ setItemModal({ item, modGroups, editCartKey })
         return
       }
       if (!result.ok) throw new Error(data.error)
-      showToast(`Order #${data.orderId} confirmed`)
+      // ── "Take payment £X" WENT THROUGH; THE MONEY DID NOT ────────────────────────────────────────
+      // 🔴 THE THIRD paymentWarning PRODUCER, and the one whose lie lasts longest. The walk-up
+      // paid-at-order path fails OPEN on the ledger write (action/route.ts:~1237): the ORDER is created
+      // and only the charge is lost, so the operator who just took £X at the counter sees "confirmed"
+      // and a card with no PAID chip. Nothing said the money was not recorded.
+      // ⚠️ REPLACES the confirmation toast rather than following it — same rule as the dashboard's
+      // completion toast. The order really was created; saying so in green alongside a red warning is
+      // how an operator ends up reading only the green one.
+      // The card marker is the durable half: this order stays ON the board, so the next poll renders
+      // ⚠ PAYMENT NOT RECORDED on its card with a repair beside it. No new alerting mechanism here.
+      if (data.paymentWarning) {
+        showToast(`⚠ Order #${data.orderId} added — PAYMENT NOT RECORDED. Take payment again on the order card.`, 'error', { duration: 20000 })
+      } else {
+        showToast(`Order #${data.orderId} confirmed`)
+      }
       if (manualItems.length) {
         const categoryMap: Record<string, string> = {}
         manualItems.forEach(item => {
@@ -1259,17 +1286,48 @@ setItemModal({ item, modGroups, editCartKey })
       />
       {slotSelector}
       {contactDetails}
-      {/* ── PAYMENT DECISION (V9.4) — TWO EQUAL ACTIONS, SIDE BY SIDE, NEITHER PRE-SELECTED ────────
-          A ROW, not a stack. Two stacked full-width primaries create a "which one is the default?"
-          problem and put the second target directly under the thumb's travel from the first — a
-          mis-tap that records money. Toast puts fire-to-kitchen and Pay in a bottom row; Square splits
-          "save cart" from "Charge $X" the same way.
-          "Take payment" carries the AMOUNT deliberately: the number on the button is the last
-          confirmation before money is recorded, and it distinguishes the two buttons by SHAPE rather
-          than by wording alone. The total also appears above; that redundancy is conventional, not an
-          oversight. The amount is stacked under the label so it can never clip at narrow widths —
-          see the width note in the report.
-          Both actions confirm the order; only one records payment. Neither is remembered. */}
+      {/* ── PAYMENT DECISION — TAKING PAYMENT IS THE DEFAULT, PLACING UNPAID IS THE OPTION ─────────
+          🔴 REBUILT 10 August 2026. THE OLD BAR WAS INVERTED, AND THIS IS THE DEFECT IT CAUSED.
+          With "Take orders without payment" OFF it rendered ONE button reading `Confirm order · £X`
+          that created the order and recorded NOTHING — so turning the setting OFF produced an order
+          taken WITHOUT payment, the exact inverse of what the setting says. The operator hit it in
+          testing and had to go to the order card afterwards to mark it paid and collected.
+          The client half was only half the bug: `paymentTaken: showPaidStep ? … : false` (see
+          submitManual) forced FALSE whenever the setting was off, and the SERVER re-checked
+          `showPaidStep` before booking, so even a client that sent true would have been refused.
+          BOTH gates are gone; see the note at each.
+          ── WHAT IT DOES NOW ────────────────────────────────────────────────────────────────────
+          OFF  → ONE button, and it TAKES PAYMENT. There is deliberately NO route to place an unpaid
+                 order from this panel: the truck has said they always take payment at order time.
+                 ⚠️ ACCEPTED CONSEQUENCE, ruled on by the operator — a truck that takes phone
+                 pre-orders turns the setting ON. Do NOT add a third state or a workaround here.
+          ON   → TWO buttons. The payment one is PRIMARY (solid); the unpaid one is SECONDARY
+                 (outline) and says what it does and does not do.
+          ── LABELS: THE BUTTON MUST SAY WHICH ONE TAKES MONEY ───────────────────────────────────
+          `Confirm order` was the whole problem — it sounds like the primary action and says nothing
+          about payment, so on a two-button bar it read as the safe default. The payment button keeps
+          "Take payment" over the amount — that shape is unchanged and already correct.
+          🔴 THE SECONDARY IS **"Place order"**, AND IT IS DELIBERATELY SHORT. DO NOT LENGTHEN IT.
+          It was briefly "Place order, pay later"; that was DEFENSIVE, and the defence is unnecessary
+          because it never stands alone — **it sits beside "Take payment £10.00", and the contrast
+          carries the meaning: one button names a price, the other does not.** An operator who has
+          turned "Take orders without payment" ON knows what they configured. The longer label also
+          cost width in a row that is tight on a phone.
+          ⚠️ AND IT IS NOT "Confirm order", which is what it will drift back to if anyone shortens it
+          without reading this. Two reasons, both live: "confirm" reads as THE primary action, which is
+          the inversion this bar was rebuilt to remove; and **"Confirm" is the customer-order flow's own
+          word for accepting an order into the queue** (the order card's `✓ Confirm`, the pending
+          bucket), so it already means something else in this product. "Place order" is unambiguous
+          next to a button that names a price.
+          ⚠️ THE AMOUNT STAYS STACKED UNDER THE LABEL, not inline: it cannot clip at narrow widths.
+          A ROW, not a stack of full-width primaries — two stacked primaries create a "which is the
+          default?" problem and put the second target under the thumb's travel from the first.
+          🔴 ONE PRESS = ONE SERVER ACTION, ONE REQUEST, ONE OUTBOX OP. Every button here calls
+          `submitManual`, which makes ONE `gatedAction({ kind: 'create' })` carrying `paymentTaken`;
+          the server creates the order and books the ledger row inside the SAME handler. Nothing here
+          dispatches a payment op alongside a create — the outbox skips a conflicted op and continues,
+          so a create that landed beside a payment that conflicted would leave an unpaid order looking
+          paid. Do not split this into two dispatches. */}
       {showPaidStep ? (
         <div className="flex gap-2">
           <button
@@ -1277,7 +1335,7 @@ setItemModal({ item, modGroups, editCartKey })
             disabled={loading || !hasItems || !manualEvent}
             className={`flex-1 min-w-0 ${ORANGE_OUTLINE} font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]`}
           >
-            {submitting === 'plain' ? 'Confirming…' : !manualEvent ? 'Select an event' : 'Confirm order'}
+            {submitting === 'plain' ? 'Confirming…' : !manualEvent ? 'Select an event' : 'Place order'}
           </button>
           {takesCash ? (
             /* CASH/CARD — both blue (both are money actions; no fourth colour), one tap each, no modal.
@@ -1315,13 +1373,45 @@ setItemModal({ item, modGroups, editCartKey })
             </button>
           )}
         </div>
+      ) : takesCash ? (
+        /* OFF + cash/card — still ONE ACT, offered as two one-tap choices, exactly as the ON branch
+           and the order card do it. Both create the order AND record the payment; they differ only in
+           the `method` recorded. Same solid colour, distinguished by ICON, never by colour. */
+        <div className="flex gap-2">
+          <button
+            onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'cash'; void submitManual() }}
+            disabled={loading || !hasItems || !manualEvent}
+            className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
+          >
+            {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
+              <><span className="text-sm">💷 Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+            )}
+          </button>
+          <button
+            onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'card'; void submitManual() }}
+            disabled={loading || !hasItems || !manualEvent}
+            className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
+          >
+            {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : !manualEvent ? <span className="text-sm">Select an event</span> : (
+              <><span className="text-sm">💳 Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+            )}
+          </button>
+        </div>
       ) : (
+        /* 🔴 OFF — THE SINGLE BUTTON TAKES PAYMENT. It used to read `Confirm order · £X` and record
+           nothing, which is the inversion this rebuild fixes: with the setting OFF the truck has said
+           they always take payment at order time, so the one button must do both.
+           ⚠️ `takePaymentRef.current = true` is what the old branch was missing — it called
+           `submitManual()` bare, leaving the ref at whatever the last press set it to and the
+           `paymentTaken` expression forcing false anyway.
+           The label names the ACT and the AMOUNT, matching the primary button in the ON branch, so an
+           operator moving between the two states meets the same words for the same outcome. */
         <button
-          onClick={() => submitManual()}
+          onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = null; void submitManual() }}
           disabled={loading || !hasItems || !manualEvent}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
-          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Take payment${manualTotal > 0 ? ` £${manualTotal.toFixed(2)}` : ''}`}
         </button>
       )}
     </div>

@@ -119,6 +119,13 @@ interface ProvisionProfile {
    *  `Paid & collected` before the takesCash branch is reached. Also NOT customer-facing; see the
    *  report's P0(a). */
   takesCash: boolean
+  /** P5c — `trucks.completion_presses`: does completing an UNPAID order take one press
+   *  ("Mark paid and collected", firing the existing 'collected' action) or two ("Mark paid" then
+   *  "Collected")? Truck-level, NO per-event override. It also decides what `undo_collected` reverses.
+   *  ⚠️ INDEPENDENT OF showPaidStep, which owns the Add Order panel. Declared here rather than left to
+   *  the column default for the same reason every other field on this type is: a default is invisible,
+   *  and nothing in the product would record that anyone chose it. */
+  completionPresses: 'one' | 'two'
 }
 
 const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
@@ -168,6 +175,11 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     // end. Turning it on for a truck that has not asked would put a Cash/Card choice in front of every
     // order they take.
     takesCash: false,
+    // P5c — TWO, matching this profile's showPaidStep: true, so a truck provisioned today behaves
+    // exactly as one provisioned yesterday. 🔴 NOT DERIVED FROM showPaidStep AT RUNTIME — the two are
+    // independent settings and this is a separate decision that merely happens to agree with it now.
+    // The migration backfills existing trucks by the same rule, so new and old trucks match.
+    completionPresses: 'two',
   },
   demo: {
     identity: 'random',
@@ -195,6 +207,9 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     notesRequireReview: true,
     showPaidStep: false,
     takesCash: false,
+    // P5c — ONE press, matching this profile's showPaidStep: false, so the demo's story stays a single
+    // walk-up order placed and served in one loop. A second completion tap would be scenery.
+    completionPresses: 'one',
   },
 }
 
@@ -420,12 +435,16 @@ export async function provisionTruck(
         // Written EXPLICITLY. The column's `default true` is a backfill default for pre-existing trucks,
         // not the right answer for a truck being created now — see the note on ProvisionProfile.
         preorders_enabled: profile.preordersEnabled,
-        // P4/P5 — all four written explicitly from the profile, never inherited. notes_require_review
+        // P4/P5 — all FIVE written explicitly from the profile, never inherited. notes_require_review
         // and takes_cash happen to match their DB defaults today; that is a fact about the database
         // right now, not a contract, and this is what stops a default change moving new trucks.
         notes_require_review: profile.notesRequireReview,
         show_paid_step: profile.showPaidStep,
         takes_cash: profile.takesCash,
+        // P5c — the operator profile writes 'two' here, which is NOT the column default ('one'). A truck
+        // created before the migration is applied would carry no value at all, and the resolver's
+        // show_paid_step fallback covers that; once applied, this is what makes the decision explicit.
+        completion_presses: profile.completionPresses,
         // Read by upsert_event when creating events (`truck.default_auto_open ?? true`).
         default_auto_open: true,
         default_auto_close: true,

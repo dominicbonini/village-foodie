@@ -133,7 +133,11 @@ export async function GET(req: NextRequest) {
       // statement fails, which lands on the silent-empty-board path documented directly below.
       // `buzzer_prompt` is added by supabase/migrations/20260803_buzzer_settings.sql: apply it BEFORE
       // deploying this build.
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override, buzzer_prompt')
+      // 🔴 `completion_presses_override` added 10 August 2026 — apply
+      // supabase/migrations/20260810_truck_events_completion_presses_override.sql BEFORE deploying this
+      // build, exactly as the `buzzer_prompt` note above requires. The consequence of the wrong order is
+      // the silent-empty-board path documented immediately below, not a visible error.
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override, completion_presses_override, buzzer_prompt')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -201,6 +205,9 @@ export async function GET(req: NextRequest) {
   let doneToday: any[] = []
   /** order_key → its order_payments rows. Fed straight into getOrderBalance client-side. */
   const payments: Record<string, any[]> = {}
+  /** order_keys whose money write is on record as having FAILED. Paired client-side with the live
+   *  balance by hasUnrecordedPayment() — see the query below for why both halves are required. */
+  const paymentFailures = new Set<string>()
   if (selectedEventId) {
     let activeOrdersQuery = supabase
       .from('orders')
@@ -266,6 +273,43 @@ export async function GET(req: NextRequest) {
         for (const r of payRows ?? []) {
           ;(payments[r.order_key] ||= []).push(r)
         }
+      }
+
+      // ── ORDERS WHOSE MONEY WRITE FAILED (paymentWarning, made visible) ─────────────────────────────
+      // 🔴 THE PROVENANCE HALF OF THE MARKER, AND IT IS ALREADY IN THE DATABASE. 'collected',
+      // 'mark_paid' and the walk-up paid-at-order path all fail OPEN on the ledger write and all record
+      // `ledger_failed: <bool>` in their audit after_state. That flag was written from day one and read
+      // by nothing; this query is what turns it into something an operator can see.
+      //
+      // WHY THE AUDIT LOG AND NOT A NEW COLUMN: it needs no migration, it is append-only (so the fact
+      // cannot be lost by a later write), and it is the ONLY per-order record of a failure that the
+      // client can never reconstruct — see the offline case below. Paired with the live balance in
+      // hasUnrecordedPayment(), it also self-clears on repair.
+      //
+      // 🔴 THIS IS THE ONLY THING THAT COVERS THE OFFLINE PATH. An outbox op that syncs successfully has
+      // its response body DISCARDED — drainOnce does `if (res.ok) { removeOp; synced++ }` and never
+      // parses it (lib/native/orderGate.ts:~267). A queued 'collected' that replays and half-fails
+      // therefore produces a paymentWarning that no toast can ever show, because no client is watching
+      // at the moment it arrives. The server wrote the audit row regardless, so this query sees it.
+      //
+      // ⚠️ NON-BLOCKING, like the payments fetch above and for the same reason: the dashboard must
+      // render. On failure the set is EMPTY, which under-reports rather than inventing markers — the
+      // safe direction for an alert (a false "payment missing" on a busy board destroys the signal),
+      // and it self-heals on the next poll. The toast at the moment of failure is unaffected.
+      // ⚠️ Scoped to the SAME visibleKeys as the payments query, so it can only ever return rows for
+      // orders already on this response. Small table (163 rows live), one extra query per poll.
+      const { data: failRows, error: failErr } = await supabase
+        .from('action_audit_log')
+        .select('order_key')
+        .eq('truck_id', truck.id)
+        .in('order_key', visibleKeys)
+        // ->> yields TEXT, so the comparison value is the STRING 'true', not the boolean. Verified
+        // against the live table before this shipped; a boolean here matches nothing and fails silent.
+        .eq('after_state->>ledger_failed', 'true')
+      if (failErr) {
+        console.error('[dashboard] ledger-failure lookup failed — the PAYMENT NOT RECORDED marker will not render this poll:', failErr.message)
+      } else {
+        for (const r of failRows ?? []) if (r.order_key) paymentFailures.add(r.order_key)
       }
     }
   }
@@ -621,6 +665,7 @@ export async function GET(req: NextRequest) {
     offlinePauseEventId: selectedEventId,         // the event the marker belongs to (ack key)
     orders:  orders || [],
     payments,                                       // order_key → order_payments rows (V9.4) → getOrderBalance
+    paymentFailures: [...paymentFailures],          // order_keys whose ledger write failed → hasUnrecordedPayment
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
     capacityBreaches,                               // Piece 2 — slots genuinely over a ceiling (reconnect flag)

@@ -196,7 +196,14 @@ export function OrderCard({
   // The card already receives `truck` and `event`, so it resolves its own settings rather than taking
   // them as props. That removes any chance of the card and the server disagreeing about whether the
   // paid step is split for THIS event — they run the same function over the same two inputs.
-  const { showPaidStep, takesCash } = resolvePaidStep(truck, event)
+  // 🔴 `showPaidStep` IS DELIBERATELY NOT DESTRUCTURED — THIS CARD NO LONGER READS IT AT ALL.
+  // It had three consumers here and all three left: the PAID chip (un-gated, because whether money has
+  // been recorded is a fact about the ORDER), and completionBtn / completionBtnDisabled (moved to
+  // `completionPresses`, because how an order is handed over is a different question from whether the
+  // Add Order panel can place one unpaid). An unpaid order reaches this card from the customer path on
+  // every truck, whatever that setting says — so nothing about a CARD should depend on it. If you find
+  // yourself adding it back, that is the thing to re-examine first.
+  const { takesCash, completionPresses } = resolvePaidStep(truck, event)
 
   // ── PAYMENT STATE — DERIVED, NEVER RECOMPUTED HERE (V9.4) ───────────────────────────────────────
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
@@ -231,16 +238,76 @@ export function OrderCard({
   // That matters for the fast-tap rule (§10): there is no timing window, no debounce and no delayed
   // first action. Two quick taps do paid-then-done naturally because the second tap lands on a button
   // that has already become "Done"; tapping once and stopping is a complete, valid action either way.
-  //   showPaidStep OFF → "Paid & collected", firing 'collected' — the ACTION name is unchanged.
-  //   unpaid           → "Mark paid"            → 'mark_paid'  (order stays put in the queue)
-  //   part paid        → "Mark £X.XX paid"      → 'mark_paid'  (charges the outstanding balance only)
-  //   paid             → "Collected"            → 'collected'
+  //   ONE press → "Mark paid & collected", firing 'collected' — the ACTION name is unchanged.
+  // ⚠️ THE LABEL IS LENGTH-CONSTRAINED, NOT FREE COPY. It shares a flex row with a status chip in the
+  // cooking-gate case (completionBtnDisabled beside "⏳ Waiting"), inside a KDS grid column whose FLOOR
+  // is 240px, and `Btn` sets no `whitespace-nowrap` or `truncate` — so an over-long label WRAPS and the
+  // button grows taller than the chip beside it. "Mark paid and collected" measured ~177px against
+  // ~130px of usable width in that slot; "&" saves ~14px and restores the slack. Measurements and the
+  // shorter/longer options are in docs/payments-report.md. Do not lengthen this without re-measuring.
+  // ⚠️ THE ENABLED BUTTON SPELLED IT "and" UNTIL 10 August 2026 while the disabled placeholder below
+  // said "&" — a shortening pass matched only the single-quoted string and missed this JSX attribute,
+  // so the two disagreed and Manage advertised a label the card never rendered. If you change the
+  // wording, change it in THREE places: here, completionBtnDisabled, and the Manage radio's button line.
+  //
+  // ── 🔴 DO NOT DROP THE WORD "MARK". IT IS WHAT MAKES THESE READ AS ACTIONS. ─────────────────────
+  // The Add Order bar's secondary was shortened on 10 August ("Place order, pay later" → "Place order")
+  // and these are the obvious next thing to shorten. They must not be. **"Mark paid" is an instruction;
+  // "Paid" is a status** — and this card already carries a PAID CHIP a few lines up, so a button reading
+  // `Paid & collected` beside a chip reading `PAID` would read as a state the card is reporting rather
+  // than a thing the operator can press. That ambiguity is worse here than anywhere else in the product,
+  // because the press books money.
+  // ⚠️ The Add Order case is the opposite and that is why it could be shortened: "Place order" sits
+  // beside "Take payment £10.00", so the CONTRAST carries the meaning. Nothing on this card supplies
+  // that contrast — the completion button is frequently the only control on the row.
+  //   unpaid    → "Mark paid"            → 'mark_paid'  (order stays put in the queue)
+  //   part paid → "Mark £X.XX paid"      → 'mark_paid'  (charges the outstanding balance only)
+  //   paid      → "Collected"            → 'collected'
+  //
+  // ── 🔴 THE ONE-PRESS PATH IS ONE SERVER ACTION, ONE REQUEST, ONE OUTBOX OP. DO NOT SPLIT IT. ─────
+  // It fires the EXISTING 'collected' action, unchanged — the server books the full outstanding balance
+  // and writes the status inside one handler (app/api/dashboard/action/route.ts). Only the LABEL is new.
+  // ⚠️ NEVER dispatch 'mark_paid' AND 'collected' from here to "do both". The outbox marks a conflicted
+  // op `conflict` and SKIPS it, then CONTINUES with the rest (lib/native/orderGate.ts) — and it has no
+  // dependency ordering — so a conflicting 'mark_paid' would be dropped while 'collected' replayed, and
+  // the order would complete with no payment recorded. The safety is in there being exactly one op.
+  // 🔴 GATED ON completionPresses, NOT ON showPaidStep (10 August 2026). Those were the same boolean
+  // until the settings were split. `showPaidStep` now answers "can this truck place an order unpaid?",
+  // which is a question about ORDER ENTRY and says nothing about how an order is handed over — and an
+  // unpaid order reaches this button from the customer path whatever that setting says.
+  //
+  // ── 🔴 PAYMENT STATE IS TESTED FIRST. THE SETTING ONLY DECIDES WHAT AN *UNPAID* ORDER OFFERS. ────
+  // WHETHER MONEY HAS BEEN RECORDED AGAINST THIS ORDER IS A FACT ABOUT THE ORDER, NOT A PREFERENCE OF
+  // THE TRUCK — the same rule that un-gated the PAID chip earlier today, applied to the action instead
+  // of the decoration. A truck setting can decide HOW payment is taken; it cannot decide whether £10
+  // has already changed hands, and it must never offer to take it again.
+  //
+  // ⚠️ THE BUG THIS FIXES, OBSERVED ON test-kitchen (10 August 2026): `completionPresses === 'one'` was
+  // tested BEFORE `effectivePaid`, so an order that was already paid — marked paid at order time, PAID
+  // chip rendering correctly beside it — was offered "Mark paid & collected". The ledger was right and
+  // the button was wrong, because the branch never asked about the order.
+  // 🔴 AND IT GETS WORSE WITH STRIPE. An online order arriving ALREADY PAID would land on that same
+  // branch and invite a second recording of money already taken. Testing paid-ness first makes the
+  // route the payment arrived by irrelevant: ledger, walk-up, Mark paid, or a webhook that does not
+  // exist yet — a settled order is offered COLLECTED and nothing else.
+  // (The server has always been safe here: recordCollectionPayment short-circuits on a zero balance, so
+  // the second press would have booked nothing. This is about not ASKING an operator to do it — a
+  // button that invites a duplicate payment is a defect even when the duplicate cannot land.)
+  //
+  // ⚠️ PART-PAID DELIBERATELY DOES NOT TAKE THIS BRANCH and falls through to the setting. Money is still
+  // outstanding, so a payment action is still the right offer: one press charges the remainder and
+  // collects, two presses offers "Mark £X.XX paid" first. `effectivePaid` is paid-or-refunded only.
+  //
+  // ⚠️ READ THROUGH THE EXISTING RESOLVER, NO ARITHMETIC. `effectivePaid` is declared once near the top
+  // of this component from getOrderBalance(order, ledgerRows) — the same pure function the server rollup
+  // and the PAID chip use — with the offline payment overlay already folded in. Nothing is re-derived
+  // here and nothing may be: one derivation, one place.
   const completionBtn = () => {
-    if (!showPaidStep) {
-      return <Btn label="Paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
-    }
     if (effectivePaid) {
       return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+    }
+    if (completionPresses === 'one') {
+      return <Btn label="Mark paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
     // (Ready, ✓ Confirm) and SLATE means completion (Done). Blue was tried here and was foreign to a
@@ -284,8 +351,30 @@ export function OrderCard({
 
   // ── THE MONEY CHIP, AND THE PERSISTENT PAYMENT REVERSAL (V9.4) ──────────────────────────────────
   // The chip states the payment fact: paid at a glance, or the outstanding balance when part paid,
-  // because that is the number the operator has to ask for. Nothing when the truck has not opted in or
-  // nothing has been paid — an unpaid order is the norm and needs no decoration.
+  // because that is the number the operator has to ask for. Nothing when nothing has been paid — an
+  // unpaid order is the norm and needs no decoration.
+  //
+  // ── 🔴 ORDER-KEYED, NOT SETTING-KEYED. DO NOT RE-GATE THIS ON `showPaidStep`. ────────────────────
+  // WHETHER MONEY HAS BEEN RECORDED AGAINST THIS ORDER IS A FACT ABOUT THE ORDER, NOT A PREFERENCE OF
+  // THE TRUCK. A truck setting can decide how payment is TAKEN — one press or two, at the hatch or when
+  // the order is typed in. It cannot decide whether £10 has already changed hands, and it must not be
+  // able to hide that it has. The chip already answers the right question below (`effectivePaid` /
+  // `effectivePartPaid`, both derived from getOrderBalance over this order's own ledger rows), so an
+  // unpaid order shows nothing whatever the truck is configured to do, and a paid one shows PAID.
+  //
+  // ⚠️ THE GATE THAT USED TO BE HERE — `!showPaidStep ||` — WAS REMOVED DELIBERATELY (10 August 2026).
+  // Why it looked harmless: on a truck whose paid step is off, no path books a payment before collection
+  // (Add Order cannot take payment, there is no `Mark paid` button, a collected order has left the
+  // board), so the chip was empty by construction and the gate appeared to remove nothing.
+  // 🔴 THAT REASONING HAS A HOLE, AND IT WAS FOUND IN LIVE DATA. It holds for a truck whose DEFAULT is
+  // off; it does NOT hold for a truck whose default is ON and whose EVENT overrides it to off. Payments
+  // booked while the paid step applied stay on the order, and flipping `show_paid_step_override` to false
+  // afterwards HID THEM: six open, fully-paid orders on test-kitchen's 2026-07-30 event were carrying a
+  // settled balance the operator could not see. A truck setting was concealing a money fact.
+  // It also blocked the one configuration the completion setting will make reachable — paid step off with
+  // a two-press completion — where `Mark paid` exists but its result would be invisible.
+  // And it is what would hide a Stripe-paid order from a truck that takes payment at the hatch, the day
+  // that writer lands (lib/payments/ledger.ts reserves the seat).
   //
   // 🔴 THE CHIP IS ALSO THE UNDO ROUTE AFTER THE TOAST HAS GONE. The 7-second toast is a mis-tap catch,
   // not a correction mechanism: an operator who realises ten minutes later that they marked the WRONG
@@ -302,10 +391,25 @@ export function OrderCard({
   // It calls `undo_mark_paid`, which is the SAME server path the undo toast already uses: audit FIRST
   // (abort the delete if the audit write fails), then delete the ledger row, then recalc. No second
   // reversal implementation exists.
-  // `hidePayments` sits alongside `!showPaidStep` rather than wrapping the render: both mean "this
-  // surface has no business stating a payment fact", and folding them into the one null-gate keeps the
-  // chip, its tap target and the remove-payment modal on a single switch. There is no second path.
-  const paidChipStatic = !showPaidStep || hidePayments ? null
+  // ── 🔴 THIS ALSO UN-GATES THE REMOVE-PAYMENT MODAL, AND THAT WAS ACCEPTED, NOT OVERLOOKED ───────
+  // The chip IS the modal's only entry point (see `paidChip` below), so the two share one switch by
+  // construction — there is no way to widen one without the other except by ADDING a condition, which
+  // would produce a card that states a payment the operator cannot correct. Ruled on 10 August 2026:
+  //   • A visible PAID state with no way to correct a mistaken one is WORSE than the alternative.
+  //   • `undo_mark_paid` reverses a RECORDING, not a refund. No money moves. It deletes a row that says
+  //     money was taken; it does not take money back.
+  //   • There is a trail: reverseCollectionPayment writes its audit row BEFORE deleting the charge
+  //     (logActionOrThrow — a failed audit ABORTS the delete), with the full row contents in
+  //     before_state, so the deletion is reconstructable from the log alone.
+  //   • This WIDENS an existing capability rather than introducing one. Every truck whose gate already
+  //     resolved open — Gusto, village-spice, test-kitchen — has had exactly this since V9.4.
+  //
+  // ⚠️ `hidePayments` STAYS, and is now the only thing in this gate. It is a PER-DEVICE preference
+  // ("this screen does not handle money"), which is a different kind of fact from a truck setting: it
+  // describes where the operator is standing, not what is true of the order. A grill screen not showing
+  // a money chip is not the product concealing a payment. Keeping it here also keeps the chip, its tap
+  // target and the remove-payment modal on a single switch — there is still no second path.
+  const paidChipStatic = hidePayments ? null
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
@@ -393,10 +497,14 @@ export function OrderCard({
     </button>
   )
 
-  /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
+  /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action.
+   *  ⚠️ IT DUPLICATES completionBtn's BRANCH AND WILL DRIFT IF ONLY ONE IS CHANGED. Both moved from
+   *  `showPaidStep` to `completionPresses` together on 10 August 2026; keep them in step. */
   const completionBtnDisabled = () => (
     <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">
-      {!showPaidStep ? 'Paid & collected' : effectivePaid ? 'Collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+      {/* 🔴 SAME BRANCH ORDER AS completionBtn: effectivePaid FIRST, the setting second. A paid order
+          reads "Collected" here too, whatever the truck is configured to do. Keep these in step. */}
+      {effectivePaid ? 'Collected' : completionPresses === 'one' ? 'Mark paid & collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})

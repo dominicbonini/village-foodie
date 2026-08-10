@@ -18,7 +18,7 @@ import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import type { Order, TruckData, TruckEvent, SoundConfig } from '@/components/dashboard/types'
 import { DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
-import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
+import { getOrderBalance, hasUnrecordedPayment, type LedgerRow } from '@/lib/payments/ledger'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
@@ -90,6 +90,10 @@ export default function KdsPage() {
   // keyed by order_key and already van-scoped) — this surface simply discarded them at setState time.
   // No extra query, no new endpoint, nothing added to the 60s poll.
   const [payments, setPayments] = useState<Record<string, LedgerRow[]>>({})
+  // Order keys whose ledger write is on record as having FAILED. Same server-derived signal the
+  // dashboard reads, so the two surfaces cannot disagree about which orders are missing money.
+  // Paired with the live balance by hasUnrecordedPayment — never used alone (see that function).
+  const [paymentFailures, setPaymentFailures] = useState<Set<string>>(new Set())
   // Buzzers (phase 1, online only). buzzerCount null ⇒ this van has no buzzers → no chip, no grid.
   const [buzzerCount, setBuzzerCount] = useState<number | null>(null)
   const [buzzerTarget, setBuzzerTarget] = useState<Order | null>(null)
@@ -193,6 +197,8 @@ export default function KdsPage() {
   const [kdsToast, setKdsToast] = useState<string | null>(null)
 
   const fetchAllRef = useRef<() => void>(() => {})
+  /** Assigned just below handleAction — see the note there for why the retry goes through a ref. */
+  const handleActionRef = useRef<(action: string, orderKey: string) => Promise<void>>(async () => {})
   const prevOrderCountRef = useRef(0)
   const initialLoadDoneRef = useRef(false)
 
@@ -243,6 +249,7 @@ export default function KdsPage() {
       // unpaid; a server that sends an EMPTY map (the payments query failed, route.ts logs it) still
       // clears it, because that is a real "no rows this poll" and must not be masked by a stale copy.
       if (data.payments !== undefined) setPayments(data.payments || {})
+      if (data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures || []))
       setRequiresPin(false)
 
       try {
@@ -642,6 +649,25 @@ export default function KdsPage() {
         }
         return
       }
+      // ── THE MONEY HALF FAILED, ON A 200 ──────────────────────────────────────────────────────────
+      // 🔴 The window person is the one holding the cash, so this surface needs the same signal the
+      // dashboard gets — same words, same 20s, same repair. Without it the KDS swallowed it entirely:
+      // this handler checks `result.ok` only for 'ready', and its `catch {}` is empty.
+      // The card marker (see the `conflict` prop below) is the durable record; this is the catch-in-the-
+      // act. 'mark_paid' charges the outstanding balance under the same idempotency key — safe to
+      // re-fire, a no-op if the money did land.
+      const payWarn = (result.data as { paymentWarning?: string } | undefined)?.paymentWarning
+      if (payWarn && result.ok) {
+        const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
+        showToast(
+          `⚠ Order #${num} — PAYMENT NOT RECORDED. The order went through; the money did not.`,
+          'error',
+          // ⚠️ Through the REF, not a direct self-call: handleAction is a useCallback, and naming itself
+          // in its own body would put it in its own dependency array. Same fetchAllRef pattern this file
+          // already uses. The retry is the SAME handler, so it takes the same offline gate.
+          { duration: 20000, action: { label: 'Record payment', run: () => { void handleActionRef.current('mark_paid', orderKey) } } },
+        )
+      }
       // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
       // reverts the status; the order then re-appears in the cook list on refetch).
       if (action === 'ready' && result.ok) {
@@ -661,6 +687,12 @@ export default function KdsPage() {
     setActionLoading(null)
     fetchAllRef.current()
   }, [token, pin, orders, scheduleReadyEmail, undoReady, showToast])
+  // Kept current so the PAYMENT NOT RECORDED toast's "Record payment" can re-enter this same handler
+  // (and therefore the same offline gate) without handleAction depending on itself.
+  // ⚠️ In an EFFECT, not during render. The `fetchAllRef.current = fetchAll` assignment above writes during
+  // render and is one of this file's existing react-hooks/refs findings; copying that would add a new one.
+  // A ref written after commit is equivalent here — the toast can only fire long after mount.
+  useEffect(() => { handleActionRef.current = handleAction }, [handleAction])
 
   // Latest active-event id (assigned during render after activeEvent resolves below) so the pause/
   // extra-wait callbacks — defined before activeEvent — can read the current id without a TDZ ref.
@@ -721,6 +753,7 @@ export default function KdsPage() {
     // Seeded here too, not just in fetchAll: this response is the FIRST board an operator sees after
     // entering the PIN. Without it the first paint would resolve every order unpaid until the next poll.
     if (data.payments !== undefined) setPayments(data.payments || {})
+    if (data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures || []))
     setRequiresPin(false)
   }
 
@@ -1312,7 +1345,13 @@ export default function KdsPage() {
                    a show_paid_step-false truck renders exactly what it rendered before. */
                 hidePayments={hidePayments}
                 pendingSync={pendingSync.has(order.order_key)}
-                conflict={conflictByOrder.get(order.order_key)}
+                /* 🔴 TWO SOURCES, ONE MARKER — the SAME fold the dashboard makes (page.tsx, cardConflict).
+                   A failed offline replay and a failed server-side ledger write are one fact to an
+                   operator; they must not produce two different red bars. Payment wins over status,
+                   matching useOutboxConflicts' own rule. */
+                conflict={hasUnrecordedPayment(order as never, payments[order.order_key] ?? [], paymentFailures.has(order.order_key))
+                  ? 'payment'
+                  : conflictByOrder.get(order.order_key)}
                 onBuzzer={buzzerCount != null ? setBuzzerTarget : undefined}
               />
             ))

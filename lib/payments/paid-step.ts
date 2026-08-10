@@ -33,16 +33,30 @@
 // The override expires by itself — nothing is seeded, so the next event inherits the truck default
 // again. Do not build an expiry mechanism; the absence of seeding IS the expiry.
 //
-/** The truck-level defaults. Both optional so a partially-hydrated truck object is safe. */
+// ── ⚠️ completion_presses IS A THIRD, INDEPENDENT SETTING — NOT A RENAME OF show_paid_step ──────────
+// `show_paid_step` decides what the ADD ORDER panel offers (a Confirm button, so an order can be placed
+// unpaid). `completion_presses` decides how an UNPAID order is COMPLETED on the card — one press or two.
+// They were one boolean until 10 August 2026 and are now two settings, deliberately: a truck that never
+// places an unpaid order still receives them from the customer path, so the two questions have different
+// answers. Neither is derived from the other at read time.
+// 🔴 TRUCK-LEVEL ONLY — no `completion_presses_override`, and do not add one without reading the
+// reasoning in supabase/migrations/20260810_trucks_completion_presses.sql: this setting decides what
+// `undo_collected` REVERSES, so flipping it mid-event can make an undo delete an hour-old payment.
+/** The truck-level defaults. All optional so a partially-hydrated truck object is safe. */
 export interface PaidStepTruck {
   show_paid_step?: boolean | null
   takes_cash?: boolean | null
+  completion_presses?: CompletionPresses | null
 }
 
-/** The event's overrides. NULL/undefined on either = inherit that truck default. */
+/** One press ("Mark paid and collected") or two ("Mark paid" then "Collected"). */
+export type CompletionPresses = 'one' | 'two'
+
+/** The event's overrides. NULL/undefined on any = inherit that truck default. */
 export interface PaidStepEvent {
   show_paid_step_override?: boolean | null
   takes_cash_override?: boolean | null
+  completion_presses_override?: CompletionPresses | null
 }
 
 export interface ResolvedPaidStep {
@@ -50,6 +64,8 @@ export interface ResolvedPaidStep {
   showPaidStep: boolean
   /** Does THIS event split the paid action into Cash/Card? */
   takesCash: boolean
+  /** Does completing an UNPAID order take one press or two? Truck-level; no event override. */
+  completionPresses: CompletionPresses
 }
 
 /**
@@ -64,8 +80,32 @@ export function resolvePaidStep(
   truck: PaidStepTruck | null | undefined,
   event: PaidStepEvent | null | undefined,
 ): ResolvedPaidStep {
+  const showPaidStep = event?.show_paid_step_override ?? truck?.show_paid_step ?? false
   return {
-    showPaidStep: event?.show_paid_step_override ?? truck?.show_paid_step ?? false,
+    showPaidStep,
     takesCash: event?.takes_cash_override ?? truck?.takes_cash ?? false,
+    // ── THE SAME NULLABLE-MEANS-INHERIT CHAIN THE OTHER TWO USE — event, then truck, then fallback ──
+    // ⚠️ `??` and never `||`: 'one' is truthy so `||` happens to work here, but the moment a value like
+    // 0 or '' enters this vocabulary it would silently re-inherit. Same chain shape as its neighbours,
+    // deliberately, so there is one pattern on this page and not two.
+    //
+    // 🔴 THE LAST LINK IS THE OLD FLAG, NOT A CONSTANT, AND THAT IS LOAD-BEARING.
+    // `?? 'one'` would be wrong in the one window that matters. `trucks` is read with select('*')
+    // everywhere, so a truck column that does not exist yet arrives `undefined` rather than raising
+    // 42703 — which means a CODE-BEFORE-MIGRATION deploy silently resolves every truck here. With a
+    // constant that would flip the three paid-step trucks from two presses to one AND make
+    // undo_collected start deleting their payment rows, with no error anywhere. Deriving from the
+    // RESOLVED showPaidStep instead reproduces today's behaviour exactly — including per-event
+    // overrides, since that value has already been through the ?? chain above.
+    // ⚠️ THE EVENT OVERRIDE IS NOT PROTECTED BY THAT FALLBACK, and cannot be. It is read through a
+    // NAMED select (paidStepFor, /api/dashboard), so its column must EXIST before the code that names
+    // it deploys — see supabase/migrations/20260810_truck_events_completion_presses_override.sql.
+    // Migration first, then deploy.
+    // ⚠️ The truck-level fallback is insurance, not the mechanism. After its migration that column is
+    // NOT NULL and every row carries the value backfilled from its own show_paid_step, so the last link
+    // stops firing. Do not "simplify" it to a constant, and do not read it as the two settings being
+    // coupled: they are independent inputs, and this is the value used when the input is absent.
+    completionPresses:
+      event?.completion_presses_override ?? truck?.completion_presses ?? (showPaidStep ? 'two' : 'one'),
   }
 }

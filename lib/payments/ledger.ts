@@ -191,6 +191,44 @@ export function getOrderBalance(order: BalanceableOrder, ledgerRows: LedgerRow[]
 }
 
 /**
+ * ── "THE MONEY WRITE FAILED AND IS STILL MISSING" — THE PERSISTENT MARKER'S ONE PREDICATE ───────────
+ *
+ * 🔴 TWO HALVES, AND BOTH ARE REQUIRED. Either alone is wrong, and this was measured against the live
+ * database rather than reasoned about:
+ *
+ *   • PROVENANCE (`writeFailed`) — this order has an `action_audit_log` row whose after_state carries
+ *     `ledger_failed: true`, written by the fail-open catch in 'collected' / 'mark_paid' / the walk-up
+ *     paid-at-order path. Precise: 159 of 159 money-action audit rows carry the key, so the signal is
+ *     complete for every money action since the ledger landed. Alone it is STICKY FOREVER — the audit
+ *     log is append-only, so a repaired order would keep its marker for good.
+ *   • STATE (an outstanding balance) — the money is still not recorded, right now, per the ledger.
+ *     Alone it is CATASTROPHICALLY NOISY: 145 of 221 collected orders in the live database have no
+ *     ledger rows at all, because they were collected BEFORE the ledger existed (117 on pizzeria-gusto,
+ *     28 on test-truck). A balance-only rule lights all 145 up as "PAYMENT NOT RECORDED" and the marker
+ *     is dead on arrival.
+ *
+ * AND-ing them gives a marker with no false positives on today's data (0 of 221) that CLEARS ITSELF the
+ * moment the payment is recorded — no acknowledge, no dismissal, no second state to keep in step.
+ *
+ * ⚠️ It goes through getOrderBalance, the chokepoint, and derives nothing itself — same rule as every
+ * other consumer. The test-row exclusion and the refund branch order come along for free.
+ *
+ * ⚠️ ONE CASE IT DELIBERATELY DOES NOT REPORT: `recordPaymentEvent` inserts the ledger row and THEN
+ * recalcs, so a failed write-back throws with the row already committed. The audit row says
+ * ledger_failed, but the balance is settled — the money IS recorded and only orders.payment_status is
+ * stale. That is a cache repair, not missing money, and the operator must not be told money is missing
+ * when it is not. The toast at the moment of failure still fires; the persistent marker does not.
+ */
+export function hasUnrecordedPayment(
+  order: BalanceableOrder,
+  ledgerRows: LedgerRow[],
+  writeFailed: boolean,
+): boolean {
+  if (!writeFailed) return false
+  return getOrderBalance(order, ledgerRows).balanceMinor > 0
+}
+
+/**
  * The idempotency key for an in-person charge — a STATE-TRANSITION key: *"from this ledger position,
  * settle this amount"*.
  *

@@ -15,6 +15,8 @@ import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
+// 🔴 Routes for the legal documents — NEVER typed inline. See the Legal card at the foot of Settings.
+import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -52,7 +54,7 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -8279,6 +8281,16 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   // True when WhatsApp is a usable customer contact method (ticked + a phone present).
   const whatsappUsable = !!form.phone_is_whatsapp && !!(form.contact_phone || '').trim()
 
+  // ── THE RESOLVED COMPLETION SETTING, ONE PLACE ON THIS PAGE ────────────────────────────────────
+  // Read by the "Completing an unpaid order" radio AND by the cash row's enable gate, so those two
+  // cannot disagree about what this truck is doing.
+  // 🔴 THE FALLBACK IS `show_paid_step`, NOT A CONSTANT — the SAME expression lib/payments/paid-step.ts
+  // uses. Before the column is backfilled it arrives undefined, and `?? 'one'` would show every
+  // two-press truck as one-press, i.e. Settings lying about live behaviour for the length of the
+  // deploy window. Do not simplify it; see the resolver for the full reasoning.
+  const completionPresses: 'one' | 'two' =
+    form.completion_presses ?? (form.show_paid_step === true ? 'two' : 'one')
+
   const handleDisplayModeChange = async (value: 'list' | 'grid') => {
     setDisplayMode(value)
     try { await api('update_truck', { data: { display_mode: value } }) }
@@ -8394,6 +8406,33 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   return (
     <div className="space-y-6">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
+
+      {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT ────────────────────────────────────────────────
+          🔴 MOVED TO THE TOP, 10 August 2026 (operator review). It sat as the LAST card, after "Your
+          trucks", at the bottom of the longest page in the product — and **nobody scrolls to find an
+          onboarding tour**. An entry point that has to be hunted for is not an entry point.
+          🔴 STILL A HOLDING PLACE, NOT A HOME, and the original reasoning is unchanged: there is
+          nowhere natural on Manage — no footer, no help surface — and UserMenu is shared with the
+          dashboard and the KDS, so anything added there appears on all three. **It MOVES to the help
+          centre the day one exists.** Being at the top makes it findable; it does not make it the
+          right home.
+          ⚠️ THE OTHER TWO ENTRY POINTS ARE UNTOUCHED and neither needed moving: the reminder STRIP is
+          already at the top of the page (above the tabs), and the wizard's "Show me around" is a
+          choice inside the completion overlay, not a page element.
+          It stores nothing: opening from here does not change the seen-state until the tour is closed,
+          which is the same rule as every other entry point. */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-base font-bold text-slate-800">New to HatchGrab?</p>
+            <p className="text-xs text-slate-500 mt-0.5">A quick tour of what lives on each tab. Takes about a minute.</p>
+          </div>
+          <button type="button" onClick={onOpenWalkthrough}
+            className="shrink-0 text-xs font-bold px-3 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50">
+            Show me around
+          </button>
+        </div>
+      </Card>
 
       {/* Logo */}
       <Card className="p-4">
@@ -8571,11 +8610,24 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                       placeholder="+447700900000"
                       className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     />
+                    {/* ── RELABELLED AND RESTYLED, 10 August 2026 (operator review) — COSMETIC ONLY ──
+                        🔴 BEHAVIOUR IS BYTE-IDENTICAL. Same `onClick={saveWhatsappSender}`, same
+                        save-on-blur beside it, same handler, same request. **It does not connect
+                        anything and must not be made to look as though it does** — the label is the
+                        operator's word for the step they will wire up separately, not a claim about
+                        state. If a real connection is built later, that is when a connected/disconnected
+                        state belongs here; adding one now would be a label asserting a state nobody
+                        checked (§35).
+                        ⚠️ WAS `bg-teal-600 text-white ... rounded-xl` — a one-off on this page: teal
+                        appears elsewhere only as a pale chip/background (`bg-teal-50`), never as a
+                        button fill. It now uses the page's OWN small-button class, copied verbatim from
+                        the three existing instances of it, so it matches every other inline action
+                        beside an input rather than standing out as a different kind of thing. */}
                     <button
                       onClick={saveWhatsappSender}
-                      className="flex-shrink-0 text-xs px-2.5 py-1.5 bg-teal-600 text-white font-medium rounded-xl"
+                      className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
                     >
-                      Save
+                      Connect
                     </button>
                   </>
                 ) : (
@@ -8966,19 +9018,123 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
               <p className={SUBCARD_HEADING}>Taking payment</p>
-              <p className="text-xs text-slate-500 mt-0.5">Your defaults. Either can be changed for a single event from the dashboard.</p>
+              <p className="text-xs text-slate-500 mt-0.5">How your team records money for each order.</p>
             </div>
+            {/* ── SETTING 1 — trucks.show_paid_step, RELABELLED (10 August 2026) ─────────────────────
+                Same column, same save path, same per-event override. Only the words changed, because
+                the old ones ("Separate paid step — splits Paid & collected into Mark paid then
+                Collected") described the COMPLETION behaviour, which is now its own setting below.
+                What this column actually controls is the Add Order panel: on, it offers a Confirm
+                button so an order can be placed unpaid; off, the panel only takes payment.
+                ⚠️ THE NOTE IS DELIBERATELY NOT ELABORATED. "It doesn't affect online orders" is true
+                whatever state online orders arrive in — and Stripe is being integrated, after which they
+                will arrive PAID. A sentence describing what state they arrive in today would go stale at
+                exactly the moment nobody remembers to come back and change it. Leave it as it is. */}
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits "Paid &amp; collected" into "Mark paid" then "Collected", so you can take money before the food is handed over. You can change this for a single event from the dashboard.</p>
+                <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
+                <p className="text-xs text-slate-500 mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.</p>
+                <p className="text-xs text-slate-400 mt-1">This only affects orders you add. It doesn&apos;t affect online orders.</p>
               </div>
               <Toggle
                 on={(form as any).show_paid_step === true}
                 onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
               />
             </div>
-            {/* ── 🔴 NESTED AS A CHILD OF THE PAID STEP (V9.6). READ THIS BEFORE RE-FLATTENING IT. ──────
+            {/* ── SETTING 2 — trucks.completion_presses (NEW, 10 August 2026) ────────────────────────
+                🔴 A SIBLING, NOT A CHILD, AND IT MUST NEVER BE DISABLED BY THE SETTING ABOVE.
+                It looks like a dependency and is not. "Take orders without payment" decides whether the
+                Add Order panel can place an order unpaid; this decides how an unpaid order is COMPLETED.
+                Unpaid orders arrive from the CUSTOMER PATH regardless — every truck has them — so
+                greying this out when the setting above is off would hide the control for a case that
+                still happens every day. The cash row below IS a genuine dependency and is treated as
+                one; this is not, and the two must not be made to look alike.
+                ⚠️ It reads slightly oddly in this group, and that is worth knowing rather than papering
+                over: the group now holds two independent top-level settings plus one nested dependent,
+                so the indentation below no longer means "depends on the row directly above" but
+                "depends on this group". Reported rather than resolved.
+                RADIO, not a toggle: two named alternatives that each need their own explanation, which
+                is the deals "Apply to events" pattern in this same file — the page's existing shape for
+                exactly this. A toggle would need a single label that reads true in one direction only.
+                ⚠️ `completion_presses` must stay on update_truck's `allowed` list
+                (app/api/manage/route.ts) — that list SILENTLY DROPS unlisted keys, so a missing entry
+                means this appears to save, returns {ok:true}, and writes nothing. */}
+            <div className="py-3">
+              <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
+              <p className="text-xs text-slate-500 mt-0.5">What happens when an unpaid order is ready to hand over.</p>
+              <div className="flex flex-col gap-2 mt-2">
+                {([
+                  // ── 🔴 THE BUTTON NAMES HERE ARE QUOTED FROM THE CODE, NOT DESCRIBED ────────────
+                  // “Mark paid & collected”, “Mark paid” and “Collected” are the EXACT `label` strings
+                  // OrderCard renders (components/dashboard/OrderCard.tsx — the one-press branch, the
+                  // two-press unpaid branch and the effectivePaid branch). Copy that names a button an
+                  // operator cannot find sends them looking for it, so **verify these against the code
+                  // before editing either side**, and change the copy to match the button — never the
+                  // button to match the copy.
+                  // ⚠️ TWO RENDERED VARIANTS THIS COPY DELIBERATELY DOES NOT NAME, because they are
+                  // conditional and naming them here would make the common case unreadable: a PART-PAID
+                  // order reads “Mark £X.XX paid” instead of “Mark paid”, and with "Do you take cash?"
+                  // on, the two-press money button splits into “💷 Cash” / “💳 Card”. The cash row below
+                  // is where that second one is explained.
+                  // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
+                  // and cash rows both do it). Not a new convention.
+                  ['one', 'One press',
+                   'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
+                  ['two', 'Two presses',
+                   'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
+                ] as const).map(([v, lbl, help]) => (
+                  /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's
+                     EXISTING two-option-with-descriptions control (button + drawn radio + font-medium
+                     label over a text-xs help line). It replaced a native <input type="radio">, which
+                     was mine and was wrong: it rendered in the browser's own accent rather than this
+                     page's, so it read as a foreign control in a card of matched ones.
+                     ⚠️ ORANGE HERE IS NOT AN INTRODUCTION, IT IS THIS PAGE'S SELECTED STATE. On Manage,
+                     orange is the selection/focus colour throughout — focus:ring-orange-400 on every
+                     input, accent-orange-600 on checkboxes, and border-orange-500 / bg-orange-500 on
+                     exactly this radio. The reserved-meaning rule for orange ("a MONEY action") belongs
+                     to the ORDER CARD's vocabulary, a different surface with a different palette. */
+                  <button type="button" key={v}
+                    onClick={() => { setForm(p => ({...p, completion_presses: v})); saveSetting('completion_presses', v) }}
+                    className="w-full text-left flex items-start gap-2 cursor-pointer">
+                    {/* Absent ⇒ resolve from show_paid_step, the SAME fallback lib/payments/paid-step.ts
+                        uses, so this shows what the cards are actually doing before the column has been
+                        backfilled. Never `?? 'one'` — that would render two-press trucks as one-press
+                        for the length of the deploy window. */}
+                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${completionPresses === v ? 'border-orange-500' : 'border-slate-300'}`}>{completionPresses === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+                    <span className="text-sm">
+                      <span className="font-medium text-slate-700">{lbl}</span>
+                      <span className="block text-xs text-slate-400">{help}</span>
+                      {/* ⚠️ THE SEPARATE BUTTON-NAMES LINE WAS REMOVED, NOT LOST. It rendered
+                          “Mark paid & collected” / “Mark paid” then “Collected” beneath the
+                          description — and the description now names those buttons in its own
+                          sentence, so the line repeated it verbatim on the row directly below.
+                          One fact, one place. The names still have to match the code; see the note
+                          on the options array above. */}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* ── 🔴 DE-NESTED AGAIN ON 10 AUGUST 2026, AND NOT BY REVERSING THE RULE BELOW ──────────
+                READ THIS BEFORE RE-INDENTING IT. The V9.6 note that follows is KEPT because its rule is
+                still right; what changed is that the rule now points the other way.
+                THE RULE: "structure should show the DEPENDENCY, not the semantics." Correct, and it is
+                what put `pl-4` here when the cash split had exactly ONE parent (the paid step).
+                WHAT CHANGED: the cash split now has TWO parents. It renders in two places, and after the
+                settings were split those places answer to different settings — the Add Order panel's
+                "Take payment" button splits on show_paid_step, and the ORDER CARD's "Mark paid" button
+                splits on completion_presses === 'two'. Indentation is a SINGLE-PARENT notation: it can
+                only point at the row directly above it, which is now "Completing an unpaid order" —
+                only one of the two ways to unlock this. So the indent had stopped showing the
+                dependency and started asserting a WRONG one. Applying the rule removes the indent.
+                WHAT CARRIES THE DEPENDENCY INSTEAD: the disabled state plus the inline note, which now
+                NAMES BOTH PARENTS. That is the other half of the V9.6 instruction — "structure shows
+                the relationship, the text explains it. Both, not either" — with the half that can no
+                longer be true dropped rather than left to mislead.
+                ⚠️ SO THE GROUP IS NOW FLAT: two independent settings and one dependent, all at the same
+                level, with the dependent saying in words what it depends on. If the cash split ever goes
+                back to a single parent, re-indent it and restore the note below.
+                ── the V9.6 reasoning, retained ──────────────────────────────────────────────────────
                 ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE, AND THAT WAS REVERSED ON A LAYOUT ARGUMENT.
                 The de-nesting rationale — "they answer different questions: WHEN do we take money vs HOW
                 does it arrive" — is still true and is still in the git history, which is exactly why this
@@ -8997,26 +9153,42 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                 goes DISABLED with the reason inline: structure shows the relationship, the text explains
                 it. Both, not either. An operator who cannot find this setting is why it exists on two
                 surfaces at all. */}
-            <div className="flex items-center justify-between gap-3 py-3 pl-4">
+            <div className="flex items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
                 <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
-                {/* The gate itself: OrderCard.tsx:173 returns `Paid & collected` BEFORE the takesCash
-                    branch at :197, so with the paid step off the split is unreachable no matter what this
-                    column says. AddOrderPanel.tsx:1127 nests its cash/card choice inside the same
-                    `showPaidStep` branch at :1118 — one dependency, both surfaces.
-                    ⚠️ DOES NOT auto-enable the paid step. toggleOfflineProtection silently enabling
+                {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
+                    The cash split renders in two places, and after the settings were split those two
+                    places answer to DIFFERENT settings:
+                      • the Add Order panel's "Take payment" button splits when show_paid_step is on;
+                      • the ORDER CARD's "Mark paid" button splits when completion_presses is 'two'.
+                    Leaving this disabled on `show_paid_step !== true` alone would have been a real
+                    defect introduced by this change: a truck with entry payment-only but a TWO-press
+                    completion has a live "Mark paid" button that this control would refuse to split.
+                    So the condition is the OR of the two, and the split is inert only when neither
+                    surface can reach it — which is exactly the state it was inert in before.
+                    ⚠️ The card's ONE-press button is still never split, and the reasoning above stands
+                    unchanged: "Cash" that also collects cannot be labelled honestly at a 240px column.
+                    ⚠️ DOES NOT auto-enable either parent. toggleOfflineProtection silently enabling
                     keep-screen-on is already recorded in the manual as a defect; one is enough.
-                    ⚠️ DOES NOT write takes_cash=false when the paid step is turned off. The stored value
-                    is left exactly as the operator set it and simply renders inert — never mutate what
-                    the operator chose in order to tidy state. Turning the paid step back on restores it. */}
-                {(form as any).show_paid_step !== true && (
-                  <p className="text-xs text-amber-600 mt-1">Needs the separate paid step turned on.</p>
-                )}
+                    ⚠️ DOES NOT write takes_cash=false when it becomes inert. The stored value is left
+                    exactly as the operator set it and simply renders inert — never mutate what the
+                    operator chose in order to tidy state. Re-enabling either parent restores it. */}
+                {/* 🔴 THE GATE IS GONE — 10 August 2026. The cash split is now ALWAYS reachable, and
+                    keeping a condition here would disable a toggle whose button is live on screen.
+                    The Add Order confirm bar was rebuilt so that it ALWAYS offers a payment button:
+                    with "Take orders without payment" OFF that is the single button, with it ON it is
+                    the primary one. So the split has a live parent in every configuration, and the
+                    previous OR condition ("paid step on, or completion set to two presses") is stale —
+                    it would have disabled this for the nine trucks on OFF + one press, every one of
+                    which now has a payment button in Add Order.
+                    ⚠️ THE CARD'S ONE-PRESS BUTTON IS STILL NEVER SPLIT — `Cash & collected` cannot be
+                    labelled honestly at a 240px KDS column. The split reaches the Add Order bar in all
+                    states, and the card's `Mark paid` only under two presses. That asymmetry is
+                    deliberate and unchanged. */}
               </div>
               <Toggle
                 on={(form as any).takes_cash === true}
-                disabled={(form as any).show_paid_step !== true}
                 onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
               />
             </div>
@@ -9536,27 +9708,6 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
         )}
       </Card>
 
-      {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT ────────────────────────────────────────────────
-          Its own small section at the BOTTOM of Settings — the last card, after "Your trucks".
-          🔴 THIS IS A HOLDING PLACE, NOT A HOME. The inventory's W5 found there is nowhere natural on
-          Manage: no footer, no help surface, and UserMenu is shared with the dashboard and the KDS so
-          anything added there appears on all three. A walkthrough is not a setting, and this card sits
-          at the bottom of the longest page in the product. It MOVES to the help centre the day one
-          exists — that is the intended fate, not a nice-to-have.
-          It stores nothing: opening from here does not change the seen-state until the tour is closed,
-          which is the same rule as every other entry point. */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-base font-bold text-slate-800">New to HatchGrab?</p>
-            <p className="text-xs text-slate-500 mt-0.5">A quick tour of what lives on each tab. Takes about a minute.</p>
-          </div>
-          <button type="button" onClick={onOpenWalkthrough}
-            className="shrink-0 text-xs font-bold px-3 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50">
-            Show me around
-          </button>
-        </div>
-      </Card>
 
       {/* Remove van confirmation modal */}
       {deletingVan && (
@@ -9721,6 +9872,37 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           Bottom of the tab: findable by scrolling (5.1.1(v) wants a reasonable path) without sitting
           anywhere near the settings an operator changes routinely. */}
       {userRole === 'owner' && <DeleteAccountSection truckName={truck?.name ?? ''} showToast={showToast} />}
+
+      {/* ── 🔴 LEGAL LINKS — AN APP STORE REQUIREMENT, NOT A COURTESY. MOVED HERE 10 August 2026. ────
+          Guideline 5.1.1(i) requires the privacy policy to be reachable INSIDE the app, not only in App
+          Store Connect metadata. These lived in the account dropdown (components/dashboard/UserMenu.tsx)
+          and were moved out at the operator's request; **they could not simply be deleted**, so this is
+          where they went. Manage → Settings is the conventional home and is reachable in the native
+          shell from the dashboard's account menu (`showManageLink`).
+          ⚠️ WHAT THE MOVE COSTS, RECORDED SO IT IS A KNOWN TRADE AND NOT A DISCOVERY. UserMenu was the
+          only chrome on EVERY operator surface, so one placement there covered dashboard, KDS, manage
+          and admin at once. From here the policy is two taps from the dashboard and is NOT reachable
+          without leaving the KDS. That still satisfies "reachable within the app" — which is the actual
+          requirement — but it is one route, not four, so **do not delete this block without providing
+          another in-app route first.**
+          ⚠️ NOT the marketing footer (components/Footer.tsx): it renders on landing, venues and truck
+          pages only — never on an operator surface — so it was not an option.
+          🔴 Routes come from lib/legal.ts. Never type them here. Update that file's placement list if
+          this moves again. Unconditional and role-independent, exactly as it was in UserMenu: a manager
+          who cannot see the danger zone above must still be able to read the policy. */}
+      <Card className="p-4">
+        <p className="text-base font-bold text-slate-800">Legal</p>
+        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer"
+            className="text-sm text-slate-500 underline underline-offset-2 hover:text-orange-600">
+            Privacy policy
+          </a>
+          <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer"
+            className="text-sm text-slate-500 underline underline-offset-2 hover:text-orange-600">
+            Terms
+          </a>
+        </div>
+      </Card>
     </div>
   )
 }

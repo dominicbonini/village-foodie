@@ -34,7 +34,11 @@ export const GREEN_SOLID = 'bg-green-600 hover:bg-green-700 text-white'
  *  is — never which variant of it. ⚠️ white on orange-600 is 3.56:1, below the 4.5:1 AA floor; it is the
  *  pre-existing brand primary and is used here for consistency with the rest of the page. */
 export const ORANGE_SOLID = 'bg-orange-600 hover:bg-orange-700 text-white'
-/** SECONDARY of the same brand colour — "Confirm order" beside "Cash"/"Card". Orange-700 TEXT is
+/** SECONDARY of the same brand colour — "Place order" beside "Take payment" / "Cash" / "Card".
+ *  ⚠️ This doc named "Confirm order" until 10 August 2026, which had not been the rendered label since
+ *  the Add Order bar was rebuilt — a token comment naming a button that no longer exists is exactly the
+ *  drift the header of this file warns about. If the label changes again, change it here too.
+ *  Orange-700 TEXT is
  *  5.18:1 on white (AA pass); the orange-600 border is 3.56:1, clearing the 3:1 UI-component bar.
  *  ⚠️ Contrast is SYMMETRIC — "orange text on white" is NOT automatically safer than the reverse:
  *  text-orange-600 on white is the same 3.56:1 as white on orange-600. 700 is what makes it pass. */

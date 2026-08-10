@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+// (The lib/legal import was dropped with the links themselves — see the note at the former render site.
+//  Re-add it here, do not type a route inline, if a legal link ever returns to this menu.)
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
@@ -228,31 +229,20 @@ export default function UserMenu({
               </Link>
             )}
 
-            {/* ── 🔴 LEGAL LINKS — AN APP STORE REQUIREMENT, NOT A COURTESY ────────────────────────────
-                Guideline 5.1.1(i) requires the privacy policy to be reachable INSIDE the app, not only in
-                App Store Connect metadata. UserMenu is the only chrome present on EVERY operator surface in
-                the native shell (dashboard, KDS, manage, admin), so one placement here satisfies "reachable
-                from an operator surface" on all of them at once — rather than four placements that can
-                drift apart.
-                ⚠️ UNCONDITIONAL — no `showSignOut`/`isAdmin`-style gate, and no native check. A demo
-                visitor and a logged-out viewer are exactly the people most likely to want the privacy
-                policy before committing, and on web these two links are additive to a menu that already
-                carries navigation. Routes come from lib/legal.ts; never type them here. */}
-            <hr className="border-slate-100" />
-            <Link
-              href={PRIVACY_PATH}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
-            >
-              Privacy policy
-            </Link>
-            <Link
-              href={TERMS_PATH}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
-            >
-              Terms
-            </Link>
+            {/* ── 🔴 THE LEGAL LINKS MOVED OUT OF THIS MENU — 10 August 2026, AT THE OPERATOR'S REQUEST.
+                THEY WERE NOT DELETED, AND THEY MUST NOT BE. Guideline 5.1.1(i) requires the privacy
+                policy to be reachable INSIDE the app, not only in App Store Connect metadata.
+                🔴 THEY NOW LIVE IN **Manage → Settings**, in a "Legal" card at the foot of the tab
+                (app/manage/[token]/page.tsx). Routes still come from lib/legal.ts — never typed inline.
+                ⚠️ WHAT THIS MENU USED TO BUY, AND WHAT THE MOVE COST. UserMenu is the only chrome
+                present on EVERY operator surface in the native shell (dashboard, KDS, manage, admin), so
+                one placement here covered all four at once. From Settings the policy is two taps from
+                the dashboard, via this menu's own Manage link, and is not reachable without leaving the
+                KDS. That still satisfies "reachable within the app" — the actual requirement — but it is
+                ONE route rather than four.
+                🔴 SO: IF THE SETTINGS CARD IS EVER REMOVED OR THE SETTINGS TAB GATED, THE APP LOSES ITS
+                ONLY IN-APP PRIVACY ROUTE AND BECOMES NON-COMPLIANT. Restore a link here, or provide
+                another one, before touching it. lib/legal.ts carries the full placement list. */}
 
             {/* Sign out — every caller EXCEPT the demo dashboard (no session exists to end). The <hr> is
                 tied to the button so a hidden sign-out doesn't leave a dangling divider. */}

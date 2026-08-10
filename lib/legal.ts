@@ -18,11 +18,19 @@
 //        as the evidence that it happened; these links are the evidence that it COULD have).
 //   3. ✅ Demo → signup modal, same consent line — components/DemoGetStarted.tsx (two call sites: the
 //        account step, and the marketing opt-in's privacy reference)
-//   4. ✅ Operator account menu — components/dashboard/UserMenu.tsx
+//   4. ✅ Manage → Settings, the "Legal" card at the foot of the tab — app/manage/[token]/page.tsx
 //        🔴 THIS ONE IS AN APP STORE REQUIREMENT, not a nicety. Guideline 5.1.1(i) requires the privacy
-//        policy to be accessible WITHIN the app, not only in store metadata. UserMenu is the only chrome
-//        present on every operator surface in the native shell (dashboard, KDS, manage, admin), so it is
-//        the one place that satisfies "reachable from an operator surface" on all of them at once.
+//        policy to be accessible WITHIN the app, not only in store metadata. **This card is currently
+//        the app's ONLY in-app route to the privacy policy** — removing it, or gating the Settings tab,
+//        makes the app non-compliant. Provide another in-app route first.
+//        ⚠️ MOVED HERE FROM components/dashboard/UserMenu.tsx on 10 August 2026, at the operator's
+//        request. What that cost, recorded so it stays a known trade: UserMenu is the only chrome on
+//        EVERY operator surface (dashboard, KDS, manage, admin), so one placement there covered all
+//        four at once. From Settings the policy is two taps from the dashboard (via UserMenu's Manage
+//        link) and is not reachable without leaving the KDS. **One route, not four** — still "reachable
+//        within the app", which is the requirement, but with no redundancy left.
+//        ⚠️ NOT the marketing footer (components/Footer.tsx): it renders on landing, venues and truck
+//        pages only, never on an operator surface, so it is not an option for this requirement.
 //   5. ✅ The legal pages themselves — each links the other, via the shared layout footer.
 //
 // OUTSIDE THIS CODEBASE — 🔴 EXTERNAL AND MANUAL. Nothing here can set or verify these; they are listed so

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.5
+HatchGrab Engineering Reference Manual · V11.6
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.5**
+**Version 11.6**
 
 August 2026
 
@@ -15,6 +15,56 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.6 — 10 August 2026
+
+**Two corrections to V11.5 that matter more than the new work, then the payment-action model.** The version on disk was V11.5, so this is V11.6 — no number was skipped.
+
+### 🔴 CORRECTION — GUSTO DID NOT LOSE AN AFTERNOON'S TAKINGS
+
+**V11.5 recorded that they did. They did not.** Live verification on 10 August: **all 17 in-window collections carry correct ledger rows**, **ledger coverage is 100% since 31 July**, and the **117 uncovered orders predate the ledger table** — they are pre-ledger history, not damage. **One row is residue:** order #1, `refund_due` with **£1,050.40** against a **£25 cancelled** order, which `recalcOrderPayment` will converge.
+
+🔴 **THE BUG WAS REAL AND THE MECHANISM WAS REAL. It could have lost money and did not** — because the operator completed every order and took payment themselves. The corrected entries in §35 and §37 say exactly that, in those terms, and no more.
+
+🔴 **THE §35 INVARIANT STANDS UNCHANGED — exercise money code against real database rows. IT WAS EARNED BY THE MECHANISM, NOT BY THE DAMAGE.** An invariant that survives only while its story is dramatic is not an invariant. Nothing about the money-path rule is softened by the takings being intact.
+
+### 🔴 CORRECTION — GUSTO IS `show_paid_step` **TRUE**
+
+**Three of twelve trucks are** (`pizzeria-gusto`, `test-kitchen`, `village-spice`); the other nine are false. V11.4 and V11.5 state or imply the opposite in several places, and every one is corrected in place.
+
+🔴 **CONSEQUENCE: the KDS `ledgerRows` defect recorded in V11.5 as LATENT was LIVE for them.** The gate that was supposed to make it harmless was the gate they did not have.
+
+**NEW INVARIANT (§35): a truck's configuration is live-schema truth.** **Four separate premises about Gusto were asserted wrongly from memory or from a prior session's summary across 7–10 August.** Do not assert a truck's configuration; read it.
+
+### The `readLedger` fix — applied, and exercised against rows
+
+- **`readLedger` now carries BOTH filters** — `order_key` **and** `livemode`. **The original mistake was REPLACING rather than ADDING.**
+- **VERIFIED AGAINST THE LIVE DATABASE, not `tsc`:** **1 row** returned for an order versus **83** in the table; a paid order at **`balanceMinor` 0** (the bug gave **−186,640** → `refund_due` → £0); an unpaid order at exactly its **£13.50** total.
+- **NEW GUARD — a scope assertion that throws if the returned rows do not all belong to the requested order.** 🔴 **ITS FIRST DRAFT WAS INERT:** `LEDGER_ROW_COLUMNS` did not select `order_key`, so every row's field was `undefined` and the assertion **silently passed everything**. Caught by checking it, fixed by adding the column, and the `!== undefined` escape was **dropped** so it now fails if its own precondition is ever removed.
+
+### `paymentWarning` is surfaced — three ways
+
+- **A 20-second error toast REPLACING the green one** at the moment of failure, on **all three producers** (`collected`, `mark_paid`, the walk-up paid-at-order path) and **both operator surfaces**.
+- **A persistent per-order marker**, derived from **`action_audit_log.ledger_failed` AND a live outstanding balance**, reusing the **conflict-marker vocabulary** rather than inventing a second one, with a **"Record payment"** retry that reuses **`mark_paid`**.
+- 🔴 **THE `AND` IS LOAD-BEARING.** **145 of 221 collected orders are pre-ledger legacy collections** that a balance-only rule would paint red — **117 of them Gusto's**. Provenance alone is sticky forever; state alone is unusable. **The predicate was exercised against 395 real orders: 0 false positives.**
+- ⚠️ **CORRECTION: `paymentWarning` IS on Gusto's path.** `mark_paid` produces it on their **first** press, and `collected` produces it on **any unpaid web pre-order they complete directly**.
+
+### The PAID chip is un-gated — and so is the completion button
+
+- **One operand removed from one boolean.** The chip is **ORDER-KEYED**: whether money has been recorded is a fact about the **order**, not a preference of the truck.
+- ⚠️ **The old gate looked harmless because it holds for a truck whose DEFAULT is off.** **The hole was a default of ON with an event override to OFF** — which is how **six fully-paid `test-kitchen` orders carried settled balances their operator could not see**.
+- **Un-gating the chip also un-gates the REMOVE-PAYMENT modal** — the chip is its only entry point. **ACCEPTED:** a visible PAID state with no way to correct a mistaken one is worse; `undo_mark_paid` reverses a **RECORDING, not a refund**; and `reverseCollectionPayment` writes its audit row **before** deleting.
+- **`hidePayments` STAYS** — it is a **per-DEVICE** preference describing where the operator is standing, not a truck setting.
+
+### Completion presses — a new setting, and the button that reads the order
+
+- **BUILT AND APPLIED:** `trucks.completion_presses` (text, NOT NULL, default `'one'`) and `truck_events.completion_presses_override` (text, nullable). **Verified 10 August: 3 paid-step-true trucks backfilled to `'two'`, 9 to `'one'`; 93 of 95 events inherit, 2 carry the forward-carried coupling, 0 events change behaviour.**
+- 🔴 **THE BUTTON READS PAYMENT STATE, NOT THE SETTING.** `effectivePaid` is tested **first**: a paid order is only ever offered **`Collected`**, whatever the setting and whatever route the payment arrived by. **Eight live orders were being offered a payment action on settled money.**
+- 🔴 **DEPLOY ORDER IS ASYMMETRIC — migrations first, then deploy.**
+
+### OPEN — the override one-way door
+
+🔴 **Nothing in the UI can clear a per-event override.** The handlers accept `NULL`; nothing sends it. Full entry in §27 and §45.
 
 ## V11.5 — 7 August 2026
 
@@ -27,7 +77,7 @@ August 2026
 **TWO SYMPTOMS, AND THE VISIBLE ONE WAS THE LESS SERIOUS:**
 
 - **On a paid-step-ON truck (Test Kitchen) — LOUD, and how it was found.** `mark_paid` recorded nothing, so the card stayed unpaid, `Collected` never appeared, and the order **could not leave the board**. Reported within minutes.
-- 🔴 **On Pizzeria Gusto (`show_paid_step` false) — SILENT, and the one that mattered.** Cards cleared normally and **every collection from 14:24 recorded £0, with no error and no warning**. Orders touched in the window were additionally written with `payment_status = 'refund_due'` and a whole-table `amount_paid`.
+- 🔴 **On Pizzeria Gusto — SILENT, and the one that could have mattered.** Cards cleared normally, with no error and no warning. ⚠️ **CORRECTED V11.6, TWICE.** (1) **Gusto is `show_paid_step` TRUE, not false** — this line said false and was wrong. (2) **They did NOT lose an afternoon's takings.** Live verification on 10 August: **all 17 in-window collections carry correct ledger rows**, **ledger coverage is 100% since 31 July**, and the **117 uncovered orders predate the ledger table**. One row is residue — order #1, `refund_due` with **£1,050.40** against a **£25 cancelled** order, which `recalcOrderPayment` will converge. **The mechanism was real and could have lost money; it did not, because the operator completed every order and took payment themselves.**
 
 **Rolled back to `6be1064` at approximately 19:00 by promoting the earlier Vercel build.** 🔴 **The one-line fix was NOT applied that evening, deliberately — deploying an unexercised change to money code is what caused the incident in the first place.** Restoring a known-good build is not the same act as shipping a new one.
 
@@ -49,7 +99,7 @@ August 2026
 
 ### KDS PAYMENT STATE — fixed
 
-- **`ledgerRows` had NEVER been passed to the KDS `OrderCard` in any commit**, so every order resolved unpaid there. **Latent** because Gusto has `show_paid_step` false — **one tap on the per-event override would have made it live**, offering a money button on already-paid orders and removing `Collected` so nothing could clear the board. `/api/dashboard` already returned `payments` keyed by `order_key`; the KDS was **discarding it at `setState`**, so the fix was a **prop, not a query**.
+- **`ledgerRows` had NEVER been passed to the KDS `OrderCard` in any commit**, so every order resolved unpaid there. 🔴 **CORRECTED V11.6 — recorded here as LATENT, and it was LIVE.** This line reasoned that Gusto's `show_paid_step` false gated it harmless; **Gusto is `show_paid_step` TRUE**, so the gate that was supposed to make it safe was the gate they did not have — a money button on already-paid orders, and `Collected` removed so nothing could clear the board. `/api/dashboard` already returned `payments` keyed by `order_key`; the KDS was **discarding it at `setState`**, so the fix was a **prop, not a query**.
 - **NEW per-device setting `hg_kds_payments_${token}`** — Capacitor Preferences, **default OFF**, **window view only**, visible **only when the truck's paid step is on**, **no plan gate**. It is a **LIFECYCLE toggle, not a display one**: OFF, `Ready` ends the ticket's life on that screen; ON, the ticket persists until marked paid and collected. **Two iPads on one truck may differ deliberately** — a window device and a grill device.
 - ⚠️ **The Done-today strip's hardcoded `✓ paid` is now DERIVED.** Another instance of **a label asserting a state nobody checked** — same class as `PrinterStatus.connected` hardcoding `true`.
 
@@ -274,7 +324,7 @@ Delta over V9.4 — the **29–30 July payments phase 1a/1b workstream**. Paymen
 
 - **THE WRITE PATH DISCARDED AN IDENTITY IT ALREADY HAD.** `/api/dashboard/action`'s entire auth was `verifyToken(token, pin)` — no cookie, no `getUser`, no `truck_users` read — while the sibling GET route resolved name, role and membership in full and the browser displayed it. **The read path knew who you were; the write path never asked.** Fixed with one shared resolver, split into `resolveActor` (may throw, GET, preserved byte-for-byte) and `resolveActorSafe` (action route). ⚠️ **A blanket try/catch around the GET resolver would have converted a genuine auth failure into a silent success**, letting a foreign operator through during an auth outage — caught before shipping.
 
-- **THE PAID STEP.** `trucks.show_paid_step` (default false — Gusto unaffected) splits "Mark paid and done" into a relabelling single button: unpaid → `Mark paid`, paid → `Done`, part-paid → `Mark £X.XX paid`. **No double-tap gesture** — one tap advances a stage, so two quick taps do both with no timing window, no debounce and no delayed first action. `trucks.takes_cash` (default false) splits the paid action into `💷 Cash` / `💳 Card`, one tap either way, recording `order_payments.method`. **`method` is a SEPARATE axis from `channel`** — `channel` answers "does the 0.99% apply and does this count toward the allowance", and cash and own-PDQ are identical on it. Widening `channel` would make every fee query an `in (...)` over a growing list, and one forgotten member silently charges a fee on cash.
+- **THE PAID STEP.** `trucks.show_paid_step` (**column** default false; ⚠️ **"Gusto unaffected" was WRONG — corrected V11.6: Gusto is `show_paid_step` TRUE**, and three of twelve trucks are) splits "Mark paid and done" into a relabelling single button: unpaid → `Mark paid`, paid → `Done`, part-paid → `Mark £X.XX paid`. **No double-tap gesture** — one tap advances a stage, so two quick taps do both with no timing window, no debounce and no delayed first action. `trucks.takes_cash` (default false) splits the paid action into `💷 Cash` / `💳 Card`, one tap either way, recording `order_payments.method`. **`method` is a SEPARATE axis from `channel`** — `channel` answers "does the 0.99% apply and does this count toward the allowance", and cash and own-PDQ are identical on it. Widening `channel` would make every fee query an `in (...)` over a growing list, and one forgotten member silently charges a fee on cash.
 
 - **`default_walkup_payment` WAS ADDED AND REMOVED WITHIN A DAY.** A truck-level default for "walk-ups usually pay at order / at collection" is wrong about half the time, because walk-ups and phone orders arrive through the SAME panel with OPPOSITE timings — so the operator must check and flip on every order anyway, which is worse than no default. Replaced with **two equal confirm actions, neither remembered**: `Confirm order` and `Cash £X` / `Card £X`. This is open-check semantics and matches how a POS actually behaves.
 
@@ -2746,7 +2796,7 @@ The dashboard Menu & Stock tab edits category prep and batch inline on the categ
 
 🔴 **`ledgerRows` had NEVER been passed to the KDS `OrderCard` in any commit.** `git log -S` returns nothing for the file. So `getOrderBalance(order, undefined ?? [])` resolved **every** order on the kitchen screen to `{paidMinor: 0, status: 'unpaid'}` — a fully-paid online order included.
 
-**It was LATENT, not harmless.** Gusto has `show_paid_step` false, which gates the chip to `null` and pins the button to the constant *"Paid & collected"*, so nothing payment-derived rendered. 🔴 **One tap on the per-event override would have made it live** — and the consequence is not a mislabelled chip: with the paid step on, `Collected` only appears when `effectivePaid` is true, so the board would have offered a **money button on already-paid orders** and **removed the only route to `collected`**, stranding every ticket. The server's `balanceMinor <= 0` guard protects the *ledger* from a double charge; it does not protect the *till* from an operator asking a customer to pay twice.
+🔴 **IT WAS LIVE, NOT LATENT — CORRECTED V11.6.** This entry originally read *"LATENT, not harmless"* on the premise that **Gusto has `show_paid_step` false**, which would gate the chip to `null` and pin the button to the constant *"Paid & collected"*. **That premise was wrong: Gusto is `show_paid_step` TRUE** (three of twelve trucks are). **The gate that was supposed to make this harmless was the gate they did not have** — so on their kitchen screen it was already live, with no per-event override required. **This is the clearest instance of the §35 invariant that a truck's configuration is live-schema truth**, and the consequence is not a mislabelled chip: with the paid step on, `Collected` only appears when `effectivePaid` is true, so the board would have offered a **money button on already-paid orders** and **removed the only route to `collected`**, stranding every ticket. The server's `balanceMinor <= 0` guard protects the *ledger* from a double charge; it does not protect the *till* from an operator asking a customer to pay twice.
 
 **The fix was a prop, not a query.** `/api/dashboard` already returned `payments` keyed by `order_key` — already van-scoped, one query, riding on the response the KDS was already fetching. The KDS was **discarding it at `setState`**.
 
@@ -4525,7 +4575,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 ### Added V11.4 — open items
 - **No dashboard banner during pending deletion** — Manage → Settings is the only in-app indication that an account is closing.
 - 🔴 **The published TERMS promise an export that does not exist** — *"Export anything you need before you close your account"*. **NO EXPORT FEATURE EXISTS ANYWHERE IN THE PRODUCT** (operator-confirmed). Either the terms change or the feature gets built; the deletion dialog currently tells operators to email for a copy.
-- 🔴 **The KDS renders `OrderCard` WITHOUT `ledgerRows`**, so **every order reads unpaid there**, online or offline. Pre-existing, on a live surface. **Drive payment testing from the Orders tab.**
+- ✅ **DONE (V11.5) — the KDS `OrderCard` now receives `ledgerRows`.** It was a **prop, not a query**. ⚠️ **And it was LIVE, not latent** (§9, corrected V11.6): the harmlessness argument rested on Gusto being `show_paid_step` false, and they are TRUE.
 - **Amount pinning via `op_id`** — a queued payment op carries no amount, so a replay charges the balance **as of reconnect**, not as of the tap. The outbox already mints an `op_id` for exactly this and never transmits it. Needs a second actor editing while the first is offline, so it cannot fire on a single device today.
 - **Two intermittent iPad display defects** — the right strip recovers on scroll-to-top, the header does not. Unreproducible; Web Inspector now set up. Decided by `window.scrollY > 0` with the header missing.
 - **`/admin` never converted to the app shell** — blocks `scrollEnabled: false`.
@@ -4538,8 +4588,8 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 - **`components/manage/[token]/page.tsx` carries five inline toggle copies still at `green-500`** while the dashboard toggles were reverted to the same value — they match today by coincidence, not by sharing a token.
 
 ### Not built, decided
-- **Truck-level defaults in Manage → Settings, with a per-event override on the dashboard**, for `show_paid_step` and `takes_cash`. Follow the pause / extra-wait precedent that moved to `truck_events` in V6.6. Needs its own diagnose-first pass: where the override lives, what happens to an event created before the default changed, and whether an event-level value persists or resets.
-- **Wire `paymentWarning` to a toast.** It rides back on the response and nothing renders it, so a ledger failure is currently invisible to the operator — detectable only from the server log and the reconciliation query. Touching that toast means touching the live 7-second undo affordance.
+- ✅ **DONE — truck-level defaults in Manage with a per-event override on the dashboard**, for `show_paid_step`, `takes_cash` **and now `completion_presses`** (§37, V11.6). The diagnose-first questions this item asked are answered there: the override lives on `truck_events`, **nullable-means-inherit**, **NOT seeded** at event creation and **never bulk-written** when the default changes — so changing a default reaches un-overridden events and leaves deliberate per-event choices alone. ⚠️ **What remains open is the route BACK to inherit** — see the V11.6 backlog entry.
+- ✅ **DONE V11.6 — `paymentWarning` is surfaced three ways** (§45): a 20-second error toast replacing the green one on all three producers and both surfaces, a persistent per-order marker derived from `action_audit_log.ledger_failed` **AND** a live outstanding balance, and a `Record payment` retry reusing `mark_paid`. **The undo affordance this item worried about was not disturbed** — the failure toast **replaces** the success toast rather than competing with it.
 - **Balance display on the KDS ticket and the customer manage page.** `getOrderBalance` exists for exactly this.
 - **The ledger backfill** — one row per existing collected order carrying a `paid_at`. Deferred because it flips ~128 orders into a state that switches on a dormant customer-refund email branch. Land it AFTER the refund copy is fixed.
 - **Three refund-copy sites, not two** — `/api/orders/cancel` (reads `payment_status`), `/api/events/action` (reads `paid_at`), and `app/api/dashboard/action/route.ts:254` (operator cancel, builds its refund line inline, bypassing `lib/email.ts`). All three collapse onto the ledger.
@@ -5060,8 +5110,8 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **`@capacitor/status-bar` is ONE PATCH BEHIND — look at that diff deliberately, don't discover it in a build.** Installed **8.0.2**, latest **8.0.3** (`npm view`, 28 July). The declared range is **`^8.0.2`**, so **a fresh `npm install` picks it up SILENTLY** — and `lib/native/statusBar.ts` is precisely the file carrying **three verified no-ops on modern Android** and the **unresolved null-window question** (§35's native-throw invariant: `StatusBar.java:42`, `:102` dereference `activity.getWindow()` inside an unprotected `executeOnMainThread` Runnable). **Whether 8.0.3 touches this area is UNDETERMINED** — **no changelog ships in `node_modules`** (both this package and `keep-awake` contain only `README.md`), so answering it needs the upstream repo. For contrast, `@capacitor-community/keep-awake` **is already on latest (8.0.1)** — nothing to chase there.
 ### 🔴 Added V11.5 — the 7 August incident and the Stripe/stock work
 
-- 🔴 **THE `readLedger` ONE-LINE FIX — restore `.eq('order_key', orderKey)`** (§37). Production is on the rolled-back build `6be1064`, so the defect is **not live**, but the fix is **not applied either**. ⚠️ **It must be exercised against real rows before it deploys** — §35. Deploying it unexercised is what caused the incident.
-- 🔴 **RECONSTRUCT GUSTO'S 7 AUGUST COLLECTIONS.** Every collection between 14:24 and ~19:00 recorded £0. Each shortfall is that order's own `total_minor`; seven read-only queries are in `docs/payments-damage-report.md`. ⚠️ **Time-sensitive:** `undo_collected` clears `paid_at` **and** `collected_at`, so an operator tapping Undo removes that order from most of the queries, and the demo-cleanup cron runs hourly. `action_audit_log` is the durable backstop.
+- ✅ **DONE V11.6 — THE `readLedger` FIX IS APPLIED**, carrying **BOTH** filters, and **exercised against real rows** (§35, §37): 1 row for an order versus 83 in the table; a paid order at `balanceMinor` 0; an unpaid order at exactly its £13.50 total. **A new scope assertion throws if returned rows do not all belong to the requested order** — and its first draft was **inert**, which is now its own §35 invariant.
+- ✅ **CLOSED V11.6 — THERE ARE NO GUSTO COLLECTIONS TO RECONSTRUCT.** This item read *"every collection between 14:24 and ~19:00 recorded £0"*. **It did not happen.** Live verification on 10 August: **all 17 in-window collections carry correct ledger rows**, **ledger coverage is 100% since 31 July**, and the **117 uncovered orders predate the ledger table**. **One row is residue:** order #1, `refund_due` with **£1,050.40** against a **£25 cancelled** order, which `recalcOrderPayment` will converge — worth running, not worth a recovery project. **The bug was real and could have lost money; the operator completed every order and took payment themselves.**
 - **The operator stock badge discards `bound`** (§30) — a pooled category ceiling renders as *"(1 left)"* against every item in the category. The customer page already uses the field.
 - **`"Only 1 pizzas left!"` — pluralisation bug on the CUSTOMER page** (§30). The noun is the raw category name lowercased.
 - **No urgency tier on the operator stock threshold** (§30) — flat `<= 10`, so 10 and 1 render identically. The customer page and the shared option badge redden at 3.
@@ -5069,6 +5119,13 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **Stripe Connect — onboarding, PaymentIntents, refunds, Terminal, Locations and subscription billing are ALL UNBUILT** (§37). Only the webhook endpoint exists. The model and the controller properties are decided; nothing else is.
 - **The collect idempotency key still swallows a legitimate second charge of the same amount.** `collect:{order_key}:{paidBefore}:{balance}` collides when the ledger returns to a previous position and the same amount is settled again — **true today with cash**, not merely a future Stripe concern. The complete answer is a client-minted per-tap key; a Stripe object id is one.
 - 🔴 **Apple Developer enrolment requested 7 Aug, awaiting confirmation.** ⚠️ **Xcode CANNOT BUILD until it completes** — a personal team cannot sign the Push Notifications capability.
+
+### 🔴 Added V11.6 — the per-event override one-way door
+
+- 🔴 **NOTHING IN THE UI CAN CLEAR A PER-EVENT OVERRIDE.** All three `set_*_override` handlers **accept `NULL`** and return a **400** for anything else — verified — and **92–93 of 95 events already hold `NULL`**, so the sentinel is live and readable. **But nothing sends it.** Both the *"Changed for this event"* pill and the *"Use my usual setting"* control were removed at the operator's instruction — the pill because **dashboard Settings is entirely event-scoped**, so a per-row badge repeats a screen-level fact on every row.
+  - **CONSEQUENCE, plainly: an operator who changes a payment setting for one event CANNOT return that event to following the truck default.** They can only **match it by hand** — and 🔴 **a hand-matched event SILENTLY STOPS TRACKING the default when it later changes.** **Coinciding and inheriting are different states**, and only one of them is now reachable.
+  - **`test-truck`'s 2026-08-10 event is in that state now** (`completion_presses_override = 'one'` with no route back).
+  - **Restoring it is two lines and needs NO migration** — render one control per row calling that row's existing save function with `null`. The server side is unchanged and already handles it. **Suggested form:** a plain text link at the row's foot, shown **only when that row is overriding** — no pill, no colour, nothing on a row that is inheriting.
 
 - **`app/dashboard/[token]/kds/page.tsx:245` calls `prepareKeepAwake()` UNCONDITIONALLY, ignoring `keepScreenOn`**; the separate `[keepScreenOn]` effect at `:253` then applies the real pref. So **mounting KDS with the pref OFF acquires the lock and immediately releases it.** Harmless in effect, but it is the **lying-toggle family** — for one render the published state is not what the pref says, and `lib/native/keepAwake.ts:8-13` exists specifically to publish the ACTUAL state rather than the intended one. Fix is to gate `:245` on the pref like the dashboard already does.
 
@@ -5632,14 +5689,28 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 **WHEN FOLDING A VALUE INTO AN EXISTING DERIVED ONE, the check is not "does it compile" but "have I found every consumer of the thing I am shadowing".** `tsc` did not catch `effectivePaid` being declared **below three of its consumers** — the card would have shown a green PAID chip beside a live "Mark paid" button. A grep of every paid-ness consumer did.
 
 **🔴🔴 EXERCISE MONEY CODE AGAINST REAL DATABASE ROWS BEFORE IT DEPLOYS. `tsc`-CLEAN AND LINT-BASELINES-HOLDING ARE NOT VERIFICATION ON THE MONEY PATH.** The strongest invariant in this section, and it was bought expensively. On 7 August a one-line change to `readLedger` **replaced** `.eq('order_key', orderKey)` instead of adding a filter beside it, so every balance was computed from the whole `order_payments` table (§37). **It passed `tsc` and it passed lint rule-for-rule** — it had to, because the deleted filter left `orderKey` still referenced in the function's error message, so the parameter was never "unused". Cursor's own account: *"tsc and lint both passed clean on this change and could not have caught it — I reported that as verification when I had never exercised `readLedger` against a database."* **A type checker cannot see a missing `WHERE` clause.** The same session had verified a signature helper against 15 executed HMAC vectors; applying that discipline one file over would have caught this in a minute. **Any change under `lib/payments/` is unverified until it has been run against rows.**
+>
+> 🔴 **V11.6 — THIS INVARIANT STANDS UNCHANGED, AND THE REASON IS WORTH STATING.** The 7 August incident **did not lose Gusto any money** (§37, corrected): every in-window collection carries a correct ledger row. **The invariant was earned by the MECHANISM, not by the damage.** A rule that holds only while its story is dramatic is not a rule — and the mechanism here was a one-line change that passed `tsc` and lint and computed every balance from the whole table. **Do not weaken this entry because the outcome was survivable; it was survivable because the operator took the payments by hand.**
+>
+> ✅ **APPLIED AND EXERCISED (V11.6).** `readLedger` now carries **BOTH** filters — `order_key` **and** `livemode`. **The original mistake was REPLACING rather than ADDING**, which is the whole lesson in four words. Verified **against the live database, not `tsc`**: **1 row** returned for an order versus **83** in the table; a paid order at **`balanceMinor` 0** (the bug gave **−186,640** → `refund_due` → £0); an unpaid order at exactly its **£13.50** total.
 
-**🔴 A SILENT FAILURE ON A QUIET PATH IS MORE DANGEROUS THAN A LOUD ONE ON A BUSY PATH.** The same 7-August defect produced both at once, and the ranking is counter-intuitive. On the **paid-step-ON** truck it **stopped the board** — `Collected` was unreachable, orders could not clear, and it was **reported within minutes**. On **paid-step-OFF Gusto** the cards cleared normally, the operator saw a success toast, and **an afternoon's takings recorded £0 without a single error**. **The loud one gets fixed; the quiet one gets discovered by an accountant.** When assessing a defect's blast radius, ask which configuration **fails without complaining**, and weight that one higher — not the one generating the tickets.
+**🔴 A SILENT FAILURE ON A QUIET PATH IS MORE DANGEROUS THAN A LOUD ONE ON A BUSY PATH.** The same 7-August defect produced both at once, and the ranking is counter-intuitive. Where the operator reached for `mark_paid` it **stopped the board** — `Collected` was unreachable, orders could not clear, and it was **reported within minutes**. Where a collection cleared the card normally, the operator saw a success toast and **a collection could record £0 without a single error**. **The loud one gets fixed; the quiet one gets discovered by an accountant.** When assessing a defect's blast radius, ask which path **fails without complaining**, and weight that one higher — not the one generating the tickets. ⚠️ **CORRECTED V11.6 on two counts, and the invariant is unchanged by both.** This entry originally contrasted a *"paid-step-ON truck"* with *"paid-step-OFF Gusto"* — **Gusto is paid-step ON**, so the split was never a configuration split. And it stated that **an afternoon's takings recorded £0**; **they did not** — live verification found every in-window collection correctly recorded (§37). 🔴 **The lesson is about which failures ANNOUNCE themselves, not about how much money was lost, and it survives the damage being zero.**
 
 **🔴 FOLLOWING A VENDOR QUICKSTART VERBATIM CAN INVERT YOUR COMMERCIAL POSITION.** Stripe's embedded-onboarding sample sets `controller.fees.payer`, `controller.losses.payments` and `controller.requirement_collection` **all to `'application'`** — meaning **the PLATFORM** bears Stripe's fees, absorbs every chargeback, and takes on KYC collection. That is the **exact inverse** of HatchGrab's published terms, and it is one copy-paste away. **Read what a default MEANS, not just what it is** — and when a vendor's sample and your contract disagree, the contract is the specification. See §37.
 
 **WHEN ONE SURFACE IS RIGHT AND ANOTHER IS WRONG, THE FIX IS USUALLY THE FIELD THAT WAS DISCARDED, NOT A NEW DESIGN.** `calcAddableRemaining` returns `{ addable, bound }`; `bound` names which constraint produced the number and exists specifically for badge copy. The **customer** page destructures both and phrases the badge against the category. The **operator** panel destructures only `addable` at both of its render sites, which is the whole reason a pooled ceiling of 1 reads as *"(1 left)"* against twenty pizzas. **Before designing a fix for a divergence, diff the two call sites and look for the value one of them threw away.** See §30.
 
 **🔴 RUN CURSOR'S MIGRATION FILE, NEVER A RETYPED VERSION.** On 7 August the planning chat reconstructed a four-column `create table` from a **report summary** when the real file had **nine columns, a unique constraint, two indexes and RLS**. The webhook then verified signatures correctly and **500ed on every insert for an hour**, with zero rows to show for it — a failure that looked like a permissions or key problem and was neither. **Quote files; do not summarise them into SQL.** The report is a description of the migration; **the migration is the migration**.
+
+**🔴 A GUARD THAT CANNOT SEE WHAT IT CHECKS IS WORSE THAN NO GUARD.** *Evidence (V11.6):* the new `readLedger` scope assertion — which throws if returned rows do not all belong to the requested order — had a **first draft that was INERT**. `LEDGER_ROW_COLUMNS` did not select `order_key`, so every row's field was `undefined`, and the assertion **silently passed everything**, including exactly the whole-table result it existed to catch. Caught by checking it, fixed by **adding the column to the shared select list**, and the `!== undefined` escape was **deliberately dropped** so the guard now **fails if its own precondition is ever removed**. 🔴 **Nobody re-checks a guard that is already there** — a present-but-blind guard is worse than an absent one, because its presence ends the enquiry. **Whenever you add an assertion, prove it FIRES: feed it the failure it is meant to catch.**
+
+**🔴 A CONTROL MUST BRANCH ON THE ORDER, NOT ON THE TRUCK SETTING, whenever the underlying fact belongs to the order.** **A setting decides HOW money is taken; it cannot decide whether it already HAS been.** *Three instances in one day (V11.6), which is why this is an invariant and not a bug report:* the **PAID chip**, gated on `show_paid_step` so a settled balance was invisible; the **completion button**, which tested the presses setting before `effectivePaid` and offered *"Mark paid & collected"* on **eight live orders that were already paid**; and the **KDS `ledgerRows`** defect, whose whole harmlessness argument rested on a truck setting. **The test: if the fact is recorded against the ORDER, read it from the order.** ⚠️ **This sharpens with Stripe**, where an online order arrives **already paid** and every truck-keyed branch meets a state it was never written for.
+
+**🔴 TEST THE POST-MIGRATION STATE, NOT ONLY THE PRE-MIGRATION ONE.** *Evidence (V11.6):* a first verification run resolved all 95 live events with the new columns **absent** and reported "0 events change" — but that is not the state that ships. Re-run with **both migrations simulated**, it found that **one boolean had been driving two settings**, so an event overriding the paid step OFF was also overriding the completion to one press; splitting them would have **silently flipped that event from one press to two**. The migration now **carries the old coupling forward** in a one-time per-row backfill, and 0 of 95 change. **A migration that "looks inert" is a claim about the after state, so verify the after state.**
+
+**🔴 A TRUCK'S CONFIGURATION IS LIVE-SCHEMA TRUTH. Do not assert it from memory or from a prior session's summary.** *Evidence (V11.6):* **four separate premises about Pizzeria Gusto were asserted wrongly across 7–10 August** — that they are `show_paid_step` false (they are **TRUE**; three of twelve trucks are), that the KDS `ledgerRows` defect was latent for them (it was **live**), that `paymentWarning` was not on their path (it **is**, via `mark_paid` and via a direct `collected` on an unpaid web pre-order), and that they had lost an afternoon's takings (**they had not**). Each was plausible, each was repeated into a report, and each survived until someone read the row. **One query settles it; a summary never does.** Same family as *a loose restatement will be believed over the authoritative entry*, one level down: **the schema outranks the manual, and the manual outranks the changelog.**
+
+**WHEN ONE SURFACE IS FIXED, CHECK ITS SIBLINGS.** A fix applied to one of two matching surfaces leaves a divergence that reads as intentional. *Three instances in one day (V11.6):* the **dashboard cash row** left on a single-parent enable gate after the Manage copy was widened to an OR; the **enabled completion button** left reading *"Mark paid and collected"* after a shortening pass matched only the single-quoted string, so the card rendered a label **no other surface named**; and the **operator stock badge** discarding `bound` while the customer page uses it (§30). **After fixing a surface, grep the string or the condition you changed and read every other hit** — the sibling is usually one file away and never in the diff.
 
 **🔴 A LOOSE RESTATEMENT WILL BE BELIEVED OVER THE AUTHORITATIVE ENTRY. Read the section, not the summary.** The V11.4 brief asserted four manual errors and **only one was real**. The `order_payments` cascade was recorded **correctly in §27 on 30 July** and restated ambiguously in a changelog line as *"no FK cascade concerns pending"* — and it was the ambiguous line that got believed and built on. **State provenance as read-from-the-manual, name the section you read, and verify anything load-bearing against the live schema.** The corollary for writing: a changelog restatement of a schema fact is a **liability**, because it will be read instead of the schema section.
 
@@ -5750,7 +5821,11 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 | Truck | `show_paid_step` | What the operator saw | Severity |
 |---|---|---|---|
 | Test Kitchen | **ON** | `mark_paid` recorded nothing → card stayed unpaid → **`Collected` never appeared** → order **could not leave the board** | **LOUD** — reported in minutes, and how it was found |
-| **Pizzeria Gusto** | **false** | Cards cleared normally, success toast every time — and **every collection from 14:24 recorded £0** | 🔴 **SILENT** — and the one that mattered |
+| **Pizzeria Gusto** | **ON** *(corrected V11.6 — this row read `false`)* | Cards cleared normally, success toast every time, and a collection could record £0 | 🔴 **SILENT** — the one that **could** have mattered |
+
+🔴 **CORRECTED V11.6 — THE DAMAGE DID NOT HAPPEN, AND THE TABLE ABOVE ORIGINALLY SAID IT DID.** Live verification on 10 August: **all 17 in-window collections carry correct ledger rows**, **ledger coverage is 100% since 31 July**, and the **117 uncovered orders predate the ledger table** — pre-ledger history, not damage. **One row is residue:** order #1, `refund_due` with **£1,050.40** against a **£25 cancelled** order, which `recalcOrderPayment` will converge. **The bug was real, the mechanism was real, and it could have lost money — it did not, because the operator completed every order and took payment themselves.** Recorded accurately rather than dramatically, and 🔴 **the §35 money-path invariant stands unchanged: it was earned by the MECHANISM, not by the damage.**
+
+⚠️ **The second correction is in the table's own second column.** Gusto is **`show_paid_step` TRUE**, so the two rows are **the same configuration**, not a contrast between an ON truck and an OFF one. What separated the symptoms was **which action the operator reached for** — `mark_paid` on a card that then refused to advance, versus a direct `collected` that cleared the board — not a difference in truck settings.
 
 Orders touched in the window were **additionally corrupted**: `recalcOrderPayment` wrote `payment_status = 'refund_due'` and an `amount_paid` equal to the **whole-table total** onto whichever order was being collected.
 
@@ -5878,6 +5953,65 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 - **`app/order/[id]/manage/page.tsx:85` promises every cancelling customer a 5–10 day refund, unconditionally.** That is a live commitment which forces refunds into the payments pass rather than after it, and the sentence must become conditional on the ledger.
 - **Two cancel paths currently key their refund copy off DIFFERENT fields** — `/api/orders/cancel` reads `payment_status`, `/api/events/action` reads `paid_at`. Both collapse onto the ledger.
 - **`undo_collected` does not clear `paid_at`**, so a reverted order keeps a payment timestamp and the operator-cancel email can promise a cash customer a refund. Fix with the ledger.
+
+## The payment ACTION model (V11.6) — two settings, and one rule that outranks both
+
+**Three settings now describe how a truck handles money, and they are independent inputs, not one flag wearing three hats.** All three resolve in **exactly one place — `lib/payments/paid-step.ts`** — and **nothing may resolve them inline**.
+
+| Setting | Scope | What it decides |
+|---|---|---|
+| `trucks.show_paid_step` | truck default **+ per-event override** | Whether the **Add Order panel** offers a Confirm button, i.e. whether an order can be placed **unpaid** |
+| `trucks.completion_presses` | truck default **+ per-event override** | Whether completing an **unpaid** order takes **one** press or **two** — and **what `undo_collected` reverses** |
+| `trucks.takes_cash` | truck default **+ per-event override** | Whether the payment button splits into **Cash / Card** |
+
+**Live values, verified 10 August:** `show_paid_step` is **TRUE on three of twelve trucks** (`pizzeria-gusto`, `test-kitchen`, `village-spice`). `completion_presses` was **backfilled per row** from it — those three to `'two'`, the other nine to `'one'` — so **no truck's behaviour changed**. **93 of 95 events inherit**; 2 carry the forward-carried coupling; **0 events changed behaviour**.
+
+### 🔴 THE RULE THAT OUTRANKS THE SETTINGS: the button reads the ORDER
+
+**`effectivePaid` is tested BEFORE the presses setting.** A **paid** order is only ever offered **`Collected`** — whatever the setting says and **whatever route the payment arrived by**: ledger, walk-up, `mark_paid`, or a Stripe webhook that does not exist yet.
+
+| Presses | Order state | Offered |
+|---|---|---|
+| one | unpaid / part-paid | `Mark paid & collected` |
+| one | **paid** | 🔴 **`Collected`** |
+| two | unpaid | `Mark paid` (or 💷 Cash / 💳 Card) |
+| two | part-paid | `Mark £X.XX paid` |
+| two | **paid** | 🔴 **`Collected`** |
+
+⚠️ **Part-paid deliberately does NOT take the paid branch** — money is outstanding, so a payment action is still the right offer. `effectivePaid` is paid-or-refunded only.
+
+**The defect this fixed:** the branch tested the setting first, so **eight live orders** — fully settled, PAID chip rendering correctly beside them — were offered *"Mark paid & collected"*. The **server was never at risk** (`recordCollectionPayment` short-circuits on a zero balance), but **a button that invites a duplicate payment is a defect even when the duplicate cannot land**. 🔴 **It sharpens with Stripe**, where an online order arrives **already paid** and lands on that branch every time.
+
+### 🔴 ONE PRESS = ONE SERVER ACTION, ONE REQUEST, ONE OUTBOX OP
+
+The one-press button fires the **existing `'collected'` action, unchanged** — only the label is new. The server books the full outstanding balance and writes the status **inside one handler**.
+
+🔴 **NEVER dispatch `mark_paid` AND `collected` from the client to "do both".** The outbox marks a conflicted op `conflict`, **SKIPS it and continues**, and has **no dependency ordering** — so a conflicting `mark_paid` would be dropped while `collected` replayed, completing an order **with no payment recorded**. `'collected'` is deliberately **not** in `PAYMENT_ACTIONS`, because it moves status too and the status overlay already carries the card. **The safety is in there being exactly one op.**
+
+### 🔴 DEPLOY ORDER IS ASYMMETRIC — migrations first, then deploy
+
+| Column | Order-sensitive? | Why |
+|---|---|---|
+| `trucks.completion_presses` | **No** | `trucks` is read with `select('*')`, so a missing column arrives `undefined` and the resolver's `?? (showPaidStep ? 'two' : 'one')` fallback reproduces today's behaviour exactly |
+| `truck_events.completion_presses_override` | 🔴 **YES — migration MUST precede deploy** | Read through a **NAMED select** in both `paidStepFor` and `/api/dashboard`'s events query |
+
+**What breaks in the wrong order:** a named select on a column that does not exist returns **42703**, and **PostgREST fails the WHOLE statement**. `/api/dashboard`'s events query then returns null, every `selectedEventId` branch is skipped, the orders block never runs, and the route answers **HTTP 200 with `orders: []`** — the **silent-empty-board class**. Separately `paidStepFor` **logs and continues with the truck defaults**, so every per-event payment override is silently ignored for `collected`, `undo_collected` and the walk-up paid-at-order path.
+
+### The PAID chip, the remove-payment modal, and `hidePayments`
+
+**The chip is ORDER-KEYED. Whether money has been recorded is a fact about the order, not a preference of the truck.** The `!showPaidStep` operand was removed.
+
+⚠️ **The old gate looked harmless, and the argument must not be re-made from first principles.** It holds for a truck whose **default** is off — no path books a payment before collection there. 🔴 **The hole is a default of ON with an event override to OFF:** payments booked while the paid step applied stay on the order, and flipping the override afterwards **hid them**. That is how **six fully-paid `test-kitchen` orders carried settled balances their operator could not see.**
+
+**Un-gating the chip also un-gates the REMOVE-PAYMENT modal**, because the chip is its **only entry point**. **ACCEPTED, deliberately:** a visible PAID state with no way to correct a mistaken one is worse than the alternative; `undo_mark_paid` reverses a **RECORDING, not a refund** — no money moves; and `reverseCollectionPayment` writes its audit row **BEFORE** deleting, via `logActionOrThrow`, so a failed audit **aborts the delete** and the deletion is reconstructable from `before_state`.
+
+**`hidePayments` STAYS in that gate.** It is a **per-DEVICE** preference — it describes **where the operator is standing**, not what is true of the order. A grill screen not showing a money chip is not the product concealing a payment.
+
+### `takes_cash` now has TWO parents
+
+The cash split renders in two places that answer to **different settings**: the Add Order panel's *Take payment* button splits on **`show_paid_step`**, and the **order card's `Mark paid`** button splits on **`completion_presses === 'two'`**. The enable gate is therefore the **OR** of the two; the old single-parent condition would have been a defect this change introduced.
+
+⚠️ **The `pl-4` indent went with it.** **Indentation is a SINGLE-PARENT notation** — it can only point at the row directly above — so with two parents it had stopped showing the dependency and started asserting a wrong one. **The disabled state plus a note naming both parents carries it instead.** The card's **one-press** button is still never split: `Cash & collected` cannot be labelled honestly at a 240px KDS column.
 
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
@@ -6424,7 +6558,30 @@ It was assessed as **inadequate** and then rebuilt:
 
 **ALSO FIXED:** the walk-up buzzer prompt was a raw `fetch` and **lost the number offline**; it now reuses the dashboard's `saveBuzzer`.
 
-⚠️ **ALSO OPEN:** the **KDS renders `OrderCard` WITHOUT `ledgerRows`**, so **every order reads unpaid there**, online or offline. Pre-existing, on a live surface. **Drive payment tests from the Orders tab.**
+✅ **CLOSED V11.5 (recorded here as open):** the **KDS rendered `OrderCard` WITHOUT `ledgerRows`**, so every order read unpaid there. **Fixed by passing the prop** — `/api/dashboard` already returned `payments`; the KDS was discarding it at `setState`. ⚠️ **And it was LIVE, not latent** — see §9, corrected V11.6.
+
+## `paymentWarning` is surfaced (V11.6) — three ways, and the AND is load-bearing
+
+**`paymentWarning` was produced by three server handlers and read by NO client.** `'collected'`, `'mark_paid'` and the walk-up paid-at-order path all **fail OPEN** on the ledger write — the operator is at the hatch with cash in hand, so a failed accounting write must not refuse the action — and all three returned the warning **on a 200** that nothing rendered. **An order completed with no payment recorded looked exactly like a successful one.**
+
+- **A 20-second error toast REPLACING the green one**, at the moment of failure, on **all three producers** and **both operator surfaces**. It replaces rather than accompanies: two toasts for one tap is the operator reading whichever their eye lands on, **and the green one is the lie**.
+- **A persistent per-order marker**, so the fact survives the toast, a poll, a reload and a different device. It **reuses the conflict-marker vocabulary** (§45 above) rather than inventing a second way of saying *"something went wrong with money on this order"*.
+- **A `Record payment` retry that reuses `mark_paid`** — one existing action, same idempotency key, safe to re-fire, a no-op if the money did land. **An alert with no action teaches operators to ignore alerts.**
+
+🔴 **THE MARKER IS AN `AND`, AND BOTH HALVES ARE REQUIRED.**
+
+| Half | Source | Alone it is |
+|---|---|---|
+| **Provenance** | `action_audit_log.after_state->>'ledger_failed'` — already written by all three handlers, and read by nothing until now | **sticky forever** (the log is append-only, so a repaired order keeps its marker) |
+| **State** | a live outstanding balance from `getOrderBalance` | 🔴 **catastrophically noisy** |
+
+**Measured, not reasoned: 145 of 221 collected orders have no ledger rows at all — 117 of them Gusto's — because they were collected BEFORE the ledger existed.** A balance-only rule paints all 145 red and the marker is dead on arrival. AND-ed, the predicate had **0 false positives across 395 real orders**, and it **clears itself** when the payment is recorded — no acknowledge, no dismissal.
+
+⚠️ **It also covers the one path a toast never can.** The outbox drain does `if (res.ok) { removeOp; synced++ }` and **never parses the success body**, so a queued `collected` that replays and half-fails produces a warning **no client is watching for**. The server wrote the audit row regardless, so the marker appears on the next poll.
+
+⚠️ **CORRECTION (V11.6): `paymentWarning` IS on Gusto's path.** An earlier reading held that their split flow exempted them. It does not: **`mark_paid` produces it on their FIRST press**, and **`collected` produces it on any unpaid web pre-order they complete directly** — which is exactly how their five open web pre-orders would be completed.
+
+⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.5
+HatchGrab Engineering Reference Manual · V11.6

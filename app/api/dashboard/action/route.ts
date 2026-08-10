@@ -38,7 +38,13 @@ async function paidStepFor(truck: any, eventId: string | null | undefined) {
   if (!eventId) return resolvePaidStep(truck, null)
   const { data: ev, error: evErr } = await supabase
     .from('truck_events')
-    .select('show_paid_step_override, takes_cash_override')
+    // 🔴 DEPLOY-COUPLED, IN ONE DIRECTION ONLY. `completion_presses_override` was added here on
+    // 10 August 2026, which makes THIS BUILD REQUIRE supabase/migrations/
+    // 20260810_truck_events_completion_presses_override.sql TO HAVE BEEN APPLIED FIRST. A named select
+    // on a column that does not exist is 42703 and fails the WHOLE statement — see the handler below,
+    // which then falls back to the truck defaults and silently ignores every per-event override.
+    // Migration first, then deploy. The reverse order is the failure this file already documents.
+    .select('show_paid_step_override, takes_cash_override, completion_presses_override')
     .eq('id', eventId)
     .eq('truck_id', truck.id)
     .maybeSingle()
@@ -460,14 +466,25 @@ export async function POST(req: NextRequest) {
       // before_state carries the FULL contents of the row about to be destroyed (amount, channel,
       // idempotency_key, created_at, created_by, note, currency, state, external_ref, id) so the deletion
       // is fully reconstructable from the log alone.
-      // ── TWO-STAGE UNDO (V9.4) — WHETHER THIS ALSO REVERSES THE PAYMENT DEPENDS ON THE PAID STEP ────
-      // show_paid_step OFF (default, and today's behaviour): "Mark paid & done" is ONE action, so its
-      //   undo must reverse BOTH halves — status and payment. Unchanged from phase 1a.
-      // show_paid_step ON: paying and completing are two separate taps with two separate toasts, so an
-      //   undo must reverse exactly ONE stage. Undoing "Done" reverts the STATUS ONLY and leaves the
-      //   payment standing; the payment has its own undo (undo_mark_paid) on its own toast. Reversing
-      //   both here would silently undo a tap the operator did not just make.
-      const splitPaidStep = (await paidStepFor(truck, (order as any)?.event_id)).showPaidStep
+      // ── TWO-STAGE UNDO (V9.4) — WHETHER THIS ALSO REVERSES THE PAYMENT DEPENDS ON THE PRESSES ──────
+      // ONE press: "Mark paid and collected" is ONE action, so its undo must reverse BOTH halves —
+      //   status and payment. Unchanged from phase 1a.
+      // TWO presses: paying and completing are two separate taps with two separate toasts, so an undo
+      //   must reverse exactly ONE stage. Undoing "Done" reverts the STATUS ONLY and leaves the payment
+      //   standing; the payment has its own undo (undo_mark_paid) on its own toast. Reversing both here
+      //   would silently undo a tap the operator did not just make.
+      //
+      // 🔴 KEYED ON completionPresses, NOT show_paid_step (10 August 2026). Those were the same boolean
+      // until the settings were split, and this is the branch that makes the split matter: it decides
+      // what an undo MEANS. `show_paid_step` now answers a question about ORDER ENTRY (can an order be
+      // placed unpaid from the Add Order panel) and has no bearing on whether completion was one tap or
+      // two — so reading it here would, on a truck with entry unpaid-capable but completion in one tap,
+      // leave a payment standing that the single tap had just booked.
+      // ⚠️ `completionPresses` comes from the TRUCK object, which paidStepFor already has via
+      // select('*') — NOTHING was added to that function's named truck_events select. That select is on
+      // the path the outbox replays through and fails to a WRONG VALUE rather than a crash; keeping this
+      // column off it is why this change carries no 42703 exposure.
+      const splitPaidStep = (await paidStepFor(truck, (order as any)?.event_id)).completionPresses === 'two'
       let reversal: 'deleted' | 'refunded' | 'none' = 'none'
       try {
         if (splitPaidStep) {
@@ -1225,16 +1242,34 @@ export async function POST(req: NextRequest) {
       }
 
       // ── WALK-UP PAID AT ORDER (V9.4) ────────────────────────────────────────────────────────────
-      // The operator took the money as part of placing the order (the confirm bar's "Confirm and take
-      // £X.XX"). Books the same ledger row a later "Mark paid" would, under the same
-      // `collect:{order_key}` key — the money event is identical, only the moment differs.
+      // The operator took the money as part of placing the order (the confirm bar's payment button).
+      // 🔴 THE ORDER AND THE PAYMENT ARE ONE SERVER ACTION, ONE REQUEST, ONE OUTBOX OP. The order was
+      // created above in this same handler and the ledger row is booked here — the client makes a single
+      // `gatedAction({ kind: 'create' })` carrying `paymentTaken`, and NOTHING dispatches a separate
+      // payment op beside it. That is not an implementation detail: the outbox marks a conflicted op
+      // `conflict`, SKIPS it and continues, so a create that landed while a payment conflicted would
+      // leave an unpaid order looking paid. Do not split this into two dispatches.
+      // ⚠️ SAME LEDGER ROW A LATER "Mark paid" WOULD WRITE — same `recordCollectionPayment`, same
+      // `collect:{order_key}:{paidBefore}:{balance}` key, same `channel: 'in_person_other'`. One order,
+      // one ledger, whichever route the money arrived by; only the moment differs.
       // ⚠️ FAILS OPEN, matching `collected` and `mark_paid`: the order is ALREADY CREATED above and must
       // stay created. An accounting failure must never undo or block order entry at the hatch — the
-      // warning rides back on the success response and the reconciliation query surfaces the gap.
-      // Only runs when the truck has opted into the paid step AND this order was marked paid; otherwise
-      // this whole block is inert and walk-up creation is byte-identical to before.
+      // warning rides back on the success response (and is now surfaced; see docs/payments-report.md).
+      //
+      // ── 🔴 THE `showPaidStep &&` GATE WAS REMOVED, 10 August 2026. IT WAS HALF OF A LIVE DEFECT. ──
+      // This read `if (paidStepFor(...).showPaidStep && paymentTaken === true && …)`. Its stated purpose
+      // was to stop a stale client booking a payment on a truck that had not enabled the flow — but the
+      // setting does not mean that and never did. `show_paid_step` answers "can this panel ALSO place an
+      // order UNPAID?", so with it OFF the truck is saying they ALWAYS take payment at order time, and
+      // this gate refused a payment in precisely the configuration that always takes one. Combined with
+      // the client forcing `paymentTaken: false` in the same state, the OFF setting could not record a
+      // payment by any route — the operator had to mark the order paid on the card afterwards.
+      // 🔴 THERE IS NO TRUCK CONFIGURATION UNDER WHICH A `paymentTaken: true` FROM THIS PANEL SHOULD BE
+      // REFUSED. Both settings offer a payment button; only the presence of an UNPAID button differs. So
+      // the condition is the operator's action alone, and no config is consulted. Do not re-add a
+      // settings gate here — if the panel offered the button, the server honours it.
       let manualPaymentWarning: string | null = null
-      if ((await paidStepFor(truck, manualOrder?.event_id)).showPaidStep && manualOrder?.paymentTaken === true && manualOrderKey) {
+      if (manualOrder?.paymentTaken === true && manualOrderKey) {
         let chargedMinor = 0
         try {
           const manualMethod: 'cash' | 'card' | null =
@@ -1537,9 +1572,28 @@ export async function POST(req: NextRequest) {
     // 🔴 This writes truck_events ONLY. The truck DEFAULT (trucks.show_paid_step) is owned by
     // Manage → Settings; the dashboard must never write it. Writes a concrete true/false for THIS event,
     // which is what makes it survive a later change to the default — see lib/payments/paid-step.ts.
+    //
+    // ── 🔴 NULL CLEARS THE OVERRIDE. IT IS A VALUE, NOT A MISSING ARGUMENT (10 August 2026) ─────────
+    // This used to coerce with `!!value`, so it could ONLY ever write a concrete true/false — which made
+    // the override a ONE-WAY DOOR. An operator who tried a setting on one event could never return that
+    // event to "follow the truck default": they could only guess the default and match it by hand, and
+    // the event would then silently stop tracking the default when it later changed. Coinciding with the
+    // default and INHERITING it are different states, and only one of them was reachable.
+    // `value === null` now writes NULL, which is exactly the "inherit" the schema has always defined
+    // (truck_events.show_paid_step_override is `boolean default null`, and lib/payments/paid-step.ts
+    // resolves `event?.show_paid_step_override ?? truck?.show_paid_step`).
+    // ⚠️ RESOLUTION ORDER IS UNTOUCHED. This changes only which values can be STORED, never how a stored
+    // value is read. Nothing in paidStepFor or the resolver moved.
+    // ⚠️ VALIDATED, NOT COERCED — `!!value` would silently turn a typo'd string into `true`. Anything
+    // that is not a boolean or null is now a 400, the same discipline set_completion_presses_override
+    // uses. `undefined` is REJECTED rather than treated as null: an omitted field is a client bug, and
+    // silently clearing an override on one would be the quiet kind of wrong.
     if (action === 'set_show_paid_step_override') {
       const { value, eventId } = body
       if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (value !== null && typeof value !== 'boolean') {
+        return NextResponse.json({ error: 'value must be true, false, or null to clear' }, { status: 400 })
+      }
       // ── SERVER-CONFIRMED UPDATE (V9.6) ─────────────────────────────────────────────────────────
       // Returns the UPDATED ROW so the client can set state FROM THE RESPONSE instead of guessing
       // (optimistic) or re-reading (full refetch). The response IS the source, so it cannot refresh the
@@ -1549,12 +1603,41 @@ export async function POST(req: NextRequest) {
       // ⚠️ NO .single(): it throws PGRST116 on zero rows, which would turn a no-op into a 500. An array
       // lets a zero-row result fall through to `event: null` → the client's refetch fallback.
       const { data: rows, error } = await supabase.from('truck_events')
-        .update({ show_paid_step_override: !!value }).eq('id', eventId).eq('truck_id', truck.id)
+        .update({ show_paid_step_override: value }).eq('id', eventId).eq('truck_id', truck.id)
         .select('*')
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       // Row absent ⇒ still success. The UPDATE and the representation are ONE PostgREST statement, so
       // `error` unset means the write committed; a missing row is not a failed write and must never be
       // reported as one. The client falls back to its refetch.
+      return NextResponse.json({ success: true, event: rows?.[0] ?? null })
+    }
+
+    // ── set_completion_presses_override ── EVENT-scoped (truck_events), mirrors set_show_paid_step_override.
+    // 🔴 Writes truck_events ONLY. The truck DEFAULT (trucks.completion_presses) is owned by Manage →
+    // Settings and the dashboard must never write it — the same rule the other two overrides follow.
+    //
+    // ── 🔴 NULL IS A REAL VALUE HERE: IT MEANS "CLEAR THE OVERRIDE, GO BACK TO MY USUAL SETTING" ─────
+    // The other two overrides coerce with `!!value`, so they can only ever write a CONCRETE true/false —
+    // which means once an operator touches one for an event, that event is pinned to a literal value
+    // forever and changing the truck default no longer reaches it. There is no route back to inherit.
+    // That is a real gap in those two (named in docs/payments-report.md), and it is not repeated here:
+    // `value === null` writes NULL, which is exactly the "inherit" the schema already defines.
+    // ⚠️ VALIDATED, NOT COERCED. An unrecognised value is a 400 rather than a silent write of something
+    // the CHECK would reject with a 23514 — the same discipline mark_paid uses for `method`.
+    if (action === 'set_completion_presses_override') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (value !== null && value !== 'one' && value !== 'two') {
+        return NextResponse.json({ error: "value must be 'one', 'two', or null to clear" }, { status: 400 })
+      }
+      // Server-confirmed update — same contract as set_show_paid_step_override above: select('*') and
+      // NOT a named list (a named select naming a column that does not exist fails the WHOLE statement
+      // with 42703), no .single() (PGRST116 on zero rows would turn a no-op into a 500), and a missing
+      // row is still success because the UPDATE and its representation are ONE statement.
+      const { data: rows, error } = await supabase.from('truck_events')
+        .update({ completion_presses_override: value }).eq('id', eventId).eq('truck_id', truck.id)
+        .select('*')
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true, event: rows?.[0] ?? null })
     }
 
@@ -1651,13 +1734,19 @@ export async function POST(req: NextRequest) {
     // 🔴 Writes truck_events ONLY. The truck DEFAULT (trucks.takes_cash) is owned by Manage → Settings.
     // The intended use is a card terminal failing mid-service: cash on for TONIGHT, from the dashboard.
     // Nothing is seeded onto future events, so the override expires by itself.
+    // 🔴 NULL CLEARS THE OVERRIDE, exactly as on set_show_paid_step_override above — read the full
+    // reasoning there. In short: `!!value` made this a one-way door, and coinciding with the truck
+    // default is not the same state as inheriting it. Resolution order is untouched.
     if (action === 'set_takes_cash_override') {
       const { value, eventId } = body
       if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (value !== null && typeof value !== 'boolean') {
+        return NextResponse.json({ error: 'value must be true, false, or null to clear' }, { status: 400 })
+      }
       // Server-confirmed update — same contract as set_show_paid_step_override above; the reasoning for
       // select('*'), the absent .single() and the row-absent-is-still-success rule is recorded there.
       const { data: rows, error } = await supabase.from('truck_events')
-        .update({ takes_cash_override: !!value }).eq('id', eventId).eq('truck_id', truck.id)
+        .update({ takes_cash_override: value }).eq('id', eventId).eq('truck_id', truck.id)
         .select('*')
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true, event: rows?.[0] ?? null })

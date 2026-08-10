@@ -72,7 +72,7 @@ import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { useOfflinePaymentOverlay } from '@/lib/native/useOfflinePaymentOverlay'
 import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
-import { getOrderBalance } from '@/lib/payments/ledger'
+import { getOrderBalance, hasUnrecordedPayment } from '@/lib/payments/ledger'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
@@ -89,6 +89,30 @@ import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/li
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
 const TAB_VALUES = ['orders','add','stock','settings'] as const
+
+// ── THE PER-EVENT OVERRIDE INDICATOR — REMOVED 10 AUGUST 2026. READ BEFORE REBUILDING IT. ──────────
+// A "Changed for this event" pill briefly rendered on each of the three payment rows. It is gone, and
+// the reason is the ruling already recorded at the payment card: DASHBOARD → SETTINGS IS ENTIRELY
+// EVENT-SCOPED. Every control on that tab applies to the current event only, so a per-row badge saying
+// "changed for this event" states on every row what the screen already says once — the exact
+// repeat-a-screen-level-fact-per-row failure that made the card read as a box of unrelated exceptions
+// when scope wording was removed on 30 July. Do not reinstate it.
+//
+// 🔴 THE RESET AFFORDANCE WENT WITH IT, ON EXPLICIT INSTRUCTION, AND THAT HAS A COST — SEE BELOW.
+// "Use my usual setting" was the only route from an overridden event back to inheriting the truck
+// default. With it gone, the three set_*_override handlers still ACCEPT null (that capability is intact
+// and tested), but nothing in the product sends it. So an operator who changes a payment setting for
+// one event can no longer return that event to following the truck default: they can only match the
+// default by hand, and a hand-matched event SILENTLY STOPS TRACKING the default when it later changes —
+// coinciding and inheriting are different states. That is the one-way door the 10 August work removed,
+// re-opened deliberately at the operator's request and recorded here so it is not rediscovered as a bug.
+// 🔴 TO RESTORE IT: render a single "Use my usual setting" control per row calling the row's existing
+// save function with `null`. No migration, no new action, no outbox op — the server side is unchanged.
+// docs/payments-report.md carries the full reasoning and the recommendation.
+//
+// USUAL_SETTING_TOAST is KEPT because the save functions still handle `null` and still toast for it;
+// it is the string that fires if a clear is ever dispatched again.
+const USUAL_SETTING_TOAST = 'Back to your usual setting for this event'
 
 // A cheap fingerprint of the edit basket, used ONLY to invalidate a stale unpriceable-line banner:
 // the server's verdict was computed for one particular basket, and must not stay on screen naming a
@@ -271,7 +295,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the per-EVENT override, written to truck_events.show_paid_step_override for the current event only.
   const[savingPaidStepOverride,setSavingPaidStepOverride]=useState(false)
   const[savingTakesCashOverride,setSavingTakesCashOverride]=useState(false)
+  const[savingCompletionOverride,setSavingCompletionOverride]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
+  // Order keys whose ledger write is on record as having FAILED (audit after_state.ledger_failed).
+  // Server-derived, so it survives a poll, a reload, a different device and an offline replay whose
+  // response nobody read. Paired with the live balance by hasUnrecordedPayment — never used alone.
+  const[paymentFailures,setPaymentFailures]=useState<Set<string>>(new Set())
   // ── OFFLINE PAYMENT OVERLAY ──────────────────────────────────────────────────────────────────────
   // 🔴 `confirmedPaid` is computed HERE from getOrderBalance — the same resolver the card uses — so the
   // overlay knows when the server has caught up WITHOUT re-deriving a balance anywhere. It is the ledger,
@@ -293,6 +322,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const o=orders.find(x=>x.order_key===c.order_key)
     return o?`#${o.id}`:(c.provisional_id?`#${c.provisional_id}`:null)
   },[orders])
+  // ── THE SERVER-SIDE MONEY FAILURE, FOLDED INTO THE SAME MARKER ───────────────────────────────────
+  // 🔴 TWO SOURCES, ONE VOCABULARY. A failed offline replay (outbox conflict) and a failed server-side
+  // ledger write are the same fact to an operator — "money went wrong on this order" — so they must not
+  // produce two different red bars. They meet HERE, and everything downstream sees one `conflict` prop
+  // and the one marker OrderCard already renders. Inventing a second alerting mechanism is the failure
+  // this fold exists to prevent.
+  // ⚠️ PAYMENT WINS, matching useOutboxConflicts' own rule: an order with a failed status op AND missing
+  // money is a money problem first.
+  // ⚠️ The server signal is NOT acknowledgeable and must not become so. An outbox conflict is hidden by
+  // the operator because the op is dead and only they can judge it; this one clears by ITSELF the moment
+  // the payment is recorded, because hasUnrecordedPayment re-reads the live balance every render. A
+  // dismiss button here would let an operator hide missing money.
+  const cardConflict=useCallback((o:Order):'payment'|'status'|undefined=>{
+    if(hasUnrecordedPayment(o as never,payments[o.order_key]??[],paymentFailures.has(o.order_key)))return 'payment'
+    return conflictByOrder.get(o.order_key)
+  },[payments,paymentFailures,conflictByOrder])
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
@@ -708,6 +753,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.buzzerLosses !== undefined) setBuzzerLosses(data.buzzerLosses || [])                        // phase 2 — orders that lost a buzzer to conflict resolution
       if(data.payments !== undefined) setPayments(data.payments || {})
+      if(data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures||[]))
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
@@ -1262,7 +1308,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // other subscription would be silently dead on arrival (a truck_vans one was, for months — see the
   // note in the subscription effect). That is not an oversight: it is option C, declined.
   // **Cross-device settings propagation at 60s is ACCEPTED.**
-  const savePaidStepOverride=async(val:boolean)=>{
+  // `val === null` CLEARS the override — this event goes back to following the truck default. Same
+  // mechanism, wording and behaviour as the other two; see the handler for why NULL is a value here.
+  const savePaidStepOverride=async(val:boolean|null)=>{
     if(!activeEvent)return
     setSavingPaidStepOverride(true)
     try{
@@ -1271,16 +1319,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_show_paid_step_override',value:val,eventId:activeEvent.id})
       })
       await applyEventPatch(res)
-      showToast(val?'Paid step on for this event':'Paid step off for this event')
+      showToast(val===null?USUAL_SETTING_TOAST:val?'Unpaid orders on for this event':'Unpaid orders off for this event')
     }catch{showToast('Failed to save','error')}
     finally{setSavingPaidStepOverride(false)}
+  }
+
+  // PER-EVENT ONLY, same rule as the paid step: writes truck_events.completion_presses_override for the
+  // CURRENT event and NEVER trucks.completion_presses — that default belongs to Manage → Settings.
+  // `val === null` CLEARS the override (back to the truck default); 'one'/'two' pin this event.
+  // Same server-confirmed shape as savePaidStepOverride above (applyEventPatch, refetch as the no-row
+  // fallback), and the propagation ruling recorded there applies here unchanged.
+  const saveCompletionPressesOverride=async(val:'one'|'two'|null)=>{
+    if(!activeEvent)return
+    setSavingCompletionOverride(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_completion_presses_override',value:val,eventId:activeEvent.id})
+      })
+      await applyEventPatch(res)
+      showToast(val===null?USUAL_SETTING_TOAST:val==='one'?'One press for this event':'Two presses for this event')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingCompletionOverride(false)}
   }
 
   // PER-EVENT ONLY, same rule as the paid step: writes truck_events.takes_cash_override for the CURRENT
   // event and NEVER trucks.takes_cash. The case this exists for is a card terminal failing mid-service.
   // ⚠️ The `await fetchAll()` here is the SAME ruled decision recorded above savePaidStepOverride —
   // option B, refetch. Do not convert it to an optimistic update or a truck_events subscription.
-  const saveTakesCashOverride=async(val:boolean)=>{
+  // `val === null` CLEARS the override, same as the two above.
+  const saveTakesCashOverride=async(val:boolean|null)=>{
     if(!activeEvent)return
     setSavingTakesCashOverride(true)
     try{
@@ -1289,7 +1357,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         body:JSON.stringify({token,pin,action:'set_takes_cash_override',value:val,eventId:activeEvent.id})
       })
       await applyEventPatch(res)
-      showToast(val?'Cash and card on for this event':'Cash and card off for this event')
+      showToast(val===null?USUAL_SETTING_TOAST:val?'Cash and card on for this event':'Cash and card off for this event')
     }catch{showToast('Failed to save','error')}
     finally{setSavingTakesCashOverride(false)}
   }
@@ -1638,6 +1706,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
       const num=done?.id??''
+      // ── THE MONEY HALF FAILED, ON A 200 ──────────────────────────────────────────────────────────
+      // 🔴 `result.ok` IS TRUE HERE AND THE ACTION DID PARTLY SUCCEED. 'collected' books the ledger row,
+      // then logs, then writes the status; the ledger write FAILS OPEN (caught, execution continues) so
+      // the operator is never stranded at the hatch. The response carries `paymentWarning` and until now
+      // nothing read it — an order completed with no payment recorded looked EXACTLY like a successful
+      // one: green toast, card cleared, done.
+      // 🔴 IT REPLACES THE SUCCESS TOAST, never sits beside it. Two toasts for one tap — one green, one
+      // red — is the operator reading whichever their eye lands on, and the green one is the lie. So this
+      // is the FIRST branch of the toast chain below and the others are `else if`; everything AFTER the
+      // chain (the prep-pill auto-clear, the refetch) still runs, because the order really did advance.
+      // The 20s duration is a deliberate outlier against the 3.5s default: this is the only toast that
+      // reports missing money, and it must survive a glance away at a hatch. It is NOT the durable
+      // record — the card marker is (see cardConflict) — it is the thing that catches them in the act.
+      // ⚠️ The repair is the SAME 'mark_paid' the card offers, charging the outstanding balance under the
+      // same idempotency key: safe to re-fire, and a no-op if the money did land after all.
+      const moneyFailed=!!data.paymentWarning
       // "Paid & collected" → a 7s Undo toast (undo_collected reverts ONE stage to the order's actual
       // previous status — ready if it was ready, else confirmed — AND rebuilds capacity to match).
       // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
@@ -1648,7 +1732,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // stage it reverses. Undo is never ambiguous after a fast double tap: whichever toast is on screen
       // is the one for the tap you just made, and it reverses exactly that stage. Undoing "Done" leaves
       // the payment standing (the server does the same — see undo_collected's splitPaidStep branch).
-      if(action==='mark_paid'){
+      if(moneyFailed){
+        showToast(
+          `⚠ Order #${num} — PAYMENT NOT RECORDED. ${action==='collected'?'The order completed':'The order was saved'}; the money did not.`,
+          'error',
+          {duration:20000,action:{label:'Record payment',run:()=>doAction('mark_paid',orderKey)}},
+        )
+      }else if(action==='mark_paid'){
         showToast(`Order #${num} marked paid`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_mark_paid',orderKey)}})
       }else if(action==='undo_mark_paid'){
         showToast('Undone — payment removed')
@@ -2017,7 +2107,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const activeEvent:TruckEvent|null=resolvedEvent
   // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
   // the collected/undo toast wording) must agree with the card and the server.
-  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash}=resolvePaidStep(truck,activeEvent)
+  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -2927,13 +3017,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={conflictByOrder.get(o.order_key)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={conflictByOrder.get(o.order_key)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2949,9 +3039,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </button>
                 {showCompleted&&(
                 <div className="space-y-2 mt-1">
-                  {otherOrders.map(o=>(
-                    <div key={o.order_key} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between">
+                  {otherOrders.map(o=>{
+                  // ── THE COLLECTED ORDER'S MONEY MARKER ────────────────────────────────────────────
+                  // 🔴 THIS IS THE SURFACE THAT MATTERS FOR 'collected'. A completed order LEAVES the
+                  // board, so the card marker can never be seen for the one failure that hides itself
+                  // best: the operator taps once, the order clears, and nothing anywhere says the money
+                  // is missing. This row is where that order now lives, and the ↩ Undo already sitting
+                  // beside it is why: this is the surface an operator already comes to when a completed
+                  // order needs correcting.
+                  // Same predicate, same words and same red as the card marker — one vocabulary for
+                  // "money went wrong on this order", never a second alerting mechanism.
+                  const unrecorded=hasUnrecordedPayment(o as never,payments[o.order_key]??[],paymentFailures.has(o.order_key))
+                  return (
+                    <div key={o.order_key} className={`bg-white rounded-xl px-4 py-3 flex items-center justify-between ${unrecorded?'border-2 border-red-600':'border border-slate-200'}`}>
                       <div className="min-w-0 flex-1">
+                        {unrecorded&&(
+                          <p className="text-[11px] font-black text-red-700 mb-1 tracking-wide">⚠ PAYMENT NOT RECORDED</p>
+                        )}
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
                           <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?.label||o.status}</span>
@@ -2961,6 +3065,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         {o.notes&&<p className="text-orange-500 text-xs truncate">📝 {o.notes}</p>}
                       </div>
                       <div className="shrink-0 ml-3 flex items-center gap-2">
+                        {/* 🔴 THE REPAIR, NOT JUST THE ALERT. An operator told money is missing and given
+                            nothing to do about it will learn to ignore the marker. This fires the SAME
+                            'mark_paid' the card offers — one existing action, charging the outstanding
+                            balance under the same idempotency key, so re-firing is safe and a no-op if
+                            the money did land after all. The marker clears by itself on the next poll
+                            because hasUnrecordedPayment re-reads the live balance; nothing is dismissed.
+                            Shown ONLY when unrecorded, so a normal completed row is unchanged. */}
+                        {unrecorded&&(
+                          <button onClick={()=>doAction('mark_paid',o.order_key)} disabled={actionLoading===`mark_paid-${o.order_key}`}
+                            className="text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg px-3 py-2 transition-colors active:scale-95 disabled:opacity-50">
+                            {actionLoading===`mark_paid-${o.order_key}`?'…':'Record payment'}
+                          </button>
+                        )}
                         {/* Later-recovery Undo — collected orders only (not cancelled/rejected). Reuses
                             the same undo_collected action as the toast: reverts ONE stage to the actual
                             previous status (ready/confirmed) + rebuilds capacity. */}
@@ -2973,7 +3090,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
                 )}
               </div>
@@ -3141,12 +3258,49 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   lib/payments/paid-step.ts). The toasts still name the event after a tap. */}
               <div className="flex items-center justify-between gap-3 pb-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Splits "Paid &amp; collected" into "Mark paid" then "Collected", so you can take money before the food is handed over.</p>
+                  <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingPaidStepOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                   <Toggle on={effectivePaidStep} onToggle={()=>savePaidStepOverride(!effectivePaidStep)} disabled={isOffline||!activeEvent}/>
+                </div>
+              </div>
+              {/* ── COMPLETING AN UNPAID ORDER — PER-EVENT OVERRIDE (10 August 2026) ─────────────────
+                  A SIBLING of the row above, NOT a child. "Take orders without payment" decides whether
+                  the Add Order panel can place an order unpaid; this decides how an unpaid order is
+                  COMPLETED. Unpaid orders arrive from the CUSTOMER PATH on every truck, so this must
+                  stay live whatever the row above says — it is never disabled by it.
+                  ⚠️ NO PER-ROW SCOPE WORDING, per the ruling at the top of this card: scope is a
+                  property of THIS SCREEN, not of each setting. The toast names the event after a tap.
+                  RADIO SHAPE COPIED FROM MANAGE's "Past the deadline" control — the codebase's existing
+                  two-option-with-descriptions pattern. Not a new control style. */}
+              <div className="py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
+                    <p className="text-slate-500 text-xs mt-0.5">What happens when an unpaid order is ready to hand over.</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 ml-3">
+                    {savingCompletionOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  </div>
+                </div>
+                <div className="space-y-1.5 mt-1.5">
+                  {/* 🔴 SAME WORDING AS MANAGE, DELIBERATELY — the two surfaces set the same setting at
+                      different scopes, so an operator must meet the same sentence in both. If you edit
+                      one, edit the other; app/manage/[token]/page.tsx carries the full note.
+                      🔴 The button names are QUOTED FROM THE CODE — “Mark paid & collected”, “Mark paid”
+                      and “Collected” are the exact `label` strings OrderCard renders. Verify against the
+                      code before editing, and change the copy to match the button, never the reverse. */}
+                  {([['one','One press','Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
+                     ['two','Two presses','Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.']] as const).map(([v,lbl,help])=>(
+                    <button type="button" key={v} onClick={()=>saveCompletionPressesOverride(v)}
+                      disabled={isOffline||!activeEvent||savingCompletionOverride}
+                      className="w-full text-left flex items-start gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${effectiveCompletionPresses===v?'border-orange-500':'border-slate-300'}`}>{effectiveCompletionPresses===v&&<span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+                      <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
+                    </button>
+                  ))}
                 </div>
               </div>
               {/* ── 🔴 NESTED AS A CHILD OF THE PAID STEP (V9.6). READ BEFORE RE-FLATTENING. ──────────
@@ -3169,15 +3323,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   while Manage shows the paid step off.
                   ⚠️ Does NOT auto-enable the paid step; does NOT write takes_cash_override=false when
                   the paid step goes off — the stored override is left exactly as the operator set it. */}
-              <div className="pt-3 pl-4 flex items-center justify-between gap-3">
+              {/* ── 🔴 DE-NESTED AND RE-GATED TO MATCH MANAGE (10 August 2026) ──────────────────────
+                  Two corrections to my own earlier change, which fixed the Manage copy of this row and
+                  left this one behind — so the two surfaces disagreed about when cash is available.
+                  1. THE GATE HAS TWO PARENTS NOW. The cash split renders in two places and they answer
+                     to different settings: the Add Order panel's "Take payment" button splits on the
+                     paid step, and the ORDER CARD's "Mark paid" button splits on two-press completion.
+                     Gating on the paid step alone left a truck with a live "Mark paid" button unable to
+                     split it. The condition is the OR of the two, and the note names both.
+                  2. THE `pl-4` IS GONE, and NOT by reversing the V9.6 rule. That rule — "structure
+                     should show the DEPENDENCY" — is what removes it: indentation is a SINGLE-PARENT
+                     notation, it can only point at the row directly above, and that row is now only one
+                     of the two ways to unlock this. The indent had stopped showing the dependency and
+                     started asserting a wrong one. The disabled state plus the note carry it instead.
+                  Both changes match app/manage/[token]/page.tsx exactly; full reasoning is recorded
+                  there. Resolution is untouched — effectiveTakesCash still comes from the one resolver. */}
+              <div className="pt-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
                   <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into "Cash" and "Card".</p>
-                  {!effectivePaidStep&&<p className="text-xs text-amber-600 mt-1">Needs the separate paid step turned on.</p>}
+                  {/* 🔴 THE GATE IS GONE — 10 August 2026, matching Manage. The Add Order confirm bar now
+                      ALWAYS offers a payment button (the single one when "Take orders without payment" is
+                      off, the primary one when it is on), so the cash split has a live parent in every
+                      configuration and a disabled toggle here would contradict a button already on
+                      screen. Full reasoning at the Manage copy of this row. */}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent||!effectivePaidStep}/>
+                  <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
             </div>

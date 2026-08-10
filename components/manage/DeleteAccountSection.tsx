@@ -22,10 +22,26 @@
 //   • The destructive button NAMES the action ("Delete my account"), never "Confirm" or "Yes".
 //
 // ⚠️ NO `frontend-design` SKILL EXISTS in this environment (checked: no .claude/skills, no ~/.claude/skills),
-// so styling follows the codebase's own established vocabulary instead — `border-2 border-red-300
-// bg-red-50` for destructive panels and `text-red-600 border-red-200 hover:bg-red-50` for destructive
-// buttons, both already used throughout the Manage page. A "Danger Zone" heading and a focus-trapping
-// dialog are NEW here; nothing equivalent existed to copy.
+// so styling follows the codebase's own established vocabulary instead — `text-red-600 border-red-200
+// hover:bg-red-50` for destructive buttons, already used throughout the Manage page. A "Danger Zone"
+// heading and a focus-trapping dialog are NEW here; nothing equivalent existed to copy.
+//
+// ── 🔴 THE CONTAINER WAS TONED DOWN, 10 August 2026 (operator review). QUIETER, NOT NEUTRAL. ────────
+// It was `border-2 border-red-300 bg-red-50` — a fully red-filled, heavy-bordered box, which on a long
+// settings page reads as an alarm rather than as a section an operator will visit once. It is now the
+// page's ORDINARY card treatment (`border border-slate-200 bg-white`) carrying THREE deliberate
+// destructive signals instead of one loud one:
+//   1. the heading text stays RED and uppercase — `text-red-800`, unchanged;
+//   2. a warning icon beside it, which is what replaced the colour of the whole container;
+//   3. every control inside is unchanged — the red-outlined buttons, the typed-name gate, the red
+//      confirmation panels in the dialog.
+// ⚠️ THE ICON IS AN INLINE OUTLINE `<svg>`, matching this codebase's icon vocabulary exactly. THERE IS
+// NO ICON LIBRARY HERE — no Tabler, no Heroicons package, nothing in package.json — the Manage page
+// draws its icons as inline `fill="none" viewBox="0 0 24 24" stroke="currentColor"` paths (the trash,
+// the chevron, the tick). **No emoji**: this settings chrome uses none, and introducing one for this
+// would be a new vocabulary on the most serious control in the product.
+// 🔴 NOTHING ABOUT THE FLOW CHANGED — not the confirmation dialog, not the typed-name requirement, not
+// a button label, not a gate. This is the container's paint and one icon.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { PRIVACY_PATH } from '@/lib/legal'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
@@ -46,6 +62,22 @@ const SUPPORT_EMAIL = HATCHGRAB_SENDER.replyTo
 
 const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'
+
+/** The warning triangle beside "Danger zone" — it carries the destructive signal that the red container
+ *  fill used to carry, at a fraction of the volume.
+ *  ⚠️ INLINE OUTLINE `<svg>`, WHICH IS THIS CODEBASE'S ICON VOCABULARY. There is no icon library in
+ *  package.json — no Tabler, no Heroicons — and the Manage page draws its trash, chevron and tick the
+ *  same way: `fill="none" viewBox="0 0 24 24" stroke="currentColor"` with round caps and joins. Copied
+ *  from that shape, not invented, and deliberately NOT an emoji: this settings chrome uses none.
+ *  `aria-hidden` because the heading beside it already says "Danger zone" — the icon is emphasis, not
+ *  information, and announcing it twice would be noise for a screen reader. */
+const DangerIcon = () => (
+  <svg className="w-4 h-4 shrink-0 text-red-600" aria-hidden="true" fill="none" viewBox="0 0 24 24"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+    <path d="M12 9v4M12 17h.01" />
+  </svg>
+)
 
 export function DeleteAccountSection({ truckName, showToast }: {
   truckName: string
@@ -119,9 +151,11 @@ export function DeleteAccountSection({ truckName, showToast }: {
   // ── PENDING — the control is REPLACED, so it cannot be requested twice ─────────────────────────────
   if (summary.pending) {
     return (
-      <section className="mt-10 rounded-2xl border-2 border-red-300 bg-red-50 p-5" aria-labelledby="danger-zone-heading">
-        <h3 id="danger-zone-heading" className="text-sm font-black uppercase tracking-wide text-red-800">Danger zone</h3>
-        <div className="mt-3 rounded-xl border border-red-200 bg-white p-4">
+      <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="danger-zone-heading">
+        <h3 id="danger-zone-heading" className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-red-800">
+          <DangerIcon />Danger zone
+        </h3>
+        <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-4">
           <p className="text-sm font-bold text-red-800">This account is scheduled for deletion</p>
           <p className="mt-1 text-sm text-slate-700">
             Requested on <strong>{fmtDate(summary.requestedAt)}</strong>. It is due to be deleted on{' '}
@@ -145,8 +179,10 @@ export function DeleteAccountSection({ truckName, showToast }: {
   const canConfirm = typed.trim() === confirmTarget.trim() && !submitting
 
   return (
-    <section className="mt-10 rounded-2xl border-2 border-red-300 bg-red-50 p-5" aria-labelledby="danger-zone-heading">
-      <h3 id="danger-zone-heading" className="text-sm font-black uppercase tracking-wide text-red-800">Danger zone</h3>
+    <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="danger-zone-heading">
+      <h3 id="danger-zone-heading" className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-red-800">
+        <DangerIcon />Danger zone
+      </h3>
       <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm font-bold text-slate-800">Delete your account</p>
