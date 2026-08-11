@@ -3426,7 +3426,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 reachable during an incident whether or not an event is selected.
                 ⚠️ THE DATE IS RENDERED FROM THE ISO STRING BY SLICE, not toLocaleString: this is a
                 client component that also renders on the server, and a locale-formatted date is a
-                hydration mismatch. The switch stores WHEN so this line can exist at all. */}
+                hydration mismatch. The switch stores WHEN so this line can exist at all.
+
+                ── 🔴 THE GATE HAS TWO ARMS AND BOTH ARE LOAD-BEARING ─────────────────────────────
+                (a) truck.stripe_charges_enabled — the truck can actually take cards. Without this arm
+                    the control renders for every truck, including Pizzeria Gusto, which has no Stripe
+                    account at all and was being offered a switch for a capability it does not have.
+                🔴 (b) truck.online_payments_paused_at — the truck is CURRENTLY PAUSED.
+                    THIS ARM IS NOT REDUNDANT AND MUST NOT BE DROPPED. Readiness can be withdrawn at
+                    any time: Stripe revokes charges_enabled the moment a requirement falls due, and
+                    the account.updated webhook writes that straight to operators. A truck that paused
+                    during an incident and then lost readiness would, under (a) alone, have the ONLY
+                    control that can clear the pause disappear from the screen — leaving it paused with
+                    no way out, and the banner above still telling it to "turn it back on" with nothing
+                    to turn. THE WAY OUT MUST NEVER BE HIDDEN. Arm (b) is what guarantees that: a
+                    non-null paused_at is exactly the state in which the control is indispensable.
+                ⚠️ OR, never AND. (a) alone is a truck that can take cards and is not paused — show it.
+                (b) alone is a truck that is paused and cannot take cards — show it, because it needs
+                the way out. Both is the ordinary paused-but-ready case. Neither is Gusto.
+                ⚠️ The BANNER above is deliberately gated on (b) ONLY and is not touched by this: a
+                paused truck must keep seeing why cards are off wherever it is in the app. */}
+            {(truck?.stripe_charges_enabled === true || truck?.online_payments_paused_at != null) && (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -3451,6 +3471,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             </div>
+            )}
 
             {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
                 Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
@@ -3466,8 +3487,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&vanBuzzerCount!=null&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Ask for a buzzer number after each new order?</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. You can always add one later by tapping the order.</p>
+                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don’t.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}

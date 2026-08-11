@@ -608,6 +608,35 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── ⚠️ TEMPORARY — CARD-PAYMENT READINESS FOR THE ONLINE-PAYMENTS SWITCH ────────────────────────
+  // Delete this block with the switch (supabase/migrations/20260811_trucks_online_payments_paused_at.sql
+  // carries the removal list). It exists so Settings can HIDE a control for a capability the truck does
+  // not have — Pizzeria Gusto has no Stripe account and was being shown the switch anyway.
+  //
+  // 🔴 THE SAME SHAPE AS app/api/menu/[truckId]/route.ts:663-674, AND FOR THE SAME REASON: a SEPARATE
+  // query, never an `operators(...)` embed on the truck read above. A named select that cannot resolve
+  // fails the WHOLE statement with 42703 — and the truck read is the one this route's silent-empty-board
+  // incident came from. Isolated, the worst case is `false`, which hides a control. That is the safe
+  // direction: it can never hide the way OUT of a pause, because the client's gate has a second arm on
+  // `online_payments_paused_at` for exactly that case.
+  //
+  // ⚠️ `trucks.operator_id` IS NULLABLE — a demo or token-only truck has none. That is a CHECKED
+  // PRECONDITION, not a null-deref: no operator ⇒ not ready ⇒ the control is hidden, which is correct.
+  // ⚠️ THIS IS A RENDERING INPUT, NEVER A GATE. Both money gates re-read readiness server-side
+  // (/api/menu and /api/stripe/checkout). A stale `true` here can only show a switch, never take a payment.
+  let stripeChargesEnabled = false
+  if (truck.operator_id) {
+    const { data: op, error: opErr } = await supabase
+      .from('operators')
+      .select('stripe_charges_enabled')
+      .eq('id', truck.operator_id)
+      .maybeSingle()
+    if (opErr) {
+      console.error('[dashboard] readiness lookup failed — the card-payments control stays hidden:', opErr.message)
+    }
+    stripeChargesEnabled = op?.stripe_charges_enabled === true
+  }
+
   return NextResponse.json({
     currentUserName,
     userRole,
@@ -644,6 +673,10 @@ export async function GET(req: NextRequest) {
       slug:                 truck.slug ?? null,
       sound_config:         truck.sound_config ?? null,
       show_paid_step:       truck.show_paid_step ?? false,        // V9.4 — the third member of the class
+      // ⚠️ TEMPORARY — NOT a trucks column. Resolved above from operators.stripe_charges_enabled, and
+      // placed here (in the truck object, after the spread) because that is where the customer menu API
+      // puts its equivalent `card_payments_ready`. Delete with the switch.
+      stripe_charges_enabled: stripeChargesEnabled,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

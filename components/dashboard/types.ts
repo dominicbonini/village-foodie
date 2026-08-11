@@ -143,6 +143,12 @@ export interface TruckData {
    *  /api/dashboard's spread-and-redact truck projection. Read the RULE only through
    *  lib/payments/online-payments-switch.ts; this field is for the dashboard's own control and banner. */
   online_payments_paused_at?: string | null
+  /** 🔴 TEMPORARY — delete with the online-payments switch. NOT a trucks column: /api/dashboard resolves
+   *  it from operators.stripe_charges_enabled for this truck's operator and places it here, the same way
+   *  the customer menu API ships `card_payments_ready`. FALSE when the truck has no operator, which is a
+   *  checked precondition rather than a missing value. Renders the switch; NEVER authorises a payment —
+   *  both money gates re-read readiness server-side. */
+  stripe_charges_enabled?: boolean
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'
