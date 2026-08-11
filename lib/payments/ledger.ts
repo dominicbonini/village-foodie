@@ -80,6 +80,16 @@ export interface LedgerRow {
    *  one. If you are adding a reader and your rows come back without this field, the fix is to select
    *  it — not to relax the check. */
   livemode?: boolean
+  /** ── DOES THE TRUCK'S CONNECTED STRIPE ACCOUNT ITSELF RUN IN TEST MODE? ─────────────────────────
+   *  NOT a column on order_payments. It is stamped onto the row by whichever reader fetched it, from
+   *  `operators.stripe_account_livemode === false` for the truck that owns the row. Only two readers
+   *  set it — readLedger and /api/dashboard — and both resolve it from the database.
+   *  🔴 ABSENT MEANS "NO", exactly like `livemode`. A caller that hand-builds a row, or a reader that
+   *  does not resolve the account, gets today's behaviour unchanged. See isLiveRow. */
+  account_is_test?: boolean
+  /** The owning truck, selected so a reader can resolve `account_is_test` without a second query per
+   *  row. Present on every row read from the database; absent on hand-built fixtures. */
+  truck_id?: string
 }
 
 /** The column list EVERY reader of `order_payments` selects. Exported and shared so the select list
@@ -90,7 +100,9 @@ export interface LedgerRow {
 // every returned row's order_key against the one it asked for; without the column selected, that field
 // is `undefined` on every row and the assertion is INERT. Removing it from this string silently disarms
 // the only guard that can see the 7 August defect. If you shorten this list, do not shorten it here.
-export const LEDGER_ROW_COLUMNS = 'order_key, kind, channel, amount_minor, state, external_ref, livemode'
+// ⚠️ `truck_id` was added on 11 August 2026 so a reader can resolve the owning operator's account mode
+// without a per-row lookup. It is SELECTED but never summed, exactly like `external_ref`.
+export const LEDGER_ROW_COLUMNS = 'order_key, truck_id, kind, channel, amount_minor, state, external_ref, livemode'
 
 /**
  * 🔴 THE SINGLE TEST FOR "THIS ROW IS REAL MONEY", AND THE DEFAULT IS EXCLUDE.
@@ -105,9 +117,38 @@ export const LEDGER_ROW_COLUMNS = 'order_key, kind, channel, amount_minor, state
  *     exist, and nothing anywhere reports it. Not visible, and not recoverable.
  * Between "under-report" and "over-report" on a money column there is no symmetry, so the check is not
  * symmetric either. DO NOT relax this to `!== false` to make a fixture pass; give the fixture a livemode.
+ *
+ * ── 🔴 ARM (b), ADDED 11 AUGUST 2026 — AND IT IS STRICTLY ADDITIVE ──────────────────────────────────
+ * Stripe decides `livemode` from the API key that authenticated the request, so a TEST-mode card payment
+ * can ONLY ever be `livemode: false` — no Stripe feature changes that, and this build refuses live keys
+ * outright. Under arm (a) alone a card payment that genuinely succeeded is invisible everywhere, which
+ * is what §37's "store the livemode flag with the account id" exists to fix.
+ *
+ * A row also counts when ALL THREE hold:
+ *   1. `account_is_test === true`  — the truck's connected Stripe account is ITSELF a test account
+ *                                     (operators.stripe_account_livemode === false, resolved by the
+ *                                     reader; NULL — no connected account — never satisfies this)
+ *   2. `livemode === false`         — it is test money
+ *   3. `channel === 'online'`       — it came from Stripe
+ *
+ * 🔴 WHY THIS CANNOT REMOVE A ROW, WHICH IS THE ACCEPTANCE CRITERION AND NOT A PREFERENCE:
+ * arm (a) is tested FIRST, alone, and returns immediately. Nothing below it can be reached by a
+ * `livemode: true` row, so no row that counts today can stop counting — including every in-person
+ * collection, which `recordCollectionPayment` hardcodes to `livemode: true` because there is no test
+ * mode for cash. A truck with NO connected Stripe account has `account_is_test` unset on every row and
+ * is therefore byte-identical to before.
+ * ⚠️ THE TEMPTING WRONG SHAPE IS A COMPARISON: `row.livemode === accountIsLive`. It reads as symmetrical
+ * and it is a SUBTRACTION — a cash row (`livemode: true`) on a test-account truck would stop counting,
+ * and the truck's takings would vanish. If you find yourself writing that, you have inverted the rule.
+ * ⚠️ CHANNEL IS IN THE PREDICATE ON PURPOSE. It confines arm (b) to money Stripe reported. An in-person
+ * row can never be `livemode: false` today, but the guard means that if one ever were — a bad writer, a
+ * bad backfill — it would still be excluded rather than admitted by an account-level flag.
  */
-export function isLiveRow(row: { livemode?: boolean }): boolean {
-  return row.livemode === true
+export function isLiveRow(row: { livemode?: boolean; channel?: PaymentChannel; account_is_test?: boolean }): boolean {
+  // ── ARM (a) — UNCHANGED, AND FIRST. Every row that counted yesterday returns here. ────────────────
+  if (row.livemode === true) return true
+  // ── ARM (b) — test money, from Stripe, on an account that is itself test. Absent flags fail closed. ─
+  return row.account_is_test === true && row.livemode === false && row.channel === 'online'
 }
 
 /** The full stored shape of a collect row, as read immediately before deletion. Every column is
@@ -282,8 +323,18 @@ async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<L
     //   .eq('order_key', orderKey) → WHOSE money is this?   Scope. Without it the sum is everyone's.
     //   .eq('livemode', true)      → is this money REAL?    Mode.  Without it a test row counts as cash.
     // If you are adding a third, ADD it. Do not edit either of these two lines to make room.
+    //
+    // ── 🔴 11 AUGUST 2026 — THE MODE FILTER IS WIDENED, NOT REMOVED. READ THIS BEFORE EDITING IT. ──
+    // The `.or(...)` below replaces `.eq('livemode', true)` and is a STRICT SUPERSET of it: the first
+    // disjunct IS the old filter, character for character. Every row the old query returned, this query
+    // returns. The second disjunct additionally fetches TEST rows that came from Stripe — and fetching
+    // is not counting. Whether such a row counts is decided by isLiveRow, which additionally requires
+    // the truck's connected account to be a test account. This query cannot admit a row to a balance on
+    // its own, which is why widening it here is safe.
+    // ⚠️ THE SCOPE FILTER IS UNTOUCHED AND STILL SEPARATE. The 7 August incident was one filter eating
+    // another; that is exactly what must not happen again, so `.eq('order_key', orderKey)` keeps its line.
     .eq('order_key', orderKey)
-    .eq('livemode', true)
+    .or('livemode.eq.true,and(livemode.eq.false,channel.eq.online)')
   if (error) throw new Error(`[ledger] could not read order_payments for ${orderKey}: ${error.message}`)
 
   // ── 🔴 RUNTIME SCOPE ASSERTION — the guard for the class, not the instance ──────────────────────
@@ -310,7 +361,72 @@ async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<L
       `from this read would be the sum of other orders' money. Refusing to return it.`,
     )
   }
-  return rows as LedgerRow[]
+  return annotateTestAccountRows(supabase, rows as LedgerRow[])
+}
+
+/**
+ * Stamp `account_is_test` onto any TEST-ONLINE rows, so isLiveRow's arm (b) can decide.
+ *
+ * ── 🔴 IT IS LAZY, AND THAT IS THE POINT ────────────────────────────────────────────────────────────
+ * It returns IMMEDIATELY unless the set actually contains a `livemode: false` + `channel: 'online'` row.
+ * On every order in the database today except three, that is zero extra queries and zero extra latency —
+ * this function sits on `recalcOrderPayment`, which runs on the hatch, on every collect and every undo.
+ * The common path must not pay for a case it does not have.
+ *
+ * ── ⚠️ TWO READS, AND THERE IS NO WAY TO DO IT IN ONE ───────────────────────────────────────────────
+ * `readLedger` is given an order_key and nothing else. The mode lives on `operators`, which is two hops
+ * away: order_payments.truck_id -> trucks.operator_id -> operators.stripe_account_livemode. PostgREST
+ * can embed across a foreign key, but embedding it into the LEDGER SELECT would put a NAMED nested
+ * select on the money read — and a named select that cannot resolve is 42703, which fails the WHOLE
+ * statement and would take every balance in the product down with it. That is the exact failure class
+ * §35 records twice. So the hop is a SEPARATE query, deliberately, and its worst case is that the flag
+ * stays unset — which is today's behaviour, not a broken one. Stated rather than worked around.
+ *
+ * ── 🔴 NULL IS NOT "LIVE" AND IT IS NOT "TEST" ─────────────────────────────────────────────────────
+ * `stripe_account_livemode` is NULL when there is no connected account. The test below is `=== false`,
+ * never `!== true`: a NULL operator must contribute nothing to arm (b).
+ * ⚠️ A FAILED LOOKUP LEAVES THE ROWS UNANNOTATED, which means they do not count — the same direction
+ * every other failure on this path takes. Under-report, never over-report.
+ */
+async function annotateTestAccountRows(supabase: SupabaseClient, rows: LedgerRow[]): Promise<LedgerRow[]> {
+  const candidates = rows.filter(r => r.livemode === false && r.channel === 'online')
+  if (candidates.length === 0) return rows
+
+  const truckIds = [...new Set(candidates.map(r => r.truck_id).filter(Boolean))] as string[]
+  if (truckIds.length === 0) return rows
+
+  const { data: truckRows, error: truckErr } = await supabase
+    .from('trucks')
+    .select('id, operator_id')
+    .in('id', truckIds)
+  if (truckErr || !truckRows?.length) {
+    console.error('[ledger] could not resolve trucks for test-account annotation — test rows stay excluded:', truckErr?.message)
+    return rows
+  }
+
+  const operatorIds = [...new Set(truckRows.map(t => t.operator_id).filter(Boolean))] as string[]
+  if (operatorIds.length === 0) return rows
+
+  const { data: opRows, error: opErr } = await supabase
+    .from('operators')
+    .select('id, stripe_account_livemode')
+    .in('id', operatorIds)
+  if (opErr || !opRows?.length) {
+    console.error('[ledger] could not resolve operator account mode — test rows stay excluded:', opErr?.message)
+    return rows
+  }
+
+  // `=== false` — see the header. NULL (no connected account) is not a test account.
+  const testOperators = new Set(opRows.filter(o => o.stripe_account_livemode === false).map(o => o.id))
+  const testTrucks = new Set(truckRows.filter(t => t.operator_id && testOperators.has(t.operator_id)).map(t => t.id))
+  if (testTrucks.size === 0) return rows
+
+  // Returns NEW row objects for the annotated ones; the others are passed through untouched.
+  return rows.map(r =>
+    r.livemode === false && r.channel === 'online' && r.truck_id && testTrucks.has(r.truck_id)
+      ? { ...r, account_is_test: true }
+      : r,
+  )
 }
 
 async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder> {

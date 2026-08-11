@@ -208,6 +208,41 @@ export async function GET(req: NextRequest) {
   /** order_keys whose money write is on record as having FAILED. Paired client-side with the live
    *  balance by hasUnrecordedPayment() — see the query below for why both halves are required. */
   const paymentFailures = new Set<string>()
+
+  // ── 🔴 THE OPERATOR'S STRIPE FACTS — ONE READ, TWO CONSUMERS, HOISTED TO HERE ────────────────────
+  // Read BEFORE the orders block because the payments map below needs `stripe_account_livemode` to stamp
+  // `account_is_test` onto test-online rows, and the card-payments control further down needs
+  // `stripe_charges_enabled`. Both come off the same row, so this is ONE query, not two — it simply used
+  // to sit lower in the file, when only the second consumer existed.
+  //
+  // 🔴 A SEPARATE QUERY, NEVER AN `operators(...)` EMBED ON THE TRUCK READ ABOVE, and for the reason this
+  // route already learned the hard way: a named select that cannot resolve fails the WHOLE statement with
+  // 42703, and the truck read is the one whose silent-empty-board incident is documented below. Isolated,
+  // the worst case is that both values stay at their safe defaults.
+  //
+  // ⚠️ `trucks.operator_id` IS NULLABLE — a demo or token-only truck has none. A CHECKED PRECONDITION,
+  // not a null-deref: no operator ⇒ not ready and not a test account, which is correct for both consumers.
+  // ⚠️ 🔴 DEPLOY-COUPLED: this is a NAMED select and `stripe_account_livemode` must exist before this
+  // build ships — see supabase/migrations/20260811_operators_stripe_account_livemode.sql.
+  // ⚠️ `accountLivemode` stays `null` unless the column says otherwise. NULL means NO CONNECTED ACCOUNT
+  // and must never be read as either mode; the consumer tests `=== false`, never `!== true`.
+  const operatorStripe: { chargesEnabled: boolean; accountLivemode: boolean | null } =
+    { chargesEnabled: false, accountLivemode: null }
+  if (truck.operator_id) {
+    const { data: op, error: opErr } = await supabase
+      .from('operators')
+      .select('stripe_charges_enabled, stripe_account_livemode')
+      .eq('id', truck.operator_id)
+      .maybeSingle()
+    if (opErr) {
+      console.error('[dashboard] operator stripe lookup failed — card control hidden, test rows stay excluded:', opErr.message)
+    }
+    operatorStripe.chargesEnabled = op?.stripe_charges_enabled === true
+    operatorStripe.accountLivemode =
+      typeof op?.stripe_account_livemode === 'boolean' ? op.stripe_account_livemode : null
+  }
+  const stripeAccountLivemode = operatorStripe.accountLivemode
+
   if (selectedEventId) {
     let activeOrdersQuery = supabase
       .from('orders')
@@ -258,20 +293,37 @@ export async function GET(req: NextRequest) {
         // both ride in that list — do NOT re-add `order_key` here, it would be selected twice.
         .select(LEDGER_ROW_COLUMNS)
         .in('order_key', visibleKeys)
-        // 🔴 TEST ROWS DO NOT LEAVE THE DATABASE. This response is the ONLY route by which payment rows
-        // reach a browser — the operator's dashboard, the KDS, and through mapOrderToTicket the printed
-        // kitchen ticket. getOrderBalance would discard a test row anyway (isLiveRow), so this filter is
-        // not what makes the figures correct; it is what stops a test payment being visible on an
-        // operator's screen at all, and what keeps the payload honest for anything that might later read
-        // these rows for a purpose other than summing them.
-        .eq('livemode', true)
+        // 🔴 TEST ROWS DO NOT LEAVE THE DATABASE — EXCEPT THE ONES A TEST ACCOUNT PRODUCED. This response
+        // is the ONLY route by which payment rows reach a browser — the operator's dashboard, the KDS, and
+        // through mapOrderToTicket the printed kitchen ticket.
+        // ⚠️ 11 August 2026: this filter is WIDENED, not removed. The first disjunct IS the old filter,
+        // character for character, so every row that reached a browser yesterday still does. The second
+        // additionally admits Stripe test rows — and only for an operator whose connected account is
+        // ITSELF a test account, which is decided below, not here. Fetching is not counting: isLiveRow
+        // still makes the final call, so a widened fetch cannot on its own put money on a screen.
+        .or('livemode.eq.true,and(livemode.eq.false,channel.eq.online)')
       if (payErr) {
         // Non-blocking: the dashboard must render. An empty map makes every order read 'unpaid', which
         // is visibly wrong rather than silently wrong, and it self-heals on the next poll.
         console.error('[dashboard] order_payments fetch failed — cards will read unpaid this poll:', payErr.message)
       } else {
+        // ── 🔴 STAMP `account_is_test` SO isLiveRow'S ARM (b) CAN DECIDE, CLIENT-SIDE ────────────────
+        // The rows go straight to the browser and are fed to getOrderBalance there, so the account mode
+        // has to travel WITH them — the client cannot look it up. One boolean, resolved once for this
+        // truck's operator, applied to the rows it applies to.
+        // ⚠️ `=== false` AND NOT `!== true`. NULL means the operator has NO connected Stripe account, and
+        // must contribute nothing here — otherwise every truck that never connected Stripe would start
+        // admitting test rows on the strength of a column that was never set.
+        // ⚠️ `stripeAccountLivemode` is resolved further down this route, alongside stripe_charges_enabled,
+        // from the SAME operators read — no extra query.
+        const accountIsTest = stripeAccountLivemode === false
         for (const r of payRows ?? []) {
-          ;(payments[r.order_key] ||= []).push(r)
+          // Only a TEST-ONLINE row is ever annotated. A livemode:true row is pushed untouched, so its
+          // path through isLiveRow is byte-identical to before.
+          const row = (accountIsTest && r.livemode === false && r.channel === 'online')
+            ? { ...r, account_is_test: true }
+            : r
+          ;(payments[r.order_key] ||= []).push(row)
         }
       }
 
@@ -624,18 +676,10 @@ export async function GET(req: NextRequest) {
   // PRECONDITION, not a null-deref: no operator ⇒ not ready ⇒ the control is hidden, which is correct.
   // ⚠️ THIS IS A RENDERING INPUT, NEVER A GATE. Both money gates re-read readiness server-side
   // (/api/menu and /api/stripe/checkout). A stale `true` here can only show a switch, never take a payment.
-  let stripeChargesEnabled = false
-  if (truck.operator_id) {
-    const { data: op, error: opErr } = await supabase
-      .from('operators')
-      .select('stripe_charges_enabled')
-      .eq('id', truck.operator_id)
-      .maybeSingle()
-    if (opErr) {
-      console.error('[dashboard] readiness lookup failed — the card-payments control stays hidden:', opErr.message)
-    }
-    stripeChargesEnabled = op?.stripe_charges_enabled === true
-  }
+  // ⚠️ THE READ ITSELF WAS HOISTED ABOVE THE ORDERS BLOCK on 11 August 2026, because the payments map
+  // needs `stripe_account_livemode` from the SAME row and is built earlier in this route. It is still
+  // ONE query; only its position moved. This block now just consumes what that read produced.
+  const stripeChargesEnabled = operatorStripe.chargesEnabled
 
   return NextResponse.json({
     currentUserName,

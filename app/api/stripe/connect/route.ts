@@ -166,9 +166,37 @@ export async function POST(req: NextRequest) {
       // rows, so readiness would never update and the failure would look like nothing happening.
       // ⚠️ The posture verification below is deliberately AFTER this — it is a check, and a check must
       // never be the reason an account id is lost.
+      // ── 🔴 THE ACCOUNT'S MODE, READ OFF STRIPE'S OWN OBJECT — NOT INFERRED FROM OUR KEY ────────────
+      // The v2 Account object carries `livemode: boolean` as a NON-OPTIONAL field — "Has the value `true`
+      // if the object exists in live mode or the value `false` if the object exists in test mode". So the
+      // mode is READ BACK, exactly as the posture is read back below, rather than assumed from the key
+      // that made the call. A 200 on the create is not evidence about what landed.
+      //
+      // ⚠️ WHY DERIVING A MODE WOULD BE LEGITIMATE HERE, WHILE IT IS FORBIDDEN FOR A WEBHOOK EVENT.
+      // Not a double standard — two different kinds of fact:
+      //   AN ACCOUNT'S MODE IS A PROPERTY OF THE KEY THAT CREATED IT. A test key creates a test account
+      //   and can create nothing else, and the account cannot later change mode. The key would be a sound
+      //   source; the object agreeing with it is confirmation, not coincidence.
+      //   AN EVENT'S MODE IS A PROPERTY OF THE EVENT. A production Connect webhook URL receives BOTH live
+      //   and test events by design, so neither the endpoint nor the key says anything about a callback
+      //   that arrived unbidden — which is why order_payments.livemode and stripe_webhook_events.livemode
+      //   are copied verbatim from the event and may never be inferred.
+      // The object is authoritative and is used; the fallback below exists only so a shape change cannot
+      // silently write NULL, which the consumers read as "no connected account".
+      const accountLivemode =
+        typeof (account as { livemode?: unknown }).livemode === 'boolean'
+          ? (account as { livemode: boolean }).livemode
+          : !process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_')
       const { error } = await supabase
         .from('operators')
-        .update({ stripe_account_id: account.id, stripe_account_synced_at: new Date().toISOString() })
+        .update({
+          stripe_account_id: account.id,
+          // 🔴 WRITTEN IN THE SAME STATEMENT AS THE ID, DELIBERATELY. An account id without its mode is
+          // exactly the state this column exists to end: the id is recorded, the payments arrive, and
+          // nothing can classify them. One statement means the pair can never be half-written.
+          stripe_account_livemode: accountLivemode,
+          stripe_account_synced_at: new Date().toISOString(),
+        })
         .eq('id', ctx.operatorId)
       if (error) {
         // 🔴 THE ACCOUNT EXISTS AT STRIPE AND WE FAILED TO RECORD IT. Say so loudly with the id: it is
@@ -179,7 +207,9 @@ export async function POST(req: NextRequest) {
         )
         return NextResponse.json({ error: 'Account created but not saved — contact support' }, { status: 500 })
       }
-      console.log(`[stripe/connect] account created operator=${ctx.operatorId} account=${account.id}`)
+      // 🔴 `livemode` IS ON THE LINE. During sandbox bring-up a `livemode=true` here means a REAL account
+      // was created by a build that is supposed to refuse live keys, and that should be noticed at once.
+      console.log(`[stripe/connect] account created operator=${ctx.operatorId} account=${account.id} livemode=${accountLivemode}`)
 
       // ── 🔴 READ THE POSTURE BACK. NEVER INFER IT FROM WHAT WAS SENT. ───────────────────────────
       // `requirements_collector` is COMPUTED by Stripe and is never sent, so it can only be checked this
