@@ -25,6 +25,7 @@ export async function GET(
       items,
       deals,
       total,
+      payment_status,
       truck_id,
       trucks!truck_id (
         name,
@@ -62,6 +63,10 @@ export async function GET(
     items: order.items,
     deals: order.deals,
     total: order.total,
+    // ⚠️ THE ORDER'S OWN STATE, NOT A CLAIM FROM A URL. The customer can land here from Stripe's
+    // cancel_url, from a bookmark, or minutes later — so what they are told about money must come from
+    // the row, never from a query parameter that a failed payment happens to carry.
+    payment_status: order.payment_status ?? 'unpaid',
     truck_name: truck?.name ?? null,
     venue_name: venueName,
     allow_cancellation: truck?.allow_customer_cancellation ?? false,

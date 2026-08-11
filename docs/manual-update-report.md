@@ -1,110 +1,168 @@
-# Reference manual update — V11.6 → V11.7
+# Reference manual — V11.7 → V11.8
 
-**Date:** 10 August 2026
-**File edited:** `docs/reference-manual.md` — **and nothing else.**
-**Prompt integrity:** nothing arrived garbled; no span needed reconstruction.
+**Date:** 11 August 2026
+**Result: 🔴 INTEGRITY GATE PASSED. Zero characters dropped, zero vanished, zero new characters introduced.**
+**Prompt integrity:** nothing arrived garbled, and no instruction contradicted another.
+
+**Edited only `docs/reference-manual.md`.** No source file touched. No cap sync, no `next dev`, no `next build`.
 
 ---
 
-## 🔴 INTEGRITY GATE — PASSED, ZERO DROPS
+## 🔴 THE INTEGRITY GATE
 
-| | Before | After | Δ |
-|---|---|---|---|
-| Bytes | 1,166,855 | 1,183,295 | +16,440 |
-| Characters | 1,153,910 | 1,170,058 | +16,148 |
-| Lines | 6,588 | 6,714 | +126 |
-| **Distinct non-ASCII characters** | **71** | **71** | **0** |
-| **Total non-ASCII occurrences** | **6,728** | **6,867** | **+139** |
+### Version on disk — verified FIRST
 
 ```
-🔴 CHARACTERS WHOSE COUNT DROPPED:      0
-🔴 CHARACTERS THAT VANISHED ENTIRELY:   0
-   NEW CHARACTERS INTRODUCED:           0
-   counts UNCHANGED:                    58 characters
-   counts ROSE:                         13 characters
+line 1  : HatchGrab Engineering Reference Manual · V11.7
+line 9  : **Version 11.7**
 ```
 
-**No character's count fell**, so there is nothing to explain away and nothing to repair. All 71 distinct non-ASCII characters present before are present after at equal or higher counts, and **no glyph was introduced that the file did not already use.**
+✅ **V11.7 on disk, as the prompt expected. V11.8 is the correct next number and none was skipped.**
 
-### The thirteen that rose, each attributable to added prose
+⚠️ **Three version markers, not two.** Line 1 (title), line 9 (front matter) **and line 6713 (footer)** — the footer repeats the title verbatim. All three now read V11.8; a missed footer would have left the document disagreeing with itself.
 
-| Char | Before → After | Why |
+### Census BEFORE
+
+```
+DISTINCT = 71      TOTAL_NONASCII = 6867
+```
+
+### Census AFTER
+
+```
+DISTINCT = 71      TOTAL_NONASCII = 7093      (+226)
+```
+
+### 🔴 PER-CHARACTER DIFF — every change, with its cause
+
+| Char | | Before | After | Δ | Accounted for by |
+|---|---|---|---|---|---|
+| `£` | U+00A3 | 104 | 106 | **+2** | £1,500 / £2,000 in the platform-fee section |
+| `§` | U+00A7 | 529 | 533 | **+4** | four cross-references to §37 |
+| `·` | U+00B7 | 96 | 103 | **+7** | the six-state list and table separators |
+| `×` | U+00D7 | 74 | 75 | **+1** | *"50 keys × 500 chars"* (Checkout metadata limit) |
+| `–` | U+2013 | 68 | 69 | **+1** | *"3–5 working days"* in the cancellation-email backlog item |
+| `—` | U+2014 | 3587 | 3672 | **+85** | em dashes throughout the new prose |
+| `…` | U+2026 | 63 | 64 | **+1** | an ellipsis inside a quoted Stripe sentence |
+| `→` | U+2192 | 1168 | 1175 | **+7** | *"false → true"*, *"V11.7 → V11.8"*, table arrows |
+| `⚠` | U+26A0 | 250 | 275 | **+25** | warning markers in the new sections |
+| `️` | U+FE0F | 249 | 274 | **+25** | ⚠️'s variation selector — **exactly matches ⚠, as it must** |
+| `✅` | U+2705 | 28 | 34 | **+6** | proven-by-probe markers |
+| `🔴` | U+1F534 | 284 | 346 | **+62** | critical markers in the new sections |
+
+```
+characters that DROPPED           : 0
+characters that VANISHED entirely : 0
+characters NEWLY introduced       : 0
+```
+
+🔴 **Every single delta is an INCREASE, every increase is a character I typed, and DISTINCT is unchanged at 71 — so no character class was lost and none was invented.**
+
+✅ **The ⚠/U+FE0F pairing is exact (+25 / +25).** A mismatch there is the classic sign of an emoji being split or half-pasted; it is the one ratio worth checking by hand, and it holds.
+
+### Garble scan
+
+| Check | Result |
+|---|---|
+| U+FFFD replacement character | **0** |
+| Classic UTF-8-as-Latin-1 mojibake (`Â£`, `â€`, `Ã©`, `â–`, `ðŸ`) | **none found** |
+
+✅ **No pre-existing garbled span was found, so none needed flagging and nothing was silently repaired.**
+
+---
+
+## What changed, and where
+
+| # | Location | Change |
 |---|---|---|
-| `—` U+2014 | 3526 → 3587 (+61) | em dashes across the new changelog, §10 subsection, §43 block and four §35 invariants |
-| `→` U+2192 | 1161 → 1168 (+7) | `Manage → Settings`, `Save` → `Connect`, the role/route tables |
-| `§` U+00A7 | 526 → 529 (+3) | cross-references to §27, §35, §43 |
-| `🔴` U+1F534 | 259 → 284 (+25) | the inversion, the safety rule, the legal placement, the new invariants |
-| `⚠` U+26A0 | 239 → 250 (+11) | caveats and corrections |
-| `️` U+FE0F | 238 → 249 (+11) | **exactly matches the ⚠ rise** — every warning sign added carries its variation selector |
-| `£` U+00A3 | 96 → 104 (+8) | `Take payment £10.00`, `Confirm order £10` |
-| `·` U+00B7 | 92 → 96 (+4) | `Confirm order · £10.00`, the backlog heading separator |
-| `…` U+2026 | 62 → 63 (+1) | an ellipsis in the quoted old subsection text |
-| `✓` U+2713 | 61 → 62 (+1) | the customer flow's `✓ Confirm`, quoted as the naming collision |
-| `💳` U+1F4B3 | 7 → 9 (+2) | the Cash/Card rows in the §10 button table |
-| `💷` U+1F4B7 | 7 → 9 (+2) | same |
-| `←` U+2190 | 6 → 9 (+3) | the KDS `← Dashboard` link, named in §43 and the changelog |
+| 1 | lines 1, 9, footer | **V11.7 → V11.8**, all three markers |
+| 2 | Changelog | 🆕 **`## V11.8 — 11 August 2026`** — the v2 move, the inversion, the real payment, the corrections |
+| 3 | Top summary, *STRIPE — the foundation is proven* | 🔴 **CORRECTED IN PLACE** |
+| 4 | §37 | 🆕 **six new subsections** (below) |
+| 5 | §35 Cross-cutting invariants | 🆕 **five new invariants, placed first** |
+| 6 | §27 Open backlog | 🆕 **`V11.8 — added 11 August 2026 (Stripe payments)`**, eleven items |
 
-**Emoji integrity confirmed separately.** `⚠` and its VS16 rose by the same 11; a direct scan reports **paired 243, bare 7** — and **bare was 7 before**, so every `⚠️` added is a complete pair and the seven unpaired ones are pre-existing and untouched.
+### The six new §37 subsections
 
-**Mojibake scan: 0 before, 0 after.** No `U+FFFD`, no `Ã`/`â€`/`Â` signatures. **No already-garbled span was found, so none was flagged and none was silently fixed.**
+```
+5998  ## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
+6060  ## 🔴 AUTHORIZE-THEN-CAPTURE — PROVEN, NOT BUILT (V11.8)
+6120  ## WHAT IS BUILT ON THE PAYMENT PATH TODAY (V11.8)
+6138  ## 🔴 THE PLATFORM FEE — BLOCKED, AND BY MORE THAN A COUNTER (V11.8)
+6159  ## 🔴 RADAR — a per-transaction cost nobody chose (V11.8)
+6173  ## THE PAYMENTS TAB (V11.8)
+```
 
-### Version on disk — verified first
-
-All three markers read **V11.6** (title line 1, `**Version 11.6**` line 9, footer line 6587). **V11.7 is therefore the correct next number and none was skipped** — stated in the changelog entry itself. All three updated.
-
-### Only the manual was touched
-
-`docs/reference-manual.md` mtime **15:30:18** (this task). Every source file carries an mtime from **earlier tasks**: `AddOrderPanel.tsx` 15:04, `UserMenu.tsx` 15:12, `app/manage/[token]/page.tsx` 15:13, `lib/legal.ts` 15:13 — all before this task began. **No source file was edited, and no cap sync, `next dev` or `next build` was run.**
+⚠️ **They are placed BEFORE the V11.5 `## Stripe — what is actually built` block, with a pointer at the top** telling the reader those subsections record the v1 design and that **where they disagree, V11.8 is current.** The v1 material is **kept, not deleted** — the inversion between the two versions is itself the lesson.
 
 ---
 
-## What changed, section by section
+## 🔴 CORRECTED IN PLACE — not appended
 
-### 1. The Add Order inversion — §10 rewritten in place, plus the changelog
+**The top summary carried this, and it is now the v1 spelling of our position rather than the current one:**
 
-**§10's "Confirm order button" subsection is now "The confirm bar — TAKING PAYMENT IS THE DEFAULT (V11.7)".** The old text is **quoted inside the new one** rather than deleted, with a note that the disable rule and the endpoint are unchanged but the label and the behaviour are not.
+> *"We want the defaults: `losses.payments` **stripe**, `fees.payer` **account**, `requirement_collection` **stripe**, `stripe_dashboard.type` **full**."*
 
-Recorded there:
+**A line was added immediately beneath it** recording that v2 writes the same position as **`fees_collector: 'stripe'`**, that **v2 has no `'account'` value**, and that the nearest-looking token means **HatchGrab pays**.
 
-- **the four button states** (OFF, OFF + cash, ON, ON + cash) as a table;
-- 🔴 **the three-site breakage**, with *"fixing (1) alone would have looked correct and still recorded nothing"*;
-- **the live-data proof** — all 12 `manual_paid_at_order` rows on paid-step-TRUE trucks, nine OFF trucks with none;
-- 🔴 **one press = one server action, one request, one outbox op**, with the skip-and-continue reason it must not be split, and the verified ledger identity (one row shape across all 90 live rows);
-- ⚠️ **the accepted consequence** — no unpaid route with the setting OFF, the truck chooses, no third state;
-- **the label reasoning** — why not `Confirm order` (primary-action reading *and* the customer flow's own word), why `Place order` is short, and 🔴 why the completion buttons keep `Mark`;
-- ⚠️ **`takes_cash`'s removed gate**, framed as *"a defect this change would have introduced, not one it found"*;
-- the **inline-vs-stacked amount** measurement, so the asymmetry is not read as an inconsistency.
+⚠️ **The original line was NOT deleted, deliberately.** Someone reading a v1 example on Stripe's site needs to find our v1 spelling and be told what it became — deleting it would leave them translating the inversion themselves, which is the exact mistake the entry exists to prevent.
 
-### 2. Legal link placement — a new §43 block
+**Two other in-place corrections in the same block:**
 
-**§43 gains "🔴 WHERE THE IN-APP LINKS LIVE — ONE LOCATION, SETTLED V11.7. DO NOT MOVE THEM."**, carrying the role map (staff **redirected out** of Manage, in no `roles` array), the two common surfaces, the per-role tap table (1 tap / 2 from the KDS), 🔴 **the styling as load-bearing** with the reason the clutter objection dissolves, the same-day move-and-move-back, and ⚠️ **the retraction** of `lib/legal.ts`'s KDS claim with why the overstatement mattered.
-
-### 3. Other UI fixes — in the changelog
-
-Danger zone (white card, red heading, outline triangle; **flow, typed-name requirement and gating untouched**), the tour card moved to the top of Settings (three sites, only one needed moving), and the WhatsApp button (`Save` → `Connect`, page's own class, ⚠️ **behaviour byte-identical and 🔴 not wired up — do not read the label as a working connection**).
-
-### 4. §35 — four invariants added
-
-- 🔴 **A defect can be broken in more places than the visible one** — the three sites, and the cheap diagnostic (follow one press down: handler, wire, route).
-- 🔴 **Recover removed code from git; do not retype it** — restored verbatim from `32921c6`, tied to the existing four-column-migration precedent.
-- 🔴 **A comment asserting reach must be re-grepped, not trusted** — the KDS claim, and that **it changed a decision**; same class as `setOverlaysWebView`'s "LOAD-BEARING" note on an early-returning call.
-- **When a control becomes available in more states, its enable gates go stale** — `takes_cash`'s gate against exactly the trucks that gained the button.
-
-### 5. §27 backlog — reaffirmed, deliberately not duplicated
-
-⚠️ **The per-event override reset was already recorded in full under "Added V11.6 — the per-event override one-way door", and it is accurate.** Rather than add a second entry that would drift from it, the heading is now **"· STILL OPEN at V11.7"** with a note that it was re-confirmed today, that nothing changed, and that **it remains open at the operator's decision, not through oversight**. One backlog item, one place.
-
-**All six keep-open items verified present and unchanged**, by grep: Stripe Connect, the collect idempotency key, the stock-badge `bound` defect, "Only 1 pizzas left!", `hide_pricing` masking footnote 2, Apple Developer enrolment.
-
-**Nothing labelled open in the brief is recorded as verified.** The override reset says the handlers are verified and the UI route is missing — which is exactly the split the brief gave.
+| Was | Now |
+|---|---|
+| *"`operators` (13 columns, **no `stripe_*` today**)"* | **APPLIED V11.8** — the three columns named |
+| *"**UNBUILT:** onboarding, PaymentIntents, the customer payment path…"* | **BUILT SINCE (V11.8):** onboarding, the Payments tab, a real sandbox card payment. **STILL UNBUILT:** refunds, Terminal, Locations, subscription billing, the platform fee |
 
 ---
 
-## Structural check
+## ⚠️ THE BUILT / PROVEN / UNBUILT LINE — held throughout
 
-- Version markers: **3 of 3** updated.
-- Top-level `#` headings: **44**, unchanged — no section added, deleted, renumbered or reordered.
-- `# Changelog` → `## V11.7 — 10 August 2026` → `## V11.6 — 10 August 2026`: correct order, V11.6 intact beneath.
-- Every change is an in-place correction or an extension of an existing section.
+**The prompt's constraint was that nothing labelled open, unproven or unbuilt may be recorded as verified. Every new subsection carries its own status in its heading**, and the two that are not built say so before their first sentence:
 
-**Integrity gate: PASSED. Zero character-count drops, zero vanished characters, zero mojibake, no already-garbled span found.**
+| Subsection | Status as written |
+|---|---|
+| Accounts v2 | **BUILT AND PROVEN** — probe results with their evidence |
+| Authorize-then-capture | 🔴 **PROVEN, NOT BUILT** — with a blockquote: *"NOTHING IN THIS SUBSECTION IS BUILT. The Stripe behaviour is measured; the design is agreed; the code does not exist."* |
+| The payment path today | **BUILT** — a real sandbox payment, zero migrations |
+| The platform fee | 🔴 **BLOCKED** |
+| Radar | ⚠️ **UNRESOLVED** on the platform cost; **CORRECTED** on who can change a tier |
+| The Payments tab | **BUILT** |
+
+✅ **The Radar per-connected-account cost is recorded as UNRESOLVED with the two Dashboard reads that would settle it** — not as a finding. **The per-transaction figure is recorded as still hidden**, not guessed.
+
+---
+
+## Standing alone — the test the prompt set
+
+**This was written so a fresh planning chat can continue without the conversation.** Concretely, someone reading §37 cold now finds:
+
+- the **exact version string** and that it will move;
+- the **four posture properties**, which one is computed, and 🔴 **which one inverts and what the wrong value costs**;
+- **what was proven by probe versus inferred**, with the evidence inline (`balance_transaction: null`, zero refund objects, 7.00 days);
+- 🔴 **the traps**: `charge.status` reading `succeeded` uncaptured, the `@accounts` scope, the empty merchant configuration, the frozen country, the two-layer test-money exclusion;
+- **why Checkout over Payment Element**, and what swapping later would cost;
+- **the fee's three missing inputs** and why omitting it is safe;
+- **the one thing blocking live mode entirely** — Site links — at the top of the backlog.
+
+---
+
+## Verification
+
+```
+$ node census.mjs docs/reference-manual.md   (before)  DISTINCT=71  TOTAL=6867
+$ node census.mjs docs/reference-manual.md   (after)   DISTINCT=71  TOTAL=7093
+$ per-character diff → 0 drops, 0 vanished, 0 new characters
+
+$ sed -n '1p;9p' + tail -1   → V11.8 · Version 11.8 · V11.8
+$ wc -l docs/reference-manual.md  → 6713 → 6978 lines (+265)
+$ git status --porcelain docs/    → only reference-manual.md and the two report files
+```
+
+✅ **No source file was touched.** ✅ **No build, dev server or cap sync was run.**
+
+---
+
+## One judgement call worth naming
+
+⚠️ **I put the five new invariants FIRST in §35 rather than appending them.** The section opens with a CSS-overlay lesson; the new entries are money-path and API-semantics invariants and are the ones most likely to be needed by whoever opens this next. **If you would rather §35 stayed chronological, they are five contiguous paragraphs at the top of the section and move as a block.**

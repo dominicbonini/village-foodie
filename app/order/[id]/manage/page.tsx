@@ -12,6 +12,8 @@ type OrderState = {
   items: any[]
   deals: any[]
   total: number
+  /** From the order row, never from a query parameter — see the API note. */
+  payment_status: string | null
   truck_name: string | null
   venue_name: string | null
   allow_cancellation: boolean
@@ -81,8 +83,21 @@ export default function ManageOrderPage() {
         <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-sm">
           <div className="text-3xl mb-3">✓</div>
           <h2 className="font-bold text-slate-900 mb-2">Order cancelled</h2>
+          {/* ── 🔴 REWRITTEN 10 August 2026, BEFORE THE FIRST CARD PAYMENT EXISTED ────────────────
+              It read: "If you paid online, a refund will be processed within 5-10 business days."
+              Both halves were promises HatchGrab cannot keep, and they were harmless only because no
+              online payment existed. This build makes them false.
+              🔴 WE ARE NEVER MERCHANT OF RECORD. Card payments are DIRECT charges on the truck's own
+              Stripe account — the money never passes through HatchGrab, so we cannot return it. The
+              published terms already assign refunds to the truck; that sentence contradicted them.
+              🔴 NO TIMEFRAME. "5-10 business days" is the card networks' settlement window, quoted as
+              though it were our commitment. We control neither when the truck issues a refund nor how
+              long the customer's bank takes to show it.
+              ⚠️ IT STILL ANSWERS THE QUESTION THE CUSTOMER HAS. Saying nothing about money would be
+              worse than over-promising: it names who to ask, which is the one thing they need. */}
           <p className="text-sm text-slate-500">
-            Your order has been cancelled. If you paid online, a refund will be processed within 5–10 business days.
+            Your order has been cancelled. If you paid by card, any refund is handled by{' '}
+            {order?.truck_name || 'the truck'} directly — please contact them about it.
           </p>
         </div>
       </div>
@@ -135,6 +150,19 @@ export default function ManageOrderPage() {
               </span>
             </div>
           )}
+          {/* ── 🔴 WHAT THE CUSTOMER IS TOLD ABOUT MONEY, FROM THE ORDER ROW ───────────────────────
+              This page is where a card payment lands — both on success (Stripe's success_url) and on
+              abandonment (its cancel_url). Those two arrive at the SAME page, so the difference must
+              come from the row, not the URL: a `?paid=1` in the address bar is a claim the customer
+              could type themselves, and the row is written by the webhook from Stripe's own event.
+              ⚠️ 'unpaid' IS NOT AN ERROR STATE. It is every Pay-at-Hatch order ever placed, so it is
+              rendered plainly rather than in red — it says what to do, not that something went wrong. */}
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-slate-500">Payment</span>
+            <span className={`font-medium ${order.payment_status === 'paid' ? 'text-green-600' : 'text-slate-900'}`}>
+              {order.payment_status === 'paid' ? 'Paid by card' : 'Pay at the truck'}
+            </span>
+          </div>
           <div className="flex justify-between text-sm">
             <span className="text-slate-500">Status</span>
             <span className={`font-medium capitalize ${

@@ -1824,6 +1824,50 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── set_online_payments_paused ── 🔴 TEMPORARY. DELETE THIS HANDLER WITH THE SWITCH ──────────────
+    // Turns online card payments off (and back on) for THIS TRUCK, across every event. The rule itself
+    // lives in lib/payments/online-payments-switch.ts — this handler writes the column and never decides.
+    //
+    // 🔴 TRUCK-WIDE, AND UNLIKE EVERY OTHER SETTING ON THE DASHBOARD SETTINGS TAB. The three paid-step
+    // overrides and the buzzer prompt all write truck_events for the ACTIVE EVENT and expire by
+    // themselves. This writes `trucks` and persists until an operator clears it. That is correct for a
+    // payment incident — an outage does not end because the service did — and it is exactly why the
+    // dashboard carries a persistent banner while it is set. Do NOT re-scope this to an event.
+    //
+    // ⚠️ THE TIMESTAMP IS SERVER-MINTED. The client sends a boolean intent and never a time it could
+    // backdate — the same discipline capacity_ack_at uses on the walk-up insert.
+    //
+    // ⚠️ VALIDATED, NOT COERCED — `!!value` would silently read a typo'd string as `true` and pause a
+    // truck's payments. Anything that is not a boolean is a 400, the same rule
+    // set_show_paid_step_override follows. There is no `null` here: unlike a per-event override this
+    // column has no third "inherit" state, so `false` IS the un-paused value.
+    if (action === 'set_online_payments_paused') {
+      const { value } = body
+      if (typeof value !== 'boolean') {
+        return NextResponse.json({ error: 'value must be true or false' }, { status: 400 })
+      }
+      // ⚠️ select('*'), NOT a named list — the same rule set_show_paid_step_override follows: a named
+      // select naming a column that does not exist fails the WHOLE statement with 42703 (§35), and '*'
+      // cannot. 🔴 But unlike that handler the ROW IS NOT RETURNED: `trucks` carries tokens and pins,
+      // which /api/dashboard strips through publicTruckFields before they reach a browser. Only the one
+      // column is echoed back, which is all the client sets state from.
+      // ⚠️ NO .single(): it throws PGRST116 on zero rows, turning a no-op into a 500.
+      const { data: rows, error } = await supabase.from('trucks')
+        .update({ online_payments_paused_at: value ? new Date().toISOString() : null })
+        .eq('id', truck.id)
+        .select('*')
+      if (error) {
+        console.error('[set_online_payments_paused] update failed:', error.message)
+        return NextResponse.json({ error: error.message }, { status: 500 })
+      }
+      // Row absent still means success — the UPDATE and its representation are ONE PostgREST statement,
+      // so `error` unset means the write committed. The client falls back to its refetch.
+      return NextResponse.json({
+        success: true,
+        online_payments_paused_at: rows?.[0]?.online_payments_paused_at ?? null,
+      })
+    }
+
     // ── set_print_trigger_mode ── WHEN a kitchen ticket prints. TRUCK-level, not device-level: it is a
     //    workflow policy ("we print when we accept" vs "ten minutes before"), and two devices holding
     //    DIFFERENT modes would print the same order twice at two different times, which reads as a

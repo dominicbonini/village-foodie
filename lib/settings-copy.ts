@@ -58,6 +58,11 @@ export const TRIAL_NOT_STARTED_BY_EVENTS =
 // ⚠️ "every Max feature" is TRUE and is not marketing: PLAN_FEATURES.trial is `[...MAX_FEATURES]`, and
 // canAccess now grants that whole set on a NULL expiry. If the expired branch is ever changed to fall
 // back to Starter, re-read this sentence — it would still be true, but its neighbour would not be.
+export const TRIAL_NOT_STARTED_HEADING = 'Your free trial has not started yet'
+export const TRIAL_NOT_STARTED_BILLING =
+  'You have every Max feature while you set up. You choose which event starts your free trial - '
+  + 'until then, nothing is counting down.'
+
 // ── 🔴 CONNECTING STRIPE IS NOT A PURCHASE. NEW 10 August 2026, AND IT IS NEW FOR A REASON. ─────────
 // The Payments tab asks a truck to connect Stripe, which LOOKS like a commercial commitment — bank
 // details, ID, a named provider — and is not. A truck on trial must be told so BEFORE they connect.
@@ -70,19 +75,29 @@ export const TRIAL_NOT_STARTED_BY_EVENTS =
 // 🔴 SO THE SHAPE IS BORROWED, NOT THE SENTENCE. TRIAL_NOT_STARTED_BY_EVENTS above establishes the
 // pattern — "doing X doesn't start your free trial" — and this reuses that construction for a different
 // X, which is the consistency that matters: an operator meets the same reassurance shape twice.
-// ⚠️ TRUE IN BOTH TRIAL STATES, deliberately. Whether the trial has started or not, connecting Stripe
-// neither starts it nor bills anything, so this needs no `trial_expires_at` branch — unlike its
-// neighbours, which do.
+// ⚠️ TRUE IN BOTH TRIAL STATES, deliberately. Whether the trial has started or not, the ACT of
+// connecting neither starts a subscription nor bills anything, so this needs no `trial_expires_at`
+// branch — unlike its neighbours, which do.
 // ⚠️ NO PLATFORM GATE NEEDED. It contains no instruction to buy and no price, so App Store 3.1.1/3.1.3
 // does not reach it — the same reasoning recorded for TRIAL_NOT_STARTED_BILLING at the Billing card.
-export const CONNECTING_STRIPE_NOT_A_CHARGE =
-  "Connecting Stripe doesn't start your subscription or charge you anything — it's how your customers "
-  + 'pay you, not how you pay us.'
-
-export const TRIAL_NOT_STARTED_HEADING = 'Your free trial has not started yet'
-export const TRIAL_NOT_STARTED_BILLING =
-  'You have every Max feature while you set up. You choose which event starts your free trial - '
-  + 'until then, nothing is counting down.'
+// ── 🔴 NARROWED 10 August 2026 — THE FIRST VERSION OVERCLAIMED, AND ON A MONEY FACT ────────────────
+// It read: "Connecting Stripe doesn't start your subscription or charge you anything — it's how your
+// customers pay you, not how you pay us."
+// 🔴 "CHARGE YOU ANYTHING" IS TRUE OF CONNECTING AND FALSE OF WHAT FOLLOWS. On a paid plan HatchGrab
+// takes a platform fee on online orders above the plan's allowance, so an operator who read that
+// sentence and later saw a platform fee would have been misled by us, in writing, on their own
+// Payments tab. The claim is now scoped to the ACT of connecting — "today" — and the plan is named as
+// a separate thing rather than implicitly denied.
+// ⚠️ THE REASSURANCE MUST SURVIVE THE CORRECTION. This sentence exists so a truck on trial is not
+// afraid to press Connect; hedging it into "some charges may apply" would make it accurate and
+// useless. Two short sentences: nothing happens today, and your plan is a different question.
+// ⚠️ NO NUMBERS, EVER, IN THIS STRING. The allowance and the platform fee belong to the plan pricing.
+// The manual records what restating the same fee facts across surfaces has already cost.
+// ⚠️ RENAMED with the narrowing — it was CONNECTING_STRIPE_NOT_A_CHARGE, and a constant whose NAME
+// overclaims is the same defect one level up: the next reader reads the name before the string.
+export const CONNECTING_STRIPE_NOT_A_COMMITMENT =
+  "Connecting doesn't start your subscription or charge you anything today. It's how your customers "
+  + 'pay you — your plan is separate.'
 
 export const SETTING_COPY = {
   /** Settings → Contact Details. The sentence wraps a <select>, so it is stored as its two halves —

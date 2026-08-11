@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.7
+HatchGrab Engineering Reference Manual · V11.8
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.7**
+**Version 11.8**
 
 August 2026
 
@@ -15,6 +15,28 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.8 — 11 August 2026
+
+**Stripe Connect moved to Accounts v2, a real card payment taken end to end, and a payment design proven that is not yet built.** The version on disk was V11.7, so this is V11.8 and no number was skipped.
+
+**⚠️ THIS ENTRY IS WRITTEN TO STAND ALONE.** It is the last update before a fresh planning chat. Someone reading §37 cold should be able to continue the Stripe work without the conversation that produced it — which is why the probe results are recorded with their evidence rather than as conclusions.
+
+### 🔴 ACCOUNTS V2, AND A PROPERTY THAT INVERTED
+
+- **Accounts are created on `/v2/core/accounts`.** Stripe now blocks v1 for new integrations. **`Stripe-Version: 2026-07-29.dahlia` is MANDATORY — a 400 without it** — and it is a **preview-train string that WILL move**, so it is pinned in one constant and a 400 from it is a first-class, loudly-logged failure rather than a generic error.
+- 🔴 **`fees.payer: 'account'` became `fees_collector: 'stripe'`. THE WORD INVERTS, and v2 has no `'account'` value.** A mechanical translation to the nearest-looking token puts **HatchGrab on the hook for every truck's Stripe fees**. **This property has now inverted twice.**
+- **PROVEN BY PROBE, not inferred:** `/v1/account_sessions` accepts a v2 account id; **a v2 account still emits v1 `account.updated` carrying `charges_enabled` as a real boolean.** 🔴 **So the webhook needs no change and keeps holding no `STRIPE_SECRET_KEY`.** Thin events are not required.
+
+### 🔴 A REAL CARD PAYMENT, AND A DESIGN THAT REPLACES IT
+
+- **A sandbox payment works end to end** via hosted Checkout — order first, PaymentIntent on the connected account, webhook writes `order_payments` with `channel: 'online'`. **Zero migrations.**
+- 🔴 **Authorize-then-capture is PROVEN ON OUR EXACT POSTURE and NOT BUILT.** The property it rests on — **cancelling an authorization creates NO Refund object** — was measured, and it matters because under direct charges a refund is money leaving **the truck's** account, which HatchGrab cannot issue.
+
+### 🔴 CORRECTIONS TO EARLIER ENTRIES
+
+- **§37's Connect model is rewritten for v2 in place.** The V11.5 line recording `fees.payer: 'account'` as our posture is now the **v1 spelling of the same position**, and is marked as such rather than deleted — the inversion is the lesson.
+- **Radar: an earlier reading was too narrow.** "Can the platform force a tier" was answered and reported as if it were "can this be avoided". **The truck can change their own tier**, so it is a guidance problem.
 
 ## V11.7 — 10 August 2026
 
@@ -146,8 +168,9 @@ August 2026
 - **`order_payments.livemode` applied 7 Aug — 50 existing rows, all `true`, NOT NULL DEFAULT true.** **`stripe_webhook_events.livemode` is NOT NULL with NO DEFAULT — deliberately the opposite**, because it has no legacy rows to rescue and a default would let a writer that forgot record a **test** event as live.
 - 🔴 **CONNECT MODEL DECIDED: ONE connected account PER OPERATOR, not per truck.** Terminal readers are grouped by **Stripe Location, one per truck** — verified from Stripe's docs, so **terminals do NOT force separate accounts**. **Direct charges**; the connected account bears fees, refunds and chargebacks, matching the published terms. **Consequence: `charges_enabled` is an ACCOUNT property, so all of an operator's trucks go live together.**
 - 🔴 **Stripe's own embedded-onboarding quickstart sets `fees.payer`, `losses.payments` and `requirement_collection` all to `'application'` — the EXACT INVERSE of our model**, which would put HatchGrab on the hook for every chargeback. **We want the defaults:** `losses.payments` **stripe**, `fees.payer` **account**, `requirement_collection` **stripe**, `stripe_dashboard.type` **full**. **Following the quickstart verbatim is the trap.**
-- **The account id belongs on `operators`** (13 columns, **no `stripe_*` today**). **Readiness must resolve to `charges_enabled`, never to a row existing.**
-- **UNBUILT:** onboarding, PaymentIntents, the customer payment path, refunds, Terminal, Locations, subscription billing.
+- 🔴 **CORRECTED V11.8 — THE LINE ABOVE IS THE v1 SPELLING, AND IT IS KEPT BECAUSE THE INVERSION IS THE LESSON.** Accounts are now created on **Accounts v2**, where the same commercial position is written **`fees_collector: 'stripe'`** — *"Stripe collects"* rather than *"the account pays"*. **v2 has no `'account'` value**, so translating `fees.payer: 'account'` to the nearest-looking token lands on `'application'`, which means **HatchGrab pays**. See §37 for the full v2 posture and the read-back that guards it.
+- **The account id belongs on `operators`.** 🔴 **APPLIED V11.8:** `stripe_account_id`, `stripe_charges_enabled` (NOT NULL default false), `stripe_account_synced_at`. **Readiness must resolve to `charges_enabled`, never to a row existing.**
+- 🔴 **BUILT SINCE (V11.8):** onboarding, the Payments tab, a real sandbox card payment on the customer path. **STILL UNBUILT:** refunds, Terminal, Locations, subscription billing, the platform fee.
 
 ### KDS PAYMENT STATE — fixed
 
@@ -4504,6 +4527,23 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 V11.8 — added 11 August 2026 (Stripe payments)
+
+**⚠️ ONE OF THESE BLOCKS EVERYTHING ELSE GOING LIVE. It is first for that reason, not by size.**
+
+- 🔴 **SITE LINKS ARE UNCONFIGURED — THIS BLOCKS LIVE-MODE ACCOUNT SESSIONS ENTIRELY.** Stripe: *"Before you can create a live mode Account Session, you must provide the URLs where you have integrated the embedded components"* — Notification banner, Account management, Payments, Payouts, Balances, Documents. **No truck can onboard for real until this form is filled** in Connect settings → Site links. **It is a form, not a build.**
+- 🔴 **Authorize-then-capture** — proven, not built. Needs a **server-side draft table + migration** (the basket cannot survive a hosted-Checkout page navigation) and **extraction of `/api/orders/submit`'s core** from a 1,139-line route handler, on the money path. **~a week.** See §37.
+- 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter: allowances are display strings, 0.99% is hardcoded in five places, nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.**
+- **Radar** — guidance copy telling a truck how to change their own tier, plus **two Dashboard reads** (our own Radar tier; any Radar line on our invoices) to settle whether HatchGrab carries a per-connected-account cost.
+- **The onboarding confirmation email** — Stripe sends nothing when an account becomes ready. The trigger already exists: the `account.updated` handler already detects `charges_enabled` flipping false → true. **Small.**
+- **The printed ticket shows NOTHING for a pre-paid order when `show_paid_step` is off** — `mapOrderToTicket` gates all payment fields on that setting, which is about collecting at the hatch, not about an order already paid online. **The ticket is what the hatch works from.**
+- **Refunds have no route in HatchGrab.** Under direct charges the money is in the truck's account; the terms assign refunds to them. `PaymentStatus` already reserves `'refunded'` and `'refund_due'`, unwritten.
+- **The abandoned-checkout capacity sweeper** — an unpaid card order holds a slot and stock indefinitely today. **Cheapest partial mitigation: set `expires_at` on the Checkout Session** (settable to 30 minutes; currently unset, so the default is **24 hours**).
+- **`lib/go-live-checks.ts` is dead code carrying a misleading title.** `checkGoLive` has **zero call sites** and the module is imported by no file, yet it contains the string *"Confirm your email address"* — which is also what Stripe's notification banner shows, and it cost an investigation to tell them apart.
+- **The Payments tab badge does not self-clear within a session** — fetched once on mount, so an operator who resolves a requirement still sees it until reload. ⚠️ **The schedule badge has the same property**, so this matches existing behaviour rather than introducing a new flaw.
+- ⚠️ **Order emails do not reflect how an order was paid** — and for the confirmation this is a **TIMING** defect, not a copy one: it is sent inside `/api/orders/submit`, **before the customer has seen a card form**. The ready, updated and cancellation emails fire later and *could* read the order's state. **The cancellation emails also promise *"your refund will be processed automatically within 3–5 working days"*, which HatchGrab cannot do.**
+
 ## 🔴 V11.3 — added 5 August 2026 (iOS native + App Store)
 
 ### 🔴 TWO UNRESOLVED iPad DISPLAY DEFECTS — open, intermittent, NOT reproducing on demand
@@ -5564,6 +5604,16 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 > Lessons that belong to no single subsystem. §31's structural lesson is slot-engine-specific and §22 covers process; these are engineering invariants that cost real time in more than one place, and had nowhere to live until now.
 
+🔴 **THE SAME PROPERTY CAN INVERT BETWEEN API VERSIONS. READ WHAT A DEFAULT *MEANS*, NOT WHAT IT IS NAMED.** v1's `fees.payer: 'account'` — *"the account pays"* — is v2's `fees_collector: 'stripe'` — *"Stripe collects"*. The same commercial position, described from the opposite end, and **v2 has no `'account'` value at all**, so the nearest-looking token (`'application'`) means the exact opposite: HatchGrab pays. **This property has now inverted twice.** The defence is not care; it is **reading the value back from the API after writing it** and logging loudly when it differs from intent, because a 200 on the create call is not evidence the position landed.
+
+🔴 **AN UNCAPTURED CHARGE REPORTS SUCCESS. KEY ON THE EVENT, NOT THE FIELD.** A Stripe charge awaiting manual capture carries `status: "succeeded"` while `captured: false`, `amount_captured: 0` and `balance_transaction: null` — no money has moved. The Dashboard reads `captured`; the API field says `succeeded`. **Anything that reads `charge.status === 'succeeded'` to mean "paid" is wrong for every authorization.** The general form: **a status field and a lifecycle event of the same name may fire at different moments**, and the event is usually the one that means what you think.
+
+🔴 **A CANCELLED AUTHORIZATION IS NOT A REFUND — IT IS THE ABSENCE OF A CHARGE.** Measured: cancelling produces **zero Refund objects**. Under direct charges that distinction is the difference between **possible and impossible**, because a refund is money leaving a connected account we do not control. **When a design depends on "we can undo this", establish which of the two undos it actually is.**
+
+🔴 **ASK WHICH QUESTION WAS ACTUALLY ANSWERED.** *"Can the platform force a Radar tier"* was investigated, answered correctly, and reported as though it were *"can this be avoided"*. **Three distinct questions — can the platform force it, can the account change it, can the step be skipped — were collapsed into one wrong conclusion.** The account could change it themselves all along, which turned a structural problem into a guidance one. **Before reporting a constraint, name the question the evidence answers and check it is the question asked.**
+
+🔴 **A CROSS-SURFACE SIGNAL CANNOT BE FED BY A SINGLE-SURFACE SOURCE.** A badge that must be visible from every tab cannot be driven by a callback from an iframe that only exists on one tab — it would be silent precisely when the operator is elsewhere, and silence reads as "all clear". **This is a stronger objection than unreliability and it applies before any discussion of latency.** The source must be at least as widely available as the signal.
+
 **A `position: fixed` overlay inside a transformed ancestor is silently mispositioned.** A CSS `transform` on ANY ancestor makes that element the containing block for `fixed` descendants, so `inset-0` resolves to the ancestor's box, not the viewport. No error, no console warning. Also caused by `filter`, `backdrop-filter`, `perspective`, `will-change` and `contain: paint`. **Portal every `fixed inset-0` overlay to `document.body` by default** — `DemoUpload` already did; `DemoGetStarted` did not, and lost its modal behind a `-translate-y-1/2` banner slot.
 >
 > **Second instance, 28 July — the same class, a different mechanism.** A focus ring was clipped along the top edge of an input because the scroll container (`overflow-y-auto`, needed for the modal's flex shell) had horizontal-only padding, and the input was its first child. Tailwind's `focus:ring-2` paints 2px OUTSIDE the border-box, so a flush element has nowhere to draw. The sibling branch used `p-5` and was immune **by accident, not by intent** — inherited from the import wizard's layout — which is exactly why the fix did not generalise. An audit then found a second clipped element nobody had reported: a link at the container's bottom edge, drawing the browser's default focus outline, visible only when tabbing. **Where a clipping ancestor is required, the remedy is padding on that ancestor, not per-element offsets** — a per-input fix would never have found the link.
@@ -5944,6 +5994,221 @@ Orders touched in the window were **additionally corrupted**: `recalcOrderPaymen
 - **Detecting a wrongly-WRITTEN row** (worse than an absent one) uses the idempotency key's own shape: `collect:{order_key}:{paidBefore}:{balance}`. A healthy first collection encodes `paidBefore = 0`; during the incident it encoded the whole-table sum, so the key itself carries the fingerprint.
 
 **The invariant this establishes is recorded in §35** and is the strongest one there: **any change under `lib/payments/` must be exercised against real database rows before it deploys.** `tsc`-clean and lint-baselines-holding are not verification on this path — this change passed both.
+
+## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
+
+> **⚠️ READ THIS BEFORE THE V11.5 SUBSECTIONS BELOW.** Those record the v1 design and are kept because the
+> **inversion between v1 and v2 is itself the lesson**. Where they disagree with this section, **this
+> section is current.**
+
+**Accounts are created on `POST /v2/core/accounts`.** Stripe now blocks v1 for new integrations.
+
+### The version header is mandatory, and it will move
+
+🔴 **`Stripe-Version: 2026-07-29.dahlia` — a 400 without it**, proven by probe. It is a **preview-train string**, not a stable date, so it is:
+
+- **pinned in ONE constant** (`STRIPE_V2_API_VERSION`, `lib/stripe/connect.ts`), sent **explicitly** even though the installed SDK's own default currently matches it — omitting it would work today and silently start sending something else the day the SDK is bumped;
+- treated as a **first-class, loudly-logged failure**: a rejection prints the pinned constant next to Stripe's complaint about it, because the fix is to change one line and the log should say which.
+
+⚠️ **Classification is by MESSAGE TEXT** — Stripe returns no machine-readable code for it — so a reworded error degrades to the generic branch, which still prints the pinned version.
+
+### 🔴 THE POSTURE, AND THE TRAP INSIDE IT
+
+| v2 property | Value | Meaning |
+|---|---|---|
+| `dashboard` | `'full'` | The truck gets a real Stripe Dashboard with its own login |
+| `defaults.responsibilities.fees_collector` | **`'stripe'`** | 🔴 **The TRUCK pays Stripe's fees** |
+| `defaults.responsibilities.losses_collector` | `'stripe'` | Stripe bears negative balances, not HatchGrab |
+| `defaults.responsibilities.requirements_collector` | `'stripe'` | ⚠️ **COMPUTED, NOT SETTABLE** — inherited, so it must be **read back and checked**, never assumed |
+
+🔴 **`fees.payer: 'account'` (v1) BECOMES `fees_collector: 'stripe'` (v2). THE WORD INVERTS.** v1 named the payer; v2 names the collector. **v2 has no `'account'` value** — the options are `application` / `application_custom` / `application_express` / `stripe`, and **`application` means HatchGrab pays**. A mechanical translation to the nearest-looking token is therefore not a near-miss but the exact opposite of the commercial model.
+
+⚠️ **This property has now inverted TWICE**, and Stripe's own quickstart still sets all three responsibilities to `'application'` — the inverse of ours. **Three defences, because two were not enough:** one constant so no call site can assemble a different combination; a comment at the line naming what the wrong value costs; and 🔴 **a read-back after every create** that logs loudly if any of the four properties differs from intent. **A 200 from the create call is not evidence the position landed.**
+
+### PROVEN BY PROBE — not inferred
+
+- ✅ **`/v1/account_sessions` accepts a v2 account id** and enables `account_onboarding`, `account_management` and `notification_banner`. The embedded UI is unchanged by the move to v2.
+- ✅ 🔴 **A v2 account still emits v1 `account.updated` carrying `charges_enabled` as a real boolean**, delivered to the `@accounts`-scoped endpoint. **SO THE WEBHOOK NEEDS NO CHANGE AND KEEPS HOLDING NO `STRIPE_SECRET_KEY`** — the blast-radius property recorded in `webhook-signature.ts` survives. **Thin events and a follow-up fetch are NOT required.**
+- ✅ **Dual emission is documented as a property of v2 accounts** — *"v2 `Accounts` send both v1 (snapshot) Events and v2 (thin) Events"* — **with no sunset language anywhere.**
+
+🔴 **THE `@accounts` SCOPE IS LOAD-BEARING.** v1 events for v2 accounts arrive on the **Connected accounts** scope **only** — Stripe: *"For events triggered by connected accounts, v2 Events use the Your account scope, while v1 Events use the Connected accounts scope, even when triggered by the same v2 Account."* **An endpoint registered without it receives nothing, silently.** Ours has it.
+
+### 🔴 COUNTRY IS FROZEN AT CREATION — a new consequence
+
+v2 refuses `dashboard` without a merchant configuration, and refuses a merchant configuration without `identity.country`. **So a country must be named at creation and cannot be changed afterwards.** It is taken from **`trucks.country`, which defaults `'GB'` without anyone choosing it.**
+
+⚠️ **That default is now consequential.** A non-UK operator must have `trucks.country` set **BEFORE they press Connect** — afterwards is too late, and nothing on screen asks.
+
+✅ **`entity_type` is NOT pinned and is not required**, so sole-trader vs company remains the truck's choice during onboarding.
+
+⚠️ **AN EMPTY MERCHANT CONFIGURATION IS A TRAP.** `configuration: { merchant: {} }` yields `capabilities: {}` and **`charges_enabled` can never become true**. **`card_payments` must be explicitly requested.** (In v1, Stripe picked the capability set automatically for a full-dashboard account; in v2 it does not.)
+
+### Environment variables
+
+| Variable | Where | For |
+|---|---|---|
+| `STRIPE_SECRET_KEY` | server | account creation, sessions, reads |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | client | the embedded components |
+| `STRIPE_WEBHOOK_SECRET` | server | **verification only** — comma-separated, one URL receives live + test + any v2 destination |
+
+### Columns applied
+
+`operators.stripe_account_id` · `operators.stripe_charges_enabled` (**NOT NULL default false**) · `operators.stripe_account_synced_at`
+
+---
+
+## 🔴 AUTHORIZE-THEN-CAPTURE — PROVEN, NOT BUILT (V11.8)
+
+> **⚠️ NOTHING IN THIS SUBSECTION IS BUILT.** The Stripe behaviour is measured; the design is agreed; the
+> code does not exist. It is recorded here because it replaces the payment flow that IS built, and
+> because the probe results are expensive to re-obtain.
+
+### 🔴 THE PROBLEM IT SOLVES — the order row IS the reservation
+
+**There is no reservation ledger.** Stock is a **live `SELECT` over `orders`** excluding `cancelled`/`rejected` (`getLiveItemCounts`); capacity is a **cache rebuilt from `orders`** in four live statuses (`buildUnitsFromOrders`). **So an order that exists has reserved, and one that does not has reserved nothing. There is no third state.**
+
+🔴 **Therefore an unpaid card order holds a slot AND stock, and NOTHING RELEASES THEM.** Release keys on `status = 'cancelled'`; an unpaid order stays `pending`; **there is no sweeper**; and **Stripe Checkout's default expiry is 24 HOURS** (settable down to 30 minutes — currently unset).
+
+### The design
+
+1. **Authorize** — `capture_method: 'manual'`. **No order exists, nothing is reserved.**
+2. **Create the order** with the existing binding checks **inside the event lock**.
+3. **All checks pass → CAPTURE.**
+4. **Any check fails → CANCEL the authorization.**
+
+🔴 **ALL OR NOTHING. No partial capture** — a customer who ordered a pizza and a side does not want to be charged for the side alone.
+
+✅ **A customer who abandons at the card form never authorizes, so no order is created and nothing is reserved.** The abandonment problem disappears rather than needing a sweeper.
+
+### 🔴 PROVEN BY SANDBOX PROBE, ON OUR EXACT POSTURE
+
+| Finding | Evidence |
+|---|---|
+| Checkout accepts manual capture as a direct charge | `payment_intent_data[capture_method]=manual` **+ `Stripe-Account` header, together, accepted** |
+| Authorization moves no money | `status: requires_capture`, `amount_received: 0`, **`balance_transaction: null`** |
+| 🔴 **Cancelling creates NO Refund object** | **zero refunds before, zero after**; `charge.refunded: false` |
+| The window | **exactly 7.00 days**, and `capture_before` is machine-readable on the charge |
+| Never capturing | Stripe: *"the funds are released and the payment status changes to `canceled`"* — **the money side needs no sweeper** |
+| 🔴 `application_fee_amount` **AT CAPTURE** | **Accepted**, and an `ApplicationFee` object reached the platform |
+
+🔴 **THE NO-REFUND PROPERTY IS WHY THE DESIGN WORKS.** Under **direct charges** a refund is money leaving **the truck's** Stripe account, which HatchGrab cannot issue and which the terms assign to the truck. **A cancelled authorization is not a refund — it is the absence of a charge.**
+
+🔴 **AND THE FEE WORKS DESPITE `fees.payer: 'account'`.** The truck paying Stripe's processing fees is a **SEPARATE AXIS** from the platform fee. Setting the fee **at capture** is also strictly better: that is the moment the order is confirmed and its final value is known.
+
+### 🔴 A TRAP THE DOCUMENTATION DOES NOT WARN ABOUT
+
+**An UNCAPTURED charge reports `charge.status: "succeeded"`** while `captured: false`, `amount_captured: 0` and `balance_transaction: null`. The Dashboard renders it correctly as *"Uncaptured"* — it reads `captured`, not `status`.
+
+🔴 **We are safe only because our webhook keys on the `payment_intent.succeeded` EVENT, which under manual capture fires at CAPTURE.** **Anything reading `charge.status === 'succeeded'` to mean "paid" would be wrong for every authorization** — including any future reconciliation script or Sigma query.
+
+⚠️ **The truck has a full Stripe Dashboard and can capture or cancel an authorization THEMSELVES** before our checks finish.
+
+⚠️ **Cancellation copy must say the hold will disappear, not that nothing happened.** Stripe: *"Card statements from some issuers … don't always distinguish between authorizations and captured (settled) payments."*
+
+### The cost, unchanged
+
+🔴 **Hosted Checkout is a full page navigation, so the basket cannot survive in the browser.** Metadata is too small (50 keys × 500 chars) and Checkout line items lose modifiers, deals, slot and notes. **A SERVER-SIDE DRAFT TABLE plus a migration is required.**
+
+🔴 **The tempting shortcut — an `orders` row in a status excluded from stock and capacity — reintroduces exactly what this design avoids**, weakens the insert-follows-validation coupling, and forces every `status` filter in the product to learn a new value.
+
+🔴 **And `/api/orders/submit` is a 1,139-line ROUTE HANDLER, not a callable function.** Extracting its core — validation, locking, slot resolution, stock guards, the atomic RPC — **on the money path dominates the estimate. Roughly a week.**
+
+**DECIDED:** a **rolled-forward slot still captures**; the customer is notified of the correct time.
+
+---
+
+## WHAT IS BUILT ON THE PAYMENT PATH TODAY (V11.8)
+
+**A real sandbox card payment works end to end** via **hosted Checkout**: order first → PaymentIntent on the connected account → **webhook writes `order_payments` with `channel: 'online'` and `livemode` from the event**.
+
+✅ **ZERO MIGRATIONS WERE NEEDED.** `channel`, `external_ref`, `idempotency_key`, `livemode` and `truck_id` were all **reserved and unwritten** since the ledger was built.
+
+🔴 **IDEMPOTENCY KEY: `stripe_pi:{PaymentIntent id}` — NOT the collect key.** `collectIdempotencyKey` derives from **ledger position**, which is the one thing that is not stable across a Stripe retry: the second delivery would mint a **different** key and insert a **second charge row, doubling the recorded amount**. The PaymentIntent id is minted before the money moves and is identical on every redelivery.
+
+🔴 **NO `application_fee_amount` IS SENT. The fee is OMITTED, not zero** — the parameter must be positive.
+
+⚠️ 🔴 **TEST MONEY IS EXCLUDED AT TWO LAYERS** — `readLedger`'s `.eq('livemode', true)` and `getOrderBalance`'s `isLiveRow` — **so a sandbox payment can NEVER make an order look paid.** The paid-state UX (the PAID chip, the *Collected* button) **cannot be exercised until live money exists. Do not relax that guard to produce a nicer screenshot.**
+
+**Readiness reaches the customer page via a SEPARATE query**, never an embedded select on the truck row. 🔴 **Folding it in would put it inside the statement that fetches the MENU** — the 42703 class that answers **HTTP 200 with an empty board**. Isolated, the worst case is `false`, which is the safe answer anyway.
+
+**Stripe Checkout was chosen over an in-page Payment Element:** the latter needs **two npm packages this project does not have** plus a new SCA-handling card UI inside a 2,300-line component. ⚠️ **The trade is that the customer leaves the site**; swapping later touches only that route's response, because the ledger keys off the PaymentIntent either way.
+
+---
+
+## 🔴 THE PLATFORM FEE — BLOCKED, AND BY MORE THAN A COUNTER (V11.8)
+
+**All three inputs are missing:**
+
+| Input | State |
+|---|---|
+| The allowances (£1,500 / £2,000) | 🔴 **DISPLAY STRINGS ONLY, in four places** — `lib/payments` cannot read a number |
+| The 0.99% rate | 🔴 **hardcoded in five places**, all strings |
+| Online value per truck per period | 🔴 **nothing tracks it** — no column, no table, no query |
+| "Period" | 🔴 **not merely untracked but UNDEFINED** — no `stripe_customer_id`, no subscription, no billing anniversary anywhere |
+
+🔴 **SO THE FEE IS BLOCKED BEHIND SUBSCRIPTION BILLING, not just behind a counter.**
+
+🔴 **SHIPPING WITHOUT THE FEE IS NOT A TRAP — and the thing that makes it safe is not the fee.** It is that **every ledger row carries `channel: 'online'` with `truck_id` and `created_at`**, so **THE LEDGER IS THE ALLOWANCE HISTORY** and the running total stays **reconstructible**. ⚠️ **It becomes a trap only if a version writes `orders.payment_status` from the webhook and SKIPS the ledger.**
+
+⚠️ **On a cached running total: this codebase has already had a money cache drift from its ledger.** Weigh that against adding a second.
+
+**OPEN COMMERCIAL DECISION:** an order straddling the threshold — fee on the excess only, or on the whole order. **The money is trivial (~40p a month); the stakes are entirely in the wording.**
+
+---
+
+## 🔴 RADAR — a per-transaction cost nobody chose (V11.8)
+
+**Onboarding DEFAULTS every connected account into Radar Standard**, which **charges per screened transaction ON TOP of card processing.** Stripe's step reference: *"Allows a connected account to **confirm** their Radar fraud protection plan. **By default, connected accounts are opted in to Radar Standard**."* ⚠️ The same table says accounts *"opt into"* Climate and Tax — **Radar is opt-OUT.**
+
+**Forcing free Radar Lite is gated on the platform paying Stripe's fees**, which our posture means we do not.
+
+🔴 **CORRECTED: the truck CAN change or drop their own tier** — via `summary_fraud_protection` inside the onboarding flow, and via **Radar in their own Stripe Dashboard, which they have because `dashboard: 'full'`**. **So this is a GUIDANCE problem, not a structural one.**
+
+**The step itself cannot be suppressed:** `collectionOptions` matches **requirement entries** and a Radar plan is not a requirement — and suppressing it would remove **the disclosure**, not the enrolment, which is worse.
+
+⚠️ **UNRESOLVED — whether HatchGrab carries a per-connected-account Radar cost.** *"Stripe charges Radar account fees to the platform always"* fixes **who is billed, not whether a bill exists**: account screening is a **paid-tier feature Radar Lite does not include**. **Needs two Dashboard reads — our own Radar tier, and any Radar line on our invoices.** ⚠️ **The per-transaction figure is still hidden behind a "Show pricing" control** and is not in the docs.
+
+---
+
+## THE PAYMENTS TAB (V11.8)
+
+**Manage → Payments — AFTER Settings, BEFORE Billing, OWNER-ONLY**, and it does **not** inherit Billing's `plan !== 'tester'` exclusion (that rule is keyed on the id `'billing'`), because a tester truck still needs to reach Connect onboarding.
+
+### Six states, one panel at a time
+
+**From one pure, client-safe module (`lib/stripe/payments-state.ts`):** `not_connected` · `requirements` · `pending` · `ready` · `restricted` · `unsupported`.
+
+🔴 **NOT A WIZARD.** Stripe owns onboarding's steps and its docs say the step names *"can change at any time, without notice"* and that steps *"can appear in any order and can repeat"* — **so our own progress spine would be a lie we could not maintain.**
+
+🔴 **`pending` READS `card_payments.status`, NOT `charges_enabled`.** The boolean **cannot distinguish WAITING from BLOCKED**, and telling a truck to *"finish the steps below"* while Stripe is verifying **sends them hunting for work that does not exist.** ⚠️ Costs **one extra Stripe call per tab open**; **readiness never depends on it** (a failed read degrades to the v1-only states).
+
+### 🔴 The notification banner
+
+**It renders NOTHING until `details_submitted`, AND in the healthy steady state.** An unconditional wrapper around it showed **an empty white card in both** — including **permanently, for a verified trading truck.**
+
+🔴 **Fixed by DELETING THE WRAPPER, not by driving it from `onNotificationsChange`:** no flag means **nothing for a late, duplicate or missing event to be wrong about.** It now lives **inside the "Your Stripe details" card**, which always has content, so it can be neither an empty box nor an unpadded strip touching its neighbours.
+
+🔴 **THE BANNER CANNOT BE FILTERED.** It is **one opaque iframe** carrying **risk interventions and paused payouts** as well as hygiene prompts, and `onNotificationsChange` returns **`{total, actionRequired}` — two integers with NO message text.** ⚠️ **So *"your payouts are paused"* appears inside a card headed "Your Stripe details".** **Accepted, because the urgent path does not depend on it — see the badge.**
+
+### 🔴 The tab badge — server-side only
+
+**Driven by `requirements.currently_due`, `past_due` and `disabled_reason`, which ride on the account read we already make.**
+
+🔴 **NOT from `onNotificationsChange`**, and the reason is stronger than reliability: **the banner exists ONLY on the Payments tab**, so a **cross-tab badge fed by a same-tab iframe would be silent exactly when the operator is elsewhere.**
+
+🔴 **`disabled_reason` is in the predicate deliberately:** an account can be **disabled with both arrays empty**, which is exactly when a truck has stopped being able to trade.
+
+**Countless `(!)` variant**, reusing the Menu tab's allergen treatment — **"Payments (3)" is not something an operator can act on.**
+
+⚠️ **The badge does NOT fire for "Confirm your email address"** — **account hygiene, not a Connect requirement**, with `charges_enabled` and `payouts_enabled` both true and **every requirements array empty**. **Correct and deliberate: a badge is for things that stop the money.**
+
+### Two things that cannot be changed
+
+⚠️ **"Add information" is STRIPE'S button inside its iframe and cannot be removed.** Authentication needs a **popup**, a popup needs a **user gesture**, and the gesture must originate inside their cross-origin frame. **`disable_stripe_user_authentication` only works when `requirement_collection` is `'application'`; ours is `'stripe'`.**
+
+⚠️ **A three-section restructure was tried and REVERTED at the operator's request** — only the notification-banner merge was wanted. **The fee-line argument is PARKED, not abandoned: revisit when Tap to Pay ships**, because `CARD_FEE_ONLINE_LABEL` is the **online** rate and in-person is a **different** one.
+
+---
 
 ## Stripe — what is actually built (V11.5)
 
@@ -6710,4 +6975,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.7
+HatchGrab Engineering Reference Manual · V11.8

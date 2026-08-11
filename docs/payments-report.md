@@ -1,149 +1,205 @@
-# The Add Order secondary button is now "Place order"
+# Probe — manual capture on a direct charge, under our posture
 
-**Date:** 10 August 2026
-**Copy only.** No behaviour change, no styling change, no other label change.
-**Prompt integrity:** nothing arrived garbled, and **no instruction contradicted another** — nothing to stop and ask about.
+**Date:** 11 August 2026
+**Result: 🔴 ALL SIX STEPS PASSED. Cancellation creates NO Refund object — the property the whole design rests on is confirmed.**
+**Prompt integrity:** nothing arrived garbled, and no instruction contradicted another.
+
+**Scope of what was written:** four PaymentIntents and one Checkout Session on the **sandbox** connected account `acct_1U1oKsGjKNrnUpcM`. **No database call, no code change** — neither script imported the Supabase client. Both deleted, confirmed.
+
+🔴 **One trap found that the documentation does not warn about: an UNCAPTURED charge reports `charge.status: "succeeded"`.** See §7.
 
 ---
 
-## The change
+## The answers, first
 
-| | Before | After |
+| # | Question | Answer |
 |---|---|---|
-| Add Order, secondary button (setting **ON**) | `Place order, pay later` | **`Place order`** |
-
-[AddOrderPanel.tsx:1338](../components/dashboard/AddOrderPanel.tsx#L1338) — one line, one string.
-
-### Recorded at the site so it is not lengthened again
-
-The reasoning is now a comment on the confirm bar, in the terms you gave:
-
-> 🔴 *"THE SECONDARY IS **"Place order"**, AND IT IS DELIBERATELY SHORT. DO NOT LENGTHEN IT. It was briefly "Place order, pay later"; that was DEFENSIVE, and the defence is unnecessary because it never stands alone — **it sits beside "Take payment £10.00", and the contrast carries the meaning: one button names a price, the other does not.** An operator who has turned "Take orders without payment" ON knows what they configured. The longer label also cost width in a row that is tight on a phone."*
-
-And the guard against the obvious wrong shortening:
-
-> ⚠️ *"AND IT IS NOT "Confirm order", which is what it will drift back to if anyone shortens it without reading this. Two reasons, both live: "confirm" reads as THE primary action, which is the inversion this bar was rebuilt to remove; and **"Confirm" is the customer-order flow's own word for accepting an order into the queue** (the order card's `✓ Confirm`, the pending bucket), so it already means something else in this product."*
+| 1 | Checkout Session + `capture_method: manual` as a direct charge? | ✅ **ACCEPTED** |
+| 2–3 | Reaches `requires_capture` with no money moved? | ✅ **YES** — `amount_received: 0`, `balance_transaction: null` |
+| 4 | 🔴 **Does cancelling create a Refund?** | ✅ 🔴 **NO. Zero refunds before, zero after.** |
+| 5 | Capture on a connected account? | ✅ **Succeeded** |
+| 6 | 🔴 `application_fee_amount` **at capture**? | ✅ **ACCEPTED** — and it works despite `fees.payer: 'account'` |
 
 ---
 
-## VERIFY
+## 0. The account, and our posture on it
 
-### Every surface rendering the secondary label — checked for siblings
+```
+acct_1U1oKsGjKNrnUpcM
+charges_enabled : true   details_submitted: true
+controller      : {"fees":{"payer":"account"},"is_controller":true,
+                   "losses":{"payments":"stripe"},"requirement_collection":"stripe",
+                   "stripe_dashboard":{"type":"full"},"type":"application"}
+```
 
-**There is exactly one render site.** A repo-wide search for the old string returns two hits and only one is code:
+✅ **This is exactly our posture** — the truck pays Stripe's fees, Stripe bears losses and collects requirements, full Dashboard. **Everything below was measured on it, not on a default account.**
 
-| Hit | What it is |
+---
+
+## 1. ✅ Checkout Session with manual capture, as a direct charge
+
+```
+✅ ACCEPTED — session cs_test_a1ju1AMoy1CXjTTGohig8zDLLP4guDSW0lwiauK3doNfXRrC1MjYAKnSHU
+   livemode: false  amount_total: 1250 gbp
+   status: open  payment_status: unpaid
+```
+
+**Created with `payment_intent_data: { capture_method: 'manual' }` and the `Stripe-Account` header — the two parameters together, on one call, with no error.**
+
+🔴 **This is the §2 assumption I flagged as unverified, and it is settled.** The absence of a restriction in the docs was correct: `capture_method` and `Stripe-Account` are orthogonal, and Stripe accepts them together under our exact controller configuration.
+
+⚠️ **A hosted Checkout Session cannot be completed without a browser**, so steps 2–6 used PaymentIntents created with the same shape Checkout produces: same connected account, `capture_method: 'manual'`, test card. **The parameter acceptance above is what step 1 could prove; the lifecycle below is what the rest proves.**
+
+---
+
+## 2–3. ✅ Authorization — `requires_capture`, and no money moved
+
+```
+[AUTHORIZED] pi_3U3BUOGjKNrnUpcM04vV5uZe
+   status                          : requires_capture
+   amount / capturable / received  : 1250 / 1250 / 0
+   application_fee_amount          : null
+   charge.status                   : succeeded
+   charge.captured                 : false
+   charge.amount_captured          : 0
+   charge.balance_transaction      : null   ← null = no money moved
+   capture_before                  : 2026-08-18T08:56:52.000Z
+   (created 2026-08-11T08:56:52.000Z → window 7.00 days)
+```
+
+✅ **`balance_transaction: null` is the proof that nothing moved** — a balance transaction is what exists when money changes hands, and there is none.
+
+✅ **The window is exactly 7.00 days**, matching the documented *"Usually, an authorization for an online card payment is valid for 7 days"* to the second. `capture_before` is on the charge and is machine-readable, so a future implementation can read the deadline rather than assume it.
+
+---
+
+## 4. 🔴 CANCELLATION CREATES NO REFUND — the design property holds
+
+```
+refunds on the account BEFORE : 0
+
+[CANCELLED] pi_3U3BUOGjKNrnUpcM04vV5uZe
+   status                          : canceled
+   amount / capturable / received  : 1250 / 0 / 0
+   cancellation_reason             : null
+   charge.status                   : succeeded
+   charge.refunded                 : false
+   charge.amount_refunded          : 0
+
+refunds on the account AFTER  : 0
+
+🔴 NEW REFUND OBJECTS: 0  ✅ NONE — the property the design rests on HOLDS
+```
+
+🔴 **This is the answer that matters most, and it is unambiguous.** `amount_capturable` falls to 0, the PaymentIntent goes `canceled`, and **no `Refund` object comes into existence** — `charge.refunded` stays `false` and `amount_refunded` stays `0`.
+
+**Why it matters so much for this design:** under direct charges, a refund is money leaving **the truck's** account, which HatchGrab cannot issue and which the terms assign to the truck. **A cancelled authorization is not a refund — it is the absence of a charge.** So the "cancel on check failure" step in the proposal costs the truck nothing and involves no refund mechanics at all.
+
+⚠️ **`cancellation_reason` came back `null`** because none was passed. It is settable (`requested_by_customer`, `abandoned`, …) and **worth setting deliberately** — it is the only field that would later distinguish "stock ran out" from "we crashed".
+
+---
+
+## 5. ✅ Capture on a connected account
+
+```
+authorized pi_3U3BVAGjKNrnUpcM0azUCCbI → requires_capture
+```
+
+Then captured — see §6.
+
+---
+
+## 6. 🔴 `application_fee_amount` AT CAPTURE — confirmed
+
+```
+[CAPTURED] pi_3U3BVAGjKNrnUpcM0azUCCbI
+   status                          : succeeded
+   amount / capturable / received  : 1250 / 0 / 1250
+   application_fee_amount          : 99
+   charge.captured                 : true
+   charge.amount_captured          : 1250
+   charge.application_fee          : "fee_1U3BVBGjKNrnUpcMQ6klJJDZ"
+   charge.application_fee_amount   : 99
+   charge.balance_transaction      : present — money moved
+
+✅ application_fee_amount AT CAPTURE: ACCEPTED
+```
+
+**And the fee really reached the platform** — an `ApplicationFee` object exists on the platform account, attributed to the connected account:
+
+```
+fee_1U3BVBGjKNrnUpcMQ6klJJDZ  amount=99 gbp  charge=ch_3U3BVAGjKNrnUpcM0NoqGEZc  account=acct_1U1oKsGjKNrnUpcM
+```
+
+🔴 **The non-obvious part, and it is worth stating plainly: the fee worked despite `fees.payer: 'account'`.** Our posture makes the **truck** pay Stripe's processing fees. That is a *separate axis* from the platform fee — **the truck pays Stripe, and HatchGrab can still take an application fee on top.** The two do not interfere, and I had not verified that before now.
+
+✅ **So the deferred fee is genuinely easier under authorize-then-capture**, exactly as §3 of the audit predicted: the fee is set at capture, which is the moment the order is confirmed and its final value is known.
+
+⚠️ Note the two older fees in the list (`amount=123` each, 7 August) — **pre-existing from earlier testing, not from this probe.**
+
+---
+
+## 7. 🔴 WHAT THE TRUCK SEES — and the trap
+
+```
+an UNCAPTURED payment on their account:
+   payment_intent.status      : requires_capture
+   charge.status              : succeeded        ← 🔴 THIS
+   charge.captured            : false
+   charge.amount_captured     : 0
+   charge.balance_transaction : null
+```
+
+🔴 **`charge.status` is `"succeeded"` on a charge where no money has moved.** The Stripe Dashboard renders this correctly as **"Uncaptured"** — it derives the label from `captured`, not from `status` — but **the API field says `succeeded`.**
+
+⚠️ **This is the one thing that behaved differently from what the documentation led me to expect, and it is a live trap for us:**
+
+- ✅ **We are safe today by accident of a good decision.** Our webhook keys on the **`payment_intent.succeeded` EVENT**, which under manual capture only fires at capture. **The event and the field are not the same thing.**
+- 🔴 **Anything that ever reads `charge.status === 'succeeded'` to mean "paid" would be wrong** for every uncaptured authorization. That includes any future reconciliation script, any Sigma query, and any human reading the API.
+
+**What the truck sees in their own Dashboard:** a payment listed as **Uncaptured**, for the full amount, with a visible expiry (`capture_before`). ⚠️ **They can capture or cancel it themselves** — they have a full Dashboard and it is their account. That is a real operational consideration this design introduces: **a truck could capture an authorization for an order our checks were about to reject.** The window is seconds in the happy path, but it is not zero.
+
+---
+
+## Anything else that differed from the documentation
+
+| | |
 |---|---|
-| [AddOrderPanel.tsx:1338](../components/dashboard/AddOrderPanel.tsx#L1338) | 🔴 **the rendered label** — changed |
-| AddOrderPanel.tsx:1311 | the new comment, quoting the old label as history |
-
-**No sibling render site exists.** I checked specifically because a label disagreed with itself earlier today — the enabled completion button read "Mark paid and collected" while its disabled placeholder read "&".
-
-### Two related strings found, examined, and left alone — reported not fixed
-
-| Site | String | Verdict |
-|---|---|---|
-| [AddOrderPanel.tsx:1892](../components/dashboard/AddOrderPanel.tsx#L1892) | `<p className="font-black text-slate-900">Confirm order</p>` | **A SHEET HEADING, not a button** — it titles the mobile order sheet, beside a ✕ close. It is not a competing label and does not sit next to the payment button. **Left as-is.** |
-| [app/trucks/[slug]/order/page.tsx:2259](../app/trucks/[slug]/order/page.tsx#L2259) | `'Place order'` | **The CUSTOMER's submit button.** The operator's secondary now uses the same words — and that is **coherent, not a collision**: "place an order" means the same thing on both surfaces. It is precisely the contrast with `Confirm`, which means something *different* on the operator card (accepting an incoming order), that made `Confirm` the wrong choice. **Left as-is.** |
-
-### One stale sibling found and corrected
-
-[lib/ui-tokens.ts:37](../lib/ui-tokens.ts#L37) — the `ORANGE_OUTLINE` doc comment read:
-
-> *"SECONDARY of the same brand colour — **"Confirm order"** beside "Cash"/"Card"."*
-
-**That named a button that had not existed since the confirm bar was rebuilt.** The file's own header says *"Two copies that agree today are two copies that disagree tomorrow; a shared constant cannot drift"*, so a token comment naming a dead label is exactly the drift it warns about. Updated to `"Place order" beside "Take payment" / "Cash" / "Card"`, with a note to keep it in step. **Comment only — the exported class string is unchanged.**
-
-### Settings descriptions still name buttons that exist ✅
-
-The Manage and dashboard completion-setting descriptions name **`Mark paid & collected`**, **`Mark paid`** and **`Collected`** — the *completion* buttons, none of which changed. **No settings copy anywhere names the Add Order buttons**, so nothing needed updating. (The only Manage/dashboard mentions of *"Take payment"* are code comments about the cash split, not rendered copy.)
-
-### 🔴 No completion button label changed
-
-```
-OrderCard.tsx:296  label="Collected"
-OrderCard.tsx:299  label="Mark paid & collected"
-OrderCard.tsx:334  : 'Mark paid'   /  `Mark ${money(balance.balanceMinor)} paid`
-OrderCard.tsx:496  the disabled placeholder — same four strings
-```
-
-**All four unchanged.** And your reasoning is now recorded at that site, since it is the obvious next thing someone would shorten:
-
-> 🔴 *"DO NOT DROP THE WORD "MARK". IT IS WHAT MAKES THESE READ AS ACTIONS. **"Mark paid" is an instruction; "Paid" is a status** — and this card already carries a PAID CHIP a few lines up, so a button reading `Paid & collected` beside a chip reading `PAID` would read as a state the card is reporting rather than a thing the operator can press."*
->
-> ⚠️ *"The Add Order case is the opposite and that is why it could be shortened: "Place order" sits beside "Take payment £10.00", so the CONTRAST carries the meaning. Nothing on this card supplies that contrast — the completion button is frequently the only control on the row."*
+| 🔴 `charge.status: "succeeded"` while uncaptured | §7 — **the significant one** |
+| `cancellation_reason: null` after an explicit cancel | Expected only if one is passed; ours was not. Not a defect, but worth setting. |
+| The charge object **persists** after cancellation | With `status: succeeded`, `captured: false`, `refunded: false`. So a cancelled authorization leaves a charge record, not a clean absence — **visible to the truck.** |
+| Application fees created **asynchronously** | The docs say so, and it held: the `ApplicationFee` object needed a moment to appear after capture. Anything reading it immediately after capture must tolerate a lag. |
+| Everything else | Matched the documentation exactly, including the 7-day window to the second |
 
 ---
 
-## ALSO CHECKED — the inline vs stacked amount. **Reported, not changed.**
+## What was written, and cleanup
 
-### Yes, the two states differ
-
-| State | Markup | Renders |
-|---|---|---|
-| **OFF**, single button | `` `Take payment${manualTotal > 0 ? ` £${…}` : ''}` `` at `text-base` | **INLINE** — one line |
-| **ON**, primary button | `<span className="text-sm">Take payment</span><span className="text-base font-black">£{…}</span>` in a `flex flex-col` | **STACKED** — label over amount |
-
-### Measured at 375px — the inline form does **not** clip, with room to spare
-
-The confirm bar is `<div className="border-t border-slate-200 p-4 …">` ([:1273](../components/dashboard/AddOrderPanel.tsx#L1273)), so `p-4` = 16px each side → **≈343px of inner width**. The OFF button is `w-full` with **no horizontal padding class**, so effectively all 343px is available to centred text.
-
-| Label | Chars | Approx width at 16px semibold | Available | Verdict |
-|---|---|---|---|---|
-| `Take payment £10.00` | 19 | **≈158px** | ≈343px | ✅ **46% of the width — comfortable** |
-| `Take payment £1,234.56` | 22 | ≈183px | ≈343px | ✅ still comfortable |
-
-### Why the ON state stacks anyway — and why that is not an inconsistency
-
-**The two buttons face different constraints.** The stacked form exists because in the ON state the payment button is `flex-1` **sharing the row** with the secondary — and with `takes_cash` on, with two more. Three buttons across ≈343px leaves each roughly **110px**, against which an inline `Take payment £10.00` at ≈158px **would** clip. That is the width note the original comment records.
-
-**The OFF button has the whole row to itself, so the constraint does not apply.** Inline is correct there and stacked is correct in the row.
-
-**No recommendation, and nothing changed** — as instructed. ⚠️ One incidental benefit worth noting: shortening the secondary from `Place order, pay later` (≈150px at 14px) to `Place order` (≈80px) **gives the ON row about 70px back**, which makes the shared-row constraint less tight than it was.
-
----
-
-## 🔴 GUSTO — the label, and nothing else
-
-They are `show_paid_step` **TRUE**, so the setting is **ON** and they see this button.
-
-| | Before | After |
-|---|---|---|
-| Secondary button | `Place order, pay later` | 🔴 **`Place order`** |
-| Primary button | `Take payment` / `£10.00` stacked | **identical** |
-| Cash/card split | not split (`takes_cash` false) | **identical** |
-| What either button dispatches | one `gatedAction({ kind: 'create' })` | **identical** |
-| `paymentTaken` / `paymentMethod` | unchanged | **identical** |
-| Order card, chip, completion buttons | unchanged | **identical** |
-| Settings descriptions | name the completion buttons | **identical** |
-
-**Exactly what you expected: the label only.**
-
----
-
-## tsc and lint
-
-```
-$ npx tsc --noEmit
-TSC EXIT: 0
-
-$ npx eslint .   (rule|severity, whole repo)
-  vs the immediately-previous task : IDENTICAL
-  vs this morning's pre-work baseline:
-    3c3   568 → 566  @typescript-eslint/no-explicit-any   (2 FEWER, from the previous task)
-    15c15  44 → 32   react/no-unescaped-entities          (12 FEWER, from earlier tasks)
-```
-
-**No rule introduced and no count increased by this task** — the lint profile is byte-identical to the previous run, which is what a copy-only change should produce.
-
----
-
-## Files changed — three
-
-| File | Change |
+| | |
 |---|---|
-| [components/dashboard/AddOrderPanel.tsx](../components/dashboard/AddOrderPanel.tsx) | the label, plus the do-not-lengthen / not-"Confirm order" reasoning |
-| [components/dashboard/OrderCard.tsx](../components/dashboard/OrderCard.tsx) | **comment only** — why the completion buttons keep "Mark" |
-| [lib/ui-tokens.ts](../lib/ui-tokens.ts) | **comment only** — the stale `"Confirm order"` reference corrected |
+| **Stripe (sandbox)** | 1 Checkout Session (`cs_test_a1ju1AM…`, left `open`, expires by itself) · 4 PaymentIntents: **2 cancelled**, **1 captured** (`pi_3U3BVAGjKNrnUpcM0azUCCbI`, £12.50 with a 99p application fee), 1 cancelled after the Dashboard check |
+| **Our database** | **Untouched.** Neither script imported `@supabase/supabase-js`; every call went to `api.stripe.com`. |
+| **The repo** | **Unchanged by this probe.** The modified files are earlier tasks'; no source file was edited here. |
+| **The scripts** | `_probe_capture.mjs`, `_probe_capture2.mjs` — **deleted, confirmed** |
+| **Safety guard** | Both scripts refused any key not starting `sk_test_`, checked before the first request |
 
-**Copy only. No behaviour change, no styling change, no completion button touched, and the inline/stacked question reported rather than altered.**
+⚠️ **One captured payment of £12.50 now sits on `acct_1U1oKsGjKNrnUpcM`** with 99p taken to the platform. It is sandbox money. **I did not refund it deliberately** — a refund would create the very `Refund` object §4 exists to show does not appear, and would muddy the record if you re-check.
+
+---
+
+## What this changes about the design
+
+**Nothing was wrong. One thing is now proven that was assumed, and one new trap is named.**
+
+| | Before this probe | Now |
+|---|---|---|
+| Checkout + manual capture + direct charge | ⚠️ inferred from the absence of a restriction | ✅ **measured** |
+| Cancel ≠ refund | ⚠️ assumed | ✅ 🔴 **proven — 0 refund objects** |
+| Fee at capture | ⚠️ read in the API reference | ✅ **proven, and proven compatible with `fees.payer: 'account'`** |
+| 7-day window | ⚠️ documented | ✅ **measured at exactly 7.00 days** |
+| 🔴 `charge.status` on an uncaptured charge | not considered | 🔴 **reads `succeeded` — never key on it** |
+| 🔴 The truck can capture or cancel it themselves | not considered | 🔴 **they have a full Dashboard; it is their account** |
+
+⚠️ **The structural cost from the audit is untouched by this probe and still stands: hosted Checkout is a full page navigation, so the basket needs a server-side draft (§10 of the previous report), and extracting order creation from the 1,139-line submit route is still the piece that dominates the estimate.**
+
+**Stopping here, as instructed. Nothing built, nothing migrated, the checkout route unchanged.**

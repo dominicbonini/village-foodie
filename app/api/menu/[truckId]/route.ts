@@ -10,6 +10,8 @@ import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
+// ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
+import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
@@ -641,6 +643,42 @@ export async function GET(
   // Logo: operator upload → Village Foodie discovery fallback (shared resolver, Section 14/27).
   const logo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
 
+  // ── 🔴 CARD-PAYMENT READINESS — A SEPARATE QUERY, DELIBERATELY ──────────────────────────────────
+  // Readiness lives on `operators.stripe_charges_enabled`, but this page is truck-slug-scoped, so it
+  // has to be reached through `trucks.operator_id`.
+  //
+  // 🔴 IT IS NOT AN EMBEDDED SELECT, AND THAT IS THE WHOLE POINT. Adding `operators(...)` to the truck
+  // query above would fold readiness into the statement that fetches the MENU — and a named select that
+  // cannot resolve fails the WHOLE statement (the 42703 class this codebase has been bitten by, where a
+  // missing column answers HTTP 200 with an empty board). The blast radius would be every customer
+  // seeing no menu at all, to decide whether to show a card button. Isolated, the worst case is
+  // `false`, which is the safe answer anyway: no card option, Pay-at-Hatch, exactly as today.
+  //
+  // ⚠️ WHAT IT COSTS: one extra indexed primary-key lookup per menu load, on the hottest customer
+  // endpoint in the product. It is skipped entirely when the truck has no operator, and it is a single
+  // boolean read — but it IS a real cost and it is on the critical path, so it is recorded rather than
+  // waved through. If it ever matters, the fix is to denormalise readiness onto `trucks`, not to fold
+  // this back into the menu query.
+  //
+  // ⚠️ THIS IS A RENDERING HINT, NEVER A GATE. The server re-reads readiness at Checkout creation
+  // (app/api/stripe/checkout/route.ts). A customer holding a stale `true` cannot force a payment.
+  // ⚠️ TEMPORARY: the operator's online-payments pause is ANDed in here, via the one resolver in
+  // lib/payments/online-payments-switch.ts. `truck` above is select('*'), so before that migration is
+  // applied the column arrives undefined and the resolver reads it as "not paused" — today's behaviour
+  // exactly. Delete the import and this call when the switch goes; see the migration for the list.
+  let cardPaymentsReady = false
+  if (truck.operator_id) {
+    const { data: op, error: opErr } = await supabase
+      .from('operators')
+      .select('stripe_charges_enabled')
+      .eq('id', truck.operator_id)
+      .maybeSingle()
+    if (opErr) {
+      console.error('[MENU API] readiness lookup failed — falling back to Pay-at-Hatch:', opErr.message)
+    }
+    cardPaymentsReady = resolveOnlineCardPayments(op, truck).offered
+  }
+
   return NextResponse.json({
     truck: {
       id: truck.id,
@@ -667,6 +705,10 @@ export async function GET(
       allergen_display_mode: (truck.allergen_display_mode ?? null) as 'per_dish' | 'card' | 'both' | null,
       preorder_open_rule: ((truck as any).preorder_open_rule ?? null) as string | null,   // V8.3 calendar "opens [date]"
       ordering_available: orderingAvailable,
+      /** 🔴 Whether to OFFER a card option. `false` for every truck whose operator has not completed
+       *  Stripe onboarding — which is all of them until one does — and the customer simply sees
+       *  Pay-at-Hatch, exactly as before. Never a card option that then fails. */
+      card_payments_ready: cardPaymentsReady,
       // Truck-level allergen-verification flag: false when ANY live menu item is unverified
       // (allergens_verified === false). Drives the customer "allergen info not verified — ask staff"
       // safety notice. true when every item is verified/legacy (no false) → no notice (e.g. Gusto).

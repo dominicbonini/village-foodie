@@ -1122,6 +1122,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success:       true,
       orderId,
+      // 🔴 THE ORDER KEY, RETURNED SO A CARD PAYMENT CAN REFERENCE THE ORDER THAT ALREADY EXISTS.
+      // `orderId` is the human display number and is NOT unique across trucks; `order_key` is the uuid
+      // every money path keys off — /api/stripe/checkout takes it, the PaymentIntent carries it in
+      // metadata, and the webhook finds the order by it. It is also the id /order/[id]/manage uses.
+      orderKey:      order.order_key,
       truckName:     truck.name,
       slot:          confirmedSlot,
       requestedSlot,

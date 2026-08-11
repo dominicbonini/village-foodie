@@ -222,6 +222,14 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Banner is dismissible per-session but REAPPEARS when the count rises above the dismissed level
   // (i.e. new events arrived) — not dismissed-forever.
   const [bannerDismissedAtCount, setBannerDismissedAtCount] = useState<number | null>(null)
+  // ── 🔴 STRIPE REQUIREMENTS → Payments nav badge + banner. SAME PATTERN AS THE TWO ABOVE. ─────────
+  // A SERVER-SIDE boolean from `requirements.currently_due` / `past_due` / `disabled_reason`, fetched
+  // once on mount exactly like pendingApprovalCount. It is NOT fed by Stripe's notification banner:
+  // that banner lives inside an iframe that only exists on the Payments tab, so a cross-tab badge fed
+  // by it would be silent precisely when the operator is on another tab — see lib/stripe/connect.ts
+  // readAccountRequirements for the full reasoning. Do not reintroduce onNotificationsChange here.
+  const [stripeActionRequired, setStripeActionRequired] = useState(false)
+  const [stripeBannerDismissed, setStripeBannerDismissed] = useState(false)
 
   // ── K3/K4: THE WALKTHROUGH ────────────────────────────────────────────────────────────────────────
   // 🔴 THERE IS NO AUTO-OPEN PATH, AND THAT IS THE GUARANTEE. `walkthroughOpen` starts false and is only
@@ -348,6 +356,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         ).length
         setPendingApprovalCount(n)
       })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [token])
+
+  // ── 🔴 STRIPE REQUIREMENTS, ON MOUNT — the Payments badge's only source ─────────────────────────
+  // Mirrors the pending-approval fetch above: one request on load, state set when it lands, badge and
+  // banner derived from it. Nothing blocks on it and a failure leaves the badge simply absent.
+  // ⚠️ THE ROUTE IS OWNER-ONLY AND SO IS THE PAYMENTS TAB, so a 403 here is the correct, expected
+  // answer for a manager — they never see the tab, so they never need the badge. Swallowed silently.
+  // ⚠️ It short-circuits server-side for a truck with no connected account, so this costs nothing for
+  // the eleven trucks that have not connected.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/stripe/connect', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, action: 'requirements' }),
+    })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (!cancelled && d) setStripeActionRequired(d.actionRequired === true) })
       .catch(() => {})
     return () => { cancelled = true }
   }, [token])
@@ -559,6 +586,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               {t.id === 'schedule' && pendingApprovalCount > 0 ? (
                 // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
                 <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
+              ) : t.id === 'payments' && stripeActionRequired ? (
+                // Stripe needs something from the truck: the SAME orange-400 (!) treatment the Menu tab
+                // uses for unverified allergens — a countless variant, because "how many requirements"
+                // is not a number an operator can act on. No new formatting was invented.
+                <span className="text-orange-400">{t.label} <span aria-label="Stripe needs your attention">(!)</span></span>
               ) : t.id === 'menu' && allergensUnverified ? (
                 // Allergens unverified: a (!) on the Menu tab. Uses the SAME orange-400 treatment as the
                 // Schedule needs-approval cue (consistency) — not amber.
@@ -619,6 +651,23 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               <strong>Allergens not set</strong> — customers can&apos;t see allergen info until you verify it. Review each dish&apos;s allergens on the Menu tab.
             </p>
             <button onClick={() => setActiveTab('menu')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+          </div>
+        )}
+        {/* Stripe-requirements banner — cross-tab signal, suppressed on the Payments tab itself, where
+            Stripe's own notification banner is the surface and a second one would double it. Identical
+            treatment to the two banners above: amber-50 / amber-200, icon, "Review →", ✕.
+            ⚠️ DISMISS IS PER-SESSION AND SIMPLER THAN THE APPROVAL ONE, deliberately. That banner
+            re-appears when the COUNT rises; this signal is a boolean, so there is no "more than before"
+            to detect. Dismiss hides it until the page is reloaded — at which point the server is asked
+            again, and if Stripe still wants something it comes back. */}
+        {stripeActionRequired && !stripeBannerDismissed && activeTab !== 'payments' && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+            <span className="text-amber-500 text-lg shrink-0">💷</span>
+            <p className="text-sm text-amber-800 flex-1">
+              <strong>Stripe needs something from you</strong> — card payments can stop until it&apos;s sorted.
+            </p>
+            <button onClick={() => setActiveTab('payments')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+            <button onClick={() => setStripeBannerDismissed(true)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
           </div>
         )}
         {/* Mandatory fields banner */}

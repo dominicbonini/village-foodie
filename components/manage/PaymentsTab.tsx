@@ -20,7 +20,7 @@
 // The docs call this out as a performance best practice: "Create a single Connect instance by calling
 // loadConnectAndInitialize only once per session… A common mistake is to create one Connect instance per
 // component." It is held in a ref and created once, after an account exists.
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { loadConnectAndInitialize } from '@stripe/connect-js'
 import type { StripeConnectInstance } from '@stripe/connect-js'
 import {
@@ -33,9 +33,79 @@ import {
 // anywhere below — the landing page carries the same rule and the same reason: a rate typed twice is a
 // rate that disagrees with itself the first time one of them moves.
 import { CARD_FEE_ONLINE_LABEL, CARD_FEE_IN_PERSON_LABEL, TAP_TO_PAY_SURCHARGE_LABEL } from '@/lib/plan-features'
-import { CONNECTING_STRIPE_NOT_A_CHARGE } from '@/lib/settings-copy'
+import { CONNECTING_STRIPE_NOT_A_COMMITMENT } from '@/lib/settings-copy'
+import {
+  derivePaymentsState, shouldMountNotificationBanner, shouldShowOnboarding, shouldOfferAccountManagement,
+  type PaymentsState,
+} from '@/lib/stripe/payments-state'
 
-type Status = { accountId: string | null; chargesEnabled: boolean; syncedAt: string | null }
+type Status = {
+  accountId: string | null
+  chargesEnabled: boolean
+  syncedAt: string | null
+  detailsSubmitted: boolean
+  cardPaymentsStatus: string | null
+}
+
+// ── 🔴 ONE HEADLINE PER STATE, AND NOT ONE OF THEM CONTAINS AN INSTRUCTION ─────────────────────────
+// We own "can you take money" and the commercial framing. STRIPE OWNS THE TASK LIST, and under
+// `requirements_collector: 'stripe'` we are structurally incapable of writing it: "Most identity
+// information about your connected accounts … is inaccessible unless your platform is responsible for
+// collecting that information." So a sentence here telling an operator to "finish the steps below" is
+// us doing the notification banner's job in prose, WITHOUT its buttons and without knowing what the
+// steps are. That sentence is gone; the panel underneath carries the action.
+// ⚠️ `pending` IS THE POINT OF THE WHOLE CHANGE. It used to read "finish the steps below" — telling a
+// truck to go and do work that does not exist, while Stripe was simply verifying.
+const HEADER: Record<PaymentsState, { title: string; body: string; chip: string; chipClass: string }> = {
+  not_connected: {
+    title: 'Not connected',
+    body: "Takes about 10 minutes. You'll need your bank details and ID.",
+    chip: 'Not connected',
+    chipClass: 'bg-slate-50 text-slate-500 border-slate-200',
+  },
+  // ── 🔴 THIS STATE USED TO SAY "Connected — finishing verification" / "In progress". BOTH WERE FALSE
+  //    OF THE OPERATOR, 10 August 2026. ────────────────────────────────────────────────────────────
+  // They had pressed one button and been asked nothing. An `Account` object existing is not "connected"
+  // in any sense a truck would recognise, and "In progress" claims motion in a state they can sit in
+  // forever having done nothing. The account lifecycle was being described accurately and the person's
+  // experience inaccurately — and the person is who reads it.
+  // ⚠️ THE WORDING MUST ALSO BE TRUE OF SOMEONE WHO GOT HALFWAY AND LEFT. See the note on
+  //    derivePaymentsState: this one state covers "never opened the form" and "abandoned it midway",
+  //    so it may not claim either. "Stripe needs your details" is true of both, and so is the body.
+  // ⚠️ "Action needed" IS THE CHIP BECAUSE IT IS THE ONE THING THAT IS TRUE: something IS required, and
+  //    it is required of THEM. It is also what separates this state from `pending`, where the honest
+  //    chip is "Checking" precisely because nothing is being asked of them.
+  requirements: {
+    title: 'Stripe needs your details',
+    body: "Card payments won't work until Stripe has your business and bank details.",
+    chip: 'Action needed',
+    chipClass: 'bg-amber-50 text-amber-700 border-amber-200',
+  },
+  pending: {
+    title: 'Connected — Stripe is checking your details',
+    body: "Nothing for you to do. Stripe is reviewing what you sent, and this page updates when they're done.",
+    chip: 'Checking',
+    chipClass: 'bg-amber-50 text-amber-700 border-amber-200',
+  },
+  ready: {
+    title: 'Connected',
+    body: 'Your Stripe account is connected and able to take payments.',
+    chip: 'Ready',
+    chipClass: 'bg-green-50 text-green-700 border-green-200',
+  },
+  restricted: {
+    title: 'Card payments paused',
+    body: 'Stripe has paused card payments on your account until something is resolved.',
+    chip: 'Paused',
+    chipClass: 'bg-red-50 text-red-700 border-red-200',
+  },
+  unsupported: {
+    title: "Card payments aren't available on this account",
+    body: 'Stripe cannot enable card payments here. Get in touch and we will sort it out with you.',
+    chip: 'Unavailable',
+    chipClass: 'bg-red-50 text-red-700 border-red-200',
+  },
+}
 
 export function PaymentsTab({ token, plan, showToast }: {
   token: string
@@ -49,6 +119,20 @@ export function PaymentsTab({ token, plan, showToast }: {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
+  // ⚠️ MOUNT-ON-DEMAND, AND IT NEVER GOES BACK TO FALSE. Account management is an iframe with a Stripe
+  // sign-in popup; mounting it on page load for every owner who never opens it wastes a load cycle, and
+  // Stripe asks us not to: "Avoid mounting and unmounting component unnecessarily. Each time a component
+  // mounts, its loading cycle starts again." One-way means opening it can never cost a second mount.
+  const [showManagement, setShowManagement] = useState(false)
+  // ── 🔴 PRESSING CONNECT MUST TAKE THEM SOMEWHERE, NOT JUST CHANGE A CHIP ─────────────────────────
+  // The button is at the bottom of the first card; the onboarding panel appears below it, off-screen on
+  // a phone. Without this the operator presses Connect, the wording changes, and nothing visibly
+  // happens — which is most of why the old copy had to carry the instruction.
+  // ⚠️ ONE-WAY, AND THE EFFECT NEVER WRITES STATE. The flag is set in the click handler and never reset,
+  // so the effect fires exactly once on the false→true edge. Nothing here is a `setState` inside an
+  // effect, and the ref is only read inside the effect — never during render.
+  const [connectPressed, setConnectPressed] = useState(false)
+  const onboardingRef = useRef<HTMLDivElement | null>(null)
 
   const post = useCallback(async (action: string) => {
     const res = await fetch('/api/stripe/connect', {
@@ -111,12 +195,44 @@ export function PaymentsTab({ token, plan, showToast }: {
     setCreating(true)
     try {
       const { accountId, alreadyExisted } = await post('create_account')
-      setStatus(s => ({ accountId, chargesEnabled: s?.chargesEnabled ?? false, syncedAt: s?.syncedAt ?? null }))
-      showToast(alreadyExisted ? 'Account already connected' : 'Stripe account created — continue below')
+      // A brand-new account has submitted nothing and has no capability status worth trusting yet, so
+      // both are set to their "nothing known" values — which lands the tab in `requirements`, correctly.
+      setStatus(s => ({
+        accountId,
+        chargesEnabled: s?.chargesEnabled ?? false,
+        syncedAt: s?.syncedAt ?? null,
+        detailsSubmitted: false,
+        cardPaymentsStatus: null,
+      }))
+      setConnectPressed(true)
+      // ⚠️ THE TOAST NO LONGER SAYS "connected" EITHER — same reason as the headline. It names the one
+      // thing that is true and about to happen on screen.
+      showToast(alreadyExisted ? 'Already set up — continuing' : 'Now add your details for Stripe')
     } catch (e) {
       showToast(e instanceof Error ? e.message : 'Could not create the account', 'error')
     } finally { setCreating(false) }
   }
+
+  /**
+   * Scroll the operator to Stripe's onboarding screen the moment it appears, so pressing Connect lands
+   * them at the next thing to do rather than leaving them to find it. Fires once, on the edge.
+   *
+   * ⚠️ `block: 'start'` — THE TOP OF THE VIEWPORT, not merely "somewhere on screen". Manage is an
+   * app-shell: `h-dvh flex flex-col overflow-hidden`, where the header and tab bar are non-scrolling
+   * SIBLINGS and only `<main>` scrolls. So the nearest scrollable ancestor is `<main>`, there is no
+   * sticky element inside it on this tab, and 'start' puts the panel flush under the tabs with nothing
+   * overlapping it.
+   * ⚠️ REDUCED MOTION RESPECTED. A smooth scroll is motion the operator did not ask for; anyone who has
+   * asked the OS to stop that gets an instant jump to the same place.
+   * ⚠️ SAFE WHEN THE PANEL IS ABSENT. Pressing Connect on an account that is already `ready` renders no
+   * onboarding panel; the ref is null and the optional call is a no-op rather than a crash.
+   */
+  useEffect(() => {
+    if (!connectPressed) return
+    const reduceMotion = typeof window !== 'undefined'
+      && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    onboardingRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+  }, [connectPressed])
 
   /** Re-read after the operator finishes or exits onboarding — that is when readiness usually changes. */
   const refresh = async () => {
@@ -127,6 +243,19 @@ export function PaymentsTab({ token, plan, showToast }: {
     return <div className="space-y-6"><h2 className="font-black text-slate-900 text-lg">Payments</h2>
       <p className="text-sm text-slate-500">Checking your Stripe account…</p></div>
   }
+
+  // ── 🔴 THE STATE IS DERIVED ONCE, FROM SERVER DATA ONLY ─────────────────────────────────────────
+  // Every field here came from `/api/stripe/connect` reading Stripe server-side. NOTHING in this
+  // derivation comes from inside a Connect iframe, so no headline on this page can be delayed, doubled
+  // or lost by a component callback. That is deliberate and is the reason no callback is used at all —
+  // see the notification banner below.
+  const state = derivePaymentsState({
+    accountId: status?.accountId ?? null,
+    chargesEnabled: status?.chargesEnabled ?? false,
+    detailsSubmitted: status?.detailsSubmitted ?? false,
+    cardPaymentsStatus: status?.cardPaymentsStatus ?? null,
+  })
+  const header = HEADER[state]
 
   return (
     <div className="space-y-6">
@@ -142,7 +271,18 @@ export function PaymentsTab({ token, plan, showToast }: {
       {/* ══ ONLINE PAYMENTS ═══════════════════════════════════════════════════════════════════════
           🔴 ONE CONNECTION, TWO USES. The Stripe account connected here is the SAME account Terminal and
           Tap to Pay will use at the hatch. The walk-up section below therefore describes a CHOICE ABOUT
-          HOW MONEY IS TAKEN, not a second setup — and nothing in it may read as another connection. */}
+          HOW MONEY IS TAKEN, not a second setup — and nothing in it may read as another connection.
+
+          ── ⚠️ A SPLIT WAS TRIED ON 11 August 2026 AND REVERTED. THE REASONING IS KEPT ON PURPOSE. ──
+          This section was briefly broken into "Your Stripe account" (the connection, the chip, the
+          Connect button) + "Online payments" (the fee line), on the argument that the fee line describes
+          a CHANNEL and the rest describes a CONNECTION shared with the hatch. The operator preferred the
+          original and it was restored in full.
+          🔴 THE ARGUMENT STILL STANDS AND IS WORTH REVISITING WHEN TAP TO PAY SHIPS: `CARD_FEE_ONLINE_
+          LABEL` below is the ONLINE rate, and in-person cards are a DIFFERENT rate (CARD_FEE_IN_PERSON_
+          LABEL, already quoted in the walk-up section). The day a truck can take a card at the hatch on
+          this same connection, a card headed "Online payments" carrying the account's own status will be
+          describing two things at once. Revisit then — not before, and not as a tidy-up. */}
       <section>
         <h3 className="text-base font-bold text-slate-800">Online payments</h3>
         <p className="text-xs text-slate-500 mt-0.5">
@@ -150,31 +290,16 @@ export function PaymentsTab({ token, plan, showToast }: {
         </p>
 
         <div className="mt-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-          {/* 🔴 READINESS IS `chargesEnabled`, NEVER "an account exists". The middle state — connected,
-              not yet able to take payments — is the one an operator is most likely to be in and the one
-              a naive "connected ✓" would get wrong. */}
+          {/* 🔴 READINESS IS `chargesEnabled`, NEVER "an account exists" — and the five connected states
+              are now told apart rather than collapsed into one. Every string comes from HEADER above,
+              which is where the reasoning lives; nothing is composed inline any more. */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-800">
-                {!status?.accountId ? 'Not connected'
-                  : status.chargesEnabled ? 'Connected' : 'Connected — finishing verification'}
-              </p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {!status?.accountId
-                  ? "Takes about 10 minutes. You'll need your bank details and ID."
-                  : status.chargesEnabled
-                    ? 'Your Stripe account is connected and able to take payments.'
-                    : 'Your Stripe account is connected but cannot take payments yet — finish the steps below.'}
-              </p>
+              <p className="text-sm font-semibold text-slate-800">{header.title}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{header.body}</p>
             </div>
-            <span className={`shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-              status?.chargesEnabled
-                ? 'bg-green-50 text-green-700 border-green-200'
-                : status?.accountId
-                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                  : 'bg-slate-50 text-slate-500 border-slate-200'
-            }`}>
-              {status?.chargesEnabled ? 'Ready' : status?.accountId ? 'In progress' : 'Not connected'}
+            <span className={`shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full border ${header.chipClass}`}>
+              {header.chip}
             </span>
           </div>
 
@@ -186,7 +311,7 @@ export function PaymentsTab({ token, plan, showToast }: {
               no existing trial string could be reused verbatim and whose shape this borrows.
               ⚠️ Rendered only while NOT connected: after connecting, the question it answers has been
               answered, and a standing "this doesn't charge you" note would read as a disclaimer. */}
-          {plan === 'trial' && !status?.accountId && (
+          {plan === 'trial' && state === 'not_connected' && (
             /* 🔴 THE PAGE'S AMBER NOTICE, REUSED VERBATIM — `rounded-xl bg-amber-50 border
                border-amber-200 p-3` with `text-xs text-amber-700`, exactly as the two allergen-card
                notices in app/manage/[token]/page.tsx use it. It rendered GREY
@@ -196,7 +321,7 @@ export function PaymentsTab({ token, plan, showToast }: {
                ⚠️ No heading line, because the pattern's heading slot needs heading copy and the wording
                here is fixed — one sentence, rendered in the notice's body treatment. */
             <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3">
-              <p className="text-xs text-amber-700">{CONNECTING_STRIPE_NOT_A_CHARGE}</p>
+              <p className="text-xs text-amber-700">{CONNECTING_STRIPE_NOT_A_COMMITMENT}</p>
             </div>
           )}
 
@@ -207,7 +332,7 @@ export function PaymentsTab({ token, plan, showToast }: {
               that did. Naming the provider is what makes the next screen make sense.
               ⚠️ It also costs nothing in surprise: the section copy directly above already says money
               goes to "your own Stripe account", so the name is on screen either way. */}
-          {!status?.accountId && (
+          {state === 'not_connected' && (
             <button
               onClick={createAccount}
               disabled={creating || !!configError}
@@ -217,10 +342,16 @@ export function PaymentsTab({ token, plan, showToast }: {
             </button>
           )}
           {/* ── 🔴 WHOSE FEE THIS IS, STATED — AND IT IS NOT OURS ────────────────────────────────
-              STRIPE'S processing charge, named as Stripe's. 🔴 THE PLAN'S PLATFORM FEE ON ONLINE
-              ORDERS IS A DIFFERENT THING AND DOES NOT BELONG HERE: it is a property of the plan, it
-              already appears on the Billing tab, and restating it beside a payment-provider rate is how
-              an operator ends up adding the two together or thinking one is the other.
+              TWO FEES, TWO OWNERS, NEITHER QUANTIFIED TWICE.
+              🔴 STRIPE'S rate is named as Stripe's and comes from CARD_FEES. 🔴 HATCHGRAB'S platform fee
+              on online orders is NAMED but NOT QUANTIFIED — it depends on the plan, so the line points
+              at Billing instead of carrying a figure.
+              ⚠️ NAMING IT WAS THE CORRECTION (10 August 2026). Quoting only Stripe's rate implied
+              Stripe's was the whole cost of taking a card payment, which is untrue on a paid plan.
+              🔴 DO NOT ADD THE PERCENTAGE OR THE ALLOWANCE HERE, however tempting. They are properties
+              of the plan, they already live on Billing, and the manual records what restating the same
+              fee facts across surfaces has cost before. A figure here also invites an operator to add
+              the two rates together, which is not how either works.
               ⚠️ FROM CARD_FEES, never a literal — and it carries the qualifier CARD_FEES itself
               instructs: the rate is for standard UK cards, and cards issued outside the UK/EEA cost
               more, because "quoting the domestic rate alone would be a claim that is untrue for some
@@ -228,7 +359,7 @@ export function PaymentsTab({ token, plan, showToast }: {
               ⚠️ ONE LINE. Detail belongs in the plan pricing, not on this page. */}
           <p className="text-xs text-slate-500 mt-3">
             Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
-            the UK and EEA cost more.
+            the UK and EEA cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
           </p>
           {/* ⚠️ SANDBOX. Said on screen, not only in code — an operator who completes real-looking
               onboarding must not believe they can take real money. */}
@@ -239,23 +370,139 @@ export function PaymentsTab({ token, plan, showToast }: {
 
       {connectInstance && (
         <ConnectComponentsProvider connectInstance={connectInstance}>
-          {/* 🔴 THE NOTIFICATION BANNER IS REQUIRED, and it goes FIRST because it carries the thing that
-              is time-sensitive: Stripe uses it to tell the account about outstanding requirements. */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-            <ConnectNotificationBanner />
-          </div>
+          {/* ── 🔴 THE EMPTY BOX IS GONE, AND THE WRAPPER IS WHAT WENT ────────────────────────────
+              This used to be `<div class="bg-white rounded-2xl shadow-sm border p-4">` around the
+              banner, rendered unconditionally. The banner renders NOTHING in two entirely normal
+              states — before `details_submitted`, and whenever a healthy account has no open tasks —
+              so the card was empty for a truck finishing verification AND, permanently, for a verified
+              truck that was trading perfectly well.
+              🔴 THE FIX IS TO DROP THE WRAPPER, NOT TO DRIVE IT FROM `onNotificationsChange`.
+              Stripe offers that callback and it would work, but it reports from inside an iframe on
+              Stripe's schedule — it can arrive late, twice, or never. Anything hung off it needs a flag
+              that is correct in all three cases, and the failure mode of getting it wrong is HIDING the
+              one panel that tells a restricted truck why their money has stopped. Dropping the wrapper
+              removes the callback from the design entirely: there is no flag, so there is nothing for a
+              late or missing event to be wrong about. Stripe's own components "behave like regular block
+              HTML elements … and grow in height according to the content rendered inside", so an empty
+              banner is zero pixels with no wrapper to give it a border.
+              ⚠️ MOUNTED ONLY ONCE `details_submitted` IS TRUE, from OUR server-side read — the same
+              field Stripe gates the banner on internally ("The banner won't render any UI if the account
+              is missing details_submitted"), so the two cannot disagree. Before then it would render
+              nothing anyway, and not mounting it also removes the parent's row gap.
 
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-            <p className="text-base font-bold text-slate-800 mb-3">Set up your account</p>
-            {/* `onExit` fires when the operator leaves the flow — the moment readiness most often
-                changes, so it is the natural place to re-reconcile rather than waiting for the webhook. */}
-            <ConnectAccountOnboarding onExit={refresh} />
-          </div>
+              ── 🔴 MOVED 11 August 2026: THE BANNER NOW LIVES INSIDE "Your Stripe details", BELOW. ──
+              It used to render here, as a bare sibling between two cards — so when it DID have something
+              to say it appeared as an unpadded strip touching the card above and below it, and when it
+              had nothing it contributed only the parent's row gap. Inside a card that ALWAYS has content
+              (a heading, a sentence and a button) it can never be an empty box and can never be an
+              orphaned strip: it either adds a block to a real card or adds nothing at all.
+              🔴 IT MOVED WHOLE, AND IT HAD TO. The banner is ONE opaque iframe carrying risk
+              interventions and paused payouts as well as hygiene prompts, and `onNotificationsChange`
+              returns `{total, actionRequired}` — two numbers with NO message text. We cannot read what it
+              says, so we cannot route part of it. Merging means all of it. */}
 
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-            <p className="text-base font-bold text-slate-800 mb-3">Your Stripe details</p>
-            <ConnectAccountManagement />
-          </div>
+          {/* ── ONBOARDING: THE ONLY PLACE REQUIREMENTS ARE COLLECTED ────────────────────────────
+              Shown for the first run AND for a later interruption, because Stripe says to reuse it:
+              "Let your accounts remediate their verification requirements by directing them to the
+              Account onboarding component." Hidden in `pending` (nothing to collect), in `ready`
+              (nothing outstanding), and in `unsupported` (nothing it could ever fix). */}
+          {/* ── 🔴 NO HEADING OF OURS ABOVE STRIPE'S OWN START SCREEN ─────────────────────────────
+              This card used to carry "Set up your account" above the component. Underneath it, STRIPE
+              renders its own start screen with an "Add information" button — so the operator met a
+              heading, then a button, before a single question. A door in front of a door.
+              🔴 THE STRIPE SCREEN CANNOT BE SKIPPED, AND THAT WAS CHECKED BEFORE ASSUMING IT. The string
+              "Add information" appears NOWHERE in this repo; it is inside Stripe's iframe. It is there
+              because onboarding must authenticate the account holder first — "Connect embedded
+              components require the connected account to sign in with their Stripe account before
+              accessing the component … (for example, writing information to the account legal entity in
+              the case of the account onboarding component)" — and "Authentication is required for
+              connected accounts where Stripe is responsible for collecting updated information", which
+              is our posture. That auth is a popup, and popups need a click, so Stripe MUST render a
+              button. Their docs are explicit that it cannot be designed away: "Some behavior in embedded
+              components, such as user authentication, must be presented in a popup. You can't customize
+              the embedded component to eliminate such popups."
+              ⚠️ `disable_stripe_user_authentication` is not a way out either: it "can only be true for
+              accounts where controller.requirement_collection is application". Ours is `stripe`.
+              ✅ SO THE STEP WE COULD REMOVE WAS OURS, AND IT IS GONE. What remains is one card holding
+              exactly one thing: Stripe's screen. The card stays because this component always has
+              content, so it can never be the empty box the notification banner was. */}
+          {shouldShowOnboarding(state) && (
+            <div ref={onboardingRef} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              {/* ── 🔴 ONE SENTENCE, AND IT IS NOT THE HEADING THAT WAS DELETED ───────────────────
+                  What was removed was `text-base font-bold` — A TITLE, competing with Stripe's own and
+                  reading as a step of ours. This is `text-xs text-slate-500` — a caption EXPLAINING the
+                  screen underneath, which is otherwise unexplained: Stripe's own button says "Add
+                  information to start accepting money", which names an outcome and not an action, and
+                  gives no warning that a Stripe SIGN-IN comes first.
+                  🔴 IT EXISTS BECAUSE STRIPE'S COPY IS UNREACHABLE. Every `appearance` option is a style
+                  variable — colours, sizes, radii, `buttonLabelTextTransform` changes CASE, not words —
+                  and the docs say those options "are the only way to change styles in Connect embedded
+                  components". No prop on ConnectAccountOnboarding carries copy either; the installed
+                  types allow only onExit, onStepChange, three URL overrides, skipTermsOfServiceCollection
+                  and collectionOptions. So the button cannot be relabelled, and the only place the
+                  action can be named is immediately above it.
+                  ⚠️ TWO WORDINGS BECAUSE THE PANEL SERVES TWO STATES. First run collects everything;
+                  remediation updates one thing. Saying "give your business and bank details" to a truck
+                  fixing a single flagged document would be wrong. */}
+              <p className="text-xs text-slate-500 mb-3">
+                {state === 'restricted'
+                  ? "Stripe takes it from here — you'll sign in to Stripe and update the details it needs."
+                  : "Stripe takes it from here — you'll sign in to Stripe, then give your business and bank details."}
+              </p>
+              {/* `onExit` fires when the operator leaves the flow — the moment readiness most often
+                  changes, so it is the natural place to re-reconcile rather than waiting for the webhook. */}
+              <ConnectAccountOnboarding onExit={refresh} />
+            </div>
+          )}
+
+          {/* ── 🔴 ACCOUNT MANAGEMENT: AFTER ONBOARDING ONLY, AND DISCOVERABLE OVER TIDY ───────────
+              Stripe is explicit that it is the wrong tool before verification: "Account management
+              isn't optimized for collecting missing account information. For that use case, consider
+              using account onboarding or the notification banner." Beside an onboarding panel it was a
+              second, worse door to the same job.
+              🔴 THE JUDGEMENT CALL, MADE: THE ROW IS ALWAYS VISIBLE AND ITS PURPOSE IS SPELLED OUT.
+              This is the ONLY route to change payout bank details once verified, and a truck whose bank
+              account changes must be able to find it under pressure. So it is NOT a bare collapsed row
+              labelled "Your Stripe details" — the heading and the sentence beneath it are always on
+              screen and name the bank account explicitly. Only the iframe is behind the button.
+              ⚠️ THE BUTTON EXISTS FOR MOUNT COST, NOT FOR TIDINESS. It defers one iframe (and its Stripe
+              sign-in popup) until asked, and `showManagement` is one-way, so opening it can never cause
+              a second mount. */}
+          {/* ⚠️ `shouldOfferAccountManagement` NOW INCLUDES `unsupported`, changed as a consequence of the
+              merge rather than as a preference — see the note on that function. In short: the banner
+              mounts in every post-onboarding state, so the card that now HOSTS it must too, or moving
+              the banner in here would have deleted it in the one state where Stripe is most likely to be
+              explaining why an account will never take cards. */}
+          {shouldOfferAccountManagement(state) && (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <p className="text-base font-bold text-slate-800">Your Stripe details</p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Change the bank account you get paid into, or update your business details and documents.
+              </p>
+
+              {/* 🔴 STRIPE'S NOTIFICATION BANNER, INSIDE THE CARD. See the note above for why it moved
+                  whole rather than selectively.
+                  ⚠️ `mt-3` ONLY WHEN IT IS MOUNTED — and when mounted-but-empty it still contributes
+                  nothing visible, because Stripe's components "grow in height according to the content
+                  rendered inside" and this wrapper has no background, border or padding of its own. So
+                  the card reads identically whether or not Stripe has something to say; the only
+                  residue in the empty case is 12px of margin inside a card that was already there. */}
+              {shouldMountNotificationBanner(state, status?.detailsSubmitted ?? false) && (
+                <div className="mt-3"><ConnectNotificationBanner /></div>
+              )}
+
+              {showManagement ? (
+                <div className="mt-3"><ConnectAccountManagement /></div>
+              ) : (
+                <button
+                  onClick={() => setShowManagement(true)}
+                  className="mt-3 w-full sm:w-auto px-4 py-2 bg-white text-slate-700 text-sm font-semibold rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
+                >
+                  View or edit
+                </button>
+              )}
+            </div>
+          )}
         </ConnectComponentsProvider>
       )}
 

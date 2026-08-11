@@ -36,8 +36,23 @@
 // order-calculations COMBINES them. That is why subtotal here always includes deals
 // (order-calculations.ts:108) with no separate formula to drift.
 //
-// DUPLICATE NAMES: modifier options are matched by name, last-wins — the edge already documented in
-// lib/option-stock.ts:11-13. Two stored lines sharing one identity are matched pairwise, in order.
+// DUPLICATE NAMES: two stored lines sharing one identity are matched pairwise, in order.
+//
+// ── MODIFIER OPTIONS ARE KEYED (ITEM NAME, OPTION NAME), NOT BY OPTION NAME ALONE ───────────────
+// optionPrice used to be a flat truck-wide Record<optionName, price> and it MISPRICED. Live data on
+// real-thai-food: "Prawn" is 1.50 on Springrolls and 0.00 on six other dishes; "Beef" is 0.50 on
+// Massaman Curry and 0.00 elsewhere. A flat key keeps whichever row happened to load last, so the
+// resolved price depended on row order — up to 1.50 out, silently, with nothing to catch it.
+// The key is now (item name → option name), built from item_modifier_groups so it reflects what each
+// dish ACTUALLY offers. A live sweep of every truck found ZERO items offering one option name twice,
+// so (item, option) is a total key and no option ids are needed on the wire.
+// A dish that does not offer an option resolves UNRESOLVED. There is deliberately NO flat fallback:
+// falling back is exactly the behaviour that returned the wrong 1.50.
+// EXCLUSIONS ARE HONOURED: item_modifier_groups.excluded_option_ids removes an option from THAT
+// dish's book (model C, the same filter the menu API and the submit guard apply), so an excluded
+// option is unresolved for that dish and priced normally everywhere else.
+// (lib/option-stock.ts keeps its own flat by-name map for STOCK, which is a genuinely truck-wide
+// pool — that is a different question from price and is untouched.)
 
 import {
   calculateOrderTotal,
@@ -123,8 +138,13 @@ export interface RepricedOrder {
 export interface PriceBook {
   /** menu_items_db: name → price */
   itemPrice: Record<string, number>
-  /** modifier_options (scoped to this truck via group→truck): name → price_adjustment */
-  optionPrice: Record<string, number>
+  /**
+   * modifier_options, keyed ITEM NAME → OPTION NAME → price_adjustment. Two levels, deliberately:
+   * one option name can carry different prices on different dishes (see the header). An item with no
+   * modifier groups has no entry at all; an option a dish excludes is absent from that dish's map.
+   * A miss at EITHER level is UNRESOLVED — never a truck-wide fallback.
+   */
+  optionPrice: Record<string, Record<string, number>>
   /** bundles_db: name → bundle row */
   bundle: Record<string, { name: string; bundle_price: number; original_price: number | null }>
   /** menu_items_db as calculateOrderTotal's MenuItem[] — used for deal original-price/savings. */
@@ -161,15 +181,25 @@ export function lineIdentity(name: unknown, modifiers?: { name?: unknown }[] | n
  * the stored order does not already carry a price for.
  */
 export async function loadPriceBook(supabase: SupabaseClient, truckId: string): Promise<PriceBook> {
-  const [{ data: itemRows }, { data: optionRows }, { data: bundleRows }] = await Promise.all([
+  const [{ data: itemRows }, { data: optionRows }, { data: bundleRows }, { data: linkRows }] = await Promise.all([
     supabase.from('menu_items_db').select('name, price').eq('truck_id', truckId),
     // SAME truck-scoping join as lib/option-stock.ts fetchTruckOptionsByName — modifier_options has no
-    // truck_id of its own, only group_id → modifier_groups.truck_id.
+    // truck_id of its own, only group_id → modifier_groups.truck_id. `id` is selected because
+    // excluded_option_ids is a list of OPTION IDS, so exclusions cannot be applied without it.
     supabase
       .from('modifier_options')
-      .select('name, price_adjustment, modifier_groups!inner(truck_id)')
+      .select('id, name, price_adjustment, group_id, modifier_groups!inner(truck_id)')
       .eq('modifier_groups.truck_id', truckId),
     supabase.from('bundles_db').select('name, bundle_price, original_price').eq('truck_id', truckId),
+    // WHICH DISH OFFERS WHICH GROUP — the reason optionPrice can be item-scoped at all.
+    // 🔴 TRUCK-SCOPED VIA THE EMBED, not read whole. item_modifier_groups has no truck_id of its own,
+    // so the scope comes from menu_item_id → menu_items_db.truck_id, and the same embed hands back the
+    // item NAME, which is the key we need. (app/api/orders/submit/route.ts:625 reads this table with no
+    // truck filter at all — a full-table read. That is a separate backlog item; do not copy it here.)
+    supabase
+      .from('item_modifier_groups')
+      .select('group_id, excluded_option_ids, menu_items_db!inner(name, truck_id)')
+      .eq('menu_items_db.truck_id', truckId),
   ])
 
   const itemPrice: Record<string, number> = {}
@@ -179,9 +209,32 @@ export async function loadPriceBook(supabase: SupabaseClient, truckId: string): 
     menuItems.push({ name: r.name, price: num(r.price) })
   }
 
-  const optionPrice: Record<string, number> = {}
-  for (const r of (optionRows as { name: string; price_adjustment: unknown }[] | null) || []) {
-    optionPrice[r.name] = num(r.price_adjustment)
+  // Options bucketed by their group, so a link row can expand to that group's options in one step.
+  type OptionRow = { id: string; name: string; price_adjustment: unknown; group_id: string }
+  const optionsByGroup = new Map<string, OptionRow[]>()
+  for (const r of (optionRows as OptionRow[] | null) || []) {
+    const bucket = optionsByGroup.get(r.group_id)
+    if (bucket) bucket.push(r)
+    else optionsByGroup.set(r.group_id, [r])
+  }
+
+  // ITEM NAME → OPTION NAME → price. Built from the links, so an option only appears against a dish
+  // that genuinely offers it, and never against a dish that excludes it.
+  const optionPrice: Record<string, Record<string, number>> = {}
+  type LinkRow = { group_id: string; excluded_option_ids: string[] | null; menu_items_db: { name: string } | null }
+  for (const link of (linkRows as unknown as LinkRow[] | null) || []) {
+    const itemName = link?.menu_items_db?.name
+    if (!itemName) continue
+    const options = optionsByGroup.get(link.group_id)
+    if (!options) continue
+    const excluded = new Set(link.excluded_option_ids || [])
+    const forItem = (optionPrice[itemName] ||= {})
+    for (const o of options) {
+      // Per-dish exclusion (model C) — an excluded option is NOT priceable on this dish, so it must
+      // stay absent and fall through to unresolved rather than pick up the group's figure.
+      if (excluded.has(o.id)) continue
+      forItem[o.name] = num(o.price_adjustment)
+    }
   }
 
   const bundle: PriceBook['bundle'] = {}
@@ -284,9 +337,14 @@ export function repriceOrder(
   const storedDeals = indexStoredDeals(stored?.deals)
 
   // Price a modifier that is NEW (no locked price): current menu, else the advisory figure + a flag.
-  const priceNewModifier = (m: RepriceModifier, on: string): number => {
+  //
+  // 🔴 `itemName` IS THE LOOKUP KEY. `on` is for the operator-facing message only and is NOT
+  // interchangeable with it: for a deal slot `on` falls back to a synthesised "<deal> · <slot>" label
+  // that is not any dish's name, and using it as a key would miss every time. They are passed
+  // separately on purpose. A null itemName (no resolvable dish) is UNRESOLVED, not a truck-wide guess.
+  const priceNewModifier = (m: RepriceModifier, on: string, itemName: string | null): number => {
     const advisory = num(m?.price)
-    const known = priceBook.optionPrice[m?.name]
+    const known = itemName ? priceBook.optionPrice[itemName]?.[String(m?.name ?? '')] : undefined
     if (known === undefined) {
       unresolved.push({ kind: 'modifier', name: m?.name ?? '(unnamed)', on, advisoryPrice: advisory })
       return advisory
@@ -330,7 +388,9 @@ export function repriceOrder(
         serverUnit = advisoryUnit
         repricedMods = mods.map(m => ({ ...m, name: String(m?.name ?? ''), price: num(m?.price) }))
       } else {
-        repricedMods = mods.map(m => ({ ...m, name: String(m?.name ?? ''), price: priceNewModifier(m, name || '(unnamed)') }))
+        // `name` is this line's dish and is known to be on the menu (base !== undefined above), so it
+        // is a valid key into the item-scoped option book.
+        repricedMods = mods.map(m => ({ ...m, name: String(m?.name ?? ''), price: priceNewModifier(m, name || '(unnamed)', name) }))
         // Repo-wide convention: unit_price INCLUDES the modifiers
         // (app/trucks/[slug]/order/page.tsx:1127, lib/seed-demo-orders.ts:290-292).
         serverUnit = base + repricedMods.reduce((s, m) => s + m.price, 0)
@@ -363,11 +423,16 @@ export function repriceOrder(
     let modifierExtra = 0
     for (const slotKey of Object.keys(slotModifiers)) {
       const list = asArray<RepriceModifier>(slotModifiers[slotKey])
-      const on = slots[slotKey] || `${name || 'deal'} · ${slotKey}`
+      // The DISH filling this slot — the lookup key. Null when the slot names no item, which is
+      // UNRESOLVED: there is no dish to price the option against and no truck-wide book to guess from.
+      const slotItemName = String(slots[slotKey] ?? '') || null
+      // The operator-facing label. Falls back to a synthesised name when the slot is empty, which is
+      // precisely why it must not double as the key.
+      const on = slotItemName || `${name || 'deal'} · ${slotKey}`
       repricedSlotModifiers[slotKey] = list.map(m => {
         const modName = String(m?.name ?? '')
         const lockedPrice = locked?.modPrice[`${slotKey}::${modName}`]
-        return { ...m, name: modName, price: lockedPrice !== undefined ? lockedPrice : priceNewModifier(m, on) }
+        return { ...m, name: modName, price: lockedPrice !== undefined ? lockedPrice : priceNewModifier(m, on, slotItemName) }
       })
       modifierExtra += repricedSlotModifiers[slotKey].reduce((s, m) => s + m.price, 0)
     }

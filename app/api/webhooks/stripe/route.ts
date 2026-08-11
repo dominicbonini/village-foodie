@@ -37,6 +37,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { parseSigningSecrets, verifyStripeSignature } from '@/lib/stripe/webhook-signature'
+import { extractConnectedAccount, extractStripeCreatedAt, isThinEvent } from '@/lib/stripe/webhook-envelope'
+// 🔴 THE ONLY WRITER OF AN ONLINE PAYMENT INTO order_payments. See the payment_intent.succeeded branch.
+import { recordOnlineCardPayment } from '@/lib/payments/online'
 
 // Node runtime, pinned EXPLICITLY. Signature verification uses node:crypto's createHmac/timingSafeEqual,
 // which do not exist on the edge runtime. Without this the route would build fine and fail at runtime on
@@ -52,7 +55,9 @@ const supabase = createClient(
 )
 
 /** The subset of a Stripe Event this endpoint reads. Deliberately narrow: everything else in the payload
- *  is ignored and none of it is stored (see the migration header for why the body is not persisted). */
+ *  is ignored and none of it is stored (see the migration header for why the body is not persisted).
+ *  ⚠️ SPANS BOTH FORMATS. `account` and `api_version` are v1-only; `object`, `related_object` and
+ *  `context` are how a v2 thin event says the same things. See lib/stripe/webhook-envelope.ts. */
 interface StripeEventEnvelope {
   id?: unknown
   type?: unknown
@@ -60,6 +65,9 @@ interface StripeEventEnvelope {
   account?: unknown
   api_version?: unknown
   created?: unknown
+  object?: unknown
+  related_object?: unknown
+  context?: unknown
 }
 
 /** Postgres unique-violation. A duplicate delivery, which is a SUCCESS on this endpoint. */
@@ -134,16 +142,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })
   }
 
-  // The connected account for a Connect event. Stripe: "Each event for a connected account contains a
-  // top-level `account` property that identifies the connected account." Absent on platform events.
-  const connectedAccount = typeof event.account === 'string' ? event.account : null
+  // ── 🔴 THE TWO FIELDS THAT USED TO BE DROPPED ON EVERY v2 EVENT ──────────────────────────────────
+  // Both are extracted by lib/stripe/webhook-envelope.ts, which handles v1 and v2 shapes SEPARATELY
+  // rather than assuming one of them. Each returns a `source` slug alongside the value, because a NULL
+  // meaning "this event has no connected account" and a NULL meaning "we failed to read one" are not
+  // the same NULL and must not look the same in this table or in these logs.
+  const account = extractConnectedAccount(event)
+  const created = extractStripeCreatedAt(event.created)
+  const connectedAccount = account.value
+  const stripeCreatedAt = created.value
+
+  // ⚠️ `api_version` IS v1-ONLY AND ITS NULL IS CORRECT, NOT A DROP. Thin events are UNVERSIONED by
+  // design — Stripe: "Unversioned, allowing you to upgrade your integration without changing your
+  // webhook endpoint configuration" — so there is no value to record and none is invented.
   const apiVersion = typeof event.api_version === 'string' ? event.api_version : null
-  // `created` is unix SECONDS. Guarded because a malformed value would otherwise become 1970 or Invalid
-  // Date and quietly poison the delivery-delay figure this column exists to give.
-  const stripeCreatedAt =
-    typeof event.created === 'number' && Number.isFinite(event.created)
-      ? new Date(event.created * 1000).toISOString()
-      : null
+
+  // 🔴 A DROP IS LOUD. `unreadable` means the payload offered the value and we could not read it, which
+  // is the failure this pair of fields just spent a probe demonstrating can happen in total silence.
+  // Logged at error level with the raw value, and the event is still recorded — a diagnostic gap must
+  // not cost us the receipt.
+  if (created.source === 'unreadable' || account.source === 'unreadable') {
+    console.error(
+      `[webhook/stripe] FIELD DROP id=${eventId} type=${eventType} ` +
+      `createdSource=${created.source} rawCreated=${JSON.stringify(event.created)} ` +
+      `accountSource=${account.source} — recorded with a NULL that means "we could not read it"`,
+    )
+  }
 
   // ── 🔴 IDEMPOTENCY: INSERT FIRST, LET THE UNIQUE CONSTRAINT ARBITRATE ────────────────────────────
   // Deliberately NOT `select … then insert if absent`. Stripe guarantees AT-LEAST-ONCE delivery and
@@ -198,9 +222,14 @@ export async function POST(req: NextRequest) {
   // 🔴 `livemode` is logged EXPLICITLY and on every line. During test-mode bring-up, `livemode=true`
   // appearing in these logs means a REAL event has reached this app, and that should be noticed
   // immediately rather than discovered later in a table.
+  // ⚠️ `format` and the two `…Source` slugs are on every line deliberately. One URL now receives both
+  // event formats (see §6.3 of the Connect report — three registrations point at it), so "which shape
+  // was this" is the first question asked when a row looks wrong, and it is not answerable from the
+  // stored columns alone once a value is NULL.
   console.log(
-    `[webhook/stripe] RECEIVED id=${eventId} type=${eventType} livemode=${livemode}` +
-    `${connectedAccount ? ` account=${connectedAccount}` : ''}` +
+    `[webhook/stripe] RECEIVED id=${eventId} type=${eventType} livemode=${livemode} ` +
+    `format=${isThinEvent(event) ? 'thin' : 'snapshot'} ` +
+    `account=${connectedAccount ?? 'null'}(${account.source}) created=${created.source}` +
     `${apiVersion ? ` apiVersion=${apiVersion}` : ''}`,
   )
 
@@ -278,6 +307,104 @@ export async function POST(req: NextRequest) {
     )
     await markHandled(eventId, `charges_enabled:${chargesEnabled}`)
     return NextResponse.json({ received: true })
+  }
+
+  // ── 🔴 payment_intent.succeeded — THE ONLINE CARD PAYMENT LANDS IN THE LEDGER HERE ───────────────
+  // This is the ONLY place an online payment becomes true. The customer's browser returning from
+  // Stripe is not evidence — they can close the tab, lose signal, or never come back — so the money is
+  // recorded from the event and nowhere else.
+  //
+  // 🔴 IT WRITES order_payments, NOT orders.payment_status. That is the whole reason a fee-free first
+  // version is safe: `recordOnlineCardPayment` writes `channel: 'online'` with the truck and the
+  // timestamp, so the ledger IS the allowance history and a platform fee introduced later can be
+  // computed over orders taken today. Setting payment_status directly and skipping the ledger would
+  // take real money with no record of how it arrived — the one mistake that cannot be undone.
+  // ⚠️ `orders.payment_status` and `amount_paid` still update — recordPaymentEvent calls
+  // recalcOrderPayment, which rewrites them FROM the ledger. They stay derived caches, as designed.
+  //
+  // ⚠️ SCOPE: this arrives on the CONNECTED-ACCOUNT scope (`events_from: @accounts`), because a direct
+  // charge belongs to the truck. The endpoint is already subscribed to it.
+  if (eventType === 'payment_intent.succeeded') {
+    if (livemode !== false) {
+      console.warn(
+        `[webhook/stripe] payment_intent.succeeded IGNORED id=${eventId} livemode=${livemode} — this ` +
+        `build records SANDBOX payments only, and a null livemode means the payload could not be classified`,
+      )
+      await markHandled(eventId, 'ignored:livemode')
+      return NextResponse.json({ received: true })
+    }
+
+    const pi = (event as { data?: { object?: Record<string, unknown> } }).data?.object
+    const piId = typeof pi?.id === 'string' ? pi.id : null
+    // 🔴 THE AMOUNT IS STRIPE'S. `amount_received` is what the customer was actually charged; using our
+    // own order total here would paper over a divergence the ledger exists to expose.
+    const amountReceived = typeof pi?.amount_received === 'number' ? pi.amount_received : null
+    const metadata = (pi?.metadata ?? {}) as Record<string, unknown>
+    const orderKey = typeof metadata.order_key === 'string' ? metadata.order_key : null
+
+    // ⚠️ NOT OURS IS NORMAL, NOT AN ERROR. The same connected account can take payments that did not
+    // originate from HatchGrab — from their own Stripe Dashboard, or another integration. Those carry
+    // no order_key and must be acknowledged and ignored, never guessed at.
+    if (!orderKey) {
+      console.log(`[webhook/stripe] payment_intent.succeeded id=${eventId} pi=${piId} — no order_key metadata, not ours`)
+      await markHandled(eventId, 'not_ours')
+      return NextResponse.json({ received: true })
+    }
+    if (!piId || amountReceived === null || amountReceived <= 0) {
+      console.warn(
+        `[webhook/stripe] payment_intent.succeeded INCOMPLETE id=${eventId} pi=${piId} ` +
+        `amount_received=${String(pi?.amount_received)} — recorded, not acted on`,
+      )
+      await markHandled(eventId, 'incomplete_payload')
+      return NextResponse.json({ received: true })
+    }
+
+    // 🔴 THE ORDER ROW IS THE AUTHORITY FOR truck_id, not the metadata. Metadata is ours and therefore
+    // trustworthy, but the ledger's truck_id drives per-truck money rollups — so it is read from the
+    // row that owns it. This also proves the order still exists before writing money against it.
+    const { data: order } = await supabase
+      .from('orders')
+      .select('order_key, truck_id')
+      .eq('order_key', orderKey)
+      .maybeSingle()
+
+    if (!order?.truck_id) {
+      // Money has moved and we cannot attribute it. LOUD: this is the only branch here that means a
+      // customer has paid a truck for an order this system cannot find.
+      console.error(
+        `[webhook/stripe] 🔴 payment_intent.succeeded FOR AN UNKNOWN ORDER — pi=${piId} order_key=${orderKey} ` +
+        `amount_received=${amountReceived}. The customer HAS been charged. Reconcile by hand.`,
+      )
+      await markHandled(eventId, 'unknown_order')
+      return NextResponse.json({ received: true })
+    }
+
+    try {
+      const { inserted, balance } = await recordOnlineCardPayment(supabase, {
+        orderKey: order.order_key,
+        truckId: order.truck_id,
+        amountMinor: amountReceived,
+        paymentIntentId: piId,
+        livemode,
+        currency: typeof pi?.currency === 'string' ? pi.currency.toUpperCase() : undefined,
+      })
+      console.log(
+        `[webhook/stripe] online payment ${inserted ? 'RECORDED' : 'DUPLICATE (no-op)'} order=${orderKey} ` +
+        `truck=${order.truck_id} pi=${piId} amount_minor=${amountReceived} → status=${balance.status} ` +
+        `paid_minor=${balance.paidMinor}`,
+      )
+      await markHandled(eventId, `online_payment:${balance.status}`)
+      return NextResponse.json({ received: true })
+    } catch (ledgerErr) {
+      // 🔴 500 SO STRIPE RETRIES. The money moved and we failed to record it — a lost event here is a
+      // paid order showing unpaid on the hatch. The write is idempotent on the PaymentIntent id, so a
+      // retry costs nothing.
+      console.error(
+        `[webhook/stripe] 🔴 LEDGER WRITE FAILED for order=${orderKey} pi=${piId} — returning 500 so ` +
+        `Stripe retries:`, ledgerErr instanceof Error ? ledgerErr.message : ledgerErr,
+      )
+      return NextResponse.json({ error: 'ledger write failed' }, { status: 500 })
+    }
   }
 
   // ── UNRECOGNISED EVENT TYPES ARE NORMAL, NOT ERRORS ──────────────────────────────────────────────

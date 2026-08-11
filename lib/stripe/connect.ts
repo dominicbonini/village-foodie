@@ -32,28 +32,54 @@
 // embedded components for onboarding, account management, and the notification banner." That is why
 // all three are built together and why the notification banner is not optional polish.
 //
-// ── ⚠️ ACCOUNTS v1 vs v2 — A FORK THE OPERATOR MUST SETTLE BEFORE LIVE ─────────────────────────────
-// Current docs carry BOTH of these, on different pages:
-//   • the embedded-onboarding page (the page for the feature being built) documents `/v1/accounts`
-//     with `controller` — which is what this file uses, and what the decided properties name;
-//   • the "design an integration" / interactive platform guide says: "This guide only applies to
-//     existing Connect platforms that use the Accounts v1 API. If you're a NEW Connect user, use the
-//     Accounts v2 API instead."
-// 🔴 WE ARE A NEW CONNECT USER. This file follows v1 because that is what the embedded-onboarding path
-// documents and what the agreed controller properties are expressed in — but the choice is recorded, not
-// assumed, and it belongs to the operator. See docs/stripe-connect-report.md.
+// ── ✅ ACCOUNTS v2 — SETTLED 10 August 2026, ON EVIDENCE ────────────────────────────────────────────
+// The fork recorded here previously (v1's `controller` vs v2's `responsibilities`) is decided: accounts
+// are created on **v2**, because Stripe's own guidance is "If you're a NEW Connect user, use the Accounts
+// v2 API instead" and every blocker was probed away rather than argued away. See
+// docs/stripe-connect-report.md for the runs. The three findings that made it safe:
+//   • `/v1/account_sessions` ACCEPTS a v2 account id and enables all three embedded components, so the
+//     onboarding UI is unchanged.
+//   • A v2 account still emits v1 `account.updated` carrying `charges_enabled` as a real boolean, to the
+//     existing `@accounts`-scoped endpoint — so THE WEBHOOK NEEDS NO CHANGE and the webhook route keeps
+//     holding no STRIPE_SECRET_KEY.
+//   • `/v1/accounts/{v2 id}` returns the account in v1 shape, so `readAccountReadiness` below is
+//     untouched and still reads `charges_enabled`.
+//
+// ── 🔴 THE FEE PROPERTY INVERTS BETWEEN v1 AND v2. THIS IS THE MOST DANGEROUS LINE IN THIS FILE. ────
+// v1 said `fees.payer: 'account'` — "the ACCOUNT pays". v2 says `fees_collector: 'stripe'` — "STRIPE
+// collects". THE SAME COMMERCIAL POSITION, DESCRIBED FROM THE OPPOSITE END. v2 has NO 'account' value
+// for `fees_collector`; the allowed values are 'application' | 'application_custom' |
+// 'application_express' | 'stripe', and `application` means THE PLATFORM (us) is on the hook.
+// 🔴 SO THE MECHANICAL TRANSLATION — 'account' → the nearest-looking token — SILENTLY PUTS HATCHGRAB ON
+// THE HOOK FOR EVERY TRUCK'S STRIPE FEES. It is verified by READING THE ACCOUNT BACK (see
+// `readAccountPosture`), not by trusting this constant, precisely because it has now inverted twice.
 //
 // ── 🔴 SANDBOX ONLY. NOTHING HERE MAY CREATE A LIVE ACCOUNT. ───────────────────────────────────────
 // Enforced by `assertSandboxKey` below, on the KEY rather than on a config flag: a flag can be wrong,
 // but a key that starts `sk_live_` cannot be mistaken for anything else. Every entry point calls it.
 import Stripe from 'stripe'
 
-/** The four controller properties, as ONE constant, so no call site can send a different combination. */
-export const CONNECT_CONTROLLER = {
-  losses: { payments: 'stripe' },
-  fees: { payer: 'account' },
-  requirement_collection: 'stripe',
-  stripe_dashboard: { type: 'full' },
+// ── 🔴 THE PINNED v2 API VERSION. ONE CONSTANT, AND IT WILL MOVE. ──────────────────────────────────
+// `/v2/core/*` REFUSES a request with no version header — probed: HTTP 400, "You did not provide an API
+// version." This string is on Stripe's PREVIEW TRAIN, so it is not a stable identifier the way a v1
+// date is; it is a moving target that will one day stop being accepted.
+// ⚠️ SENT EXPLICITLY EVEN THOUGH THE SDK'S OWN DEFAULT CURRENTLY MATCHES IT. `stripe@22.4.0` pins
+// '2026-07-29.dahlia' internally, so omitting it would work TODAY and would silently start sending a
+// different version the day the SDK is upgraded. An explicit pin makes the version OUR decision and
+// makes an SDK bump a visible, testable change rather than an invisible one.
+// 🔴 A REJECTION OF THIS STRING IS A FIRST-CLASS FAILURE, NOT A GENERIC ERROR — see `asVersionRejection`.
+export const STRIPE_V2_API_VERSION = '2026-07-29.dahlia'
+
+/** The posture, as ONE constant, so no call site can send a different combination.
+ *  🔴 `requirementsCollector` IS NOT SENT — Stripe COMPUTES it. It is listed here because it is part of
+ *  the decided position and must therefore be CHECKED on read-back. Probed: it comes back 'stripe'
+ *  without ever being sent, inherited from `dashboard: 'full'` + `losses_collector: 'stripe'`. */
+export const CONNECT_V2_POSTURE = {
+  dashboard: 'full',
+  feesCollector: 'stripe',
+  lossesCollector: 'stripe',
+  /** Computed by Stripe. Expected, never sent. */
+  requirementsCollector: 'stripe',
 } as const
 
 /**
@@ -82,23 +108,202 @@ function stripeClient(): Stripe {
 }
 
 /**
- * Create the operator's connected account.
- * ⚠️ NO COUNTRY IS PINNED. `trucks.country` exists and defaults 'GB' if it is ever wanted, but the docs
- * are explicit that with a full Stripe Dashboard the account owner picks their own acquiring country
- * during onboarding — and pinning it here would take that away and freeze it, since specifying a country
- * makes it unchangeable. Nothing about this integration needs to know the country today.
- * ⚠️ NO CAPABILITIES REQUESTED, for the same reason: requesting one also freezes the country. Stripe
- * requests the right set for the chosen country automatically on a full-dashboard account.
+ * 🔴 Recognise a rejection of OUR PINNED VERSION STRING, so it can be handled as its own failure.
+ *
+ * ⚠️ THIS SNIFFS THE MESSAGE TEXT, AND THAT IS A KNOWN WEAKNESS — stated rather than hidden. Stripe
+ * returns NO machine-readable code for either form (probed: `code` is `undefined` on both), so the text
+ * is the only signal there is. Both observed forms contain "api version":
+ *   no header  → "You did not provide an API version. You need to provide an API version header."
+ *   bad string → "Invalid Stripe API version: 2020-01-01.nonesuch. Learn more at …"
+ * If Stripe rewords these, the match degrades to the generic branch — which still logs the pinned
+ * version (see `createConnectedAccount`), so the clue survives even when the classification does not.
  */
-export async function createConnectedAccount(opts: { email?: string | null; businessUrl?: string | null }) {
+function asVersionRejection(err: unknown): string | null {
+  const e = err as { statusCode?: number; message?: string }
+  if (e?.statusCode !== 400) return null
+  const message = e.message ?? ''
+  return /api version/i.test(message) ? message : null
+}
+
+/** What the operator is shown when the version pin is rejected. Deliberately says nothing about API
+ *  versions: it is not their problem, they cannot act on it, and retrying will not fix it. */
+const VERSION_REJECTED_MESSAGE =
+  'Stripe could not set up your account. This is a fault on our side, it has been logged, and nothing '
+  + 'was created or charged. Please contact support.'
+
+/**
+ * Create the operator's connected account on **Accounts v2**.
+ *
+ * ── 🔴 A COUNTRY IS NOW PINNED AT CREATION, AND IT DID NOT USED TO BE ──────────────────────────────
+ * The v1 version of this function deliberately pinned NO country, because on a full-dashboard account
+ * the owner picks their own acquiring country during onboarding and naming one freezes it.
+ * ⚠️ v2 REMOVES THAT CHOICE, and it was probed rather than assumed:
+ *     dashboard without a configuration → 400 "You cannot set `dashboard` unless the account is
+ *                                             configured as a merchant or a recipient…"
+ *     merchant configuration, no country → 400 "The field identity.country is required before setting
+ *                                             configuration.merchant."
+ * So `dashboard: 'full'` REQUIRES a merchant configuration, and a merchant configuration REQUIRES a
+ * country. The country is therefore not a preference here; it is the price of the posture.
+ * ✅ `entity_type` is NOT pinned and is NOT required (probed: comes back `null`), so sole-trader vs
+ * company is still decided by the truck during onboarding. That mattered more than the country did.
+ *
+ * ── 🔴 card_payments IS REQUESTED, AND THE INTEGRATION IS BROKEN WITHOUT IT ────────────────────────
+ * The v1 version requested no capabilities, because in v1 requesting one froze the country and Stripe
+ * picked the right set automatically. In v2 it does not: an account created with an EMPTY merchant
+ * configuration comes back with `capabilities: {}` and a v1 view of `capabilities: {}` — meaning
+ * `charges_enabled` can NEVER become true and the money gate can never open. Probed both ways.
+ * ⚠️ The v1 objection to requesting a capability has also dissolved: it was "requesting one freezes the
+ * country", and the country is already pinned above because v2 insists on it.
+ */
+export async function createConnectedAccount(opts: {
+  email?: string | null
+  /** ISO-3166-1 alpha-2. Defaults 'GB' — `trucks.country` is NOT NULL and 'GB' for every row today. */
+  country?: string | null
+  businessUrl?: string | null
+}) {
   const stripe = stripeClient()
-  return stripe.accounts.create({
-    controller: CONNECT_CONTROLLER as unknown as Stripe.AccountCreateParams.Controller,
-    ...(opts.email ? { email: opts.email } : {}),
-    // Prefilling the URL is the one prefill the docs single out as worth doing; it reduces what the
-    // operator has to type and does not constrain anything.
-    ...(opts.businessUrl ? { business_profile: { url: opts.businessUrl } } : {}),
-  })
+  try {
+    return await stripe.v2.core.accounts.create(
+      {
+        dashboard: CONNECT_V2_POSTURE.dashboard,
+        defaults: {
+          responsibilities: {
+            // 🔴 'stripe' MEANS THE TRUCK PAYS STRIPE'S FEES. See the inversion note at the top of this
+            // file before touching this line. 'application' would mean HatchGrab pays them.
+            fees_collector: CONNECT_V2_POSTURE.feesCollector,
+            losses_collector: CONNECT_V2_POSTURE.lossesCollector,
+          },
+          ...(opts.businessUrl ? { profile: { business_url: opts.businessUrl } } : {}),
+        },
+        identity: { country: (opts.country || 'GB').toLowerCase() },
+        configuration: { merchant: { capabilities: { card_payments: { requested: true } } } },
+        // v2 names this `contact_email`; v1 called it `email`.
+        ...(opts.email ? { contact_email: opts.email } : {}),
+      },
+      { apiVersion: STRIPE_V2_API_VERSION },
+    )
+  } catch (err) {
+    const versionMessage = asVersionRejection(err)
+    if (versionMessage) {
+      // 🔴 FIRST-CLASS FAILURE. Named, greppable, and it prints the pinned constant next to what Stripe
+      // said about it — so the fix (change one constant) is visible from the log line alone.
+      console.error(
+        `[stripe/connect] 🔴 STRIPE REJECTED OUR PINNED API VERSION — no account was created.\n` +
+        `    pinned STRIPE_V2_API_VERSION = ${STRIPE_V2_API_VERSION}\n` +
+        `    Stripe said                  : ${versionMessage}\n` +
+        `    FIX: update STRIPE_V2_API_VERSION in lib/stripe/connect.ts to a version Stripe still ` +
+        `accepts. This is a preview-train string and is EXPECTED to move. Connect account creation is ` +
+        `DOWN for every operator until it is changed.`,
+      )
+      throw new Error(VERSION_REJECTED_MESSAGE)
+    }
+    // Everything else still names the version, because a 400 whose wording we did not recognise is the
+    // most likely place for the next version change to hide.
+    console.error(
+      `[stripe/connect] account creation failed (pinned version ${STRIPE_V2_API_VERSION}):`,
+      err instanceof Error ? err.message : err,
+    )
+    throw err
+  }
+}
+
+/** The four posture properties as Stripe reports them back. */
+/** What the Payments tab badge is driven by. Server-side, from Stripe's own account object. */
+export interface AccountRequirements {
+  /** 🔴 THE BADGE PREDICATE. True only when Stripe is blocked on the TRUCK. */
+  actionRequired: boolean
+  currentlyDue: string[]
+  pastDue: string[]
+  /** Non-null when Stripe has disabled the account — e.g. 'requirements.past_due'. */
+  disabledReason: string | null
+}
+
+/**
+ * 🔴 THE BADGE'S SOURCE, AND IT IS DELIBERATELY NOT THE NOTIFICATION BANNER.
+ *
+ * ── WHY NOT `onNotificationsChange` — TWO REASONS, AND THE SECOND IS FATAL ─────────────────────────
+ * 1. It reports from inside an IFRAME on Stripe's schedule: late, twice, or never. A badge that is
+ *    silent when action IS required is worse than no badge, because silence reads as "all clear".
+ * 2. 🔴 THE BANNER ONLY EXISTS ON THE PAYMENTS TAB. The badge has to be visible from every OTHER tab —
+ *    that is the entire point of it. A cross-tab signal fed by a same-tab iframe is a contradiction:
+ *    open Manage on the Menu tab and Connect.js has never loaded, no Account Session has been minted,
+ *    and the iframe has never rendered, so the callback cannot have fired. The only way round it would
+ *    be to mount a Connect instance on EVERY Manage page load for every operator, paying an Account
+ *    Session and an iframe on every page view to power a badge.
+ * ⚠️ DO NOT REINTRODUCE IT. If a future pass wants richer detail, extend THIS function — the fields are
+ * already on a response we make anyway.
+ *
+ * ── ⚠️ WHAT THIS DELIBERATELY DOES NOT CATCH ──────────────────────────────────────────────────────
+ * Stripe's banner also shows ACCOUNT-HYGIENE prompts — "Confirm your email address" being the one that
+ * prompted this build. Measured on the live account: every requirements array is EMPTY while that
+ * banner shows, with `charges_enabled` and `payouts_enabled` both true. It is a Stripe-login concern,
+ * not a Connect requirement, and it stops no money.
+ * 🔴 THE BADGE IS FOR THINGS THAT STOP THE MONEY. Amplifying hygiene prompts to a cross-tab badge and an
+ * amber banner — the treatment reserved for "customers can't see allergen info" — would be a category
+ * error, and would train an operator to ignore the badge that matters.
+ *
+ * ⚠️ ONE v1 RETRIEVE, not the two calls `readAccountReadiness` makes. This runs on Manage page load, so
+ * it is deliberately the cheapest read that answers the question. It is never called for a truck with
+ * no connected account — see the route.
+ */
+export async function readAccountRequirements(accountId: string): Promise<AccountRequirements> {
+  const stripe = stripeClient()
+  const account = await stripe.accounts.retrieve(accountId)
+  const currentlyDue = account.requirements?.currently_due ?? []
+  const pastDue = account.requirements?.past_due ?? []
+  const disabledReason = account.requirements?.disabled_reason ?? null
+  return {
+    // 🔴 `disabled_reason` IS INCLUDED, AND IT IS THE ONE THAT MATTERS MOST. An account can be disabled
+    // with both arrays empty (a Stripe-side review, for instance) — reading only the arrays would miss
+    // exactly the case where the truck has stopped being able to trade.
+    actionRequired: currentlyDue.length > 0 || pastDue.length > 0 || disabledReason !== null,
+    currentlyDue,
+    pastDue,
+    disabledReason,
+  }
+}
+
+export interface AccountPosture {
+  dashboard: string | null
+  feesCollector: string | null
+  lossesCollector: string | null
+  requirementsCollector: string | null
+}
+
+/**
+ * 🔴 READ THE POSTURE BACK FROM STRIPE. Never inferred from what was sent.
+ * Two of these cannot be verified any other way: `requirements_collector` is COMPUTED and is not sent at
+ * all, and `fees_collector` is the property that has now inverted twice between API versions. A create
+ * call that returns 200 having quietly landed a different posture is exactly the failure this catches.
+ */
+export async function readAccountPosture(accountId: string): Promise<AccountPosture> {
+  const stripe = stripeClient()
+  const account = await stripe.v2.core.accounts.retrieve(
+    accountId,
+    { include: ['defaults'] },
+    { apiVersion: STRIPE_V2_API_VERSION },
+  )
+  const r = account.defaults?.responsibilities
+  return {
+    dashboard: account.dashboard ?? null,
+    feesCollector: r?.fees_collector ?? null,
+    lossesCollector: r?.losses_collector ?? null,
+    requirementsCollector: r?.requirements_collector ?? null,
+  }
+}
+
+/** Compare a read-back posture against intent. Pure, so it is testable without a network call.
+ *  Returns every mismatch rather than the first, because "which of the four" is the whole diagnostic. */
+export function postureMismatches(actual: AccountPosture): string[] {
+  const expected: Array<[keyof AccountPosture, string]> = [
+    ['dashboard', CONNECT_V2_POSTURE.dashboard],
+    ['feesCollector', CONNECT_V2_POSTURE.feesCollector],
+    ['lossesCollector', CONNECT_V2_POSTURE.lossesCollector],
+    ['requirementsCollector', CONNECT_V2_POSTURE.requirementsCollector],
+  ]
+  return expected
+    .filter(([key, want]) => actual[key] !== want)
+    .map(([key, want]) => `${key}: expected '${want}', got '${actual[key] ?? 'null'}'`)
 }
 
 /**
@@ -121,16 +326,67 @@ export async function createAccountSession(accountId: string) {
   })
 }
 
+export interface AccountReadiness {
+  /** 🔴 THE MONEY GATE. Nothing else is readiness. */
+  chargesEnabled: boolean
+  /** Whether onboarding has ever been completed. Free — same call as `chargesEnabled`. */
+  detailsSubmitted: boolean
+  /** v2 `card_payments.status`: 'active' | 'pending' | 'restricted' | 'unsupported'. Null if unreadable. */
+  cardPaymentsStatus: string | null
+}
+
 /**
- * Read the account's live readiness from Stripe.
- * 🔴 RETURNS `charges_enabled`, AND NOTHING ELSE IS READINESS. Not "the account exists", not
+ * Read the account's live state from Stripe.
+ *
+ * 🔴 `charges_enabled` IS READINESS, AND NOTHING ELSE IS. Not "the account exists", not
  * `details_submitted`, not `payouts_enabled`. An account can exist for days mid-verification, and can
  * lose `charges_enabled` at any time when Stripe raises a requirement.
+ * ⚠️ IT STAYS THE v1 BOOLEAN ON PURPOSE. The `account.updated` webhook writes
+ * `operators.stripe_charges_enabled` from the v1 `charges_enabled` on the event, so this must read the
+ * same field from the same API. Deriving readiness here from a capability status instead would give two
+ * writers two definitions of one column, and the column would flip-flop between them.
+ *
+ * ── ⚠️ THIS MAKES TWO API CALLS, AND THE SECOND ONE IS NEW. THE COST, STATED: ──────────────────────
+ * One extra Stripe request per Payments-tab open. That is an OWNER-ONLY route, opened rarely and never
+ * in a loop, and the tab already made one call and one database write — so 1 → 2 is not a meaningful
+ * change in load. It is recorded rather than waved through because it is a real cost.
+ *
+ * 🔴 WHY IT IS NOT FREE, HAVING BEEN CHECKED. The v1 retrieve above ALREADY returns a capability map —
+ * `capabilities: {"card_payments":"inactive", …}` — and using it would have cost nothing. It is not
+ * used because v1's vocabulary is `active | inactive | pending | unrequested`, which folds v2's
+ * `restricted` AND `unsupported` into one word. Those two need opposite advice: `restricted` means
+ * "finish onboarding", `unsupported` means "this account will never take cards, stop asking". A free
+ * value that cannot tell them apart would have us telling some truck to add information forever.
+ *
+ * ⚠️ THE SECOND CALL IS NON-FATAL. If it fails, `cardPaymentsStatus` is null and the tab falls back to
+ * the states it can derive from the v1 fields alone — degraded, never blocked. Readiness itself never
+ * depends on it.
  */
-export async function readAccountReadiness(accountId: string): Promise<{ chargesEnabled: boolean }> {
+export async function readAccountReadiness(accountId: string): Promise<AccountReadiness> {
   const stripe = stripeClient()
   const account = await stripe.accounts.retrieve(accountId)
-  return { chargesEnabled: account.charges_enabled === true }
+
+  let cardPaymentsStatus: string | null = null
+  try {
+    const v2 = await stripe.v2.core.accounts.retrieve(
+      accountId,
+      { include: ['configuration.merchant'] },
+      { apiVersion: STRIPE_V2_API_VERSION },
+    )
+    cardPaymentsStatus = v2.configuration?.merchant?.capabilities?.card_payments?.status ?? null
+  } catch (err) {
+    console.error(
+      `[stripe/connect] could not read card_payments status for ${accountId} — the tab will fall back ` +
+      `to the v1 fields and cannot distinguish 'pending' from 'restricted':`,
+      err instanceof Error ? err.message : err,
+    )
+  }
+
+  return {
+    chargesEnabled: account.charges_enabled === true,
+    detailsSubmitted: account.details_submitted === true,
+    cardPaymentsStatus,
+  }
 }
 
 /** True when the platform is configured enough to attempt anything. Used to render an honest empty state

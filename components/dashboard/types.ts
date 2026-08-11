@@ -137,6 +137,12 @@ export interface TruckData {
    *  Arrives free via /api/dashboard's spread-and-redact truck projection. THE COLUMN IS THE ONLY HOME —
    *  it was briefly mirrored into device Preferences and that copy was removed. Do not reintroduce it. */
   print_trigger_mode?: 'lead_time' | 'on_confirmed' | null
+  /** 🔴 TEMPORARY — delete with the online-payments switch. NULL/undefined = online card payments are
+   *  offered; a timestamp = the operator paused them, and when. TRUCK-WIDE and it does NOT self-expire,
+   *  which is why the dashboard shows a persistent banner while it is set. Arrives free via
+   *  /api/dashboard's spread-and-redact truck projection. Read the RULE only through
+   *  lib/payments/online-payments-switch.ts; this field is for the dashboard's own control and banner. */
+  online_payments_paused_at?: string | null
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'

@@ -296,6 +296,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingPaidStepOverride,setSavingPaidStepOverride]=useState(false)
   const[savingTakesCashOverride,setSavingTakesCashOverride]=useState(false)
   const[savingCompletionOverride,setSavingCompletionOverride]=useState(false)
+  // 🔴 TEMPORARY — delete with the online-payments switch. NOT a per-event override: this one is
+  // TRUCK-WIDE and lives on trucks.online_payments_paused_at, which is why it is not in the card with
+  // the three that are. State is held on `truck`, not here; only the in-flight flag is local.
+  const[savingOnlinePaymentsPause,setSavingOnlinePaymentsPause]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
   // Order keys whose ledger write is on record as having FAILED (audit after_state.ledger_failed).
   // Server-derived, so it survives a poll, a reload, a different device and an offline replay whose
@@ -1253,6 +1257,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       showToast(val?'Auto-accept enabled':'Auto-accept disabled')
     }catch{showToast('Failed to save','error')}
     finally{setSavingAutoAccept(false)}
+  }
+
+  // ── 🔴 TEMPORARY — ONLINE CARD PAYMENTS OFF/ON. DELETE WITH THE SWITCH. ────────────────────────────
+  // TRUCK-WIDE, not per-event. It writes trucks.online_payments_paused_at and applies to every event
+  // this truck runs, now and later, until it is turned back on. That is why it is NOT in the per-event
+  // card and why the copy says so out loud — the house rule there ("scope is a property of the screen")
+  // holds for that card, and this control is the exception that proves it, so it lives outside.
+  //
+  // SERVER-CONFIRMED, same shape as applyEventPatch: state is set from the TIMESTAMP THE SERVER MINTED,
+  // never from a local clock, so the banner's "since" can never disagree with the row. Not optimistic.
+  // ⚠️ The response carries ONLY this column, not the truck row — `trucks` holds the dashboard token and
+  // pin, which /api/dashboard strips before they reach a browser. Patch the one field onto `truck`.
+  const saveOnlinePaymentsPaused=async(paused:boolean)=>{
+    setSavingOnlinePaymentsPause(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_online_payments_paused',value:paused})
+      })
+      if(!res.ok)throw new Error('write failed')
+      const d=await res.json().catch(()=>({}))
+      setTruck(t=>t?{...t,online_payments_paused_at:d?.online_payments_paused_at??null}:t)
+      showToast(paused?'Card payments off — customers pay at the hatch':'Card payments back on')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingOnlinePaymentsPause(false)}
   }
 
   // ── SERVER-CONFIRMED EVENT PATCH (V9.6) ───────────────────────────────────────────────────────────
@@ -2634,6 +2663,32 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
+      {/* ── 🔴 TEMPORARY — CARD PAYMENTS OFF. PERSISTENT BANNER. DELETE WITH THE SWITCH. ─────────────
+          ⚠️ IT SITS OUTSIDE <main> ON PURPOSE, so it shows on EVERY tab and is not inside the scroll
+          container that Add manages itself. This is the one dashboard setting that does NOT expire on
+          its own — the three per-event overrides all lapse when the event does, this one persists until
+          somebody turns it back on — so it must be impossible to leave switched off and forget.
+          ⚠️ NO DATE FORMATTING HERE. The card below carries the day it was turned off; a formatted
+          timestamp in a client component that also renders on the server is a hydration mismatch, and
+          this banner does not need one to do its job.
+          ⚠️ The "Turn back on" button writes the same action as the card's toggle — one save path. */}
+      {truck?.online_payments_paused_at&&(
+        <div className="w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 pt-3">
+          <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-amber-500">⚠️</span>
+              <p className="text-sm font-medium text-amber-800">
+                Card payments are off — customers are paying at the hatch. This stays off, on every event, until you turn it back on.
+              </p>
+            </div>
+            <button onClick={()=>saveOnlinePaymentsPaused(false)} disabled={isOffline||savingOnlinePaymentsPause}
+              className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap disabled:opacity-50">
+              Turn back on
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* The ONLY scroll container — flex-1 min-h-0 lets it fill the shell and scroll internally while the
           top bars above stay put. Add tab manages its own inner scroll (overflow-hidden here). */}
       <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 ${activeTab==='add'?'overflow-hidden px-4':'overflow-y-auto px-4 py-4 pb-20'}`}>
@@ -3354,6 +3409,49 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             </div>
+
+            {/* ── 🔴 TEMPORARY — ONLINE CARD PAYMENTS. DELETE THIS WHOLE BLOCK WITH THE SWITCH. ──────
+                🔴 DELIBERATELY OUTSIDE THE CARD ABOVE, AND THE SEPARATION IS THE POINT.
+                That card's house rule (read the 🔴 note at the top of it) is that SCOPE IS A PROPERTY OF
+                THE SCREEN: everything in it is PER-EVENT, so no row repeats it. This control breaks that
+                invariant — it is TRUCK-WIDE and writes trucks.online_payments_paused_at — so putting it
+                in that card would silently make every neighbouring row's scope a lie. It gets its own
+                block, its own heading, and copy that states the scope explicitly, precisely BECAUSE the
+                surrounding convention says not to. Do not merge it in.
+                ⚠️ IT DOES NOT SELF-EXPIRE. The three overrides above lapse when the event does, because
+                nothing seeds them onto the next one. This one persists until an operator clears it —
+                correct for a payment incident, and the reason for the persistent banner at the top of
+                every tab. Do not add an auto-expiry.
+                ⚠️ NOT GATED ON activeEvent, unlike every toggle above. A truck-wide switch must be
+                reachable during an incident whether or not an event is selected.
+                ⚠️ THE DATE IS RENDERED FROM THE ISO STRING BY SLICE, not toLocaleString: this is a
+                client component that also renders on the server, and a locale-formatted date is a
+                hydration mismatch. The switch stores WHEN so this line can exist at all. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Take card payments online</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Turn this off during a card problem and customers will place orders as normal and pay at the hatch instead. Orders keep coming; only the card step stops.
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    This applies to your whole truck, on every event, and stays off until you turn it back on.
+                  </p>
+                  {truck?.online_payments_paused_at&&(
+                    <p className="text-xs font-semibold text-amber-700 mt-1.5">
+                      Off since {String(truck.online_payments_paused_at).slice(0,10)}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {savingOnlinePaymentsPause&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  {/* ON means "we take cards", so the stored value is INVERTED at both ends: the toggle
+                      reads !pausedAt, and tapping saves !pausedAt (currently on ⇒ pause). */}
+                  <Toggle on={!truck?.online_payments_paused_at} onToggle={()=>saveOnlinePaymentsPaused(!truck?.online_payments_paused_at)} disabled={isOffline}/>
+                </div>
+              </div>
+            </div>
+
             {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
                 Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
                 — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and

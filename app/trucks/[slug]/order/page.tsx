@@ -50,7 +50,10 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null;
+  /** 🔴 Whether to OFFER a card option, from /api/menu. Absent/false ⇒ Pay-at-Hatch, silently, exactly
+   *  as before. A RENDERING HINT ONLY — /api/stripe/checkout re-reads readiness server-side. */
+  card_payments_ready?: boolean }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
@@ -227,6 +230,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [eventEnded, setEventEnded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  // ── PAY BY CARD ──────────────────────────────────────────────────────────────────────────────────
+  // ⚠️ DEFAULTS TRUE, BUT ONLY EVER READ ALONGSIDE `truck.card_payments_ready`. On every truck that has
+  // not completed Stripe onboarding — all of them today — the choice is never rendered and this value
+  // never reaches the submit path, so the page behaves exactly as it did before.
+  const [payByCard, setPayByCard] = useState(true)
+  /** Set when the order was placed but the card step could not start. NEVER silent — see the confirmation. */
+  const [cardFallbackNotice, setCardFallbackNotice] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
   const [submittedAutoAccepted, setSubmittedAutoAccepted] = useState(false)
   const [submittedConfirmedSlot, setSubmittedConfirmedSlot] = useState<string | null>(null)
@@ -1178,6 +1188,33 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         return
       }
       if (!res.ok) throw new Error(data.error || 'Order failed')
+
+      // ── 🔴 THE ORDER NOW EXISTS. ONLY NOW IS A CARD OFFERED. ─────────────────────────────────────
+      // Order-first is forced, not chosen: place_order_atomic books production capacity in the same
+      // transaction as the order, so paying first would need slot reservation that does not exist.
+      // ⚠️ EVERY FAILURE BELOW FALLS THROUGH TO THE NORMAL CONFIRMATION, which says "Pay at the truck".
+      // The order is real and unpaid either way, so the worst outcome of a Stripe problem is the
+      // behaviour this page had yesterday — never a customer left believing a payment is in flight.
+      if (payByCard && truck?.card_payments_ready && data.orderKey) {
+        try {
+          const pay = await fetch('/api/stripe/checkout', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderKey: data.orderKey }),
+          })
+          const payData = await pay.json().catch(() => ({}))
+          if (pay.ok && payData.url) {
+            // Leaves the site for Stripe's hosted page and returns to /order/{key}/manage.
+            window.location.href = payData.url as string
+            return
+          }
+          console.error('[order] card payment unavailable, falling back to Pay at the truck:', payData?.error)
+        } catch (payErr) {
+          console.error('[order] card payment could not start, falling back to Pay at the truck:', payErr)
+        }
+        // ⚠️ TOLD, NOT HIDDEN. The order is placed; only the card step failed.
+        setCardFallbackNotice(true)
+      }
+
       setSubmittedOrderId(data.orderId)
       setSubmittedAutoAccepted(!!data.autoAccepted)
       setSubmittedConfirmedSlot(data.slot ?? null)
@@ -1337,6 +1374,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <span className="text-slate-500">Payment</span>
             <span className="font-bold text-slate-700">Pay at the truck</span>
           </div>
+
+          {/* ── 🔴 THE ORDER IS PLACED BUT THE CARD STEP DID NOT START ─────────────────────────────
+              This confirmation is only reached on the card path when Stripe could not be started —
+              a successful card payment redirects away and never renders here. The customer chose to
+              pay now and is not paying now, so they are TOLD. Leaving the line above saying "Pay at
+              the truck" with no explanation would be technically true and actively misleading. */}
+          {cardFallbackNotice && (
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 mb-4 text-left">
+              <p className="text-xs text-amber-700">
+                We couldn’t start the card payment, so your order is set to pay at the truck instead.
+                Your order is placed — nothing has been charged.
+              </p>
+            </div>
+          )}
 
           <p className="text-slate-400 text-xs mb-6">Confirmation sent to {email}</p>
           {/* Slug-based truck route (Manual s.7). Targets the truck's own order/menu
@@ -2258,7 +2309,45 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
                 {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
               </button>
-              <p className="text-center text-slate-400 text-xs mt-2">Pay at the truck on collection · No card details needed</p>
+              {/* ── 🔴 THE CARD CHOICE. RENDERED ONLY WHEN THE TRUCK'S OPERATOR IS ACTUALLY READY. ──
+                  `card_payments_ready` is false for every truck whose operator has not completed Stripe
+                  onboarding, so this block does not exist for any of them and the line below is the
+                  page exactly as it was. That is the "silent fallback" rule: never a card option that
+                  then fails, and no explanation of a thing that is not on offer.
+                  ⚠️ Stacked rows in the existing radio vocabulary — a filled circle in a ring — not a
+                  native <input>, matching the pattern used across Manage. */}
+              {truck?.card_payments_ready && (
+                <div className="mt-4 space-y-1.5">
+                  {([
+                    { key: true,  label: 'Pay now by card', hint: 'Secure payment through Stripe' },
+                    { key: false, label: 'Pay at the truck', hint: 'No card details needed' },
+                  ] as const).map(opt => (
+                    <button
+                      key={String(opt.key)}
+                      type="button"
+                      onClick={() => setPayByCard(opt.key)}
+                      className="w-full flex items-start gap-2 text-left"
+                    >
+                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        payByCard === opt.key ? 'border-orange-500' : 'border-slate-300'
+                      }`}>
+                        {payByCard === opt.key && <span className="w-2 h-2 rounded-full bg-orange-500" />}
+                      </span>
+                      <span className="text-sm min-w-0">
+                        <span className="font-medium text-slate-700">{opt.label}</span>
+                        <span className="block text-xs text-slate-400">{opt.hint}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* ⚠️ The original line, unchanged, for every truck that cannot take cards — and replaced
+                  only when a card is both available and chosen, so it never describes the wrong thing. */}
+              <p className="text-center text-slate-400 text-xs mt-2">
+                {truck?.card_payments_ready && payByCard
+                  ? 'You’ll pay securely with Stripe on the next screen'
+                  : 'Pay at the truck on collection · No card details needed'}
+              </p>
 
             </div>
           </div>

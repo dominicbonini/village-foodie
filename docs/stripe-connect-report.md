@@ -1,152 +1,197 @@
-# Payments tab — four refinements
+# Payments tab — split reverted, banner merged into "Your Stripe details", badge kept
 
-**Date:** 10 August 2026
-**Styling and copy only.** No behaviour change, no change to the connection flow.
-**Prompt integrity:** nothing arrived garbled, and **no instruction contradicted another** — nothing to stop and ask about.
+**Date:** 11 August 2026
+**Result: Online payments is byte-for-byte back to what it was. The notification banner now lives inside the details card, so it can never be an empty box or a strip touching its neighbours. The badge is untouched.**
+**Prompt integrity:** nothing arrived garbled, and no instruction contradicted another.
 
-**One file changed:** `components/manage/PaymentsTab.tsx`.
+**Untouched, as instructed:** the six states, account creation, the webhook, `lib/payments`, and the walk-up section. Every fee figure still resolves from `CARD_FEES`.
 
 ---
 
-## 1. The trial banner is now the page's amber notice
+## 1. 🔴 THE SPLIT IS REVERTED, AND THE REASONING IS KEPT
 
-### The treatment I found, quoted
-
-`app/manage/[token]/page.tsx` uses one in-card amber notice, **three times**, identically — at `:887`, `:947` and `:5226`:
+**Online payments is restored exactly**: heading, intro sentence, and one card containing the status headline and chip, the trial reassurance, the **Connect Stripe** button, **the fee line**, and the test-mode note — in that order, as before.
 
 ```jsx
-<div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
-  <p className="text-sm font-bold text-amber-800">Your allergen card</p>
-  <p className="text-xs text-amber-700 mt-0.5">Customers see this exactly as you write it — nothing is rewritten…</p>
-</div>
+<section>
+  <h3>Online payments</h3>
+  <p>Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it.</p>
+  <div className="mt-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+    …status headline + chip · trial reassurance · Connect Stripe…
+    <p className="text-xs text-slate-500 mt-3">
+      Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
+      the UK and EEA cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
+    </p>
+    <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
+  </div>
+</section>
 ```
 
-### Reused verbatim
+✅ **The fee line is back where it was**, with its original `mt-3`, its original position above the test-mode note, and `CARD_FEE_ONLINE_LABEL` unchanged.
+
+### ⚠️ The reasoning is recorded, not lost
+
+**At the section head, so it is found by whoever next opens this file:**
+
+> *A split was tried on 11 August 2026 and reverted. …The argument still stands and is worth revisiting when Tap to Pay ships: `CARD_FEE_ONLINE_LABEL` below is the ONLINE rate, and in-person cards are a DIFFERENT rate (`CARD_FEE_IN_PERSON_LABEL`, already quoted in the walk-up section). The day a truck can take a card at the hatch on this same connection, a card headed "Online payments" carrying the account's own status will be describing two things at once. **Revisit then — not before, and not as a tidy-up.***
+
+### 🔴 The "Your Stripe account" heading was DROPPED, and it had to be
+
+**Your instruction was to keep it only if it cost nothing.** It did not:
+
+**Restoring the previous layout puts the account's status, chip and Connect button back inside the Online-payments card.** A "Your Stripe account" heading over what remains — the onboarding and details cards — would label **only the leftovers**, while the account's actual status sat above it under a different heading. **Two headings splitting one subject reads worse than one heading and an unlabelled group.**
+
+⚠️ **So the group is once again unlabelled, exactly as before this task.** The observation that prompted it — markup says sibling, typography says child — is now recorded in the section comment, so it survives without the structure.
+
+---
+
+## 2. THE BANNER IS MERGED INTO "YOUR STRIPE DETAILS"
 
 ```jsx
-<div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3">
-  <p className="text-xs text-amber-700">{CONNECTING_STRIPE_NOT_A_CHARGE}</p>
-</div>
+{shouldOfferAccountManagement(state) && (
+  <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+    <p className="text-base font-bold">Your Stripe details</p>
+    <p className="text-xs text-slate-500 mt-0.5">Change the bank account you get paid into…</p>
+
+    {shouldMountNotificationBanner(state, detailsSubmitted) && (
+      <div className="mt-3"><ConnectNotificationBanner /></div>
+    )}
+
+    {showManagement ? <ConnectAccountManagement /> : <button>View or edit</button>}
+  </div>
+)}
 ```
 
-**Container class-for-class identical**; the sentence uses the pattern's own body treatment, `text-xs text-amber-700`. The only addition is `mt-3`, the spacing every sibling in that card already uses.
+**It was a bare sibling between two cards.** When it had something to say it appeared as an unpadded strip touching the card above and below; when it had nothing it contributed only the parent's row gap. **Inside a card that always has content it can be neither.**
 
-⚠️ **The heading line is omitted, deliberately** — the pattern's heading slot needs heading copy, and you said the wording stays as built. Inventing a heading to fill the slot would have been new copy. **One sentence, in the notice's body treatment, in the notice's container.**
+### 🔴 It moved WHOLE — and your instinct to check that was right
 
-**It was `bg-slate-50 border-slate-200 … text-slate-600`** — grey, beside a button, which reads as fine print. **The wording is unchanged.**
+**I can confirm the operator's intent is served, with one thing they should know.**
 
-## 2. The walk-up options are boxed
+**Served:** the "Action required" box stops being a loose strip. Whatever Stripe has to say now appears inside a card with proper padding and the page's standard spacing around it.
 
-### The treatment I found
+🔴 **What they should know: this is not a filter.** The banner is **one opaque iframe** carrying **risk interventions and paused payouts** as well as hygiene prompts, and `onNotificationsChange` returns `{total, actionRequired}` — **two numbers with no message text**. We cannot read what it says, so we cannot route part of it.
 
-`bg-slate-50 border border-slate-200 rounded-xl p-3` — the page's sub-panel container for a group of related settings. Manage → Settings uses it for **Taking payment**, **Notifications** and **Opening and closing** (`:8975`, `:9021`, `:9051`).
+⚠️ **So "your payouts are paused pending review" will now appear inside a card headed "Your Stripe details", one line under a sentence about changing bank details.** That is a real consequence of merging, and it is the honest cost of it. **It is still better than the strip**, because the message is at least framed and spaced — but it is not the same as giving urgent notices their own treatment, and no amount of markup can separate them while Stripe gives us two integers.
 
-### Reused
+✅ **Mitigating it: the notice is never the only signal.** A truck whose payouts are paused has `disabled_reason` set, which **fires the tab badge and the cross-tab banner** built last task — and those *are* ours to word. **The urgent path does not depend on where the iframe sits.**
 
-```jsx
-<div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
+### ⚠️ No empty box, and no odd spacing — the defect already fixed once on this page
+
+**The wrapper has no background, no border and no padding of its own** — only `mt-3`. Stripe's components *"grow in height according to the content rendered inside"*, so an empty banner is zero pixels.
+
+**The card itself always has content** — a heading, a sentence and a button — **so it cannot be the empty card the standalone wrapper used to be.** In the empty case the only residue is 12px of margin **inside a card that was already there**.
+
+### 🔴 One consequence I had to accept, flagged rather than buried
+
+**`shouldOfferAccountManagement` now includes `unsupported`.**
+
+The banner mounts in **every** post-onboarding state, `unsupported` included. **Had the gate stayed as it was, moving the banner into this card would have deleted it in that one state — and `unsupported` is precisely where Stripe is most likely to be explaining why an account will never take cards.**
+
+✅ **It is also the better rule on its own terms:** a truck that has completed onboarding has real bank and business details on file, and being unable to take *cards* is not a reason to lock them out of their own information. **The old exclusion also left a dead end** — a card offering to change bank details with no button to do it.
+
+⚠️ **This is a behaviour change I made without being asked.** The alternative was silently dropping a risk-notice surface. **Recorded at the function and here.**
+
+---
+
+## 3. SPACING — the existing convention, unchanged
+
+| | |
+|---|---|
+| **Vertical rhythm** | The root is `<div className="space-y-6">` ([:261](../components/manage/PaymentsTab.tsx#L261)) — the page's existing convention. **Nothing new was invented.** |
+| **Card treatment** | Every card is `bg-white rounded-2xl shadow-sm border border-slate-200 p-4`, class-for-class: Online payments (:292), onboarding (:430), details (:477), walk-up (:552) |
+| **Why they no longer touch** | `ConnectComponentsProvider` renders **no DOM**, so the onboarding and details cards are direct children of `space-y-6` and get the full 24px. **The one element that was not a card — the bare banner — is gone.** |
+
+---
+
+## 4. THE BADGE — untouched
+
+✅ **`readAccountRequirements` unchanged**, including `disabled_reason` in the predicate:
+
+```ts
+actionRequired: currentlyDue.length > 0 || pastDue.length > 0 || disabledReason !== null
 ```
 
-Same three classes, plus the `space-y-1.5` the two rows already had. **Presentation only** — the rows inside are untouched.
-
-## 3. Online payments now states the price
-
-```jsx
-<p className="text-xs text-slate-500 mt-3">
-  Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
-  the UK and EEA cost more.
-</p>
-```
-
-**Renders:** *"Stripe charges **1.5% + 20p** per payment on standard UK cards. Cards issued outside the UK and EEA cost more."*
-
-- 🔴 **Whose fee, named:** *"Stripe charges…"*. It is the payment provider's rate, not ours.
-- 🔴 **The plan's platform fee on online orders is NOT restated here.** It belongs to the plan, it already appears on the Billing tab, and putting it beside a provider rate is how an operator adds the two together or mistakes one for the other. The comment at the site says exactly that.
-- ⚠️ **The qualifier `CARD_FEES` demands is present** — *"Cards issued outside the UK and EEA cost more"*, because the constant's own note says quoting the domestic rate alone *"would be a claim that is untrue for some customers"*.
-- ⚠️ **One line.** Detail belongs in the plan pricing.
-
-## 4. The button label stays `Connect Stripe` — decision recorded, nothing changed
-
-No code change. The reasoning is now a comment immediately above the button so it is not revisited:
-
-> 🔴 *"A generic 'Connect payments' was considered and rejected. Pressing this hands the operator straight to STRIPE'S OWN embedded form asking for bank details and photo ID — and a button that did not name Stripe, opening a stranger's identity check, is MORE alarming than one that did. Naming the provider is what makes the next screen make sense."*
->
-> ⚠️ *"It also costs nothing in surprise: the section copy directly above already says money goes to 'your own Stripe account', so the name is on screen either way."*
+✅ **The countless `(!)` variant unchanged.** ✅ **The `requirements` route action unchanged.** ✅ **The cross-tab banner unchanged.** **Not one line of it was touched by this task.**
 
 ---
 
 ## VERIFY
 
-### The walk-up options are still non-interactive after being boxed ✅
+### All six states — what renders, and nothing empty or touching
+
+| State | Online payments card | Onboarding card | "Your Stripe details" card | Banner lives in |
+|---|---|---|---|---|
+| **not_connected** | ✅ always | — | — | not mounted |
+| **requirements** | ✅ always | **SHOWN** | — | not mounted (`details_submitted` false) |
+| **pending** | ✅ always | — | **SHOWN** | 🔴 **inside the details card** |
+| **ready** | ✅ always | — | **SHOWN** | 🔴 **inside the details card** |
+| **restricted** | ✅ always | **SHOWN** | **SHOWN** | 🔴 **inside the details card** |
+| **unsupported** | ✅ always | — | **SHOWN** | 🔴 **inside the details card** |
+
+**Empty-card check — every rendered card, every state:**
 
 ```
-$ awk '/══ WALK-UP PAYMENTS/,0' components/manage/PaymentsTab.tsx \
-    | grep -E "onClick|href=|<button|<input|onChange|tabIndex|role=|<a "
-  (three matches, all inside my own comments telling future readers not to add them)
+not_connected  1 card(s), all non-empty ✅      ready        2 card(s), all non-empty ✅
+requirements   2 card(s), all non-empty ✅      restricted   3 card(s), all non-empty ✅
+pending        2 card(s), all non-empty ✅      unsupported  2 card(s), all non-empty ✅
 ```
 
-**No handler, no control, nothing focusable, in either row or in the new container.** The box is a `<div>`; the rows remain `<div>`s with drawn radio circles. The coming-soon row keeps its dimmed `opacity-60` + badge — the codebase's `coming_soon` convention — and gained nothing.
-
-### Every rate resolves from `CARD_FEES` ✅
+**Orphaned-strip check — is the banner ever a bare sibling?**
 
 ```
-$ grep -E "1\.4%|1\.5%|20p|10p" components/manage/PaymentsTab.tsx
-  NONE
+not_connected  banner mounted=false                        ✅
+requirements   banner mounted=false                        ✅
+pending        banner mounted=true  hosted inside a card=true  ✅
+ready          banner mounted=true  hosted inside a card=true  ✅
+restricted     banner mounted=true  hosted inside a card=true  ✅
+unsupported    banner mounted=true  hosted inside a card=true  ✅
 ```
 
-**No literal rate anywhere in the file.** The three labels, and what they render:
+🔴 **The banner is hosted inside a card in every state where it mounts. There is no state in which it is a loose element.**
 
-| Constant | Renders | Where |
-|---|---|---|
-| `CARD_FEE_ONLINE_LABEL` | **1.5% + 20p** | the new online price line |
-| `CARD_FEE_IN_PERSON_LABEL` | **1.4% + 10p** | the walk-up coming-soon row |
-| `TAP_TO_PAY_SURCHARGE_LABEL` | **10p** | same row, stated **separately** as `CARD_FEES` instructs |
+### Online payments is back to its previous content
 
-### No fact repeated across the sections ✅
+**Heading, intro sentence, and one card with: status headline + chip → trial reassurance (trial + not connected) → Connect Stripe (not connected) → fee line → test-mode note.** Same order, same classes, same strings. **`CARD_FEE_ONLINE_LABEL` still resolves from `CARD_FEES`; no literal exists anywhere on the page.**
 
-| Fact | Stated once, in |
-|---|---|
-| Stripe's **online** rate 1.5% + 20p | Online payments |
-| No HatchGrab platform fee on walk-ups | Walk-up header |
-| Stripe's **in-person** rate + Tap to Pay surcharge | Walk-up coming-soon row |
-| The plan's platform fee on online orders | **Neither** — it lives on Billing |
+### 🔴 GUSTO — not connected
 
-Two different Stripe rates for two different things, each in its own section. The non-UK/EEA caveat appears once per rate, which is required rather than repetition — each is a qualifier on a different figure.
+```
+Pizzeria Gusto · plan trial · stripe_account_id = null · state = not_connected
+  Online payments card : SHOWN — headline, chip, trial banner, Connect Stripe, fee line, test-mode
+  Onboarding card      : —
+  Your Stripe details  : —
+  Notification banner  : not mounted (no connectInstance at all)
+  Payments tab badge   : none (route short-circuits — no stripe_account_id)
+```
 
-### 🔴 GUSTO — owner, on trial (`trial_expires_at` 17 Oct 2026), not connected
-
-**Online payments** — *"Customers pay by card when they order. Money goes straight to your own Stripe account — we never hold it."*
-
-> **Not connected** · *"Takes about 10 minutes. You'll need your bank details and ID."*
->
-> 🟡 **AMBER NOTICE** — *"Connecting Stripe doesn't start your subscription or charge you anything — it's how your customers pay you, not how you pay us."*
->
-> **[ Connect Stripe ]**
->
-> *"Stripe charges **1.5% + 20p** per payment on standard UK cards. Cards issued outside the UK and EEA cost more."* ← **new**
-> *"Test mode. No real payments can be taken yet."*
-
-**Walk-up payments** — *"How you take money at the hatch. HatchGrab charges no platform fee on walk-ups, whichever you choose."*
-
-> **In a grey sub-panel box:** ← **new**
-> ● **Your own card terminal** `Current` — *Zettle, Square, or whatever you already use. Nothing to set up — only your provider's own fees apply.*
-> ○ **Through HatchGrab** `Coming soon` *(dimmed)* — *Uses the same Stripe connection as your online payments — a card reader, or contactless straight from your phone or tablet.*
-> *1.4% + 10p per payment on UK and EEA cards, plus 10p for contactless taken on a phone or tablet. Cards issued outside the UK and EEA cost more.*
-
-**Four visible changes for them:** the trial sentence is now amber rather than grey, the walk-up options sit in a box, the online rate line is new, and the button is unchanged.
+✅ **One card, no badge, no Stripe call.** Their page is **identical to what it was before yesterday's restructure** — the split that briefly moved their fee line into a second section is gone, and every string is one they read two days ago.
 
 ### tsc and lint
 
 ```
-$ npx tsc --noEmit
-TSC: 0
-
-$ npx eslint .   (rule|severity, whole repo)
-  vs the immediately-previous task : IDENTICAL
+$ npx tsc --noEmit          → TSC EXIT CODE: 0
+$ npx eslint .  (rule|severity|count, whole repo)
+  diff vs baseline : IDENTICAL — no rule, no severity, no count changed
 ```
 
-**No rule introduced, no count changed.**
+15 rule/severity pairs, unchanged. **Compared as rules, not as a total.**
 
-### Behaviour unchanged ✅
+---
 
-`createAccount`, the `status` reconcile, `fetchClientSecret`, the account-session route, the three embedded components and every server file are untouched. **The diff is class strings, one new `<p>`, one new wrapper `<div>`, one import, and comments.**
+## Files changed — two
+
+| File | Change |
+|---|---|
+| `components/manage/PaymentsTab.tsx` | Online payments restored in full (fee line back, section heading back, the second section removed); the notification banner moved inside the "Your Stripe details" card; the revisit-when-Tap-to-Pay-ships reasoning recorded at the section head |
+| `lib/stripe/payments-state.ts` | `shouldOfferAccountManagement` now includes `unsupported` — a consequence of the merge, documented at the function |
+
+**The badge's three files — `lib/stripe/connect.ts`, `app/api/stripe/connect/route.ts`, `app/manage/[token]/page.tsx` — were not touched.**
+
+---
+
+## Worth your attention
+
+1. 🔴 **The merge is all-or-nothing and you should decide you are happy with it.** A paused-payouts notice will appear inside a card headed "Your Stripe details". **The tab badge and cross-tab banner still fire independently for anything that stops the money**, so the urgent path is covered — but the notice itself sits in a box about bank details, and no markup can change that while Stripe gives us two integers and no text.
+2. ⚠️ **`shouldOfferAccountManagement` gained a state.** Small, defensible, and forced by the merge — but it is a behaviour change I made without being asked, and it is the one thing in this task to reject if you disagree.
+3. ⚠️ **The fee-line argument is parked, not abandoned.** It becomes correctness rather than tidiness the day a card reader shares this connection.
