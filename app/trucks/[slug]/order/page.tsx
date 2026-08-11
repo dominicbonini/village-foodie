@@ -460,6 +460,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const res = await fetch(`/api/events?truck=${slug}`)
+          // ── 🔴 A 429 IS A REFUSAL, NOT A BLIP. IT MUST NOT BE RETRIED. ──────────────────────────
+          // The backoff loop below exists for a transient failure — a cold start, a dropped packet —
+          // where trying again is likely to work. A 429 is the server saying the budget for this
+          // window is already spent, so retrying spends more of a budget it has just told us is empty
+          // AND makes the refusal last longer. On 11 August this loop turned one refusal into three,
+          // and the Retry button turned each tap into three more: eight 429s in fifty seconds.
+          // Stop immediately, surface the card, and let the window refill.
+          if (res.status === 429) {
+            if (cancelled) return
+            setEventsError(true)
+            setEventLoading(false)
+            return
+          }
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const data = await res.json()
           if (cancelled) return
@@ -1431,10 +1444,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Shown in place of the event card when the events fetch failed (after auto-retries) — friendly,
   // not alarming, with a Retry that re-runs the events effect (setReloadKey bump). Used by both the
   // eventsError branch AND the catch-all, so the event section is NEVER a silent blank.
+  // ── 🔴 THE COPY NAMES EVENTS, BECAUSE EVENTS IS WHAT FAILED. ────────────────────────────────────
+  // It used to read "We couldn't load the menu right now" and "Please check your connection", and both
+  // were false in the one incident this card has ever had: /api/menu returned 200 throughout, and the
+  // connection was fine — the server answered, with a refusal we had issued ourselves. Naming the wrong
+  // subsystem is worse than being vague, because it sends whoever investigates to the wrong route; that
+  // sentence cost a full audit. And blaming the customer's connection for our own rate limit is simply
+  // untrue. This wording is true for BOTH causes this card can have — a rate-limit refusal and a genuine
+  // network failure — which is why it names neither.
   const eventsRetryCard = (
     <div className="mt-3 bg-slate-100 rounded-xl px-4 py-4 text-center">
-      <p className="text-slate-600 text-sm font-medium">We couldn&apos;t load the menu right now.</p>
-      <p className="text-slate-400 text-xs mt-0.5 mb-3">Please check your connection and tap to retry.</p>
+      <p className="text-slate-600 text-sm font-medium">We couldn&apos;t load this truck&apos;s events.</p>
+      <p className="text-slate-400 text-xs mt-0.5 mb-3">Give it a moment, then tap to try again.</p>
       <button
         onClick={() => setReloadKey(k => k + 1)}
         disabled={eventLoading}

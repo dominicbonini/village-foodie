@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { ratelimit, strictRatelimit } from '@/lib/ratelimit'
+import { ratelimit, strictRatelimit, eventsRatelimit } from '@/lib/ratelimit'
 
 // ── Rate-limit SCOPE = a POSITIVE ALLOWLIST of ONLY the public, scraping-prone endpoints. ───────────────
 // INVERTED by design (NOT "limit every /api/* minus an exempt list"). Operator surfaces — the dashboard /
@@ -9,12 +9,24 @@ import { ratelimit, strictRatelimit } from '@/lib/ratelimit'
 // considered for limiting, so no future edit to an exempt list can accidentally re-expose them. ONLY paths
 // matched by the two predicates below are ever limited.
 //
-// STRICT (3/min) — public bulk-scrapeable competitor-harvest targets. `/api/events` is matched EXACTLY (the
-//   public `?truck=` listing, called only from the customer order page); the operator
-//   `/api/events/manage|action|affected-orders` sub-routes have a longer pathname and are NOT matched.
+// STRICT (3/min) — public bulk-scrapeable competitor-harvest targets. ONE call returns EVERY truck, so
+//   this is the tier that actually stops a harvest. Unchanged.
+// CUSTOMER-EVENTS (600/min) — `/api/events` ONLY, matched EXACTLY: the public `?truck=` listing, called
+//   from the customer order page and nowhere else. The operator `/api/events/manage|action|
+//   affected-orders` sub-routes have longer pathnames and are NOT matched by any predicate here.
 // GENERAL (60/min) — public customer pages that share IPs behind one network (café WiFi, CGNAT) → lenient.
+//
+// ── ⚠️ `/api/events` WAS ON THE STRICT TIER UNTIL 11 AUGUST 2026 AND IT REFUSED REAL CUSTOMERS ──────
+// It shared STRICT's 3/min bucket with /api/discovery/*, keyed on IP alone. A normal journey — order
+// page, "change event", back — costs exactly 3, so the fourth request in a minute was a 429. Vercel
+// logs at 14:53 on 11 August: eight 429s in fifty seconds, all on /api/events, while /api/menu returned
+// 200 throughout. The customer saw a failure card and could not order.
+// ⚠️ THE TWO ROUTES ARE NOT THE SAME KIND OF THING and must never share a bucket again: /api/discovery
+// returns EVERY truck in one call (a harvest target); /api/events returns ONE truck's schedule to the
+// customer who is trying to order from it (an ordering dependency). Sizing rationale: lib/ratelimit.ts.
+const isCustomerEvents = (p: string) => p === '/api/events'
 const isStrictPublic = (p: string) =>
-  p === '/api/events' || p === '/api/discovery' || p.startsWith('/api/discovery/')
+  p === '/api/discovery' || p.startsWith('/api/discovery/')
 const isGeneralPublic = (p: string) =>
   p === '/trucks' || p.startsWith('/trucks/')
 
@@ -79,7 +91,8 @@ export async function proxy(request: NextRequest) {
   const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
 
   const isStrict = isStrictPublic(pathname)
-  const inLimitedScope = isStrict || isGeneralPublic(pathname)
+  const isEvents = isCustomerEvents(pathname)
+  const inLimitedScope = isStrict || isEvents || isGeneralPublic(pathname)
   const isDev = process.env.NODE_ENV !== 'production'
   const isLoopback = !forwarded || ip === '127.0.0.1' || ip === '::1'
   // Cheap, no network: presence of an operator credential. A native Bearer, or a Supabase auth cookie
@@ -87,21 +100,57 @@ export async function proxy(request: NextRequest) {
   const authHeader = request.headers.get('authorization') || ''
   const hasBearer = authHeader.startsWith('Bearer ')
   const hasOperatorSession = request.cookies.getAll().some(c => c.name.startsWith('sb-') && c.name.includes('auth-token'))
+  // ── ⚠️ THE OPERATOR BYPASS NOW COVERS /api/events, AND STILL DOES NOT COVER STRICT ─────────────────
+  // DECIDED 11 August 2026. `!isStrict` used to exclude /api/events too, because /api/events WAS strict.
+  // Splitting the tiers changes what that expression means, so the decision is restated rather than
+  // inherited: an authenticated operator IS exempt from the customer-ordering limiter, and is NOT exempt
+  // from the bulk-harvest one. The operator who tripped this at 14:53 was loading their own customer
+  // order page to check a deploy — carrying a Supabase session cookie the whole time — and was limited
+  // exactly like a scraper. An operator inspecting their own storefront is the most legitimate traffic
+  // this route receives.
+  // ⚠️ STRICT STAYS EXCLUDED, unchanged: a forged or stolen credential must not unlock the bulk feed,
+  // and an operator has no reason to call /api/discovery/* at all.
   const operatorBypass = (hasBearer || hasOperatorSession) && !isStrict
 
   let rlRemaining: number | null = null
 
   if (inLimitedScope && !isDev && !isLoopback && !operatorBypass) {
-    const limiter = isStrict ? strictRatelimit : ratelimit
+    // ── ⚠️ THE KEY IS (IP, TRUCK) FOR /api/events AND IP ALONE FOR THE OTHERS ────────────────────────
+    // IP alone was half the defect: a venue's wifi puts every customer in one bucket, and UK carriers use
+    // CGNAT, so hundreds of phones can share one address. Adding the truck slug means one truck's
+    // customers can never exhaust another truck's budget, and the limit reads as "requests for this truck
+    // from this address". `?truck=` is the route's own required parameter (it 400s without one), so it is
+    // already present on every legitimate call; a missing value collapses to a single shared '-' bucket,
+    // which is correct — those requests are malformed, not customer traffic.
+    // ⚠️ NO BETTER KEY EXISTS TODAY. There is no customer identity on this path — no account, no session,
+    // no device id — and inventing one to rate-limit by would be a tracking identifier introduced for the
+    // convenience of a limiter. The real defence against a shared address is a threshold a shared address
+    // cannot reach, which is what 600/min is for.
+    const limiter = isEvents ? eventsRatelimit : isStrict ? strictRatelimit : ratelimit
+    const limiterName = isEvents ? 'events' : isStrict ? 'strict' : 'general'
+    const truckParam = isEvents ? (request.nextUrl.searchParams.get('truck') || '-') : null
+    const key = truckParam ? `${ip}:${truckParam}` : ip
 
-    const { success, remaining } = await limiter.limit(ip)
+    const { success, remaining } = await limiter.limit(key)
 
     if (!success) {
+      // ── ⚠️ THE REFUSAL NOW LOGS. IT USED TO BE COMPLETELY SILENT. ────────────────────────────────
+      // Before this line the 429 was visible ONLY as a status code in the request log, with no text to
+      // grep and no indication of which limiter fired or on what key — which is why the 14:53 incident
+      // took a full audit to attribute. Names the limiter, the key and the path.
+      // ⚠️ THIS RUNS IN EDGE MIDDLEWARE, so it lands in the MIDDLEWARE log stream, not a serverless
+      // function log — the function never runs when the refusal happens. Search the edge/middleware logs.
+      // ⚠️ The key contains an IP, which is personal data. It is logged because attributing a refusal is
+      // impossible without it, and Vercel already records the client IP on every request line.
+      console.warn(`[ratelimit] REFUSED limiter=${limiterName} key=${key} path=${pathname} — returning 429`)
       return new Response(JSON.stringify({ error: 'Too many requests' }), {
         status: 429,
         headers: {
           'Content-Type': 'application/json',
-          'Retry-After': isStrict ? '300' : '60',
+          // Matched to each window rather than to the tier: strict is 1 minute, so the old '300' was
+          // advertising five minutes for a one-minute window. Nothing reads it today; it should still
+          // be true.
+          'Retry-After': '60',
         },
       })
     }

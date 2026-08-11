@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.8
+HatchGrab Engineering Reference Manual · V11.9
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.8**
+**Version 11.9**
 
 August 2026
 
@@ -15,6 +15,44 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.9 — 11 August 2026 (afternoon)
+
+**A pricing authority that was never authoritative, a price book keyed on a colliding name, and a Stripe webhook that had never actually run.** Three read-only audits, one measurement over every order in the database, two builds, and one deploy of 5,691 insertions.
+
+### 🔴 THE PRICE PATH IS CLIENT-SUPPLIED END TO END, ON BOTH INSERT PATHS
+
+- **`validateOrderTotals` is INERT and always has been.** The client sends `unit_price`; the submit route's own interface declares `unit_price`; `calculateOrderTotal` reads `item.price`. Every item is `undefined`, every total is `NaN`, and `Math.abs(a - b) > tolerance` is **false for NaN** — so every check passes. **Proven by execution**, not inference: a client posting £0.01 for a £9.50 order passes.
+- 🔴 **Correcting the field name would NOT make it authoritative.** `calculateOrderTotal` prices the items arm from the **submitted item** (`item.price * item.quantity`), with no menu lookup. It would compare the client's own numbers to the client's own total. Only the **bundle price** (`bundles_db`) and the **discount code** (`discount_codes_db`) are server-sourced.
+- 🔴 **The walk-up path is client-priced too**, and its comment says otherwise. `action/route.ts:1060` reads *"derived here from the server-held total. Never client-supplied."* The chain traces unbroken from `AddOrderPanel`'s **browser** `calculateOrderTotal` → `manualOrder.total` → `passedTotal` → `finalTotal` → `orders.total` and `total_minor`. **`validateOrderTotals` has no call site on that path at all.**
+
+### 🔴 A PRICE BOOK EXISTED, AND ITS KEY COLLIDED ON REAL MENUS
+
+- **`lib/order-repricing.ts` is a genuine server-authoritative pricing engine** — truck-scoped price book from `menu_items_db`, `modifier_options` (via `modifier_groups`) and `bundles_db`, request-body prices advisory throughout — **wired to exactly one call site, the operator edit handler.**
+- 🔴 **Its `optionPrice` was a FLAT `Record<string, number>` keyed on option name alone, and real menus collide.** Live-verified: on `real-thai-food`, `Prawn` is **£1.50 on Springrolls and £0.00 on six other dishes**; `Beef` is £0.50 on Massaman Curry and £0.00 elsewhere. **The resolved price was a function of row order** — proven by execution, returning `0.00` for both dishes and `1.50` for both with the rows reversed. **Nondeterministic pricing, which never reproduces when you go looking.**
+- ✅ **RE-KEYED to `(item_name, option_name)`** via a truck-scoped `item_modifier_groups` join, honouring `excluded_option_ids`. **No option ids on the wire** — item names are unique per truck (live-verified), so no client payload changed. **Gusto: 176 of 176 pairs agree, zero disagreement.** 14 of 14 live exclusions correctly absent. 1,068 pairs newly resolve UNRESOLVED, 451 of them non-zero under the old key.
+
+### THE MEASUREMENT — every order in the database, re-priced
+
+- **424 of 426 price exactly (99.5%).** **Pizzeria Gusto: 213 of 213 exact, £0.00 signed delta.**
+- **The 2 divergent are both WALK-UPS on `test-truck`** — the client sent `Extra cheese` at £0.00 where the menu prices it at £1.50. **+£3.00, both undercharges.** 🔴 **The only two real mispricings in the database are on the path the submit-side fix would not touch.**
+- **Every modifier in all 426 orders resolved** under the new key — zero modifier UnresolvedRefs.
+- 🔴 **ZERO orders carry a deal. ZERO carry a discount code.** Those two arms of `repriceOrder` have **no historical coverage whatsoever**; confidence there must come from a constructed test, not from history.
+- ⚠️ 21 orders produce an `item` UnresolvedRef — **a method artefact**, three Gusto dishes renamed or deleted after the fact. Not evidence about enforcement.
+
+### 🔴 THE STRIPE WEBHOOK HAD NEVER RUN IN PRODUCTION
+
+- **First production delivery returned 400 `Invalid signature`.** Cause: **two Stripe destinations** (platform-scoped and `@accounts`-scoped) both pointing at one URL, each with its own signing secret, while `STRIPE_WEBHOOK_SECRET` held **one**. The comma-separated format was always required; this is the incident that proves it.
+- ✅ **Verification code is byte-identical to the 7 August version.** Zero lines changed between `4f0f2c5` and HEAD touching `req.text`, `rawBody`, `STRIPE_WEBHOOK_SECRET`, `parseSigningSecrets` or `verifyStripeSignature`. **The 15 HMAC vectors still cover 100% of what runs.** The re-serialised-body hypothesis was tested and refuted.
+
+### The temporary card kill switch, and a copy change
+
+- **`trucks.online_payments_paused_at`** + `lib/payments/online-payments-switch.ts`, both gates, dashboard control, persistent banner. **Deliberately temporary**, with a removal list in the migration header.
+- **Buzzer prompt relabelled** to *"Remind me to add a buzzer"*.
+
+### Deployment record
+
+**`6fd4b97` "payment changes" — 33 files, 5,691 insertions, 395 deletions.** Carried this session's price-book re-key and card kill switch, **plus the previous session's uncommitted Stripe work** (`app/api/stripe/checkout/`, `lib/payments/online.ts`, `lib/stripe/payments-state.ts`, `lib/stripe/webhook-envelope.ts`, and changes to the webhook route, connect route, PaymentsTab and the customer order page). Followed by `e018dc2` (empty commit, clean rebuild for the webhook secret) and the killswitch render gate plus buzzer copy. ⚠️ **Migration `20260811_trucks_online_payments_paused_at.sql` applied and verified before the deploy:** `timestamp with time zone`, nullable, null default, 12 trucks, 0 paused.
 
 ## V11.8 — 11 August 2026
 
@@ -2465,6 +2503,98 @@ Only customer-path orders are subject to auto_accept. The behaviour of resolveAu
 
 When auto_accept is false the customer path skips this block, but the slot-capacity check at submission still runs (a full window returns 409, order never created).
 
+### 🔴 CORRECTION (V11.9) — `resolveAutoAcceptSlot` DOES NOT EXIST, AND THE LIST ABOVE IS ONE ROUTE OF FIVE
+
+**Provenance: repo-wide grep, ZERO matches for the symbol.** The five bullets above are kept because they correctly describe the **slot-capacity** arm — which lives in `placeOrderInSlotLocked`, not in a function of that name. **But they are not the whole decision, and they are not where most `pending` orders come from.**
+
+**What actually decides it** is an inline block at `app/api/orders/submit/route.ts:838-880`, nested inside `if (claim.booked && claim.finalSlot)`. **There are FOUR further routes to `pending` and §5 listed one:**
+
+| Outcome | Condition |
+|---|---|
+| **CONFIRMED** | all four true: `truck.auto_accept` · every line's `auto_accept !== false` · no line past a `force_pending` pre-order deadline · **not** (`notes_require_review !== false` **and** the order has notes) |
+| **PENDING** — truck setting | `truck.auto_accept` falsy |
+| **PENDING** — one item | any line whose menu item has `auto_accept === false` |
+| **PENDING** — pre-order | any line past a `force_pending` deadline |
+| 🔴 **PENDING** — notes | order-level `notes`, **or any item's `specialInstructions`, or any deal's `slotNotes`** |
+| **PENDING** — not booked | `!claim.booked` — the branch the bullets above describe; it lives in `placeOrderInSlotLocked` |
+
+⚠️ **Two `!== false` reads are safe-by-default and deliberate:** an absent item `auto_accept` **allows**; an absent `notes_require_review` **reviews**.
+
+🔴 **CONSEQUENCE: `pending` is ROUTINE, not an edge case.** Notes force pending, and `trucks.notes_require_review` is **NOT NULL default true** (live-verified). **32 order-level plus 4 item-level notes across 212 Gusto orders — roughly 1 in 6.** ⚠️ Upper-bound estimate: that count includes walk-ups and rows predating notes-review.
+
+### 🔴 NOTHING AGES OUT A PENDING ORDER (V11.9)
+
+**Provenance: exhaustive negative search.** No `crons` key in `vercel.json`; the two cron routes never touch `orders.status`; both Supabase edge functions write only `truck_events` and `truck_vans`; zero bulk updates filtered on `pending`. **A pending order persists indefinitely, holding its slot and its stock.** The only exits are the operator/customer actions.
+
+### Confirmation writes `orders.status` in the INSERT (V11.9)
+
+Auto-accept passes `p_status` straight into `place_order_atomic` — **a customer order is born `confirmed` or `pending` and is never inserted then updated.** There is **no separate confirmation write to hook**, so anything that must happen "on confirmation" has multiple sites, not one. See §37 for the four capture sites this produces.
+
+### 🔴 Offline replay can confirm an order with no payment awareness (V11.9)
+
+`confirm` is in `OFFLINE_STATUS_MAP` and replays by re-POSTing the stored body. `expected_from` guards on **`status` only**; `client_ts` is *"display only — NEVER used for reconciliation"*. **A replayed confirm would confirm an order regardless of whether an authorization existed, had expired, or had been captured.**
+
+### 🔴 ORDER PRICING IS CLIENT-SUPPLIED ON BOTH INSERT PATHS (V11.9)
+
+> **Provenance: three read-only audits plus a script exercised against real rows, 11 August. Placed HERE rather than in §31 — that section is the slot & capacity engine — because this is about what a customer is charged, which is order management.**
+
+#### `validateOrderTotals` is INERT, and correcting it would not make it authoritative
+
+`lib/order-calculations.ts` `calculateOrderTotal` prices the items arm at line 84:
+
+```ts
+const itemsTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+```
+
+🔴 **`item.price`, from the SUBMITTED ITEM. There is no menu lookup in the items arm.** The submit route's own `OrderItem` declares `unit_price` and no `price`, so on the server every `item.price` is `undefined`, `itemsTotal` is `NaN`, and `validateOrderTotals`' three `Math.abs(a - b) > tolerance` comparisons are **false for NaN** — every check passes. **Proven by execution.**
+
+🔴 **Renaming the field would make the check RUN, not make it AUTHORITATIVE.** It would multiply the client's unit price by the client's quantity and compare the result to the client's total. Only two inputs are server-sourced: `bundles_db` for the bundle price (with a silent `bundle_price: 0` fallback on a name miss) and `discount_codes_db` for the code.
+
+⚠️ **`menuItems` is passed in and read on EXACTLY ONE line** — inside the `dealSavings` reduce, a **display figure that never reaches `subtotal` or `total`**. The header's claims that this function is the *"SINGLE SOURCE OF TRUTH for all order calculations"* and that `menuItems` is the *"Full menu for price lookup"* are **both false for the items arm**.
+
+**Four call sites:** the customer page (client), `AddOrderPanel` (client), `submit/route.ts:517` (server), `order-repricing.ts:412` (server). 🔴 **Both client sites map to `price:` explicitly; the server site passes `items` straight through** — which is exactly why `item.price` is `undefined` there and nowhere else. `app/dashboard/[token]/page.tsx:45` imports it and never calls it.
+
+⚠️ **`dealsForCalc` supplies only `{ bundle, slots }`, so `modifierExtra` is always 0 on the server**, while the client's own call site passes it.
+
+#### 🔴 The walk-up path is client-priced too, and its comment says otherwise
+
+`action/route.ts:1060` reads *"§4a — pence, derived here from the server-held total. Never client-supplied."* **The number traces unbroken from the browser:**
+
+```
+AddOrderPanel state → calculateOrderTotal() IN THE BROWSER → manualOrder.total → POST body
+  → passedTotal → finalTotal = passedTotal || total → orders.total AND total_minor
+```
+
+⚠️ **Even the fallback is client-priced:** `const total = items.reduce((s, i) => s + parseFloat(i.unit_price) * parseInt(i.quantity), 0)` sums the request body's own prices. **`validateOrderTotals` has no call site on this path at all.**
+
+#### `lib/order-repricing.ts` — the only genuine server-authoritative pricing in the product
+
+`loadPriceBook(supabase, truckId)` reads `menu_items_db` (`price`), `modifier_options` (`price_adjustment`, truck-scoped via `modifier_groups!inner`) and `bundles_db`. `repriceOrder` resolves against it. **Request-body prices are advisory throughout: they say WHAT was selected, never what it costs.** An unresolved name pushes an `UnresolvedRef` and the edit handler returns **409 `needsPriceConfirm`** for an operator to acknowledge.
+
+**Three tiers:** stored order row (price-lock) → live menu (new lines) → the client's advisory figure (flagged, never silently accepted).
+
+🔴 **Wired to EXACTLY ONE call site — the operator `edit` handler.** The customer submit path does not call it and never has.
+
+#### 🔴 PRICE-LOCK IS NOT PRICE AUTHORITY
+
+**`orders.deals[].price` is stored VERBATIM from the browser** (`p_order.deals = deals ?? null`), and `indexStoredDeals` then treats it as the **locked, authoritative bundle price**, never consulting `bundles_db`. **So the engine is authoritative only for lines new to an edit; for everything the customer placed it faithfully preserves whatever the customer path admitted.**
+
+✅ **Live-verified clean: no stored deal price disagrees with `bundles_db`, and no stored deal name is unmatched.** The mechanism was real; it produced no bad data. Recorded accurately rather than dramatically.
+
+#### 🔴 `PriceBook.optionPrice` — RE-KEYED (do not revert to a flat name key)
+
+**The flat truck-wide key was row-order dependent.** Proven by execution: `flat["Prawn"]` returned `0` for both Springrolls and Pad Thai, and `1.5` for both with the rows reversed.
+
+**Now keyed `(item_name, option_name)`**, built from `item_modifier_groups` joined truck-scoped via `menu_items_db!inner(name, truck_id)`, honouring `excluded_option_ids`. `priceNewModifier` takes an **explicit `itemName` parameter** — 🔴 **`on` is the operator-facing label and MUST NOT be reused as the key**, because for deal slots it falls back to a synthesised name.
+
+- **A deal slot with no resolvable item name is UNRESOLVED** — there is no dish to price against and no truck-wide book to guess from.
+- ⚠️ **`item_modifier_groups` must be read TRUCK-SCOPED.** `submit/route.ts:625` reads it with **no truck filter at all** — do not copy that pattern (see §27).
+- ⚠️ **`lib/option-stock.ts` keeps its flat by-name map deliberately** — stock is a genuinely truck-wide pool. Do not "fix" it by symmetry.
+
+#### The measurement — every order in the database
+
+**424 of 426 price exactly (99.5%).** **Pizzeria Gusto: 213 of 213 exact, £0.00 signed delta.** The **2 divergent are both WALK-UPS on `test-truck`** — `Extra cheese` sent at £0.00 where the menu prices it at £1.50, **+£3.00, both undercharges**. 🔴 **The only two real mispricings in the database are on the path a submit-side fix would not touch.** Every modifier in all 426 orders resolved. 🔴 **ZERO orders carry a deal; ZERO carry a discount code** — those arms have no historical coverage at all. ⚠️ 21 orders produce an `item` UnresolvedRef, a **method artefact** of pricing history against today's menu (three Gusto dishes renamed or deleted after the fact), not evidence about enforcement.
+
 ### Per-event booking lock (V6.4)
 
 > **RULE** — The capacity claim is protected by a per-event INSERT-mutex: `booking_locks`, keyed `(truck_id, event_date)`, acquired before the fresh capacity read and released after the insert. ~1s retry, 10s stale TTL, contention→pending fallback (never a hard error). Both the customer claim path and ASAP go through it; reassign-or-pend is preserved. The lock is keyed by date, so two same-date events serialise together — conservative but correct. New migration: 20260608_booking_locks.sql.
@@ -3576,6 +3706,8 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 
 > **CHECK constraints on `orders` (live-verified):** `status` ∈ `pending|confirmed|rejected|modified|cancelled|cooking|ready|collected` — **no payment value**, payment is orthogonal to fulfilment by construction. `payment_status` ∈ `unpaid|paid|part_paid|refunded|refund_due|failed` — **widened from four values by `20260729_orders_payment_status_widen_check.sql` (V9.4); corrected here at V10, having been recorded as the pre-migration four.** `source` ∈ `web|manual|whatsapp`. `order_type` ∈ `collection|table`. `modify_type` ∈ `slot|item_sub|item_remove`.
 >
+> ✅ **DISCHARGED V11.9 — READ DIRECTLY FROM THE LIVE CONSTRAINT, 11 August 2026.** `pg_get_constraintdef` confirms all six values: `unpaid | paid | part_paid | refunded | refund_due | failed`. **The caveat below is kept as the record of how it was open and what settled it, but the fact is no longer indirect.**
+>
 > ⚠️ **The `payment_status` values are MIGRATION-SOURCED, not directly read from the live constraint.** PostgREST exposes no CHECK metadata and this project has no SQL-exec RPC, so `orders_payment_status_check` cannot be read from the app. The evidence that the migration **ran** is strong but indirect: that file's other statement sets the `payment_status` column comment, and the live comment matches the file **byte-for-byte (342 characters, exact)** — so the file was applied. A live population check (3 Aug 2026) found `unpaid` 313, `paid` 45 and **zero rows** for the four other values, which neither confirms nor refutes the constraint. To settle it directly: `select pg_get_constraintdef(oid) from pg_constraint where conname = 'orders_payment_status_check';`
 
 > **🔴 RULE (V9.4) — `orders.source` EXISTS AND IS NEVER WRITTEN.** Text, default `'web'`, correctly constrained — and all **356** rows hold the default, walk-ups included. Order channel is currently inferred from `customer_email IS NULL` (`app/api/manage/route.ts:1248-1249`), which **misclassifies a walk-up whose operator captured an email as online**, always in that direction. Reliable discriminators until `source` is populated: **`van_id IS NULL` + `items[0].cartKey` present ⇒ walk-up** (the customer path sets `van_id` from the event row and never writes `cartKey`; the operator path does the opposite). **This is a present-but-never-written column, the most dangerous shape in this schema** — it returns a plausible value on every row and reads as data. Populate it on write (three insert sites), then retire the inference; do not leave both.
@@ -3841,6 +3973,38 @@ truck_id   text  not null references trucks(id)        on delete cascade,
 - 🔴 **`livemode` is `NOT NULL` with NO DEFAULT — deliberately the opposite of `order_payments.livemode`.** That column needed a default to classify 50 legacy rows; this table has **no legacy rows and no legacy writer**, so a default would rescue nothing and could hide everything — it would let a writer that forgot record a **test** event as live. No default ⇒ omission is a loud `23502`.
 - 🔴 **NO payload column.** A Stripe event carries `customer_details.email`, `.name`, `.phone` and a billing address, and **nothing sweeps JSONB for GDPR erasure** — the `action_audit_log` lesson, applied before it bit. `stripe_event_id` is the join key to Stripe's own Dashboard, which holds the payload and delivery history.
 - **No foreign keys** (following `action_audit_log`, not `order_payments`), RLS on with zero policies, service-role only.
+
+#### 🔴 ACTUAL COLUMNS, READ FROM `information_schema` — 11 August 2026 (V11.9)
+
+**The table was created BY HAND, so no migration file is its schema.** Eleven columns:
+
+`id` (uuid) · `stripe_event_id` (text) · `type` (text) · `livemode` (boolean) · `connected_account` (text) · `api_version` (text) · `stripe_created_at` (timestamptz) · `received_at` (timestamptz) · `handled` (boolean) · `handled_at` (timestamptz) · `handler_result` (text)
+
+⚠️ **There is NO `created_at` column** — ordering by it returns `42703`. The receipt timestamp is **`received_at`**.
+
+⚠️ **`handled` / `handled_at` / `handler_result` read `false | null | null` on all four 7 August rows.** `markHandled` was added on 11 August, so those rows are **correct history, not a defect** — the migration that added the two columns predicted exactly that state and forbade a backfill.
+
+⚠️ **`connected_account` is stored and logged but REQUIRED BY NOTHING.** Its only functional read is inside the `account.updated` branch; the `payment_intent.succeeded` branch resolves the truck from the order row instead. A NULL there cannot block a payment being recorded.
+
+### NEW COLUMN — `trucks.online_payments_paused_at` (V11.9)
+
+**`timestamptz`, NULLABLE, NO DEFAULT. Live-verified after migration: 12 trucks, 0 paused.**
+
+- **NULL = online card payments offered. A timestamp = an operator paused them, and when.**
+- Read **only** through `lib/payments/online-payments-switch.ts`. `IS NULL` is the whole decision; the timestamp exists so the dashboard can say how long a truck has been paused, because the switch does not self-expire.
+- 🔴 **TEMPORARY BY DESIGN.** The migration header carries the seven-step removal list, and a repo-wide grep confirms exactly seven files reference the column or its module.
+- 🔴 **DEPLOY-COUPLED.** `paid-step.ts:93-95` asserts `trucks` is read with `select('*')` everywhere — **that is 3-for-4.** `app/api/stripe/checkout/route.ts:79` is a **NAMED** select. Deploying before the migration returns `42703`, nulls the truck, and **silently drops every truck's card payments to pay-at-hatch with nothing in any log.**
+- 🔴 **REMOVAL IS DEPLOY-COUPLED IN THE MIRROR DIRECTION:** revert the code, deploy, verify it is live everywhere, **then** drop the column. Dropping first reproduces the identical silent failure.
+
+### `total_minor` is computed inside `place_order_atomic`, from the client's number (V11.9)
+
+`round(coalesce((p_order->>'total')::numeric, 0) * 100)::integer`, and `p_order.total` is the **request body's** `total`. **No trigger** — an exhaustive search of every migration found none. ⚠️ **Live-verified: 422 rows, 207 null (pre-27 July), zero mismatches against `round(total * 100)`.** The arithmetic is correct; its *input* is the problem (see §5).
+
+⚠️ **Contrast the operator paths, which genuinely are server-derived:** `action/route.ts:692` (the edit path, from `repriceOrder`) and — despite its comment — **not** `:1061`, the walk-up insert.
+
+### Orphaned menu rows for deleted demo trucks (V11.9)
+
+`demo-krh2c8k…` and `demo-ekww…` carry `menu_items_db` and `item_modifier_groups` rows with **no `trucks` row**. **`deleteTruckCascade` has gaps** — noted alongside §16's existing finding that the same function silently destroyed `order_payments`. **A cascade inventory is warranted.**
 - ⚠️ **Created BY HAND in the SQL editor rather than by running the migration file** — see §35's *"run Cursor's migration file, never a retyped version"*: the retyped four-column version against a nine-column file cost an hour of 500s.
 
 ## Database maintenance and storage (V11.1) — OPERATIONAL
@@ -4527,6 +4691,22 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 V11.9 — added 11 August 2026 (afternoon)
+
+- 🔴 **`app/order/[id]/manage`'s `canCancel` ignores `payment_status`** — a paid customer gets a one-tap route to a refund nobody can process. **Launch blocker.** Latent only while `livemode` excludes test money.
+- 🔴 **There is no customer-facing confirmation ROUTE** — the rich confirmation is a component state with no URL, which is why Stripe returns customers to the cancellation page. **Building one is real work, not a redirect change.**
+- 🔴 **"Adjust time: +5m" IS AN ACCEPT.** `action/route.ts:1516` writes `status: 'confirmed'` **unconditionally**, in the same statement as the slot. The SELECT at `:1501` **does not fetch `status`**, so the handler cannot branch on it; the only guard is `if (!ord?.slot)`. It then sends a full `formatConfirmationEmail` with **`autoAccepted: true`** under the subject *"Your order … has been updated"*. ⚠️ `moveSlotBooking` runs first and **its result is discarded** — INFERRED: a full destination slot does not stop the confirm. **The control is offered on `pending` orders only** — the exact population that will hold authorizations. **Live today, Gusto-reachable, own merits.**
+- 🔴 **Microsoft/Outlook deliverability.** Confirmation emails are **accepted by Brevo and silently dropped by Microsoft**; the same message to Gmail arrives. ⚠️ **RECLASSIFY the existing `HATCHGRAB_SENDER.email = hello@villagefoodie.co.uk` item from "brand inconsistency" to a DELIVERABILITY DEFECT** — mail branded as one domain and authenticated as another is the classic silent-drop profile, and Microsoft is the strictest major provider about it. ✅ **The block has lifted** — the hatchgrab.com mailboxes are live. Needs SPF/DKIM verified in Brevo. **DNS has a lead time; start it rather than schedule it.**
+- 🔴 **`submit/route.ts:625` reads `item_modifier_groups` with NO truck filter** — a **full-table read on the money path**, linear in total menu size. Harmless at twelve trucks. **Do not copy this pattern** (the price-book re-key deliberately did not).
+- **The menu load failure is UNEXPLAINED.** *"We couldn't load the menu right now — Retry"* on the customer order page, plus the event picker failing to render its calendar, minutes after the deploy. **Cleared on retry rather than being fixed.** Candidates: a 429 (§27 already records *"a 429 on /api/events/manage was wiping upcomingEvents to []"* — never setState from a failed fetch), or the changed `/api/menu` path. **Not diagnosed.**
+- **`online_ordering_pay_at_hatch` is a FIFTH unenforced feature gate** — zero `canAccess`/`hasFeature` call sites anywhere, and **plan `trial` does not hold it**. Pay-at-hatch works only because nothing checks. ⚠️ The trial's marketing description says *"Max tier + Pay at Hatch ordering"*, which the feature set contradicts. **`online_payments` also has zero gate sites.**
+- **`lib/payments/paid-step.ts`'s header is STALE** — it says `completion_presses` is truck-level-only with no override, while line 109 resolves `completion_presses_override`; the header at `:2` still says two settings when there are three. **Anyone copying the file for a fourth setting reads the comment first.**
+- **`paid-step.ts:93-95`'s claim that `trucks` is read with `select('*')` everywhere is 3-for-4** — `app/api/stripe/checkout/route.ts:79` is a named select. **Nearly-true is the most dangerous kind.**
+- **Price authority must land on the WALK-UP insert path too**, not only submit. Both real mispricings in the database are walk-ups, and `validateOrderTotals` has no call site there.
+- **Deals and discount arms have ZERO historical coverage** — no order in the database has ever used either. Any enforcement confidence there must come from a constructed test.
+- **`deleteTruckCascade` leaves orphaned menu rows** for deleted demo trucks. **Cascade inventory warranted.**
+- ⚠️ **The abandoned-checkout sweeper below is NARROWED, NOT CLOSED** — from *"unpaid orders accumulate for 24 hours"* to *"unapproved orders accumulate indefinitely"*. See §37.
 
 ## 🔴 V11.8 — added 11 August 2026 (Stripe payments)
 
@@ -5604,6 +5784,22 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 > Lessons that belong to no single subsystem. §31's structural lesson is slot-engine-specific and §22 covers process; these are engineering invariants that cost real time in more than one place, and had nowhere to live until now.
 
+🔴 **A FLAT LOOKUP KEY THAT REAL DATA COLLIDES ON RETURNS ROW-ORDER-DEPENDENT ANSWERS.** *Evidence (V11.9):* `PriceBook.optionPrice` was keyed on option name alone, truck-wide. On a protein-choice menu `Prawn` exists in four groups at £0.00 and £1.50, and the resolved price was **whichever row loaded last** — proven by execution, returning `0` for both dishes and `1.5` for both with the rows reversed. Postgres gives no ordering guarantee without an `ORDER BY`. 🔴 **Nondeterministic pricing never reproduces when you go looking for it, so it survives every investigation.** The general form: **a key that is not unique in the data is not a key**, and the collision is invisible until two rows disagree about a value.
+
+🔴 **A COMMENT ASSERTING SERVER AUTHORITY MUST BE TRACED, NOT BELIEVED.** *Evidence (V11.9):* `action/route.ts:1060` reads *"derived here from the server-held total. Never client-supplied."* The number traces unbroken from a browser `calculateOrderTotal`. **Within one file, two handlers each claim server authority and only one has it.** Same family as `setOverlaysWebView`'s *"LOAD-BEARING ON iOS"* and `lib/legal.ts`'s reach claim. **The cheap diagnostic is to follow the value backwards to where it enters the process.**
+
+🔴 **A PROVENANCE CONSTANT PROVES WHICH FUNCTION RAN, NOT WHICH ROUTE.** *Evidence (V11.9):* `created_by: 'stripe_webhook'` is a hardcoded string inside `lib/payments/online.ts`. A row carrying it was read as evidence that the webhook had processed a payment — but the file did not exist in any commit at the time, and the route had no payment handler. **Anything that calls the function stamps the string.** 🔴 **When a record says who wrote it, check that the writer could have been running.**
+
+**A RECEIPT LOG AND A LEDGER CAN DISAGREE, AND THE DISAGREEMENT IS THE FINDING.** *Evidence (V11.9):* an `order_payments` row existed with no `stripe_webhook_events` row. The instinct was *"the receipt insert is broken"*; the truth was that **the webhook never wrote either.** ⚠️ **A table with a known gap stops being usable as evidence** — after this, only Stripe's own delivery log could answer whether an event arrived.
+
+**"SENT" IS NOT "DELIVERED".** *Evidence (V11.9):* Brevo logged the confirmation emails as sent while Microsoft accepted and silently dropped them, with no bounce. **Gmail received the same message.** A provider's *Requests* count answers *"did we hand it over"*, never *"did it arrive"* — and the difference is invisible from our side without reading the per-message event status.
+
+🔴 **A KNOWN-GOOD BUILD IS ONLY A ROLLBACK TARGET IF IT CONTAINS THE THING YOU WANT BACK.** *Evidence (V11.9):* "promote the previous build" was proposed for a broken webhook — but `app/api/stripe/checkout/` was **untracked** and had never existed in production, so the previous build had no checkout route at all. **Rolling back would have removed card payments rather than restoring them.** **Before proposing a rollback, establish what the target build actually contains.**
+
+🔴 **UNTRACKED FILES DO NOT DEPLOY, AND THE FAILURE MODE DEPENDS ON WHAT THEY ARE.** *Evidence (V11.9):* thirteen untracked paths sat in the tree at deploy time. **An untracked MODULE that tracked code imports fails the build — loud and recoverable. An untracked ROUTE compiles fine, ships nothing, and the fetch gets a 404** — which on this codebase falls straight into the pay-at-hatch fallback. **Green build, silent feature.** `git add -A` before every deploy, and read `git status --porcelain` rather than assuming.
+
+**POOLED DEPLOYS POOL ATTRIBUTION.** *Evidence (V11.9):* one push carried three independently-proven changes plus a prior session's uncommitted work — 5,691 insertions across 33 files. When the webhook failed an hour later, *"which change caused this"* had no answer, and the investigation had to reconstruct git history to establish that **none** of them had. **Independently-proven changes deserve independent pushes; the cost is one extra deploy and the benefit is a name instead of a list.**
+
 🔴 **THE SAME PROPERTY CAN INVERT BETWEEN API VERSIONS. READ WHAT A DEFAULT *MEANS*, NOT WHAT IT IS NAMED.** v1's `fees.payer: 'account'` — *"the account pays"* — is v2's `fees_collector: 'stripe'` — *"Stripe collects"*. The same commercial position, described from the opposite end, and **v2 has no `'account'` value at all**, so the nearest-looking token (`'application'`) means the exact opposite: HatchGrab pays. **This property has now inverted twice.** The defence is not care; it is **reading the value back from the API after writing it** and logging loudly when it differs from intent, because a 200 on the create call is not evidence the position landed.
 
 🔴 **AN UNCAPTURED CHARGE REPORTS SUCCESS. KEY ON THE EVENT, NOT THE FIELD.** A Stripe charge awaiting manual capture carries `status: "succeeded"` while `captured: false`, `amount_captured: 0` and `balance_transaction: null` — no money has moved. The Dashboard reads `captured`; the API field says `succeeded`. **Anything that reads `charge.status === 'succeeded'` to mean "paid" is wrong for every authorization.** The general form: **a status field and a lifecycle event of the same name may fire at different moments**, and the event is usually the one that means what you think.
@@ -6080,6 +6276,8 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 
 ✅ **A customer who abandons at the card form never authorizes, so no order is created and nothing is reserved.** The abandonment problem disappears rather than needing a sweeper.
 
+> 🔴 **CORRECTION (V11.9) — THAT PROPERTY IS NARROWER THAN WRITTEN.** It holds **only for the window BEFORE the order exists.** Capture-at-approval creates a case this paragraph did not consider: **an order created, authorized, and never approved.** After 7 days Stripe releases the hold automatically — **the money side does self-heal** — but **the order remains `pending` forever, holding its slot and its stock, with no money ever taken** (§5: nothing ages out a pending order). **§27's abandoned-checkout sweeper item is therefore NARROWED AND KEPT**, not closed: from *"unpaid orders accumulate for 24 hours"* to *"unapproved orders accumulate indefinitely."*
+
 ### 🔴 PROVEN BY SANDBOX PROBE, ON OUR EXACT POSTURE
 
 | Finding | Evidence |
@@ -6210,6 +6408,93 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 
 ---
 
+## 🔴 CORRECTION (V11.9) — "a real sandbox card payment works end to end" is NOT CORROBORATED
+
+**V11.8 records the webhook writing `order_payments` with `channel: 'online'` as proven end to end. The git history contradicts it.**
+
+- `lib/payments/online.ts` **did not exist in any commit before 11 August** (`git cat-file -e 4f0f2c5:lib/payments/online.ts` → fatal).
+- `4f0f2c5`'s webhook route contained **zero** occurrences of `payment_intent.succeeded`.
+- `created_by: 'stripe_webhook'` is a **hardcoded constant inside `online.ts`** — it proves which **function** ran, not which route, and not that any HTTP request occurred.
+- The 10 August ledger row has **no corresponding `stripe_webhook_events` row**; that table's last entries are 7 August.
+
+**Two readings, both INFERRED.** **(A)** `recordOnlineCardPayment` was invoked directly as a bring-up exercise — **strongest**, explains the gap completely, and is what the file's own header mandates (*"exercised against real rows before deploying"*). **(B)** an uncommitted working-tree build ran locally over Stripe CLI forwarding — possible, unsupported, and that code is not in git. ⚠️ **Not established which.** Stripe's delivery record for `pi_3U31rB2fB4PPCw2D0j9ji161` would settle it.
+
+🔴 **THIS MATTERS BEYOND THE FACT.** The authorize-then-capture scope was reasoned against *"a working path being replaced"*. On this evidence it is **an unfinished path being completed**, which is a different job.
+
+## 🔴 THE FIRST PRODUCTION WEBHOOK DELIVERY — 400 `Invalid signature` (V11.9)
+
+**TWO Stripe destinations point at `https://www.hatchgrab.com/api/webhooks/stripe`** — one platform-scoped (*"your account"*), one **connected-accounts-scoped** — **each with its own signing secret.** `STRIPE_WEBHOOK_SECRET` held one, so **one destination was always going to be rejected as forged.**
+
+- ✅ `parseSigningSecrets` splits on `,`, trims, drops empties; the verifier loops **every secret × every offered `v1`** with no early exit. **The comma-separated pair is exactly the shape the code expects** — the module's header had documented the requirement since 7 August, for test-vs-live; platform-vs-connected is the same mechanism.
+- 🔴 **The `@accounts`-scoped destination is the one that carries direct charges**, so it is the one that must verify.
+- ⚠️ **Vercel binds env vars at BUILD time.** Editing the value is not enough — **rebuild.**
+- ⚠️ **`.env.local` holds no webhook secret**, so local runs used whatever `stripe listen` minted. **That is why the deployed secret was never exercised until the first production delivery.**
+- ✅ **Verification code is byte-identical to the 7 August version.** Zero added or removed lines between `4f0f2c5` and HEAD touch `req.text`, `rawBody`, `STRIPE_WEBHOOK_SECRET`, `parseSigningSecrets` or `verifyStripeSignature`; `lib/stripe/webhook-signature.ts` has not changed since `b7f3213`. **The 15 HMAC vectors still cover 100% of what runs.** The re-serialised-body hypothesis was tested and refuted.
+- ⚠️ **The refusal is 61 lines BEFORE the `stripe_webhook_events` insert**, which is why a 400 leaves no row — the route's own contract: *"400 … Nothing is recorded."* Every 400 in the file precedes the insert.
+- ⚠️ **`[webhook/stripe] REFUSED reason=… secretsConfigured=N hasSignature=…` names the cause on every refusal.** Six closed-union reasons; `secretsConfigured` distinguishes a missing variable from a mismatched secret in one character.
+
+## 🔴 THE ORDER PAGE AFTER PAYMENT IS THE CANCELLATION PAGE, AND THAT IS STRUCTURAL (V11.9)
+
+**The rich confirmation is NOT a route.** It is a `submitted` state of `app/trucks/[slug]/order/page.tsx` — one `setSubmitted(true)`, **no URL** — so `success_url` cannot point at it. Both `success_url` and `cancel_url` resolve to **`app/order/[id]/manage`**, a 220-line cancellation page built for the *"Cancel your order"* email link: **no deals, no modifiers, no savings, and one control — a red "Cancel order" button.**
+
+🔴 **`canCancel` does not consider `payment_status`.** A customer who has just paid by card lands on a page whose only control cancels the order — **and under direct charges HatchGrab cannot issue a refund.** Harmless today only because `livemode` excludes test money. **This is a launch blocker, not a formatting complaint.**
+
+⚠️ **`?paid=1` is never read by any code** — no `useSearchParams` anywhere in the file. **A dead parameter that looks like it does something.** The page reads `payment_status` from the ROW instead, which is correct — but the row is written by the webhook, so a redirect that beats the webhook shows *"Pay at the truck"* on a paid order.
+
+## DECIDED (V11.9) — CAPTURE FOLLOWS CONFIRMATION
+
+**This closes the OPEN item *"charge-at-order versus auth-at-order / capture-at-approval"* recorded above.**
+
+**Capture follows confirmation, whatever route the order took to get there.** A rolled-forward, **confirmed** slot still captures. **Auto-accept failing leaves the order pending and UNCAPTURED**, like any other pending order.
+
+**Why:** rejection is the ordinary path when slots fill, and a cancelled authorization produces **zero Refund objects** — measured. Capturing at placement would put the ordinary failure mode onto captured money, and **refunds are the one action this architecture cannot perform.**
+
+🔴 **CAPTURE THEREFORE HAS FOUR SITES, NOT ONE**, because §5 establishes that status is written in the INSERT and there is no single confirmation write to hook:
+
+1. **inline after the RPC** (auto-accept),
+2. **`action:confirm`**,
+3. **quick-time-adjust** — `adjust_slot_+N` writes `status: 'confirmed'` unconditionally (see §27),
+4. **offline replay of `confirm`** — which guards on `status` only and has no payment awareness at all.
+
+### The draft table — what it holds, corrected (V11.9)
+
+**The draft is a SHORT-LIVED staging record.** Once the order exists, the basket lives in `orders` and the draft's job is done. ⚠️ **What must survive until the operator decision is the AUTHORIZATION BINDING — order to PaymentIntent — not the basket.** A long-lived draft holds customer PII in JSONB for days, which is exactly the shape `stripe_webhook_events` was deliberately built to avoid.
+
+🔴 **The binding is now proven necessary, not preferred:** correlation runs **one way only** (`metadata.order_key → orders.order_key`) and **nothing on `orders` records the PaymentIntent**, so the disposal paths cannot find an authorization to cancel.
+
+**Contents:** basket verbatim (items with modifiers, extras, bundle, deals, discount_code, notes) · resolved server facts (truck_id, event_id, van_id, event_date, requested slot, order_type/table_ref) · **server-priced** money with the currency **and country** snapshot · customer PII **with a purge story** · lifecycle (created_at, expiry, PaymentIntent id, `livemode`, promoted marker to `order_key`) · **a uniqueness constraint that makes double-promotion impossible**, because a redelivered webhook creating a second order is the failure this table exists to prevent.
+
+⚠️ **Still unspecified: what fires step 2** — redirect-back or webhook. Opposite failure modes.
+
+### The four disposal paths are blind (V11.9)
+
+**None reads the ledger, none writes a payment field, none touches Stripe.** Two read `paid_at`, one reads `payment_status`, **for email copy only**.
+
+⚠️ **`rejected` has NEVER been written** — live-verified, 0 of 426 orders. **`cancelled` has, 7 times.** 🔴 **So the cancel-authorization branch must hang off `cancelled`, not only `rejected`, or it will never fire in production.**
+
+⚠️ **The event-cancellation path is BULK** and would sweep confirmed (captured) and pending (authorized) orders in one loop, needing opposite handling per row.
+
+### Refund copy — FOUR sites, and they now contradict each other (V11.9)
+
+Three assert *"Your refund will be processed automatically within 3–5 working days"*, branching on **two different fields** (`payment_status === 'paid'` in one, `paid_at` truthiness in two). ⚠️ **A fourth site, `app/order/[id]/manage/page.tsx`, was rewritten to *"any refund is handled by {truck} directly"* — so the product currently says two different things about the same event.** Under direct charges the fourth is the true one.
+
+## NEW (V11.9) — THE TEMPORARY CARD KILL SWITCH
+
+**`trucks.online_payments_paused_at` + `lib/payments/online-payments-switch.ts`.** One exported resolver, deliberately **NOT** folded into `lib/payments/paid-step.ts` — that answers a permanent per-event in-person question with eight callers, and folding this in would turn a delete into surgery.
+
+- **Both gates wired:** `/api/menu` (`card_payments_ready`) and `/api/stripe/checkout` (authoritative, before session creation), returning the **identical `409 notReady`** so the order page's existing `cardFallbackNotice` path fires unchanged. **No new fallback was built.**
+- 🔴 **`== null`, NOT `=== null`, and it is load-bearing.** True for both `null` and `undefined`, so a pre-migration truck reads as **enabled**. `=== null` would read every truck as paused.
+- **Dashboard-only, truck-wide, does not self-expire** — an outage does not end because the service does. A persistent banner on every tab carries the way out. **Deliberately placed OUTSIDE the per-event Settings card**, whose house rule is that *"scope is a property of the screen"* — a truck-wide row inside it would make every neighbouring row's scope a lie.
+- **Render gate is `(stripe_charges_enabled === true || online_payments_paused_at != null)`.** 🔴 **Arm (b) is not redundant:** if Stripe later revokes `charges_enabled` while a truck is paused, arm (a) alone would hide the only control that can clear the pause. **The way out must never be hidden.** Live-verified: **1 visible / 11 hidden**; the arm-(b) counterfactual resolves VISIBLE where arm (a) alone gives HIDDEN.
+- **The write action returns only the one column, not the truck row** — `trucks` carries the dashboard token and PIN.
+- ✅ **The webhook consults NO truck or event setting before writing the ledger, and must not.** A payment in flight still completes and is still recorded. **The exposure window is one customer's time on Stripe's page; it cannot be closed to zero and should not be.**
+
+### Card readiness reads exactly one input (V11.9)
+
+**`operators.stripe_charges_enabled`**, at two points: `/api/menu/[truckId]/route.ts:663-674` (a **rendering hint**) and `/api/stripe/checkout/route.ts:86-95` (**authoritative**). **No plan check, no truck column, no event column** before this session's change — and the dashboard now resolves the same value a third time, as a **rendering input only**.
+
+---
+
 ## Stripe — what is actually built (V11.5)
 
 **BUILT AND PROVEN END TO END on 7 August: the webhook endpoint only.** `app/api/webhooks/stripe` is live, verifying and recording — **four events forwarded, four 200s, four rows, `livemode` false on all four.**
@@ -6280,7 +6565,7 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 
 - **Operator-only edits today.** The difference is taken **at collection** — an increase creates a balance due, it must NOT silently re-charge a saved card. Customer-initiated edits are a later feature and drop into the ledger as another `online` row with no schema change.
 - **A downward edit creates a refund owed, operator-confirmed with the amount pre-filled.** Auto-refunding on every edit means a fat-fingered edit moves real money.
-- **OPEN:** charge-at-order versus **auth-at-order / capture-at-approval**. §510 already leans to the latter, and it is materially better — a downward edit before approval costs nothing, you simply capture less than you authorised, with no refund and no money leaving and returning. The two are different integrations, not a setting. **Decide before building.**
+- ✅ **DECIDED V11.9 — auth-at-order / capture-at-approval. This item is CLOSED; see "DECIDED — capture follows confirmation" below.** *(Original wording kept for the record:)* **OPEN:** charge-at-order versus **auth-at-order / capture-at-approval**. §510 already leans to the latter, and it is materially better — a downward edit before approval costs nothing, you simply capture less than you authorised, with no refund and no money leaving and returning. The two are different integrations, not a setting. **Decide before building.**
 - **OPEN:** refund the 0.99% pro-rata on partial refunds? (Stripe supports `refund_application_fee`.) Recommendation: yes.
 
 ## Stripe Connect — the flow
@@ -6975,4 +7260,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.8
+HatchGrab Engineering Reference Manual · V11.9
