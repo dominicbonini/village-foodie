@@ -3347,8 +3347,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       🔴 The button names are QUOTED FROM THE CODE — “Mark paid & collected”, “Mark paid”
                       and “Collected” are the exact `label` strings OrderCard renders. Verify against the
                       code before editing, and change the copy to match the button, never the reverse. */}
-                  {([['one','One press','Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                     ['two','Two presses','Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.']] as const).map(([v,lbl,help])=>(
+                  {([['one','One press (“Mark paid & collected”)','Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
+                     ['two','Two presses (“Mark paid” & “Collected”)','Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.']] as const).map(([v,lbl,help])=>(
                     <button type="button" key={v} onClick={()=>saveCompletionPressesOverride(v)}
                       disabled={isOffline||!activeEvent||savingCompletionOverride}
                       className="w-full text-left flex items-start gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
@@ -3497,7 +3497,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
 
-            {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
+            {/* Order-ready step — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
                 order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
                 master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
                 Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
@@ -3508,7 +3508,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications{demoLockChip}</p>
+                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
                   <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
                 </div>
                 <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>

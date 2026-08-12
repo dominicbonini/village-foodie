@@ -10,20 +10,23 @@
 // 🔴 NOTHING IN THIS PHASE CAPTURES. Capture follows confirmation and is a later phase. Search this file
 // for `capture(` — there is none.
 //
-// ── ⚠️ A CHECKOUT SESSION, NOT A BARE PaymentIntent, AND WHY ────────────────────────────────────────
-// The brief asks for "a PaymentIntent for total_minor with capture_method: 'manual' and
-// metadata.order_key". That is exactly what this creates — via a Checkout Session, because a bare
-// PaymentIntent has NO UI IN THIS APP to confirm it: an in-page Payment Element needs `@stripe/stripe-js`
-// and `@stripe/react-stripe-js`, neither of which is installed (only the Connect packages are), plus SCA
-// and network-failure handling inside a 2,700-line client component.
-// `payment_intent_data` sets the properties ON the PaymentIntent the Session creates, so the intent that
-// results is byte-for-byte the one the brief describes — manual capture, our metadata, our amount — and
-// `session.payment_intent` hands back its id at creation so it can be attached to the draft immediately.
-// The upgrade path is unchanged: swapping to a Payment Element later changes this function's return from
-// a redirect URL to a client secret and touches nothing else.
+// ── 🔴 A PaymentIntent CREATED DIRECTLY. NOT A CHECKOUT SESSION, AND THIS IS THE WHOLE FIX. ────────
+// This used to create a hosted Checkout Session and read `session.payment_intent`. THAT FIELD IS NULL AT
+// CREATION: a Session's PaymentIntent does not exist until the customer submits payment. So the id was
+// never available, the attach never ran, `authorizeDraft` returned not-ok on EVERY card order, and the
+// card fork fell through to the old order-first path — which is exactly the behaviour this workstream
+// exists to remove. Proved live on 12 August: a session carrying the draft key came back with
+// payment_intent: null, while the order it should have prevented was created one second later.
+// 🔴 `paymentIntents.create` RETURNS THE ID SYNCHRONOUSLY. There is no window in which an authorisation
+// exists that the draft cannot name.
+//
+// ⚠️ `application_fee_amount`, `on_behalf_of` and `transfer_data` all exist on this call. NONE is sent,
+// deliberately and unchanged from the Session version: this build charges no platform fee, and a fee
+// must be a POSITIVE integer so "no fee" is expressed by ABSENCE, never by zero. Search this file for
+// `application_fee` — there is none.
 //
 // ── READINESS IS RE-READ HERE ──────────────────────────────────────────────────────────────────────
-// Same rule /api/stripe/checkout has always applied: the client's `card_payments_ready` is a rendering
+// Same rule the hosted-Checkout route always applied: the client's `card_payments_ready` is a rendering
 // hint. A customer holding a stale `true` from a tab left open while the truck's account was restricted
 // must not be able to start a payment.
 import Stripe from 'stripe'
@@ -31,7 +34,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 import { attachPaymentIntent } from '@/lib/payments/order-drafts'
 
-/** ⚠️ The same refusal /api/stripe/checkout makes, for the same reason: this build may not move real
+/** ⚠️ The same refusal the hosted-Checkout route made, for the same reason: this build may not move real
  *  money, and a key starting `sk_live_` cannot be mistaken for anything else. */
 function sandboxKey(): string {
   const key = process.env.STRIPE_SECRET_KEY
@@ -43,10 +46,18 @@ function sandboxKey(): string {
 }
 
 export type AuthorizeResult =
-  | { ok: true; url: string; paymentIntentId: string }
-  /** The truck cannot take cards right now. The caller falls back to pay-at-hatch. */
+  | {
+      ok: true
+      /** 🔴 The ONLY secret the browser needs, and it is scoped to this one PaymentIntent. */
+      clientSecret: string
+      paymentIntentId: string
+      /** The connected account this intent lives on. Stripe.js MUST be initialised with it, or the
+       *  Element confirms against the platform account and cannot find the intent. */
+      stripeAccount: string
+    }
+  /** The truck cannot take cards right now. */
   | { ok: false; reason: 'not_ready' }
-  /** Something went wrong at Stripe or in this function. The caller falls back to pay-at-hatch. */
+  /** Something went wrong at Stripe or in this function. */
   | { ok: false; reason: 'error'; detail: string }
 
 /**
@@ -61,8 +72,6 @@ export async function authorizeDraft(
   args: {
     orderKey: string
     truckId: string
-    truckName: string
-    truckSlug: string | null
     amountMinor: number
     currency?: string
   },
@@ -88,7 +97,7 @@ export async function authorizeDraft(
       if (cards.pausedAt) {
         console.log(
           `[authorize] draft=${args.orderKey} truck=${args.truckId} — online payments PAUSED since ` +
-          `${cards.pausedAt}; falling back to pay-at-hatch`,
+          `${cards.pausedAt}; card refused`,
         )
       }
       return { ok: false, reason: 'not_ready' }
@@ -99,87 +108,68 @@ export async function authorizeDraft(
     }
 
     const stripe = new Stripe(sandboxKey())
-    const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
-    const slug = args.truckSlug ?? args.truckId
 
-    const session = await stripe.checkout.sessions.create(
+    const intent = await stripe.paymentIntents.create(
       {
-        mode: 'payment',
-        line_items: [{
-          quantity: 1,
-          price_data: {
-            currency: (args.currency ?? 'GBP').toLowerCase(),
-            unit_amount: args.amountMinor,
-            // ⚠️ NO ORDER NUMBER. There is no order and therefore no display number — that is minted at
-            // promotion, under the lock, by the same counter every other order uses. Naming the truck is
-            // all this line can honestly say.
-            product_data: { name: `${args.truckName} — order` },
-          },
-        }],
-        payment_intent_data: {
-          // 🔴 THE LINE THE WHOLE DESIGN RESTS ON. See the header.
-          capture_method: 'manual',
-          // 🔴 THE JOIN KEY, unchanged from the order-first build. The webhook has only a PaymentIntent;
-          // this is how it finds the draft — and because a draft's key becomes its order's key, the same
-          // metadata keeps working after promotion with nothing to migrate.
-          metadata: { order_key: args.orderKey, truck_id: args.truckId, source: 'hatchgrab_online_order' },
-        },
-        metadata: { order_key: args.orderKey, truck_id: args.truckId },
-        // 🔴 SUCCESS RETURNS THROUGH A SERVER ROUTE, NOT STRAIGHT TO THE CONFIRMATION. Under order-first
-        // the order already existed and the confirmation could render immediately. It does not exist now:
-        // something has to promote the draft, and the returning customer is the fastest trigger we have.
-        // /api/payments/return promotes and then redirects to the SAME confirmation URL as before — so
-        // the confirmation screen itself is untouched and still renders from the order row.
-        success_url: `${base}/api/payments/return?draft=${args.orderKey}&truck=${encodeURIComponent(slug)}`,
-        // ⚠️ CANCEL CANNOT GO TO /order/{key}/manage ANY MORE — there is no order to manage. A customer
-        // who abandoned at the card form has a draft, which expires and is cancelled without their
-        // involvement, so they are returned to the menu with their basket intact.
-        cancel_url: `${base}/trucks/${encodeURIComponent(slug)}/order?payment=abandoned`,
-        // ⚠️ NO application_fee_amount. Omitted, never zero — a positive integer is required, so "no fee"
-        // is expressed by absence. Unchanged from /api/stripe/checkout.
+        amount: args.amountMinor,
+        currency: (args.currency ?? 'GBP').toLowerCase(),
+        // 🔴 THE LINE THE WHOLE DESIGN RESTS ON. A hold, not a charge. See the header.
+        capture_method: 'manual',
+        // 🔴 THE JOIN KEY. The webhook has only a PaymentIntent; this is how it finds the draft — and
+        // because a draft's key becomes its order's key, the same metadata keeps working after promotion
+        // with nothing to migrate and no change to the webhook or the ledger.
+        metadata: { order_key: args.orderKey, truck_id: args.truckId, source: 'hatchgrab_online_order' },
+        // ⚠️ AUTOMATIC PAYMENT METHODS, WITH REDIRECTS ALLOWED. This is what makes the Payment Element
+        // render Apple Pay and Google Pay as native buttons where the browser and device support them,
+        // instead of a card-number form alone. `allow_redirects: 'always'` is required because 3DS may
+        // redirect; the client still passes `redirect: 'if_required'`, so the common card path stays
+        // entirely in-page and only a method that genuinely demands a redirect gets one.
+        // ⚠️ Stripe filters this list to methods that support MANUAL CAPTURE, so a method that cannot be
+        // authorised-then-captured simply does not appear. That filtering is Stripe's, not ours.
+        automatic_payment_methods: { enabled: true, allow_redirects: 'always' },
+        // ⚠️ NO application_fee_amount, NO on_behalf_of, NO transfer_data. See the header — absence, not
+        // zero, and unchanged from the Session this replaces.
       },
-      // 🔴 The connected account. Without this the charge would be created on the PLATFORM account,
-      // making HatchGrab merchant of record — the one thing the model forbids.
+      // 🔴 The connected account. BYTE-IDENTICAL to what the Session call passed. Without this the
+      // charge would be created on the PLATFORM account, making HatchGrab merchant of record — the one
+      // thing the model forbids.
       { stripeAccount: operator.stripe_account_id },
     )
 
-    const paymentIntentId = typeof session.payment_intent === 'string'
-      ? session.payment_intent
-      : session.payment_intent?.id ?? null
-
-    if (!session.url || !paymentIntentId) {
-      console.error(
-        `[authorize] 🔴 session created without a url or intent for draft=${args.orderKey} ` +
-        `(url=${!!session.url} pi=${paymentIntentId}) — cannot proceed`,
-      )
-      return { ok: false, reason: 'error', detail: 'session incomplete' }
+    if (!intent.client_secret) {
+      console.error(`[authorize] 🔴 intent ${intent.id} created without a client_secret for draft=${args.orderKey}`)
+      return { ok: false, reason: 'error', detail: 'intent has no client secret' }
     }
 
-    // 🔴 ATTACHED BEFORE THE CUSTOMER IS SENT ANYWHERE. If this write is skipped and the customer pays,
+    // 🔴 ATTACHED BEFORE THE SECRET LEAVES THIS FUNCTION. If this write is skipped and the customer pays,
     // the draft has no intent id — and the cancellation sweep, which finds work by payment_intent_id,
-    // would never see the money. The webhook could still promote via metadata, but a failure there would
-    // leave an orphaned hold nothing can name. Attaching first makes that impossible.
-    // ⚠️ `livemode` from the SESSION, which is Stripe's own statement about the key that created it —
-    // never from an sk_test_/sk_live_ prefix or NODE_ENV, the same rule order_payments.livemode follows.
+    // would never see the money. Attaching first makes an unnameable authorisation impossible.
+    // ⚠️ `livemode` FROM THE STRIPE OBJECT, never from an sk_test_/sk_live_ prefix or NODE_ENV — the same
+    // rule order_payments.livemode and stripe_webhook_events.livemode follow.
     const attached = await attachPaymentIntent(supabase, {
       orderKey: args.orderKey,
-      paymentIntentId,
-      livemode: session.livemode === true,
+      paymentIntentId: intent.id,
+      livemode: intent.livemode === true,
     })
     if (!attached) {
       console.error(
-        `[authorize] 🔴 could not attach pi=${paymentIntentId} to draft=${args.orderKey} — REFUSING to ` +
-        `send the customer to pay, because an authorisation this system cannot name is worse than no ` +
-        `card payment. Falling back to pay-at-hatch.`,
+        `[authorize] 🔴 could not attach pi=${intent.id} to draft=${args.orderKey} — REFUSING to hand the ` +
+        `customer a client secret, because an authorisation this system cannot name is worse than no card ` +
+        `payment. The intent is left uncancelled here; the sweep cannot see it, so this is loud on purpose.`,
       )
       return { ok: false, reason: 'error', detail: 'intent not attached to draft' }
     }
 
     console.log(
-      `[authorize] session=${session.id} draft=${args.orderKey} truck=${args.truckId} ` +
+      `[authorize] pi=${intent.id} draft=${args.orderKey} truck=${args.truckId} ` +
       `account=${operator.stripe_account_id} amount_minor=${args.amountMinor} capture_method=manual`,
     )
-    return { ok: true, url: session.url, paymentIntentId }
+    return {
+      ok: true,
+      clientSecret: intent.client_secret,
+      paymentIntentId: intent.id,
+      stripeAccount: operator.stripe_account_id,
+    }
   } catch (err) {
     console.error(`[authorize] FAILED draft=${args.orderKey}:`, err instanceof Error ? err.message : err)
     return { ok: false, reason: 'error', detail: err instanceof Error ? err.message : 'unknown' }

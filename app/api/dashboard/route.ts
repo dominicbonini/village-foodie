@@ -675,7 +675,7 @@ export async function GET(req: NextRequest) {
   // ⚠️ `trucks.operator_id` IS NULLABLE — a demo or token-only truck has none. That is a CHECKED
   // PRECONDITION, not a null-deref: no operator ⇒ not ready ⇒ the control is hidden, which is correct.
   // ⚠️ THIS IS A RENDERING INPUT, NEVER A GATE. Both money gates re-read readiness server-side
-  // (/api/menu and /api/stripe/checkout). A stale `true` here can only show a switch, never take a payment.
+  // (/api/menu and lib/payments/authorize). A stale `true` here can only show a switch, never take a payment.
   // ⚠️ THE READ ITSELF WAS HOISTED ABOVE THE ORDERS BLOCK on 11 August 2026, because the payments map
   // needs `stripe_account_livemode` from the SAME row and is built earlier in this route. It is still
   // ONE query; only its position moved. This block now just consumes what that read produced.

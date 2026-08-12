@@ -467,7 +467,7 @@ export function OrderCard({
   // identity — "who is this food for" — so it belongs beside the order number, not in row 2 with the
   // metadata. Row 2 is also where the crowding fixes live: in solo the customer NAME is the only
   // flex-1 element and absorbs all pressure (the "Dom"→"D…" fix, see the note at the solo header),
-  // and in window mode row 2 already carries name + Contact + time + late pill at a 240px column.
+  // and in window mode row 2 already carries name + time + late pill at a 240px column.
   // Adding a sixth shrink-0 chip there is what would force a THIRD ROW. Row 1 has slack in every mode:
   // solo has an ml-auto gap before the offset pill, window is justify-between with a short left side,
   // cook is #order + time only. NEITHER HEADER GREW A ROW.
@@ -742,6 +742,34 @@ export function OrderCard({
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
+  // ── 🔴 THE CUSTOMER NAME IS THE CONTACT CONTROL ────────────────────────────────────────────────
+  // There used to be a separate "Contact" chip beside the name. At the KDS's 240px column and on a
+  // phone it competed with the name for the same row and won — the name truncated to "D…" so a bordered
+  // box could say a word the operator already knew. Space there is tight and the box was the thing to
+  // remove, not the name.
+  // ✉ THE AFFORDANCE IS THIS FILE'S OWN, NOT A NEW ONE. InlinePriceEditor (top of this file) is the
+  // established pattern for tappable text on this card: a <button> wrapping the value, a small trailing
+  // glyph that colours on hover, and a `title` saying what a tap does. This copies that shape.
+  // 🔴 PLUS AN UNDERLINE, AND THAT PART IS NOT DECORATION. Hover does not exist on the touch screens
+  // this card is actually used on, so a glyph that only colours on hover is invisible to the operator
+  // holding a tablet. The underline is what makes it obvious a name is selectable when nothing is
+  // hovering — which is the whole point of the change.
+  // ⚠️ NO CONTACT DETAILS ⇒ THE PLAIN SPAN, BYTE-IDENTICAL TO BEFORE. A walk-up with no email and no
+  // phone gets no underline, no glyph and nothing to tap — never an affordance that leads nowhere.
+  const nameEl = (className: string) => (
+    (order.customer_email || order.customer_phone) ? (
+      <button
+        onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
+        title="Tap for contact details"
+        className={`group inline-flex items-baseline gap-1 text-left ${className}`}>
+        <span className="truncate underline underline-offset-2">{order.customer_name}</span>
+        <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-[10px] flex-shrink-0" aria-hidden>✉</span>
+      </button>
+    ) : (
+      <span className={`truncate ${className}`}>{order.customer_name}</span>
+    )
+  )
+
   // ── THE FAILURE MARKER ────────────────────────────────────────────────────────────────────────────
   // Above the header, inside the card, so it is visible without opening, expanding or scrolling anything.
   // 🔴 The money copy says what is UNTRUE ("not recorded") and what to DO, not "couldn't sync" — an
@@ -784,14 +812,7 @@ export function OrderCard({
             </span>
           </div>
           <div className="flex items-center gap-1 mt-0.5">
-            <span className="text-xs text-slate-600 truncate">{order.customer_name}</span>
-            {(order.customer_email || order.customer_phone) && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-                className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors">
-                Contact
-              </button>
-            )}
+            {nameEl('text-xs text-slate-600 min-w-0')}
             {allStruck && <span className="text-green-700 font-black text-xs ml-1">✓</span>}
           </div>
         </div>
@@ -804,7 +825,7 @@ export function OrderCard({
                and the collection TIME together and prominent (the time is key info, so it sits beside
                the big order#, not demoted), then the status badge; offset/✓ go right. Row 2 gives the
                customer NAME the flex space (flex-1 min-w-0) so it shows in full and only ellipsis-
-               truncates as a last resort — Contact + PRICE are flex-shrink-0 so they keep their size
+               truncates as a last resort — the PRICE is flex-shrink-0 so it keeps its size
                and never crowd the name out (the "Dom"→"D…" fix). Price is now the only number on the
                right of row 2, so time and price are no longer stacked in the same corner. */
             <>
@@ -827,17 +848,7 @@ export function OrderCard({
                 )}
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm opacity-70 truncate min-w-0 flex-1">{order.customer_name}</span>
-                {(order.customer_email || order.customer_phone) && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors cursor-pointer flex-shrink-0">
-                    Contact
-                  </span>
-                )}
+                {nameEl('text-sm opacity-70 min-w-0 flex-1')}
                 {/* Status BADGE (moved here from row 1) — sits between channel/name and price. Same
                     condition as before: shown for modified/cooking/ready (incl. the blue "Ready"),
                     suppressed for the baseline confirmed/pending the section heading already says. This
@@ -852,14 +863,14 @@ export function OrderCard({
           ) : (
             /* Window (KDS): TWO-ROW header (was a single cramped row that truncated name + clipped
                price at the dense 240px column). Row 1 = the glance numbers (#order / £total); Row 2 =
-               metadata (name + Contact + time + lateness). */
+               metadata (name + time + lateness). */
             <>
               {/* Row 1 — order # (left) + total (right) */}
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-1.5 min-w-0">
                   <span className="text-3xl font-bold">#{order.id}</span>
                   {/* Buzzer chip — left cluster with the order number. At the 240px KDS column this is
-                      the only row with slack; row 2 already carries name + Contact + time + late pill.
+                      the only row with slack; row 2 already carries name + time + late pill.
                       See the buzzerChip note. */}
                   {buzzerChip}
                 </div>
@@ -869,19 +880,9 @@ export function OrderCard({
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
               </div>
-              {/* Row 2 — customer name + Contact + time + lateness */}
+              {/* Row 2 — customer name + time + lateness */}
               <div className="flex items-center gap-2 font-medium text-sm mt-0.5">
-                <span className="opacity-80 truncate min-w-0">{order.customer_name}</span>
-                {(order.customer_email || order.customer_phone) && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal cursor-pointer flex-shrink-0">
-                    Contact
-                  </span>
-                )}
+                {nameEl('opacity-80 min-w-0')}
                 {timeLabel && <span className="opacity-70 flex-shrink-0 ml-auto">{timeLabel}</span>}
                 {offsetLabel !== null && (isLate
                   ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white flex-shrink-0">{offsetLabel}</span>

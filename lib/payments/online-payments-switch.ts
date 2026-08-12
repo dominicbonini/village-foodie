@@ -22,11 +22,11 @@
 // is applied the column simply is not on the object and arrives `undefined`. `== null` catches both
 // null and undefined, so a truck with no column behaves exactly as it does today. That protects three
 // of the four paths from a code-before-migration deploy.
-// ⚠️ IT DOES NOT PROTECT THE FOURTH. app/api/stripe/checkout/route.ts reads `trucks` with a NAMED
+// ⚠️ IT DOES NOT PROTECT THE FOURTH. lib/payments/authorize.ts reads `trucks` with a NAMED
 // select, and a named select on a missing column is 42703 — the whole statement fails before this
 // function is ever called. Migration first, then deploy. See the migration for the full reasoning.
 //
-// ⚠️ THE SWITCH IS NOT A REFUND AND NOT A GATE ON MONEY ALREADY TAKEN. It stops a NEW Checkout Session
+// ⚠️ THE SWITCH IS NOT A REFUND AND NOT A GATE ON MONEY ALREADY TAKEN. It stops a NEW authorisation
 // being created. A session already open on Stripe's hosted page will still succeed, and the webhook
 // will still write the ledger row — deliberately, and it must stay that way.
 

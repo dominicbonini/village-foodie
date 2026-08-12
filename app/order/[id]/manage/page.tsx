@@ -151,10 +151,11 @@ export default function ManageOrderPage() {
             </div>
           )}
           {/* ── 🔴 WHAT THE CUSTOMER IS TOLD ABOUT MONEY, FROM THE ORDER ROW ───────────────────────
-              This page is where a card payment lands — both on success (Stripe's success_url) and on
-              abandonment (its cancel_url). Those two arrive at the SAME page, so the difference must
-              come from the row, not the URL: a `?paid=1` in the address bar is a claim the customer
-              could type themselves, and the row is written by the webhook from Stripe's own event.
+              A card payment no longer lands here at all — it is taken in-page on the order form and
+              the customer goes to ?confirm=. This page is the "Cancel your order" email link. The rule
+              it was written for still governs it: what a customer is told about money comes from the
+              ROW, never the URL — a `?paid=1` in the address bar is a claim they could type themselves,
+              and the row is written by the webhook from Stripe's own event.
               ⚠️ 'unpaid' IS NOT AN ERROR STATE. It is every Pay-at-Hatch order ever placed, so it is
               rendered plainly rather than in red — it says what to do, not that something went wrong. */}
           <div className="flex justify-between text-sm mb-1">

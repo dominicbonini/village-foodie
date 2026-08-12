@@ -9160,9 +9160,9 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   // is where that second one is explained.
                   // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
                   // and cash rows both do it). Not a new convention.
-                  ['one', 'One press',
+                  ['one', 'One press (“Mark paid & collected”)',
                    'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                  ['two', 'Two presses',
+                  ['two', 'Two presses (“Mark paid” & “Collected”)',
                    'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
                 ] as const).map(([v, lbl, help]) => (
                   /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's

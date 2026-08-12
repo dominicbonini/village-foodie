@@ -27,6 +27,14 @@ import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place
 import { newOrderKey, createOrderDraft } from '@/lib/payments/order-drafts'
 import { authorizeDraft } from '@/lib/payments/authorize'
 
+/** 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP.
+ *  It has three jobs and does them in this order: say nothing was charged (they are about to check
+ *  their banking app), say the order was NOT placed (so they do not turn up expecting food), and offer
+ *  the way forward that always works. Their basket is untouched on this path. */
+const CARD_UNAVAILABLE_MESSAGE =
+  'We could not set up card payment just now, so your order has not been placed and you have not been ' +
+  'charged. Your basket is saved — please try again, or choose Pay at the truck.'
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface OrderItem {
@@ -725,37 +733,55 @@ export async function POST(req: NextRequest) {
         totalMinor:    serverTotalMinor,
       })
 
-      if (created.ok) {
-        const auth = await authorizeDraft(supabase, {
-          orderKey:    draftKey,
-          truckId:     resolvedTruckId,
-          truckName:   truck.name,
-          truckSlug:   truck.slug ?? null,
-          amountMinor: serverTotalMinor,
-        })
-        if (auth.ok) {
-          // 🔴 THE ONLY SUCCESSFUL EXIT THAT CREATES NO ORDER. The client redirects to `url`; Stripe
-          // authorises; promotion follows from the webhook (authoritative) and/or the return route.
-          return NextResponse.json({
-            requiresAuthorization: true,
-            orderKey: draftKey,
-            url: auth.url,
-            total: serverTotal,
-          })
-        }
-        console.warn(
-          `[submit] card authorisation unavailable for draft=${draftKey} truck=${resolvedTruckId} ` +
-          `(${auth.reason}${auth.reason === 'error' ? `: ${auth.detail}` : ''}) — falling through to ` +
-          `pay-at-hatch. The draft is left to expire and be swept; no money was authorised.`,
-        )
-      } else {
-        console.error(
-          `[submit] draft not created for truck=${resolvedTruckId} (${created.error}) — falling through ` +
-          `to pay-at-hatch. No money was authorised.`,
+      // ── 🔴 THERE IS NO FALL-THROUGH. A CARD ORDER THAT CANNOT BE AUTHORISED FAILS. ──────────────
+      // This block used to `console.warn` and continue into the lock, placing an unpaid order with a
+      // DIFFERENT order_key, sending a confirmation email and reserving stock — for a customer who had
+      // not paid and had not been asked to. It fired on 12 August on every card order, because the
+      // authorisation was broken in a way no truck configuration could have caused.
+      // 🔴 THE FALL-BACK WAS THE DEFECT, NOT THE MITIGATION. "The order still gets placed" sounds kind
+      // and is not: it reserves capacity nobody paid for, emails a confirmation for an order the
+      // customer never completed, and hides a total failure of the payment path behind a success.
+      // From here every failure below RETURNS. No order, no email, no lock, nothing reserved.
+      if (!created.ok) {
+        console.error(`[submit] draft not created for truck=${resolvedTruckId}: ${created.error}`)
+        return NextResponse.json(
+          { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+          { status: 503 },
         )
       }
-      // ⚠️ FALL THROUGH. Not a return: the order is placed unpaid below, exactly as it is today when
-      // /api/stripe/checkout fails, and the customer pays at the truck.
+
+      const auth = await authorizeDraft(supabase, {
+        orderKey:    draftKey,
+        truckId:     resolvedTruckId,
+        amountMinor: serverTotalMinor,
+      })
+
+      if (!auth.ok) {
+        console.error(
+          `[submit] REFUSED card order for draft=${draftKey} truck=${resolvedTruckId} — ` +
+          `${auth.reason}${auth.reason === 'error' ? `: ${auth.detail}` : ''}. NO order was created, no ` +
+          `email sent and nothing reserved. The draft expires and is swept.`,
+        )
+        // ⚠️ 503, NOT 500. This is "the card system is unavailable right now", which is a temporary,
+        // retryable condition and not a fault in the customer's order. The client shows the message and
+        // KEEPS THE BASKET so they can switch to paying at the truck or try again.
+        return NextResponse.json(
+          { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+          { status: 503 },
+        )
+      }
+
+      // 🔴 THE ONLY SUCCESSFUL EXIT ON THIS BRANCH, AND IT CREATES NO ORDER. The browser mounts a
+      // Payment Element from `clientSecret`; Stripe authorises; the webhook promotes the draft.
+      // ⚠️ `stripeAccount` is required by the client: a direct charge lives on the connected account, so
+      // Stripe.js must be initialised with it or the Element cannot find the intent.
+      return NextResponse.json({
+        requiresAuthorization: true,
+        orderKey:      draftKey,
+        clientSecret:  auth.clientSecret,
+        stripeAccount: auth.stripeAccount,
+        total:         serverTotal,
+      })
     }
 
     // ── Atomic stock guard + slot placement under ONE per-event lock (Stage 2, Option B) ──
@@ -1204,7 +1230,7 @@ export async function POST(req: NextRequest) {
       orderId,
       // 🔴 THE ORDER KEY, RETURNED SO A CARD PAYMENT CAN REFERENCE THE ORDER THAT ALREADY EXISTS.
       // `orderId` is the human display number and is NOT unique across trucks; `order_key` is the uuid
-      // every money path keys off — /api/stripe/checkout takes it, the PaymentIntent carries it in
+      // every money path keys off — lib/payments/authorize puts it on the PaymentIntent, which carries it in
       // metadata, and the webhook finds the order by it. It is also the id /order/[id]/manage uses.
       orderKey:      order.order_key,
       truckName:     truck.name,

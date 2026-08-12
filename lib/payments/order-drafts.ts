@@ -15,7 +15,7 @@
 //
 // ── THE KEY ─────────────────────────────────────────────────────────────────────────────────────
 // The draft mints `order_key` and the order later takes that same uuid as its primary key. That is what
-// keeps every existing correlation working untouched: /api/stripe/checkout puts it in
+// keeps every existing correlation working untouched: lib/payments/authorize puts it in
 // payment_intent_data.metadata.order_key, the webhook reads it back, and the ledger's idempotency key
 // (`stripe_pi:{id}`) never involved the order key at all.
 // The precedent is the offline walk-up path, which already supplies a client-minted order_key on INSERT

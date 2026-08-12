@@ -661,7 +661,7 @@ export async function GET(
   // this back into the menu query.
   //
   // ⚠️ THIS IS A RENDERING HINT, NEVER A GATE. The server re-reads readiness at Checkout creation
-  // (app/api/stripe/checkout/route.ts). A customer holding a stale `true` cannot force a payment.
+  // (lib/payments/authorize.ts). A customer holding a stale `true` cannot force a payment.
   // ⚠️ TEMPORARY: the operator's online-payments pause is ANDed in here, via the one resolver in
   // lib/payments/online-payments-switch.ts. `truck` above is select('*'), so before that migration is
   // applied the column arrives undefined and the resolver reads it as "not paused" — today's behaviour
