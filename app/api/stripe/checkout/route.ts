@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     // payment on every truck would fall back to pay-at-hatch with no error anywhere. Migration, then deploy.
     const { data: truck } = await supabase
       .from('trucks')
-      .select('id, name, operator_id, online_payments_paused_at')
+      .select('id, name, slug, operator_id, online_payments_paused_at')
       .eq('id', order.truck_id)
       .single()
     if (!truck?.operator_id) {
@@ -144,7 +144,22 @@ export async function POST(req: NextRequest) {
           metadata: { order_key: order.order_key, truck_id: truck.id, source: 'hatchgrab_online_order' },
         },
         metadata: { order_key: order.order_key, truck_id: truck.id },
-        success_url: `${base}/order/${order.order_key}/manage?paid=1`,
+        // ── 🔴 SUCCESS RETURNS TO THE CONFIRMATION, NOT TO THE CANCELLATION PAGE ──────────────────
+        // It used to point at /order/{key}/manage — a 220-line cancellation page built for the "Cancel
+        // your order" email link, whose only control is a red Cancel button and which renders no deals,
+        // no modifiers and no savings. A customer who had just paid landed on a page offering to cancel
+        // the thing they had paid for.
+        // ⚠️ THE SLUG IS REQUIRED, not decorative: the confirmation lives on the truck's own order route
+        // and the page passes it back to the API so an order_key from another truck cannot render under
+        // this truck's header.
+        // ⚠️ `?confirm=` IS AN IDENTIFIER, NEVER A CLAIM OF PAYMENT. The paid line on that screen reads
+        // `orders.payment_status`, written by the webhook from Stripe's own event — this parameter says
+        // only WHICH order to show. That is the lesson of `?paid=1`, which was written here and then
+        // correctly ignored by every reader.
+        success_url: `${base}/trucks/${truck.slug ?? truck.id}/order?confirm=${order.order_key}`,
+        // ⚠️ CANCEL IS UNCHANGED AND STAYS ON THE MANAGE PAGE. A customer who ABANDONED payment has an
+        // unpaid order, and the manage page's Cancel button is exactly the right thing to offer them —
+        // the new paid-gate there leaves it available precisely for this case.
         cancel_url: `${base}/order/${order.order_key}/manage`,
         // ⚠️ NO application_fee_amount. See the header. Omitted, never zero.
       },

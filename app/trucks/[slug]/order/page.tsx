@@ -164,6 +164,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // a single-event truck auto-selects; a multi-event truck shows the picker to choose from.
   const searchParams = useSearchParams()
   const eventIdParam = searchParams.get('event_id')
+  // ── 🔴 THE CONFIRMATION DEEP-LINK. `?confirm=<order_key>` ────────────────────────────────────────
+  // Present ⇒ this page render is a RECEIPT, not an order form. It is read from the SAME searchParams
+  // object `event_id` already uses, so nothing about how this component reads the query string changes
+  // and no Suspense boundary is introduced.
+  // 🔴 IT IS AN IDENTIFIER, NOT A CLAIM. It says WHICH order to show and nothing else — never that the
+  // order is paid, never that it exists, never that it belongs to this truck. All three are answered by
+  // the server. This is the lesson of `?paid=1` on /order/[id]/manage, which was written into a URL and
+  // then correctly ignored by every reader.
+  const confirmOrderKey = searchParams.get('confirm')
 
   // ── THE STICKY STACK ────────────────────────────────────────────────────────────────────────────
   // Bars pin in this order, each offset by everything above it:
@@ -207,7 +216,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [showAllergenModal, setShowAllergenModal] = useState(false)
   const [events, setEvents] = useState<EventData[]>([])
   const [event, setEvent] = useState<EventData | null>(null)
-  const [eventLoading, setEventLoading] = useState(true)
+  // ⚠️ INITIALISED FROM THE PARAM, not set inside the effect below. A confirmation render never loads
+  // events, so it must not start in a loading state — and doing that here rather than with a setState
+  // in the effect avoids a cascading render (react-hooks/set-state-in-effect).
+  const [eventLoading, setEventLoading] = useState(!confirmOrderKey)
   const [noEvents, setNoEvents] = useState(false)
   // Events fetch FAILED (after auto-retries) — set only on the failure paths, so the render shows a
   // "couldn't load — tap to retry" card instead of a silent blank body. Bumping reloadKey re-runs
@@ -345,6 +357,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;eventStartMins:number}|null>(null)
   const [notes, setNotes] = useState('')
 
+  // ── 🔴 THE CONFIRMATION BRANCH'S OWN STATE — SEPARATE FROM THE FORM'S, ON PURPOSE ────────────────
+  // It has its own `loading` and `error` because it sits ABOVE the page's, and must not share them: the
+  // page's `loading` is owned by the menu fetch, which this branch switches off. Three small values
+  // rather than reusing three big ones, so neither path can put the other into a state it cannot leave.
+  const [confirmOrder, setConfirmOrder] = useState<any | null>(null)
+  const [confirmLoading, setConfirmLoading] = useState(!!confirmOrderKey)
+  const [confirmError, setConfirmError] = useState<string | null>(null)
+
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
 
   // Calculate available hours from event times (customer-facing only)
@@ -392,6 +412,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // Fetch available slots (must use date_iso yyyy-mm-dd to match orders.event_date in Supabase)
   const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string, eventId?: string) => {
+    // ⚠️ GATED OFF FOR THE CONFIRMATION, AT THE FUNCTION rather than at each of its two callers — the
+    // slots effect and the visibilitychange handler — so neither can be added to without remembering.
+    // A receipt shows a slot that is already booked; there is nothing left to choose.
+    if (confirmOrderKey) return
     setLoadingSlots(true)
     try {
       const p = new URLSearchParams({ date: dateIso })
@@ -417,9 +441,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Live clock tick — re-derive ASAP + the selectable list every 30s WITHOUT refetching, so a page
   // left open never shows a stale/past ASAP. (The fix for: ASAP cached at load = 10:00 at 10:04.)
   useEffect(() => {
+    // ⚠️ GATED OFF FOR THE CONFIRMATION. This tick exists to keep the ASAP estimate honest on a form
+    // left open; a receipt has no ASAP to recompute, and a perpetual 30s re-render of a static screen
+    // is pure waste on a customer's phone.
+    if (confirmOrderKey) return
     const id = setInterval(() => setNowTick(t => t + 1), 30000)
     return () => clearInterval(id)
-  }, [])
+  }, [confirmOrderKey])
 
   // ASAP collection time — DERIVED LIVE (was useState set once at fetch). Recomputes on every tick,
   // slot change, or tz change, so it always reflects the CURRENT time in the event's timezone.
@@ -445,8 +473,60 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return () => document.removeEventListener('visibilitychange', onVisible)
   }, [truck?.id, eventDateIso, event?.start_time, event?.end_time])
 
+  // ── 🔴 THE CONFIRMATION FETCH — THE ONLY REQUEST THIS BRANCH MAKES ──────────────────────────────
+  // One order row. Not a menu, not an event list, not slots. Every other fetch on this page is gated
+  // off when `confirmOrderKey` is present (see each effect below), because a receipt does not need a
+  // menu to render and a customer who has just paid should not wait on one.
+  //
+  // 🔴 `?truck=${slug}` IS THE SCOPING, AND IT IS WHY THE PARAMETER WAS ADDED TO THAT ROUTE. The
+  // order_key is an unguessable UUID, so an unscoped read is not a leak — but this page renders the
+  // order under THIS truck's name and logo, and an order_key from another truck would put one truck's
+  // order under another truck's header. The server compares and 404s; the client does not decide it.
+  // ⚠️ THE EMAIL LINK'S CONSUMER IS UNAFFECTED: the parameter is optional, and /order/[id]/manage does
+  // not send it, so that route behaves exactly as before for the "Cancel your order" link.
+  useEffect(() => {
+    if (!confirmOrderKey) return
+    // ⚠️ NO SYNCHRONOUS setState HERE. `confirmLoading` is initialised to `!!confirmOrderKey`, so this
+    // path already starts in the right state and a setState in the effect body would only cause a
+    // cascading render (react-hooks/set-state-in-effect). Every state change below is in a callback.
+    let cancelled = false
+    fetch(`/api/orders/${confirmOrderKey}?truck=${encodeURIComponent(slug)}`, { cache: 'no-store' })
+      .then(async r => {
+        if (cancelled) return
+        if (!r.ok) {
+          // ⚠️ ONE MESSAGE FOR "no such order" AND "wrong truck", because the server deliberately
+          // returns the same 404 for both — a customer asking about an order on the wrong truck must
+          // not learn whether it exists elsewhere. Same reasoning as the hidden-truck gate in submit.
+          setConfirmError('We couldn’t find that order.')
+          setConfirmLoading(false)
+          return
+        }
+        const d = await r.json()
+        if (cancelled) return
+        // ⚠️ A CANCELLED ORDER IS NOT A CONFIRMATION. Rendering "Order confirmed!" over a cancelled row
+        // would be actively wrong, so it is refused here with copy that says what happened rather than
+        // pretending the order is missing.
+        if (d?.status === 'cancelled') {
+          setConfirmError('This order has been cancelled.')
+          setConfirmLoading(false)
+          return
+        }
+        setConfirmOrder(d)
+        setConfirmLoading(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setConfirmError('We couldn’t load that order.')
+        setConfirmLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [confirmOrderKey, slug])
+
   // Load upcoming events for this truck
   useEffect(() => {
+    // ⚠️ GATED OFF FOR THE CONFIRMATION. A receipt needs no event list, and this fetch is on the STRICT
+    // rate-limit tier — a customer refreshing their receipt must not spend that budget.
+    if (confirmOrderKey) return   // `eventLoading` already initialised false for this path
     // Initial events load WITH bounded auto-retry (3 attempts, 1s then 2s backoff). A transient
     // cold-start/blip self-heals silently; only an exhausted-retry failure surfaces eventsError so
     // the render shows the retry card (never a silent blank). `cancelled` (cleanup) prevents a stale
@@ -550,6 +630,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [slug, event?.id])
 
   useEffect(() => {
+    // 🔴 GATED OFF FOR THE CONFIRMATION, AND THIS IS THE ONE THAT MATTERS. This fetch OWNS `loading`
+    // via its .finally(), so leaving it on would be harmless (the confirmation branch returns above the
+    // loading check) but wasteful — a full menu, deals and upsell payload fetched to render a receipt.
+    // ⚠️ `loading` therefore stays TRUE forever on this path. That is safe ONLY because the confirmation
+    // branch sits above the loading check; if it were ever moved below, this page would hang. The comment
+    // at that branch says the same thing from the other side. Do not move one without the other.
+    if (confirmOrderKey) return
     // Initial load: page-replacing error on failure (first paint has no basket to protect yet).
     refetchMenu()
       .catch((err: any) => {
@@ -567,6 +654,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // NON-DESTRUCTIVE: never touches the basket; a transient failure is ignored (retry next tick).
   // Stops once eventEnded (terminal) or when there's no selected event (the chooser view).
   useEffect(() => {
+    // ⚠️ GATED OFF FOR THE CONFIRMATION. This poll watches for an event closing so the FORM can stop
+    // taking orders. A receipt is already placed; nothing it shows can be invalidated by the event
+    // ending, and it would otherwise poll indefinitely on a screen the customer may leave open.
+    if (confirmOrderKey) return
     if (!event?.id || eventEnded) return
     const id = setInterval(async () => {
       try {
@@ -1157,6 +1248,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           discountCode: appliedCode?.code || null,
           subtotal: subtotal, discountAmt: discountAmt, total, notes: notes || null,
           upsellEvents: extra.upsellEvents || [],
+          // ── 🔴 THE ONE CONFIRMATION VALUE THE SERVER CANNOT COMPUTE ────────────────────────────
+          // The "Around HH:MM" the customer is looking at as they press this button. Derived here from
+          // the slots fetch and nowhere else — the server has no equivalent, so without this field the
+          // URL-reachable confirmation could never show it. Same precedence as the ASAP button itself.
+          // ⚠️ DISPLAY ONLY. It decides nothing: not the slot, not capacity, not money. The server
+          // stores it on the row and reads it back onto one line of the receipt.
+          asapEstimate: asapChosen ? (backwardAsap || asapSlot || customerAsapTime || null) : null,
         }),
       })
       const data = await res.json()
@@ -1243,6 +1341,103 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   // ── States ──────────────────────────────────────────────────────────────────
+
+  // ── 🔴 THE URL-REACHABLE CONFIRMATION. IT SITS FIRST, ABOVE EVERY OTHER BRANCH, DELIBERATELY. ─────
+  // A customer returning from Stripe has no component state, so `?confirm=<order_key>` is how they get
+  // the same screen a pay-at-hatch customer sees. Both render <OrderConfirmation>; only the data source
+  // differs.
+  //
+  // 🔴 WHY IT IS ABOVE `loading`, `error` AND THE FEATURE GATE — AND NOT NEXT TO `if (submitted)`,
+  // WHICH IS WHERE IT LOGICALLY BELONGS. Each of the three below would swallow it, and each failure is
+  // worse than the last:
+  //   - `loading` (the next line) is set false ONLY by the menu fetch's .finally(). This screen renders
+  //     no menu, and the fetch is gated off for it (see the effects), so `loading` would never clear —
+  //     a customer who has just paid would sit on "Loading menu..." indefinitely.
+  //   - `error && !submitted` fires on any menu-fetch failure with "This truck is not currently taking
+  //     orders." A paid customer must not be told the truck is closed.
+  //   - 🔴 THE FEATURE GATE IS THE WORST ONE. `advance_preordering` is NOT held by plan 'starter', so on
+  //     a starter truck this branch would render "Online ordering not available" — to a customer holding
+  //     a receipt for an order that truck has just taken and been paid for. The gate is correct about
+  //     placing NEW orders and has no business judging a completed one.
+  // ⚠️ THE COST OF SITTING FIRST is that this branch owns its own loading and error states. That is the
+  // right way round: it needs one order row and nothing else, so it should not wait on, or fail with,
+  // machinery it does not use.
+  if (confirmOrderKey) {
+    if (confirmLoading) {
+      return <Shell><Hdr slug={slug} truck={null} scrolled={false} showBack={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading your order...</p></div></Shell>
+    }
+    // ⚠️ THE SAME 😕 PATTERN THE REST OF THE PRODUCT USES for a customer-facing dead end — the order
+    // page's own error branch below and /order/[id]/manage both render exactly this shape. Not a new
+    // treatment, and deliberately not a 404 page: the customer has a way back to the truck.
+    if (confirmError || !confirmOrder) {
+      return (
+        <Shell><Hdr slug={slug} truck={null} scrolled={false} />
+          <div className="flex-1 flex items-center justify-center px-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">😕</div>
+              <p className="text-slate-600 font-medium">{confirmError || 'We couldn&apos;t find that order.'}</p>
+              <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back to truck page</a>
+            </div>
+          </div>
+        </Shell>
+      )
+    }
+    return (
+      <OrderConfirmation
+        slug={slug}
+        // A minimal truck object for the header — name and logo are all <Hdr> reads. NOT the `truck`
+        // state, which is populated by the menu fetch this branch deliberately never makes.
+        truck={{ ...(truck ?? {} as TruckData), name: confirmOrder.truck_name ?? '', logo: confirmOrder.truck_logo ?? null } as TruckData}
+        truckName={displayTruckName(confirmOrder.truck_name)}
+        orderId={confirmOrder.id ?? null}
+        // The row's own status IS the auto-accept answer: place_order_atomic writes 'confirmed' or
+        // 'pending' in the INSERT, so there is nothing else to consult.
+        autoAccepted={confirmOrder.status === 'confirmed'}
+        confirmedSlot={confirmOrder.slot ?? null}
+        requestedSlot={confirmOrder.requested_slot ?? null}
+        // 🔴 DERIVED, NOT STORED. There is no `slot_changed` column on purpose — the comparison IS the
+        // fact, and a stored copy could disagree with it. See the migration header.
+        slotChanged={!!confirmOrder.requested_slot && confirmOrder.requested_slot !== confirmOrder.slot}
+        asapEstimate={confirmOrder.asap_estimate ?? null}
+        preferredSlot={confirmOrder.slot ?? null}
+        lines={(confirmOrder.items ?? []).map((it: any, i: number) => ({
+          key: `${it?.name ?? 'item'}-${i}`,
+          name: String(it?.name ?? ''),
+          quantity: Number(it?.quantity ?? 0),
+          // Stored `unit_price` already INCLUDES modifiers (the repo-wide convention), so basePrice is
+          // reconstructed by subtracting them — the same relationship the in-memory path builds forwards.
+          unitPrice: Number(it?.unit_price ?? 0),
+          basePrice: Number(it?.unit_price ?? 0) - (it?.modifiers ?? []).reduce((s: number, m: any) => s + Number(m?.price ?? 0), 0),
+          modifiers: (it?.modifiers ?? []).map((m: any) => ({ name: String(m?.name ?? ''), price: Number(m?.price ?? 0) })),
+          specialInstructions: it?.specialInstructions || undefined,
+        }))}
+        // ⚠️ SAVINGS ARE NOT SHOWN ON THIS PATH, AND THAT IS RECORDED RATHER THAN PAPERED OVER. The
+        // in-memory path computes them live from the menu (`calcDealOriginalPrice`); reproducing that
+        // here would mean fetching a menu that may have changed since the order — the price-book audit
+        // found three Gusto dishes renamed or deleted under existing orders. A figure that might differ
+        // from the one the customer was shown is worse than no figure, so `saving: 0` suppresses the
+        // line entirely (`deal.saving > 0` guards it). `orders.deal_savings` exists and would settle
+        // this, but the customer path does not populate it — a separate piece of work.
+        deals={(confirmOrder.deals ?? []).map((d: any) => ({
+          name: String(d?.name ?? ''),
+          bundlePrice: Number(d?.price ?? 0),
+          saving: 0,
+          slots: (d?.slots ?? {}) as Record<string, string>,
+          slotModifiers: (d?.slotModifiers ?? {}) as Record<string, { name: string; price: number }[]>,
+          slotNotes: (d?.slotNotes ?? {}) as Record<string, string>,
+        }))}
+        total={Number(confirmOrder.total ?? 0)}
+        // 🔴 THE ORDER'S OWN STATE. Written by the webhook from Stripe's event, never by this page and
+        // never from the URL — a `?confirm=` in the address bar says WHICH order, never that it is paid.
+        paymentStatus={confirmOrder.payment_status ?? 'unpaid'}
+        email={confirmOrder.customer_email ?? null}
+        // False by construction: a customer who arrived here from Stripe did start a card payment, so
+        // the "we couldn't start the card payment" notice cannot be true for them.
+        cardFallbackNotice={false}
+      />
+    )
+  }
+
   if (loading) return <Shell><Hdr slug={slug} truck={null} scrolled={false} /><div className="flex-1 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading menu...</p></div></Shell>
 
   if (error && !submitted) return (
@@ -1273,147 +1468,52 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     )
   }
 
-  // ASAP silently bumped: the customer chose ASAP (no chosen slot, so server slotChanged=false), but
-  // the booked slot differs from the "Around HH:MM" estimate they saw. Compare via formatTime so a
-  // seconds/format mismatch doesn't false-trigger. Drives the "your estimate wasn't available" note.
-  const asapMoved =
-    !!submittedAsapEstimate && !!submittedConfirmedSlot &&
-    formatTime(submittedAsapEstimate) !== formatTime(submittedConfirmedSlot)
-
+  // ── 🔴 THE CONFIRMATION, IN-MEMORY PATH — UNCHANGED IN BEHAVIOUR ──────────────────────────────────
+  // Reached exactly as before: submitOrder sets these values and flips `submitted`, and this early
+  // return fires. No fetch, no URL, no navigation. The MARKUP now lives in <OrderConfirmation> so the
+  // card path cannot drift from it — see that component's header.
+  // ⚠️ `paymentStatus="unpaid"` reproduces the hardcoded "Pay at the truck" string this screen has
+  // always shown here. The order was created moments ago on this very request and is unpaid by
+  // construction, so this is a statement of fact rather than a default.
+  // ⚠️ The basket/deal mapping below is the SAME arithmetic the inline JSX did — `unitPrice` still
+  // includes modifiers and `saving` is still original-minus-bundle, floored at zero.
   if (submitted) return (
-    <Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-          <h2 className="text-2xl font-black text-slate-900 mb-1">{submittedAutoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
-          <p className="text-slate-500 mb-3 text-sm">
-            {submittedAutoAccepted
-              ? <>Thanks! We've received your order and it'll be ready soon.</>
-              : <><span className="font-semibold text-slate-700">{truckName}</span> will confirm your order shortly.</>
-            }
-          </p>
-
-          {submittedOrderId && <p className="text-slate-400 text-sm mb-3">Order #{submittedOrderId}</p>}
-
-          {/* Collection time — promoted above the receipt */}
-          {(submittedConfirmedSlot || selectedSlot) && (
-            submittedAutoAccepted && submittedConfirmedSlot ? (
-              <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${(submittedSlotChanged || asapMoved) ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
-                {submittedSlotChanged && submittedRequestedSlot ? (
-                  // Time-moved: collection time is the prominent headline; the reason is small supporting
-                  // text. Subtle amber (not error) — it's a confirmed order at a slightly different time.
-                  <>
-                    <p className="font-black text-amber-900 text-base">Ready at {submittedConfirmedSlot}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Your {submittedRequestedSlot} slot was just taken — this is the next available time.</p>
-                  </>
-                ) : asapMoved ? (
-                  <>
-                    <p className="font-black text-amber-900 text-base">Ready at {submittedConfirmedSlot}</p>
-                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(submittedAsapEstimate!)} we estimated.</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-bold text-green-800 mb-0.5">Collection time: {submittedConfirmedSlot}</p>
-                    <p className="text-green-700 text-xs">See you at the hatch!</p>
-                  </>
-                )}
-              </div>
-            ) : (selectedSlot || submittedConfirmedSlot) ? (
-              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
-                {/* Preferred (pending) collection time is the prominent headline; the moved reason +
-                    "truck will confirm" are smaller supporting lines. Reads as confirmed-at-a-time, not error. */}
-                <p className="font-black text-orange-800 text-base">Preferred collection: {asapMoved ? submittedConfirmedSlot : (selectedSlot || submittedConfirmedSlot)}</p>
-                {asapMoved && (
-                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(submittedAsapEstimate!)} we estimated.</p>
-                )}
-                <p className="text-orange-600 text-xs mt-0.5">{truckName} will confirm your collection time when they accept your order.</p>
-              </div>
-            ) : null
-          )}
-
-          <div className="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-4 border border-slate-100">
-            {basket.map(b => (
-              <OrderLineItem
-                key={b.cartKey}
-                name={b.menuItem.name}
-                quantity={b.quantity}
-                unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
-                basePrice={b.menuItem.price}
-                modifiers={b.modifiers}
-                specialInstructions={b.specialInstructions}
-                variant="customer"
-              />
-            ))}
-            {appliedDeals.map((deal, i) => {
-              const origPrice = calcDealOriginalPrice(deal, menu?.items || [])
-              const saving = origPrice > deal.bundle.bundle_price ? origPrice - deal.bundle.bundle_price : 0
-              return (
-                <div key={i}>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-slate-600">
-                      🎁 {deal.bundle.name}
-                      {saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save £{saving.toFixed(2)}</span>}
-                    </span>
-                    <span className="font-medium text-slate-700">£{deal.bundle.bundle_price.toFixed(2)}</span>
-                  </div>
-                  {Object.keys(deal.slots).sort().map(slotKey => {
-                    const itemName = deal.slots[slotKey]
-                    if (!itemName) return null
-                    const mods = deal.slotModifiers?.[slotKey] || []
-                    const note = deal.slotNotes?.[slotKey]
-                    return (
-                      <div key={slotKey}>
-                        <div className="pl-3 text-xs text-slate-400">{itemName}</div>
-                        {mods.map(m => (
-                          <div key={m.name} className="flex justify-between pl-6 text-xs text-slate-400">
-                            <span>{m.name}</span>
-                            {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
-                          </div>
-                        ))}
-                        {note && <div className="pl-6 text-xs text-slate-400 italic">📝 {note}</div>}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            })}
-            <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
-              <span className="font-black text-slate-900">Total</span>
-              <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between text-sm mb-4">
-            <span className="text-slate-500">Payment</span>
-            <span className="font-bold text-slate-700">Pay at the truck</span>
-          </div>
-
-          {/* ── 🔴 THE ORDER IS PLACED BUT THE CARD STEP DID NOT START ─────────────────────────────
-              This confirmation is only reached on the card path when Stripe could not be started —
-              a successful card payment redirects away and never renders here. The customer chose to
-              pay now and is not paying now, so they are TOLD. Leaving the line above saying "Pay at
-              the truck" with no explanation would be technically true and actively misleading. */}
-          {cardFallbackNotice && (
-            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 mb-4 text-left">
-              <p className="text-xs text-amber-700">
-                We couldn’t start the card payment, so your order is set to pay at the truck instead.
-                Your order is placed — nothing has been charged.
-              </p>
-            </div>
-          )}
-
-          <p className="text-slate-400 text-xs mb-6">Confirmation sent to {email}</p>
-          {/* Slug-based truck route (Manual s.7). Targets the truck's own order/menu
-             page, the only customer route that resolves by slug for a HatchGrab truck
-             (/trucks/[slug] is the discovery profile and 404s for operator-only trucks).
-             A full navigation (<a>) reloads a fresh form — the confirmation shares this
-             URL, so a soft <Link> would just re-render the confirmation. */}
-          <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
-            Back to {truckName}
-          </a>
-        </div>
-      </div>
-    </Shell>
+    <OrderConfirmation
+      slug={slug}
+      truck={truck}
+      truckName={truckName}
+      orderId={submittedOrderId}
+      autoAccepted={submittedAutoAccepted}
+      confirmedSlot={submittedConfirmedSlot}
+      requestedSlot={submittedRequestedSlot}
+      slotChanged={submittedSlotChanged}
+      asapEstimate={submittedAsapEstimate}
+      preferredSlot={selectedSlot || null}
+      lines={basket.map(b => ({
+        key: b.cartKey,
+        name: b.menuItem.name,
+        quantity: b.quantity,
+        unitPrice: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
+        basePrice: b.menuItem.price,
+        modifiers: b.modifiers,
+        specialInstructions: b.specialInstructions,
+      }))}
+      deals={appliedDeals.map(deal => {
+        const origPrice = calcDealOriginalPrice(deal, menu?.items || [])
+        return {
+          name: deal.bundle.name,
+          bundlePrice: deal.bundle.bundle_price,
+          saving: origPrice > deal.bundle.bundle_price ? origPrice - deal.bundle.bundle_price : 0,
+          slots: deal.slots,
+          slotModifiers: deal.slotModifiers ?? {},
+          slotNotes: deal.slotNotes ?? {},
+        }
+      })}
+      total={total}
+      paymentStatus="unpaid"
+      email={email}
+      cardFallbackNotice={cardFallbackNotice}
+    />
   )
 
   // ── Main form ───────────────────────────────────────────────────────────────
@@ -2618,6 +2718,233 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
+
+// ── 🔴 THE CONFIRMATION — ONE COMPONENT, TWO WAYS IN ────────────────────────────────────────────────
+// This is the markup that used to live inline under `if (submitted)`. It was EXTRACTED, not copied, and
+// that distinction is the whole point of the change: a card customer returning from Stripe and a
+// pay-at-hatch customer who never left must see the SAME screen, and the only way to guarantee that over
+// time is for there to be one copy of it.
+//
+// 🔴 IF YOU EVER NEED TO CHANGE THIS SCREEN FOR ONE PATH ONLY, YOU HAVE FOUND A PRODUCT QUESTION, NOT A
+// TECHNICAL ONE. Add a prop and branch inside; do not fork the component. Two copies would drift within
+// a release, and the drift would be invisible because only one of the two is reachable in normal use.
+//
+// ── THE TWO CALLERS, AND WHY THE PROPS LOOK LIKE THIS ──────────────────────────────────────────────
+//   IN-MEMORY  (pay-at-hatch, unchanged): the page maps its live `basket` / `appliedDeals` into the
+//              shapes below. It reaches here by exactly the same path it always did — `setSubmitted(true)`
+//              then an early return — with no fetch and no URL.
+//   BY URL     (a card customer, new): the page fetches the order by order_key and maps `orders.items` /
+//              `orders.deals` into the SAME shapes.
+// ⚠️ THE PROPS ARE NORMALISED ON PURPOSE. `basket` holds `BasketItem` objects with a nested `menuItem`;
+// the database holds flat JSONB. Neither shape belongs in the markup, so both callers map to a third
+// that is neither — which is what stops the component learning about either source.
+//
+// ⚠️ PURE. No hooks, no fetches, no effects. Everything it renders arrives as a prop, so it can be
+// exercised against a database row without a browser — and it was.
+
+/** One receipt line, normalised. Both callers map into this; the markup knows nothing else. */
+export interface ConfirmationLine {
+  key: string
+  name: string
+  quantity: number
+  /** INCLUDING modifiers — the repo-wide convention for unit_price. */
+  unitPrice: number
+  basePrice: number
+  modifiers: { name: string; price: number }[]
+  specialInstructions?: string
+}
+
+/** One applied deal, normalised. `saving` is precomputed by the caller — see the note on each call site. */
+export interface ConfirmationDeal {
+  name: string
+  bundlePrice: number
+  saving: number
+  slots: Record<string, string>
+  slotModifiers: Record<string, { name: string; price: number }[]>
+  slotNotes: Record<string, string>
+}
+
+function OrderConfirmation({
+  slug, truck, truckName, orderId, autoAccepted,
+  confirmedSlot, requestedSlot, slotChanged, asapEstimate, preferredSlot,
+  lines, deals, total, paymentStatus, email, cardFallbackNotice,
+}: {
+  slug: string
+  truck: TruckData | null
+  truckName: string
+  orderId: string | null
+  autoAccepted: boolean
+  confirmedSlot: string | null
+  requestedSlot: string | null
+  slotChanged: boolean
+  asapEstimate: string | null
+  /** The slot to show on the PENDING branch when nothing is confirmed yet. */
+  preferredSlot: string | null
+  lines: ConfirmationLine[]
+  deals: ConfirmationDeal[]
+  total: number
+  /** 🔴 THE ORDER'S OWN payment_status, never a truck setting. See the payment line below. */
+  paymentStatus: string | null
+  email: string | null
+  cardFallbackNotice: boolean
+}) {
+  // ASAP silently bumped: the customer chose ASAP (no chosen slot, so server slotChanged=false), but the
+  // booked slot differs from the "Around HH:MM" estimate they saw. Compare via formatTime so a
+  // seconds/format mismatch doesn't false-trigger. MOVED HERE WITH THE MARKUP IT DRIVES — it was computed
+  // in the page body and read only here, so it belongs to this component, not to the page.
+  const asapMoved =
+    !!asapEstimate && !!confirmedSlot &&
+    formatTime(asapEstimate) !== formatTime(confirmedSlot)
+
+  return (
+    <Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
+          <h2 className="text-2xl font-black text-slate-900 mb-1">{autoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
+          <p className="text-slate-500 mb-3 text-sm">
+            {autoAccepted
+              ? <>Thanks! We&apos;ve received your order and it&apos;ll be ready soon.</>
+              : <><span className="font-semibold text-slate-700">{truckName}</span> will confirm your order shortly.</>
+            }
+          </p>
+
+          {orderId && <p className="text-slate-400 text-sm mb-3">Order #{orderId}</p>}
+
+          {/* Collection time — promoted above the receipt */}
+          {(confirmedSlot || preferredSlot) && (
+            autoAccepted && confirmedSlot ? (
+              <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${(slotChanged || asapMoved) ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
+                {slotChanged && requestedSlot ? (
+                  // Time-moved: collection time is the prominent headline; the reason is small supporting
+                  // text. Subtle amber (not error) — it's a confirmed order at a slightly different time.
+                  <>
+                    <p className="font-black text-amber-900 text-base">Ready at {confirmedSlot}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Your {requestedSlot} slot was just taken — this is the next available time.</p>
+                  </>
+                ) : asapMoved ? (
+                  <>
+                    <p className="font-black text-amber-900 text-base">Ready at {confirmedSlot}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!)} we estimated.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-bold text-green-800 mb-0.5">Collection time: {confirmedSlot}</p>
+                    <p className="text-green-700 text-xs">See you at the hatch!</p>
+                  </>
+                )}
+              </div>
+            ) : (preferredSlot || confirmedSlot) ? (
+              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
+                {/* Preferred (pending) collection time is the prominent headline; the moved reason +
+                    "truck will confirm" are smaller supporting lines. Reads as confirmed-at-a-time, not error. */}
+                <p className="font-black text-orange-800 text-base">Preferred collection: {asapMoved ? confirmedSlot : (preferredSlot || confirmedSlot)}</p>
+                {asapMoved && (
+                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(asapEstimate!)} we estimated.</p>
+                )}
+                <p className="text-orange-600 text-xs mt-0.5">{truckName} will confirm your collection time when they accept your order.</p>
+              </div>
+            ) : null
+          )}
+
+          <div className="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-4 border border-slate-100">
+            {lines.map(l => (
+              <OrderLineItem
+                key={l.key}
+                name={l.name}
+                quantity={l.quantity}
+                unitPrice={l.unitPrice}
+                basePrice={l.basePrice}
+                modifiers={l.modifiers}
+                specialInstructions={l.specialInstructions}
+                variant="customer"
+              />
+            ))}
+            {deals.map((deal, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-600">
+                    🎁 {deal.name}
+                    {deal.saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save £{deal.saving.toFixed(2)}</span>}
+                  </span>
+                  <span className="font-medium text-slate-700">£{deal.bundlePrice.toFixed(2)}</span>
+                </div>
+                {Object.keys(deal.slots).sort().map(slotKey => {
+                  const itemName = deal.slots[slotKey]
+                  if (!itemName) return null
+                  const mods = deal.slotModifiers?.[slotKey] || []
+                  const note = deal.slotNotes?.[slotKey]
+                  return (
+                    <div key={slotKey}>
+                      <div className="pl-3 text-xs text-slate-400">{itemName}</div>
+                      {mods.map(m => (
+                        <div key={m.name} className="flex justify-between pl-6 text-xs text-slate-400">
+                          <span>{m.name}</span>
+                          {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                        </div>
+                      ))}
+                      {note && <div className="pl-6 text-xs text-slate-400 italic">📝 {note}</div>}
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+            <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
+              <span className="font-black text-slate-900">Total</span>
+              <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* ── 🔴 THE PAYMENT LINE — FROM THE ORDER'S OWN STATE, NEVER FROM A TRUCK SETTING ────────
+              This used to be the hardcoded string "Pay at the truck", which was correct while the only
+              way to reach this screen was pay-at-hatch. It now reads `payment_status` off the ORDER, so
+              an order paid online lands on the paid branch every time — whatever the truck's settings
+              say, whatever the customer chose, and whether they arrived here in memory or by URL.
+              ⚠️ THE PAY-AT-HATCH PATH IS UNCHANGED: it passes 'unpaid' (the order was created moments
+              ago and is unpaid by construction), which renders the identical original string.
+              ⚠️ `part_paid` and `refunded` are legal values on this column and both fall to the
+              not-paid branch, which is the safe direction: it tells a customer to expect to pay rather
+              than telling them they are square when they are not. */}
+          <div className="flex justify-between text-sm mb-4">
+            <span className="text-slate-500">Payment</span>
+            {paymentStatus === 'paid' ? (
+              <span className="font-bold text-green-600">Paid by card</span>
+            ) : (
+              <span className="font-bold text-slate-700">Pay at the truck</span>
+            )}
+          </div>
+
+          {/* ── 🔴 THE ORDER IS PLACED BUT THE CARD STEP DID NOT START ─────────────────────────────
+              Reached only on the card path when Stripe could not be started. The customer chose to pay
+              now and is not paying now, so they are TOLD. Leaving the line above saying "Pay at the
+              truck" with no explanation would be technically true and actively misleading.
+              ⚠️ It is FALSE on the URL path by construction — a customer who arrived here from Stripe
+              did start a card payment, so the notice cannot be true for them. */}
+          {cardFallbackNotice && (
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 mb-4 text-left">
+              <p className="text-xs text-amber-700">
+                We couldn&apos;t start the card payment, so your order is set to pay at the truck instead.
+                Your order is placed — nothing has been charged.
+              </p>
+            </div>
+          )}
+
+          {email && <p className="text-slate-400 text-xs mb-6">Confirmation sent to {email}</p>}
+          {/* Slug-based truck route (Manual s.7). Targets the truck's own order/menu
+             page, the only customer route that resolves by slug for a HatchGrab truck
+             (/trucks/[slug] is the discovery profile and 404s for operator-only trucks).
+             🔴 A FULL NAVIGATION (<a>), NOT A <Link>, AND NOW FOR TWO REASONS. It always reloaded a
+             fresh form because the confirmation shared this URL. It ALSO now drops the ?confirm=
+             parameter and clears the in-memory basket — a soft navigation would leave both in place,
+             and a customer would return to the form with an order they have already placed still in it. */}
+          <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
+            Back to {truckName}
+          </a>
+        </div>
+      </div>
+    </Shell>
+  )
+}
 
 // Shared note input used on basket lines (compact) and in the modifier popup (full)
 function ItemNoteInput({

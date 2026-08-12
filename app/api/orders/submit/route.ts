@@ -319,6 +319,17 @@ export async function POST(req: NextRequest) {
       total,
       notes,
       upsellEvents,
+      // ── 🔴 THE ONLY CONFIRMATION VALUE THE SERVER CANNOT COMPUTE ────────────────────────────────
+      // The "Around HH:MM" estimate the customer was SHOWN before pressing Place order. It is derived
+      // in the BROWSER from the slots fetch (`backwardAsap || asapSlot || customerAsapTime`) and there
+      // is no server equivalent — so the URL-reachable confirmation could never show it unless the
+      // client sent it. `requested_slot` and the slot-moved comparison are both computed here and
+      // simply were not persisted; this one genuinely had to arrive.
+      // ⚠️ DISPLAY ONLY, AND IT MUST STAY SO. A client-produced number, the same class as the offline
+      // outbox's `client_ts` ("display only — NEVER used for reconciliation"). It decides nothing:
+      // not the slot, not capacity, not money. It is written to a column and read back onto one line
+      // of a confirmation screen. Do not let it into any branch that matters.
+      asapEstimate,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -956,6 +967,44 @@ export async function POST(req: NextRequest) {
     // is placed online, synchronously, inside that transaction — request time IS commit time — so
     // reading our own clock beats trusting a customer's phone. Do not start sending it from the client
     // on this path.
+
+    // ── THE CONFIRMATION'S TWO STORED FIELDS — WRITTEN HERE, NOT IN THE RPC ─────────────────────────
+    // `requested_slot` and `asap_estimate` exist so the confirmation screen can be reached by URL: a
+    // card customer returning from Stripe has no component state, so every value it renders has to
+    // survive a page load. See supabase/migrations/20260811_orders_confirmation_slot_fields.sql.
+    //
+    // 🔴 WHY AN UPDATE AFTER THE RPC AND NOT A CHANGE TO place_order_atomic — A DELIBERATE TRADE.
+    // The RPC's INSERT column list is fixed SQL. Adding two columns to it means reproducing a ~90-line
+    // money-path function to carry two DISPLAY strings, and a transcription error there does not break a
+    // confirmation screen — it breaks every customer order. The risk is inverted against the reward.
+    // ⚠️ THE PRECEDENT IS DIRECTLY ABOVE: `placed_at` was written exactly this way in phase 1 and folded
+    // into the insert later, once the value had earned it. Same shape, same reasoning, same option to
+    // fold these in later if they ever stop being display-only.
+    // 🔴 THE COST, STATED: this is NOT atomic with the insert. There is a window in which the order
+    // exists without these two fields.
+    // AND THE COST IS ACCEPTABLE BECAUSE OF WHAT THEY ARE. A failure leaves both null, which is
+    // EXACTLY what every row placed before today reads, and the confirmation already renders correctly
+    // for null — it takes the plain "Collection time: HH:MM" branch. No money, no slot, no capacity
+    // depends on either. So this is logged and NEVER thrown: the order is committed and the customer
+    // must not see a failure for a cosmetic write.
+    // ⚠️ `requested_slot` is null for an ASAP order by construction (`slot` arrives null), which is
+    // correct — nothing was requested. `asap_estimate` is null for every chosen-slot order.
+    {
+      const confirmationFields = {
+        requested_slot: requestedSlot,
+        asap_estimate: typeof asapEstimate === 'string' && asapEstimate.trim() ? asapEstimate.trim() : null,
+      }
+      const { error: confErr } = await supabase
+        .from('orders')
+        .update(confirmationFields)
+        .eq('order_key', order.order_key)
+      if (confErr) {
+        console.error(
+          `[submit] confirmation fields not written for order_key=${order.order_key} — the order is SAVED ` +
+          `and unaffected; the confirmation will show its plain slot line:`, confErr.message,
+        )
+      }
+    }
 
     // ── Record upsell events ──────────────────────────────────────────────────
     if (upsellEvents?.length) {
