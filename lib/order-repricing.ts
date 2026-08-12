@@ -179,6 +179,28 @@ export function lineIdentity(name: unknown, modifiers?: { name?: unknown }[] | n
 /**
  * Read this truck's whole current menu price book in one round of queries. Used ONLY to price lines
  * the stored order does not already carry a price for.
+ *
+ * ── 🔴 EVERY QUERY BELOW FILTERS ON truck_id AND NOTHING ELSE. DO NOT ADD AN AVAILABILITY FILTER. ──
+ *
+ * `menu_items_db` carries is_active, is_available, stock_count and default_stock. `modifier_options`
+ * carries is_active, available and stock_count. None of them is read here, and that is deliberate:
+ * THIS FUNCTION ANSWERS "WHAT DOES IT COST", NOT "CAN IT BE ORDERED". Those are different questions
+ * with different owners, and the price of a sold-out dish is still its price.
+ *
+ * ── WHY IT MATTERS AT SERVICE ──────────────────────────────────────────────────────────────────
+ * Both order-creation paths price BEFORE the stock guard runs, and an unpriceable line REFUSES the
+ * order (app/api/orders/submit/route.ts). A sold-out item survives pricing only because it is still a
+ * row here with a name and a price; it then reaches checkStockShortfall and the customer gets that
+ * guard's own message, which names the item and the number left.
+ *
+ * 🔴 SO ADDING `.eq('is_active', true)` OR `.eq('is_available', true)` — which reads like an obvious
+ * tightening — WOULD BREAK ORDERING DURING SERVICE. Every sold-out item would become unpriceable, the
+ * pricing refusal would fire first, and customers would be told the menu had changed instead of that
+ * the dish had sold out. The price book must stay a STRICT SUPERSET of what the menu offers: /api/menu
+ * applies `.eq('is_active', true)` and this must not, so anything orderable is always priceable.
+ *
+ * The one legitimate exclusion is per-dish and lives below: item_modifier_groups.excluded_option_ids
+ * removes an option a dish does not OFFER, which is a question about the menu's shape, not its stock.
  */
 export async function loadPriceBook(supabase: SupabaseClient, truckId: string): Promise<PriceBook> {
   const [{ data: itemRows }, { data: optionRows }, { data: bundleRows }, { data: linkRows }] = await Promise.all([

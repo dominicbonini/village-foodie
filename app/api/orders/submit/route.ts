@@ -4,7 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { calculateOrderTotal, validateOrderTotals } from '@/lib/order-calculations'
+import type { DiscountCode } from '@/lib/order-calculations'
+import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
 import {
   computeEventUnitRows,
   getProductionSlotUnits,
@@ -47,7 +48,17 @@ interface AppliedDeal {
 }
 
 // ─── WhatsApp message formatter ───────────────────────────────────────────────
-
+//
+// ⚠️ NO CALL SITE. A repo-wide grep finds exactly one occurrence of `formatWhatsAppOrder` — this
+// definition. Nothing invokes it, so nothing it computes reaches anybody, and the money it reads has
+// never been printed anywhere. It is left in place rather than deleted because removing an unused
+// exportable formatter is not part of this change.
+//
+// 🔴 IF IT IS EVER WIRED UP, IT MUST BE HANDED THE REPRICED ARRAY. `params.items[].unit_price`,
+// `params.discountAmt` and `params.total` are read straight out of whatever the caller passes, and the
+// obvious caller — the request body — is exactly the client pricing this route no longer trusts. Pass
+// `pricedItems` / `serverDiscountAmt` / `serverTotal` (see the reprice block in POST), never `items` /
+// `discountAmt` / `total` from the body.
 function formatWhatsAppOrder(params: {
   orderId: string
   truckName: string
@@ -500,16 +511,16 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    const { data: bundles } = await supabase
-      .from('bundles_db')
-      .select('*')
-      .eq('truck_id', resolvedTruckId)
+    // (The `bundles_db` read lived here. Its only two consumers — `dealsForCalc` for the removed
+    // validation, and `dealsWithPrice` for the confirmation email — are both gone, and loadPriceBook
+    // reads the same table itself as the authority for bundle prices. Keeping it would have been a
+    // second read of the same rows that decides nothing, and a place for a future edit to re-derive a
+    // bundle price outside the engine. So the net cost of server pricing on this route is +3 queries,
+    // not +4: the price book adds four, this removes one.)
 
-    // Reconstruct deals
-    const dealsForCalc = (deals || []).map((d: AppliedDeal) => ({
-      bundle: bundles?.find(b => b.name === d.name) || { name: d.name, bundle_price: 0, original_price: null },
-      slots: d.slots || {}
-    }))
+    // (`dealsForCalc` lived here — it existed ONLY to feed the removed calculateOrderTotal call below.
+    // The price book now resolves bundle prices itself, from the same bundles_db rows, so reconstructing
+    // them here would be a second lookup that could drift from the one that decides the charge.)
 
     // Find discount code
     let discountCodeData = null
@@ -524,27 +535,115 @@ export async function POST(req: NextRequest) {
       discountCodeData = data
     }
 
-    // Calculate totals server-side
-    const serverCalculation = calculateOrderTotal(
-      items,
-      dealsForCalc,
-      menuItems || [],
-      discountCodeData
+    // ── 🔴 SERVER-AUTHORITATIVE PRICING. THE CLIENT'S MONEY FIELDS DECIDE NOTHING. ─────────────────
+    // What arrives in `items` / `deals` says WHAT was selected — dish name, modifier names, quantity,
+    // bundle name, slot fills. Every PRICE is resolved here, from this truck's live menu, via the SAME
+    // engine the operator edit path uses (lib/order-repricing). There is no second implementation and
+    // no arithmetic reimplemented at this call site: repriceOrder resolves, calculateOrderTotal combines.
+    //
+    // NO `stored` ARGUMENT — this order does not exist yet, so there is nothing to price-lock against
+    // and every line resolves from the price book. (Price-lock is what protects an EXISTING order from
+    // a later menu change; on a first placement the live menu IS the authority.)
+    //
+    // 🔴 THIS REPLACES A GUARD THAT COULD NEVER FIRE. What stood here compared the client's totals
+    // against calculateOrderTotal(items, …) — but calculateOrderTotal reads `item.price` while this
+    // route receives `item.unit_price`, so every line summed to NaN, every comparison was NaN > 0.01
+    // (false), and validateOrderTotals returned valid for every order ever submitted. A guard that has
+    // never rejected anything is worse than no guard: its presence ends the enquiry. It is gone, and
+    // what replaces it does not compare the client's numbers at all — it discards them.
+    //
+    // ⚠️ THE CLIENT'S `subtotal` / `discountAmt` / `total` ARE NOW UNUSED ON THIS PATH. They are still
+    // destructured (an older app build still sends them) and still ignored: nothing below reads them.
+    //
+    // ⚠️ `price_override` IS AN OPERATOR FIELD AND IS STRIPPED HERE. The walk-up panel may send one
+    // (a hand-set line price — see app/api/dashboard/action/route.ts); a customer may not, and the
+    // strip is what makes that structural rather than a rule someone has to remember. Stripped BEFORE
+    // repricing because repriceOrder passes unknown keys through, so an unstripped one would land in
+    // the stored row and read exactly like an operator's.
+    const customerItems: RepriceItem[] = (items || []).map((it: RepriceItem) => {
+      const copy = { ...it }
+      delete copy.price_override
+      delete copy.book_price
+      return copy
+    })
+    // ── 🔴 THIS RUNS BEFORE THE STOCK GUARD, AND THAT IS ONLY SAFE FOR ONE REASON. ────────────────
+    // The order of this route is: PRICE (here) → sold-out option backstop (:~830) → event lock →
+    // checkClosedCategories → checkStockShortfall → checkOptionCeilingShortfall → INSERT. So an
+    // unpriceable line refuses the order BEFORE anything has been asked about stock.
+    //
+    // 🔴 A SOLD-OUT ITEM MUST STILL PRICE, or the customer gets a "menu has changed" refusal in place
+    // of "only 2 Margherita left" — during service, on a dish the truck deliberately ran down.
+    // It does price, because loadPriceBook filters on truck_id and NOTHING else: not is_active, not
+    // is_available, not available, not stock_count. Sold out is a STATE on a row that still exists, and
+    // only a MISSING row (a deleted or renamed item) is unpriceable. See the header on loadPriceBook in
+    // lib/order-repricing.ts, which carries the other half of this note.
+    //
+    // ⚠️ IF THAT EVER CHANGES, THIS ORDERING BECOMES A LIVE DEFECT. Either the price book must keep no
+    // availability filter, or this block must move below checkStockShortfall. Do not change one end
+    // without the other.
+    const priceBook = await loadPriceBook(supabase, resolvedTruckId)
+    const repriced = repriceOrder(
+      customerItems,
+      deals,
+      priceBook,
+      {},                               // no stored order — see above
+      discountCodeData as DiscountCode | null,
     )
 
-    // Validate submitted totals
-    const validation = validateOrderTotals(
-      { subtotal, discountAmt: discountAmt ?? 0, total },
-      serverCalculation,
-      0.01
-    )
-
-    if (!validation.valid) {
-      console.error('[ORDER VALIDATION]', validation.error)
-      return NextResponse.json({ 
-        error: 'Order total validation failed. Please refresh and try again.' 
-      }, { status: 400 })
+    // ── 🔴 AN UNPRICEABLE LINE FAILS THE ORDER. ────────────────────────────────────────────────────
+    // `unresolved` means a dish, a modifier-on-that-dish, or a bundle whose name the live menu cannot
+    // price. On the operator path that is a prompt (a human is standing there); here there is nobody to
+    // ask, and the alternative — falling back to the advisory client figure — is precisely the client
+    // pricing this change exists to remove. So it refuses.
+    //
+    // 🔴 NO NEW ERROR SURFACE. Deliberately the SAME `{ error, stock: true, items }` 409 the sold-out
+    // guard below returns, because the order page's existing handler for it does exactly the right
+    // thing: keeps the basket, re-fetches /api/menu, and lets the customer re-submit. A stale basket
+    // against a changed menu is also, in practice, what causes this — the customer needs the menu they
+    // are looking at refreshed, which is that branch's whole behaviour.
+    // `items: []` — nothing is out of stock, so there is no per-item remaining to cap the basket to,
+    // and capBasketToRemaining([]) is a no-op.
+    //
+    // 🔴 `menuChanged: true` IS THE DISCRIMINATOR, AND IT EXISTS BECAUSE THE TWO REFUSALS NEED THE SAME
+    // HANDLING BUT DIFFERENT WORDS. The sold-out branch's notice reads "Sorry — {x} now. We've updated
+    // your order — please review and confirm.", which is built to wrap a FRAGMENT ("only 2 Margherita
+    // left") and which promises the basket was capped. Neither is true here: this message is a whole
+    // sentence, and nothing on the basket was touched. Rather than reword a message the stock path
+    // depends on, this flag lets the client render THIS one plainly. Do not drop it, and do not infer
+    // the case from `items.length === 0` instead — checkStockShortfall never returns an empty array,
+    // but that is its invariant to keep, not ours to lean on.
+    //
+    // ⚠️ THE COPY MUST NOT CLAIM ANYTHING WAS CHANGED ON THE CUSTOMER'S BEHALF. Nothing was: no line
+    // removed, no quantity capped, no price rewritten. It states what happened and asks them to look.
+    if (repriced.unresolved.length > 0) {
+      const first = repriced.unresolved[0]
+      console.error(
+        `[submit] REFUSED — unpriceable on truck ${resolvedTruckId}: ` +
+        repriced.unresolved.map(u => `${u.kind} "${u.name}"${u.on ? ` on "${u.on}"` : ''} (client said ${u.advisoryPrice})`).join('; '),
+      )
+      // A modifier is named with the dish it was on, because "Truffle Shavings" alone tells a customer
+      // nothing about which line to look at.
+      const label = first.kind === 'modifier' && first.on ? `${first.name} (on ${first.on})` : first.name
+      return NextResponse.json(
+        {
+          error: `The menu has changed — ${label} is no longer available. Please check your order before placing it.`,
+          stock: true,
+          menuChanged: true,
+          items: [],
+        },
+        { status: 409 },
+      )
     }
+
+    // The authoritative figures. PENCE FIRST, then pounds derived from the pence, so `total` and
+    // `total_minor` are the same number by construction — the same ordering the edit path uses
+    // (action/route.ts) and the reason a percentage code can't leave them 1p apart.
+    const pricedItems = repriced.items
+    const pricedDeals = repriced.deals
+    const serverTotalMinor = toMinor(repriced.calculation.total)
+    const serverTotal = serverTotalMinor / 100
+    const serverSubtotal = repriced.calculation.subtotal
+    const serverDiscountAmt = repriced.calculation.discountAmt
 
     // ── Resolve the event for this order ──────────────────────────────────────
     // Prefer the event_id the customer ordered against (unambiguous). Only fall back
@@ -906,7 +1005,10 @@ export async function POST(req: NextRequest) {
       //     NULL (NOT []) so the RPC's step-4 guard SKIPS the usage write → order persists unbooked,
       //     exactly like the old full-but-pending path.
       const unitRows = (booked && eventRow?.id)
-        ? await computeEventUnitRows(supabase, resolvedTruckId, eventRow.id, { slot: finalSlot, items, deals: deals ?? null })
+        // Priced arrays, so the capacity board is computed from EXACTLY the lines about to be inserted.
+        // Capacity reads names and quantities only — no money — so this is not a behaviour change; it
+        // means there is one items array after the reprice point rather than two that could diverge.
+        ? await computeEventUnitRows(supabase, resolvedTruckId, eventRow.id, { slot: finalSlot, items: pricedItems, deals: deals ? pricedDeals : null })
         : null
 
       // (e) ATOMIC PLACEMENT — display number + order INSERT + usage book in ONE transaction
@@ -915,17 +1017,26 @@ export async function POST(req: NextRequest) {
       //     Shortfall — not an in-RPC pool draw.) p_order carries ONLY the plain order columns
       //     (id/slot/status/event_id/event_date/order_key are RPC params or DB defaults). Totals are
       //     numbers (RPC casts ::numeric); items/deals are jsonb; van_id is uuid-string-or-empty.
+      //
+      // 🔴 EVERY MONEY FIELD HERE IS SERVER-DERIVED. `items` and `deals` are the REPRICED arrays, so
+      // orders.items[].unit_price and orders.items[].modifiers[].price are the price book's figures,
+      // not the browser's; the three totals come from calculateOrderTotal via repriceOrder. Nothing on
+      // this object is read from the request body except names, quantities, notes and contact details.
+      // The RPC derives total_minor as round(total * 100) — which is why `total` must be the pence-
+      // derived figure and not the raw float (see the reprice block above).
       const p_order = {
         customer_name:  customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone,
         order_type:     'collection',
-        items,
-        deals:          deals ?? null,
+        items:          pricedItems,
+        // `deals ? … : null` and NOT `?? null` — an empty array must keep storing as [], exactly as
+        // `deals ?? null` did, because [] ?? null is []. Only a null/absent deals array stores null.
+        deals:          deals ? pricedDeals : null,
         discount_code:  discountCode ?? null,
-        subtotal:       subtotal ?? total,
-        discount_amt:   discountAmt ?? 0,
-        total,
+        subtotal:       serverSubtotal,
+        discount_amt:   serverDiscountAmt,
+        total:          serverTotal,
         notes:          notes ?? null,
         van_id:         eventRow?.van_id ?? null,
         payment_status: 'unpaid',
@@ -1050,9 +1161,11 @@ export async function POST(req: NextRequest) {
           customerName,
           customerPhone,
           slot,
-          items,
-          deals: deals || [],
-          total,
+          // The SERVER-priced arrays and the SERVER total — the same figures just written to the row,
+          // so the operator's "new order" email can never quote a price the order does not hold.
+          items: pricedItems,
+          deals: pricedDeals,
+          total: serverTotal,
           notes: notes ?? null,
           venueName:     eventRow?.venue_name ?? null,
           venueTown:     eventRow?.town ?? null,
@@ -1081,10 +1194,9 @@ export async function POST(req: NextRequest) {
     // send) so we don't build an email nobody receives.
     if (isDemoTruck) console.log(`[submit] demo truck ${truck.id} — customer + truck emails suppressed`)
     if (!isDemoTruck) try {
-      const dealsWithPrice = (deals ?? []).map((d: AppliedDeal) => {
-        const bundle = bundles?.find(b => b.name === d.name)
-        return { ...d, price: bundle?.bundle_price }
-      })
+      // (`dealsWithPrice` lived here — it re-read bundles_db to give the EMAIL a server bundle price
+      // while the stored row kept the client's. That split is gone: the row and the email now read the
+      // same repriced array, so they cannot disagree.)
       const { subject, html, text } = formatConfirmationEmail({
         orderId,
         orderKey:     order.order_key,
@@ -1093,10 +1205,10 @@ export async function POST(req: NextRequest) {
         slot:         confirmedSlot,
         requestedSlot,
         slotChanged,
-        items,
-        deals:        dealsWithPrice,
-        discountAmt:  discountAmt ?? 0,
-        total,
+        items:        pricedItems,
+        deals:        pricedDeals,
+        discountAmt:  serverDiscountAmt,
+        total:        serverTotal,
         notes:        notes ?? null,
         autoAccepted,
         venueName:              eventRow?.venue_name ?? null,
@@ -1181,7 +1293,11 @@ export async function POST(req: NextRequest) {
       requestedSlot,
       autoAccepted,
       slotChanged,
-      total,
+      // The SERVER total — what the row holds and what the customer will actually be charged. Echoing
+      // the client's own figure back would have made a divergence invisible at exactly the moment it
+      // mattered. (The in-memory confirmation renders from basket state, so this is not what the
+      // customer sees on screen; the URL-reachable one reads the row. Both now agree with this.)
+      total: serverTotal,
     })
 
   } catch (err: any) {

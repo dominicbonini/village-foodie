@@ -234,6 +234,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Non-destructive "just sold out" notice on a submit 409 (atomic stock guard) — keeps the
   // basket (capped to what's left) so the customer can review + re-submit. Customer hard stop.
   const [stockNotice, setStockNotice] = useState<string | null>(null)
+  // 🔴 SEPARATE FROM stockNotice ON PURPOSE, AND NOT A SECOND ERROR SURFACE — the SAME 409, the same
+  // handler, the same menu re-fetch. It exists only because stockNotice is rendered INSIDE a sentence
+  // ("Sorry — … now. We've updated your order …") that is written for a fragment and promises a
+  // basket capping. A menu-change refusal caps nothing and arrives as a complete sentence, so it must
+  // render on its own. Sharing the state would have meant rewording the stock notice, which is correct
+  // as it stands and which real customers see far more often.
+  const [menuChangedNotice, setMenuChangedNotice] = useState<string | null>(null)
   // "Check again" in-place re-fetch state (pause banner) — never reloads, never clears the basket.
   const [rechecking, setRechecking] = useState(false)
   // Event finished EARLY (status='closed'/'cancelled') while the customer was already on the page —
@@ -1230,6 +1237,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setSubmitting(true)
     setPauseNotice(null)
     setStockNotice(null)
+    // Cleared alongside the other two, for the same reason: a notice from the PREVIOUS attempt must
+    // not sit under the one this attempt produces. Without it a customer who fixed a menu-change and
+    // then hit a sold-out line would read both panels and not know which one still applies.
+    setMenuChangedNotice(null)
     try {
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1284,11 +1295,31 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       if (res.status === 409 && data?.stock) {
         const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
         capBasketToRemaining(shortItems)
-        setStockNotice(
-          shortItems.length
-            ? shortItems.map(s => `only ${s.remaining} ${s.name} left`).join(', ')
-            : 'some items just sold out'
-        )
+        // ── ⚠️ TWO REFUSALS, ONE HANDLER, TWO NOTICES ───────────────────────────────────────────────
+        // This branch answers both the sold-out guard and the server's unpriceable-line refusal,
+        // because everything they need is identical: keep the basket, re-fetch the menu, let the
+        // customer re-submit. What differs is the WORDS, and they cannot share a notice.
+        // 🔴 THE STOCK NOTICE IS A FRAGMENT SLOTTED INTO A SENTENCE. It renders as
+        // "Sorry — {notice} now. We've updated your order — please review and confirm.", which reads
+        // correctly for "only 2 Margherita left" and promises a capping that genuinely happened.
+        // For a menu change NEITHER holds: the message is a whole sentence, so the wrapper produces a
+        // doubled "Sorry" and a stray "now.", and nothing was capped — capBasketToRemaining([]) above
+        // returns at its own guard. Claiming otherwise would be a plain untruth to a real customer.
+        // So the menu-change case gets its OWN state and renders unwrapped, and the stock wording
+        // below is exactly what it always was.
+        if (data.menuChanged) {
+          setMenuChangedNotice(
+            typeof data.error === 'string' && data.error
+              ? data.error
+              : 'The menu has changed. Please check your order before placing it.'
+          )
+        } else {
+          setStockNotice(
+            shortItems.length
+              ? shortItems.map(s => `only ${s.remaining} ${s.name} left`).join(', ')
+              : 'some items just sold out'
+          )
+        }
         // Refresh stock_remaining badges from the authoritative menu read.
         if (event?.id) {
           fetch(`/api/menu/${slug}?event_id=${event.id}`, { cache: 'no-store' })
@@ -2420,6 +2451,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
                   <p className="flex-1 text-amber-800 text-sm font-medium">Sorry — {stockNotice} now. We&apos;ve updated your order — please review and confirm.</p>
                   <button onClick={() => setStockNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
+                </div>
+              )}
+
+              {/* 🔴 THE SERVER'S SENTENCE, RENDERED WHOLE. No "Sorry — " prefix, no " now." suffix, and
+                  no "We've updated your order" — because nothing was updated. Same panel styling and
+                  same dismiss affordance as the stock notice above, so it reads as the same class of
+                  message; only the wrapping differs, which is the entire point of it being separate. */}
+              {menuChangedNotice && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
+                  <p className="flex-1 text-amber-800 text-sm font-medium">{menuChangedNotice}</p>
+                  <button onClick={() => setMenuChangedNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
                 </div>
               )}
 

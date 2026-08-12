@@ -16,7 +16,7 @@ import {
   rebuildProductionSlotUsage,
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
-import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
+import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
 import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
@@ -831,7 +831,13 @@ export async function POST(req: NextRequest) {
       // §4b: `dealSavings` is a NOTIONAL "saved vs à la carte" figure, NOT money deducted — it used
       // to be shipped in the discountAmt slot and stored as if it were a discount. It now has its own
       // column (orders.deal_savings) and discountAmt means money-off on this path like every other.
-      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, dealSavings, total: passedTotal, subtotal, event_date: passedEventDate, event_id: passedEventId } = manualOrder
+      // 🔴 `total`, `subtotal`, `discountAmt` and `dealSavings` ARE DELIBERATELY NOT DESTRUCTURED ANY
+      // MORE. The panel still sends all four and the server now reads none of them — every one is
+      // resolved below from the price book. Leaving them bound would leave four client money values in
+      // scope for a future edit to reach for by accident, which is the whole failure mode this change
+      // exists to close. (§4b's rule still holds and is now enforced by the engine: dealSavings is
+      // notional and lands in orders.deal_savings; discount_amt means money actually deducted.)
+      const { customerName, customerPhone, customerEmail, slot, items, notes, event_date: passedEventDate, event_id: passedEventId } = manualOrder
       const deals = manualOrder.deals ?? null
       if (!items?.length && !deals?.length) {
         return NextResponse.json({ error: 'Items required' }, { status: 400 })
@@ -962,7 +968,127 @@ export async function POST(req: NextRequest) {
       // incremental capacity write. Instant constituents are skipped later by projectOvenOccupancy.
       const manualLines = normaliseOrderLines(items || [], deals)
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
-      const total = (items || []).reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
+
+      // ── 🔴 SERVER-AUTHORITATIVE PRICING (WALK-UP) ──────────────────────────────────────────────
+      // The same engine the customer path and the edit path use — lib/order-repricing. There is ONE
+      // pricing implementation in this codebase and this is a call into it, not a copy of it.
+      // What stood here was `items.reduce((s,i) => s + parseFloat(i.unit_price) * parseInt(i.quantity))`
+      // — the panel's own arithmetic, re-added up. It agreed with the client because it WAS the client.
+      //
+      // ── 🔴 AND THE OPERATOR PRICE OVERRIDE, WHICH IS THE ONE THING THAT SURVIVES CLIENT-SIDE ────
+      // AddOrderPanel's InlinePriceEditor lets an operator set a line price by hand: a walk-up
+      // discount, a damaged item, goodwill. That is a real capability and it stays. What changes is
+      // that it is now EXPLICIT rather than indistinguishable from a normal price.
+      //
+      // 🔴 THE FIELD NAMES.
+      //   ON THE WIRE   items[].price_override  — the operator's hand-set UNIT price, in pounds.
+      //                                           Absent on every line they did not touch.
+      //   IN THE ROW    items[].unit_price      — the EFFECTIVE price (the override where one was set,
+      //                                           the book price otherwise). Unchanged meaning, so all
+      //                                           thirty-odd existing readers are untouched.
+      //                 items[].price_override  — the operator's figure, echoed. Its PRESENCE is the
+      //                                           audit marker: a line carrying it was priced by a
+      //                                           human, and no other line can be.
+      //                 items[].book_price      — what the menu said at that moment. Written only
+      //                                           alongside an override, so the adjustment is
+      //                                           reconstructable later without a menu archaeology dig.
+      // The customer path STRIPS price_override before it reaches the engine (see
+      // app/api/orders/submit) — this field is operator-only by construction, not by convention.
+      //
+      // ⚠️ THE OVERRIDE IS APPLIED THROUGH PRICE-LOCK, NOT AROUND IT. Pass 1 prices everything from
+      // the book. Pass 2 re-runs the SAME engine with pass 1 as the stored/locked price source, with
+      // the operator's unit price substituted on the lines they set — so the engine treats an override
+      // exactly as it treats an already-locked line, and the totals still come out of
+      // calculateOrderTotal. No money arithmetic is performed at this call site.
+      //
+      // 🔴 THIS RUNS BEFORE THE STOCK GUARDS HERE TOO (lock → checkClosedCategories →
+      // checkStockShortfall → checkOptionCeilingShortfall → findSoldOutOption → INSERT, all below), and
+      // it is safe for the SAME single reason: loadPriceBook filters on truck_id and nothing else, so a
+      // sold-out item still prices and still reaches its own guard. Adding an availability filter there
+      // would turn every sold-out line into a needsPriceConfirm prompt at the hatch. See the header on
+      // loadPriceBook in lib/order-repricing.ts and the matching note in app/api/orders/submit/route.ts.
+      const priceBook = await loadPriceBook(supabase, truck.id)
+
+      // An override is a finite, non-negative number and nothing else. A blank editor, a null, a string
+      // that does not parse, or a negative all mean NO OVERRIDE — never a silent £0 or a credit.
+      const readOverride = (it: { price_override?: unknown } | null | undefined): number | null => {
+        const v = it?.price_override
+        if (v === null || v === undefined || v === '') return null
+        const n = typeof v === 'number' ? v : parseFloat(String(v))
+        return Number.isFinite(n) && n >= 0 ? n : null
+      }
+      const overrideByIndex: (number | null)[] = (items || []).map(readOverride)
+
+      // Strip the operator's money fields before the engine sees them: the engine passes unknown keys
+      // straight through to the stored row, so an unparsed `price_override` (or a hand-crafted
+      // `book_price`) would otherwise persist and read as if the server had written it. We re-attach
+      // our own, derived, below.
+      const manualItemsIn: RepriceItem[] = (items || []).map((it: RepriceItem) => {
+        const copy = { ...it }
+        delete copy.price_override
+        delete copy.book_price
+        return copy
+      })
+
+      // PASS 1 — the book, and only the book. This is also where `unresolved` is decided: pass 2 can
+      // never report one, because everything is locked by then.
+      const booked = repriceOrder(manualItemsIn, deals, priceBook, {})
+      const hasOverride = overrideByIndex.some(v => v !== null)
+      // PASS 2 — the same engine, price-locked to pass 1, with the operator's figures substituted.
+      const priced = hasOverride
+        ? repriceOrder(manualItemsIn, deals, priceBook, {
+            items: booked.items.map((line, i) =>
+              overrideByIndex[i] === null ? line : { ...line, unit_price: overrideByIndex[i] }),
+            deals: booked.deals,
+          })
+        : booked
+
+      // ── UNPRICEABLE LINE — THE OPERATOR IS ASKED, NOT REFUSED ──────────────────────────────────
+      // A human is standing at the hatch, so this follows the edit handler's existing 409
+      // needsPriceConfirm pattern rather than failing the order: the server reports what it could not
+      // price and the total it would store, and the panel asks the operator to confirm that figure.
+      // Nothing is written on this branch — no lock is taken, no counter advanced, no row inserted.
+      // 🔴 An OVERRIDE is not an unresolved. The operator setting a price is an answer, not a question.
+      const serverTotalMinor = toMinor(priced.calculation.total)
+      const serverTotal = serverTotalMinor / 100
+      const serverSubtotal = priced.calculation.subtotal
+      const serverDiscountAmt = priced.calculation.discountAmt
+      const serverDealSavings = priced.calculation.dealSavings
+      {
+        // Strictly `typeof number` — Number(null) and Number('') are 0, which would read as a genuine
+        // acknowledgement of a £0.00 total. Same test the edit handler uses, same field name.
+        const ack = manualOrder?.confirmUnresolvedTotal
+        const acknowledged = typeof ack === 'number' && Number.isFinite(ack) && Math.abs(ack - serverTotal) <= 0.005
+        if (booked.unresolved.length > 0 && !acknowledged) {
+          return NextResponse.json({
+            needsPriceConfirm: true,
+            total:             serverTotal,
+            subtotal:          serverSubtotal,
+            discountAmt:       serverDiscountAmt,
+            unresolved:        booked.unresolved,
+          }, { status: 409 })
+        }
+      }
+
+      // The rows as they will be stored. `unit_price` is already the effective price on an overridden
+      // line (pass 2 locked it there); the two extra keys are what make it auditable.
+      const pricedItems = priced.items.map((line, i) => {
+        const ov = overrideByIndex[i]
+        if (ov === null) return line
+        return { ...line, price_override: ov, book_price: booked.items[i]?.unit_price ?? null }
+      })
+      // Deals in EXACTLY the shape the edit path persists — price is the AUTHORITATIVE bundle price.
+      // `deals ? … : null` preserves the existing null-vs-[] distinction on this column.
+      const pricedDeals = deals
+        ? priced.deals.map(d => ({
+            name: d.name,
+            slots: d.slots ?? {},
+            slotModifiers: d.slotModifiers ?? {},
+            slotNotes: d.slotNotes ?? {},
+            price: Number(d.price) || 0,
+          }))
+        : null
+
       // Informed-override flag: the operator only sees this AFTER an atomic check reported the
       // real shortfall, then consciously chooses to proceed. It does NOT skip the check.
       const override = manualOrder.override === true
@@ -1046,19 +1172,23 @@ export async function POST(req: NextRequest) {
         // walk-up is a no-op (order_key PK conflict → ignored), never a duplicate. Online walk-ups (no client
         // key) keep the server-default order_key + a plain insert, exactly as before.
         const clientOrderKey: string | undefined = typeof manualOrder?.order_key === 'string' ? manualOrder.order_key : undefined
-        const finalTotal = passedTotal || total
         const insertPayload: Record<string, any> = {
           id: newOrderId, truck_id: truck.id,
           customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
           customer_email: customerEmail || null,
           slot: slot || null, order_type: 'collection', event_date: eventDate,
           event_id: orderEventId,
-          items, deals, discount_code: null,
-          subtotal: subtotal || total, discount_amt: discountAmt || 0, total: finalTotal,
+          // 🔴 EVERY MONEY FIELD BELOW IS SERVER-DERIVED. The panel's `total`, `subtotal`, `discountAmt`
+          // and `dealSavings` are still destructured (an offline outbox replay from an older build still
+          // sends them) and are now read by NOTHING. The only client figure that reaches money is an
+          // explicit per-line price_override, which is recorded as such on the row.
+          items: pricedItems, deals: pricedDeals, discount_code: null,
+          subtotal: serverSubtotal, discount_amt: serverDiscountAmt, total: serverTotal,
           // §4b — the notional deal saving, in its own column. Never subtracted from `total`.
-          deal_savings: Number(dealSavings) > 0 ? Number(dealSavings) : null,
+          // Now computed by calculateOrderTotal (inside the engine) rather than sent by the panel.
+          deal_savings: serverDealSavings > 0 ? serverDealSavings : null,
           // §4a — pence, derived here from the server-held total. Never client-supplied.
-          total_minor: toMinor(finalTotal),
+          total_minor: serverTotalMinor,
           // OVER-CAPACITY ACKNOWLEDGEMENT. Set only when the operator was shown the over-capacity
           // modal (AddOrderPanel, submit-time fresh fit check) and chose "Place it anyway". The
           // TIMESTAMP is server-minted — the client sends a boolean intent, never a time it could
@@ -1174,7 +1304,10 @@ export async function POST(req: NextRequest) {
         : manualEventQuery.eq('event_date', eventDate).neq('status', 'cancelled')
       const { data: manualEventRow } = await manualEventQuery.maybeSingle()
 
-      const manualEmailItems = (items || []).map((i: any) => ({
+      // Built from the SERVER-priced rows, not the request body — the same figures just written to
+      // the order, so neither email can quote a price the row does not hold. An overridden line shows
+      // its overridden price, which is what the customer was charged and what the operator agreed.
+      const manualEmailItems = pricedItems.map((i: any) => ({
         name: i.name,
         quantity: parseInt(i.quantity) || 1,
         unit_price: parseFloat(i.unit_price) || 0,
@@ -1190,9 +1323,9 @@ export async function POST(req: NextRequest) {
           customerName,
           slot: slot || null,
           items: manualEmailItems,
-          deals: deals || [],
-          discountAmt: manualOrder.discountAmt || 0,
-          total: passedTotal || total,
+          deals: pricedDeals || [],
+          discountAmt: serverDiscountAmt,
+          total: serverTotal,
           notes: notes || null,
           autoAccepted: true,
           venueName:              manualEventRow?.venue_name ?? null,
@@ -1223,8 +1356,8 @@ export async function POST(req: NextRequest) {
           customerPhone: customerPhone || null,
           slot: slot || null,
           items: manualEmailItems,
-          deals: deals || [],
-          total: passedTotal || total,
+          deals: pricedDeals || [],
+          total: serverTotal,
           notes: notes || null,
           venueName:     manualEventRow?.venue_name ?? null,
           venueTown:     manualEventRow?.town ?? null,

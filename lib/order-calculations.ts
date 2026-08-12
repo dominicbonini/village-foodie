@@ -133,44 +133,20 @@ export interface OrderItem {
   }
   
   /**
-   * Validate that submitted order totals match server-side calculation
-   * 
-   * @param submitted - Totals submitted by client
-   * @param calculated - Server-calculated totals
-   * @param tolerance - Maximum allowed difference in pounds (default £0.01)
-   * @returns true if totals match within tolerance
+   * REMOVED: validateOrderTotals.
+   *
+   * It compared the client's submitted subtotal/discountAmt/total against a server calculation and
+   * rejected a mismatch over a 1p tolerance. It had ONE call site, in app/api/orders/submit, and it
+   * never once rejected an order: the server side of the comparison was calculateOrderTotal(items),
+   * which reads `item.price`, while the customer path sends `item.unit_price`. Every line summed to
+   * NaN, so every `Math.abs(submitted - NaN) > tolerance` was false and every order passed. It had been
+   * blind for its entire life and looked, in the code, exactly like a working guard.
+   *
+   * There is nothing left for it to validate. Pricing is no longer a claim the client makes and the
+   * server checks: the server resolves every price itself, from the menu, via lib/order-repricing, on
+   * both order-creation paths. A comparison against a number nobody trusts is not a weaker guard than
+   * before; it is a misleading one, and its presence is what stopped anyone looking.
+   *
+   * calculateOrderTotal itself STAYS and is used more than ever: the customer basket, the Add Order
+   * panel, the dashboard edit modal and repriceOrder all combine money through it.
    */
-  export function validateOrderTotals(
-    submitted: { subtotal: number; discountAmt: number; total: number },
-    calculated: OrderCalculation,
-    tolerance: number = 0.01
-  ): { valid: boolean; error?: string } {
-    // Check subtotal
-    const subtotalDiff = Math.abs(submitted.subtotal - calculated.subtotal)
-    if (subtotalDiff > tolerance) {
-      return {
-        valid: false,
-        error: `Subtotal mismatch: submitted £${submitted.subtotal.toFixed(2)}, calculated £${calculated.subtotal.toFixed(2)}`
-      }
-    }
-    
-    // Check discount amount
-    const discountDiff = Math.abs(submitted.discountAmt - calculated.discountAmt)
-    if (discountDiff > tolerance) {
-      return {
-        valid: false,
-        error: `Discount mismatch: submitted £${submitted.discountAmt.toFixed(2)}, calculated £${calculated.discountAmt.toFixed(2)}`
-      }
-    }
-    
-    // Check total
-    const totalDiff = Math.abs(submitted.total - calculated.total)
-    if (totalDiff > tolerance) {
-      return {
-        valid: false,
-        error: `Total mismatch: submitted £${submitted.total.toFixed(2)}, calculated £${calculated.total.toFixed(2)}`
-      }
-    }
-    
-    return { valid: true }
-  }

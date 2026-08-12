@@ -707,7 +707,11 @@ setItemModal({ item, modGroups, editCartKey })
         const without = prev.filter(i => (i.cartKey || i.name) !== itemModal.editCartKey)
         const collision = without.find(i => i.cartKey === newKey)
         if (collision) return without.map(i => i.cartKey === newKey ? { ...i, quantity: i.quantity + editEntry.quantity } : i)
-        return without.concat({ ...editEntry, modifiers: modalMods, specialInstructions: modalNotes || undefined, unit_price: newUnitPrice, cartKey: newKey })
+        // ⚠️ `price_override: undefined` IS LOAD-BEARING. This spreads the existing line, so an
+        // override set before the modifiers were changed would survive onto a line whose composition
+        // — and therefore whose correct price — is now different, and the server would honour it. The
+        // operator re-prices the new line if they still want to; the old figure does not follow it.
+        return without.concat({ ...editEntry, modifiers: modalMods, specialInstructions: modalNotes || undefined, unit_price: newUnitPrice, price_override: undefined, cartKey: newKey })
       })
     } else {
       addManualItem(itemModal.item, modalMods, modalNotes)
@@ -759,6 +763,13 @@ setItemModal({ item, modGroups, editCartKey })
   // the override/re-submit recursion (submitManual(true, true) retries) without threading a parameter
   // through three call sites, and it never triggers a render or looks like a sticky selection.
   const takePaymentRef = useRef(false)
+
+  /** The server total the operator confirmed when a line could not be priced from the menu. A REF for
+   *  the same reason takePaymentRef is one: it must survive the re-submit recursion without threading
+   *  another parameter through submitManual's signature. Echoed back so the server confirms the exact
+   *  figure the operator was shown, not whatever it happens to compute on the second pass. Cleared on
+   *  every fresh submit so a stale acknowledgement can never authorise a different total. */
+  const confirmUnresolvedTotalRef = useRef<number | null>(null)
   // 🔴 WHICH button is submitting — NOT just "is something submitting". `loading` is one shared boolean,
   // so both confirm buttons read it and BOTH switched to "Confirming…". Only the pressed one should say
   // that; the other must simply disable with its label intact, or the operator cannot tell which action
@@ -962,6 +973,9 @@ setItemModal({ item, modGroups, editCartKey })
         // orders.capacity_ack_at so an INFORMED over-capacity placement is later distinguishable from
         // one that arrived unattended (offline collision / sync race). Nothing reads it yet.
         capacityAcknowledged: capacityAck,
+        // Present ONLY on a re-submit after the operator confirmed a total for lines the menu could
+        // not price (409 needsPriceConfirm, below). Null on every normal submit.
+        confirmUnresolvedTotal: confirmUnresolvedTotalRef.current,
         // ── 🔴 THE `showPaidStep ? … : false` GATE IS GONE, AND ITS REMOVAL IS HALF THE FIX ──────────
         // It read `paymentTaken: showPaidStep ? takePaymentRef.current : false`, which forced FALSE
         // whenever "Take orders without payment" was OFF — so the one state that means "we ALWAYS take
@@ -977,6 +991,11 @@ setItemModal({ item, modGroups, editCartKey })
         paymentTaken: takePaymentRef.current,
         paymentMethod: takePaymentRef.current ? paymentMethodRef.current : null,
       }
+      // 🔴 ONE-SHOT, CONSUMED THE MOMENT IT IS READ. An acknowledgement authorises ONE total on ONE
+      // submit. Left set, it would ride silently onto the next order and could authorise a figure the
+      // operator never saw. If this submit comes back needing a price confirmation again — a stock
+      // override re-submit, say — the operator is asked again, which is the correct cost.
+      confirmUnresolvedTotalRef.current = null
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
         url: '/api/dashboard/action',
@@ -1028,6 +1047,30 @@ setItemModal({ item, modGroups, editCartKey })
         // POST — re-entry for the stock override must not re-prompt the fit modal.
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel for adjustment, not inserted
+      }
+      // ── 🔴 A LINE THE MENU CANNOT PRICE ────────────────────────────────────────────────────────
+      // The server prices every line from this truck's menu. A name it cannot find there — a dish
+      // renamed or deleted since this basket was built, an extra no longer offered on that dish — has
+      // no authoritative price, so rather than guessing (which would be the client pricing the order
+      // again) it reports what it could not price and the total it WOULD store, and asks. An operator
+      // is standing here, so this is a question; the customer path, where nobody is, refuses instead.
+      // Nothing was inserted — the basket is intact either way.
+      // ⚠️ A hand-set price is NOT an unresolved: the operator answering is the answer.
+      if (result.status === 409 && data?.needsPriceConfirm) {
+        const list: { kind: string; name: string; on?: string }[] = Array.isArray(data.unresolved) ? data.unresolved : []
+        const detail = list.length
+          ? list.map(u => `${u.name}${u.on ? ` (on ${u.on})` : ''} — not on the menu`).join('\n')
+          : 'Something on this order is no longer on the menu'
+        const proceed = window.confirm(`${detail}\n\nSave at £${Number(data.total ?? 0).toFixed(2)}?\n\nOK = save at this total   ·   Cancel = edit the order`)
+        if (proceed) {
+          confirmUnresolvedTotalRef.current = Number(data.total ?? 0)
+          // skipFitCheck=true for the same reason the stock override passes it: the fit check already
+          // ran before this POST and must not re-prompt. `override` is carried through unchanged —
+          // this is a pricing answer, not a stock decision, and must not silently authorise an oversell.
+          await submitManual(override, true)
+          return
+        }
+        return // Edit/Cancel — keep the order in the panel, nothing written
       }
       // Option shared-pool shortfall (D2): a tracked modifier option ran out. SHARED POOL — overriding
       // oversells it across ALL dishes that use it (not just this one). Same override→re-submit shape.
@@ -1520,8 +1563,16 @@ setItemModal({ item, modGroups, editCartKey })
                         </button>
                       ) : undefined}
                       rightSlot={
+                        /* 🔴 THE OPERATOR PRICE OVERRIDE. Writes BOTH fields, on purpose.
+                           `unit_price` keeps this panel's running total, line totals and payment
+                           button correct with no other change — every one of them reads it.
+                           `price_override` is the DECLARATION: it tells the server this figure was
+                           set by a human, so the server prices the line from the menu like every
+                           other and then honours this instead, and stores it as an override rather
+                           than as an ordinary price. Without the second field the server cannot tell
+                           a deliberate £4 pizza from a stale or crafted one. */
                         <InlinePriceEditor price={item.unit_price} quantity={item.quantity}
-                          onChange={p => setManualItems(prev => prev.map(i => (i.cartKey || i.name) === rowKey ? { ...i, unit_price: p } : i))} />
+                          onChange={p => setManualItems(prev => prev.map(i => (i.cartKey || i.name) === rowKey ? { ...i, unit_price: p, price_override: p } : i))} />
                       }
                     />
                   </div>

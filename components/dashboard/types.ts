@@ -224,6 +224,17 @@ export interface BasketItem {
   modifiers?: { name: string; price: number; allergens?: string[]; dietary?: string[] }[]
   specialInstructions?: string
   cartKey?: string
+  /**
+   * 🔴 THE OPERATOR'S HAND-SET UNIT PRICE — a walk-up discount, a damaged item, goodwill.
+   * Set ONLY by AddOrderPanel's InlinePriceEditor, and only for the line the operator edited.
+   * It travels to the server as items[].price_override and is stored under the same name, so an
+   * adjusted line is distinguishable from a normally-priced one on the row itself.
+   * ⚠️ NOT the price to display or total against — `unit_price` is, and it is kept in step with this.
+   * The server prices every line from the menu and applies this only where it was explicitly sent;
+   * the customer order path strips the field entirely, so it can never arrive from a member of
+   * the public.
+   */
+  price_override?: number
 }
 
 export interface AppliedDeal {
