@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { VillageEvent } from '@/types';
+import { GREEN_SOLID, ORANGE_SOLID } from '@/lib/ui-tokens';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
@@ -134,9 +135,19 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                         href={`/trucks/${slug}/order?event_id=${event.id}`}
                         // Equal-width (min-w + justify-center) so the card layout doesn't shift between
                         // the Pre-order and Order now states. Text flips on live (status==='open').
-                        className="shrink-0 inline-flex items-center justify-center min-w-[104px]
-                                   bg-orange-600 hover:bg-orange-700 text-white font-semibold
-                                   px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
+                        //
+                        // COLOUR FLIPS WITH THE TEXT, ON THE SAME `liveNow`. Every event's CTA used to be
+                        // brand orange, so a live event and one three weeks away were the same colour and
+                        // only the label told them apart — read second, if at all, in a list of cards.
+                        // GREEN ALREADY MEANS "LIVE" ON THIS EXACT CARD: the "Live" dot two elements above
+                        // is text-green-600 / bg-green-500 and is gated on the SAME `liveNow`. The button
+                        // now agrees with the dot instead of contradicting it.
+                        // The tokens are the SHARED ones from lib/ui-tokens.ts, which exists precisely so a
+                        // green defined in two places cannot drift apart. Pre-order keeps the brand orange
+                        // it has always had, unchanged.
+                        className={`shrink-0 inline-flex items-center justify-center min-w-[104px]
+                                   ${liveNow ? GREEN_SOLID : ORANGE_SOLID} font-semibold
+                                   px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap`}
                     >
                         {liveNow ? 'Order now' : 'Pre-order'}
                     </a>

@@ -7,6 +7,15 @@
 // slot still captures. Auto-accept FAILING leaves the order pending and UNCAPTURED, exactly like any
 // other pending order, and it will capture when a human confirms it.
 //
+// ── 🔴 THERE ARE TWO AUTO-ACCEPTS, AND THAT COST ONE ORDER ITS CAPTURE ──────────────────────────
+// A PAY-AT-HATCH order is auto-accepted inside place_order_atomic, at app/api/orders/submit. A CARD
+// order never reaches that code: its request returns at submit/route.ts:820 with a client secret, and
+// the order is created later by lib/payments/promote-draft, which decides auto-accept itself. The first
+// build of this file hooked only the first of those, so every auto-accepted CARD order was confirmed and
+// never captured — the state this file exists to prevent. `promote_auto_accept` is that second site.
+// ⚠️ SO THE TRIGGER LIST IS NOT DECORATION. It is how "which confirmations capture" is answerable by
+// grep and by one audit query, instead of by reading two routes and inferring.
+//
 // ── WHERE THE AUTHORISATION LIVES, AND WHY NO MIGRATION WAS NEEDED ──────────────────────────────
 // The promoted draft keeps `payment_intent_id` under the ORDER'S OWN KEY — a draft's key becomes its
 // order's key at promotion, and nothing deletes a promoted draft. So finding the intent for an order is
@@ -74,10 +83,19 @@ const GONE = /canceled|cancelled|expired|status of requires_payment_method/i
  *
  * @param trigger which confirmation site called this. Recorded, so "did the time-adjust capture?" is
  *                answerable from the audit log rather than by inference.
+ *                ⚠️ `auto_accept` is the PAY-AT-HATCH auto-accept (place_order_atomic);
+ *                `promote_auto_accept` is the CARD one (promote-draft). They are different code paths
+ *                and are named apart so the audit log can tell them apart.
+ *                ⚠️ `stranded_sweep` is not a confirmation at all — it is the backstop retrying a
+ *                capture that should already have happened. See lib/payments/stranded-authorisations.
  */
 export async function captureOnConfirmation(
   supabase: SupabaseClient,
-  args: { orderKey: string; truckId: string; trigger: 'auto_accept' | 'confirm' | 'time_adjust' },
+  args: {
+    orderKey: string
+    truckId: string
+    trigger: 'auto_accept' | 'promote_auto_accept' | 'confirm' | 'time_adjust' | 'stranded_sweep'
+  },
 ): Promise<CaptureResult> {
   try {
     // ── 1. IS THERE AN AUTHORISATION AT ALL? ──────────────────────────────────────────────────

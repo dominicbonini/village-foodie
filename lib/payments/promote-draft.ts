@@ -11,6 +11,13 @@
 // an order, and it is the FIRST moment this system reserves anything: until it runs, no capacity is
 // booked, no stock is counted, no display number is consumed and no email has been sent.
 //
+// ── 🔴 AND IT IS A CONFIRMATION SITE. CAPTURE HAPPENS HERE (step 8a). ───────────────────────────────
+// This function decides auto-accept for every card order and writes 'confirmed' itself. app/api/orders/
+// submit does the same for PAY-AT-HATCH orders and captures there — but a card order returns from that
+// route 248 lines before its capture call, so that site can never see one. For four days that meant
+// every auto-accepted card order was confirmed and never captured, and the money sat held until Stripe
+// expired it. If you ever move the auto-accept decision out of this file, THE CAPTURE MOVES WITH IT.
+//
 // ── 🔴 THE FOUR BINDING PHASES RUN AGAIN, INSIDE THE LOCK, AND THAT IS THE POINT ────────────────────
 // They ran once before the draft was written, advisory, to avoid taking money for an order that was
 // obviously impossible. That answer is stale by the time the customer has typed their card number:
@@ -41,6 +48,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { claimOrderDraft, erasePii, markPromotionFailed, markAuthorizationCancelled, type OrderDraftRow } from '@/lib/payments/order-drafts'
 import { cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
+import { captureOnConfirmation } from '@/lib/payments/capture'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { checkOptionCeilingShortfall, findSoldOutOption } from '@/lib/option-stock'
 import { buildItemCatMap, normaliseOrderLines, rebuildProductionSlotUsage } from '@/lib/slot-bookings'
@@ -231,9 +239,13 @@ export async function promoteDraft(
           finalSlot = claim.finalSlot
           confirmedSlot = claim.finalSlot
           slotChanged = !!draft.requested_slot && claim.finalSlot !== draft.requested_slot
-          // ⚠️ AUTO-ACCEPT IS UNCHANGED, AND CAPTURE DOES NOT FOLLOW IT HERE. An order that stays pending
-          // is pending and UNCAPTURED — capture follows confirmation, in a later phase. Nothing in this
-          // file captures anything, whatever this flag says.
+          // 🔴 THIS FLAG IS THE CONFIRMATION, AND CAPTURE NOW FOLLOWS IT — see step 8a, after the lock.
+          // The comment that stood here said "capture does not follow it here, in a later phase.
+          // Nothing in this file captures anything". That later phase arrived and hooked the OTHER
+          // auto-accept (place_order_atomic, on the pay-at-hatch path), not this one, so every
+          // auto-accepted card order was confirmed and never captured. Do not restore that sentence.
+          // ⚠️ AN ORDER THAT STAYS PENDING IS STILL PENDING AND UNCAPTURED, exactly as before. Its hold
+          // is correct and stays held until a human confirms it.
           const allItemsAutoAccept = orderLines.every(l => autoAcceptByName[l.name] !== false)
           const orderHasNotes =
             !!(draft.notes && draft.notes.trim()) ||
@@ -263,8 +275,10 @@ export async function promoteDraft(
       // 🔴 THIS IS WHY THE KEY WAS MINTED EARLY. Stripe already holds it in metadata; the ledger will key
       // its idempotency off the PaymentIntent; the confirmation URL already points at it. Supplying it
       // here is the same thing the offline walk-up path does every day.
-      // ⚠️ payment_status stays 'unpaid'. NOTHING HAS BEEN CAPTURED. The money is held, not taken, and
-      // the ledger — which is the only thing that may say otherwise — is untouched by this file.
+      // ⚠️ payment_status stays 'unpaid' AND IS NEVER WRITTEN AGAIN BY THIS FILE, EVEN THOUGH STEP 8a
+      // MAY CAPTURE SECONDS LATER. That column is not what makes an order paid — the LEDGER is, through
+      // getOrderBalance, and captureOnConfirmation writes the ledger row. Setting this to 'paid' here
+      // would be a second, divergent answer to a question that already has one.
       const { data: inserted, error: insertErr } = await supabase
         .from('orders')
         .insert({
@@ -333,7 +347,32 @@ export async function promoteDraft(
       await releaseEventLock(draft.truck_id, eventDate)
     }
 
-    // ── 8. EVERYTHING BELOW IS POST-SAVE AND BEST-EFFORT. The order exists; nothing here may undo it.
+    // ── 8a. 🔴 CAPTURE. THE CARD PATH'S AUTO-ACCEPT CONFIRMATION SITE. ─────────────────────────────
+    // 🔴 GATED ON `autoAccepted`, AND ON NOTHING ELSE. That flag IS the confirmation: it is the value
+    // this function just wrote into `orders.status` as 'confirmed'. A promoted order that landed
+    // 'pending' has NOT been confirmed, so it must NOT capture — its hold is legitimately held, waiting
+    // for a human, and it captures at the operator-confirm site instead.
+    // 🔴 WHY IT IS HERE AND NOT AT app/api/orders/submit. A card order returns from that route at :820
+    // with a client secret and never reaches place_order_atomic, so the auto-accept capture site 248
+    // lines below that return is unreachable for it. THIS function is where a card order is created and
+    // where its status is decided, so this is the only place its confirmation can be hooked.
+    // ⚠️ OUTSIDE THE EVENT LOCK, DELIBERATELY. Capture is a Stripe round trip; holding a per-truck,
+    // per-day lock across it would stall every other order for that service while the network answers.
+    // ⚠️ BEFORE THE EMAILS, ALSO DELIBERATELY. Money first: an invocation that dies during a slow mail
+    // send must not be what loses a capture. The cost is stated at the email below.
+    // ⚠️ AWAITED, AND IT CANNOT THROW — captureOnConfirmation returns every failure as a value and
+    // records it. The order is already committed; nothing here may undo it.
+    let captureNote = 'no authorisation'
+    if (autoAccepted) {
+      const cap = await captureOnConfirmation(supabase, {
+        orderKey: draft.order_key, truckId: draft.truck_id, trigger: 'promote_auto_accept',
+      })
+      captureNote = cap.status
+    } else if (draft.payment_intent_id) {
+      captureNote = 'held, pending confirmation'
+    }
+
+    // ── 8b. EVERYTHING BELOW IS POST-SAVE AND BEST-EFFORT. The order exists; nothing here may undo it.
     try {
       if (eventRow?.id) await enforceStockLimits(supabase, draft.truck_id, eventRow.id, itemCatMap)
     } catch (err) {
@@ -365,11 +404,17 @@ export async function promoteDraft(
           // This email used to tell a customer who had just authorised their card to "Pay at the truck
           // on collection" — the sentence was a hardcoded constant because formatConfirmationEmail took
           // no payment parameter at all. It takes one now, and this is where it is answered.
-          // ⚠️ TRUE BY CONSTRUCTION AT THIS LINE. `draft.payment_intent_id` is non-null only for a card
-          // order, and nothing captures before promotion returns — so an intent here is a HELD one.
-          // Reading it off the draft in hand costs no query and cannot disagree with the resolver the
-          // operator surfaces use.
           // ⚠️ FALSE for every pay-at-hatch order, which keeps their email byte-identical to today.
+          // 🔴 AND IT STAYS `true` EVEN WHEN STEP 8a HAS JUST CAPTURED, WHICH IS A DELIBERATE TRADE,
+          // NOT AN OVERSIGHT. For an AUTO-ACCEPTED card order the money moved a moment ago, so the
+          // sentence "your card is held, not charged" is stale by the time it is read. The alternative
+          // is worse by a wide margin: this parameter has exactly two branches, and the other one says
+          // "Pay at the truck on collection" — telling a customer who has just been charged to pay
+          // again, which is the double-payment bug the whole cardHeld branch was added to kill. The
+          // load-bearing sentence, "nothing to pay at the truck", is true either way.
+          // ⚠️ THE HONEST FIX IS A THIRD BRANCH IN formatConfirmationEmail — a "paid" one. That is a
+          // change to a held-authorisation surface and is out of scope here; it is written down rather
+          // than done quietly. Until then this line reads "was this a card order", not "is it held".
           cardHeld:     !!draft.payment_intent_id,
           venueName:              eventRow?.venue_name ?? null,
           venueTown:              eventRow?.town ?? null,
@@ -414,9 +459,12 @@ export async function promoteDraft(
       }
     }
 
+    // ⚠️ THE CAPTURE OUTCOME IS ON THE PROMOTION LINE ON PURPOSE. This log line used to end
+    // "(UNCAPTURED)" unconditionally, which was true of every order and therefore told nobody anything.
+    // One line now answers "was this order's money taken, and if not, why not".
     console.log(
       `[promote:${trigger}] PROMOTED draft=${orderKey} -> order #${orderId} truck=${draft.truck_id} ` +
-      `slot=${confirmedSlot ?? 'ASAP'} status=${autoAccepted ? 'confirmed' : 'pending'} (UNCAPTURED)`,
+      `slot=${confirmedSlot ?? 'ASAP'} status=${autoAccepted ? 'confirmed' : 'pending'} capture=${captureNote}`,
     )
     return { status: 'promoted', orderKey, orderId, truckSlug: truck.slug ?? null, confirmedSlot }
   } catch (err) {

@@ -218,7 +218,9 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
 
-      // ── 🔴 CAPTURE SITE 2 of 3: THE OPERATOR CONFIRM — AND EVERY OFFLINE REPLAY OF IT. ──────────
+      // ── 🔴 CAPTURE SITE 2 of 4: THE OPERATOR CONFIRM — AND EVERY OFFLINE REPLAY OF IT. ──────────
+      // ⚠️ THIS IS ALSO WHERE A CARD ORDER THAT LANDED `pending` CAPTURES. Its hold sat correctly held
+      // from promotion until this tap; site 4 (promote-draft) deliberately did not take it.
       // The native outbox replays a queued confirm as this same `action: 'confirm'`, differing only by
       // the `expected_from` guard checked at the top of this route. There is no separate replay handler,
       // so this one call covers both — including a replay that lands long after the tap, where the hold
@@ -1660,7 +1662,7 @@ export async function POST(req: NextRequest) {
       }
       await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('order_key', orderKey)
 
-      // ── 🔴 CAPTURE SITE 3 of 3: QUICK-TIME-ADJUST, WHICH IS A CONFIRMATION IN DISGUISE. ─────────
+      // ── 🔴 CAPTURE SITE 3 of 4: QUICK-TIME-ADJUST, WHICH IS A CONFIRMATION IN DISGUISE. ─────────
       // The line above writes `status: 'confirmed'` UNCONDITIONALLY alongside the new slot, and the
       // control is offered on PENDING orders only — so pressing "+10m" confirms the order. A held
       // authorisation must capture here exactly as it does at the Confirm button, or a customer who was

@@ -1055,14 +1055,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
     }
 
-    // ── 🔴 CAPTURE SITE 1 of 3: AUTO-ACCEPT. ──────────────────────────────────────────────────────
-    // Auto-accept writes 'confirmed' in the SAME INSERT as the order, inside place_order_atomic, so
-    // there is no separate confirmation write to hook. Capture therefore fires inline, immediately
-    // after the RPC returns and outside the event lock.
+    // ── 🔴 CAPTURE SITE 1 of 4: AUTO-ACCEPT ON THE PAY-AT-HATCH PATH, AND ONLY THAT PATH. ─────────
+    // 🔴 THIS COMMENT USED TO CLAIM MORE THAN THE CODE DOES, AND THAT COST AN ORDER ITS CAPTURE.
+    // It read: "Auto-accept writes 'confirmed' in the SAME INSERT as the order, inside
+    // place_order_atomic, so there is no separate confirmation write to hook." That is true of a
+    // pay-at-hatch order and FALSE of a card one. A CARD ORDER NEVER REACHES THIS LINE: its fork
+    // returns at :820 with a client secret, 248 lines above here, and its order is created later by
+    // lib/payments/promote-draft — which decides auto-accept itself and writes 'confirmed' itself.
+    // So this site captures pay-at-hatch auto-accepts. The CARD auto-accept is capture site 4, in
+    // promote-draft's step 8a, and the two are separate because the code paths are separate.
+    // ⚠️ IF YOU ADD A THIRD WAY TO CREATE AN ORDER, IT NEEDS ITS OWN CAPTURE CALL. There is no shared
+    // choke point below the fork; `grep -rn "captureOnConfirmation(" app lib` is the whole list.
     // 🔴 GATED ON `autoAccepted`, WHICH IS THE CONFIRMATION. An order that auto-accept declined is
     // `pending` and stays UNCAPTURED, exactly like any other pending order — it captures when a human
     // confirms it, at site 2 or 3.
-    // ⚠️ A NO-OP FOR EVERY PAY-AT-HATCH ORDER: one indexed read of order_drafts and out, no Stripe call.
+    // ⚠️ A NO-OP FOR EVERY ORDER THAT REACHES IT, in practice: an order on this path has no
+    // authorisation, so it costs one indexed read of order_drafts and out, with no Stripe call. The
+    // call stays because "this path never has a draft" is a property of today's fork, not a guarantee.
     // ⚠️ AWAITED, and it cannot throw — captureOnConfirmation returns failures as values. The order is
     // already committed and booked by this line; nothing below can undo it.
     if (autoAccepted) {
