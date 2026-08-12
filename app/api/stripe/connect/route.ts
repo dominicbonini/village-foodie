@@ -24,6 +24,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   createConnectedAccount, createAccountSession, readAccountReadiness,
   readAccountPosture, postureMismatches, readAccountRequirements,
+  registerPaymentMethodDomains,
 } from '@/lib/stripe/connect'
 
 type Ctx = { operatorId: string; email: string | null; country: string | null }
@@ -244,6 +245,42 @@ export async function POST(req: NextRequest) {
           postureErr instanceof Error ? postureErr.message : postureErr,
         )
       }
+      // ── 🔴 REGISTER THE PAYMENT METHOD DOMAIN ON THE NEW ACCOUNT. ONCE, HERE, AND NOWHERE ELSE. ──
+      // This is what makes Apple Pay and Google Pay render in the Payment Element. It is per-CONNECTED-
+      // ACCOUNT because these are direct charges — the truck is the merchant of record — and registering
+      // the domain on the platform does nothing for them. See the header on registerPaymentMethodDomains.
+      //
+      // 🔴 IT RUNS HERE BECAUSE THIS IS THE ONLY PLACE AN ACCOUNT COMES INTO EXISTENCE. `create_account`
+      // returns early when `operator.stripe_account_id` is already set, so this cannot fire twice for one
+      // truck through the normal flow — and the helper is idempotent anyway, so a hand-run or a retry is
+      // a pair of reads and no writes.
+      // ⚠️ A TRUCK ONBOARDED BEFORE THIS EXISTED HAS NO REGISTRATION AND NO WALLETS, SILENTLY. That is a
+      // one-off backfill per account; see scripts/register-payment-domain.cjs.
+      //
+      // ⚠️ AFTER the persist and after the posture read, deliberately: those two decide whether the
+      // operator has a usable account and whether HatchGrab is paying their fees. This decides whether a
+      // wallet button appears. It is last because it matters least.
+      // 🔴 NON-FATAL, AND IT CANNOT THROW — registerPaymentMethodDomains captures every failure into its
+      // result rows. Onboarding must never break over a wallet: the account already exists at Stripe and
+      // cannot be deleted, so failing the request now would strand the operator without undoing anything.
+      // A truck with no wallet registration still takes cards perfectly well.
+      const domainResults = await registerPaymentMethodDomains(account.id)
+      for (const r of domainResults) {
+        if (r.status === 'failed') {
+          console.error(
+            `[stripe/connect] 🔴 PAYMENT METHOD DOMAIN NOT REGISTERED — account=${account.id} ` +
+            `domain=${r.domain}: ${r.detail}. The account is FINE and can take cards; Apple Pay and ` +
+            `Google Pay will NOT appear for this truck until it is registered by hand ` +
+            `(scripts/register-payment-domain.cjs).`,
+          )
+        } else {
+          console.log(
+            `[stripe/connect] payment method domain ${r.status} account=${account.id} domain=${r.domain} ` +
+            `applePay=${r.applePay ?? 'unknown'} googlePay=${r.googlePay ?? 'unknown'}`,
+          )
+        }
+      }
+
       // Readiness is NOT assumed here. A brand-new account is not `charges_enabled`, and the column's
       // default false already says so.
       return NextResponse.json({ accountId: account.id, alreadyExisted: false })

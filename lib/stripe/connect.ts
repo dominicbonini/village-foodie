@@ -397,3 +397,114 @@ export function connectConfigured(): boolean {
     && typeof process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === 'string'
     && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.length > 0
 }
+
+// ── 🔴 PAYMENT METHOD DOMAIN REGISTRATION — WHAT MAKES APPLE PAY AND GOOGLE PAY APPEAR ─────────────
+// Without this the Payment Element renders a card form and nothing else. The wallets are not missing
+// because of a code option — `wallets: { applePay: 'auto', googlePay: 'auto' }` is already set — they
+// are missing because Stripe will not offer a wallet on a domain it has not verified for the account
+// that is taking the money.
+//
+// 🔴 FOR THE CONNECTED ACCOUNT, NOT THE PLATFORM. These are DIRECT charges: the truck's account is the
+// merchant of record, so the domain has to be registered against THAT account. Registering it on the
+// platform does nothing for them — measured on 13 August 2026, and it is exactly the symptom that looks
+// like the Dashboard toggle undoing itself:
+//     PLATFORM   acct (ours)              → www.hatchgrab.com     apple_pay=active
+//     CONNECTED  acct_1U30w22fB4PPCw2D    → checkout.stripe.com   (and nothing else)
+// The truck had only the domain Stripe auto-registered for hosted Checkout, which is why wallets worked
+// on the old hosted page and vanished when the Payment Element moved in-page.
+//
+// ⚠️ THERE IS NO DASHBOARD PATH FOR A CONNECT PLATFORM CREATING DIRECT CHARGES. The API is the only
+// route, authenticated with the PLATFORM secret key and the connected account id in the Stripe-Account
+// header — which is what `{ stripeAccount }` sets.
+//
+// ⚠️ MODE MATTERS AND DOES NOT FLOW UPWARDS. Registering in LIVE mode also covers sandboxes; registering
+// in a SANDBOX does NOT cover live. This build refuses live keys (assertSandboxKey), so every
+// registration it performs is sandbox-only and MUST BE REPEATED IN LIVE MODE when live accounts are
+// switched on. That is a real deployment step, not a nicety.
+
+/**
+ * The domains the Payment Element is served from.
+ *
+ * ⚠️ ONLY `www.hatchgrab.com`, AND THE BARE DOMAIN IS DELIBERATELY ABSENT. Measured: `hatchgrab.com`
+ * answers 307 → `https://www.hatchgrab.com/`, so a customer never has an Element mounted on the bare
+ * host and a registration there would verify a domain nothing renders on. If the redirect is ever
+ * removed, add it here — the function takes a list precisely so that is a one-line change.
+ * ⚠️ Read from NEXT_PUBLIC_HATCHGRAB_URL when it is set, so a preview deployment registers itself rather
+ * than silently registering production's host.
+ */
+export function paymentMethodDomains(): string[] {
+  const raw = process.env.NEXT_PUBLIC_HATCHGRAB_URL
+  if (!raw) return ['www.hatchgrab.com']
+  try { return [new URL(raw).hostname] } catch { return ['www.hatchgrab.com'] }
+}
+
+export interface DomainRegistrationResult {
+  domain: string
+  /** 'registered' — created now. 'already' — it was already there. 'failed' — see `detail`. */
+  status: 'registered' | 'already' | 'failed'
+  applePay?: string
+  googlePay?: string
+  detail?: string
+}
+
+/**
+ * Register this platform's payment method domains on ONE connected account.
+ *
+ * 🔴 IDEMPOTENT, AND IT ASKS BEFORE IT WRITES. Stripe's guidance is not to register a domain more than
+ * once per account, so this LISTS first (filtered by `domain_name`, so it is one cheap lookup) and only
+ * creates what is missing. Running it twice is a pair of reads and no writes.
+ *
+ * 🔴 NON-FATAL BY CONSTRUCTION — IT CANNOT THROW. Every failure is captured into a result row. A truck
+ * that cannot show Apple Pay can still take cards, and onboarding must never break over a wallet: the
+ * account exists at Stripe by the time this runs and CANNOT be deleted, so a throw here would strand an
+ * operator mid-signup to fix something entirely cosmetic. The caller is expected to log and continue.
+ *
+ * ⚠️ `enabled: true` is the default but is passed explicitly, because a domain registered disabled shows
+ * no wallets and looks identical to one that was never registered.
+ */
+export async function registerPaymentMethodDomains(accountId: string): Promise<DomainRegistrationResult[]> {
+  const results: DomainRegistrationResult[] = []
+  let stripe: Stripe
+  try {
+    stripe = stripeClient()
+  } catch (err) {
+    // The sandbox guard, or a missing key. Report it as a failure per domain rather than throwing.
+    return paymentMethodDomains().map(domain => ({
+      domain, status: 'failed' as const,
+      detail: err instanceof Error ? err.message : 'stripe client unavailable',
+    }))
+  }
+
+  for (const domain of paymentMethodDomains()) {
+    try {
+      const existing = await stripe.paymentMethodDomains.list(
+        { domain_name: domain, limit: 1 },
+        { stripeAccount: accountId },
+      )
+      const found = existing.data[0]
+      if (found) {
+        results.push({
+          domain, status: 'already',
+          applePay: found.apple_pay?.status, googlePay: found.google_pay?.status,
+        })
+        continue
+      }
+      const created = await stripe.paymentMethodDomains.create(
+        { domain_name: domain, enabled: true },
+        // 🔴 THE Stripe-Account HEADER. Without it this registers on the PLATFORM, which is the exact
+        // no-op that made the Dashboard toggle look like it was undoing itself.
+        { stripeAccount: accountId },
+      )
+      results.push({
+        domain, status: 'registered',
+        applePay: created.apple_pay?.status, googlePay: created.google_pay?.status,
+      })
+    } catch (err) {
+      results.push({
+        domain, status: 'failed',
+        detail: err instanceof Error ? err.message : String(err),
+      })
+    }
+  }
+  return results
+}
