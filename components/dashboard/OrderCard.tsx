@@ -749,21 +749,30 @@ export function OrderCard({
   // remove, not the name.
   // ✉ THE AFFORDANCE IS THIS FILE'S OWN, NOT A NEW ONE. InlinePriceEditor (top of this file) is the
   // established pattern for tappable text on this card: a <button> wrapping the value, a small trailing
-  // glyph that colours on hover, and a `title` saying what a tap does. This copies that shape.
-  // 🔴 PLUS AN UNDERLINE, AND THAT PART IS NOT DECORATION. Hover does not exist on the touch screens
-  // this card is actually used on, so a glyph that only colours on hover is invisible to the operator
-  // holding a tablet. The underline is what makes it obvious a name is selectable when nothing is
-  // hovering — which is the whole point of the change.
+  // glyph, and a `title` saying what a tap does. This copies that shape.
+  // 🔴 THE UNDERLINE IS GONE, AND THE GLYPH NOW CARRIES THE AFFORDANCE ON ITS OWN. An underline is this
+  // app's NAVIGATION idiom — `text-orange-600 hover:underline` on the access-denied link, `underline` on
+  // "Edit categories" — so underlining a name promised a page that does not exist, and read as a
+  // hyperlink dropped into a card of chips and pills.
+  // 🔴 AND THE GLYPH IS PERMANENTLY COLOURED, NOT HOVER-REVEALED. That is the part that keeps this
+  // honest on a touch screen. InlinePriceEditor's ✏ sits at `text-slate-300` until a pointer hovers it,
+  // which on the tablets this card is used on means it is never seen at all — the flaw the underline was
+  // added to paper over. Fixing the glyph is the better answer than keeping a second signal: `✉` renders
+  // at the card's own interactive orange from the first paint, beside a name and nowhere else, with a
+  // `title` behind it. Hover only DARKENS it, so pointer users get the usual feedback and touch users
+  // lose nothing.
+  // ⚠️ THE SIZE AND SPACING ARE UNCHANGED — `text-[10px]`, `gap-1`, `flex-shrink-0`. Colour is the only
+  // thing that moved, so no element on this card changes width or position in any view mode.
   // ⚠️ NO CONTACT DETAILS ⇒ THE PLAIN SPAN, BYTE-IDENTICAL TO BEFORE. A walk-up with no email and no
-  // phone gets no underline, no glyph and nothing to tap — never an affordance that leads nowhere.
+  // phone gets no glyph and nothing to tap — never an affordance that leads nowhere.
   const nameEl = (className: string) => (
     (order.customer_email || order.customer_phone) ? (
       <button
         onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
         title="Tap for contact details"
         className={`group inline-flex items-baseline gap-1 text-left ${className}`}>
-        <span className="truncate underline underline-offset-2">{order.customer_name}</span>
-        <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-[10px] flex-shrink-0" aria-hidden>✉</span>
+        <span className="truncate">{order.customer_name}</span>
+        <span className="text-orange-500 group-hover:text-orange-600 transition-colors text-[10px] flex-shrink-0" aria-hidden>✉</span>
       </button>
     ) : (
       <span className={`truncate ${className}`}>{order.customer_name}</span>

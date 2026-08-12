@@ -24,8 +24,8 @@ import { sendOrderPendingPush } from '@/lib/apns'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
 // ── PHASE 2b: the card fork. See the block just above the event lock in POST. ──────────────────────
-import { newOrderKey, createOrderDraft } from '@/lib/payments/order-drafts'
-import { authorizeDraft } from '@/lib/payments/authorize'
+import { newOrderKey, createOrderDraft, getOrderDraft, markAuthorizationCancelled } from '@/lib/payments/order-drafts'
+import { authorizeDraft, cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
 
 /** 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP.
  *  It has three jobs and does them in this order: say nothing was charged (they are about to check
@@ -184,6 +184,9 @@ export async function POST(req: NextRequest) {
       // no money by itself. Absent (every existing client, and the whole pay-at-hatch flow) => the
       // order is created directly below, byte-identically to today.
       payByCard,
+      // ── 🔴 THE KEY OF AN AUTHORISATION THIS ONE REPLACES. See the supersede block in the card fork.
+      // Present only when the browser is already holding a live intent whose basket has since changed.
+      supersedeOrderKey,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -707,6 +710,44 @@ export async function POST(req: NextRequest) {
     // through to the pay-at-hatch path below and the customer is told to pay at the truck, which is the
     // behaviour the page already has for a failed card start.
     if (payByCard === true) {
+      // ── 🔴 ONE LIVE AUTHORISATION PER BASKET. CANCEL BEFORE CREATE, IN THIS REQUEST. ────────────
+      // The browser sends the key of the intent it is already holding whenever the basket has moved
+      // under it. That intent is for the OLD amount and must not survive: leaving it would put two
+      // manual-capture holds against one basket, and the double-promotion guards are all per-DRAFT, so
+      // if both were ever authorised BOTH would promote and the customer would get two orders.
+      //
+      // 🔴 CANCEL FIRST, AND REFUSE IF THE CANCEL FAILS. Creating the replacement first would open
+      // exactly the window this exists to close. A failed cancel is a 503, not a "carry on" — the
+      // customer sees the card-unavailable message, their basket is intact, and the sweep will release
+      // the old hold at expiry. Refusing to authorise is always recoverable; two live holds are not.
+      // ⚠️ Skipped silently when the draft is already promoted, already cancelled, or gone — all three
+      // mean there is nothing live to supersede.
+      if (typeof supersedeOrderKey === 'string' && supersedeOrderKey) {
+        const prior = await getOrderDraft(supabase, supersedeOrderKey)
+        if (prior && prior.payment_intent_id && !prior.promoted_at && !prior.authorization_cancelled_at) {
+          const account = await stripeAccountForTruck(supabase, prior.truck_id)
+          const cancelled = account
+            ? await cancelAuthorization({ paymentIntentId: prior.payment_intent_id, stripeAccountId: account })
+            : { ok: false, detail: 'no stripe account for the truck' }
+          if (!cancelled.ok) {
+            console.error(
+              `[submit] 🔴 REFUSED to authorise: could not cancel the superseded intent ` +
+              `pi=${prior.payment_intent_id} draft=${supersedeOrderKey} (${cancelled.detail}). NO second ` +
+              `intent was created — two live holds for one basket is the one outcome this must never produce.`,
+            )
+            return NextResponse.json(
+              { error: CARD_UNAVAILABLE_MESSAGE, cardUnavailable: true },
+              { status: 503 },
+            )
+          }
+          await markAuthorizationCancelled(supabase, supersedeOrderKey)
+          console.log(
+            `[submit] superseded draft=${supersedeOrderKey} pi=${prior.payment_intent_id} cancelled ` +
+            `(${cancelled.detail ?? 'cancelled'}) — the basket changed; authorising the new one`,
+          )
+        }
+      }
+
       const draftKey = newOrderKey()
       const created = await createOrderDraft(supabase, {
         orderKey:      draftKey,

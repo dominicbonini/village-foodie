@@ -116,7 +116,7 @@ function calcDealOriginalPrice(deal: AppliedDeal, menuItems: MenuItem[]): number
 // decline) must not inject a second script tag; every caller awaits the same load.
 /** The slice of Stripe.js this page uses. Structural, hand-written, and deliberately narrow: there is no
  *  npm package to import types from, and a wide `any` on a money path is exactly what a type is for. */
-type StripeElement = { mount: (el: HTMLElement) => void; on: (ev: string, fn: () => void) => void }
+type StripeElement = { mount: (el: HTMLElement) => void; unmount: () => void; on: (ev: string, fn: () => void) => void }
 type StripeElements = { create: (kind: string, opts?: Record<string, unknown>) => StripeElement }
 type StripeJs = {
   elements: (opts: Record<string, unknown>) => StripeElements
@@ -150,6 +150,10 @@ function loadStripeJs(): Promise<StripeCtorFn> {
 /** What the server hands back when a card order needs authorising. No order exists while this is set. */
 type PendingPayment = {
   clientSecret: string
+  /** 🔴 THE BASKET THIS AUTHORISATION IS FOR. Compared on reopen: same ⇒ re-present it, different ⇒
+   *  cancel it and authorise afresh. An intent is for one amount and one order; presenting it against
+   *  anything else would charge the wrong thing. */
+  fingerprint: string
   /** The connected account the intent lives on. Stripe.js MUST be initialised with it (direct charge). */
   stripeAccount: string
   /** The DRAFT's key — which becomes the order's key on promotion, so it is also the confirmation URL. */
@@ -319,10 +323,32 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [payStage, setPayStage] = useState<'idle' | 'mounting' | 'ready' | 'authorising' | 'failed'>('idle')
   const [payError, setPayError] = useState<string | null>(null)
   // Stripe's own objects, held in refs rather than state: they are not rendered and must not re-trigger
-  // the mount effect. The Element mounts into a plain div by id, exactly as the vanilla API expects.
+  // the mount effect.
   const stripeRef = useRef<StripeJs | null>(null)
   const elementsRef = useRef<StripeElements | null>(null)
-  const paymentBoxRef = useRef<HTMLDivElement | null>(null)
+
+  // ── 🔴 THE PAYMENT STAGE IS SEPARATE FROM THE AUTHORISATION IT SHOWS. ───────────────────────────
+  // `payment` is the AUTHORISATION — a client secret and a PaymentIntent that exist at Stripe and cost
+  // real money to replace. `stageOpen` is merely whether the customer is LOOKING at it.
+  // 🔴 CLOSING THE STAGE MUST NOT DESTROY THE AUTHORISATION. That is the entire reopen fix: the old code
+  // had one flag doing both jobs, so any close either threw the intent away or (worse, and what actually
+  // happened) left it behind with a detached Element and an enabled Pay button.
+  const [stageOpen, setStageOpen] = useState(false)
+
+  // 🔴 THE HOST NODE IS STATE, NOT A REF, AND THAT IS THE FIX FOR "IT DID NOT RE-MOUNT". ────────────
+  // A `useRef` is invisible to the dependency array: when the stage closed and reopened, React created a
+  // BRAND-NEW div and quietly repointed the ref, and the mount effect — keyed on the client secret,
+  // which had not changed — never re-ran. The customer got an empty box with a live Pay button.
+  // A callback ref writing to STATE makes the node's identity a real dependency: a new div is a new
+  // value, the effect re-runs, and the Element mounts into the node that is actually on screen. Setting
+  // it to null on detach is what fires the teardown.
+  const [paymentBoxEl, setPaymentBoxEl] = useState<HTMLDivElement | null>(null)
+
+  // 🔴 THE PAY BUTTON'S ONE PRECONDITION. Set ONLY by Stripe's own `ready` event, cleared ONLY by the
+  // single teardown. Never inferred from `payStage`, which is about the flow rather than the DOM — it
+  // was a stale `payStage: 'ready'` over a detached Element that turned a cosmetic bug into a failed
+  // payment attempt.
+  const [elementReady, setElementReady] = useState(false)
   // ── 🔴 GATE 1 of 4 — THE IN-MEMORY BASKET, AND IT NEEDED NO GATE AT ALL. ───────────────────────
   // The earlier audit listed the basket as unmount-dependent: hosted Checkout navigated the browser away
   // with `window.location.href`, the component unmounted, and `basket` — plain React state, never
@@ -331,9 +357,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // navigation on the ordinary card path, so the component never unmounts and the basket simply stays.
   // A decline leaves the Element mounted, the basket intact and the customer able to press again.
   // ⚠️ The only navigation left is the SUCCESS one, to ?confirm= — where the basket is meant to be gone.
-  /** True from the moment a card payment is set up until the page navigates away. The one flag every
-   *  background behaviour checks. */
-  const paying = payment !== null
+  /** 🔴 TRUE ONLY WHILE THE PAYMENT STAGE IS ON SCREEN — NOT merely while an authorisation is held.
+   *  The two came apart when closing the stage stopped destroying the intent: a customer who backs out
+   *  to edit their basket is on the ORDER FORM, where the slot refresh, the clock tick and the menu
+   *  poll all need to work again. Gating on `payment` alone would freeze the form for the rest of the
+   *  session. The one flag every background behaviour checks. */
+  const paying = stageOpen && payment !== null
   // ⚠️ A REF ALONGSIDE THE BOOLEAN. `fetchSlots` is a plain function re-created every render, but it is
   // captured by the visibilitychange listener's closure, which is only re-attached when ITS deps change.
   // A ref is read live at call time, so the gate cannot go stale inside a stale closure.
@@ -1365,45 +1394,49 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const handleSubmitClick = () => submitOrder({})
 
-  // ── 🔴 MOUNT THE PAYMENT ELEMENT ────────────────────────────────────────────────────────────────
-  // Runs once per client secret. Loads Stripe.js, initialises it ON THE CONNECTED ACCOUNT (a direct
-  // charge lives there; without `stripeAccount` the Element confirms against the platform and cannot
-  // find the intent), builds an Elements group from the secret, and mounts the Payment Element.
-  // ⚠️ `payment?.clientSecret` IS THE ONLY DEPENDENCY. `payment` is a fresh object each time, so
-  // depending on it would re-mount on every unrelated render.
+  // ── 🔴 THE ONE MOUNT AND THE ONE TEARDOWN. THERE IS NO SECOND OF EITHER. ───────────────────────
+  // MOUNT: `el.mount(paymentBoxEl)` below — the only call to `.mount()` in this file.
+  // TEARDOWN: `el.unmount()` in this effect's cleanup — the only call to `.unmount()` in this file.
+  //
+  // 🔴 HOW A THIRD PATH IS RULED OUT, AND IT IS NOT DISCIPLINE. React runs an effect's cleanup before
+  // every re-run and once on unmount. Both things that can close this stage change a DEPENDENCY:
+  //   1. closing the stage      → the overlay unmounts → the callback ref fires with null
+  //                              → `paymentBoxEl` becomes null → cleanup runs
+  //   2. replacing the payment  → `payment.clientSecret` changes → cleanup runs, then the new mount
+  // So teardown is not something a close has to REMEMBER to do; it is what React does when the inputs
+  // change. A future close that forgets to call anything still tears down, because to close at all it
+  // must remove the node or clear the payment. THAT is the guarantee — no reachable close can skip it.
+  //
+  // ⚠️ `elementReady` IS CLEARED IN THE CLEANUP, and that is the whole defence for the Pay button.
+  // A torn-down Element cannot leave a button enabled behind it.
   useEffect(() => {
-    if (!payment?.clientSecret) return
+    if (!payment?.clientSecret || !paymentBoxEl) return
     let cancelled = false
+    let mounted: StripeElement | null = null
     const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     if (!pk) {
       // ⚠️ REPORTED VIA THE SAME REJECTION PATH AS EVERY OTHER SETUP FAILURE, not by calling setState in
-      // the effect body — a synchronous setState there is a cascading render
-      // (react-hooks/set-state-in-effect), the same rule confirmLoading and eventLoading are initialised
-      // around. One failure path, one place, no lint suppression.
+      // the effect body — a synchronous setState there is a cascading render.
       console.error('[order] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — cannot mount the card form')
     }
     ;(pk ? loadStripeJs() : Promise.reject(new Error('no publishable key')))
       .then(StripeCtor => {
-        if (cancelled || !paymentBoxRef.current || !pk) return
+        if (cancelled || !pk) return
         const stripe = StripeCtor(pk, { stripeAccount: payment.stripeAccount })
-        // Appearance only — no behaviour. Keeps the Element visually part of this page rather than an
-        // obviously foreign widget dropped into it.
+        // Appearance only — no behaviour.
         const elements = stripe.elements({
           clientSecret: payment.clientSecret,
           appearance: { theme: 'flat', variables: { colorPrimary: '#f97316', borderRadius: '12px', fontFamily: 'inherit' } },
         })
-        // 🔴 `layout: 'accordion'` WITH WALLETS ON. Apple Pay and Google Pay render as NATIVE BUTTONS
-        // above the card fields wherever the browser and device support them; where they do not, the
-        // customer simply sees the card form. Stripe decides that per-visitor, from the live browser.
-        // ⚠️ THE WALLETS ALSO NEED THE PLATFORM DOMAIN REGISTERED WITH STRIPE. That is a Dashboard
-        // action, not code — see the report. Without it the buttons are silently absent and the card
-        // form still works.
+        // ⚠️ WALLETS ON. Apple Pay and Google Pay render as native buttons where the browser and device
+        // support them AND the domain is registered with Stripe (a Dashboard action, not code).
         const el = elements.create('payment', {
           layout: { type: 'accordion', defaultCollapsed: false, radios: true, spacedAccordionItems: false },
           wallets: { applePay: 'auto', googlePay: 'auto' },
         })
-        el.mount(paymentBoxRef.current)
-        el.on('ready', () => { if (!cancelled) setPayStage('ready') })
+        el.mount(paymentBoxEl)                       // ← THE ONE MOUNT
+        mounted = el
+        el.on('ready', () => { if (!cancelled) setElementReady(true) })
         stripeRef.current = stripe
         elementsRef.current = elements
       })
@@ -1413,19 +1446,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         setPayError('We could not load the card form — check your connection and try again. Your basket is saved, and you have not been charged.')
         setPayStage('failed')
       })
-    return () => { cancelled = true }
-  }, [payment?.clientSecret, payment?.stripeAccount])
+    return () => {
+      cancelled = true
+      // ← THE ONE TEARDOWN. Guarded because a load that never resolved has nothing to unmount, and
+      // wrapped because Stripe throws if the node has already gone — which must not break a cleanup.
+      try { mounted?.unmount() } catch { /* already detached — nothing to undo */ }
+      mounted = null
+      stripeRef.current = null
+      elementsRef.current = null
+      setElementReady(false)
+    }
+  }, [payment?.clientSecret, payment?.stripeAccount, paymentBoxEl])
 
   // ── 🔴 CONFIRM. THE ONE PLACE MONEY IS AUTHORISED. ──────────────────────────────────────────────
   const confirmCardPayment = async () => {
     const stripe = stripeRef.current
     const elements = elementsRef.current
-    if (!stripe || !elements || !payment) return
+    // ⚠️ `elementReady` IS IN THE GUARD, not just on the button. A keyboard Enter, a double-tap that
+    // lands between renders, or any future caller must hit the same precondition the button shows.
+    if (!stripe || !elements || !payment || !elementReady) return
     setPayStage('authorising')
     setPayError(null)
-    // 🔴 THE CONFIRMATION URL IS THE ORDER KEY'S URL, and it works because the draft's key BECOMES the
-    // order's key. Only used when a payment method genuinely demands a redirect (some 3DS flows, some
-    // wallets); `redirect: 'if_required'` keeps the ordinary card path entirely in this page.
     const returnUrl = `${window.location.origin}/trucks/${encodeURIComponent(slug)}/order?confirm=${encodeURIComponent(payment.orderKey)}`
     try {
       const result = await stripe.confirmPayment({
@@ -1434,20 +1475,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         redirect: 'if_required',
       })
       if (result.error) {
-        // ⚠️ DECLINED, OR THE DETAILS WERE WRONG. NOT a page-replacing error: the basket, the slot and
-        // the customer's details are all still here, and the Element stays mounted so they can correct
-        // the card and press again. Stripe's own message is shown — it is written for customers and is
-        // more specific than anything this page could compose ("Your card was declined.", "Your card
-        // has insufficient funds.").
+        // ⚠️ DECLINED, OR THE DETAILS WERE WRONG. NOT page-replacing: the basket, the slot and the
+        // customer's details are all still here, and the Element stays mounted so they can correct the
+        // card and press again. Stripe's own message is shown — it is written for customers.
         console.error('[order] authorisation failed:', result.error.code, result.error.message)
         setPayError(result.error.message || 'That payment could not be authorised. No money has been taken — please try another card, or choose Pay at the truck.')
         setPayStage('failed')
         return
       }
-      // 🔴 AUTHORISED. With manual capture the intent is now `requires_capture` — money HELD, not taken.
-      // The webhook promotes the draft into a real order; this navigation is the optimisation, not the
-      // guarantee, and the confirmation waits for promotion rather than showing an error (see the
-      // confirmation fetch).
+      // AUTHORISED. Manual capture ⇒ `requires_capture`: money HELD, not taken. The webhook promotes.
       window.location.href = returnUrl
     } catch (err) {
       console.error('[order] confirmPayment threw:', err)
@@ -1456,11 +1492,47 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     }
   }
 
-  /** Abandon the card attempt and go back to the order form with everything intact. The draft expires
-   *  and the cancellation sweep releases the (uncaptured, never-confirmed) intent. */
-  const abandonCardPayment = () => {
-    setPayment(null); setPayStage('idle'); setPayError(null)
-    stripeRef.current = null; elementsRef.current = null
+  // ── 🔴 CLOSING THE STAGE KEEPS THE AUTHORISATION. ───────────────────────────────────────────────
+  // The customer is going back to look at their order, not abandoning payment. The PaymentIntent is
+  // still `requires_payment_method` and still the right amount, so it is kept and re-presented when
+  // they return — which is what makes reopen cost no second draft and no second intent.
+  // ⚠️ IT DOES NOT TOUCH THE ELEMENT. Closing the stage unmounts the overlay, which detaches the host
+  // node, which fires the ONE teardown. Doing it here as well would be a second path.
+  const closePaymentStage = () => { setStageOpen(false); setPayStage('idle'); setPayError(null) }
+
+  // ── 🔴 THE BASKET FINGERPRINT — HOW "DID IT CHANGE" IS DECIDED. ─────────────────────────────────
+  // An authorisation is for a fixed AMOUNT on a fixed order. If any of that moved while the stage was
+  // closed, the held intent is for the wrong thing and must not be presented.
+  // ⚠️ NOT THE TOTAL ALONE. Two different baskets can come to the same money — swap a £6.50 item for
+  // another £6.50 item and the price is identical while the order is not, and the draft carries the
+  // LINES, not just the sum. So the fingerprint is the composition: every line with its modifiers and
+  // quantity, every deal, the slot, the discount code and the total.
+  // ⚠️ Deliberately built from the same values the submit body sends, so it cannot describe a basket
+  // different from the one the server would price.
+  const basketFingerprint = useMemo(() => JSON.stringify({
+    i: basket.map(b => [b.menuItem.name, b.quantity, (b.modifiers || []).map(m => m.name).sort(), b.specialInstructions || '']),
+    d: appliedDeals.map(d => [d.bundle.name, d.slots, d.slotModifiers, d.slotNotes]),
+    s: asapChosen ? null : (selectedSlot || null),
+    c: appliedCode?.code || null,
+    t: Math.round(total * 100),
+    e: event?.id ?? null,
+  }), [basket, appliedDeals, asapChosen, selectedSlot, appliedCode, total, event?.id])
+
+  // ── 🔴 THE CARD BUTTON. THE ONE DECISION POINT: REOPEN, OR AUTHORISE AFRESH. ────────────────────
+  // Reopen is free and must be preferred; a fresh authorisation costs a draft and a PaymentIntent, and
+  // leaves the previous one to be cancelled.
+  const openCardPayment = () => {
+    // 🔴 SAME BASKET, LIVE AUTHORISATION ⇒ JUST SHOW IT AGAIN. No fetch, no draft, no intent. The
+    // client secret is still held, the Element re-mounts against it, and the customer pays.
+    if (payment && payment.fingerprint === basketFingerprint) {
+      setPayError(null)
+      setPayStage('mounting')
+      setStageOpen(true)
+      return
+    }
+    // ⚠️ EITHER no authorisation yet, OR the basket moved under one. submitOrder decides which, and
+    // carries the superseded key so the server cancels before it creates. See its card branch.
+    void submitOrder({})
   }
 
   const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
@@ -1511,6 +1583,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           // ⚠️ ANDed with `card_payments_ready` here only to avoid a pointless server round-trip on a
           // truck that plainly cannot take one; the server never trusts this value.
           payByCard: !!(payByCard && truck?.card_payments_ready),
+          // 🔴 ONE LIVE AUTHORISATION PER BASKET. If we are holding one and the basket has since moved,
+          // its key rides along so the SERVER cancels it before creating the replacement — cancel-then-
+          // create, in one request, so there is never a moment when two intents are live for one basket.
+          // Null on a first attempt, which is every ordinary order.
+          supersedeOrderKey: payment?.orderKey ?? null,
         }),
       })
       const data = await res.json()
@@ -1603,9 +1680,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           stripeAccount: data.stripeAccount as string,
           orderKey:      data.orderKey as string,
           totalPence:    Math.round(Number(data.total ?? 0) * 100),
+          // Stamped with the basket it was authorised FOR, so a later reopen can tell "show this again"
+          // from "this is for a basket that no longer exists".
+          fingerprint:   basketFingerprint,
         })
         setPayStage('mounting')
         setPayError(null)
+        setStageOpen(true)
         return
       }
 
@@ -2730,75 +2811,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 </div>
               )}
 
-              {/* ── 🔴 THE CARD FORM. IN THIS PAGE, ON THIS COMPONENT, WITH THE BASKET STILL IN MEMORY. ──
-                  It REPLACES the place-order controls while a payment is in flight rather than sitting
-                  beside them: there is nothing else to do at this point, and two primary actions on one
-                  screen is how a customer pays twice.
-                  🔴 NO ORDER EXISTS WHILE THIS IS ON SCREEN. Nothing is reserved, nothing is emailed,
-                  and abandoning costs nothing — the draft expires and the sweep releases the hold. */}
-              {payment ? (
-                <div className="mt-5 border border-slate-200 rounded-2xl p-4">
-                  <div className="flex items-baseline justify-between mb-3">
-                    <h3 className="text-sm font-black text-slate-900">Pay by card</h3>
-                    <span className="text-sm font-black text-slate-900 tabular-nums">£{(payment.totalPence / 100).toFixed(2)}</span>
-                  </div>
-
-                  {/* MOUNTING — Stripe.js is loading and the Element is being built. A skeleton rather
-                      than a spinner over an empty box, so the layout does not jump when it arrives. */}
-                  {payStage === 'mounting' && (
-                    <div className="animate-pulse space-y-2" aria-live="polite">
-                      <div className="h-10 bg-slate-100 rounded-lg" />
-                      <div className="h-10 bg-slate-100 rounded-lg" />
-                      <p className="text-xs text-slate-400 pt-1">Loading secure card form…</p>
-                    </div>
-                  )}
-
-                  {/* 🔴 THE ELEMENT'S HOST. It stays MOUNTED across every stage — unmounting it on a
-                      decline would destroy the card details the customer just typed, which is the
-                      opposite of what a retry needs. Hidden under the skeleton, never removed. */}
-                  <div ref={paymentBoxRef} className={payStage === 'mounting' ? 'hidden' : ''} />
-
-                  {/* FAILED — declined, or the form could not be set up. Stripe's own wording where it
-                      has one, because it is written for customers and is more specific than ours. */}
-                  {payStage === 'failed' && payError && (
-                    <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-3">
-                      <p className="text-red-800 text-sm font-medium">{payError}</p>
-                    </div>
-                  )}
-
-                  <button onClick={e => { e.preventDefault(); void confirmCardPayment() }}
-                    disabled={payStage !== 'ready' && payStage !== 'failed'}
-                    className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-4">
-                    {/* AUTHORISING is the one stage where this must be inert — a second press during
-                        confirmPayment is how a customer ends up with two holds on their card. */}
-                    {payStage === 'authorising' ? 'Authorising…'
-                      : payStage === 'mounting' ? 'Preparing…'
-                      : payStage === 'failed' ? `Try again · £${(payment.totalPence / 100).toFixed(2)}`
-                      : `Pay £${(payment.totalPence / 100).toFixed(2)}`}
-                  </button>
-
-                  {/* ⚠️ THE WAY BACK. Without it a customer whose card keeps failing is stuck on a form
-                      they cannot leave without losing the basket. Hidden mid-authorisation: leaving
-                      while confirmPayment is in flight would drop them on the order form with a hold
-                      being placed behind them. */}
-                  {payStage !== 'authorising' && (
-                    <button onClick={e => { e.preventDefault(); abandonCardPayment() }}
-                      className="w-full text-slate-500 text-sm font-medium py-3 mt-1 hover:text-slate-700">
-                      Back to my order
-                    </button>
-                  )}
-
-                  <p className="text-[11px] text-slate-400 text-center mt-2 leading-relaxed">
-                    {/* 🔴 TRUE, AND IT IS THE PRODUCT PROMISE OF authorize-then-capture. The money is
-                        HELD at this point, not taken; capture follows the truck confirming. */}
-                    Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
-                  </p>
-                </div>
-              ) : (
-              <>
               {/* PLACE ORDER — the actual submit. Carries the SAME full validation gate that was on
                   the footer button (name/email/phone/slot etc.), relocated verbatim. */}
-              <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
+              {/* 🔴 ONE BUTTON, TWO DESTINATIONS, AND THE CARD ONE IS NOT ALWAYS A SUBMIT. `openCardPayment`
+                  re-presents a live authorisation for an unchanged basket without touching the server;
+                  only a first attempt or a changed basket calls submitOrder. Pay-at-hatch is untouched
+                  and still goes straight to handleSubmitClick. */}
+              <button onClick={e => { e.preventDefault(); if (payByCard && truck?.card_payments_ready) openCardPayment(); else handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
                 {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
@@ -2844,9 +2863,92 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
                   : 'Pay at the truck on collection · No card details needed'}
               </p>
-              </>
+
+            </div>
+          </div>
+        </div>
+        )}
+
+        {/* ── 🔴 THE PAYMENT STAGE. FULL SCREEN, AND A SIBLING OF THE ORDER SHEET, NOT A CHILD. ──────
+            IT USED TO LIVE INSIDE THE SHEET, and that single fact was the defect: the sheet's ✕ and its
+            backdrop unmounted the card form's host div while the authorisation state survived, so
+            reopening showed an empty box with a live Pay button and confirmPayment threw against a
+            detached Element. A sibling cannot be destroyed by closing the sheet.
+            🔴 FULL SCREEN, NOT AN EXPANSION BELOW THE SUMMARY. Paying is its own step: the customer was
+            scrolling past their order to find the card fields, with the place-order button still above
+            them. Here there is one thing on screen and one thing to do.
+            ⚠️ z-[70] — ABOVE the sheet's z-[60] and the footer's z-50, so nothing shows through and no
+            control behind it is reachable while a payment is in flight.
+            ⚠️ NO BACKDROP-CLICK CLOSE, deliberately. This is a step, not a popover; a stray tap beside a
+            card form should not dismiss it. The Back control is explicit and is the only way out. */}
+        {stageOpen && payment && (
+        <div className="fixed inset-0 z-[70] bg-white flex flex-col">
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 flex-shrink-0">
+            {/* ⚠️ HIDDEN MID-AUTHORISATION. Leaving while confirmPayment is in flight would drop the
+                customer on the order form with a hold being placed behind them. */}
+            {payStage !== 'authorising' ? (
+              <button onClick={e => { e.preventDefault(); closePaymentStage() }}
+                className="text-slate-500 hover:text-slate-800 text-sm font-bold flex items-center gap-1.5 -ml-1 px-1 py-1">
+                ← Back to my order
+              </button>
+            ) : <span className="text-sm font-bold text-slate-400">Authorising…</span>}
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 py-5">
+            <div className="max-w-lg mx-auto">
+              <div className="flex items-baseline justify-between mb-1">
+                <h2 className="text-xl font-black text-slate-900">Pay by card</h2>
+                <span className="text-xl font-black text-slate-900 tabular-nums">£{(payment.totalPence / 100).toFixed(2)}</span>
+              </div>
+              <p className="text-xs text-slate-400 mb-5">{truck?.name ?? 'This truck'} · {basket.reduce((n, b) => n + b.quantity, 0) + appliedDeals.length} item{(basket.reduce((n, b) => n + b.quantity, 0) + appliedDeals.length) !== 1 ? 's' : ''}</p>
+
+              {/* Skeleton while Stripe.js loads and the Element builds — not a spinner over an empty
+                  box, so the layout does not jump when it arrives. Driven by `elementReady`, the same
+                  fact the Pay button reads, so the two can never disagree. */}
+              {!elementReady && (
+                <div className="animate-pulse space-y-2" aria-live="polite">
+                  <div className="h-12 bg-slate-100 rounded-lg" />
+                  <div className="h-12 bg-slate-100 rounded-lg" />
+                  <div className="h-12 bg-slate-100 rounded-lg" />
+                  <p className="text-xs text-slate-400 pt-1">Loading secure card form…</p>
+                </div>
               )}
 
+              {/* 🔴 THE ELEMENT'S HOST, AND THE ONLY ONE. The callback ref publishes the node into state,
+                  which is what makes the mount effect re-run when this div is recreated on reopen — the
+                  fix for the defect. Hidden under the skeleton, never conditionally removed while the
+                  stage is open: unmounting it on a decline would destroy the card details just typed. */}
+              <div ref={setPaymentBoxEl} className={elementReady ? '' : 'hidden'} />
+
+              {/* FAILED — declined, or the form could not be set up. Stripe's own wording where it has
+                  one, because it is written for customers and is more specific than ours. */}
+              {payStage === 'failed' && payError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4">
+                  <p className="text-red-800 text-sm font-medium">{payError}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-shrink-0 border-t border-slate-100 px-5 py-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+            <div className="max-w-lg mx-auto">
+              {/* 🔴 THE ONE PRECONDITION: A MOUNTED ELEMENT. `elementReady` is set by Stripe's own
+                  `ready` event and cleared by the single teardown, so it cannot outlive the Element it
+                  describes. `payStage !== 'authorising'` stops a second press mid-confirm, which is how
+                  a customer ends up with two holds. Nothing here reads a stage that could be stale. */}
+              <button onClick={e => { e.preventDefault(); void confirmCardPayment() }}
+                disabled={!elementReady || payStage === 'authorising'}
+                className="w-full bg-orange-600 text-white font-black py-4 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
+                {payStage === 'authorising' ? 'Authorising…'
+                  : !elementReady ? 'Preparing…'
+                  : payStage === 'failed' ? `Try again · £${(payment.totalPence / 100).toFixed(2)}`
+                  : `Pay £${(payment.totalPence / 100).toFixed(2)}`}
+              </button>
+              <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
+                {/* 🔴 TRUE, AND IT IS THE PRODUCT PROMISE OF authorize-then-capture. The money is HELD
+                    at this point, not taken; capture follows the truck confirming. */}
+                Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
+              </p>
             </div>
           </div>
         </div>

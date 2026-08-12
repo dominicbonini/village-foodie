@@ -119,14 +119,22 @@ export async function authorizeDraft(
         // because a draft's key becomes its order's key, the same metadata keeps working after promotion
         // with nothing to migrate and no change to the webhook or the ledger.
         metadata: { order_key: args.orderKey, truck_id: args.truckId, source: 'hatchgrab_online_order' },
-        // ⚠️ AUTOMATIC PAYMENT METHODS, WITH REDIRECTS ALLOWED. This is what makes the Payment Element
-        // render Apple Pay and Google Pay as native buttons where the browser and device support them,
-        // instead of a card-number form alone. `allow_redirects: 'always'` is required because 3DS may
-        // redirect; the client still passes `redirect: 'if_required'`, so the common card path stays
-        // entirely in-page and only a method that genuinely demands a redirect gets one.
-        // ⚠️ Stripe filters this list to methods that support MANUAL CAPTURE, so a method that cannot be
-        // authorised-then-captured simply does not appear. That filtering is Stripe's, not ours.
-        automatic_payment_methods: { enabled: true, allow_redirects: 'always' },
+        // ── 🔴 AN EXPLICIT LIST, AND IT REPLACED `automatic_payment_methods`. THE REASON IS LINK. ──
+        // It read `automatic_payment_methods: { enabled: true, allow_redirects: 'always' }`, which lets
+        // Stripe offer every method enabled on the account — including LINK, whose inline signup renders
+        // the "Save my information for faster checkout" box with an email and phone field inside our
+        // payment panel. There is no client-side switch for that box: the Payment Element has `wallets`
+        // options for Apple Pay and Google Pay and nothing equivalent for Link. The method list is the
+        // lever, and it is here.
+        // 🔴 SO THIS IS A DELIBERATE PAYMENT-METHOD CONFIGURATION CHANGE, NOT A TIDY-UP: Link is no
+        // longer offered on this intent. Nothing else was on offer that is lost — see the report.
+        // ⚠️ APPLE PAY AND GOOGLE PAY ARE UNAFFECTED. They are CARD wallets, surfaced by the Payment
+        // Element whenever `card` is an accepted method and the device supports them; they are not
+        // separate entries in this list and never were. The client's `wallets: { applePay: 'auto',
+        // googlePay: 'auto' }` still governs whether they render.
+        // ⚠️ `card` SUPPORTS MANUAL CAPTURE, which is what `automatic_payment_methods` was silently
+        // filtering for. Naming it explicitly makes that guarantee visible instead of delegated.
+        payment_method_types: ['card'],
         // ⚠️ NO application_fee_amount, NO on_behalf_of, NO transfer_data. See the header — absence, not
         // zero, and unchanged from the Session this replaces.
       },
