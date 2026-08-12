@@ -21,11 +21,14 @@
 // The precedent is the offline walk-up path, which already supplies a client-minted order_key on INSERT
 // (app/api/dashboard/action/route.ts:1174, :1219).
 //
-// ── SCOPE OF THIS PHASE ─────────────────────────────────────────────────────────────────────────
-// ⚠️ NOTHING CALLS THIS MODULE YET. Phase 2a is the store and its accessors. The authorize call, the
-// capture call, the promotion into `orders`, the sweeper and cancel-authorization are later phases, and
-// deliberately absent — including any function that would create an order. This module reads and writes
-// one table and does nothing else.
+// ── SCOPE ───────────────────────────────────────────────────────────────────────────────────────
+// ⚠️ WIRED AS OF PHASE 2b (13 August 2026). Callers: app/api/orders/submit (creates the draft),
+// lib/payments/authorize (attaches the intent), lib/payments/promote-draft (claims it),
+// app/api/cron/cancel-stale-authorizations (cancels and marks).
+// 🔴 THIS MODULE STILL DOES ONE THING: it reads and writes `order_drafts`. It creates no orders, sends
+// no email, talks to no payment provider and holds no lock. Anything that does belongs elsewhere, and
+// the reason is that this is the only file that can be reasoned about as "what is true of a draft".
+// CAPTURE IS NOT HERE AND IS NOT ANYWHERE YET — it follows confirmation, in a later phase.
 //
 // 🔴 DEPLOY COUPLING. The selects below are NAMED, which is the house rule for a money-adjacent table
 // (lib/payments/ledger.ts's LEDGER_ROW_COLUMNS) because it makes the read's dependencies legible. The
@@ -43,6 +46,10 @@ export const DRAFT_ROW_COLUMNS = [
   'items', 'deals', 'extras', 'bundle', 'notes', 'discount_code', 'asap_estimate', 'upsell_events',
   'subtotal', 'discount_amt', 'total', 'total_minor', 'currency',
   'created_at', 'expires_at', 'payment_intent_id', 'livemode', 'promoted_at',
+  // 🔴 ADDED 13 August 2026 (20260813_order_drafts_authorization.sql) — see the deploy note in the
+  // header. A NAMED select on a missing column is a 42703 that fails the whole statement, so this
+  // build REQUIRES that migration.
+  'authorization_cancelled_at', 'promotion_failed_at', 'promotion_failure_reason',
 ].join(', ')
 
 /** The request as the draft holds it. Money is SERVER-computed — see NewOrderDraft's note. */
@@ -78,6 +85,10 @@ export interface OrderDraftRow {
   payment_intent_id: string | null
   livemode: boolean | null
   promoted_at: string | null
+  /** Set once the Stripe hold is released. Null WITH a payment_intent_id means money may still be held. */
+  authorization_cancelled_at: string | null
+  promotion_failed_at: string | null
+  promotion_failure_reason: string | null
 }
 
 /**
@@ -142,6 +153,14 @@ export function newOrderKey(): string {
  * ⚠️ TRUCK-SCOPED, so one busy truck cannot make another truck's insert pay for a large sweep, and so
  * the delete uses order_drafts_truck rather than scanning. purge_order_drafts() in the migration is the
  * unscoped belt-and-braces for a truck that stopped trading mid-service.
+ *
+ * 🔴 AND IT WILL NOT TOUCH A DRAFT THAT MAY STILL BE HOLDING MONEY. Added 13 August 2026 with the
+ * authorisation columns: a draft carrying a payment_intent_id is deletable ONLY once
+ * authorization_cancelled_at is set. Deleting one before that destroys the only link between a live
+ * Stripe hold and anything this system knows, and the money would sit authorised until Stripe expired
+ * it with nothing able to name it. A PURGE MUST NEVER OUTRUN A CANCELLATION.
+ * ⚠️ The cost: if the cancellation sweep stops running, these rows accumulate and their PII outlives
+ * its expiry. That is the right way round — lingering details are recoverable, orphaned money is not.
  * ⚠️ FAIL-OPEN: a purge failure is logged and the draft is still created. Refusing to take an order
  * because we could not tidy up would be the wrong trade by a wide margin.
  */
@@ -155,6 +174,8 @@ export async function createOrderDraft(
     .eq('truck_id', draft.truckId)
     .is('promoted_at', null)
     .lt('expires_at', new Date().toISOString())
+    // 🔴 EITHER no authorisation was ever created, OR it has been cancelled. See above.
+    .or('payment_intent_id.is.null,authorization_cancelled_at.not.is.null')
   if (purgeErr) {
     console.error(
       `[order-drafts] expired-draft purge failed for truck=${draft.truckId} — the draft is still being ` +
@@ -284,46 +305,52 @@ export async function attachPaymentIntent(
  * succeed, and the loser must LEARN it lost rather than error.
  *
  * ── HOW IT WORKS ────────────────────────────────────────────────────────────────────────────────
- * One statement: a conditional UPDATE guarded on `promoted_at is null`, RETURNING the row. Two
- * concurrent claims serialise on Postgres's row lock. The winner gets the row back — including the PII
- * it needs to build the order. The loser re-evaluates the guard after the winner commits, matches
+ * A conditional UPDATE guarded on `promoted_at is null`. Two concurrent claims serialise on Postgres's
+ * row lock: the winner's guard matches, the loser re-evaluates it after the winner commits, matches
  * nothing, and receives an EMPTY RESULT AND NO ERROR. That empty result IS the answer: someone else is
- * creating this order.
+ * creating this order. Proved against real rows — one winner, one zero-row loser, zero errors.
  *
- * 🔴 THE `.select()` IS LOAD-BEARING, NOT A CONVENIENCE. Claim-then-read would leave a window in which
- * the loser reads the row between the winner's claim and its INSERT, and both would proceed. The claim
- * and the read have to be the same statement.
+ * ── 🔴 WHY THE ROW IS READ FIRST, AND WHY THE PII IS NO LONGER ERASED IN THE CLAIM ──────────────
+ * This function used to be ONE statement that set promoted_at, nulled the three PII columns, and
+ * returned the row — on the stated belief that "the returned row still carries the values, because the
+ * caller needs them to create that order".
+ * 🔴 THAT BELIEF WAS WRONG, AND VERIFICATION CAUGHT IT. PostgREST's UPDATE ... RETURNING returns the row
+ * AS IT IS AFTER THE UPDATE, so the winner got `{name: null, email: null, phone: null}` — the exact
+ * fields it needs. Promotion would have inserted an order with no customer name, no phone, and no email
+ * address to send the confirmation to. Silently, on every card order.
  *
- * 🔴 AND IT ERASES THE PII IN THE SAME BREATH. The three customer columns are nulled by this UPDATE, so
- * from the instant a draft is claimed it holds no personal data — the ORDER holds it from then on,
- * under the order's own retention. The returned row still carries the values, because the caller needs
- * them to create that order; the stored row does not. There is no second write to forget.
+ * So the read and the claim are now two statements, and the ERASURE IS A THIRD (erasePii), called only
+ * once the order actually exists. That ordering is also the safer one on its own merits: erasing at the
+ * claim destroyed the customer's details at the moment promotion began, so any failure between claim and
+ * insert left a draft that could never be reconstructed into an order by anyone.
+ * ⚠️ THE PLAIN READ IS NOT A RACE. A loser may read the PII too, but it never wins the claim and
+ * therefore never does anything with it. Only the UPDATE decides who proceeds.
  *
- * ⚠️ EXPIRY IS *NOT* PART OF THE GUARD, DELIBERATELY. A draft whose customer authorised at 29:58 and
- * whose webhook lands at 30:02 must still promote — refusing it would mean money held with no order,
- * which is the worst outcome this design has. Expiry governs the PURGE (an unauthorised draft nobody
- * paid for), not the claim. The purge only ever deletes rows with `promoted_at is null` AND no
- * authorisation behind them, and a draft in flight is racing a purge either way; the intent id on the
- * row is what a later phase would use to tell the two apart.
- *
- * @returns the claimed row (you won, create the order), or null (you lost, or it never existed)
+ * @returns the claimed row WITH its customer details (you won, create the order), or null (you lost, it
+ *          was already promoted, or it never existed)
  */
 export async function claimOrderDraft(
   supabase: SupabaseClient,
   orderKey: string,
 ): Promise<OrderDraftRow | null> {
+  // 1. READ. This is where the caller's copy of the customer details comes from.
+  const row = await getOrderDraft(supabase, orderKey)
+  if (!row) {
+    console.log(`[order-drafts] claim not taken for order_key=${orderKey} — no such draft`)
+    return null
+  }
+  if (row.promoted_at) {
+    console.log(`[order-drafts] claim not taken for order_key=${orderKey} — already promoted at ${row.promoted_at}`)
+    return null
+  }
+
+  // 2. CLAIM. The guard is what arbitrates; the read above decided nothing.
   const { data, error } = await supabase
     .from('order_drafts')
-    .update({
-      promoted_at: new Date().toISOString(),
-      // 🔴 ERASURE, IN THE CLAIM. See above.
-      customer_name: null,
-      customer_email: null,
-      customer_phone: null,
-    })
+    .update({ promoted_at: new Date().toISOString() })
     .eq('order_key', orderKey)
     .is('promoted_at', null)
-    .select(DRAFT_ROW_COLUMNS)
+    .select('order_key')
     .maybeSingle()
 
   if (error) {
@@ -336,8 +363,111 @@ export async function claimOrderDraft(
     // ⚠️ THE ORDINARY OUTCOME FOR THE LOSER, AND NOT AN ERROR. Logged at info because in a two-trigger
     // design one of these per paid order is expected, and an error line per payment would train
     // everyone to ignore the log.
-    console.log(`[order-drafts] claim not taken for order_key=${orderKey} — already promoted, or no such draft`)
+    console.log(`[order-drafts] claim not taken for order_key=${orderKey} — another promoter got there first`)
     return null
   }
-  return data as unknown as OrderDraftRow
+  return row
+}
+
+/**
+ * 🔴 ERASE THE CUSTOMER'S DETAILS. Called ONCE THE ORDER EXISTS and not before.
+ *
+ * From this point the ORDER holds the customer's name, email and phone, under the order's own retention,
+ * and the draft holds none. That is what bounds PII in this table to the life of a draft.
+ * ⚠️ DELIBERATELY NOT PART OF THE CLAIM — see claimOrderDraft for the defect that taught us why. Erasing
+ * before the order exists destroys the only copy of details a failed promotion would need.
+ * ⚠️ NON-FATAL. The order is already saved; failing to tidy up must never undo it. But it IS logged
+ * loudly, because a promoted draft still carrying PII is a retention breach waiting to be noticed.
+ */
+export async function erasePii(supabase: SupabaseClient, orderKey: string): Promise<void> {
+  const { error } = await supabase
+    .from('order_drafts')
+    .update({ customer_name: null, customer_email: null, customer_phone: null })
+    .eq('order_key', orderKey)
+  if (error) {
+    console.error(
+      `[order-drafts] 🔴 PII NOT ERASED for promoted draft order_key=${orderKey} — the ORDER IS SAVED ` +
+      `and unaffected, but this row still holds a customer's name, email and phone:`, error.message,
+    )
+  }
+}
+
+/**
+ * Record that promotion was attempted and refused.
+ *
+ * 🔴 THE STATE THIS CREATES IS THE WORST ONE THIS DESIGN HAS: a customer has authorised money for an
+ * order that cannot exist. It is written down rather than inferred so that it is legible in one query —
+ * `promotion_failed_at is not null and promoted_at is null` — and so the cancellation that MUST follow
+ * can be checked rather than assumed.
+ * ⚠️ Does NOT cancel anything. The caller cancels at Stripe and then calls markAuthorizationCancelled.
+ * Splitting them is deliberate: the record of the failure must survive a cancellation that itself fails.
+ */
+export async function markPromotionFailed(
+  supabase: SupabaseClient,
+  orderKey: string,
+  reason: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('order_drafts')
+    .update({ promotion_failed_at: new Date().toISOString(), promotion_failure_reason: reason.slice(0, 500) })
+    .eq('order_key', orderKey)
+  if (error) {
+    console.error(
+      `[order-drafts] 🔴 could not record promotion failure for order_key=${orderKey} (reason="${reason}") — ` +
+      `the authorisation may be uncancelled and now has no marker:`, error.message,
+    )
+  }
+}
+
+/**
+ * Record that the Stripe hold behind this draft has been released.
+ *
+ * 🔴 THIS IS WHAT UNLOCKS THE PURGE. Until it is set, a draft carrying a payment_intent_id is undeletable
+ * (see createOrderDraft and purge_order_drafts). Setting it without actually cancelling at Stripe would
+ * make the money invisible to this system — so it is called ONLY after Stripe has confirmed the cancel.
+ */
+export async function markAuthorizationCancelled(
+  supabase: SupabaseClient,
+  orderKey: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('order_drafts')
+    .update({ authorization_cancelled_at: new Date().toISOString() })
+    .eq('order_key', orderKey)
+  if (error) {
+    console.error(
+      `[order-drafts] could not mark authorisation cancelled for order_key=${orderKey} — the hold IS ` +
+      `released at Stripe but this row will keep being swept until the mark lands:`, error.message,
+    )
+  }
+}
+
+/**
+ * Every draft holding money that will never become an order: expired (or already failed promotion),
+ * never promoted, and not yet cancelled.
+ *
+ * 🔴 THIS IS THE ONLY QUESTION THE CANCELLATION SWEEP ASKS, and it is exactly the predicate of
+ * `order_drafts_uncancelled_authorization`. `.limit` is a hard bound so one bad day cannot make the job
+ * run past its timeout and cancel nothing at all.
+ * ⚠️ EXPIRY IS THE GATE, NOT AGE. A draft inside its window may still be a customer typing their card
+ * number, and cancelling that would decline a payment mid-flow.
+ */
+export async function listUncancelledAuthorizations(
+  supabase: SupabaseClient,
+  limit = 100,
+): Promise<Pick<OrderDraftRow, 'order_key' | 'truck_id' | 'payment_intent_id' | 'expires_at' | 'promotion_failed_at' | 'total_minor'>[]> {
+  const { data, error } = await supabase
+    .from('order_drafts')
+    .select('order_key, truck_id, payment_intent_id, expires_at, promotion_failed_at, total_minor')
+    .not('payment_intent_id', 'is', null)
+    .is('promoted_at', null)
+    .is('authorization_cancelled_at', null)
+    .lt('expires_at', new Date().toISOString())
+    .order('expires_at', { ascending: true })
+    .limit(limit)
+  if (error) {
+    console.error('[order-drafts] could not list uncancelled authorisations:', error.message)
+    return []
+  }
+  return (data ?? []) as unknown as Pick<OrderDraftRow, 'order_key' | 'truck_id' | 'payment_intent_id' | 'expires_at' | 'promotion_failed_at' | 'total_minor'>[]
 }

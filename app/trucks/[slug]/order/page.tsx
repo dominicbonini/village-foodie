@@ -173,6 +173,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // the server. This is the lesson of `?paid=1` on /order/[id]/manage, which was written into a URL and
   // then correctly ignored by every reader.
   const confirmOrderKey = searchParams.get('confirm')
+  // 🔴 THE REFUSAL MESSAGE, CARRIED BACK FROM /api/payments/return. The server composed it; this only
+  // reads it. Present ONLY when an authorisation was taken and the order could not be placed — the
+  // authorisation has already been cancelled by then, which is what the sentence tells the customer.
+  const paymentFailedParam = searchParams.get('payment_failed')
 
   // ── THE STICKY STACK ────────────────────────────────────────────────────────────────────────────
   // Bars pin in this order, each offset by everything above it:
@@ -241,6 +245,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // render on its own. Sharing the state would have meant rewording the stock notice, which is correct
   // as it stands and which real customers see far more often.
   const [menuChangedNotice, setMenuChangedNotice] = useState<string | null>(null)
+  // 🔴 THE ONE MESSAGE THAT REACHES A CUSTOMER WHOSE CARD WAS AUTHORISED FOR AN ORDER WE COULD NOT
+  // PLACE. Set from the `payment_failed` query parameter that /api/payments/return redirects with, and
+  // never composed here: the server built the sentence, so the webhook path logs the identical wording.
+  // ⚠️ SEPARATE FROM THE OTHER NOTICES because it is not about the basket. Nothing was capped and
+  // nothing sold out on this page — money was authorised elsewhere and released, and the sentence has
+  // to lead with that.
+  // ⚠️ SEEDED FROM THE URL IN THE INITIALISER, not in an effect — calling setState in an effect body
+  // trips react-hooks/set-state-in-effect and causes a cascading render. Same shape as confirmLoading.
+  const [paymentFailedNotice, setPaymentFailedNotice] = useState<string | null>(paymentFailedParam)
   // "Check again" in-place re-fetch state (pause banner) — never reloads, never clears the basket.
   const [rechecking, setRechecking] = useState(false)
   // Event finished EARLY (status='closed'/'cancelled') while the customer was already on the page —
@@ -1241,6 +1254,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // not sit under the one this attempt produces. Without it a customer who fixed a menu-change and
     // then hit a sold-out line would read both panels and not know which one still applies.
     setMenuChangedNotice(null)
+    setPaymentFailedNotice(null)
     try {
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1266,6 +1280,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           // ⚠️ DISPLAY ONLY. It decides nothing: not the slot, not capacity, not money. The server
           // stores it on the row and reads it back onto one line of the receipt.
           asapEstimate: asapChosen ? (backwardAsap || asapSlot || customerAsapTime || null) : null,
+          // ── 🔴 AUTHORIZE-THEN-CAPTURE. AN INTENT, NOT A CLAIM. ────────────────────────────────────
+          // `true` says only "this customer chose to pay by card". The server re-reads readiness and,
+          // if it holds, writes a DRAFT and authorises instead of creating an order — so an abandoned
+          // card form no longer leaves an unpaid order holding a slot. If the truck cannot take a card
+          // the server falls through and places the order unpaid, exactly as before.
+          // ⚠️ ANDed with `card_payments_ready` here only to avoid a pointless server round-trip on a
+          // truck that plainly cannot take one; the server never trusts this value.
+          payByCard: !!(payByCard && truck?.card_payments_ready),
         }),
       })
       const data = await res.json()
@@ -1331,12 +1353,31 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       }
       if (!res.ok) throw new Error(data.error || 'Order failed')
 
+      // ── 🔴 AUTHORISE FIRST: NO ORDER EXISTS YET, AND THAT IS THE POINT. ──────────────────────────
+      // The server priced the basket, wrote a draft and created a PaymentIntent with manual capture.
+      // Nothing is reserved: no slot, no stock, no order number, no email. The order is created only
+      // once the money is authorised — by the webhook, or by the return route as the customer comes
+      // back — so abandoning at the card form now costs nothing and holds nothing.
+      // ⚠️ `data.url` GOES TO STRIPE AND RETURNS THROUGH /api/payments/return, which promotes the draft
+      // and then redirects to the same `?confirm=` URL as before. The confirmation screen is unchanged.
+      // ⚠️ The basket is deliberately NOT cleared before leaving: if the customer backs out of Stripe,
+      // the cancel_url returns them here with their order intact.
+      if (data.requiresAuthorization && data.url) {
+        window.location.href = data.url as string
+        return
+      }
+
       // ── 🔴 THE ORDER NOW EXISTS. ONLY NOW IS A CARD OFFERED. ─────────────────────────────────────
       // Order-first is forced, not chosen: place_order_atomic books production capacity in the same
       // transaction as the order, so paying first would need slot reservation that does not exist.
       // ⚠️ EVERY FAILURE BELOW FALLS THROUGH TO THE NORMAL CONFIRMATION, which says "Pay at the truck".
       // The order is real and unpaid either way, so the worst outcome of a Stripe problem is the
       // behaviour this page had yesterday — never a customer left believing a payment is in flight.
+      // ⚠️ THE ORDER-FIRST CARD PATH, NOW A FALLBACK AND NOT THE ROUTE ANY CARD ORDER NORMALLY TAKES.
+      // It is reached only when the server declined to authorise — Stripe not ready, the operator's kill
+      // switch on, a Stripe error — and fell through to creating the order unpaid. In that state
+      // offering the old checkout is still the right thing: the order is real and someone should be able
+      // to pay for it. Left in place deliberately rather than deleted.
       if (payByCard && truck?.card_payments_ready && data.orderKey) {
         try {
           const pay = await fetch('/api/stripe/checkout', {
@@ -2440,6 +2481,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {/* Submit-time notices (paused 423 / lock 409 / stock 409) — co-located with the
                   place-order action so they surface INSIDE the sheet (the footer is hidden behind it
                   during submit). Non-destructive: basket kept, customer retries in place. */}
+              {/* 🔴 THE PAYMENT-REFUSED NOTICE. RED, NOT AMBER, AND DELIBERATELY: every other notice on
+                  this page is "adjust your basket and try again"; this one is "your card was authorised,
+                  it has been released, and you have no order". The server's sentence is rendered whole —
+                  no prefix, no suffix, nothing added — and it always leads with the money.
+                  ⚠️ NOT the confirmation screen and not inside it: this renders in the order sheet
+                  beside the other submit-time notices, and `?confirm=` is absent on this path. */}
+              {paymentFailedNotice && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
+                  <p className="flex-1 text-red-800 text-sm font-medium">{paymentFailedNotice}</p>
+                  <button onClick={() => setPaymentFailedNotice(null)} className="text-red-400 hover:text-red-600 text-sm font-bold leading-none mt-0.5">✕</button>
+                </div>
+              )}
+
               {pauseNotice && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
                   <p className="flex-1 text-amber-800 text-sm font-medium">⏸ {pauseNotice}</p>

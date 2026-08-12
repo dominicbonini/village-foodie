@@ -37,6 +37,10 @@
     {
       "path": "/api/cron/account-deletion-due",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/cancel-stale-authorizations",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

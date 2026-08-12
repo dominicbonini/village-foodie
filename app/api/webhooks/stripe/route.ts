@@ -40,6 +40,9 @@ import { parseSigningSecrets, verifyStripeSignature } from '@/lib/stripe/webhook
 import { extractConnectedAccount, extractStripeCreatedAt, isThinEvent } from '@/lib/stripe/webhook-envelope'
 // 🔴 THE ONLY WRITER OF AN ONLINE PAYMENT INTO order_payments. See the payment_intent.succeeded branch.
 import { recordOnlineCardPayment } from '@/lib/payments/online'
+// ── PHASE 2b: promotion. Started out of band; never awaited before the 2xx. See startPromotion. ────
+import { promoteDraft } from '@/lib/payments/promote-draft'
+import { getOrderDraft } from '@/lib/payments/order-drafts'
 
 // Node runtime, pinned EXPLICITLY. Signature verification uses node:crypto's createHmac/timingSafeEqual,
 // which do not exist on the edge runtime. Without this the route would build fine and fail at runtime on
@@ -197,22 +200,49 @@ export async function POST(req: NextRequest) {
 
   if (insertErr) {
     if (insertErr.code === PG_UNIQUE_VIOLATION) {
-      // DUPLICATE DELIVERY. Not an error — the documented behaviour of an at-least-once system. The
-      // first delivery is already recorded, so acknowledge and stop. 200, so Stripe stops retrying.
-      console.log(
-        `[webhook/stripe] DUPLICATE id=${eventId} type=${eventType} livemode=${livemode}` +
-        `${connectedAccount ? ` account=${connectedAccount}` : ''} — already recorded, ignoring`,
+      // ── 🔴 A DUPLICATE IS NOT AUTOMATICALLY A NO-OP ANY MORE ────────────────────────────────────
+      // This used to return immediately, BEFORE any handler ran, and that was right when every handler
+      // was cheap and synchronous: the first delivery had already done the work.
+      // It is wrong now. Promotion runs OUT OF BAND, so a first delivery can be recorded and then have
+      // its promotion dropped — a frozen serverless invocation, a crash, a lock it could not get. If a
+      // redelivery still short-circuits here, that draft is never promoted by the webhook at all, and
+      // the customer's money sits authorised against nothing.
+      // 🔴 SO THE DUPLICATE BRANCH NOW DISTINGUISHES THE TWO CASES, using the `handled` flag the first
+      // delivery sets only once its handler reached a decision:
+      //     handled = true   → the work was done. Acknowledge and stop, exactly as before.
+      //     handled = false  → recorded, but the handler never finished. FALL THROUGH and run it.
+      // ⚠️ RE-RUNNING IS SAFE BECAUSE PROMOTION IS IDEMPOTENT ON THE DRAFT CLAIM: a second promotion of
+      // an already-promoted draft gets zero rows from the conditional UPDATE and returns `already`. The
+      // ledger is likewise idempotent on the PaymentIntent id. Nothing here can double.
+      const { data: seen } = await supabase
+        .from('stripe_webhook_events')
+        .select('handled, handler_result')
+        .eq('stripe_event_id', eventId)
+        .maybeSingle()
+      if (seen?.handled) {
+        console.log(
+          `[webhook/stripe] DUPLICATE id=${eventId} type=${eventType} livemode=${livemode}` +
+          `${connectedAccount ? ` account=${connectedAccount}` : ''} — already recorded AND handled ` +
+          `(${seen.handler_result ?? 'no result'}), ignoring`,
+        )
+        return NextResponse.json({ received: true, duplicate: true })
+      }
+      console.warn(
+        `[webhook/stripe] DUPLICATE id=${eventId} type=${eventType} — recorded but NOT handled ` +
+        `(handled=${String(seen?.handled)}). Re-running the handler: a first delivery whose out-of-band ` +
+        `work was dropped is exactly what this redelivery is for.`,
       )
-      return NextResponse.json({ received: true, duplicate: true })
+      // ⚠️ Deliberately NOT a return. Execution continues into the dispatch below.
+    } else {
+      // 🔴 A REAL PERSISTENCE FAILURE. 500 ON PURPOSE, so Stripe retries — we hold no record of this
+      // event, and its re-delivery is the recovery path. This is the one branch where a non-2xx is the
+      // correct answer rather than a mistake. Names the event id so the retry can be correlated.
+      console.error(
+        `[webhook/stripe] PERSIST FAILED id=${eventId} type=${eventType} livemode=${livemode} — ` +
+        `returning 500 so Stripe retries. ${insertErr.code ?? ''} ${insertErr.message}`,
+      )
+      return NextResponse.json({ error: 'Could not record event' }, { status: 500 })
     }
-    // 🔴 A REAL PERSISTENCE FAILURE. 500 ON PURPOSE, so Stripe retries — we hold no record of this
-    // event, and its re-delivery is the recovery path. This is the one branch where a non-2xx is the
-    // correct answer rather than a mistake. Names the event id so the retry can be correlated.
-    console.error(
-      `[webhook/stripe] PERSIST FAILED id=${eventId} type=${eventType} livemode=${livemode} — ` +
-      `returning 500 so Stripe retries. ${insertErr.code ?? ''} ${insertErr.message}`,
-    )
-    return NextResponse.json({ error: 'Could not record event' }, { status: 500 })
   }
 
   // ── ACCEPTED ─────────────────────────────────────────────────────────────────────────────────────
@@ -324,6 +354,60 @@ export async function POST(req: NextRequest) {
   //
   // ⚠️ SCOPE: this arrives on the CONNECTED-ACCOUNT scope (`events_from: @accounts`), because a direct
   // charge belongs to the truck. The endpoint is already subscribed to it.
+  // ── 🔴 payment_intent.amount_capturable_updated — THE AUTHORISATION LANDS HERE ────────────────────
+  // ⚠️ A CORRECTION TO THE PHASE-2b BRIEF, STATED RATHER THAN QUIETLY IMPLEMENTED. The brief said
+  // promotion should hang off `payment_intent.succeeded` "which now arrives with amount_received: 0".
+  // It does not arrive at all. With `capture_method: 'manual'` an authorised-but-uncaptured intent has
+  // status `requires_capture` and Stripe emits `payment_intent.amount_capturable_updated`;
+  // `payment_intent.succeeded` fires only AFTER capture, which is a later phase. Hanging promotion on
+  // `succeeded` alone would mean no card order was ever created.
+  // 🔴 SO BOTH ARE HANDLED: this branch is the real trigger, and the `succeeded` branch below ALSO
+  // promotes if a draft somehow reaches capture unpromoted. Doing what was asked, plus what works.
+  //
+  // 🔴 THE AMOUNT IS `amount_capturable`, NOT `amount_received`. Money is HELD, not taken — nothing has
+  // moved, so nothing is written to the ledger here. The ledger stays exactly as it was: it records
+  // captures, and this is not one.
+  //
+  // ⚠️ SUBSCRIPTION REQUIRED. The endpoint must be subscribed to
+  // `payment_intent.amount_capturable_updated` on the CONNECTED-ACCOUNT scope (`events_from: @accounts`),
+  // alongside the two types it already receives. Without that subscription this branch never runs and
+  // every card order waits for its redirect — which works, but loses the guarantee that a customer who
+  // closes the tab still gets their order.
+  if (eventType === 'payment_intent.amount_capturable_updated') {
+    if (livemode !== false) {
+      console.warn(`[webhook/stripe] amount_capturable_updated IGNORED id=${eventId} livemode=${livemode} — sandbox only`)
+      await markHandled(eventId, 'ignored:livemode')
+      return NextResponse.json({ received: true })
+    }
+    const pi = (event as { data?: { object?: Record<string, unknown> } }).data?.object
+    const piId = typeof pi?.id === 'string' ? pi.id : null
+    const capturable = typeof pi?.amount_capturable === 'number' ? pi.amount_capturable : 0
+    const metadata = (pi?.metadata ?? {}) as Record<string, unknown>
+    const orderKey = typeof metadata.order_key === 'string' ? metadata.order_key : null
+
+    // ⚠️ NOT OURS IS NORMAL. The same connected account can take payments that did not originate here.
+    if (!orderKey || capturable <= 0) {
+      console.log(
+        `[webhook/stripe] amount_capturable_updated id=${eventId} pi=${piId} capturable=${capturable} ` +
+        `order_key=${orderKey ?? 'none'} — not ours or nothing held, ignoring`,
+      )
+      await markHandled(eventId, 'not_ours')
+      return NextResponse.json({ received: true })
+    }
+
+    // 🔴 OUT OF BAND. THE 2xx CONTRACT IS NOT NEGOTIABLE — see the header: nothing slow and nothing that
+    // can throw runs between verification and the response. Promotion is both: it takes a lock, runs
+    // four checks, inserts, rebuilds capacity and sends two emails. So it is STARTED and not awaited,
+    // and the 2xx goes back immediately.
+    // ⚠️ THE COST, STATED PLAINLY: on a serverless runtime an invocation may be frozen once the response
+    // is returned, so this promotion is NOT guaranteed to finish. That is why it is not the only trigger.
+    // The redirect route promotes too, and the cancellation sweep releases any hold that never became an
+    // order — so a dropped continuation costs latency, never money.
+    startPromotion(orderKey, 'webhook', eventId)
+    console.log(`[webhook/stripe] AUTHORISED pi=${piId} order_key=${orderKey} capturable=${capturable} — promotion started`)
+    return NextResponse.json({ received: true })
+  }
+
   if (eventType === 'payment_intent.succeeded') {
     if (livemode !== false) {
       console.warn(
@@ -350,14 +434,22 @@ export async function POST(req: NextRequest) {
       await markHandled(eventId, 'not_ours')
       return NextResponse.json({ received: true })
     }
-    if (!piId || amountReceived === null || amountReceived <= 0) {
-      console.warn(
-        `[webhook/stripe] payment_intent.succeeded INCOMPLETE id=${eventId} pi=${piId} ` +
-        `amount_received=${String(pi?.amount_received)} — recorded, not acted on`,
-      )
+    // ── ⚠️ THE GUARD, AND WHAT CHANGED ────────────────────────────────────────────────────────────
+    // IT USED TO READ:
+    //     if (!piId || amountReceived === null || amountReceived <= 0) { … recorded, not acted on }
+    // and that was right when every intent was an immediate charge. Under manual capture it is a trap:
+    // an intent can reach this branch with `amount_received: 0` and still be an intent we own, so the
+    // guard would silently drop it as an incomplete payload and no draft would ever be promoted.
+    // 🔴 WHAT CHANGED: a zero amount no longer ends the branch — it skips the LEDGER WRITE and still
+    // attempts promotion. The ledger's rule is untouched and deliberately so: it records money that has
+    // MOVED, and nothing has moved until capture. Only `piId` is now genuinely required, because without
+    // it there is nothing to key anything off.
+    if (!piId) {
+      console.warn(`[webhook/stripe] payment_intent.succeeded INCOMPLETE id=${eventId} — no intent id, not acted on`)
       await markHandled(eventId, 'incomplete_payload')
       return NextResponse.json({ received: true })
     }
+    const moneyMoved = amountReceived !== null && amountReceived > 0
 
     // 🔴 THE ORDER ROW IS THE AUTHORITY FOR truck_id, not the metadata. Metadata is ours and therefore
     // trustworthy, but the ledger's truck_id drives per-truck money rollups — so it is read from the
@@ -369,13 +461,31 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (!order?.truck_id) {
-      // Money has moved and we cannot attribute it. LOUD: this is the only branch here that means a
-      // customer has paid a truck for an order this system cannot find.
+      // ── 🔴 "UNKNOWN ORDER" IS NO LONGER ALWAYS AN ALARM ──────────────────────────────────────────
+      // Under authorize-then-capture the order legitimately does not exist yet: the draft has not been
+      // promoted. That is an ordinary state, not a lost payment, and it must not fire the reconcile-by-
+      // hand alert that this branch was written for. So promotion is started and the alarm is kept for
+      // what it was always meant to catch: money that moved with nothing anywhere to attribute it to.
+      const draft = await getOrderDraft(supabase, orderKey)
+      if (draft) {
+        startPromotion(orderKey, 'webhook', eventId)
+        console.log(`[webhook/stripe] payment_intent.succeeded pi=${piId} order_key=${orderKey} — draft not yet promoted, promotion started`)
+        await markHandled(eventId, 'promotion_started')
+        return NextResponse.json({ received: true })
+      }
       console.error(
-        `[webhook/stripe] 🔴 payment_intent.succeeded FOR AN UNKNOWN ORDER — pi=${piId} order_key=${orderKey} ` +
-        `amount_received=${amountReceived}. The customer HAS been charged. Reconcile by hand.`,
+        `[webhook/stripe] 🔴 payment_intent.succeeded FOR AN UNKNOWN ORDER AND NO DRAFT — pi=${piId} ` +
+        `order_key=${orderKey} amount_received=${amountReceived}. The customer HAS been charged. Reconcile by hand.`,
       )
       await markHandled(eventId, 'unknown_order')
+      return NextResponse.json({ received: true })
+    }
+
+    // ⚠️ NO MONEY MOVED => NO LEDGER ROW. An uncaptured intent that somehow reaches this branch has an
+    // order already, so there is nothing to promote and nothing to record. The ledger records captures.
+    if (!moneyMoved) {
+      console.log(`[webhook/stripe] payment_intent.succeeded pi=${piId} order=${orderKey} amount_received=0 — order exists, nothing captured, no ledger row`)
+      await markHandled(eventId, 'no_capture')
       return NextResponse.json({ received: true })
     }
 
@@ -423,6 +533,37 @@ export async function POST(req: NextRequest) {
  * account_updated.sql. Before that migration this write fails harmlessly and logs; the money-gate update
  * above has already committed either way.
  */
+/**
+ * 🔴 START PROMOTION AND DO NOT WAIT FOR IT. THE 2xx CONTRACT IS WHY.
+ *
+ * The header's rule is absolute: nothing slow and nothing that can throw runs between verification and
+ * the response, because a slow or throwing handler is what turns one delivery into several. Promotion is
+ * both — it takes a per-event lock, runs four checks, inserts an order, rebuilds the capacity board and
+ * sends two emails. Awaiting it here would put all of that inside Stripe's timeout.
+ *
+ * So the promise is started, its result is logged, and its rejection is swallowed into a log line. The
+ * caller returns 200 immediately.
+ *
+ * ⚠️ THE HONEST LIMITATION: on a serverless runtime the invocation may be frozen once the response is
+ * sent, so this is NOT guaranteed to run to completion. It is an OPTIMISATION with a guarantee behind it,
+ * not the guarantee itself. The two things that make a dropped continuation cost latency instead of money:
+ *   - /api/payments/return promotes as well, whenever the customer comes back;
+ *   - the cancellation sweep releases any authorisation that never became an order.
+ * And a redelivery now re-runs the handler (see the duplicate branch) precisely because of this.
+ */
+function startPromotion(orderKey: string, trigger: 'webhook', eventId: string) {
+  void promoteDraft(supabase, orderKey, trigger)
+    .then(res => {
+      console.log(`[webhook/stripe] promotion(${orderKey}) -> ${res.status}${'detail' in res ? ` (${res.detail})` : ''}${'reason' in res ? ` (${res.reason})` : ''}`)
+      // Marked only once the work actually finished, which is what makes the duplicate branch above
+      // able to tell "done" from "started and lost".
+      return markHandled(eventId, `promotion:${res.status}`)
+    })
+    .catch(err => {
+      console.error(`[webhook/stripe] 🔴 promotion(${orderKey}) threw — the event stays UNHANDLED so a redelivery retries it:`, err)
+    })
+}
+
 async function markHandled(eventId: string | null, result: string) {
   if (!eventId) return
   const { error } = await supabase

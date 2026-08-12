@@ -8,18 +8,12 @@ import type { DiscountCode } from '@/lib/order-calculations'
 import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
 import {
   computeEventUnitRows,
-  getProductionSlotUnits,
   buildItemCatMap,
   normaliseOrderLines,
 } from '@/lib/slot-bookings'
-import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { earliestBackwardFitSlot } from '@/lib/slot-availability'
-import { getAsapSlot } from '@/lib/slot-utils'
-import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCountForGroup } from '@/lib/modifier-rules'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
-import type { CatConfig } from '@/lib/prep-utils'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderDeadlinePassed, isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
@@ -28,6 +22,10 @@ import { isDemoIdentifier } from '@/lib/demo'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
+import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
+// ── PHASE 2b: the card fork. See the block just above the event lock in POST. ──────────────────────
+import { newOrderKey, createOrderDraft } from '@/lib/payments/order-drafts'
+import { authorizeDraft } from '@/lib/payments/authorize'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -126,183 +124,14 @@ function formatWhatsAppOrder(params: {
 }
 
 // ─── Email confirmation formatter ─────────────────────────────────────────────
+//
+// ⚠️ `timeToMins`, `eventKitchenCapacity` and `placeOrderInSlotLocked` USED TO BE DECLARED HERE.
+// They moved VERBATIM to lib/orders/place-in-slot.ts on 13 August 2026 and are imported above. The
+// reason is not tidiness: the card path now creates its order from an authorised draft
+// (lib/payments/promote-draft), and that order has to be PLACED by the same rules a pay-at-hatch
+// order is. One engine, two callers — never two copies of a capacity decision.
+// 🔴 THE BODIES DID NOT CHANGE. This path calls the same function it used to declare.
 
-function timeToMins(t: string): number {
-  const [h, m] = t.split(':').map(Number)
-  return h * 60 + m
-}
-
-/** Resolve collection slot after auto-accept; bump if production window is batch-full. */
-/**
- * Live kitchen_capacity (items ceiling) + event start for a truck/date, from the
- * event's van — the same source the operator traffic light uses. Replaces the dead
- * slot_capacity batch cache for the customer capacity decision.
- */
-async function eventKitchenCapacity(
-  truckId: string,
-  eventDate: string,
-  eventId: string | null,
-): Promise<{ kitchenCapacity: number | null; capacityWindowMins: number; eventStartMins: number }> {
-  // Resolve the SPECIFIC event by id (the order's actual event) so a multi-event-same-date
-  // day reads the right van/capacity. Fall back to the date's first event only when no
-  // event_id is available (warn).
-  let ev: { start_time: string | null; van_id: string | null } | null = null
-  if (eventId) {
-    const { data } = await supabase
-      .from('truck_events')
-      .select('start_time, van_id')
-      .eq('truck_id', truckId)
-      .eq('id', eventId)
-      .maybeSingle()
-    ev = data ?? null
-    if (!ev) console.warn(`[eventKitchenCapacity] event_id ${eventId} not found for truck ${truckId} — date fallback`)
-  }
-  if (!ev) {
-    if (!eventId) console.warn(`[eventKitchenCapacity] no event_id for truck ${truckId} on ${eventDate} — using date's first event`)
-    const { data } = await supabase
-      .from('truck_events')
-      .select('start_time, van_id')
-      .eq('truck_id', truckId)
-      .eq('event_date', eventDate)
-      .neq('status', 'cancelled')
-      .order('start_time', { ascending: true })
-      .limit(1)
-      .maybeSingle()
-    ev = data ?? null
-  }
-  let kitchenCapacity: number | null = null
-  let capacityWindowMins = 5
-  if (ev?.van_id) {
-    const { data: van } = await supabase
-      .from('truck_vans')
-      .select('kitchen_capacity, capacity_window_mins')
-      .eq('id', ev.van_id)
-      .single()
-    kitchenCapacity = van?.kitchen_capacity ?? null
-    capacityWindowMins = van?.capacity_window_mins ?? 5
-  }
-  return { kitchenCapacity, capacityWindowMins, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
-}
-
-/**
- * Customer slot rule (Section 5/6/7), race-safe via ONE per-event lock. The whole
- * walk runs inside a single lock: read units FRESH (reflecting all prior bookings on
- * the event), evaluate the requested/ASAP-resolved slot then each later slot via
- * buildSlotAvailability (this order folded in as basket), and BOOK the first non-red
- * one atomically. ASAP (requestedSlot null) resolves its start via getAsapSlot
- * (Section 6 — not forked) then walks the same way.
- *
- *   booked=true  → finalSlot is the RESOLVED placement (capacity NOT yet consumed).
- *   booked=false → no slot non-red (event full) OR lock contended → pending, NOT
- *                  booked. A slot is never overfilled and the customer is never rejected.
- *
- * RESOLVE-ONLY: this function no longer files production_slot_usage. The caller persists
- * order.slot = finalSlot FIRST, then calls addOrderToProductionSlot once — so the lazy reseed
- * (buildUnitsFromOrders) reads the real placed slot on a first-order-after-clear, not the null
- * insert value (which fell back to eventStart). Reuses buildSlotAvailability — no forked formula.
- *
- * LOCK-FREE: the CALLER MUST already hold the per-event booking lock. The acquire/release is
- * hoisted to the POST handler so the stock re-check + order insert + this placement all run
- * under ONE lock (Option B atomic stock guard). Here booked=false means "event full / no
- * fitting slot before end" only — lock contention is handled by the caller.
- */
-async function placeOrderInSlotLocked(
-  truckId: string,
-  eventDate: string,
-  eventId: string | null,
-  requestedSlot: string | null,
-  orderLines: { name: string; quantity: number }[],
-  itemCatMap: Record<string, string>,
-  catConfigs: Record<string, CatConfig>,
-  eventStartTime?: string | null,
-  eventEndTime?: string | null,
-  intervalMins?: number,
-  slotDurationMins?: number,
-  kitchenCapacity?: number | null,
-  capacityWindowMins?: number,
-  // The PLACING order's own order_key — excluded from the fit's occupancy reseed so it can't count
-  // itself (it's inserted pending+null-slot before this fit). Opt-in; only the submit path passes it.
-  excludeOrderKey?: string | null,
-): Promise<{ finalSlot: string | null; booked: boolean }> {
-  // event_id scopes the production_slot_usage read/write so same-date events don't pool.
-  {
-    const { data: staticTimes } = await supabase
-      .from('collection_times')
-      .select('collection_time, production_slot')
-      .eq('truck_id', truckId)
-      .order('collection_time', { ascending: true })
-
-    const iv = intervalMins ?? 0
-    const dur = slotDurationMins ?? iv
-    const times =
-      staticTimes?.length
-        ? staticTimes
-        : eventStartTime && eventEndTime && iv > 0
-          ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
-          : []
-    const basketByCat = orderItemsToQtyByCat(orderLines, itemCatMap)
-
-    // Resolve the starting slot: explicit request, else ASAP via the existing resolver
-    // (Section 6/7 — first slot at/after the ASAP floor; not forked).
-    const startSlot =
-      requestedSlot ??
-      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate)?.collection_time ??
-      null
-
-    // No schedule / unresolvable start (e.g. pub / no collection_times) → book at the
-    // event-start window with no slot model, preserving prior ASAP-booking behaviour.
-    if (!startSlot || !times.length) {
-      const ct = startSlot ?? (eventStartTime ? eventStartTime.slice(0, 5) : null)
-      if (!ct) return { finalSlot: null, booked: false }
-      return { finalSlot: ct, booked: true }
-    }
-
-    const startEntry = times.find(t => t.collection_time === startSlot)
-    // Unrecognised slot (not in the list) → confirm at requested, no capacity check (Section 5).
-    if (!startEntry) {
-      return { finalSlot: startSlot, booked: true }
-    }
-
-    // One FRESH read under the event lock — we are the sole writer for its duration. excludeOrderKey
-    // drops THIS order from the empty-cache reseed so it doesn't self-occupy the start window (Option B).
-    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId, excludeOrderKey)
-    const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
-    const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
-
-    // Truly-uncounted order (no oven AND no ticked-instant categories) → book at the start slot
-    // (nothing participates in the concurrency ceiling). Counted-instant orders fall THROUGH to the
-    // backward-fit gate below so they're capacity-checked too (no oversell) — the engine seats their
-    // instant items as concurrency points on the capacity cadence.
-    const hasCounted = Object.keys(basketByCat).some(c => {
-      const cfg = catConfigs[c.toLowerCase()]
-      return !!(cfg && (cfg.secs || cfg.countsToCapacity))
-    })
-    if (!hasCounted) {
-      return { finalSlot: startSlot, booked: true }
-    }
-
-    // BACKWARD-FIT placement (Stage 3): the earliest slot whose ceil(N/batch) cooking windows
-    // (ending at it) have spare — the SAME fitOrderBackward engine the picker/ASAP use, so the
-    // server places exactly where the backward picker would OFFER. A requested slot is honored
-    // when it fits; otherwise the order reassigns FORWARD to the next fitting slot (never
-    // rejected). ASAP (no requested slot) → earliest fitting at/after the now-floor startSlot.
-    const fromMins = requestedSlot
-      ? Math.max(timeToMins(startSlot), timeToMins(requestedSlot))
-      : timeToMins(startSlot)
-    // NOW-CLAMP so the BOOKED slot is physically achievable (cooking can't start before now). Today
-    // only — for a future-date event nowMins (mins-of-day) would mis-compare, so pass -Inf (no clamp).
-    // Event tz hardcoded 'Europe/London' (matches the engine default), replaced by trucks.timezone later.
-    const placeNowMins = eventDate === getLocalDateInTz('Europe/London')
-      ? getNowMinsInTz('Europe/London')
-      : Number.NEGATIVE_INFINITY
-    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins)
-    if (!placement || timeToMins(placement) > eventEndMins) {
-      // No fitting slot before event end → event full → pending (never reject).
-      return { finalSlot: null, booked: false }
-    }
-    return { finalSlot: placement, booked: true }
-  }
-}
 
 function cap(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1)
@@ -341,6 +170,12 @@ export async function POST(req: NextRequest) {
       // not the slot, not capacity, not money. It is written to a column and read back onto one line
       // of a confirmation screen. Do not let it into any branch that matters.
       asapEstimate,
+      // ── 🔴 PHASE 2b. THE ONE NEW REQUEST FIELD, AND IT IS AN INTENT, NEVER A CLAIM. ──────────────
+      // `true` means "the customer chose to pay by card", nothing more. It does not assert that the
+      // truck can take one — readiness is re-read server-side in lib/payments/authorize — and it moves
+      // no money by itself. Absent (every existing client, and the whole pay-at-hatch flow) => the
+      // order is created directly below, byte-identically to today.
+      payByCard,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -837,6 +672,90 @@ export async function POST(req: NextRequest) {
       if (soldOut) {
         return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true }, { status: 409 })
       }
+    }
+
+    // ── 🔴 THE CARD FORK. AUTHORISE FIRST; NO ORDER YET. ──────────────────────────────────────────
+    // Everything above this line has run exactly as it always did: the truck, the pause and event-status
+    // guards, server-side pricing, the pre-order gate, the required-modifier guard and the option
+    // sold-out backstop. Everything BELOW it — the lock, the stock re-check, the slot claim, the INSERT,
+    // the counter, the emails, the push — has not run and must not.
+    //
+    // 🔴 NOTHING IS RESERVED HERE. No lock is taken, no capacity is booked, no stock is counted, no
+    // display number is consumed and no email is sent. A draft is a wish. The order is created only once
+    // the money is authorised, by lib/payments/promote-draft, and by nothing else.
+    //
+    // ⚠️ THE FORK IS HERE AND NOT AT THE PRICING LINE, DELIBERATELY. Pricing finishes ~30 lines above,
+    // but between there and here sit the pre-order open gate, the required-modifier completeness guard
+    // and the option sold-out backstop — all of which REFUSE orders. Forking earlier would let a
+    // customer authorise money for a basket that promotion would then have to refuse and refund. Every
+    // refusal we can make before touching their card, we make before touching their card.
+    //
+    // ⚠️ OPT-IN, SO THE PAY-AT-HATCH PATH IS UNTOUCHED. `payByCard` is absent on every existing client
+    // and on the whole pay-at-hatch flow, so this branch is not entered and execution continues into the
+    // lock exactly as it does today. An older app build that never sends it keeps working unchanged.
+    //
+    // ⚠️ AND IT FALLS BACK RATHER THAN FAILING. If the truck cannot take a card right now — Stripe not
+    // ready, the operator's kill switch on, a Stripe error — this does NOT refuse the order. It falls
+    // through to the pay-at-hatch path below and the customer is told to pay at the truck, which is the
+    // behaviour the page already has for a failed card start.
+    if (payByCard === true) {
+      const draftKey = newOrderKey()
+      const created = await createOrderDraft(supabase, {
+        orderKey:      draftKey,
+        truckId:       resolvedTruckId,
+        eventId:       eventRow?.id ?? null,
+        vanId:         eventRow?.van_id ?? null,
+        eventDate:     orderEventDate,
+        requestedSlot: slot ?? null,
+        orderType:     'collection',
+        customerName:  customerName,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        // 🔴 THE SERVER-PRICED ARRAYS AND THE SERVER TOTALS. Never the request body's figures — server
+        // pricing removed those, and the draft must carry the number that will be authorised.
+        items:         pricedItems,
+        deals:         deals ? pricedDeals : null,
+        notes:         notes ?? null,
+        discountCode:  discountCode ?? null,
+        asapEstimate:  typeof asapEstimate === 'string' && asapEstimate.trim() ? asapEstimate.trim() : null,
+        upsellEvents:  upsellEvents ?? null,
+        subtotal:      serverSubtotal,
+        discountAmt:   serverDiscountAmt,
+        total:         serverTotal,
+        totalMinor:    serverTotalMinor,
+      })
+
+      if (created.ok) {
+        const auth = await authorizeDraft(supabase, {
+          orderKey:    draftKey,
+          truckId:     resolvedTruckId,
+          truckName:   truck.name,
+          truckSlug:   truck.slug ?? null,
+          amountMinor: serverTotalMinor,
+        })
+        if (auth.ok) {
+          // 🔴 THE ONLY SUCCESSFUL EXIT THAT CREATES NO ORDER. The client redirects to `url`; Stripe
+          // authorises; promotion follows from the webhook (authoritative) and/or the return route.
+          return NextResponse.json({
+            requiresAuthorization: true,
+            orderKey: draftKey,
+            url: auth.url,
+            total: serverTotal,
+          })
+        }
+        console.warn(
+          `[submit] card authorisation unavailable for draft=${draftKey} truck=${resolvedTruckId} ` +
+          `(${auth.reason}${auth.reason === 'error' ? `: ${auth.detail}` : ''}) — falling through to ` +
+          `pay-at-hatch. The draft is left to expire and be swept; no money was authorised.`,
+        )
+      } else {
+        console.error(
+          `[submit] draft not created for truck=${resolvedTruckId} (${created.error}) — falling through ` +
+          `to pay-at-hatch. No money was authorised.`,
+        )
+      }
+      // ⚠️ FALL THROUGH. Not a return: the order is placed unpaid below, exactly as it is today when
+      // /api/stripe/checkout fails, and the customer pays at the truck.
     }
 
     // ── Atomic stock guard + slot placement under ONE per-event lock (Stage 2, Option B) ──
