@@ -1387,7 +1387,11 @@ export default function KdsPage() {
                 // Suppressed entirely on a no-payments device: a screen that shows no prices and no pay
                 // buttons must not assert in a footer that money changed hands.
                 const bal = getOrderBalance(o as never, payments[o.order_key] ?? [])
-                const settled = bal.status === 'paid' || bal.status === 'refunded'
+                // ⚠️ 'part_refunded' RIDES WITH 'refunded'. Charged in full and partly given back means
+                // nothing is owed, and without it here the KDS footer prints "£2.00 due" for money the
+                // customer was just refunded. The KDS is a glance surface, so it says paid rather than
+                // spelling out the refund; the order card carries the detail.
+                const settled = bal.status === 'paid' || bal.status === 'refunded' || bal.status === 'part_refunded'
                 // 🔴 HELD IS NEITHER SETTLED NOR DUE. `£X due` on an order whose card is already
                 // authorised is an instruction to collect money that is held — the double-payment path
                 // this change exists to close. Tested after `settled`, and the resolver already excludes

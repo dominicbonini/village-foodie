@@ -315,7 +315,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // not the status, that clears a pending payment chip.
   const paymentOrders=useMemo(()=>orders.map(o=>({
     order_key:o.order_key,
-    confirmedPaid:(()=>{const b=getOrderBalance(o as never,payments[o.order_key]??[]);return b.status==='paid'||b.status==='refunded'})(),
+    /* 'part_refunded' counts as settled here for the same reason as 'refunded': nothing is outstanding. */
+    confirmedPaid:(()=>{const b=getOrderBalance(o as never,payments[o.order_key]??[]);return b.status==='paid'||b.status==='refunded'||b.status==='part_refunded'})(),
   })),[orders,payments])
   const{overlay:paymentOverlay,refresh:refreshPendingPayment}=useOfflinePaymentOverlay(paymentOrders)
   // ── THE CONFLICT SIGNAL ──────────────────────────────────────────────────────────────────────────

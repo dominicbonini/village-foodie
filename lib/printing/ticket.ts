@@ -100,7 +100,10 @@ export interface TicketOrder {
    *  step has no concept of an unpaid order at handover, and printing one would invent a state it does
    *  not have. Pizzeria Gusto is exactly this truck. */
   showPaidStep?: boolean
-  paymentStatus?: 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'refund_due' | 'failed'
+  // ⚠️ 'part_refunded' JOINED THE UNION 17 August 2026. The RENDERER ALREADY HANDLED IT: the else arm
+  // below prints `PAYMENT PART REFUNDED` via .replace('_',' ').toUpperCase(), so only the type needed
+  // widening. What matters is that it does NOT fall into the 'part_paid' arm, which prints "TO PAY".
+  paymentStatus?: 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'part_refunded' | 'refund_due' | 'failed'
   /** 🔴 A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved by lib/payments/held-authorisation.ts and passed
    *  in — never derived here. NOT a payment status: the order is genuinely `unpaid` and no money has
    *  moved. It says only that the money is HELD and must not be collected at the hatch. */

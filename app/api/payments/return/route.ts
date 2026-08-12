@@ -19,8 +19,38 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { promoteDraft } from '@/lib/payments/promote-draft'
+import { keepAlive } from '@/lib/runtime/after-response'
 
 export const runtime = 'nodejs'
+
+// ── 🔴 THE BUDGET, AND WHY IT IS THE CEILING RATHER THAN SOMETHING SNUGGER. ───────────────────────
+// This route had NO maxDuration and so inherited the platform default the repo documents at
+// app/api/demo/route.ts:23 as "10s on Hobby / 15s on Pro". That is BELOW the measured cost of a
+// promotion (order 25: 23.5s from claim to insert), and being killed here is the single worst outcome
+// this route can produce: the claim is taken BEFORE the work, so a killed promoter leaves `promoted_at`
+// set with no order row, and the webhook then stands down on `already`.
+// Set to 300, matching app/api/demo/route.ts, which records it as "the highest a Vercel Pro Node
+// function permits (300s)". ⚠️ REQUIRES THE PRO PLAN: on Hobby the cap is 60s.
+// 🔴 THE CUSTOMER NEVER WAITS THAT LONG — see REDIRECT_DEADLINE_MS. This budget is for the `after()`
+// continuation that carries on once they have already been sent to their confirmation.
+export const maxDuration = 300
+
+// ── 🔴 HOW LONG A WAITING HUMAN IS MADE TO WAIT, AND WHY IT IS NOT "UNTIL PROMOTION FINISHES". ────
+// Awaiting the whole of promoteDraft would hold this request through the order insert AND the capacity
+// rebuild AND two Brevo sends — order 24 measured 20.4s end to end, of which only the first 2.5s
+// produced the order row the customer is waiting for. The rest is work they have no reason to watch.
+// So the promotion is RACED against this deadline. Beat it and they are redirected to a confirmation
+// that renders instantly. Miss it and they are redirected anyway, to exactly the screen and exactly the
+// polling behaviour they get today — while the SAME promotion continues under after().
+// 🔴 SO THE DEADLINE CANNOT MAKE ANYTHING WORSE. It never cancels, never abandons and never releases the
+// claim; it only stops WAITING. The floor of this design is today's behaviour, and the ceiling is an
+// instant confirmation.
+// ⚠️ 6000ms is ~2.4x the 2.5s a healthy promotion took to reach its insert (order 24, 12 August), and
+// far inside the 60s the confirmation screen tolerates before it gives up (page.tsx:675-677).
+const REDIRECT_DEADLINE_MS = 6000
+
+/** The deadline arm of the race. Resolves to this sentinel; never rejects, never cancels anything. */
+const STILL_RUNNING = Symbol('promotion-still-running')
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,16 +70,40 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(menuUrl, { status: 303 })
   }
 
-  let res: Awaited<ReturnType<typeof promoteDraft>>
-  try {
-    res = await promoteDraft(supabase, draftKey, 'redirect')
-  } catch (err) {
-    // 🔴 THE WEBHOOK IS STILL COMING. This route failing does not mean the order will not exist, so the
-    // customer is sent to the confirmation, which will resolve as soon as promotion lands. Telling them
-    // it failed would be a guess, and the wrong one.
-    console.error(`[payments/return] 🔴 promotion threw for draft=${draftKey} — the webhook remains the authority:`, err)
+  // ── 🔴 START IT, HAND IT TO THE RUNTIME, THEN WAIT ONLY AS LONG AS A HUMAN SHOULD. ─────────────
+  // `keepAlive` is called with the IN-FLIGHT promise rather than a thunk, precisely because this route
+  // wants to await part of it. Registering it before the race means the continuation is declared to the
+  // runtime whether we end up waiting for it or not — the whole lesson of order 25.
+  // ⚠️ THE `.catch` IS ON THE SHARED PROMISE, so the deadline arm winning can never leave an unhandled
+  // rejection behind. It converts a throw into the `error` shape this switch already handles.
+  const work: Promise<Awaited<ReturnType<typeof promoteDraft>>> =
+    promoteDraft(supabase, draftKey, 'redirect').catch(err => {
+      console.error(`[payments/return] 🔴 promotion threw for draft=${draftKey} — the webhook remains the authority:`, err)
+      return { status: 'error' as const, orderKey: draftKey, detail: err instanceof Error ? err.message : 'threw' }
+    })
+  keepAlive(work, `promotion:${draftKey}`)
+
+  const raced = await Promise.race([
+    work,
+    new Promise<typeof STILL_RUNNING>(resolve => setTimeout(() => resolve(STILL_RUNNING), REDIRECT_DEADLINE_MS)),
+  ])
+
+  if (raced === STILL_RUNNING) {
+    // 🔴 NOT A FAILURE, AND NOTHING WAS ABANDONED. Promotion is still running under after(); the
+    // customer goes to the confirmation, which polls for up to 60s and fills in the moment the order
+    // row lands. This is precisely the experience they had before this route was wired at all.
+    console.warn(
+      `[payments/return] promotion for draft=${draftKey} exceeded ${REDIRECT_DEADLINE_MS}ms — redirecting ` +
+      `now and letting it finish under after(); the confirmation screen will poll it in.`,
+    )
     return NextResponse.redirect(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { status: 303 })
   }
+
+  // ⚠️ NO try/catch HERE ANY MORE, AND NOTHING IS LOST BY THAT. A throw is caught on the shared promise
+  // above and arrives as `{ status: 'error' }`, which the `default` arm below already sends to the
+  // confirmation — the same redirect the old catch produced, for the same stated reason: the webhook is
+  // still coming, and telling the customer it failed would be a guess, and the wrong one.
+  const res = raced
 
   switch (res.status) {
     case 'promoted':

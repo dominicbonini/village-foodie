@@ -48,7 +48,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { claimOrderDraft, erasePii, markPromotionFailed, markAuthorizationCancelled, type OrderDraftRow } from '@/lib/payments/order-drafts'
 import { cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
-import { captureOnConfirmation } from '@/lib/payments/capture'
+import { captureOnConfirmation, type CaptureResult } from '@/lib/payments/capture'
+import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { checkOptionCeilingShortfall, findSoldOutOption } from '@/lib/option-stock'
 import { buildItemCatMap, normaliseOrderLines, rebuildProductionSlotUsage } from '@/lib/slot-bookings'
@@ -362,12 +363,16 @@ export async function promoteDraft(
     // send must not be what loses a capture. The cost is stated at the email below.
     // ⚠️ AWAITED, AND IT CANNOT THROW — captureOnConfirmation returns every failure as a value and
     // records it. The order is already committed; nothing here may undo it.
+    // ⚠️ HOISTED SO THE CONFIRMATION EMAIL CAN READ IT. It used to be a `const` inside the branch and
+    // was discarded — the same defect the operator-confirm branch had, and for the same reason: the
+    // email is composed forty lines later and re-derives what this already knows.
     let captureNote = 'no authorisation'
+    let captureResult: CaptureResult | undefined
     if (autoAccepted) {
-      const cap = await captureOnConfirmation(supabase, {
+      captureResult = await captureOnConfirmation(supabase, {
         orderKey: draft.order_key, truckId: draft.truck_id, trigger: 'promote_auto_accept',
       })
-      captureNote = cap.status
+      captureNote = captureResult.status
     } else if (draft.payment_intent_id) {
       captureNote = 'held, pending confirmation'
     }
@@ -386,6 +391,17 @@ export async function promoteDraft(
     //      checkout left a customer holding a confirmation for an order nobody paid for.
     if (!isDemoTruck && draft.customer_email) {
       try {
+        // ── 🔴 WHAT THIS CUSTOMER OWES, FROM THE SAME RESOLVER ALL FOUR OPERATOR EMAILS USE. ────────
+        // 🔴 THE CAPTURE RESULT FIRST, BECAUSE IT IS THE MOST ACCURATE SOURCE THERE IS, and this
+        // function has one in hand. Step 8a captured moments ago; an `expired` result means Stripe
+        // refused because the hold is gone, and the draft row does not know that yet — a database read
+        // at this instant would answer "held" and promise a customer their card is covering an order
+        // it is not. Exactly the reasoning the operator-confirm branch now follows.
+        // ⚠️ `captureResult` IS UNDEFINED FOR AN ORDER THAT LANDED PENDING, deliberately: nothing was
+        // captured, so there is nothing to report from, and the resolver reads — answering 'held' for a
+        // live authorisation and 'hatch' for a draft that never had one.
+        // ⚠️ INSIDE THE EMAIL GUARD, so a demo truck or an order with no email address pays nothing.
+        const paymentState = await resolveEmailPaymentState(supabase, draft.order_key, captureResult)
         const { subject, html, text } = formatConfirmationEmail({
           orderId,
           orderKey:     draft.order_key,
@@ -400,22 +416,21 @@ export async function promoteDraft(
           total:        draft.total,
           notes:        draft.notes ?? null,
           autoAccepted,
-          // ── 🔴 THE ONE LINE THIS FILE GAINED, AND IT IS THE WHOLE POINT OF THE EMAIL CHANGE. ──────
+          // ── 🔴 THE PAYMENT SENTENCE. RESOLVED, NOT ASSUMED. ───────────────────────────────────────
           // This email used to tell a customer who had just authorised their card to "Pay at the truck
-          // on collection" — the sentence was a hardcoded constant because formatConfirmationEmail took
-          // no payment parameter at all. It takes one now, and this is where it is answered.
-          // ⚠️ FALSE for every pay-at-hatch order, which keeps their email byte-identical to today.
-          // 🔴 AND IT STAYS `true` EVEN WHEN STEP 8a HAS JUST CAPTURED, WHICH IS A DELIBERATE TRADE,
-          // NOT AN OVERSIGHT. For an AUTO-ACCEPTED card order the money moved a moment ago, so the
-          // sentence "your card is held, not charged" is stale by the time it is read. The alternative
-          // is worse by a wide margin: this parameter has exactly two branches, and the other one says
-          // "Pay at the truck on collection" — telling a customer who has just been charged to pay
-          // again, which is the double-payment bug the whole cardHeld branch was added to kill. The
-          // load-bearing sentence, "nothing to pay at the truck", is true either way.
-          // ⚠️ THE HONEST FIX IS A THIRD BRANCH IN formatConfirmationEmail — a "paid" one. That is a
-          // change to a held-authorisation surface and is out of scope here; it is written down rather
-          // than done quietly. Until then this line reads "was this a card order", not "is it held".
-          cardHeld:     !!draft.payment_intent_id,
+          // on collection" — a hardcoded constant, because formatConfirmationEmail took no payment
+          // parameter at all. The first fix gave it `cardHeld: !!draft.payment_intent_id`, which was
+          // accurate for exactly as long as this file captured nothing.
+          // 🔴 THAT STOPPED BEING TRUE WHEN STEP 8a WAS ADDED. Capture now runs inline, BEFORE this
+          // line, so an auto-accepted card order was being told "your card is held, not charged" about
+          // money that had already moved. A boolean cannot say otherwise: its two branches are "held"
+          // and "pay at the truck", and the second would bill someone who has just been charged.
+          // ⚠️ SO IT IS A STATE, NOT A FLAG, AND THE SAME ONE THE OTHER FOUR EMAILS READ. 'captured'
+          // when the money moved, 'held' when it has not yet, 'hatch' when it is genuinely owed, and
+          // 'unknown' when we could not tell — which says neither and asks them not to pay twice.
+          // ⚠️ A DRAFT WITH NO AUTHORISATION STILL RESOLVES TO 'hatch', so anything reaching this file
+          // without an intent renders the block it always rendered, character for character.
+          paymentState,
           venueName:              eventRow?.venue_name ?? null,
           venueTown:              eventRow?.town ?? null,
           venuePostcode:          eventRow?.postcode ?? null,

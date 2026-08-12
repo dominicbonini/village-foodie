@@ -2,7 +2,15 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml, paymentNote } from '@/lib/email'
+// 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
+// collection" unconditionally — to customers whose card was held, and to customers already charged.
+// None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
+import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
+// 🔴 THE SERVER-SIDE HALF OF "DO NOT COLLECT THIS AT THE HATCH". The order card hides the button; these
+// two branches are what stops an offline replay, a stale board or the KDS booking the payment anyway.
+// Same resolver the CARD HELD chip reads, so the button and the guard cannot disagree.
+import { hasHeldAuthorisation } from '@/lib/payments/held-authorisation'
 import { isDemoIdentifier } from '@/lib/demo'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes } from '@/lib/time-utils'
@@ -147,8 +155,15 @@ async function deliverReadyEmail(order: any, truck: any) {
     ? eventQuery.eq('id', order.event_id)
     : eventQuery.eq('event_date', order.event_date).neq('status', 'cancelled')
   const { data: eventRow } = await eventQuery.maybeSingle()
+  // ── 🔴 THE READY EMAIL SAID "Pay at the truck." TWICE, TO EVERYONE. ─────────────────────────────
+  // Once in the headline ("come and collect from X. Pay at the truck.") and once in the payment box.
+  // For a card order that has been confirmed and captured, both were a bill for money already taken —
+  // and this is the last email before the customer walks up to the window.
+  // ⚠️ NO CAPTURE RESULT EXISTS HERE. Ready happens long after any confirmation, so this reads.
+  const paymentState = await resolveEmailPaymentState(supabase, order.order_key)
   const { subject, html, text } = formatConfirmationEmail({
     variant: 'ready',
+    paymentState,
     orderId: order.id,
     orderKey: order.order_key,
     customerName: order.customer_name,
@@ -228,9 +243,18 @@ export async function POST(req: NextRequest) {
       // ⚠️ AFTER the status write, deliberately: the confirmation is the thing that must happen.
       // ⚠️ AWAITED AND CANNOT THROW — every failure comes back as a value. The order is already
       // confirmed by the line above and stays confirmed whatever this returns.
-      await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'confirm' })
+      const captureResult = await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'confirm' })
 
       if (order.customer_email) {
+        // ── 🔴 THE RESULT ON THE LINE ABOVE IS WHAT THE EMAIL NEEDS, AND IT USED TO BE DISCARDED. ──
+        // This branch called captureOnConfirmation, threw the answer away, and then composed an email
+        // twenty-six lines later that told the customer to pay at the truck — money it had just taken.
+        // 🔴 IT IS ALSO MORE ACCURATE THAN RE-READING. An `expired` capture means Stripe refused because
+        // the hold is gone: the draft row does not know that yet, so a database read would answer
+        // "held" and promise a customer their card is covering an order it is not.
+        // ⚠️ `none` (no authorisation on this order) is not decisive, and the resolver falls through to
+        // the database — which answers 'hatch' for every pay-at-hatch order, exactly as today.
+        const paymentState = await resolveEmailPaymentState(supabase, orderKey, captureResult)
         // Resolve the venue strictly by the order's OWN event_id (cross-event fix): an
         // event_date+maybeSingle lookup returns null/the wrong row on multi-event dates,
         // putting the wrong venue in the confirmation email. Fall back to date only when the
@@ -255,6 +279,7 @@ export async function POST(req: NextRequest) {
           total: Number(order.total),
           notes: order.notes ?? null,
           autoAccepted: true,
+          paymentState,
           venueName: eventRow?.venue_name ?? null,
           venueTown: eventRow?.town ?? null,
           venuePostcode: eventRow?.postcode ?? null,
@@ -419,8 +444,28 @@ export async function POST(req: NextRequest) {
       // must be reconsidered deliberately, not inherited.
       let paymentWarning: string | null = null
       let chargedMinor: number | null = null
+      // ── 🔴 THE SAME GUARD, SHAPED DIFFERENTLY, BECAUSE THIS ACTION IS NOT ABOUT MONEY. ───────────
+      // One-press completion books the SAME in-person row as mark_paid — recordCollectionPayment,
+      // channel 'in_person_other', the full outstanding balance — so a held order double-charges here
+      // too. But `collected` is a FULFILMENT action, and refusing it strands an operator at the hatch
+      // with food in their hand, which this file says repeatedly must never happen.
+      // 🔴 SO THE ACTION PROCEEDS AND ONLY THE MONEY WRITE IS SKIPPED. The order completes, the queue
+      // clears, and nothing is charged twice. The customer's card already covers this order and is
+      // captured at confirmation.
+      // ⚠️ For a held order that has ALREADY been captured this changes nothing: the balance is zero,
+      // so recordCollectionPayment's own `before.balanceMinor <= 0` guard was already booking nothing.
+      // This branch is for the window where the capture has not landed yet.
+      const heldOnCollect = await hasHeldAuthorisation(supabase, orderKey)
+      if (heldOnCollect) {
+        console.warn(
+          `[collected] order_key=${orderKey} truck=${truck.id} has a LIVE CARD HOLD — completing the ` +
+          `order but booking NO in-person payment. The card is charged at confirmation.`,
+        )
+      }
       try {
-        const res = await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+        const res = heldOnCollect
+          ? { chargedMinor: 0 }
+          : await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
         chargedMinor = res.chargedMinor
       } catch (err) {
         console.error(`[collected] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order WAS still marked collected (fail-open). Re-run recalcOrderPayment for this order_key to repair; the reconciliation query in lib/payments/ledger.ts will list it until then:`, err)
@@ -740,6 +785,18 @@ export async function POST(req: NextRequest) {
       }
 
       if (order.customer_email) {
+        // ── 🔴 THE ONE SITE THAT DOES NOT USE formatConfirmationEmail, AND THE ONLY ONE WHERE THE
+        //    SENTENCE WAS A STRING LITERAL RATHER THAN AN UNPASSED PARAMETER. ─────────────────────
+        // It builds its own HTML, so the fix is the same resolver feeding `paymentNote().short` into
+        // the footer line and the plain text. 'hatch' renders "Pay at the truck on collection", which
+        // is byte-identical to the literal it replaces.
+        // ⚠️ NO CAPTURE HAPPENS ON THIS PATH, so this reads. An edit does not confirm anything.
+        // ⚠️ AND A LIMIT, STATED RATHER THAN PAPERED OVER: editing an order whose card is ALREADY
+        // CAPTURED changes the total, and the captured amount does not follow it. The customer is told
+        // the new total and that their payment has gone through, which are both true and do not add up.
+        // Reconciling a repriced capture is a money change and is out of scope here.
+        const paymentState = await resolveEmailPaymentState(supabase, orderKey)
+        const payNote = paymentNote(paymentState, truck.name)
         // The SERVER-priced items/deals — the same figures that were just persisted, so the
         // customer's email can never quote a price the order row doesn't hold.
         const finalItems = repriced.items.map(i => ({
@@ -766,7 +823,7 @@ export async function POST(req: NextRequest) {
                 <td style="text-align:right;padding-top:8px;font-weight:700">£${newTotal.toFixed(2)}</td>
               </tr>
             </table>
-            <p style="color:#94a3b8;font-size:12px">Pay at the truck on collection · Powered by HatchGrab · hatchgrab.com</p>
+            <p style="color:#94a3b8;font-size:12px">${payNote.short} · Powered by HatchGrab · hatchgrab.com</p>
           </body>`
         // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
         // confirmation/new-order emails) — replaces the inline notifyCustomer (Village Foodie).
@@ -774,7 +831,7 @@ export async function POST(req: NextRequest) {
           to: order.customer_email,
           subject: `Order #${order.id} updated`,
           html,
-          text: `${truck.name} has updated your order #${order.id}. New total £${newTotal.toFixed(2)}. Pay at the truck on collection. — HatchGrab`,
+          text: `${truck.name} has updated your order #${order.id}. New total £${newTotal.toFixed(2)}. ${payNote.short}. — HatchGrab`,
           truckName: truck.name,
         })
       }
@@ -1670,10 +1727,13 @@ export async function POST(req: NextRequest) {
       // ⚠️ The rolled-forward slot changes nothing about the money: the amount was fixed at
       // authorisation and capture takes that amount.
       // ⚠️ AWAITED AND CANNOT THROW. The order is already confirmed and re-slotted above.
-      await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'time_adjust' })
+      const adjustCapture = await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'time_adjust' })
 
       // Notify customer of time change
       if (ord.customer_email) {
+        // 🔴 THE SAME DISCARDED-ANSWER DEFECT AS THE CONFIRM BRANCH. This is a confirmation, it takes
+        // the money, and the email it sends about the new time said "Pay at the truck on collection".
+        const paymentState = await resolveEmailPaymentState(supabase, orderKey, adjustCapture)
         const { data: slotEventRow } = await supabase
           .from('truck_events')
           .select('venue_name, town, postcode')
@@ -1694,6 +1754,7 @@ export async function POST(req: NextRequest) {
           total: Number(ord.total),
           notes: ord.notes ?? null,
           autoAccepted: true,
+          paymentState,
           venueName: slotEventRow?.venue_name ?? null,
           venueTown: slotEventRow?.town ?? null,
           venuePostcode: slotEventRow?.postcode ?? null,
@@ -1924,6 +1985,36 @@ export async function POST(req: NextRequest) {
     // `mark_paid` (no suffix) stays valid for a truck that does not split, and still honours an explicit
     // body.method if one is ever sent.
     if (action === 'mark_paid' || action === 'mark_paid_cash' || action === 'mark_paid_card') {
+      // ── 🔴 THE SERVER-SIDE GUARD. A LIVE CARD HOLD REFUSES AN IN-PERSON PAYMENT. ─────────────────
+      // The order card already hides this button for a held order (OrderCard.tsx:322, "pressing it
+      // books a SECOND payment at the hatch for an order the customer has already authorised"). That
+      // reasoning was right and it was written down — AND IT WAS THE ONLY THING PROTECTING THE MONEY.
+      // 🔴 ON 12 AUGUST 2026 IT WAS NOT ENOUGH. Orders 18 and 19 were marked paid at 21:14 and their
+      // held cards captured 70 seconds later; both customers were charged twice. A button label cannot
+      // defend a route that an offline replay, a stale board, the KDS or a direct POST can all reach.
+      // ⚠️ THIS ONE FAILS CLOSED, UNLIKE EVERY OTHER MONEY WRITE IN THIS FILE. `collected` and the
+      // ledger writes below fail OPEN because refusing them strands an operator at the hatch with cash
+      // in hand. Refusing HERE strands nobody: the money has not been taken yet, the customer's card
+      // already covers the order, and the correct action is to do nothing. Fail-open is for recording
+      // money that has already moved; this is preventing money from moving twice.
+      // ⚠️ 409, NOT 400. The request is well-formed; it conflicts with the order's current state.
+      if (await hasHeldAuthorisation(supabase, orderKey)) {
+        console.warn(
+          `[${action}] REFUSED for order_key=${orderKey} truck=${truck.id} — the card is authorised and ` +
+          `uncaptured. Recording an in-person payment here is the double-charge of 12 August.`,
+        )
+        await logAction(supabase, {
+          action: `${action}_refused_card_held`, truckId: truck.id, orderKey,
+          beforeState: { reason: 'held_authorisation' },
+          afterState: { recorded: false, meaning: 'refused: this order has a live card hold against it' },
+          actor, source: actorSource,
+        })
+        return NextResponse.json({
+          error: 'This customer has already paid by card. Their card is authorised for this order and is '
+               + 'charged automatically when you confirm it, so taking payment here would charge them '
+               + 'twice. Nothing has been recorded.',
+        }, { status: 409 })
+      }
       let paymentWarning: string | null = null
       let charged = 0
       // HOW the money arrived. Validated against the same vocabulary as the DB CHECK so a bad value

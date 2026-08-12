@@ -1,5 +1,83 @@
 // lib/email.ts
 // Shared email formatting and sending for order confirmations
+import type { EmailPaymentState } from '@/lib/payments/email-payment-state'
+
+// THE PAYMENT SENTENCE, IN ONE PLACE, FOR EVERY EMAIL THAT NEEDS ONE.
+//
+// There used to be two possible sentences and only one caller that could choose between them, so the
+// operator confirm, the ready notification, the quick-time-adjust and the edit email all printed
+// "Pay at the truck on collection" — to customers whose card was held, and to customers who had
+// already been charged. Two of those sites take the money in the same request.
+//
+// FOUR SENTENCES, BECAUSE THERE ARE FOUR THINGS THAT CAN BE TRUE.
+// The word "paid" appears in exactly one of them, and only where money has actually moved. 'held' and
+// 'hatch' render the two blocks that shipped before this function existed, character for character, so
+// every email that was already correct is unchanged.
+//
+// `short` is the compact form for the edit email, which builds its own bespoke HTML and has room for a
+// clause rather than a box.
+export function paymentNote(state: EmailPaymentState, truckName: string): {
+  html: string
+  text: string
+  short: string
+  /** Appended to the "your order is ready" line — which hardcoded ". Pay at the truck." for everyone. */
+  readySuffix: string
+} {
+  switch (state) {
+    case 'captured':
+      return {
+        html: `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#166534">Paid by card</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#15803d">Your payment has gone through — nothing to pay at the truck.</p>
+  </div>`,
+        text: `Paid by card. Your payment has gone through — nothing to pay at the truck.`,
+        short: 'Paid by card',
+        readySuffix: ' Already paid by card.',
+      }
+
+    case 'held':
+      // Character for character the block that shipped with the cardHeld branch. Indigo, matching the
+      // CARD HELD chip the operator sees, and deliberately not green: no money has moved.
+      return {
+        html: `<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#3730a3">Your card is held, not charged</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#4f46e5">${truckName} takes the payment when they confirm your order. Nothing to pay at the truck.</p>
+  </div>`,
+        text: `Your card is held, not charged. ${truckName} takes the payment when they confirm your order — nothing to pay at the truck.`,
+        short: 'Your card is held, not charged',
+        readySuffix: ' Your card is held, not charged — nothing to pay at the truck.',
+      }
+
+    case 'unknown':
+      // THE FOURTH SENTENCE, AND IT EXISTS BECAUSE THE HONEST ANSWER IS SOMETIMES "WE DO NOT KNOW".
+      // A capture can fail in a way that leaves the money genuinely taken (captured, ledger write lost),
+      // and a read can fail outright. Saying "paid" might bill nobody for real food; saying "pay at the
+      // truck" charges a customer twice. This says neither, and the operative instruction — do not pay
+      // again — is the one that cannot be wrong: at worst they owe money and are told at the hatch.
+      return {
+        html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">We're still confirming your payment</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">Your card was authorised, so please do not pay again — ${truckName} will confirm at the hatch.</p>
+  </div>`,
+        text: `We're still confirming your payment. Your card was authorised, so please do not pay again — ${truckName} will confirm at the hatch.`,
+        short: "We're still confirming your payment",
+        readySuffix: " We're still confirming your payment — please do not pay again.",
+      }
+
+    case 'hatch':
+    default:
+      // Character for character what every email said before any of this existed. A pay-at-hatch order,
+      // a walk-up, and a card order whose hold was released without being taken all land here.
+      return {
+        html: `<div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">Pay at the truck on collection</p>
+  </div>`,
+        text: 'Pay at the truck on collection.',
+        short: 'Pay at the truck on collection',
+        readySuffix: ' Pay at the truck.',
+      }
+  }
+}
 
 export interface EmailOrderItem {
   name: string
@@ -98,8 +176,23 @@ export function formatConfirmationEmail(params: {
    *  Absent or false, and the email is byte-identical to every one sent before this existed, which is
    *  what keeps every pay-at-hatch order unchanged.
    *  NOT "paid" — no money has moved; the truck captures it when they confirm the order. Do not let
-   *  the word "paid" into either branch below. */
+   *  the word "paid" into either branch below.
+   *
+   *  SUPERSEDED BY `paymentState`, AND KEPT BECAUSE ONE CALLER IS CORRECT AS IT STANDS.
+   *  lib/payments/promote-draft passes this and nothing else, deliberately. Everything else should pass
+   *  `paymentState`, which can say three things this boolean cannot: that the money has actually moved,
+   *  and that we do not know. `cardHeld` is the fallback when `paymentState` is absent, so no existing
+   *  caller changes by a byte. */
   cardHeld?: boolean
+  /** WHAT THIS CUSTOMER OWES, IF ANYTHING — resolved once, by lib/payments/email-payment-state, and
+   *  never worked out by a send site for itself.
+   *    'captured'  money has moved. Nothing to pay.
+   *    'held'      authorised, not captured. Nothing to pay yet and nothing to pay at the hatch.
+   *    'hatch'     no authorisation, or one released without being taken. Money IS owed.
+   *    'unknown'   we could not tell. Says neither, and asks them not to pay twice.
+   *  Absent falls back to `cardHeld`, so 'hatch' and 'held' render exactly the two blocks that shipped
+   *  before this parameter existed. */
+  paymentState?: EmailPaymentState
   // Truck contact & venue info
   venueName?: string | null
   venueTown?: string | null
@@ -119,6 +212,10 @@ export function formatConfirmationEmail(params: {
   variant?: 'confirmation' | 'ready'
 }): { subject: string; html: string; text: string } {
   const isReady = params.variant === 'ready'
+  // ONE RESOLUTION, USED BY ALL THREE PLACES THIS EMAIL MENTIONS MONEY. The fallback is what keeps
+  // every existing caller byte-identical: promote-draft still passes only `cardHeld`, and the walk-up
+  // and pay-at-hatch sites still pass neither.
+  const payNote = paymentNote(params.paymentState ?? (params.cardHeld ? 'held' : 'hatch'), params.truckName)
   const subject = isReady
     ? `Order #${params.orderId} is ready — ${params.truckName}`
     : params.autoAccepted
@@ -211,7 +308,9 @@ export function formatConfirmationEmail(params: {
     <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px">✓</div>
     <h1 style="font-size:22px;font-weight:800;margin:0 0 4px">${heading}</h1>
     <p style="color:#64748b;margin:0;font-size:14px">${isReady
-      ? `Your order is ready for collection — come and collect from ${params.truckName}. Pay at the truck.`
+      // THE READY LINE ALSO SAID "Pay at the truck." TO EVERYONE, AND IT IS NOT EVEN THE PAYMENT BOX.
+      // A card customer collecting an order they have already been charged for read it twice.
+      ? `Your order is ready for collection — come and collect from ${params.truckName}.${payNote.readySuffix}`
       : params.autoAccepted
         ? `Thanks! We've received your order and we're getting it ready.`
         : `Thanks! We've received your order — we'll let you know once it's confirmed.`}</p>
@@ -235,20 +334,7 @@ export function formatConfirmationEmail(params: {
 
   ${collectionSection}
 
-  ${params.cardHeld
-    /* THE CARD-HELD BRANCH. It used to be impossible for this block to say anything else: the
-       function took no payment parameter and this sentence was a hardcoded constant, so a customer who
-       had just authorised £6.00 was told to pay again at the truck.
-       EVERY WORD IS TRUE FOR AN AUTHORISED, UNCAPTURED PAYMENT: the card IS held, it has NOT been
-       charged, and the charge follows the truck confirming. Indigo, matching the CARD HELD chip the
-       operator sees, and deliberately not green. */
-    ? `<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#3730a3">Your card is held, not charged</p>
-    <p style="margin:6px 0 0;font-size:13px;color:#4f46e5">${params.truckName} takes the payment when they confirm your order. Nothing to pay at the truck.</p>
-  </div>`
-    : `<div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">Pay at the truck on collection</p>
-  </div>`}
+  ${payNote.html}
 
   ${contactSection}
 
@@ -292,7 +378,7 @@ export function formatConfirmationEmail(params: {
     }).join('\n') : '',
     `Total: £${params.total.toFixed(2)}`,
     isReady
-      ? `Your order is ready for collection — come and collect. Pay at the truck.`
+      ? `Your order is ready for collection — come and collect.${payNote.readySuffix}`
       : params.slotAdjustedFrom && params.slot
       ? `Collection time updated to ${params.slot} (was ${params.slotAdjustedFrom}).`
       : params.autoAccepted && params.slot
@@ -302,12 +388,10 @@ export function formatConfirmationEmail(params: {
         : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
     params.notes ? `Notes: ${params.notes}` : '',
     '',
-    // THE SAME BRANCH IN THE PLAIN TEXT. Both halves of the email had the sentence hardcoded, so
-    // changing only the HTML would have left the text part telling a paying customer to pay again —
-    // and the text part is what a stripped-down or accessibility client renders.
-    params.cardHeld
-      ? `Your card is held, not charged. ${params.truckName} takes the payment when they confirm your order — nothing to pay at the truck.`
-      : 'Pay at the truck on collection.',
+    // THE SAME SENTENCE IN THE PLAIN TEXT. Both halves of the email had it hardcoded, so changing only
+    // the HTML would have left the text part telling a paying customer to pay again — and the text part
+    // is what a stripped-down or accessibility client renders.
+    payNote.text,
     venueOneLine ? `📍 ${venueOneLine}` : '',
     (() => {
       const method = params.preferredContactMethod

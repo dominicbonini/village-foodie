@@ -1492,7 +1492,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!stripe || !elements || !payment || !elementReady) return
     setPayStage('authorising')
     setPayError(null)
-    const returnUrl = `${window.location.origin}/trucks/${encodeURIComponent(slug)}/order?confirm=${encodeURIComponent(payment.orderKey)}`
+    // ── 🔴 THE RETURN GOES THROUGH THE PROMOTER, NOT STRAIGHT TO THE CONFIRMATION. ────────────────
+    // This pointed at `?confirm=` directly, which made /api/payments/return unreachable — nothing else
+    // in the codebase names it — so the webhook has promoted every card order alone since the Payment
+    // Element shipped, detached, on an invocation the runtime is free to suspend. Order 25 waited 23.5s
+    // for its order row because of it.
+    // 🔴 THE CUSTOMER LANDS IN EXACTLY THE SAME PLACE. Every exit from that route 303s to
+    // `${base}/trucks/${truck}/order?confirm=${draft}` — character for character the URL this line
+    // used to build — having promoted the draft on the way. Nothing about the confirmation screen,
+    // its polling, or its rendering changes.
+    // ⚠️ `payment.orderKey` IS THE DRAFT KEY, which is also the order's key. Both names are the same
+    // uuid by construction; the route takes it as `draft` because at that moment no order exists yet.
+    const returnUrl = `${window.location.origin}/api/payments/return?draft=${encodeURIComponent(payment.orderKey)}&truck=${encodeURIComponent(slug)}`
     try {
       const result = await stripe.confirmPayment({
         elements,
@@ -2542,9 +2553,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                   <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>
                                 ))}
                                 {v.specialInstructions && <p className="text-sm italic text-slate-400 break-words">📝 {v.specialInstructions}</p>}
-                                {!v.modifiers.length && !v.specialInstructions && (
-                                  <p className="text-sm italic text-slate-400">{catAllowNotes ? 'Add note' : 'Customise'}</p>
-                                )}
+                                {/* (Removed) the 'Add note' / 'Customise' placeholder that used to fill this
+                                    space when a line had neither extras nor a note. It READ AS A BUTTON and
+                                    was not one — the tappable thing is the ✏️ to its right, which is always
+                                    there. This column now shows only what the customer actually chose, and
+                                    is simply empty when they chose nothing. */}
                               </div>
                               <button onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells, v.cartKey)}
                                 disabled={isOrderingBlocked} aria-label="Edit"

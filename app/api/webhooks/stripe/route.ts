@@ -39,15 +39,37 @@ import { createClient } from '@supabase/supabase-js'
 import { parseSigningSecrets, verifyStripeSignature } from '@/lib/stripe/webhook-signature'
 import { extractConnectedAccount, extractStripeCreatedAt, isThinEvent } from '@/lib/stripe/webhook-envelope'
 // 🔴 THE ONLY WRITER OF AN ONLINE PAYMENT INTO order_payments. See the payment_intent.succeeded branch.
-import { recordOnlineCardPayment } from '@/lib/payments/online'
+import { recordOnlineCardPayment, recordOnlineCardRefund, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 // ── PHASE 2b: promotion. Started out of band; never awaited before the 2xx. See startPromotion. ────
 import { promoteDraft } from '@/lib/payments/promote-draft'
 import { getOrderDraft } from '@/lib/payments/order-drafts'
+// 🔴 THE FIX FOR THE SUSPENSION ORDER 25 EVIDENCED. See the file, and startPromotion below.
+import { keepAlive } from '@/lib/runtime/after-response'
+// A PENDING refund writes no ledger row (see the refund branch); this is how it stays visible anyway.
+import { logAction } from '@/lib/audit/actionAudit'
+// ⚠️ THE ONLY OUTBOUND STRIPE CALL ON THIS ROUTE, and it exists for one measured reason: a
+// `charge.refunded` payload carries NO refunds list, so the safety-net branch has to ask. See it there.
+import Stripe from 'stripe'
 
 // Node runtime, pinned EXPLICITLY. Signature verification uses node:crypto's createHmac/timingSafeEqual,
 // which do not exist on the edge runtime. Without this the route would build fine and fail at runtime on
 // every request. Precedent: app/api/manage/verify-schedule-url/route.ts.
 export const runtime = 'nodejs'
+
+// ── 🔴 THE BUDGET FOR THE WORK THAT OUTLIVES THE RESPONSE. ────────────────────────────────────────
+// This route returns its 2xx in well under a second and then keeps promoting, so `maxDuration` is not a
+// bound on the customer's latency — it is the window the runtime is willing to keep this container
+// awake for the `after()` task. It had NONE, so it inherited the platform default the repo documents at
+// app/api/demo/route.ts:23 as "10s on Hobby / 15s on Pro".
+// 🔴 THAT DEFAULT IS BELOW THE MEASURED COST OF A PROMOTION. Order 25 spent 23.5s from claim to insert
+// alone; order 24 took 20.4s end to end including its two emails. A 15s budget cannot host either.
+// Set to 300 — the same number and the same reasoning as app/api/demo/route.ts, which records it as
+// "the highest a Vercel Pro Node function permits (300s)". ⚠️ REQUIRES THE PRO PLAN: on Hobby the cap is
+// 60s and this value is rejected.
+// ⚠️ IT COSTS NOTHING WHEN UNUSED. Vercel bills actual duration, and the ordinary promotion finishes in
+// seconds. The number is a ceiling for the pathological case, not a reservation — and the pathological
+// case is exactly the one that currently loses a customer's order.
+export const maxDuration = 300
 
 // Service-role client at module scope — the house pattern for a server-only route
 // (app/api/inbound-schedule, app/api/webhooks/meta/whatsapp, …). stripe_webhook_events has RLS enabled
@@ -517,6 +539,177 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── 🔴 charge.refunded / refund.updated — A REFUND MADE ANYWHERE REACHES THE LEDGER ──────────────
+  // ── WHY THIS EXISTS ─────────────────────────────────────────────────────────────────────────────
+  // These are DIRECT charges on the truck's own Stripe account, and the truck has full Dashboard
+  // access to it. They can refund a customer in two taps, today, without touching HatchGrab — and
+  // until this branch existed our ledger never learned. Every surface kept saying PAID: the order card,
+  // the KDS, the printed ticket and the takings figure. That is true whatever refund UI is built later,
+  // which is why it is handled first.
+  //
+  // ── 🔴 THREE TYPES, ONE WRITER — AND THE SHAPE OF charge.refunded FORCED IT. MEASURED. ──────────
+  // The obvious design was "handle charge.refunded, read the refunds out of the payload". IT DOES NOT
+  // WORK, and this was found by issuing a real refund and reading the real event rather than by
+  // reasoning: on this API version `charge.refunded`'s data.object carries
+  //     id, payment_intent, amount_refunded: 650, refunded: true
+  // and NO `refunds` KEY AT ALL — `'refunds' in charge` is false. There is nothing in that payload with
+  // a refund id, so nothing that can key a row one-per-refund. `amount_refunded` is no substitute: it
+  // is CUMULATIVE, so a second 200p refund on a charge already refunded 200p reports 400, and booking it
+  // would double-count the first.
+  //
+  //   refund.created   -> carries the Refund itself — id, amount, status, payment_intent. The primary.
+  //   refund.updated   -> the same object, and THE ONLY EVENT FOR A SETTLEMENT. A Connect refund can be
+  //                    created `pending` when the connected account's balance is short; the later flip
+  //                    to succeeded emits refund.updated and NOT another charge.refunded. Without this
+  //                    type a pending refund would never be recorded at all.
+  //   charge.refunded  ⚠️ KEPT AS THE SAFETY NET, and it has to ASK. It names the intent, so the refunds
+  //                    are fetched with one refunds.list on the connected account. It earns its keep if
+  //                    the refund.* types are ever unsubscribed, or one delivery is lost.
+  // All three converge on `stripe_re:<refund id>`, so whichever arrives first with a settled refund
+  // writes the row and every other delivery is a 23505 no-op. None of them knows about the others.
+  if (eventType === 'charge.refunded' || eventType === 'refund.created' || eventType === 'refund.updated') {
+    if (livemode !== false) {
+      console.warn(`[webhook/stripe] ${eventType} IGNORED id=${eventId} livemode=${livemode} — sandbox only`)
+      await markHandled(eventId, 'ignored:livemode')
+      return NextResponse.json({ received: true })
+    }
+
+    const obj = (event as { data?: { object?: Record<string, unknown> } }).data?.object ?? {}
+    let refunds: Record<string, unknown>[] = []
+
+    if (eventType === 'refund.created' || eventType === 'refund.updated') {
+      // THE OBJECT IS THE REFUND. No network call, no ambiguity, nothing to look up.
+      refunds = [obj]
+    } else {
+      // ── ⚠️ THE ONE PLACE THIS ROUTE ASKS STRIPE A QUESTION, AND WHY IT IS ACCEPTABLE HERE ────────
+      // The 2xx contract forbids anything SLOW or THROWING between verification and the response. This
+      // is one GET, on a branch that fires only for a refund (rare), wrapped so it cannot throw, and its
+      // failure mode is a 500 — which is not a broken contract but the DOCUMENTED one: "we failed to
+      // PERSIST it. RETRY IS EXACTLY WHAT WE WANT." It is the same posture the ledger write below takes.
+      // ⚠️ IT IS NOT MOVED UNDER after() LIKE PROMOTION. after() would forfeit the retry, and the retry
+      // is the entire recovery mechanism for a refund we would otherwise lose. Promotion can be redriven
+      // by the redirect and the sweep; a lost refund event has no second trigger.
+      const piId = typeof obj.payment_intent === 'string' ? obj.payment_intent : null
+      if (!piId || !connectedAccount) {
+        console.warn(`[webhook/stripe] charge.refunded id=${eventId} — no payment_intent or no account, not acted on`)
+        await markHandled(eventId, 'incomplete_payload')
+        return NextResponse.json({ received: true })
+      }
+      try {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+        const list = await stripe.refunds.list({ payment_intent: piId, limit: 100 }, { stripeAccount: connectedAccount })
+        refunds = list.data as unknown as Record<string, unknown>[]
+      } catch (listErr) {
+        console.error(
+          `[webhook/stripe] 🔴 could not list refunds for pi=${piId} on ${connectedAccount} — returning 500 ` +
+          `so Stripe retries; a refund we cannot read is a refund the ledger never learns about:`,
+          listErr instanceof Error ? listErr.message : listErr,
+        )
+        return NextResponse.json({ error: 'refund list failed' }, { status: 500 })
+      }
+    }
+
+    let written = 0, pending = 0, skipped = 0
+    for (const r of refunds) {
+      const refundId = typeof r.id === 'string' ? r.id : null
+      const amountMinor = typeof r.amount === 'number' ? r.amount : 0
+      const status = typeof r.status === 'string' ? r.status : null
+      const piId = typeof r.payment_intent === 'string' ? r.payment_intent
+        : typeof obj.payment_intent === 'string' ? obj.payment_intent : null
+
+      if (!refundId || amountMinor <= 0 || !piId) {
+        console.warn(`[webhook/stripe] ${eventType} id=${eventId} — refund ${refundId ?? '?'} incomplete (amount=${amountMinor} pi=${piId ?? 'none'}), not acted on`)
+        skipped++
+        continue
+      }
+
+      // ── 🔴 THE CORRELATION. THE LEDGER IS THE INDEX. ────────────────────────────────────────────
+      // Stripe tells us the PaymentIntent; our own capture row for that intent was written under
+      // `stripe_pi:<intent id>` and carries the order_key and truck_id. So the charge we took IS the
+      // lookup — a unique-index hit on order_payments_idempotency_key_uidx, no join, no scan.
+      // ⚠️ AND IT IS WHY A CASH ORDER CAN NEVER MATCH. An in-person payment writes
+      // `collect:<order_key>:<paid_before>:<balance>` and has no Stripe charge at all, so no
+      // charge.refunded can ever name it and this lookup can never return it. See the report.
+      // ⚠️ METADATA IS DELIBERATELY NOT USED. Our order_key rides on the PaymentIntent, not the Charge,
+      // and a refund issued from the truck's Dashboard carries none of ours at all. The ledger row is
+      // the only correlation that works for a refund we did not initiate — which is the whole case.
+      const { data: chargeRow, error: lookupErr } = await supabase
+        .from('order_payments')
+        .select('order_key, truck_id, currency')
+        .eq('idempotency_key', onlinePaymentIdempotencyKey(piId))
+        .maybeSingle()
+
+      if (lookupErr) {
+        // 🔴 500 SO STRIPE RETRIES. We cannot tell whether this refund belongs to us, and guessing "not
+        // ours" would lose a customer's refund silently.
+        console.error(`[webhook/stripe] 🔴 refund correlation lookup FAILED for pi=${piId} — returning 500 so Stripe retries:`, lookupErr.message)
+        return NextResponse.json({ error: 'refund lookup failed' }, { status: 500 })
+      }
+      if (!chargeRow) {
+        // ⚠️ NOT OURS, AND THAT IS ORDINARY. The same connected account can take payments that did not
+        // originate here — a walk-up on the truck's own terminal, a Stripe invoice, a Payment Link.
+        console.log(`[webhook/stripe] ${eventType} refund=${refundId} pi=${piId} — no charge of ours under that intent, ignoring`)
+        skipped++
+        continue
+      }
+
+      // ── 🔴 PENDING WRITES NO LEDGER ROW. THE REASONING IS IN lib/payments/online.ts. ────────────
+      // In short: getOrderBalance counts only `succeeded`, so a pending row would change no balance and
+      // no surface, and recordPaymentEvent is insert-only so flipping it later would mean building an
+      // UPDATE path for a row nothing reads. The audit log carries it instead — visible, and not
+      // pretending to be money that has moved. `refund.updated` writes the real row when Stripe settles.
+      if (status !== 'succeeded') {
+        console.warn(
+          `[webhook/stripe] refund=${refundId} on order_key=${chargeRow.order_key} is ${status ?? 'unknown'}, ` +
+          `NOT succeeded — no ledger row yet. The order still reads paid, which is true: the money has ` +
+          `not gone back. Waiting for refund.updated.`,
+        )
+        await logAction(supabase, {
+          action: 'refund_pending', truckId: chargeRow.truck_id as string, orderKey: chargeRow.order_key as string,
+          amountMinor,
+          beforeState: { refund_id: refundId, payment_intent_id: piId, event_type: eventType },
+          afterState: {
+            stripe_status: status, recorded: false,
+            meaning: 'Stripe has not settled this refund yet, so no money has gone back and no ledger row exists',
+          },
+          actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+          source: 'web',
+        })
+        pending++
+        continue
+      }
+
+      try {
+        const { inserted, balance } = await recordOnlineCardRefund(supabase, {
+          orderKey: chargeRow.order_key as string,
+          truckId: chargeRow.truck_id as string,
+          amountMinor,
+          refundId,
+          paymentIntentId: piId,
+          livemode,
+          currency: typeof r.currency === 'string' ? r.currency.toUpperCase() : undefined,
+        })
+        if (inserted) written++
+        console.log(
+          `[webhook/stripe] refund ${inserted ? 'RECORDED' : 'DUPLICATE (no-op)'} order=${chargeRow.order_key} ` +
+          `refund=${refundId} amount_minor=${amountMinor} -> status=${balance.status} paid_minor=${balance.paidMinor}`,
+        )
+      } catch (ledgerErr) {
+        // 🔴 500 SO STRIPE RETRIES, exactly as the payment branch does and for the mirror reason: a lost
+        // event here is a REFUNDED order showing paid on the hatch. The write is idempotent on the
+        // refund id, so a retry costs nothing and re-runs the ones already written as no-ops.
+        console.error(
+          `[webhook/stripe] 🔴 REFUND LEDGER WRITE FAILED for order=${chargeRow.order_key} refund=${refundId} — ` +
+          `returning 500 so Stripe retries:`, ledgerErr instanceof Error ? ledgerErr.message : ledgerErr,
+        )
+        return NextResponse.json({ error: 'refund write failed' }, { status: 500 })
+      }
+    }
+
+    await markHandled(eventId, `refund:written=${written},pending=${pending},skipped=${skipped}`)
+    return NextResponse.json({ received: true })
+  }
+
   // ── UNRECOGNISED EVENT TYPES ARE NORMAL, NOT ERRORS ──────────────────────────────────────────────
   // Every verified event is recorded and acknowledged, whatever its type. Handlers dispatch above on
   // `eventType`; this default arm stays exactly as it is: record, log, 200. Returning non-2xx for a type
@@ -534,34 +727,67 @@ export async function POST(req: NextRequest) {
  * above has already committed either way.
  */
 /**
- * 🔴 START PROMOTION AND DO NOT WAIT FOR IT. THE 2xx CONTRACT IS WHY.
+ * 🔴 SCHEDULE PROMOTION FOR AFTER THE RESPONSE. THE 2xx CONTRACT IS WHY IT IS NOT AWAITED.
  *
  * The header's rule is absolute: nothing slow and nothing that can throw runs between verification and
  * the response, because a slow or throwing handler is what turns one delivery into several. Promotion is
  * both — it takes a per-event lock, runs four checks, inserts an order, rebuilds the capacity board and
  * sends two emails. Awaiting it here would put all of that inside Stripe's timeout.
  *
- * So the promise is started, its result is logged, and its rejection is swallowed into a log line. The
- * caller returns 200 immediately.
+ * ── 🔴 IT WAS `void promoteDraft(...)`. THAT IS WHAT ORDER 25 PROVED DOES NOT SURVIVE. ─────────────
+ * Vercel's runtime log for 21:22-21:25 on 12 August carries 24 RECEIVED lines, one DUPLICATE and one
+ * 500, and NOT ONE `promotion(...) -> promoted` line — yet the order exists and `handled_at` was
+ * written, which only happens in the `.then` below. The work ran and its logs surfaced under no
+ * invocation: the container was suspended and resumed, because nothing had told the runtime the work
+ * existed. `after()` tells it. See lib/runtime/after-response.
+ * ⚠️ A THUNK, NOT A PROMISE, so promotion does not even BEGIN until the response is on the wire. With
+ * `void` it started immediately and raced the response; there is no reason for it to.
  *
- * ⚠️ THE HONEST LIMITATION: on a serverless runtime the invocation may be frozen once the response is
- * sent, so this is NOT guaranteed to run to completion. It is an OPTIMISATION with a guarantee behind it,
- * not the guarantee itself. The two things that make a dropped continuation cost latency instead of money:
- *   - /api/payments/return promotes as well, whenever the customer comes back;
+ * ⚠️ THE HONEST LIMITATION IS SMALLER BUT NOT GONE. `after()` is a declaration, not a guarantee, and the
+ * two backstops still matter:
+ *   - /api/payments/return promotes as well, and since the return_url now points at it, that path runs
+ *     for every customer who comes back — awaited, ahead of this one, in the ordinary case;
  *   - the cancellation sweep releases any authorisation that never became an order.
- * And a redelivery now re-runs the handler (see the duplicate branch) precisely because of this.
+ * And a redelivery re-runs the handler (see the duplicate branch) precisely because of this.
  */
 function startPromotion(orderKey: string, trigger: 'webhook', eventId: string) {
-  void promoteDraft(supabase, orderKey, trigger)
-    .then(res => {
+  keepAlive(() => promoteDraft(supabase, orderKey, trigger)
+    .then(async res => {
       console.log(`[webhook/stripe] promotion(${orderKey}) -> ${res.status}${'detail' in res ? ` (${res.detail})` : ''}${'reason' in res ? ` (${res.reason})` : ''}`)
+
+      // ── 🔴 `already` IS NOW VERIFIED, NOT ASSUMED. ────────────────────────────────────────────
+      // `already` means the claim was taken by someone else — the redirect, ordinarily, which is the
+      // whole point of wiring it. It does NOT prove an order exists. The claim is taken BEFORE the
+      // work, so a promoter killed between the claim and the insert leaves `promoted_at` set with no
+      // order row, and this branch used to stand down on that and call it success.
+      // ⚠️ ONE INDEXED READ, ON THE UNCOMMON PATH ONLY. A `promoted` result skips it entirely.
+      if (res.status === 'already') {
+        const { data: order } = await supabase
+          .from('orders').select('order_key').eq('order_key', orderKey).maybeSingle()
+        if (!order) {
+          // 🔴 A CLAIMED DRAFT WITH NO ORDER. Either another promoter is still mid-flight (ordinary,
+          // resolves in seconds) or one was killed holding the claim (money authorised against
+          // nothing). This webhook cannot tell them apart and must not guess: re-promoting a draft
+          // whose order is about to be inserted would hit the order_key primary key, and promoteDraft
+          // treats an insert failure as a refusal AND CANCELS THE HOLD — on a real order.
+          // So it is recorded, loudly and distinctly, and left for the operator tooling:
+          //     node scripts/list-stranded-authorisations.cjs   -> shows it as CHECK BY HAND
+          console.error(
+            `[webhook/stripe] 🔴 promotion(${orderKey}) -> already, BUT NO ORDER ROW EXISTS. Either a ` +
+            `promoter is still running or one died holding the claim. If this key has no order in a ` +
+            `few minutes, money is authorised against nothing — reconcile by hand.`,
+          )
+          return markHandled(eventId, 'promotion:already_no_order')
+        }
+      }
+
       // Marked only once the work actually finished, which is what makes the duplicate branch above
       // able to tell "done" from "started and lost".
       return markHandled(eventId, `promotion:${res.status}`)
     })
     .catch(err => {
       console.error(`[webhook/stripe] 🔴 promotion(${orderKey}) threw — the event stays UNHANDLED so a redelivery retries it:`, err)
-    })
+    }), `promotion:${orderKey}`)
 }
 
 async function markHandled(eventId: string | null, result: string) {

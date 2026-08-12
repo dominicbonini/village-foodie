@@ -42,6 +42,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { recordOnlineCardPayment, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
+// 🔴 THE CHOKEPOINT FOR "WHAT DOES THIS ORDER OWE". Read-only. See step 2b.
+import { readOrderBalance, type OrderBalance } from '@/lib/payments/ledger'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 
@@ -66,6 +68,28 @@ export type CaptureResult =
   /** 🔴 THE HOLD IS GONE. Stripe expires an uncaptured intent after ~7 days, and the sweep cancels
    *  abandoned ones. The order is confirmed and the customer owes money at the hatch. */
   | { status: 'expired'; paymentIntentId: string; detail: string }
+  /**
+   * 🔴 A REFUSAL, NOT AN ERROR AND NOT A SUCCESS. THE ORDER DOES NOT OWE THIS MONEY.
+   *
+   * `settled`   the balance is already zero — somebody paid at the hatch, or a part-payment closed it.
+   *             Capturing would charge the customer a second time.
+   * `part_paid` something is still owed, but LESS than the hold is for. The hold is for the whole order
+   *             and this build does not do partial capture, so taking it would overcharge by the
+   *             difference. Refused rather than approximated.
+   *
+   * The hold is left EXACTLY as it was: live, uncaptured, uncancelled. Nothing here releases money and
+   * nothing here takes it — the decision of what to do next belongs to a human.
+   */
+  | {
+      status: 'not_owed'
+      paymentIntentId: string
+      reason: 'settled' | 'part_paid'
+      /** From getOrderBalance. Minor units. */
+      paidMinor: number
+      balanceMinor: number
+      /** What the hold is for, and therefore what a capture would take. */
+      authorisedMinor: number
+    }
   /** Capture was attempted and failed for a reason that is not "already" and not "expired". */
   | { status: 'failed'; paymentIntentId: string; detail: string }
 
@@ -106,7 +130,9 @@ export async function captureOnConfirmation(
     // keeps that dependency legible.
     const { data: draft, error: draftErr } = await supabase
       .from('order_drafts')
-      .select('order_key, truck_id, payment_intent_id, authorization_cancelled_at')
+      // ⚠️ `total_minor` JOINED THE LIST for the balance guard at step 2b: it is the amount the hold is
+      // for, and therefore the amount a capture would take.
+      .select('order_key, truck_id, payment_intent_id, authorization_cancelled_at, total_minor')
       .eq('order_key', args.orderKey)
       .maybeSingle()
 
@@ -133,9 +159,11 @@ export async function captureOnConfirmation(
     }
     const piId = draft.payment_intent_id
 
-    // ── 2. HAS IT ALREADY BEEN CAPTURED? Answered from OUR ledger, before touching Stripe. ───────
+    // ── 2a. HAS THIS INTENT ALREADY BEEN CAPTURED? Answered from OUR ledger, before touching Stripe. ─
     // 🔴 IDEMPOTENCY LAYER 1. A second confirmation of the same order — a time-adjust after a confirm,
     // an offline replay landing late — must not cost a Stripe round trip, let alone a second capture.
+    // ⚠️ THIS IS A NARROW QUESTION AND IT IS NOT THE ONE THAT MATTERS MOST. It answers "did WE capture
+    // THIS intent", nothing more. Step 2b is the one that asks what the order owes.
     const idempotencyKey = onlinePaymentIdempotencyKey(piId)
     const { data: existing } = await supabase
       .from('order_payments')
@@ -143,6 +171,76 @@ export async function captureOnConfirmation(
       .eq('idempotency_key', idempotencyKey)
       .maybeSingle()
     if (existing) return { status: 'already', paymentIntentId: piId }
+
+    // ── 2b. 🔴 DOES THIS ORDER STILL OWE THE MONEY? THE GUARD THAT WAS MISSING. ─────────────────────
+    // ── WHAT IT COST TO NOT ASK THIS ─────────────────────────────────────────────────────────────
+    // Orders 18 and 19, 12 August 2026. An operator pressed Mark paid at 21:14:05 and 21:14:07, booking
+    // `collect:<order_key>:0:600` and `…:0:650` in person. Seventy seconds later the stranded sweep
+    // captured both held cards. Two customers were charged twice, and BOTH orders read `refund_due`
+    // within a second — the ledger knew immediately, and nothing had asked it.
+    // 🔴 THE OLD PRE-CHECK COULD NOT HAVE CAUGHT IT AT ANY PRICE. It tests
+    // `idempotency_key = 'stripe_pi:' || <intent>`; an in-person row's key is `collect:<order_key>:…`.
+    // Those strings can never be equal, so the check is not a filter that missed a case — it is a filter
+    // that can only ever see one row, and every other payment in the ledger is outside its field of view.
+    // 🔴 SO THE QUESTION CHANGED. Not "has this intent been captured" but "does this order owe money",
+    // and this codebase already has exactly one answer to that: getOrderBalance, which its own header
+    // calls "the CHOKEPOINT" and which every other paid-ness consumer goes through. readOrderBalance is
+    // that call, read-only. Capture now goes through it too.
+    // ⚠️ FIXED HERE, AT THE ONE FUNCTION ALL FOUR CAPTURE SITES CALL, rather than in the sweep that
+    // happened to expose it. A guard in the sweep would have left confirm, time-adjust and promotion
+    // blind, and the next report would have been about one of those.
+    let balance: OrderBalance
+    try {
+      balance = await readOrderBalance(supabase, args.orderKey)
+    } catch (err) {
+      // 🔴 "I COULD NOT TELL" IS A REFUSAL, NEVER A ZERO. readOrderBalance throws on a missing order, a
+      // failed read and a scope violation. Capturing on any of those would be moving money on a guess,
+      // and the guess that costs a double charge is exactly the one being fixed. The sweep retries.
+      const message = err instanceof Error ? err.message : String(err)
+      console.error(
+        `[capture] 🔴 COULD NOT ESTABLISH THE BALANCE for order_key=${args.orderKey} (${args.trigger}) — ` +
+        `REFUSING TO CAPTURE pi=${piId} rather than risk charging twice:`, message,
+      )
+      return { status: 'failed', paymentIntentId: piId, detail: `balance unavailable: ${message}` }
+    }
+
+    // What the hold is for, and therefore what capturing takes. The draft's own figure, which is the
+    // amount authorised — not the order total, which an operator may have edited since.
+    const authorisedMinor = typeof draft.total_minor === 'number' ? draft.total_minor : balance.balanceMinor
+
+    if (balance.balanceMinor <= 0) {
+      // 🔴 THE ORDERS 18-AND-19 CASE. Nothing is owed; somebody has already been paid.
+      console.error(
+        `[capture] 🔴 REFUSING TO CAPTURE order_key=${args.orderKey} (${args.trigger}): the order is ` +
+        `ALREADY SETTLED — paid_minor=${balance.paidMinor}, balance=${balance.balanceMinor}, ` +
+        `status=${balance.status}. Capturing pi=${piId} would charge this customer a second time. The ` +
+        `hold is untouched and still needs releasing or claiming by hand.`,
+      )
+      await recordCaptureRefusal(supabase, args, piId, 'settled', balance, authorisedMinor)
+      return {
+        status: 'not_owed', paymentIntentId: piId, reason: 'settled',
+        paidMinor: balance.paidMinor, balanceMinor: balance.balanceMinor, authorisedMinor,
+      }
+    }
+
+    if (balance.balanceMinor < authorisedMinor) {
+      // 🔴 PART-PAID, AND CAPTURING WOULD OVERCHARGE BY THE DIFFERENCE. The hold is for the whole order;
+      // some of it has been settled another way. Stripe can capture a lesser amount, but this build does
+      // not do partial capture and inventing it inside a guard would be the wrong place to decide it.
+      // ⚠️ THE ORDINARY CARD ORDER IS UNAFFECTED: nothing paid means balance == authorised, so this
+      // condition is false and capture proceeds exactly as before.
+      console.error(
+        `[capture] 🔴 REFUSING TO CAPTURE order_key=${args.orderKey} (${args.trigger}): the order is ` +
+        `PART PAID — paid_minor=${balance.paidMinor}, still owed=${balance.balanceMinor}, but the hold ` +
+        `is for ${authorisedMinor}. Capturing pi=${piId} would take ${authorisedMinor - balance.balanceMinor} ` +
+        `too much. Collect the remainder at the hatch and release the hold.`,
+      )
+      await recordCaptureRefusal(supabase, args, piId, 'part_paid', balance, authorisedMinor)
+      return {
+        status: 'not_owed', paymentIntentId: piId, reason: 'part_paid',
+        paidMinor: balance.paidMinor, balanceMinor: balance.balanceMinor, authorisedMinor,
+      }
+    }
 
     // ── 3. CAPTURE AT STRIPE. ─────────────────────────────────────────────────────────────────
     const account = await stripeAccountForTruck(supabase, draft.truck_id ?? args.truckId)
@@ -250,6 +348,48 @@ export async function captureOnConfirmation(
  * ⚠️ actor is 'unknown'/'web': capture is a SYSTEM action with no human behind it — auto-accept has no
  * operator at all — and inventing one would put a false name on a money record.
  */
+/**
+ * 🔴 MAKE A NEAR-MISS VISIBLE. A refusal that leaves no trace is indistinguishable from never having
+ * run, and this one means an operator has taken money at the hatch for an order that still has a live
+ * hold against it — a state somebody has to resolve, and nothing else will notice.
+ *
+ * A DISTINCT ACTION FROM `capture_failed`, deliberately. Nothing failed. One query separates
+ * "capture is broken" from "capture correctly declined":
+ *     select * from action_audit_log where action = 'capture_not_owed' order by created_at desc;
+ *
+ * ⚠️ Best-effort, like every other audit write on this path — logAction swallows its own errors, because
+ * a logging failure must not become a second failure in a function whose whole contract is not to throw.
+ */
+async function recordCaptureRefusal(
+  supabase: SupabaseClient,
+  args: { orderKey: string; truckId: string; trigger: string },
+  paymentIntentId: string,
+  reason: 'settled' | 'part_paid',
+  balance: OrderBalance,
+  authorisedMinor: number,
+): Promise<void> {
+  await logAction(supabase, {
+    action: 'capture_not_owed',
+    truckId: args.truckId,
+    orderKey: args.orderKey,
+    amountMinor: authorisedMinor,
+    beforeState: { payment_intent_id: paymentIntentId, trigger: args.trigger, authorised_minor: authorisedMinor },
+    afterState: {
+      reason,
+      captured: false,
+      paid_minor: balance.paidMinor,
+      balance_minor: balance.balanceMinor,
+      payment_status: balance.status,
+      meaning: reason === 'settled'
+        ? 'this order was already paid by other means; capturing would have charged the customer twice'
+        : 'this order is part paid; capturing the whole hold would have overcharged',
+      hold: 'left live and uncaptured — release or claim it by hand',
+    },
+    actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+    source: 'web',
+  })
+}
+
 async function recordCaptureProblem(
   supabase: SupabaseClient,
   args: { orderKey: string; truckId: string; trigger: string },

@@ -62,7 +62,7 @@ export type PaymentEventState = 'pending' | 'succeeded' | 'failed'
  *  recorded (every pre-split row, and every Stripe row whose method is implicit in its channel).
  *  ⚠️ Affects NO arithmetic: getOrderBalance never reads it. It is a label on a money event. */
 export type PaymentMethod = 'cash' | 'card'
-export type PaymentStatus = 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'refund_due' | 'failed'
+export type PaymentStatus = 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'part_refunded' | 'refund_due' | 'failed'
 
 /** A row of `order_payments`. amount_minor is ALWAYS POSITIVE — `kind` carries the sign. */
 export interface LedgerRow {
@@ -226,6 +226,20 @@ export function getOrderBalance(order: BalanceableOrder, ledgerRows: LedgerRow[]
   else if (paidMinor < 0) status = 'refund_due'
   else if (balanceMinor < 0) status = 'refund_due'
   else if (balanceMinor === 0) status = 'paid'
+  // ── 🔴 A PARTIAL REFUND IS NOT AN OUTSTANDING BALANCE, AND SAYING SO WAS DANGEROUS. ──────────────
+  // 6.50 charged, 2.00 refunded gives paidMinor 450, balanceMinor 200 — arithmetically identical to an
+  // order that has only ever paid £4.50 of £6.50. Until this branch existed both fell to 'part_paid',
+  // so the card printed the amber "4.50 / 2.00 due" chip and the ticket printed "TO PAY 2.00" —
+  // an instruction to collect 200p from a customer who had just been REFUNDED 200p. Wrong in the
+  // direction that takes money from the wrong person.
+  // ⚠️ SAME TEST AS THE 'refunded' BRANCH ABOVE — refund-row PRESENCE, never the sum — for the same
+  // reason: the two states are the same arithmetic and only a refund row tells them apart.
+  // ⚠️ IT ADDS A BRANCH AND CHANGES NO ARITHMETIC. paidMinor, refundMinor and balanceMinor are computed
+  // exactly as before; this only decides which name that arithmetic is given.
+  // 🔴 DEPLOY-COUPLED. `orders.payment_status` carries a CHECK, and recalcOrderPayment writes this value
+  // into it: 20260817_orders_payment_status_part_refunded.sql MUST be applied before a partial refund
+  // lands, or the write-back fails with 23514. recalcOrderPayment already names that error explicitly.
+  else if (hasRefundRow) status = 'part_refunded'
   else status = 'part_paid'
 
   return { paidMinor, balanceMinor, status }
@@ -450,6 +464,30 @@ async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<Ba
  *
  * Throws on any failure. Callers must surface it, never swallow it.
  */
+/**
+ * 🔴 WHAT DOES THIS ORDER STILL OWE? READ-ONLY.
+ *
+ * recalcOrderPayment without the write-back — the same two reads, the same getOrderBalance, and nothing
+ * touched. It exists because CAPTURE needs to ask this question and must not answer it any other way.
+ *
+ * ── WHY A NEW EXPORT RATHER THAN A HAND-ROLLED SELECT AT THE CALL SITE ─────────────────────────────
+ * 🔴 BECAUSE readLedger IS NOT A SELECT, IT IS FOUR SAFETY PROPERTIES. The order_key scope filter and
+ * its runtime assertion (the 7 August incident), the widened mode filter, and annotateTestAccountRows —
+ * without which isLiveRow's arm (b) has no `account_is_test` to read and EVERY sandbox card payment
+ * silently stops counting. A caller that writes its own query gets none of that and looks correct.
+ * ⚠️ recalcOrderPayment keeps its own body rather than delegating here. Two reads are duplicated; that
+ * is deliberate, because the alternative is editing a function that writes payment_status on the hatch,
+ * for no behavioural gain.
+ *
+ * ⚠️ IT THROWS, exactly as readOrder and readLedger do — on a missing order, on a read failure, and on a
+ * scope violation. A caller deciding whether to MOVE MONEY must treat "I could not tell" as a refusal,
+ * never as a zero.
+ */
+export async function readOrderBalance(supabase: SupabaseClient, orderKey: string): Promise<OrderBalance> {
+  const [order, rows] = await Promise.all([readOrder(supabase, orderKey), readLedger(supabase, orderKey)])
+  return getOrderBalance(order, rows)
+}
+
 export async function recalcOrderPayment(supabase: SupabaseClient, orderKey: string): Promise<OrderBalance> {
   const [order, rows] = await Promise.all([readOrder(supabase, orderKey), readLedger(supabase, orderKey)])
   const balance = getOrderBalance(order, rows)

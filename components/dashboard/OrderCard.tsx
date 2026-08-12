@@ -216,7 +216,11 @@ export function OrderCard({
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
   // can never disagree. Do not add arithmetic on amount_paid/total here: one derivation, one place.
   const balance = getOrderBalance(order as any, ledgerRows ?? [])
-  const isPaid = balance.status === 'paid' || balance.status === 'refunded'
+  // 🔴 'part_refunded' IS SETTLED, NOT OUTSTANDING. Charged in full, some given back — the customer
+  // owes nothing. Without it here the value falls through BOTH branches: no chip at all, and a
+  // completion button reading "Mark paid" for money already taken. It rides with 'refunded' because
+  // both mean "do not collect", and the chip below is what tells them apart.
+  const isPaid = balance.status === 'paid' || balance.status === 'refunded' || balance.status === 'part_refunded'
   const isPartPaid = balance.status === 'part_paid'
 
   // 🔴 THE OVERLAY FOLDS INTO THE RESOLVER'S BOOLEANS, RIGHT HERE, so EVERY consumer below — the chip,
@@ -432,7 +436,13 @@ export function OrderCard({
   // ⚠️ INDIGO, NOT GREEN AND NOT AMBER. Green means money received; amber means money outstanding. This
   // is neither, and giving it either colour would be the whole defect again in a different form.
   // ⚠️ THE WORD "PAID" IS DELIBERATELY ABSENT. Nothing has been charged.
+  // 🔴 THE REFUND CHIPS SIT BEFORE THE GREEN PAID CHIP, because both are `effectivePaid` and the more
+  // specific fact wins. Slate, not green and not amber: green says money received, amber says money
+  // outstanding, and a refund is neither. The partial one carries the AMOUNT GIVEN BACK, because
+  // "part refunded" without a figure sends an operator to Stripe to find out how much.
   const paidChipStatic = hidePayments ? null
+    : balance.status === 'refunded' ? <span title="Refunded in full. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">REFUNDED</span>
+    : balance.status === 'part_refunded' ? <span title="Charged in full, then partly refunded. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{money(balance.balanceMinor)} REFUNDED</span>
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : heldAuthorisation ? <span title="Card authorised — do not collect. Payment is taken when you confirm." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">CARD HELD</span>
     : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>

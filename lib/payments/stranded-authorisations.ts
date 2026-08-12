@@ -184,6 +184,19 @@ export async function recoverStrandedAuthorisations(
         `[stranded] recovered order #${row.orderId} order_key=${row.orderKey} pi=${row.paymentIntentId} ` +
         `(${cap.status}) — the money is now taken and the board will read paid.`,
       )
+    } else if (cap.status === 'not_owed') {
+      // 🔴 THE GUARD FIRED. This is the 12 August case, caught. captureOnConfirmation has already
+      // logged it loudly and written a `capture_not_owed` audit row; nothing more is done here on
+      // purpose — in particular the hold is NOT released, because deciding between "capture the
+      // remainder" and "give the hold back" is a human's call and releasing money is irreversible.
+      // ⚠️ IT KEEPS BEING RETURNED BY THE SQL FUNCTION UNTIL SOMEBODY RESOLVES IT, which is correct:
+      // an order with a live hold and money already taken is an open problem, not a closed one. The
+      // audit row is deduplicated by nothing, but `capture_not_owed` is rare by construction.
+      console.error(
+        `[stranded] 🔴 REFUSED to capture order #${row.orderId} order_key=${row.orderKey}: ${cap.reason} ` +
+        `(paid=${cap.paidMinor}p, owed=${cap.balanceMinor}p, hold=${cap.authorisedMinor}p). The hold is ` +
+        `still live and needs resolving by hand.`,
+      )
     } else if (cap.status === 'expired') {
       // ── 🔴 THE HOLD IS GONE AND NO RETRY WILL EVER BRING IT BACK. WRITE THAT DOWN. ─────────────
       // Stripe expires an uncaptured intent after ~7 days, and this row is by definition older than the

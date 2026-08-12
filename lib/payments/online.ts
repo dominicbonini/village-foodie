@@ -47,6 +47,29 @@ export function onlinePaymentIdempotencyKey(paymentIntentId: string): string {
 }
 
 /**
+ * The idempotency key for an online card REFUND. Stripe's own refund id, prefixed.
+ *
+ * ── 🔴 WHY NOT THE INTENT ID, AND WHY NOT THE CHARGE ID ────────────────────────────────────────────
+ * A capture is ONE-PER-INTENT, so `stripe_pi:{id}` is a complete identity for it. A refund is not:
+ * Stripe's own documentation says "You can optionally refund only part of a charge. You can do so
+ * multiple times, until the entire charge has been refunded." Keying on the intent or the charge would
+ * make the SECOND partial refund a 23505 no-op — silently swallowed, exactly the defect
+ * collectIdempotencyKey was rewritten to fix when `collect:{order_key}` swallowed every charge after
+ * the first. The refund id is the only identifier that is one-per-refund.
+ *
+ * ✅ AND IT IS STABLE ACROSS REDELIVERY, which is the property the unique index actually needs. Stripe
+ * mints `re_...` when the refund is created and repeats it on every redelivery of every event that
+ * mentions it — including `charge.refunded` and `refund.updated`, which is what lets those two branches
+ * converge on ONE row without knowing about each other.
+ *
+ * ⚠️ `stripe_re:` DELIBERATELY MIRRORS `stripe_pi:`. One prefix per Stripe object type, so the source of
+ * any row is legible from the key alone and no path can collide with another.
+ */
+export function onlineRefundIdempotencyKey(refundId: string): string {
+  return `stripe_re:${refundId}`
+}
+
+/**
  * Record a successful online card payment.
  *
  * ⚠️ `livemode` IS REQUIRED AND COMES FROM THE EVENT, never from a key prefix or an env var — the same
@@ -86,5 +109,61 @@ export async function recordOnlineCardPayment(
     currency: args.currency,
     createdBy: 'stripe_webhook',
     note: 'Online card payment',
+  })
+}
+
+/**
+ * Record an online card REFUND that Stripe has already settled.
+ *
+ * ── 🔴 ONLY `succeeded` REFUNDS REACH HERE, AND THAT IS THE WHOLE PENDING DECISION ─────────────────
+ * A Connect refund on a direct charge can come back `pending` when the connected account's balance is
+ * short — Stripe: "we set the refund status to `pending`... Stripe automatically processes pending
+ * refunds in the order they were created and updates their status to `successful`."
+ * getOrderBalance counts ONLY `state === 'succeeded'`, so a pending row would be inert: it would change
+ * no balance and no surface. Writing one would therefore buy nothing and cost a second state to keep in
+ * step — and `recordPaymentEvent` is INSERT-ONLY, so flipping it later would mean building an UPDATE
+ * path into the ledger for a row nothing reads. So the rule is: NO LEDGER ROW UNTIL THE MONEY HAS
+ * ACTUALLY GONE BACK. A pending refund is recorded in `action_audit_log` instead, where it is visible
+ * without pretending to be money that has moved. See the webhook's `refund.updated` branch, which is
+ * what turns a pending refund into this call once Stripe settles it.
+ *
+ * ⚠️ THE AMOUNT IS THE INDIVIDUAL REFUND'S, NEVER `charge.amount_refunded`. That field is CUMULATIVE:
+ * a second 200p refund on a charge already refunded 200p reports 400, and booking it would double-count.
+ * One row per `re_...`, each carrying its own amount, and the sum is arithmetic the ledger already does.
+ *
+ * ⚠️ POSITIVE amount, `kind: 'refund'`. The ledger's CHECK requires it — "amount_minor must be a
+ * positive integer... kind carries the sign" — and getOrderBalance subtracts refunds from charges.
+ */
+export async function recordOnlineCardRefund(
+  supabase: SupabaseClient,
+  args: {
+    orderKey: string
+    truckId: string
+    /** Minor units, POSITIVE, from the Refund object — never from the charge's cumulative total. */
+    amountMinor: number
+    /** Stripe's `re_...`. The identity of this refund and the whole of its idempotency. */
+    refundId: string
+    /** The intent this refund is against. Recorded so a row can be traced back without a join. */
+    paymentIntentId: string | null
+    livemode: boolean
+    currency?: string
+  },
+) {
+  return recordPaymentEvent(supabase, {
+    orderKey: args.orderKey,
+    truckId: args.truckId,
+    kind: 'refund',
+    channel: 'online',
+    amountMinor: args.amountMinor,
+    state: 'succeeded',
+    method: 'card',
+    // ⚠️ THE REFUND ID, NOT THE INTENT. `external_ref` is what a human follows back to Stripe, and for
+    // this row the object at Stripe is the refund.
+    externalRef: args.refundId,
+    idempotencyKey: onlineRefundIdempotencyKey(args.refundId),
+    livemode: args.livemode,
+    currency: args.currency,
+    createdBy: 'stripe_webhook',
+    note: args.paymentIntentId ? `Card refund (${args.paymentIntentId})` : 'Card refund',
   })
 }
