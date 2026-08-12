@@ -357,17 +357,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // navigation on the ordinary card path, so the component never unmounts and the basket simply stays.
   // A decline leaves the Element mounted, the basket intact and the customer able to press again.
   // ⚠️ The only navigation left is the SUCCESS one, to ?confirm= — where the basket is meant to be gone.
-  /** 🔴 TRUE ONLY WHILE THE PAYMENT STAGE IS ON SCREEN — NOT merely while an authorisation is held.
-   *  The two came apart when closing the stage stopped destroying the intent: a customer who backs out
-   *  to edit their basket is on the ORDER FORM, where the slot refresh, the clock tick and the menu
-   *  poll all need to work again. Gating on `payment` alone would freeze the form for the rest of the
-   *  session. The one flag every background behaviour checks. */
-  const paying = stageOpen && payment !== null
-  // ⚠️ A REF ALONGSIDE THE BOOLEAN. `fetchSlots` is a plain function re-created every render, but it is
-  // captured by the visibilitychange listener's closure, which is only re-attached when ITS deps change.
-  // A ref is read live at call time, so the gate cannot go stale inside a stale closure.
-  const payingRef = useRef(false)
-  useEffect(() => { payingRef.current = paying }, [paying])
   // "Check again" in-place re-fetch state (pause banner) — never reloads, never clears the basket.
   const [rechecking, setRechecking] = useState(false)
   // Event finished EARLY (status='closed'/'cancelled') while the customer was already on the page —
@@ -396,6 +385,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [summaryExpanded, setSummaryExpanded] = useState(false)
   // STAGE 2 (commit): the order FORM opens as a bottom-sheet overlay only at commit. Default closed.
   const [formSheetOpen, setFormSheetOpen] = useState(false)
+
+  /** 🔴 THE PAYMENT STEP IS ON SCREEN — which now means the SHEET is open AND the step is selected.
+   *  It is a step inside the sheet, so closing the sheet hides it exactly as closing it hides the review;
+   *  `stageOpen` survives, so reopening the sheet returns the customer to the card form rather than
+   *  dropping them back to a review they had already left.
+   *  ⚠️ THE ELEMENT'S LIFECYCLE DOES NOT READ THIS. It reads `paymentBoxEl`, the host node itself — which
+   *  is what makes every close route, including the sheet's, go through the one teardown. */
+  const payingInSheet = formSheetOpen && stageOpen && payment !== null
+
+  /** 🔴 TRUE ONLY WHILE THE PAYMENT STAGE IS ON SCREEN — NOT merely while an authorisation is held.
+   *  The two came apart when closing the stage stopped destroying the intent: a customer who backs out
+   *  to edit their basket is on the ORDER FORM, where the slot refresh, the clock tick and the menu
+   *  poll all need to work again. Gating on `payment` alone would freeze the form for the rest of the
+   *  session. The one flag every background behaviour checks. */
+  const paying = payingInSheet
+  // ⚠️ A REF ALONGSIDE THE BOOLEAN. `fetchSlots` is a plain function re-created every render, but it is
+  // captured by the visibilitychange listener's closure, which is only re-attached when ITS deps change.
+  // A ref is read live at call time, so the gate cannot go stale inside a stale closure.
+  const payingRef = useRef(false)
+  useEffect(() => { payingRef.current = paying }, [paying])
+
   // The form sheet's own review-summary state — EXPANDED by default so the customer sees what they're
   // confirming on open (food-truck orders are small). A max-h cap on the summary (see render) keeps a
   // rare large order from burying the form. Customer can still collapse it. Separate from footer peek.
@@ -2560,10 +2570,92 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <div className="absolute inset-0 bg-black/40" onClick={() => setFormSheetOpen(false)} />
           <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
             <div className="px-5 pt-5 pb-5">
+              {/* ⚠️ THE SHEET'S OWN CHROME, KEPT. The payment step is a step INSIDE this sheet, not a
+                  screen over it, so the title changes and the ✕ stays where it has always been.
+                  🔴 THE ✕ IS HIDDEN MID-AUTHORISATION, for the same reason the Back control is:
+                  dismissing the sheet while confirmPayment is in flight would leave the customer on the
+                  menu with a hold being placed behind them. It is the only close route that could
+                  otherwise fire during those two seconds. */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-black text-slate-900 text-lg leading-snug">Complete your order</h3>
-                <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
+                <h3 className="font-black text-slate-900 text-lg leading-snug">
+                  {payingInSheet ? 'Pay by card' : 'Complete your order'}
+                </h3>
+                {payStage !== 'authorising' && (
+                  <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
+                )}
               </div>
+
+              {/* ── 🔴 THE PAYMENT STEP. INSIDE THE SHEET, REPLACING THE REVIEW, NOT COVERING IT. ────
+                  It sits immediately under the sheet's own header, so the card fields are the FIRST
+                  thing in the sheet and there is nothing to scroll past to reach them. The review
+                  content below is hidden, not unmounted, so returning to it costs nothing and no field
+                  loses its value.
+                  🔴 AND THE ELEMENT'S HOST STILL CANNOT BE DESTROYED WITHOUT TEARING DOWN. Being inside
+                  the sheet is safe — it was never the location that caused the old defect. The host is
+                  published into STATE by a callback ref, so the sheet's ✕ and its backdrop detach the
+                  node, the ref fires with null, `paymentBoxEl` changes, and React runs the effect's
+                  cleanup. Every close is a dependency change; there is no close that is not. */}
+              {payingInSheet && payment && (
+                <div className="mb-2">
+                  <div className="flex items-center justify-between mb-4">
+                    {/* ⚠️ HIDDEN MID-AUTHORISATION, exactly like the ✕ above. */}
+                    {payStage !== 'authorising' ? (
+                      <button onClick={e => { e.preventDefault(); closePaymentStage() }}
+                        className="text-slate-500 hover:text-slate-800 text-sm font-bold flex items-center gap-1.5 -ml-1 px-1 py-1">
+                        ← Back to my order
+                      </button>
+                    ) : <span className="text-sm font-bold text-slate-400">Authorising…</span>}
+                    <span className="text-lg font-black text-slate-900 tabular-nums">£{(payment.totalPence / 100).toFixed(2)}</span>
+                  </div>
+
+                  {/* Skeleton while Stripe.js loads and the Element builds. Driven by `elementReady` —
+                      the same fact the Pay button reads, so the two can never disagree. */}
+                  {!elementReady && (
+                    <div className="animate-pulse space-y-2" aria-live="polite">
+                      <div className="h-12 bg-slate-100 rounded-lg" />
+                      <div className="h-12 bg-slate-100 rounded-lg" />
+                      <div className="h-12 bg-slate-100 rounded-lg" />
+                      <p className="text-xs text-slate-400 pt-1">Loading secure card form…</p>
+                    </div>
+                  )}
+
+                  {/* 🔴 THE ELEMENT'S HOST, AND THE ONLY ONE. `setPaymentBoxEl` is a callback ref: it
+                      publishes this node into state, which is what makes the mount effect re-run when
+                      the div is recreated, and what fires the single teardown when it is detached.
+                      Hidden under the skeleton, never conditionally removed while the step is open —
+                      unmounting it on a decline would destroy the card details just typed. */}
+                  <div ref={setPaymentBoxEl} className={elementReady ? '' : 'hidden'} />
+
+                  {payStage === 'failed' && payError && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4">
+                      <p className="text-red-800 text-sm font-medium">{payError}</p>
+                    </div>
+                  )}
+
+                  {/* 🔴 THE ONE PRECONDITION: A MOUNTED ELEMENT. `elementReady` is set by Stripe's own
+                      `ready` event and cleared by the single teardown, so it cannot outlive the Element
+                      it describes. `payStage !== 'authorising'` stops a second press mid-confirm. */}
+                  <button onClick={e => { e.preventDefault(); void confirmCardPayment() }}
+                    disabled={!elementReady || payStage === 'authorising'}
+                    className="w-full bg-orange-600 text-white font-black py-4 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-4">
+                    {payStage === 'authorising' ? 'Authorising…'
+                      : !elementReady ? 'Preparing…'
+                      : payStage === 'failed' ? `Try again · £${(payment.totalPence / 100).toFixed(2)}`
+                      : `Pay £${(payment.totalPence / 100).toFixed(2)}`}
+                  </button>
+                  <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
+                    Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
+                  </p>
+                </div>
+              )}
+
+              {/* ── 🔴 THE REVIEW, HIDDEN RATHER THAN UNMOUNTED WHILE PAYING. ────────────────────────
+                  `hidden` is `display:none`, so it takes no space and the card form sits at the top of
+                  the sheet with nothing to scroll past — while every field keeps its value and its
+                  focus state, and Back is instant. Unmounting it would re-run the whole review tree for
+                  no benefit. ⚠️ A BARE WRAPPER: the parent is `px-5 pt-5 pb-5` with no flex and no
+                  space-y, so an extra block-level div changes no spacing anywhere. */}
+              <div className={payingInSheet ? 'hidden' : ''}>
 
               {/* ORDER REVIEW SUMMARY — COLLAPSED by default so a large order can't bury the form
                   fields below. One-line "{N} items · £{total} ⌄"; tap to reveal the full list (the
@@ -2863,92 +2955,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   ? 'You’ll pay securely by card on this page · Apple Pay and Google Pay supported'
                   : 'Pay at the truck on collection · No card details needed'}
               </p>
+              </div>{/* end review, hidden while paying */}
 
-            </div>
-          </div>
-        </div>
-        )}
-
-        {/* ── 🔴 THE PAYMENT STAGE. FULL SCREEN, AND A SIBLING OF THE ORDER SHEET, NOT A CHILD. ──────
-            IT USED TO LIVE INSIDE THE SHEET, and that single fact was the defect: the sheet's ✕ and its
-            backdrop unmounted the card form's host div while the authorisation state survived, so
-            reopening showed an empty box with a live Pay button and confirmPayment threw against a
-            detached Element. A sibling cannot be destroyed by closing the sheet.
-            🔴 FULL SCREEN, NOT AN EXPANSION BELOW THE SUMMARY. Paying is its own step: the customer was
-            scrolling past their order to find the card fields, with the place-order button still above
-            them. Here there is one thing on screen and one thing to do.
-            ⚠️ z-[70] — ABOVE the sheet's z-[60] and the footer's z-50, so nothing shows through and no
-            control behind it is reachable while a payment is in flight.
-            ⚠️ NO BACKDROP-CLICK CLOSE, deliberately. This is a step, not a popover; a stray tap beside a
-            card form should not dismiss it. The Back control is explicit and is the only way out. */}
-        {stageOpen && payment && (
-        <div className="fixed inset-0 z-[70] bg-white flex flex-col">
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 flex-shrink-0">
-            {/* ⚠️ HIDDEN MID-AUTHORISATION. Leaving while confirmPayment is in flight would drop the
-                customer on the order form with a hold being placed behind them. */}
-            {payStage !== 'authorising' ? (
-              <button onClick={e => { e.preventDefault(); closePaymentStage() }}
-                className="text-slate-500 hover:text-slate-800 text-sm font-bold flex items-center gap-1.5 -ml-1 px-1 py-1">
-                ← Back to my order
-              </button>
-            ) : <span className="text-sm font-bold text-slate-400">Authorising…</span>}
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-5 py-5">
-            <div className="max-w-lg mx-auto">
-              <div className="flex items-baseline justify-between mb-1">
-                <h2 className="text-xl font-black text-slate-900">Pay by card</h2>
-                <span className="text-xl font-black text-slate-900 tabular-nums">£{(payment.totalPence / 100).toFixed(2)}</span>
-              </div>
-              <p className="text-xs text-slate-400 mb-5">{truck?.name ?? 'This truck'} · {basket.reduce((n, b) => n + b.quantity, 0) + appliedDeals.length} item{(basket.reduce((n, b) => n + b.quantity, 0) + appliedDeals.length) !== 1 ? 's' : ''}</p>
-
-              {/* Skeleton while Stripe.js loads and the Element builds — not a spinner over an empty
-                  box, so the layout does not jump when it arrives. Driven by `elementReady`, the same
-                  fact the Pay button reads, so the two can never disagree. */}
-              {!elementReady && (
-                <div className="animate-pulse space-y-2" aria-live="polite">
-                  <div className="h-12 bg-slate-100 rounded-lg" />
-                  <div className="h-12 bg-slate-100 rounded-lg" />
-                  <div className="h-12 bg-slate-100 rounded-lg" />
-                  <p className="text-xs text-slate-400 pt-1">Loading secure card form…</p>
-                </div>
-              )}
-
-              {/* 🔴 THE ELEMENT'S HOST, AND THE ONLY ONE. The callback ref publishes the node into state,
-                  which is what makes the mount effect re-run when this div is recreated on reopen — the
-                  fix for the defect. Hidden under the skeleton, never conditionally removed while the
-                  stage is open: unmounting it on a decline would destroy the card details just typed. */}
-              <div ref={setPaymentBoxEl} className={elementReady ? '' : 'hidden'} />
-
-              {/* FAILED — declined, or the form could not be set up. Stripe's own wording where it has
-                  one, because it is written for customers and is more specific than ours. */}
-              {payStage === 'failed' && payError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4">
-                  <p className="text-red-800 text-sm font-medium">{payError}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex-shrink-0 border-t border-slate-100 px-5 py-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-            <div className="max-w-lg mx-auto">
-              {/* 🔴 THE ONE PRECONDITION: A MOUNTED ELEMENT. `elementReady` is set by Stripe's own
-                  `ready` event and cleared by the single teardown, so it cannot outlive the Element it
-                  describes. `payStage !== 'authorising'` stops a second press mid-confirm, which is how
-                  a customer ends up with two holds. Nothing here reads a stage that could be stale. */}
-              <button onClick={e => { e.preventDefault(); void confirmCardPayment() }}
-                disabled={!elementReady || payStage === 'authorising'}
-                className="w-full bg-orange-600 text-white font-black py-4 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-                {payStage === 'authorising' ? 'Authorising…'
-                  : !elementReady ? 'Preparing…'
-                  : payStage === 'failed' ? `Try again · £${(payment.totalPence / 100).toFixed(2)}`
-                  : `Pay £${(payment.totalPence / 100).toFixed(2)}`}
-              </button>
-              <p className="text-[11px] text-slate-400 text-center mt-3 leading-relaxed">
-                {/* 🔴 TRUE, AND IT IS THE PRODUCT PROMISE OF authorize-then-capture. The money is HELD
-                    at this point, not taken; capture follows the truck confirming. */}
-                Your card is held, not charged, until {truck?.name ?? 'the truck'} confirms your order.
-              </p>
             </div>
           </div>
         </div>
