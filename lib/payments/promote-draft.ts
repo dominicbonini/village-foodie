@@ -361,6 +361,16 @@ export async function promoteDraft(
           total:        draft.total,
           notes:        draft.notes ?? null,
           autoAccepted,
+          // ── 🔴 THE ONE LINE THIS FILE GAINED, AND IT IS THE WHOLE POINT OF THE EMAIL CHANGE. ──────
+          // This email used to tell a customer who had just authorised their card to "Pay at the truck
+          // on collection" — the sentence was a hardcoded constant because formatConfirmationEmail took
+          // no payment parameter at all. It takes one now, and this is where it is answered.
+          // ⚠️ TRUE BY CONSTRUCTION AT THIS LINE. `draft.payment_intent_id` is non-null only for a card
+          // order, and nothing captures before promotion returns — so an intent here is a HELD one.
+          // Reading it off the draft in hand costs no query and cannot disagree with the resolver the
+          // operator surfaces use.
+          // ⚠️ FALSE for every pay-at-hatch order, which keeps their email byte-identical to today.
+          cardHeld:     !!draft.payment_intent_id,
           venueName:              eventRow?.venue_name ?? null,
           venueTown:              eventRow?.town ?? null,
           venuePostcode:          eventRow?.postcode ?? null,

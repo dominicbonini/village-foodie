@@ -97,6 +97,7 @@ export function OrderCard({
   highlight = false,
   ledgerRows,
   hidePayments = false,
+  heldAuthorisation = false,
   pendingPayment,
   conflict,
   onBuzzer,
@@ -181,6 +182,12 @@ export function OrderCard({
    *  the real ledger rows and still governs everything else — this decides only what is OFFERED. Payment
    *  state stays derived in one place; a device preference must never be able to change what is true. */
   hidePayments?: boolean
+  /** 🔴 THIS ORDER HAS A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved ONCE server-side
+   *  (lib/payments/held-authorisation.ts) and shipped by /api/dashboard — never worked out here.
+   *  ⚠️ IT IS NOT "paid". The order is genuinely unpaid, no money has moved and getOrderBalance is
+   *  untouched. It says only that the money is HELD and must not be collected at the hatch: capture
+   *  follows confirmation. */
+  heldAuthorisation?: boolean
   /** Open the buzzer grid for this order. UNDEFINED ⇒ this van has no buzzers (or the surface has not
    *  wired it) and the chip is not rendered at all — the card is byte-identical to before. */
   onBuzzer?: (order: Order) => void
@@ -303,7 +310,16 @@ export function OrderCard({
   // and the PAID chip use — with the offline payment overlay already folded in. Nothing is re-derived
   // here and nothing may be: one derivation, one place.
   const completionBtn = () => {
-    if (effectivePaid) {
+    // 🔴 A HELD AUTHORISATION TAKES THE SAME BRANCH AS PAID: COMPLETE, DO NOT COLLECT. That is the whole
+    // point of this change — an operator must never be offered `Mark paid` for money that is already
+    // held, because pressing it books a SECOND payment at the hatch for an order the customer has
+    // already authorised.
+    // ⚠️ IT DOES NOT CLAIM THE ORDER IS PAID. The chip above says CARD HELD, the balance still reads
+    // unpaid, and `Collected` is a KITCHEN action — it advances handover and books no money.
+    // ⚠️ Capture happens at CONFIRMATION, not here, so by the time a held order reaches this button in
+    // the ordinary flow it has usually already become paid. This branch covers the window where it has
+    // not: a confirmed order whose capture failed or is still in flight.
+    if (effectivePaid || heldAuthorisation) {
       return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (completionPresses === 'one') {
@@ -409,8 +425,16 @@ export function OrderCard({
   // describes where the operator is standing, not what is true of the order. A grill screen not showing
   // a money chip is not the product concealing a payment. Keeping it here also keeps the chip, its tap
   // target and the remove-payment modal on a single switch — there is still no second path.
+  // 🔴 THE HELD CHIP SITS BETWEEN "paid" AND "owes money", BECAUSE THAT IS WHERE THE ORDER IS.
+  // Tested AFTER effectivePaid — a captured order is paid and says PAID, and the resolver already
+  // excludes captured intents, so the two can never both be true. Tested BEFORE part-paid, which is an
+  // in-person state that a card-held order cannot be in.
+  // ⚠️ INDIGO, NOT GREEN AND NOT AMBER. Green means money received; amber means money outstanding. This
+  // is neither, and giving it either colour would be the whole defect again in a different form.
+  // ⚠️ THE WORD "PAID" IS DELIBERATELY ABSENT. Nothing has been charged.
   const paidChipStatic = hidePayments ? null
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
+    : heldAuthorisation ? <span title="Card authorised — do not collect. Payment is taken when you confirm." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">CARD HELD</span>
     : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
 
@@ -418,7 +442,13 @@ export function OrderCard({
   // online. The queued undo is safe: the outbox coalesces only kind:'stock', so BOTH ops are sent, FIFO
   // (listOps sorts by seq), and an `undo_mark_paid` that finds no charge row returns reversal:'none' with
   // a 2xx — a no-op, not a failure. See docs/offline-coverage-report.md.
-  const paidChip = paidChipStatic === null ? null : (
+  // ⚠️ THE HELD CHIP IS NOT TAPPABLE, AND THAT IS DELIBERATE. The remove-payment modal reverses a
+  // RECORDING; a held authorisation has no ledger row to remove, so the modal would offer to undo
+  // something that does not exist and `undo_mark_paid` would find nothing. Releasing a hold is a
+  // different action entirely and is not built here.
+  const paidChip = paidChipStatic === null ? null : heldAuthorisation && !effectivePaid ? (
+    <span className="flex-shrink-0">{paidChipStatic}</span>
+  ) : (
     <button onClick={() => setConfirmRemovePayment(true)} title="Tap to remove this payment" className="flex-shrink-0">
       {paidChipStatic}
     </button>
@@ -504,7 +534,9 @@ export function OrderCard({
     <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">
       {/* 🔴 SAME BRANCH ORDER AS completionBtn: effectivePaid FIRST, the setting second. A paid order
           reads "Collected" here too, whatever the truck is configured to do. Keep these in step. */}
-      {effectivePaid ? 'Collected' : completionPresses === 'one' ? 'Mark paid & collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+      {/* 🔴 heldAuthorisation FOLDED IN ALONGSIDE effectivePaid, exactly as in completionBtn. These two
+          branches are documented as drifting if only one is changed — they are changed together. */}
+      {effectivePaid || heldAuthorisation ? 'Collected' : completionPresses === 'one' ? 'Mark paid & collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})

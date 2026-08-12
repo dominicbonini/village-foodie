@@ -17,6 +17,7 @@ import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
 // Type-only would not work here: LEDGER_ROW_COLUMNS is a VALUE. This route is server-only, so pulling
 // the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
 import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
+import { readHeldAuthorisations } from '@/lib/payments/held-authorisation'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -208,6 +209,8 @@ export async function GET(req: NextRequest) {
   /** order_keys whose money write is on record as having FAILED. Paired client-side with the live
    *  balance by hasUnrecordedPayment() — see the query below for why both halves are required. */
   const paymentFailures = new Set<string>()
+  /** order_keys whose card authorisation is live and NOT yet captured — see the response field. */
+  const heldAuthorisations: string[] = []
 
   // ── 🔴 THE OPERATOR'S STRIPE FACTS — ONE READ, TWO CONSUMERS, HOISTED TO HERE ────────────────────
   // Read BEFORE the orders block because the payments map below needs `stripe_account_livemode` to stamp
@@ -302,6 +305,15 @@ export async function GET(req: NextRequest) {
         // ITSELF a test account, which is decided below, not here. Fetching is not counting: isLiveRow
         // still makes the final call, so a widened fetch cannot on its own put money on a screen.
         .or('livemode.eq.true,and(livemode.eq.false,channel.eq.online)')
+      // ── 🔴 HELD AUTHORISATIONS — TWO EXTRA READS FOR THE WHOLE BOARD ─────────────────────────
+      // Batched over the SAME visibleKeys as the payments query above, so the cost does not scale with
+      // the number of orders. Non-blocking in spirit: the reader fails closed and returns an empty set,
+      // in which case every surface shows exactly what it showed before this existed.
+      try {
+        for (const k of await readHeldAuthorisations(supabase, visibleKeys)) heldAuthorisations.push(k)
+      } catch (e) {
+        console.error('[dashboard] held-authorisation read failed — cards fall back to today\'s display:', e)
+      }
       if (payErr) {
         // Non-blocking: the dashboard must render. An empty map makes every order read 'unpaid', which
         // is visibly wrong rather than silently wrong, and it self-heals on the next poll.
@@ -742,6 +754,11 @@ export async function GET(req: NextRequest) {
     offlinePauseEventId: selectedEventId,         // the event the marker belongs to (ack key)
     orders:  orders || [],
     payments,                                       // order_key → order_payments rows (V9.4) → getOrderBalance
+    // 🔴 ORDER KEYS WITH A LIVE, UNCAPTURED CARD AUTHORISATION. Computed ONCE, here, and read by the
+    // order card, the KDS and the ticket — no surface works it out for itself. It is an ADDITIONAL fact
+    // beside `payments`, never a substitute: those orders are genuinely unpaid and getOrderBalance is
+    // untouched. See lib/payments/held-authorisation.ts.
+    heldAuthorisations,
     paymentFailures: [...paymentFailures],          // order_keys whose ledger write failed → hasUnrecordedPayment
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)

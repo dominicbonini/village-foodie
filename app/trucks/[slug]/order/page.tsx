@@ -657,9 +657,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // of those their order does not exist would be the worst screen in the product.
     // ⚠️ Deliberately a fixed short interval rather than a backoff: promotion either lands in the first
     // few seconds or something is wrong, and a backoff would only lengthen the wrong answer.
+    // ── 🔴 THE WINDOW IS 60 SECONDS, AND IT IS SET FROM A MEASURED ORDER. ───────────────────────
+    // It was 8 attempts at 1s = ~8 seconds, and a real Apple Pay order missed it: the customer was told
+    // "We couldn't find that order" for an order that arrived moments later.
+    // THE MEASUREMENT (order 18, 12 August): draft 16:38:55 -> Stripe stamped the authorisation
+    // 16:39:18 -> webhook received 16:39:19.6 -> order row 16:39:42.3.
+    //   1. 22.4s of that was the CUSTOMER at the card sheet. Not our latency, and not what this bounds —
+    //     they are not looking at the confirmation yet.
+    //   2. 🔴 22.7s IS OURS: webhook receipt to order row. That is the number this must cover.
+    // 60s is ~2.6x the measured worst case, which leaves room for a slower cold start without being so
+    // long that a genuinely bad key hangs the screen. 30 retries at 2s rather than 60 at 1s: the first
+    // attempt is immediate and usually succeeds, so the interval only costs the waiting case, and half
+    // the requests is politer to a phone on poor coverage.
+    // ⚠️ THE COST, ACCEPTED: a bogus order key now takes ~60s to report "not found" instead of ~8s. That
+    // is the right way round — the common case is a customer who has paid, and telling one of those
+    // their order does not exist is the worst screen in the product.
     let attempt = 0
-    const MAX_ATTEMPTS = 8
-    const RETRY_MS = 1000
+    const MAX_ATTEMPTS = 30
+    const RETRY_MS = 2000
     const run = () => fetch(`/api/orders/${confirmOrderKey}?truck=${encodeURIComponent(slug)}`, { cache: 'no-store' })
       .then(async r => {
         if (cancelled) return

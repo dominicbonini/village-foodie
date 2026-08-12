@@ -101,6 +101,10 @@ export interface TicketOrder {
    *  not have. Pizzeria Gusto is exactly this truck. */
   showPaidStep?: boolean
   paymentStatus?: 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'refund_due' | 'failed'
+  /** 🔴 A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved by lib/payments/held-authorisation.ts and passed
+   *  in — never derived here. NOT a payment status: the order is genuinely `unpaid` and no money has
+   *  moved. It says only that the money is HELD and must not be collected at the hatch. */
+  heldAuthorisation?: boolean
   /** Outstanding balance in MINOR units, as getOrderBalance returns it. Only read when part_paid/unpaid. */
   balanceMinor?: number
   truck_name?: string
@@ -360,6 +364,12 @@ function buildCombined(order: TicketOrder, config: TicketConfig): TicketLine[] {
     const bal = order.balanceMinor ?? 0
     const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
     if (order.paymentStatus === 'paid') lines.push({ text: padBetween('PAYMENT', 'PAID', width), bold: true })
+    // 🔴 HELD BEATS 'unpaid', AND ONLY 'unpaid'. `TO PAY £6.00` on a ticket whose card is already
+    // authorised is a printed instruction to collect money that is held — the exact double-payment path
+    // this change closes. It cannot mask a real balance: a captured order is 'paid' and takes the branch
+    // above, and the resolver excludes captured intents.
+    // ⚠️ THE WORD "PAID" IS ABSENT. Nothing has been charged; the kitchen must not read it as settled.
+    else if (order.heldAuthorisation) lines.push({ text: padBetween('CARD HELD', 'DO NOT COLLECT', width), bold: true })
     else if (order.paymentStatus === 'part_paid') lines.push({ text: padBetween('TO PAY', money(bal), width), bold: true })
     else if (order.paymentStatus === 'unpaid') lines.push({ text: padBetween('TO PAY', money(bal), width), bold: true })
     else lines.push({ text: padBetween('PAYMENT', order.paymentStatus.replace('_', ' ').toUpperCase(), width), bold: true })

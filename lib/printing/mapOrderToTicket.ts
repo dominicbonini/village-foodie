@@ -41,6 +41,11 @@ export interface MapTicketInput {
   printedLabel?: string
   /** From usePrintWatcher's PrintAttemptContext — see reprintFromContext below. */
   reprint?: TicketReprint | null
+  /** 🔴 Does this order have a live, UNCAPTURED card authorisation? Comes from /api/dashboard's
+   *  `heldAuthorisations` (lib/payments/held-authorisation.ts) — the SAME answer the order card and the
+   *  KDS read. Never derived from the ledger here: an uncaptured hold writes no ledger row, which is
+   *  exactly why the ticket used to print `TO PAY`. */
+  heldAuthorisation?: boolean
 }
 
 /** 🔴 The bridge from the watcher's attempt history to the ticket's banner, in ONE place so the rule is
@@ -114,6 +119,9 @@ export function mapOrderToTicket(input: MapTicketInput): TicketOrder {
     showPaidStep,
     paymentStatus,
     balanceMinor,
+    // 🔴 GATED ON showPaidStep LIKE ITS TWO NEIGHBOURS. A truck that does not use the paid step prints
+    // no payment line at all, and must not start printing one because a card was held.
+    heldAuthorisation: showPaidStep ? (input.heldAuthorisation ?? false) : undefined,
 
     truck_name: truck?.name,
     printedLabel,

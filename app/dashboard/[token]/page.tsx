@@ -210,6 +210,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Order-ready redesign (stage 3): the resolved order-ready value (event override ?? van default ?? false,
   // computed in /api/dashboard) — gates the orders-screen Ready button. Defaults off.
   const[effectiveOrderReady,setEffectiveOrderReady]=useState(false)
+  // 🔴 ORDER KEYS WITH A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved server-side once per load
+  // (lib/payments/held-authorisation.ts) and passed straight to the card — never derived here, and never
+  // mixed into `payments`, which is the ledger and must keep meaning money that has MOVED.
+  const[heldAuthorisations,setHeldAuthorisations]=useState<Set<string>>(new Set())
   const[slots,setSlots]=useState<Slot[]>([])
   const[truckMenu,setTruckMenu]=useState<TruckMenu|null>(null)
   // Per-EVENT stock slices (keyed by event_id; '__none__' for the no-event case). Keeps each event's
@@ -756,7 +760,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.buzzerLosses !== undefined) setBuzzerLosses(data.buzzerLosses || [])                        // phase 2 — orders that lost a buzzer to conflict resolution
-      if(data.payments !== undefined) setPayments(data.payments || {})
+      if(data.payments !== undefined) setPayments(data.payments||{})
+      // ⚠️ GUARDED SEPARATELY, exactly like every sibling above. A partial refresh that omits the field
+      // must leave the previous value alone — clearing it would flip every held order back to reading
+      // "collect at the hatch" for one poll.
+      if(data.heldAuthorisations !== undefined) setHeldAuthorisations(new Set<string>(data.heldAuthorisations||[]))
       if(data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures||[]))
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
@@ -3072,13 +3080,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(

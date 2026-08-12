@@ -26,6 +26,7 @@ import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place
 // ── PHASE 2b: the card fork. See the block just above the event lock in POST. ──────────────────────
 import { newOrderKey, createOrderDraft, getOrderDraft, markAuthorizationCancelled } from '@/lib/payments/order-drafts'
 import { authorizeDraft, cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
+import { captureOnConfirmation } from '@/lib/payments/capture'
 
 /** 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP.
  *  It has three jobs and does them in this order: say nothing was charged (they are about to check
@@ -1052,6 +1053,22 @@ export async function POST(req: NextRequest) {
     // so `order` is set — this guard satisfies the type and never fires in practice.
     if (!order) {
       return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+    }
+
+    // ── 🔴 CAPTURE SITE 1 of 3: AUTO-ACCEPT. ──────────────────────────────────────────────────────
+    // Auto-accept writes 'confirmed' in the SAME INSERT as the order, inside place_order_atomic, so
+    // there is no separate confirmation write to hook. Capture therefore fires inline, immediately
+    // after the RPC returns and outside the event lock.
+    // 🔴 GATED ON `autoAccepted`, WHICH IS THE CONFIRMATION. An order that auto-accept declined is
+    // `pending` and stays UNCAPTURED, exactly like any other pending order — it captures when a human
+    // confirms it, at site 2 or 3.
+    // ⚠️ A NO-OP FOR EVERY PAY-AT-HATCH ORDER: one indexed read of order_drafts and out, no Stripe call.
+    // ⚠️ AWAITED, and it cannot throw — captureOnConfirmation returns failures as values. The order is
+    // already committed and booked by this line; nothing below can undo it.
+    if (autoAccepted) {
+      await captureOnConfirmation(supabase, {
+        orderKey: order.order_key, truckId: resolvedTruckId, trigger: 'auto_accept',
+      })
     }
 
     // ── placed_at — SET INSIDE place_order_atomic'S INSERT (phase 2) ────────────────────────────────

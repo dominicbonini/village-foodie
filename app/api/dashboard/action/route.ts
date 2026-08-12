@@ -18,6 +18,7 @@ import {
 import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
 import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
+import { captureOnConfirmation } from '@/lib/payments/capture'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { assignBuzzer } from '@/lib/buzzer'
@@ -216,6 +217,17 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
+
+      // ── 🔴 CAPTURE SITE 2 of 3: THE OPERATOR CONFIRM — AND EVERY OFFLINE REPLAY OF IT. ──────────
+      // The native outbox replays a queued confirm as this same `action: 'confirm'`, differing only by
+      // the `expected_from` guard checked at the top of this route. There is no separate replay handler,
+      // so this one call covers both — including a replay that lands long after the tap, where the hold
+      // may since have expired (captureOnConfirmation reports that as `expired`, never as a capture).
+      // ⚠️ AFTER the status write, deliberately: the confirmation is the thing that must happen.
+      // ⚠️ AWAITED AND CANNOT THROW — every failure comes back as a value. The order is already
+      // confirmed by the line above and stays confirmed whatever this returns.
+      await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'confirm' })
+
       if (order.customer_email) {
         // Resolve the venue strictly by the order's OWN event_id (cross-event fix): an
         // event_date+maybeSingle lookup returns null/the wrong row on multi-event dates,
@@ -1647,6 +1659,17 @@ export async function POST(req: NextRequest) {
         }
       }
       await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('order_key', orderKey)
+
+      // ── 🔴 CAPTURE SITE 3 of 3: QUICK-TIME-ADJUST, WHICH IS A CONFIRMATION IN DISGUISE. ─────────
+      // The line above writes `status: 'confirmed'` UNCONDITIONALLY alongside the new slot, and the
+      // control is offered on PENDING orders only — so pressing "+10m" confirms the order. A held
+      // authorisation must capture here exactly as it does at the Confirm button, or a customer who was
+      // "confirmed" by a time change keeps a hold that expires unclaimed.
+      // ⚠️ The rolled-forward slot changes nothing about the money: the amount was fixed at
+      // authorisation and capture takes that amount.
+      // ⚠️ AWAITED AND CANNOT THROW. The order is already confirmed and re-slotted above.
+      await captureOnConfirmation(supabase, { orderKey, truckId: truck.id, trigger: 'time_adjust' })
+
       // Notify customer of time change
       if (ord.customer_email) {
         const { data: slotEventRow } = await supabase

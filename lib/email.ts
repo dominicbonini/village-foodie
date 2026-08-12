@@ -94,6 +94,12 @@ export function formatConfirmationEmail(params: {
   notes: string | null
   autoAccepted?: boolean
   slotAdjustedFrom?: string | null
+  /** THE CUSTOMER'S CARD IS AUTHORISED AND NOT YET CHARGED. THE ONE PAYMENT FACT THIS EMAIL TAKES.
+   *  Absent or false, and the email is byte-identical to every one sent before this existed, which is
+   *  what keeps every pay-at-hatch order unchanged.
+   *  NOT "paid" — no money has moved; the truck captures it when they confirm the order. Do not let
+   *  the word "paid" into either branch below. */
+  cardHeld?: boolean
   // Truck contact & venue info
   venueName?: string | null
   venueTown?: string | null
@@ -229,9 +235,20 @@ export function formatConfirmationEmail(params: {
 
   ${collectionSection}
 
-  <div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+  ${params.cardHeld
+    /* THE CARD-HELD BRANCH. It used to be impossible for this block to say anything else: the
+       function took no payment parameter and this sentence was a hardcoded constant, so a customer who
+       had just authorised £6.00 was told to pay again at the truck.
+       EVERY WORD IS TRUE FOR AN AUTHORISED, UNCAPTURED PAYMENT: the card IS held, it has NOT been
+       charged, and the charge follows the truck confirming. Indigo, matching the CARD HELD chip the
+       operator sees, and deliberately not green. */
+    ? `<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#3730a3">Your card is held, not charged</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#4f46e5">${params.truckName} takes the payment when they confirm your order. Nothing to pay at the truck.</p>
+  </div>`
+    : `<div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
     <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">Pay at the truck on collection</p>
-  </div>
+  </div>`}
 
   ${contactSection}
 
@@ -285,7 +302,12 @@ export function formatConfirmationEmail(params: {
         : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
     params.notes ? `Notes: ${params.notes}` : '',
     '',
-    'Pay at the truck on collection.',
+    // THE SAME BRANCH IN THE PLAIN TEXT. Both halves of the email had the sentence hardcoded, so
+    // changing only the HTML would have left the text part telling a paying customer to pay again —
+    // and the text part is what a stripped-down or accessibility client renders.
+    params.cardHeld
+      ? `Your card is held, not charged. ${params.truckName} takes the payment when they confirm your order — nothing to pay at the truck.`
+      : 'Pay at the truck on collection.',
     venueOneLine ? `📍 ${venueOneLine}` : '',
     (() => {
       const method = params.preferredContactMethod

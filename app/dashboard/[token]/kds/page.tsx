@@ -80,6 +80,9 @@ export default function KdsPage() {
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)
+  // 🔴 Order keys with a live, UNCAPTURED card authorisation — resolved server-side once per load and
+  // read, never derived. See lib/payments/held-authorisation.ts.
+  const [heldAuthorisations, setHeldAuthorisations] = useState<Set<string>>(new Set())
   const [orders, setOrders] = useState<Order[]>([])
   // ── THE PAYMENT LEDGER ROWS (order_key → order_payments rows) ───────────────────────────────────
   // 🔴 PREREQUISITE, NOT A FEATURE. Without this the KDS rendered OrderCard with no `ledgerRows`, so
@@ -249,6 +252,9 @@ export default function KdsPage() {
       // unpaid; a server that sends an EMPTY map (the payments query failed, route.ts logs it) still
       // clears it, because that is a real "no rows this poll" and must not be masked by a stale copy.
       if (data.payments !== undefined) setPayments(data.payments || {})
+    if (data.heldAuthorisations !== undefined) setHeldAuthorisations(new Set<string>(data.heldAuthorisations || []))
+      // ⚠️ Guarded separately, like every sibling: a partial refresh must not clear it.
+      if (data.heldAuthorisations !== undefined) setHeldAuthorisations(new Set<string>(data.heldAuthorisations || []))
       if (data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures || []))
       setRequiresPin(false)
 
@@ -1340,6 +1346,7 @@ export default function KdsPage() {
                    state before this line existed) is not "unknown", it is "nothing paid", which is why
                    its absence was silent. See the payments state above. */
                 ledgerRows={payments[order.order_key]}
+                heldAuthorisation={heldAuthorisations.has(order.order_key)}
                 /* 🔴 PART 2, the DISPLAY half. True ⇒ this device does not do money: no paid chip, no
                    pay buttons, Ready in their place. Always FALSE when the truck's paid step is off, so
                    a show_paid_step-false truck renders exactly what it rendered before. */
@@ -1381,11 +1388,18 @@ export default function KdsPage() {
                 // buttons must not assert in a footer that money changed hands.
                 const bal = getOrderBalance(o as never, payments[o.order_key] ?? [])
                 const settled = bal.status === 'paid' || bal.status === 'refunded'
+                // 🔴 HELD IS NEITHER SETTLED NOR DUE. `£X due` on an order whose card is already
+                // authorised is an instruction to collect money that is held — the double-payment path
+                // this change exists to close. Tested after `settled`, and the resolver already excludes
+                // captured intents, so the two cannot both be true.
+                const held = heldAuthorisations.has(o.order_key)
                 return (
                   <div key={o.order_key} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
                     <span>#{o.id} · {o.customer_name}</span>
                     {hidePayments ? null : settled
                       ? <span className="text-green-600">✓ paid</span>
+                      : held
+                      ? <span className="text-indigo-600">card held</span>
                       : <span className="text-amber-600">£{(bal.balanceMinor / 100).toFixed(2)} due</span>}
                   </div>
                 )
