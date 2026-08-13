@@ -1088,6 +1088,87 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   )
 }
 
+/**
+ * The saved allergen card, as a panel: the summary text (expandable) and a link to the original file.
+ *
+ * ── 🔴 WHY IT IS A COMPONENT AND NOT TWO MORE COPIES OF THE SAME JSX ──────────────────────────────
+ * This markup existed twice — the Menu tab and AllergenWizardModal below — and BOTH carried the same
+ * defect: the whole panel was gated on the TEXT, with the file link nested inside it, so a truck holding
+ * a card file and no summary text rendered an empty panel under a green "allergen card saved". One
+ * definition, so that cannot drift again. ⚠️ The wizard has NOT been switched over — see the report; its
+ * clamp, padding, heading and Replace button differ and changing them unseen would be a guess.
+ *
+ * ── ⚠️ READ-ONLY. IT WRITES NOTHING. ──────────────────────────────────────────────────────────────
+ * No api() call, no setState on the truck, no allergen column touched. `expanded` is local view state
+ * and dies with the component, deliberately: which panel someone left open is not a fact about the
+ * truck, and persisting it would mean a write on a read.
+ *
+ * ── 🔴 "Show more" APPEARS ONLY WHEN THE TEXT IS GENUINELY CLIPPED ───────────────────────────────
+ * Measured, not guessed. A character-count heuristic gets this wrong in both directions — a short wide
+ * line and a long narrow one clamp differently — so the collapsed paragraph is asked whether its
+ * scrollHeight exceeds its clientHeight. A ResizeObserver repeats that when the column changes width,
+ * because a card that fits at one width can clip at another.
+ */
+function SavedAllergenCard({ text, url, clampClass, className = '' }: {
+  text: string
+  url: string
+  /** A LITERAL Tailwind class ('line-clamp-3'), never interpolated — a computed class name is not
+   *  generated at build time and would silently produce no clamp at all. */
+  clampClass: string
+  className?: string
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const [clipped, setClipped] = useState(false)
+  const textRef = useRef<HTMLParagraphElement | null>(null)
+
+  useEffect(() => {
+    const el = textRef.current
+    // Only meaningful while collapsed: expanded, the clamp is off and the two heights always match.
+    // `clipped` is left at its last collapsed reading so "Show less" survives the expansion.
+    if (!el || expanded) return
+    const measure = () => setClipped(el.scrollHeight > el.clientHeight + 1)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [text, expanded, clampClass])
+
+  // Nothing saved at all — render nothing rather than an empty green box.
+  if (!text && !url) return null
+
+  return (
+    <div className={`border border-green-100 bg-green-50 rounded-xl p-3 ${className}`}>
+      {text ? (
+        <>
+          <p ref={textRef} className={`text-xs text-slate-600 whitespace-pre-wrap ${expanded ? '' : clampClass}`}>{text}</p>
+          {(clipped || expanded) && (
+            <button
+              type="button"
+              onClick={() => setExpanded(v => !v)}
+              className="text-xs font-semibold text-green-700 hover:text-green-800 underline mt-1"
+            >
+              {expanded ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </>
+      ) : (
+        // 🔴 THE URL-ONLY CASE, WHICH USED TO RENDER AN EMPTY PANEL. A file is saved and no summary was
+        // ever produced — usually an upload whose AI pass then failed. Say that, rather than showing a
+        // green box with nothing in it.
+        <p className="text-xs text-slate-600">
+          A card file is saved for this truck, but no summary text was stored. Open the original to read it.
+        </p>
+      )}
+      {url && (
+        <a href={url} target="_blank" rel="noopener noreferrer"
+          className="text-xs text-green-600 underline mt-1 inline-block">
+          View original card
+        </a>
+      )}
+    </div>
+  )
+}
+
 function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, initialReviewView = 'list', onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {
   items: Item[]; categories: Category[]
   canEdit: boolean                                                       // owner/admin — VIEW for all, EDIT/confirm only here (server also enforces)
@@ -4203,13 +4284,18 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   }} />
                 : <span className="text-[11px] text-slate-400 self-center">View only — only the owner can edit allergens</span>}
             </div>
-            {/* Saved card preview (view always; replace is owner/admin via the wizard). */}
-            {allergenInfoText && (
-              <div className="mt-3 border border-green-100 bg-green-50 rounded-xl p-3">
-                <p className="text-xs text-slate-600 whitespace-pre-wrap line-clamp-3">{allergenInfoText}</p>
-                {allergenUrl && <a href={allergenUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 underline mt-1 inline-block">View original card</a>}
-              </div>
-            )}
+            {/* Saved card preview (view always; replace is owner/admin via the wizard).
+                ⚠️ THE GATE MOVED INTO THE COMPONENT, and that is the fix for the url-only truck: this
+                read `{allergenInfoText && (…)}`, so a truck with a card FILE and no summary text showed
+                the green "allergen card saved" line above and then nothing. SavedAllergenCard renders
+                whichever of the two exists and returns null when neither does, so the panel and the
+                indicator can no longer disagree. */}
+            <SavedAllergenCard
+              text={allergenInfoText}
+              url={allergenUrl}
+              clampClass="line-clamp-3"
+              className="mt-3"
+            />
           </div>
         )
       })()}
