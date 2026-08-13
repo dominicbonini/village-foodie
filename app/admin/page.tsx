@@ -70,7 +70,6 @@ interface NewTruckForm {
   contactEmail: string
   cuisineType: string
   vanName: string
-  kitchenCapacity: string
 }
 
 const NEW_TRUCK_DEFAULTS: NewTruckForm = {
@@ -81,7 +80,6 @@ const NEW_TRUCK_DEFAULTS: NewTruckForm = {
   contactEmail: '',
   cuisineType: '',
   vanName: 'Van 1',
-  kitchenCapacity: '5',
 }
 
 // The endpoint's error shape. `code` distinguishes 400 validation/reserved-prefix from 409
@@ -126,6 +124,8 @@ interface CreateTruckResponse {
   }
   van: { id: string; name: string; kds_token: string | null } | null
   urls: { manage: string; dashboard: string; order: string }
+  /** ADDITIVE — the discovery row this truck was promoted from, or null for a blank create. */
+  linkedDiscoveryTruckId?: string | null
   warnings: string[]
 }
 
@@ -239,6 +239,12 @@ export default function AdminPage() {
   const [newTruckError, setNewTruckError] = useState<NewTruckError | null>(null)
   const [newTruckResult, setNewTruckResult] = useState<CreateTruckResponse | null>(null)
   const [tokenCopied, setTokenCopied] = useState(false)
+  // ── PROMOTE-FROM-DISCOVERY ──────────────────────────────────────────────────────────────────────
+  // The discovery row this create is promoting, or null for a blank create. Held OUTSIDE NewTruckForm
+  // deliberately: it is not a form field, nothing renders it as an input, and keeping it separate is
+  // what lets `openNewTruck` clear it in one line so a blank create can never inherit it.
+  const [promoteFrom, setPromoteFrom] = useState<{ id: string; name: string } | null>(null)
+  const [promoteLoading, setPromoteLoading] = useState<string | null>(null)
 
   // ── DELETE TRUCK (POST /api/admin/delete-truck → lib/delete-truck) ────────────────────────────────
   // Deliberately NOT a per-row button: a one-click delete in a dense table that also lists a live trading
@@ -415,6 +421,42 @@ export default function AdminPage() {
     setNewTruckError(null)
     setNewTruckResult(null)
     setTokenCopied(false)
+    // ⚠️ CLEARED HERE, AND THIS LINE IS THE WHOLE POINT OF HOLDING IT SEPARATELY. Without it a blank
+    // create opened after a promote would still carry the last discovery id and link to the wrong row.
+    setPromoteFrom(null)
+    setShowNewTruck(true)
+  }
+
+  // ── PROMOTE AN UNLINKED DISCOVERY ROW ─────────────────────────────────────────────────────────────
+  // Opens the SAME create modal, pre-filled from the scraped row, with the discovery id held so submit
+  // can link the two. Every pre-filled field stays editable — this is a head start, not a commitment.
+  // ⚠️ PHONE AND WEBSITE ARE DELIBERATELY NOT PRE-FILLED. The scraped phone is a landline and the
+  // scraped website is usually a Facebook URL; both are wrong for the columns they would land in, and a
+  // wrong value an admin has to notice and clear is worse than an empty field they have to fill.
+  const openPromote = async (dt: DiscoveryTruck) => {
+    setPromoteLoading(dt.id)
+    // Name is on the row the console already holds. Cuisine and contact email are NOT — the admin GET
+    // does not select them — so they are fetched from the create-truck route's own prefill endpoint.
+    // A failure here is non-fatal: the modal still opens with the name, and the admin types the rest.
+    let prefill: { cuisine?: string | null; contact_email?: string | null } = {}
+    try {
+      const res = await fetch(`/api/admin/create-truck?discoveryTruckId=${encodeURIComponent(dt.id)}`, {
+        headers: { ...await nativeAuthHeader() },
+      })
+      if (res.ok) prefill = await res.json()
+    } catch { /* name-only pre-fill */ }
+    setNewTruck({
+      ...NEW_TRUCK_DEFAULTS,
+      name: dt.name ?? '',
+      cuisineType: prefill.cuisine ?? '',
+      contactEmail: prefill.contact_email ?? '',
+      // slug left blank so lib/provision-truck derives it from the name, exactly as a blank create does.
+    })
+    setNewTruckError(null)
+    setNewTruckResult(null)
+    setTokenCopied(false)
+    setPromoteFrom({ id: dt.id, name: dt.name })
+    setPromoteLoading(null)
     setShowNewTruck(true)
   }
 
@@ -427,7 +469,6 @@ export default function AdminPage() {
     setNewTruckLoading(true)
     setNewTruckError(null)
     try {
-      const capacity = Number(newTruck.kitchenCapacity)
       const res = await fetch('/api/admin/create-truck', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
@@ -440,10 +481,12 @@ export default function AdminPage() {
           ...(newTruck.contactEmail.trim() ? { contactEmail: newTruck.contactEmail.trim() } : {}),
           ...(newTruck.cuisineType.trim() ? { cuisineType: newTruck.cuisineType.trim() } : {}),
           visibility: newTruck.visibility,
-          van: {
-            name: newTruck.vanName.trim() || 'Van 1',
-            ...(Number.isFinite(capacity) && capacity > 0 ? { kitchen_capacity: capacity } : {}),
-          },
+          // ⚠️ NO kitchen_capacity. The route now always passes an explicit null to the module, so
+          // capacity is deliberately unset at creation and chosen in Manage -> Settings once the
+          // operator knows their kitchen. Only the van's NAME is still ours to send.
+          van: { name: newTruck.vanName.trim() || 'Van 1' },
+          // Present only for a promote; absent for a blank create, which the route treats exactly as before.
+          ...(promoteFrom ? { discoveryTruckId: promoteFrom.id } : {}),
         }),
       })
       const data = await res.json()
@@ -983,12 +1026,23 @@ export default function AdminPage() {
                         <td className="text-center px-2 py-2 border-l border-slate-100">
                           {opNav ? linkBtn(`/manage/${r.op.dashboard_token}`, '⚙️') : na}
                         </td>
-                        {/* Actions — Edit (operator only) */}
+                        {/* Actions — Edit (operator) / Create account (unlinked discovery row).
+                            ⚠️ THE ACTIONS CELL, not one of the other three empty ones. Active, Dashboard
+                            and Manage each describe a property or destination of a truck that EXISTS;
+                            this is a verb performed on the row, which is what this column already means
+                            for an operator (Edit). Putting it here also keeps every row's rightmost
+                            control in the same place, so the eye does not hunt. */}
                         <td className="text-center px-2 py-2 border-l border-slate-100">
                           {isOp
                             ? <button onClick={() => openEditModal(r.op)}
                                 className="text-xs px-2.5 py-1 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Edit</button>
-                            : na}
+                            : <button
+                                onClick={() => openPromote(r.dt)}
+                                disabled={promoteLoading === r.id}
+                                title="Create a real operator truck from this scraped row and link the two"
+                                className="text-xs px-2.5 py-1 border border-orange-200 text-orange-700 rounded-lg hover:bg-orange-50 disabled:opacity-50">
+                                {promoteLoading === r.id ? '…' : 'Create account'}
+                              </button>}
                           {busy && <span className="ml-1 text-xs text-slate-400 animate-pulse">…</span>}
                         </td>
                       </tr>
@@ -1711,7 +1765,7 @@ export default function AdminPage() {
             {!newTruckResult ? (
               <>
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Create truck</h3>
+                  <h3 className="text-lg font-semibold text-slate-900">{promoteFrom ? 'Create account' : 'Create truck'}</h3>
                   <p className="text-xs text-slate-500 mt-1">
                     Creates the truck row + a van. Replaces the old hand-written SQL path.
                   </p>
@@ -1851,29 +1905,21 @@ export default function AdminPage() {
                 {/* Van */}
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van</label>
-                  <div className="mt-1 grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      value={newTruck.vanName}
-                      onChange={e => setNewTruck(p => ({ ...p, vanName: e.target.value }))}
-                      placeholder="Van 1"
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    />
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        min={1}
-                        value={newTruck.kitchenCapacity}
-                        onChange={e => setNewTruck(p => ({ ...p, kitchenCapacity: e.target.value }))}
-                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      />
-                      <span className="text-xs text-slate-400 whitespace-nowrap">capacity</span>
-                    </div>
-                  </div>
+                  {/* ⚠️ THE CAPACITY INPUT IS GONE, DELIBERATELY. It defaulted to 5, so every truck
+                      created here inherited a concurrency ceiling nobody had chosen. Capacity must be an
+                      active decision made once the operator knows their kitchen, so the route now always
+                      passes an explicit null and this is set in Manage -> Settings -> Kitchen capacity.
+                      The van itself is still created — a vanless truck has an inert capacity engine. */}
+                  <input
+                    type="text"
+                    value={newTruck.vanName}
+                    onChange={e => setNewTruck(p => ({ ...p, vanName: e.target.value }))}
+                    placeholder="Van 1"
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
                   <p className="text-[11px] text-slate-400 mt-1.5">
-                    Kitchen capacity is a <strong>concurrency ceiling</strong> — how many counted items can be in
-                    production at once — not a rate. Without a van carrying one, no slot capacity is written and the
-                    capacity engine stays inert.
+                    Kitchen capacity is <strong>not set here</strong> — it is a concurrency ceiling the operator
+                    chooses in Manage once they know their kitchen. Until they do, the capacity engine stays inert.
                   </p>
                 </div>
 
@@ -1881,21 +1927,30 @@ export default function AdminPage() {
                 {newTruckError && (
                   <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
                     <p className="text-sm text-red-700 font-semibold">
-                      {newTruckError.status === 409 ? 'Name/slug already taken'
+                      {newTruckError.code === 'link_failed' ? 'Could not link the discovery row'
+                        : newTruckError.status === 409 ? 'Name/slug already taken'
                         : newTruckError.code === 'reserved_prefix' ? 'Reserved prefix'
                         : newTruckError.status === 400 ? 'Invalid'
                         : 'Creation failed'}
                     </p>
                     <p className="text-xs text-red-600 mt-1">{newTruckError.message}</p>
-                    {newTruckError.status === 409 && (
+                    {newTruckError.status === 409 && newTruckError.code !== 'link_failed' && (
                       <p className="text-xs text-red-500 mt-1">
                         Tried several numeric suffixes without finding a free slug — pick a different name.
                       </p>
                     )}
+                    {/* ⚠️ A LINK FAILURE MEANS NOTHING WAS CREATED. The route rolls the new truck back, so
+                        the honest message is "nothing happened", not "partly happened". */}
+                    {newTruckError.code === 'link_failed' && (
+                      <p className="text-xs text-red-500 mt-1">
+                        The new truck was rolled back — nothing was created. Refresh and check whether that
+                        discovery row is already linked to a truck.
+                      </p>
+                    )}
                     {newTruckError.orphanTruckId && (
                       <p className="text-xs text-red-800 mt-2 font-mono bg-red-100 rounded-lg px-2 py-1.5">
-                        ⚠️ ORPHAN — truck <strong>{newTruckError.orphanTruckId}</strong> was created but its van
-                        failed AND the rollback failed. It needs manual cleanup.
+                        ⚠️ ORPHAN — truck <strong>{newTruckError.orphanTruckId}</strong> was created but a
+                        later step failed AND the rollback failed. It needs manual cleanup.
                       </p>
                     )}
                   </div>
@@ -1962,6 +2017,21 @@ export default function AdminPage() {
                 </div>
 
                 {/* Van */}
+                {/* ⚠️ ADDITIVE — sits ABOVE the van line and below the visibility proof; nothing existing
+                    is moved, removed or reordered, and the dashboard_token copy button below is untouched.
+                    Rendered only for a promote, so a blank create's panel is byte-identical to before. */}
+                {newTruckResult.linkedDiscoveryTruckId && (
+                  <div className="mt-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2">
+                    <p className="text-xs font-semibold text-green-800">✓ Linked to discovery row</p>
+                    <p className="text-[11px] text-green-700 mt-0.5">
+                      The scraped row now points at this truck, so it stops showing as a separate entry here
+                      and its profile fills this truck&apos;s gaps.
+                    </p>
+                    <code className="block text-[11px] font-mono text-green-800 mt-1 truncate">
+                      {newTruckResult.linkedDiscoveryTruckId}
+                    </code>
+                  </div>
+                )}
                 {newTruckResult.van ? (
                   <div className="text-xs text-slate-600">
                     <span className="font-semibold">Van:</span> {newTruckResult.van.name}{' '}
