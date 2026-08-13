@@ -24,7 +24,17 @@ export const STATUS_REPLAY_EXPECTED_FROM = ['pending', 'confirmed', 'modified', 
 /** action→status map for an OFFLINE optimistic status advance — mirrors what the server status handler sets.
  *  cancel/reject included so an offline cancel/reject shows its TERMINAL state immediately (they now route
  *  through the gate too — FIX 2 / offline-cancel queueing). */
-const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooking: 'cooking', ready: 'ready', collected: 'collected', cancel: 'cancelled', reject: 'rejected' }
+// ⚠️ `collected_cash` / `collected_card` ARE `collected` WITH A METHOD ON THE ROW. They complete the
+// order exactly as `collected` does — same status, same status_before_collected rule below — and exist
+// as separate action names only so the two buttons keep separate pending state and an offline replay
+// carries which one was tapped. Omitting them here would leave an offline one-press completion with no
+// optimistic advance while `collected` had one.
+const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooking: 'cooking', ready: 'ready', collected: 'collected', collected_cash: 'collected', collected_card: 'collected', cancel: 'cancelled', reject: 'rejected' }
+
+/** The three action names that complete an order. `collected` is the plain one; the other two also
+ *  record HOW the money arrived. Every consumer that means "did this complete the order" tests this. */
+export const COLLECT_ACTIONS = new Set(['collected', 'collected_cash', 'collected_card'])
+export function isCollectAction(action: string): boolean { return COLLECT_ACTIONS.has(action) }
 
 /**
  * Compute the optimistic local order-status change for an offline-QUEUED status action, so the UI advances
@@ -40,7 +50,7 @@ export function offlineStatusPatch(
   if (action === 'undo_collected') return { status: order?.status_before_collected ?? 'confirmed', status_before_collected: null }
   const next = OFFLINE_STATUS_MAP[action]
   if (!next) return null
-  if (action === 'collected') return { status: next, status_before_collected: order?.status ?? null }
+  if (isCollectAction(action)) return { status: next, status_before_collected: order?.status ?? null }
   return { status: next }
 }
 
@@ -77,7 +87,12 @@ export async function listPendingStatusOps(): Promise<PendingStatusOp[]> {
 
 /** The payment actions that route through the gate as kind:'status'. ⚠️ `collected` and `undo_collected`
  *  are NOT here: they change status too, so the STATUS overlay already moves the card for them. Adding
- *  them here would double-report the same op on two overlays. */
+ *  them here would double-report the same op on two overlays.
+ *  🔴 AND NEITHER ARE `collected_cash` / `collected_card`, FOR THE IDENTICAL REASON. They take money as
+ *  well as completing the order, so the temptation is to list them — but they move the card through the
+ *  STATUS overlay, and adding them would put the same op on two overlays. The distinction they exist for
+ *  (per-button pending state, and a faithful offline replay) comes from the action STRING, which the
+ *  outbox stores in the op body and replays verbatim; it does not require membership of this set. */
 const PAYMENT_ACTIONS = new Set(['mark_paid', 'mark_paid_cash', 'mark_paid_card', 'undo_mark_paid'])
 
 export type PendingPaymentState = 'pending_paid' | 'pending_unpaid'

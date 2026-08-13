@@ -440,17 +440,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // On a user TAB CHANGE (activeCategory), pin the tab bar under the fixed header and start the new
   // category's list at the top — WITHOUT scrolling the page to document-top (the event card + meal
-  // deals above the menu anchor must stay scrolled away). We scroll so the menu anchor sits at y=60
-  // (just under the h-[60px] header), i.e. exactly where the sticky tabs pin. Skipped on first mount
-  // (initial default category) so the page doesn't auto-scroll-down on load. Instant ('auto') — a tap
-  // should land at the category immediately; 'smooth' lags between far-apart categories.
+  // deals above the menu anchor must stay scrolled away). We scroll so the menu anchor sits exactly
+  // where the sticky tabs pin. Skipped on first mount (initial default category) so the page doesn't
+  // auto-scroll-down on load. Instant ('auto') — a tap should land at the category immediately;
+  // 'smooth' lags between far-apart categories.
+  //
+  // 🔴 IT SCROLLS TO `stickyTop`, NOT TO A HARDCODED 60, AND THAT IS THE DEMO FIX.
+  // The 60 counted the page header and NOT the DEMO MODE banner — the same class of bug the sticky
+  // stack above already fixed for the bars themselves, left behind in the one place that scrolls
+  // rather than pins. In demo the tabs pin 46px lower than this scroll assumed, so the first item of
+  // the new category landed UNDER the banner and its name was clipped. Every other category's first
+  // item was fine because the customer scrolled to it themselves.
+  // ⚠️ NON-DEMO IS BYTE-IDENTICAL: `stickyTop` is HEADER_H + 0 = the same 60 it always was, and
+  // `demoBannerH` is measured rather than assumed, so OS text scaling cannot reintroduce the clip.
   useEffect(() => {
     if (!categoryScrollMounted.current) { categoryScrollMounted.current = true; return }
     const el = menuTopRef.current
     if (!el) return
     const menuTop = el.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({ top: Math.max(0, menuTop - 60), behavior: 'auto' })
-  }, [activeCategory])
+    window.scrollTo({ top: Math.max(0, menuTop - stickyTop), behavior: 'auto' })
+  }, [activeCategory, stickyTop])
 
   // Sync padding synchronously after every render — fires before paint so the
   // expanded footer and the updated paddingBottom are always drawn together.
@@ -2558,7 +2567,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {/* FULL-WIDTH description + chips (Option B) — span the whole row so the description
                         wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
                         is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
-                    {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
+                    {/* 🔴 slate-500 AND text-sm, NOT slate-400 AND text-xs. A dish description is the one
+                        line that decides an order — "hot 38hr makhani sauce on top" is the difference
+                        between two chip dishes — and at 12px in slate-400 it measures about 2.8:1 against
+                        white, under the 4.5:1 WCAG AA floor for body text. slate-500 clears it, and the
+                        step to 14px is the same size the modal already uses for the same sentence.
+                        ⚠️ IT REMAINS SECONDARY. The dish NAME is font-bold slate-900 and the price is
+                        black; this is one step up from invisible, not a competing headline. */}
+                    {item.description && <p className="text-slate-500 text-sm mt-1 leading-snug">{item.description}</p>}
                     {/* Per-item allergen chips hidden in 'card' mode (the card is the reference there);
                         shown in 'per_dish'/'both'/legacy(null). Dietary + spice always show (not the
                         card's domain). Allergens are still server-side verified-gated regardless. */}
@@ -3255,7 +3271,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-black text-slate-900 text-lg leading-snug">{itemModal.item.name}</h3>
-                  {itemModal.item.description && <p className="text-slate-400 text-sm mt-0.5">{itemModal.item.description}</p>}
+                  {/* The SAME sentence as the list row above, so it takes the same colour — it was already
+                      text-sm here; only the contrast was short. */}
+                  {itemModal.item.description && <p className="text-slate-500 text-sm mt-0.5">{itemModal.item.description}</p>}
                 </div>
                 <button onClick={() => setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
               </div>

@@ -16,6 +16,35 @@ August 2026
 
 # Changelog
 
+## V11.12 — 13 August 2026 (evening)
+
+**Refunds, end to end, and the cancellation gap they exposed.** An operator can now refund from either order list, full or partial, with a reason and a note; a cancellation offers the refund rather than leaving it dangling; and a cancelled held order finally releases its authorisation instead of sitting on a customer's card for a week.
+
+Along the way: the backdrop could dismiss the payment sheet **mid-authorisation**, a refund emailed nobody, the cancellation email hedged because it did not know what had happened, two reason dropdowns appeared in one modal, and **the refund timeframe the product has been quoting was wrong**.
+
+### 🔴 REFUNDS — BUILT
+
+- **`lib/payments/refund.ts` holds every guard.** The paid modal was extracted from `OrderCard.tsx:522-568` into a shared `PaymentActionsModal` — the "Remove payment?" branch **character for character identical** — and the completed list gained a tappable PAID/REFUNDED chip from ledger rows **it already received**.
+- **Full or partial · a required reason from seven · an optional note, required for "other" · a confirmation step.**
+- 🔴 **The already-refunded figure comes from Stripe's `refunds.list`, not from our ledger** — a pending refund writes no ledger row by design, so ours is blind to one in flight.
+- **Written by the webhook's own `recordOnlineCardRefund`**, so Stripe's event that follows is a 23505 no-op. One function writes both; they cannot disagree.
+
+### 🔴 CANCELLING A HELD ORDER NOW RELEASES THE AUTHORISATION
+
+It never touched Stripe, and **neither sweep could see a cancelled order** — it fell between the capture sweep's status allow-list and the abandonment sweep's `promoted_at is null`. Both cancel paths now release, through `promoteDraft`'s own `releaseHold`.
+
+### Corrections carried in this release
+
+- 🔴 **The refund timeframe was WRONG, not stale.** Stripe states **5-10 business days**; the product quoted **3-5 working days**.
+- 🔴 **V11.10's premise that cancelling releases a hold was false** until this session.
+- 🔴 **165 of 166 in-person ledger rows carry `method = NULL`** — cash and a card terminal are indistinguishable for almost all history, and the paid modal now says so rather than guessing.
+
+### Deployment record
+
+Several deploys across the afternoon and evening of 13 August. **No migration was required by any of this session's work.**
+
+⚠️ **Stripe configuration completed today:** `refund.failed` subscribed · Link turned **off** and Google Pay **on** in the connected-account payment method configurations · payment-method domain registered on `acct_1U30w22fB4PPCw2D` for Apple Pay.
+
 ## V11.11 — 13 August 2026
 
 **Seven defects, five of which were the same mistake wearing different clothes.** Every one of those five asked a question about the *intent* or the *transport* when the question was about the *order*.
@@ -2709,6 +2738,37 @@ Three follow-on UX defects on the same refusal:
 
 ⚠️ **The pay-at-hatch path got the deal removal and the emptied-basket message too, because it is the same defect** — its item capping and its own notice wording are byte-identical.
 
+### 🔴 THE BACKDROP COULD DISMISS THE SHEET MID-AUTHORISATION (V11.12)
+
+**The ✕ was guarded on `payStage !== 'authorising'` and the backdrop was not** — and a comment beside the ✕ asserted that route could not exist. 🔴 **A stray tap could tear the Payment Element down while `confirmPayment` was in flight**, which is the outcome that gate was written to prevent.
+
+✅ **One predicate delivers both fixes.** `authorising` is reachable only from a Pay button that renders inside `{payingInSheet && payment && (`, so **`!payingInSheet` implies `payStage !== 'authorising'`** — proved by construction, not by two rules that happen to agree. The backdrop is deliberately stricter than the ✕ elsewhere on the payment step, which is the second fix.
+
+**And the backdrop no longer closes the payment step at all.** Typed card details live inside Stripe's iframe — *"Stripe inserts an iframe into each `div` to securely collect payment information"* — and **cannot be preserved across an unmount**, because every close destroys the host node, which is exactly the teardown guarantee. ⚠️ **So the fix is preventing the accidental close, not preserving state through it.**
+
+🔴 **THE ASYMMETRY THAT DECIDED IT:** *"a backdrop tap that fails to close costs one deliberate tap on a control already on screen. A backdrop tap that does close costs everything typed into a form that cannot be restored — not by us, not by Stripe, not by the customer's browser."*
+
+⚠️ **"Ask first" was rejected because it could not be established** whether the Payment Element's `change` payload exposes an `empty` flag — Stripe's own page does not enumerate the keys, and there is no `@stripe/stripe-js` in the repo to read types from. ⚠️ **A refused backdrop tap gives no feedback** — flagged, not built. ✅ **Five close routes before, five after; the review step's backdrop is unchanged.**
+
+⚠️ **`unmount()` is reversible and `destroy()` is not** — *"Call `element.mount` to re-attach it to the DOM"* versus *"A destroyed Element can not be re-activated or re-mounted"*. **Whether entered VALUES survive that round trip is not stated anywhere Stripe documents, and is moot here**: the cleanup nulls `elementsRef` and drops the Element, so no instance survives to re-mount.
+
+### One sold-out sentence, one builder (V11.12)
+
+`lib/payments/sold-out-copy.ts` is now the only place the sentence is written, called by `promoteDraft`, the return route's late-arrival rebuild, and the order page.
+
+🔴 **Two defects it closed on the way:** `promoteDraft` named **`shortfall[0]` only** while the page removed every item; and the pay-at-hatch path rendered **"only 0 Fish Cake left"** — count wording for a thing with no count — **~290 lines down the sheet, above the Place order button**, where a customer who has just had lines removed is not looking.
+
+**One wording for one item, several, or an emptied basket:**
+
+> *"Fish Cake and Prawn Toast sold out while you were **paying**. We've removed **them** and have not taken any money — please check your order before placing it again."*
+> *"Fish Cake sold out while you were **ordering**. We've removed **it** — please check your order before placing it again."*
+
+🔴 **The money clause is emitted ONLY for `stage: 'paying'`**, enforced by the type rather than by a caller remembering: nothing was ever taken on the pay-at-hatch path, and *"we have not taken any money"* answers a question that customer did not have. ⚠️ **"sold out" is invariant in the past tense** — what pluralises is `it` → `them`.
+
+⚠️ **Amber, not red, on the hatch path.** Red on that page means a card was authorised and released; borrowing it would raise the money question the wording avoids.
+
+⚠️ **A partial CAP keeps its own wording** — the line was reduced, not removed, so *"we've removed it"* would be false. **A cap is not a sell-out.** ⚠️ **The category-closed refusal still reads in the old shape** — a different event, and now the only place that phrasing survives.
+
 ### The customer confirmation is now URL-reachable (V11.10)
 
 `?confirm=<order_key>` renders the **same** `<OrderConfirmation>` component the pay-at-hatch path renders — extracted, not copied, so the two cannot drift.
@@ -4880,6 +4940,18 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## 🔴 V11.12 — added 13 August 2026 (evening)
+
+- 🔴 **REFUND REPORTING.** `get_report` sums `orders.total` and **never touches `order_payments`**, so unpaid orders count as revenue and **no refund could ever appear**. ✅ **DIAGNOSED (V11.12):** live for August, Reports says **£544.50** against **£471.50** actually received — a **£73.00 gap with no refunds in the period at all**, because eleven unpaid orders count in full while two double-charged orders pull it back. 🔴 **So refunds are not the biggest thing wrong there.** The smallest honest change is a **label** (*"Orders sold"*, not *"Total"*) plus a **separate refunds list**; making the figure net-of-refunds would restate every historical export. ⚠️ **A paid-then-CANCELLED order is dropped from Reports entirely** by the status filter — which is exactly how a refund now happens. ⚠️ **A refunds-by-date-range query has no usable index:** the only `(truck_id, created_at)` index is partial on `not livemode`.
+- 🔴 **THE WALK-UP FLOW DOES NOT RECORD CASH VERSUS CARD TERMINAL.** That is why 165 rows are NULL — **a capture gap, not a display one**, and exactly what an operator wants when reconciling takings. The buttons exist but are gated on `takesCash`. **Fixable going forward; the history stays unknowable.**
+- **A notification when a CUSTOMER cancels a PAID order.** The chip already opens the refund form, so the gap is only that nothing prompts. Option (iii) of four, costed in the refund build report.
+- **A third, cancel-only sweep** for failed hold releases (`promoted_at is not null` AND `authorization_cancelled_at is null` AND the order is cancelled AND no `stripe_pi:` row). **Zero backlog today**; revisit if `hold_release_failed` ever appears.
+- **Nothing emails the customer when a PENDING refund later settles.** The webhook is the only thing that knows.
+- **A part-card, part-cash order cannot be refunded from the modal** — the in-person branch takes precedence.
+- **A refused backdrop tap gives no feedback.**
+- **The category-closed refusal** still uses the pre-consolidation wording.
+- **Stripe's "reversal" case is not in any copy:** a refund issued minutes after the charge can make the original charge vanish with no separate credit.
+
 ## 🔴 V11.11 — added 13 August 2026
 
 - 🔴 **The refund UI.** Everything it depends on is now settled — a platform **can** refund a direct charge, `part_refunded` exists, and all four refund events are handled. What remains: **the completed list renders inline JSX, not `OrderCard`**, with no chip, no balance and no payment control, so the popup must be **extracted** before it can open from there; **no idempotency pattern fits a pre-write guard**, since the refund id does not exist until Stripe answers; and the reason dropdown needs agreeing. **Suggested reasons:** item unavailable · order not collected · wrong or missing item · quality issue · duplicate payment · customer cancelled · other (note required).
@@ -4920,6 +4992,7 @@ Test and live mode are almost entirely separate in Stripe. **Before a real truck
 2. **Create a live-mode webhook destination** and add its signing secret to the comma-separated `STRIPE_WEBHOOK_SECRET`. **Then rebuild** — Vercel binds env vars at build time.
 3. **Subscribe every event type on the live destination:** `payment_intent.amount_capturable_updated`, `payment_intent.succeeded`, `refund.created`, `refund.updated`, **`refund.failed`** (V11.11 — the ONLY event that announces a refund reversal), `charge.refunded`. ⚠️ **On the destination that actually receives events** — everything so far has arrived on the platform-scoped one.
    ⚠️ **And check the connected-account payment method configuration** while there: Link off, Google Pay on. Both are account settings, not intent parameters (§37).
+   ✅ **DONE ON THE SANDBOX ACCOUNT (V11.12):** `refund.failed` subscribed · Link **off** · Google Pay **on** · payment-method domain registered on `acct_1U30w22fB4PPCw2D`. **All four must be repeated on the live account and the live destination.**
 4. **Re-run payment-method-domain registration with a live key**, for the platform and for every connected account.
 5. **Onboard each truck as a live connected account.** The test one does not carry over.
 6. **Site links** — verify what it actually gates.
@@ -6024,6 +6097,14 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **🔴 `void` TELLS THE RUNTIME NOTHING.** *Evidence (V11.10):* the webhook started promotion with `void promoteDraft(...)`. Vercel's runtime log for order 25's window contains 24 lines and **not one `promotion(...) -> promoted` completion line** — yet the work ran and `handled_at` was written, which only happens inside that continuation. **The work executed under no invocation the platform was accounting for.** 23.5s to the insert, 122.8s to resolve, against 2.5s for the same path three minutes earlier. Next's `after()` is the declared mechanism; **`void` hands the runtime a floating promise it has no reason to wait for.**
 
+**🔴 OPPOSITE ORDERINGS CAN BOTH BE RIGHT, AND THE REASON MUST BE WRITTEN DOWN.** *Evidence (V11.12):* refund-on-cancel refunds **first**; release-on-cancel cancels **first**. **Not an inconsistency — the failure costs differ.** A failed refund leaves money taken forever with nobody looking; a failed release leaves an authorisation that expires by itself in about a week. **When two similar flows order their steps differently, the asymmetry is the documentation** — and it is written at both call sites, each naming the other.
+
+**🔴 A MODULE THAT IMPORTS NOTHING DANGEROUS CANNOT DO ANYTHING DANGEROUS.** *Evidence (V11.12):* `lib/payments/release-hold.ts` imports no capture and no refund, so *"this only ever releases"* is a property of the file rather than a claim in a comment — `grep` proves it in one line. **The same discipline as the stranded sweep, whose only reachable Stripe verb is `capture`.** Structural guarantees survive edits that comments do not.
+
+**🔴 SAY WHAT THE DATA SUPPORTS, NOT WHAT WOULD BE USEFUL.** *Evidence (V11.12):* `method` is NULL on **165 of 166** in-person ledger rows, so the paid modal reads *"cash or your card machine — not recorded"* rather than picking one. **An operator reconciling a till gets an honest answer instead of a confident wrong one**, and the sentence improves by itself the moment the split buttons are used.
+
+**A PREVENTABLE LOSS BEATS A RECOVERABLE ONE.** *Evidence (V11.12):* typed card details cannot be restored by us, by Stripe or by the browser, so the fix was **stopping the accidental close** rather than preserving state through it. **When one side of a trade is unrecoverable, that is where the fix goes.**
+
 **🔴 ASK ABOUT THE ORDER, NOT THE INTENT. THIS DEFECT HAS NOW APPEARED THREE TIMES IN ONE WEEK.** *Evidence (V11.11):* (1) the capture guard asked *"has this intent been captured?"* and **double-charged two orders** already paid in cash; (2) the email resolver asked *"did the capture succeed?"* and told a customer who owed £6.50 that they had **paid by card**; (3) the stranded sweep asked the same question and skipped orders that still owed money. 🔴 **`getOrderBalance` is the answer in all three cases and was called in none of them.** The general form: **a question about an order cannot be answered by a fact about one payment.** An idempotency-key match, a capture result and a `stripe_pi:` row are all facts about an intent; *"does this order still owe money"* is a fact about the order.
 
 **🔴 THE CLIENT REPORTS THE TRANSPORT, NOT THE OUTCOME.** *Evidence (V11.11):* a `grep` across `app/` and `components/` (excluding `app/api/`) found **`chargedMinor`, `reversal`, `skipped`, `assigned` and `lost` all have ZERO readers.** The only two response fields the client reads — `paymentWarning` and `slotWarning` — **were each added after an incident.** So a 2xx is a success toast whatever the body says: `mark_paid` on a settled order produced *"Order #18 marked paid"*, wrote nothing, **and offered an Undo that would have deleted a real £6.00 cash payment.** ⚠️ **The pattern is not "some routes forgot"; it is "the client reports the transport, and only two exceptions were ever carved out."** Nine actions can decline inside a 2xx.
@@ -6594,13 +6675,113 @@ All five now resolve through `lib/payments/email-payment-state.ts`, with a sente
 
 **Undo on a card-paid order** opens a modal with **no destructive button**, explaining that the money is on the customer's card and a refund is the action. ⚠️ **A ROW TEST, NOT AN ORDER TEST:** an order paid partly by card and partly in cash **has** a reversible row, and undo must keep working for it — the predicate mirrors `reverseCollectionPayment`'s own lookup condition for condition. ⚠️ **It names Stripe only because the refund UI is not built; that sentence is the one thing to change when it is.**
 
+### 🔴 REFUNDS — BUILT (V11.12)
+
+**`lib/payments/refund.ts` holds every guard**, and the UI is one modal reached from both order lists.
+
+**The extraction was contained**, and the premise that blocked it did not hold: the paid popup was already self-contained inside `OrderCard.tsx:522-568`, so moving it into `components/dashboard/PaymentActionsModal.tsx` **took nothing out of the 4,482-line dashboard page**. The "Remove payment?" branch is **character for character identical**. The completed list gained a tappable **PAID / REFUNDED / £X REFUNDED** chip computed from `payments[o.order_key]` — **ledger rows that row already received** for `hasUnrecordedPayment`.
+
+**The form:** full or partial with the amount editable · a **required** reason from seven · an optional note, **required for "other"** and enforced server-side as well as in the browser · a confirmation step.
+
+🔴 **OUR SEVEN REASONS ARE NOT STRIPE'S THREE.** `duplicate_payment` maps to `duplicate`; everything else to `requested_by_customer`. ⚠️ **`fraudulent` is deliberately unreachable** — it is a chargeback-risk signal to the card networks, not a description of a wrong sandwich. **The real reason and the note live in OUR audit row** (`refund_issued`) and ride to Stripe as metadata, never squeezed into its three-value field.
+
+🔴 **THE ALREADY-REFUNDED FIGURE COMES FROM STRIPE'S `refunds.list`, NOT FROM OUR LEDGER.** A pending refund writes **no ledger row by design**, so our figure is blind to one in flight and Stripe's is not. `failed` and `canceled` refunds are excluded — that money came back to the truck and is refundable again. **One extra call, on a manual operator action.**
+
+**The guards, server-side and in this order:** not a card payment at all → refused; amount not a positive integer → refused; amount above the remainder → refused with the figure (*"Only £15.00 is left to refund on this order."*, 409). **A second refund needs no second guard** — `remainingMinor` is captured minus everything Stripe holds open, so a first full refund leaves zero.
+
+**The idempotency key is a state transition**, the same shape `collectIdempotencyKey` uses: `op_refund:<order_key>:<refundedSoFar>:<amount>`. ⚠️ **Built from STRIPE'S figure, not ours** — which is what makes it correct while a refund is pending.
+
+✅ **THE LEDGER ROW IS WRITTEN BY THE WEBHOOK'S OWN `recordOnlineCardRefund`**, so Stripe's `refund.created` moments later is a **23505 no-op**. Proved: `inserted=false`, row count unchanged. **One function writes both; they cannot disagree.**
+
+🔴 **IF STRIPE ACCEPTS AND OUR WRITE FAILS, THE CALL STILL RETURNS `refunded`.** Reporting a failure would invite the operator to press again — a **second** refund for money already returned. The webhook writes the row under the same key within seconds, and the console line names the refund id.
+
+⚠️ **A cash-paid order is refused** — *"Nothing was taken by card on this order, so there is nothing to refund here."* — with the ledger untouched. The modal never offers the form for one. ⚠️ **A part-card, part-cash order shows the in-person branch first, so its card half cannot be refunded from the modal.** Recorded.
+
+### 🔴 CANCELLING A HELD ORDER RELEASES THE AUTHORISATION (V11.12) — CORRECTING V11.10
+
+**The cancel handler updated `status`, unbooked the slot and emailed. It never touched Stripe.** And **neither sweep could see it**: the capture sweep's allow-list is `('confirmed','modified','cooking','ready','collected')` — `cancelled` is deliberately absent, because that job may only ever capture — and the abandonment sweep owns `promoted_at is null`, which a promoted order fails by construction. 🔴 **A cancelled order with a live hold fell between the two jobs and sat until Stripe expired it, about seven days.**
+
+⚠️ **The worse path was the customer's** — a customer cancelling inside their window left an authorisation live against an order that no longer existed, with nobody watching.
+
+✅ **Both paths now release**, through `promoteDraft`'s own `releaseHold` (exported; body unchanged), wrapped in `lib/payments/release-hold.ts`. **There is still exactly one `paymentIntents.cancel` in the codebase.**
+
+🔴 **THE MODULE IMPORTS NO CAPTURE AND NO REFUND**, so *"it only ever releases"* is a property of the file rather than a claim in a comment — and it **refuses outright when a `stripe_pi:` ledger row exists**, so a captured order is untouched. A ledger read failure is also a refusal: *"I could not tell"* is never *"nothing was captured"*.
+
+### 🔴 THE TWO ORDERINGS ARE OPPOSITE, DELIBERATELY (V11.12)
+
+| | Order | Why |
+|---|---|---|
+| **Refund on cancel** | **refund FIRST**, then cancel | A failed refund would leave a cancelled order with the money still taken and nobody looking at it. Failing first leaves the order exactly as it was, with the error on screen |
+| **Release on cancel** | **cancel FIRST**, then release | An operator mid-service must not be blocked by Stripe being slow. **A failed release leaves an authorisation that expires by itself; a failed refund leaves money taken forever** |
+
+**A failed release writes `hold_release_failed`** and leaves `authorization_cancelled_at` **NULL**, so the hold stays findable rather than being marked done when it is not:
+
+```sql
+select * from action_audit_log where action = 'hold_release_failed' order by created_at desc;
+```
+
+⚠️ **No sweep collects a failed release.** The capture sweep must never see a cancelled order and the abandonment sweep's partition must hold, so **a third cancel-only sweep is the honest answer** — recommended, not built. ✅ **The current backlog is ZERO:** all nine promoted drafts with an apparently-uncancelled intent turned out to be captured.
+
+### Cancelling a paid order offers the refund — declinably (V11.12)
+
+🔴 **THE REFUND IS A TICKED-BY-DEFAULT CHECKBOX, NOT AN ASSUMPTION, AND THE NO-SHOW IS WHY.** The truck cooked the food and nobody came: a real cancellation where the money stays. Unticking replaces the reason select with *"The order will be cancelled and the £12.50 will stay with you. Nothing goes back to the customer's card."*
+
+| Case | What the operator sees |
+|---|---|
+| **Card money taken** | *"Cancel this order and refund £12.50 to the customer's card?"* + the ticked box + the reason |
+| **Card held** | *"held, not charged — nothing to refund. Cancelling releases the hold straight away."* |
+| **Cash taken** | *"hand the money back at the truck, and use the PAID chip on the order to remove the record"* |
+| **Nothing taken** | no block at all |
+
+### 🔴 CORRECTION: THE REFUND TIMEFRAME WAS WRONG, NOT STALE (V11.12)
+
+**Stripe's current stated figure is 5-10 BUSINESS DAYS** — *"Your customer sees the refund as a credit approximately 5-10 business days later, depending upon the bank."* (`docs.stripe.com/refunds`, "Trace a refund", read 13 August 2026). **The product had been quoting 3-5 working days**, so every customer given that figure would have been chasing on day four.
+
+⚠️ **Two things from the same page the copy deliberately does NOT claim:** that successful refunds can appear *"in real time"* (a different, faster claim in a different section), and the **reversal** case — *"Refunds issued shortly after the original charge appear in the form of a reversal instead of a refund… the original charge drops off the customer's statement, and a separate credit isn't issued."* 🔴 **That is a real support question and is not in the copy.**
+
+### Refund and cancellation emails (V11.12)
+
+**Nothing told a customer a refund had happened.** `sendRefundEmail` now does, from `lib/email.ts`, with **distinct full and partial wording** — a full refund closes the order's money, a partial one leaves the rest standing and the customer must be told rather than left to wonder.
+
+- ⚠️ **Suppressed when the refund is part of a cancellation** (`refund_context: 'cancellation'`) — one event, one email. Measured: **zero** emails from the refund itself.
+- 🔴 **Never sent on a PENDING refund.** No ledger row exists and no money has moved; emailing *"refunded"* would be the false-success class in an inbox, where it cannot be corrected. ⚠️ **And nothing emails when it later settles** — the webhook is the only thing that knows, and it sends nothing. Recorded.
+
+**The cancellation email now states what happened**, because at the moment of cancelling the operator **has decided**. One builder, `cancellationPaymentSentence`, shared by both cancel paths and returning **both** renderings:
+
+| Case | Sentence |
+|---|---|
+| **Cancelled and refunded** | *"£9.00 has been refunded to your card. Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank."* |
+| **Cancelled, refund declined** | *"If you have a question about payment for this order, please contact {truck}."* 🔴 **It must NOT promise a refund and must NOT say one was refused** — the operator may change their mind, and an email is the wrong place to argue |
+| **Cancelled, held card** | *"Your card was held for this order, not charged. That hold has been released and no money has been taken."* |
+| **Cancelled, nothing paid** | no payment sentence at all |
+
+⚠️ **The operator cancellation email had no plain-text body at all** before this — `notifyCustomer` sent HTML only. It now takes an optional text part, passed by this email alone.
+
+⚠️ **A customer-cancelled paid order issues no refund and says so honestly:** *"any refund is handled by {truck} directly — please contact them about it."* **It does not promise one**, because nobody was present to decide.
+
+### One reason dropdown, not two (V11.12)
+
+The cancel modal carried **its own cancellation reason** (three values, customer-visible) **and the refund reason the refund path brought with it** (seven, operator-facing). Now one `<select>`.
+
+🔴 **THE SEVEN SURVIVE BECAUSE THEY ARE A STRICT SUPERSET.** Sold out → `item_unavailable`, Requested by customer → `customer_cancelled`, Other → `other`; **the reverse is not true**, so keeping the three would have dropped four. **The label goes to the customer and to `orders.cancellation_reason`; the machine value goes to Stripe and the audit row; the note becomes the refund's note.** Required only when the cancellation will move money.
+
+### The paid modal names the channel (V11.12)
+
+**It was not clear whether money came in online, in cash, or on the truck's own card machine.**
+
+🔴 **AND THE DATA CANNOT ALWAYS SAY. Measured across 183 ledger rows: 165 of 166 in-person rows carry `method = NULL`**, one carries `cash`, and all 16 online rows carry `card`. So the modal reads **"Paid in person"** with *"Cash or your card machine — not recorded"* rather than inventing a distinction the row cannot carry; an online payment says so plainly; **a mixed order gets both lines with their amounts** (3 such orders exist).
+
+⚠️ **The mechanism exists and is simply unused:** the card's 💷 Cash / 💳 Card buttons and the walk-up panel's both send a `method`, but the card's are gated on the truck's `takesCash` setting and 165 rows show the single "Mark paid" button was used.
+
+⚠️ **`method` was added to `LEDGER_ROW_COLUMNS`** — additive, nothing computes on it, and it is now on the wire for every order on every dashboard poll.
+
 ### ⚠️ Still open on this path
 
 - **A promoted draft with no order row** is invisible to the SQL finder (no status to test). The one-off script shows it as `CHECK BY HAND`. **Money held against nothing; nothing repairs it automatically.**
 - **Editing an already-captured order** changes the total without moving the captured amount. ⚠️ **PARTLY ADDRESSED (V11.11):** the column, the card and every email now tell the truth about it (`part_paid`, or `refund_due` when the edit went down) — but 🔴 **`refund_due` still has no consumer**, so nothing prompts anyone to return the difference.
 - ~~**Partial capture** is not built.~~ ✅ **BUILT (V11.11)** — see the capture rule above.
-- **The refund UI.** The completed list renders inline JSX, not `OrderCard`, with no chip, no balance and no payment control — **the popup must be extracted before it can open from there.** No idempotency pattern exists for a pre-write guard, since the refund id does not exist until Stripe answers.
-- **Five customer-facing sentences still promise an automatic refund.** Now that a platform *can* refund, the honest copy depends on what gets built.
+- ~~**The refund UI.**~~ ✅ **BUILT (V11.12)** — see above. What remains is **reporting**, which cannot see a refund at all.
+- ~~**Five customer-facing sentences still promise an automatic refund.**~~ ✅ **CORRECTED (V11.11-V11.12)** — four were rewritten, the fifth was already right, and the cancellation email now states what actually happened.
 
 ## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
 

@@ -51,7 +51,11 @@ import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+// 🔴 `collected_cash` / `collected_card` ARE COLLECTIONS. Every branch below that asked "was this a
+// collection?" by string equality now asks the shared predicate, so the two new names get the struck-prep
+// clear, the undo affordance, the payment-warning wording and the post-action refresh that `collected`
+// has always had — rather than silently taking the else branch.
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, isCollectAction } from '@/lib/native/orderGate'
 import { removePendingStatusOp } from '@/lib/native/outbox'
 import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/reachability'
 import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
@@ -1769,7 +1773,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         const q=orders.find(o=>o.order_key===orderKey)??deviceQueuedOrders.find(o=>o.order_key===orderKey)
         refreshPendingStatus(); refreshPendingPayment()
         // Mirror the online prep-board auto-clear on ready/collected.
-        if((action==='ready'||action==='collected')&&q){
+        if((action==='ready'||isCollectAction(action))&&q){
           setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
         }
         setActionLoading(null)
@@ -1784,11 +1788,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             setStruckPrep(prev=>{const n=new Set(prev);prev.forEach(k=>{if(k.split(':')[0]===orderKey)n.delete(k)});return n})
             showToast(`Order #${q?.id??''} reverted`)
           }else if(action==='ready'){undoReady(orderKey,q?.id??'')}
-          else if(action==='collected'){doAction('undo_collected',orderKey)}
+          else if(isCollectAction(action)){doAction('undo_collected',orderKey)}
           else{fetchAll()}
         }
         const savedMsg=`Order #${q?.id??''} saved on this device — will sync when back online`
-        if(action==='ready'||action==='collected'){
+        if(action==='ready'||isCollectAction(action)){
           showToast(savedMsg,'success',{duration:7000,action:{label:'↩ Undo',run:offlineUndo}})
         }else{showToast(savedMsg)}
         return
@@ -1825,7 +1829,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // the payment standing (the server does the same — see undo_collected's splitPaidStep branch).
       if(moneyFailed){
         showToast(
-          `⚠ Order #${num} — PAYMENT NOT RECORDED. ${action==='collected'?'The order completed':'The order was saved'}; the money did not.`,
+          `⚠ Order #${num} — PAYMENT NOT RECORDED. ${isCollectAction(action)?'The order completed':'The order was saved'}; the money did not.`,
           'error',
           {duration:20000,action:{label:'Record payment',run:()=>doAction('mark_paid',orderKey)}},
         )
@@ -1835,7 +1839,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         showToast('Undone — payment removed')
       }else if(action==='undo_collected'){
         showToast('Undone — order not collected')
-      }else if(action==='collected'){
+      }else if(isCollectAction(action)){
         showToast(`Order #${num} collected`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
       }else if(action==='ready'){
         scheduleReadyEmail(orderKey)
@@ -1857,7 +1861,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         showToast(`Order #${num} ${labels[action]||action}`)
       }
       // Auto-clear prep board on collected (solo operator workflow)
-      if(action==='collected'||action==='ready'){
+      if(isCollectAction(action)||action==='ready'){
         if(done){
           // Auto-clear unit pills for this specific order
           setStruckPrep(prev=>{

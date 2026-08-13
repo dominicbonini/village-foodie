@@ -470,7 +470,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, status: 'cooking' })
     }
 
-    if (action === 'collected') {
+    // ── 🔴 THREE NAMES, ONE HANDLER. ────────────────────────────────────────────────────────────
+    // `collected` is the plain one-press completion. `collected_cash` / `collected_card` are the SAME
+    // action with the operator's answer to "which did they hand over" attached — they exist as separate
+    // names so the two buttons keep separate pending state and an offline replay carries which was
+    // tapped, exactly as `mark_paid_cash` / `mark_paid_card` do.
+    // ⚠️ NOTHING ELSE IN THIS BRANCH BRANCHES ON THE NAME. The status write, the from-status capture, the
+    // held-authorisation check, the fail-open ledger write, the slot rebuild and the response are shared,
+    // so the two new names cannot drift from the one that has been running since V9.4.
+    if (action === 'collected' || action === 'collected_cash' || action === 'collected_card') {
+      // 🔴 WHAT THE CUSTOMER PHYSICALLY HANDED OVER, AND NOTHING MORE. `channel` stays
+      // 'in_person_other' for all three — the money arrived at the hatch, outside the platform, either
+      // way — and 'card' here means THE TRUCK'S OWN CARD MACHINE, never an online payment. A method is a
+      // label on a money event and no arithmetic reads it (20260730_takes_cash_and_payment_method.sql).
+      // ⚠️ THE PLAIN NAME STAYS NULL. A one-press truck that has not opted into the cash/card split is
+      // never asked, so there is no answer to record — and NULL means "not recorded", which is the truth.
+      // Defaulting it to 'cash' would be a fabricated fact in the money ledger.
+      const collectMethod: 'cash' | 'card' | null =
+        action === 'collected_cash' ? 'cash' : action === 'collected_card' ? 'card' : null
       const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       // Record the from-status so Undo reverts ONE stage to the ACTUAL previous status (ready if it was
@@ -518,7 +535,7 @@ export async function POST(req: NextRequest) {
       try {
         const res = heldOnCollect
           ? { chargedMinor: 0 }
-          : await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+          : await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId, method: collectMethod })
         chargedMinor = res.chargedMinor
       } catch (err) {
         console.error(`[collected] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order WAS still marked collected (fail-open). Re-run recalcOrderPayment for this order_key to repair; the reconciliation query in lib/payments/ledger.ts will list it until then:`, err)

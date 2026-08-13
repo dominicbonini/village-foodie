@@ -376,6 +376,31 @@ export function OrderCard({
       return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (completionPresses === 'one') {
+      // ── 🔴 A ONE-PRESS TRUCK THAT TAKES CASH CAN NOW SAY WHICH IT WAS. ────────────────────────
+      // ── THE GAP THIS CLOSES ──────────────────────────────────────────────────────────────────
+      // This branch RETURNED BEFORE the `takesCash` split fifteen lines below, so a truck that had
+      // explicitly opted into distinguishing cash from its own card machine had no way to record it:
+      // every one-press completion wrote `method: null`, and no setting the operator could change
+      // would fix it. 165 of 166 in-person rows in the live data carry NULL.
+      // ⚠️ THE SPLIT IS THE ONE TEN LINES BELOW, NOT A NEW SHAPE — same icons, same solid orange, same
+      // one-tap-either-way rule, same per-button pending state from distinct action names. The only
+      // difference is the label, because this button also completes the order.
+      // 🔴 "CARD" MEANS THE TRUCK'S OWN CARD MACHINE, NEVER AN ONLINE PAYMENT. Both buttons book the
+      // same `channel: 'in_person_other'` row — the money arrived at the hatch either way, outside the
+      // platform — and `method` records only what the customer physically handed over. An online card
+      // payment is a different channel entirely and never reaches this button.
+      // ⚠️ GATED ON takesCash, so a truck that does not distinguish is NEVER asked: with the setting
+      // off this returns the single button below, byte for byte as it always has.
+      if (takesCash) {
+        return (
+          <>
+            <Btn label="💷 Cash & collected" colour="money" loading={isLoading('collected_cash')}
+              onClick={() => onAction('collected_cash', order.order_key)} />
+            <Btn label="💳 Card & collected" colour="money" loading={isLoading('collected_card')}
+              onClick={() => onAction('collected_card', order.order_key)} />
+          </>
+        )
+      }
       return <Btn label="Mark paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
