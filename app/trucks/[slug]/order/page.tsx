@@ -384,7 +384,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // STAGE 1 (basket peek) starts COLLAPSED — it expands on demand rather than starting open.
   const [summaryExpanded, setSummaryExpanded] = useState(false)
   // STAGE 2 (commit): the order FORM opens as a bottom-sheet overlay only at commit. Default closed.
-  const [formSheetOpen, setFormSheetOpen] = useState(false)
+  // ── 🔴 EXCEPT WHEN THE CUSTOMER ARRIVES ON A REFUSAL. ──────────────────────────────────────────
+  // paymentFailedNotice renders INSIDE this sheet, beside the stock and menu-change notices — which is
+  // right, and which means that on a fresh document (Stripe redirected for 3DS, so the page was rebuilt)
+  // the sentence exists in state and renders nowhere until the customer happens to open the sheet.
+  // Seeding it open is what makes "the message survived" true on screen rather than only in the URL.
+  // ⚠️ SEEDED IN THE INITIALISER, not an effect — the same rule paymentFailedNotice itself follows.
+  // ⚠️ NOTHING ELSE OPENS IT: absent the parameter this is the `false` it has always been.
+  const [formSheetOpen, setFormSheetOpen] = useState(!!paymentFailedParam)
 
   /** 🔴 THE PAYMENT STEP IS ON SCREEN — which now means the SHEET is open AND the step is selected.
    *  It is a step inside the sheet, so closing the sheet hides it exactly as closing it hides the review;
@@ -1519,8 +1526,55 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         setPayStage('failed')
         return
       }
-      // AUTHORISED. Manual capture ⇒ `requires_capture`: money HELD, not taken. The webhook promotes.
-      window.location.href = returnUrl
+      // ── 🔴 AUTHORISED, AND THE PAGE IS STILL STANDING. DO NOT THROW IT AWAY TO ASK A QUESTION. ──
+      // Manual capture ⇒ `requires_capture`: money HELD, not taken. `redirect: 'if_required'` means
+      // Stripe did NOT navigate for an ordinary card, so at this instant the customer is still here with
+      // their basket, their slot, their details and their event in memory. This used to assign
+      // `window.location.href` unconditionally, which destroyed all of it before knowing whether it
+      // needed to — and when promotion REFUSED, the customer was rebuilt on a fresh document with no
+      // event, no basket, and one sentence in the query string. They landed on the event picker.
+      // 🔴 SO ASK FIRST. Same route, same promotion, same `after()` continuation — `json=1` only changes
+      // the SHAPE of the answer. A refusal is then rendered in place, by the notice the pay-at-hatch
+      // refusal has always used, with the basket untouched and editable.
+      // ⚠️ ANY FAILURE TO ASK FALLS BACK TO THE NAVIGATION THIS REPLACES. A network blip must not strand
+      // a customer whose card is authorised: the route is idempotent (promoteDraft claims once), so
+      // going there for real is always safe.
+      let outcome: { outcome?: string; orderKey?: string; message?: string } | null = null
+      try {
+        const r = await fetch(`${returnUrl}&json=1`, { cache: 'no-store' })
+        outcome = r.ok ? await r.json() : null
+      } catch (fetchErr) {
+        console.error('[order] could not read the promotion outcome — falling back to the redirect:', fetchErr)
+      }
+      if (!outcome?.outcome) { window.location.href = returnUrl; return }
+
+      if (outcome.outcome === 'refused') {
+        // 🔴 THE SAME PLACE, THE SAME PANEL, THE SAME AFFORDANCES AS A SOLD-OUT PAY-AT-HATCH REFUSAL.
+        // paymentFailedNotice already exists and already renders the server's sentence whole, beside the
+        // stock notice, inside the order sheet. Nothing new is rendered and no copy is written here.
+        // ⚠️ THE AUTHORISATION IS GONE — promoteDraft cancelled it before replying — so `payment` is
+        // dropped rather than kept. Keeping it would re-present a dead intent on the next tap; clearing
+        // it makes the card button submit afresh, which is what "retryable" has to mean here.
+        setPayment(null)
+        setPayStage('idle')
+        setPayError(null)
+        setStageOpen(false)
+        setPaymentFailedNotice(outcome.message || 'We could not place your order. No money has been taken.')
+        // The item that sold out must disappear from the menu they are looking at — the same re-fetch
+        // the stock-409 branch does, for the same reason.
+        if (event?.id) {
+          fetch(`/api/menu/${slug}?event_id=${event.id}`, { cache: 'no-store' })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d?.menu) { setMenu(d.menu); if (d.truck) setTruck(d.truck) } })
+            .catch(() => null)
+        }
+        return
+      }
+
+      // 'confirmed' (the order exists) or 'pending' (promotion still running) — both go to the
+      // confirmation screen, which is where the basket is MEANT to be gone, and which polls a pending
+      // order in exactly as it does today.
+      window.location.href = `${window.location.origin}/trucks/${encodeURIComponent(slug)}/order?confirm=${encodeURIComponent(outcome.orderKey || payment.orderKey)}`
     } catch (err) {
       console.error('[order] confirmPayment threw:', err)
       setPayError('Something went wrong taking that payment. No money has been taken — please try again, or choose Pay at the truck.')

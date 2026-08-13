@@ -57,17 +57,82 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
 
+/**
+ * 🔴 WHAT THE DRAFT SAYS HAPPENED, FOR A CALLER THAT DID NOT DO THE PROMOTING.
+ *
+ * A draft can only be claimed once, so the LOSER of the webhook-versus-redirect race gets `already` and
+ * knows nothing about the outcome. When the winner REFUSED, `already` is not "your order exists" — it is
+ * "your order never will", and sending that customer to a confirmation screen to poll for sixty seconds
+ * is the worst answer available. This is the one read that tells them apart.
+ */
+async function refusalOnDraft(
+  draftKey: string,
+): Promise<{ refused: boolean; eventId: string | null; reason: string | null }> {
+  const [{ data: draft }, { data: order }] = await Promise.all([
+    supabase.from('order_drafts').select('event_id, promotion_failed_at, promotion_failure_reason').eq('order_key', draftKey).maybeSingle(),
+    supabase.from('orders').select('order_key').eq('order_key', draftKey).maybeSingle(),
+  ])
+  return {
+    // An ORDER settles it: if one exists this draft promoted, whatever else is recorded on it.
+    refused: !order && !!draft?.promotion_failed_at,
+    eventId: draft?.event_id ?? null,
+    reason: draft?.promotion_failure_reason ?? null,
+  }
+}
+
+/**
+ * ⚠️ THE SAME SENTENCES promoteDraft BUILDS, AND THAT DUPLICATION IS DELIBERATE AND UNHAPPY.
+ *
+ * promoteDraft composes the customer's wording and returns it — but it does not PERSIST it; only the
+ * machine reason ("stock: Fish Cake") is written to the draft. So a caller that lost the claim race can
+ * see WHY it was refused and cannot see what the customer was told. The DRY fix is to persist the
+ * sentence, or to export one builder both sides call, and both mean editing promoteDraft's refusal path.
+ * Reported rather than done. If promoteDraft's copy ever changes, change it here too.
+ */
+/** The refusal landing URL: the customer's own event, then the sentence. Both or neither is wrong. */
+function refusedUrl(menuUrl: string, eventId: string | null, message: string): string {
+  const url = new URL(menuUrl)
+  if (eventId) url.searchParams.set('event_id', eventId)
+  url.searchParams.set('payment_failed', message)
+  return url.toString()
+}
+
+function messageForRecordedReason(reason: string | null): string {
+  const generic = 'Sorry — we could not place your order. No money has been taken.'
+  if (!reason) return generic
+  const named = reason.includes(': ') ? reason.slice(reason.indexOf(': ') + 2).split(', ')[0] : ''
+  if (reason === 'truck_missing') return 'This truck is no longer taking orders. No money has been taken.'
+  if (!named) return generic
+  if (reason.startsWith('category_closed:')) {
+    return `Sorry — ${named} closed while you were paying, so we could not place your order. No money has been taken.`
+  }
+  if (reason.startsWith('stock:') || reason.startsWith('option_sold_out:') || reason.startsWith('option_ceiling:')) {
+    return `Sorry — ${named} sold out while you were paying, so we could not place your order. No money has been taken.`
+  }
+  return generic
+}
+
 export async function GET(req: NextRequest) {
   const draftKey = req.nextUrl.searchParams.get('draft')
   const truck = req.nextUrl.searchParams.get('truck') ?? ''
   const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? req.nextUrl.origin
   const menuUrl = `${base}/trucks/${encodeURIComponent(truck)}/order`
 
-  // ⚠️ A REDIRECT, NEVER A JSON BODY. A human is at the other end of this request, in a browser, having
-  // just paid. Every exit below lands them on a page.
+  // ── 🔴 TWO CALLERS, TWO SHAPES, ONE DECISION. ─────────────────────────────────────────────────
+  // `json=1` is the IN-PAGE caller: the customer never left, `confirmPayment` resolved without a
+  // redirect, and the page is still standing with their basket in it. It asks for the outcome as data
+  // so a refusal can be rendered where they are — in the order sheet, beside the sold-out notice the
+  // pay-at-hatch path has always used — instead of throwing the page away to say one sentence.
+  // ⚠️ WITHOUT IT NOTHING CHANGES. Stripe's own redirect (3DS, wallets, any flow that leaves the page)
+  // arrives as a top-level navigation with no such parameter and still gets a 303 to a page, because a
+  // browser following a redirect cannot render JSON.
+  const wantsJson = req.nextUrl.searchParams.get('json') === '1'
+  const reply = (redirectTo: string, payload: Record<string, unknown>) =>
+    wantsJson ? NextResponse.json(payload) : NextResponse.redirect(redirectTo, { status: 303 })
+
   if (!draftKey) {
     console.warn('[payments/return] no draft key — sending to the menu')
-    return NextResponse.redirect(menuUrl, { status: 303 })
+    return reply(menuUrl, { outcome: 'pending', orderKey: null })
   }
 
   // ── 🔴 START IT, HAND IT TO THE RUNTIME, THEN WAIT ONLY AS LONG AS A HUMAN SHOULD. ─────────────
@@ -96,7 +161,7 @@ export async function GET(req: NextRequest) {
       `[payments/return] promotion for draft=${draftKey} exceeded ${REDIRECT_DEADLINE_MS}ms — redirecting ` +
       `now and letting it finish under after(); the confirmation screen will poll it in.`,
     )
-    return NextResponse.redirect(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { status: 303 })
+    return reply(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { outcome: 'pending', orderKey: draftKey })
   }
 
   // ⚠️ NO try/catch HERE ANY MORE, AND NOTHING IS LOST BY THAT. A throw is caught on the shared promise
@@ -107,11 +172,28 @@ export async function GET(req: NextRequest) {
 
   switch (res.status) {
     case 'promoted':
-    case 'already':
-      // ✅ THE ORDER EXISTS — created by this request, or by the webhook a moment before it. The draft's
-      // key IS the order's key, so this is the same confirmation URL the order-first build produced and
-      // the screen renders unchanged.
-      return NextResponse.redirect(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { status: 303 })
+      // ✅ THE ORDER EXISTS, created by this request. The draft's key IS the order's key, so this is the
+      // same confirmation URL the order-first build produced and the screen renders unchanged.
+      return reply(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { outcome: 'confirmed', orderKey: draftKey })
+
+    case 'already': {
+      // ── 🔴 SOMEBODY ELSE PROMOTED IT, AND `already` DOES NOT SAY WHETHER THEY SUCCEEDED. ─────────
+      // The webhook fires on `payment_intent.amount_capturable_updated`, which Stripe emits the instant
+      // the customer authorises — the same instant this request starts. Losing that race is ordinary.
+      // Until now the loser assumed success and sent the customer to a confirmation screen; when the
+      // winner had REFUSED, that screen polls for an order that will never exist and then gives up,
+      // which is a worse outcome than the redirect this whole change is about.
+      const outcome = await refusalOnDraft(draftKey)
+      if (!outcome.refused) {
+        return reply(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { outcome: 'confirmed', orderKey: draftKey })
+      }
+      const message = messageForRecordedReason(outcome.reason)
+      console.warn(
+        `[payments/return] draft=${draftKey} was already REFUSED by the other trigger (${outcome.reason}) — ` +
+        `telling the customer instead of sending them to a confirmation that will never fill in.`,
+      )
+      return reply(refusedUrl(menuUrl, outcome.eventId, message), { outcome: 'refused', orderKey: draftKey, message })
+    }
 
     case 'refused': {
       // ── 🔴 THE CASE THAT REACHES SOMEBODY'S BANK STATEMENT ────────────────────────────────────────
@@ -132,9 +214,16 @@ export async function GET(req: NextRequest) {
           `remain on this customer's card. The sweep will retry; check Stripe if it persists.`,
         )
       }
-      const url = new URL(menuUrl)
-      url.searchParams.set('payment_failed', res.customerMessage)
-      return NextResponse.redirect(url.toString(), { status: 303 })
+      // 🔴 THE EVENT TRAVELS WITH THE MESSAGE. Without it the redirect lands on the truck's EVENT
+      // PICKER — a customer who has just had a card authorised and released is asked which market day
+      // they meant, with their order gone. `?event_id=` is the page's existing deep-link and scopes it
+      // to the event they were ordering from. Read from the draft, which is the only thing that still
+      // knows: nothing in the redirect URL carries it.
+      const { eventId } = await refusalOnDraft(draftKey)
+      return reply(
+        refusedUrl(menuUrl, eventId, res.customerMessage),
+        { outcome: 'refused', orderKey: draftKey, message: res.customerMessage },
+      )
     }
 
     case 'error':
@@ -142,6 +231,6 @@ export async function GET(req: NextRequest) {
       // Ours, not theirs, and retryable — lock contention is the realistic cause. The webhook will try
       // again; the customer is sent to the confirmation, which fills in when it lands.
       console.warn(`[payments/return] promotion incomplete for draft=${draftKey} (${res.detail}) — webhook will retry`)
-      return NextResponse.redirect(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { status: 303 })
+      return reply(`${menuUrl}?confirm=${encodeURIComponent(draftKey)}`, { outcome: 'pending', orderKey: draftKey })
   }
 }
