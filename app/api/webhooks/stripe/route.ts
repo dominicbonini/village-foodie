@@ -292,20 +292,32 @@ export async function POST(req: NextRequest) {
   // construction: the cached value simply stops changing, and a stale `true` is a truck still being
   // offered card payment that Stripe has stopped allowing.
   //
-  // 🔴 LIVEMODE-GUARDED, AND THE GUARD IS `!== false`, NOT `=== true`. `livemode` is parsed strictly
-  // above and is `null` when the payload carried a non-boolean. A null here means "we could not tell",
-  // and an event we cannot classify must NOT be allowed to write a money gate. Only an explicit
-  // `livemode: false` — a sandbox event, which is all this build may act on — proceeds.
-  // ⚠️ When live accounts are switched on, this condition is the thing to change, deliberately and in
-  // its own change. Do not widen it while `lib/stripe/connect.ts` still refuses a live key.
+  // ── 🔴 THE LIVEMODE GATE, WIDENED ON 13 AUGUST 2026. READ THIS BEFORE CHANGING IT AGAIN. ─────────
+  // IT USED TO READ `if (livemode !== false)`, on this branch and on the three below, with the note:
+  //     "When live accounts are switched on, this condition is the thing to change, deliberately and in
+  //      its own change. Do not widen it while `lib/stripe/connect.ts` still refuses a live key."
+  // THAT PRECONDITION HAS BEEN MET. The `sk_test_` refusals came out of `lib/stripe/connect.ts`,
+  // `authorize.ts`, `capture.ts` and `refund.ts` on 13 August 2026 (docs/live-key-guard-report.md), so
+  // this is the deliberate, own-change widening that note asked for — not an oversight, and not a
+  // relaxation made to get something to pass.
+  //
+  // 🔴 IT IS `=== null`, NOT `!== true`. The condition that discards must stay pinned to the ONE thing
+  // that was ever unsafe — an event we cannot classify. Both `true` and `false` are classifications and
+  // both now proceed. Writing `livemode !== true` would merely invert the original defect: live would
+  // work and every sandbox event would be dropped, silently, with the endpoint still answering 200.
+  //
+  // ⚠️ AND `null` CANNOT ACTUALLY REACH HERE — see the malformed-event refusal at the top of this
+  // handler, which 400s on `livemode === null` long before any dispatch. This is defence in depth
+  // against that check being loosened later, and it is deliberately kept rather than deleted, because
+  // "an unclassifiable event must never write a money gate" is the rule, not the line that enforces it.
   //
   // ⚠️ IT LOOKS THE OPERATOR UP BY ACCOUNT ID, which is why the migration puts a UNIQUE index on
   // `operators.stripe_account_id`. Without it a duplicated id would make this update an arbitrary row.
   if (eventType === 'account.updated') {
-    if (livemode !== false) {
+    if (livemode === null) {
       console.warn(
-        `[webhook/stripe] account.updated IGNORED id=${eventId} livemode=${livemode} — this build acts ` +
-        `on SANDBOX events only, and a null livemode means the payload could not be classified`,
+        `[webhook/stripe] account.updated IGNORED id=${eventId} livemode=${livemode} — the payload could ` +
+        `not be classified, and an unclassifiable event must never write a money gate`,
       )
       await markHandled(eventId, 'ignored:livemode')
       return NextResponse.json({ received: true })
@@ -396,8 +408,11 @@ export async function POST(req: NextRequest) {
   // every card order waits for its redirect — which works, but loses the guarantee that a customer who
   // closes the tab still gets their order.
   if (eventType === 'payment_intent.amount_capturable_updated') {
-    if (livemode !== false) {
-      console.warn(`[webhook/stripe] amount_capturable_updated IGNORED id=${eventId} livemode=${livemode} — sandbox only`)
+    // 🔴 `=== null` — see the gate on account.updated above for why, and why not `!== true`. This was
+    // the costliest of the four while it read `!== false`: a LIVE customer authorised, the hold landed
+    // on their real card, this branch discarded the event, and NO ORDER WAS EVER CREATED.
+    if (livemode === null) {
+      console.warn(`[webhook/stripe] amount_capturable_updated IGNORED id=${eventId} livemode=${livemode} — unclassifiable payload`)
       await markHandled(eventId, 'ignored:livemode')
       return NextResponse.json({ received: true })
     }
@@ -431,10 +446,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (eventType === 'payment_intent.succeeded') {
-    if (livemode !== false) {
+    // 🔴 `=== null` — see the gate on account.updated above. `livemode` is passed VERBATIM into
+    // recordOnlineCardPayment further down this branch, so widening the gate is the whole change: a live
+    // capture now writes a `livemode: true` ledger row and a sandbox capture still writes `false`.
+    if (livemode === null) {
       console.warn(
-        `[webhook/stripe] payment_intent.succeeded IGNORED id=${eventId} livemode=${livemode} — this ` +
-        `build records SANDBOX payments only, and a null livemode means the payload could not be classified`,
+        `[webhook/stripe] payment_intent.succeeded IGNORED id=${eventId} livemode=${livemode} — the ` +
+        `payload could not be classified, and unclassifiable money is not recorded`,
       )
       await markHandled(eventId, 'ignored:livemode')
       return NextResponse.json({ received: true })
@@ -568,8 +586,11 @@ export async function POST(req: NextRequest) {
   // All three converge on `stripe_re:<refund id>`, so whichever arrives first with a settled refund
   // writes the row and every other delivery is a 23505 no-op. None of them knows about the others.
   if (eventType === 'charge.refunded' || eventType === 'refund.created' || eventType === 'refund.updated' || eventType === 'refund.failed') {
-    if (livemode !== false) {
-      console.warn(`[webhook/stripe] ${eventType} IGNORED id=${eventId} livemode=${livemode} — sandbox only`)
+    // 🔴 `=== null` — see the gate on account.updated above. `livemode` is passed VERBATIM into
+    // recordOnlineCardRefund below, so a live refund books against live money and a sandbox refund
+    // against test money, on the same side of the line as the charge each reverses.
+    if (livemode === null) {
+      console.warn(`[webhook/stripe] ${eventType} IGNORED id=${eventId} livemode=${livemode} — unclassifiable payload`)
       await markHandled(eventId, 'ignored:livemode')
       return NextResponse.json({ received: true })
     }
