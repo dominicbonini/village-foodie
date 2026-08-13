@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.9
+HatchGrab Engineering Reference Manual · V11.10
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.9**
+**Version 11.10**
 
 August 2026
 
@@ -15,6 +15,37 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.10 — 12 August 2026
+
+**Authorize-then-capture built end to end, and four premises corrected by measurement.** Server-side pricing landed on both insert paths; hosted Checkout was replaced by an in-page Payment Element; the order is no longer created before payment. Along the way: a confirmation route that did not exist, a capture call unreachable from the path it was written for, a webhook continuation the runtime was never told about, and two orders charged twice.
+
+### 🔴 SERVER-SIDE PRICING — BUILT AND DEPLOYED
+
+- **`validateOrderTotals` deleted**, having first been proven inert by execution: `Math.abs(0.01 - NaN) > 0.01 => false`.
+- **Both order-creation paths now price from the database** through `lib/order-repricing.ts`. A forged £0.01 payload against a £9.50 order prices at **£9.50**.
+- **445 of 447 existing orders re-price exactly.** The two that differ are the known `Extra cheese` walk-ups, now correctly £1.50. **Gusto: 224/224 identical at £5,622.50.**
+- **The operator override survives as an explicit field** — `price_override` on the wire, `price_override` + `book_price` in the stored row, so an adjustment is auditable and distinguishable from a menu price. Same bytes from a customer are charged the book price.
+- ⚠️ **A sold-out item is priceable.** `loadPriceBook` filters on `truck_id` and nothing else — no `is_active`, no availability, no stock. That is the ONLY reason a sold-out item falls through to `checkStockShortfall`'s own message rather than a pricing refusal. **Recorded at both ends; do not add an availability filter.**
+- **An unpriceable line refuses the order** — 409, back to a refreshed menu, in its own unwrapped panel.
+
+### 🔴 AUTHORIZE-THEN-CAPTURE — BUILT
+
+- **`order_drafts`** holds the request. Invisible to the capacity engine and to stock. The draft mints `order_key`, which becomes the order's primary key, so correlation is unchanged end to end.
+- **In-page Payment Element replaces hosted Checkout**, which is deleted. Zero new npm dependencies — the Element mounts from Stripe's CDN.
+- **`paymentIntents.create` with `capture_method: 'manual'`.** The order does not exist until the authorisation succeeds.
+- **Capture follows confirmation** at every site, and the balance guard sits below all of them.
+- **`charge.refunded` / `refund.created` / `refund.updated`** handled, so a refund issued in the truck's own Stripe Dashboard reaches the ledger.
+
+### The corrections
+
+Four premises this workstream was built on turned out to be false. Each is recorded in its section below: a Checkout Session has no PaymentIntent at creation; the confirmation screen is not a route; capture was written for a path card orders do not take; and a platform **can** refund a direct charge.
+
+### Deployment record
+
+Multiple deploys across 12 August. Migrations applied and verified: `order_drafts` · `operators.stripe_account_livemode` · `orders.requested_slot` + `orders.asap_estimate` · `purge_order_drafts` comment · `find_stranded_authorisations` (created, then amended to exclude settled orders) · `orders_payment_status_check` widened for `part_refunded`.
+
+⚠️ **Outstanding at close:** subscribe the three refund event types in Stripe.
 
 ## V11.9 — 11 August 2026 (afternoon)
 
@@ -2595,6 +2626,32 @@ AddOrderPanel state → calculateOrderTotal() IN THE BROWSER → manualOrder.tot
 
 **424 of 426 price exactly (99.5%).** **Pizzeria Gusto: 213 of 213 exact, £0.00 signed delta.** The **2 divergent are both WALK-UPS on `test-truck`** — `Extra cheese` sent at £0.00 where the menu prices it at £1.50, **+£3.00, both undercharges**. 🔴 **The only two real mispricings in the database are on the path a submit-side fix would not touch.** Every modifier in all 426 orders resolved. 🔴 **ZERO orders carry a deal; ZERO carry a discount code** — those arms have no historical coverage at all. ⚠️ 21 orders produce an `item` UnresolvedRef, a **method artefact** of pricing history against today's menu (three Gusto dishes renamed or deleted after the fact), not evidence about enforcement.
 
+### ✅ SERVER-SIDE PRICING — BUILT AND DEPLOYED (V11.10)
+
+The entry above records the audit; this records the build. **`validateOrderTotals` is deleted** and both insert paths now price from the database through `lib/order-repricing.ts`. **A forged £0.01 payload against a £9.50 order prices at £9.50.** Re-measured after the change: **445 of 447 orders re-price exactly**, the two divergent being the same `Extra cheese` walk-ups, now correctly £1.50; **Gusto 224/224 identical at £5,622.50**.
+
+🔴 **THE OPERATOR OVERRIDE SURVIVES AS AN EXPLICIT FIELD, NOT AS A TOLERANCE.** `price_override` on the wire; `price_override` plus `book_price` in the stored row. An adjustment is auditable and distinguishable from a menu price, and **the same bytes sent by a customer are charged the book price.**
+
+⚠️ **A SOLD-OUT ITEM IS STILL PRICEABLE, AND THAT IS LOAD-BEARING.** `loadPriceBook` filters on `truck_id` and nothing else — no `is_active`, no availability, no stock. It is the only reason a sold-out line reaches `checkStockShortfall` and gets that message rather than a pricing refusal, which would be the wrong sentence for the customer. **Recorded at both ends of the dependency; do not add an availability filter.**
+
+**An unpriceable line refuses the order** — 409, returned to a refreshed menu, in its own unwrapped panel.
+
+### The customer confirmation is now URL-reachable (V11.10)
+
+`?confirm=<order_key>` renders the **same** `<OrderConfirmation>` component the pay-at-hatch path renders — extracted, not copied, so the two cannot drift.
+
+🔴 **THE BRANCH SITS ABOVE `loading`, `error` AND THE `advance_preordering` FEATURE GATE.** Placing it next to `if (submitted)` — where it logically belongs — would render *"Online ordering not available"* to a paying customer on a `starter` truck, and would hold the page on *"Loading menu…"* for a screen that renders no menu.
+
+**New columns:** `orders.requested_slot` (text, nullable) and `orders.asap_estimate` (text, nullable), both live-verified. ⚠️ **`slot_changed` is deliberately NOT a column** — it is `requested_slot is not null and requested_slot is distinct from slot`, derivable from what is stored.
+
+⚠️ **Written by an UPDATE after the RPC, not inside `place_order_atomic`** — deliberately, following the `placed_at` precedent: *"a transcription error there does not break a confirmation screen — it breaks every customer order."* A failure leaves nulls, which is what every pre-existing row reads.
+
+### 🔴 CORRECTION (V11.10) — the cancellation gate was added and then reverted
+
+A gate blocking customer cancellation for `paid` / `part_paid` / `refund_due` orders was built and then reverted **byte-exactly** (`git checkout HEAD -- <file>`, after proving the gate was that file's only uncommitted change). **The customer cancellation window is a truck-configured feature and must keep working for paid orders.** Across 446 orders: 445 unchanged, 1 restored, **0 lost**.
+
+⚠️ **`canCancel` contains no payment term at all** — the state it was in before, and the state it is in now. This supersedes the V11.9 backlog item that called for one.
+
 ### Per-event booking lock (V6.4)
 
 > **RULE** — The capacity claim is protected by a per-event INSERT-mutex: `booking_locks`, keyed `(truck_id, event_date)`, acquired before the fresh capacity read and released after the insert. ~1s retry, 10s stale TTL, contention→pending fallback (never a hard error). Both the customer claim path and ASAP go through it; reassign-or-pend is preserved. The lock is keyed by date, so two same-date events serialise together — conservative but correct. New migration: 20260608_booking_locks.sql.
@@ -4002,6 +4059,40 @@ truck_id   text  not null references trucks(id)        on delete cascade,
 
 ⚠️ **Contrast the operator paths, which genuinely are server-derived:** `action/route.ts:692` (the edit path, from `repriceOrder`) and — despite its comment — **not** `:1061`, the walk-up insert.
 
+### NEW TABLE — `order_drafts` (V11.10)
+
+**Live-verified after migration.** `order_key uuid PRIMARY KEY with NO default` · RLS **on**, zero policies · partial unique index on `payment_intent_id WHERE NOT NULL` · partial index on `expires_at WHERE promoted_at IS NULL` · FK to `trucks` `ON DELETE CASCADE`.
+
+**Columns:** the basket (`items`, `deals`, `extras`, `bundle`, `notes`, `discount_code`, `asap_estimate`, `upsell_events`) · resolved server facts (`truck_id`, `event_id`, `van_id`, `event_date`, `requested_slot`, `order_type`, `table_ref`) · customer PII (`customer_name`, `customer_email`, `customer_phone`) · money (`subtotal`, `discount_amt`, `total`, `total_minor`, `currency`) · lifecycle (`created_at`, `expires_at` default **+30 minutes**, `payment_intent_id`, `livemode`, `promoted_at`, `authorization_cancelled_at`, `promotion_failed_at`, `promotion_failure_reason`).
+
+- **30 minutes is Stripe Checkout's minimum session lifetime**, chosen so a draft can never expire before the session referencing it.
+- 🔴 **IT IS INVISIBLE TO STOCK AND CAPACITY BY CONSTRUCTION, NOT BY CONVENTION.** `getLiveItemCounts` and `getLiveOptionCounts` are DENY-lists (`.neq('status','cancelled').neq('status','rejected')`), so a draft row inside `orders` would count as sold whatever status it carried. **There is no status value that avoids that; only a different relation does.**
+- **Double promotion is prevented by a conditional `UPDATE … WHERE promoted_at IS NULL … RETURNING`.** The loser gets zero rows, not an error.
+- 🔴 **PII IS ERASED AFTER THE ORDER EXISTS, NOT IN THE CLAIM STATEMENT.** The first design nulled the three columns in the same `UPDATE` that claimed the draft — and `RETURNING` returns the row **after** the update, so **every card order would have been created with no customer details and no address to send the confirmation to.** Caught only by exercising against real rows.
+- 🔴 **A PROMOTED DRAFT IS A SOURCE OF TRUTH FOR DISPLAY.** `promoted_at IS NOT NULL AND authorization_cancelled_at IS NULL` means *authorised, not released*, and the order card, KDS, ticket and confirmation email all read it. **`purge_order_drafts()` must never widen to promoted rows** — the reason is written into the function body and its `COMMENT`, which survives in the database.
+
+### `orders.payment_status` CHECK — WIDENED for `part_refunded` (V11.10)
+
+`unpaid | paid | part_paid | refunded | part_refunded | refund_due | failed`
+
+🔴 **`part_refunded` added 17 August.** Without it a partially refunded order computed `part_paid` and told an operator to collect money from a customer who had just been refunded — **wrong in the dangerous direction.** Deploy-coupled: `recalcOrderPayment` is the only writer of this column and writes whatever `getOrderBalance` returns, so the moment a partial refund lands the write-back attempts the new value. **The verification run showed the 23514 it prevents.**
+
+⚠️ **No backfill, and none is possible to get wrong** — the value is derived, never hand-written, and the live database held no partially-refunded order (`unpaid` 317, `paid` 170, `refund_due` 3).
+
+### `operators.stripe_account_livemode` (V11.10)
+
+`boolean`, nullable, no default. 🔴 **NULL means no connected account and must never be treated as live.** Read back from Stripe's v2 Account object, **not derived from the key prefix.** Backfill verified: one operator with an account reads `false`, seven with none read `null`.
+
+**The rule it enables is ADDITIVE ONLY:** a ledger row counts if `livemode` is true, **OR** it is `false` **AND** `channel` is `online` **AND** the truck's connected account is itself a test account. **Proven over 442 orders: 438 identical, 4 increased, 0 decreased.** ⚠️ In-person rows hardcode `livemode: true` and are always real money — a blanket comparison would have stopped a truck with no Stripe account counting its own cash.
+
+### Ledger — refund rows (V11.10)
+
+`kind: 'refund'`, `channel: 'online'`, `state: 'succeeded'`, **amount POSITIVE** (the kind carries the sign), keyed **`stripe_re:<refund id>`**.
+
+🔴 **NOT THE CHARGE AND NOT THE INTENT.** A refund is N-per-charge — Stripe: *"You can do so multiple times, until the entire charge has been refunded"* — so keying on either would make the **second** partial refund a silent 23505 no-op, the exact defect `collectIdempotencyKey` was rewritten to fix when `collect:{order_key}` swallowed every charge after the first.
+
+⚠️ **A PENDING REFUND WRITES NO LEDGER ROW.** `getOrderBalance` counts only `succeeded`, so a pending row would be inert, and `recordPaymentEvent` is insert-only — flipping it later would mean building an UPDATE path for a row nothing reads. The pending state is recorded in `action_audit_log` as **`refund_pending`** and resolved by `refund.updated`. **The order reads PAID meanwhile, and that is true — the money has not gone back.**
+
 ### Orphaned menu rows for deleted demo trucks (V11.9)
 
 `demo-krh2c8k…` and `demo-ekww…` carry `menu_items_db` and `item_modifier_groups` rows with **no `trucks` row**. **`deleteTruckCascade` has gaps** — noted alongside §16's existing finding that the same function silently destroyed `order_payments`. **A cascade inventory is warranted.**
@@ -4692,11 +4783,38 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## 🔴 V11.10 — added 12 August 2026
+
+- 🔴 **The stranded finder cannot see a promoted draft with no order row.** Its SQL inner-joins `orders`, so there is no status to test. Money held against nothing, and nothing repairs it automatically.
+- 🔴 **Editing a captured order changes the total without moving the money.** The customer is told the new total *and* that their payment went through — both true, and they do not add up.
+- **The refund UI**, and the completed-list popup extraction it requires.
+- **Five refund sentences** promising automatic processing that nothing issues.
+- **Nothing records that payment-method-domain registration succeeded** — no column, no flag, only Stripe can answer. ⚠️ **That is exactly how `acct_1U30w2…` reached production with only `checkout.stripe.com` registered and Apple Pay silently absent.**
+- **Stripe Site links point at the marketing homepage** — needs a landing route reading the `stripe_account_id` Stripe appends and forwarding to the operator's Payments tab.
+- **`cardHeld` has no caller** and can be retired.
+- **The dead discount-code feature.** `applyCode` and `setDiscountInput` have **zero call sites**, so `discountAmt` is permanently 0 and `{discountAmt > 0 && (` can never be true. ⚠️ **This explains the V11.9 measurement: no order has ever carried a discount code because the customer path cannot enter one.**
+- **`makeCartKey` exists in three byte-identical copies; `toMins` in eight.**
+- **The order page is 2,750 lines** — 17 live features, so mostly genuine, but nine blocks are extractable with no behaviour change.
+- **`?paid=1` is referenced nowhere.**
+- **The rate limiter fix is not complete:** `/api/events` now has its own tier at 600/min keyed `(IP, truck)`, but customers of one truck at one venue still share a bucket. **Proper keying is outstanding.**
+- **The "notify customers by email" help text** on the Order-ready step is misleading — the KDS emails regardless of that setting.
+
+### 🔴 GO-LIVE CHECKLIST — every item is invisible until it fails
+
+Test and live mode are almost entirely separate in Stripe. **Before a real truck trades:**
+
+1. **Swap `STRIPE_SECRET_KEY` to live, and remove the `sk_test_` guards** at `lib/stripe/connect.ts:88` and `checkout/route.ts:40-47`. On the current build **`livemode: true` can never arrive from Stripe at all.**
+2. **Create a live-mode webhook destination** and add its signing secret to the comma-separated `STRIPE_WEBHOOK_SECRET`. **Then rebuild** — Vercel binds env vars at build time.
+3. **Subscribe every event type on the live destination:** `payment_intent.amount_capturable_updated`, `payment_intent.succeeded`, `refund.created`, `refund.updated`, `charge.refunded`. ⚠️ **On the destination that actually receives events** — everything so far has arrived on the platform-scoped one.
+4. **Re-run payment-method-domain registration with a live key**, for the platform and for every connected account.
+5. **Onboard each truck as a live connected account.** The test one does not carry over.
+6. **Site links** — verify what it actually gates.
+
 ## 🔴 V11.9 — added 11 August 2026 (afternoon)
 
-- 🔴 **`app/order/[id]/manage`'s `canCancel` ignores `payment_status`** — a paid customer gets a one-tap route to a refund nobody can process. **Launch blocker.** Latent only while `livemode` excludes test money.
-- 🔴 **There is no customer-facing confirmation ROUTE** — the rich confirmation is a component state with no URL, which is why Stripe returns customers to the cancellation page. **Building one is real work, not a redirect change.**
-- 🔴 **"Adjust time: +5m" IS AN ACCEPT.** `action/route.ts:1516` writes `status: 'confirmed'` **unconditionally**, in the same statement as the slot. The SELECT at `:1501` **does not fetch `status`**, so the handler cannot branch on it; the only guard is `if (!ord?.slot)`. It then sends a full `formatConfirmationEmail` with **`autoAccepted: true`** under the subject *"Your order … has been updated"*. ⚠️ `moveSlotBooking` runs first and **its result is discarded** — INFERRED: a full destination slot does not stop the confirm. **The control is offered on `pending` orders only** — the exact population that will hold authorizations. **Live today, Gusto-reachable, own merits.**
+- ~~🔴 **`app/order/[id]/manage`'s `canCancel` ignores `payment_status`**~~ — ⚠️ **SUPERSEDED (V11.10). The gate was built and deliberately reverted byte-exactly:** the customer cancellation window is a truck-configured feature and must keep working for paid orders. See §5. **The underlying concern moved rather than closed** — it is now the refund copy and the refund UI, not the gate.
+- ~~🔴 **There is no customer-facing confirmation ROUTE**~~ — ✅ **BUILT (V11.10).** `?confirm=<order_key>` renders the same extracted `<OrderConfirmation>`, above `loading`, `error` and the feature gate. See §5.
+- 🔴 **"Adjust time: +5m" IS AN ACCEPT.** `action/route.ts:1516` writes `status: 'confirmed'` **unconditionally**, in the same statement as the slot. The SELECT at `:1501` **does not fetch `status`**, so the handler cannot branch on it; the only guard is `if (!ord?.slot)`. It then sends a full `formatConfirmationEmail` with **`autoAccepted: true`** under the subject *"Your order … has been updated"*. ⚠️ `moveSlotBooking` runs first and **its result is discarded** — INFERRED: a full destination slot does not stop the confirm. **The control is offered on `pending` orders only** — the exact population that will hold authorizations. **Live today, Gusto-reachable, own merits.** ⚠️ **PARTLY ADDRESSED (V11.10):** it is now **capture site 3**, so a held authorisation is taken there, and its email resolves payment state through the shared resolver. **The unconditional `status: 'confirmed'` write and the discarded `moveSlotBooking` result are unchanged.**
 - 🔴 **Microsoft/Outlook deliverability.** Confirmation emails are **accepted by Brevo and silently dropped by Microsoft**; the same message to Gmail arrives. ⚠️ **RECLASSIFY the existing `HATCHGRAB_SENDER.email = hello@villagefoodie.co.uk` item from "brand inconsistency" to a DELIVERABILITY DEFECT** — mail branded as one domain and authenticated as another is the classic silent-drop profile, and Microsoft is the strictest major provider about it. ✅ **The block has lifted** — the hatchgrab.com mailboxes are live. Needs SPF/DKIM verified in Brevo. **DNS has a lead time; start it rather than schedule it.**
 - 🔴 **`submit/route.ts:625` reads `item_modifier_groups` with NO truck filter** — a **full-table read on the money path**, linear in total menu size. Harmless at twelve trucks. **Do not copy this pattern** (the price-book re-key deliberately did not).
 - **The menu load failure is UNEXPLAINED.** *"We couldn't load the menu right now — Retry"* on the customer order page, plus the event picker failing to render its calendar, minutes after the deploy. **Cleared on retry rather than being fixed.** Candidates: a 429 (§27 already records *"a 429 on /api/events/manage was wiping upcomingEvents to []"* — never setState from a failed fetch), or the changed `/api/menu` path. **Not diagnosed.**
@@ -5784,6 +5902,22 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 > Lessons that belong to no single subsystem. §31's structural lesson is slot-engine-specific and §22 covers process; these are engineering invariants that cost real time in more than one place, and had nowhere to live until now.
 
+**🔴 A COMPONENT-STATE SCREEN IS NOT A DESTINATION.** *Evidence (V11.10):* the rich customer confirmation was `if (submitted) return (…)` — a state inside the order page with no URL. Stripe can only return a customer to an address, so `success_url` was pointed at `/order/[id]/manage`, the **cancellation** page, whose only control offered to cancel an order the customer had just paid for. **Nothing was invented; an existing page was pressed into service because the right one was unreachable.** Before integrating any flow that leaves the site, establish that the return destination is a route.
+
+**🔴 A PREMISE ABOUT HOW TWO PIECES CONNECT IS THE THING TO CHECK.** *Evidence (V11.10), three times in one build:* (1) a Checkout Session's PaymentIntent **does not exist at Session creation** — it is created when the customer submits payment, so `session.payment_intent` was null, the guard failed, and every card order fell through to the old path; (2) capture was wired *"inline after the RPC"* for auto-accept, but a card order's order is created by `promoteDraft`, not `place_order_atomic`, so the call sat **248 lines below a `return`** and was unreachable; (3) `charge.refunded`'s payload carries **no `refunds` key at all**, only a cumulative `amount_refunded`, so it cannot key a row one-per-refund. **Each was found by measurement — a real Session, a line count, a real event — and none by reading the code that used it.**
+
+**🔴 EVERY COMPONENT PASSING ITS OWN TEST DOES NOT MEAN THE PATH WORKS.** *Evidence (V11.10):* the capture build verified capture against real Stripe and passed; the wiring assumed a path card orders do not take. **The defect lived in the join, and every individual test was green.** When two phases are built separately, the seam between them is the thing that was never exercised.
+
+**🔴 `void` TELLS THE RUNTIME NOTHING.** *Evidence (V11.10):* the webhook started promotion with `void promoteDraft(...)`. Vercel's runtime log for order 25's window contains 24 lines and **not one `promotion(...) -> promoted` completion line** — yet the work ran and `handled_at` was written, which only happens inside that continuation. **The work executed under no invocation the platform was accounting for.** 23.5s to the insert, 122.8s to resolve, against 2.5s for the same path three minutes earlier. Next's `after()` is the declared mechanism; **`void` hands the runtime a floating promise it has no reason to wait for.**
+
+**🔴 AN IDEMPOTENCY-KEY MATCH IS NOT A PAYMENT CHECK.** *Evidence (V11.10):* the stranded-authorisation sweep tested `idempotency_key = 'stripe_pi:' || payment_intent_id` — which an in-person payment's key (`collect:<order_key>:0:600`) can never equal. So it asked *"has this intent been captured?"* when it needed *"does this order still owe money?"*, and captured two orders that had already been paid in cash. **`getOrderBalance` is the codebase's own chokepoint for that question and no capture path called it.**
+
+**🔴 A CLIENT-SIDE CONTROL IS NOT A GUARD.** *Evidence (V11.10):* `OrderCard` correctly suppressed *"Mark paid"* for an order with a held authorisation — and **there was no server-side check at all.** The only thing between a held order and a second charge was a button label, bypassable by offline replay, a stale board or the KDS.
+
+**A CLAIM TAKEN BEFORE THE WORK POISONS THE ROW IF THE WORKER DIES.** *Evidence (V11.10):* promotion claims the draft first, then does everything else. A promoter killed mid-flight leaves `promoted_at` set with no order row, and every other promoter then reads `already` and stands down. ⚠️ **Releasing the claim on timeout was considered and rejected as more dangerous** — if the first promoter was merely slow, the second hits the primary key, promotion treats an insert failure as a refusal, **and cancels the hold on an order that exists.**
+
+**A VERIFICATION HARNESS THAT WRITES REAL ROWS CAN BREAK PRODUCTION.** *Evidence (V11.10):* an unexplained 500 on `payment_intent.succeeded` was traced to a harness deleting its own test rows while the deployed webhook was mid-write against them. The duplicate branch recovered it. ⚠️ **Declared honestly every time, but this is the first that produced a real error on a real request.**
+
 🔴 **A FLAT LOOKUP KEY THAT REAL DATA COLLIDES ON RETURNS ROW-ORDER-DEPENDENT ANSWERS.** *Evidence (V11.9):* `PriceBook.optionPrice` was keyed on option name alone, truck-wide. On a protein-choice menu `Prawn` exists in four groups at £0.00 and £1.50, and the resolved price was **whichever row loaded last** — proven by execution, returning `0` for both dishes and `1.5` for both with the rows reversed. Postgres gives no ordering guarantee without an `ORDER BY`. 🔴 **Nondeterministic pricing never reproduces when you go looking for it, so it survives every investigation.** The general form: **a key that is not unique in the data is not a key**, and the collision is invisible until two rows disagree about a value.
 
 🔴 **A COMMENT ASSERTING SERVER AUTHORITY MUST BE TRACED, NOT BELIEVED.** *Evidence (V11.9):* `action/route.ts:1060` reads *"derived here from the server-held total. Never client-supplied."* The number traces unbroken from a browser `calculateOrderTotal`. **Within one file, two handlers each claim server authority and only one has it.** Same family as `setOverlaysWebView`'s *"LOAD-BEARING ON iOS"* and `lib/legal.ts`'s reach claim. **The cheap diagnostic is to follow the value backwards to where it enters the process.**
@@ -6191,6 +6325,80 @@ Orders touched in the window were **additionally corrupted**: `recalcOrderPaymen
 
 **The invariant this establishes is recorded in §35** and is the strongest one there: **any change under `lib/payments/` must be exercised against real database rows before it deploys.** `tsc`-clean and lint-baselines-holding are not verification on this path — this change passed both.
 
+## 🔴 AUTHORIZE-THEN-CAPTURE — BUILT (V11.10)
+
+> **Supersedes the V11.8 "PROVEN, NOT BUILT" section below**, which remains for the sandbox probe that established the mechanism. This records what shipped, and the four premises it corrected.
+
+### 🔴 CORRECTION (V11.10) — A PLATFORM **CAN** REFUND A DIRECT CHARGE
+
+**This reverses a claim asserted repeatedly across V11.9 and the 12 August session.** Stripe's Connect documentation, under *Issue refunds*: platforms **can** create refunds of charges on connected accounts, **using the platform's secret key while authenticated as the connected account**, with `Stripe-Account`.
+
+🔴 **The error was conflating whose balance is debited — the connected account, correctly — with who may call the API.** ⚠️ **Every design decision that deferred refunds to the truck was made on a false premise** and should be revisited. ⚠️ `refund_application_fee` must be passed explicitly or the connected account loses that amount; moot while this build charges no fee, and not moot the day it does.
+
+### 🔴 CORRECTION (V11.10) — hosted Checkout could never have supported authorize-then-capture
+
+**A Checkout Session's PaymentIntent is created when the customer submits payment, not at Session creation.** `session.payment_intent` is `null` at creation, so there is nothing to attach to a draft, nothing to correlate, and no way to know an authorisation succeeded before creating the order. **`paymentIntents.create` returns the id synchronously and is the only workable basis.**
+
+### The flow, as built
+
+1. **Card selected** → validate and price server-side → write the draft → `paymentIntents.create` with `capture_method: 'manual'`, `metadata.order_key`, `{ stripeAccount }` → attach the intent to the draft → return the client secret. **No order, no email, no lock, nothing reserved.**
+2. **The Payment Element renders in-page**, inside the order sheet.
+3. **Promotion** — claim the draft, re-run the four binding phases inside the event lock, insert the order with the draft's `order_key`, capture if confirmed, send the emails.
+4. **Two triggers.** The redirect races a **6-second deadline** and hands the remainder to `after()`; the webhook schedules through `after()` with `maxDuration = 300`. **Authorisation to order row went from 23.5s to 2.0s, measured.**
+
+🔴 **THE REDIRECT RACES A DEADLINE RATHER THAN BLOCKING, AND THAT IS THE WHOLE SAFETY PROPERTY.** It cannot cancel, cannot abandon and cannot release the claim — it only stops *waiting*. **The floor of the design is today's behaviour; the ceiling is an instant confirmation.**
+
+⚠️ **`/api/payments/return` was unreachable for four days.** The Payment Element build pointed `return_url` straight at `?confirm=`, so nothing named the promoter and the webhook ran unopposed for every card order. **The two URLs were already identical strings**, which is exactly why nothing looked broken.
+
+### The refusal is absolute
+
+🔴 **If authorisation cannot be set up, the card order FAILS.** No order, no email, nothing reserved. The earlier fall-through — which continued into `place_order_atomic` and created an unpaid order with a **different `order_key`** — is deleted. **Both refusal arms were exercised against the real route handler.**
+
+### Capture — five sites, one function
+
+`paymentIntents.capture` appears in **exactly one function**, so every site inherits every guard. Sites: `promoteDraft` (gated on `autoAccepted`), submit's auto-accept (**pay-at-hatch only**), operator confirm (which also covers **every offline replay** — the outbox replays the same action, there is no separate handler), quick-time-adjust, and the stranded sweep. ⚠️ **`undo_ready` is deliberately excluded** — it reverts an already-confirmed order, which captured at its original confirmation.
+
+🔴 **CAPTURE ASKS WHETHER THE ORDER STILL OWES MONEY**, via `readOrderBalance`, refusing with `not_owed` / `settled` or `part_paid` and writing a `capture_not_owed` audit row. A part-paid order is a **refusal, not a partial capture** — the hold is for the whole order, so taking it against a £2-paid order overcharges by exactly £2. ⚠️ **Partial capture is not built.**
+
+### The held-authorisation state
+
+**Four surfaces used to agree and all four were wrong**: the order card showed `Mark paid`, the KDS `£6.00 due`, the ticket `TO PAY £6.00`, and the email *"Pay at the truck on collection"* — for money already held. **That is a double-payment path.**
+
+Now: **`CARD HELD` in indigo** — deliberately not green (money received) or amber (money outstanding), *because this is neither, and giving it either colour would be the whole defect again in a different form.* The card offers **`Collected`**, a kitchen action that books no money. ⚠️ **The held chip is not tappable** — the remove-payment modal reverses a *recording*, and a hold has no ledger row to remove.
+
+**Cost: two batched queries per dashboard load, regardless of order count.**
+
+### Email — five sites, one resolver, four states
+
+🔴 **`cardHeld` was passed at exactly ONE call site**; the operator confirm, ready, time-adjust and edit emails all fell through to a hardcoded *"Pay at the truck on collection"*. **The confirm branch discarded the `CaptureResult` that answers the question, 26 lines above where it composed the email.**
+
+All five now resolve through `lib/payments/email-payment-state.ts`, with four sentences in **both** HTML and plain text: **captured** · **held** · **hatch** · **unknown** (*"please do not pay again"*).
+
+🔴 **THE CAPTURE RESULT BEATS A DATABASE READ, AND THIS IS MEASURED.** `captureOnConfirmation`'s `expired` branch does not call `markAuthorizationCancelled`, so at the instant the email is composed the draft still looks held — live intent, `authorization_cancelled_at` null, no ledger row. **A read answers `held` and promises a customer their card covers an order it does not.**
+
+### Refunds — inbound
+
+- **`refund.created` and `refund.updated` are the primary path**; `charge.refunded` is a safety net resolving via `refunds.list`. All three converge on `stripe_re:<refund id>`.
+- 🔴 **Correlation is through OUR LEDGER ROW, not metadata.** `order_key` rides on the PaymentIntent, and a refund issued from the truck's own Dashboard carries none of ours — **which is the entire case this handler exists for.** A unique-index hit on `stripe_pi:<intent id>`.
+- **A lookup error returns 500 so Stripe retries** — *guessing "not ours" loses a customer's refund silently.*
+- ⚠️ **A cash refund has no path into the ledger.** No Stripe object exists to emit an event, and the correlation key can never match a `collect:` row.
+
+### Stranded authorisations
+
+`find_stranded_authorisations()` — a read-only SQL function plus a `*/15` cron **that can only capture**: `'pending'` is absent from its allow-list, and there is no cancellation verb anywhere in the mechanism. Records `capture_missing` **before** any repair — *a silent self-heal is how a defect survives for months.*
+
+⚠️ **The two sweeps partition the space and cannot collide:** `promoted_at IS NULL` for the canceller, `NOT NULL` for the capturer.
+
+🔴 **AND IT MUST EXCLUDE SETTLED ORDERS** — `payment_status not in ('paid', 'refund_due')`, added after orders 18 and 19 were each charged twice.
+
+### ⚠️ Still open on this path
+
+- **A promoted draft with no order row** is invisible to the SQL finder (no status to test). The one-off script shows it as `CHECK BY HAND`. **Money held against nothing; nothing repairs it automatically.**
+- **Editing an already-captured order** changes the total without moving the captured amount.
+- **Partial capture** is not built.
+- **The refund UI.** The completed list renders inline JSX, not `OrderCard`, with no chip, no balance and no payment control — **the popup must be extracted before it can open from there.** No idempotency pattern exists for a pre-write guard, since the refund id does not exist until Stripe answers.
+- **Five customer-facing sentences still promise an automatic refund.** Now that a platform *can* refund, the honest copy depends on what gets built.
+
 ## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
 
 > **⚠️ READ THIS BEFORE THE V11.5 SUBSECTIONS BELOW.** Those record the v1 design and are kept because the
@@ -6254,6 +6462,8 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 ---
 
 ## 🔴 AUTHORIZE-THEN-CAPTURE — PROVEN, NOT BUILT (V11.8)
+
+> ⚠️ **BUILT IN V11.10 — see the section above.** This entry is kept for the sandbox probe that established the mechanism on our exact posture. 🔴 **Its Checkout-based design was NOT what shipped**: a Session has no PaymentIntent at creation, which the correction above records.
 
 > **⚠️ NOTHING IN THIS SUBSECTION IS BUILT.** The Stripe behaviour is measured; the design is agreed; the
 > code does not exist. It is recorded here because it replaces the payment flow that IS built, and
@@ -6433,6 +6643,8 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 - ⚠️ **The refusal is 61 lines BEFORE the `stripe_webhook_events` insert**, which is why a 400 leaves no row — the route's own contract: *"400 … Nothing is recorded."* Every 400 in the file precedes the insert.
 - ⚠️ **`[webhook/stripe] REFUSED reason=… secretsConfigured=N hasSignature=…` names the cause on every refusal.** Six closed-union reasons; `secretsConfigured` distinguishes a missing variable from a mismatched secret in one character.
 
+> ✅ **RESOLVED IN V11.10** — `?confirm=<order_key>` is a real destination now. Kept because the invariant it produced (§35, *a component-state screen is not a destination*) is the durable part.
+
 ## 🔴 THE ORDER PAGE AFTER PAYMENT IS THE CANCELLATION PAGE, AND THAT IS STRUCTURAL (V11.9)
 
 **The rich confirmation is NOT a route.** It is a `submitted` state of `app/trucks/[slug]/order/page.tsx` — one `setSubmitted(true)`, **no URL** — so `success_url` cannot point at it. Both `success_url` and `cancel_url` resolve to **`app/order/[id]/manage`**, a 220-line cancellation page built for the *"Cancel your order"* email link: **no deals, no modifiers, no savings, and one control — a red "Cancel order" button.**
@@ -6442,6 +6654,8 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 ⚠️ **`?paid=1` is never read by any code** — no `useSearchParams` anywhere in the file. **A dead parameter that looks like it does something.** The page reads `payment_status` from the ROW instead, which is correct — but the row is written by the webhook, so a redirect that beats the webhook shows *"Pay at the truck"* on a paid order.
 
 ## DECIDED (V11.9) — CAPTURE FOLLOWS CONFIRMATION
+
+> ✅ **IMPLEMENTED IN V11.10** at five sites, with a balance guard below all of them. This entry records the decision; the section above records the build.
 
 **This closes the OPEN item *"charge-at-order versus auth-at-order / capture-at-approval"* recorded above.**
 
@@ -6476,7 +6690,9 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 
 ### Refund copy — FOUR sites, and they now contradict each other (V11.9)
 
-Three assert *"Your refund will be processed automatically within 3–5 working days"*, branching on **two different fields** (`payment_status === 'paid'` in one, `paid_at` truthiness in two). ⚠️ **A fourth site, `app/order/[id]/manage/page.tsx`, was rewritten to *"any refund is handled by {truck} directly"* — so the product currently says two different things about the same event.** Under direct charges the fourth is the true one.
+Three assert *"Your refund will be processed automatically within 3–5 working days"*, branching on **two different fields** (`payment_status === 'paid'` in one, `paid_at` truthiness in two). ⚠️ **A fourth site, `app/order/[id]/manage/page.tsx`, was rewritten to *"any refund is handled by {truck} directly"* — so the product currently says two different things about the same event.** Under direct charges the fourth was believed to be the true one.
+
+🔴 **CORRECTED (V11.10) — SIX SITES, AND THE FOURTH IS NO LONGER THE TRUE ONE.** A full audit found **six** places, of which **five** promise the automatic refund: `dashboard/action/route.ts:354` (operator cancel) · `lib/email.ts:520` and `:538` (customer self-cancel, HTML and text) · `lib/email.ts:561` and `:579` (event cancellation, HTML and text). The sixth, `app/order/[id]/manage/page.tsx`, says the truck handles it — **and its stated reason, that HatchGrab cannot refund a direct charge, is false** (see the correction above). **All six should be rewritten together, with whatever the refund UI actually does.**
 
 ## NEW (V11.9) — THE TEMPORARY CARD KILL SWITCH
 

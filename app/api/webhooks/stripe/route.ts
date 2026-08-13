@@ -39,7 +39,7 @@ import { createClient } from '@supabase/supabase-js'
 import { parseSigningSecrets, verifyStripeSignature } from '@/lib/stripe/webhook-signature'
 import { extractConnectedAccount, extractStripeCreatedAt, isThinEvent } from '@/lib/stripe/webhook-envelope'
 // 🔴 THE ONLY WRITER OF AN ONLINE PAYMENT INTO order_payments. See the payment_intent.succeeded branch.
-import { recordOnlineCardPayment, recordOnlineCardRefund, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
+import { recordOnlineCardPayment, recordOnlineCardRefund, removeFailedOnlineRefund, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 // ── PHASE 2b: promotion. Started out of band; never awaited before the 2xx. See startPromotion. ────
 import { promoteDraft } from '@/lib/payments/promote-draft'
 import { getOrderDraft } from '@/lib/payments/order-drafts'
@@ -567,7 +567,7 @@ export async function POST(req: NextRequest) {
   //                    the refund.* types are ever unsubscribed, or one delivery is lost.
   // All three converge on `stripe_re:<refund id>`, so whichever arrives first with a settled refund
   // writes the row and every other delivery is a 23505 no-op. None of them knows about the others.
-  if (eventType === 'charge.refunded' || eventType === 'refund.created' || eventType === 'refund.updated') {
+  if (eventType === 'charge.refunded' || eventType === 'refund.created' || eventType === 'refund.updated' || eventType === 'refund.failed') {
     if (livemode !== false) {
       console.warn(`[webhook/stripe] ${eventType} IGNORED id=${eventId} livemode=${livemode} — sandbox only`)
       await markHandled(eventId, 'ignored:livemode')
@@ -609,7 +609,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    let written = 0, pending = 0, skipped = 0
+    let written = 0, pending = 0, skipped = 0, failed = 0
     for (const r of refunds) {
       const refundId = typeof r.id === 'string' ? r.id : null
       const amountMinor = typeof r.amount === 'number' ? r.amount : 0
@@ -658,6 +658,72 @@ export async function POST(req: NextRequest) {
       // no surface, and recordPaymentEvent is insert-only so flipping it later would mean building an
       // UPDATE path for a row nothing reads. The audit log carries it instead — visible, and not
       // pretending to be money that has moved. `refund.updated` writes the real row when Stripe settles.
+      // ── 🔴 TERMINAL FAILURE. THE REFUND WILL NEVER SETTLE, AND WE MAY ALREADY HAVE BOOKED IT. ───
+      // ── WHY THIS IS THE DANGEROUS CASE AND NOT A TIDY-UP ──────────────────────────────────────
+      // Stripe's own test card documents the shape: 4000000000005126 / pm_card_refundFail —
+      // "its status begins as `succeeded`. Some time later, its status transitions to `failed` and
+      // sends a `refund.failed` event."
+      // 🔴 SO THE LEDGER ROW IS ALREADY WRITTEN. The refund arrived succeeded, we booked it, the order
+      // read `refunded` on every surface — and then the bank returned the money to the truck and the
+      // customer got nothing. Left alone, the order says REFUNDED forever for a refund that did not
+      // happen: an operator is told a customer has been made whole when they have not.
+      // ⚠️ `canceled` IS THE SAME TERMINAL SHAPE and is handled here for the same reason. Stripe:
+      // "Canceled refunds transition to a `canceled` status. As cancellations are a type of refund
+      // failure, the attributes failure_reason and failure_balance_transaction are included."
+      // ⚠️ IT SITS ABOVE THE PENDING CHECK DELIBERATELY. `failed` and `canceled` used to fall into that
+      // branch and be logged as "waiting for refund.updated" — a promise about a future that will never
+      // arrive. The pending branch itself is unchanged; it now only sees genuinely in-flight statuses.
+      // ⚠️ NO LEDGER ROW IS EVER WRITTEN HERE. Net, no money moved.
+      if (status === 'failed' || status === 'canceled') {
+        const failureReason = typeof r.failure_reason === 'string' ? r.failure_reason : null
+        let removed: Awaited<ReturnType<typeof removeFailedOnlineRefund>>
+        try {
+          removed = await removeFailedOnlineRefund(supabase, {
+            orderKey: chargeRow.order_key as string,
+            truckId: chargeRow.truck_id as string,
+            refundId, failureReason, eventType,
+          })
+        } catch (revErr) {
+          // 🔴 500 SO STRIPE RETRIES. Leaving a refund row standing for a refund that failed is the
+          // exact false statement this branch exists to remove, so a failure to remove it must not be
+          // acknowledged as handled.
+          console.error(
+            `[webhook/stripe] 🔴 COULD NOT REVERSE THE FAILED REFUND ${refundId} on order_key=` +
+            `${chargeRow.order_key} — the ledger may still claim this customer was refunded. Returning ` +
+            `500 so Stripe retries:`, revErr instanceof Error ? revErr.message : revErr,
+          )
+          return NextResponse.json({ error: 'failed-refund reversal failed' }, { status: 500 })
+        }
+
+        // 🔴 THE OPERATOR-FACING RECORD, AND IT RESOLVES THE OPEN `refund_pending` ROW. The audit log is
+        // append-only, so "resolve" means appending the row that closes it rather than editing it —
+        // `resolves` names the action this supersedes so one query pairs them by order and refund id.
+        await logAction(supabase, {
+          action: 'refund_failed',
+          truckId: chargeRow.truck_id as string,
+          orderKey: chargeRow.order_key as string,
+          amountMinor,
+          beforeState: { refund_id: refundId, payment_intent_id: piId, event_type: eventType, resolves: 'refund_pending' },
+          afterState: {
+            stripe_status: status, failure_reason: failureReason,
+            ledger_row: removed.outcome === 'removed' ? 'removed (had been recorded as succeeded)' : 'none was ever written',
+            meaning: 'THE CUSTOMER HAS NOT BEEN REFUNDED. Stripe returned the money to the truck. Only '
+                   + 'the truck can arrange another way to pay them back.',
+          },
+          actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+          source: 'web',
+        })
+
+        console.error(
+          `[webhook/stripe] 🔴 REFUND ${String(status).toUpperCase()} refund=${refundId} order_key=` +
+          `${chargeRow.order_key} amount_minor=${amountMinor} reason=${failureReason ?? 'unknown'}. ` +
+          `${removed.outcome === 'removed' ? 'The ledger row has been REMOVED and the order reads paid again. ' : 'No ledger row existed. '}` +
+          `THE CUSTOMER EXPECTED THIS MONEY BACK AND DID NOT GET IT — only the truck can retry it.`,
+        )
+        failed++
+        continue
+      }
+
       if (status !== 'succeeded') {
         console.warn(
           `[webhook/stripe] refund=${refundId} on order_key=${chargeRow.order_key} is ${status ?? 'unknown'}, ` +
@@ -706,7 +772,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    await markHandled(eventId, `refund:written=${written},pending=${pending},skipped=${skipped}`)
+    await markHandled(eventId, `refund:written=${written},pending=${pending},failed=${failed},skipped=${skipped}`)
     return NextResponse.json({ received: true })
   }
 

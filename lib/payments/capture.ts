@@ -72,10 +72,14 @@ export type CaptureResult =
    * 🔴 A REFUSAL, NOT AN ERROR AND NOT A SUCCESS. THE ORDER DOES NOT OWE THIS MONEY.
    *
    * `settled`   the balance is already zero — somebody paid at the hatch, or a part-payment closed it.
-   *             Capturing would charge the customer a second time.
-   * `part_paid` something is still owed, but LESS than the hold is for. The hold is for the whole order
-   *             and this build does not do partial capture, so taking it would overcharge by the
-   *             difference. Refused rather than approximated.
+   *             Capturing would charge the customer a second time. THIS IS THE 12 AUGUST FIX AND IT
+   *             STANDS UNCHANGED.
+   * `part_paid` 🔴 NO LONGER EMITTED. It used to mean "something is owed, but LESS than the hold is
+   *             for", and it refused — which took nothing at all from a card that was covering the
+   *             order, and left the truck with no money and a hold that expired in silence. That case
+   *             now CAPTURES THE LOWER AMOUNT (step 2c below). The variant is kept so an older
+   *             persisted result or an exhaustive switch elsewhere still type-checks; nothing in this
+   *             file produces it.
    *
    * The hold is left EXACTLY as it was: live, uncaptured, uncancelled. Nothing here releases money and
    * nothing here takes it — the decision of what to do next belongs to a human.
@@ -223,24 +227,25 @@ export async function captureOnConfirmation(
       }
     }
 
-    if (balance.balanceMinor < authorisedMinor) {
-      // 🔴 PART-PAID, AND CAPTURING WOULD OVERCHARGE BY THE DIFFERENCE. The hold is for the whole order;
-      // some of it has been settled another way. Stripe can capture a lesser amount, but this build does
-      // not do partial capture and inventing it inside a guard would be the wrong place to decide it.
-      // ⚠️ THE ORDINARY CARD ORDER IS UNAFFECTED: nothing paid means balance == authorised, so this
-      // condition is false and capture proceeds exactly as before.
-      console.error(
-        `[capture] 🔴 REFUSING TO CAPTURE order_key=${args.orderKey} (${args.trigger}): the order is ` +
-        `PART PAID — paid_minor=${balance.paidMinor}, still owed=${balance.balanceMinor}, but the hold ` +
-        `is for ${authorisedMinor}. Capturing pi=${piId} would take ${authorisedMinor - balance.balanceMinor} ` +
-        `too much. Collect the remainder at the hatch and release the hold.`,
-      )
-      await recordCaptureRefusal(supabase, args, piId, 'part_paid', balance, authorisedMinor)
-      return {
-        status: 'not_owed', paymentIntentId: piId, reason: 'part_paid',
-        paidMinor: balance.paidMinor, balanceMinor: balance.balanceMinor, authorisedMinor,
-      }
-    }
+    // ── 2c. 🔴 TAKE WHAT IS OWED, NEVER MORE THAN WAS AGREED. ──────────────────────────────────────
+    // ── THE RULE ─────────────────────────────────────────────────────────────────────────────────
+    // The authorisation is fixed at the amount the customer agreed to. An operator's edit NEVER
+    // increases what comes off the card. So the amount captured is the SMALLER of the two numbers:
+    //     order goes UP    balance > authorised   capture the whole hold; the remainder is owed at the hatch
+    //     order goes DOWN  balance < authorised   capture the balance; Stripe releases the difference
+    //     untouched        balance = authorised   capture the whole hold, exactly as before
+    // 🔴 WHAT THIS REPLACES, AND WHY IT HAD TO GO. Until now the middle row REFUSED. It was written to
+    // stop an overcharge, and it did — by taking nothing at all. A held order edited down was never
+    // captured by anything: the sweep retried into the same refusal, the hold expired after about seven
+    // days, and the truck was paid nothing for food it had served. Silent, and wrong in the direction
+    // that costs the operator rather than the customer.
+    // ⚠️ THE 12 AUGUST GUARD ABOVE IS UNTOUCHED. `balance <= 0` still refuses, so an order already paid
+    // at the hatch still cannot be charged a second time. This step only ever LOWERS the amount taken.
+    // ⚠️ THE ORDINARY CARD ORDER IS BYTE-IDENTICAL: nothing paid and no edit means balance == authorised,
+    // so `captureMinor === authorisedMinor`, no `amount_to_capture` is sent, and the Stripe call below is
+    // the same call it has always been.
+    const captureMinor = Math.min(balance.balanceMinor, authorisedMinor)
+    const isPartialCapture = captureMinor < authorisedMinor
 
     // ── 3. CAPTURE AT STRIPE. ─────────────────────────────────────────────────────────────────
     const account = await stripeAccountForTruck(supabase, draft.truck_id ?? args.truckId)
@@ -256,7 +261,21 @@ export async function captureOnConfirmation(
     try {
       const stripe = new Stripe(sandboxKey())
       // ⚠️ NO application_fee_amount. See the header — absence, never zero.
-      const captured = await stripe.paymentIntents.capture(piId, {}, { stripeAccount: account })
+      // 🔴 `amount_to_capture` IS SENT ONLY WHEN IT LOWERS THE AMOUNT, so a full capture is the same
+      // empty-params call it has always been and cannot change behaviour for an unedited order.
+      // Stripe's own wording for the parameter, from the hold documentation: "This captures the total
+      // authorized amount by default. To capture less or (for certain online card payments) more than
+      // the initial amount, pass the amount_to_capture option. A PARTIAL CAPTURE AUTOMATICALLY RELEASES
+      // THE REMAINING AMOUNT." Nothing here releases anything by hand — there is no second call.
+      // ⚠️ AND IT IS ONE SHOT: "you can only perform one capture on an authorized payment for most
+      // payments. If you partially capture a payment, you can't perform another capture for the
+      // difference." So the number below is the last word on this hold, which is why it is the minimum
+      // of the two and never a guess.
+      const captured = await stripe.paymentIntents.capture(
+        piId,
+        isPartialCapture ? { amount_to_capture: captureMinor } : {},
+        { stripeAccount: account },
+      )
       amountMinor = typeof captured.amount_received === 'number' ? captured.amount_received : 0
       if (amountMinor <= 0) {
         // Captured with nothing received is not a state this design produces, and writing a zero-amount
@@ -290,6 +309,22 @@ export async function captureOnConfirmation(
         await recordCaptureProblem(supabase, args, piId, 'failed', message)
         return { status: 'failed', paymentIntentId: piId, detail: message }
       }
+    }
+
+    // ── 3b. 🔴 A PARTIAL CAPTURE IS A MONEY DECISION AND IS WRITTEN DOWN. ──────────────────────────
+    // The ledger row records what was TAKEN. Only this record says what was HELD and therefore what was
+    // released and never collected, which is the number somebody reconciling a till will want:
+    //     select * from action_audit_log where action = 'capture_partial' order by created_at desc;
+    // ⚠️ Best-effort, like every other audit write on this path — logAction swallows its own errors,
+    // because a logging failure must not become a second failure in a function that may not throw.
+    if (isPartialCapture) {
+      console.warn(
+        `[capture] PARTIAL CAPTURE order_key=${args.orderKey} (${args.trigger}): the hold is for ` +
+        `${authorisedMinor} and the order owes ${balance.balanceMinor}, so ${amountMinor} was taken from ` +
+        `pi=${piId} and Stripe released the remaining ${authorisedMinor - amountMinor}. That difference is ` +
+        `NOT recoverable from this hold — a capture cannot be repeated for the difference.`,
+      )
+      await recordPartialCapture(supabase, args, piId, balance, authorisedMinor, amountMinor)
     }
 
     // ── 4. THE LEDGER ROW. Same writer the webhook uses, so the row is identical in shape. ───────
@@ -384,6 +419,43 @@ async function recordCaptureRefusal(
         ? 'this order was already paid by other means; capturing would have charged the customer twice'
         : 'this order is part paid; capturing the whole hold would have overcharged',
       hold: 'left live and uncaptured — release or claim it by hand',
+    },
+    actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+    source: 'web',
+  })
+}
+
+/**
+ * 🔴 RECORD THAT LESS WAS TAKEN THAN WAS HELD, AND HOW MUCH WENT BACK.
+ *
+ * A DISTINCT ACTION FROM `capture_not_owed`, deliberately: nothing was refused and nothing is
+ * outstanding. This is a completed capture at a lowered amount, and the fact worth keeping is the
+ * DIFFERENCE — money the customer authorised, the truck did not take, and cannot take later.
+ *
+ * ⚠️ `amountMinor` IS STRIPE'S OWN `amount_received`, not the figure we asked for. If the two ever
+ * disagree the record shows both, because the ledger only ever sees the one Stripe returned.
+ */
+async function recordPartialCapture(
+  supabase: SupabaseClient,
+  args: { orderKey: string; truckId: string; trigger: string },
+  paymentIntentId: string,
+  balance: OrderBalance,
+  authorisedMinor: number,
+  amountMinor: number,
+): Promise<void> {
+  await logAction(supabase, {
+    action: 'capture_partial',
+    truckId: args.truckId,
+    orderKey: args.orderKey,
+    amountMinor,
+    beforeState: { payment_intent_id: paymentIntentId, trigger: args.trigger, authorised_minor: authorisedMinor },
+    afterState: {
+      captured: true,
+      captured_minor: amountMinor,
+      requested_minor: balance.balanceMinor,
+      released_minor: authorisedMinor - amountMinor,
+      paid_minor_before: balance.paidMinor,
+      meaning: 'the order owed less than the hold was for, so only the lower amount was taken and Stripe released the rest',
     },
     actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
     source: 'web',

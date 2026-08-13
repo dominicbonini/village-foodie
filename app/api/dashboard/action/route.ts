@@ -6,7 +6,7 @@ import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, re
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
-import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
+import { resolveEmailPaymentState, resolveEmailPayment } from '@/lib/payments/email-payment-state'
 // 🔴 THE SERVER-SIDE HALF OF "DO NOT COLLECT THIS AT THE HATCH". The order card hides the button; these
 // two branches are what stops an offline replay, a stale board or the KDS booking the payment anyway.
 // Same resolver the CARD HELD chip reads, so the button and the guard cannot disagree.
@@ -25,7 +25,9 @@ import {
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
-import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
+// 🔴 recalcOrderPayment IS THE ONLY WRITER OF orders.payment_status / amount_paid, and the edit handler
+// is the only thing that moves the other side of `balance = total_minor - paid`. See the EDIT branch.
+import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment } from '@/lib/payments/ledger'
 import { captureOnConfirmation } from '@/lib/payments/capture'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
@@ -756,6 +758,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Could not save the changes to this order' }, { status: 500 })
       }
 
+      // ── 🔴 THE TOTAL MOVED, SO THE MONEY QUESTION HAS A NEW ANSWER. RECOMPUTE IT. ────────────────
+      // ── WHAT THIS FIXES ─────────────────────────────────────────────────────────────────────────
+      // Order 59, 13 August: paid 650 by card, edited to 1300, and `orders.payment_status` still read
+      // 'paid' with `amount_paid` 6.50 against a total of 13.00. balance = total_minor - paid, and this
+      // handler is the ONLY thing in the codebase that moves the first term. Every ledger writer already
+      // recalculates; nothing did when the OTHER side of the subtraction changed.
+      // 🔴 HERE, NOT LATER. Directly after the write that changed the total and BEFORE the email below,
+      // so the resolver that composes the customer's sentence and the row a refetching dashboard reads
+      // are looking at the same recomputed state. Later would be a window; earlier would recompute
+      // against the old total.
+      // ⚠️ IT DOES NOT DECIDE ANYTHING — it recomputes from the ledger, which this handler does not
+      // touch. `amount_paid` cannot move (no payment happened); only `payment_status` can, and only to
+      // the answer getOrderBalance was already giving the operator's card. An upward edit of a paid
+      // order goes 'paid' -> 'part_paid', which is the chip they are already looking at.
+      // ⚠️ NON-FATAL, and deliberately the same shape as the slot re-booking below: the edit is already
+      // saved and correct, the LEDGER is untouched and still authoritative, and every ledger-derived
+      // surface (the card, the ticket, the emails) is right with or without this line. Losing an
+      // operator's edit over a cache write would be far worse than a stale cache that the next payment
+      // event repairs.
+      try {
+        const recalculated = await recalcOrderPayment(supabase, orderKey)
+        console.log(
+          `[edit] order_key=${orderKey} repriced to ${newTotalMinor} — payment cache recomputed: ` +
+          `status=${recalculated.status} paid_minor=${recalculated.paidMinor} balance_minor=${recalculated.balanceMinor}`,
+        )
+      } catch (recalcErr) {
+        console.error(
+          `[edit] 🔴 PAYMENT CACHE NOT UPDATED for order_key=${orderKey} after repricing to ${newTotalMinor} — ` +
+          `orders.payment_status and amount_paid still describe the OLD total. The edit IS saved and the ` +
+          `ledger is unaffected; re-run recalcOrderPayment for this order to repair:`,
+          recalcErr instanceof Error ? recalcErr.message : recalcErr,
+        )
+      }
+
       // Slot re-booking is reported, NOT rolled back: the order above is already saved and correct.
       // A capacity-board write failure is a display/planning problem that the next rebuild self-heals
       // — losing the operator's edit over it would be far worse.
@@ -795,8 +831,21 @@ export async function POST(req: NextRequest) {
         // CAPTURED changes the total, and the captured amount does not follow it. The customer is told
         // the new total and that their payment has gone through, which are both true and do not add up.
         // Reconciling a repriced capture is a money change and is out of scope here.
-        const paymentState = await resolveEmailPaymentState(supabase, orderKey)
-        const payNote = paymentNote(paymentState, truck.name)
+        // ── 🔴 THE STATE AND THE FIGURES, FROM ONE RESOLUTION. ────────────────────────────────────
+        // An edit is the one action that can turn a settled order into a part-paid one, or leave a hold
+        // covering only part of the new total — so this is the site most likely to render 'part_paid' or
+        // 'held_short', and a customer reading "New total £13.00" needs the numbers, not a vague
+        // sentence. Read AFTER the repricing above, so the balance is the new total minus what was taken.
+        // ⚠️ THIS USED TO BE TWO CALLS — resolveEmailPaymentState, then readOrderBalance a dozen lines
+        // later for the same two rows. resolveEmailPayment returns the figures it already computed, so
+        // the second read is gone and the sentence and the numbers can no longer come from two reads
+        // taken at different instants.
+        const payFacts = await resolveEmailPayment(supabase, orderKey)
+        const paymentState = payFacts.state
+        const payAmounts = typeof payFacts.paidMinor === 'number' && typeof payFacts.balanceMinor === 'number'
+          ? { paidMinor: payFacts.paidMinor, balanceMinor: payFacts.balanceMinor, heldMinor: payFacts.heldMinor }
+          : undefined
+        const payNote = paymentNote(paymentState, truck.name, payAmounts)
         // The SERVER-priced items/deals — the same figures that were just persisted, so the
         // customer's email can never quote a price the order row doesn't hold.
         const finalItems = repriced.items.map(i => ({

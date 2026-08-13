@@ -216,12 +216,39 @@ export function OrderCard({
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
   // can never disagree. Do not add arithmetic on amount_paid/total here: one derivation, one place.
   const balance = getOrderBalance(order as any, ledgerRows ?? [])
-  // 🔴 'part_refunded' IS SETTLED, NOT OUTSTANDING. Charged in full, some given back — the customer
-  // owes nothing. Without it here the value falls through BOTH branches: no chip at all, and a
-  // completion button reading "Mark paid" for money already taken. It rides with 'refunded' because
-  // both mean "do not collect", and the chip below is what tells them apart.
-  const isPaid = balance.status === 'paid' || balance.status === 'refunded' || balance.status === 'part_refunded'
+  // ── 🔴 EVERY PAYMENT STATE IN WHICH THE ORDER DOES NOT OWE MONEY, IN ONE PLACE. ─────────────────
+  // The test this list answers is "would recording another payment be wrong?", and for all four the
+  // answer is yes. It is an ALLOW-list, so a status added to the CHECK in future keeps offering the
+  // button until someone decides otherwise — the safe direction, because the cost of asking for money
+  // that is owed is one tap and the cost of taking money that is not is a refund.
+  //   'paid'           balance zero. The ordinary settled order.
+  //   'refunded'       charged and fully given back. Closed; nothing to collect at the hatch.
+  //   'part_refunded'  charged in full, some given back. The remainder is the truck's, not owed.
+  //   'refund_due'     🔴 MORE THAN THE BALANCE HAS BEEN TAKEN. Offering to record a further payment
+  //                    on an order that is already over-paid is the worst member of this list, and it
+  //                    was the one missing: `mark_paid` on order 18 produced a green "marked paid"
+  //                    toast, wrote nothing (recordCollectionPayment's `balanceMinor <= 0` guard), and
+  //                    offered an Undo that would have deleted a real cash payment.
+  // ⚠️ 'part_paid' AND 'unpaid' ARE DELIBERATELY ABSENT — those orders genuinely owe money.
+  // ⚠️ 'failed' IS ABSENT AND UNREACHABLE. getOrderBalance never returns it; it exists on the column's
+  // CHECK only, and its meaning — a payment attempt failed — is "money IS owed" anyway.
+  const SETTLED_STATUSES = ['paid', 'refunded', 'part_refunded', 'refund_due'] as const
+  const isPaid = (SETTLED_STATUSES as readonly string[]).includes(balance.status)
   const isPartPaid = balance.status === 'part_paid'
+
+  // ── 🔴 IS THERE AN IN-PERSON PAYMENT THAT `undo_mark_paid` COULD ACTUALLY REMOVE? ───────────────
+  // A MIRROR OF reverseCollectionPayment's OWN LOOKUP, condition for condition — it selects
+  //     .eq('kind', 'charge').neq('channel', 'online').eq('livemode', true)
+  // and returns `reversal: 'none'` when that finds nothing. The dashboard already ships every one of
+  // those columns in LEDGER_ROW_COLUMNS, so the card can answer the same question without a round trip.
+  // 🔴 THIS IS WHY THE UNDO CONTROL LIED. A card payment writes `channel: 'online'`, so the lookup can
+  // never select it: nothing is deleted, the route discards `reversal: 'none'`, and the operator is told
+  // "Undone — payment removed" about a payment that is still on the customer's card.
+  // ⚠️ IT IS A ROW TEST, NOT AN ORDER TEST, and that distinction is load-bearing: an order paid partly by
+  // card and partly in cash HAS a reversible row, and undo must keep working for it exactly as today.
+  const hasReversibleInPersonPayment = (ledgerRows ?? []).some(
+    r => r.kind === 'charge' && r.channel !== 'online' && r.livemode === true,
+  )
 
   // 🔴 THE OVERLAY FOLDS INTO THE RESOLVER'S BOOLEANS, RIGHT HERE, so EVERY consumer below — the chip,
   // the pay buttons, the primary action, the tap targets — reads ONE pair of values and CANNOT diverge
@@ -445,7 +472,11 @@ export function OrderCard({
     : balance.status === 'part_refunded' ? <span title="Charged in full, then partly refunded. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{money(balance.balanceMinor)} REFUNDED</span>
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : heldAuthorisation ? <span title="Card authorised — do not collect. Payment is taken when you confirm." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">CARD HELD</span>
-    : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
+    // 🔴 PART-PAID HAS LEFT THE HEADER ROW ENTIRELY — see `partPaidRow` below. It read
+    // "£6.50 / £6.50 due", which parses as a fraction rather than as two amounts, and it was
+    // `whitespace-nowrap` + `flex-shrink-0` at three to four times the width of PAID on the busiest row
+    // of the card, so it overflowed. Returning null here is what frees that row; nothing else on it
+    // moved, and PAID / CARD HELD / REFUNDED are untouched.
     : null
 
   // ✅ TAPPABLE IN BOTH CASES. An operator who mis-taps offline must be able to undo it exactly as
@@ -459,7 +490,9 @@ export function OrderCard({
   const paidChip = paidChipStatic === null ? null : heldAuthorisation && !effectivePaid ? (
     <span className="flex-shrink-0">{paidChipStatic}</span>
   ) : (
-    <button onClick={() => setConfirmRemovePayment(true)} title="Tap to remove this payment" className="flex-shrink-0">
+    <button onClick={() => setConfirmRemovePayment(true)}
+      title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
+      className="flex-shrink-0">
       {paidChipStatic}
     </button>
   )
@@ -475,30 +508,89 @@ export function OrderCard({
   // "Keep" escape was unreachable, which is the worst possible thing to lose from a destructive confirm.
   // ⚠️ It calls `undo_mark_paid` — the SAME server path the undo toast uses. No third implementation:
   // audit FIRST, abort the delete if the audit write fails, then delete the ledger row, then recalc.
+  // ── 🔴 A CARD PAYMENT CANNOT BE UNDONE HERE, AND THE MODAL NOW SAYS SO INSTEAD OF PRETENDING. ───
+  // ── WHY IT STILL OPENS RATHER THAN GOING DEAD ──────────────────────────────────────────────────
+  // Making the chip inert for a card-paid order was the other option and it was rejected: an operator
+  // who taps a PAID chip is asking a question, and a control that does nothing answers it with silence.
+  // They would tap it again, then look for the setting they think they are missing. The held chip is
+  // inert because there is genuinely nothing to say beyond the chip's own word; here there is — the
+  // money is real, it is on the customer's card, and getting it back is a different action.
+  // 🔴 SO THERE IS NO DESTRUCTIVE BUTTON ON THIS BRANCH. `undo_mark_paid` is not offered, because it is
+  // a guaranteed no-op that would return "Undone — payment removed" and change nothing.
+  // ⚠️ IT NAMES THE REAL ROUTE, WHICH IS STRIPE, BECAUSE THE REFUND UI IS NOT BUILT. When it is, this is
+  // the sentence that changes and the only one — the branch itself stays.
   const removePaymentModal = !confirmRemovePayment ? null : (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
       onClick={e => e.target === e.currentTarget && setConfirmRemovePayment(false)}>
       <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
-          <p className="text-sm text-slate-500 mt-2">
-            This removes the <strong className="text-slate-700">{money(balance.paidMinor)}</strong> recorded
-            against order <strong className="text-slate-700">#{order.id}</strong>. The order stays where it is;
-            only the payment record is removed.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={() => setConfirmRemovePayment(false)}
-            className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
-          <button
-            onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
-            disabled={isLoading('undo_mark_paid')}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">
-            {isLoading('undo_mark_paid') ? '…' : 'Remove payment'}
-          </button>
-        </div>
+        {hasReversibleInPersonPayment ? (
+          <>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                This removes the <strong className="text-slate-700">{money(balance.paidMinor)}</strong> recorded
+                against order <strong className="text-slate-700">#{order.id}</strong>. The order stays where it is;
+                only the payment record is removed.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmRemovePayment(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+              <button
+                onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
+                disabled={isLoading('undo_mark_paid')}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">
+                {isLoading('undo_mark_paid') ? '…' : 'Remove payment'}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Paid by card</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                Order <strong className="text-slate-700">#{order.id}</strong> was paid by card, so there is no
+                payment record to remove here — the money is already on the customer&apos;s card.
+              </p>
+              <p className="text-sm text-slate-500 mt-2">
+                To give it back you need to <strong className="text-slate-700">refund it in Stripe</strong>, on
+                your own Stripe dashboard. Removing the record here would not return anything.
+              </p>
+            </div>
+            <button onClick={() => setConfirmRemovePayment(false)}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">
+              Got it
+            </button>
+          </>
+        )}
       </div>
     </div>
+  )
+
+  // ── 🔴 THE PART-PAID LINE. ITS OWN ROW, ABOVE THE ITEMS, BELOW THE HEADER. ──────────────────────
+  // ── WHY IT IS NOT A CHIP ────────────────────────────────────────────────────────────────────────
+  // Every other payment state is one word — PAID, CARD HELD, REFUNDED — and fits beside the price.
+  // Part-paid is TWO AMOUNTS and cannot be, so it stopped being a chip rather than being shrunk into
+  // one. `w-full` with no `whitespace-nowrap` is the whole fix for the overflow: at a narrow viewport
+  // it WRAPS instead of pushing the row wider, which is what an unshrinkable chip could never do.
+  //
+  // ⚠️ THE STRING SAYS WHICH NUMBER IS WHICH. "£6.50 / £6.50 due" reads as a fraction — six-fifty out
+  // of six-fifty — and on an order edited from £6.50 to £13.00 the two happen to be equal, which is the
+  // worst case for a reader. "£6.50 paid, £6.50 due" cannot be misread.
+  //
+  // ⚠️ NOT IN COOK MODE, AND NOT WHEN `hidePayments`. Cook shows no prices at all (`showPrices` is
+  // false there) and its header carries no payment chip today; adding a money line would put money on
+  // the one screen deliberately without it. It is absent there rather than overflowing there.
+  //
+  // ⚠️ IT KEEPS THE CHIP'S TAP TARGET, so the correction path is unchanged: the same modal, the same
+  // card-vs-cash branch. Moving the information must not remove the way to fix it.
+  const partPaidRow = (hidePayments || viewMode === 'cook' || !effectivePartPaid) ? null : (
+    <button
+      onClick={() => setConfirmRemovePayment(true)}
+      title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
+      className="w-full mb-2 rounded-md bg-amber-100 text-amber-800 px-2 py-1 text-xs font-black text-center">
+      {money(balance.paidMinor)} paid, {money(balance.balanceMinor)} due
+    </button>
   )
 
   // ── THE BUZZER CHIP ─────────────────────────────────────────────────────────────────────────────
@@ -961,6 +1053,11 @@ export function OrderCard({
 
       {expanded && (
         <div className="px-4 pb-3 pt-2 bg-slate-50 flex flex-col flex-1">
+
+          {/* 🔴 DIRECTLY ABOVE THE ITEMS AND BELOW THE HEADER. It sits INSIDE this block's existing
+              `pt-2`, so nothing above it moves — the header row, the time label, the order number and
+              the buzzer chip are all untouched. Null in every state but part-paid. */}
+          {partPaidRow}
 
           {/* ── Items: cook view vs window/solo view ── */}
           {viewMode === 'cook' ? (

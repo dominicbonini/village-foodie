@@ -23,7 +23,10 @@
 // ⚠️ THIS FILE IS lib/payments. THE MONEY-PATH INVARIANT APPLIES: exercised against real rows before
 // deploying, never merely typechecked.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { recordPaymentEvent } from './ledger'
+import { recordPaymentEvent, recalcOrderPayment } from './ledger'
+// A failed refund DESTROYS a money row, so its audit write must be the strict one: a failed log aborts
+// the delete. Same rule undo_collected follows.
+import { logActionOrThrow } from '@/lib/audit/actionAudit'
 
 /**
  * 🔴 THE IDEMPOTENCY KEY FOR A WEBHOOK-DRIVEN PAYMENT.
@@ -166,4 +169,68 @@ export async function recordOnlineCardRefund(
     createdBy: 'stripe_webhook',
     note: args.paymentIntentId ? `Card refund (${args.paymentIntentId})` : 'Card refund',
   })
+}
+
+/**
+ * 🔴 A REFUND THAT FAILED AFTER WE ALREADY RECORDED IT. REMOVE THE ROW.
+ *
+ * ── WHY THIS EXISTS, AND WHY IT IS NOT THE PENDING CASE ────────────────────────────────────────
+ * Stripe's own test card for this path documents the shape: `4000000000005126` / `pm_card_refundFail`
+ * — "If you initiate a refund, its status begins as `succeeded`. Some time later, its status
+ * transitions to `failed` and sends a `refund.failed` event."
+ * 🔴 SO THE LEDGER ROW IS ALREADY WRITTEN BY THE TIME THE FAILURE ARRIVES. The refund was `succeeded`,
+ * recordOnlineCardRefund booked it, getOrderBalance computed `refunded`, and every surface said so.
+ * Then the bank returned the money to the truck and the customer got nothing. Without this, the order
+ * reads REFUNDED forever for a refund that never happened — the worst direction, because it tells an
+ * operator a customer has been made whole when they have not.
+ *
+ * ── DELETE, NEVER COMPENSATE, AND THE PRECEDENT IS reverseCollectionPayment ────────────────────
+ * That function deletes rather than compensates when the row "represents no money", and this is the
+ * same case read the other way: the refund row asserts money went back, and it came back. A
+ * compensating `charge` row would inflate Sigma-visible takings by an amount nobody was ever paid.
+ * ⚠️ AUDIT FIRST, WITH THE WHOLE ROW, AND THE AUDIT FAILING ABORTS THE DELETE — `logActionOrThrow`, the
+ * same rule undo_collected follows: money evidence is never erased without a record of the erasure.
+ * ⚠️ THEN recalc, so `orders.payment_status` returns to `paid`. It is derived, and the ledger just moved.
+ *
+ * @returns `removed` when a row was deleted, `none` when there was nothing recorded (the pending case,
+ *          where the refund failed before it ever settled and no row was ever written).
+ */
+export async function removeFailedOnlineRefund(
+  supabase: SupabaseClient,
+  args: { orderKey: string; truckId: string; refundId: string; failureReason: string | null; eventType: string },
+): Promise<{ outcome: 'removed' | 'none'; amountMinor: number }> {
+  const { data: row, error } = await supabase
+    .from('order_payments')
+    // The FULL row, because this is what goes into action_audit_log.before_state and that log has to be
+    // enough to reconstruct what was destroyed. Same list, same reason, as reverseCollectionPayment.
+    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by, livemode')
+    .eq('idempotency_key', onlineRefundIdempotencyKey(args.refundId))
+    .maybeSingle()
+
+  if (error) throw new Error(`[online-refund] could not read the refund row for ${args.refundId}: ${error.message}`)
+  if (!row) return { outcome: 'none', amountMinor: 0 }
+
+  // 🔴 AUDIT BEFORE THE DELETE, AND A FAILED AUDIT ABORTS IT. logActionOrThrow, not logAction.
+  await logActionOrThrow(supabase, {
+    action: 'refund_reversed_failed',
+    truckId: args.truckId,
+    orderKey: args.orderKey,
+    amountMinor: typeof row.amount_minor === 'number' ? row.amount_minor : null,
+    beforeState: { ...row, refund_id: args.refundId, event_type: args.eventType },
+    afterState: {
+      deleted: true,
+      failure_reason: args.failureReason,
+      meaning: 'Stripe reported this refund FAILED after we had recorded it. The money came back to the '
+             + 'truck, so the ledger row asserting a refund is removed and the order reads paid again.',
+    },
+    actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+    source: 'web',
+  })
+
+  const { error: delErr } = await supabase.from('order_payments').delete().eq('id', row.id)
+  if (delErr) throw new Error(`[online-refund] could not delete the failed refund row ${row.id}: ${delErr.message}`)
+
+  // The cache is derived and the ledger just moved. This is the only writer of payment_status.
+  await recalcOrderPayment(supabase, args.orderKey)
+  return { outcome: 'removed', amountMinor: typeof row.amount_minor === 'number' ? row.amount_minor : 0 }
 }

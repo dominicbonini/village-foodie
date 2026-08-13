@@ -3036,7 +3036,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Review & order →'}
           </button>
-          <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
+          {/* ── 🔴 THIS LINE WAS UNGATED, AND ITS SIBLING EIGHT ROWS ABOVE IS NOT. ──────────────────
+              It read "Pay at the truck on collection · No card details needed" for EVERY customer on
+              EVERY truck, including one about to authorise a card — the second half of it flatly
+              contradicted the card form that opens on the next tap. The review sheet's copy at ~:2984
+              already branches on `card_payments_ready`; this footer was simply never updated with it.
+              ⚠️ IT BRANCHES ON THE TRUCK, NOT ON `payByCard`. The card-or-cash choice is made INSIDE
+              the review sheet, so at this point the customer has not chosen and this line must be true
+              either way — hence "or", and no claim about what details are or are not needed.
+              ⚠️ A truck that cannot take cards keeps the original sentence, character for character. */}
+          <p className="text-center text-slate-400 text-xs mt-1">
+            {truck?.card_payments_ready
+              ? 'Pay by card or at the truck'
+              : 'Pay at the truck on collection · No card details needed'}
+          </p>
         </div>
       </div>
       )}

@@ -16,7 +16,14 @@ import type { EmailPaymentState } from '@/lib/payments/email-payment-state'
 //
 // `short` is the compact form for the edit email, which builds its own bespoke HTML and has room for a
 // clause rather than a box.
-export function paymentNote(state: EmailPaymentState, truckName: string): {
+export function paymentNote(
+  state: EmailPaymentState,
+  truckName: string,
+  /** Minor units, for the states that need figures. Absent renders the same sentence without them,
+   *  which is still true — a caller that cannot cheaply produce a balance is not forced to invent one.
+   *  `heldMinor` is what the card is authorised for, and only 'held_short' reads it. */
+  amounts?: { paidMinor: number; balanceMinor: number; heldMinor?: number },
+): {
   html: string
   text: string
   short: string
@@ -35,6 +42,29 @@ export function paymentNote(state: EmailPaymentState, truckName: string): {
         readySuffix: ' Already paid by card.',
       }
 
+    case 'part_paid': {
+      // PAID SOMETHING, STILL OWES SOMETHING. Order 59: paid 6.50 by card, edited up to 13.00, and the
+      // update email said "New total 13.00" and "Paid by card" — two true sentences that together tell
+      // a customer they are settled when they owe half.
+      // THE FIGURES COME FROM getOrderBalance VIA THE CALLER, never from this function. It renders.
+      // NO FIGURES SUPPLIED means the same sentence without them. Vaguer, never wrong.
+      const money = (m: number) => `£${(m / 100).toFixed(2)}`
+      const paidPart = amounts ? `${money(amounts.paidMinor)} of this order is paid.` : ''
+      return {
+        html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">Part paid${amounts ? ` &mdash; ${money(amounts.balanceMinor)} still to pay` : ''}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${paidPart}${amounts ? ` The remaining ${money(amounts.balanceMinor)} is due when you collect.` : 'The rest is due when you collect.'}</p>
+  </div>`,
+        text: amounts
+          ? `Part paid: ${money(amounts.paidMinor)} received, ${money(amounts.balanceMinor)} still to pay when you collect.`
+          : `Part paid. Some of this order is still to pay when you collect.`,
+        short: amounts ? `${money(amounts.paidMinor)} paid, ${money(amounts.balanceMinor)} still to pay` : 'Part paid',
+        readySuffix: amounts
+          ? ` ${money(amounts.balanceMinor)} still to pay.`
+          : ' Part of this order is still to pay.',
+      }
+    }
+
     case 'held':
       // Character for character the block that shipped with the cardHeld branch. Indigo, matching the
       // CARD HELD chip the operator sees, and deliberately not green: no money has moved.
@@ -47,6 +77,31 @@ export function paymentNote(state: EmailPaymentState, truckName: string): {
         short: 'Your card is held, not charged',
         readySuffix: ' Your card is held, not charged — nothing to pay at the truck.',
       }
+
+    case 'held_short': {
+      // THE HOLD IS TOO SMALL, WHICH IS NOT THE SAME FACT AS PART PAID. Nothing has been charged yet:
+      // the card is standing by for the amount the customer agreed to, and an edit since has taken the
+      // order past it. So this says what is held, what is still to pay, and does NOT use the word paid.
+      // NO FIGURES SUPPLIED means the same sentence without them. Vaguer, never wrong.
+      const money = (m: number) => `£${(m / 100).toFixed(2)}`
+      const held = typeof amounts?.heldMinor === 'number' ? amounts.heldMinor : null
+      const stillToPay = amounts && held !== null ? amounts.balanceMinor - held : null
+      return {
+        html: `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
+    <p style="margin:0;font-size:16px;font-weight:800;color:#92400e">Your card is held for part of this order${stillToPay !== null ? ` &mdash; ${money(stillToPay)} still to pay` : ''}</p>
+    <p style="margin:6px 0 0;font-size:13px;color:#b45309">${held !== null ? `${truckName} takes the ${money(held)} held when they confirm your order.` : `${truckName} takes the amount held when they confirm your order.`} ${stillToPay !== null ? `The remaining ${money(stillToPay)} is due when you collect.` : 'The rest is due when you collect.'}</p>
+  </div>`,
+        text: held !== null && stillToPay !== null
+          ? `Your card is held for ${money(held)}, which ${truckName} takes when they confirm your order. ${money(stillToPay)} of this order is still to pay when you collect.`
+          : `Your card is held for part of this order. ${truckName} takes the amount held when they confirm your order, and the rest is due when you collect.`,
+        short: stillToPay !== null
+          ? `Card held for part of this order, ${money(stillToPay)} still to pay`
+          : 'Card held for part of this order',
+        readySuffix: stillToPay !== null
+          ? ` ${money(stillToPay)} still to pay.`
+          : ' Part of this order is still to pay.',
+      }
+    }
 
     case 'unknown':
       // THE FOURTH SENTENCE, AND IT EXISTS BECAUSE THE HONEST ANSWER IS SOMETIMES "WE DO NOT KNOW".
@@ -188,11 +243,18 @@ export function formatConfirmationEmail(params: {
    *  never worked out by a send site for itself.
    *    'captured'  money has moved. Nothing to pay.
    *    'held'      authorised, not captured. Nothing to pay yet and nothing to pay at the hatch.
+   *    'held_short' authorised, not captured, and the hold no longer covers the order after an edit.
+   *                Part of it IS owed at the hatch, and no money has moved.
    *    'hatch'     no authorisation, or one released without being taken. Money IS owed.
    *    'unknown'   we could not tell. Says neither, and asks them not to pay twice.
    *  Absent falls back to `cardHeld`, so 'hatch' and 'held' render exactly the two blocks that shipped
    *  before this parameter existed. */
   paymentState?: EmailPaymentState
+  /** Minor units, ONLY read by the 'part_paid' and 'held_short' sentences. Absent renders them without
+   *  figures. `heldMinor` is what the card is authorised for and is read by 'held_short' alone. */
+  paidMinor?: number
+  balanceMinor?: number
+  heldMinor?: number
   // Truck contact & venue info
   venueName?: string | null
   venueTown?: string | null
@@ -215,7 +277,14 @@ export function formatConfirmationEmail(params: {
   // ONE RESOLUTION, USED BY ALL THREE PLACES THIS EMAIL MENTIONS MONEY. The fallback is what keeps
   // every existing caller byte-identical: promote-draft still passes only `cardHeld`, and the walk-up
   // and pay-at-hatch sites still pass neither.
-  const payNote = paymentNote(params.paymentState ?? (params.cardHeld ? 'held' : 'hatch'), params.truckName)
+  const payNote = paymentNote(
+    params.paymentState ?? (params.cardHeld ? 'held' : 'hatch'),
+    params.truckName,
+    // Only the part-paid and hold-too-small sentences read these; every other branch ignores them.
+    typeof params.paidMinor === 'number' && typeof params.balanceMinor === 'number'
+      ? { paidMinor: params.paidMinor, balanceMinor: params.balanceMinor, heldMinor: params.heldMinor }
+      : undefined,
+  )
   const subject = isReady
     ? `Order #${params.orderId} is ready — ${params.truckName}`
     : params.autoAccepted
