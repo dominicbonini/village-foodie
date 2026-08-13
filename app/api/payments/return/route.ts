@@ -97,6 +97,19 @@ function refusedUrl(menuUrl: string, eventId: string | null, message: string): s
   return url.toString()
 }
 
+/**
+ * 🔴 THE NAMES, SO THE PAGE CAN TAKE THEM OUT OF THE BASKET ITSELF.
+ *
+ * The recorded reason is machine-readable by construction — `stock: Fish Cake, Chicken Satay`,
+ * `option_sold_out: Extra cheese`, `category_closed: Starters` — and the page cannot act on a sentence.
+ * ⚠️ IT RETURNS WHATEVER WAS NAMED, INCLUDING A CATEGORY OR AN OPTION NAME. Matching is the page's job
+ * and a name that matches no basket line simply removes nothing, which is the correct outcome for both.
+ */
+function namesFromReason(reason: string | null): string[] {
+  if (!reason || !reason.includes(': ')) return []
+  return reason.slice(reason.indexOf(': ') + 2).split(', ').map(s => s.trim()).filter(Boolean)
+}
+
 function messageForRecordedReason(reason: string | null): string {
   const generic = 'Sorry — we could not place your order. No money has been taken.'
   if (!reason) return generic
@@ -192,7 +205,9 @@ export async function GET(req: NextRequest) {
         `[payments/return] draft=${draftKey} was already REFUSED by the other trigger (${outcome.reason}) — ` +
         `telling the customer instead of sending them to a confirmation that will never fill in.`,
       )
-      return reply(refusedUrl(menuUrl, outcome.eventId, message), { outcome: 'refused', orderKey: draftKey, message })
+      return reply(refusedUrl(menuUrl, outcome.eventId, message), {
+        outcome: 'refused', orderKey: draftKey, message, soldOut: namesFromReason(outcome.reason),
+      })
     }
 
     case 'refused': {
@@ -222,7 +237,7 @@ export async function GET(req: NextRequest) {
       const { eventId } = await refusalOnDraft(draftKey)
       return reply(
         refusedUrl(menuUrl, eventId, res.customerMessage),
-        { outcome: 'refused', orderKey: draftKey, message: res.customerMessage },
+        { outcome: 'refused', orderKey: draftKey, message: res.customerMessage, soldOut: namesFromReason(res.reason) },
       )
     }
 

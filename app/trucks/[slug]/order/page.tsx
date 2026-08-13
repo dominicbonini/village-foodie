@@ -392,6 +392,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // ⚠️ SEEDED IN THE INITIALISER, not an effect — the same rule paymentFailedNotice itself follows.
   // ⚠️ NOTHING ELSE OPENS IT: absent the parameter this is the `false` it has always been.
   const [formSheetOpen, setFormSheetOpen] = useState(!!paymentFailedParam)
+  /** The sheet's scroll container. Only ever used to put a refusal in front of the customer — the sheet
+   *  keeps its scroll position across steps, so a notice at the top can otherwise arrive off screen. */
+  const sheetScrollRef = useRef<HTMLDivElement | null>(null)
 
   /** 🔴 THE PAYMENT STEP IS ON SCREEN — which now means the SHEET is open AND the step is selected.
    *  It is a step inside the sheet, so closing the sheet hides it exactly as closing it hides the review;
@@ -947,6 +950,60 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       }
       return next.filter(b => b.quantity > 0)
     })
+  }
+
+  // ── 🔴 TAKE THE SOLD-OUT LINES OUT, AND SAY WHAT WENT. ────────────────────────────────────────
+  // ── WHY THIS WRAPS capBasketToRemaining RATHER THAN REPLACING IT ────────────────────────────────
+  // capBasketToRemaining IS the right home for the item half and is called unchanged: it caps to the
+  // server's own `remaining`, drops a line that reaches zero, and touches nothing else in the basket.
+  // What it deliberately does NOT do is deals — its own comment says so — and a deal is exactly the case
+  // that cannot be left alone. So the deal half is added AROUND it rather than inside it, and the item
+  // behaviour every pay-at-hatch customer already gets is byte-identical.
+  //
+  // ── 🔴 A DEAL LOSES ITS WHOLE BUNDLE, NOT ONE SLOT, AND THAT IS A CHOICE ────────────────────────
+  // A bundle is priced and served as a unit: a Meal Deal with an empty slot is not a cheaper Meal Deal,
+  // it is not orderable at all, and the server would refuse the very next attempt for the same reason.
+  // Removing just the constituent would leave the customer in a loop they cannot see the cause of. So
+  // the deal goes, and the sentence NAMES it so they can re-add it with a different choice — the deal
+  // picker is two taps away and every other deal is untouched.
+  //
+  // ⚠️ USED BY BOTH REFUSAL PATHS. The pay-at-hatch 409 and the card refusal are the same defect from
+  // two directions, so they share this and cannot drift.
+  const applySoldOutRemoval = (shortItems: { name: string; remaining: number }[]) => {
+    const gone = shortItems.filter(s => Math.max(0, s.remaining) === 0).map(s => s.name)
+    // What the basket WILL hold once the state updates land — computed here, from the values this
+    // render already has, because the copy has to name what went and setState answers too late.
+    const keptItems = basket.filter(b => {
+      const short = shortItems.find(s => s.name === b.menuItem.name)
+      return !short || Math.max(0, short.remaining) > 0
+    })
+    const doomedDeals = appliedDeals.filter(d =>
+      Object.values(d.slots || {}).some(n => n && gone.includes(String(n))))
+    const removedItems = basket.filter(b => gone.includes(b.menuItem.name)).map(b => b.menuItem.name)
+    const removedDeals = doomedDeals.map(d => d.bundle.name)
+
+    capBasketToRemaining(shortItems)
+    if (doomedDeals.length) {
+      setAppliedDeals(prev => prev.filter(d =>
+        !Object.values(d.slots || {}).some(n => n && gone.includes(String(n)))))
+    }
+
+    const removed = [...new Set([...removedItems, ...removedDeals.map(n => `your ${n} deal`)])]
+    const emptied = removed.length > 0
+      && keptItems.length === 0
+      && appliedDeals.length - doomedDeals.length === 0
+    return { removed, emptied }
+  }
+
+  /** The half of the sentence only the PAGE can write: what was taken out, and what to do now. */
+  const removalSentence = (removed: string[], emptied: boolean): string => {
+    if (!removed.length) return ''
+    const list = removed.length === 1
+      ? removed[0]
+      : `${removed.slice(0, -1).join(', ')} and ${removed[removed.length - 1]}`
+    return emptied
+      ? ` We have taken ${list} out of your order, which leaves it empty — close this and choose something else.`
+      : ` We have taken ${list} out of your order — please check it and place it again.`
   }
 
   // Total qty across all variants of an item (for UI badge and stock checks)
@@ -1539,7 +1596,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // ⚠️ ANY FAILURE TO ASK FALLS BACK TO THE NAVIGATION THIS REPLACES. A network blip must not strand
       // a customer whose card is authorised: the route is idempotent (promoteDraft claims once), so
       // going there for real is always safe.
-      let outcome: { outcome?: string; orderKey?: string; message?: string } | null = null
+      let outcome: { outcome?: string; orderKey?: string; message?: string; soldOut?: string[] } | null = null
       try {
         const r = await fetch(`${returnUrl}&json=1`, { cache: 'no-store' })
         outcome = r.ok ? await r.json() : null
@@ -1559,7 +1616,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         setPayStage('idle')
         setPayError(null)
         setStageOpen(false)
-        setPaymentFailedNotice(outcome.message || 'We could not place your order. No money has been taken.')
+        // ── 🔴 TAKE THE SOLD-OUT LINES OUT RATHER THAN ASKING THE CUSTOMER TO FIND THEM. ───────────
+        // The server names them (`soldOut`), the page owns the basket, and only the page can say what
+        // was in it. So the sentence is composed of two halves: the SERVER'S, rendered whole and
+        // unchanged — it is the one that says no money was taken, and promoteDraft is fenced off — and
+        // the PAGE'S, which is the only half that can be true about a basket the server never saw.
+        // ⚠️ AND THE SERVER HALF STILL READS CORRECTLY ALONE. The redirect leg (Stripe sent the browser
+        // away for 3DS) rebuilds this page with no basket to edit, seeds the notice from the query
+        // string, and appends nothing — which is right, because nothing was removed there.
+        const { removed, emptied } = applySoldOutRemoval(
+          (outcome.soldOut ?? []).map(name => ({ name, remaining: 0 })),
+        )
+        setPaymentFailedNotice(
+          (outcome.message || 'We could not place your order. No money has been taken.')
+          + removalSentence(removed, emptied),
+        )
+        // The sheet may be scrolled to wherever the card form was. The refusal is the only thing on
+        // screen that matters now, and it renders at the top of the sheet — so go there.
+        sheetScrollRef.current?.scrollTo({ top: 0 })
         // The item that sold out must disappear from the menu they are looking at — the same re-fetch
         // the stock-409 branch does, for the same reason.
         if (event?.id) {
@@ -1706,7 +1780,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // Mirrors the pause-423 pattern (keep basket, never page-replacing). Customer can't exceed.
       if (res.status === 409 && data?.stock) {
         const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
-        capBasketToRemaining(shortItems)
+        // ⚠️ capBasketToRemaining IS STILL WHAT CAPS THE ITEMS — this wraps it to take out a DEAL whose
+        // constituent is gone, which it deliberately never did, and to report what went. Same defect as
+        // the card path, so the same helper: a deal left standing with a sold-out slot is refused again
+        // on the next attempt, and the customer cannot see why.
+        const { removed, emptied } = applySoldOutRemoval(shortItems)
         // ── ⚠️ TWO REFUSALS, ONE HANDLER, TWO NOTICES ───────────────────────────────────────────────
         // This branch answers both the sold-out guard and the server's unpriceable-line refusal,
         // because everything they need is identical: keep the basket, re-fetch the menu, let the
@@ -1719,11 +1797,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         // returns at its own guard. Claiming otherwise would be a plain untruth to a real customer.
         // So the menu-change case gets its OWN state and renders unwrapped, and the stock wording
         // below is exactly what it always was.
+        // 🔴 AND A THIRD CASE THE WRAPPER CANNOT CARRY EITHER: THE REMOVAL EMPTIED THE BASKET.
+        // "We've updated your order — please review and confirm" is addressed to an order that still
+        // exists. When the last line has just been taken out there is nothing to review and nothing to
+        // confirm, so it borrows the menu-change surface, which renders a whole sentence unwrapped.
+        // ⚠️ EVERY OTHER PAY-AT-HATCH REFUSAL IS BYTE-IDENTICAL — same state, same fragment, same words.
         if (data.menuChanged) {
           setMenuChangedNotice(
             typeof data.error === 'string' && data.error
               ? data.error
               : 'The menu has changed. Please check your order before placing it.'
+          )
+        } else if (emptied) {
+          setMenuChangedNotice(
+            `Sorry — ${shortItems.map(s => s.name).join(', ')} sold out.${removalSentence(removed, emptied)}`
           )
         } else {
           setStockNotice(
@@ -2650,7 +2737,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         {formSheetOpen && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setFormSheetOpen(false)} />
-          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+          <div ref={sheetScrollRef} className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
             <div className="px-5 pt-5 pb-5">
               {/* ⚠️ THE SHEET'S OWN CHROME, KEPT. The payment step is a step INSIDE this sheet, not a
                   screen over it, so the title changes and the ✕ stays where it has always been.
@@ -2666,6 +2753,30 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
                 )}
               </div>
+
+              {/* ── 🔴 THE PAYMENT-REFUSED NOTICE, AND IT IS THE FIRST THING IN THE SHEET. ────────────
+                  RED, NOT AMBER, AND DELIBERATELY: every other notice on this page is "adjust your
+                  basket and try again"; this one is "your card was authorised, it has been released, and
+                  you have no order". The server's sentence is rendered whole, and the page appends only
+                  what IT knows — which lines it removed and what to do next.
+                  🔴 IT USED TO SIT BESIDE THE OTHER SUBMIT-TIME NOTICES, ~300 LINES LOWER, DIRECTLY
+                  ABOVE THE PLACE ORDER BUTTON. That is the right home for a refusal the customer caused
+                  by pressing that button — they are already looking at it. This one arrives from
+                  somewhere else entirely (a promotion that ran after they paid, or a fresh document
+                  Stripe redirected them onto), so the sheet can be scrolled anywhere or freshly opened,
+                  and on a laptop it landed below the fold. Now it is above every step, before the
+                  header's own content, and nothing can push it down.
+                  ⚠️ IT PUSHES NOTHING IMPORTANT OFF SCREEN. The sheet scrolls (max-h-[90vh],
+                  overflow-y-auto) and the notice is three lines at its longest; the review, the fields
+                  and the Place order button all keep their order and are reached by the same scroll. It
+                  renders ONLY when there is a refusal to report, so an ordinary order sees the sheet it
+                  has always seen. ⚠️ Dismissible, and cleared by the next submit, exactly as before. */}
+              {paymentFailedNotice && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
+                  <p className="flex-1 text-red-800 text-sm font-medium">{paymentFailedNotice}</p>
+                  <button onClick={() => setPaymentFailedNotice(null)} className="text-red-400 hover:text-red-600 text-sm font-bold leading-none mt-0.5">✕</button>
+                </div>
+              )}
 
               {/* ── 🔴 THE PAYMENT STEP. INSIDE THE SHEET, REPLACING THE REVIEW, NOT COVERING IT. ────
                   It sits immediately under the sheet's own header, so the card fields are the FIRST
@@ -2947,19 +3058,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {/* Submit-time notices (paused 423 / lock 409 / stock 409) — co-located with the
                   place-order action so they surface INSIDE the sheet (the footer is hidden behind it
                   during submit). Non-destructive: basket kept, customer retries in place. */}
-              {/* 🔴 THE PAYMENT-REFUSED NOTICE. RED, NOT AMBER, AND DELIBERATELY: every other notice on
-                  this page is "adjust your basket and try again"; this one is "your card was authorised,
-                  it has been released, and you have no order". The server's sentence is rendered whole —
-                  no prefix, no suffix, nothing added — and it always leads with the money.
-                  ⚠️ NOT the confirmation screen and not inside it: this renders in the order sheet
-                  beside the other submit-time notices, and `?confirm=` is absent on this path. */}
-              {paymentFailedNotice && (
-                <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
-                  <p className="flex-1 text-red-800 text-sm font-medium">{paymentFailedNotice}</p>
-                  <button onClick={() => setPaymentFailedNotice(null)} className="text-red-400 hover:text-red-600 text-sm font-bold leading-none mt-0.5">✕</button>
-                </div>
-              )}
-
               {pauseNotice && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
                   <p className="flex-1 text-amber-800 text-sm font-medium">⏸ {pauseNotice}</p>
