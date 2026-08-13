@@ -17,6 +17,9 @@ import type { Plan } from '@/lib/features'
 import { createSlug } from '@/lib/utils'
 import { deleteTruckCascade } from '@/lib/delete-truck'
 import { DEMO_PREFIX } from '@/lib/demo'
+// ONE cuisine->emoji map, shared with the signup wizard. Imported rather than reimplemented so the two
+// surfaces cannot disagree about what an "Indian" truck's emoji is.
+import { emojiForCuisine } from '@/lib/cuisines'
 
 // ── Reserved prefix ──────────────────────────────────────────────────────────────────────────────────
 // proxy.ts grants `/dashboard/demo-*` an exception from the session gate, so for a demo the TOKEN ALONE is
@@ -385,6 +388,9 @@ export async function provisionTruck(
     assertReservedPrefix(identity, opts.kind)
 
     const truckName = name || `Demo Kitchen (${identity.id.slice(DEMO_PREFIX.length, DEMO_PREFIX.length + 6)})`
+    // The FIRST cuisine of the comma-joined string, or '' when none was supplied. Split-and-trim rather
+    // than a regex so it matches how the discovery filter reads the same column.
+    const firstCuisine = (opts.cuisineType ?? '').split(',')[0]?.trim() ?? ''
 
     const { data, error } = await supabase
       .from('trucks')
@@ -429,6 +435,18 @@ export async function provisionTruck(
         // no contact details rather than a broken one.
         preferred_contact_method: contactPhone ? (phoneIsWhatsapp ? 'whatsapp' : 'phone') : null,
         cuisine_type: opts.cuisineType ?? null,
+        // ── truck_emoji — DERIVED FROM THE FIRST CUISINE, AND ONLY WHEN THERE IS ONE ──────────────
+        // `cuisine_type` is a COMMA-JOINED string (lib/cuisines.ts) — "Pizza, Burgers" — and the emoji
+        // belongs to the first one, matching what the signup wizard writes after creation.
+        // 🔴 THE KEY IS OMITTED WHEN THERE IS NO CUISINE, DELIBERATELY, and that is what keeps the other
+        // two callers byte-identical: /api/setup and lib/provision-demo pass no cuisineType at all, so
+        // writing `emojiForCuisine(undefined)` would stamp every self-serve and demo truck with the
+        // "Other" plate instead of leaving the column's own default standing. Nothing is derived from
+        // nothing; an absent cuisine means an absent opinion.
+        // ⚠️ THE WIZARD STILL WINS. components/DemoGetStarted.tsx writes truck_emoji through
+        // update_settings AFTER the truck exists, so its value overwrites whatever is set here — and for
+        // that path nothing IS set here, because the demo passes no cuisine.
+        ...(firstCuisine ? { truck_emoji: emojiForCuisine(firstCuisine) } : {}),
         truck_order_email_enabled: profile.truckOrderEmailEnabled,
         auto_accept: profile.autoAccept,
         allergen_display_mode: profile.allergenDisplayMode,

@@ -902,18 +902,31 @@ export default function AdminPage() {
 
             <div className="border border-slate-200 rounded-xl overflow-auto max-h-[70vh]">
               <table className="w-full text-sm border-collapse table-fixed">
+                {/* ── WIDTHS RETUNED SO THE WHOLE TABLE FITS A NORMAL DESKTOP ─────────────────────
+                    These summed to 64rem (1024px). The page's content box is `min(viewport - 32px,
+                    1152px)` (the wrapper at the top of this tab is `w-full min-[1400px]:max-w-6xl px-4`),
+                    so on a 1024px laptop the table was ~32px wider than its container and the three
+                    rightmost columns — Dashboard, Manage, Actions — sat behind the wrapper's
+                    `overflow-auto`. They were reachable only by scrolling sideways, which reads as
+                    "the buttons are missing".
+                    ⚠️ THE SUM IS NOW 58rem (928px), which clears a 1024px viewport with room to spare.
+                    Nothing was removed, merged or reordered — every column is still here, in the same
+                    order. The width came off the six tickbox columns, which held a 16px checkbox in 5rem,
+                    and out of Plan; Actions GAINED width because it now carries "Create account".
+                    ⚠️ `table-fixed` scales these proportionally when the container is wider, so a large
+                    monitor still fills the width and nothing looks cramped. */}
                 <colgroup>
                   <col style={{ width: '11rem' }} />{/* Name — fixed base so it never collapses to 0 on mobile (table-fixed); flexes wider on desktop */}
-                  <col style={{ width: '5rem' }} />{/* Active */}
-                  <col style={{ width: '6rem' }} />{/* Plan */}
-                  <col style={{ width: '5rem' }} />{/* VF · Map */}
-                  <col style={{ width: '5rem' }} />{/* VF · Ordering */}
-                  <col style={{ width: '5rem' }} />{/* HG · Map */}
-                  <col style={{ width: '5rem' }} />{/* HG · Ordering */}
-                  <col style={{ width: '5rem' }} />{/* Exclude? */}
-                  <col style={{ width: '6rem' }} />{/* Dashboard */}
-                  <col style={{ width: '6rem' }} />{/* Manage */}
-                  <col style={{ width: '5rem' }} />{/* Actions */}
+                  <col style={{ width: '4rem' }} />{/* Active */}
+                  <col style={{ width: '5.5rem' }} />{/* Plan */}
+                  <col style={{ width: '4rem' }} />{/* VF · Map */}
+                  <col style={{ width: '4rem' }} />{/* VF · Ordering */}
+                  <col style={{ width: '4rem' }} />{/* HG · Map */}
+                  <col style={{ width: '4rem' }} />{/* HG · Ordering */}
+                  <col style={{ width: '4rem' }} />{/* Exclude? */}
+                  <col style={{ width: '5rem' }} />{/* Dashboard */}
+                  <col style={{ width: '5rem' }} />{/* Manage */}
+                  <col style={{ width: '7.5rem' }} />{/* Actions — widened for "Create account" (was 5rem, sized for "Edit") */}
                 </colgroup>
                 {/* z-20 + opaque bg on every sticky th → body tickboxes never bleed through the header. */}
                 <thead className="text-slate-500 text-xs uppercase tracking-wide">
@@ -955,7 +968,18 @@ export default function AdminPage() {
                       <AppLink href={href} target="_blank" rel="noopener noreferrer"
                         className="inline-block text-xs px-2.5 py-1 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">{label}</AppLink>
                     )
-                    const opNav = isOp && r.op.operator_id && r.op.dashboard_token
+                    // ⚠️ THE TOKEN IS THE CREDENTIAL; AN OPERATOR IS NOT REQUIRED. This read
+                    // `isOp && r.op.operator_id && r.op.dashboard_token`, which hid two working
+                    // destinations: /manage/[token] and /dashboard/[token] both authenticate on the
+                    // dashboard_token ALONE and never consult operators (see
+                    // docs/tikka-tonic-account-report-2.md). The operator_id test therefore blanked the
+                    // links on a truck that had a perfectly usable one — specifically a truck promoted
+                    // from a discovery row, during the window BEFORE its operator is created, which is
+                    // exactly when an admin needs to open Manage to finish setting it up.
+                    // ⚠️ Demo trucks also carry a null operator_id, so they gain these links too. That is
+                    // expected and accepted: their tokens work, and reaching a demo's console from here
+                    // is useful rather than harmful.
+                    const opNav = isOp && r.op.dashboard_token
                     return (
                       <tr key={`${r.kind}-${r.id}`} className="group border-t border-slate-100 hover:bg-slate-50/60">
                         {/* Name — sticky-left so it stays visible while the wide table scrolls horizontally on mobile */}
@@ -1040,7 +1064,10 @@ export default function AdminPage() {
                                 onClick={() => openPromote(r.dt)}
                                 disabled={promoteLoading === r.id}
                                 title="Create a real operator truck from this scraped row and link the two"
-                                className="text-xs px-2.5 py-1 border border-orange-200 text-orange-700 rounded-lg hover:bg-orange-50 disabled:opacity-50">
+                                /* ⚠️ whitespace-nowrap — the label is two words in a column that used to
+                                   hold "Edit", and without this it wrapped onto two lines. The column is
+                                   now 7.5rem, so this is belt-and-braces rather than the fix itself. */
+                                className="text-xs whitespace-nowrap px-2.5 py-1 border border-orange-200 text-orange-700 rounded-lg hover:bg-orange-50 disabled:opacity-50">
                                 {promoteLoading === r.id ? '…' : 'Create account'}
                               </button>}
                           {busy && <span className="ml-1 text-xs text-slate-400 animate-pulse">…</span>}
