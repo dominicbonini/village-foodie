@@ -45,7 +45,22 @@ type Status = {
   syncedAt: string | null
   detailsSubmitted: boolean
   cardPaymentsStatus: string | null
+  /** ⚠️ WHO IS LOOKING, from the server — never asserted by the client. 'owner' is the operator whose
+   *  account this is; 'platform_admin' is support, and may READ ONLY. Optional so an older response
+   *  (or a cached one) is treated as 'owner', which is the pre-existing behaviour. */
+  viewer?: 'owner' | 'platform_admin'
+  /** ⚠️ THE SERVER'S SECRET-KEY MODE, from platformKeyLivemode(). `true` live, `false` test, `null` when
+   *  the prefix is neither. This is the mode an account WOULD BE CREATED IN — the browser cannot derive
+   *  it, because the browser only ever holds the publishable key. */
+  livemode?: boolean | null
 }
+
+/** ── 🔴 A PERMISSIONS ANSWER IS NOT A CONFIGURATION PROBLEM. ────────────────────────────────────────
+ *  Every non-200 used to become `configError` and render under the fixed headline "Card payments aren't
+ *  configured yet". A 403 about WHO IS SIGNED IN therefore read as "the platform is broken" — the single
+ *  most alarming way to say "you're on the wrong account". These are now told apart by the HTTP status
+ *  the server already sent, and each gets copy that is true of it. */
+type PostError = Error & { status?: number; code?: string }
 
 // ── 🔴 ONE HEADLINE PER STATE, AND NOT ONE OF THEM CONTAINS AN INSTRUCTION ─────────────────────────
 // We own "can you take money" and the commercial framing. STRIPE OWNS THE TASK LIST, and under
@@ -118,7 +133,11 @@ export function PaymentsTab({ token, plan, showToast }: {
   const [status, setStatus] = useState<Status | null>(null)
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  // ⚠️ TWO STATES, NOT ONE. `permissionError` is a 403 about who is signed in; `fetchError` is anything
+  // else that stopped us reading Stripe. They render as different cards with different copy — see the
+  // note on PostError above.
   const [fetchError, setFetchError] = useState<string | null>(null)
+  const [permissionError, setPermissionError] = useState<'not_permitted' | null>(null)
   // ⚠️ MOUNT-ON-DEMAND, AND IT NEVER GOES BACK TO FALSE. Account management is an iframe with a Stripe
   // sign-in popup; mounting it on page load for every owner who never opens it wastes a load cycle, and
   // Stripe asks us not to: "Avoid mounting and unmounting component unnecessarily. Each time a component
@@ -140,7 +159,14 @@ export function PaymentsTab({ token, plan, showToast }: {
       body: JSON.stringify({ token, action }),
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+    if (!res.ok) {
+      // ⚠️ THE STATUS AND THE CODE RIDE ON THE ERROR. The message alone cannot distinguish "you are not
+      // this truck's owner" from "Stripe is down", and the caller has to.
+      const err: PostError = new Error(data.error || `Request failed (${res.status})`)
+      err.status = res.status
+      if (typeof data.code === 'string') err.code = data.code
+      throw err
+    }
     return data
   }, [token])
 
@@ -155,7 +181,10 @@ export function PaymentsTab({ token, plan, showToast }: {
         const s = await post('status')
         if (!cancelled) setStatus(s)
       } catch (e) {
-        if (!cancelled) setFetchError(e instanceof Error ? e.message : 'Could not reach Stripe')
+        if (cancelled) return
+        // 🔴 403 IS SORTED OUT HERE, ONCE. Everything else keeps the old behaviour exactly.
+        if ((e as PostError)?.status === 403) setPermissionError('not_permitted')
+        else setFetchError(e instanceof Error ? e.message : 'Could not reach Stripe')
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -171,7 +200,40 @@ export function PaymentsTab({ token, plan, showToast }: {
   // is what the provider below needs. A ref would have meant reading a ref in render (a react-hooks/refs
   // error) plus a `setConnectReady` in an effect purely to trigger the re-render the ref could not.
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  // ⚠️ WHO IS LOOKING. Absent means owner — an older or cached status response behaves exactly as before.
+  const isAdminViewer = status?.viewer === 'platform_admin'
+
+  // ── 🔴 THE TWO KEYS, COMPARED. THIS IS THE ONLY PLACE IN THE APP THAT DOES IT. ──────────────────
+  // `publishableKey` above is INLINED AT BUILD TIME into this bundle; `status.livemode` is the server's
+  // SECRET key mode, read PER REQUEST. That difference is the whole point: setting a variable in Vercel
+  // updates the server on the next request but does not touch a bundle that was built before it, and
+  // scoping a variable to Preview leaves Production on the old one. So the two can disagree, silently,
+  // and no other check anywhere compares them — connectConfigured() tests presence and has no callers,
+  // and describeAccountModeMismatch compares the key against a connected ACCOUNT, not against the
+  // publishable key.
+  // ⚠️ ONE VALUE FROM EACH SIDE, DELIBERATELY. Comparing the server's own NEXT_PUBLIC_… against its own
+  // STRIPE_SECRET_KEY would test whether two variables agree and would MISS a stale bundle entirely,
+  // which is the likelier fault. The browser's copy is the one a customer's card form actually uses.
+  // ⚠️ NULL IS NOT A MISMATCH. An unrecognised prefix, a missing key, or a status response from before
+  // this field existed all leave one side unknown, and "we cannot tell" must never be reported as
+  // "they disagree" — that would block a working install on no evidence.
+  const publishableLivemode: boolean | null =
+    typeof publishableKey !== 'string' ? null
+      : publishableKey.startsWith('pk_live_') ? true
+      : publishableKey.startsWith('pk_test_') ? false
+      : null
+  const serverLivemode = status?.livemode ?? null
+  const keyModeMismatch =
+    typeof serverLivemode === 'boolean'
+    && typeof publishableLivemode === 'boolean'
+    && serverLivemode !== publishableLivemode
   const connectInstance: StripeConnectInstance | null = useMemo(() => {
+    // 🔴 NEVER FOR AN ADMIN, AND THIS IS NOT COSMETIC. `fetchClientSecret` below calls `account_session`,
+    // which the server refuses for a platform admin — Connect.js would mount, fire that call, take a 403
+    // and surface a Stripe-branded error inside the iframe. Not mounting is the honest outcome: these
+    // embedded components are Stripe's onboarding and account-management forms, and they belong to the
+    // operator. Support looks at the state around them, not through them.
+    if (isAdminViewer) return null
     if (!status?.accountId || !publishableKey) return null
     return loadConnectAndInitialize({
       publishableKey,
@@ -184,7 +246,7 @@ export function PaymentsTab({ token, plan, showToast }: {
       // Stripe's defaults rather than half-matched to the page.
       appearance: { variables: { colorPrimary: '#ea580c' } },
     })
-  }, [status?.accountId, publishableKey, post])
+  }, [status?.accountId, publishableKey, post, isAdminViewer])
 
   // Derived, not stored: an account exists but the browser key is absent, so the components cannot mount.
   const keyMissing = !!status?.accountId && !publishableKey
@@ -261,9 +323,55 @@ export function PaymentsTab({ token, plan, showToast }: {
     <div className="space-y-6">
       <h2 className="font-black text-slate-900 text-lg">Payments</h2>
 
+      {/* ── 🔴 THE KEY MISMATCH. RED, FIRST, AND IT STOPS THE FLOW. ───────────────────────────────
+          The two Stripe keys are in DIFFERENT MODES. Left alone this does not fail here — it fails at
+          the moment a customer taps Pay, because a `pk_test_` browser cannot confirm a `sk_live_`
+          PaymentIntent (and the reverse is equally broken). That is the worst possible place to
+          discover it, so it is surfaced here instead, in red, above everything.
+          ⚠️ THIS IS THE ONE CARD THAT USES RED. The three below are slate and amber: a permissions
+          answer and a configuration gap are both ordinary states. This one is a deployment that will
+          take a customer's card and fail, and it should not read as ordinary.
+          ⚠️ IT NAMES THE FIX, NOT THE KEYS. No key value or fragment is rendered — only which side is
+          in which mode, which is what tells you whether to rebuild or to change the variable. */}
+      {keyModeMismatch && (
+        <div className="bg-white rounded-2xl shadow-sm border border-red-200 p-4">
+          <p className="text-sm font-semibold text-red-800">Stripe keys do not match</p>
+          <p className="text-xs text-slate-600 mt-1">
+            This site&apos;s server is using its <strong>{serverLivemode ? 'live' : 'test'}</strong> Stripe key
+            while the browser was built with the <strong>{publishableLivemode ? 'live' : 'test'}</strong> one.
+            Card payments would fail at the moment a customer tries to pay, so setting up Stripe is
+            blocked until they agree.
+          </p>
+          <p className="text-xs text-slate-500 mt-1">
+            Both keys must be set for the same environment, and the site rebuilt afterwards — the
+            publishable key is baked in at build time, the secret key is read on every request.
+          </p>
+        </div>
+      )}
+
+      {/* ── 🔴 A PERMISSIONS ANSWER, SAID AS ONE. ─────────────────────────────────────────────────
+          This case used to render as "Card payments aren't configured yet — Unauthorised": a fixed
+          setup headline over a 403 about WHO IS SIGNED IN. An operator reading it would reasonably
+          conclude the platform was broken, and go looking for a setting that does not exist.
+          ⚠️ IT NAMES NEITHER THE OWNER NOR THE ACCOUNT. Who owns a truck is not this screen's to
+          disclose to whoever is holding the link, so the copy says what to do without saying who. */}
+      {permissionError && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900">Only the truck&apos;s owner can set up payments</p>
+          <p className="text-xs text-slate-500 mt-1">
+            Stripe is connected by the person whose bank account receives the money, so it has to be set
+            up from their own signed-in account. Nothing is wrong with this truck or with HatchGrab.
+          </p>
+        </div>
+      )}
+
+      {/* ⚠️ NOW GENUINELY ABOUT CONFIGURATION, AND ONLY THAT: a missing publishable key, or a failure to
+          reach Stripe at all. The 403 no longer arrives here. */}
       {configError && (
         <div className="bg-white rounded-2xl shadow-sm border border-amber-200 p-4">
-          <p className="text-sm font-semibold text-amber-800">Card payments aren&apos;t configured yet</p>
+          <p className="text-sm font-semibold text-amber-800">
+            {keyMissing ? "Card payments aren't configured yet" : "We couldn't check this truck's Stripe account"}
+          </p>
           <p className="text-xs text-slate-500 mt-1">{configError}</p>
         </div>
       )}
@@ -332,10 +440,31 @@ export function PaymentsTab({ token, plan, showToast }: {
               that did. Naming the provider is what makes the next screen make sense.
               ⚠️ It also costs nothing in surprise: the section copy directly above already says money
               goes to "your own Stripe account", so the name is on screen either way. */}
-          {state === 'not_connected' && (
+          {/* ── 🔴 SUPPORT SEES THE STATE; IT DOES NOT GET THE BUTTON. ────────────────────────────
+              A platform admin reaches this tab to see what the operator sees. Connecting Stripe is
+              irreversible and binds THIS OPERATOR's business and bank details to a real account, so it
+              is not an act support can perform on their behalf however helpful it would feel. The
+              server refuses `create_account` for an admin regardless (ADMIN_READ_ONLY); this is the
+              screen agreeing with it out loud rather than showing a button that would fail.
+              ⚠️ IT IS A SENTENCE, NOT A DISABLED BUTTON. A greyed control says "this is yours and you
+              cannot use it yet"; a line of text says "this is not yours" — which is the true statement,
+              and the same distinction the walk-up section already draws for its coming-soon row. */}
+          {state === 'not_connected' && isAdminViewer && (
+            <div className="mt-3 rounded-xl bg-slate-50 border border-slate-100 p-3">
+              <p className="text-xs font-semibold text-slate-700">Viewing as platform admin</p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                This truck has not connected Stripe. Only the owner can start it, from their own
+                signed-in account — there is nothing to press here.
+              </p>
+            </div>
+          )}
+          {state === 'not_connected' && !isAdminViewer && (
             <button
               onClick={createAccount}
-              disabled={creating || !!configError}
+              /* 🔴 `keyModeMismatch` JOINS THE DISABLERS. Fail loudly rather than proceed: an account
+                 created while the keys disagree is a real, undeletable account whose customers cannot
+                 pay. The red card above says why; this stops the press. */
+              disabled={creating || !!configError || keyModeMismatch}
               className="mt-3 w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
             >
               {creating ? 'Connecting…' : 'Connect Stripe'}
@@ -361,9 +490,33 @@ export function PaymentsTab({ token, plan, showToast }: {
             Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
             the UK and EEA cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
           </p>
-          {/* ⚠️ SANDBOX. Said on screen, not only in code — an operator who completes real-looking
-              onboarding must not believe they can take real money. */}
-          <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
+          {/* ── 🔴 THE MODE LINE, DERIVED. IT USED TO BE A LITERAL AND IT LIED. ────────────────────
+              This read, unconditionally:
+                  <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
+              — a bare JSX string with no condition behind it, so it said "Test mode" whatever keys were
+              set, and went on saying it through two rebuilds after the live keys landed. A mode
+              indicator that cannot be wrong about the mode is the only kind worth having, so it now
+              comes from `platformKeyLivemode()` on the server: the mode of the key that would actually
+              create the account, not of the publishable key this bundle happens to hold.
+              ⚠️ THE TEST WORDING IS UNCHANGED, deliberately — it was right when it applied.
+              🔴 THE LIVE WORDING IS HEAVIER, AND THAT IS THE POINT. It sits directly above a button that
+              creates a real Stripe account which CANNOT BE DELETED, with no confirmation step anywhere
+              in the flow, and the next screen asks for a bank account and photo ID. slate-600 at text-xs
+              rather than slate-400 at 11px: one step up from a whisper, still not a warning. Amber and
+              red mean something is wrong on this page, and nothing is wrong — this is the state you
+              want to be in.
+              ⚠️ NULL RENDERS NOTHING. An unrecognised prefix, or a status response from before this
+              field existed, leaves the mode unknown, and an unknown mode must not be asserted either
+              way. Silence is the honest output. */}
+          {serverLivemode === false && (
+            <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
+          )}
+          {serverLivemode === true && (
+            <p className="text-xs text-slate-600 mt-3">
+              Live mode. Connecting here creates a real Stripe account in your name, and customer payments
+              will reach your own bank.
+            </p>
+          )}
         </div>
       </section>
 

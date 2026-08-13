@@ -15,10 +15,14 @@
 // ("do not register a domain more than once per account"). A second run prints `already registered` and
 // writes nothing at all.
 //
-// 🔴 SANDBOX ONLY, BY THE SAME GUARD THE APP USES. STRIPE_SECRET_KEY must start with sk_test_.
-// ⚠️ AND THAT MATTERS FOR GOING LIVE: registering in LIVE mode also covers sandboxes, but registering in
-// a SANDBOX DOES NOT COVER LIVE. When live accounts are switched on, this must be run again with a live
-// key against every live connected account, or wallets will be missing in production.
+// 🔴 RUNS IN WHATEVER MODE STRIPE_SECRET_KEY IS IN, AND PRINTS WHICH BEFORE IT ACTS. This header used to
+// read "SANDBOX ONLY, BY THE SAME GUARD THE APP USES — STRIPE_SECRET_KEY must start with sk_test_", and
+// there was a refusal below enforcing it. Both are gone (13 August 2026), for the same reason the app's
+// guard went: this is the only manual path to registering wallets on a LIVE connected account.
+// ⚠️ MODE STILL DOES NOT FLOW UPWARDS: registering in LIVE mode also covers sandboxes, but registering in
+// a SANDBOX DOES NOT COVER LIVE. So a live account needs a run with a live key, per account — CHECK THE
+// `mode=` LINE THIS PRINTS before trusting a run, because a sandbox run against a live account is the
+// failure that produces no error at all, just wallets that never appear.
 //
 // 🔴 THE PLATFORM ACCOUNT IS NOT THE ANSWER AND THIS DOES NOT TOUCH IT. These are DIRECT charges, so the
 // truck's account is the merchant of record and the domain must be registered against THAT account.
@@ -40,10 +44,18 @@ const { createClient } = require(path.join(ROOT, 'node_modules/@supabase/supabas
 
 const KEY = process.env.STRIPE_SECRET_KEY
 if (!KEY) { console.error('STRIPE_SECRET_KEY is not set'); process.exit(1) }
-if (!KEY.startsWith('sk_test_')) {
-  console.error('REFUSING: STRIPE_SECRET_KEY is not a sandbox key. Remove this guard deliberately when going live.')
-  process.exit(1)
-}
+// ⚠️ THE SANDBOX REFUSAL IS GONE — removed 13 August 2026, the last one left in the repository. It read:
+//     if (!KEY.startsWith('sk_test_')) {
+//       console.error('REFUSING: STRIPE_SECRET_KEY is not a sandbox key. Remove this guard deliberately when going live.')
+//       process.exit(1)
+//     }
+// and it was written to match the guard in lib/stripe/connect.ts, which came out earlier today. Keeping it
+// here would have blocked the ONE manual path for registering Apple Pay and Google Pay domains on a LIVE
+// connected account — the failure that shows no error at all, just wallets that never appear.
+// 🔴 SO THIS SCRIPT NOW RUNS IN WHATEVER MODE THE KEY IS IN, AND IT SAYS SO BEFORE IT ACTS. Domain
+// registration does not flow between modes: registering in live covers sandboxes, registering in a
+// sandbox covers nothing live. Read the line below before trusting the run.
+console.log(`[register-payment-domain] mode=${KEY.startsWith('sk_live_') ? 'LIVE' : KEY.startsWith('sk_test_') ? 'TEST' : 'UNRECOGNISED KEY PREFIX'}`)
 
 /** The host the Payment Element is served from. Mirrors paymentMethodDomains() in lib/stripe/connect.ts.
  *  ⚠️ www ONLY — hatchgrab.com answers 307 to www, so nothing renders on the bare host. */

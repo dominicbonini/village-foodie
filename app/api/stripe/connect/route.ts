@@ -1,12 +1,17 @@
 // app/api/stripe/connect/route.ts
 // The operator-facing Connect endpoint: create the account, mint an Account Session, reconcile readiness.
 //
-// ── 🔴 OWNER ONLY, AND RESOLVED THE SAME WAY MANAGE RESOLVES IT ────────────────────────────────────
+// ── 🔴 OWNER FOR EVERYTHING; PLATFORM ADMIN FOR READS ONLY ─────────────────────────────────────────
 // The Payments tab is owner-only in the UI, but a tab filter is a rendering decision and this route is
-// reachable without it. So every action re-derives the role server-side using the SAME cascade
-// app/api/manage/route.ts uses — session user → `operators.auth_user_id` → is this truck's
-// `operator_id`? — and refuses anything else. A manager or staff member with the dashboard token gets a
-// 403, not a connected account.
+// reachable without it. So every action re-derives the caller server-side: session user →
+// `operators.auth_user_id` → is this truck's `operator_id`? A manager or staff member holding the
+// dashboard token gets a 403, not a connected account.
+// ⚠️ SINCE 13 AUGUST 2026 A PLATFORM ADMIN (`operators.is_admin`, via lib/auth/admin's `verifyAdmin`)
+// may ALSO reach this route — but for `status` and `requirements` ONLY, so support can see exactly what
+// an operator sees. `create_account` and `account_session` stay owner-only: one is irreversible and the
+// other opens Stripe's own bank-details-and-ID form. Seeing is not pressing.
+// ⚠️ NOTHING ABOUT THE OWNER PATH CHANGED. `requireOwner` is attempted first and unmodified; the admin
+// fallback runs only after it has refused, and `truck_users` is still consulted nowhere in this file.
 // ⚠️ The account is created against the OPERATOR, so the truck token is only ever an authentication
 // device here. What gets written is `operators.stripe_account_id` for the truck's `operator_id`.
 //
@@ -23,13 +28,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+// ⚠️ THE CANONICAL PLATFORM-ADMIN CHECK, NOT A NEW ONE. Authority is `operators.is_admin`; the same
+// function gates the admin console and the /landing preview. Its own header says "Do not fork this".
+import { verifyAdmin } from '@/lib/auth/admin'
 import {
   createConnectedAccount, createAccountSession, readAccountReadiness,
   readAccountPosture, postureMismatches, readAccountRequirements,
-  registerPaymentMethodDomains,
+  registerPaymentMethodDomains, platformKeyLivemode,
 } from '@/lib/stripe/connect'
 
-type Ctx = { operatorId: string; email: string | null; country: string | null }
+/** Who is asking. `operatorId` is ALWAYS the TRUCK's operator — the account being read or written —
+ *  never the caller's own, which for a platform admin is a different row entirely. */
+type Ctx = { operatorId: string; email: string | null; country: string | null; viewer: Viewer }
+
+/** 🔴 TWO CALLERS, AND ONLY ONE OF THEM MAY ACT.
+ *  'owner'          — the operator whose bank account this is. Unchanged: everything.
+ *  'platform_admin' — operators.is_admin, supporting a truck. READ ONLY. See the action gate below. */
+type Viewer = 'owner' | 'platform_admin'
+
+/** Actions a platform admin may perform. Everything absent from this set is owner-only.
+ *  ⚠️ AN ALLOW-LIST, NOT A DENY-LIST, DELIBERATELY: a new action added later is owner-only by default,
+ *  which is the safe direction to be wrong in. */
+const ADMIN_READABLE_ACTIONS = new Set(['status', 'requirements'])
 
 /** Resolve the calling user and prove they OWN this truck. Returns null for everyone else.
  *  ⚠️ NO PIN CHECK, DELIBERATELY. The dashboard PIN is a SHARED secret that gates the token; this route
@@ -64,6 +84,44 @@ async function requireOwner(token: string): Promise<Ctx | null> {
     operatorId: sessionOperator.id,
     email: sessionOperator.email ?? null,
     country: truck.country ?? null,
+    viewer: 'owner',
+  }
+}
+
+/**
+ * 🔴 THE PLATFORM-ADMIN FALLBACK. READ-ONLY, AND IT DOES NOT TOUCH `requireOwner`.
+ *
+ * Tried only AFTER `requireOwner` has already returned null, so nothing about the owner path changes and
+ * no non-admin gains anything. `truck_users` is still never consulted anywhere in this file: a 'manager'
+ * or 'staff' row grants nothing here, exactly as before.
+ *
+ * ⚠️ IT REUSES `verifyAdmin` FROM lib/auth/admin — the SAME check the admin console and the /landing gate
+ * use, whose authority is `operators.is_admin`. No second notion of admin is introduced, and `req` is
+ * passed so the native app's Bearer path works identically to the web's cookie path.
+ *
+ * 🔴 `operatorId` IS THE TRUCK'S OPERATOR, NOT THE ADMIN'S. This is the whole subtlety. `requireOwner`
+ * can return the session operator's id because for an owner the two are equal by definition; for an admin
+ * they are DIFFERENT ROWS, and returning the admin's own id here would have made `status` read and cache
+ * readiness against the admin's Stripe account while displaying it as the truck's. Wrong data, silently.
+ *
+ * ⚠️ `email` IS NULL, DELIBERATELY. The only consumer is `createConnectedAccount`, which an admin may not
+ * reach — so there is no value to supply and no reason to carry the operator's address into a context
+ * that must never create anything.
+ */
+async function requirePlatformAdmin(token: string, req: NextRequest): Promise<Ctx | null> {
+  const { data: truck } = await supabase
+    .from('trucks')
+    .select('id, operator_id, country')
+    .eq('dashboard_token', token)
+    .single()
+  if (!truck) return null
+  if (!truck.operator_id) return null
+  if (!(await verifyAdmin(req))) return null
+  return {
+    operatorId: truck.operator_id,
+    email: null,
+    country: truck.country ?? null,
+    viewer: 'platform_admin',
   }
 }
 
@@ -83,8 +141,30 @@ export async function POST(req: NextRequest) {
   const action = typeof body.action === 'string' ? body.action : null
   if (!token || !action) return NextResponse.json({ error: 'Missing token or action' }, { status: 400 })
 
-  const ctx = await requireOwner(token)
-  if (!ctx) return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
+  // ── 🔴 OWNER FIRST, ADMIN SECOND, AND THE ORDER IS LOAD-BEARING ─────────────────────────────────
+  // `requireOwner` is attempted unchanged and unweakened. Only when it refuses is the platform-admin
+  // fallback tried, so an owner's context is never replaced by an admin's and nobody who is neither
+  // gains anything. A `truck_users` membership still grants nothing on this route.
+  const ctx = (await requireOwner(token)) ?? (await requirePlatformAdmin(token, req))
+  if (!ctx) {
+    // ⚠️ THE CODE IS NEW; THE STATUS IS NOT. Still 403, still the same shape — but the client can now
+    // tell a permissions answer from a configuration one instead of rendering both as "not configured".
+    return NextResponse.json({ error: 'Unauthorised', code: 'NOT_PERMITTED' }, { status: 403 })
+  }
+
+  // ── 🔴 SEEING IS NOT PRESSING. THE ADMIN ALLOW-LIST IS ENFORCED HERE, ONCE, FOR EVERY ACTION. ────
+  // `create_account` creates a REAL connected account that cannot be deleted and binds this operator's
+  // business to Stripe; `account_session` mints the secret that mounts Stripe's own form asking for
+  // BANK DETAILS AND PHOTO ID. Neither is a thing a platform admin may do on someone's behalf, however
+  // convenient it would be during support — the operator is the one entering into that relationship.
+  // Reads carry no such weight, so `status` and `requirements` are allowed.
+  if (ctx.viewer === 'platform_admin' && !ADMIN_READABLE_ACTIONS.has(action)) {
+    console.warn(`[stripe/connect] admin READ-ONLY refusal action=${action} operator=${ctx.operatorId}`)
+    return NextResponse.json(
+      { error: 'Only the truck\'s owner can do this', code: 'ADMIN_READ_ONLY' },
+      { status: 403 },
+    )
+  }
 
   const { data: operator } = await supabase
     .from('operators')
@@ -101,6 +181,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           accountId: null, chargesEnabled: false, syncedAt: null,
           detailsSubmitted: false, cardPaymentsStatus: null,
+          // ⚠️ ADDITIVE. The tab needs to know WHO IS LOOKING so it can hide controls that are not this
+          // viewer's to press. Every existing field is unchanged; an older client ignoring this reads
+          // exactly what it read before.
+          viewer: ctx.viewer,
+          // ── 🔴 THE SERVER'S OWN KEY MODE. THE ONE THE ACCOUNT WOULD BE CREATED WITH. ────────────
+          // `true` for sk_live_, `false` for sk_test_, `null` for neither — platformKeyLivemode() refuses
+          // to guess. It is sent because the CLIENT CANNOT WORK IT OUT: the browser holds only the
+          // publishable key, which is inlined at BUILD time while this is read PER REQUEST. Those two
+          // are exactly what can drift apart, so the comparison needs one value from each side.
+          livemode: platformKeyLivemode(),
         })
       }
       // ⚠️ `detailsSubmitted` and `cardPaymentsStatus` are read for the tab's STATE MACHINE, not for the
@@ -123,6 +213,8 @@ export async function POST(req: NextRequest) {
         syncedAt: new Date().toISOString(),
         detailsSubmitted,
         cardPaymentsStatus,
+        viewer: ctx.viewer,
+        livemode: platformKeyLivemode(),
       })
     }
 
