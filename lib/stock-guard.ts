@@ -120,8 +120,35 @@ export function checkCeilingShortfall(
 
 /**
  * Atomic stock guard. Given the order's DEAL-INCLUSIVE lines (normaliseOrderLines — deal-slot
- * constituents already flattened in), return the items whose requested qty exceeds the CURRENT
- * effective remaining, or null if everything fits. Effective remaining = min(item, category):
+ * constituents already flattened in), return the items that CANNOT BE ORDERED — either marked
+ * unavailable, or requested over the CURRENT effective remaining — or null if everything fits.
+ *
+ * ── AVAILABILITY, WHICH THIS DID NOT ASK ABOUT UNTIL NOW ────────────────────────────────────────
+ * Orders 62 and 63, 13 August 2026. An operator marked Fish Cake sold out for the event at 10:35:25;
+ * a card order for it was placed 43 seconds later and a pay-at-hatch order for another
+ * hand-marked item 12 seconds after its own toggle. Neither was a bypass: this function ran, on both
+ * paths, against the right event — and answered a COUNT question. Fish Cake has no ceiling
+ * (stock_count and default_stock both null = unlimited), so "everything fits" was true and the sold-out
+ * flag was never read. It sits on a row this function ALREADY SELECTS.
+ *
+ * THE MENU COMPOSES THREE THINGS WITH AND (app/api/menu/[truckId]/route.ts): menu-wide is_available,
+ * the per-event available override, and the count. An item vanishes from the customer's menu when ANY
+ * of them says no, so the guard has to answer the same question or the two disagree — which is exactly
+ * what an operator sees as "the check has been removed". All three are now read here, from the two
+ * queries below; NO NEW QUERY WAS ADDED.
+ *
+ * The two remaining menu legs are NOT read here. An unsatisfiable required group already has an owner
+ * on the order path (the required-modifier guard at /api/orders/submit, which returns `soldOut` for it),
+ * and so does the pre-order OPEN window (the 403 at the same route). The one leg with no submit-side
+ * owner is a pre-order item past a `sold_out` deadline: the menu hides it, and nothing found so far
+ * refuses it. That is a SEPARATE gap from the one this block closes, it is not an availability column,
+ * and it is deliberately not smuggled in here.
+ *
+ * UNAVAILABLE IS REPORTED AS remaining: 0, which is not a new shape and not a new message: an item
+ * exhausted BY COUNT already returns exactly that (checkCeilingShortfall caps at Math.max(0, cap)), so
+ * every caller and the customer's own basket-capping handler behave identically for both.
+ *
+ * Effective remaining = min(item, category):
  * item ceiling = event_item_stock.stock_count(eventId) ?? menu_items_db.default_stock; category
  * ceiling = event_category_stock.stock_count(eventId) ?? menu_categories.default_stock. The per-event
  * override is read for the SAME eventId that feeds getLiveItemCounts (sold) — ceiling and sold are
@@ -141,11 +168,13 @@ export async function checkStockShortfall(
   // The override is read for the SAME eventId that feeds getLiveItemCounts (sold) — so ceiling and
   // sold are scoped to one event (no cross-event bleed). A missing override row falls through to the
   // Settings default below; it never yields unlimited-by-accident.
+  // `is_available` and `available` ride along on the two reads this function already makes — the SAME
+  // rows, the SAME filters, one extra column each. See the availability note in the header.
   const [sold, { data: menuItems }, { data: menuCats }, { data: overrides }, { data: catStock }] = await Promise.all([
     getLiveItemCounts(supabase, truckId, eventId),
-    supabase.from('menu_items_db').select('name, default_stock').eq('truck_id', truckId),
+    supabase.from('menu_items_db').select('name, default_stock, is_available').eq('truck_id', truckId),
     supabase.from('menu_categories').select('name, default_stock').eq('truck_id', truckId),
-    supabase.from('event_item_stock').select('item_name, stock_count, no_item_cap').eq('truck_id', truckId).eq('event_id', eventId),
+    supabase.from('event_item_stock').select('item_name, stock_count, no_item_cap, available').eq('truck_id', truckId).eq('event_id', eventId),
     supabase.from('event_category_stock').select('category, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
   ])
 
@@ -169,15 +198,48 @@ export async function checkStockShortfall(
   const catCeiling = (cat: string): number | null =>
     cat in catOverride ? catOverride[cat] : (catDefault[cat] ?? null)
 
+  // ── AVAILABILITY, PER LINE ────────────────────────────────────────────────────────────────────
+  // Resolved over orderLines, which is DEAL-INCLUSIVE — normaliseOrderLines has already flattened every
+  // deal-slot constituent into its own line, so a bundle whose slot holds a sold-out dish is caught by
+  // the constituent's own name. The top-level deal name is not a menu item and is not looked up.
+  // The two flags are read the same way the menu reads them: menu-wide is_available=false is a hard no
+  // everywhere, and the per-event override can only RESTRICT (available=false), never force-available.
+  // A name with NO row in either table is untouched — the same name-join limitation the ceilings above
+  // carry, and never a false reject.
+  const perEventUnavailable = new Set<string>()
+  ;(overrides || []).forEach((o: any) => { if (o.available === false) perEventUnavailable.add(o.item_name) })
+  const menuWideHidden = new Set<string>()
+  ;(menuItems || []).forEach((i: any) => { if (i.is_available === false) menuWideHidden.add(i.name) })
+
+  const unavailable: { name: string; remaining: number }[] = []
+  const namedUnavailable = new Set<string>()
+  for (const l of orderLines) {
+    if (namedUnavailable.has(l.name)) continue
+    if (perEventUnavailable.has(l.name) || menuWideHidden.has(l.name)) {
+      namedUnavailable.add(l.name)
+      unavailable.push({ name: l.name, remaining: 0 })
+    }
+  }
+
   // Run the SHARED engine: items are the primary axis (sold + itemCeiling), CATEGORY is the secondary
   // axis (key = the item's lowercased category, ceiling = catCeiling). The derivation (soldByCat /
   // reqByCat) + the shortfall math now live ONCE in checkCeilingShortfall — behaviour is byte-identical.
-  return checkCeilingShortfall(
+  const shortfall = checkCeilingShortfall(
     orderLines,
     sold,
     itemCeiling,
     { keyOf: (name) => (itemCatMap[name] || '').toLowerCase(), ceiling: catCeiling },
   )
+
+  // NOTHING MARKED UNAVAILABLE → the return value is the ceiling engine's, unchanged, including its
+  // null. Every order that placed before this block existed still places, and every count shortfall
+  // still reads exactly as it did.
+  if (!unavailable.length) return shortfall
+
+  // Unavailable lines come FIRST: callers that name a single item (promoteDraft's refusal message, the
+  // operator 409) should name the one that cannot be ordered at any quantity, not one that is merely
+  // short. A name in both lists appears once — it is already reported at remaining 0.
+  return [...unavailable, ...(shortfall || []).filter(s => !namedUnavailable.has(s.name))]
 }
 
 /**
