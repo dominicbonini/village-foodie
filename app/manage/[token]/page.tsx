@@ -10090,7 +10090,12 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         {TRANSACTION_ROWS.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
             <div className="flex-1 pr-4">
-              <div className="text-sm font-medium text-slate-800 pl-3 sm:pl-0">
+              {/* ⚠️ NO pl-3 HERE EITHER. This carried the same `pl-3 sm:pl-0` the feature titles did —
+                  12px of left padding on mobile only — and it is removed the same way: deleted, not
+                  cancelled by an offset somewhere else. Every label in this table, fee and feature
+                  alike, now starts at its row's content edge, which is where the feature descriptions
+                  have always started. */}
+              <div className="text-sm font-medium text-slate-800">
                 {row.name}
                 {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
               </div>
@@ -10125,7 +10130,21 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           {section.rows.map(row => (
             <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
               <div className="flex-1 pr-4">
-                <div className="text-sm text-slate-800 pl-3 sm:pl-0">
+                {/* ── 🔴 NO pl-3 HERE. THE INDENT WAS REMOVED, NOT CANCELLED. ────────────────────────
+                    This read `text-sm text-slate-800 pl-3 sm:pl-0`. That `pl-3` put 12px of left
+                    padding on the TITLE ONLY, on mobile only — the description `<p>` below is its
+                    sibling inside the same `flex-1 pr-4` wrapper and has never had any left padding, so
+                    the two did not share a left edge at any width below sm:. Nothing compensating was
+                    added; the padding that produced the offset is simply gone, and both elements now
+                    start at the wrapper's content edge, as they do at sm: and above and as they always
+                    do on the landing page (`.cmp2-label` sets `padding-right` only, and `.f-name` /
+                    `.f-desc` are plain blocks with no inset of their own).
+                    ── ⚠️ font-semibold ADDED TO MATCH THE LANDING PAGE'S WEIGHT, NOT ITS SIZE. ───────
+                    This div carried NO font-weight class at all, so it rendered at 400 while the
+                    landing page's `.f-name` is `font-weight: 600`. `font-semibold` is 600 — the same
+                    weight, reached through Manage's own scale. `text-sm` and `text-slate-800` are
+                    deliberately UNCHANGED: the two pages size and colour text differently on purpose. */}
+                <div className="text-sm font-semibold text-slate-800">
                   {row.name}
                   {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
                 </div>

@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
-import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
+import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
@@ -158,6 +158,26 @@ interface CommitSummary {
 }
 
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'demo', 'pro', 'max']
+
+// ── ⚠️ WHICH FEE COLUMN EACH ADMIN COLUMN READS ────────────────────────────────────────────────────
+// Admin shows SIX plans; TRANSACTION_ROWS (lib/plan-features.ts) carries the four a customer can be on.
+// `tester` and `demo` are internal and have no fee column of their own, so they are mapped here rather
+// than given values — the shared table's numbers are not touched.
+// ⚠️ BOTH MAP TO `trial`, AND THE REASON IS THE FEATURE SETS, NOT A GUESS. lib/features.ts defines
+// `TRIAL_FEATURES = [...MAX_FEATURES]`, `tester: new Set(MAX_FEATURES)` and `demo: new Set(TRIAL_FEATURES)`
+// with the comment "Mirrors TRIAL's feature profile" — so trial, tester and demo are the SAME feature set,
+// and all three are non-paying. Trial's cells (0% / Unlimited / Free) are therefore the only ones that can
+// be true of them. This table also already treats tester as trial's twin on the Pay-at-Hatch feature row.
+// ⚠️ IT IS STILL A MAPPING DECISION, NOT A FACT READ OUT OF THE CODE — there is no fee logic anywhere to
+// check it against. Point them at `max` instead if internal trucks should be shown the paid position.
+const FEE_COLUMN_FOR: Record<Plan, 'trial' | 'starter' | 'pro' | 'max'> = {
+  starter: 'starter',
+  trial:   'trial',
+  tester:  'trial',
+  demo:    'trial',
+  pro:     'pro',
+  max:     'max',
+}
 
 const OVERRIDEABLE_FEATURES: Feature[] = [
   'cook_screen',
@@ -705,20 +725,34 @@ export default function AdminPage() {
                     Transaction fees
                   </td>
                 </tr>
-                <tr className="border-t border-slate-100">
-                  <td className="px-4 py-2 text-slate-700">Walk-up orders</td>
-                  {PLAN_ORDER.map(p => (
-                    <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">0%</td>
-                  ))}
-                </tr>
-                <tr className="border-t border-slate-100">
-                  <td className="px-4 py-2 text-slate-700">Online orders</td>
-                  {PLAN_ORDER.map(p => (
-                    <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">
-                      {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '0.99% + card fee'}
+                {/* ── ⚠️ THE FEE ROWS COME FROM TRANSACTION_ROWS NOW. THE LAST COPY IS GONE. ─────────
+                    These two rows were written out by hand: "Walk-up orders" was the literal string 0%
+                    in every column, and "Online orders" was
+                        {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '0.99% + card fee'}
+                    which disagreed with the landing page and Billing in four separate ways — see
+                    docs/admin-plan-table-report.md. Chief among them: `trial` and `tester` were told
+                    "Pay at Hatch" although both carry MAX's feature set including online payments, and
+                    `demo` fell through to the paid branch purely because its name was absent from that
+                    list, so the one prospect-sandbox plan was the internal plan shown a 0.99% fee.
+                    ⚠️ NO MASKING, DELIBERATELY, AND UNCHANGED. This screen never imported lib/pricing and
+                    still does not: the prices in the header above are real, and so are these. TRANSACTION_ROWS
+                    holds plain strings — masking is each surface's own decision, which is why Billing wraps
+                    them in px() and the landing page and this screen do not.
+                    ⚠️ ADMIN'S OWN TREATMENT IS KEPT: the same <td> classes, the same footnote <sup>
+                    styling the feature rows below already use. Only the structure and the values are shared. */}
+                {TRANSACTION_ROWS.map(row => (
+                  <tr key={row.name} className="border-t border-slate-100">
+                    <td className="px-4 py-2 text-slate-700">
+                      {row.name}
+                      {row.footnote && <sup className="text-slate-400 ml-0.5">{row.footnote}</sup>}
                     </td>
-                  ))}
-                </tr>
+                    {PLAN_ORDER.map(p => (
+                      <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">
+                        {row.cells[FEE_COLUMN_FOR[p]]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
                 {/* Feature sections from FEATURE_SECTIONS */}
                 {FEATURE_SECTIONS.flatMap(section => [
                   <tr key={`section-${section.title}`} className="bg-slate-50">

@@ -2645,35 +2645,44 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                slate-500. The hierarchy is name > description > options, and the size
                                carries it now that the colour no longer can. */
                             <p key={g.id} className="text-xs text-slate-500 leading-snug flex flex-wrap items-center gap-x-1 gap-y-0.5">
-                              {/* hide_name (inferred custom-extra): omit the internal "Category - Name N"
-                                  label on the card preview — the options alone read clearly. */}
-                              {!g.hide_name && <span className="font-semibold text-slate-600">{g.name}:</span>}
-                              {/* ── 🔴 SAY THAT A CHOICE IS REQUIRED, HERE, ON THE LIST. ──────────────
-                                  Until now this line listed the options and NOTHING said they had to be
-                                  chosen. On a hide_name group — an AI-import-inferred group, which is
-                                  what this truck's are — the line rendered as a bare "Chicken Tikka (M) ·
-                                  Paneer Tikka (M) · …" with no label at all, and the button beside it
-                                  says "Add", the identical word a no-modifier item gets. A customer had
-                                  no way to know a chooser was coming until the modal opened.
-                                  ⚠️ groupRuleLabel IS THE SAME FUNCTION THE MODAL CALLS, with the same
-                                  default 'customer' audience — ONE source for this wording across the
-                                  manage modal and both order screens, so they cannot drift. previewGroups
-                                  is already filtered to minRequiredForGroup(g) > 0, so the base is always
-                                  "Required"; only the cap phrase varies with max_choices.
-                                  🔴 NO AMBER. Amber is this page's "required and NOT YET CHOSEN" cue and
-                                  it is conditional on `isUnmet` in the modal. On the list every group with
-                                  options is unmet by definition — nothing has been chosen yet — so amber
-                                  would mark every modifier item identically and mean nothing, while
-                                  colliding with the amber-50 warning banners that can share this scroll.
-                                  The label is words, in the same slate-600 as the group name, so name and
-                                  rule read as one leader ahead of the lighter slate-500 options. */}
-                              <span className="font-semibold text-slate-600">{groupRuleLabel(g)}</span>
+                              {/* ── 🔴 THE LEADER: THE GROUP'S NAME, OR "Choose:" WHEN IT HAS NONE. ──
+                                  hide_name (inferred custom-extra) groups carry an internal "Category -
+                                  Name N" name that is never shown, so before this they had NO leader at
+                                  all and the line opened straight onto the options — indistinguishable
+                                  from a description of what is in the dish.
+                                  ⚠️ "Choose" IS THIS PAGE'S OWN VERB FOR "YOU MUST PICK ONE", NOT A NEW
+                                  COINAGE. It appears in every other place the page asks for a decision:
+                                    :3130  <span className="text-xs font-black text-slate-300">Choose time</span>
+                                    :3356  {group.hide_name ? 'Choose an option' : group.name}   (the modal)
+                                    :3424  'Choose required options'                (the blocked CTA)
+                                  The trailing colon is the idiom this very line already used for a named
+                                  group, so both branches read the same shape. */}
+                              <span className="font-semibold text-slate-600">{g.hide_name ? 'Choose:' : `${g.name}:`}</span>
+                              {/* ── 🔴 "Required · Choose one" IS GONE. THE OPTIONS CARRY IT INSTEAD. ──
+                                  That label said too much: on this list EVERY group is required (the
+                                  previewGroups filter above is `minRequiredForGroup(g) > 0`), so
+                                  "Required" was printed on every modifier item on the menu and therefore
+                                  distinguished nothing — the same argument that keeps amber off this
+                                  line. groupRuleLabel still owns that wording in the modal, where the
+                                  cap and the unmet state actually vary; it is simply not this line's job.
+                                  🔴 WHAT REPLACES IT IS WEIGHT, NOT WORDS. The options go from normal
+                                  slate-500 — the same treatment as the DESCRIPTION two lines above, which
+                                  is exactly why they read as one — to font-semibold slate-700. That is
+                                  the modal's own idiom for a thing you pick, one step down:
+                                    :3371  `text-sm font-bold ... bg-white text-slate-700`   (option chips)
+                                  Semibold rather than bold because this is a teaser, not a control.
+                                  ⚠️ NO AMBER AND NO BOX, both settled earlier: every group here is unmet
+                                  so amber would carry no information and would collide with the amber-50
+                                  warning banners on this scroll, and a container would cost 26px inside
+                                  a row that was widened by 16px. Weight costs nothing. */}
                               {g.options.map((opt, i) => (
-                                <span key={opt.id} className="inline-flex items-center gap-1">
+                                <span key={opt.id} className="inline-flex items-center gap-1 font-semibold text-slate-700">
                                   {/* ⚠️ The separator stays LIGHTER than the text it divides — slate-400,
                                       one step up from slate-300 so it does not vanish beside darker
-                                      options, but never competing with them. */}
-                                  {i > 0 && <span className="text-slate-400">·</span>}
+                                      options, but never competing with them. It now also does the work of
+                                      "or": between two emphasised alternatives it reads as a divider, not
+                                      as the comma of a list of ingredients. */}
+                                  {i > 0 && <span className="text-slate-400 font-normal">·</span>}
                                   <span>{opt.name}{opt.price_adjustment > 0 ? ` +£${opt.price_adjustment.toFixed(2)}` : ''}</span>
                                   <OptionStockBadge remaining={opt.stock_count ?? null} />
                                 </span>
