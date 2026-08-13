@@ -490,14 +490,28 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showCancelModal,setShowCancelModal]=useState(false)
   const[cancellingOrder,setCancellingOrder]=useState<Order|null>(null)
   const[cancelReason,setCancelReason]=useState('')
+  /** The ONE list, mirrored from lib/payments/refund's REFUND_REASONS. Value = what the server and the
+   *  audit log record; label = what the customer reads in the cancellation email. */
+  const CANCEL_REASONS: [string,string][] = [
+    ['customer_cancelled','Customer cancelled'],
+    ['item_unavailable','Item unavailable'],
+    ['not_collected','Order not collected'],
+    ['wrong_or_missing_item','Wrong or missing item'],
+    ['quality_issue','Quality issue'],
+    ['duplicate_payment','Duplicate payment'],
+    ['other','Other'],
+  ]
   // ── 🔴 CANCELLING A PAID ORDER IS TWO DECISIONS, NOT ONE. ──────────────────────────────────────
   // Whether to cancel, and whether the money goes back. They are separate because a no-show — the truck
   // cooked the food and nobody came — is a real cancellation that must NOT return the money, and
   // assuming every cancellation refunds would hand it back without asking.
   const[cancelRefund,setCancelRefund]=useState(true)
-  const[cancelRefundReason,setCancelRefundReason]=useState('customer_cancelled')
   const[cancelError,setCancelError]=useState<string|null>(null)
   const[cancelBusy,setCancelBusy]=useState(false)
+  /** A reason is REQUIRED when this cancellation will send money back, because the refund records it. */
+  const cancelNeedsRefundReason=!!cancellingOrder&&cancelRefund&&(()=>{const rows=payments[cancellingOrder.order_key]??[]
+    return Math.max(0,rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
+      -rows.filter((r:any)=>r.kind==='refund').reduce((t:number,r:any)=>t+r.amount_minor,0))>0})()
   const[cancelNote,setCancelNote]=useState('')
   // Reject (pending-order review) — REQUIRED reason, mirrors the cancel modal pattern.
   const[showRejectModal,setShowRejectModal]=useState(false)
@@ -1721,21 +1735,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // directly, and if the request cannot be made the operator is told rather than promised.
   // ⚠️ IT RETURNS WORDS, NOT A STATUS. The modal renders whatever comes back; the three outcomes that
   // matter (refunded · accepted-but-not-yet-moved · refused) each get their own sentence here.
-  const submitRefund=async({orderKey,amountMinor,reason,note}:{orderKey:string;amountMinor:number;reason:string;note:string})=>{
+  const submitRefund=async({orderKey,amountMinor,reason,note,context}:{orderKey:string;amountMinor:number;reason:string;note:string;context?:'cancellation'})=>{
     try{
+      // `refund_context` suppresses the standalone refund email: a cancellation says what happened to
+      // the money in its own sentence, and two emails for one event is worse than none.
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'refund',order_key:orderKey,amount_minor:amountMinor,reason,note})})
+        body:JSON.stringify({token,pin,action:'refund',order_key:orderKey,amount_minor:amountMinor,reason,note,refund_context:context??null})})
       const data=await res.json().catch(()=>({}))
       const money=`£${(amountMinor/100).toFixed(2)}`
-      if(!res.ok) return {ok:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
+      if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
       fetchAll()
       // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
       // charge as `pending` when the connected account's balance is short; no money has moved yet and
       // the ledger is untouched. Reporting it as done would be the false-success class again.
-      if(data?.pending) return {ok:true,message:`${money} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.`}
-      return {ok:true,message:`${money} has been refunded to the customer's card.`}
+      if(data?.pending) return {ok:true,settled:false,message:`${money} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.`}
+      return {ok:true,settled:true,message:`${money} has been refunded to the customer's card.`}
     }catch{
-      return {ok:false,message:'We could not reach the payment system, so nothing was refunded. Check your connection and try again.'}
+      return {ok:false,settled:false,message:'We could not reach the payment system, so nothing was refunded. Check your connection and try again.'}
     }
   }
 
@@ -2067,7 +2083,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!cancellingOrder) return
     const orderKey=cancellingOrder.order_key
     const displayId=cancellingOrder.id
-    const fullReason=[cancelReason,cancelNote].filter(Boolean).join(' — ')
+    // The single reason, in both vocabularies: the LABEL is what the customer reads on the cancellation,
+    // the VALUE is what the refund path and the audit log record. One question, asked once.
+    const reasonLabel=CANCEL_REASONS.find(([v])=>v===cancelReason)?.[1]??''
+    const fullReason=[reasonLabel,cancelNote].filter(Boolean).join(' — ')
     // ── 🔴 THE REFUND GOES FIRST, AND A FAILED REFUND DOES NOT CANCEL THE ORDER. ─────────────────
     // Cancel-then-refund can leave a cancelled order with the money still taken and nobody looking at
     // it. This way a failure leaves the order exactly as it was, with the error on screen and the
@@ -2078,20 +2097,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const refundableMinor=Math.max(0,
       rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
       -rows.filter((r:any)=>r.kind==='refund').reduce((t:number,r:any)=>t+r.amount_minor,0))
+    let refundedMinor:number|null=null
     if(cancelRefund&&refundableMinor>0){
+      if(!cancelReason){setCancelError('Choose a reason for the refund.');return}
       setCancelBusy(true);setCancelError(null)
-      const res=await submitRefund({orderKey,amountMinor:refundableMinor,reason:cancelRefundReason,note:fullReason||''})
+      const res=await submitRefund({orderKey,amountMinor:refundableMinor,reason:cancelReason,note:fullReason||'',context:'cancellation'})
       setCancelBusy(false)
       if(!res.ok){setCancelError(res.message);return}
+      // 🔴 ONLY A SETTLED REFUND IS REPORTED AS ONE. A pending refund has moved no money, so the
+      // cancellation email must not say it has — `refundedMinor` stays null and the email falls back to
+      // the neutral sentence. The webhook settles it later.
+      if(res.settled)refundedMinor=refundableMinor
       showToast(res.message)
     }
     setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
-    setCancelRefund(true);setCancelRefundReason('customer_cancelled');setCancelError(null)
+    setCancelRefund(true);setCancelError(null)
     setActionLoading(`cancel-${orderKey}`)
     try{
       // Through the offline GATE (FIX 2): online → normal write; offline → durable outbox + queued. The
       // reason rides IN the body so the reconnect replay is faithful; expected_from → 409-to-conflict if it raced.
-      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
+      // WHAT THE OPERATOR DECIDED TRAVELS WITH THE CANCELLATION, so the email says what happened rather
+      // than hedging: the amount when a refund settled, and the DECLINE when they were offered one and
+      // kept the money. Neither is inferred server-side — only this modal knows.
+      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null,refunded_minor:refundedMinor,refund_declined:refundableMinor>0&&!cancelRefund},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
       if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved on this device — will sync when back online`);return}
       if(!result.ok)throw new Error((result.data as any)?.error)
       showToast(`Order #${displayId} cancelled`);await fetchAll()
@@ -3240,6 +3268,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       orderId={String(o.id)} orderKey={o.order_key} paidMinor={bal.paidMinor}
                       cardChargeMinor={rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((s:number,r:any)=>s+r.amount_minor,0)}
                       refundedMinor={rows.filter((r:any)=>r.kind==='refund').reduce((s:number,r:any)=>s+r.amount_minor,0)}
+                      charges={rows.filter((r:any)=>r.kind==='charge').map((r:any)=>({channel:r.channel,method:r.method??null,amountMinor:r.amount_minor}))}
                       hasReversibleInPersonPayment={rows.some((r:any)=>r.kind==='charge'&&r.channel!=='online'&&r.livemode===true)}
                       onUndoPayment={()=>doAction('undo_mark_paid',o.order_key)}
                       undoLoading={actionLoading===`undo_mark_paid-${o.order_key}`}
@@ -4174,15 +4203,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <span>Refund {money(refundable)} to their card</span>
                   </label>
                   {cancelRefund?(
-                    <label className="block mt-3">
-                      <span className="text-xs font-semibold text-amber-900 uppercase tracking-wide">Refund reason</span>
-                      <select value={cancelRefundReason} onChange={e=>setCancelRefundReason(e.target.value)}
-                        className="mt-1 w-full border border-amber-200 rounded-xl px-3 py-2.5 text-sm bg-white">
-                        {[['customer_cancelled','Customer cancelled'],['item_unavailable','Item unavailable'],['not_collected','Order not collected'],['wrong_or_missing_item','Wrong or missing item'],['quality_issue','Quality issue'],['duplicate_payment','Duplicate payment'],['other','Other']].map(([v,l])=>(
-                          <option key={v} value={v}>{l}</option>
-                        ))}
-                      </select>
-                    </label>
+                    /* The reason for the refund IS the reason for the cancellation — asked once, below. */
+                    <p className="text-xs text-amber-800 mt-2">The reason you give below is recorded against the refund.</p>
                   ):(
                     /* 🔴 THE NO-SHOW. The food was made and nobody came, so the money stays with the
                        truck — a real cancellation that must not return it. Said plainly, because an
@@ -4205,13 +4227,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {cancelError&&(
               <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{cancelError}</p>
             )}
+            {/* ── 🔴 ONE REASON, FILLED ONCE. ──────────────────────────────────────────────────────
+                The modal carried TWO selects: this one (three cancellation reasons, shown to the
+                customer) and the refund form's own (the seven the refund path records). An operator
+                cancelling a paid order had to answer the same question twice, in two vocabularies.
+                🔴 THE SEVEN SURVIVE, BECAUSE THEY ARE A SUPERSET. Every cancellation reason maps onto
+                one of them with nothing dropped: "Sold out / item unavailable" is Item unavailable,
+                "Requested by customer" is Customer cancelled, "Other" is Other. The reverse is not
+                true — Order not collected, Wrong or missing item, Quality issue and Duplicate payment
+                had no cancellation equivalent, so keeping the three would have LOST four.
+                ⚠️ THE LABEL IS WHAT THE CUSTOMER READS, in the cancellation email, exactly as before.
+                The machine value is what reaches the refund path and the audit log. */}
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
-              <select value={cancelReason} onChange={e=>setCancelReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Reason {cancelNeedsRefundReason?'— required':'— optional'}
+              </label>
+              <select value={cancelReason} onChange={e=>{setCancelReason(e.target.value);setCancelError(null)}} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
                 <option value="">Select a reason</option>
-                <option value="Sold out / item unavailable">Sold out / item unavailable</option>
-                <option value="Requested by customer">Requested by customer</option>
-                <option value="Other">Other</option>
+                {CANCEL_REASONS.map(([v,l])=><option key={v} value={v}>{l}</option>)}
               </select>
             </div>
             <div>
@@ -4219,7 +4252,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
             </div>
             <div className="flex gap-3">
-              <button disabled={cancelBusy} onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('');setCancelRefund(true);setCancelRefundReason('customer_cancelled');setCancelError(null)}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
+              <button disabled={cancelBusy} onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('');setCancelRefund(true);setCancelError(null)}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
               <button disabled={cancelBusy} onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">{cancelBusy?'Refunding…':'Cancel order'}</button>
             </div>
           </div>

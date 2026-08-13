@@ -266,6 +266,11 @@ export function OrderCard({
   const refundedMinor = (ledgerRows ?? [])
     .filter(r => r.kind === 'refund')
     .reduce((sum, r) => sum + r.amount_minor, 0)
+  // HOW the money arrived, one entry per charge row — the modal describes what happened rather than
+  // picking one. ⚠️ `method` is NULL on almost every in-person row; the modal says so rather than guess.
+  const chargeBreakdown = (ledgerRows ?? [])
+    .filter(r => r.kind === 'charge')
+    .map(r => ({ channel: r.channel, method: (r as { method?: string | null }).method ?? null, amountMinor: r.amount_minor }))
 
   // 🔴 THE OVERLAY FOLDS INTO THE RESOLVER'S BOOLEANS, RIGHT HERE, so EVERY consumer below — the chip,
   // the pay buttons, the primary action, the tap targets — reads ONE pair of values and CANNOT diverge
@@ -553,6 +558,7 @@ export function OrderCard({
       paidMinor={balance.paidMinor}
       cardChargeMinor={cardChargeMinor}
       refundedMinor={refundedMinor}
+      charges={chargeBreakdown}
       hasReversibleInPersonPayment={hasReversibleInPersonPayment}
       onUndoPayment={() => onAction('undo_mark_paid', order.order_key)}
       undoLoading={isLoading('undo_mark_paid')}

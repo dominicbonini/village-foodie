@@ -41,7 +41,7 @@ export type RefundSubmit = (args: {
 }) => Promise<{ ok: boolean; message: string }>
 
 export function PaymentActionsModal({
-  open, onClose, orderId, orderKey, paidMinor, cardChargeMinor, refundedMinor,
+  open, onClose, orderId, orderKey, paidMinor, cardChargeMinor, refundedMinor, charges,
   hasReversibleInPersonPayment, onUndoPayment, undoLoading, onRefund,
 }: {
   open: boolean
@@ -54,6 +54,9 @@ export function PaymentActionsModal({
   cardChargeMinor: number
   /** Sum of refund rows we know about. ⚠️ Blind to a PENDING refund by design — see lib/payments/online. */
   refundedMinor: number
+  /** 🔴 HOW THE MONEY ACTUALLY ARRIVED, one entry per CHARGE row, in the ledger's own vocabulary.
+   *  The modal describes what happened rather than picking one; a mixed order has more than one. */
+  charges?: { channel: string; method: string | null; amountMinor: number }[]
   hasReversibleInPersonPayment: boolean
   onUndoPayment: () => void
   undoLoading?: boolean
@@ -73,6 +76,51 @@ export function PaymentActionsModal({
   const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
   // What the operator is shown as refundable. The server re-derives this from Stripe.
   const refundableMinor = Math.max(0, cardChargeMinor - refundedMinor)
+
+  // ── 🔴 HOW THIS CUSTOMER PAID, SAID PLAINLY, AND NO FURTHER THAN THE ROW CAN CARRY. ───────────
+  // ── WHAT THE DATA ACTUALLY SUPPORTS (measured, 13 August 2026) ────────────────────────────────
+  // 183 ledger rows: 16 `online`/method=card · 166 `in_person_other`, of which 165 carry method=NULL
+  // and ONE carries 'cash'. So an ONLINE payment is unambiguous, and an in-person one usually is not:
+  // cash and the truck's own card machine are the same row. The mechanism to record it exists — the
+  // card's Cash/Card buttons and the walk-up panel's both send a method — but it is gated on the
+  // truck's `takesCash` setting and 165 rows show the single "Mark paid" button was used instead.
+  // 🔴 SO THE NULL CASE SAYS "in person" AND SAYS WHY IT CANNOT SAY MORE. Inventing "cash" for a row
+  // that does not know would be worse than a vaguer sentence an operator can trust.
+  // ⚠️ A MIXED ORDER GETS BOTH LINES WITH THEIR AMOUNTS — 3 orders in the live data have charges on
+  // both channels — because "picking one" would describe half of what happened.
+  const chargeRows = (charges ?? []).filter(c => c.amountMinor > 0)
+  const howPaid: { label: string; hint?: string }[] = (() => {
+    if (!chargeRows.length) return []
+    const online = chargeRows.filter(c => c.channel === 'online')
+    const inPerson = chargeRows.filter(c => c.channel !== 'online')
+    const sum = (rows: typeof chargeRows) => rows.reduce((t, c) => t + c.amountMinor, 0)
+    const mixed = online.length > 0 && inPerson.length > 0
+    const out: { label: string; hint?: string }[] = []
+    if (online.length) {
+      out.push({ label: `Paid online by card${mixed ? ` — ${money(sum(online))}` : ''}` })
+    }
+    if (inPerson.length) {
+      const methods = new Set(inPerson.map(c => c.method))
+      const amount = mixed ? ` — ${money(sum(inPerson))}` : ''
+      if (methods.size === 1 && methods.has('cash')) out.push({ label: `Paid in cash${amount}` })
+      else if (methods.size === 1 && methods.has('card')) out.push({ label: `Paid on your card machine${amount}` })
+      else out.push({ label: `Paid in person${amount}`, hint: 'Cash or your card machine — not recorded' })
+    }
+    return out
+  })()
+
+  // ⚠️ IT SITS ABOVE EVERY BRANCH, INCLUDING THE REFUND FORM, so it cannot contradict the refund
+  // figures below it: this says HOW the money arrived, those say how much is left to send back.
+  const howPaidBlock = howPaid.length === 0 ? null : (
+    <div className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2">
+      {howPaid.map(h => (
+        <p key={h.label} className="text-sm font-medium text-slate-700">
+          {h.label}
+          {h.hint && <span className="block text-xs font-normal text-slate-400">{h.hint}</span>}
+        </p>
+      ))}
+    </div>
+  )
   const canRefund = !!onRefund && cardChargeMinor > 0 && refundableMinor > 0
   const partialMinor = Math.round((parseFloat(amountInput) || 0) * 100)
   const amountMinor = mode === 'full' ? refundableMinor : partialMinor
@@ -118,6 +166,7 @@ export function PaymentActionsModal({
   if (hasReversibleInPersonPayment) {
     return shell(
       <>
+        {howPaidBlock}
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
           <p className="text-sm text-slate-500 mt-2">
@@ -142,6 +191,7 @@ export function PaymentActionsModal({
   if (!canRefund) {
     return shell(
       <>
+        {howPaidBlock}
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Paid by card</h3>
           <p className="text-sm text-slate-500 mt-2">
@@ -164,6 +214,7 @@ export function PaymentActionsModal({
   // ── BRANCH 2 — THE REFUND FORM. ────────────────────────────────────────────────────────────────
   return shell(
     <>
+      {howPaidBlock}
       <div>
         <h3 className="text-lg font-semibold text-slate-900">Refund order #{orderId}</h3>
         <p className="text-sm text-slate-500 mt-1">

@@ -71,6 +71,10 @@ export interface LedgerRow {
   amount_minor: number
   state: PaymentEventState
   external_ref?: string | null
+  /** HOW an in-person payment arrived: 'cash' | 'card' | null. Display only — no arithmetic reads it.
+   *  ⚠️ NULL ON ALMOST EVERY HISTORICAL ROW, because the single "Mark paid" button records no method.
+   *  A reader must treat null as "not recorded", never as cash. */
+  method?: string | null
   /** ── IS THIS MONEY REAL? (20260807_order_payments_livemode.sql) ────────────────────────────────
    *  NOT NULL in the database, so a row read from Postgres ALWAYS carries a boolean. Optional here for
    *  exactly one reason: a caller may construct a LedgerRow by hand (the ticket preview does). It is
@@ -102,7 +106,12 @@ export interface LedgerRow {
 // the only guard that can see the 7 August defect. If you shorten this list, do not shorten it here.
 // ⚠️ `truck_id` was added on 11 August 2026 so a reader can resolve the owning operator's account mode
 // without a per-row lookup. It is SELECTED but never summed, exactly like `external_ref`.
-export const LEDGER_ROW_COLUMNS = 'order_key, truck_id, kind, channel, amount_minor, state, external_ref, livemode'
+// 🔴 `method` JOINED THE LIST so an operator surface can say HOW the money arrived — cash, the truck's
+// own card machine, or online. It is NULL on 165 of 166 in-person rows today, and the modal that reads it
+// says so rather than guessing; shipping the column is what lets it say more the moment an operator uses
+// the Cash / Card buttons. ADDITIVE: nothing computes on it, getOrderBalance ignores it, and every
+// existing consumer reads the same fields it always did.
+export const LEDGER_ROW_COLUMNS = 'order_key, truck_id, kind, channel, amount_minor, state, external_ref, livemode, method'
 
 /**
  * 🔴 THE SINGLE TEST FOR "THIS ROW IS REAL MONEY", AND THE DEFAULT IS EXCLUDE.

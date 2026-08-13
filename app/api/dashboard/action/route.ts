@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml, paymentNote } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml, paymentNote, sendRefundEmail, cancellationPaymentSentence } from '@/lib/email'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -27,7 +27,7 @@ import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/order-repricing'
 // 🔴 recalcOrderPayment IS THE ONLY WRITER OF orders.payment_status / amount_paid, and the edit handler
 // is the only thing that moves the other side of `balance = total_minor - paid`. See the EDIT branch.
-import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment } from '@/lib/payments/ledger'
+import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment, readLedger } from '@/lib/payments/ledger'
 import { captureOnConfirmation } from '@/lib/payments/capture'
 // 🔴 EVERY REFUND GUARD LIVES IN THAT MODULE, NOT HERE. This route validates the request's shape and
 // renders the outcome; the amount, the already-refunded figure and the fit are decided there.
@@ -127,6 +127,11 @@ async function notifyCustomer(
   email: string,
   subject: string,
   html: string,
+  /** ⚠️ OPTIONAL, AND ABSENT MEANS EXACTLY TODAY'S BEHAVIOUR. Every email this helper has ever sent went
+   *  out HTML-only; a client that renders text sees Brevo's own strip of the markup. The CANCELLATION
+   *  passes one, because it now states what happened to a customer's money and that sentence must exist
+   *  in both renderings — the rule lib/email already follows. */
+  text?: string,
 ) {
   const truckName = truck?.name ?? undefined
   if (isDemoIdentifier(truck?.id)) {
@@ -144,6 +149,7 @@ async function notifyCustomer(
         to:          [{ email }],
         subject,
         htmlContent: html,
+        ...(text ? { textContent: text } : {}),
       }),
     })
   } catch (err) { console.error('Email failed:', err) }
@@ -382,12 +388,19 @@ export async function POST(req: NextRequest) {
         // could never fire for a card order at all — the gate was as wrong as the sentence was. The same
         // resolver every other order email asks now decides, and it distinguishes the case this build
         // exists for: a HELD card, where nothing was taken and the hold has just been released.
-        const refundLine =
-          cancelPaymentState === 'held' || cancelPaymentState === 'held_short'
-            ? `<p>Your card was held for this order, not charged. That hold has been released and no money has been taken.</p>`
-          : cancelPaymentState === 'captured' || cancelPaymentState === 'part_paid'
-            ? `<p>If you paid by card, any refund is handled by ${truck.name} directly — please contact them about it.</p>`
-            : ''
+        // 🔴 AT THE MOMENT OF CANCELLING, THE OPERATOR HAS DECIDED — so this email says what happened
+        // rather than hedging. The decision arrives with the request: `refunded_minor` when the refund
+        // was sent and settled, `refund_declined` when they were offered it and kept the money.
+        // ⚠️ ONE SENTENCE, SHARED WITH THE CUSTOMER CANCEL PATH. See cancellationPaymentSentence.
+        const refundedMinor = typeof body.refunded_minor === 'number' && body.refunded_minor > 0
+          ? Math.round(body.refunded_minor) : null
+        const cancelMoney = cancellationPaymentSentence({
+          truckName: truck.name,
+          paymentState: cancelPaymentState,
+          refundedMinor,
+          refundDeclined: body.refund_declined === true,
+        })
+        const refundLine = cancelMoney.html
         await notifyCustomer(truck, order.customer_email, `Your order has been cancelled — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
             <p>Hi ${order.customer_name || 'there'},</p>
@@ -397,7 +410,11 @@ export async function POST(req: NextRequest) {
             <p>We're sorry for any inconvenience.</p>
             <p>${truck.name}</p>
             <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
-          </body>`)
+          </body>`,
+          // THE TEXT TWIN, from the SAME sentence, so the two cannot disagree about money.
+          `Hi ${order.customer_name || 'there'}, your order #${order.id} from ${truck.name} has been cancelled.`
+          + `${cancellationReason ? ' ' + cancellationReason : ''}${cancelMoney.text}`
+          + ` We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })
     }
@@ -953,6 +970,37 @@ export async function POST(req: NextRequest) {
       const outcome = await refundOrder(supabase, {
         orderKey, truckId: truck.id, amountMinor, reason, note: note || null, actor, source: actorSource,
       })
+      // ── 🔴 TELL THE CUSTOMER, AND ONLY WHEN THE MONEY HAS ACTUALLY MOVED. ───────────────────────
+      // ⚠️ NOT WHEN THIS REFUND IS PART OF A CANCELLATION. The cancellation email says what happened to
+      // the money in its own sentence, so sending this too would be two emails about one event. The
+      // client's cancel flow sets `refund_context: 'cancellation'`.
+      // ⚠️ AND NOT ON A PENDING REFUND. Stripe has accepted it and nothing has left the account; an
+      // email saying "refunded" would be the false-success class in the customer's inbox, where it
+      // cannot be corrected. The webhook settles it later and the operator sees the pending sentence.
+      if (outcome.status === 'refunded' && body.refund_context !== 'cancellation') {
+        const { data: refundedOrder } = await supabase
+          .from('orders').select('id, customer_name, customer_email').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+        if (refundedOrder?.customer_email && !isDemoIdentifier(truck.id)) {
+          // The CHARGED total, so the email can tell a full refund from a partial one without guessing.
+          const rows = await readLedger(supabase, orderKey)
+          const chargedMinor = rows
+            .filter(r => r.kind === 'charge' && r.channel === 'online')
+            .reduce((sum, r) => sum + r.amount_minor, 0)
+          try {
+            await sendRefundEmail({
+              to: refundedOrder.customer_email,
+              customerName: refundedOrder.customer_name || 'there',
+              orderId: String(refundedOrder.id),
+              truckName: truck.name,
+              amountMinor: outcome.amountMinor,
+              chargedMinor: chargedMinor || outcome.amountMinor,
+            })
+          } catch (mailErr) {
+            // The money has gone back either way. An email failure must not read as a refund failure.
+            console.error(`[refund] email failed for order_key=${orderKey} (the refund itself succeeded):`, mailErr)
+          }
+        }
+      }
       switch (outcome.status) {
         case 'refunded':
           return NextResponse.json({

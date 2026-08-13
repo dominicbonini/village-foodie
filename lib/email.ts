@@ -575,8 +575,105 @@ export async function sendConfirmationEmail(params: {
   }
 }
 
+/**
+ * THE ONE SENTENCE A CANCELLATION EMAIL SAYS ABOUT MONEY, FOR BOTH CANCEL PATHS.
+ *
+ * The operator route builds its own HTML and the customer route uses sendCancellationEmail below, so
+ * without this the same decision would be worded twice and drift. It returns BOTH renderings because the
+ * plain-text twin must never disagree with the HTML about money.
+ *
+ * FOUR CASES, AND ONLY ONE OF THEM IS A REFUND:
+ *   refundedMinor    money has gone back. Say the amount and how long a bank takes.
+ *   refundDeclined   the operator cancelled and kept the money (a no-show). It must NOT promise a refund
+ *                    and must NOT say one was refused: they may change their mind, and an email is the
+ *                    wrong place to argue. It points at the truck and stops.
+ *   held             nothing was ever taken and the hold has just been released.
+ *   captured, undecided  the customer cancelled and nobody was present to decide. Points at the truck.
+ * Anything else renders nothing, which is right for a pay-at-hatch order.
+ *
+ * THE TIMEFRAME IS STRIPE'S CURRENT ONE, NOT THE OLD "3-5 working days": "Your customer sees the refund
+ * as a credit approximately 5-10 business days later, depending upon the bank." (docs.stripe.com/refunds,
+ * "Trace a refund", read 13 August 2026.)
+ */
+export function cancellationPaymentSentence(args: {
+  truckName: string
+  paymentState?: EmailPaymentState
+  /** Minor units actually refunded as part of this cancellation. Absent = no refund was issued. */
+  refundedMinor?: number | null
+  /** The operator was offered the refund and declined it. Distinct from "not asked". */
+  refundDeclined?: boolean
+}): { html: string; text: string } {
+  const money = (m: number) => `£${(m / 100).toFixed(2)}`
+  if (typeof args.refundedMinor === 'number' && args.refundedMinor > 0) {
+    const sentence = `${money(args.refundedMinor)} has been refunded to your card. Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.`
+    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+  }
+  if (args.refundDeclined) {
+    const sentence = `If you have a question about payment for this order, please contact ${args.truckName}.`
+    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+  }
+  if (args.paymentState === 'held' || args.paymentState === 'held_short') {
+    const sentence = `Your card was held for this order, not charged. That hold has been released and no money has been taken.`
+    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+  }
+  if (args.paymentState === 'captured' || args.paymentState === 'part_paid') {
+    const sentence = `If you paid by card, any refund is handled by ${args.truckName} directly — please contact them about it.`
+    return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+  }
+  return { html: '', text: '' }
+}
+
+/**
+ * A REFUND ISSUED ON ITS OWN, NOT AS PART OF A CANCELLATION.
+ *
+ * The order still stands; some or all of its money has gone back. A cancellation says its own thing
+ * (cancellationPaymentSentence above) and must not also send this, or the customer gets two emails
+ * about one event.
+ *
+ * FULL AND PARTIAL ARE DIFFERENT SENTENCES because they leave the customer in different positions: a
+ * full refund closes the order's money, a partial one leaves the rest of it standing and the customer
+ * needs to know that rather than wonder.
+ * THE FIGURES COME FROM THE CALLER, never from this function, exactly as paymentNote takes its own.
+ */
+export async function sendRefundEmail(params: {
+  to: string
+  customerName: string
+  orderId: string
+  truckName: string
+  /** Minor units refunded by THIS refund. */
+  amountMinor: number
+  /** What the order was charged in total, minor units. Equal to amountMinor on a full refund. */
+  chargedMinor: number
+}): Promise<void> {
+  const money = (m: number) => `£${(m / 100).toFixed(2)}`
+  const full = params.amountMinor >= params.chargedMinor
+  const remaining = Math.max(0, params.chargedMinor - params.amountMinor)
+  const timing = 'Refunds usually take 5 to 10 business days to appear on your statement, depending on your bank.'
+  const lead = full
+    ? `${params.truckName} has refunded your order. ${money(params.amountMinor)} has gone back to the card you paid with.`
+    : `${params.truckName} has refunded ${money(params.amountMinor)} of your order to the card you paid with. The rest of the order, ${money(remaining)}, is unchanged.`
+  const html = `
+    <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
+      <p>Hi ${params.customerName || 'there'},</p>
+      <p>${lead}</p>
+      <p style="color:#64748b;font-size:14px">${timing}</p>
+      <p>If anything looks wrong, please contact ${params.truckName}.</p>
+      <p>${params.truckName}</p>
+    </div>
+  `
+  await sendConfirmationEmail({
+    to: params.to,
+    subject: full
+      ? `Your order #${params.orderId} has been refunded — ${params.truckName}`
+      : `A refund for your order #${params.orderId} — ${params.truckName}`,
+    html,
+    text: `Hi ${params.customerName || 'there'}, ${lead} ${timing} If anything looks wrong, please contact ${params.truckName}. Powered by HatchGrab — hatchgrab.com`,
+    truckName: params.truckName,
+  })
+}
+
 export async function sendCancellationEmail({
-  to, customerName, orderId, truckName, reason, paymentStatus, paymentState,
+  to, customerName, orderId, truckName, reason, paymentStatus, paymentState, refundedMinor, refundDeclined,
 }: {
   to: string
   customerName: string
@@ -590,6 +687,10 @@ export async function sendCancellationEmail({
    *  'held' IS THE ONE THIS EXISTS FOR: a cancelled held order has had its authorisation released, and
    *  the customer needs to hear that no money was taken rather than nothing at all. */
   paymentState?: EmailPaymentState
+  /** Minor units refunded AS PART OF THIS CANCELLATION. Absent on the customer path, which issues none. */
+  refundedMinor?: number | null
+  /** The operator was offered the refund and declined it. See cancellationPaymentSentence. */
+  refundDeclined?: boolean
 }): Promise<void> {
   const reasonLine = reason ? `<p style="color:#475569">${reason}</p>` : ''
   // "AUTOMATICALLY" WAS ALWAYS WRONG AND IS MORE WRONG NOW THAT A BUTTON EXISTS.
@@ -600,20 +701,17 @@ export async function sendCancellationEmail({
   // settlement window quoted as a commitment.
   // IT STILL ANSWERS THE QUESTION THE CUSTOMER HAS — who to ask — which is the one thing they need.
   // Character for character the sentence app/order/[id]/manage already settled on in August.
-  // THE HOLD CASE IS NOT THE REFUND CASE AND MUST NOT BORROW ITS SENTENCE. Nothing was ever taken from
-  // a held card, so "any refund is handled by the truck" would send a customer chasing money that never
-  // left their account. The release happens in the cancel path; this says so.
-  const refundLine = paymentState === 'held' || paymentState === 'held_short'
-    ? `<p>Your card was held for this order, not charged. That hold has been released and no money has been taken.</p>`
-    : (paymentState === 'captured' || paymentState === 'part_paid' || (!paymentState && paymentStatus === 'paid'))
-    ? `<p>If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.</p>`
-    : ''
-  // ONE DECISION, TWO RENDERINGS. The text twin must never disagree with the HTML about money.
-  const refundText = paymentState === 'held' || paymentState === 'held_short'
-    ? ' Your card was held for this order, not charged. That hold has been released and no money has been taken.'
-    : (paymentState === 'captured' || paymentState === 'part_paid' || (!paymentState && paymentStatus === 'paid'))
-    ? ` If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.`
-    : ''
+  // ONE DECISION, SHARED WITH THE OPERATOR CANCEL PATH, WHICH BUILDS ITS OWN HTML.
+  // The `paymentStatus === 'paid'` fallback keeps a caller that passes no state rendering what it always
+  // did; every current caller passes one.
+  const money = cancellationPaymentSentence({
+    truckName,
+    paymentState: paymentState ?? (paymentStatus === 'paid' ? 'captured' : undefined),
+    refundedMinor,
+    refundDeclined,
+  })
+  const refundLine = money.html
+  const refundText = money.text
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
       <p>Hi ${customerName || 'there'},</p>
