@@ -95,8 +95,14 @@ export const TRIAL_NOT_STARTED_BILLING =
 // The manual records what restating the same fee facts across surfaces has already cost.
 // ⚠️ RENAMED with the narrowing — it was CONNECTING_STRIPE_NOT_A_CHARGE, and a constant whose NAME
 // overclaims is the same defect one level up: the next reader reads the name before the string.
+// ⚠️ "Setting this up", NOT "Connecting", SINCE 13 AUGUST 2026. Its only consumer renders it directly
+// above the button on Manage > Payments, and that button now reads "Set up online payments" rather than
+// "Connect Stripe". A reassurance that names a different verb from the control it is reassuring about
+// reads as being about something else. NOTHING ELSE IN THE STRING MOVED: still two short sentences,
+// still no numbers, still scoped to "today", and the plan is still named as a separate thing — every
+// invariant above is intact. The CONSTANT'S NAME is unchanged deliberately: it is a code identifier.
 export const CONNECTING_STRIPE_NOT_A_COMMITMENT =
-  "Connecting doesn't start your subscription or charge you anything today. It's how your customers "
+  "Setting this up doesn't start your subscription or charge you anything today. It's how your customers "
   + 'pay you — your plan is separate.'
 
 export const SETTING_COPY = {

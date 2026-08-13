@@ -72,10 +72,19 @@ type PostError = Error & { status?: number; code?: string }
 // ⚠️ `pending` IS THE POINT OF THE WHOLE CHANGE. It used to read "finish the steps below" — telling a
 // truck to go and do work that does not exist, while Stripe was simply verifying.
 const HEADER: Record<PaymentsState, { title: string; body: string; chip: string; chipClass: string }> = {
+  // ⚠️ "Not set up", NOT "Not connected", SINCE 13 AUGUST 2026. The button below no longer says
+  // "Connect Stripe" — it says "Set up online payments" — and a card headed "Not connected" beside a
+  // button offering to "set up" describes a different act from the one on offer. Title and chip move
+  // together because they are the same claim at two sizes.
+  // ⚠️ THE FOUR STATES BELOW ARE DELIBERATELY UNCHANGED. They describe the STRIPE ACCOUNT's condition
+  // rather than naming this action, and their wording was settled on 10 August after a specific
+  // correction (see the note under this block). Rewriting them to match a button label would undo that
+  // for consistency's sake — the pills already read as a progression: Not set up, Action needed,
+  // Checking, Ready.
   not_connected: {
-    title: 'Not connected',
+    title: 'Not set up',
     body: "Takes about 10 minutes. You'll need your bank details and ID.",
-    chip: 'Not connected',
+    chip: 'Not set up',
     chipClass: 'bg-slate-50 text-slate-500 border-slate-200',
   },
   // ── 🔴 THIS STATE USED TO SAY "Connected — finishing verification" / "In progress". BOTH WERE FALSE
@@ -433,13 +442,24 @@ export function PaymentsTab({ token, plan, showToast }: {
             </div>
           )}
 
-          {/* ── 🔴 THE LABEL STAYS "Connect Stripe". DECIDED 10 August 2026 — DO NOT GENERICISE IT. ──
-              A generic "Connect payments" was considered and rejected. Pressing this hands the operator
-              straight to STRIPE'S OWN embedded form asking for bank details and photo ID — and a button
-              that did not name Stripe, opening a stranger's identity check, is MORE alarming than one
-              that did. Naming the provider is what makes the next screen make sense.
-              ⚠️ It also costs nothing in surprise: the section copy directly above already says money
-              goes to "your own Stripe account", so the name is on screen either way. */}
+          {/* ── 🔴 THE LABEL IS NOW "Set up online payments". THIS REVERSES A DECISION — READ BOTH. ──
+              ⚠️ WHAT THE 10 AUGUST 2026 NOTE SAID, KEPT VERBATIM SO THE ARGUMENT IS NOT LOST:
+                  "THE LABEL STAYS 'Connect Stripe'. DO NOT GENERICISE IT. A generic 'Connect payments'
+                   was considered and rejected. Pressing this hands the operator straight to STRIPE'S OWN
+                   embedded form asking for bank details and photo ID — and a button that did not name
+                   Stripe, opening a stranger's identity check, is MORE alarming than one that did.
+                   Naming the provider is what makes the next screen make sense."
+              🔴 REVERSED DELIBERATELY, 13 AUGUST 2026, ON THE OPERATOR'S INSTRUCTION: the button should
+              say what it DOES rather than who it does it with, and should match the section heading
+              "Online payments" directly above it. The counter-argument above is not wrong,
+              and the risk it names is real — an operator who does not expect Stripe meeting Stripe's ID
+              form. What blunts it is that the provider is still on screen twice within a few lines: the
+              section body says money "goes straight to your own Stripe account", and the header card's
+              body names the bank details and ID it will ask for. So the next screen is still explained;
+              it is simply no longer the button doing the explaining.
+              ⚠️ IF THIS IS EVER REVERSED AGAIN, the thing to preserve is that SOMETHING within a glance
+              of this button names Stripe. That, not the label itself, is what the original note was
+              protecting. */}
           {/* ── 🔴 SUPPORT SEES THE STATE; IT DOES NOT GET THE BUTTON. ────────────────────────────
               A platform admin reaches this tab to see what the operator sees. Connecting Stripe is
               irreversible and binds THIS OPERATOR's business and bank details to a real account, so it
@@ -453,7 +473,7 @@ export function PaymentsTab({ token, plan, showToast }: {
             <div className="mt-3 rounded-xl bg-slate-50 border border-slate-100 p-3">
               <p className="text-xs font-semibold text-slate-700">Viewing as platform admin</p>
               <p className="text-xs text-slate-500 mt-0.5">
-                This truck has not connected Stripe. Only the owner can start it, from their own
+                This truck has not set up online payments. Only the owner can start it, from their own
                 signed-in account — there is nothing to press here.
               </p>
             </div>
@@ -467,7 +487,7 @@ export function PaymentsTab({ token, plan, showToast }: {
               disabled={creating || !!configError || keyModeMismatch}
               className="mt-3 w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
             >
-              {creating ? 'Connecting…' : 'Connect Stripe'}
+              {creating ? 'Setting up…' : 'Set up online payments'}
             </button>
           )}
           {/* ── 🔴 WHOSE FEE THIS IS, STATED — AND IT IS NOT OURS ────────────────────────────────
@@ -490,32 +510,27 @@ export function PaymentsTab({ token, plan, showToast }: {
             Stripe charges {CARD_FEE_ONLINE_LABEL} per payment on standard UK cards. Cards issued outside
             the UK and EEA cost more. HatchGrab&apos;s own fee on online orders depends on your plan — see Billing.
           </p>
-          {/* ── 🔴 THE MODE LINE, DERIVED. IT USED TO BE A LITERAL AND IT LIED. ────────────────────
-              This read, unconditionally:
-                  <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
-              — a bare JSX string with no condition behind it, so it said "Test mode" whatever keys were
-              set, and went on saying it through two rebuilds after the live keys landed. A mode
-              indicator that cannot be wrong about the mode is the only kind worth having, so it now
-              comes from `platformKeyLivemode()` on the server: the mode of the key that would actually
-              create the account, not of the publishable key this bundle happens to hold.
-              ⚠️ THE TEST WORDING IS UNCHANGED, deliberately — it was right when it applied.
-              🔴 THE LIVE WORDING IS HEAVIER, AND THAT IS THE POINT. It sits directly above a button that
-              creates a real Stripe account which CANNOT BE DELETED, with no confirmation step anywhere
-              in the flow, and the next screen asks for a bank account and photo ID. slate-600 at text-xs
-              rather than slate-400 at 11px: one step up from a whisper, still not a warning. Amber and
-              red mean something is wrong on this page, and nothing is wrong — this is the state you
-              want to be in.
-              ⚠️ NULL RENDERS NOTHING. An unrecognised prefix, or a status response from before this
-              field existed, leaves the mode unknown, and an unknown mode must not be asserted either
-              way. Silence is the honest output. */}
+          {/* ── 🔴 TEST MODE SAYS SO; LIVE MODE SAYS NOTHING. THE ASYMMETRY IS THE POINT. ──────────
+              This line was once an unconditional literal reading "Test mode…" whatever keys were set —
+              it went on saying it through two rebuilds after the live keys landed. It then became a
+              two-way derived line, test and live. The LIVE variant has now been removed (13 August
+              2026): it read "Live mode. Connecting here creates a real Stripe account in your name, and
+              customer payments will reach your own bank", and every clause of it was already on screen —
+              the section copy says money "goes straight to your own Stripe account", the header card
+              says what connecting involves, and the button names the act. A sentence that only restates
+              its surroundings adds length, not information.
+              🔴 THE TEST VARIANT STAYS, AND IT IS NOT THE SAME KIND OF SENTENCE. Live is the state an
+              operator is entitled to assume — the product exists to take real payments, so saying so
+              tells them nothing they had not already concluded. TEST is the surprising state: the
+              onboarding is real, the form asks for real bank details and real ID, and at the end of it
+              no customer money can move. Nothing else on this page would say so. That is information,
+              not restatement, which is why removing one and keeping the other is not inconsistent.
+              ⚠️ ABSENCE NOW MEANS "NOT TEST", NOT "UNKNOWN", and that is safe in this direction. A null
+              mode (unrecognised prefix, or a status response from before the field existed) renders
+              nothing, exactly as live does — so the only claim this line ever makes is the cautious one.
+              A missing warning about test mode is the failure worth having; a false one is not. */}
           {serverLivemode === false && (
             <p className="text-[11px] text-slate-400 mt-3">Test mode. No real payments can be taken yet.</p>
-          )}
-          {serverLivemode === true && (
-            <p className="text-xs text-slate-600 mt-3">
-              Live mode. Connecting here creates a real Stripe account in your name, and customer payments
-              will reach your own bank.
-            </p>
           )}
         </div>
       </section>
