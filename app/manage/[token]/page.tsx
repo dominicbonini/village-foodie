@@ -10047,17 +10047,36 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
               isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
             }`}>{p}</p>
-            <p className={`text-base sm:text-xl font-bold mt-1 ${
+            {/* ── 🔴 text-[13px] AND whitespace-nowrap ON MOBILE. THIS IS THE "£29/mo£49/mo" FIX. ─────
+                The column is `w-14` (56px) and the price was `text-base` (16px) bold, at which "£29/mo"
+                measures about 56.5px — wider than the column it sits in, with no space character to
+                wrap on. So it overflowed into its neighbour and the two prices ran together. 13px puts
+                it at about 46px with ~5px clear either side; `whitespace-nowrap` makes the no-wrap
+                explicit rather than accidental.
+                ⚠️ ADAPTED, NOT COPIED. The landing table solves the same problem with `--cmp-col:
+                3.6rem` and a `.78rem` price in its own stylesheet; that is its typography, not this
+                page's. What is shared here is the DIAGNOSIS — a price must fit its column and must not
+                wrap — not the numbers. `sm:text-xl` is untouched, so nothing changes from 640px up. */}
+            <p className={`text-[13px] sm:text-xl font-bold mt-1 whitespace-nowrap ${
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-            }`}>{px(PLAN_PRICES[p])}</p>
+            }`}>{px(p === 'trial' ? 'Free' : PLAN_PRICES[p])}</p>
             <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
-              {/* Non-trial: the real "per truck / month". Trial: a SINGLE invisible line (NOT the 2-line
-                  "per truck / month") so the trial column's height matches the others at BOTH widths — on
-                  mobile the trial price "Free trial" wraps to 2 lines, which offsets the others' 2-line
-                  subtitle; on desktop everything is 1 line. (The old 2-line invisible placeholder made the
-                  trial column a line TALLER on mobile → its border sat low / needed the empty-space stretch.
-                  The trial end date is shown elsewhere: the reminder banner + the "won't be charged until" line.) */}
-              {p === 'trial' ? <span className="invisible">&nbsp;</span> : <span>per truck / month</span>}
+              {/* ── 🔴 THE TRIAL COLUMN'S RULE LINES UP NOW, AND THE COMPENSATION DANCE IS GONE. ──────
+                  This read `{p === 'trial' ? <span className="invisible">&nbsp;</span> : …}` — ONE
+                  invisible line against the others' two, chosen to offset the fact that "Free trial"
+                  wrapped to two lines at 56px while "£29/mo" did not. Two variables cancelling each
+                  other is why the border-b-2 under Free trial still sat off the others' line: it only
+                  balances if both wrap exactly as predicted, at every width and every font metric.
+                  🔴 BOTH VARIABLES ARE REMOVED INSTEAD OF BALANCED. The price is now one line in EVERY
+                  column ("Free" for trial, matching the landing table's own PLAN_PRICE_LABEL, which
+                  shows "Free" rather than "Free trial" for the same reason), and the placeholder is now
+                  the SAME STRING as the real subtitle, merely invisible — so it wraps identically, at
+                  any width, under any font. The four columns cannot disagree in height.
+                  ⚠️ The trial END DATE is unaffected and still shown by the reminder banner and the
+                  "won't be charged until" line — this is the column header, not the trial's terms. */}
+              {p === 'trial'
+                ? <span className="invisible" aria-hidden="true">per truck / month</span>
+                : <span>per truck / month</span>}
             </p>
           </div>
         ))}
@@ -10080,7 +10099,15 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <div key={p} className={`w-14 sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                 isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
               }`}>
-                {px(p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max'])}
+                {/* 🔴 `row.cells[p]` — THE TRIAL COLUMN NOW READS TRIAL DATA. This line used to read
+                    `p === 'trial' ? row.values.starter : …`, borrowing STARTER's cells because the
+                    shared constant had no trial column to read. That is why Billing told a trial
+                    operator their online orders were "Pay at Hatch" while the landing page said
+                    "Unlimited / Free" — a trial carries MAX's feature set (lib/features.ts:
+                    `TRIAL_FEATURES = [...MAX_FEATURES]`), so online payments are included, and this
+                    page's own trial banner already said "completely free*". The landing page was right;
+                    the fallback was never a claim anyone made. */}
+                {px(row.cells[p])}
               </div>
             ))}
           </div>

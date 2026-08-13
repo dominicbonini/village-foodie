@@ -16,7 +16,7 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import {
   FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
-  CARD_FEE_ONLINE_LABEL,
+  CARD_FEE_ONLINE_LABEL, TRANSACTION_ROWS,
   type FeatureValue,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
@@ -52,14 +52,15 @@ function trialFeatureValue(row: { name: string; max: FeatureValue }): FeatureVal
   return row.max
 }
 
-// Landing-only Fees rows — RENDER-ONLY. The shared TRANSACTION_ROWS (lib/plan-features.ts) is NOT modified;
-// Manage → Billing / Admin keep their own version. One short fact per cell so each fits one line on mobile.
-// Footnotes reuse the shared FOOTNOTES: 1 = walk-up terminal fees, 2 = Stripe/online-payment fees (0.99%).
-const LANDING_FEE_ROWS: { name: string; footnote?: string; cells: Record<TablePlan, string> }[] = [
-  { name: 'Walk-up orders',        footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%',     max: '0%'     } },
-  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: '£1,500', max: '£2,000' } },
-  { name: 'Fee after that',        footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: '0.99%',  max: '0.99%'  } },
-]
+// ── 🔴 THE FEE ROWS ARE NO LONGER DEFINED HERE. ────────────────────────────────────────────────────
+// This was `LANDING_FEE_ROWS`, a landing-only literal, and its own comment admitted the duplication:
+// "RENDER-ONLY. The shared TRANSACTION_ROWS is NOT modified; Manage → Billing / Admin keep their own
+// version." Those two copies then disagreed about what a trial truck gets, which is the one thing a
+// second copy of a price table is guaranteed to do eventually.
+// The values below moved VERBATIM into TRANSACTION_ROWS (lib/plan-features.ts) — same three rows, same
+// four columns, same strings — so this page renders exactly what it rendered before, and Billing now
+// reads the same constant instead of a two-row one with no trial column.
+// Footnotes still reuse the shared FOOTNOTES: 1 = walk-up terminal fees, 2 = Stripe/online-payment fees.
 
 // RENDER-ONLY footnote text overrides for the landing table. The shared FOOTNOTES (lib/plan-features.ts) are
 // NOT modified — Billing/Admin keep the original wording; only the landing table shows this text.
@@ -382,10 +383,10 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Fees group — RENDER-ONLY landing rows (LANDING_FEE_ROWS), one fact per cell. Source
-                lib/plan-features.ts is not modified. */}
+            {/* Fees group — TRANSACTION_ROWS from lib/plan-features.ts, one fact per cell. THE SAME
+                CONSTANT Manage → Billing renders, so the two cannot state different fees again. */}
             <div className="cmp2-grp">Fees</div>
-            {LANDING_FEE_ROWS.map(row => (
+            {TRANSACTION_ROWS.map(row => (
               <div key={row.name} className="cmp2-row">
                 <div className="cmp2-label">
                   <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>

@@ -2383,7 +2383,23 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             allergen chips remain hidden server-side by the verified-gate.) */}
 
         {/* MENU — grouped by category */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-4 mb-4">
+        {/* ── 🔴 px-2 ON PHONES, px-4 FROM sm: UP. PADDING ONLY — THE FRAME STAYS. ──────────────────
+            At 390px the chrome around an item row was 66px: 32px from main's px-4, 32px from this
+            card's px-4 and 2px of border. Half of this card's share comes back, taking a row from
+            324px to 340px. The BORDER, BACKGROUND, RADIUS AND SHADOW ARE UNTOUCHED, deliberately:
+            this card is white on a bg-slate-50 page and the sticky basket bar below it is ALSO white
+            (bg-white border-t border-slate-200, fixed bottom-0), so that contrast plus this border is
+            the only thing separating the menu from it. Removing the frame would save 2px and cost the
+            separation.
+            ⚠️ px-2 AND NOT px-0. 8px is what keeps the item text, the thumbnail and the Add button
+            clear of a rounded-2xl (16px) corner. px-0 would reclaim 16px more and put content against
+            the border at the radius, which reads as a bug even when the arithmetic is right.
+            ⚠️ NOTHING CHANGES AT sm: (640px) AND ABOVE. main is max-w-lg (512px), so from 512px up the
+            page is already a centred column with empty slate-50 either side — there is no width to
+            reclaim there, only the inset to lose. The breakpoint is sm: because it is the ONLY
+            breakpoint this file already uses (Hdr), and 640px sits above the 512px cap so every
+            viewport that is already width-capped keeps today's look exactly. */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-2 sm:px-4 py-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">Menu</h2>
             {/* Allergen Info — ALWAYS present (consistent, predictable entry point in every mode/state).
@@ -2404,9 +2420,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <div ref={menuTopRef} aria-hidden="true" />
           {/* Top-level category tabs — sticky below the page header (h-[60px]). Tap to filter to one
               category; subcategory headers (below) are preserved within it. Finger-sized (≥44px),
-              horizontal-scroll on narrow. -mx-4 px-4 makes the white bar span the menu card's padding. */}
+              horizontal-scroll on narrow. -mx-N px-N makes the white bar span the menu card's padding. */}
+          {/* ── ⚠️ THE NEGATIVE MARGIN IS A MIRROR OF THE CARD'S PADDING, NOT A CHOICE OF ITS OWN ────
+              It read `-mx-4 px-4` while the card was `px-4` at every width. The card is now `px-2
+              sm:px-4`, so this pair MOVES WITH IT — a stale `-mx-4` against a `px-2` card would pull
+              this white bar 8px OUTSIDE the border on each side, spilling over the rounded corners
+              while it is pinned.
+              🔴 NOTHING ABOUT THE STRIP ITSELF IS CHANGED. Same `overflow-x-auto scrollbar-hide`, same
+              `gap-1.5`, same `min-h-[44px] px-4` buttons; no fade, no snap, no scrollbar, no wrap. The
+              track still measures exactly the card's content width, as it always has — it grows by the
+              16px the card gave back, which is a consequence of the card's padding rather than a change
+              to this element's own rules. The clip stays the scroll affordance. */}
           {menuCategories.length > 1 && (
-            <div style={{ top: stickyTop }} className="sticky z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
+            <div style={{ top: stickyTop }} className="sticky z-30 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 mb-2 bg-white border-b border-slate-100">
               <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
                 {menuCategories.map(cat => (
                   <button
@@ -2460,10 +2486,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     sticky-stack note at the top of this component) + TABBAR_H. When there's ONE category
                     the tab bar isn't rendered, so the header pins flush at stickyTop. Outside demo these
                     resolve to the same 121 / 60 they were hardcoded to. z-20 sits BELOW the tab bar
-                    (z-30) and the page header bars (z-40) and ABOVE the items. -mx-4 px-4 + bg-white
-                    make it an opaque full-bleed band (matching the tab bar) so items don't bleed through. */}
+                    (z-30) and the page header bars (z-40) and ABOVE the items. -mx-N px-N + bg-white
+                    make it an opaque full-bleed band (matching the tab bar) so items don't bleed through.
+                    ⚠️ THE SAME MIRROR AS THE TAB BAR, for the same reason and with the same values: it
+                    tracks the card's `px-2 sm:px-4` so the band spans the padding and no further. These
+                    two are the only elements in the card that break out of it, and they must agree. */}
                 {group.name && (
-                  <p style={{ top: menuCategories.length > 1 ? stickyTop + TABBAR_H : stickyTop }} className="sticky z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
+                  <p style={{ top: menuCategories.length > 1 ? stickyTop + TABBAR_H : stickyTop }} className="sticky z-20 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
                     {cap(group.name)}
                     {/* Sub-category pre-order pill — shown when every available item in THIS group is an
                         enabled pre-order item (shared global string). inline-block + whitespace-nowrap so
@@ -2619,6 +2648,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               {/* hide_name (inferred custom-extra): omit the internal "Category - Name N"
                                   label on the card preview — the options alone read clearly. */}
                               {!g.hide_name && <span className="font-semibold text-slate-600">{g.name}:</span>}
+                              {/* ── 🔴 SAY THAT A CHOICE IS REQUIRED, HERE, ON THE LIST. ──────────────
+                                  Until now this line listed the options and NOTHING said they had to be
+                                  chosen. On a hide_name group — an AI-import-inferred group, which is
+                                  what this truck's are — the line rendered as a bare "Chicken Tikka (M) ·
+                                  Paneer Tikka (M) · …" with no label at all, and the button beside it
+                                  says "Add", the identical word a no-modifier item gets. A customer had
+                                  no way to know a chooser was coming until the modal opened.
+                                  ⚠️ groupRuleLabel IS THE SAME FUNCTION THE MODAL CALLS, with the same
+                                  default 'customer' audience — ONE source for this wording across the
+                                  manage modal and both order screens, so they cannot drift. previewGroups
+                                  is already filtered to minRequiredForGroup(g) > 0, so the base is always
+                                  "Required"; only the cap phrase varies with max_choices.
+                                  🔴 NO AMBER. Amber is this page's "required and NOT YET CHOSEN" cue and
+                                  it is conditional on `isUnmet` in the modal. On the list every group with
+                                  options is unmet by definition — nothing has been chosen yet — so amber
+                                  would mark every modifier item identically and mean nothing, while
+                                  colliding with the amber-50 warning banners that can share this scroll.
+                                  The label is words, in the same slate-600 as the group name, so name and
+                                  rule read as one leader ahead of the lighter slate-500 options. */}
+                              <span className="font-semibold text-slate-600">{groupRuleLabel(g)}</span>
                               {g.options.map((opt, i) => (
                                 <span key={opt.id} className="inline-flex items-center gap-1">
                                   {/* ⚠️ The separator stays LIGHTER than the text it divides — slate-400,

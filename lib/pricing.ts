@@ -6,7 +6,13 @@
 // no code change. Used by the Billing page, FeatureGate upgrade CTAs, and the per-van add-on.
 export const PRICING_PUBLISHED = process.env.NEXT_PUBLIC_PRICING_PUBLISHED === 'true'
 
-const NON_SECRET_PRICE = new Set(['Free', 'Free trial', 'Lifetime', '0%', 'Pay at Hatch'])
+// ⚠️ `Unlimited` and `—` ADDED WITH THE THREE-ROW FEE TABLE (lib/plan-features.ts). Neither is a price:
+// one says a trial's online orders are uncapped, the other says a plan has no online-order allowance at
+// all. They belong to the class this set already exists for — the comment above states the test, "they
+// carry no commercial information and blanking them to 'TBC' would read as broken", and an em dash
+// rendered as "TBC" is precisely that. The two allowance amounts and the 0.99% rate are deliberately NOT
+// here and are still masked until pricing is published.
+const NON_SECRET_PRICE = new Set(['Free', 'Free trial', 'Lifetime', '0%', 'Pay at Hatch', 'Unlimited', '—'])
 
 /** Real price string when published; otherwise "TBC" (unless it's a non-sensitive value).
  *  ⚠️ GLOBAL ONLY — it has no truck context and cannot honour `trucks.hide_pricing`. Kept as the

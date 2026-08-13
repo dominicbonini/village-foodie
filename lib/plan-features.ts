@@ -69,27 +69,36 @@ export const CARD_FEE_ONLINE_LABEL = feeLabel(CARD_FEES.online)
 export const CARD_FEE_IN_PERSON_LABEL = feeLabel(CARD_FEES.inPerson)
 export const TAP_TO_PAY_SURCHARGE_LABEL = `${CARD_FEES.tapToPaySurchargePence}p`
 
+// ── 🔴 THE FEE TABLE. ONE DEFINITION, READ BY THE LANDING PAGE AND BY MANAGE > BILLING. ──────────────
+// ⚠️ THIS EXPORT USED TO BE TWO ROWS WITH NO TRIAL COLUMN, AND THE LANDING PAGE KEPT ITS OWN THREE-ROW
+// COPY (`LANDING_FEE_ROWS`) BESIDE IT. The comment on that copy said so outright — "the shared
+// TRANSACTION_ROWS is NOT modified; Manage > Billing / Admin keep their own version" — and that
+// duplication was the actual defect: the two surfaces made DIFFERENT CLAIMS about what a trial truck
+// gets, and no amount of fixing the rendering could have kept them together. The landing page's shape
+// won because it was the correct one; this is now the only place these values exist.
+//
+// 🔴 THREE ROWS, NOT TWO, AND THE SPLIT IS WHY. Collapsing the allowance and the fee into one cell
+// ("£1,500 free, then 0.99% + card fee") produced a cell that wrapped to four lines in a 56px column.
+// One short fact per cell fits one line at 390px on both surfaces.
+//
+// ⚠️ `trial` IS A REAL COLUMN NOW. Manage used to render `row.values.starter` for the trial column
+// because there was no trial data to read — which made Billing tell a trial operator they were on
+// "Pay at Hatch" when a trial carries MAX's feature set (lib/features.ts: `TRIAL_FEATURES =
+// [...MAX_FEATURES]`), including online payments. Manage's own trial banner already said the truth:
+// "Full Max features + Pay at Hatch ordering — completely free* / *Standard card processing fees apply
+// on online orders". Unlimited, free, Stripe's fees still apply — which is exactly what these cells say.
+//
+// ⚠️ `—` AND `Unlimited` CARRY NO PRICE. lib/pricing.ts treats them as non-sensitive, like `0%` and
+// `Pay at Hatch`, so the pre-launch mask leaves them alone; `£1,500`, `£2,000` and `0.99%` are still
+// masked to "TBC" until pricing is published.
 export const TRANSACTION_ROWS: {
   name: string
   footnote?: string
-  values: Record<'starter' | 'pro' | 'max', string>
+  cells: Record<'trial' | 'starter' | 'pro' | 'max', string>
 }[] = [
-  {
-    name: 'Walk-up orders',
-    footnote: '1',
-    values: { starter: '0%', pro: '0%', max: '0%' },
-  },
-  {
-    // One row: the included allowance (£1,500 / £2,000) shown BEFORE the 0.99% fee — "first £X of online orders
-    // free, then 0.99% + card fee". Starter = Pay at Hatch (no online card orders).
-    name: 'Online orders',
-    footnote: '2',
-    values: {
-      starter: 'Pay at Hatch',
-      pro: '£1,500 free, then 0.99% + card fee',
-      max: '£2,000 free, then 0.99% + card fee',
-    },
-  },
+  { name: 'Walk-up orders',         footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%',     max: '0%'     } },
+  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: '£1,500', max: '£2,000' } },
+  { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: '0.99%',  max: '0.99%'  } },
 ]
 
 export const FEATURE_SECTIONS: FeatureSection[] = [
