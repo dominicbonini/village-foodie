@@ -576,7 +576,7 @@ export async function sendConfirmationEmail(params: {
 }
 
 export async function sendCancellationEmail({
-  to, customerName, orderId, truckName, reason, paymentStatus,
+  to, customerName, orderId, truckName, reason, paymentStatus, paymentState,
 }: {
   to: string
   customerName: string
@@ -584,10 +584,35 @@ export async function sendCancellationEmail({
   truckName: string
   reason: string | null
   paymentStatus: string | null
+  /** WHAT WAS TRUE OF THE MONEY WHEN THE ORDER WAS CANCELLED, from lib/payments/email-payment-state —
+   *  the same resolver every other order email asks. Absent falls back to `paymentStatus`, so an older
+   *  caller renders exactly what it rendered before this parameter existed.
+   *  'held' IS THE ONE THIS EXISTS FOR: a cancelled held order has had its authorisation released, and
+   *  the customer needs to hear that no money was taken rather than nothing at all. */
+  paymentState?: EmailPaymentState
 }): Promise<void> {
   const reasonLine = reason ? `<p style="color:#475569">${reason}</p>` : ''
-  const refundLine = paymentStatus === 'paid'
-    ? `<p>Your refund will be processed automatically within 3–5 working days.</p>`
+  // "AUTOMATICALLY" WAS ALWAYS WRONG AND IS MORE WRONG NOW THAT A BUTTON EXISTS.
+  // Refunds are operator-authorised: a human opens the order, chooses an amount and a reason, and
+  // presses it. CANCELLING AN ORDER ISSUES NO REFUND — this email fires on a cancellation, so the old
+  // sentence promised, on the truck's behalf, an action that no code performs and that the operator may
+  // decide differently. And the timeframe was never ours: "3-5 working days" is the card networks'
+  // settlement window quoted as a commitment.
+  // IT STILL ANSWERS THE QUESTION THE CUSTOMER HAS — who to ask — which is the one thing they need.
+  // Character for character the sentence app/order/[id]/manage already settled on in August.
+  // THE HOLD CASE IS NOT THE REFUND CASE AND MUST NOT BORROW ITS SENTENCE. Nothing was ever taken from
+  // a held card, so "any refund is handled by the truck" would send a customer chasing money that never
+  // left their account. The release happens in the cancel path; this says so.
+  const refundLine = paymentState === 'held' || paymentState === 'held_short'
+    ? `<p>Your card was held for this order, not charged. That hold has been released and no money has been taken.</p>`
+    : (paymentState === 'captured' || paymentState === 'part_paid' || (!paymentState && paymentStatus === 'paid'))
+    ? `<p>If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.</p>`
+    : ''
+  // ONE DECISION, TWO RENDERINGS. The text twin must never disagree with the HTML about money.
+  const refundText = paymentState === 'held' || paymentState === 'held_short'
+    ? ' Your card was held for this order, not charged. That hold has been released and no money has been taken.'
+    : (paymentState === 'captured' || paymentState === 'part_paid' || (!paymentState && paymentStatus === 'paid'))
+    ? ` If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.`
     : ''
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
@@ -604,7 +629,7 @@ export async function sendCancellationEmail({
     to,
     subject: `Your order has been cancelled — ${truckName}`,
     html,
-    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${paymentStatus === 'paid' ? ' Your refund will be processed within 3–5 working days.' : ''} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
+    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${refundText} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
     truckName,
   })
 }
@@ -627,8 +652,9 @@ export async function sendEventCancellationEmail({
     ? new Date(eventDate).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
     : null
   const noteLine = note ? `<p>${note}</p>` : ''
+  // Same correction as the cancellation email above, for the same reasons.
   const refundLine = paymentStatus === 'paid'
-    ? ' Your refund will be processed automatically within 3–5 working days.'
+    ? ` If you paid by card, any refund is handled by ${truckName} directly — please contact them about it.`
     : ''
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">

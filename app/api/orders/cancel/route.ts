@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendCancellationEmail } from '@/lib/email'
+// RELEASE ONLY. It cannot capture and it refuses an order whose money was already taken; see the module.
+import { releaseHoldForCancelledOrder } from '@/lib/payments/release-hold'
+import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
 import {
   removeOrderFromProductionSlot,
   buildItemCatMap,
@@ -106,6 +109,25 @@ export async function POST(req: NextRequest) {
       // ceiling tally automatically (was: releaseOptionStock, the removed decrement pool).
     }
 
+    // THE HELD CARD, AND THIS IS THE PATH NOBODY IS WATCHING.
+    // A customer cancelling inside their window is the worse of the two cases: no operator is present,
+    // and before this the authorisation simply sat on their card for about a week against an order that
+    // no longer existed. Neither sweep could see it — the capture sweep excludes 'cancelled' by design
+    // and the abandonment sweep owns drafts that were never promoted.
+    // THE ORDER IS ALREADY CANCELLED ABOVE. This runs after, cannot throw, and cannot fail the request:
+    // a customer must not be told their cancellation failed because Stripe was slow. A release that
+    // fails writes hold_release_failed and leaves the authorisation findable.
+    // ONLY EVER RELEASES: a captured order is refused by the module, because giving money back is a
+    // refund and a refund is somebody's decision, not a side effect of a cancellation.
+    const paymentState = await resolveEmailPaymentState(supabase, order.order_key)
+    await releaseHoldForCancelledOrder(supabase, {
+      orderKey: order.order_key,
+      truckId: order.truck_id,
+      trigger: 'customer_cancel',
+      actor: { actorKind: 'unknown', actorId: null, actorLabel: null },
+      source: 'web',
+    })
+
     // Send cancellation email to customer
     if (order.customer_email) {
       await sendCancellationEmail({
@@ -115,6 +137,9 @@ export async function POST(req: NextRequest) {
         truckName: truck?.name || '',
         reason: null,
         paymentStatus: order.payment_status ?? null,
+        // Resolved BEFORE the release above, so it still reads 'held' rather than the 'hatch' a stamped
+        // draft would produce. The email says what was true when they cancelled.
+        paymentState,
       })
     }
 

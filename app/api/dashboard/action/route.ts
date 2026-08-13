@@ -29,6 +29,11 @@ import { loadPriceBook, repriceOrder, toMinor, type RepriceItem } from '@/lib/or
 // is the only thing that moves the other side of `balance = total_minor - paid`. See the EDIT branch.
 import { recordCollectionPayment, reverseCollectionPayment, recalcOrderPayment } from '@/lib/payments/ledger'
 import { captureOnConfirmation } from '@/lib/payments/capture'
+// 🔴 EVERY REFUND GUARD LIVES IN THAT MODULE, NOT HERE. This route validates the request's shape and
+// renders the outcome; the amount, the already-refunded figure and the fit are decided there.
+import { refundOrder, REFUND_REASONS } from '@/lib/payments/refund'
+// 🔴 THE HOLD BEHIND A CANCELLED ORDER. Release only — it cannot capture and it refuses a captured order.
+import { releaseHoldForCancelledOrder } from '@/lib/payments/release-hold'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { assignBuzzer } from '@/lib/buzzer'
@@ -340,7 +345,27 @@ export async function POST(req: NextRequest) {
       const { cancellationReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      // ── 🔴 WHAT THE MONEY WAS DOING, ASKED BEFORE ANYTHING MOVES. ────────────────────────────────
+      // Resolved here rather than after the release, because releasing stamps `authorization_cancelled_at`
+      // and the resolver would then answer 'hatch' — "Pay at the truck on collection" — to a customer
+      // whose order has just been cancelled. One read, one answer, used by the email below.
+      const cancelPaymentState = await resolveEmailPaymentState(supabase, orderKey)
       await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // ── 🔴 THE ORDER IS CANCELLED FIRST, AND THE HOLD IS RELEASED AFTER. ────────────────────────
+      // ── WHY THIS ORDERING, WHEN THE REFUND-ON-CANCEL USES THE OPPOSITE ONE ─────────────────────
+      // The refund goes FIRST because a refund that fails must not leave a cancelled order with the
+      // customer's money still taken and nobody looking at it — money OUT is the thing that must not be
+      // silently skipped. A HOLD is not money out: nothing has been taken, and a release that fails
+      // leaves an authorisation that expires on its own in about a week. So the costs are reversed, and
+      // so is the ordering: an operator cancelling mid-service must never be blocked by Stripe being
+      // slow or unreachable, and this call cannot fail the request — every outcome is a return value.
+      // ⚠️ IT ONLY EVER RELEASES. See lib/payments/release-hold: a captured order is refused outright.
+      const released = await releaseHoldForCancelledOrder(supabase, {
+        orderKey, truckId: truck.id, trigger: 'operator_cancel', actor, source: actorSource,
+      })
+      if (released.status === 'released') {
+        console.log(`[cancel] hold released pi=${released.paymentIntentId} order_key=${orderKey} (operator)`)
+      }
       if (order.event_date) {
         // order.slot may be null (ASAP) — resolved to the event-start window so it unbooks.
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -353,7 +378,16 @@ export async function POST(req: NextRequest) {
       // ceiling tally automatically (was: releaseOptionStock, the removed decrement pool).
       if (order.customer_email) {
         const reasonLine = cancellationReason ? `<p style="color:#475569">${cancellationReason}</p>` : ''
-        const refundLine = order.paid_at ? `<p>Your refund will be processed automatically within 3–5 working days.</p>` : ''
+        // 🔴 THE RESOLVER, NOT `paid_at`. That column is never set by the capture path, so this line
+        // could never fire for a card order at all — the gate was as wrong as the sentence was. The same
+        // resolver every other order email asks now decides, and it distinguishes the case this build
+        // exists for: a HELD card, where nothing was taken and the hold has just been released.
+        const refundLine =
+          cancelPaymentState === 'held' || cancelPaymentState === 'held_short'
+            ? `<p>Your card was held for this order, not charged. That hold has been released and no money has been taken.</p>`
+          : cancelPaymentState === 'captured' || cancelPaymentState === 'part_paid'
+            ? `<p>If you paid by card, any refund is handled by ${truck.name} directly — please contact them about it.</p>`
+            : ''
         await notifyCustomer(truck, order.customer_email, `Your order has been cancelled — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
             <p>Hi ${order.customer_name || 'there'},</p>
@@ -890,6 +924,57 @@ export async function POST(req: NextRequest) {
         total: newTotal,
         ...(slotWarning ? { slotWarning } : {}),
       })
+    }
+
+    // ── 🔴 REFUND — OPERATOR-AUTHORISED, CARD ONLY ────────────────────────────────────────────────
+    // ── WHAT THIS ROUTE DOES AND DOES NOT DECIDE ──────────────────────────────────────────────────
+    // It decides NOTHING about money. The amount, the reason and the note arrive from a form; every
+    // question that matters — is there a card charge, how much has already gone back, does this fit —
+    // is answered inside lib/payments/refund, from our ledger and from Stripe. This handler validates
+    // the SHAPE of the request and renders the outcome.
+    // ⚠️ NOT OFFLINE-REPLAYABLE, AND DELIBERATELY NOT IN THE OUTBOX. A queued refund would be a Stripe
+    // call replayed blind against a position that has since moved. The card submits it online only.
+    if (action === 'refund') {
+      const rawAmount = body.amount_minor
+      const reason = body.reason
+      const note = typeof body.note === 'string' ? body.note.trim() : ''
+      if (!REFUND_REASONS.includes(reason)) {
+        return NextResponse.json({ error: 'Choose a reason for this refund.' }, { status: 400 })
+      }
+      // ⚠️ THE NOTE IS REQUIRED FOR 'other' AND THE SERVER SAYS SO TOO. A required field enforced only in
+      // the browser is a field that is empty in the audit log the first time somebody uses a stale tab.
+      if (reason === 'other' && !note) {
+        return NextResponse.json({ error: 'Add a note explaining this refund.' }, { status: 400 })
+      }
+      const amountMinor = typeof rawAmount === 'number' ? Math.round(rawAmount) : NaN
+      if (!Number.isFinite(amountMinor) || amountMinor <= 0) {
+        return NextResponse.json({ error: 'Enter an amount greater than zero.' }, { status: 400 })
+      }
+      const outcome = await refundOrder(supabase, {
+        orderKey, truckId: truck.id, amountMinor, reason, note: note || null, actor, source: actorSource,
+      })
+      switch (outcome.status) {
+        case 'refunded':
+          return NextResponse.json({
+            success: true, refunded: true, refundId: outcome.refundId, amountMinor: outcome.amountMinor,
+            status: outcome.balance?.status ?? null,
+          })
+        case 'pending':
+          // 🔴 A 200, AND IT MUST NOT SAY "REFUNDED". Stripe has accepted it and the money has not moved;
+          // the ledger is untouched and the order still reads paid. Reporting success here is the
+          // false-success class this codebase has already paid for twice.
+          return NextResponse.json({
+            success: true, refunded: false, pending: true, refundId: outcome.refundId, amountMinor: outcome.amountMinor,
+          })
+        case 'refused':
+          // 409, like every other guard refusal on this route, carrying the figure the operator needs.
+          return NextResponse.json(
+            { error: outcome.detail, refundRefused: outcome.reason, remainingMinor: outcome.remainingMinor },
+            { status: 409 },
+          )
+        default:
+          return NextResponse.json({ error: outcome.detail }, { status: 502 })
+      }
     }
 
     // ── ITEM AVAILABILITY (sold out toggle) — PER-EVENT (Phase 5) ──────────────

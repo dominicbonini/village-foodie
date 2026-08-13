@@ -319,7 +319,12 @@ export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number,
   return `collect:${orderKey}:${paidBeforeMinor}:${balanceMinor}`
 }
 
-async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<LedgerRow[]> {
+// 🔴 EXPORTED FOR lib/payments/refund, AND FOR THAT REASON ONLY. A refund needs the ONLINE CHARGE ROWS
+// themselves — their amounts and the intent id on `external_ref` — which no balance can carry. Reading
+// order_payments by hand at the call site would lose the four safety properties this function is: the
+// order_key scope filter and its runtime assertion, the widened mode filter, and annotateTestAccountRows.
+// ⚠️ VISIBILITY ONLY. Not one character of the body changed.
+export async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<LedgerRow[]> {
   const { data, error } = await supabase
     .from('order_payments')
     .select(LEDGER_ROW_COLUMNS)

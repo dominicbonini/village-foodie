@@ -20,6 +20,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { promoteDraft } from '@/lib/payments/promote-draft'
 import { keepAlive } from '@/lib/runtime/after-response'
+import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy'
 
 export const runtime = 'nodejs'
 
@@ -80,15 +81,6 @@ async function refusalOnDraft(
   }
 }
 
-/**
- * ⚠️ THE SAME SENTENCES promoteDraft BUILDS, AND THAT DUPLICATION IS DELIBERATE AND UNHAPPY.
- *
- * promoteDraft composes the customer's wording and returns it — but it does not PERSIST it; only the
- * machine reason ("stock: Fish Cake") is written to the draft. So a caller that lost the claim race can
- * see WHY it was refused and cannot see what the customer was told. The DRY fix is to persist the
- * sentence, or to export one builder both sides call, and both mean editing promoteDraft's refusal path.
- * Reported rather than done. If promoteDraft's copy ever changes, change it here too.
- */
 /** The refusal landing URL: the customer's own event, then the sentence. Both or neither is wrong. */
 function refusedUrl(menuUrl: string, eventId: string | null, message: string): string {
   const url = new URL(menuUrl)
@@ -110,17 +102,25 @@ function namesFromReason(reason: string | null): string[] {
   return reason.slice(reason.indexOf(': ') + 2).split(', ').map(s => s.trim()).filter(Boolean)
 }
 
+/**
+ * The sentence for a refusal SOMEBODY ELSE made.
+ *
+ * ✅ THE SOLD-OUT WORDING IS NO LONGER WRITTEN TWICE. promoteDraft composes it and does not persist it —
+ * only the machine reason ("stock: Fish Cake, Chicken Satay") reaches the draft — so this rebuild is
+ * unavoidable, but it now goes through the SAME builder promoteDraft calls. One wording, one file.
+ * ⚠️ The two non-sold-out branches keep their own words because they describe different facts.
+ */
 function messageForRecordedReason(reason: string | null): string {
   const generic = 'Sorry — we could not place your order. No money has been taken.'
   if (!reason) return generic
-  const named = reason.includes(': ') ? reason.slice(reason.indexOf(': ') + 2).split(', ')[0] : ''
   if (reason === 'truck_missing') return 'This truck is no longer taking orders. No money has been taken.'
-  if (!named) return generic
+  const named = namesFromReason(reason)
+  if (!named.length) return generic
   if (reason.startsWith('category_closed:')) {
-    return `Sorry — ${named} closed while you were paying, so we could not place your order. No money has been taken.`
+    return `Sorry — ${named[0]} closed while you were paying, so we could not place your order. No money has been taken.`
   }
   if (reason.startsWith('stock:') || reason.startsWith('option_sold_out:') || reason.startsWith('option_ceiling:')) {
-    return `Sorry — ${named} sold out while you were paying, so we could not place your order. No money has been taken.`
+    return soldOutRefusalMessage(named, 'paying') ?? generic
   }
   return generic
 }

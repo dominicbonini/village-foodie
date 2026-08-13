@@ -21,6 +21,7 @@ import {
   getOrderCookSecs, getCombinedUrgency, cookAmberLeadMins
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
+import { PaymentActionsModal } from '@/components/dashboard/PaymentActionsModal'
 import { useToasts } from '@/lib/useToasts'
 import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
 import { ToastStack } from '@/components/ToastStack'
@@ -384,6 +385,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[breachDismissedSig,setBreachDismissedSig]=useState<string|null>(null)
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
+  // 🔴 THE COMPLETED ROW'S MODAL, WHICH IS THE ACTIVE LIST'S MODAL. One order_key at a time — the row
+  // has no card and no local state of its own, so the page holds which one is open.
+  const[payModalOrder,setPayModalOrder]=useState<string|null>(null)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
   const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
   const[categoryConfigs,setCategoryConfigs]=useState<Record<string,{secs:number;batch:number}>>({})
@@ -486,6 +490,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showCancelModal,setShowCancelModal]=useState(false)
   const[cancellingOrder,setCancellingOrder]=useState<Order|null>(null)
   const[cancelReason,setCancelReason]=useState('')
+  // ── 🔴 CANCELLING A PAID ORDER IS TWO DECISIONS, NOT ONE. ──────────────────────────────────────
+  // Whether to cancel, and whether the money goes back. They are separate because a no-show — the truck
+  // cooked the food and nobody came — is a real cancellation that must NOT return the money, and
+  // assuming every cancellation refunds would hand it back without asking.
+  const[cancelRefund,setCancelRefund]=useState(true)
+  const[cancelRefundReason,setCancelRefundReason]=useState('customer_cancelled')
+  const[cancelError,setCancelError]=useState<string|null>(null)
+  const[cancelBusy,setCancelBusy]=useState(false)
   const[cancelNote,setCancelNote]=useState('')
   // Reject (pending-order review) — REQUIRED reason, mirrors the cancel modal pattern.
   const[showRejectModal,setShowRejectModal]=useState(false)
@@ -1702,6 +1714,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   // orderKey is the UUID row identity. Display number comes from the looked-up order.
+  // ── 🔴 THE REFUND SUBMIT. ONLINE ONLY, AND DELIBERATELY NOT THROUGH doAction. ──────────────────
+  // doAction routes through `gatedAction`, which queues to the offline outbox when the device is off
+  // the network. A refund is a Stripe call whose guards are computed from a position that moves — a
+  // queued one would replay blind against a charge that may already have been refunded. So this posts
+  // directly, and if the request cannot be made the operator is told rather than promised.
+  // ⚠️ IT RETURNS WORDS, NOT A STATUS. The modal renders whatever comes back; the three outcomes that
+  // matter (refunded · accepted-but-not-yet-moved · refused) each get their own sentence here.
+  const submitRefund=async({orderKey,amountMinor,reason,note}:{orderKey:string;amountMinor:number;reason:string;note:string})=>{
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'refund',order_key:orderKey,amount_minor:amountMinor,reason,note})})
+      const data=await res.json().catch(()=>({}))
+      const money=`£${(amountMinor/100).toFixed(2)}`
+      if(!res.ok) return {ok:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
+      fetchAll()
+      // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
+      // charge as `pending` when the connected account's balance is short; no money has moved yet and
+      // the ledger is untouched. Reporting it as done would be the false-success class again.
+      if(data?.pending) return {ok:true,message:`${money} refund sent. Stripe is processing it — the order will show as refunded once the money has actually gone back.`}
+      return {ok:true,message:`${money} has been refunded to the customer's card.`}
+    }catch{
+      return {ok:false,message:'We could not reach the payment system, so nothing was refunded. Check your connection and try again.'}
+    }
+  }
+
   const doAction=async(action:string,orderKey:string)=>{
     if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
     if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
@@ -2031,7 +2068,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const orderKey=cancellingOrder.order_key
     const displayId=cancellingOrder.id
     const fullReason=[cancelReason,cancelNote].filter(Boolean).join(' — ')
+    // ── 🔴 THE REFUND GOES FIRST, AND A FAILED REFUND DOES NOT CANCEL THE ORDER. ─────────────────
+    // Cancel-then-refund can leave a cancelled order with the money still taken and nobody looking at
+    // it. This way a failure leaves the order exactly as it was, with the error on screen and the
+    // operator's decision still to make — the recoverable direction.
+    // ⚠️ THE SAME PATH THE REFUND FORM USES. No second way to issue one: same route, same guards, same
+    // idempotency key, same ledger row.
+    const rows=payments[orderKey]??[]
+    const refundableMinor=Math.max(0,
+      rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
+      -rows.filter((r:any)=>r.kind==='refund').reduce((t:number,r:any)=>t+r.amount_minor,0))
+    if(cancelRefund&&refundableMinor>0){
+      setCancelBusy(true);setCancelError(null)
+      const res=await submitRefund({orderKey,amountMinor:refundableMinor,reason:cancelRefundReason,note:fullReason||''})
+      setCancelBusy(false)
+      if(!res.ok){setCancelError(res.message);return}
+      showToast(res.message)
+    }
     setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
+    setCancelRefund(true);setCancelRefundReason('customer_cancelled');setCancelError(null)
     setActionLoading(`cancel-${orderKey}`)
     try{
       // Through the offline GATE (FIX 2): online → normal write; offline → durable outbox + queued. The
@@ -3081,13 +3136,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -3151,12 +3206,45 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             ↩ Undo
                           </button>
                         )}
+                        {/* ── 🔴 THE MONEY CHIP THIS ROW NEVER HAD, AND THE ONLY WAY INTO A REFUND FROM HERE.
+                            A completed order LEAVES the board, so the card's PAID chip — the tap target for
+                            every payment correction — is unreachable for exactly the orders most likely to
+                            need one. This is that chip, in the card's own vocabulary and words: PAID,
+                            REFUNDED, or the amount given back. Tapping it opens the SAME modal the card
+                            opens, so there is one refund UI and not two.
+                            ⚠️ RENDERED ONLY WHEN THERE IS SOMETHING TO ACT ON — money recorded against the
+                            order. An unpaid or cancelled-before-payment row is unchanged, and the red
+                            "Record payment" repair beside it is untouched. */}
+                        {(()=>{const bal=getOrderBalance(o as never,payments[o.order_key]??[])
+                          if(bal.paidMinor<=0&&bal.status!=='refunded'&&bal.status!=='part_refunded')return null
+                          const label=bal.status==='refunded'?'REFUNDED':bal.status==='part_refunded'?`£${(bal.balanceMinor/100).toFixed(2)} REFUNDED`:'PAID'
+                          const tone=bal.status==='refunded'||bal.status==='part_refunded'?'bg-slate-200 text-slate-700':'bg-green-100 text-green-700'
+                          return (
+                            <button onClick={()=>setPayModalOrder(o.order_key)} title="Tap to refund or correct this payment"
+                              className={`text-[10px] font-black px-1.5 py-0.5 rounded-full whitespace-nowrap ${tone}`}>{label}</button>
+                          )})()}
                         <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
                       </div>
                     </div>
                   )})}
                 </div>
                 )}
+                {/* ONE modal for the list, driven by which order_key is open. The figures are derived
+                    from the SAME ledger rows the chip above read; the server recomputes both. */}
+                {payModalOrder&&(()=>{const o=otherOrders.find(x=>x.order_key===payModalOrder)
+                  if(!o)return null
+                  const rows=payments[o.order_key]??[]
+                  const bal=getOrderBalance(o as never,rows)
+                  return (
+                    <PaymentActionsModal open onClose={()=>setPayModalOrder(null)}
+                      orderId={String(o.id)} orderKey={o.order_key} paidMinor={bal.paidMinor}
+                      cardChargeMinor={rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((s:number,r:any)=>s+r.amount_minor,0)}
+                      refundedMinor={rows.filter((r:any)=>r.kind==='refund').reduce((s:number,r:any)=>s+r.amount_minor,0)}
+                      hasReversibleInPersonPayment={rows.some((r:any)=>r.kind==='charge'&&r.channel!=='online'&&r.livemode===true)}
+                      onUndoPayment={()=>doAction('undo_mark_paid',o.order_key)}
+                      undoLoading={actionLoading===`undo_mark_paid-${o.order_key}`}
+                      onRefund={submitRefund}/>
+                  )})()}
               </div>
             )}
             {pendingOrders.length===0&&confirmedOrders.length===0&&(
@@ -4064,6 +4152,59 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <h3 className="text-lg font-semibold text-slate-900">Cancel order #{cancellingOrder.id}?</h3>
               <p className="text-sm text-slate-500 mt-1">{cancellingOrder.customer_name} · £{cancellingOrder.total.toFixed(2)}</p>
             </div>
+            {/* ── 🔴 WHAT HAPPENS TO THE MONEY, STATED BEFORE THE OPERATOR PRESSES ANYTHING. ────────
+                Four different things can be true of a cancelled order's money and only one of them is a
+                refund. Each says what IS true rather than what usually is:
+                  card money taken  -> offer the refund, with the amount, and let them decline it
+                  card held         -> nothing was taken; do NOT promise a refund for money that never moved
+                  cash taken        -> there is no card to refund; the cash is handed back at the truck
+                  nothing taken     -> no block at all, and the modal is exactly as it was */}
+            {(()=>{const rows=payments[cancellingOrder.order_key]??[]
+              const cardMinor=rows.filter((r:any)=>r.kind==='charge'&&r.channel==='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
+              const refundedAlready=rows.filter((r:any)=>r.kind==='refund').reduce((t:number,r:any)=>t+r.amount_minor,0)
+              const refundable=Math.max(0,cardMinor-refundedAlready)
+              const cashMinor=rows.filter((r:any)=>r.kind==='charge'&&r.channel!=='online').reduce((t:number,r:any)=>t+r.amount_minor,0)
+              const held=heldAuthorisations.has(cancellingOrder.order_key)
+              const money=(m:number)=>`£${(m/100).toFixed(2)}`
+              if(refundable>0)return(
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-amber-900">Cancel this order and refund {money(refundable)} to the customer&apos;s card?</p>
+                  <label className="flex items-start gap-2 mt-3 text-sm text-amber-900">
+                    <input type="checkbox" checked={cancelRefund} onChange={e=>{setCancelRefund(e.target.checked);setCancelError(null)}} className="mt-0.5"/>
+                    <span>Refund {money(refundable)} to their card</span>
+                  </label>
+                  {cancelRefund?(
+                    <label className="block mt-3">
+                      <span className="text-xs font-semibold text-amber-900 uppercase tracking-wide">Refund reason</span>
+                      <select value={cancelRefundReason} onChange={e=>setCancelRefundReason(e.target.value)}
+                        className="mt-1 w-full border border-amber-200 rounded-xl px-3 py-2.5 text-sm bg-white">
+                        {[['customer_cancelled','Customer cancelled'],['item_unavailable','Item unavailable'],['not_collected','Order not collected'],['wrong_or_missing_item','Wrong or missing item'],['quality_issue','Quality issue'],['duplicate_payment','Duplicate payment'],['other','Other']].map(([v,l])=>(
+                          <option key={v} value={v}>{l}</option>
+                        ))}
+                      </select>
+                    </label>
+                  ):(
+                    /* 🔴 THE NO-SHOW. The food was made and nobody came, so the money stays with the
+                       truck — a real cancellation that must not return it. Said plainly, because an
+                       unticked box beside an amount is otherwise easy to misread. */
+                    <p className="text-xs text-amber-800 mt-2">The order will be cancelled and the {money(refundable)} will stay with you. Nothing goes back to the customer&apos;s card.</p>
+                  )}
+                </div>
+              )
+              if(held)return(
+                <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
+                  <p className="text-sm text-indigo-900">Their card is <strong>held, not charged</strong> — no money has been taken, so there is nothing to refund. Cancelling releases the hold straight away.</p>
+                </div>
+              )
+              if(cashMinor>0)return(
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <p className="text-sm text-slate-700">{money(cashMinor)} was taken in person. There is no card payment to refund — hand the money back at the truck, and use the PAID chip on the order to remove the record.</p>
+                </div>
+              )
+              return null})()}
+            {cancelError&&(
+              <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{cancelError}</p>
+            )}
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
               <select value={cancelReason} onChange={e=>setCancelReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
@@ -4078,8 +4219,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
             </div>
             <div className="flex gap-3">
-              <button onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
-              <button onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm">Cancel order</button>
+              <button disabled={cancelBusy} onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('');setCancelRefund(true);setCancelRefundReason('customer_cancelled');setCancelError(null)}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
+              <button disabled={cancelBusy} onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">{cancelBusy?'Refunding…':'Cancel order'}</button>
             </div>
           </div>
         </div>

@@ -60,6 +60,13 @@ import { enforceStockLimits } from '@/lib/stock-availability'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { isDemoIdentifier } from '@/lib/demo'
 import { toMinor } from '@/lib/order-repricing'
+// 🔴 THE SOLD-OUT SENTENCE LIVES IN ONE PLACE. Three runtimes render it — here, the return route when the
+// OTHER trigger refused and only the machine reason survived, and the order page for a pay-at-hatch
+// refusal that has no server sentence at all. See lib/payments/sold-out-copy.
+import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy'
+
+/** The one refusal we cannot name a cause for. Every other branch says what happened. */
+const GENERIC_REFUSAL = 'Sorry — we could not place your order. No money has been taken.'
 
 export type PromoteResult =
   /** An order now exists for this draft — created by this call. */
@@ -76,7 +83,11 @@ export type PromoteResult =
  * Marking first and failing to cancel would leave money held with a row claiming it was released — and
  * the sweep, which looks for uncancelled authorisations, would never look at it again.
  */
-async function releaseHold(
+// 🔴 EXPORTED FOR lib/payments/release-hold, AND FOR THAT REASON ONLY. A cancelled order's hold is the
+// same act as a refused promotion's: cancel at Stripe, then stamp the draft, in that order. Writing a
+// second one would be a second place for the ordering above to be got wrong.
+// ⚠️ VISIBILITY ONLY. Not one character of the body changed.
+export async function releaseHold(
   supabase: SupabaseClient,
   draft: Pick<OrderDraftRow, 'order_key' | 'truck_id' | 'payment_intent_id'>,
 ): Promise<boolean> {
@@ -174,7 +185,7 @@ export async function promoteDraft(
       await markPromotionFailed(supabase, orderKey, `option_sold_out: ${soldOutOption}`)
       const cancelled = await releaseHold(supabase, draft)
       return { status: 'refused', orderKey, reason: `option_sold_out: ${soldOutOption}`, cancelled,
-               customerMessage: `Sorry — ${soldOutOption} sold out while you were paying, so we could not place your order. No money has been taken.` }
+               customerMessage: soldOutRefusalMessage([soldOutOption], 'paying') ?? GENERIC_REFUSAL }
     }
 
     // ── 3. THE LOCK. Everything binding happens inside it. ─────────────────────────────────────
@@ -207,15 +218,17 @@ export async function promoteDraft(
           const names = shortfall.map(s => s.name).join(', ')
           await markPromotionFailed(supabase, orderKey, `stock: ${names}`)
           const cancelled = await releaseHold(supabase, draft)
+          // 🔴 EVERY NAME, NOT THE FIRST. The guard can refuse on several lines at once, the page removes
+          // all of them, and a sentence that admits to one is a sentence the basket then contradicts.
           return { status: 'refused', orderKey, reason: `stock: ${names}`, cancelled,
-                   customerMessage: `Sorry — ${shortfall[0].name} sold out while you were paying, so we could not place your order. No money has been taken.` }
+                   customerMessage: soldOutRefusalMessage(shortfall.map(s => s.name), 'paying') ?? GENERIC_REFUSAL }
         }
         const optShort = await checkOptionCeilingShortfall(supabase, draft.truck_id, eventRow.id, items as never, deals as never)
         if (optShort && optShort.length) {
           await markPromotionFailed(supabase, orderKey, `option_ceiling: ${optShort[0].name}`)
           const cancelled = await releaseHold(supabase, draft)
           return { status: 'refused', orderKey, reason: `option_ceiling: ${optShort[0].name}`, cancelled,
-                   customerMessage: `Sorry — ${optShort[0].name} sold out while you were paying, so we could not place your order. No money has been taken.` }
+                   customerMessage: soldOutRefusalMessage(optShort.map(o => o.name), 'paying') ?? GENERIC_REFUSAL }
         }
       }
 
@@ -323,7 +336,7 @@ export async function promoteDraft(
         await markPromotionFailed(supabase, orderKey, `insert_failed: ${insertErr?.message ?? 'unknown'}`)
         const cancelled = await releaseHold(supabase, draft)
         return { status: 'refused', orderKey, reason: 'insert_failed', cancelled,
-                 customerMessage: 'Sorry — we could not place your order. No money has been taken.' }
+                 customerMessage: GENERIC_REFUSAL }
       }
 
       // ── 7a. 🔴 THE ORDER EXISTS. ERASE THE DRAFT'S COPY OF THE CUSTOMER'S DETAILS. ─────────────

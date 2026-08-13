@@ -7,6 +7,7 @@ import { STATUS } from './types'
 import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime, getOrderCookSecs, cookAmberLeadMins } from './helpers'
 import type { CatConfig } from '@/lib/prep-utils'
 import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
+import { PaymentActionsModal, type RefundSubmit } from '@/components/dashboard/PaymentActionsModal'
 import { BTN_COLOURS } from '@/lib/ui-tokens'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 
@@ -84,6 +85,7 @@ export function OrderCard({
   slots,
   actionLoading,
   onAction,
+  onRefund,
   onEdit,
   categoryOrder,
   itemCategoryMap,
@@ -108,6 +110,11 @@ export function OrderCard({
   slots: Slot[]
   actionLoading: string | null
   onAction: (action: string, orderKey: string) => void
+  /** 🔴 ISSUE A REFUND. Optional: a surface that has not wired one gets the modal exactly as it read
+   *  before the refund form existed. NOT routed through `onAction` — that goes through the offline
+   *  outbox, and a Stripe refund replayed blind against a position that has since moved is the one
+   *  thing this must never be. */
+  onRefund?: RefundSubmit
   onEdit: (order: Order) => void
   categoryOrder?: string[]
   itemCategoryMap?: Record<string, string>
@@ -249,6 +256,16 @@ export function OrderCard({
   const hasReversibleInPersonPayment = (ledgerRows ?? []).some(
     r => r.kind === 'charge' && r.channel !== 'online' && r.livemode === true,
   )
+
+  // ── THE TWO FIGURES A REFUND NEEDS, FROM THE ROWS THIS CARD ALREADY HAS. ───────────────────────
+  // ⚠️ A SUGGESTION, NOT AN AUTHORITY. lib/payments/refund recomputes both — the refunded half from
+  // STRIPE, because a pending refund writes no ledger row and ours would be blind to one in flight.
+  const cardChargeMinor = (ledgerRows ?? [])
+    .filter(r => r.kind === 'charge' && r.channel === 'online')
+    .reduce((sum, r) => sum + r.amount_minor, 0)
+  const refundedMinor = (ledgerRows ?? [])
+    .filter(r => r.kind === 'refund')
+    .reduce((sum, r) => sum + r.amount_minor, 0)
 
   // 🔴 THE OVERLAY FOLDS INTO THE RESOLVER'S BOOLEANS, RIGHT HERE, so EVERY consumer below — the chip,
   // the pay buttons, the primary action, the tap targets — reads ONE pair of values and CANNOT diverge
@@ -519,52 +536,28 @@ export function OrderCard({
   // a guaranteed no-op that would return "Undone — payment removed" and change nothing.
   // ⚠️ IT NAMES THE REAL ROUTE, WHICH IS STRIPE, BECAUSE THE REFUND UI IS NOT BUILT. When it is, this is
   // the sentence that changes and the only one — the branch itself stays.
-  const removePaymentModal = !confirmRemovePayment ? null : (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={e => e.target === e.currentTarget && setConfirmRemovePayment(false)}>
-      <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
-        {hasReversibleInPersonPayment ? (
-          <>
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
-              <p className="text-sm text-slate-500 mt-2">
-                This removes the <strong className="text-slate-700">{money(balance.paidMinor)}</strong> recorded
-                against order <strong className="text-slate-700">#{order.id}</strong>. The order stays where it is;
-                only the payment record is removed.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setConfirmRemovePayment(false)}
-                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
-              <button
-                onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
-                disabled={isLoading('undo_mark_paid')}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">
-                {isLoading('undo_mark_paid') ? '…' : 'Remove payment'}
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Paid by card</h3>
-              <p className="text-sm text-slate-500 mt-2">
-                Order <strong className="text-slate-700">#{order.id}</strong> was paid by card, so there is no
-                payment record to remove here — the money is already on the customer&apos;s card.
-              </p>
-              <p className="text-sm text-slate-500 mt-2">
-                To give it back you need to <strong className="text-slate-700">refund it in Stripe</strong>, on
-                your own Stripe dashboard. Removing the record here would not return anything.
-              </p>
-            </div>
-            <button onClick={() => setConfirmRemovePayment(false)}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">
-              Got it
-            </button>
-          </>
-        )}
-      </div>
-    </div>
+  // 🔴 THE MODAL IS NOW components/dashboard/PaymentActionsModal — SHARED WITH THE COMPLETED LIST.
+  // The JSX that stood here moved out whole; every word of the "Remove payment?" branch and every word of
+  // the "Paid by card" branch went with it, along with the condition that chooses between them. What is
+  // NEW there is the third branch — the refund form — which renders only when the caller supplies
+  // `onRefund`. The card supplies it when the dashboard passes one down, so a surface that has not wired
+  // a refund gets exactly the two branches it had before.
+  // ⚠️ The card still owns the STATE and the tap targets: `confirmRemovePayment` is unchanged, the effect
+  // that clears it when the payment state moves is unchanged, and both triggers below are untouched.
+  const removePaymentModal = (
+    <PaymentActionsModal
+      open={confirmRemovePayment}
+      onClose={() => setConfirmRemovePayment(false)}
+      orderId={String(order.id)}
+      orderKey={order.order_key}
+      paidMinor={balance.paidMinor}
+      cardChargeMinor={cardChargeMinor}
+      refundedMinor={refundedMinor}
+      hasReversibleInPersonPayment={hasReversibleInPersonPayment}
+      onUndoPayment={() => onAction('undo_mark_paid', order.order_key)}
+      undoLoading={isLoading('undo_mark_paid')}
+      onRefund={onRefund}
+    />
   )
 
   // ── 🔴 THE PART-PAID LINE. ITS OWN ROW, ABOVE THE ITEMS, BELOW THE HEADER. ──────────────────────
