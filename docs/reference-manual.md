@@ -16,6 +16,34 @@ August 2026
 
 # Changelog
 
+## V11.13 — 13 August 2026 (evening, later)
+
+**The platform went live.** Live keys, live webhook destinations, live payment-method configuration — and,
+found on the way, **a webhook that would have discarded every live event in silence.**
+
+Also: **six `sk_test_` guards rather than the two that were known about**, one hardcoded copy of the plan
+table found and killed, the customer menu reclaimed 16px on phones, and the Connect button turned out
+**never to have been gated at all** — what blocked onboarding was a code guard removed the same day.
+
+### 🔴 THE WEBHOOK DISCARDED EVERY LIVE EVENT — FOUND BEFORE ANY LIVE TRUCK
+
+Four branches, all `if (livemode !== false)`. A live event carries `livemode: true`, fails the test, and
+was dropped — marked `ignored:livemode` and answered **`200 {received: true}`**, so **Stripe saw a healthy
+endpoint, retried nothing, and the dashboard showed green.** Fixed as `if (livemode === null)`. See §37.
+
+### Corrections carried in this release
+
+- 🔴 **The go-live checklist said TWO `sk_test_` guards. There were SIX** — see §27, corrected in place.
+- 🔴 **A stale connected-account id is a fifth Payments state nobody anticipated**, and the truck was
+  offering customers a card that could not work. See §37.
+- 🔴 **The Connect button was never gated by a plan or a flag.** §37.
+
+### Deployment record
+
+Many deploys across 13 August. **No migration was required by any of this session's work.** The live
+switch was environment variables plus a clean rebuild — 🔴 **Vercel binds env vars at BUILD time**, so an
+empty commit is the reliable way to make a value take effect.
+
 ## V11.12 — 13 August 2026 (evening)
 
 **Refunds, end to end, and the cancellation gap they exposed.** An operator can now refund from either order list, full or partial, with a reason and a note; a cancellation offers the refund rather than leaving it dangling; and a cancelled held order finally releases its authorisation instead of sitting on a customer's card for a week.
@@ -2826,6 +2854,42 @@ New columns on `truck_events`: `paused_until`, `online_paused_until`, `extra_wai
 > **DEFERRED (V6.6) — "per-event operating overrides".** kitchen capacity, `time_selection_enabled`, slot cadence, and `auto_accept` are truck-wide and COULD optionally vary per event (festival vs quiet pub). These are NOT cross-event contamination (they're set-once operating modes, not live-event activities), so they were deliberately left truck-scoped; making them per-event-overridable is a post-trial config feature (Section 27).
 
 
+## The customer menu on phones (V11.13)
+
+**`px-2 sm:px-4`** reclaims 16px at 390px. ⚠️ **Only 34px of the 66px was ever the card** (32px padding +
+2px border), and its frame is 2px — **so this was a padding problem, not a card-removal problem**, and the
+white-on-`bg-slate-50` contrast plus that border is the only thing separating the menu from the sticky
+basket bar.
+
+⚠️ **`<main>` is `max-w-lg`**, so at 1400px the page is already a centred 512px column — edge-to-edge
+would gain 34px for a cosmetic loss. **Phone-only change.**
+
+🔴 **The tab strip was deliberately left alone.** It already scrolls; reclaiming the width takes the track
+from 324px to 390px against **~480px of tabs**, so it improves the clip without fixing it — **and the clip
+is the only scroll affordance.** Turning a visible clip into a silent one is worse.
+
+⚠️ **Two sticky elements mirror the card's padding by hand** (`-mx-N px-N`, the tab bar and the
+subcategory header). They are derived values, not choices, and must move with it or the pinned white band
+overhangs the border mid-scroll.
+
+## The required-choice label — form, not words (V11.13)
+
+*"Required · Choose one"* was added, then removed. ⚠️ **`previewGroups` is filtered to
+`minRequiredForGroup(g) > 0`, so EVERY group reaching that line is required** — the word printed on every
+modifier item and distinguished nothing. **The identical argument that keeps amber off this line.**
+
+✅ **The job moved onto the options themselves**, using the page's own patterns: **`Choose:`** as the
+leader for a `hide_name` group (the verb from `Choose time`, `Choose an option`, `Choose required
+options`), `{g.name}:` where a name exists, and the options stepping from normal `slate-500` to
+**`font-semibold slate-700`** — one step below the modal's own option chips.
+
+🔴 **Why it now reads as a choice:** the options no longer share the description's exact styling · **a `·`
+between two emphasised nouns reads as alternation, where between two plain ones it read as a list** ·
+every line now has a leader. **Zero horizontal pixels**, inside rows widened by 16px the same morning.
+
+⚠️ **Deliberate loss:** the line no longer states the cap for a `max_choices: 2` group. That reaches the
+customer in the modal, as it did before.
+
 # 6. Prep time and queue logic
 
 ## Queue-aware ready time formula
@@ -4295,6 +4359,25 @@ pg_net prunes its own response rows, **so the row count stays low while the file
 
 ⚠️ **Neither table is a diagnostic dead end.** `net._http_response` is where an Edge Function's actual response body and status code live (V8.6) — it is the only way to see whether a dispatched cron job's function did anything. **Do not prune it so aggressively that a failure becomes un-investigable**; the retention window is a debugging budget, not just a storage one.
 
+## Cash versus card machine — a capture gap, not a display one (V11.13)
+
+🔴 **165 of 166 in-person rows carry `method = NULL`**, so cash and a truck's own card machine are
+indistinguishable for almost all history.
+
+⚠️ **The dominant cause is a SETTING, not a defect:** `test-truck` reads `takes_cash = false`, so the
+💷/💳 buttons have never rendered there. **Both surfaces that ask already pass the value; every path that
+does not ask already writes NULL** — which is the honest value. **No backfill: inventing 'cash' would be
+fabricating a financial record.**
+
+🔴 **One structural gap, now fixed:** the `completionPresses === 'one'` branch **returned before the
+`takesCash` split**, so a truck that had explicitly opted into distinguishing could never record it. **Two
+new actions** (`collected_cash` / `collected_card`), one tap either way.
+
+⚠️ **They must NOT go into `PAYMENT_ACTIONS`** — they change status too, so the status overlay already
+moves the card, and listing them would **double-report one queued op on two overlays.** ⚠️ **Six client
+branches tested `action === 'collected'` by string** and would have silently dropped the new names; they
+now share one predicate.
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -4940,6 +5023,47 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## 🔴 V11.13 — added 13 August 2026 (evening, later)
+
+⚠️ **Four items raised by this session's work ALREADY EXIST below under V11.12** — refund reporting, the
+customer-cancels-a-paid-order notification, the third cancel-only sweep, and the walk-up cash/card gap.
+**They are not repeated here.** Only what is genuinely new is listed.
+
+- 🔴 **The key-mismatch check is not on the customer order page**, which is where it actually costs
+  someone. The Payments tab is early warning; the order page is the blast site. Shape: `authorize.ts`
+  refuses the intent and falls back to pay-at-hatch — **a customer must never see a keys diagnostic.**
+- 🔴 **A stale connected-account id has no fifth state.** Recommended shape recorded in §37: key it on the
+  **stored mode disagreement**, never on the provider's error text, and **never auto-clear the column.**
+- **The tab strip scroll affordance** — clipping on the customer menu *and* Manage's feature tabs. Same
+  missing cue, two pages. ⚠️ **The clip is currently the only affordance**, so widening without adding one
+  makes it worse.
+- **`findPlanParityViolations`** — whether it should have caught the fee-row divergence, given it exists
+  to bind marketing to gates. It ran clean throughout while the landing page and Billing disagreed.
+- **Two prose restatements of the fee figures** remain outside `TRANSACTION_ROWS` — a marketing paragraph
+  on the landing page and one line on the admin page. Both will drift.
+- **Two card titles still say "Connected"** against a *Not set up → Ready* pill progression (§37).
+
+### 🔴 GO-LIVE STATE, 13 August
+
+**Done:** platform account activated · live keys confirmed reaching the app (**proved by Stripe's own
+error naming `sk_live_`**) · two live webhook destinations with seven event types · both signing secrets
+appended to the comma-separated variable · payment method configuration (Link **blocked**, Google Pay
+**on**) · the domain script unblocked and confirmed `mode=LIVE` · admin read-only access · the mismatch
+guard.
+
+**Proven:** the Connect flow reaches Stripe with live keys and renders the embedded form — an account was
+created (`acct_1U425JKAf3umug8O`), not completed, and its id cleared from `operators`. ⚠️ **The Stripe
+account cannot be deleted and remains on the platform, incomplete.**
+
+**Remaining, and it is Gusto's to do:**
+
+1. **Gusto onboards** signed in as their own account — `requireOwner` means nobody can do it for them.
+2. 🔴 **`node scripts/register-payment-domain.cjs acct_THEIR_ID`** — **fails completely silently.** Expect
+   `registered=1 … failed=0` with `applePay=active googlePay=active`.
+3. **`account.updated` should flip `stripe_charges_enabled`** with no manual step. **Never tested live.**
+4. 🔴 **A £1 order with your own card before their first customer**, refunded immediately. ~20p in fees.
+   **Sandbox has been wrong about production behaviour twice this week.**
+
 ## 🔴 V11.12 — added 13 August 2026 (evening)
 
 - 🔴 **REFUND REPORTING.** `get_report` sums `orders.total` and **never touches `order_payments`**, so unpaid orders count as revenue and **no refund could ever appear**. ✅ **DIAGNOSED (V11.12):** live for August, Reports says **£544.50** against **£471.50** actually received — a **£73.00 gap with no refunds in the period at all**, because eleven unpaid orders count in full while two double-charged orders pull it back. 🔴 **So refunds are not the biggest thing wrong there.** The smallest honest change is a **label** (*"Orders sold"*, not *"Total"*) plus a **separate refunds list**; making the figure net-of-refunds would restate every historical export. ⚠️ **A paid-then-CANCELLED order is dropped from Reports entirely** by the status filter — which is exactly how a refund now happens. ⚠️ **A refunds-by-date-range query has no usable index:** the only `(truck_id, created_at)` index is partial on `not livemode`.
@@ -4988,13 +5112,14 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 Test and live mode are almost entirely separate in Stripe. **Before a real truck trades:**
 
-1. **Swap `STRIPE_SECRET_KEY` to live, and remove the `sk_test_` guards** at `lib/stripe/connect.ts:88` and `checkout/route.ts:40-47`. On the current build **`livemode: true` can never arrive from Stripe at all.**
+1. ~~**Swap `STRIPE_SECRET_KEY` to live, and remove the `sk_test_` guards** at `lib/stripe/connect.ts:88` and `checkout/route.ts:40-47`.~~ ✅ **DONE (V11.13) — AND THE COUNT WAS WRONG.** 🔴 **There were SIX guards, not two, and `checkout/route.ts` NO LONGER EXISTS** — hosted Checkout was deleted in V11.10 and its guard had been **copied into `authorize.ts`, `capture.ts` and `refund.ts`**, with a sixth, **silent** one inside `connectConfigured()` (which returned `false` against a live key, so the platform would have reported itself unconfigured). ⚠️ **The lesson is in §35: grep for the rail, not for the file that documented it.** Replaced by a key-mode-versus-account-mode check that **logs rather than throws** — the account's mode is a cached column and a stale cache must not veto real money.
 2. **Create a live-mode webhook destination** and add its signing secret to the comma-separated `STRIPE_WEBHOOK_SECRET`. **Then rebuild** — Vercel binds env vars at build time.
 3. **Subscribe every event type on the live destination:** `payment_intent.amount_capturable_updated`, `payment_intent.succeeded`, `refund.created`, `refund.updated`, **`refund.failed`** (V11.11 — the ONLY event that announces a refund reversal), `charge.refunded`. ⚠️ **On the destination that actually receives events** — everything so far has arrived on the platform-scoped one.
    ⚠️ **And check the connected-account payment method configuration** while there: Link off, Google Pay on. Both are account settings, not intent parameters (§37).
    ✅ **DONE ON THE SANDBOX ACCOUNT (V11.12):** `refund.failed` subscribed · Link **off** · Google Pay **on** · payment-method domain registered on `acct_1U30w22fB4PPCw2D`. **All four must be repeated on the live account and the live destination.**
-4. **Re-run payment-method-domain registration with a live key**, for the platform and for every connected account.
-5. **Onboard each truck as a live connected account.** The test one does not carry over.
+   ✅ **AND NOW DONE LIVE (V11.13):** two live webhook destinations carrying seven event types · both signing secrets appended to the comma-separated `STRIPE_WEBHOOK_SECRET` · Link **blocked**, Google Pay **on** · the domain script unblocked and confirmed `mode=LIVE`. 🔴 **`STRIPE_SECRET_KEY` and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are NOT comma-separated** — only `STRIPE_WEBHOOK_SECRET` is parsed as a list, and comma-separating the other two produces an invalid key that fails every Stripe call. ⚠️ **Nothing carries over from sandbox** except Site links, which Stripe documents as shared.
+4. **Re-run payment-method-domain registration with a live key**, for the platform and for every connected account. 🔴 **THIS IS THE ONE THAT FAILS COMPLETELY SILENTLY** — Apple Pay simply does not appear and nothing anywhere says why. ✅ **The script's own `sk_test_` refusal was removed (V11.13)** and it now prints `mode=LIVE|TEST|UNRECOGNISED` before it acts; expect `registered=1 … failed=0` with `applePay=active googlePay=active`.
+5. **Onboard each truck as a live connected account.** The test one does not carry over. 🔴 **AND NOBODY CAN DO IT FOR THEM (V11.13):** `requireOwner` requires the session's `operators.auth_user_id` row to have an `id` equal to that truck's `operator_id`, so **the operator must be signed in as themselves.** ⚠️ **Proven live (V11.13):** the flow reaches Stripe with live keys and renders the embedded form — an account was created (`acct_1U425JKAf3umug8O`), not completed, and its id cleared from `operators`. 🔴 **That Stripe account cannot be deleted and remains on the platform, incomplete.**
 6. **Site links** — verify what it actually gates.
 
 ## 🔴 V11.9 — added 11 August 2026 (afternoon)
@@ -6404,6 +6529,35 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **🔴 A LOOSE RESTATEMENT WILL BE BELIEVED OVER THE AUTHORITATIVE ENTRY. Read the section, not the summary.** The V11.4 brief asserted four manual errors and **only one was real**. The `order_payments` cascade was recorded **correctly in §27 on 30 July** and restated ambiguously in a changelog line as *"no FK cascade concerns pending"* — and it was the ambiguous line that got believed and built on. **State provenance as read-from-the-manual, name the section you read, and verify anything load-bearing against the live schema.** The corollary for writing: a changelog restatement of a schema fact is a **liability**, because it will be read instead of the schema section.
 
+**🔴 A SILENT DISCARD IS WORSE THAN A LOUD FAILURE, AND A 200 MAKES IT PERMANENT.** *Evidence (V11.13):*
+the webhook answered `200 {received: true}` to every live event it dropped, so Stripe never retried and
+the dashboard stayed green. **A handler that refuses work must not report success**, or the refusal
+becomes invisible to the only system that could have recovered it.
+
+**🔴 A GUARD COPIED IS A GUARD MULTIPLIED.** *Evidence (V11.13):* two `sk_test_` refusals were known
+about; **six existed**, because the original had been copied into three descendants of a route that no
+longer exists, and a sixth was silent. **When removing a rail, grep for the rail rather than the file that
+documented it.**
+
+**🔴 A CACHED COLUMN MUST NOT VETO REAL MONEY.** *Evidence (V11.13):* the successor to the `sk_test_`
+guards compares key mode against account mode and **logs rather than throws**, because the account's mode
+is a cached column and a stale cache would block a legitimate payment.
+
+**🔴 BUILD-TIME AND REQUEST-TIME VALUES CAN SILENTLY DISAGREE.** *Evidence (V11.13):* `NEXT_PUBLIC_*` is
+inlined into the bundle at build time while the secret key is read per request. **Comparing the server's
+two env vars would have tested whether variables agree and missed a stale bundle**, which is the likelier
+fault. The comparison must span the two runtimes, not two variables.
+
+**AN ID THAT CANNOT BE RESOLVED IS NOT A CONNECTION.** *Evidence (V11.13):* a sandbox `acct_` under live
+keys produced a configuration error and a greyed button, when the honest reading is *not connected*.
+⚠️ **Detect it on the stored mode disagreement, not on the provider's error text** — deterministic, no
+network call, and it cannot misfire during an outage.
+
+**🔴 THE FOURTH CONSECUTIVE ASSERTION THAT MATCHED DOCUMENTATION RATHER THAN CODE.** *Evidence (V11.13):*
+four verification harnesses in four turns reported false failures because their filters matched the
+comments describing the change. **Fixed at the root** with a block-aware comment stripper rather than
+patched again. ⚠️ **A test that passes for the wrong reason is worse than one that fails.**
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -6782,6 +6936,148 @@ The cancel modal carried **its own cancellation reason** (three values, customer
 - ~~**Partial capture** is not built.~~ ✅ **BUILT (V11.11)** — see the capture rule above.
 - ~~**The refund UI.**~~ ✅ **BUILT (V11.12)** — see above. What remains is **reporting**, which cannot see a refund at all.
 - ~~**Five customer-facing sentences still promise an automatic refund.**~~ ✅ **CORRECTED (V11.11-V11.12)** — four were rewritten, the fifth was already right, and the cancellation email now states what actually happened.
+
+## 🔴 GOING LIVE — 13 August 2026 (V11.13)
+
+### 🔴 THE WEBHOOK DISCARDED EVERY LIVE EVENT
+
+**Four branches, all `if (livemode !== false)`.** A live event carries `livemode: true`, fails the test,
+and was dropped — marked `ignored:livemode`, answered **`200 {received: true}`**, so **Stripe saw a
+healthy endpoint, retried nothing, and the dashboard showed green.**
+
+| Event | What it would have cost |
+|---|---|
+| `payment_intent.amount_capturable_updated` | 🔴 **The draft never promotes.** A live customer authorises, the hold lands on their real card, **no order is ever created.** They see a confirmation with nothing behind it, the truck never gets the ticket, and the hold sits until it expires. **The single worst outcome available on this codebase, and it produces no error anywhere.** |
+| `account.updated` | `stripe_charges_enabled` never flips, so a truck completes onboarding and **the card option never appears at all** |
+| The four refund events | Money leaves, the ledger never learns, the order still reads PAID |
+| `payment_intent.succeeded` | The redundant capture-recording path is lost |
+
+✅ **Fixed as `if (livemode === null)`** — an event whose `livemode` is not a boolean is **still**
+discarded, because an unclassifiable event must never write a money gate. 🔴 **It must NOT become
+`livemode !== true`**, which would invert the bug and silently drop the sandbox.
+
+⚠️ **The code's own comment predicted this** — *"When live accounts are switched on, this condition is the
+thing to change, deliberately and in its own change."* Its precondition was met the same day.
+
+⚠️ **The `ignored:livemode` path is now unreachable** — the malformed-event refusal already 400s on a null
+`livemode` before dispatch. The gates are defence in depth, proven with four unclassifiable payloads.
+
+### Which live-mode configuration items fail silently
+
+| Item | Failure mode |
+|---|---|
+| Live webhook destination + signing secret | **Loud** — but the customer sees silence |
+| Every event subscribed on it | 🔴 **Silent** — a missing event type is simply never delivered |
+| 🔴 **Payment method domain registration** | 🔴 **COMPLETELY SILENT. THE WORST ONE.** Apple Pay does not appear and nothing says why |
+| Payment method configuration (Link off, Google Pay on) | Loud |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | **Loud, at the worst moment** — the Element fails at mount |
+
+🔴 **`STRIPE_SECRET_KEY` and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are NOT comma-separated.** Only
+`STRIPE_WEBHOOK_SECRET` is parsed as a list. Comma-separating the other two produces an invalid key and
+every Stripe call fails authentication.
+
+### 🔴 BUILD-TIME AND REQUEST-TIME KEYS CAN SILENTLY DISAGREE — a guard now compares them
+
+⚠️ **`NEXT_PUBLIC_*` is inlined at BUILD time while the secret key is read PER REQUEST**, so the two can
+diverge and **nothing compared them.** ✅ **A mismatch guard now does** — comparing the browser's inlined
+publishable key against the server's per-request secret mode, because comparing the server's two env vars
+would test whether variables agree and **miss a stale bundle, which is the likelier fault.** It shows the
+Payments tab's only red card, names which side is in which mode **without rendering any key**, and
+disables the button.
+
+⚠️ **Recommended and NOT built:** the same check on the customer order page, where a mismatch actually
+costs someone. The right shape there is `authorize.ts` refusing the intent and falling back to
+pay-at-hatch rather than showing a diagnostic — it touches the money path and wants its own turn.
+
+### 🔴 A STALE CONNECTED-ACCOUNT ID IS A FIFTH STATE NOBODY ANTICIPATED
+
+Test Kitchen's `stripe_account_id` held a **sandbox** `acct_`. Under live keys Stripe answers *"does not
+have access to account…"*, the status route 500s, and the client's non-403 branch renders it as a
+**configuration error with a greyed button** — when functionally **nothing is connected at all**.
+
+⚠️ **`derivePaymentsState` already agreed** — `status` never resolves, so it sees `accountId: null` and
+returns `not_connected`. **Only `configError` was disabling the button.**
+
+🔴 **AND THE TRUCK WAS OFFERING CUSTOMERS A CARD THAT COULD NOT WORK.** `resolveOnlineCardPayments`
+**ignores `stripe_account_id` entirely** and keys on `stripe_charges_enabled = true` with
+`online_payments_paused_at = null`. **Clearing the id alone would not have fixed that** — hence
+`charges_enabled` first.
+
+🔴 **DO NOT CLEAR `stripe_account_livemode`.** `annotateTestAccountRows` tests
+`stripe_account_livemode === false` to stamp `account_is_test`, and **arm (b) is what makes sandbox rows
+count.** Clearing it made **£164.50 charged / £6.00 refunded / £158.50 net** vanish from every total,
+**failing closed with no warning.** ⚠️ **The same happens legitimately** when a truck onboards live: its
+sandbox history stops counting, correctly, and the rows themselves are untouched.
+
+⚠️ **Recommended, not built:** detect this as a fifth state keyed on the **stored mode disagreement**, not
+on Stripe's error text — deterministic, no Stripe call, cannot misfire during an outage. 🔴 **Never
+auto-clear the column.** That is an operator's connection, not ours to delete.
+
+⚠️ **`create_account` is idempotent on the id** (`alreadyExisted: true`), so ungreying the button without
+clearing the column would have created nothing.
+
+### 🔴 THE CONNECT BUTTON WAS NEVER GATED
+
+No plan gate, no truck column, no env flag. **What blocked onboarding was `assertSandboxKey`** — a code
+guard, removed the same day. The per-truck behaviour was **`requireOwner`**: the session's
+`operators.auth_user_id` row must have an `id` equal to that truck's `operator_id`.
+
+🔴 **`truck_users` is deliberately never consulted**, so no membership role helps — and it is **empty
+across the whole database.** Every truck has a different operator with a different auth user, so **exactly
+one truck's Payments tab can work per browser session.** Test Kitchen worked because that account **owns**
+it, **not because it is admin.**
+
+⚠️ **`/api/manage` authenticates on the token alone and defaults `userRole` to `'owner'`** — which is why
+every *other* tab loads for every truck.
+
+**Two admin notions exist:** platform-level **`operators.is_admin`** (checked by `verifyAdmin`, gating the
+admin console and `/landing` — **not** the cron routes, which use `CRON_SECRET`), and per-truck
+`truck_users.role`. **Only `dbonini82@gmail.com` holds the first.**
+
+✅ **Admins now get READ, not PRESS.** `status` and `requirements` for admins; `create_account` and
+`account_session` owner-only — **the second is the sharper refusal, since its client secret mounts the
+bank-details-and-ID form.** `requirePlatformAdmin` runs **only after `requireOwner` refuses** and returns
+**the truck's** operator id — returning the admin's own would have read and cached the admin's Stripe
+account while displaying it as the truck's. **Connect.js is deliberately not mounted for admins.**
+
+⚠️ **Honest limit:** for an unconnected truck this shows the same near-empty card plus a *"Viewing as
+platform admin"* note. **The value only appears once a truck has connected.**
+
+### Copy on the Payments tab (V11.13)
+
+**The headline was a fixed string over any non-200**, so a **permissions** answer rendered as a **setup**
+problem. Now three ways: **403** → *"Only the truck's owner can set up payments"* (slate, not amber) ·
+**missing publishable key** → *"Card payments aren't configured yet"* · **anything else** → *"We couldn't
+check this truck's Stripe account"*.
+
+**The mode line was a bare JSX literal with no condition** — it said *"Test mode"* whatever keys were set,
+which is exactly why two rebuilds did not move it. **That absence was the proof it was stale.**
+
+**The live variant was added, then removed on instruction; the TEST variant stays.** ⚠️ **They are not
+symmetrical:** live is the state an operator already assumes and the surrounding copy states three times
+over; **test is the surprising one** — the onboarding is real, it asks for real bank details and photo ID,
+and **nothing else on the page says no money can move.**
+
+⚠️ **Absence now means "not test", not "unknown."** An unrecognised key renders nothing, identically to
+live. **A missing warning about test mode is the failure worth having; a false one is not.**
+
+### 🔴 THE BUTTON RENAME REVERSES A DOCUMENTED DECISION
+
+`Connect Stripe` → **`Set up online payments`**, with five sibling strings swept (`Connecting…` →
+`Setting up…`, `Not connected` → `Not set up` on both title and pill, the admin note, and the trial
+reassurance in `lib/settings-copy.ts`).
+
+⚠️ **The 10 August note said explicitly: "THE LABEL STAYS 'Connect Stripe'. DO NOT GENERICISE IT."** Its
+argument: pressing this hands the operator straight to Stripe's own embedded form asking for bank details
+and photo ID, and **a button that did not name Stripe, opening a stranger's identity check, is more
+alarming than one that did.**
+
+**Reversed on instruction, with the old argument preserved verbatim in the comment.** 🔴 **The invariant
+worth keeping is that something within a glance of the button names Stripe** — the section body and the
+card body both still do.
+
+⚠️ **Residual, reported not fixed:** the pills now read *Not set up → Action needed → Checking → Ready*
+while two card titles still say *"Connected"*.
 
 ## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
 

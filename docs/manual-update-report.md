@@ -1,168 +1,173 @@
-# Reference manual — V11.7 → V11.8
+# Reference manual — V11.12 to V11.13
 
-**Date:** 11 August 2026
-**Result: 🔴 INTEGRITY GATE PASSED. Zero characters dropped, zero vanished, zero new characters introduced.**
-**Prompt integrity:** nothing arrived garbled, and no instruction contradicted another.
-
-**Edited only `docs/reference-manual.md`.** No source file touched. No cap sync, no `next dev`, no `next build`.
+Date: 13 August 2026
+Status: APPLIED. `docs/reference-manual.md` is at **V11.13**. **No other file was changed.**
 
 ---
 
-## 🔴 THE INTEGRITY GATE
+## 0. ⚠️ THE ENCODING — THE DOWNLOAD INSTRUCTION WORKED
 
-### Version on disk — verified FIRST
+The delta arrived through the chat attachment path **garbled again**, in the identical way as the last
+three: `â` for em-dash, `â ï¸` for ⚠️, `ð´` for 🔴, `Â£` for £, `Â§` for §. UTF-8 read as Latin-1,
+applied uniformly.
 
-```
-line 1  : HatchGrab Engineering Reference Manual · V11.7
-line 9  : **Version 11.7**
-```
-
-✅ **V11.7 on disk, as the prompt expected. V11.8 is the correct next number and none was skipped.**
-
-⚠️ **Three version markers, not two.** Line 1 (title), line 9 (front matter) **and line 6713 (footer)** — the footer repeats the title verbatim. All three now read V11.8; a missed footer would have left the document disagreeing with itself.
-
-### Census BEFORE
+🔴 **But the on-disk copy is clean.** `~/Downloads/manual-delta-v11.13.md`:
 
 ```
-DISTINCT = 71      TOTAL_NONASCII = 6867
+$ file ~/Downloads/manual-delta-v11.13.md
+Unicode text, UTF-8 text, with very long lines (367)
+
+$ head -3
+# Reference manual deltas — going live, 13 August 2026 (evening)
+> **PROVENANCE.** Written against **V11.12** (7,682 → 7,863 lines).
 ```
 
-### Census AFTER
+Census of the on-disk file: `£ § · — … → ⚠️ ✅ 💳 💷 🔴` — every glyph correct.
 
-```
-DISTINCT = 71      TOTAL_NONASCII = 7093      (+226)
-```
-
-### 🔴 PER-CHARACTER DIFF — every change, with its cause
-
-| Char | | Before | After | Δ | Accounted for by |
-|---|---|---|---|---|---|
-| `£` | U+00A3 | 104 | 106 | **+2** | £1,500 / £2,000 in the platform-fee section |
-| `§` | U+00A7 | 529 | 533 | **+4** | four cross-references to §37 |
-| `·` | U+00B7 | 96 | 103 | **+7** | the six-state list and table separators |
-| `×` | U+00D7 | 74 | 75 | **+1** | *"50 keys × 500 chars"* (Checkout metadata limit) |
-| `–` | U+2013 | 68 | 69 | **+1** | *"3–5 working days"* in the cancellation-email backlog item |
-| `—` | U+2014 | 3587 | 3672 | **+85** | em dashes throughout the new prose |
-| `…` | U+2026 | 63 | 64 | **+1** | an ellipsis inside a quoted Stripe sentence |
-| `→` | U+2192 | 1168 | 1175 | **+7** | *"false → true"*, *"V11.7 → V11.8"*, table arrows |
-| `⚠` | U+26A0 | 250 | 275 | **+25** | warning markers in the new sections |
-| `️` | U+FE0F | 249 | 274 | **+25** | ⚠️'s variation selector — **exactly matches ⚠, as it must** |
-| `✅` | U+2705 | 28 | 34 | **+6** | proven-by-probe markers |
-| `🔴` | U+1F534 | 284 | 346 | **+62** | critical markers in the new sections |
-
-```
-characters that DROPPED           : 0
-characters that VANISHED entirely : 0
-characters NEWLY introduced       : 0
-```
-
-🔴 **Every single delta is an INCREASE, every increase is a character I typed, and DISTINCT is unchanged at 71 — so no character class was lost and none was invented.**
-
-✅ **The ⚠/U+FE0F pairing is exact (+25 / +25).** A mismatch there is the classic sign of an emoji being split or half-pasted; it is the one ratio worth checking by hand, and it holds.
-
-### Garble scan
-
-| Check | Result |
-|---|---|
-| U+FFFD replacement character | **0** |
-| Classic UTF-8-as-Latin-1 mojibake (`Â£`, `â€`, `Ã©`, `â–`, `ðŸ`) | **none found** |
-
-✅ **No pre-existing garbled span was found, so none needed flagging and nothing was silently repaired.**
+**So the corruption is confined to the attachment upload path, exactly as your provenance note
+predicted, and reading from the path avoided it entirely. No transcription was needed this time** — the
+text was copied from the clean file rather than reconstructed. That is the first delta this session that
+did not have to be re-typed.
 
 ---
 
-## What changed, and where
+## 1. WHAT ALREADY EXISTED — THE GREP, BEFORE ANY WRITE
 
-| # | Location | Change |
+| Marker the delta names | Hits in V11.12 | Verdict |
 |---|---|---|
-| 1 | lines 1, 9, footer | **V11.7 → V11.8**, all three markers |
-| 2 | Changelog | 🆕 **`## V11.8 — 11 August 2026`** — the v2 move, the inversion, the real payment, the corrections |
-| 3 | Top summary, *STRIPE — the foundation is proven* | 🔴 **CORRECTED IN PLACE** |
-| 4 | §37 | 🆕 **six new subsections** (below) |
-| 5 | §35 Cross-cutting invariants | 🆕 **five new invariants, placed first** |
-| 6 | §27 Open backlog | 🆕 **`V11.8 — added 11 August 2026 (Stripe payments)`**, eleven items |
-
-### The six new §37 subsections
-
-```
-5998  ## 🔴 STRIPE CONNECT ON ACCOUNTS V2 — BUILT AND PROVEN (V11.8)
-6060  ## 🔴 AUTHORIZE-THEN-CAPTURE — PROVEN, NOT BUILT (V11.8)
-6120  ## WHAT IS BUILT ON THE PAYMENT PATH TODAY (V11.8)
-6138  ## 🔴 THE PLATFORM FEE — BLOCKED, AND BY MORE THAN A COUNTER (V11.8)
-6159  ## 🔴 RADAR — a per-transaction cost nobody chose (V11.8)
-6173  ## THE PAYMENTS TAB (V11.8)
-```
-
-⚠️ **They are placed BEFORE the V11.5 `## Stripe — what is actually built` block, with a pointer at the top** telling the reader those subsections record the v1 design and that **where they disagree, V11.8 is current.** The v1 material is **kept, not deleted** — the inversion between the two versions is itself the lesson.
-
----
-
-## 🔴 CORRECTED IN PLACE — not appended
-
-**The top summary carried this, and it is now the v1 spelling of our position rather than the current one:**
-
-> *"We want the defaults: `losses.payments` **stripe**, `fees.payer` **account**, `requirement_collection` **stripe**, `stripe_dashboard.type` **full**."*
-
-**A line was added immediately beneath it** recording that v2 writes the same position as **`fees_collector: 'stripe'`**, that **v2 has no `'account'` value**, and that the nearest-looking token means **HatchGrab pays**.
-
-⚠️ **The original line was NOT deleted, deliberately.** Someone reading a v1 example on Stripe's site needs to find our v1 spelling and be told what it became — deleting it would leave them translating the inversion themselves, which is the exact mistake the entry exists to prevent.
-
-**Two other in-place corrections in the same block:**
-
-| Was | Now |
-|---|---|
-| *"`operators` (13 columns, **no `stripe_*` today**)"* | **APPLIED V11.8** — the three columns named |
-| *"**UNBUILT:** onboarding, PaymentIntents, the customer payment path…"* | **BUILT SINCE (V11.8):** onboarding, the Payments tab, a real sandbox card payment. **STILL UNBUILT:** refunds, Terminal, Locations, subscription billing, the platform fee |
+| `livemode !== false` | 0 | new |
+| `ignored:livemode` | 0 | new |
+| `sk_test_` | **1** — `:4991`, the go-live checklist | 🔴 **CORRECTION TARGET** |
+| `assertSandboxKey` | 0 | new |
+| payment method domain | 0 | new (registration named only obliquely) |
+| `annotateTestAccountRows` | 0 | new |
+| `requireOwner` | 0 | new |
+| `truck_users` | 15 | context exists; the never-consulted rule is new |
+| `is_admin` / `verifyAdmin` | 23 / 6 | context exists; the cron attribution correction is new |
+| `Connect Stripe` / `Set up online payments` | 0 / 0 | new |
+| `px-2 sm:px-4` / `previewGroups` | 0 / 0 | new |
+| `Required · Choose one` | 0 | new |
+| `collected_cash` | 0 | new |
+| `acct_1U30w22fB4PPCw2D` | **2** — `:46`, `:4995` | 🔴 **UPDATE TARGET** |
+| `165 of 166` / `method = NULL` | 3 / 2 | ⚠️ **already recorded (V11.12) — not repeated** |
+| `checkStockShortfall` | 7 | ⚠️ **already recorded (V11.12) — not repeated** |
+| `findPlanParityViolations` | 4 | context exists; the open question is new |
+| cancel-only sweep | 2 | ⚠️ **already in backlog — not repeated** |
 
 ---
 
-## ⚠️ THE BUILT / PROVEN / UNBUILT LINE — held throughout
+## 2. CORRECTIONS — APPLIED IN PLACE, NOT APPENDED
 
-**The prompt's constraint was that nothing labelled open, unproven or unbuilt may be recorded as verified. Every new subsection carries its own status in its heading**, and the two that are not built say so before their first sentence:
+### 🔴 C1 — "two `sk_test_` guards" was wrong, and one of the two paths does not exist
 
-| Subsection | Status as written |
-|---|---|
-| Accounts v2 | **BUILT AND PROVEN** — probe results with their evidence |
-| Authorize-then-capture | 🔴 **PROVEN, NOT BUILT** — with a blockquote: *"NOTHING IN THIS SUBSECTION IS BUILT. The Stripe behaviour is measured; the design is agreed; the code does not exist."* |
-| The payment path today | **BUILT** — a real sandbox payment, zero migrations |
-| The platform fee | 🔴 **BLOCKED** |
-| Radar | ⚠️ **UNRESOLVED** on the platform cost; **CORRECTED** on who can change a tier |
-| The Payments tab | **BUILT** |
+**§27 go-live checklist, item 1.** Struck through and corrected in place:
 
-✅ **The Radar per-connected-account cost is recorded as UNRESOLVED with the two Dashboard reads that would settle it** — not as a finding. **The per-transaction figure is recorded as still hidden**, not guessed.
+> ~~Swap `STRIPE_SECRET_KEY` to live, and remove the `sk_test_` guards at `lib/stripe/connect.ts:88` and
+> `checkout/route.ts:40-47`.~~ ✅ **DONE (V11.13) — AND THE COUNT WAS WRONG.** 🔴 **There were SIX guards,
+> not two, and `checkout/route.ts` NO LONGER EXISTS** — hosted Checkout was deleted in V11.10 and its
+> guard had been copied into `authorize.ts`, `capture.ts` and `refund.ts`, with a sixth, **silent** one
+> inside `connectConfigured()`…
 
----
+**Why in place:** a reader following the checklist would have removed two guards, deployed, and hit the
+other four at the first authorisation. A second entry saying "actually six" leaves the wrong instruction
+standing where it will be read first.
 
-## Standing alone — the test the prompt set
+### C2 — the sandbox-only Stripe configuration note now has its live counterpart
 
-**This was written so a fresh planning chat can continue without the conversation.** Concretely, someone reading §37 cold now finds:
+**§27 item 3.** The V11.12 line ended *"All four must be repeated on the live account and the live
+destination."* That sentence is now answered immediately beneath it (✅ two destinations, seven event
+types, both secrets, Link blocked, Google Pay on, `mode=LIVE`), plus the 🔴 warning that
+`STRIPE_SECRET_KEY` and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are **not** comma-separated.
 
-- the **exact version string** and that it will move;
-- the **four posture properties**, which one is computed, and 🔴 **which one inverts and what the wrong value costs**;
-- **what was proven by probe versus inferred**, with the evidence inline (`balance_transaction: null`, zero refund objects, 7.00 days);
-- 🔴 **the traps**: `charge.status` reading `succeeded` uncaptured, the `@accounts` scope, the empty merchant configuration, the frozen country, the two-layer test-money exclusion;
-- **why Checkout over Payment Element**, and what swapping later would cost;
-- **the fee's three missing inputs** and why omitting it is safe;
-- **the one thing blocking live mode entirely** — Site links — at the top of the backlog.
+### C3 — item 4 annotated as the silent failure, and the script recorded as unblocked
 
----
+### C4 — item 5 annotated: `requireOwner` means nobody can onboard on a truck's behalf
 
-## Verification
+Including the live proof — `acct_1U425JKAf3umug8O` created, not completed, id cleared, and the account
+permanently undeletable.
 
-```
-$ node census.mjs docs/reference-manual.md   (before)  DISTINCT=71  TOTAL=6867
-$ node census.mjs docs/reference-manual.md   (after)   DISTINCT=71  TOTAL=7093
-$ per-character diff → 0 drops, 0 vanished, 0 new characters
+### ⚠️ C5 — a correction the delta makes to itself, carried through
 
-$ sed -n '1p;9p' + tail -1   → V11.8 · Version 11.8 · V11.8
-$ wc -l docs/reference-manual.md  → 6713 → 6978 lines (+265)
-$ git status --porcelain docs/    → only reference-manual.md and the two report files
-```
-
-✅ **No source file was touched.** ✅ **No build, dev server or cap sync was run.**
+The delta states `verifyAdmin` gates the admin console and `/landing` — **not** the cron routes, which
+use `CRON_SECRET`. The manual's 6 existing `verifyAdmin` mentions carried no cron claim, so nothing
+needed striking; the correct attribution is stated in the new §37 text.
 
 ---
 
-## One judgement call worth naming
+## 3. NEW ENTRIES
 
-⚠️ **I put the five new invariants FIRST in §35 rather than appending them.** The section opens with a CSS-overlay lesson; the new entries are money-path and API-semantics invariants and are the ones most likely to be needed by whoever opens this next. **If you would rather §35 stayed chronological, they are five contiguous paragraphs at the top of the section and move as a block.**
+| # | Where | What |
+|---|---|---|
+| A | **Changelog** | `## V11.13` — the live switch, the webhook discard, three corrections, deployment record |
+| F | **§37 Payments** | `## 🔴 GOING LIVE (V11.13)` — nine subsections: the webhook discard (with the four-event cost table), which config items fail silently, the build-time/request-time mismatch guard, the stale-account-id fifth state, the Connect button never being gated, the admin read/press split, the three-way copy, and the button rename |
+| G | **§5 Order management** | The customer menu on phones (`px-2 sm:px-4`, the 34-of-66px arithmetic, why the tab strip was left alone) · the required-choice label as form rather than words |
+| H | **§16 Database schema** | Cash versus card machine — the `takes_cash = false` setting as dominant cause, the `completionPresses === 'one'` structural gap, why the two new actions must stay out of `PAYMENT_ACTIONS` |
+| I | **§35 Invariants** | Six new invariants — silent discard + 200 · a guard copied is a guard multiplied · a cached column must not veto real money · build-time vs request-time · an unresolvable id is not a connection · the fourth consecutive assertion matching documentation |
+| J | **§27 Backlog** | `## 🔴 V11.13` — six genuinely new items plus the **GO-LIVE STATE** block (done / proven / remaining, four numbered steps for Gusto) |
+
+---
+
+## 4. 🔴 FOUR BACKLOG ITEMS DELIBERATELY NOT ADDED
+
+The delta's §27 list repeats four items that **already exist** under V11.12 at `:5069-5072`:
+
+- **Refund reporting** (`get_report` sums `orders.total`) — already there, with the £544.50 / £471.50
+  measurement the delta does not carry.
+- **A notification when a customer cancels a paid order** — already there.
+- **A third, cancel-only sweep** — already there, with its exact predicate.
+- **The walk-up flow does not record cash versus card terminal** — already there.
+
+**Adding them again would have produced four pairs of entries, one detailed and one loose** — and §35's
+own invariant says *"A LOOSE RESTATEMENT WILL BE BELIEVED OVER THE AUTHORITATIVE ENTRY."*
+
+Instead the V11.13 block opens with a pointer:
+
+> ⚠️ **Four items raised by this session's work ALREADY EXIST below under V11.12** — refund reporting, the
+> customer-cancels-a-paid-order notification, the third cancel-only sweep, and the walk-up cash/card gap.
+> **They are not repeated here.**
+
+Verified: `REFUND REPORTING` still resolves to **one** authoritative entry; the second hit is that
+pointer. Same for the sweep.
+
+### Two more the delta repeats from V11.12, also not duplicated
+
+- **`method = NULL` on 165 of 166 rows** — already at three places. The §16 entry adds only what is
+  genuinely new: the `takes_cash` cause and the one-press structural fix.
+- **`checkStockShortfall` never checking availability** — already at seven places. The delta itself says
+  *"Recorded in V11.12 and repeated here"*; it was not re-recorded.
+
+---
+
+## 5. LINE COUNT AND CENSUS
+
+| | Before | After |
+|---|---|---|
+| **Lines** | **7,864** | **8,160** (+296) |
+
+⚠️ The delta's provenance line says V11.12 was 7,863; the file measures 7,864. A one-line difference in
+how a trailing newline is counted, not a content discrepancy.
+
+### Non-ASCII census
+
+**71 character classes before, 71 after. GAINED: none.** Every glyph used was already in the manual's
+vocabulary. Counts moved only within existing classes — for example `🔴` 545, `⚠` 417, `✅` 69, `£` 168,
+`§` 558.
+
+🔴 **`grep -c "â\|Â\|ð"` returns 0** — no mojibake anywhere in the manual, confirming the on-disk read
+carried clean bytes through.
+
+---
+
+## 6. VERIFICATION
+
+- `V11.13` appears **17 times**; the two structural anchors are `:19` (changelog) and `:5026` (backlog).
+- Section order preserved — the changelog stays newest-first, and the V11.13 backlog block sits **above**
+  V11.12, matching the file's existing convention.
+- All ten edits were applied by exact-string replacement with a uniqueness assertion (`count == 1`) on
+  every anchor, so none could match in two places.
+- No source file was touched. `docs/reference-manual.md` and this report are the only changes.
+
+### Not done
+
+No `next dev`, no `next build`, no commit, no deploy. The manual records the go-live state; it does not
+perform any part of it.
