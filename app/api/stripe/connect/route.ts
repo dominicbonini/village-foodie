@@ -10,9 +10,11 @@
 // ⚠️ The account is created against the OPERATOR, so the truck token is only ever an authentication
 // device here. What gets written is `operators.stripe_account_id` for the truck's `operator_id`.
 //
-// ── 🔴 SANDBOX ONLY ────────────────────────────────────────────────────────────────────────────────
-// Every path goes through lib/stripe/connect.ts, which refuses a key that is not `sk_test_`. There is no
-// branch in this file that can bypass it.
+// ── 🔴 THE MODE IS THE KEY'S MODE ──────────────────────────────────────────────────────────────────
+// Every path goes through lib/stripe/connect.ts, which USED TO REFUSE a key that was not `sk_test_` and
+// no longer does. An account created here is live when STRIPE_SECRET_KEY is live, and the mode is not
+// assumed from that — it is READ BACK off the created account, below, and written to
+// `operators.stripe_account_livemode` in the same statement as the id.
 //
 // ── ⚠️ NOTHING HERE TOUCHES THE PAYMENT LEDGER ─────────────────────────────────────────────────────
 // No `order_payments` write, no `recordCollectionPayment`, no resolver, no setting. Connect onboarding
@@ -208,8 +210,11 @@ export async function POST(req: NextRequest) {
         )
         return NextResponse.json({ error: 'Account created but not saved — contact support' }, { status: 500 })
       }
-      // 🔴 `livemode` IS ON THE LINE. During sandbox bring-up a `livemode=true` here means a REAL account
-      // was created by a build that is supposed to refuse live keys, and that should be noticed at once.
+      // 🔴 `livemode` IS ON THE LINE, AND NOW IT IS THE ONLY PLACE THE MODE OF A NEW ACCOUNT IS STATED.
+      // It must AGREE WITH THE KEY THAT MADE THE CALL: a `livemode` that disagrees with STRIPE_SECRET_KEY
+      // means the object read back is not the object we think we created, and no truck should be trading
+      // on it. Nothing here refuses on that basis, because Stripe is the authority and it answered — but
+      // a disagreement on this line is a first-class incident, not a curiosity.
       console.log(`[stripe/connect] account created operator=${ctx.operatorId} account=${account.id} livemode=${accountLivemode}`)
 
       // ── 🔴 READ THE POSTURE BACK. NEVER INFER IT FROM WHAT WAS SENT. ───────────────────────────
@@ -299,8 +304,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
   } catch (err) {
-    // The sandbox guard throws through here too, which is intended: a misconfigured key must surface as
-    // a refusal the operator can see, not a silent no-op.
+    // A missing STRIPE_SECRET_KEY throws through here, which is intended: a misconfigured key must
+    // surface as a refusal the operator can see, not a silent no-op.
     const message = err instanceof Error ? err.message : 'Stripe request failed'
     console.error(`[stripe/connect] action=${action} operator=${ctx.operatorId} FAILED:`, message)
     return NextResponse.json({ error: message }, { status: 500 })

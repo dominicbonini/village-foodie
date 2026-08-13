@@ -47,13 +47,13 @@ import { readOrderBalance, type OrderBalance } from '@/lib/payments/ledger'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 
-/** ⚠️ The same refusal every other money path makes: this build may not move real money. */
-function sandboxKey(): string {
+/** ⚠️ THIS REFUSED ANY KEY THAT WAS NOT `sk_test_`, AND THE REFUSAL IS GONE — removed deliberately, with
+ *  the matching ones in authorize.ts, refund.ts and lib/stripe/connect.ts, so a live key can capture real
+ *  money. Presence is all that remains.
+ *  🔴 THE MODE CHECK THAT REPLACED IT IS IN `stripeAccountForTruck`, which this function already calls. */
+function stripeSecretKey(): string {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  if (!key.startsWith('sk_test_')) {
-    throw new Error('REFUSING: STRIPE_SECRET_KEY is not a sandbox key. This build may not capture real payments.')
-  }
   return key
 }
 
@@ -259,7 +259,7 @@ export async function captureOnConfirmation(
 
     let amountMinor: number
     try {
-      const stripe = new Stripe(sandboxKey())
+      const stripe = new Stripe(stripeSecretKey())
       // ⚠️ NO application_fee_amount. See the header — absence, never zero.
       // 🔴 `amount_to_capture` IS SENT ONLY WHEN IT LOWERS THE AMOUNT, so a full capture is the same
       // empty-params call it has always been and cannot change behaviour for an unedited order.
@@ -289,7 +289,7 @@ export async function captureOnConfirmation(
       // and then failed to record still gets its row on the retry.
       if (ALREADY_CAPTURED.test(message)) {
         try {
-          const stripe = new Stripe(sandboxKey())
+          const stripe = new Stripe(stripeSecretKey())
           const pi = await stripe.paymentIntents.retrieve(piId, {}, { stripeAccount: account })
           amountMinor = typeof pi.amount_received === 'number' ? pi.amount_received : 0
           if (amountMinor <= 0) return { status: 'already', paymentIntentId: piId }
@@ -337,8 +337,9 @@ export async function captureOnConfirmation(
         amountMinor,
         paymentIntentId: piId,
         // ⚠️ FROM OUR OWN KEY'S MODE, because a capture is not an event and carries no `livemode` of its
-        // own to copy. `sandboxKey()` has already refused anything but sk_test_, so this is false by
-        // construction today; it is written this way so that going live changes it without an edit here.
+        // own to copy. It was written this way so that going live would change it WITHOUT AN EDIT HERE,
+        // and that is exactly what has now happened: the key guard is gone, an `sk_live_` key makes this
+        // `true`, and every captured row starts counting as live money with no change to this line.
         livemode: !process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_'),
       })
       console.log(

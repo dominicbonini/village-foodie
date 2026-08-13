@@ -129,9 +129,14 @@ export const LEDGER_ROW_COLUMNS = 'order_key, truck_id, kind, channel, amount_mi
  *
  * ── 🔴 ARM (b), ADDED 11 AUGUST 2026 — AND IT IS STRICTLY ADDITIVE ──────────────────────────────────
  * Stripe decides `livemode` from the API key that authenticated the request, so a TEST-mode card payment
- * can ONLY ever be `livemode: false` — no Stripe feature changes that, and this build refuses live keys
- * outright. Under arm (a) alone a card payment that genuinely succeeded is invisible everywhere, which
- * is what §37's "store the livemode flag with the account id" exists to fix.
+ * can ONLY ever be `livemode: false` — no Stripe feature changes that. Under arm (a) alone a card payment
+ * that genuinely succeeded is invisible everywhere, which is what §37's "store the livemode flag with the
+ * account id" exists to fix.
+ * ⚠️ THIS ARM WAS WRITTEN WHEN THE BUILD REFUSED LIVE KEYS OUTRIGHT, AND IT NO LONGER DOES. Nothing in
+ * the arm depended on that refusal and nothing here changes: `account_is_test` comes from the ACCOUNT's
+ * own `operators.stripe_account_livemode`, which is per-account and says nothing about the platform key.
+ * A sandbox account's old test rows keep counting through arm (b) after the platform key goes live, and a
+ * live account's rows count through arm (a) — the two arms do not interfere.
  *
  * A row also counts when ALL THREE hold:
  *   1. `account_is_test === true`  — the truck's connected Stripe account is ITSELF a test account

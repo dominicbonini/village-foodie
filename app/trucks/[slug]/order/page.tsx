@@ -2606,13 +2606,25 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       return (
                         <div className="mt-1.5 space-y-0.5">
                           {previewGroups.map(g => (
-                            <p key={g.id} className="text-[0.625rem] text-slate-400 leading-snug flex flex-wrap items-center gap-x-1 gap-y-0.5">
+                            /* 🔴 text-xs AND slate-500, NOT text-[0.625rem] AND slate-400. These are the
+                               CHOICES THE CUSTOMER IS ABOUT TO MAKE — "Chicken Tikka (M)", "+£3.00" — and
+                               at 10px in slate-400 they measured about 2.8:1 against white, under the
+                               4.5:1 WCAG AA floor, on the smallest type anywhere on the card. slate-500
+                               clears the floor and 12px is one rem step, still rem-based so it scales
+                               with the OS "Larger Text" setting.
+                               ⚠️ STILL ONE STEP BELOW THE DESCRIPTION, which is text-sm in the same
+                               slate-500. The hierarchy is name > description > options, and the size
+                               carries it now that the colour no longer can. */
+                            <p key={g.id} className="text-xs text-slate-500 leading-snug flex flex-wrap items-center gap-x-1 gap-y-0.5">
                               {/* hide_name (inferred custom-extra): omit the internal "Category - Name N"
                                   label on the card preview — the options alone read clearly. */}
-                              {!g.hide_name && <span className="font-semibold text-slate-500">{g.name}:</span>}
+                              {!g.hide_name && <span className="font-semibold text-slate-600">{g.name}:</span>}
                               {g.options.map((opt, i) => (
                                 <span key={opt.id} className="inline-flex items-center gap-1">
-                                  {i > 0 && <span className="text-slate-300">·</span>}
+                                  {/* ⚠️ The separator stays LIGHTER than the text it divides — slate-400,
+                                      one step up from slate-300 so it does not vanish beside darker
+                                      options, but never competing with them. */}
+                                  {i > 0 && <span className="text-slate-400">·</span>}
                                   <span>{opt.name}{opt.price_adjustment > 0 ? ` +£${opt.price_adjustment.toFixed(2)}` : ''}</span>
                                   <OptionStockBadge remaining={opt.stock_count ?? null} />
                                 </span>

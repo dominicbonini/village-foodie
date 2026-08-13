@@ -32,16 +32,17 @@
 import Stripe from 'stripe'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
+import { describeAccountModeMismatch } from '@/lib/stripe/connect'
 import { attachPaymentIntent } from '@/lib/payments/order-drafts'
 
-/** ⚠️ The same refusal the hosted-Checkout route made, for the same reason: this build may not move real
- *  money, and a key starting `sk_live_` cannot be mistaken for anything else. */
-function sandboxKey(): string {
+/** ⚠️ THIS CARRIED THE HOSTED-CHECKOUT ROUTE'S REFUSAL — any key that was not `sk_test_` threw here —
+ *  AND THAT REFUSAL IS GONE, removed deliberately so a live key can take real payments. Presence is all
+ *  that is left, because an intent cannot be created without a key.
+ *  🔴 THE MODE IS NOW THE KEY'S MODE, EVERYWHERE, WITH NO SECOND OPINION. What is checked instead is
+ *  that the key and the connected account AGREE — see `describeAccountModeMismatch`, logged below. */
+function stripeSecretKey(): string {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  if (!key.startsWith('sk_test_')) {
-    throw new Error('REFUSING: STRIPE_SECRET_KEY is not a sandbox key. This build may not take real payments.')
-  }
   return key
 }
 
@@ -86,7 +87,9 @@ export async function authorizeDraft(
 
     const { data: operator } = await supabase
       .from('operators')
-      .select('stripe_account_id, stripe_charges_enabled')
+      // ⚠️ `stripe_account_livemode` IS READ FOR THE MISMATCH LINE ONLY. It is not a gate, it is not
+      // ANDed into `cards.offered`, and `resolveOnlineCardPayments` below never sees it.
+      .select('stripe_account_id, stripe_charges_enabled, stripe_account_livemode')
       .eq('id', truck.operator_id)
       .single()
 
@@ -107,7 +110,19 @@ export async function authorizeDraft(
       return { ok: false, reason: 'error', detail: `no payable amount (${args.amountMinor})` }
     }
 
-    const stripe = new Stripe(sandboxKey())
+    // 🔴 KEY MODE AGAINST ACCOUNT MODE, ON THE LINE, BEFORE THE INTENT. It cannot refuse — the account's
+    // mode is a cached column and a stale cache may not stop a real payment — but if the two disagree the
+    // `paymentIntents.create` below fails in a way that reads like a broken Connect install, and this is
+    // the line that says otherwise. See `describeAccountModeMismatch`.
+    const modeMismatch = describeAccountModeMismatch(operator?.stripe_account_livemode)
+    if (modeMismatch) {
+      console.error(
+        `[authorize] 🔴 MODE MISMATCH draft=${args.orderKey} truck=${args.truckId} ` +
+        `account=${operator?.stripe_account_id} — ${modeMismatch}`,
+      )
+    }
+
+    const stripe = new Stripe(stripeSecretKey())
 
     const intent = await stripe.paymentIntents.create(
       {
@@ -203,7 +218,7 @@ export async function cancelAuthorization(args: {
   reason?: 'abandoned' | 'requested_by_customer'
 }): Promise<{ ok: boolean; detail?: string }> {
   try {
-    const stripe = new Stripe(sandboxKey())
+    const stripe = new Stripe(stripeSecretKey())
     await stripe.paymentIntents.cancel(
       args.paymentIntentId,
       { cancellation_reason: args.reason ?? 'abandoned' },
@@ -222,7 +237,12 @@ export async function cancelAuthorization(args: {
 }
 
 /** The connected account a draft's intent lives on. Needed for every Stripe call, which are all
- *  account-scoped on a direct charge. Returns null when the truck has no usable Stripe account. */
+ *  account-scoped on a direct charge. Returns null when the truck has no usable Stripe account.
+ *  🔴 THE MISMATCH LINE LIVES HERE BECAUSE EVERY OTHER MONEY PATH COMES THROUGH HERE — capture, refund,
+ *  promotion, the submit route's cancel and the stale-authorisation sweep. One read, one log, and NO
+ *  CHANGE TO WHAT IS RETURNED: an account id in the wrong mode is still returned, still passed to Stripe,
+ *  and still refused by Stripe. All that changes is that the refusal has a stated cause in our own logs
+ *  instead of arriving as a permissions error. */
 export async function stripeAccountForTruck(
   supabase: SupabaseClient,
   truckId: string,
@@ -230,6 +250,12 @@ export async function stripeAccountForTruck(
   const { data: truck } = await supabase.from('trucks').select('operator_id').eq('id', truckId).single()
   if (!truck?.operator_id) return null
   const { data: operator } = await supabase
-    .from('operators').select('stripe_account_id').eq('id', truck.operator_id).single()
+    .from('operators').select('stripe_account_id, stripe_account_livemode').eq('id', truck.operator_id).single()
+  const mismatch = describeAccountModeMismatch(operator?.stripe_account_livemode)
+  if (mismatch && operator?.stripe_account_id) {
+    console.error(
+      `[authorize] 🔴 MODE MISMATCH truck=${truckId} account=${operator.stripe_account_id} — ${mismatch}`,
+    )
+  }
   return operator?.stripe_account_id ?? null
 }

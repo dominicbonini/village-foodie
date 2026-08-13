@@ -54,9 +54,13 @@
 // THE HOOK FOR EVERY TRUCK'S STRIPE FEES. It is verified by READING THE ACCOUNT BACK (see
 // `readAccountPosture`), not by trusting this constant, precisely because it has now inverted twice.
 //
-// ── 🔴 SANDBOX ONLY. NOTHING HERE MAY CREATE A LIVE ACCOUNT. ───────────────────────────────────────
-// Enforced by `assertSandboxKey` below, on the KEY rather than on a config flag: a flag can be wrong,
-// but a key that starts `sk_live_` cannot be mistaken for anything else. Every entry point calls it.
+// ── 🔴 THIS MODULE CREATES ACCOUNTS IN WHATEVER MODE THE KEY IS IN. ────────────────────────────────
+// It used to refuse anything but `sk_test_`, and that refusal is GONE — removed deliberately, in its own
+// change, so live accounts can be created. The mode of everything made here is now the mode of
+// STRIPE_SECRET_KEY, and nothing in this file second-guesses it.
+// ⚠️ WHAT REPLACED IT IS NOT ANOTHER REFUSAL. `describeAccountModeMismatch` compares the key's mode with
+// a connected account's recorded mode and returns a sentence for the log. It cannot refuse, because the
+// account's mode is a cached column and a cache may not veto real money. See the function.
 import Stripe from 'stripe'
 
 // ── 🔴 THE PINNED v2 API VERSION. ONE CONSTANT, AND IT WILL MOVE. ──────────────────────────────────
@@ -83,28 +87,72 @@ export const CONNECT_V2_POSTURE = {
 } as const
 
 /**
- * 🔴 THE LIVE-ACCOUNT GUARD. Throws rather than returning a boolean, because every caller of this module
- * would otherwise have to remember to check — and the one that forgot would create a real account.
- * ⚠️ Tested on the KEY, not on NODE_ENV, not on a `SANDBOX=true` var, and not on `livemode` in a
- * response. Configuration can disagree with reality; `sk_live_` cannot.
+ * 🔴 THE KEY, AND ONLY THAT IT EXISTS.
+ *
+ * ⚠️ THIS FUNCTION USED TO REFUSE ANY KEY THAT WAS NOT `sk_test_`, AND THAT REFUSAL HAS BEEN REMOVED
+ * DELIBERATELY, IN ITS OWN CHANGE, so a live key can create live connected accounts. What it refused
+ * was the prefix; what remains is the only condition that was ever unconditional — a key must be set,
+ * because nothing can be created without one.
+ *
+ * ⚠️ NOTHING WAS PUT IN ITS PLACE HERE, AND THAT IS THE POINT. The successor check is
+ * `describeAccountModeMismatch` below: it compares the mode of the KEY against the mode of the ACCOUNT
+ * the call is about, which is the failure that actually bites now — a sandbox `acct_` addressed with a
+ * live key returns a permissions-shaped error that reads like a broken Connect install.
  */
-function assertSandboxKey(key: string | undefined): string {
+function requireStripeKey(key: string | undefined): string {
   if (!key) {
     throw new Error('[stripe/connect] STRIPE_SECRET_KEY is not set — nothing can be created without it')
-  }
-  if (!key.startsWith('sk_test_')) {
-    throw new Error(
-      '[stripe/connect] REFUSING: STRIPE_SECRET_KEY is not a sandbox key. This build may only create ' +
-      'test-mode connected accounts. Remove this guard deliberately, in its own change, when live ' +
-      'accounts are switched on.',
-    )
   }
   return key
 }
 
-/** The platform client. Created per call rather than module-scoped so the guard runs every time. */
+/**
+ * The mode of the PLATFORM KEY. `true` for `sk_live_`, `false` for `sk_test_`, `null` when there is no
+ * key or its prefix is neither.
+ *
+ * 🔴 LEGITIMATE HERE, AND STILL FORBIDDEN FOR AN EVENT OR A LEDGER ROW. This is a fact about OUR OWN
+ * CREDENTIAL, which we hold and can read directly. `order_payments.livemode` and
+ * `stripe_webhook_events.livemode` describe SOMETHING STRIPE SENT US and must keep being copied verbatim
+ * from the object — see the webhook route. The two are not the same question and this must not become a
+ * precedent for the other.
+ */
+export function platformKeyLivemode(): boolean | null {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (typeof key !== 'string') return null
+  if (key.startsWith('sk_live_')) return true
+  if (key.startsWith('sk_test_')) return false
+  return null
+}
+
+/**
+ * 🔴 THE CHECK THAT REPLACED THE SANDBOX REFUSAL. Returns a sentence when the platform key and a
+ * connected account are in DIFFERENT modes, and `null` when they agree or when either mode is unknown.
+ *
+ * ⚠️ IT DESCRIBES, IT DOES NOT THROW, AND THE ASYMMETRY IS DELIBERATE. The account's mode reaches
+ * callers from `operators.stripe_account_livemode`, which is a CACHE of what Stripe said at onboarding.
+ * A cache that is wrong must be allowed to be wrong loudly; it must never be the thing that refuses a
+ * real payment on a real account. So every caller logs this and then proceeds, and Stripe — the only
+ * authority — decides. What the sentence buys is that the resulting failure is NAMED rather than looking
+ * like a permissions bug.
+ *
+ * ⚠️ `null` FOR UNKNOWN, NEVER A GUESS. An operator onboarded before the mode column existed reads
+ * `null`, and "we do not know" is not evidence of disagreement.
+ */
+export function describeAccountModeMismatch(accountLivemode: boolean | null | undefined): string | null {
+  const keyMode = platformKeyLivemode()
+  if (keyMode === null) return null
+  if (typeof accountLivemode !== 'boolean') return null
+  if (accountLivemode === keyMode) return null
+  return keyMode
+    ? 'platform key is LIVE but the connected account is recorded as TEST — Stripe will answer as though '
+      + 'the account does not exist, which looks like a permissions failure and is not one'
+    : 'platform key is TEST but the connected account is recorded as LIVE — a test key cannot address a '
+      + 'live account, and the error it returns will not say so'
+}
+
+/** The platform client. Created per call rather than module-scoped so the check runs every time. */
 function stripeClient(): Stripe {
-  return new Stripe(assertSandboxKey(process.env.STRIPE_SECRET_KEY))
+  return new Stripe(requireStripeKey(process.env.STRIPE_SECRET_KEY))
 }
 
 /**
@@ -390,10 +438,14 @@ export async function readAccountReadiness(accountId: string): Promise<AccountRe
 }
 
 /** True when the platform is configured enough to attempt anything. Used to render an honest empty state
- *  rather than letting a button throw. */
+ *  rather than letting a button throw.
+ *  🔴 IT NO LONGER REQUIRES `sk_test_`. That clause was a second, quieter sandbox guard: against a live
+ *  key this function returned false, so the platform would have reported itself UNCONFIGURED and shown
+ *  the empty state to a truck whose keys were perfectly good. Presence is the question being asked here;
+ *  mode is not. */
 export function connectConfigured(): boolean {
   return typeof process.env.STRIPE_SECRET_KEY === 'string'
-    && process.env.STRIPE_SECRET_KEY.startsWith('sk_test_')
+    && process.env.STRIPE_SECRET_KEY.length > 0
     && typeof process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === 'string'
     && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.length > 0
 }
@@ -417,10 +469,15 @@ export function connectConfigured(): boolean {
 // route, authenticated with the PLATFORM secret key and the connected account id in the Stripe-Account
 // header — which is what `{ stripeAccount }` sets.
 //
-// ⚠️ MODE MATTERS AND DOES NOT FLOW UPWARDS. Registering in LIVE mode also covers sandboxes; registering
-// in a SANDBOX does NOT cover live. This build refuses live keys (assertSandboxKey), so every
-// registration it performs is sandbox-only and MUST BE REPEATED IN LIVE MODE when live accounts are
-// switched on. That is a real deployment step, not a nicety.
+// 🔴 MODE MATTERS AND DOES NOT FLOW UPWARDS. Registering in LIVE mode also covers sandboxes; registering
+// in a SANDBOX does NOT cover live. Every registration performed by a `sk_test_` key — which is all of
+// them to date — covers NOTHING IN LIVE, and the registration is per CONNECTED ACCOUNT, so it must be
+// repeated on each live account as it onboards.
+// ⚠️ THIS IS THE ONE THAT FAILS SILENTLY. A missing domain registration does not error: the Payment
+// Element simply renders a card form with no Apple Pay and no Google Pay, on a live order, and the only
+// symptom is wallets that are "not showing". Registration is attempted from `registerPaymentDomains`
+// below, so a live account onboarded through this build gets it — but a live account that was linked by
+// hand, or one whose registration call failed and was logged rather than thrown, has nothing.
 
 /**
  * The domains the Payment Element is served from.
@@ -468,7 +525,7 @@ export async function registerPaymentMethodDomains(accountId: string): Promise<D
   try {
     stripe = stripeClient()
   } catch (err) {
-    // The sandbox guard, or a missing key. Report it as a failure per domain rather than throwing.
+    // A missing key. Report it as a failure per domain rather than throwing.
     return paymentMethodDomains().map(domain => ({
       domain, status: 'failed' as const,
       detail: err instanceof Error ? err.message : 'stripe client unavailable',

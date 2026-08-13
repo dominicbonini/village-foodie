@@ -26,13 +26,13 @@ import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 import type { ResolvedActor } from '@/lib/audit/actor'
 
-/** ⚠️ The same refusal every other money path makes: this build may not move real money. */
-function sandboxKey(): string {
+/** ⚠️ THIS REFUSED ANY KEY THAT WAS NOT `sk_test_`, AND THE REFUSAL IS GONE — removed deliberately, with
+ *  the matching ones in authorize.ts, capture.ts and lib/stripe/connect.ts, so a live key can send real
+ *  money back. Presence is all that remains.
+ *  🔴 THE MODE CHECK THAT REPLACED IT IS IN `stripeAccountForTruck`, which this function already calls. */
+function stripeSecretKey(): string {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  if (!key.startsWith('sk_test_')) {
-    throw new Error('REFUSING: STRIPE_SECRET_KEY is not a sandbox key. This build may not refund real payments.')
-  }
   return key
 }
 
@@ -125,7 +125,7 @@ export async function refundOrder(
   if (!account) {
     return { status: 'failed', detail: 'This truck has no Stripe account, so nothing can be refunded from here.' }
   }
-  const stripe = new Stripe(sandboxKey())
+  const stripe = new Stripe(stripeSecretKey())
 
   let refundable: Awaited<ReturnType<typeof refundableFor>>
   try {
@@ -243,7 +243,8 @@ export async function refundOrder(
       refundId: refund.id,
       paymentIntentId: refundable.paymentIntentId,
       // ⚠️ FROM OUR OWN KEY'S MODE, exactly as capture does it: a refund is not an event and carries no
-      // livemode of its own to copy here. sandboxKey() has already refused anything but sk_test_.
+      // livemode of its own to copy here. With the key guard removed, an `sk_live_` key makes this `true`
+      // and the refund row counts as live money without an edit to this line.
       livemode: !process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_'),
       currency: refund.currency ?? undefined,
     })
