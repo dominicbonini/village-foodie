@@ -353,6 +353,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(hasUnrecordedPayment(o as never,payments[o.order_key]??[],paymentFailures.has(o.order_key)))return 'payment'
     return conflictByOrder.get(o.order_key)
   },[payments,paymentFailures,conflictByOrder])
+  // ── 🔴 AN OFFLINE WALK-UP PAID AT CREATION MUST NOT BE OFFERED "Mark paid" (14 August 2026) ────────
+  // OBSERVED on a live iPad: two walk-ups created offline and paid at creation rendered a live "Mark
+  // paid" button. The operator's rational response is to ask the customer to pay again; the second tap
+  // books nothing (recordCollectionPayment short-circuits on balanceMinor <= 0) but returns success
+  // silently, so cash goes in the till with no row against it.
+  // 🔴 WHY THE CARD COULD NOT KNOW. OrderCard derives paid-ness from getOrderBalance(order, ledgerRows),
+  // and the ledger is SERVER-SIDE — offline there are no rows, so balanceMinor is the full total and the
+  // order reads unpaid. `payment_status` cannot help: getOrderBalance takes BalanceableOrder
+  // ({ total_minor?, total? }) and never sees that field. See docs/paid-button-options-report.md.
+  // ⚠️ NO NEW PROP. `pendingPayment` already exists for exactly this shape of problem (a payment the
+  // operator has made that the server has not confirmed) and short-circuits effectivePaid BEFORE isPaid
+  // is consulted. This only supplies it for a case it never covered: money that rode inside a
+  // kind:'create' op rather than arriving as a `mark_paid` action.
+  // 🔴 IT LAYERS ON THE RESOLVER'S OUTPUT AND CHANGES NO ARITHMETIC. getOrderBalance still runs, `balance`
+  // is still the confirmed state, and every other consumer — the printed ticket, confirmedPaid, the
+  // ledger — is untouched. A fabricated ledger row was the rejected alternative, precisely because it
+  // would have corrupted the resolver's INPUT and reached all of them.
+  // 🔴 THE UNPAID CASE IS EXPLICIT, NOT A FALL-THROUGH. Both live trucks run show_paid_step = true, so a
+  // deliberately-unpaid walk-up is a real case and MUST still be offered the button. It resolves to
+  // 'pending_unpaid', which effectivePaid reads as false — the same answer as today, said out loud.
+  // ⚠️ READ FROM THE QUEUED RECORD, not from `o`: `o` may be a statusOverlay-merged copy, and the queued
+  // entry is the authoritative copy of what was actually sent (AddOrderPanel derives payment_status there
+  // from the same `paymentTaken` the outbox body carries, so the two cannot diverge).
+  const queuedPayment=useCallback((o:Order):'pending_paid'|'pending_unpaid'|undefined=>{
+    const q=deviceQueuedOrders.find(x=>x.order_key===o.order_key)
+    if(!q)return undefined              // not queued → online path, byte-identical to before
+    return q.payment_status==='paid'?'pending_paid':'pending_unpaid'
+  },[deviceQueuedOrders])
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
@@ -3247,13 +3275,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
