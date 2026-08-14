@@ -2393,7 +2393,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[deviceQueuedOrders,orders,statusOverlay,stockEventId,itemCategoryMap])
 
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
-  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
+  // 🔴 NON-NAVIGATING INSIDE THE NATIVE SHELL (2.1 completeness, 14 August 2026) — SAME MECHANISM AS
+  //    components/shared/AppHeader.tsx:86-115, deliberately not a second approach.
+  //    href="/" is the Village Foodie DISCOVERY MAP (app/page.tsx), not a HatchGrab page. This screen
+  //    offers exactly ONE affordance and nothing else, so in the app an operator hitting an error tapped
+  //    the only thing on offer and landed in a different product with no back button and no way home.
+  //    Worse than the header case, where it was one of several ways out.
+  //    ⚠️ The label already disagreed with the destination: _brand reads "HatchGrab" on a hatchgrab
+  //    hostname while the href goes to Village Foodie. The label is computed; the href was not.
+  //    🔴 DISPLAY-ONLY. Same text, same classes, same position. Nothing an operator can DO changes.
+  //    ⚠️ WEB IS BYTE-IDENTICAL: isNativeApp() is Capacitor.isNativePlatform(), false in every browser,
+  //    so a browser renders the <Link> branch — the same element it always did.
+  //    ⚠️ isNativeApp() IS CALLED DIRECTLY WITH NO `mounted` FLAG, AND THAT IS SAFE HERE — the loading
+  //    early-return on the line above starts `true` (:265), so this block never appears in server output
+  //    nor on the first client frame. The same property manual section 40 records for the manage page.
+  //    🔴 IF THAT EARLY-RETURN EVER GOES, THIS BECOMES A HYDRATION MISMATCH.
+  //    ⚠️ NOT repointed at /app: that is the cold-launch route and it is unverified. AppHeader declined
+  //    the same substitution for the same reason — a link landing somewhere unproven is not an
+  //    improvement on a link landing somewhere wrong.
+  //    ⚠️ KNOWN RESIDUAL, REPORTED NOT DECIDED: the native branch keeps the arrow and the link styling,
+  //    because matching AppHeader exactly means keeping the children identical. It therefore reads as a
+  //    control that does nothing, which the 2.1 rule calls a defect. It is still strictly better than the
+  //    trap it replaces (tapping now does nothing instead of stranding you in another product), but the
+  //    alternative — render nothing at all in the app — is a one-line change and is Dominic's call.
+  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
   if(requiresPin&&!authenticated)return(
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
@@ -2816,11 +2839,28 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* The ONLY scroll container — flex-1 min-h-0 lets it fill the shell and scroll internally while the
           top bars above stay put. Add tab manages its own inner scroll (overflow-hidden here). */}
-      <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 ${activeTab==='add'?'overflow-hidden px-4':'overflow-y-auto px-4 py-4 pb-20'}`}>
+      {/* ── 🔴 ORDERS AT lg+ IS NOW A FLEX FIT, NOT A SCROLLING PAGE (14 Aug 2026) ─────────────────────
+          The Kitchen capacity panel had to be sized to the VIEWPORT and stay pinned while orders scroll.
+          Inside a scrolling <main> that is impossible in pure CSS without a magic offset: a sticky child's
+          height comes from its own box, and there is no CSS token for "my scrollport's height". The manual
+          forbids the alternative in terms — hardcoded `calc(100dvh - Npx)` offsets desync the moment the
+          chrome or a safe-area inset changes, and this project has been bitten by exactly that twice.
+          So Orders adopts the SAME durable pattern the Add tab already uses in landscape: the page stops
+          scrolling, and the columns inside it scroll. `<main>` is the bounded box; the orders column and the
+          capacity panel are SIBLING scrollers, never nested.
+          ⚠️ SCOPED TO lg: AND TO THE ORDERS TAB ONLY. Below 1024px this is byte-identical to before
+          (`overflow-y-auto px-4 py-4 pb-20`) and the sidebar does not render at all, so portrait iPad and
+          every phone are untouched. Every other tab keeps its own branch unchanged.
+          ⚠️ lg:pb-4 replaces pb-20 at lg only: pb-20 exists to clear the bottom of a SCROLLING page, and on
+          a non-scrolling one it would just eat 80px of the height the panel is trying to fill. */}
+      <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 ${activeTab==='add'?'overflow-hidden px-4':activeTab==='orders'?'overflow-y-auto lg:overflow-hidden px-4 py-4 pb-20 lg:pb-4':'overflow-y-auto px-4 py-4 pb-20'}`}>
 
         {/* ORDERS TAB */}
+        {/* lg:h-full min-h-0 flex-col — the first link of the flex fit above. `h-full` resolves because
+            <main> has a DEFINITE height (flex-1 min-h-0 inside the h-dvh app-shell), so this is a real
+            bound, not an auto height wearing a percentage. Inert below lg. */}
         {activeTab==='orders'&&(
-          <div>
+          <div className="lg:h-full lg:min-h-0 lg:flex lg:flex-col">
             {!activeEvent?(
               <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
@@ -2836,11 +2876,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <>
               {/* Day-load sidebar (desktop) sits right of the order list on lg+; the order
                   content stays in the flex-1 left column. Mobile renders the strip variant
-                  inline below the summary (lg:hidden) — two presentations, one data source. */}
-              <div className="lg:flex lg:gap-5 lg:items-start">
+                  inline below the summary (lg:hidden) — two presentations, one data source.
+                  ── 🔴 `lg:items-start` REPLACED BY `lg:items-stretch`, AND THAT IS SAFE **ONLY** BECAUSE
+                  THIS ROW IS NOW HEIGHT-BOUNDED (`lg:flex-1 lg:min-h-0` inside the non-scrolling <main>).
+                  items-stretch was rightly rejected while the row was CONTENT-driven: it sized the panel to
+                  the orders grid, which grows without bound as orders arrive, giving a capacity list
+                  thousands of pixels tall. That premise is gone. The row's height is now the viewport
+                  remainder and nothing else, so stretch makes the panel exactly one screen tall.
+                  🔴 IF ANYONE EVER REMOVES `lg:flex-1 lg:min-h-0` FROM THIS ROW, `lg:items-stretch` BECOMES
+                  THE UNBOUNDED-HEIGHT BUG AGAIN. The two must be changed together or not at all. */}
+              <div className="lg:flex lg:gap-5 lg:items-stretch lg:flex-1 lg:min-h-0">
               {/* @container: the order-card grids below size their column count off THIS content column's
-                  width (not the viewport), so iPad gets 3-across in both orientations and desktop stays 3. */}
-              <div className="@container lg:flex-1 lg:min-w-0">
+                  width (not the viewport), so iPad gets 3-across in both orientations and desktop stays 3.
+                  lg:min-h-0 + lg:overflow-y-auto: THIS is the orders scroller at lg — the one <main> used to
+                  be. It is a SIBLING of the panel's scroller, not an ancestor of it. */}
+              <div className="@container lg:flex-1 lg:min-w-0 lg:min-h-0 lg:overflow-y-auto">
               {/* DEMO — behaviour-triggered signup prompt. Fires when an order the visitor caused lands on
                   this board (see the component for the baseline detection). Sits ABOVE the order list
                   because that's where their eye returns; deliberately not a modal. */}
@@ -3317,9 +3367,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
               </div>
-              {/* Sticks within <main>'s own scroll now (bars live outside main) → offset is 0, not the old
-                  120px body-scroll offset. */}
-              <aside className="hidden lg:block lg:w-48 lg:flex-shrink-0 lg:sticky lg:top-0">
+              {/* ── 🔴 STICKY REMOVED, NOT REPLACED WITH A DIFFERENT OFFSET ────────────────────────────
+                  This was `lg:sticky lg:top-0`, which was correct while <main> scrolled. <main> no longer
+                  scrolls at lg, so the panel cannot scroll away and has nothing to stick to — sticky here
+                  would be inert at best. Manual section 27 records position:sticky as unreliable in this
+                  WebView (the tab bar detaching was the same class), so an inert sticky is not worth
+                  keeping. The panel is now simply a bounded flex sibling: pinned by structure, not by
+                  position. NO hardcoded offset was introduced to replace it, and none is needed. */}
+              <aside className="hidden lg:flex lg:flex-col lg:w-48 lg:flex-shrink-0 lg:min-h-0">
                 <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
               </aside>
               </div>

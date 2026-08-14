@@ -9023,40 +9023,22 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
               </p>
             </div>
 
-            {/* Messenger */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Messenger</label>
-              <input
-                type="text"
-                disabled
-                placeholder="Coming soon"
-                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
-              />
-              <button
-                disabled
-                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
-              >
-                Connect
-              </button>
-            </div>
-
-            {/* Instagram */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Instagram</label>
-              <input
-                type="text"
-                disabled
-                value=""
-                placeholder="Coming soon"
-                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
-              />
-              <button
-                disabled
-                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
-              >
-                Connect
-              </button>
-            </div>
+            {/* ── 🔴 THE MESSENGER AND INSTAGRAM ROWS WERE REMOVED HERE — 14 August 2026 (Guideline 2.1) ──
+                Both were a `<label>`, a `disabled` `<input>` whose PLACEHOLDER READ "Coming soon", and a
+                `disabled` "Connect" button. That is a control a user can see and cannot operate, which is
+                the definition of an incomplete feature under 2.1 — as distinct from a roadmap LABEL in the
+                plan matrix, which is descriptive product information and deliberately stays.
+                🔴 UI REMOVAL ONLY. Nothing was dropped from the database, the `Truck` interface, or any
+                allow-list: `social_instagram`, `social_facebook`, `whatsapp` and `whatsapp_sender` are all
+                still declared and still written by the Contact Details fields above. Re-adding these rows
+                when the integrations exist is a JSX change and nothing else.
+                ⚠️ THE WHATSAPP ROW ABOVE IS UNTOUCHED AND STILL LIVE — it has a real `can('whatsapp_replies')`
+                gate, a real `onChange`/`onBlur`, and a real `saveWhatsappSender` handler. It is the reason
+                the "Auto-replies" subsection still has a reason to exist, so the heading, its
+                "Requires Business accounts on each platform." caption, the `border-t` divider and the
+                `space-y-3` wrapper all stay: removing them would leave the live row without its label.
+                ⚠️ NO EMPTY SHELL IS LEFT. The two `<div>`s went whole, so the `space-y-3` container now
+                holds exactly one child and renders no residual gap. */}
           </div>
         </div>
       </Card>

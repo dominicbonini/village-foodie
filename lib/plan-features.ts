@@ -146,7 +146,19 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     rows: [
       { name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
       { name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
-      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a thermal printer in the kitchen.', starter: false, pro: false, max: true },
+      // 🔴 'coming_soon', NOT true — 14 August 2026. A TICK IS A CLAIM THAT IT WORKS, AND IT DOES NOT.
+      // components/printing/PrintingSettings.tsx has NO connect(): the Phase-A stub that wrote
+      // 'Demo printer (Phase A stub)' and manufactured a connected state was REMOVED, and no real
+      // transport replaced it. The card itself already says "Coming soon" (:99) — so the matrix was
+      // asserting `true` for the same capability the product's own settings card calls unbuilt.
+      // ⚠️ THIS IS THE ONLY MATRIX VALUE THAT CHANGED, and it is a DISPLAY value: lib/plan-features.ts is
+      // PRESENTATION (its own header at :229 says so) and nothing reads it to gate. The enforcement gate
+      // is canAccess in lib/features.ts, which is UNTOUCHED — `ticket_printing` still resolves exactly as
+      // it did, so no truck gains or loses access to anything.
+      // ⚠️ It also cannot break findPlanParityViolations(): that guard only inspects cells that are hard
+      // `true` (`row[tier] === true && !canAccess(...)`), so turning one into 'coming_soon' removes a
+      // check rather than adding one. 'coming_soon' is explicitly a legitimate divergence (:231).
+      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a thermal printer in the kitchen.', starter: false, pro: false, max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
       { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', detail: 'Set different prices for specific events or festivals.', starter: false, pro: false, max: 'coming_soon'  },

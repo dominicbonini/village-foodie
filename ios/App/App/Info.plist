@@ -22,6 +22,22 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Export compliance. Without this key App Store Connect asks the encryption question on EVERY
+	     upload instead of answering it once, and a wrong answer in a hurry is a compliance statement.
+	     AUDITED 14 August 2026 before setting it, and the audit is what makes false defensible:
+	       - the app's own Swift (AppDelegate, HGBridgeViewController, CapApp-SPM) has ZERO hits for
+	         CommonCrypto, CryptoKit, SecKey, SecItem, Security or any bundled crypto library;
+	       - across the eight linked plugin packages the ONLY hit is Capacitor's own AppUUID.swift,
+	         which calls CC_SHA256 (Apple's CommonCrypto) to hash an install identifier. A one-way
+	         HASH IS NOT ENCRYPTION, and it is Apple's system library, not a bundled implementation;
+	       - transport is HTTPS only, which is the standard exemption.
+	     The PBKDF2-SHA256 backup PIN is JAVASCRIPT (lib/native/appLock.ts, crypto.subtle) running in
+	     the WebView from the remotely-loaded bundle - not native code, not in this binary - and it is
+	     authentication-only, which is separately exempt.
+	     Full evidence: docs/presubmission-housekeeping-report.md. Re-run the audit if a plugin is
+	     added: this key is a declaration, not a default. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Unlock HatchGrab with Face ID.</string>
 	<key>LSRequiresIPhoneOS</key>

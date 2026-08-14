@@ -1114,7 +1114,20 @@ setItemModal({ item, modGroups, editCartKey })
           slot: effectiveSlot, event_date: manualEvent?.event_date ?? null, event_id: manualEvent?.id ?? null,
           van_id: null, status: 'confirmed', items: manualItems, deals: manualOrder.deals,
           subtotal: manualItemsSubtotal, total: manualTotal, notes: manualNotes || null,
-          order_type: 'collection', payment_status: 'unpaid', created_at: new Date().toISOString(),
+          // 🔴 DERIVED FROM THE SAME VALUE THAT WAS QUEUED, NOT A LITERAL (14 August 2026). This read
+          // `payment_status: 'unpaid'` — a hardcoded string, eight lines after `paymentTaken` was
+          // captured at :1093 and queued correctly at :1102. The payload was always right; only this
+          // object said otherwise. Reading `manualOrder.paymentTaken` means the local object and the
+          // outbox body cannot diverge, because they are now the same value.
+          // 🔴 THIS ALONE DOES NOT MAKE THE CARD RENDER AS PAID, AND MUST NOT BE READ AS THE FIX FOR
+          // THAT. OrderCard decides paid-ness from `getOrderBalance(order, ledgerRows)`, whose
+          // BalanceableOrder type is `{ total_minor?, total? }` — it never reads payment_status at all.
+          // Offline there are no ledger rows, so the balance is still the full total and "Mark paid"
+          // still renders. See docs/offline-paid-state-report.md.
+          // ⚠️ types.ts records that payment_status is a DERIVED CACHE that "must never be hand-written",
+          // and this line hand-writes it either way. It is corrected here rather than removed because
+          // removing a field from the optimistic object is a wider change than this task allows.
+          order_type: 'collection', payment_status: manualOrder.paymentTaken ? 'paid' : 'unpaid', created_at: new Date().toISOString(),
         } as unknown as Order
         onOrderPlaced(optimistic)
         showToast(`Order ${provisional} saved on this device — will sync when back online`, 'success')

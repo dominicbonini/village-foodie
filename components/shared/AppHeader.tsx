@@ -4,9 +4,9 @@
 // Colour token documented in lib/brand.ts → HEADER_BG.
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 import { HATCHGRAB_WORDMARK_WHITE_SVG } from '@/lib/brand'
+import { BrandHomeLink } from '@/components/shared/BrandHomeLink'
 
 interface AppHeaderProps {
   truckName: string | null
@@ -61,7 +61,29 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children,
               ⚠️ WIDTH IS THE DRIVEN DIMENSION (see the classes below); height follows from the 4.548:1
               artwork. The centre block's reservation must track it — that pairing is the fragile part.
               ⚠️ opacity-70 REMOVED: it dulled a SECONDARY brand mark. This is now the primary one. */}
-          <Link href="/" className="shrink-0 z-10">
+          {/* ── 🔴 NON-NAVIGATING INSIDE THE NATIVE SHELL (2.1 completeness, 14 August 2026) ─────────
+              `href="/"` is the Village Foodie DISCOVERY MAP (app/page.tsx), not a HatchGrab home page.
+              In a browser that is a reasonable brand link. In the app it threw an operator out of their
+              dashboard onto a consumer marketing surface **with no back button and no way home** — the
+              shell has no browser chrome. This header renders on all three operator surfaces, so the
+              trap was one tap away at all times.
+              🔴 DISPLAY-ONLY. The wrapper changes; the <img>, its classes, its size and its position do
+              not. Nothing an operator can DO changes on either platform.
+              ⚠️ NOT repointed at /app. That is the cold-launch route and it is unverified; a link that
+              lands somewhere unproven is not an improvement on a link that lands somewhere wrong.
+              ── 🔴 THE BRANCH NOW LIVES IN components/shared/BrandHomeLink.tsx, NOT HERE ─────────────
+              This file used to evaluate isNativeApp() inline, which was safe because all three
+              renderers gate AppHeader behind a loading early-return starting `true` (dashboard :265,
+              manage :200, admin :203) — so it appeared in no server output and on no first client
+              frame. That reasoning was correct and is now UNNECESSARY: BrandHomeLink carries a
+              `mounted` two-pass, which is safe with or without an early-return in front of it.
+              ⚠️ WEB IS BYTE-IDENTICAL either way — the component renders exactly this <Link href="/"
+              className="shrink-0 z-10"> in every browser, and on the pre-mount pass everywhere.
+              `kind="branding"` means the app renders the same <img> in a non-navigating span with the
+              same classes: identity, not a control. See manual section 27's 2.1 decision rule.
+              ⚠️ isNativeApp, NOT purchaseCtaAllowed. That is the 3.1.1 COMMERCE predicate; this is a
+              2.1 completeness question. Manual section 40 keeps them separate deliberately — do not merge them. */}
+          <BrandHomeLink href="/" kind="branding" className="shrink-0 z-10">
             {/* ⚠️ SIZE IS DRIVEN BY THE CLASSES, NOT THE ATTRIBUTES. width/height below are the 4.548:1
                 aspect reservation only (they stop the box collapsing before the SVG loads); w-[112px]
                 md:w-[140px] + h-auto set the actual rendered size → ~25px tall mobile, ~31px from md up
@@ -78,7 +100,7 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children,
               height={31}
               className="object-contain w-[112px] md:w-[140px] h-auto"
             />
-          </Link>
+          </BrandHomeLink>
 
           {/* Centre: truck logo + name + subtitle — absolutely positioned. The inner row reserves
               horizontal space (matching the wordmark's width) for the left logo + right slot

@@ -69,10 +69,26 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
   // Desktop: a vertical sidebar list down the right of the Orders view, scrollable. Each row shows
   // the time + dot + the per-category composition wording the dots use ("2 Pizzas, 1 Other"); empty
   // windows show just the dot (quiet).
+  // FLEX FIT, NOT A VIEWPORT FRACTION (14 Aug 2026). This was `max-h-[60vh]` on the list below, which is
+  // why the panel stopped partway down an iPad in LANDSCAPE and left dead space under it: `vh` measures the
+  // viewport's HEIGHT, which in landscape is the SHORT dimension, so 60vh was about 492px on an iPad13,19 —
+  // roughly 19 rows, ending near 18:35 on a 17:00-20:00 event. The number knew nothing about the column it
+  // sat in.
+  //   - `flex-1 min-h-0` on the card: the card fills whatever height its parent gives it. The parent is the
+  //     dashboard's <aside>, which at lg is a bounded flex sibling inside a non-scrolling <main>, itself
+  //     inside the `h-dvh` app-shell. So the height is DERIVED FROM dvh at the root, not from a `vh`
+  //     fraction here, and it self-adjusts to any header/tab/inset height. No magic offset.
+  //   - `flex-1 min-h-0 overflow-y-auto` on the list: it takes the remaining space under the heading and
+  //     scrolls internally. `min-h-0` is required or a flex child refuses to shrink below its content and
+  //     the scroller never engages.
+  //   - EVERY slot stays in the DOM. There is no cap, no slice and no virtualisation here, and adding one
+  //     would change what the operator can see rather than how much of it fits.
+  // Below lg this component's sidebar variant is not rendered at all (the call site is `hidden lg:flex`),
+  // so nothing here reaches portrait or a phone.
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Kitchen capacity</p>
-      <div className="flex flex-col gap-0.5 max-h-[60vh] overflow-y-auto">
+    <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-col min-h-0 flex-1">
+      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 shrink-0">Kitchen capacity</p>
+      <div className="flex flex-col gap-0.5 flex-1 min-h-0 overflow-y-auto">
         {upcoming.map(s => {
           const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
           return (

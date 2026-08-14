@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.15
+HatchGrab Engineering Reference Manual · V11.16
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.15**
+**Version 11.16**
 
 August 2026
 
@@ -15,6 +15,35 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.16 — 14 August 2026
+
+Delta over V11.15 — **the App Store submission workstream**. An inventory, a completeness sweep, two
+narrow builds, and six corrections to this manual's own text. **Nothing in this session was rendered,
+built, archived or uploaded.**
+
+- 🔴 **A SECTION'S CROSS-REFERENCE TO ANOTHER SECTION'S STATUS IS NOT PROVENANCE.** Two blockers were
+  reported "confirmed still open" having been read out of §27 and §40 rather than out of the code. Both
+  were wrong — **account deletion and the legal pages were built in V11.4** and those two sections had
+  never been updated. The manual held the correct fact in one place and a stale restatement in another,
+  and the stale one was believed. **This is the second time; the rule is now in §1.**
+- 🔴 **The app-level privacy manifest is BUILT** — `ios/App/App/PrivacyInfo.xcprivacy`, one declared
+  category (UserDefaults / **CA92.1**), registered in the Xcode target. Without it App Store Connect
+  rejects the **upload** with ITMS-91053, before a human ever opens the build.
+- 🔴 **All twelve Capacitor dependencies are PINNED** — and the carets had **already drifted**:
+  `core`/`cli`/`ios` were declared `^8.3.4` and were running **8.4.0**, `android` **8.4.1**. A minor
+  version of the iOS platform package moved with **no diff in the repo**. The pin captures what is
+  installed, not what was declared.
+- **A repo-wide Guideline 2.1 completeness sweep found ZERO dead controls** after two were removed, and
+  produced a decision rule that settles future cases rather than re-deriving them: *"Coming soon"
+  against a **fact about a plan** is fine; against a **control a user can see and cannot operate** it is
+  a defect.*
+- **A link is not a route, and a route is not a reachable page.** `/landing` was escalated as a
+  guaranteed reviewer route and is **admin-gated server-side in production**; `/` was assumed to be a
+  HatchGrab page and is **the Village Foodie map**. Both errors in one day, in opposite directions.
+- **Six corrections to this manual**: §40's and §27's stale blocker lists, the unenforced-gate count
+  (**four** understated **17**), a wrong colour class in §10, the `20260701` migrations re-raised for
+  the fourth time, and the `/landing` reachability claim.
 
 ## V11.15 — 14 August 2026
 
@@ -1027,7 +1056,7 @@ DONE (this + prior session): `hide_name` (deploy-coupled), `lactose_allergen_to_
 
 ### Deploy state
 
-The V8.5 allergen/wizard batch + card-mode-warning + geocode-timeout are the LIVE-VALUE deploy (affect Gusto/RTF now) — deployed and partially re-tested on the deployed build; a full deployed-build operator-journey re-test still owed before RTF handover. The iPad app is BUILT-BUT-HARDWARE-GATED — parked until the iPad + paid account; ships safe (APNs no-op until env set; submit trigger non-blocking). Do NOT let the hardware-blocked app hold up the live batch. Deploy order for the app tables: run the two `20260701` migrations → deploy app code → (later, on device) cap sync + entitlements + `APNS_*` env.
+The V8.5 allergen/wizard batch + card-mode-warning + geocode-timeout are the LIVE-VALUE deploy (affect Gusto/RTF now) — deployed and partially re-tested on the deployed build; a full deployed-build operator-journey re-test still owed before RTF handover. The iPad app is BUILT-BUT-HARDWARE-GATED — parked until the iPad + paid account; ships safe (APNs no-op until env set; submit trigger non-blocking). Do NOT let the hardware-blocked app hold up the live batch. Deploy order for the app tables: run the two `20260701` migrations → deploy app code → (later, on device) cap sync + entitlements + `APNS_*` env. *(🔴 **APPLIED AND LIVE-VERIFIED — DO NOT RE-RUN.** Corrected in V8.7, V9.2, V11.4 and again in V11.16; live-verified 14 August 2026 via `information_schema.columns`. **This sentence is the one that reads as an instruction, which is why it keeps being followed.** ⚠️ `device_notification_prefs` now carries an FK to `van_devices.device_id` with `ON DELETE CASCADE`, so a re-run whose file opens with `DROP TABLE IF EXISTS` **takes live notification preferences with it**. §27.)*
 
 ### OUTSTANDING backlog (V8.6 additions + carried)
 
@@ -2161,6 +2190,8 @@ Read this before every coding session. Update it after every meaningful change. 
 - When a feature seems to contradict this manual, the manual wins. Either update the code or update the manual — never let them disagree silently.
 
 - **A delta file written for integration into this manual must NOT cite section numbers** — delta numbering does not survive integration, and both the V9.8 and V9.9 integrations left dangling pointers (`§38.4`, `§41.4`) that resolve to nothing. Describe content by **what it is**, and let the integrator place it.
+
+- 🔴 **A SECTION'S CROSS-REFERENCE TO ANOTHER SECTION'S STATUS IS NOT PROVENANCE. Open the code, or mark the claim READ-FROM-MANUAL.** This manual is large enough that a fact can be current in one section and stale in its restatement three sections away, and the restatement is usually the one you find first. ⚠️ **Precedent, 14 August 2026:** an App Store gap analysis reported account deletion and the legal pages as *"confirmed still open"*, having read that from §27 and §40 without opening `lib/account-deletion.ts` or `content/legal/`. **Both had been built in V11.4** — §41 and §43 describe them in detail — and neither §27 nor §40 had been updated. **This is the same failure V11.4 already recorded once**, which is why it is now a rule rather than an anecdote. **"Confirmed" must mean verified. If a claim's only source is this manual, say so in those words.**
 
 - **Every version bump gets a Changelog entry, written in the same pass as the bump.** The Changelog is the only place the manual records *when* something changed, so a version that ships without one is invisible to anyone reading forward from a known-good point. ⚠️ **V9.8, V9.9 and V10 were all missed and backfilled on 3 August 2026** — reconstructed from the content sections they had already written, which worked only because those sections were thorough. A bump whose content is thinner would not survive the same omission.
 
@@ -3526,15 +3557,42 @@ FILL token intended to carry white text. Contrast is **3.59:1**, below the 4.5:1
 **4.77:1** of the grey it replaced. **Chosen sighted, on the device, and recorded so it is not reverted
 blindly.**
 
-⚠️ **Unobserved and worth checking first:** the heading is `bg-white/95 backdrop-blur-sm` and is now the
-**topmost pinned element for the first time** — it previously pinned below an opaque bar. Item tiles now
-scroll underneath a translucent heading.
+⚠️ **CORRECTED V11.16 — the heading is `bg-slate-50/95`, NOT `bg-white/95`.** READ,
+`components/dashboard/AddOrderPanel.tsx:213`:
+
+```
+sticky top-0 z-10 -mx-1 px-1 py-1.5 bg-slate-50/95 backdrop-blur-sm flex items-center gap-2
+```
+
+It was white, and it was changed **after seeing it rendered**: white heading strips against the panel's
+slightly grey ground read as banding down the page. The heading is now the **topmost pinned element for
+the first time** — it previously pinned below an opaque bar — so item tiles scroll underneath a
+translucent heading, and the tint has to match the page rather than fight it.
 
 ### 🔴 THE COST, STATED PLAINLY
 
 On a 46-item menu with 23 items in one category, the last category is reachable **only by scrolling** —
 there is no longer any way to jump. **This layout is good for short menus and bad for long ones, and the
 setting is what decides which a truck gets.** A truck that chooses wrong switches back in two taps.
+
+## ✅ SCROLL MODE DID NOT CREATE AN iPad DISPLAY DEFECT — hypothesis raised and DISPROVED (V11.16)
+
+§27 records that Add Order is **the one dashboard tab immune to both iPad display defects**, because its
+`<main>` is `overflow-hidden` rather than `overflow-y-auto` — a four-for-four match with the tab split
+and the strongest structural clue there is. **A reasonable hypothesis was raised that the one-page
+layout had removed that immunity by introducing a scroller. It has not.**
+
+**READ**, `app/dashboard/[token]/page.tsx:2819` — the only `<main>` on the page. **Its className is
+byte-identical in both `'tabs'` and `'scroll'` mode**, and `addOrderLayout` **does not appear anywhere
+in that file**. `<main>` branches on `activeTab` alone, and on the Add Order tab it stays
+`overflow-hidden`.
+
+🔴 **Scroll mode MOVES the scroller one level down; it does not ADD one.** Tabs mode has exactly one
+`overflow-y-auto` (the category pane); scroll mode has exactly one (an inner child of a non-scrolling
+flex pane). **The count is unchanged, and `<main>` is untouched either way.**
+
+⚠️ **Recorded because the hypothesis will recur.** Any change that puts a scroller on Add Order costs
+the one clean control case for defects (a) and (b) — **the evidence, not just the tab**.
 
 # 11. Native app and offline architecture
 
@@ -4274,6 +4332,25 @@ time. ⚠️ **It must not become possible**: the customer picker's `availableHo
 `h = startH; h <= endH`, so an event ending after midnight yields an **empty hour list** and cannot be
 ordered from. The end-after-start rule blocks it at three layers. **Overnight support is separate work
 with its own date-rollover questions.**
+
+### ⚠️ `EventTimeSelect` MEETS NO 44pt TOUCH TARGET AT ANY CALL SITE (V11.16, backlog)
+
+**READ**, `app/manage/[token]/page.tsx:6514`. 🔴 **The component declares no height of its own** — its
+wrapper is `flex items-center gap-1 w-full` with **no `min-h-*` and no `minHeight`**. Every dimension
+comes from the caller's `className`, **and the component accepts no `style` prop**, so a height cannot
+even be forwarded without editing it.
+
+Computed from the classes at each call site — **INFERRED arithmetic, nothing was rendered**: mobile card
+**42px**, desktop grid **37px**, edit modal **38px**. All eight call sites are short.
+
+🔴 **THE DESKTOP GRID LOST HEIGHT ITS OWN ROW SIBLINGS STILL CARRY.** Every other control in the same
+table row carries `style={{ minHeight: '48px' }}`; `EventTimeSelect` passes none. **The row is
+internally inconsistent**, which is the part that reads as an oversight rather than a choice.
+
+⚠️ **Apple's 44pt guidance is HIG, not a review guideline — this is NOT an App Store blocker.** It is a
+usability defect on a tablet-first operator screen, which is where it actually costs something.
+**Logged, not fixed:** the fix is a prop the component does not have, so it is a component change plus
+eight call sites, not a class tweak.
 
 # 16. Database schema essentials
 
@@ -5572,6 +5649,187 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## 🔴 V11.16 — added 14 August 2026 (App Store submission workstream)
+
+### 🔴 APP STORE SUBMISSION BLOCKERS — THE CURRENT LIST (supersedes the V11.3 list below)
+
+| Blocker | State |
+|---|---|
+| App-level `PrivacyInfo.xcprivacy` | ✅ **BUILT 14 Aug 2026** — §36 |
+| Account deletion | ✅ **BUILT V11.4** — §41 |
+| Privacy policy and terms | ✅ **BUILT AND PUBLISHED V11.4** — §43 |
+| Guideline 2.1 completeness | ✅ **SWEPT 14 Aug 2026, zero dead controls** — below |
+| Pin the twelve Capacitor dependencies | ✅ **DONE 14 Aug 2026** — below |
+| `ITSAppUsesNonExemptEncryption` + screenshots (iPhone **and** iPad sets) | 🔴 **OPEN** |
+| 2.1(a) review account | 🔴 **OPEN** |
+| APNs proven end to end on hardware | 🔴 **OPEN** — the strongest 4.2 evidence, and a token has never been obtained |
+| `NSPrivacyCollectedDataTypes` decision | 🔴 **OPEN** — §36, and it is a commercial/legal call, not a developer's |
+
+### 🔴 THE GUIDELINE 2.1 DECISION RULE — apply this, do not re-derive it
+
+> **"Coming soon" against a FACT ABOUT A PLAN is fine and stays.**
+> **"Coming soon" against a CONTROL a user can see and cannot operate is a Guideline 2.1 defect.**
+
+A plan-comparison matrix row saying a feature is not available yet is **descriptive product
+information**. A disabled input, a toggle that does nothing, or a button that refuses is a **dead
+control**.
+
+⚠️ **This is the same shape as §40's commerce line — *facts about the product are permitted,
+instructions to buy are not* — applied to a different guideline.** Recorded in those terms so future
+cases are **decided** rather than re-argued.
+
+🔴 **THE SHARPER HALF: a `✓` against an unbuilt capability is a FALSE claim, and is worse than an honest
+"Coming soon".** That is why `lib/plan-features.ts:161` changed kitchen ticket printing from
+`max: true` to `max: 'coming_soon'` (the reasoning is recorded in the comment block at `:149-160`) — the
+settings card at `components/printing/PrintingSettings.tsx:99` **already told the operator pairing was
+unavailable**, so the matrix was asserting `true` for a capability the product itself called unbuilt.
+
+### ✅ GUIDELINE 2.1 COMPLETENESS SWEEP — repo-wide, ZERO dead controls
+
+- The **Messenger and Instagram auto-reply rows** (disabled inputs placeholdered "Coming soon") were
+  removed from `app/manage/[token]/page.tsx`. 🔴 **They were the ONLY auto-reply controls in the
+  codebase** — the setup wizard, signup, the in-Manage review step, `components/manage`,
+  `components/dashboard`, the customer order page and the KDS all return zero, and `components/setup`
+  and `components/wizard` do not exist. **No near-duplicate on any other surface.**
+- **All seven hardcoded `disabled` attributes** are else-branches of runtime conditions, plan gates, or
+  read-only displays. None is a dead control.
+- **The WhatsApp row is LIVE and was left untouched.**
+
+**Two examined and deliberately KEPT, both recorded because they are judgement calls:**
+
+- `components/printing/PrintingSettings.tsx:99` — a "Coming soon" status badge on a card **whose
+  settings genuinely work** (toggle, paper width, lead minutes, trigger mode all operate). ⚠️ **The
+  closest call of the two — re-open this first if 2.1 comes back.**
+- `app/manage/[token]/page.tsx:818` — the profile-modal email input, **a read-only display of the
+  signed-in account email**. Structurally similar to the removed rows, but nothing unbuilt sits behind
+  it.
+
+### ⚠️ `ticket_printing` NOW HAS TWO SOURCES OF TRUTH THAT CAN DISAGREE
+
+`lib/plan-features.ts` (**DISPLAY**) says `coming_soon` on every plan.
+`lib/features.ts` → `canAccess('ticket_printing')` (**GATE**, used at
+`components/printing/PrintingSettings.tsx:75`) was
+**not** touched — **the two files are unconnected, VERIFIED.**
+
+🔴 **So the matrix may advertise "coming soon" while the gate still grants the card to Max operators.**
+Not an App Store issue; **a support-ticket generator.** Unresolved, and it is the general hazard of a
+display list and a gate list that describe the same capability and are maintained separately.
+
+### 🔴 THE UNENFORCED FEATURE GATES — "four" was a substantial understatement
+
+**LIVE COUNT, READ from `lib/features.ts` and every call site, 14 August 2026:
+23 Features declared · 6 gated · 17 UNGATED.**
+
+**Gated:** `advance_preordering`, `branded_qr_code`, `advanced_reporting`, `ticket_printing`,
+`cook_screen`, `whatsapp_replies`.
+
+⚠️ **THE COUNTING METHOD MATTERS AND CHANGES THE ANSWER.** `lib/useFeatures.ts:39` exposes
+`can: (feature) => canAccess(plan, feature, overrides, trialExpiresAt)` — **`can('x')` is a real gate and
+must be counted.** Conversely, admin-override allow-list strings, log `trigger` values and wizard row
+`id`s are **not** gates: `auto_accept` has three matches and **none of them is a gate**. 🔴 **A naive
+grep for `canAccess(` gets the number wrong in BOTH directions.**
+
+**INFERRED:** most of the 17 are core-on-every-plan and need no gate. **The four worth an actual
+decision** are `online_payments`, `multi_device_kds`, `time_slot_selection` and
+`instagram_messenger_replies` — **all four are plan-differentiated in the matrix and none is enforced.**
+
+### ✅ THE TWELVE CAPACITOR DEPENDENCIES ARE PINNED — and the carets had already drifted
+
+**Every Capacitor package in `package.json` used `^`. None used `~`. None was pinned.** All twelve are
+now exact.
+
+🔴 **THE PIN CAPTURED A DRIFT THAT HAD ALREADY HAPPENED.** `@capacitor/core`, `@capacitor/cli` and
+`@capacitor/ios` were declared `^8.3.4` and were running **8.4.0**; `@capacitor/android` was running
+**8.4.1**. **A minor version of the iOS platform package moved with no diff in the repo.** The pin
+records **what is installed**, not what was declared — reverting to 8.3.4 would be an install and a
+downgrade, and is a separate deliberate decision.
+
+**Why this is a submission concern and not hygiene:** a native shell's plugin set is **compiled into the
+archive**. `^` means an `npm install` on a different day can change native code between the build you
+tested and the build you upload. §36 already records `@capacitor/status-bar` `8.0.2` behaving
+differently from its own comments — **and that package was on `^8.0.2`, free to move.**
+
+✅ **`npm ci` still works** — verified against the unchanged lockfile on copies in a scratchpad
+(`--dry-run --offline`, exit 0, 697 packages, identical to the caret control). **No lock regeneration
+was needed and none was done.** ⚠️ The lock's root spec strings still read `^8.3.4`; the next ordinary
+`npm install` will quietly rewrite them. **INFERRED that this moves no resolved version — not verified,
+because verifying it means running the install.**
+
+⚠️ **A version skew is now frozen in:** `cli`/`core`/`ios` at **8.4.0**, `android` at **8.4.1**.
+Capacitor expects these aligned. **Align it deliberately at the next upgrade.**
+
+### 🔴 `/` AND `/landing` ARE DIFFERENT DESTINATIONS — earlier work reported them as one problem
+
+- **`/`** renders the **Village Foodie consumer discovery map** — `app/page.tsx`, brand mark
+  `/logos/village-foodie-logo-v2.png` at `:194`. **READ. It is not a HatchGrab page.**
+- **`/landing`** renders the HatchGrab marketing page, **and it is admin-gated in production**.
+
+**READ**, `app/landing/layout.tsx:13-16`:
+
+```tsx
+if (process.env.NODE_ENV === 'production' && !(await verifyAdmin())) {
+  redirect('/')
+}
+```
+
+🔴 **A reviewer on a review account is not an admin, so the redirect fires SERVER-SIDE before any HTML
+ships. The landing page's four "Coming soon" strings were never reviewer-reachable in the shipped app.**
+⚠️ The gate is `NODE_ENV === 'production'` only, so **`/landing` IS open in dev** — but the native shell
+loads `https://www.hatchgrab.com`, which is production, so the app sees the gated behaviour.
+
+**Fixed in native:** the brand logo in `AppHeader.tsx` and the legal layout logo are **non-navigating
+inside the app**. In a WebView there is no back button, so tapping either threw an operator out of their
+dashboard **with no way home** — the §11 white-screen family.
+
+🔴 **STILL OPEN, both reachable in the shell:**
+
+- `app/dashboard/[token]/page.tsx:2396` — the access-denied view's own `<Link href="/">`, labelled
+  **"← HatchGrab"**, landing on the **Village Foodie map**.
+- `app/(legal)/layout.tsx:96` — the legal footer's `Contact` link (`href="/contact"`). **The chain is
+  real and was READ, not assumed:** `app/contact/page.tsx` carries **two** `<Link href="/">` (`:39` the
+  wordmark, `:42` a button), so `/` is **two taps** from the compliance surface with no back button in
+  between.
+
+⚠️ **On the WEB, tapping the HatchGrab wordmark still lands on a different product's front door.**
+Arguably a bug; unfixed; **out of scope for App Store work** and recorded so it is not rediscovered as
+one.
+
+### ✅ `/admin` STILL BLOCKS `scrollEnabled: false` — re-confirmed 14 August 2026
+
+**READ.** `app/admin/` is **one file, 2,139 lines**. `h-dvh`: **0**. `<main`: **0**. `min-h-screen`:
+**3**. The six `overflow-y-auto` are all modal or `max-h-*` list containers — **none is a page
+scroller**. The hardcoded `sticky top-[51px]` is still present.
+
+**The V11.3 statement above is confirmed verbatim: `/admin` blocks `scrollEnabled: false`, which blocks
+the durable native fix for iPad display defect (b).**
+
+### 🔴 THE `20260701` MIGRATIONS ARE APPLIED. STOP RE-RAISING THEM.
+
+**LIVE-VERIFIED 14 August 2026** via `information_schema.columns`. All three tables exist with full
+column sets: **`van_devices` (14 columns)**, **`van_notification_prefs` (3)**,
+**`device_notification_prefs` (4)**.
+
+🔴 **BOTH MIGRATIONS ARE APPLIED. THERE IS NOTHING TO RUN.** This has now been corrected in **V8.7,
+V9.2, V11.4** — and re-raised again in August. **Four corrections of the same fact.**
+
+⚠️ **RE-RUNNING IS NOT MERELY WASTED EFFORT.** `device_notification_prefs` carries an FK to
+`van_devices.device_id` with **`ON DELETE CASCADE`**. A migration file with a `DROP TABLE IF EXISTS`
+preamble **would take live notification preferences with it.**
+
+### ⚠️ NOTHING IN THIS WORKSTREAM HAS BEEN RENDERED
+
+**Four display-only edits, a privacy manifest, a pbxproj registration and a dependency pin — no browser,
+no simulator, no iPad, no build, no archive.** Every claim about appearance is **arithmetic from classes
+and markup**.
+
+**Outstanding verification before deploy:**
+
+- `/privacy` and `/terms` after the server-to-client conversion.
+- The Auto-replies section with **one** row instead of three.
+- The plan matrix rendering `coming_soon` for ticket printing.
+- **The native logo branches, which have never been executed.**
+- `findPlanParityViolations()`, which throws in dev on violation and which a coding agent cannot run.
+
 ## 🔴 V11.15 — added 14 August 2026
 
 - 🔴 **Build the trial-expiry Starter fallback.** Promised in the terms, absent from the code. Read-path
@@ -5785,9 +6043,14 @@ Still `min-h-screen` with **no inner scroller anywhere in ~2,000 lines** (`grep`
 
 ### 🔴 APP STORE SUBMISSION BLOCKERS (see §40 for the commerce posture)
 
-- 🔴 **ACCOUNT DELETION: NONE EXISTS ANYWHERE.** Nine content-level `delete_*` actions (category, subcategory, item, upsell rule, modifier group, modifier option, bundle, event, van) and **no `delete_account`**. **Guideline 5.1.1(v) requires in-app deletion if the app supports account creation.** The defence is that signup is web-only on both platforms — ⚠️ **but that is an argument made AFTER a rejection, not a substitute for the feature.** **Also required for UK GDPR erasure, independently of Apple.**
-- 🔴 **PRIVACY POLICY AND TERMS: STILL UNWRITTEN.** **5.1.1(i) requires the policy linked in App Store Connect AND reachable inside the app.** A draft exists with placeholders. ⚠️ **HatchGrab is a CONTROLLER for operator accounts and a PROCESSOR for end-customer order data — UK GDPR Article 28 requires processor clauses in the operator terms.** That is a drafting requirement, not a link.
-- **2.1(a) requires a demo account with a live backend.** A built-in demo mode needs Apple's **prior approval**, so **a review account is the simpler path**.
+> ⚠️ **SUPERSEDED — READ THE V11.16 BLOCK AT THE TOP OF §27 FOR THE CURRENT LIST.** The first two items
+> below were **BUILT in V11.4** (§41 and §43) and this entry was never updated. It is left in place as
+> the historical record of what was open on 5 August. 🔴 **It was believed as current on 14 August and
+> produced two false findings.** See §1.
+
+- 🔴 **ACCOUNT DELETION: NONE EXISTS ANYWHERE.** *(✅ **BUILT V11.4 — see §41.**)* Nine content-level `delete_*` actions (category, subcategory, item, upsell rule, modifier group, modifier option, bundle, event, van) and **no `delete_account`**. **Guideline 5.1.1(v) requires in-app deletion if the app supports account creation.** The defence is that signup is web-only on both platforms — ⚠️ **but that is an argument made AFTER a rejection, not a substitute for the feature.** **Also required for UK GDPR erasure, independently of Apple.**
+- 🔴 **PRIVACY POLICY AND TERMS: STILL UNWRITTEN.** *(✅ **BUILT AND PUBLISHED V11.4 — see §43.**)* **5.1.1(i) requires the policy linked in App Store Connect AND reachable inside the app.** A draft exists with placeholders. ⚠️ **HatchGrab is a CONTROLLER for operator accounts and a PROCESSOR for end-customer order data — UK GDPR Article 28 requires processor clauses in the operator terms.** That is a drafting requirement, not a link.
+- **2.1(a) requires a demo account with a live backend.** A built-in demo mode needs Apple's **prior approval**, so **a review account is the simpler path**. *(🔴 **STILL OPEN — the only one of these three that is.**)*
 
 ## 🔴 V11.1 — added 5 August 2026 (the plan model)
 
@@ -5796,7 +6059,7 @@ Still `min-h-screen` with **no inner scroller anywhere in ~2,000 lines** (`grep`
 All three V11 blockers below are **still open**. Re-stated here only where V11.1 changed something about them:
 
 - **🔴 TRIAL NOMINATION.** Still no UI, no route, nothing writing `trial_expires_at`. Provisioning now writes plan `trial` rather than `demo`, which makes the eventual fix smaller; **it does not make this any less blocking**, because a NULL expiry grants the full trial set indefinitely. See the V11 entry below.
-- **🔴 THE FOUR UNENFORCED FEATURE GATES.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — declared in `lib/features.ts`, no `canAccess` call anywhere. **Unchanged.**
+- **🔴 THE FOUR UNENFORCED FEATURE GATES.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — declared in `lib/features.ts`, no `canAccess` call anywhere. **Unchanged.** *(⚠️ **CORRECTED V11.16 — "four" is a substantial understatement. The live count is 23 declared, 6 gated, 17 UNGATED**, and these four are a subset. See the V11.16 block at the top of §27 for the counting method, which changes the answer.)*
 - **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side gate and the build-time client flag must flip together. **Unchanged.**
 
 ### 🔴 THE EXPIRY CLIFF — new, and it has dates
@@ -7359,6 +7622,58 @@ scanning tool*. **Each was caught by the post-write scan and by nothing else.**
 ⚠️ **Suggested companion check, not implemented:** the census should arguably also flag any byte below
 0x09 other than newline. That would have caught the first instance on the first pass.
 
+✅ **V11.16 — ADOPTED. Every scan in the App Store workstream reported three counts side by side: NUL,
+control bytes below 0x09, and other C0 (0x0B-0x1F, 0x7F).** No further instance was found in any file
+touched, and the sub-0x09 count is now cheap enough that there is no reason to omit it.
+
+## ✅ THE NON-ASCII CENSUS EARNS ITS KEEP — a real violation, caught by nothing else (V11.16)
+
+Mid-task, a code comment added to `components/shared/AppHeader.tsx` cited **"§40"** using **U+00A7** — a
+codepoint that file had never contained. **The before/after census caught it and it was rewritten as the
+words "manual section 40" before anything else proceeded.**
+
+🔴 **IT COMPILED. IT RENDERED. NOTHING ELSE WOULD EVER HAVE LOOKED AT IT.** There is no lint rule, no
+type error and no test that fails on a stray codepoint in a comment; the only thing standing between it
+and the repo was a count taken before and after.
+
+**Keep the census mandatory on EVERY file edit, not just on manual edits.** ⚠️ The tempting exception —
+*"it is only a comment"* — is exactly the case that slips through, because a comment is the one place
+nobody re-reads.
+
+## 🔴 TRACE THE LINK **AND** THE DESTINATION'S GATE — a link is not a route, a route is not a reachable page (V11.16)
+
+**Reproduced twice in one day, in opposite directions, which is why it is an invariant and not an
+anecdote:**
+
+1. `components/shared/AppHeader.tsx:97` `<Link href="/">` was traced, **and nobody asked what `/`
+   renders.** It is the **Village Foodie discovery map**, not a HatchGrab page. The link was correct;
+   the destination was a different product.
+2. `app/(legal)/layout.tsx:80` `<Link href="/landing">` was traced and **escalated as a guaranteed
+   reviewer route** to the marketing page's "Coming soon" strings. **`/landing` is admin-gated in
+   production and redirects non-admins server-side. The escalation was wrong.**
+
+🔴 **THE TWO ERRORS HAVE THE SAME SHAPE AND OPPOSITE SIGNS:** one under-read the destination and missed
+a real defect; the other over-read it and manufactured one. **Following the `href` is half the work.
+Open the destination's layout and read its gate.** §27.
+
+## ⚠️ THE NATIVE-PLATFORM CHECK NOW HAS THREE MECHANISMS (V11.16, unresolved)
+
+| Surface | Mechanism | Why |
+|---|---|---|
+| `components/shared/AppHeader.tsx` | direct `isNativeApp()` | **safe** — all three renderers gate it behind a `useState(true)` early-return, so it never appears in server output or on the first client frame |
+| `app/(legal)/layout.tsx` | `'use client'` + `mounted` two-pass | **it IS the first paint of `/privacy`**; a client-only check there would be a hydration mismatch |
+| `proxy.ts` | server-side, via the `HatchGrabNativeApp` User-Agent marker | already in production; set **byte-identically** in the iOS and Android config blocks |
+
+🔴 **Three answers to one question breaks §40's own discipline of one predicate per policy question.**
+The UA marker is readable server-side and would remove the need for **both** client mechanisms, at the
+cost of forcing dynamic rendering on the legal pages. **UNRESOLVED — logged as a design decision, not a
+defect.**
+
+⚠️ **`purchaseCtaAllowed()` was deliberately NOT used or extended for any of this.** It is the **3.1.1
+commerce** predicate; this is **2.1 completeness**. Different guideline, different question. **§40 keeps
+them separate on purpose, and merging them would make one guideline's answer move when the other's
+changes.**
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -7440,6 +7755,132 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 **⚠️ CANNOT BE VERIFIED ON THE PHYSICAL TAB** (Lenovo, Android 14 — below the API-35 threshold): the **edge-to-edge / status-bar inset behaviour**. The Tab **MASKS** the bug the API-36 emulator exposes. For that one class of defect **the more realistic device gives the less realistic answer** — **verify insets on the emulator.**
 
 **⚠️ NOT REPRESENTATIVE:** near-stock Android does **not** clear aggressive **OEM background-killing** (Samsung, Xiaomi) — the case that matters most for a tablet left on a counter all service.
+
+## ✅ THE APP-LEVEL PRIVACY MANIFEST — BUILT 14 August 2026 (V11.16)
+
+`ios/App/App/PrivacyInfo.xcprivacy`, created and **registered in the Xcode target**. 🔴 **Without it,
+App Store Connect rejects the UPLOAD with ITMS-91053 — before a human reviewer ever opens the build.**
+
+**Contents:** `NSPrivacyAccessedAPITypes` with **exactly one** entry —
+`NSPrivacyAccessedAPICategoryUserDefaults`, reason **`CA92.1`**. `NSPrivacyTracking` **false**,
+`NSPrivacyTrackingDomains` empty, `NSPrivacyCollectedDataTypes` **empty pending a decision** (below).
+
+**WHY EXACTLY ONE ENTRY.** An audit of the app's own native source **and all twelve Capacitor packages**
+found **exactly one** required-reason API in the whole app: **`UserDefaults.standard` in
+`@capacitor/preferences`** (`Preferences.swift:19`) — **the offline outbox's backing store**. 🔴 **That
+package ships NO manifest of its own**, so the declaration has to live at app level. **READ.**
+
+🔴 **FileTimestamp, DiskSpace, SystemBootTime and ActiveKeyboards have ZERO hits and are DELIBERATELY
+ABSENT.** Two near-misses in `@capacitor/ios` were examined and excluded: `FileManager.fileExists` /
+`removeItem` / `createDirectory` (**FileTimestamp covers date-READING APIs**, not existence or
+deletion), and `WebViewAssetHandler.swift`'s `.fileSizeKey` (**one file's size, not free disk space**).
+**Declaring a category you do not use is its own failure mode.**
+
+⚠️ **`@capacitor/ios`'s `KeyValueStore` has a `persistent(suiteName:)` backend that LOOKS like
+UserDefaults and is not** — it resolves to `FileStore`, reading and writing files under
+`.libraryDirectory`. A case-insensitive search for `userdefaults` across all of `@capacitor/ios` returns
+**zero**. **The name is misleading; the implementation is files.**
+
+**WHY `CA92.1` AND NOT `1C8F.1`.** `1C8F.1` is for UserDefaults **shared via an App Group**. Three
+independent checks, **all READ**: no `com.apple.security.application-groups` key in **either**
+entitlements file; **exactly one `PBXNativeTarget`**, `productType com.apple.product-type.application`,
+with no `.appex` and no Embed App Extensions phase; and the plugin calls `UserDefaults.standard`, never
+`UserDefaults(suiteName:)`. 🔴 **A wrong code for a category is ITMS-91055, which fails the upload
+exactly like a missing declaration** — so "declare both to be safe" is not safe.
+
+**REGISTRATION IN `project.pbxproj`** — four additive lines, IDs `HG01BB0000000000000005`
+(`PBXFileReference`) and `HG01BB0000000000000006` (`PBXBuildFile`), appearing in **PBXFileReference,
+PBXBuildFile, the App PBXGroup, and PBXResourcesBuildPhase**. Resources went **6 → 7** entries.
+`plutil -lint` **OK** before and after.
+
+🔴 **NOT VERIFIED BY BUILDING. A manifest that lints is not a manifest that passes App Store
+validation.** No `xcodebuild`, no archive, no upload, no `cap sync`. The first real test is an archive
+upload and it has not happened.
+
+⚠️ **If a plugin is added or upgraded, RE-RUN THE AUDIT.** Only `@capacitor/ios` ships its own manifest
+(two of them, **both declaring nothing**); the other eleven packages ship none, so anything they touch
+has to be declared in the app-level file.
+
+## 🔴 `NSPrivacyCollectedDataTypes` IS DELIBERATELY EMPTY AND MUST BE REVISITED (V11.16)
+
+**An empty array is a POSITIVE CLAIM THAT THE BINARY COLLECTS NOTHING, not a neutral placeholder.**
+
+**The one candidate: the APNs device token.** Obtained **natively** by `@capacitor/push-notifications`;
+**transmitted by JavaScript** — `lib/native/push.ts:72-74` → `saveDeviceConfig` →
+`fetch('/api/native/bind-device')`. §11 already records that **`lib/native/*` compiles into the WEB
+bundle despite its name**. `AppDelegate.swift` contains **no push code at all**.
+
+⚠️ **THE BINARY/WEBVIEW LINE IS ARGUABLE AND IS NOT A DEVELOPER'S CALL.** The manifest describes the
+**binary**; the App Store Connect privacy questionnaire describes the **app as a product**, and **the
+questionnaire is the binding artefact**. The two must agree. **The token reaches
+`van_devices.push_token` and is linked to a truck and an operator either way.**
+
+**RECOMMENDATION ON RECORD: declare `NSPrivacyCollectedDataTypeDeviceID`** — App Functionality, linked
+to identity, **not** used for tracking. It covers both the APNs token and the `device_id` UUID
+travelling in the same request. **Over-declaring costs nothing at review; under-declaring is a
+misrepresentation, and *"our website collected it"* is an argument only ever made after a rejection.**
+
+✅ **No tracking exists in the binary. READ:** no IDFA, no `AppTrackingTransparency`, no ad network, no
+data broker. The native imports are only `UIKit`, `Capacitor`, `WebKit` and `Network`. **PostHog is a
+WEB dependency** (`package.json`), loaded inside the WebView, **not linked into the binary**.
+
+## 🔴 pbxproj: `.entitlements` AND PRIVACY MANIFESTS TAKE OPPOSITE RULES (V11.16)
+
+**These look contradictory and are not. Both are correct.**
+
+| File | `PBXBuildFile` / Resources entry | Why |
+|---|---|---|
+| `.entitlements` | 🔴 **MUST NOT** be added | read by `codesign`; a Resources entry **wrongly embeds it in the bundle** |
+| `PrivacyInfo.xcprivacy` | 🔴 **MUST** be added | **it does nothing unless it is in Copy Bundle Resources** |
+
+⚠️ **RECORDED EXPLICITLY, because §36's existing entitlements rule invites a future reader to "tidy up"
+the manifest's `PBXBuildFile` entry and silently break the upload.** The failure mode is an ITMS
+rejection at upload **with no visible symptom in the app**.
+
+**When hand-editing `project.pbxproj` is acceptable** — all six, not a subset: small file, one target,
+**additive change only**, an existing hand-authored ID convention already present, **`plutil -lint`
+passes before and after** (a pbxproj is an OpenStep plist, so this is a real syntax check, not an
+eyeball), and a **byte-identical backup taken first**. 🔴 **A merge conflict, a second target, or an
+Xcode-managed group changes that answer.**
+
+⚠️ **`cap sync` regenerates parts of the native project.** The four manifest lines are hand-authored and
+no tooling put them there. **After any `cap sync`, re-check that the `PBXResourcesBuildPhase` entry
+still resolves** — it fails silently, and the symptom is an upload rejection rather than anything
+visible in the app.
+
+## `TARGETED_DEVICE_FAMILY = "1,2"` — UNIVERSAL. DECISION TAKEN: KEEP IT (V11.16)
+
+**READ, both configurations** (`project.pbxproj` Debug and Release).
+
+**Consequences, all accepted deliberately:**
+
+- 🔴 **App Review will test on iPhone, and the shell has never run on one.**
+- **Both iPhone AND iPad screenshot sets are required.**
+- It **aligns with Android**, which has no device-family concept — Play ships to phones and tablets by
+  default.
+
+⚠️ **AN iPHONE MUST ENTER THE HARDWARE TEST LOOP BEFORE SUBMISSION.** This manual is an iPad document
+end to end, and **three simulator-masked bugs were found the day the iPad became physical.**
+
+**Also READ:** `MARKETING_VERSION = 1.0` and `CURRENT_PROJECT_VERSION = 1` in both configurations. Fine
+for a first upload; ⚠️ **a second upload at the same build number is rejected by App Store Connect.**
+
+## `Info.plist` GAPS (V11.16)
+
+**READ, `ios/App/App/Info.plist`:**
+
+- ✅ **`NSFaceIDUsageDescription` present** — required, since `@aparajita/capacitor-biometric-auth` is a
+  dependency.
+- 🔴 **No `ITSAppUsesNonExemptEncryption`** — so App Store Connect asks the export-compliance question
+  on **every** upload instead of answering it. **Not a rejection; a per-upload prompt**, and one that is
+  easy to answer wrong in a hurry.
+- ⚠️ **No `UIBackgroundModes`**, so **remote notifications cannot wake the app**. **INFERRED
+  consequence, not verified against behaviour.**
+- ⚠️ **`UIRequiredDeviceCapabilities = armv7`** — stock Capacitor scaffold residue. **No supported iOS
+  device is armv7.** INFERRED harmless; unverified against Apple's current handling.
+- ⚠️ **No camera / photo / location usage descriptions.** **INFERRED correct** — no installed plugin
+  requires them — 🔴 **but the WEB BUNDLE WAS NOT AUDITED** for `getUserMedia` or geolocation, which in
+  a WKWebView would prompt and, **without the key, crash**.
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -8743,9 +9184,58 @@ Across `app/manage/[token]/page.tsx` and `components/FeatureGate.tsx`. **Suppres
 
 > ⚠️ **IF THE MANAGE PAGE EVER BECOMES SERVER-RENDERED WITH DATA — a server component, a data prefetch, or simply removing the loading early-return — EVERY GATE BECOMES AN SSR/CLIENT MISMATCH AND AN UPGRADE BUTTON FLASHES FOR A FRAME ON iOS.** That frame is exactly what an App Review screenshot catches. The gates look self-contained and are not; this property is what makes them safe.
 
+## ✅ THE ELEVEN GATES AND THE HYDRATION PROPERTY — BOTH INTACT (re-verified 14 August 2026)
+
+**READ, re-counted 14 August 2026.** `purchaseCtaAllowed` has **16 occurrences**: 1 definition
+(`lib/commerce-policy.ts:39`), 2 imports, **2 comments**, and **11 call sites** — ten in
+`app/manage/[token]/page.tsx` (`:425`, `:438`, `:737`, `:10162`, `:10528`, `:10537`, `:10570`, `:10600`,
+`:10630`, `:10694`) and one in `components/FeatureGate.tsx:58`.
+
+✅ **THE ELEVEN CALL SITES MATCH THIS SECTION EXACTLY — none lost, none added.** ⚠️ The occurrence total
+moved from 15 to 16 for a reason that is **not** a gate: `components/shared/AppHeader.tsx:84` gained a
+comment naming the predicate **in order to say it is deliberately NOT used there**. **Count call sites,
+not occurrences** — a mention is not a gate, and this section's number is the call sites.
+
+`app/manage/[token]/page.tsx:200` — `loading` is still `useState(true)`; `:508` still early-returns
+before any gated markup; the earliest render-path call is `:737`. ✅ **The load-bearing property above
+holds.**
+
+⚠️ **NEW, and worth watching.** The V11.15 Menu-layout control was added to
+`app/dashboard/[token]/page.tsx`, which contains **zero** `purchaseCtaAllowed` calls. **Correct today —
+a layout preference is not a purchase CTA** — but the dashboard Settings tab is now an operator-facing
+settings surface **with no commerce gate anywhere in the file**, i.e. a place where a future CTA could
+be added without ever meeting an existing guard.
+
+## ✅ THE TRIAL UPGRADE POPUP IS ALREADY SUPPRESSED ON iOS
+
+Gated in **three** places by `purchaseCtaAllowed()`: `:438` the trial-reminder **trigger**
+(`if (!purchaseCtaAllowed()) return`), `:737` its **render**, and `:10694` the **upgrade modal**. A
+fourth at `:425` suppresses the trial **auto-land** on the Billing tab.
+
+⚠️ **Line numbers in this section were re-read on 14 August after the manage page lost ~39 lines** to
+the Guideline 2.1 removals. **The gates are unchanged; the numbers moved.** `app/manage/[token]/page.tsx`
+is over 10,000 lines, so **a stale line number in this section points at unrelated markup**, which reads
+as a missing gate rather than as a stale reference.
+
+⚠️ **Verified in code; never observed in the shell.**
+
+⚠️ 🔴 **iOS-ONLY BY DESIGN — §40 gates on iOS specifically because Google permits steering, so THE
+ANDROID BUILD WILL SHOW THE POPUP.** **Decide whether that asymmetry is intended before shipping both.**
+It is a deliberate consequence of the predicate, not an oversight, but it has never been stated as a
+product decision.
+
 ## Related, and NOT resolved
 
-Account deletion, the privacy policy and terms, and the 2.1(a) demo account are all **open** and are recorded in §27. **None of them is discharged by this section.**
+⚠️ **CORRECTED V11.16.** This block previously listed account deletion and the legal pages as open.
+**Both were BUILT in V11.4** — `lib/account-deletion.ts` and the owner-only *Delete account* control
+(§41); `app/(legal)/privacy/page.tsx` and `app/(legal)/terms/page.tsx`, sourced from
+`content/legal/*.md` and linked from `UserMenu.tsx:261-273` (§43). 🔴 **This section held a stale
+restatement while §41 and §43 held the correct fact, and on 14 August the stale one was believed and
+produced two false "confirmed still open" findings.** See §1.
+
+**The one item here that IS still open: the 2.1(a) demo/review account.** Recorded in §27.
+**Nothing else in this section discharges the App Store blockers — see §27 for the current list, and
+§36 for the privacy manifest.**
 
 
 # 41. Account deletion — anonymisation, not row deletion (V11.4)

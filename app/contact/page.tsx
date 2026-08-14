@@ -3,6 +3,7 @@
 import Script from 'next/script';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { BrandHomeLink } from '@/components/shared/BrandHomeLink';
 import { Suspense } from 'react';
 
 function ContactForm() {
@@ -36,9 +37,18 @@ export default function ContactPage() {
 
       <header className="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold flex items-center gap-2 hover:opacity-80 transition-opacity">
+          {/* NON-NAVIGATING INSIDE THE NATIVE SHELL. This page is reachable in the app: the legal
+              layout's footer links /contact, and the legal pages are the App-Store-required in-app
+              link. href="/" is the Village Foodie DISCOVERY MAP, a different product, with no back
+              button to return from once a WebView lands there.
+              kind="branding": this is the site's wordmark, so the app renders it unchanged and simply
+              does not navigate. A non-clickable logo reads as identity, not as a control.
+              WEB IS BYTE-IDENTICAL: the same <Link href="/"> with the same classes.
+              (Comment kept ASCII-only: this file has never held an em dash or an emoji marker, and the
+              non-ASCII census flags any file that gains a character class it never had.) */}
+          <BrandHomeLink href="/" kind="branding" className="text-xl font-bold flex items-center gap-2 hover:opacity-80 transition-opacity">
             Village Foodie <span className="text-2xl">🚚</span>
-          </Link>
+          </BrandHomeLink>
           <Link href="/" className="text-xs font-bold bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors border border-slate-700">
             ← Back
           </Link>

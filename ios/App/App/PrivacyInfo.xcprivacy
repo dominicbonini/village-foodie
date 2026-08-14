@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+	App-level privacy manifest. Without this, App Store Connect rejects the UPLOAD with ITMS-91053
+	(missing required-reason API description) before a human reviewer ever opens the build.
+
+	EVERY ENTRY BELOW IS TRACED TO A REAL CALL. A wrong reason code fails the upload as ITMS-91055,
+	which is the same outcome as no file at all, so nothing here is declared "to be safe".
+
+	AUDITED 14 August 2026 across the app's own Swift and all twelve Capacitor packages. Full evidence
+	in docs/privacy-manifest-report.md. Summary of what was NOT found, because a category declared
+	without a matching call is its own defect:
+	  - FileTimestamp    NOT DECLARED. No creationDate / modificationDate / contentModificationDateKey /
+	                     attributesOfItem anywhere. The Capacitor core uses FileManager.fileExists,
+	                     removeItem and createDirectory, none of which is a required-reason API.
+	  - DiskSpace        NOT DECLARED. No volumeAvailableCapacity, systemFreeSize or statfs. The one
+	                     nearby call is WebViewAssetHandler.swift's .fileSizeKey, which is a single
+	                     file's size, not free disk space, and is not in the category.
+	  - SystemBootTime   NOT DECLARED. No systemUptime, mach_absolute_time, kern.boottime or sysctl.
+	  - ActiveKeyboards  NOT DECLARED. No activeInputModes.
+
+	If a plugin is added or upgraded, RE-RUN THE AUDIT. Only @capacitor/ios ships its own manifest
+	(two, both declaring nothing); the other eleven packages ship none, so anything they touch has to
+	be declared HERE.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<!--
+				UserDefaults — required because @capacitor/preferences is the backing store for the
+				offline order outbox (lib/native/outbox.ts, keys hg_outbox_*).
+				TRACED TO:
+				  node_modules/@capacitor/preferences/ios/Sources/PreferencesPlugin/Preferences.swift:19
+				      return UserDefaults.standard
+				  …/PreferencesPlugin.swift:89,93,112,114  (dictionaryRepresentation, string(forKey:),
+				      removeObject(forKey:))
+				That package ships NO PrivacyInfo.xcprivacy of its own, so this declaration must live here.
+			-->
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!--
+					CA92.1 — "access information from user defaults to read and write information that
+					is only accessible to the app itself."
+					CHOSEN OVER 1C8F.1 ON EVIDENCE, NOT BY DEFAULT. 1C8F.1 is for defaults shared with
+					other apps via an App Group, and this project has neither:
+					  - no com.apple.security.application-groups key in App.entitlements or
+					    AppRelease.entitlements;
+					  - exactly ONE PBXNativeTarget in project.pbxproj, productType
+					    com.apple.product-type.application — no .appex, no extension, no embed phase;
+					  - the plugin calls UserDefaults.standard and never UserDefaults(suiteName:).
+				-->
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+
+	<!--
+		NSPrivacyTracking — FALSE, from evidence rather than assumption. Apple defines tracking as
+		linking user or device data with third-party data for targeted advertising or advertising
+		measurement, or sharing it with a data broker. The native binary imports only UIKit, WebKit,
+		Network and Capacitor; there is no analytics, attribution or advertising SDK anywhere under
+		ios/. PostHog is a WEB dependency (package.json) loaded inside the WebView, not linked into
+		the binary. No IDFA, no ATT prompt, no ad network.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+
+	<!--
+		DELIBERATELY EMPTY, PENDING DOMINIC'S DECISION.
+		This declaration must AGREE with the App Store Connect privacy questionnaire, it carries legal
+		weight, and it is not a developer's call to make. The audit found exactly one candidate — the
+		APNs device token, obtained by @capacitor/push-notifications and stored in
+		van_devices.push_token — and it sits on a genuinely arguable line: the TOKEN is obtained by
+		native code, but it is TRANSMITTED by JavaScript (lib/native/device.ts saveDeviceConfig →
+		fetch('/api/native/bind-device')) which ships in the remotely-loaded web bundle, not in this
+		binary. See docs/privacy-manifest-report.md Part B for both readings.
+		An EMPTY array is a positive statement that the binary collects nothing, so this must be
+		revisited before submission — it is not a placeholder that can be left by default.
+	-->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+</dict>
+</plist>
