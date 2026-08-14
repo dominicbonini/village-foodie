@@ -851,6 +851,13 @@ export async function POST(req: NextRequest) {
   // chips and per-feature override tickboxes all write there. Nothing ever wrote them through this path.
   // The rule: gating state is never writable by a credential the gated party holds.
   if (action === 'update_truck') {
+    // ⚠️ 'add_order_layout' WAS ON THIS LIST AND WAS REMOVED, 14 August 2026 — NOT AN OVERSIGHT.
+    // Its only writer moved to DASHBOARD → Settings, which writes trucks columns through bespoke
+    // one-column actions (`set_add_order_layout`, app/api/dashboard/action/route.ts) rather than
+    // through here, so after the move nothing posted the key to update_truck and the entry was
+    // unreachable. Grep-verified before removal.
+    // 🔴 RE-ADD IT BEFORE PUTTING ANY MANAGE CONTROL FOR IT BACK: the filter below drops unlisted keys
+    // SILENTLY, so a control without the entry appears to save, returns {ok:true}, and writes nothing.
     const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled', 'setup_step', 'show_paid_step', 'takes_cash', 'completion_presses']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))

@@ -1,6 +1,6 @@
 # HatchGrab — Onboarding Flow Spec
 
-**Status:** Phases 1–4 BUILT and LIVE-WALKED on preview (4 August). Phase 5 (nomination / go-live) DESIGN ONLY and **blocking launch** (§15). Written July 2026. **v7.1** — revised 5 August after the plan-model session.
+**Status:** Phases 1–4 BUILT and LIVE-WALKED on preview (4 August). Phase 5 (nomination / go-live) DESIGN ONLY and **blocking launch** (§15). Written July 2026. **v7.2** — revised 13 August after the promote-from-discovery session.
 **Scope:** Anonymous demo → signup → guided setup → go-live. Cold-start (inbound) path only; the warm/branded outreach path is a later variant (§13).
 **Companion doc:** `docs/reference-manual.md`, now **V11.1** (architecture invariants — this spec must not contradict it). 🔴 **Where the two overlap, the manual is authoritative.** This spec describes the FLOW an operator experiences and the DECISIONS behind it; the manual owns the schema facts, the invariants and the backlog. Cross-reference rather than restate — a fact recorded twice is a fact that can disagree with itself.
 
@@ -9,6 +9,8 @@
 > **v3 changes (post-build):** Stage 3 and Stage 4 rewritten AS BUILT — several written decisions turned out wrong in practice (hiding the selling points, hiding the QR/order link, a snoozeable save bar, blocking the KDS). Added §9.3 **build discoveries** (the expensive ones — read before touching provisioning) and §9.4 **structural gaps**. Phase 2 marked complete with as-built notes. Phase 4 expanded from four words into a spec.
 >
 > **v4 changes (23 July, post-Step-4 session):** Phase 4 step 4 (menu migration) BUILT — but the session's headline finding is that the previous build was **unreachable**: `demo_sessions.extraction` had no writer, so `/api/setup` GET always returned null and the `?import=demo` bootstrap silently fell through to a blank upload. Fixed, plus four related changes (§9.3 #7–#9, §9.4 G4–G6, §12 O14). ⚠️ **Everything in this batch is tsc-clean and UNVERIFIED** — no live run, nothing committed. Test order is at the end of §10 Phase 4.
+
+> **v7.2 changes (13 August):** **Two corrections and one new blocker.** 🔴 **Mitigation 2 IS BUILT** — `/api/orders/submit` refuses `excluded === true` with a 404, so the B9 hole recorded as open is closed; and mitigation 1 does **not** apply to an operator truck, whose slug is `readable` by design, leaving `excluded` as the ONLY thing protecting a pre-trial truck. 🔴 **The admin create-truck route violated the capacity rule** until 13 August, writing `5` even when the field was cleared; it now passes an explicit `null` and the input is gone. 🔴 **NEW BLOCKER, item 5: `EMAIL_FROM_ADDRESS` is unset, so self-serve signup completes without sending the activation link** and reports success — the same shape as the payment-domain script, and the cheapest of the five to fix. Also recorded: an operator truck is created BEFORE its operator, deliberately, and promotion is a different journey from the setup wizard. Manual **V11.14**.
 
 > **v7.1 changes (5 August):** 🔴 **THE PLAN DECISION IS RESOLVED — self-serve provisions `trial`, not `demo`, and a NULL `trial_expires_at` now means THE TRIAL HAS NOT STARTED.** `canAccess()` previously denied **every** feature on a NULL expiry, which is the entire reason §3 / B10 ruled `'trial'` out for a pre-trial truck; that reason no longer exists and B10 is **CLOSED**. The DEMO provisioning profile still writes `demo` — a prospect sandbox is not a signup. 🔴 **What this does NOT resolve: nomination still does not exist, so a self-serve trial cannot be STARTED; and what happens at EXPIRY is undecided.** Both are in §15. Also settled: the Billing Trial column now shows until the trial **ends** rather than only while it runs, and two investigations closed clean — the deals three-layer model and upsells-live-on-save were both found **sound as designed** (§15B). No new build in this session; the flow an operator walks is unchanged from v7. Manual **V11.1** §4, §13, §27, §35.
 
@@ -234,7 +236,7 @@ To appear publicly a truck needs **all** of: `truck_events.status ∈ (confirmed
 | `order_link_vf` | `false` | false ✓ | |
 | `order_link_hg` | `false` | **true ✗** | **must override** |
 | `is_customer` | `false` | false ✓ | |
-| `excluded` | `true` | — | master hide |
+| `excluded` | `true` | — | master hide — **and the order gate** |
 | `active` | **`true`** | — | **required** — `/api/orders/submit` filters `.eq('active', true)`. Cannot hide via `active=false`. |
 
 ### 4.2 🔴 Discovery gating is NOT the whole public surface (B9)
@@ -245,14 +247,25 @@ Three surfaces have **no visibility gating at all**:
 |---|---|
 | `/api/menu/[truckId]` | **none** — deliberately doesn't filter on `active` |
 | `/api/events?truck=slug` | **none** — resolves any truck by slug/id |
-| `/api/orders/submit` | `active === true` only — does **not** check `excluded` or `show_on_*` |
+| `/api/orders/submit` | ~~`active === true` only — does **not** check `excluded` or `show_on_*`~~ **CORRECTED v7.2: `active === true` in the lookup, then `excluded !== true` fourteen lines below it — see 4.2. `show_on_*` is still not checked and governs the MAP only.** |
 
 **So anyone who knows or guesses the slug can load a "hidden" demo truck's menu and place a real order on it.**
 
-Two mitigations, both required:
+**Mitigation 2 IS BUILT (verified 13 August 2026).** `/api/orders/submit` refuses `excluded === true`
+with a **404**, checked fourteen lines below the truck lookup — deliberately outside both queries so one
+condition covers the slug and the id path. It sits **above all event, menu, stock and payment logic**,
+and the 404 is intentionally identical to an unknown truck: a hidden truck should not confirm its own
+existence. The only exemption is an id carrying the `demo-` prefix, because ordering on a demo IS the
+demo.
 
-1. **`id`, `slug` and `dashboard_token` must be cryptographically unguessable.** A *security property of the create path*, not a cosmetic detail.
-2. **Add `excluded !== true` to the truck check in `/api/orders/submit`.** One condition; closes the hole; also protects the pre-trial state. **In Phase 1.**
+⚠️ **Mitigation 1 does not apply to an operator truck, by design.** The unguessability requirement was
+written for demo trucks, whose provisioning identity is `random`. The **operator** identity is
+`readable` — the slug is the printed QR URL and must be. So a pre-trial operator truck has a guessable
+slug, and mitigation 2 is the ONLY thing protecting it.
+
+🔴 **Therefore: `excluded` is load-bearing, not cosmetic.** A pre-trial truck is protected by exactly
+one condition. Do not weaken it, and do not clear it as a matter of routine — clearing `excluded` is
+what OPENS a truck for real orders.
 
 ### 4.3 At nomination
 
@@ -858,6 +871,20 @@ Signup becomes **"claim it"** rather than "save it" — lower friction still. Re
 
 > ✅ **What v7.1 DID settle**, so it is not re-litigated: the NULL case. It used to deny every feature, which is why §3 / B10 ruled `'trial'` out for a pre-trial truck at all. NULL now means *not started* and grants. **The expired branch was deliberately left untouched** — changing what expiry means was never in scope for a provisioning fix, and it is item 4.
 
+**5. 🔴 `EMAIL_FROM_ADDRESS` IS UNSET, SO SIGNUP SILENTLY COMPLETES WITHOUT SENDING THE ACTIVATION
+LINK.** The signup mailer falls back to `hello@hatchgrab.com`, which the code's own comment says Brevo
+will reject as unverified, and the send result is checked **only to log it** — never thrown. `/api/signup`
+returns `{ ok: true }`, the operator sees a successful signup, and the activation link they are waiting
+for was never sent. **Nothing surfaces anywhere.**
+
+⚠️ **This is the same shape as the payment-domain registration script: a real failure that reports
+success.** It blocks launch independently of the other four items, and it is the cheapest of them to
+fix — an environment variable and a verified sender domain.
+
+⚠️ **The admin account-creation route is unaffected** — it hand-rolls its own send from the verified
+`villagefoodie.co.uk` address. So the operator-side path works today while the self-serve path does not,
+which is exactly the asymmetry that would let this ship unnoticed.
+
 **Also owed before launch, and not in the manual's blocking list:** go-live gating on `verified_at` (O11 — decided, not built), and the demo-truck retirement §10 Phase 4 specifies but nothing implements.
 
 ---
@@ -881,6 +908,11 @@ They arrive on Manage from the signup modal, already signed in, with `setup_step
 **5. Allergens.** Structure first (per-dish or an allergen card), then — for per-dish — a confirmation table, opening in TABLE view because a whole freshly-extracted menu is faster to review as a matrix. 🔴 **Next stays disabled until every dish is confirmed**, with "Skip Allergen setup for now" as the always-available escape. Unconfirmed dishes commit `allergens_verified = false` and are **hidden from customers entirely** in per-dish mode — not shown without allergen info, absent.
 
 **6. Kitchen setup.** Per-category prep time and batch size, then the total capacity ceiling and its window. Left blank by provisioning **on purpose** — a ceiling nobody chose would quietly promise collection times the kitchen cannot hit. This step is the ONE atomic commit: nothing before it has been written, and abandoning the wizard here loses the review, not the account.
+
+⚠️ **The admin create-truck route violated this until 13 August 2026**, defaulting the field to `5` and
+— worse — writing `5` when the field was cleared, because an omitted key reads as "use the default".
+**The route now always passes an explicit `null`** and the input was removed, bringing it into line with
+this rule. A third path, Manage's add-van, still supplies nothing and inherits the column's null default.
 
 **7. Schedule.** Three routes, one of which is the operator's own website: verify it, and the dates found open in the **same editable event modal Settings uses** — correct a venue, a date or a time, deselect what they do not want, save. The URL is enrolled for the scraper at the same time, so both promises hold. The other two routes are a photo/text import and "I'll add dates later", which is a real answer rather than a skip.
 
@@ -909,5 +941,21 @@ Each of these was a choice between defensible options. The reasoning matters mor
 - **🔴 Self-serve provisions `trial`; the demo profile stays `demo`.** Two profiles in one file, and they diverged the moment the difference mattered. **A prospect sandbox is not a signup:** a plan that never expires is correct for a sales surface with nobody behind it and wrong for a real operator. ⚠️ **Do not "tidy" them back onto one value** — they shared one for exactly as long as it took for that to become the launch blocker. Manual V11.1 §13.
 - **🔴 A NULL `trial_expires_at` means NOT STARTED, and grants.** It used to deny every feature. The reasoning is that the failure direction is one-way: the worst outcome of granting on NULL is that somebody is not charged when they might have been, whereas denying on NULL took the product away from operators who had not begun using it — during the setup wizard, which is exactly when they are deciding whether to stay. **The EXPIRED branch was deliberately left untouched in the same change**; what expiry should mean is a separate decision (§15 item 4). Manual V11.1 §4.
 - **The Billing Trial column shows until the trial ENDS, not only while it runs.** The condition asks *"has this trial ended"* (NULL or future → show), not *"is it running now"*. The old question hid the column from an operator whose trial had not started — **the exact audience it exists to inform**, since they are the ones deciding whether the plan is worth having. ⚠️ **One condition, three readers** (the column array and two header spacer rows): they must evaluate the same expression or every section header sits one cell out of alignment, with both halves looking correct in isolation. Manual V11.1 §4, §35.
+
+### Added v7.2 (13 August 2026)
+
+- **🔴 An operator truck is created BEFORE its operator, deliberately.** `/api/manage` authenticates on
+  the dashboard token alone, so a truck with a null `operator_id` can be fully built — menu, allergens,
+  capacity, schedule — before any account exists. **This is not a workaround; it is the correct sequence
+  for an onboarded truck**, because creating the operator is also what excludes the truck's Village
+  Foodie shadow. Creating the account first opens a window in which the truck is absent from the
+  consumer map with nothing to replace it.
+- **The setup wizard is for self-serve. Promotion is a different journey.** An admin-created truck has
+  `setup_step: null`, which means *not in setup* and never *at step 1* — reading it the other way would
+  sweep existing live operators into an onboarding flow. **Such a truck never sees the wizard, the
+  welcome screen, or the "Setup mode" indicator**, and that is correct. ⚠️ **But it also never gets the
+  wizard's writes**, so `allergen_display_mode` stays null and behaves as per-dish — hiding every
+  unverified dish from customers while showing them all to the operator. **Set it, then check the
+  CUSTOMER url; the dashboard cannot show you this failure.**
 
 ---

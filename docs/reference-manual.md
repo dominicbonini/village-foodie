@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.10
+HatchGrab Engineering Reference Manual · V11.14
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.10**
+**Version 11.14**
 
 August 2026
 
@@ -15,6 +15,34 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.14 — 13 August 2026 (night)
+
+Delta over V11.13 — the **onboarding session that turned a manual chore into a feature**. Tikka Tonic
+was promoted from a Village Foodie discovery row into a real operator truck, and the seven read-only
+investigations that preceded it (`docs/tikka-tonic-account-report.md`, `-2` … `-7`) established what
+account creation actually does, correcting four beliefs this manual carried.
+
+- 🔴 **THERE ARE THREE ACCOUNT ROUTES, NOT TWO.** `provisionTruck` holds the repo's ONLY INSERT into
+  `trucks`, reached by `/api/setup` and `/api/admin/create-truck`. `/api/admin/create-operator` creates
+  no truck — it is an ATTACH. **Creating a truck and creating an account are two separate acts**, and
+  the gap between them is usable: `/api/manage` authenticates on the dashboard token alone, so a truck
+  can be fully built before its operator exists.
+- 🔴 **PROMOTE FROM DISCOVERY — BUILT, and exercised on a real row.** A "Create account" button on
+  unlinked `discovery_trucks` rows creates the operator truck pre-filled from the shadow and writes
+  `hatchgrab_truck_id` in the same action, with a compensating delete if the link fails.
+- 🔴 **`trucks.excluded = true` CLOSES A TRUCK FOR ORDERS** — a 404 above all event, menu, stock and
+  payment logic. Every truck created through the admin console is order-closed until it is cleared.
+  ⚠️ **`discovery_trucks.excluded` is a DIFFERENT column doing an unrelated job.**
+- 🔴 **`EMAIL_FROM_ADDRESS` IS UNSET, SO SELF-SERVE SIGNUP SILENTLY COMPLETES WITHOUT SENDING THE
+  ACTIVATION LINK.** A new launch blocker, found while looking at something else.
+- **Two beliefs this manual asserted were wrong and are corrected in place:** Gusto's van capacity is
+  **2, not 5**, and the `trucks.whatsapp` NOT NULL drop **has run**.
+- **Two summary-versus-source errors were made and caught during this session** — see the new
+  invariant. Both were corrected by reading the actual lines.
+
+⚠️ **Tikka Tonic is NOT yet a live customer.** The truck exists, `excluded: true`, no operator, no
+menu, no events. **Pizzeria Gusto remains the only trading truck.**
 
 ## V11.13 — 13 August 2026 (evening, later)
 
@@ -1585,7 +1613,7 @@ Full-session V7.5 (16 Jun 2026): capacity-engine corrections + operator-dashboar
 
 ### Gusto onboarding (Pizzeria Gusto, id 'pizzeria-gusto' — text id, NOT a uuid)
 - **Plan:** set to `trial`, `trial_expires_at` = 2026-10-17 (4 months from 17 Jun; stored 22:59:59+00 = end-of-day 17 Oct BST).
-- **Van created:** `truck_vans` row — Van1, `kitchen_capacity=5`, `capacity_window_mins=5`, active (mirrors Test Kitchen; Gusto had NO van → the capacity engine had nothing to enforce). Grid config 10/5 (matches Test Kitchen — today's grid-key + ASAP fixes apply identically).
+- **Van created:** `truck_vans` row — Van1, ~~`kitchen_capacity=5`~~ **`kitchen_capacity=2` (CORRECTED V11.14 — live-verified 13 August; this line asserted 5 from memory)**, `capacity_window_mins=5`, active (mirrors Test Kitchen; Gusto had NO van → the capacity engine had nothing to enforce). Grid config 10/5 (matches Test Kitchen — today's grid-key + ASAP fixes apply identically).
 - **Manage console URL:** `hatchgrab.com/manage/{dashboard_token}` → Gusto = `hatchgrab.com/manage/gusto-3d87b5d15a6f`. (Order QR/custom domain → `hatchgrab.com/trucks/pizzeria-gusto/order`.)
 - **`trucks.active = false`** — operator-side testing fine; the customer order page needs `active=true` to be visible (flag if the customer link won't load).
 - Menu + schedule built via the UI by Dominic (operator-added events, which HatchGrab should show). Event-source rule: HatchGrab shows only operator-added events; VF currently shows events as-is, switching to approved-only once Gusto confirms.
@@ -1608,7 +1636,7 @@ The prod `trucks` schema has columns/constraints the CODE doesn't always match. 
 ### Migrations to run (Supabase SQL editor) — confirm each before testing the dependent feature
 1. `ALTER TABLE trucks ADD COLUMN IF NOT EXISTS website text; NOTIFY pgrst, 'reload schema';` (#6 — likely already run)
 2. `ALTER TABLE trucks ADD COLUMN IF NOT EXISTS phone_is_whatsapp boolean DEFAULT false; NOTIFY pgrst, 'reload schema';` (#7 — likely already run)
-3. `ALTER TABLE trucks ALTER COLUMN whatsapp DROP NOT NULL; NOTIFY pgrst, 'reload schema';` (#8 — pending)
+3. ~~`ALTER TABLE trucks ALTER COLUMN whatsapp DROP NOT NULL; NOTIFY pgrst, 'reload schema';` (#8 — pending)~~ — ✅ **HAS RUN (CORRECTED V11.14).** Live-verified `is_nullable = YES`. It was recorded as pending here while another entry already recorded it as applied; this line was the stale one.
 
 ### Open decisions / backlog (post-V7.5)
 - **Phone-validation rule:** permissive UK vs strict-11 (#7) — DECISION OPEN.
@@ -3690,6 +3718,91 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 - Personal details (first/last name, phone, login email) live on operators, edited in Team tab. Private, never shown to customers.
 - Business contact (email, phone shown to customers) lives on the truck, edited in Settings under "Business contact".
 
+## 🔴 THREE ACCOUNT ROUTES, AND ONLY ONE CREATES A TRUCK (V11.14)
+
+**`lib/provision-truck.ts:390` is the repository's ONLY INSERT into `trucks`.** Verified by grep across
+`app`, `lib`, `components`, `scripts` plus a check for raw SQL. Three callers reach it, and a fourth
+route creates an operator without creating anything.
+
+| Route | Creates a truck? | Creates an operator? | Auth |
+| --- | --- | --- | --- |
+| `/api/admin/create-truck` | ✅ via `provisionTruck` | no | `verifyAdmin` |
+| `/api/setup` `create_truck` | ✅ via `provisionTruck` | no — attaches the caller's existing operator | operator session |
+| `lib/provision-demo.ts` | ✅ via `provisionTruck` | no | the demo path |
+| `/api/admin/create-operator` | ❌ **an ATTACH** — `trucks.update({operator_id}).eq('id', truckId)` | ✅ auth user + `operators` row | inline `is_admin` |
+
+> 🔴 **CREATING A TRUCK AND CREATING AN ACCOUNT ARE TWO SEPARATE ACTS, AND THE GAP IS USABLE.**
+> `/api/manage` authenticates on `dashboard_token` ALONE and defaults `userRole` to `'owner'`, so a
+> truck with `operator_id` NULL can be fully built — menu, allergens, capacity, schedule — before any
+> operator exists. **This is the correct sequence for an onboarding truck**, because creating the
+> operator is also what excludes their Village Foodie shadow.
+
+⚠️ **`create-operator` does not abort on a bad `truckId`.** It reads `trucks.name`, falls back to
+`'your truck'` when the row is missing, then runs an UPDATE matching zero rows — which PostgREST does
+not treat as an error — and **returns `ok: true`**. INFERRED from the absence of a row-count check.
+
+⚠️ **`operators.name` is written as `email.split('@')[0]`**, so `info@tikkatonic.com` produces the
+operator name `info`. `first_name` / `last_name` stay null on this path.
+
+### 🔴 THE ADMIN PATH LEAVES FIVE THINGS THE WIZARD WOULD HAVE SET
+
+| Column | Wizard | Admin path | Consequence |
+| --- | --- | --- | --- |
+| `contact_phone` | required + validated | **null** | ⚠️ **not settable from the form OR by curl** — the route never accepts `contactPhone` |
+| `whatsapp` | the same number | `''` | same |
+| `preferred_contact_method` | `'phone'` / `'whatsapp'` | **null** | renders no contact section rather than breaking |
+| `allergen_display_mode` | written at import commit | **null** | 🔴 behaves as `per_dish` — see the allergen block |
+| `setup_step` | `'menu'` then advanced | `null` | ✅ **correct and deliberate** — null means "not in setup", never "at step 1" |
+
+**All are repairable from Manage.** `contact_phone`, `whatsapp` and `phone_is_whatsapp` are on
+`update_settings`'s allow-list; ⚠️ **`preferred_contact_method` is on `update_truck`'s instead, and both
+handlers drop unlisted keys silently and return 200** — a key sent to the wrong action writes nothing
+and reports success. Read it back rather than trusting the save.
+
+### 🔴 ROLLBACK COVERS THE VAN INSERT AND NOTHING ELSE
+
+`provisionTruck` compensates exactly one failure: the truck INSERT succeeding and the van INSERT then
+failing, rolled back with `deleteTruckCascade`, logging `PROVISION_ORPHAN_TRUCK` and returning
+`orphanTruckId` if the delete also fails. **The reason it covers nothing else is that the van is the
+function's last write.** Every caller's post-return write is therefore uncompensated — `/api/setup`'s
+`operator_id` / `setup_step` update, and both of `create-operator`'s writes. **Not transactional in any
+sense; each statement commits independently.**
+
+### The temp password
+
+12 characters from **`Math.random()`, not `crypto`** — unlike the token generator in the same codebase.
+Surfaced twice: in the HTTP response (rendered behind a copy button, shown once) and 🔴 **in the welcome
+email in plain text**, sent from `hello@villagefoodie.co.uk` under HatchGrab branding — the silent-drop
+profile. `must_change_password` is set but has **exactly one reader**, a client-side redirect on
+`/login`, with no middleware or page guard: **a nudge on one path, not an invariant.**
+
+> **STANDING PRACTICE UNTIL THIS IS FIXED:** copy the password from the console and send it through a
+> channel known to reach the operator. Do not rely on the email.
+
+### Cuisine, and the emoji derived from it (V11.14)
+
+`lib/cuisines.ts` exports `CUISINES` (26 entries, "Other" last), `CUISINE_OTHER` and
+`emojiForCuisine`. ⚠️ **`trucks.cuisine_type` is stored as a COMMA-JOINED string** (`"Pizza, Burgers"`)
+and the live Village Foodie discovery filter splits that column on commas. **Do not change that format.**
+
+🔴 **The module has ONE consumer** — the signup wizard. Its own header says Settings would adopt it *"in
+a later diff"*; that diff has not happened. **Both Manage → Settings and the admin create modal are
+still free text.** A shared `CuisinePicker` extraction is specified and not built; its two acceptance
+properties are **round-trip identity** (parse then join reproduces any existing value) and **no write on
+mount** — the second is what protects an existing truck whose owner merely opens the tab.
+
+**`truck_emoji` is now derived in the truck INSERT** from the FIRST cuisine, conditionally — the key is
+omitted when no cuisine was supplied, so `/api/setup` and the demo path are byte-identical and land on
+the column's `'🍕'` default. Deriving unconditionally would have stamped every self-serve and demo truck
+with `'🍽️'`.
+
+> 🔴 **`truck_emoji` IS NOT COSMETIC.** It renders on **every order card's Ready button**, the Manage
+> Menu tab icon, and the dashboard — and it is the **sign-off on every automated WhatsApp reply**
+> (*"— {truckName} {truckEmoji}"*). An Indian truck on the pizza default signs its customer messages
+> with 🍕.
+
+⚠️ Trucks created BEFORE this change keep the default. Fixing one is a single Settings field.
+
 ## Self-serve signup and setup (V11)
 
 **The chain, in execution order.** Driven by the two-step wizard inside the demo modal (`components/DemoGetStarted.tsx`); every step is a caller of an endpoint that already existed.
@@ -3756,6 +3869,69 @@ truck_user_vans links staff to vehicles. Empty access grants all trucks. Staff s
 > **NOTE (V6.5)** — The public profile page (`/trucks/[slug]`) reads its truck logo from `discovery_trucks.logo_url` ONLY. The operator-uploaded logo lives in `trucks.logo_storage_path` and is NOT automatically mirrored into the discovery row, so a truck that uploaded a logo in Settings can still show a blank/placeholder logo on its public profile if `discovery_trucks.logo_url` is null. Test-kitchen's null `logo_url` was fixed by SQL this session (pointing it at the storage URL). The systemic fix — the discovery/profile mapping falling back to the linked operator truck's `logo_storage_path` when `logo_url` is null — is on the backlog (Section 27). The header logo SIZE was also enlarged this session (Section 3, AppHeader note).
 
 > **NOTE (V7.5) — order page now falls back the OTHER way (the two surfaces have OPPOSITE default sources).** The customer order page (`/trucks/[slug]/order`, via `/api/menu/[truckId]`) reads its logo from `trucks.logo_storage_path` (the operator upload). When that is null it now falls back to the linked `discovery_trucks.logo_url` (`discovery_trucks.hatchgrab_truck_id = truck.id`, `.maybeSingle()`), resolved through the shared `formatImageUrl(logo_url, 'logos')` helper — so a truck with no operator-uploaded logo shows its Village Foodie discovery logo on the order page, matching the profile. The extra `discovery_trucks` query is **null-gated**: it runs ONLY when `logo_storage_path` is null, so a truck WITH an uploaded logo incurs no extra query (no regression). `formatImageUrl` was EXTRACTED to `lib/image-utils.ts` (was a local copy in `/api/discovery/events`) and is now imported by BOTH `/api/discovery/events` and `/api/menu` — one helper, both callers, so the two surfaces can never drift again (that drift WAS this whole logo bug). Rendering: both the order page and the profile render the logo via next/image `<Image src={truck.logo}>`; the profile already renders this exact discovery URL successfully, and `next.config.ts` `images.remotePatterns` allows `*.supabase.co/storage/v1/object/public/**` (the discovery logos are same-origin `/logos/…` paths or supabase-storage URLs — both already handled), so the order page needs no new allowlist entry. This closes the order-page half of the Section 27 systemic-logo-fallback item. The profile/discovery half (profile reads `discovery_trucks.logo_url` only and does NOT fall back to `logo_storage_path` when null) is STILL open — see Section 27.
+
+### 🔴 CORRECTION — GUSTO'S VAN CAPACITY IS 2, NOT 5 (V11.14)
+
+The Gusto onboarding notes record *"Van1, `kitchen_capacity=5`"*. **Live-verified 13 August: it is 2.**
+The van also carries `buzzer_count 20`, `order_ready_enabled true`, `show_cooking_step true` and
+`auto_pause_on_offline true`, none of which provisioning writes.
+
+⚠️ **This is the fifth premise about Gusto's configuration asserted from memory and found wrong.** The
+invariant already exists — *a truck's configuration is live-schema truth* — and this is another entry
+against it.
+
+### Three van-creation paths, three different capacity answers (V11.14)
+
+| Path | `kitchen_capacity` |
+| --- | --- |
+| `/api/setup` → `provisionTruck` | **explicit `null`** — deliberate |
+| `/api/admin/create-truck` | **`null` as of V11.14** — was `5` |
+| Manage `add_van` | **nothing supplied** → DB default `null` |
+
+**Capacity must be an active decision, never an inherited guess** — a ceiling nobody chose quietly
+promises collection times the kitchen cannot hit. The `'kitchen_capacity' in vanOpts` test exists
+precisely so `?? 5` cannot coerce an intentional null back to 5. 🔴 **The admin create form could not
+express "blank": clearing the box sent no key and wrote 5 anyway.** The field was removed at V11.14 and
+the route now always passes `van: { kitchen_capacity: null }`.
+
+⚠️ **`kitchen_capacity: null` leaves the capacity engine INERT** — no slot enforcement at all. Correct
+for a truck with no menu and no events; **must be set before a real order.** It is settable from
+Settings for a single-van truck: the `vans.length > 1` gate wraps only the Delete button, not the
+capacity control.
+
+⚠️ **Do not create a truck with `van: false`.** A truck with no `truck_vans` row has no `kds_token`
+(the KDS is unreachable), nothing for `getSoleActiveVanId` to stamp onto `event.van_id`, nothing for the
+heartbeat to write to, and no per-van settings. **The van is not the incorrect part; the capacity guess
+is.**
+
+### 🔴 ONE LOGO RESOLVER, FIVE BYPASSES (V11.14)
+
+`lib/truck-logo.ts` is the shared resolver and four API routes use it. **Five sites do not:**
+`discovery/events` hand-writes the same rule server-side, and **four client-side sites in the Manage
+page read `logo_storage_path` raw.**
+
+**The symptom on a promoted truck** (`logo_storage_path` null, logo inherited from the linked discovery
+row): the Manage and dashboard headers show the logo correctly — both receive the resolved value — while
+**the Settings upload card shows a placeholder.** Defensible in isolation, since that card is the upload
+control, and confusing side by side.
+
+### 🔴 THE TWO BRANDED-QR SURFACES DISAGREE — AND IT IS A PRINTED ARTIFACT
+
+| Surface | Reads | Result for an inherited logo |
+| --- | --- | --- |
+| Manage's poster | `logo_storage_path` only | `logoUrl: null` → **plain QR**, plus a "No logo" chip reading the same raw path |
+| The dashboard | the resolved `truck.logo` | **branded QR with the discovery logo** |
+
+**Same truck, same setting, two outputs.** Neither errors; neither reverts to `'standard'`.
+
+> 🔴 **DO NOT AUTO-SELECT `branded` ON CREATION UNTIL THESE AGREE.** "A logo is present" currently has
+> two answers, so the QR you print depends on which screen you printed from — on an artifact that gets
+> stuck to a van and cannot be recalled. **And the logo is inherited, not owned:** breaking the
+> discovery link would silently turn branded into an empty-centre QR. Unify the resolver first; the
+> auto-select is three lines afterwards.
+
+**INTERIM for a single truck:** uploading a logo populates `logo_storage_path`, the fallback never
+fires, and every surface agrees. That is the fast route for a handover.
 
 # 15. Events and venues
 
@@ -4378,6 +4554,36 @@ moves the card, and listing them would **double-report one queued op on two over
 branches tested `action === 'collected'` by string** and would have silently dropped the new names; they
 now share one predicate.
 
+### 🔴 THREE COLUMNS THAT LOOK LIVE AND ARE NOT (V11.14)
+
+- **`trucks.sheet_id`** — `text NOT NULL`, **no default**. The hardest constraint on any manual truck
+  insert, undocumented until now, and **functionally dead**: one write (`provisionTruck` writes `''`),
+  zero functional reads, and its only other appearance strips it from the dashboard payload. The
+  `scripts/` hits are `spreadsheetId`, a name collision.
+- **`trucks.is_customer`** — **gates nothing.** Zero conditional reads repo-wide; removed from the
+  runtime path by `20260703_discovery_excluded_boolean.sql`, which says the column is *kept
+  (reversible)*. Written only by the two visibility constants. `pizzeria-gusto` and `real-thai-food`
+  are the **only** `true` rows, set by hand in a `20260702` backfill. **It accurately labels the paying
+  customers and nothing reads it.** ⚠️ It is on neither manage allow-list, so the natural path —
+  create hidden, then clear `excluded` — leaves a new real customer `false`. Cheap to correct by hand;
+  costs nothing today.
+- **`discovery_trucks.hatchgrab_truck_id`** — written by no application code path since the link
+  control was removed, but **read in five places**. See the promote block.
+
+> **THE CLASS, restated:** a present-but-never-written column returns a plausible value on every row and
+> reads as data. `orders.source` is the original instance; these are three more.
+
+### Live-verified column facts (V11.14)
+
+- **`trucks.whatsapp` is NULLABLE.** The `DROP NOT NULL` migration recorded as *pending* in the Gusto
+  onboarding notes **has run** — `is_nullable = YES`, verified against the live schema. Correct the
+  pending list.
+- **`trucks.truck_emoji`** — `text`, nullable, **DEFAULT `'🍕'::text`**. Settles two reports' worth of
+  INFERRED.
+- **`truck_vans.kitchen_capacity`** — nullable, **default null**. `capacity_window_mins` — NOT NULL,
+  default 5. `order_ready_enabled` — NOT NULL, default **false** (not null; the `?? false` at the read
+  site is belt-and-braces).
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -4412,6 +4618,33 @@ The dashboard's fetchMenu must append ?dashboard=1&nocache=${Date.now()}. Custom
 ## Offline protection in the menu API (V6, event-scoped V6.6)
 
 offlineProtectionEnabled = eventRow.offline_protection_override (if not null/undefined) else van.auto_pause_on_offline. The pause is only applied when true, and reads the EVENT's `online_paused_until` (V6.6, Section 5).
+
+### The saved allergen card — what actually exists (V11.14)
+
+🔴 **`trucks.allergen_info_url` is NULL on all fourteen trucks. No card file has ever been uploaded.**
+Three trucks hold `allergen_info_text` only. The column stores a **full public URL** in the
+`truck-media` bucket, written before AI processing — so no URL construction is needed and
+`formatImageUrl` is a no-op on it.
+
+⚠️ **The structured extraction is still discarded at save.** `process-allergens` produces `summary`,
+`contains[]`, `may_contain[]` and `dietary_options[]`, and the save flattens them into one string.
+**Structured chips are unrecoverable for existing trucks without re-processing.** This is the standing
+*absence of data is not data* item.
+
+🔴 **A latent bug, half-fixed.** The "allergen card saved" indicator is true on EITHER column, while the
+preview rendered on the text alone — so a **url-only truck showed the green indicator and an empty
+panel**. No truck is in that state today, but the URL is written BEFORE the AI pass and that error is
+swallowed, so one failed pass after a successful upload creates one. **Fixed in the Menu tab** by moving
+the gate into a shared `SavedAllergenCard` covering both columns. ⚠️ **The allergen wizard still has the
+identical flaw**; the fix is two tokens — its outer condition must test the url as well as the text.
+
+**Reads are NOT owner-gated** — the forbidden path fires only when a key is being changed — so a manager
+can view the card. Deliberate.
+
+**Manage → Menu now expands the clamped text.** The control renders only when the paragraph is genuinely
+clipped, measured on the element rather than by counting characters, re-measured on resize. ⚠️ The clamp
+class is passed as a **literal**, never interpolated — `line-clamp-${n}` is not generated by Tailwind at
+build time and would silently produce no clamp at all.
 
 # 18. Customer communications and email
 
@@ -4654,6 +4887,25 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 ### Standing rules (V11.3)
 
 - 🔴 **PIZZERIA GUSTO IS THE ONLY REAL CUSTOMER.** Test Kitchen and Real Thai Food are **test infrastructure** and are **not** to be raised as risk, urgency or blast-radius considerations. ⚠️ Earlier entries in this manual treat all three as live trucks; where they do, only Gusto counts. **No change may impact Gusto without explicit confirmation first.**
+
+### Tikka Tonic — promoted 13 August 2026
+
+`tikka-tonic` (id = slug), promoted from `discovery_trucks` row `0259e042-…` and linked via
+`hatchgrab_truck_id`. Cuisine `Indian`, contact `info@tikkatonic.com` (**lowercase — see below**),
+`plan: trial`, `trial_expires_at` 31 December 2026, `hide_pricing: true`, `active: true`,
+**`excluded: true`** (order-closed), `operator_id` NULL, no menu, no events. Van 1 with
+`kitchen_capacity: null`.
+
+Manage: `hatchgrab.com/manage/tikka-tonic-5e39c4f46866`.
+
+⚠️ **NOT a live customer.** Pizzeria Gusto remains the only trading truck for risk, urgency and
+blast-radius purposes.
+
+> 🔴 **THE EMAIL MUST BE STORED LOWERCASE.** `/api/admin/create-operator` is the **only** email-handling
+> route in the repository that does not normalise. `forgot-password` looks up
+> `.toLowerCase().trim()` and, on no match, returns `{ ok: true }` to prevent enumeration — so a
+> mixed-case operator email produces an account whose **password reset fails and reports success**. All
+> existing operator emails are lowercase; do not be the first exception.
 - **Every Cursor report must state its filename as the LAST SENTENCE of the chat reply.** Tightens the report rule above: the two-line summary is read first, and the filename has to be the thing left on screen when it is.
 
 ## Audit before build
@@ -5022,6 +5274,36 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 V11.14 — added 13 August 2026 (night)
+
+- 🔴 **`EMAIL_FROM_ADDRESS` IS UNSET — SELF-SERVE SIGNUP SILENTLY COMPLETES WITHOUT SENDING THE
+  ACTIVATION LINK.** The signup mailer falls back to `hello@hatchgrab.com`, which the code's own comment
+  says Brevo will reject as unverified, and the send result is checked **only to `console.error` it** —
+  never thrown. `/api/signup` returns `{ ok: true }` with no email delivered and nothing surfaced. The
+  operator sees a successful signup and dead-ends. ⚠️ **NEITHER `SIGNUP_PUBLIC` VARIABLE MAY FLIP UNTIL
+  THIS IS FIXED.** The admin route is unaffected — it hand-rolls its own send from the verified
+  `villagefoodie.co.uk` address.
+- 🔴 **The temp-password chain.** In priority order: **stop emailing the password** (the console already
+  shows it behind a copy button); swap `Math.random()` for `crypto.randomBytes`; make
+  `must_change_password` a real server-side gate rather than one client-side redirect. An invite link
+  that lets the operator set their own password is strictly better and depends entirely on email
+  delivery, so it waits on the sender-domain fix.
+- 🔴 **Unify the logo resolver** — five bypasses — **then** fix the branded-QR divergence, **then**
+  auto-select branded on creation when a logo resolves. In that order; see the logo block.
+- 🔴 **Decide whether `canAccess` or `hasFeature` is canonical**, and retire the other. Three known
+  divergent surfaces, four trial expiries in the calendar.
+- **The `CuisinePicker` extraction** — the cuisine control is inline in the signup wizard and
+  unexported; Settings and the admin create modal are both still free text. Acceptance tests are
+  round-trip identity and no-write-on-mount.
+- **The allergen wizard's url-only empty panel** — two tokens, same bug as the Menu tab's.
+- **`create-operator` discoverability** — still only reachable from the truck row's Edit modal, which is
+  also the only route to creating an account at all.
+- **Promote-from-discovery follow-ups:** the route still cannot accept `contactPhone` or `website`, so a
+  Settings pass remains mandatory after every promotion.
+- **`is_customer` on a promoted truck** — creating hidden and clearing `excluded` leaves a real customer
+  `false`, diverging from the only two `true` rows. One line at handover, or leave it and accept the
+  label is now inaccurate.
 
 ## 🔴 V11.13 — added 13 August 2026 (evening, later)
 
@@ -6158,6 +6440,54 @@ A genuine shadow-free / one-row-per-truck model is possible but requires, togeth
 
 `app/admin/page.tsx` `unifiedRows`: `discovery_trucks` rows with `hatchgrab_truck_id` set are filtered OUT of the unified table (they're an operator truck's linking-shadow, already represented by the operator row). Each truck now shows **once**. The shadow row **stays in the DB** (it carries the bridge + suppression). Pure (unlinked) discovery rows render as normal. Verified: Gusto shows once in admin; its VF display (the 3 confirmed `truck_events`) is completely unaffected (that path never reads the shadow). tsc-clean.
 
+## 🔴 PROMOTE FROM DISCOVERY — BUILT (V11.14)
+
+**The problem it solves.** A truck already on Village Foodie exists as a `discovery_trucks` row. It
+cannot be "converted" — that row holds seventeen descriptive columns; `trucks` holds ninety-four and is
+referenced by ~26 tables. **Every trading truck has BOTH rows**, and the thing that stops them being
+duplicates is `hatchgrab_truck_id`.
+
+🔴 **Nothing wrote that column.** The console's "Link HG truck" control was removed; `grep` for
+`hatchgrab_truck_id:` found only a TypeScript interface field and no assignment anywhere. It is still
+READ in five places — the admin console's row-folding, the discovery profile read-through,
+`inbound-schedule`, and `lib/truck-logo.ts`. **An unlinked promoted truck therefore renders as two rows
+in the admin console and loses its logo on both customer surfaces.**
+
+**What was built.** `/api/admin/create-truck` accepts an optional `discoveryTruckId`. After
+`provisionTruck` returns it updates the shadow, guarded:
+
+```
+.update({ hatchgrab_truck_id: <new truck id>, updated_at: … })
+.eq('id', discoveryTruckId)
+.is('hatchgrab_truck_id', null)
+.select('id')
+```
+
+⚠️ **The `.select('id')` is what makes the row count observable** — a zero-row UPDATE is not a PostgREST
+error. Both the error and the count are checked. **On failure the truck is deleted** via
+`deleteTruckCascade`, matching the van precedent: fail loudly and completely rather than half-succeeding
+quietly. Distinct code `link_failed` — 409 on a clean rollback, 500 with `orphanTruckId` if the delete
+also fails.
+
+**The button** sits in the Actions cell of unlinked discovery rows, pre-filling name, cuisine and
+contact email. ⚠️ **Phone and website are deliberately NOT pre-filled** — a scraped phone is typically a
+landline and `whatsapp` is written from the same value, and a scraped website is typically a Facebook
+URL, which the scraper explicitly must not be enrolled against.
+
+⚠️ **The pre-fill reads through a small admin-gated GET on the create-truck route**, not by widening
+`/api/admin`'s discovery select, which carries only eight columns. Deliberate: that select is
+hand-maintained and has caused two outages already. The client **falls back to name-only** if the GET
+fails, so the pre-fill is a convenience and never a dependency.
+
+**What it deliberately does NOT do:** touch `discovery_trucks.excluded` (that is `create-operator`'s job
+at handover), create the operator, or write `trucks.is_customer`.
+
+> **SEQUENCING RULE, and it is the point of the feature.** `create-operator` sets
+> `discovery_trucks.excluded = true` by name match, after which **a Village Foodie visitor sees nothing
+> at all where that truck used to be** — no events, no listing, no placeholder — until the HatchGrab
+> truck has confirmed events. **So promote first, build the truck, confirm the first event, and create
+> the operator LAST.** That collapses the blackout from days to zero.
+
 # 33. Discovery / Visibility / Customer-Trucks-on-VF model + July 2026 data-integrity + DEPLOY-COUPLING LANDMINES
 
 Builds on **§32** (the shadow ↔ operator linking architecture — read it first; not duplicated here). §32 is the *why the shadow exists*; this section is the *end-to-end model, the July 2026 data-integrity work, and the strict deploy coupling for `ipad-native-app`*.
@@ -6201,6 +6531,56 @@ This branch's discovery changes have STRICT coupling. **Wrong order = a broken o
 6. **ON-DEPLOY smoke-test:** (a) app routes both-paths (web cookie + native Bearer); (b) VF/HG feed — the 37 excluded stay hidden, orphan events render via the fallback, customer trucks show confirmed-only with correct order-link gating; (c) Gusto + RTF appear on VF with logo/photo, **no** VF order link, order link on HG.
 
 **LESSON — "reported done ≠ actually done" bit us repeatedly this session** (a shadow that "was deleted" but wasn't; a "bug" that was a stale bundle; events "not surfacing" that were byte-parallel in the feed). Before diagnosing "**X doesn't show**", FIRST confirm you're viewing the **deployed/current** code (hard-refresh; check the surface/URL); then confirm the DB state with a direct query; only then chase logic.
+
+### 🔴 `trucks.excluded` CLOSES A TRUCK FOR ORDERS (V11.14)
+
+`/api/orders/submit` filters `.eq('active', true)` in both the slug and the id lookup, and then — 
+fourteen lines later, outside both queries so one condition covers both paths — refuses on `excluded`:
+
+```
+if (truck.excluded === true && !isDemoTruck) → 404 'Truck not found'
+```
+
+**Above all event, menu, stock and payment logic.** The 404 is deliberately identical to an unknown
+truck: a hidden truck should not confirm its own existence. The only exemption is an id carrying the
+`demo-` prefix, because ordering on a demo IS the demo.
+
+Full eligibility, in order: `active = true` → `deletion_requested_at` null (else **423**) →
+`excluded !== true`. **`show_on_vf`, `show_on_hg` and `order_link_*` are checked NOWHERE on that route
+— they govern the MAP only.**
+
+> 🔴 **CONSEQUENCE: every truck created through the admin console is ORDER-CLOSED until `excluded` is
+> cleared**, because the create form defaults to `visibility: 'hidden'`.
+
+⚠️ **TWO COLUMNS, ONE NAME, OPPOSITE JOBS.** `trucks.excluded = true` **stops orders**.
+`discovery_trucks.excluded = true` **hides the scraped shadow**. Setting the wrong one is a plausible
+mistake and they are set at different moments by different mechanisms.
+
+### The two visibility constants
+
+`provisionTruck` writes all six columns EXPLICITLY, including the three whose DB defaults are already
+correct — deliberate, because they are a security property and an auditor should find the whole answer
+in one place.
+
+| Column | `HIDDEN_VISIBILITY` | `PUBLIC_VISIBILITY` |
+| --- | --- | --- |
+| `show_on_vf` | false | **false** |
+| `show_on_hg` | false ⚠️ *DB default TRUE — must override* | true |
+| `order_link_vf` | false | **false** |
+| `order_link_hg` | false ⚠️ *DB default TRUE — must override* | true |
+| `is_customer` | false | true |
+| `excluded` | **true** | false |
+
+🔴 **`'public'` means HatchGrab ONLY.** `show_on_vf` and `order_link_vf` stay false by design — whether
+Village Foodie exposure follows is a separate product decision. Village Foodie exposure is its own write
+from the per-row tickboxes.
+
+**Only two values are accepted**; anything else 400s, and an omitted value resolves to `'hidden'`.
+
+⚠️ **`active` is NOT a visibility control and is always `true`.** `active = false` breaks order
+placement rather than hiding a truck — and it locks a non-admin operator out of `/dashboard`, the KDS
+and the native app while `/manage` does not gate on it at all. **The admin branch of `/dashboard` runs
+first, so an admin cannot reproduce the lockout.** Hiding is `excluded` + the `show_on_*` pair.
 
 # 34. Closing note
 
@@ -6557,6 +6937,44 @@ network call, and it cannot misfire during an outage.
 four verification harnesses in four turns reported false failures because their filters matched the
 comments describing the change. **Fixed at the root** with a block-aware comment stripper rather than
 patched again. ⚠️ **A test that passes for the wrong reason is worse than one that fails.**
+
+### 🔴 `canAccess` AND `hasFeature` ANSWER THE SAME QUESTION DIFFERENTLY — A CLASS, NOT A SITE (V11.14)
+
+`canAccess` honours trial expiry and per-truck overrides. **`hasFeature` skips the expiry check
+entirely and ignores overrides.** Three surfaces are known to diverge:
+
+1. Branded QR — Manage uses `canAccess`, the dashboard uses `hasFeature`. **An expired trial is refused
+   branded QR in Manage and granted it on the dashboard.**
+2. `advance_preordering` on the customer order page uses `hasFeature`, so **an expired trial's customers
+   keep pre-ordering while the operator's own screens go dark.**
+3. `lib/useFeatures.ts` carried its own third copy of the expiry rule, corrected earlier.
+
+**Decide which function is canonical and retire the other, rather than patching per site.** ⚠️ **This
+has dates**: four trials now expire — Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria
+Gusto 17 October, Tikka Tonic 31 December. **The August one is test infrastructure and is therefore a
+free rehearsal for the other three.**
+
+### 🔴 A SUMMARY OF CODE IS NOT THE CODE (V11.14)
+
+**Two briefs in one session were written from a report's phrasing rather than from source, and both
+were wrong.**
+
+1. A prior report noted the order-submit route's queries filter on `active` alone. That was read as *the
+   `excluded` gate was never built* — it was built, **fourteen lines below the line that had been
+   quoted**, deliberately outside both queries so one condition covers the slug and id paths.
+2. A report called a "View original card" link *"dead"*, meaning *it never renders because no truck has
+   a URL*. That was read as *it renders and points at nothing*, and a fix was briefed for a bug that did
+   not exist. The guard was correct all along.
+
+**Both were caught by the implementer reading the actual lines and refusing the premise.**
+
+> **THE RULE: quote the code in the brief, or instruct a re-read before prescribing a fix.** A line
+> reference plus a recollection is not evidence. This is the same family as *grep for the rail, not for
+> the file that documented it* — the failure is trusting a description of the code over the code.
+
+⚠️ **Corollary, and it is why this works:** an implementer that stops and names a contradiction is
+performing the check. Two builds this session correctly refused instructions — one because a component
+was inline rather than extractable, one because the premise was false — and both were right to.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 

@@ -146,6 +146,100 @@ interface AddOrderPanelProps {
   onSaveBuzzer?: (orderKey: string, buzzerNumber: number | null) => Promise<void>
 }
 
+// ─── SCROLL LAYOUT (trucks.add_order_layout === 'scroll', V11.15) ─────────────────────────────────
+// One continuous item list with sticky category headings. Nothing here runs for a truck on 'tabs' —
+// the component is not mounted at all, so the default path has no code from this block in it.
+//
+// ── 🔴 THE CHIP BAR AND THE WHOLE SCROLL-SPY WERE REMOVED, 14 August 2026 ───────────────────────────
+// Scroll mode used to render the tabs bar's chips as a jump-list with a scroll-spy: tap to scroll,
+// scroll to re-highlight. That is gone. In scroll mode there are NO category buttons — navigation is
+// scrolling — and the STICKY HEADING is the whole positional signal.
+// ⚠️ SO THE HEADING'S PIN IS NOT DECORATION, IT IS THE FEATURE. The bar was the pinned element that
+// told an operator which category they were in; taking it away without a pinned heading would leave a
+// long list with no answer to "where am I". Do not un-stick the heading without putting something else
+// pinned in its place.
+// ⚠️ EVERYTHING THE CHIPS NEEDED WENT WITH THEM, deliberately, rather than being left running against
+// nothing: the tap-lock and its safety timer, the arrival / touchstart / wheel / scrollend releases,
+// the rAF-throttled spy, the scroller resolution (nearestScrollParent), the reduced-motion check, the
+// measured bar height, the section ref map and the active-category state. The scroll listener was the
+// SPY'S OWN — it was attached by this component, called only the spy and the lock release, and was
+// shared with nothing else on this panel — so removing it removes no other behaviour.
+// The tabs layout keeps its own chip bar, untouched, in the main component below.
+
+/**
+ * Sticky-headed sections for the continuous-scroll layout.
+ *
+ * 🔴 `cats` IS THE ONE ARRAY — the caller passes the same already-filtered `menuCats` the tabs layout
+ * uses, which drops empty categories (Gusto's `Specials` holds 0 items and has never had a tab). With
+ * the chips gone there is no second consumer to drift from, but the rule stands: never derive a
+ * category list here.
+ *
+ * ⚠️ BOTH PANES MOUNT THIS AT ONCE. The tablet split is `hidden md:flex` and the phone column is
+ * `md:hidden`, so at any width one instance is inside a `display:none` subtree. That instance now has
+ * no state, no refs, no effects and no listeners, so it costs a render and nothing else.
+ */
+function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
+  cats: string[]
+  categoryStocks: CategoryStock[]
+  renderCategory: (cat: string) => React.ReactNode
+}) {
+  return (
+    <div>
+      {cats.map(cat => {
+        const closed = categoryStocks.find(s => s.category === cat)?.available === false
+        return (
+          <section key={cat} className="mb-4">
+            {/* 🔴 STICKY AT `top-0` — THE TOP OF THE SCROLLING PANE, which is now the whole pinned
+                stack inside it. It used to pin at the measured chip-bar height; with the bar gone
+                there is nothing above it in the scroller, so the offset is 0 and the measurement it
+                needed is gone with it. The event banner and the deals button sit OUTSIDE this
+                scroller (they are the pane's `shrink-0` header in scroll mode), so they cannot
+                overlap it.
+                Sticky is scoped to this <section>, so each heading releases as its own category ends
+                and the next takes over — the standard nested-sticky behaviour, and the only thing
+                telling the operator where they are now that the chips are gone.
+                ⚠️ COLOUR, SIZE, WEIGHT, TRACKING AND SPACING ARE UNCHANGED: text-xs, font-black,
+                uppercase, tracking-wide, text-orange-600, `-mx-1 px-1 py-1.5`, the translucent
+                backdrop. Only the pin offset moved, from the bar's height to 0.
+                z-10 (was z-[9], which existed solely to slide UNDER the chip bar's z-10). */}
+            <div className="sticky top-0 z-10 -mx-1 px-1 py-1.5 bg-white/95 backdrop-blur-sm flex items-center gap-2">
+              {/* 🔴 orange-600 — THE SAME VALUE AS THE PRIMARY BUTTONS' FILL, AND IT IS A DELIBERATE,
+                  SIGHTED DECISION BY THE OPERATOR. DO NOT "CORRECT" IT TO 700.
+                  This shipped as orange-700 first, on the contrast reasoning in lib/ui-tokens.ts (orange
+                  TEXT on white is 700 there, because 600 as text is the same 3.59:1 as white-on-600).
+                  Measured on white, from the Tailwind v4 OKLCH palette this project uses unmodified:
+                    orange-600  #f54900  3.59:1  — below the 4.5:1 WCAG AA floor for normal text
+                    orange-700  #ca3500  5.23:1  — passes
+                  At text-xs (12px) this is NORMAL text, not large (large = 18.66px bold / 24px), so the
+                  3:1 large-text allowance does not apply, and the slate-500 this replaced was 4.77:1.
+                  ⚠️ SO THIS IS A KNOWN AA SHORTFALL, ACCEPTED ON PURPOSE. 700 was rejected on sight —
+                  it read as a different, muddier colour rather than as the brand orange.
+                  ⚠️ THE CHIP IT WAS MATCHED TO NO LONGER EXISTS IN THIS LAYOUT (the chips were removed
+                  14 August 2026), so the "matches the active chip" half of that reasoning is now only
+                  historical — it still matches the primary buttons, which is why it stands. Worth
+                  re-weighing against the AA numbers above if this is ever revisited.
+                  ⚠️ IT DIVERGES FROM ORANGE_OUTLINE (lib/ui-tokens.ts), which uses text-orange-700 for
+                  orange text on white. That token is NOT changed by this: it governs BUTTON labels. */}
+              <p className="text-xs font-black uppercase tracking-wide text-orange-600">{cat.charAt(0).toUpperCase() + cat.slice(1)}</p>
+              {closed && <span aria-hidden>🔒</span>}
+            </div>
+            {/* The per-category closed notice rides WITH its section here. In tabs there is one banner
+                for the one visible category; in a continuous list a single banner could not say which
+                category it meant. */}
+            {closed && (
+              <div className="mb-2 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+                <span aria-hidden>🔒</span>
+                <span>{cat.charAt(0).toUpperCase() + cat.slice(1)} is closed for online orders this event — hidden from customers. You can still add for the hatch; you&apos;ll be asked to confirm.</span>
+              </div>
+            )}
+            {renderCategory(cat)}
+          </section>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── component ───────────────────────────────────────────────────────────────
 
 export function AddOrderPanel({
@@ -1637,11 +1731,14 @@ setItemModal({ item, modGroups, editCartKey })
     </div>
   ) : null
 
-  const menuGrid = (
-    <div>
-      {categoryTabs}
-      {closedBanner}
-      {selectedMenuCat && (
+  // ── ONE COPY OF EACH ITEM RENDERER, CALLED PER CATEGORY ───────────────────────────────────────────
+  // Extracted so the tabs layout and the scroll layout share it. Both used to read `selectedMenuCat`
+  // directly; they now take the category as an argument, which is the ONLY change to their bodies.
+  // ⚠️ In tabs mode the argument is `selectedMenuCat`, so the rendered output is identical.
+  // 🔴 `catSt` and `catBasketQty` are the reason this had to be a parameter rather than a closure: both
+  // are per-CATEGORY values computed inside a per-ITEM loop, so in a continuous list they would have
+  // been the selected category's stock for every section — wrong "N left" on every tile but one.
+  const renderGridItems = (cat: string) => (
         <div className="grid gap-2 grid-cols-2 @sm:grid-cols-3">
           {/* UNIFORM TILE GRID (Square/Toast/Clover POS pattern): equal-width tiles in clean columns, so
               tap targets are consistent and the whitespace reads as an intentional grid. Column count is
@@ -1653,7 +1750,7 @@ setItemModal({ item, modGroups, editCartKey })
               separate menuList, so it never forces oversized tiles). NO reflow on selection: the grid
               track widths are fixed by the container, and the quantity is an ABSOLUTE corner badge (adds
               no width), so selecting only recolours a tile — neighbours can't shift. */}
-          {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
+          {sortMenuItems(menuGroups[cat] || []).map(item => {
             const stock = itemStocks.find(s => s.name === item.name)
             // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
             // (item.available — standing Settings availability) OR per-event override OFF
@@ -1661,7 +1758,7 @@ setItemModal({ item, modGroups, editCartKey })
             // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
             // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
             const isSoldOut = !(item.available ?? true) || stock?.available === false
-            const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
+            const catSt = categoryStocks.find(s => s.category === cat)
             const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
             const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
@@ -1669,7 +1766,7 @@ setItemModal({ item, modGroups, editCartKey })
             // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
             // already folded), so a category cap can't be over-filled by adding 4 of each item. addable = what
             // you can still add; addable<=0 disables the +. (totalInBasket kept for the count pill / lines.)
-            const catBasketQty = basketByCat[(selectedMenuCat || '').toLowerCase()] || 0
+            const catBasketQty = basketByCat[cat.toLowerCase()] || 0
             const { addable } = calcAddableRemaining({ itemRem, catRem, itemBasketQty: totalInBasket, catBasketQty })
             const isLow = !isSoldOut && addable !== null && addable <= 10
             const atStockLimit = addable !== null && addable <= 0
@@ -1708,17 +1805,11 @@ setItemModal({ item, modGroups, editCartKey })
             )
           })}
         </div>
-      )}
-    </div>
   )
 
-  const menuList = (
-    <div>
-      {categoryTabs}
-      {closedBanner}
-      {selectedMenuCat && (
+  const renderListItems = (cat: string) => (
         <div>
-          {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
+          {sortMenuItems(menuGroups[cat] || []).map(item => {
             const stock = itemStocks.find(s => s.name === item.name)
             // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
             // (item.available — standing Settings availability) OR per-event override OFF
@@ -1726,7 +1817,7 @@ setItemModal({ item, modGroups, editCartKey })
             // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
             // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
             const isSoldOut = !(item.available ?? true) || stock?.available === false
-            const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
+            const catSt = categoryStocks.find(s => s.category === cat)
             const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
             const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
@@ -1734,7 +1825,7 @@ setItemModal({ item, modGroups, editCartKey })
             // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
             // already folded), so a category cap can't be over-filled by adding 4 of each item. addable = what
             // you can still add; addable<=0 disables the +. (totalInBasket kept for the count pill / lines.)
-            const catBasketQty = basketByCat[(selectedMenuCat || '').toLowerCase()] || 0
+            const catBasketQty = basketByCat[cat.toLowerCase()] || 0
             const { addable } = calcAddableRemaining({ itemRem, catRem, itemBasketQty: totalInBasket, catBasketQty })
             const isLow = !isSoldOut && addable !== null && addable <= 10
             const atStockLimit = addable !== null && addable <= 0
@@ -1809,7 +1900,34 @@ setItemModal({ item, modGroups, editCartKey })
             )
           })}
         </div>
-      )}
+  )
+
+  // ── LAYOUT SWITCH — trucks.add_order_layout ────────────────────────────────────────────────────
+  // 🔴 ANYTHING THAT IS NOT EXACTLY 'scroll' IS 'tabs'. Absent (before the migration runs), null, or an
+  // unrecognised value all take the path every truck is on today, so Pizzeria Gusto's screen cannot
+  // change without its operator picking the other option in Manage > Settings. The identical expression
+  // is in the Manage control, so the two surfaces cannot show different answers.
+  const addOrderLayout: 'tabs' | 'scroll' = truck?.add_order_layout === 'scroll' ? 'scroll' : 'tabs'
+
+  // ⚠️ `menuCats` IS PASSED STRAIGHT THROUGH — the chips and the sections inside ScrollMenuSections both
+  // map over this one array. Do not recompute a category list at either site.
+  const menuGrid = addOrderLayout === 'scroll' ? (
+    <ScrollMenuSections cats={menuCats} categoryStocks={categoryStocks} renderCategory={renderGridItems} />
+  ) : (
+    <div>
+      {categoryTabs}
+      {closedBanner}
+      {selectedMenuCat && renderGridItems(selectedMenuCat)}
+    </div>
+  )
+
+  const menuList = addOrderLayout === 'scroll' ? (
+    <ScrollMenuSections cats={menuCats} categoryStocks={categoryStocks} renderCategory={renderListItems} />
+  ) : (
+    <div>
+      {categoryTabs}
+      {closedBanner}
+      {selectedMenuCat && renderListItems(selectedMenuCat)}
     </div>
   )
 
@@ -1890,12 +2008,36 @@ setItemModal({ item, modGroups, editCartKey })
       {/* ── iPad / desktop: two-column split ── */}
       <div className="hidden md:flex flex-1 min-h-0 -mx-4">
 
-        {/* LEFT — scrollable menu */}
-        <div className="@container w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
-          {eventBanner}
-          {dealsButton}
-          {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
-        </div>
+        {/* LEFT — scrollable menu.
+            🔴 TWO SHAPES, AND THE 'tabs' ONE IS THE ORIGINAL ELEMENT UNCHANGED. In tabs the pane is a
+            single scroller with the event banner and deals button INSIDE it, scrolling away with the
+            items — exactly as today, so a truck on the default cannot see a layout change.
+            In scroll the pane becomes a flex column: banner + deals `shrink-0` at the top, the menu
+            `flex-1 min-h-0 overflow-y-auto` beneath. Start Event is an ACTION, not content, and in a
+            list that never ends there is no natural moment for it to come back.
+            ⚠️ `@container` MOVES ONTO THE SCROLLER in that shape, because the tiles' `@sm:grid-cols-3`
+            is resolved against the nearest container — leaving it on the outer div would still work but
+            would measure a box the tiles no longer live in. Padding is split (`px-4 pt-4` / `px-4 pb-4`)
+            so the visible inset is the old `p-4` on both halves.
+            ⚠️ The RIGHT pane is untouched in both shapes: the cart keeps its own scroller and the
+            submit panel stays outside it. Nothing here can make the cart scroll with the items. */}
+        {addOrderLayout === 'scroll' ? (
+          <div className="w-[58%] flex flex-col min-h-0 border-r border-slate-200">
+            <div className="shrink-0 px-4 pt-4">
+              {eventBanner}
+              {dealsButton}
+            </div>
+            <div className="@container flex-1 min-h-0 overflow-y-auto px-4 pb-4">
+              {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+            </div>
+          </div>
+        ) : (
+          <div className="@container w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
+            {eventBanner}
+            {dealsButton}
+            {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+          </div>
+        )}
 
         {/* RIGHT — cart + submit */}
         <div className="w-[42%] flex flex-col min-h-0 bg-white overflow-hidden">
@@ -1911,12 +2053,29 @@ setItemModal({ item, modGroups, editCartKey })
         </div>
       </div>
 
-      {/* ── Phone: single column ── */}
-      <div className="md:hidden flex-1 min-h-0 overflow-y-auto pb-24">
-        {eventBanner}
-        {dealsButton}
-        {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
-      </div>
+      {/* ── Phone: single column — the same two shapes, same reasoning as the pane above.
+          ⚠️ `pb-24` MOVES ONTO THE SCROLLER in the scroll shape: it is clearance for the fixed bottom
+          bar, so it has to sit on the element that scrolls under it, not on a static wrapper.
+          ⚠️ On a true phone `eventBanner` is `hidden sm:block` and renders nothing, so the pinned
+          header there is the deals button alone (or, with no deals, nothing at all — an empty
+          `shrink-0` div of zero height, which is why it needs no conditional). */}
+      {addOrderLayout === 'scroll' ? (
+        <div className="md:hidden flex-1 min-h-0 flex flex-col">
+          <div className="shrink-0">
+            {eventBanner}
+            {dealsButton}
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+            {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+          </div>
+        </div>
+      ) : (
+        <div className="md:hidden flex-1 min-h-0 overflow-y-auto pb-24">
+          {eventBanner}
+          {dealsButton}
+          {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+        </div>
+      )}
 
       {/* ── Phone: sticky bottom bar ── */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">

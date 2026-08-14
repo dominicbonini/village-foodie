@@ -35,10 +35,29 @@ export function getNowMinsInTz(tz: string = 'Europe/London'): number {
 
 /** Both event times present + valid HH:MM — the precondition for an event going LIVE (confirmed/open). The
  *  slot/collection/capacity engine needs BOTH (start = floor, end = the slot-range/"available until" bound);
- *  a null time can't project slots. DRAFTS (unconfirmed) may omit them — this gates only the live transition. */
+ *  a null time can't project slots. DRAFTS (unconfirmed) may omit them — this gates only the live transition.
+ *
+ *  V11.15 - IT NOW ALSO REQUIRES end > start, AND THAT IS A NEW RULE, NOT A CLARIFICATION.
+ *  Until the operator time control was split into hour + minute selects, the ONLY thing enforcing
+ *  ordering anywhere in the product was a UI option filter (SCHEDULE_TIME_OPTIONS.filter(t => t > start))
+ *  in one component. Nothing server-side checked it, so any path that did not go through that component -
+ *  the schedule importer, the inbound-schedule route, the scraper - could store an end at or before its
+ *  own start. A split control cannot express "later than the start" as a flat filter, so the rule moves
+ *  here, where every save path already passes.
+ *  WHY IT MATTERS BEYOND TIDINESS: the customer order page builds its collection hours as
+ *  `for (h = startH; h <= endH; h++)`, which yields an EMPTY list when endH < startH - an event nobody
+ *  can order from, with no error anywhere to say why. Refusing the row is how that stays impossible.
+ *  NOT AN OVERNIGHT-EVENT GATE. Overnight events are unbuilt (they need a date on each end, not just
+ *  a time); this refuses to let one be half-expressed.
+ *  CHECKED AGAINST LIVE DATA BEFORE SHIPPING: of 97 truck_events rows, 81 hold both times and ZERO
+ *  have end <= start, so no existing row - Pizzeria Gusto's included - is newly refused.
+ *  Times are compared as MINUTES, not strings: the seconds a `time` column returns ('17:00:00') make
+ *  a string compare against 'HH:MM' silently wrong, which is a live bug elsewhere in this repo. */
 export function hasValidEventTimes(start?: string | null, end?: string | null): boolean {
   const ok = (t?: string | null) => typeof t === 'string' && /^([01]\d|2[0-3]):[0-5]\d/.test(t)
-  return ok(start) && ok(end)
+  if (!ok(start) || !ok(end)) return false
+  const mins = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
+  return mins(end as string) > mins(start as string)
 }
 
 /** Calendar date 'YYYY-MM-DD' in the given timezone (the tz-aware localToday). */

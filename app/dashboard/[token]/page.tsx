@@ -296,6 +296,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
+  const[savingAddOrderLayout,setSavingAddOrderLayout]=useState(false)
   // ── PAID STEP (V9.4) ──────────────────────────────────────────────────────────────────────────
   // showPaidStep=false (the DB default) means every paid-step affordance below is inert and the
   // operator surface is byte-identical to before. payments = order_key → order_payments rows, shipped
@@ -1283,6 +1284,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setTruck(t=>t?{...t,print_trigger_mode:m}:t)
       showToast(m==='on_confirmed'?'Tickets will print when you accept an order':'Tickets will print shortly before collection')
     }catch{showToast('Failed to save','error')}
+  }
+
+  // ── MENU LAYOUT (trucks.add_order_layout) ──────────────────────────────────────────────────────────
+  // Shape copied from saveAutoAccept directly below: POST one named action to /api/dashboard/action,
+  // then patch the local `truck` so the Add order screen re-renders immediately instead of waiting for
+  // the 60s poll. No optimistic local mirror state — `truck.add_order_layout` IS the value the control
+  // reads, so there is nothing that can disagree with the server.
+  // 🔴 THE STORE DID NOT MOVE. Still trucks.add_order_layout, 'tabs' | 'scroll'. Not localStorage, not
+  // per-device, not a van column: the same value must reach every device this truck signs in on.
+  const saveAddOrderLayout=async(value:'tabs'|'scroll')=>{
+    if(truck?.add_order_layout===value)return
+    setSavingAddOrderLayout(true)
+    const prev=truck?.add_order_layout
+    // Optimistic: the radio is the kind of control that must answer the tap instantly. Reverted below
+    // if the write fails, so the dot can never claim a layout the server did not accept.
+    setTruck(t=>t?{...t,add_order_layout:value}:t)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_add_order_layout',value})
+      })
+      if(!res.ok)throw new Error('save failed')
+      showToast(value==='scroll'?'Menu shows as one page':'Menu shows separate categories')
+    }catch{
+      setTruck(t=>t?{...t,add_order_layout:prev}:t)
+      showToast('Failed to save','error')
+    }
+    finally{setSavingAddOrderLayout(false)}
   }
 
   const saveAutoAccept=async(val:boolean)=>{
@@ -3440,7 +3469,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   box of unrelated exceptions.
                   Behaviour is unaffected and always was: both toggles write truck_events overrides for
                   the ACTIVE EVENT ONLY and never touch the trucks columns (resolved by
-                  lib/payments/paid-step.ts). The toasts still name the event after a tap. */}
+                  lib/payments/paid-step.ts). The toasts still name the event after a tap.
+
+                  ── 🔴 AMENDED 14 AUGUST 2026: "EVERY option on this tab" IS NO LONGER TRUE. ─────────
+                  The rule above is kept because it is right about THESE rows and about why per-row
+                  scope wording was removed. But the tab now carries settings that are TRUCK-WIDE, and a
+                  reader who takes "PER-EVENT" as universal will draw the wrong conclusion about them:
+                    • "Menu layout" (trucks.add_order_layout) — added below, in the Add order card.
+                    • "Online card payments" (trucks.online_payments_paused_at) — already here, and
+                      already flagging itself as the exception in its own header.
+                  ⚠️ WHY MENU LAYOUT CROSSES THE BOUNDARY DELIBERATELY: it is a property of the SCREEN
+                  THE OPERATOR IS LOOKING AT, not of a night's trading. A per-event copy would ask the
+                  same question again at every event and let two events disagree about the shape of the
+                  same menu; and the setting is only meaningful WHILE standing at the hatch on this
+                  screen, which is where it now lives and is not where Manage is. Scope is still a
+                  property of the SCREEN — the screen just no longer has exactly one scope.
+                  ⚠️ THE PER-ROW WORDING RULE IS UNCHANGED AND STILL BINDING. The truck-wide rows do
+                  NOT say "applies to every event" in their descriptions either; that is what this
+                  comment is for. Do not start annotating rows with their scope. */}
               <div className="flex items-center justify-between gap-3 pb-3">
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
@@ -3537,6 +3583,54 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                   <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent}/>
                 </div>
+              </div>
+            </div>
+
+            {/* ── MENU LAYOUT — trucks.add_order_layout (MOVED HERE 14 August 2026) ────────────────────
+                It was in Manage → Settings and is now here, in ONE place, because this is the screen it
+                changes: an operator judging tabs against one scrolling list is standing at the hatch
+                looking at the Add order tab, not in Manage. The Manage sub-panel, its resolver constant
+                and its update_truck allow-list entry were all removed in the same change — see the note
+                left at app/api/manage/route.ts.
+
+                🔴 TRUCK-WIDE ON A MOSTLY-PER-EVENT TAB. Read the amended scope note on the card above
+                before assuming otherwise. It writes trucks.add_order_layout through
+                `set_add_order_layout` (app/api/dashboard/action/route.ts), the same one-action-one-column
+                shape as set_auto_accept — this route has no update_truck and no shared allow-list.
+
+                ⚠️ ITS OWN CARD, not a row in the payment card above: that card's rows are per-event
+                payment overrides and this is neither. RADIO rather than a toggle — two named
+                alternatives that each need their own explanation, and neither is the "on" state of the
+                other. DRAWN radio, never <input type="radio">: a native one paints in the browser's
+                accent instead of this page's orange and reads as a foreign control. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Menu layout</p>
+                  <p className="text-slate-500 text-xs mt-0.5">How items appear on the Add order screen.</p>
+                </div>
+                {savingAddOrderLayout&&<span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>}
+              </div>
+              <div className="flex flex-col gap-2 mt-3">
+                {([
+                  ['tabs','Separate categories','Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.'],
+                  ['scroll','One page','Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.'],
+                ] as const).map(([v,lbl,help])=>{
+                  // Anything that is not exactly 'scroll' reads as 'tabs' — the SAME expression
+                  // AddOrderPanel uses, so this control and that screen cannot show different answers.
+                  const active=(truck?.add_order_layout==='scroll'?'scroll':'tabs')===v
+                  return (
+                    <button type="button" key={v} disabled={isOffline}
+                      onClick={()=>saveAddOrderLayout(v)}
+                      className={`w-full text-left flex items-start gap-2 ${isOffline?'opacity-50 cursor-not-allowed':'cursor-pointer'}`}>
+                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${active?'border-orange-500':'border-slate-300'}`}>{active&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}</span>
+                      <span className="text-sm">
+                        <span className="font-medium text-slate-700">{lbl}</span>
+                        <span className="block text-xs text-slate-400">{help}</span>
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 

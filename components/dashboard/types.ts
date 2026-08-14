@@ -152,6 +152,13 @@ export interface TruckData {
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'
+  /** Dashboard Add Order menu presentation. 'tabs' = category chips FILTER (one category at a time);
+   *  'scroll' = one continuous list with sticky headings, the chips becoming jump links + scroll-spy.
+   *  OPTIONAL on the type on purpose: /api/dashboard delivers trucks via select('*') + a redact list, so
+   *  before the migration runs this key is simply absent. Every reader resolves it as
+   *  `add_order_layout === 'scroll' ? 'scroll' : 'tabs'`, so absent, null and any unexpected value all
+   *  mean today's behaviour. NOT display_mode — that is the KDS list/grid switcher. */
+  add_order_layout?: 'tabs' | 'scroll'
   keep_screen_on: boolean
   plan: Plan
   trial_expires_at: string | null

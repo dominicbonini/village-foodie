@@ -235,6 +235,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // authorisation has already been cancelled by then, which is what the sentence tells the customer.
   const paymentFailedParam = searchParams.get('payment_failed')
 
+  // SAFETY NET ONLY — the spy lock is released by ARRIVAL, by touch/wheel, and by scrollend; this
+  // fires only if none of those happen (e.g. a scrollIntoView that silently does nothing). Generous
+  // on purpose: with the real exits handled directly a late release costs nothing, whereas a tight
+  // timer would reintroduce the mid-flight re-arm it exists to prevent.
+  const SPY_LOCK_SAFETY_MS = 2000
+
   // ── THE STICKY STACK ────────────────────────────────────────────────────────────────────────────
   // Bars pin in this order, each offset by everything above it:
   //   page header      sticky top-0            h-[60px]   z-50   (Hdr)
@@ -263,6 +269,34 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return () => ro.disconnect()
   }, [isDemo])
   const stickyTop = HEADER_H + (isDemo ? demoBannerH : 0)
+
+  // ── A1 FIX: THE STATUS BANNERS AND THE CHIP BAR ARE NOW MEASURED TOO ────────────────────────────
+  // 🔴 `stickyTop` ABOVE IS UNCHANGED AND MUST STAY THAT WAY. It is where the STATUS BANNERS pin, so
+  // folding their own height into it would pin them below themselves — a feedback loop, not a fix.
+  // The bug was one level down: the CHIP BAR also pinned at `stickyTop`, in the same band as the
+  // banners and at a LOWER z-index (z-30 vs z-40), so whenever a closed / paused / time-not-set
+  // banner was showing it drew straight over the pinned chip bar. Live on Pizzeria Gusto today.
+  // So there are now three pin lines, each the one above it plus what that one occupies:
+  //   stickyTop   = header + demo banner            → where the STATUS BANNERS pin (unchanged)
+  //   chipBarTop  = stickyTop + statusBannerH       → where the CHIP BAR pins        (the A1 fix)
+  //   pinnedTop   = chipBarTop + tabBarH (if shown) → the readable top: sub-headings and jump targets
+  // ⚠️ THREE REFS, NOT ONE WRAPPER. Wrapping the banners in a div would make that div their sticky
+  // containing block, so each would stop sticking once the wrapper scrolled past — it would break the
+  // banners to measure them. They are measured individually and SUMMED.
+  // ⚠️ THE SUM IS THE SAFE DIRECTION when two banners are somehow live at once (time-not-set AND
+  // paused is reachable). They pin at the same offset, so they overlap and the true band is the max,
+  // not the sum — an over-estimate leaves a GAP above a heading, an under-estimate hides it behind a
+  // banner. That banner-on-banner overlap is a separate pre-existing defect and is NOT fixed here.
+  const timeBannerRef = useRef<HTMLDivElement | null>(null)
+  const closedBannerRef = useRef<HTMLDivElement | null>(null)
+  const pausedBannerRef = useRef<HTMLDivElement | null>(null)
+  const tabBarRef = useRef<HTMLDivElement | null>(null)
+  const [statusBannerH, setStatusBannerH] = useState(0)
+  // ⚠️ TABBAR_H (61) IS THE FIRST-PAINT FALLBACK ONLY, NOT THE VALUE. The bar's button is
+  // `min-h-[44px]` and its padding is rem, so OS text scaling moves it — the same class of bug
+  // demoBannerH is measured for, left behind in this one constant. Measurement takes over on mount.
+  const [tabBarH, setTabBarH] = useState(TABBAR_H)
+  const chipBarTop = stickyTop + statusBannerH
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   // CUSTOMER-FACING name — the stored name minus any trailing "(code)". A demo truck is stored as
@@ -429,37 +463,95 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(true)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
-  // Viewport height (SSR-guarded), updated on resize/orientationchange in the window-listener effect
-  // below. Drives the menu min-height so even a SHORT category has enough scrollable content beneath
-  // it to scroll its tabs to the very top (window is the scroll container). See menuMinHeight.
-  const [viewportH, setViewportH] = useState(() => (typeof window !== 'undefined' ? window.innerHeight : 800))
-  // Anchor at the menu region's natural top (rendered just above the sticky tab bar) + a first-mount
-  // guard, used by the tab-change scroll effect below.
-  const menuTopRef = useRef<HTMLDivElement>(null)
-  const categoryScrollMounted = useRef(false)
+  // ⚠️ `viewportH` WAS HERE AND IS GONE (B6). Its only reader was menuMinHeight, which A2 replaced
+  // with a `dvh` min-height in CSS — so no JS height is derived from window.innerHeight any more and
+  // there is nothing left for an iOS address-bar collapse to invalidate. `bumpMeasure` replaces it:
+  // resize/orientationchange force a render so the pinned bands are re-MEASURED rather than recomputed.
+  const [, bumpMeasure] = useState(0)
+  // ⚠️ `menuTopRef` AND `categoryScrollMounted` WERE HERE AND ARE GONE. They existed only for the
+  // tab-change scroll pin, which filtering made possible (one anchor served every category). The jump
+  // now targets the tapped SECTION, so a single shared anchor has nothing to point at. Removed rather
+  // than left dangling — see the jump + spy block below.
 
-  // On a user TAB CHANGE (activeCategory), pin the tab bar under the fixed header and start the new
-  // category's list at the top — WITHOUT scrolling the page to document-top (the event card + meal
-  // deals above the menu anchor must stay scrolled away). We scroll so the menu anchor sits exactly
-  // where the sticky tabs pin. Skipped on first mount (initial default category) so the page doesn't
-  // auto-scroll-down on load. Instant ('auto') — a tap should land at the category immediately;
-  // 'smooth' lags between far-apart categories.
+  // ── B1 / B4: JUMP + SCROLL-SPY ──────────────────────────────────────────────────────────────────
+  // 🔴 THIS REPLACED THE OLD TAB-CHANGE `window.scrollTo`, which existed because the tabs FILTERED:
+  // every category started at the same place, so the pin always scrolled to one fixed anchor
+  // (`menuTopRef`). With every category in one list they start at different places, so the jump has
+  // to target the tapped SECTION. The old effect's demo fix is preserved and generalised — it scrolled
+  // to `stickyTop`, and `pinnedTop` below is that same number plus the two bands it never counted.
   //
-  // 🔴 IT SCROLLS TO `stickyTop`, NOT TO A HARDCODED 60, AND THAT IS THE DEMO FIX.
-  // The 60 counted the page header and NOT the DEMO MODE banner — the same class of bug the sticky
-  // stack above already fixed for the bars themselves, left behind in the one place that scrolls
-  // rather than pins. In demo the tabs pin 46px lower than this scroll assumed, so the first item of
-  // the new category landed UNDER the banner and its name was clipped. Every other category's first
-  // item was fine because the customer scrolled to it themselves.
-  // ⚠️ NON-DEMO IS BYTE-IDENTICAL: `stickyTop` is HEADER_H + 0 = the same 60 it always was, and
-  // `demoBannerH` is measured rather than assumed, so OS text scaling cannot reintroduce the clip.
-  useEffect(() => {
-    if (!categoryScrollMounted.current) { categoryScrollMounted.current = true; return }
-    const el = menuTopRef.current
+  // ⚠️ ONE NUMBER, TWO CONSUMERS. `pinnedTop` is both the CSS `scroll-margin-top` on each section and
+  // the JS pin line the spy compares against. They cannot disagree, which is the whole reason the
+  // jump uses scrollIntoView (the browser applies scroll-margin-top itself) instead of arithmetic.
+  const sectionRefs = useRef<Map<string, HTMLElement>>(new Map())
+  /** The chip bar's INNER scrolling box (the `overflow-x-auto` row) and the chip buttons in it.
+   *  ⚠️ NOT `tabBarRef` — that is the OUTER sticky wrapper, which does not scroll. Measuring or
+   *  scrolling the wrapper would do nothing at all, silently. */
+  const chipScrollRef = useRef<HTMLDivElement | null>(null)
+  const chipRefs = useRef<Map<string, HTMLElement>>(new Map())
+  /** Pending rAF for the chip-bar auto-scroll — see the effect for why it is coalesced. */
+  const chipRafRef = useRef(0)
+  /** The scrollY a chip tap asked for. Non-null exactly while locked. */
+  const spyTargetRef = useRef<number | null>(null)
+  const spyTimerRef = useRef<number | null>(null)
+  const spyRafRef = useRef(0)
+  /** Live copy of the values the scroll handler needs, so the listener can mount ONCE with no deps
+   *  and never be torn down and re-attached as categories load or the pinned band is re-measured. */
+  const spyStateRef = useRef<{ cats: string[]; pinnedTop: number }>({ cats: [], pinnedTop: 60 })
+
+  const releaseSpyLock = useCallback(() => {
+    spyTargetRef.current = null
+    if (spyTimerRef.current !== null) { window.clearTimeout(spyTimerRef.current); spyTimerRef.current = null }
+  }, [])
+
+  const onScrollSpy = useCallback(() => {
+    const { cats, pinnedTop: line } = spyStateRef.current
+    if (cats.length < 2) return
+    const atBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2
+    // 🔴 LOCKED while our own smooth scroll is in flight: letting the spy run would repaint the active
+    // chip for every category the page passes THROUGH, so the tapped chip lights, flickers through its
+    // neighbours, then settles. Released on ARRIVAL (or at the bottom, where a target past the end of
+    // the document can never be reached), on touch/wheel, and on scrollend — the timer is only a net.
+    if (spyTargetRef.current !== null) {
+      if (Math.abs(window.scrollY - spyTargetRef.current) > 2 && !atBottom()) return
+      releaseSpyLock()
+    }
+    if (spyRafRef.current) return
+    spyRafRef.current = requestAnimationFrame(() => {
+      spyRafRef.current = 0
+      // BOTTOM CLAMP: a short LAST category cannot always bring its heading up to the pin line, so the
+      // plain rule would leave its chip permanently unlit. At the bottom of the page it IS what you
+      // are looking at. (A2's trailing min-height makes this rare; it is not made redundant by it.)
+      if (atBottom()) { setActiveCategory(cats[cats.length - 1] ?? null); return }
+      let current = cats[0] ?? null
+      for (const cat of cats) {
+        const el = sectionRefs.current.get(cat)
+        if (!el) continue
+        if (el.getBoundingClientRect().top <= line + 1) current = cat
+        else break
+      }
+      setActiveCategory(current)
+    })
+  }, [releaseSpyLock])
+
+  /** Tap a chip: scroll that section's top to just below everything pinned. */
+  const jumpToCategory = useCallback((cat: string) => {
+    setActiveCategory(cat)                       // light the chip on the TAP, not when the scroll lands
+    const el = sectionRefs.current.get(cat)
     if (!el) return
-    const menuTop = el.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({ top: Math.max(0, menuTop - stickyTop), behavior: 'auto' })
-  }, [activeCategory, stickyTop])
+    const target = Math.max(0, window.scrollY + el.getBoundingClientRect().top - spyStateRef.current.pinnedTop)
+    releaseSpyLock()
+    // ⚠️ ALREADY THERE ⇒ DO NOT LOCK. scrollIntoView to the current position emits no scroll event, so
+    // a lock taken here would have no arrival to release it and would sit until the net expired.
+    if (Math.abs(target - window.scrollY) > 2) {
+      spyTargetRef.current = target
+      spyTimerRef.current = window.setTimeout(releaseSpyLock, SPY_LOCK_SAFETY_MS)
+    }
+    const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  }, [releaseSpyLock])
+
+  useEffect(() => releaseSpyLock, [releaseSpyLock])
 
   // Sync padding synchronously after every render — fires before paint so the
   // expanded footer and the updated paddingBottom are always drawn together.
@@ -467,6 +559,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!footerRef.current) return
     const h = Math.ceil(footerRef.current.offsetHeight)
     if (h !== footerHeight) setFooterHeight(h)
+  })
+
+  // A1: measure the pinned bands, in the SAME shape the footer above uses (layout effect, no dep
+  // array, runs after every render, guarded so it cannot loop). No dep array is deliberate: a banner
+  // mounting or unmounting is a render, so this catches every appearance without having to enumerate
+  // the conditions that produce one — which are computed hundreds of lines below this hook.
+  useLayoutEffect(() => {
+    const banners = [timeBannerRef.current, closedBannerRef.current, pausedBannerRef.current]
+      .filter((el): el is HTMLDivElement => el !== null)
+    const total = banners.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0)
+    setStatusBannerH(prev => (Math.abs(prev - total) < 0.5 ? prev : total))
+    const bar = tabBarRef.current
+    if (bar) {
+      const h = bar.getBoundingClientRect().height
+      setTabBarH(prev => (Math.abs(prev - h) < 0.5 ? prev : h))
+    }
   })
 
   // ResizeObserver as backup for orientation changes / window resize events
@@ -481,19 +589,38 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return () => observer.disconnect()
   }, [])
 
+  // 🔴 B6 — NOTHING ON THIS PAGE COMPUTES A HEIGHT FROM `window.innerHeight` ANY MORE.
+  // It used to seed `viewportH`, whose only reader was menuMinHeight (see A2, now `dvh` in CSS).
+  // iOS Safari collapses its address bar mid-gesture and fires `resize` for it, so any JS height
+  // derived from innerHeight changed the document *while the customer was scrolling*. The resize
+  // listener is kept but now only forces a re-render, which makes the layout effect above RE-MEASURE
+  // the real elements. Measuring beats computing: an element's height is whatever the address bar
+  // has just done to it.
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 120)
-    const onResize = () => setViewportH(window.innerHeight)
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 120)
+      onScrollSpy()
+    }
+    const onResize = () => bumpMeasure(n => n + 1)
+    const takeOver = () => releaseSpyLock()
     window.addEventListener('scroll', onScroll, { passive: true })
+    // 🔴 THE CUSTOMER ALWAYS WINS. A touch or wheel during our own smooth scroll means they have taken
+    // over, so the spy lock ends there and then and follows THEIR scroll — the case a timer-only
+    // release serves worst (it keeps asserting the tapped chip while the page moves elsewhere).
+    window.addEventListener('touchstart', takeOver, { passive: true })
+    window.addEventListener('wheel', takeOver, { passive: true })
+    window.addEventListener('scrollend', takeOver)
     window.addEventListener('resize', onResize)
     window.addEventListener('orientationchange', onResize)
-    onResize() // sync once on mount (covers the SSR seed / first paint)
     return () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('touchstart', takeOver)
+      window.removeEventListener('wheel', takeOver)
+      window.removeEventListener('scrollend', takeOver)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('orientationchange', onResize)
     }
-  }, [])
+  }, [onScrollSpy, releaseSpyLock])
 
   const [basket, setBasket] = useState<BasketItem[]>([])
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
@@ -1098,12 +1225,87 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return groupByCategory(menu.items, menu.categories?.map(c => c.name))
   }, [menu])
 
-  // Top-level category TABS (customer browse): tap a tab to show only that category. Subcategory
-  // grouping/headers STAY within the selected category (groupBySubcategory below is untouched) — the
-  // customer is browsing, the subcategory merchandising is intentional. Menu order preserved.
+  // 🔴 B2 — THE ONE ARRAY. Both the chips and the sections map over `menuCategories`, and it is
+  // derived from `groupedMenu`, which is built from `menu.items` — the POST-FILTER list. NEVER
+  // iterate `menu.categories` here: that is the raw category table, and the customer's menu is not
+  // the operator's. The server drops a whole category when it is disabled, and in per-dish allergen
+  // mode it drops items whose allergens are unconfirmed, so a category can hold items for the
+  // operator and none for the customer. groupByCategory only emits categories that HAVE items, so
+  // Pizzeria Gusto's empty `Specials` has never had a chip and must never gain a heading. Two
+  // derivations would put an empty heading in the list and shift every jump target after it.
   const menuCategories = useMemo(() => groupedMenu.map(([cat]) => cat), [groupedMenu])
-  // Default to the first category; self-heal if the active tab disappears (menu reload / now-empty cat).
+  // 🔴 B5 — A SINGLE-CATEGORY TRUCK RENDERS NO CHIP BAR, so nothing may be offset by its height.
+  // The chip bar is gated on `length > 1` in the render; this mirrors that gate exactly. Getting it
+  // wrong puts a bar's worth of dead space above every heading on a one-category menu.
+  const hasChipBar = menuCategories.length > 1
+  // THE READABLE TOP: everything pinned, measured. Used as the sections' CSS scroll-margin-top AND as
+  // the spy's pin line — one number, so a heading cannot land somewhere the spy disagrees with.
+  const pinnedTop = chipBarTop + (hasChipBar ? tabBarH : 0)
+  // ⚠️ `selectedCategory` IS NOW A HIGHLIGHT, NOT A FILTER. It no longer decides what renders — every
+  // category renders — it decides which chip is orange. The self-heal is kept: a category that
+  // disappears on a menu reload must not leave a chip lit that no longer exists.
   const selectedCategory = (activeCategory && menuCategories.includes(activeCategory)) ? activeCategory : (menuCategories[0] ?? null)
+
+  // Feed the scroll handler without re-attaching it. Runs after every render, so the spy always reads
+  // the current categories and the current measured pin line.
+  useEffect(() => { spyStateRef.current = { cats: menuCategories, pinnedTop } })
+
+  // ── KEEP THE ACTIVE CHIP VISIBLE IN THE BAR ──────────────────────────────────────────────────────
+  // With five categories the chip row overflows horizontally, so the spy can light a chip that is
+  // scrolled out of sight — on Gusto, reaching Dough Balls highlights something the customer cannot
+  // see. This nudges the BAR (never the page) just far enough to bring it back.
+  //
+  // 🔴 IT DOES NOT CENTRE, AND THAT IS THE WHOLE DESIGN. Centring on every spy change would make the
+  // bar twitch continuously while someone scrolls a long category — 23 pizzas would be 23 little
+  // animations. The rule is: already fully visible ⇒ DO NOTHING; clipped right ⇒ bring it to the right
+  // edge; clipped left ⇒ bring it to the left edge. The bar is STILL unless it has something to fix.
+  //
+  // 🔴 NOT `scrollIntoView`. Even `block: 'nearest', inline: 'nearest'` walks ANCESTORS: it is defined
+  // to scroll every scrollable box up to the viewport, so it can move the PAGE vertically — yanking
+  // the menu out from under someone who is reading it — whenever the bar is not already perfectly in
+  // view (mid-pin, address bar collapsing, a status banner appearing). Setting the bar's own
+  // `scrollLeft` cannot touch anything but the bar. This was a considered choice, not an assumption.
+  //
+  // 🔴 IT RESPECTS THE EXISTING SPY LOCK, and adds no second one. `selectedCategory` is the only
+  // input, and during a chip-tap jump the spy is locked, so the active category changes ONCE (to the
+  // tapped chip) instead of stepping through every category in transit. The bar therefore makes one
+  // correction for the chip you tapped, not one per category the page flies past.
+  //
+  // ⚠️ COALESCED, SO A FAST FLICK CANNOT QUEUE ANIMATIONS. A flick can change the active category
+  // several times in a few frames. Each change cancels the previous pending frame (`cancelAnimationFrame`)
+  // and the work is done at frame time from the CURRENT DOM, so only the final category is ever acted
+  // on. Two things then guarantee it settles correctly rather than animating through each one: at most
+  // one `scrollTo` is issued per frame, and a new scroll on the same box supersedes an in-flight smooth
+  // scroll rather than being appended to it.
+  useEffect(() => {
+    if (!selectedCategory) return
+    if (chipRafRef.current) cancelAnimationFrame(chipRafRef.current)
+    chipRafRef.current = requestAnimationFrame(() => {
+      chipRafRef.current = 0
+      const bar = chipScrollRef.current
+      const chip = chipRefs.current.get(selectedCategory)
+      if (!bar || !chip) return
+      // No overflow ⇒ every chip is already visible ⇒ there is nothing this could correct. A bar that
+      // fits must never move.
+      if (bar.scrollWidth <= bar.clientWidth + 1) return
+      const barRect = bar.getBoundingClientRect()
+      const chipRect = chip.getBoundingClientRect()
+      if (barRect.width === 0) return                       // not laid out / hidden — nothing to measure
+      // Breathing room so the chip does not sit flush against the edge and read as half-cut.
+      const MARGIN = 12
+      let delta = 0
+      if (chipRect.left < barRect.left + MARGIN) {
+        delta = chipRect.left - barRect.left - MARGIN        // clipped LEFT  → bring to the left edge
+      } else if (chipRect.right > barRect.right - MARGIN) {
+        delta = chipRect.right - barRect.right + MARGIN      // clipped RIGHT → bring to the right edge
+      } else {
+        return                                               // 🔴 FULLY VISIBLE → DO NOTHING
+      }
+      const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      bar.scrollTo({ left: bar.scrollLeft + delta, behavior: reduce ? 'auto' : 'smooth' })
+    })
+    return () => { if (chipRafRef.current) { cancelAnimationFrame(chipRafRef.current); chipRafRef.current = 0 } }
+  }, [selectedCategory])
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
   // Inline upsells — item-specific, shown immediately when a matching item is in basket
@@ -1194,10 +1396,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
-  // Min-height for the menu list so a SHORT category still has enough scrollable content beneath the
-  // tabs to pin them at the very top. 121 = fixed header (60) + tab bar (61); over-generous is invisible
-  // (you can't scroll past content end), under-padding reintroduces the bug — so stay at the 121 floor.
-  const menuMinHeight = Math.max(0, viewportH - 121)
+  // ── A2 FIX: THE LAST CATEGORY MUST ALWAYS REACH THE TOP ─────────────────────────────────────────
+  // 🔴 THE OLD RULE WAS RIGHT FOR TABS AND WRONG FOR ONE LIST. It was
+  //     minHeight: max(0, viewportH - 121)   on the WHOLE list
+  // which padded a short category out to a viewport so its tabs could pin. Its own comment called it
+  // self-cancelling — "inert once the category's content exceeds it" — and with every category
+  // rendered at once the combined list ALWAYS exceeds it, so the padding silently became 0 exactly
+  // when it was needed. The last category could then never be scrolled to the pin line: its chip
+  // would be untappable-to and, with a spy, permanently unlit.
+  // THE FIX MOVES THE FLOOR FROM THE LIST TO THE LAST SECTION. `lastSectionMinHeight` below makes the
+  // FINAL section at least as tall as the readable area, so there is always a screen's worth of
+  // scroll beneath its heading. Still self-cancelling — a long last category exceeds it and the
+  // min-height is inert — but it can no longer be cancelled by the categories ABOVE it.
+  // 🔴 B6 — IT IS `dvh`, NOT JS. `100dvh` is the DYNAMIC viewport height: the browser tracks the iOS
+  // address bar itself, so the value is correct through a collapse instead of being recomputed from a
+  // stale `window.innerHeight` mid-gesture. The two subtracted terms are measured element heights.
+  const lastSectionMinHeight = `calc(100dvh - ${Math.round(pinnedTop)}px - ${Math.round(footerHeight)}px)`
 
   // Shared order breakdown (deal lines + item lines + discount + total). Rendered in BOTH the footer
   // basket peek AND the form-sheet review summary so the two can never drift. DISPLAY-ONLY — no
@@ -2116,7 +2330,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {/* Time-not-set banner — a null-time event can't be ordered against (engine needs the times). Shown
           INSTEAD of treating it as orderable; intentional + reassuring, never a broken/crash screen. */}
       {orderingTimeNotSet && !isClosed && (
-        <div style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+        <div ref={timeBannerRef} style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering isn’t available for this event yet</p>
             <p className="text-xs text-slate-300 mt-0.5">The truck hasn’t set the event time yet — please check with them directly. You’ll be able to order here once it’s set.</p>
@@ -2144,7 +2358,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           customer-facing response to make a link possible would weaken that boundary for real trucks too.
           Hence the copy names the dashboard without pretending to navigate there — see the report. */}
       {isClosed && (
-        <div style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+        <div ref={closedBannerRef} style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering has closed</p>
             <p className="text-xs text-slate-300 mt-0.5">
@@ -2165,7 +2379,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           customer is actually ordering from. A pre-order event can't be offline-paused (the monitor
           only pauses live status='open' events), so it never shows the offline variant. */}
       {event && isPaused && !isClosed && (
-        <div style={{ top: stickyTop }} className="sticky z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
+        <div ref={pausedBannerRef} style={{ top: stickyTop }} className="sticky z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="flex items-start gap-3 max-w-lg mx-auto">
             <span className="text-xl flex-shrink-0">
               {truck?.pauseReason === 'account_closing' ? '🚫' : truck?.pauseReason === 'offline' ? '📡' : '⏸️'}
@@ -2413,11 +2627,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               ⓘ Allergen Info
             </button>
           </div>
-          {/* Anchor at the MENU region's natural top (just above the sticky tab bar). Non-sticky, so
-              its document position is stable even when the tabs are pinned — used by the tab-change
-              scroll effect to pin the tabs under the header without scrolling the page to the top
-              (the event card + deals above this anchor stay scrolled away). */}
-          <div ref={menuTopRef} aria-hidden="true" />
           {/* Top-level category tabs — sticky below the page header (h-[60px]). Tap to filter to one
               category; subcategory headers (below) are preserved within it. Finger-sized (≥44px),
               horizontal-scroll on narrow. -mx-N px-N makes the white bar span the menu card's padding. */}
@@ -2431,13 +2640,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               track still measures exactly the card's content width, as it always has — it grows by the
               16px the card gave back, which is a consequence of the card's padding rather than a change
               to this element's own rules. The clip stays the scroll affordance. */}
-          {menuCategories.length > 1 && (
-            <div style={{ top: stickyTop }} className="sticky z-30 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 mb-2 bg-white border-b border-slate-100">
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+          {/* 🔴 A1: `chipBarTop`, NOT `stickyTop`. This bar used to pin at the SAME offset as the status
+              banners above it and at a lower z-index (z-30 vs their z-40), so a closed / paused /
+              time-not-set banner drew straight over it and the chips vanished — live on Gusto today.
+              chipBarTop = stickyTop + the banners' MEASURED height, so it now pins beneath them.
+              🔴 B1: the chips no longer FILTER. Every category renders; a tap jumps. Styling, sizing,
+              `min-h-[44px]`, the horizontal scroll and the negative-margin mirror are all untouched —
+              only the handler and the offset changed. */}
+          {hasChipBar && (
+            <div ref={tabBarRef} style={{ top: chipBarTop }} className="sticky z-30 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 mb-2 bg-white border-b border-slate-100">
+              <div ref={chipScrollRef} className="flex gap-1.5 overflow-x-auto scrollbar-hide">
                 {menuCategories.map(cat => (
                   <button
                     key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    ref={el => { if (el) chipRefs.current.set(cat, el); else chipRefs.current.delete(cat) }}
+                    onClick={() => jumpToCategory(cat)}
                     className={`shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 rounded-xl text-sm font-black uppercase tracking-wide transition-colors active:scale-95 ${
                       cat === selectedCategory ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
@@ -2448,26 +2665,57 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
             </div>
           )}
-          {/* MIN-HEIGHT wrapper (V7.6): pads a SHORT category out to ~a viewport so the tab-switch
-              scroll can pin the tabs to the very top (window is the scroll container). Self-cancelling
-              — inert once the category's content exceeds it, so NO blank gap on long categories.
-              Keyed off viewportH (not the active category), so no layout tick is needed. */}
-          <div style={{ minHeight: menuMinHeight }}>
-          {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => {
+          {/* ⚠️ THE OLD MIN-HEIGHT WRAPPER IS GONE — see A2. It padded the WHOLE list to a viewport,
+              which the combined list always exceeds, so it silently became 0. The floor moved onto the
+              LAST SECTION, below. */}
+          <div>
+          {/* 🔴 B1/B2: EVERY category renders. The old `.filter(… === selectedCategory)` is gone — that
+              was the tabs. The array is `groupedMenu`, the same post-filter source the chips map over. */}
+          {groupedMenu.map(([category, items], catIndex) => {
             const subGroups = groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0)
             // Category-level pre-order label — only when the category is FLAT (no named sub-category
             // headings to carry it), so the category + sub-category sites never double up. Shared
             // string when every available item in the category is an enabled pre-order item.
             const catPreorder = subGroups.some(g => g.name) ? null : groupPreorderLabel(items)
+            const isLastCategory = catIndex === groupedMenu.length - 1
             return (
             // divide-y here borders BETWEEN subcategory group wrappers, so the last item before a
             // subcategory header gets a separator (the per-group divide-y below only draws between
             // items WITHIN a group, dropping the boundary line). No leading line (first group) and no
             // trailing line (category's final item) — divide-y only borders between siblings.
-            <div key={category} className="mb-4 last:mb-0 divide-y divide-slate-200">
+            // 🔴 `scrollMarginTop` IS THE SAME `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump calls
+            // scrollIntoView and lets the BROWSER apply this, rather than doing the arithmetic itself —
+            // so "where a heading lands" and "where the spy thinks the line is" are one number, and a
+            // re-measure moves both together. A2's floor is on the last section only.
+            <div
+              key={category}
+              ref={el => { if (el) sectionRefs.current.set(category, el); else sectionRefs.current.delete(category) }}
+              style={{ scrollMarginTop: pinnedTop, ...(isLastCategory ? { minHeight: lastSectionMinHeight } : {}) }}
+              className="mb-4 last:mb-0"
+            >
+              {/* 🔴 B3: THE CATEGORY HEADING IS DELIBERATELY NOT STICKY, AND THAT IS A DECISION.
+                  The highlighted CHIP is the parent indicator — it names the section you are in and
+                  shows its neighbours, which a pinned heading does not. Two pinned levels (chips +
+                  category) plus the header would eat roughly a third of a phone viewport before any
+                  food. ⚠️ SUB-CATEGORY HEADINGS STAY STICKY, as they are today: deep inside a long
+                  category they are the only thing naming the group you are reading, and the chip above
+                  carries the parent. So a sticky child under a non-sticky parent is intended here.
+                  ⚠️ Rendered only when there is more than one category — a one-category menu needs no
+                  divider and must look exactly as it does today (B5). */}
+              {hasChipBar && (
+                <p className="text-sm font-black text-orange-600 uppercase tracking-wider pt-1 pb-2">{cap(category)}</p>
+              )}
+              {/* ⚠️ `divide-y` MOVED FROM THE SECTION DIV ONTO THIS WRAPPER, and it is not cosmetic
+                  fiddling: divide-y borders BETWEEN SIBLINGS, so leaving it on the section would have
+                  made the new category heading a sibling and drawn a rule under it that has never been
+                  there. Same children, same borders between them as before. */}
+              <div className="divide-y divide-slate-200">
               {catPreorder && (
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="text-xs font-bold text-slate-500">{cap(category)}</span>
+                  {/* ⚠️ The category NAME here is now conditional: the heading above already says it
+                      whenever there is more than one category, and printing it twice reads as a bug.
+                      On a ONE-category menu that heading is not rendered (B5), so this keeps it. */}
+                  {!hasChipBar && <span className="text-xs font-bold text-slate-500">{cap(category)}</span>}
                   {/* Group cue pill — matches the per-item pill style; flex-wrap drops it below on narrow screens. */}
                   <span className={`rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap ${catPreorder.state === 'closed_pending' ? 'bg-amber-100 text-amber-800' : 'bg-amber-50 text-amber-700'}`}>
                     {catPreorder.label}
@@ -2491,8 +2739,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     ⚠️ THE SAME MIRROR AS THE TAB BAR, for the same reason and with the same values: it
                     tracks the card's `px-2 sm:px-4` so the band spans the padding and no further. These
                     two are the only elements in the card that break out of it, and they must agree. */}
+                {/* 🔴 `pinnedTop`, which IS the old expression with the two missing bands added:
+                    it was `menuCategories.length > 1 ? stickyTop + TABBAR_H : stickyTop`, and
+                    pinnedTop = stickyTop + statusBannerH + (hasChipBar ? tabBarH : 0). The
+                    single-category branch (B5) is preserved inside pinnedTop, not lost here. */}
                 {group.name && (
-                  <p style={{ top: menuCategories.length > 1 ? stickyTop + TABBAR_H : stickyTop }} className="sticky z-20 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
+                  <p style={{ top: pinnedTop }} className="sticky z-20 -mx-2 px-2 sm:-mx-4 sm:px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
                     {cap(group.name)}
                     {/* Sub-category pre-order pill — shown when every available item in THIS group is an
                         enabled pre-order item (shared global string). inline-block + whitespace-nowrap so
@@ -2801,10 +3053,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 </div>
               </div>
               ))}
+              </div>{/* end divide-y wrapper */}
             </div>
             )
           })}
-          </div>{/* end min-height wrapper */}
+          </div>
         </div>
 
 

@@ -57,7 +57,7 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -755,9 +755,29 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               <p className="text-sm font-semibold text-orange-800">
                 Full Max features + Pay at Hatch ordering — completely free*
               </p>
+              {/* 🔴 SAME CORRECTION AS THE BILLING TAB, 14 August 2026 — one false sentence, two copies.
+                  This read "You won't be charged anything until your trial ends on {date}." Nothing
+                  activates at the end of a trial; billing starts only when a plan is chosen and payment
+                  details are entered. See the Billing tab's note for the full reasoning.
+                  ⚠️ THE NULL BRANCH IS UNREACHABLE AND IS STILL WRITTEN OUT IN FULL. The trigger effect
+                  returns early on `!truck.trial_expires_at`, so this popup cannot render for a
+                  not-started trial — but the old code carried a `: 'soon'` fallback that would have
+                  produced "your trial ends on soon", and replacing it with a sentence that reads
+                  correctly costs nothing and removes the trap if the guard ever moves.
+                  🔴 THE SENTENCE BELOW IS NOT MINE AND IS NOT CORRECTED — see the report. It promises a
+                  Starter-tier fallback at expiry that IS NOT BUILT. It is left exactly as found because
+                  rewriting it was outside this task's brief, not because it is true. */}
               <p className="text-sm text-orange-700 mt-1">
-                You won&apos;t be charged anything until your trial ends on{' '}
-                <strong>{truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at) : 'soon'}</strong>.
+                {truck.trial_expires_at ? (
+                  <>
+                    You won&apos;t be charged anything during your trial, which runs until{' '}
+                    <strong>{formatTrialEndDate(truck.trial_expires_at)}</strong>.
+                  </>
+                ) : (
+                  <>You won&apos;t be charged anything while you&apos;re on trial.</>
+                )}
+                {' '}Billing only ever starts when you choose a plan and enter your payment details.
+                Until then there&apos;s nothing to cancel and nothing to pay.
                 Choose your plan before then — if you don&apos;t, access will revert to the free Starter tier and some features will stop working.
               </p>
               <p className="text-xs text-orange-500 mt-2">
@@ -6432,18 +6452,154 @@ function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent
 
 type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null }
 
-const SCHEDULE_TIME_OPTIONS = Array.from({ length: 33 }, (_, i) => {
-  const totalMins = 7 * 60 + i * 30
-  const h = Math.floor(totalMins / 60).toString().padStart(2, '0')
-  const m = (totalMins % 60).toString().padStart(2, '0')
-  return `${h}:${m}`
-})
+// ── EVENT TIME CONTROL (V11.15) ──────────────────────────────────────────────────────────────────
+// 🔴 REPLACES `SCHEDULE_TIME_OPTIONS`, which was `Array.from({length: 33}, i => 07:00 + i*30)` — a flat
+// 30-minute list from 07:00 to 23:00, rendered by four selects. It is GONE, not deprecated: a second
+// source of truth for "what times may an event have" is exactly the drift this file's other constants
+// exist to prevent. Everything below is the one replacement, used by all four sites.
+//
+// 🔴 THE MINUTE STEP IS EXACTLY 5 AND IS NOT A PROP, A CONFIG VALUE, OR A DEFAULT. It is a correctness
+// constraint, not a style choice, and the reasoning is in docs/event-times-report.md §4e:
+//   • the CUSTOMER collection picker (app/trucks/[slug]/order/page.tsx) offers a HARDCODED
+//     ['00','05',…,'55'] minute list, narrowed by the event start but never regenerated from it; and
+//   • the SERVER walks collection slots from the event start in `collection_interval_mins` (5) steps.
+// The two agree if and only if the event start's minute is a multiple of 5. A 12:07 start would make
+// the server generate 12:07/12:12/12:17… while the customer could only ever pick :10/:15/:20 — every
+// selectable time would be one the server never generated. ⚠️ DO NOT MAKE THIS CONFIGURABLE.
+//
+// ⚠️ THE HOUR RANGE WIDENS FROM 07–23 TO 00–23. Deliberate: 07:00 was an accident of the old constant's
+// start offset and a 06:00 breakfast pitch could not be entered at all. It does NOT enable overnight
+// events — an end at or before the start is refused (see EventTimeSelect's `minExclusive` and
+// hasValidEventTimes), which is what keeps the customer picker's startH→endH loop non-empty.
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
+const MINUTE_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'))
+
+/** 'HH:MM' or 'HH:MM:SS' or ''/null → its two-digit parts. Seconds are ignored, never parsed.
+ *  Anything that isn't two digits either side of the first colon yields empty parts, so a malformed
+ *  stored value renders as "not set" rather than throwing. */
+function splitHhMm(value: string | null | undefined): { h: string; m: string } {
+  const [rawH = '', rawM = ''] = (value ?? '').split(':')
+  const two = (s: string) => (/^\d{2}$/.test(s) ? s : '')
+  return { h: two(rawH), m: two(rawM) }
+}
+
+/** 'HH:MM' → minutes from midnight. Returns null for anything unparseable. */
+function hhMmToMins(value: string | null | undefined): number | null {
+  const { h, m } = splitHhMm(value)
+  if (!h || !m) return null
+  return Number(h) * 60 + Number(m)
+}
+
+/**
+ * ONE event time control — an HOUR select and a MINUTE select — used by all four event-time sites.
+ *
+ * ⚠️ IT RENDERS ONE TIME, NOT A START/END PAIR. That is forced by the markup, not a preference: on the
+ * importer's DESKTOP grid the start and end live in SEPARATE `<td>` cells, so a component spanning both
+ * could not be dropped in. One-time granularity is the only shape all four sites can share, and each
+ * site renders it twice.
+ *
+ * 🔴 STORED VALUES ARE NEVER COERCED. A time whose minute is not a multiple of 5 — which the schedule
+ * importer can already produce, and which two live demo rows already hold (23:59) — is INJECTED into
+ * this instance's option list rather than rounded, snapped or blanked. The component has no effect and
+ * no lifecycle: it cannot call `onChange` unless the operator touches a select, so a value that is
+ * merely DISPLAYED round-trips byte-identically. Silently rewriting a stored event time is the failure
+ * this design is built against.
+ *
+ * `minExclusive` is the end-after-start guard (it replaces the old `filter(t => t > start_time)`, which
+ * was the ONLY ordering enforcement anywhere — hasValidEventTimes did not check it). Hours that cannot
+ * hold a later time are omitted; within the boundary hour, minutes at or before it are omitted; and a
+ * change to the hour re-picks the minute so the emitted value always satisfies it. ⚠️ It cannot repair
+ * an ALREADY-invalid stored pair — that value is preserved and injected, so call sites flag it visually.
+ */
+function EventTimeSelect({
+  value, onChange, className, placeholder = '—:—', minExclusive = null, disabled = false, label,
+}: {
+  value: string | null | undefined
+  /** Receives 'HH:MM', or '' when the hour is cleared. Never fires on its own. */
+  onChange: (next: string) => void
+  className: string
+  placeholder?: string
+  /** The time the value must fall strictly AFTER (the start, when this is an end field). */
+  minExclusive?: string | null
+  disabled?: boolean
+  /** Screen-reader name; the grid sites have no visible <label>. */
+  label?: string
+}) {
+  const { h: curH, m: curM } = splitHhMm(value)
+  const minMins = hhMmToMins(minExclusive)
+
+  // Minutes selectable for a given hour: the fixed 5-step list, narrowed only inside the boundary hour.
+  const minutesFor = (h: string) =>
+    minMins === null || !h ? MINUTE_OPTIONS : MINUTE_OPTIONS.filter(m => Number(h) * 60 + Number(m) > minMins)
+
+  // An hour is offered when ANY minute in it can beat the boundary (i.e. :55 does).
+  const hours = HOUR_OPTIONS.filter(h => minMins === null || Number(h) * 60 + 55 > minMins)
+  if (curH && !hours.includes(curH)) hours.push(curH)          // preserve a stored/earlier hour
+  hours.sort()
+
+  const minutes = minutesFor(curH)
+  const minuteOptions = curM && !minutes.includes(curM) ? [...minutes, curM].sort() : minutes
+
+  const onHour = (h: string) => {
+    if (!h) { onChange(''); return }
+    // Keep the operator's existing minute — INCLUDING an off-grid one — whenever it still satisfies
+    // the boundary. Only when it cannot survive do we fall to the earliest minute that can.
+    const keeps = curM !== '' && (minMins === null || Number(h) * 60 + Number(curM) > minMins)
+    onChange(`${h}:${keeps ? curM : (minutesFor(h)[0] ?? '00')}`)
+  }
+
+  return (
+    <div className="flex items-center gap-1 w-full">
+      <select
+        aria-label={label ? `${label} hour` : 'Hour'}
+        value={curH}
+        disabled={disabled}
+        onChange={e => onHour(e.target.value)}
+        className={className}
+      >
+        <option value="">{placeholder}</option>
+        {hours.map(h => <option key={h} value={h}>{h}</option>)}
+      </select>
+      <span className="text-slate-400 text-xs flex-shrink-0" aria-hidden="true">:</span>
+      <select
+        aria-label={label ? `${label} minute` : 'Minute'}
+        value={curM}
+        // No hour means there is no time to attach a minute to; the hour is always chosen first.
+        disabled={disabled || !curH}
+        onChange={e => { if (curH) onChange(`${curH}:${e.target.value}`) }}
+        className={className}
+      >
+        {!curH && <option value="">--</option>}
+        {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
+      </select>
+    </div>
+  )
+}
+
+/** TRUE when both times are present AND the end is not strictly after the start — the condition every
+ *  call site flags and the server refuses. Missing either time is NOT this error (it is the separate
+ *  "needs a time" amber), so it returns false. */
+function endIsNotAfterStart(start: string | null | undefined, end: string | null | undefined): boolean {
+  const s = hhMmToMins(start)
+  const e = hhMmToMins(end)
+  return s !== null && e !== null && e <= s
+}
 
 function applyStartTimeChange(newStart: string, currentEnd: string): { start_time: string; end_time: string } {
   if (!newStart) return { start_time: '', end_time: currentEnd }
   if (!currentEnd) {
     const [h, m] = newStart.split(':').map(Number)
-    const clamped = Math.min(h * 60 + m + 180, 23 * 60)
+    const startMins = h * 60 + m
+    const clamped = Math.min(startMins + 180, 23 * 60)
+    // 🔴 THE CLAMP CAN NOW LAND AT OR BEFORE THE START, WHICH IT COULD NOT BEFORE (V11.15).
+    // The ceiling is 23:00 because that was the old dropdown's last option. With the hour range widened
+    // to 00–23 and minutes at a 5 step, every start from 20:05 onward clamps to 23:00 — so a 21:30 start
+    // used to auto-fill 23:00 (fine) but a 23:30 start would auto-fill 23:00, an end BEFORE its own
+    // start. Leaving the field empty is the only honest answer: there is no valid three-hour end, and
+    // inventing one would be the silent-wrong-time failure this work exists to remove. The operator
+    // picks an end, and EventTimeSelect's minExclusive then offers only valid ones.
+    // ⚠️ THE `<=` MATTERS: a 20:00 start clamps to exactly 23:00 and must still auto-fill.
+    if (clamped <= startMins) return { start_time: newStart, end_time: '' }
     const autoEnd = `${Math.floor(clamped / 60).toString().padStart(2, '0')}:${(clamped % 60).toString().padStart(2, '0')}`
     return { start_time: newStart, end_time: autoEnd }
   }
@@ -6626,6 +6782,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
     if (!form.venue_name?.trim()) errors.venue_name = 'Venue name is required'
     if (!form.start_time) errors.start_time = 'Start time is required'
     if (!form.end_time) errors.end_time = 'End time is required'
+    // V11.15: the end select can no longer OFFER an invalid time, but an event opened for editing may
+    // already hold one. Without this the modal would save it and the server would reject it with a
+    // message about missing times, which is not what is wrong.
+    else if (endIsNotAfterStart(form.start_time, form.end_time)) errors.end_time = 'End time must be after the start time'
     if (vans.length > 1 && !form.van_id) errors.van_id = 'Please select a truck'
     return errors
   }
@@ -7299,22 +7459,31 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
             const dateVal = getDateVal(ev)
 
             const fieldCls = (amber: boolean) => `bg-white border rounded-lg px-3 py-2.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-orange-400 ${amber ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`
-            const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+            // Flag (not block) an ALREADY-invalid pair: minExclusive stops one being CHOSEN, but an
+            // imported or previously-saved row can arrive with end <= start and must be visible.
+            const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
             const timePair = (
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={`text-xs font-medium mb-1 block ${!ev.start_time ? 'text-amber-600' : 'text-slate-500'}`}>Start time</label>
-                  <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={fieldCls(!ev.start_time)}>
-                    <option value="">— : —</option>
-                    {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <EventTimeSelect
+                    label="Start time"
+                    value={ev.start_time}
+                    onChange={v => updateEvent(ev.id, { start_time: v })}
+                    className={fieldCls(!ev.start_time)}
+                    placeholder="—"
+                  />
                 </div>
                 <div>
-                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time ? 'text-amber-600' : 'text-slate-500'}`}>End time</label>
-                  <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={fieldCls(!ev.end_time)}>
-                    <option value="">— : —</option>
-                    {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time || endBeforeStart ? 'text-amber-600' : 'text-slate-500'}`}>End time</label>
+                  <EventTimeSelect
+                    label="End time"
+                    value={ev.end_time}
+                    onChange={v => updateEvent(ev.id, { end_time: v })}
+                    className={fieldCls(!ev.end_time || endBeforeStart)}
+                    placeholder="—"
+                    minExclusive={ev.start_time}
+                  />
                 </div>
               </div>
             )
@@ -7496,7 +7665,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                 const dateVal = getDateVal(ev)
                 const dateLabel = getFriendlyDate(ev)
                 const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
-                const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+                const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
                 return (
                   <Fragment key={ev.id}>
                   <tr className={`${rowAmber ? 'bg-amber-50' : isHistorical ? 'bg-slate-50' : 'bg-white'} ${!ev.selected && !isHistorical ? 'opacity-35' : ''} ${isHistorical ? 'opacity-70' : ''}`}>
@@ -7521,16 +7690,23 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                       <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={ci(missingStart)} style={{ minHeight: '48px' }}>
-                        <option value="">—:—</option>
-                        {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                      <EventTimeSelect
+                        label="Start time"
+                        value={ev.start_time}
+                        onChange={v => updateEvent(ev.id, { start_time: v })}
+                        className={ci(missingStart)}
+                        placeholder="—"
+                      />
                     </td>
                     <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
-                      <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={ci(missingEnd)} style={{ minHeight: '48px' }}>
-                        <option value="">—:—</option>
-                        {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                      <EventTimeSelect
+                        label="End time"
+                        value={ev.end_time}
+                        onChange={v => updateEvent(ev.id, { end_time: v })}
+                        className={ci(missingEnd || endBeforeStart)}
+                        placeholder="—"
+                        minExclusive={ev.start_time}
+                      />
                     </td>
                     {vans.length > 1 && (
                       <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
@@ -7580,7 +7756,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                     const dateVal = getDateVal(ev)
                     const dateLabel = getFriendlyDate(ev)
                     const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
-                    const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+                    const endBeforeStart = endIsNotAfterStart(ev.start_time, ev.end_time)
                     return (
                       <Fragment key={ev.id}>
                       <tr className={`bg-slate-50 opacity-70`}>
@@ -7599,16 +7775,23 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                         <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={ci(false)} style={{ minHeight: '48px' }} /></td>
                         <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} /></td>
                         <td className="px-0 py-0 align-middle">
-                          <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={ci(missingStart)} style={{ minHeight: '48px' }}>
-                            <option value="">—:—</option>
-                            {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                          </select>
+                          <EventTimeSelect
+                            label="Start time"
+                            value={ev.start_time}
+                            onChange={v => updateEvent(ev.id, { start_time: v })}
+                            className={ci(missingStart)}
+                            placeholder="—"
+                          />
                         </td>
                         <td className="px-0 py-0 align-middle">
-                          <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={ci(missingEnd)} style={{ minHeight: '48px' }}>
-                            <option value="">—:—</option>
-                            {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
-                          </select>
+                          <EventTimeSelect
+                            label="End time"
+                            value={ev.end_time}
+                            onChange={v => updateEvent(ev.id, { end_time: v })}
+                            className={ci(missingEnd || endBeforeStart)}
+                            placeholder="—"
+                            minExclusive={ev.start_time}
+                          />
                         </td>
                         {vans.length > 1 && (
                           <td className="px-0 py-0 align-middle">
@@ -7894,26 +8077,34 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                 <div className="sm:col-span-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
-                    <select value={editingEvent.start_time}
-                      onChange={e => {
-                        const { start_time, end_time } = applyStartTimeChange(e.target.value, editingEvent.end_time)
+                    <EventTimeSelect
+                      label="Start time"
+                      value={editingEvent.start_time}
+                      onChange={v => {
+                        const { start_time, end_time } = applyStartTimeChange(v, editingEvent.end_time)
                         setEditingEvent(p => ({ ...p!, start_time, end_time }))
                         if (formErrors.start_time) setFormErrors(p => ({ ...p, start_time: '' }))
+                        if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' }))
                       }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
-                      <option value="">Select</option>
-                      {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                      placeholder="--"
+                    />
                     {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">End time<span className="text-red-400 ml-0.5">*</span></label>
-                    <select value={editingEvent.end_time}
-                      onChange={e => { setEditingEvent(p => ({ ...p!, end_time: e.target.value })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
-                      <option value="">Select</option>
-                      {(editingEvent.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > editingEvent.start_time) : SCHEDULE_TIME_OPTIONS).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    {/* 🔴 `minExclusive` IS THE REPLACEMENT FOR `filter(t => t > start_time)`, which was the
+                        only end-after-start enforcement in the product. It cannot repair a pair that is
+                        already invalid, so validateEventForm now rejects one too — belt and braces, plus
+                        hasValidEventTimes on the server. */}
+                    <EventTimeSelect
+                      label="End time"
+                      value={editingEvent.end_time}
+                      onChange={v => { setEditingEvent(p => ({ ...p!, end_time: v })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                      placeholder="--"
+                      minExclusive={editingEvent.start_time}
+                    />
                     {formErrors.end_time && <p className="text-xs text-red-500 mt-1">{formErrors.end_time}</p>}
                   </div>
                 </div>
@@ -8458,6 +8649,16 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   // deploy window. Do not simplify it; see the resolver for the full reasoning.
   const completionPresses: 'one' | 'two' =
     form.completion_presses ?? (form.show_paid_step === true ? 'two' : 'one')
+
+  // ⚠️ THE "Menu layout" CONTROL (trucks.add_order_layout) LIVED HERE AND HAS MOVED, 14 August 2026.
+  // It is now on DASHBOARD → Settings, beside the other Add-order controls, written by the
+  // `set_add_order_layout` action in app/api/dashboard/action/route.ts. ONE HOME: its resolver constant
+  // and its sub-panel were removed from this file rather than left behind, and `add_order_layout` was
+  // taken off update_truck's `allowed` list because nothing here posts it any more.
+  // 🔴 IF YOU EVER PUT A CONTROL FOR IT BACK ON THIS PAGE, RE-ADD IT TO THAT LIST FIRST — the list
+  // silently drops unlisted keys, so without the entry the control would appear to save, return
+  // {ok:true}, and write nothing. `add_order_layout` stays on this file's `interface Truck` because that
+  // interface describes the truck ROW, which really does carry the column.
 
   const handleDisplayModeChange = async (value: 'list' | 'grid') => {
     setDisplayMode(value)
@@ -10387,9 +10588,22 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             {truck.trial_expires_at && purchaseCtaAllowed() && (
               <>
                 <p className="text-xs text-center text-slate-500 mt-3">
-                  🔒 You won&apos;t be charged anything until your trial ends on{' '}
+                  {/* 🔴 CORRECTED 14 August 2026 — THE OLD SENTENCE WAS FACTUALLY FALSE ON A MONEY CLAIM.
+                      It read: "You won't be charged anything until your trial ends on {date}. Automated
+                      billing activates at the end of your trial — cancel anytime before then at no cost."
+                      NOTHING activates. No operator has a payment method on file and there is no
+                      subscription object anywhere; billing can only ever begin after an operator actively
+                      picks a plan AND enters payment details. "Cancel anytime" implied something was
+                      already running that needed cancelling, which would frighten an operator into
+                      cancelling a trial that costs nothing.
+                      ⚠️ IT DELIBERATELY DOES NOT SAY WHAT HAPPENS AT EXPIRY. The Starter-plan fallback is
+                      not built (see the trial-reminder popup's own copy, which DOES promise it and is
+                      flagged in docs/trial-billing-copy-report.md). Copy must not run ahead of the build
+                      in the direction that costs an operator money or access. */}
+                  🔒 You won&apos;t be charged anything during your trial, which runs until{' '}
                   {formatTrialEndDate(truck.trial_expires_at)}.
-                  Automated billing activates at the end of your trial — cancel anytime before then at no cost.
+                  Billing only ever starts when you choose a plan and enter your payment details.
+                  Until then there&apos;s nothing to cancel and nothing to pay.
                 </p>
                 <p className="text-xs text-center text-slate-400 mt-1">
                   *Standard card processing fees apply on online orders

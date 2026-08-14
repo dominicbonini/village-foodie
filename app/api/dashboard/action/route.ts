@@ -2337,6 +2337,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── set_add_order_layout ── the Add order screen's MENU LAYOUT, 'tabs' | 'scroll' (V11.15) ───────
+    // Shape copied from set_auto_accept directly above: one named action, one column, token-scoped by
+    // the same `truck.id` every handler on this route resolves. There is no update_truck action and no
+    // shared allow-list on this route, so a bespoke handler IS the pattern here.
+    //
+    // 🔴 TRUCK-WIDE, on a tab that is otherwise per-event. That is deliberate and is recorded at the
+    // control itself (app/dashboard/[token]/page.tsx) — a layout preference is a property of the
+    // operator's screen, not of one night's trading, and a per-event copy would ask the same question
+    // again at every event.
+    //
+    // 🔴 THE VALUE IS WHITELISTED HERE, NOT COERCED. `notes_require_review` above can take `!!value`
+    // because a boolean column cannot hold a wrong string; this is `text` with no CHECK constraint, so
+    // an unexpected body would otherwise be stored verbatim and every reader would silently fall back
+    // to 'tabs' — a setting that appears to save and does nothing. Anything that is not exactly
+    // 'scroll' or 'tabs' is REJECTED rather than written.
+    if (action === 'set_add_order_layout') {
+      const { value } = body
+      if (value !== 'tabs' && value !== 'scroll') {
+        return NextResponse.json({ error: 'Invalid layout' }, { status: 400 })
+      }
+      const { error } = await supabase.from('trucks').update({ add_order_layout: value }).eq('id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ success: true })
+    }
+
     // ── set_sound_config ── per-truck SOUND POLICY (which alerts fire). Same trucks.sound_config column
     //    the Manage settings write → the two surfaces mirror automatically. Sanitised defensively: the
     //    'off' new_orders value stays VALID (spec'd + may be API/DB-set) even though the UI no longer offers it.

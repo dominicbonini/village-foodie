@@ -213,7 +213,15 @@ export async function commitMenu(
   //    live invariant: 0 rows null, and commitMenu is the only writer — always non-null).
   type ExistingRow = { id: string; is_active: boolean }
   const existingByKey = new Map<string, ExistingRow | 'MULTIPLE'>()
-  const keyOf = (name: string, categoryId: string) => `${name} ${categoryId}`
+  // Separator is the ESCAPE SEQUENCE '\u0000', six ASCII characters in the source -- NOT a change of
+  // separator. It evaluates to the SAME U+0000 the literal produced, so every key this builds is
+  // byte-identical; only the source encoding moved.
+  // It was a literal NUL byte until 14 August 2026, which made `file` report this .ts as `data` and
+  // made grep skip the file entirely -- every search of it silently returned nothing, which reads the
+  // same as 'no matches'. tsc compiled it happily throughout, which is exactly why it went unnoticed.
+  // Keep it escaped. U+0000 is deliberate as the separator and must not be swapped for a printable
+  // character: it is the one byte that cannot occur in a name or a category id, so it cannot collide.
+  const keyOf = (name: string, categoryId: string) => `${name}\u0000${categoryId}`
   const liveNames = [...new Set(items.filter(it => !it._skip).map(it => it.name))]
   if (liveNames.length > 0) {
     const { data: existingItems } = await supabase
