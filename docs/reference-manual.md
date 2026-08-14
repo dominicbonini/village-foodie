@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.14
+HatchGrab Engineering Reference Manual · V11.15
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.14**
+**Version 11.15**
 
 August 2026
 
@@ -15,6 +15,29 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.15 — 14 August 2026
+
+Delta over V11.14 — **the UI session**. Event times, menu layout on both sides of the platform, and
+three defects found while looking for something else.
+
+- 🔴 **A NUL BYTE MAKES A FILE INVISIBLE TO GREP, AND THE DEFECT CONCEALS ITSELF.** One literal NUL in a
+  `.tsx` made every search of that file silently return nothing for a full turn. `tsc` compiled it, the
+  non-ASCII census could not see it, and the failure reads identically to "no matches". A second,
+  committed instance was then found in `lib/menu-commit.ts` — on the menu import path — where it had
+  been hiding that file from grep indefinitely. **New invariant, and a new post-write check.**
+- 🔴 **The customer order page is now ONE CONTINUOUS SCROLL**, and two pre-existing defects were fixed
+  to make it possible: the pin geometry omitted the status banners (**live on Gusto — a paused truck's
+  chip bar was drawn over and invisible**), and the bottom clamp went inert on any list taller than a
+  viewport, which would have made the last category unreachable.
+- **Event times are hour + minute dropdowns**, 24-hour, 5-minute steps, replacing a single 30-minute
+  select. The 5-minute step is **not a preference** — it is the only step that keeps the operator's
+  choice aligned with the customer collection picker's fixed minute list.
+- **A per-truck Menu layout setting** on the dashboard: separate categories, or one page.
+- 🔴 **The trial-expiry Starter fallback is promised in the TERMS and does not exist in the code.** A
+  live contractual gap, on three real expiry dates.
+- **Two more beliefs corrected by reading the source**, both briefed from a nearby fact rather than the
+  surface in question. The cross-surface variant is now named in the invariants.
 
 ## V11.14 — 13 August 2026 (night)
 
@@ -2419,6 +2442,43 @@ if (plan === 'trial') {
 
 > 🔴 **THE EXPIRY CLIFF IS UNRESOLVED, AND IT HAS DATES ATTACHED.** Nothing anywhere writes the `plan` value at expiry — there is no cron, no job, no downgrade path. So the day a trial lapses the row still reads `trial` while behaving as **nothing at all**: less access than Starter, no upgrade prompt tied to it, and a plan value that names a state the truck is no longer in. **Live dates (verified by Dominic, 4 August 2026): Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October.** Two separate decisions are outstanding — **what feature set an expired trial gets**, and **what the `plan` value becomes**. Answering one does not answer the other. §27.
 
+### 🔴 THE STARTER FALLBACK IS PROMISED IN THE TERMS AND DOES NOT EXIST (V11.15)
+
+**`content/legal/terms-and-conditions.md` states that a truck which does not choose a plan moves to the
+free Starter tier at trial end.** A second copy of the same promise sits in the Manage UI.
+
+**Nothing in the code delivers it.** Nothing writes `trucks.plan` at expiry — the column stays `'trial'`
+indefinitely — and an expired trial resolves to **less** than Starter, not equal to it. `hasFeature`
+skips the expiry check entirely, so some surfaces still behave as though the trial were live.
+
+> 🔴 **This is a live contractual gap, not a backlog nicety.** Four trials now have dates: Test Kitchen
+> 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October, Tikka Tonic 31 December.
+> ⚠️ **The terms must NOT be edited to match the behaviour — the behaviour must be built to match the
+> terms.** Changing accepted terms is a legal act, not a copy edit.
+
+**Test Kitchen's 23 August expiry is test infrastructure and is therefore a free rehearsal**: let it
+expire and observe what an operator actually gets, before it reaches a real customer.
+
+**Design steer when it is built:** resolve on the READ path — one shared function returning `'starter'`
+for a truck past its expiry — rather than a nightly sweeper that writes the column. A cron job that
+fails, fails silently; a read-path resolver breaks visibly. The stored column can be swept later as
+tidy-up rather than being the source of truth. It also forces the `canAccess` / `hasFeature` decision,
+which is the root of this.
+
+### Trial billing copy (corrected V11.15)
+
+The old copy claimed *"Automated billing activates at the end of your trial — cancel anytime before then
+at no cost."* **Factually wrong**: no operator has a payment method on file and there is no billing to
+activate; "cancel anytime" implies something is running. It existed in **two inline copies** — the
+Billing tab and the trial-reminder popup — both now reading:
+
+> "You won't be charged anything during your trial, which runs until {date}. Billing only ever starts
+> when you choose a plan and enter your payment details. Until then there's nothing to cancel and
+> nothing to pay."
+
+with a null-`trial_expires_at` variant that omits the date. ⚠️ **The Starter sentence was deliberately
+withheld** until the behaviour exists — see above.
+
 ## Two gating entry points, and only one checks expiry (V11.1)
 
 `lib/features.ts` exports **two** feature tests, and they do not agree about trials.
@@ -3421,6 +3481,61 @@ The Menu & Stock tab shows the slim event bar at the top. When an event is selec
 
 > **RULE (V6.6)** — the dashboard pause/resume and extra-wait controls send `eventId` and write the SELECTED event's `truck_events` columns (Section 5). The dashboard "Paused" badge derives from the active event's own `paused_until` / `online_paused_until`. The KDS controls also write event-scoped (via a render-synced `activeEventIdRef`). The offline-paused banner carries a prominent inline "Resume orders" button (Section 11).
 
+## Menu layout — a per-truck Add Order setting (V11.15)
+
+`trucks.add_order_layout text NOT NULL DEFAULT 'tabs'`, values `'tabs' | 'scroll'`. **Additive, applied
+and live-verified** — all 14 rows defaulted correctly, which is what kept every existing truck unchanged.
+
+**The control lives on DASHBOARD Settings only**, as a drawn radio. ⚠️ A native `<input type="radio">`
+renders in the browser's accent rather than the page's orange and was rejected. The copy is:
+
+> **Menu layout** — How items appear on the Add order screen.
+> **Separate categories** — Show one category at a time. Tap a category to switch. Best for longer
+> menus, where every item stays in the same place.
+> **One page** — Show every item in one scrolling list, with a heading for each category. There are no
+> category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at
+> once.
+
+⚠️ **The write path whitelists the value rather than coercing it.** The column is `text`, so a bad body
+would store verbatim and then read back as `'tabs'` via the client's fallback — a silent wrong-value
+path.
+
+### 🔴 A SCOPE BOUNDARY, CROSSED DELIBERATELY
+
+The **dashboard** Settings tab writes `trucks` columns only through bespoke one-column actions, has no
+`update_truck` and no shared allow-list, and **its own comment declares in capitals that it is per-event
+scope while Manage is truck-wide.** This setting is truck-wide and lives there anyway, because an
+operator will look for it while taking orders. The comment records the exception. **There is one column
+and no second store**, so a change made anywhere reaches an open dashboard within ~60s via its existing
+poll.
+
+⚠️ **The `update_truck` allow-list silently drops unlisted keys** and returns `{ok:true}` — a missing
+entry means the control appears to save and writes nothing. It is the step that fails invisibly.
+
+### Scroll mode
+
+`ScrollMenuSections` renders sections with sticky headings and **no chip bar at all**. The component has
+**no state, no refs, no effects and no listeners**: the spy's entire apparatus — tap-lock, safety timer,
+arrival / `touchstart` / `wheel` / `scrollend` releases, scroller resolution, and the `ResizeObserver`
+that measured the bar — was verified as the spy's own and removed with it, leaving zero references.
+Headings moved from `top: barH` / `z-[9]` to `top-0` / `z-10`, since nothing sits above them now.
+
+Headings are `text-orange-600`, matching the primary buttons. ⚠️ **A knowing divergence from
+`lib/ui-tokens.ts`**, which specifies `orange-700` for orange text on a background — `ORANGE_SOLID` is a
+FILL token intended to carry white text. Contrast is **3.59:1**, below the 4.5:1 AA floor and below the
+**4.77:1** of the grey it replaced. **Chosen sighted, on the device, and recorded so it is not reverted
+blindly.**
+
+⚠️ **Unobserved and worth checking first:** the heading is `bg-white/95 backdrop-blur-sm` and is now the
+**topmost pinned element for the first time** — it previously pinned below an opaque bar. Item tiles now
+scroll underneath a translucent heading.
+
+### 🔴 THE COST, STATED PLAINLY
+
+On a 46-item menu with 23 items in one category, the last category is reachable **only by scrolling** —
+there is no longer any way to jump. **This layout is good for short menus and bad for long ones, and the
+setting is what decides which a truck gets.** A truck that chooses wrong switches back in two taps.
+
 # 11. Native app and offline architecture
 
 ## Why native is needed
@@ -4101,6 +4216,65 @@ truck_events.offline_protection_override (nullable boolean): null = use the van 
 Distinct order queues per event; per-event order numbering (display ids restart at 1 per event) is the V6.3 model (Section 18a). Pause, extra-wait, and stock are all per-event (V6.5 / V6.6) — no cross-event bleed.
 
 
+## Event start and end times — hour + minute (V11.15)
+
+**The 30-minute grid lived in exactly one constant**, `SCHEDULE_TIME_OPTIONS` (07:00–23:00, step 30),
+feeding four selects in the Manage page: the Edit event modal and three in the schedule-importer review
+grid, all sharing `applyStartTimeChange`. It is **deleted**, with no consumers remaining.
+
+**Replaced by a shared `EventTimeSelect`** rendering ONE time as an hour select (00–23) plus a
+**hardcoded** 5-minute minute list, across 8 call sites at the 4 former positions.
+
+### 🔴 WHY THE MINUTE STEP MUST BE 5, AND IS NOT REACHABLE FROM OUTSIDE THE MODULE
+
+The customer collection picker's `availableMinutes` is a **fixed list of multiples of 5**, only ever
+*filtered* by the event start and **never generated from it**. The server walks forward from the event
+start in `collection_interval_mins` steps. **The two agree if and only if the event start's minute is a
+multiple of 5.**
+
+- Start **12:10** or **12:05** → server offers `12:10, 12:15…`; picker offers `10, 15…`. ✅ identical.
+- Start **12:07** → server offers `12:07, 12:12, 12:17…`; picker offers `10, 15, 20…`. 🔴 **DISJOINT.
+  Every customer selection is a time the server never generated, and ordering silently stops working.**
+
+**So a free-text or 1-minute control would be a customer-facing outage with no error.** The step is
+hardcoded deliberately.
+
+### The end-after-start guard
+
+🔴 **The old end-select's `filter(t => t > start_time)` was the SYSTEM'S ONLY enforcement that an event
+does not end before it starts** — `hasValidEventTimes` checked range but not ordering. Two independent
+dropdowns would have deleted it. It is now enforced at four layers: option filtering in the control, a
+form error in the Edit modal, amber flags in the importer grid, and `hasValidEventTimes` server-side.
+
+**All 81 live rows holding both times pass the new server rule**, verified by executing the shipped
+function against live data rather than by inspection.
+
+### Off-grid values are preserved, never coerced
+
+Three mechanisms: the component **has no lifecycle** and cannot fire on its own, so a displayed value
+round-trips byte-identically; an off-grid hour or minute is **injected into the option list and sorted
+into place** rather than filtered away; and an active hour change keeps an off-grid minute unless it
+would break the end-after-start boundary (`23:59` moved to hour 21 gives **`21:59`**, not `21:00`).
+
+⚠️ The two `23:59:00` demo rows rendered **blank** in the old flat select — this fixes a display bug on
+the way past.
+⚠️ `splitHhMm` ignores seconds. Unreachable today: values arrive as `HH:MM` and no live row has non-zero
+seconds.
+
+### Live event-time facts (verified 14 August, 97 rows)
+
+**Zero** rows with `end_time <= start_time`. **Zero** starting before 07:00. **Two** off-grid, both
+`23:59:00` **end** times on demo trucks. **No real truck has an off-grid event time**, and an off-grid
+END is harmless — only an off-grid START creates the disjoint set above.
+
+### Overnight events remain impossible, deliberately
+
+The hour range widened from 07–23 to 00–23, which makes an overnight event expressible for the first
+time. ⚠️ **It must not become possible**: the customer picker's `availableHours` loops
+`h = startH; h <= endH`, so an event ending after midnight yields an **empty hour list** and cannot be
+ordered from. The end-after-start rule blocks it at three layers. **Overnight support is separate work
+with its own date-rollover questions.**
+
 # 16. Database schema essentials
 
 ## Core tables
@@ -4573,6 +4747,18 @@ now share one predicate.
 > **THE CLASS, restated:** a present-but-never-written column returns a plausible value on every row and
 > reads as data. `orders.source` is the original instance; these are three more.
 
+### Two more, and a near-dead third (V11.15)
+
+- **`truck_vans.display_layout`** and **`truck_vans.split_screen`** — selected by the manage route,
+  **never read by any component**, and **not writable by any action**. Neither is a precedent to follow.
+- ⚠️ **`trucks.display_mode`** is read at **exactly one place** — the KDS list/grid switcher — and has
+  orphaned state plus an **uncalled saver** in the Manage page with **no rendered control at all**. It
+  is not an Add Order setting and must not be reused as one.
+
+> **The running list is now:** `orders.source`, `trucks.sheet_id`, `trucks.is_customer`,
+> `discovery_trucks.hatchgrab_truck_id`, `truck_vans.display_layout`, `truck_vans.split_screen`.
+> **A present-but-never-written column returns a plausible value on every row and reads as data.**
+
 ### Live-verified column facts (V11.14)
 
 - **`trucks.whatsapp` is NULLABLE.** The `DROP NOT NULL` migration recorded as *pending* in the Gusto
@@ -4645,6 +4831,117 @@ can view the card. Deliberate.
 clipped, measured on the element rather than by counting characters, re-measured on resize. ⚠️ The clamp
 class is passed as a **literal**, never interpolated — `line-clamp-${n}` is not generated by Tailwind at
 build time and would silently produce no clamp at all.
+
+## 🔴 THE CUSTOMER ORDER PAGE IS ONE CONTINUOUS SCROLL (V11.15)
+
+**No operator setting — this applies to every truck.** Customers cannot have a preference, and a
+two-shape customer page would be a maintenance burden permanently. The tap count to reach a category is
+unchanged (a chip either way); continuous scroll is added on top.
+
+### Two pre-existing defects fixed first, and one was live
+
+**The pin geometry omitted the status banners.** `stickyTop` did not account for the closed / paused /
+time-not-set banners, which pin in the same band at a **higher z-index** — so **whenever a status banner
+showed, the category chip bar was drawn over and invisible.** Live on Gusto until 14 August. Replaced by
+**three measured pin lines**: `stickyTop` (banners), `chipBarTop` (below them), `pinnedTop` (below the
+chips), with `statusBannerH` and the previously-hardcoded **`TABBAR_H = 61`** both **measured rather
+than assumed** — which retires a latent OS-Larger-Text defect as well.
+
+**The bottom clamp went inert on any long list.** `menuMinHeight` — the padding that lets the last
+category scroll to the top — computes to zero once the list exceeds a viewport. Correct while each
+category rendered alone; **wrong the moment the list is combined, making the final category
+unreachable.** The floor moved off the whole list onto the **last section** as a `dvh` min-height, a unit
+that survives iOS address-bar collapse. `viewportH` is deleted — **no JS height now derives from
+`innerHeight`.**
+
+### The build
+
+🔴 **Every category renders from `groupedMenu`, the post-filter array — NEVER from `menu.categories`.**
+This is the single most severe failure mode available here: a build iterating the raw category list
+would emit an empty heading for a zero-item category and **misalign every jump after it**. The customer
+view can legitimately differ from the operator's, because the allergen gate filters server-side before
+grouping — so a category can be empty for a customer and not for the operator.
+
+Category headings are **non-sticky and orange**; sub-headings **stay sticky**, with the highlighted chip
+acting as the parent indicator. Two pinned levels would eat too much of a phone viewport.
+
+Chips jump via `scrollIntoView` + `scroll-margin-top` from the same `pinnedTop` the spy pins on. The spy
+**extends the page's existing scroll listener** rather than adding a second, and releases on arrival /
+`touchstart` / `wheel` / `scrollend`, with the timer as a safety net only.
+
+⚠️ Two consequences handled that were not in the review: `divide-y` moved to an inner wrapper so a
+heading does not draw a phantom rule, and the pre-order block's category name is gated against
+double-printing.
+
+⚠️ **The `menuCategories.length > 1` branch is preserved** — a single-category truck renders no chip bar
+and its headings must not inherit the bar's offset.
+
+### The chip bar keeps the active chip in view
+
+The spy highlights correctly, but with an overflowing bar the active chip is often **off-screen** — on
+Gusto, reaching Dough Balls highlighted a chip the customer could not see. The bar now corrects itself:
+
+| Case | Behaviour |
+| --- | --- |
+| Chip fully visible | 🔴 **nothing** — returns before any scroll |
+| Bar does not overflow | 🔴 **nothing** — returns before the chip is even measured |
+| Clipped/off to the **right** | scrolled so its right edge sits 12px inside the bar's right edge |
+| Clipped/off to the **left** | scrolled so its left edge sits 12px inside the bar's left edge |
+
+🔴 **IT NEVER CENTRES.** Centring on every change would animate the bar 23 times while a customer scrolls
+Pizza. **The bar must be still unless it has something to correct.** The effect is keyed on
+`selectedCategory`, not on scroll position, so within a category it does not execute at all — not a
+measurement, not a rAF, not a no-op scroll.
+
+🔴 **It sets the inner row's own `scrollLeft` and does NOT use `scrollIntoView`.** `scrollIntoView` is
+specified to scroll **every scrollable ancestor** up to the viewport; `inline:'nearest'` reduces how far
+each one scrolls but does not stop the walk. On this page the bar's vertical position genuinely moves —
+it is sticky beneath a band whose height changes with a status banner, and iOS collapses its address bar
+mid-scroll — so it could **yank the menu out from under a customer who is reading**, triggered by a
+horizontal correction they did not ask for.
+
+⚠️ **The ref matters**: the outer sticky wrapper does not scroll. Scrolling it would silently do nothing.
+The scroll ref is on the **inner** row.
+
+It **reuses the existing spy lock** rather than adding one, so a chip tap produces exactly one
+correction instead of dragging the bar through every category in transit, and a fast flick is coalesced
+into a single rAF so only the final category is acted on.
+
+### 🔴 THE TWO SURFACES NOW DIFFER DELIBERATELY
+
+The **customer** page keeps its chip bar with auto-scroll, because customers get no setting. The
+**dashboard** in scroll mode has no chip bar, because the operator chose that layout. **This is
+intentional and is not obvious from either surface alone.**
+
+### Scale, for reference
+
+Gusto renders **one item per row** on the customer page — there is no grid — so 46 items is 46 rows,
+23 of them Pizza: roughly **six screen-heights before the second heading**. Tikka Tonic's 12 items across
+4 categories is about 1.5 screens.
+
+### Live menu shape, verified 14 August (V11.15)
+
+| Truck | Categories | Items |
+| --- | --- | --- |
+| **Pizzeria Gusto** | 6 (**5 visible**) | **46** |
+| Village Spice | 5 | 29 |
+| Test Kitchen / Real Thai Food / TT3 / test-truck / 2 demos | 4 | 27 |
+| **Tikka Tonic** | 4 | **12** |
+| 2 × Demo Kitchen | 3 | 10 |
+
+🔴 **Gusto is lopsided: 23 of its 46 items are in ONE category (Pizza), and `Specials` holds ZERO
+items** — so it renders no chip and no section, because the category list filters on item count.
+**Any layout work must be mocked against Gusto, not against a small menu.**
+
+🔴 **The chip list and the section list must derive from ONE filtered array.** Two separate derivations
+that happen to agree today will index a scroll-spy off by one the moment an empty category appears
+between them.
+
+⚠️ Tikka Tonic's `sort_order` places **Mains third**, behind Starters and Sides. Tabs hide that; a
+continuous scroll makes it immediately visible.
+
+⚠️ **No truck currently has a menu-level unavailable item**, so sold-out styling in a long scroll is
+untested against real data.
 
 # 18. Customer communications and email
 
@@ -5274,6 +5571,26 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 V11.15 — added 14 August 2026
+
+- 🔴 **Build the trial-expiry Starter fallback.** Promised in the terms, absent from the code. Read-path
+  resolver, not a sweeper. **Test Kitchen expires 23 August — a free rehearsal on test infrastructure.**
+- 🔴 **Decide whether `canAccess` or `hasFeature` is canonical**, and retire the other. Still three known
+  divergent surfaces.
+- **Widen the non-ASCII census to flag control bytes below 0x09 other than newline.** Would have caught
+  the first NUL on the first pass.
+- **Re-check any conclusion drawn from a `lib/` grep before 14 August.** `lib/menu-commit.ts` was
+  invisible to grep for an unknown period; empty results from that file read as clean.
+- **Unify the logo resolver** (five bypasses), **then** the branded-QR divergence, **then** auto-select
+  branded on creation. In that order.
+- **The `CuisinePicker` extraction** — still inline in the signup wizard; Settings and the admin create
+  modal remain free text.
+- **The allergen wizard's url-only empty panel** — two tokens, same bug already fixed in the Menu tab.
+- **`is_customer` on a promoted truck** — creating hidden then clearing `excluded` leaves a real customer
+  `false`, diverging from the only two `true` rows.
+- **Overnight events** — expressible in the hour range, blocked at three layers, and would need the
+  customer picker's `availableHours` loop rewritten plus date-rollover handling.
 
 ## 🔴 V11.14 — added 13 August 2026 (night)
 
@@ -6975,6 +7292,72 @@ were wrong.**
 ⚠️ **Corollary, and it is why this works:** an implementer that stops and names a contradiction is
 performing the check. Two builds this session correctly refused instructions — one because a component
 was inline rather than extractable, one because the premise was false — and both were right to.
+
+### Two more instances, and the cross-surface variant (V11.15)
+
+3. A brief asserted that a customer-page chip-bar guard was unbuilt, from a grep of two line numbers in
+   an earlier report. **It was built, fourteen lines below the quoted line**, deliberately outside both
+   queries so one condition covered two paths.
+4. 🔴 A brief instructed that dashboard category headings be *made* sticky. **They already were.** The
+   non-sticky headings are on the CUSTOMER page, where a previous build made them non-sticky
+   deliberately because the chips carried position there. **The brief carried a fact across surfaces.**
+
+> 🔴 **THE CROSS-SURFACE VARIANT, NAMED:** this codebase has near-duplicate implementations of the same
+> idea on the operator and customer sides — category chips, scroll spies, sticky headings, time pickers.
+> **A fact verified on one surface is not a fact about the other.** Check the surface in front of you,
+> every time.
+
+⚠️ **Corollary, and it is why this keeps working:** an implementer that stops and names a contradiction
+is performing the check. Every one of these was caught by the implementer reading the actual lines and
+refusing the premise rather than building to it.
+
+### 🔴 A NUL BYTE MAKES A FILE INVISIBLE TO GREP, AND THE DEFECT CONCEALS ITSELF (V11.15)
+
+A literal NUL byte written into a source file makes `file(1)` report it as `data` and makes **grep skip
+it entirely**. `grep -c` prints **nothing** and exits 1 — **indistinguishable on the command line from
+"this symbol is not in the file".**
+
+**Three checks are structurally blind to it:**
+
+| Check | Why it cannot see a NUL |
+| --- | --- |
+| `grep` | The byte trips grep's own binary guard. **Searching for NUL with grep asks a tool to report the exact condition under which it goes quiet.** |
+| The non-ASCII census | It counts `[^\x00-\x7F]` — a range that **EXCLUDES** NUL. The one automated check that runs over every changed file cannot see this byte. |
+| `tsc` | Compiles it happily; a NUL is a valid string character. |
+
+**Two instances were found:**
+
+1. Introduced into a dashboard component as a composite-key separator, where it hid that file from every
+   search for a full turn.
+2. 🔴 **`lib/menu-commit.ts`, committed and pre-existing** — the same idiom, on the **menu import path**,
+   hiding that file from grep indefinitely. Fixed by writing the escape sequence instead of the
+   character: **identical runtime behaviour, byte-for-byte identical keys**, proven by building the
+   function from each file's own bytes and comparing hex dumps rather than by reasoning.
+
+> ⚠️ **U+0000 remains the right SEPARATOR** — it is the one byte that cannot occur in a name or an id,
+> so it cannot collide. The fix is how it is spelled in source, never what it is.
+
+### 🔴 THE ORDERING PROBLEM — THE CHECK MUST RUN AFTER THE WRITE
+
+**Verification runs before the report is written.** Every check in a report's verification section runs
+against source files while the report does not yet exist. **By construction, a defect introduced by the
+act of writing the report cannot appear in that report's own verification**, however thorough it is. The
+report is the last artefact produced and the only one nothing inspects.
+
+🔴 **Four reports in a row reproduced the defect while documenting it** — one of them seven times, in a
+document whose entire subject was that byte, and once through the single sentence *describing the
+scanning tool*. **Each was caught by the post-write scan and by nothing else.**
+
+> **THE RULE: byte-scan with a byte-level tool — never grep — as a SEPARATE PASS AFTER the file is on
+> disk, including the report itself.** `open(path,'rb').read().count(b'\x00')` is immune because it never
+> decodes, has no binary guard to trip, and cannot report a false clean. `xxd | grep` and
+> `tr -d` + `wc -c` are equivalent. **`grep -P '\x00'` and ripgrep without `--text` are not.**
+>
+> ⚠️ **The mitigation is fallible; the check is not.** Placeholders and care did not prevent any of the
+> four; ordering caught all four.
+
+⚠️ **Suggested companion check, not implemented:** the census should arguably also flag any byte below
+0x09 other than newline. That would have caught the first instance on the first pass.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 

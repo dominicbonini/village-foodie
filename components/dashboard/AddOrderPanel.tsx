@@ -201,8 +201,16 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
                 ⚠️ COLOUR, SIZE, WEIGHT, TRACKING AND SPACING ARE UNCHANGED: text-xs, font-black,
                 uppercase, tracking-wide, text-orange-600, `-mx-1 px-1 py-1.5`, the translucent
                 backdrop. Only the pin offset moved, from the bar's height to 0.
-                z-10 (was z-[9], which existed solely to slide UNDER the chip bar's z-10). */}
-            <div className="sticky top-0 z-10 -mx-1 px-1 py-1.5 bg-white/95 backdrop-blur-sm flex items-center gap-2">
+                z-10 (was z-[9], which existed solely to slide UNDER the chip bar's z-10).
+                ⚠️ `bg-slate-50/95`, NOT `bg-white/95` — IT MUST MATCH THE PANE, NOT CONTRAST WITH IT.
+                The app shell is `bg-slate-50` (app/dashboard/[token]/page.tsx) and neither pane sets a
+                background, so the scroller behind this band is slate-50. A white band drew as a bright
+                stripe across a grey pane at every heading — reported on Tikka Tonic. The item tiles are
+                ALSO `bg-slate-50`, so they read by their border rather than their fill; the heading has
+                no border and would have been the only white thing on the pane.
+                ⚠️ STILL 95% + backdrop-blur, NOT transparent: it is sticky, so items scroll UNDERNEATH
+                it and it has to occlude them. Matching the pane is what makes that invisible. */}
+            <div className="sticky top-0 z-10 -mx-1 px-1 py-1.5 bg-slate-50/95 backdrop-blur-sm flex items-center gap-2">
               {/* 🔴 orange-600 — THE SAME VALUE AS THE PRIMARY BUTTONS' FILL, AND IT IS A DELIBERATE,
                   SIGHTED DECISION BY THE OPERATOR. DO NOT "CORRECT" IT TO 700.
                   This shipped as orange-700 first, on the contrast reasoning in lib/ui-tokens.ts (orange
