@@ -55,6 +55,7 @@ import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
+import { isNativeApp } from '@/lib/native/device'   // native-only hide: Auto-replies (see SettingsTab)
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
@@ -8959,6 +8960,27 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           />
         </div>
 
+        {/* ── 🔴 HIDDEN IN THE NATIVE APP ONLY — NOT REMOVED (14 August 2026) ──────────────────────
+            Self-serve WhatsApp onboarding for trucks is not built, so this subsection must not appear
+            in the build going to App Review. 🔴 IT IS NOT A DEAD CONTROL AND MUST NOT BE DELETED: the
+            "Connect" button runs `saveWhatsappSender` → `api('update_truck', { whatsapp_sender })`,
+            Pizzeria Gusto has a sender set, and their `preferred_contact_method` is 'whatsapp'.
+            See docs/whatsapp-connect-report.md.
+            🔴 THE WHOLE SUBSECTION GOES, NOT THE ROW. The Messenger and Instagram rows were removed on
+            14 August, so the WhatsApp row is the LAST child of `space-y-3` — hiding the row alone would
+            orphan the `border-t` divider, the "Auto-replies" heading, the caption and an empty wrapper.
+            ⚠️ `isNativeApp()` IS CALLED DIRECTLY, WITH NO `mounted` FLAG, AND THAT IS SAFE HERE —
+            verified, not assumed: SettingsTab is rendered at ManagePage:719, BELOW the `loading`
+            early-return at :509 whose state starts `true` (:201). So this markup appears in NO server
+            output and on NO first client frame — the same property manual section 40 records for the
+            manage page's commerce gates.
+            ⚠️ isNativeApp, NOT purchaseCtaAllowed. That is the 3.1.1 COMMERCE predicate; this is
+            neither commerce nor 2.1 completeness. Manual section 40 keeps them separate — do not merge.
+            ⚠️ FAILURE DIRECTION IS THE SAFE ONE: the helper is
+            `typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()`, which is FALSE in every
+            browser. A wrong answer therefore SHOWS the section on iPad (mild); it cannot hide a working
+            control from Gusto on the web. */}
+        {!isNativeApp() && (<>
         {/* Auto-replies subsection */}
         <div className="border-t border-slate-100 pt-4 mt-1">
           <p className="text-sm font-bold text-slate-700 mb-0.5">Auto-replies</p>
@@ -9041,6 +9063,7 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                 holds exactly one child and renders no residual gap. */}
           </div>
         </div>
+        </>)}
       </Card>
 
       {/* Your schedule */}

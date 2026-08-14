@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.16
+HatchGrab Engineering Reference Manual · V11.17
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.16**
+**Version 11.17**
 
 August 2026
 
@@ -15,6 +15,40 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.17 — 14 August 2026 (continued session)
+
+Delta over V11.16 — **the iPad build landed on hardware**, and hardware immediately corrected three
+things that source-reading had got wrong.
+
+- ✅ **THE APP IS ON THE iPAD, AND PUSH IS SIGNED.** Apple Developer enrolment is live as an
+  ORGANISATION (`HATCHGRAB LTD`, `C24X5FG48V`), and **`aps-environment = development` is proven twice**
+  — in the profile embedded in the built `App.app` and in what `codesign` stamped into the binary.
+  §36's account of the personal-team push failure was reasoning; **it is now an artefact.**
+- 🔴 **PUSH STILL HAS NO TOKEN ON iOS.** The entitlement is signed and the device binds, but
+  `van_devices.push_token` is **NULL on all four iOS rows**. **Check that column BEFORE placing a test
+  order** — a `BadDeviceToken` send NULLs it, so "never registered" and "registered then destroyed"
+  are indistinguishable afterwards.
+- 🔴 **A WALK-UP PAID OFFLINE RENDERED "Mark paid"**, inviting a second charge. **No money was ever
+  wrong** — the queued payload always carried `paymentTaken`. The cause was that `OrderCard` derives
+  paid-ness from **ledger rows**, and offline there are none. Fixed by supplying the existing
+  `pendingPayment` prop for queued orders.
+- 🔴 **A NEW RULE FOR MONEY PATHS: safe failure beats root-cause correctness.** The chosen fix's worst
+  case is today's defect (the operator over-asks). The root-cause fix's worst case is an **unpaid order
+  rendering PAID** — the operator never asks and the money walks silently. **This is the allergen
+  principle applied to money: never under-warn.**
+- 🔴 **THE KDS WAS NEVER MISSING FROM THE SHELL.** It is reachable four ways including cold launch, and
+  the "Kitchen screen" control was already gated. ⚠️ **But it ejected to Safari once, on the first
+  launch after install, and has not since** — leading hypothesis is a cold-start race on
+  `isNativeApp()`. Unreproduced.
+- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED**, and a report marked "reachable" as READ when only the
+  source had been read. **The device is the authority.** Joins the same family as *tsc-clean is not
+  done* and *a cross-reference is not provenance*. §1.
+- **The capacity panel is fixed** — `max-h-[60vh]` measured the viewport's SHORT dimension in landscape.
+  ⚠️ **The fix changes §27's four-for-four evidence base for the two iPad display defects**, which makes
+  the next build a natural experiment with a built-in control.
+- **The launch screen is Capacitor's own logo on white** — the wrapper vendor's branding, on the app
+  whose main rejection risk is 4.2 "a website in a wrapper".
 
 ## V11.16 — 14 August 2026
 
@@ -2193,6 +2227,12 @@ Read this before every coding session. Update it after every meaningful change. 
 
 - 🔴 **A SECTION'S CROSS-REFERENCE TO ANOTHER SECTION'S STATUS IS NOT PROVENANCE. Open the code, or mark the claim READ-FROM-MANUAL.** This manual is large enough that a fact can be current in one section and stale in its restatement three sections away, and the restatement is usually the one you find first. ⚠️ **Precedent, 14 August 2026:** an App Store gap analysis reported account deletion and the legal pages as *"confirmed still open"*, having read that from §27 and §40 without opening `lib/account-deletion.ts` or `content/legal/`. **Both had been built in V11.4** — §41 and §43 describe them in detail — and neither §27 nor §40 had been updated. **This is the same failure V11.4 already recorded once**, which is why it is now a rule rather than an anecdote. **"Confirmed" must mean verified. If a claim's only source is this manual, say so in those words.**
 
+- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED. THE DEVICE IS THE AUTHORITY.** Reading a branch in a file and marking the resulting claim READ is a category error: what was read is the SOURCE, not the BEHAVIOUR. ⚠️ **Precedent, 14 August 2026:** `docs/kds-native-report.md` marked the KDS *"already native-ready and already reachable"* as READ — its own caveats said nothing had been run on a device — and the iPad then ejected an operator to Safari from that exact control. The source was correct and the claim was still wrong. **This joins a family, and the family is the point:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a cross-reference is not provenance* · **source-read is not behaviour-verified**. 🔴 **Each is a weaker check wearing a stronger label.** When only source has been read, say READ-FROM-SOURCE and state that the behaviour is unobserved.
+
+- 🔴 **A SUMMARY OF A REPORT IS NOT THE REPORT.** The standing rule *a summary of code is not the code* extends to this manual's own reports. ⚠️ **Precedent, 14 August 2026:** a fix was briefed from a chat summary of `docs/offline-paid-state-report.md` rather than from the report. The summary said *"two independent causes"*; the report's own section B3 said the first cause **was not load-bearing at all**, so the resulting one-line fix could not have worked — **and the same mistake was then made a second time on the same defect.** **Read the artefact, not the précis of it.**
+
+- ⚠️ **LINE NUMBERS DECAY FASTER THAN THIS MANUAL DOES, AND A ROTTED ONE READS EXACTLY LIKE A FRESH ONE.** Within one workstream: an upgrade modal moved `:10712` → `:10694` when 39 lines were removed from the same file; `PrintingSettings.tsx` changed directory; a header `<Link>` moved `:64` → `:97`; a matrix row moved `:149` → `:161`. This manual carries hundreds of `file.tsx:NNN` references **with no signal distinguishing the two**. 🔴 **Anchor on what survives an edit** — a function name, a `const` identifier, a unique string literal. Where a line number genuinely helps, tag it *as-of V11.17* so the decay is legible.
+
 - **Every version bump gets a Changelog entry, written in the same pass as the bump.** The Changelog is the only place the manual records *when* something changed, so a version that ships without one is invisible to anyone reading forward from a known-good point. ⚠️ **V9.8, V9.9 and V10 were all missed and backfilled on 3 August 2026** — reconstructed from the content sections they had already written, which worked only because those sections were thorough. A bump whose content is thinner would not survive the same omission.
 
 > **CRITICAL** — If a coding session produces code that violates rules in this manual, that is a regression. Either the rule changes (with explicit agreement) or the code changes. The two must never diverge.
@@ -3557,7 +3597,8 @@ FILL token intended to carry white text. Contrast is **3.59:1**, below the 4.5:1
 **4.77:1** of the grey it replaced. **Chosen sighted, on the device, and recorded so it is not reverted
 blindly.**
 
-⚠️ **CORRECTED V11.16 — the heading is `bg-slate-50/95`, NOT `bg-white/95`.** READ,
+⚠️ **CORRECTED V11.16, AND RESTATED IN V11.17 BECAUSE THE SAME VALUE WAS MISQUOTED TWICE — the
+heading is `bg-slate-50/95`, NOT `bg-white/95`.** READ,
 `components/dashboard/AddOrderPanel.tsx:213`:
 
 ```
@@ -3814,6 +3855,125 @@ Settings are currently in **Capacitor Preferences (device-local)**, NOT `van_dev
 
 ### Hardware-gated / needs-validation tracking
 Printing **Phase B** joins the **native app** + the **offline outbox** as requiring the **physical iPad** (+ Apple Developer account) to validate — and printing **additionally needs a real BT thermal printer** (MFi Star/Epson recommended). Phase A (renderer/preview/scheduler/config/reprint) is fully validatable now via the preview + the virtual thermal printer; only the byte→paper transport is gated.
+
+
+## ✅ THE KDS IS ALREADY NATIVE-READY. NO BUILD IS NEEDED. (V11.17)
+
+**The KDS was suspected missing from the shell. It is not. READ, and DEVICE-VERIFIED for in-app
+opening.**
+
+- **"Kitchen screen" is a `<button onClick={handleOpenKDS}>`, NOT a link.** The external-link glyph
+  beside it is **decorative SVG** — there is no `href` and no `target` to carry it.
+- **`openKDS` branches on the platform:** `router.push()` when `isNativeApp()`,
+  `window.open(…, '_blank')` **only on web**. 🔴 **The header button, the UserMenu entry and the
+  multi-van picker ALL converge on it** — the UserMenu case proven by the prop
+  (`onOpenKDS={handleOpenKDS}`), not assumed.
+- 🔴 **AN UNGATED `window.open` GENUINELY DOES EJECT TO SAFARI, AND THIS IS PROVEN FROM CAPACITOR'S OWN
+  SWIFT:** `WebViewDelegationHandler.createWebViewWith` calls `UIApplication.shared.open(url)` and
+  returns `nil`. **The native branch is the only thing preventing it.** ✅ Operator surfaces carry
+  **exactly one** `window.open` (that gated one), and every internal `target="_blank"` goes through
+  `AppLink`.
+- ✅ **COLD LAUNCH REACHES THE KDS WITHOUT THE DASHBOARD.** `app/app/page.tsx` routes on
+  `getLastScreen() ?? device.default_screen`, and the KDS writes `setLastScreen('kds')` on mount —
+  **so once opened it becomes the relaunch destination automatically.** ⚠️ `getLastScreen()` WINS over
+  the configured default, which makes `default_screen` a first-run seed rather than a standing
+  preference.
+- `default_screen` accepts exactly `'dashboard' | 'kds'`, **server-validated**, with a `<select>` in
+  three places including the KDS's own "This device" sheet.
+- Keep-awake is fully wired on the KDS. ⚠️ **Still never run through a full service** (§36).
+
+## ⚠️ KDS DIVERGENCES FROM THE APP-SHELL PATTERN (V11.17)
+
+- **`h-screen`, not `h-dvh`** — the one divergence from the pattern §35 insists on. In the shell there
+  is no collapsing chrome so the two agree; ⚠️ **an operator opening the KDS in mobile Safari gets the
+  wrong height.**
+- 🔴 **THE KDS HEADER DOES NOT RESPECT `env(safe-area-inset-top)`. DEVICE-VERIFIED:** the dashboard
+  renders below the status bar; the KDS renders full-bleed and its top-right control sits **under the
+  battery indicator**.
+  ⚠️ **MOVING THE CONTROL LEFT IS NOT THE FIX.** On iPad landscape the status bar spans the full width,
+  so it would collide with the clock instead — and **any horizontal position breaks when the status bar
+  grows taller** (call in progress, screen recording, hotspot). 🔴 **Inset the header; do not move the
+  button.**
+- New-order alerting is **foreground-only Web Audio** (`playNewOrder`), with the APNs fallback that has
+  never yielded a token (§36).
+- ✅ **No `position: sticky` anywhere** — the KDS is where the app-shell pattern came from, and §27's
+  `sticky top-[51px]` class of defect does not exist on this surface.
+
+## ⚠️ THE VAN PICKER ASKS A QUESTION ALREADY ANSWERED (V11.17)
+
+`handleOpenKDS` keys **only** on `vans.length` and **ignores `activeEvent.van_id`** — which the same
+page already uses for kitchen capacity and the van-name display.
+
+🔴 **LIVE-VERIFIED: Pizzeria Gusto and Tikka Tonic each have exactly ONE van.** Neither can reach the
+ambiguous branch, **so auto-routing would be pure improvement with no live blast radius.**
+
+**Rule if it is implemented: skip when unambiguous, ask when not.** A truck with two vans at one event
+still needs the picker.
+
+## 🔴 ONE UNEXPLAINED SAFARI EJECTION. INTERMITTENT, UNREPRODUCED. (V11.17)
+
+**DEVICE-VERIFIED, 14 August 2026:** tapping "Kitchen screen" opened **Safari once**, then opened
+in-app on the next attempt — **same build, same bundle, no deploy in between.**
+
+**Eliminated conclusively — a stale service worker.** `public/sw.js` caches only `/api/dashboard` and
+`/api/events/manage` GETs plus images and fonts, **never HTML or JS**, so it cannot serve an old bundle.
+**Weakened to near-zero — a stale deployed bundle:** the gate landed in commit `21cdb96b` on **1 July**,
+an ancestor of `origin/main`, and production shipped on 14 August.
+
+**LEADING HYPOTHESIS, INFERRED AND UNTESTED: a cold-start race — `isNativeApp()` evaluating before
+Capacitor's bridge is injected, on the first launch after install.** It fits the evidence: the
+first-ever open failed and everything since has not.
+
+✅ **THE COMMERCE GATES ARE NOT AFFECTED. DEVICE-VERIFIED:** `/manage` lands on **Menu**, not Billing,
+which is `purchaseCtaAllowed()` doing its job. **§40's eleven gates are live on the device and there is
+no 3.1.1 exposure.**
+
+⚠️ **Reproduction may require a fresh install. Logged as backlog, not a blocker.**
+
+## 🔴 THREE OFFLINE DETECTORS, NOT ONE — THE N8 PATTERN ON A LIVE PATH (V11.17)
+
+| # | Detector | Behaviour | Consumers |
+|---|---|---|---|
+| 1 | `lib/native/reachability.ts` | `HEAD /api/ping` every 10s; **3 consecutive failures (~30s)** before declaring offline. The Capacitor plugin is used only as a hint that forces a check | dashboard `isOffline`, `OfflineBanner`, `useOfflineAlert` |
+| 2 | `lib/native/network.ts` | **raw `@capacitor/network`** on native; `navigator.onLine` + window events on web | 🔴 **KDS `isOffline`**, dashboard `deviceOnline` (heartbeat only) |
+| 3 | bare `navigator.onLine` + its own ping loop | — | `WebOfflineBanner`, heartbeat guards |
+
+🔴 **DETECTOR 2 FLIPS INSTANTLY ON INTERFACE LOSS AND REPORTS ONLINE ON A CONNECTED-BUT-DEAD UPLINK.**
+Detector 1 asks the server. **So two screens in the same truck will disagree** — the KDS green while the
+dashboard has gone offline, or the KDS red thirty seconds early.
+
+⚠️ **THIS CONTRADICTS THE STANDING INVARIANT THAT OFFLINE PROTECTION IS DELIVERABILITY, NOT
+ATTENTIVENESS.** A detector that trusts the interface is testing the wrong thing. **Unify the KDS on
+detector 1** — ⚠️ **but that is a behaviour change on Gusto's live service screen and needs its own
+diagnose-first pass.**
+
+⚠️ **The KDS banner has NO `isNativeApp()` gate and renders on WEB**, unlike every dashboard banner.
+
+## SIX OFFLINE BANNERS, ELEVEN TOASTS — THE CONSOLIDATION DECISION (V11.17, decided not built)
+
+**Six banners:** `OfflineBanner.tsx:181` (orange, count + sync phases) · the dark app-shell chip
+(settings locked) · the Settings-tab notice · the Menu & Stock notice · `WebOfflineBanner` (web) ·
+the KDS banner (detector 2). **On the Orders tab two stack; on Settings, three at once — all from one
+detector.** **Eleven toasts**, all repeating *"saved on this device — will sync when back online"*.
+
+🔴 **`countPendingOps()` COUNTS EVERY OP KIND — `create | status | edit | stock | buzzer` — BUT RENDERS
+AS "{n} orders".** A stock toggle increments a counter labelled "orders". **Any merged banner must say
+"changes", or it ships a bigger lie than the two do separately.**
+
+> ### 🔴 THE RULE: PERSISTENT STATE BELONGS IN THE BANNER. PER-EVENT CONFIRMATION BELONGS IN THE TOAST.
+> The toast keeps **identity** and **action**; the banner keeps **state**.
+
+- **Merge** the orange banner and the dark chip into one: *"Offline — {n} changes saved on this device,
+  will sync when you're back online. Settings are locked."* Keep both transient phases.
+- **Delete** the Menu & Stock notice (covered by the count). **Trim** the Settings notice to only
+  *"Printer & notification settings still work offline."*
+- **Toasts drop the sync clause** — *"Order #N4 saved"*. 🔴 **NEVER NORMALISE THE ACTION AWAY:** the
+  `↩ Undo` affordance exists only on the offline path and must survive the copy change.
+
+🔴 **THE FAILURE PATH IS UNTOUCHED AND MUST STAY LOUD.** `AddOrderPanel.tsx:1191` is the only thing
+between a web operator and a silently lost order; the **PAYMENT NOT RECORDED** banner and its two-step
+dismissal likewise. ⚠️ **These are REACTIVE — a failed fetch — not detector-driven, so they cannot be
+suppressed by fixing a detector. That is correct and must stay that way.**
 
 
 # 12. Authentication and access
@@ -5648,6 +5808,70 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 V11.17 — added 14 August 2026 (the iPad build, on hardware)
+
+### 🔴 SUBMISSION STATE — ONE BLOCKER LEFT
+
+| | |
+|---|---|
+| 🔴 **THE ONLY BLOCKER: SCREENSHOTS** | **iPhone AND iPad sets**, because `TARGETED_DEVICE_FAMILY` is `"1,2"` |
+| ✅ Built, **proven in the bundle** | the privacy manifest |
+| ✅ Built, **unverified on device** | `ITSAppUsesNonExemptEncryption` · `BrandHomeLink` at three branding sites · the capacity panel · the 2.1 completeness sweep · pinned dependencies · the offline paid-state fix |
+| 🔴 **Open decisions** | the launch-screen asset (§36) · `NSPrivacyCollectedDataTypes` (§36) · the merged banner copy (§11) · **the two `BrandHomeLink` CONTROL sites, still unfixed** |
+| ⚠️ **2.1(a) review account** | still open |
+
+**Backlog with substance:** KDS safe-area inset and `h-screen` · the intermittent `isNativeApp()`
+failure · van auto-routing · the offline payment overlay's root-cause fix · KDS detector unification ·
+banner and toast consolidation · the `van_devices` orphan-row sweeper · `payment_status` off the
+optimistic object. **All are recorded in §11, §36 or §37 with their evidence.**
+
+🔴 **ANDROID IS NOT READY TO SHIP ALONGSIDE.** §36 records the push send path as
+`.or('platform.eq.ios,platform.is.null')` — **Android is excluded from order push entirely** — plus
+`ic_stat_icon_config_sample` does not exist (a white-square notification icon) and hardware-back has no
+handler. **It needs its own session; do not treat "the iOS build works" as covering it.**
+
+### 🔴 THE CAPACITY PANEL — TWO INDEPENDENT CAUSES, BOTH FIXED
+
+**`max-h-[60vh]` at `DayLoadStrip.tsx` was the ONLY height constraint in the component.** 🔴 **`vh` is
+the viewport's HEIGHT, which in landscape is the SHORT dimension** — about **492px** on an iPad13,19,
+giving roughly **19 rows** at 24px plus 2px gaps: `17:00 + 19 × 5min` = **18:35, exactly where the list
+appeared to end.** ✅ **The slots were never cut off** — all 37 rows were in the DOM, scrolling inside a
+nested scroller with no visual affordance on iOS.
+
+**The dead space was a SEPARATE cause: `lg:items-start`.** A bounded height genuinely existed two levels
+up, but `items-start` opts out of stretch and nothing below asked for the height.
+
+⚠️ **THE PANEL EXISTS ONLY IN LANDSCAPE — and not from orientation CSS, of which the component has
+none.** The sidebar is gated `lg:` (1024px) at the call site, which only the iPad's 1180pt landscape
+width satisfies. 🔴 **So the panel appears exactly where `60vh` is smallest.** The two facts are
+independent and they compound.
+
+🔴 **THE OBVIOUS FIX WAS WRONG AND WAS REJECTED:** removing `lg:items-start` alone makes the panel
+stretch to the **row**, whose height is driven by the orders grid and **grows without bound as orders
+arrive**. **Also rejected: `calc(100dvh − Npx)`** — forbidden by §35's no-magic-number-offsets rule, and
+wrong anyway since six of the bars above `<main>` are conditional.
+
+**Implemented:** the Orders tab now uses the **Add tab's existing flex fit**, `lg:`-gated. `<main>` stops
+scrolling at ≥1024px; the orders column and the panel become **sibling** scrollers; `max-h-[60vh]` is
+gone and the height derives from the `h-dvh` root. **`lg:items-stretch` is safe ONLY because the row now
+carries `lg:flex-1 lg:min-h-0`** — that coupling is written into the code as a warning. Below 1024px
+every class is `lg:`-gated and the aside is still `hidden`.
+
+### 🔴 §27's FOUR-FOR-FOUR EVIDENCE BASE HAS CHANGED — RE-TEST THE DISPLAY DEFECTS
+
+The strongest structural clue for the two iPad display defects was that they appear on **every tab whose
+`<main>` is `overflow-y-auto`, and only those** — Add Order being immune because it is `overflow-hidden`.
+🔴 **THE ORDERS `<main>` IS NO LONGER `overflow-y-auto` AT `lg`.**
+
+**The next build is therefore a natural experiment:**
+
+- **Defects GONE from Orders in landscape** → the hypothesis is confirmed, and **the fix for both
+  defects is known rather than theorised.**
+- **Defects STILL PRESENT** → the hypothesis is dead and this section needs rewriting.
+
+✅ **AND THERE IS A BUILT-IN CONTROL:** the change is `lg:`-gated, so **the same binary** keeps the old
+`overflow-y-auto` structure on iPhone and in portrait. **One build, two structures, one comparison.**
 
 ## 🔴 V11.16 — added 14 August 2026 (App Store submission workstream)
 
@@ -7640,6 +7864,42 @@ and the repo was a count taken before and after.
 *"it is only a comment"* — is exactly the case that slips through, because a comment is the one place
 nobody re-reads.
 
+## 🔴 A STOP CLAUSE STOPS WORKING THE MOMENT GOOD REASONING OVERRIDES IT (V11.17)
+
+**Across one workstream a coding session stopped correctly twice and overrode twice. Both patterns are
+worth naming, because only one of them is safe.**
+
+✅ **CORRECT STOPS.** (1) A `mounted` two-pass renders the pre-mount branch **by construction**, so a
+"render nothing in the app" variant would paint the control and then remove it — the instruction and its
+own guard were genuinely contradictory, and the session said so instead of picking. (2) A link fix whose
+named element was **not** the one carrying the defect: neutering it would have killed a working support
+route while leaving the real trap in place.
+
+⚠️ **OVERRIDES, BOTH WITH SOUND REASONING, BOTH DECLARED.** Correcting a false claim inline, and
+proceeding past a `STOP` clause in the dependency-pin task. 🔴 **The second was a DEFECTIVE INSTRUCTION
+on the planning side** — *"STOP if you find a disagreement between declared and installed"* is
+self-defeating, because that disagreement is the **precondition** for pinning to do anything at all.
+
+> 🔴 **THE RULE STANDS: STOP AND ASK RATHER THAN CHOOSE.** *"My reasoning was good, so I continued"* is
+> exactly how a stop clause quietly stops working — and the reasoning is usually good, which is what
+> makes it dangerous. **A defective stop clause is a planning bug to be reported, not a hurdle to be
+> cleared.**
+
+## ✅ THE CENSUS AND THE GARBLE FLAG BOTH FIRED, ON FILES NOBODY WOULD HAVE INSPECTED (V11.17)
+
+- **The non-ASCII census caught a SECOND real violation:** a comment added to `app/contact/page.tsx`
+  gained **four** codepoint classes that file had never held (an em dash and three emoji markers), in a
+  file whose entire non-ASCII vocabulary was four unrelated characters: a down-pointing-hand emoji, a
+  lorry emoji, a left arrow and a copyright sign. Rewritten ASCII-only before anything else.
+  🔴 **AND WRITING THIS ENTRY VIOLATED THE CENSUS: naming those four characters BY REPRODUCING THEM
+  added three classes to this manual.** Caught by the same before/after count, and rewritten to describe
+  them instead. **A codepoint list cannot be quoted; it can only be described.**
+- **The garble flag fired for the FIRST time** — a prompt truncated mid-sentence at *"Then in chat, give
+  me"*. It was flagged, and the established convention was used rather than a new one invented.
+
+🔴 **Both checks have now paid for themselves. Keep them mandatory** — neither file would have been
+looked at again, and in both cases the alternative was a silent defect.
+
 ## 🔴 TRACE THE LINK **AND** THE DESTINATION'S GATE — a link is not a route, a route is not a reachable page (V11.16)
 
 **Reproduced twice in one day, in opposite directions, which is why it is an invariant and not an
@@ -7881,6 +8141,129 @@ for a first upload; ⚠️ **a second upload at the same build number is rejecte
 - ⚠️ **No camera / photo / location usage descriptions.** **INFERRED correct** — no installed plugin
   requires them — 🔴 **but the WEB BUNDLE WAS NOT AUDITED** for `getUserMedia` or geolocation, which in
   a WKWebView would prompt and, **without the key, crash**.
+
+## ✅ THE iPAD BUILD LANDED — ENROLMENT, SIGNING AND PUSH (V11.17, 14 August 2026)
+
+### Apple Developer enrolment — an ORGANISATION team, proven three ways
+
+**Team `HATCHGRAB LTD`, Team ID `C24X5FG48V`, ORGANISATION enrolment.** READ from the keychain:
+```
+subject= /UID=RLLVDUD8M7/CN=Apple Development: Dominic Bonini (RD4KJ7R72Z)/OU=C24X5FG48V/O=HATCHGRAB LTD/C=US
+notBefore=Aug 14 2026   notAfter=Aug 14 2027
+```
+🔴 **Three independent confirmations:** the `OU` is the Team ID · `O=HATCHGRAB LTD` means a company team,
+not a personal one · **one-year validity**, against the personal team's **seven-day** profiles.
+
+⚠️ **`RD4KJ7R72Z` IN A CERTIFICATE'S COMMON NAME IS THE CERTIFICATE'S OWN IDENTIFIER, NOT A TEAM.** The
+Team ID lives in the **`OU`** field. An earlier read of `9VY4BW4KB4` as "a second team" was the same
+misreading. 🔴 **Do not delete keychain certificates on the strength of a CN parenthetical.**
+
+**The dev iPad is `00008101-0012045A1E93001E`** (iPad13,19, iOS 26.6), registered to the team and
+connected **wirelessly, not cabled**.
+
+### 🔴 `aps-environment` IS PRESENT. §36's push account is closed BY ARTEFACT.
+
+**DEVICE-VERIFIED, proven twice** — in the profile embedded in the built `App.app`, and in what
+`codesign` stamped into the binary:
+```
+aps-environment            = development
+application-identifier     = C24X5FG48V.com.hatchgrab.app
+keychain-access-groups     = ['C24X5FG48V.*', 'com.apple.token']
+ProvisionedDevices         = [00008101-0012045A1E93001E]   (exactly this iPad)
+```
+**`CodeSign` ran with `--entitlements` — the step all three earlier attempts died before reaching.**
+
+🔴 **AND THE PERSONAL-TEAM PROFILES PROVABLY LACKED IT.** Decoded from the two failed builds: team
+`Dominic Bonini` / `UD5438FTG9`, seven-day expiry, and `aps-environment` **ABSENT** — the entitlement
+keys were only `application-identifier`, `team-identifier`, `get-task-allow`, `keychain-access-groups`.
+✅ **§36's account of the personal-team push failure was REASONING. It is now DEVICE-VERIFIED. Upgrade
+the claim.**
+
+### 🔴 CHANGING THE TEAM PREFIX REQUIRES AN UNINSTALL, AND THE UNINSTALL WIPES LOCAL DATA
+
+Installing a `C24X5FG48V`-signed build over a `UD5438FTG9`-signed one fails with
+**`MIInstallerErrorDomain` code 64, `MismatchedApplicationIdentifierEntitlement`**. iOS refuses to
+upgrade an app across a team-prefix change — otherwise a different developer could inherit an existing
+app's data and keychain. **There is no override.**
+
+🔴 **THE UNINSTALL TAKES EVERYTHING LOCAL WITH IT:** WKWebView `localStorage` (the Supabase session),
+**Capacitor Preferences — which is the OFFLINE OUTBOX** — and the app-lock PIN.
+⚠️ **IF THE DEVICE HOLDS QUEUED ORDERS, THEY ARE LOST.** **Check the outbox before uninstalling any
+device that has been trading.**
+
+⚠️ **Side effect:** a fresh `device_id` UUID is minted on next launch, so `van_devices` gains an
+orphaned row per reinstall, and the old rows keep `notify_enabled = true` indefinitely. **Harmless at
+this scale; wants a sweeper before any fleet deployment.**
+
+### ✅ `PrivacyInfo.xcprivacy` SURVIVES `cap sync` AND SHIPS INSIDE THE BUNDLE
+
+**DEVICE-VERIFIED.** `cap sync ios` left `project.pbxproj` **byte-identical** — `sha256 7f5dab4f…` on
+both sides, all four hand-authored lines at the same line numbers, Resources still 7 entries. The
+manifest is present inside the built `App.app` and parses to exactly the one UserDefaults / CA92.1 entry.
+
+⚠️ **THE SHIPPED COPY IS 292 BYTES, NOT 4,763, BECAUSE XCODE STRIPS XML COMMENTS ON COPY. This is
+expected — do not read the size difference as corruption.**
+
+⚠️ **ONE OBSERVATION, NOT A GUARANTEE:** this sync added and removed no plugin. §36's instruction to
+re-check after every sync stands.
+
+### 🔴 A DEBUG BUILD GETS A SANDBOX TOKEN, AND THE FAILURE ERASES ITS OWN EVIDENCE
+
+Debug uses `App.entitlements` (`aps-environment: development`) → a **sandbox** token. If the server
+sends to **production** APNs with it, the result is `BadDeviceToken`, and §11 records that the handler
+**NULLs `push_token`**.
+
+> 🔴 **ALWAYS CHECK `van_devices.push_token` BEFORE PLACING A TEST ORDER.** Afterwards, *"push never
+> registered"* and *"push registered and was destroyed"* are indistinguishable.
+
+**STATUS, LIVE-VERIFIED 14 August 2026:** the entitlement is signed, the device binds
+(`platform = 'ios'`, `notify_enabled = true`), and 🔴 **`push_token` is NULL on all four iOS rows.**
+The only token in the table is Android's. **Push has still never obtained a token on iOS.**
+**Next step: `didFailToRegisterForRemoteNotificationsWithError` from the device log.**
+
+### The twelve Capacitor dependencies had ALREADY drifted. Now pinned.
+
+**READ:** `@capacitor/core`, `cli` and `ios` were declared `^8.3.4` and **running 8.4.0**;
+`@capacitor/android` **running 8.4.1**. 🔴 **A MINOR version of the iOS platform package moved with no
+diff in the repo — §27's N10 hazard, already realised.**
+
+All twelve are now pinned to what was installed. **231 native source files hash byte-identically before
+and after**; `package-lock.json` and `capacitor.config.json` untouched; `npm ci` still accepts the file
+(verified `--dry-run --offline` on copies, exit 0, 697 packages).
+
+⚠️ **TWO THINGS FROZEN IN DELIBERATELY:** the `core`/`ios` **8.4.0** vs `android` **8.4.1** skew —
+Capacitor expects the family aligned, INFERRED harmless at a patch level, **resolve before the Android
+submission** — and the fact that **every native fact in §11 and §36 was established while
+`package.json` said 8.3.4.** 🔴 **The tree that gets hardware-verified must be this pinned tree.**
+
+### 🔴 THE LAUNCH SCREEN IS CAPACITOR'S OWN LOGO
+
+**DEVICE-VERIFIED.** `LaunchScreen.storyboard` is the **unmodified scaffold** — Capacitor's blue "X" on
+a white field, from three byte-identical 2732×2732 PNGs, untouched since 12 May.
+
+🔴 **ON AN APP WHOSE PRIMARY REJECTION RISK IS 4.2 — "a website in a wrapper" — THE FIRST THING A
+REVIEWER SEES IS THE WRAPPER VENDOR'S BRANDING.**
+
+**The fix is an asset swap: replace the three PNGs.** Same filenames, same dimensions, storyboard
+untouched. iOS scales and crops that one square to every device and orientation, **so the logo must be
+centred with generous margin**, and the background should match the app's first screen so the handoff
+does not flash. ⚠️ The storyboard's declared `1366×1366` against 2732px files is generator residue and
+is cosmetically irrelevant under `scaleAspectFill`.
+
+🔴 **DO NOT INSTALL `@capacitor/splash-screen` TO "DO THIS PROPERLY".** The `SplashScreen` block in
+`capacitor.config.ts` is **entirely inert** — the plugin is not installed, not in `packageClassList`,
+and has no native class. **Installing it would activate `launchShowDuration: 1000` and make the
+Capacitor logo linger A SECOND LONGER. The inertness cuts in your favour.**
+
+### `Info.plist` — export compliance closed
+
+✅ **`ITSAppUsesNonExemptEncryption = false`** added 14 August, after an audit: the app's own Swift has
+**zero** hits for `CommonCrypto`, `CryptoKit`, `SecKey`, `SecItem` or `Security`; the only hit across
+the eight linked plugins is Capacitor's `AppUUID.swift` calling `CC_SHA256` — 🔴 **a one-way HASH is not
+encryption**, and it is Apple's own library. The PBKDF2 backup PIN is **JavaScript** (`crypto.subtle`,
+`lib/native/appLock.ts`), not in the binary, and authentication-only.
+⚠️ **It is a DECLARATION, not a default. Re-run the audit if a plugin is added.**
+
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -8803,6 +9186,115 @@ The one-press button fires the **existing `'collected'` action, unchanged** — 
 The cash split renders in two places that answer to **different settings**: the Add Order panel's *Take payment* button splits on **`show_paid_step`**, and the **order card's `Mark paid`** button splits on **`completion_presses === 'two'`**. The enable gate is therefore the **OR** of the two; the old single-parent condition would have been a defect this change introduced.
 
 ⚠️ **The `pl-4` indent went with it.** **Indentation is a SINGLE-PARENT notation** — it can only point at the row directly above — so with two parents it had stopped showing the dependency and started asserting a wrong one. **The disabled state plus a note naming both parents carries it instead.** The card's **one-press** button is still never split: `Cash & collected` cannot be labelled honestly at a 240px KDS column.
+
+## 🔴 THE OFFLINE PAID-STATE DEFECT — DIAGNOSIS, FIX, AND THE RULE IT ESTABLISHED (V11.17)
+
+**DEVICE-VERIFIED symptom, Test Kitchen, 14 August 2026:** a walk-up order created **offline** and paid
+at creation rendered with a live **"Mark paid"** button. On reconnect it corrected itself with no
+intervention.
+
+### ✅ NO MONEY WAS EVER WRONG. Establish this before anything else.
+
+`paymentTaken` is captured at `AddOrderPanel.tsx:1093` — **before** the offline branch — and
+`gatedAction` queues `{...body}` verbatim. **The server only ever saw a PAID order.** No email, ledger
+row, report or accounting artefact was affected. **The falsehood existed only in one iPad's React state,
+and only until the drain.**
+
+### 🔴 THE CAUSE IS THE LEDGER, NOT THE `payment_status` LITERAL
+
+`OrderCard` derives paid-ness from **ledger rows** via `getOrderBalance`, whose parameter type is
+```ts
+export interface BalanceableOrder { total_minor?: number | null; total?: number | null }
+```
+🔴 **`payment_status` IS NOT ON THE TYPE IT ACCEPTS.** Offline there are no ledger rows, so
+`paidMinor = 0`, `balanceMinor = total`, and the order reads unpaid — **whatever the column says.**
+
+⚠️ `payment_status: 'unpaid'` **was** hardcoded on the optimistic object, cast through
+`as unknown as Order` **so no compiler check could catch it**; it is now derived from `paymentTaken`.
+**That edit looked inert and turned out to be the input the chosen fix reads.**
+
+🔴 **`components/dashboard/types.ts` RECORDS `payment_status` AS A DERIVED CACHE THAT "MUST NEVER BE
+HAND-WRITTEN" AND MUST NOT BE READ FOR PAID-NESS.** The optimistic object hand-writes it either way.
+**Durable fix: the optimistic object should not carry the field at all. Backlog.**
+
+### The fix, and why it was chosen — 🔴 FAILURE DIRECTION, NOT ELEGANCE
+
+**Implemented:** a `queuedPayment` callback mirroring the existing `cardConflict` pattern, plus
+`?? queuedPayment(o)` at both `<OrderCard>` call sites (applied with `replace_all` so they cannot
+drift). ✅ **NO NEW PROP** — `OrderCard` already declares
+`pendingPayment?: 'pending_paid' | 'pending_unpaid'` and short-circuits `effectivePaid` **before**
+`isPaid` is consulted, so the empty ledger stops mattering. **+30/−2 in one file;
+`lib/payments`, `lib/native`, `OrderCard.tsx`, the KDS and `lib/printing` all untouched.**
+
+**Precedence is `??`:** when the payment overlay has an entry it **wins outright**, because a later
+`mark_paid` / `undo_mark_paid` op is newer information than what was true at creation.
+**Strict equality on `'paid'`** means anything else — including a queued order written before the
+`payment_status` edit — resolves to `'pending_unpaid'` and **still shows the button**.
+
+> ## 🔴 THE GOVERNING RULE, AND IT GENERALISES: ON A MONEY PATH, SAFE FAILURE BEATS ROOT-CAUSE CORRECTNESS.
+>
+> The chosen fix's worst case is **today's defect** — the operator over-asks, and a human notices.
+> The root-cause fix's worst case is an **unpaid order rendering PAID** — the operator never asks, the
+> money walks, and **nobody investigates an order that looks settled.**
+> **This is the allergen principle applied to money: never under-warn.**
+
+### 🔴 THE REJECTED OPTION, AND THE REASON IS PHYSICAL
+
+A synthetic client-side ledger row must assert **`livemode: true`** to be counted — `isLiveRow`'s only
+other arm requires `channel === 'online'`. That corrupts the **resolver's INPUT**, so all six client
+consumers inherit it — 🔴 **including `mapOrderToTicket`, which prints PAID on physical kitchen paper.**
+
+**Server consumers are out of reach. Paper is not.** ⚠️ **Record the principle: a fabricated payment
+record that produces a PHYSICAL artefact claiming money changed hands is categorically worse than a UI
+defect.**
+
+### The root-cause fix remains deferred, by choice
+
+`lib/native/orderGate.ts` filters `o.kind === 'status'` **and** `PAYMENT_ACTIONS.has(action)`. A walk-up
+create is `kind:'create'` with `action:'manual'`, so **the overlay built for exactly this defect is
+structurally blind to money riding inside a create.**
+
+⚠️ **It CANNOT be fixed by adding `'manual'` to `PAYMENT_ACTIONS`** — that would classify a
+deliberately-unpaid walk-up as a payment. It needs the predicate to read the **op body**, which
+contradicts the design note naming `body.action` as *"the one predicate that owns that decision"*.
+
+🔴 **THERE ARE NOW TWO ANSWERS TO "IS THIS ORDER PENDING-PAID?"** — the new derivation and the overlay.
+**When the root-cause fix lands it must REPLACE the derivation, not stack on it**, or this becomes the
+§35 N8 pattern again.
+
+### Severity — corrected, LIVE-VERIFIED
+
+Both live trucks have **`show_paid_step = true`** and **`completion_presses = 'two'`**. ✅ **So the
+defect hits the PAID SUBSET of offline walk-ups, not every one** — an unpaid one rendered correctly.
+**And the two-press setting is why the label read "Mark paid" specifically**, rather than
+"Mark paid & collected".
+
+**Four conditions must all hold:** the native iPad app · reachability reporting offline (~30s) · a
+walk-up via + Add order · payment taken at order time.
+
+### 🔴 THE SILENT-SUCCESS SHORT-CIRCUIT THAT HID THE 7 AUGUST INCIDENT
+
+Tapping "Mark paid" on an already-paid queued order **books nothing** — `recordCollectionPayment`'s
+`balanceMinor <= 0` guard returns `inserted: false, chargedMinor: 0` — ⚠️ **but returns SUCCESS with a
+green toast.**
+
+🔴 **THIS IS THE SAME SHORT-CIRCUIT `lib/payments/ledger.ts` RECORDS AS HAVING HIDDEN THE 7 AUGUST
+INCIDENT**, where Pizzeria Gusto recorded £0 for an afternoon of real collections with nothing anywhere
+reporting a fault.
+
+🔴 **THE HARM IS UPSTREAM OF THE DATABASE.** `OrderCard` states it exactly: *"a button that invites a
+duplicate payment is a defect even when the duplicate cannot land."* **The operator asked the customer
+twice; the cash is in the till with no row against it. The database is consistent. The takings are
+not.**
+
+### ✅ CAVEAT CLOSED — no other instance of this shape exists
+
+**Exactly ONE `as unknown as Order` in the tree.** **`kind:'edit'` is a declared outbox kind with NO
+PRODUCER ANYWHERE** — the kinds actually enqueued are `create`, `status`, `stock` and `buzzer` — so
+there is no offline edit path carrying the same defect. **The KDS has zero occurrences of
+`deviceQueuedOrders`, `onOrderPlaced` or `AddOrderPanel`** and passes `hidePayments`, so the optimistic
+object has no route there.
+
 
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 

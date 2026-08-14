@@ -178,27 +178,27 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   if (phase === 'offline') {
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        📴 Offline — {queued} {queued === 1 ? 'order' : 'orders'} saved on this device, will sync when you&apos;re back online.
+        📴 Offline — {queued} {queued === 1 ? 'change' : 'changes'} saved on this device, will sync when you&apos;re back online. Settings are locked.
       </div>
     )
   } else if (phase === 'syncing') {
     syncBanner = (
       <div className="w-full bg-slate-700 text-white text-sm font-semibold px-4 py-2 text-center animate-pulse">
-        Syncing {queued} {queued === 1 ? 'order' : 'orders'}…
+        Back online — syncing {queued} {queued === 1 ? 'change' : 'changes'}…
       </div>
     )
   } else if (phase === 'synced' && lastSynced > 0) {
     // Only when something actually synced — a drain that produced only conflicts is carried by the conflict banner.
     syncBanner = (
       <div className="w-full bg-green-600 text-white text-sm font-semibold px-4 py-2 text-center">
-        Synced {lastSynced} ✓
+        All changes synced.
       </div>
     )
   } else if (queued > 0) {
     // Online but still-queued (mid-recovery / retrying) → keep the operator informed rather than silent.
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        {queued} {queued === 1 ? 'order' : 'orders'} saved on this device, syncing…
+        {queued} {queued === 1 ? 'change' : 'changes'} saved on this device, syncing…
       </div>
     )
   }

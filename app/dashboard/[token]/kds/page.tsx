@@ -590,8 +590,8 @@ export default function KdsPage() {
         // Queued durably. The optimistic guard HOLDS until replay — dropping it would let the next poll
         // revert a pager that is already in a customer's hand.
         showToast(buzzerNumber == null
-          ? `Buzzer ${prior ?? ''} removed — saved on this device, will sync when back online`
-          : `Buzzer ${buzzerNumber} saved on this device — will sync when back online`)
+          ? `Buzzer ${prior ?? ''} removed`
+          : `Buzzer ${buzzerNumber} saved`)
         if (!keepOpen) setBuzzerTarget(null)
         setSavingBuzzer(false)
         return
@@ -651,7 +651,7 @@ export default function KdsPage() {
               showToast(`Order #${num} reverted`)
             } else { undoReady(orderKey, num) }
           }
-          showToast(`Order #${num} saved on this device — will sync when back online`, 'success', { duration: 7000, action: { label: '↩ Undo', run: offlineUndo } })
+          showToast(`Order #${num} saved`, 'success', { duration: 7000, action: { label: '↩ Undo', run: offlineUndo } })
         }
         return
       }

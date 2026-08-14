@@ -1108,8 +1108,29 @@ setItemModal({ item, modGroups, editCartKey })
       // now (cleared on the reconnect drain; the merge NEVER touches fetchAll). Skip the online-only 409
       // override flow + stock decrement below.
       if (result.queued) {
+        // ── 🔴 THE PLACEHOLDER FOLLOWS THE QUEUE DECISION, NOT A SEPARATE CONNECTIVITY GUESS ──────────
+        // DEVICE-CONFIRMED 14 August 2026: a bare '#' card and a '#N7' card on screen at the same time.
+        // TWO things decided the same outcome and disagreed. `isOnline()` at :1031 decided the NUMBER;
+        // `gatedAction` decided whether the order QUEUED — and it has TWO routes into queue(): the
+        // known-offline check on `online === false`, and a CATCH on a thrown fetch. Reachability needs
+        // three consecutive failed pings (~30s) to flip, so inside that window the app believes it is
+        // online (no placeholder minted, `provisional === ''`) while the POST is already failing and the
+        // order queues anyway. The card then rendered `#{order.id}` over an empty string: a bare '#'.
+        // 🔴 `result.queued` IS THE AUTHORITY, because it is the thing that queued it. One decision, one
+        // answer — and it is available here, before the optimistic object exists.
+        // ⚠️ FALLBACK ONLY. `provisional || …` keeps route 1 EXACTLY as it was: when reachability had
+        // already flipped, the number minted at :1031 is the one that went into the queued body, and it
+        // must stay the one shown or the card would disagree with what the server will keep.
+        // ⚠️ THE ROUTE-2 NUMBER IS DISPLAY-ONLY, AND THAT ASYMMETRY IS DELIBERATE. The body was built at
+        // :1039 and is already in the outbox carrying `provisional_id: null`, so on replay the server
+        // assigns an ordinary sequential number — a route-2 order shows 'N8' now and '#7' after sync,
+        // where a route-1 order keeps its N permanently. Changing that would mean rewriting a queued
+        // payload, which is the outbox's business and out of scope here.
+        // 🔴 NOTHING HERE IS LOAD-BEARING. `order_key` (minted at :1030) is the identity key and is
+        // untouched; `id` is the human display number and is never a lookup key.
+        const displayId = provisional || await nextProvisionalId()
         const optimistic = {
-          id: provisional, order_key: orderKey,
+          id: displayId, order_key: orderKey,
           customer_name: manualName || 'Walk-up', customer_phone: manualPhone || null, customer_email: manualEmail || null,
           slot: effectiveSlot, event_date: manualEvent?.event_date ?? null, event_id: manualEvent?.id ?? null,
           van_id: null, status: 'confirmed', items: manualItems, deals: manualOrder.deals,
@@ -1130,7 +1151,11 @@ setItemModal({ item, modGroups, editCartKey })
           order_type: 'collection', payment_status: manualOrder.paymentTaken ? 'paid' : 'unpaid', created_at: new Date().toISOString(),
         } as unknown as Order
         onOrderPlaced(optimistic)
-        showToast(`Order ${provisional} saved on this device — will sync when back online`, 'success')
+        // Same value as the card, for the same reason: on route 2 this read "Order  saved" with a hole
+        // where the number belongs.
+        // ⚠️ THE SYNC CLAUSE IS GONE ON PURPOSE (14 August 2026): OfflineBanner says "will sync when you're
+        // back online" persistently, with a count. The toast's job is IDENTITY — which order was saved.
+        showToast(`Order ${displayId} saved`, 'success')
         resetManual(); setShowOrderSheet(false); setLoading(false); setSubmitting(null)
         return
       }

@@ -99,6 +99,7 @@ export function OrderCard({
   highlight = false,
   ledgerRows,
   hidePayments = false,
+  offline = false,
   heldAuthorisation = false,
   pendingPayment,
   conflict,
@@ -189,6 +190,13 @@ export function OrderCard({
    *  the real ledger rows and still governs everything else — this decides only what is OFFERED. Payment
    *  state stays derived in one place; a device preference must never be able to change what is true. */
   hidePayments?: boolean
+  /** 🔴 THIS DEVICE CANNOT REACH THE SERVER. Forwarded to PaymentActionsModal, which replaces every
+   *  money-CHANGING branch with an explanation. DEFAULT FALSE ⇒ a surface that does not pass it (the KDS,
+   *  which never renders that modal anyway) is byte-identical.
+   *  ⚠️ IT DOES NOT TOUCH `balance`, `effectivePaid` OR ANY ARITHMETIC, and it does NOT gate the Mark
+   *  paid / collected buttons — recording a NEW payment offline is queued through the gate exactly as
+   *  before. Only MODIFICATION of an existing payment is restricted. */
+  offline?: boolean
   /** 🔴 THIS ORDER HAS A LIVE, UNCAPTURED CARD AUTHORISATION. Resolved ONCE server-side
    *  (lib/payments/held-authorisation.ts) and shipped by /api/dashboard — never worked out here.
    *  ⚠️ IT IS NOT "paid". The order is genuinely unpaid, no money has moved and getOrderBalance is
@@ -588,6 +596,7 @@ export function OrderCard({
       onUndoPayment={() => onAction('undo_mark_paid', order.order_key)}
       undoLoading={isLoading('undo_mark_paid')}
       onRefund={onRefund}
+      offline={offline}
     />
   )
 

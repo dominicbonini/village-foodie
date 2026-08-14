@@ -42,7 +42,7 @@ export type RefundSubmit = (args: {
 
 export function PaymentActionsModal({
   open, onClose, orderId, orderKey, paidMinor, cardChargeMinor, refundedMinor, charges,
-  hasReversibleInPersonPayment, onUndoPayment, undoLoading, onRefund,
+  hasReversibleInPersonPayment, onUndoPayment, undoLoading, onRefund, offline = false,
 }: {
   open: boolean
   onClose: () => void
@@ -62,6 +62,18 @@ export function PaymentActionsModal({
   undoLoading?: boolean
   /** Absent ⇒ no refund form. The caller has not wired one, and the modal reads as it always did. */
   onRefund?: RefundSubmit
+  /** 🔴 PAYMENT MODIFICATION REQUIRES CONNECTIVITY (14 August 2026).
+   *  True ⇒ this device cannot reach the server, so every branch below that CHANGES money is replaced by
+   *  an explanation. DEFAULT FALSE, so a caller that does not pass it is byte-identical to before — and
+   *  the KDS never renders this modal at all.
+   *  🔴 WHY MODIFICATION IS NEVER QUEUED. Every other offline op fails SAFE: a queued order that does
+   *  not land is visible as unsynced. A queued REFUND fails toward "money shown as returned that has not
+   *  been" — the customer walks away believing they have been refunded, and nobody investigates an order
+   *  that looks settled. Manual section 37 forbids that direction. There is no refund op kind in the
+   *  outbox and none is being added.
+   *  ⚠️ THIS RESTRICTS MODIFICATION ONLY. Recording a NEW payment offline is untouched — that is the
+   *  card's own Mark paid / collected buttons, which queue through the gate exactly as they did. */
+  offline?: boolean
 }) {
   const [mode, setMode] = useState<'full' | 'partial'>('full')
   const [amountInput, setAmountInput] = useState('')
@@ -158,6 +170,37 @@ export function PaymentActionsModal({
         </div>
         <button onClick={onClose}
           className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">Done</button>
+      </>
+    )
+  }
+
+  // ── 🔴 BRANCH 0 — OFFLINE. TESTED BEFORE EVERY OTHER BRANCH, AND THAT ORDER IS LOAD-BEARING. ──
+  // Offline the ledger rows this modal reasons from are STALE OR ABSENT: `payments` comes from
+  // /api/dashboard, and an order paid offline has no ledger row at all. So `hasReversibleInPersonPayment`
+  // resolves false and `cardChargeMinor` resolves 0, and the modal fell through to Branch 3 — which told
+  // the operator the order "was paid by card, so there is no payment record to remove here".
+  // 🔴 THAT SENTENCE WAS FALSE FOR A CASH ORDER TAKEN AT THE HATCH, and it was indistinguishable from
+  // the same sentence said truthfully about a real card order. This branch exists so an operator can tell
+  // "not while offline" from "not possible for this order".
+  // ⚠️ IT IS VISIBLE AND EXPLAINS ITSELF — not hidden, not a disabled button that swallows a tap, and NOT
+  // a control that lets the tap through and fails. There is nothing to press but Got it.
+  if (offline) {
+    return shell(
+      <>
+        {howPaidBlock}
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Payment changes need a connection</h3>
+          <p className="text-sm text-slate-500 mt-2">
+            Payment changes can&apos;t be made while offline. Refunds and removing a recorded payment both
+            have to reach the payment provider, so they can&apos;t be saved on this device and sent later.
+          </p>
+          <p className="text-sm text-slate-500 mt-2">
+            Order <strong className="text-slate-700">#{orderId}</strong> is unchanged. Reconnect and open
+            this again.
+          </p>
+        </div>
+        <button onClick={onClose}
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm">Got it</button>
       </>
     )
   }

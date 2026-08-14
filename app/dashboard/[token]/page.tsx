@@ -1558,8 +1558,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // Durably queued. The optimistic patch already applied above and its guard HOLDS — do not drop
         // it here, or the next poll would revert the cell while the op is still waiting to replay.
         showToast(buzzerNumber==null
-          ?`Buzzer ${prior??''} removed — saved on this device, will sync when back online`
-          :`Buzzer ${buzzerNumber} saved on this device — will sync when back online`)
+          ?`Buzzer ${prior??''} removed`
+          :`Buzzer ${buzzerNumber} saved`)
         if(!keepOpen)setBuzzerTarget(null)
         setSavingBuzzer(false)
         return
@@ -1848,7 +1848,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           else if(isCollectAction(action)){doAction('undo_collected',orderKey)}
           else{fetchAll()}
         }
-        const savedMsg=`Order #${q?.id??''} saved on this device — will sync when back online`
+        const savedMsg=`Order #${q?.id??''} saved`
         if(action==='ready'||isCollectAction(action)){
           showToast(savedMsg,'success',{duration:7000,action:{label:'↩ Undo',run:offlineUndo}})
         }else{showToast(savedMsg)}
@@ -2024,14 +2024,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // Through the offline GATE (kind:'stock'): online → posts directly (unchanged); offline → durable outbox +
     // optimistic stays. Synthetic key `${event_id}:set_stock:${itemName}` coalesces re-queues (last-write-wins).
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_stock',itemName,available,stockCount,noItemCap,category,event_id},kind:'stock',order_key:`${event_id??'none'}:set_stock:${itemName}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved on this device — will sync when back online')
+    if(r.queued)showToast('Stock saved')
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     const key=event_id??'__none__'
     setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,stock_count:stockCount}:s):[...cur,{category,stock_count:stockCount,default_stock:null,orders_count:0}];return{...prev,[key]:next}})
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_stock',category,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_stock:${category}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved on this device — will sync when back online')
+    if(r.queued)showToast('Stock saved')
   }
 
   // Enable/disable a whole category for THIS event (GATE) — mirrors updateCategoryStock. Optimistic
@@ -2044,7 +2044,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     pendingWritesRef.current[pk]={v:available,meta:category}   // shared guard; meta=name so an omitting refetch can re-add the row
     setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,available}:s):[...cur,{category,stock_count:null,default_stock:null,orders_count:0,available}];return{...prev,[key]:next}})
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_available',category,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_available:${category}`,online:isOnline()})
-    if(r.queued){delete pendingWritesRef.current[pk];showToast('Saved on this device — will sync when back online');return}
+    if(r.queued){delete pendingWritesRef.current[pk];showToast(`${category} availability saved`);return}
     if(!r.ok){
       // Write FAILED (surfaced now that the action checks .error): drop the guard + revert so the UI
       // shows the truth instead of a lie that a later refetch would silently undo.
@@ -2078,13 +2078,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     patchOption(optionId,{available}) // optimistic
     // Offline gate (kind:'stock'). Key includes the ACTION so an option's availability + stock don't collide.
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_available',optionId,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_available:${optionId}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved on this device — will sync when back online')
+    if(r.queued)showToast('Stock saved')
   }
   const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{stock_count:stockCount}) // optimistic
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_stock:${optionId}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved on this device — will sync when back online')
+    if(r.queued)showToast('Stock saved')
   }
 
   const openEvent=async(eventId:string)=>{
@@ -2181,7 +2181,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // than hedging: the amount when a refund settled, and the DECLINE when they were offered one and
       // kept the money. Neither is inferred server-side — only this modal knows.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null,refunded_minor:refundedMinor,refund_declined:refundableMinor>0&&!cancelRefund},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved on this device — will sync when back online`);return}
+      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved`);return}
       if(!result.ok)throw new Error((result.data as any)?.error)
       showToast(`Order #${displayId} cancelled`);await fetchAll()
     }catch{showToast('Failed to cancel','error')}finally{setActionLoading(null)}
@@ -2201,7 +2201,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       // Offline GATE (FIX 2) — reason in the body for faithful replay; expected_from → conflict if it raced.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'reject',order_key:orderKey,rejectionReason:fullReason},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved on this device — will sync when back online`);return}
+      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved`);return}
       if(!result.ok)throw new Error((result.data as any)?.error)
       showToast(`Order #${displayId} rejected`);await fetchAll()
     }catch{showToast('Failed to reject','error')}finally{setActionLoading(null)}
@@ -2616,14 +2616,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
         onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
       />
-      {/* Persistent OFFLINE chip — shown on EVERY tab whenever offline (single isOffline source), so the
-          operator always knows. Complements OfflineBanner (order-focused, native-only): this signals the
-          global offline state + what's locked, on Settings/Stock too. Slim shrink-0 bar in the app-shell. */}
-      {isOffline&&(
-        <div className="w-full bg-slate-800 text-white text-xs font-semibold px-4 py-1.5 flex items-center justify-center gap-2 shrink-0">
-          <span>📴 Offline — orders &amp; stock save on this device; settings are locked</span>
-        </div>
-      )}
+      {/* ── 🔴 THE DARK OFFLINE CHIP WAS DELETED HERE (14 August 2026). DO NOT REINSTATE IT. ──────────
+          It read "Offline — orders & stock save on this device; settings are locked" and stacked directly
+          under OfflineBanner, which was already saying the same thing with a count. Both read the SAME
+          detector (reachability), so they could never disagree — the duplication was purely presentational,
+          and on the Settings tab THREE offline notices rendered at once.
+          ⚠️ ITS ONE UNIQUE FACT — "settings are locked" — WAS NOT LOST: it is absorbed into OfflineBanner's
+          offline phase. ⚠️ AND ITS COVERAGE WAS NOT LOST EITHER: both were app-shell children OUTSIDE
+          <main>, so the surviving banner still renders on every tab exactly as this did.
+          🔴 THE RULE THIS FOLLOWS: persistent state belongs in the BANNER, per-event confirmation in the
+          TOAST. The banner keeps STATE; the toast keeps IDENTITY and ACTION. */}
       {/* DEMO MODE — persistent app-shell strip (same slim shrink-0 treatment as the offline chip). Sits on
           EVERY tab so the visitor is never unclear about what they're looking at. Deliberately calm rather
           than alarming: this is a prospect exploring the product, not an operator being warned. The
@@ -3275,13 +3277,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -3383,7 +3385,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       hasReversibleInPersonPayment={rows.some((r:any)=>r.kind==='charge'&&r.channel!=='online'&&r.livemode===true)}
                       onUndoPayment={()=>doAction('undo_mark_paid',o.order_key)}
                       undoLoading={actionLoading===`undo_mark_paid-${o.order_key}`}
-                      onRefund={submitRefund}/>
+                      onRefund={submitRefund}
+                      /* 🔴 Same reachability state the offline banner uses (onReachabilityChange →
+                         setIsOffline), so this modal recovers on reconnect without a reload. */
+                      offline={isOffline}/>
                   )})()}
               </div>
             )}
@@ -3466,7 +3471,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {isOffline&&(
               <div className="bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2">
                 <span aria-hidden>📴</span>
-                <span>You&apos;re offline — reconnect to change these settings. (Printer &amp; notification settings still work offline.)</span>
+                {/* TRIMMED 14 August 2026 to the ONE fact nothing else says. The lead — "You're offline —
+                    reconnect to change these settings" — is carried persistently by OfflineBanner, which
+                    now ends with "Settings are locked." This keeps the EXCEPTION to that rule. */}
+                <span>Printer &amp; notification settings still work offline.</span>
               </div>
             )}
             {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.
@@ -3988,12 +3996,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className="space-y-4">
             {/* Stock is EDITABLE offline (unlike Settings, which lock) — changes are optimistic + durably
                 queued and reconcile on reconnect. Distinct affordance so the operator knows it's safe to edit. */}
-            {isOffline&&(
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-800 flex items-center gap-2">
-                <span aria-hidden>📴</span>
-                <span>You&apos;re offline — stock changes are saved on this device and will sync when you reconnect.</span>
-              </div>
-            )}
+            {/* ── 🔴 THE MENU & STOCK OFFLINE NOTICE WAS DELETED HERE (14 August 2026). ─────────────────
+                It read "You're offline — stock changes are saved on this device and will sync when you
+                reconnect" — which OfflineBanner now says persistently, with a COUNT, on every tab. It
+                added nothing this tab did not already have on screen above it. */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Items — this event</p>
               <p className="text-slate-500 text-xs mb-4">Category totals, item limits and availability for the selected event — these reset each event. Changes take effect immediately.</p>
