@@ -172,6 +172,19 @@ export async function refundOrder(
 
   let refund: Stripe.Refund
   try {
+    // ── 🔴 THE DAY A PLATFORM FEE EXISTS, THIS CALL SILENTLY SHORTCHANGES THE TRUCK ─────────────────
+    // CORRECT TODAY, AND ONLY BECAUSE THERE IS NO FEE. `application_fee_amount` is never sent anywhere in
+    // this build — authorize.ts and capture.ts both record "absence, never zero", and the commercial model
+    // is 0% on every tier. With no fee on the charge there is nothing for a refund to give back.
+    // ⚠️ THE TRAP IS STRIPE'S DEFAULT, NOT OUR CODE. On a DIRECT charge, `refunds.create` WITHOUT an
+    // explicit `refund_application_fee: true` leaves the application fee WITH THE PLATFORM. So the moment
+    // a fee is introduced, this unchanged call refunds the customer in full out of the CONNECTED ACCOUNT
+    // while HatchGrab keeps its cut — the truck absorbs the platform's fee on every refund it issues.
+    // 🔴 IT FAILS SILENTLY AND IN THE TRUCK'S DISFAVOUR. No error, no refused status, no audit anomaly:
+    // the refund succeeds, the customer is made whole, and the shortfall is invisible until someone
+    // reconciles a payout by hand. This file's other guards all fail LOUD; this one would not.
+    // 🔴 SET `refund_application_fee` IN THE SAME COMMIT THAT INTRODUCES THE FEE — not afterwards, and not
+    // as a follow-up ticket. If a fee is ever added and this line is still unchanged, that is the bug.
     refund = await stripe.refunds.create(
       {
         payment_intent: refundable.paymentIntentId,

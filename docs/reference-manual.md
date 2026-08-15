@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.17
+HatchGrab Engineering Reference Manual · V11.18
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.17**
+**Version 11.18**
 
 August 2026
 
@@ -15,6 +15,30 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.18 — 14 August 2026 (late session)
+
+Delta over V11.17 — **a root cause found, two of this manual's own claims struck, and a pattern named.**
+
+- 🔴 **BOTH SAFARI EJECTIONS HAVE ONE CAUSE, AND IT IS THE CONFIG.** `server.url` is
+  `https://www.hatchgrab.com/**app**`, and Capacitor decides "is this our app?" with a **string PREFIX
+  match including the path** — so every hard navigation to a sibling route is handed to
+  `UIApplication.shared.open`. **Same origin; the PATH damns it.** `router.push` is immune, which is why
+  some controls worked and others did not. **The fix is `allowNavigation`, and it needs a `cap sync`.**
+- 🔴 **A CLASS, NOT THREE INCIDENTS: a server-derived input is EMPTY OFFLINE, and the code reads its
+  absence as a FACT rather than as MISSING INFORMATION.** Three instances in one day — the "Mark paid"
+  defect, the missing order number, and a payment modal that told an operator their cash order "was
+  paid by card, so there is no payment record to remove". **All three read empty data as an answer.**
+- 🔴 **PAYMENT MODIFICATION NOW REQUIRES CONNECTIVITY, and is never queued.** A queued refund fails
+  toward *"money shown as returned that has not been"* — the direction §37 forbids.
+- 🔴 **TWO OF THIS MANUAL'S CLAIMS WERE WRONG AND CAUSED WRONG WORK:** *authorize-then-capture is
+  incomplete* and *refunds are unbuilt*. **Both were stale text sitting BESIDE their own corrections**,
+  and two planning briefs read the stale halves. **Both are struck in place in this version, and §1 now
+  requires striking rather than annotating.**
+- **The launch screen carries the HatchGrab wordmark**, rasterised from vector; **WhatsApp auto-replies
+  are hidden in the app and untouched on the web**; **six offline banners are now four**.
+- ⚠️ **A removal was proposed and correctly refused** — the WhatsApp "Connect" button works, and the
+  truck using it is the live one.
 
 ## V11.17 — 14 August 2026 (continued session)
 
@@ -288,7 +312,8 @@ Multiple deploys across 12 August. Migrations applied and verified: `order_draft
 ### 🔴 A REAL CARD PAYMENT, AND A DESIGN THAT REPLACES IT
 
 - **A sandbox payment works end to end** via hosted Checkout — order first, PaymentIntent on the connected account, webhook writes `order_payments` with `channel: 'online'`. **Zero migrations.**
-- 🔴 **Authorize-then-capture is PROVEN ON OUR EXACT POSTURE and NOT BUILT.** The property it rests on — **cancelling an authorization creates NO Refund object** — was measured, and it matters because under direct charges a refund is money leaving **the truck's** account, which HatchGrab cannot issue.
+- ~~🔴 **Authorize-then-capture is PROVEN ON OUR EXACT POSTURE and NOT BUILT.**~~ 🔴 **STRUCK V11.18 — IT IS BUILT (V11.10), wired from five call sites.** This line survived beside its own correction and a planning brief read THIS one, building an entire refund investigation on it. The measured property below is still true and still worth keeping; only "NOT BUILT" is wrong.
+- 🔴 **Authorize-then-capture is PROVEN ON OUR EXACT POSTURE (and since V11.10, BUILT).** The property it rests on — **cancelling an authorization creates NO Refund object** — was measured, and it matters because under direct charges a refund is money leaving **the truck's** account, which HatchGrab cannot issue.
 
 ### 🔴 CORRECTIONS TO EARLIER ENTRIES
 
@@ -427,7 +452,7 @@ Multiple deploys across 12 August. Migrations applied and verified: `order_draft
 - 🔴 **Stripe's own embedded-onboarding quickstart sets `fees.payer`, `losses.payments` and `requirement_collection` all to `'application'` — the EXACT INVERSE of our model**, which would put HatchGrab on the hook for every chargeback. **We want the defaults:** `losses.payments` **stripe**, `fees.payer` **account**, `requirement_collection` **stripe**, `stripe_dashboard.type` **full**. **Following the quickstart verbatim is the trap.**
 - 🔴 **CORRECTED V11.8 — THE LINE ABOVE IS THE v1 SPELLING, AND IT IS KEPT BECAUSE THE INVERSION IS THE LESSON.** Accounts are now created on **Accounts v2**, where the same commercial position is written **`fees_collector: 'stripe'`** — *"Stripe collects"* rather than *"the account pays"*. **v2 has no `'account'` value**, so translating `fees.payer: 'account'` to the nearest-looking token lands on `'application'`, which means **HatchGrab pays**. See §37 for the full v2 posture and the read-back that guards it.
 - **The account id belongs on `operators`.** 🔴 **APPLIED V11.8:** `stripe_account_id`, `stripe_charges_enabled` (NOT NULL default false), `stripe_account_synced_at`. **Readiness must resolve to `charges_enabled`, never to a row existing.**
-- 🔴 **BUILT SINCE (V11.8):** onboarding, the Payments tab, a real sandbox card payment on the customer path. **STILL UNBUILT:** refunds, Terminal, Locations, subscription billing, the platform fee.
+- 🔴 **BUILT SINCE (V11.8):** onboarding, the Payments tab, a real sandbox card payment on the customer path. ~~**STILL UNBUILT:** refunds,~~ **Terminal, Locations, subscription billing, the platform fee.** 🔴 **REFUNDS STRUCK V11.18 — THEY ARE BUILT END TO END** (`lib/payments/refund.ts`, the modal, the webhook, the emails). See §37.
 
 ### KDS PAYMENT STATE — fixed
 
@@ -2233,6 +2258,10 @@ Read this before every coding session. Update it after every meaningful change. 
 
 - ⚠️ **LINE NUMBERS DECAY FASTER THAN THIS MANUAL DOES, AND A ROTTED ONE READS EXACTLY LIKE A FRESH ONE.** Within one workstream: an upgrade modal moved `:10712` → `:10694` when 39 lines were removed from the same file; `PrintingSettings.tsx` changed directory; a header `<Link>` moved `:64` → `:97`; a matrix row moved `:149` → `:161`. This manual carries hundreds of `file.tsx:NNN` references **with no signal distinguishing the two**. 🔴 **Anchor on what survives an edit** — a function name, a `const` identifier, a unique string literal. Where a line number genuinely helps, tag it *as-of V11.17* so the decay is legible.
 
+- 🔴 **WHEN A CLAIM IS CORRECTED, THE SUPERSEDED TEXT MUST BE STRUCK OR REMOVED — NEVER LEFT ADJACENT.** A correction sitting next to the claim it corrects is **not a correction: it is two claims**, and a reader takes whichever they meet first. ⚠️ **Precedent, 14 August 2026, twice in one day:** §37 carried *"authorize-then-capture is PROVEN… and NOT BUILT"* beside the V11.10 entry recording it as BUILT, and §27/§37 carried *"refunds… ALL UNBUILT"* beside a shipped `lib/payments/refund.ts`. **Two planning briefs read the stale halves** and commissioned work on false premises. 🔴 **V11.16 already fixed §40 this way — by REPLACING the stale block, not annotating it. That is the pattern.** Use `~~strikethrough~~` with a dated note when the history matters, deletion when it does not.
+
+- 🔴 **A BRIEF BUILT ON A MANUAL CLAIM INHERITS THAT CLAIM'S STALENESS.** This manual is now large enough that a superseded line survives next to its correction, so *"the manual says X"* is not provenance for X. ⚠️ **Practical rule: when a brief's premise is load-bearing, STATE ITS PROVENANCE IN THE BRIEF** so the executor can check it rather than assume it. **Every prompt in the 14 August session that did so had its premise tested; the two that did not were both wrong.**
+
 - **Every version bump gets a Changelog entry, written in the same pass as the bump.** The Changelog is the only place the manual records *when* something changed, so a version that ships without one is invisible to anyone reading forward from a known-good point. ⚠️ **V9.8, V9.9 and V10 were all missed and backfilled on 3 August 2026** — reconstructed from the content sections they had already written, which worked only because those sections were thorough. A bump whose content is thinner would not survive the same omission.
 
 > **CRITICAL** — If a coding session produces code that violates rules in this manual, that is a regression. Either the rule changes (with explicit agreement) or the code changes. The two must never diverge.
@@ -3976,6 +4005,145 @@ dismissal likewise. ⚠️ **These are REACTIVE — a failed fetch — not detec
 suppressed by fixing a detector. That is correct and must stay that way.**
 
 
+## 🔴 THE NAVIGATION ROOT CAUSE — `server.url` CARRIES A PATH (V11.18)
+
+**This is the cause of BOTH Safari ejections observed on 14 August, on two different surfaces.**
+
+**READ.** `server.url` is `https://www.hatchgrab.com/app`. Capacitor's `decidePolicyFor` decides
+"is this our app?" with:
+```swift
+        let isApplicationNavigation = navURL.absoluteString.starts(with: bridge.config.serverURL.absoluteString) ||
+            navURL.absoluteString.starts(with: bridge.config.localURL.absoluteString)
+
+        if !isApplicationNavigation, toplevelNavigation {
+            if UIApplication.shared.applicationState == .active {
+                UIApplication.shared.open(navURL, options: [:], completionHandler: nil)
+            }
+            decisionHandler(.cancel)
+```
+🔴 **A STRING PREFIX MATCH, INCLUDING THE PATH.** So
+`https://www.hatchgrab.com/dashboard/<token>` does **not** start with
+`https://www.hatchgrab.com/app`, `allowNavigation` is not set so the hostname allow-list is empty, and
+the navigation is cancelled and handed to Safari.
+
+> ### 🔴 SAME ORIGIN. THE PATH IS WHAT DAMNS IT. Every top-level navigation to a sibling route — `/dashboard`, `/manage`, the KDS, `/admin` — is treated as "an outside source".
+
+✅ **`router.push` IS IMMUNE.** A soft navigation never creates a `navigationAction`, so it never
+reaches the policy. 🔴 **That is why some controls work and others do not, and it has nothing to do
+with which surface they are on** — only with whether the control does a hard navigation.
+
+### The fix, and the fix that would break everything
+
+✅ **CORRECT: `allowNavigation: ['www.hatchgrab.com']` in the server block.** Hard navigations then stay
+in the WebView **regardless of what `isNativeApp()` returns** — defence in depth, independent of the
+unresolved intermittent below.
+
+🔴 **DO NOT "FIX" IT BY DROPPING `/app` FROM `server.url`.** That is the **cold-launch route**.
+Stripping it opens the app on `/`, which renders the **Village Foodie consumer map** — a different
+product.
+
+⚠️ **It is a native config change: `cap sync` and a rebuild.** §36's standing warning applies —
+**re-check the four hand-authored `PrivacyInfo.xcprivacy` lines in `project.pbxproj` afterwards.**
+
+## ⚠️ `isNativeApp()` MAY BE INTERMITTENTLY FALSE IN THE SHELL — UNRESOLVED (V11.18)
+
+**Two ejections, two surfaces, both consistent with one cause:**
+
+1. **"Kitchen screen"** — `openKDS` is gated, and its **web branch is `window.open`**. A false reading
+   sends it there.
+2. **Manage → "Orders dashboard"** — the header control is `AppLink` (gated). A false reading makes
+   `AppLink` fall through to a **plain anchor**, which is a hard navigation, which hits the policy above.
+
+⚠️ **A CONFOUNDER, and it must be stated:** `components/dashboard/UserMenu.tsx:214` carries a **raw
+ungated `<a href>`** — the only ungated internal route navigation on manage — **but it is `sm:hidden`**,
+so on a full-screen iPad it should not render. **Either the device was under 640px (Split View) OR
+`AppLink` fell through — and only the second ties both incidents to one root cause.**
+
+**Neither has reproduced.** **Leading hypothesis, INFERRED and untested: a cold-start race —
+`isNativeApp()` evaluating before Capacitor's bridge is injected, on the first launch after install.**
+
+✅ **THE COMMERCE GATES ARE NOT AFFECTED. DEVICE-VERIFIED:** `/manage` lands on **Menu**, not Billing.
+**No 3.1.1 exposure.**
+
+## ⚠️ MANAGE HAS NO OFFLINE DETECTOR AT ALL (V11.18)
+
+**READ:** no `isOffline`, **none of §35's three mechanisms**, and `isNativeApp()` was never called on
+the page at all before the WhatsApp hide (§20). The only occurrence of anything is a one-line
+`navigator.onLine` guard **inside** a heartbeat function — not state, not subscribed, re-rendering
+nothing.
+
+🔴 **CONSEQUENCE TO RECORD: any payment-modification control ever added to manage inherits NONE of
+§37's offline protection**, because that protection is a prop fed from the dashboard's reachability
+state.
+
+⚠️ **And the remaining candidate for "the button did nothing when back online":** `AppLink` calls
+`e.preventDefault()` and then `router.push`, **whose promise is never awaited and has no catch or
+fallback**. A failed RSC fetch after an offline period produces exactly "nothing at all". **INFERRED.**
+
+## 🔴 THE MISSING ORDER NUMBER — TWO ROUTES INTO THE QUEUE, ONE OF THEM NUMBERLESS (V11.18)
+
+**DEVICE-VERIFIED:** an order placed offline rendered with a **bare `#`**, beside a `#N7` card on the
+same screen.
+
+**`isOnline()` decided the NUMBER; `gatedAction` decided whether the order was QUEUED — and it has TWO
+routes in:** the known-offline check, and a **catch on a thrown fetch**. Reachability needs ~30s to
+flip, so inside that window the app believes it is online (**no `N` placeholder minted**) while the POST
+is already failing (**the order queues anyway**) → `provisional === ''` → `id: ''` → **a bare `#`**.
+
+⚠️ **The toast was broken too** — *"Order  saved on this device"*, with a hole where the number belongs.
+**Nobody reported it because the card's bare `#` was the visible symptom.**
+
+**PRE-EXISTING**, blamed to `3cbfb59c` (2 July). ⚠️ **The reinstall wiping Preferences is what made it
+reachable** — the first realistic run at that window.
+
+✅ **FIXED:** `const displayId = provisional || await nextProvisionalId()` inside the queued branch.
+**`result.queued` is now the authority — one decision, one answer.** Route 1 short-circuits on `||` so
+it is byte-identical; the online path **cannot** reach the line because it sits inside
+`if (result.queued)`. ✅ **`order_key` untouched throughout**, and the server's truthy test treats `''`
+as null so a queued order takes an ordinary sequential number on replay.
+
+⚠️ **BACKLOG — ROUTE-2 ORDERS RENUMBER ON DRAIN.** The body was already in the outbox carrying
+`provisional_id: null`, so a route-2 order shows `N8` now and `#7` after sync, where a route-1 order
+keeps its `N` permanently. 🔴 **If an operator wrote `N8` on a bag, the bag and the screen now disagree,
+with no trace.** **Strictly better than a bare `#`; not closed.** Fixing it means rewriting a queued
+payload — outbox work.
+
+⚠️ **THE DEV OFFLINE TOGGLE CANNOT TEST THIS FIX** — it bypasses the debounce and gives you route 1.
+**Route 2 needs the basket built, then the network killed, then Confirm tapped before the banner
+appears.**
+
+✅ **A raised concern, closed:** both routes go through the same `queue()` closure and
+`countPendingOps` filters only on `state !== 'conflict'`, **so route-2 orders were always counted.**
+
+## ✅ OFFLINE MESSAGING — IMPLEMENTED (V11.18, updates the consolidation decision above)
+
+- **The dark app-shell chip and the Menu & Stock notice are DELETED**, each replaced by a comment
+  recording why, **so neither gets reinstated**.
+- **The Settings notice is trimmed to the exception only:** *"Printer & notification settings still work
+  offline."*
+- **The orange banner absorbed "Settings are locked."**
+- ✅ **Coverage is genuinely unchanged** — both deleted and surviving banners were app-shell children
+  **outside `<main>`**, so identical every-tab coverage. **Checked, not assumed.**
+- ✅ **All four count render sites now say "changes"**, singular handled, and a repo-wide search for the
+  count rendered as "orders" returns nothing.
+- ✅ **`↩ Undo` counts match `HEAD` exactly (6 and 2)** — only message strings moved; durations and
+  variants byte-identical.
+
+🔴 **SEQUENCING MATTERED: the count relabel had to come FIRST.** Deleting the stock banner before fixing
+the label would have left stock ops counted under a heading that said "orders".
+
+⚠️ **TWO OPEN ITEMS:**
+1. `OfflineBanner.tsx` **lost a codepoint class** (`U+2713`) when `Synced {n} ✓` became
+   `All changes synced.` — **and the COUNT went with it.** The number is the load-bearing part: an
+   operator who saw "3 changes saved" wants "3 changes synced". **Restore as `All {n} changes synced.`**
+2. **The four `Stock saved` toasts still do not name their subject.** One bare toast was fixed to
+   `${category} availability saved`; the other four should get the same treatment. 🔴 **Four can fire in
+   a row and none says which item.**
+
+⚠️ **The earlier inventory's "eleven toasts" was an undercount** — **twelve call sites, thirteen
+strings** once the two buzzer ternaries are counted per arm.
+
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
@@ -5369,6 +5537,42 @@ Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiate
 
 /api/webhooks/meta/whatsapp, /messenger, /instagram. Each handles the GET verification challenge and a POST. The WhatsApp POST is fully wired; Messenger/Instagram POSTs only log and return 200 (classifier wiring TODO). Shared verify token META_WEBHOOK_VERIFY_TOKEN. Messenger/Instagram remain parked (per-truck OAuth, token storage via ENCRYPTION_KEY / lib/crypto.ts, send API, classifier wiring deferred).
 
+## 🔴 WHATSAPP AUTO-REPLIES — HIDDEN IN THE NATIVE APP, UNTOUCHED ON THE WEB (V11.18)
+
+🔴 **A REMOVAL WAS PROPOSED AND CORRECTLY REFUSED.** The "Connect" button is **not dead**: it fires
+`api('update_truck', { data: { whatsapp_sender } })`, the column is **server-allow-listed**, and it
+toasts *"WhatsApp number saved"*. **The label says Connect; the behaviour is Save** — and the button's
+own comment, dated 10 August from an operator review, already said *"It does not connect anything and
+must not be made to look as though it does."*
+
+**Self-serve WhatsApp onboarding for trucks does not exist**, so the section is **hidden in the app** and
+**left working on the web**, where it will be rolled out.
+
+**IMPLEMENTATION:** `{!isNativeApp() && (<> … </>)}` wrapping the **ENTIRE subsection** — divider,
+heading, caption, `space-y-3` wrapper and row. 🔴 **The WhatsApp row is the LAST remaining child** after
+the 14 August Messenger/Instagram removal, **so hiding the row alone would have orphaned four things.**
+
+✅ **`git diff --stat`: 23 insertions, 0 deletions** — which is only possible if nothing inside was
+altered, so **web byte-identity is STRUCTURAL, not inspected.**
+
+✅ **Direct `isNativeApp()` call, no `mounted` two-pass**, safe because `loading` starts `true` at
+`ManagePage:200`, the page **early-returns at `:508`**, and `<SettingsTab>` renders at `:718` below it.
+⚠️ **RECORDED AS A DEPENDENCY: if that early-return is ever removed, this becomes a hydration
+mismatch** — the same warning `AppHeader` carries.
+
+✅ **THE FAILURE DIRECTION IS UNREACHABLE IN THE SERIOUS DIRECTION.** `isNativeApp()` is a conjunction
+whose first clause is a `typeof` guard, so any absence of Capacitor yields `false`. 🔴 **There is no
+path on which a browser can be told it is native**, so *"the live truck loses a working control on the
+web"* cannot occur; only *"the section shows on iPad"* can.
+
+⚠️ **CARRIED FORWARD, STILL TRUE ON THE WEB:** the label says Connect while it Saves, and
+`saveWhatsappSender` **returns silently when the value is unchanged**, so tapping without editing does
+visibly nothing — 🔴 **the likeliest source of the "it doesn't work" report.** **A relabel is the
+smallest fix.**
+
+✅ **Pizzeria Gusto is NOT set up on WhatsApp yet** (confirmed 14 August), so the national-format vs
+E.164 sender question is **not a live defect**. **Recheck at onboarding.**
+
 # 21. Competitive positioning
 
 ## Hatches Up cost model
@@ -6224,7 +6428,7 @@ Test and live mode are almost entirely separate in Stripe. **Before a real truck
 **⚠️ ONE OF THESE BLOCKS EVERYTHING ELSE GOING LIVE. It is first for that reason, not by size.**
 
 - 🔴 **SITE LINKS ARE UNCONFIGURED — THIS BLOCKS LIVE-MODE ACCOUNT SESSIONS ENTIRELY.** Stripe: *"Before you can create a live mode Account Session, you must provide the URLs where you have integrated the embedded components"* — Notification banner, Account management, Payments, Payouts, Balances, Documents. **No truck can onboard for real until this form is filled** in Connect settings → Site links. **It is a form, not a build.**
-- 🔴 **Authorize-then-capture** — proven, not built. Needs a **server-side draft table + migration** (the basket cannot survive a hosted-Checkout page navigation) and **extraction of `/api/orders/submit`'s core** from a 1,139-line route handler, on the money path. **~a week.** See §37.
+- ~~🔴 **Authorize-then-capture** — proven, not built. Needs a **server-side draft table + migration**~~ 🔴 **STRUCK V11.18 — BUILT IN V11.10. This backlog item is CLOSED**; the draft table and the extraction both landed. Original text kept struck so the estimate below is not re-quoted as outstanding: **server-side draft table + migration** (the basket cannot survive a hosted-Checkout page navigation) and **extraction of `/api/orders/submit`'s core** from a 1,139-line route handler, on the money path. **~a week.** See §37.
 - 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter: allowances are display strings, 0.99% is hardcoded in five places, nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.**
 - **Radar** — guidance copy telling a truck how to change their own tier, plus **two Dashboard reads** (our own Radar tier; any Radar line on our invoices) to settle whether HatchGrab carries a per-connected-account cost.
 - **The onboarding confirmation email** — Stripe sends nothing when an account becomes ready. The trigger already exists: the `account.updated` handler already detects `charges_enabled` flipping false → true. **Small.**
@@ -6945,7 +7149,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **`"Only 1 pizzas left!"` — pluralisation bug on the CUSTOMER page** (§30). The noun is the raw category name lowercased.
 - **No urgency tier on the operator stock threshold** (§30) — flat `<= 10`, so 10 and 1 render identically. The customer page and the shared option badge redden at 3.
 - 🔴 **`hide_pricing` masks footnote 2 ONLY, keyed on the magic string `f.number !== '2'`** (§44). **Gusto sees footnote 1's real card figures unmasked on their Billing tab**, and **renumbering the footnotes would silently unmask everything**.
-- **Stripe Connect — onboarding, PaymentIntents, refunds, Terminal, Locations and subscription billing are ALL UNBUILT** (§37). Only the webhook endpoint exists. The model and the controller properties are decided; nothing else is.
+- ~~**Stripe Connect — onboarding, PaymentIntents, refunds, Terminal, Locations and subscription billing are ALL UNBUILT** (§37). Only the webhook endpoint exists.~~ 🔴 **STRUCK V11.18 — ONBOARDING, PAYMENTINTENTS AND REFUNDS ARE ALL BUILT.** Terminal, Locations and subscription billing remain unbuilt. See §37. The model and the controller properties are decided; nothing else is.
 - **The collect idempotency key still swallows a legitimate second charge of the same amount.** `collect:{order_key}:{paidBefore}:{balance}` collides when the ledger returns to a previous position and the same amount is settled again — **true today with cash**, not merely a future Stripe concern. The complete answer is a client-minted per-tap key; a Stripe object id is one.
 - 🔴 **Apple Developer enrolment requested 7 Aug, awaiting confirmation.** ⚠️ **Xcode CANNOT BUILD until it completes** — a personal team cannot sign the Push Notifications capability.
 
@@ -6959,6 +7163,36 @@ A truck-level master switch that gates ALL per-item pre-order config without los
   - **Restoring it is two lines and needs NO migration** — render one control per row calling that row's existing save function with `null`. The server side is unchanged and already handles it. **Suggested form:** a plain text link at the row's foot, shown **only when that row is overriding** — no pill, no colour, nothing on a row that is inheriting.
 
 - **`app/dashboard/[token]/kds/page.tsx:245` calls `prepareKeepAwake()` UNCONDITIONALLY, ignoring `keepScreenOn`**; the separate `[keepScreenOn]` effect at `:253` then applies the real pref. So **mounting KDS with the pref OFF acquires the lock and immediately releases it.** Harmless in effect, but it is the **lying-toggle family** — for one render the published state is not what the pref says, and `lib/native/keepAwake.ts:8-13` exists specifically to publish the ACTUAL state rather than the intended one. Fix is to gate `:245` on the pref like the dashboard already does.
+
+### 🔴 Added V11.18 — state at close, 14 August 2026
+
+**SHIPPED THIS SESSION:** the capacity-panel flex fit · the offline paid-state defect · the missing
+order number · the offline messaging consolidation · **the offline payment Branch 0** · the launch
+screen · the WhatsApp native-only hide.
+
+**ONE BLOCKER, AND IT IS NOT A CODE PROBLEM:** 🔴 **App Store SCREENSHOTS have never been produced**,
+and nothing in the build can substitute for them. Everything else below is work, not a gate.
+
+**CARRIED FORWARD OUT OF THIS SESSION:**
+
+- 🔴 **THE `/app` PATH IN `server.url` (§11).** Capacitor's `decidePolicyFor` matches
+  `serverURL.absoluteString` as a **string PREFIX INCLUDING THE PATH**, so every same-origin `<a href>`
+  outside `/app` ejects to Safari. **Two ejections observed on one day.** `router.push` is immune, which
+  is why it looks intermittent.
+- 🔴 **THE GATE SHOULD REFUSE `undo_mark_paid` OUTRIGHT** (§37) rather than relying on a UI branch being
+  unreachable. Branch 0 makes it doubly unreachable **today**.
+- 🔴 **THE APPLICATION-FEE COMMENT IS NOT YET AT THE REFUND CALL SITE** (§37). ⚠️ **NOT DONE THIS
+  SESSION — the turn was a manual update, and this is a change to live payment code.** The landmine is
+  recorded here so it is not rediscovered by a refund going the truck's way; **the comment is still the
+  right defusal and should go in with the next payment-path change.**
+- **`manage` has NO offline detector at all** (§11) — three exist elsewhere and none is wired to it.
+- **The WhatsApp button says Connect while it Saves, and returns silently when unchanged** (§20). Live
+  on the web. **A relabel is the smallest fix.**
+- **The launch screen has NEVER BEEN SEEN ON A DEVICE** (§36). The crop safety is arithmetic.
+- **The `#EF8B2C` / `#EA580C` split was RE-CONFIRMED, NOT CHANGED** (§38): `#EF8B2C` is the brand mark
+  and the artwork is authoritative; `#EA580C` is the action colour. ✅ **No correction was needed — the
+  manual already stated it correctly**, and the splash work took its colours from existing assets
+  rather than minting new ones.
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -7934,6 +8168,41 @@ commerce** predicate; this is **2.1 completeness**. Different guideline, differe
 them separate on purpose, and merging them would make one guideline's answer move when the other's
 changes.**
 
+## P11 — THE CENSUS CAUGHT A REAL VIOLATION FOR THE THIRD TIME (V11.18)
+
+**Third time, and the third distinct mechanism.** On 14 August a comment added to `app/contact/page.tsx`
+introduced **four codepoint classes the file had never held** — an em dash, a warning sign, a variation
+selector and a coloured circle. **Caught by the after-census, not by review**, and rewritten ASCII-only.
+
+⚠️ **The variation selector is the instructive one: it is INVISIBLE.** No amount of reading the diff
+would have surfaced it. 🔴 **The census is not ceremony — it is the only mechanism that sees characters
+a human cannot.**
+
+> 🔴 **AND THE RULE IT PRODUCED, WHICH APPLIES TO THIS MANUAL ITSELF: A CODEPOINT LIST CANNOT BE QUOTED,
+> ONLY DESCRIBED.** Writing the offending characters into a report **to name them** adds those very
+> classes to the report. **Naming a character is not the same as reproducing it**, and on this rule the
+> difference is the whole point. Every codepoint discussed above is therefore described in words.
+
+## P12 — FOUR STOPS AND TWO DECLARED OVER-RIDES (V11.18)
+
+🔴 **Four tasks stopped before touching code, each on a FALSE PREMISE IN THE INSTRUCTION, not on
+difficulty:**
+
+| Stopped | The premise | What was true |
+|---|---|---|
+| the `/contact` link fix | a link was said to be broken | it was not |
+| the two BrandHomeLink sites | said to be the ejection cause | the guard was already correct; the cause was elsewhere |
+| **the WhatsApp removal** | *"the button is dead"* | 🔴 **it saves to a live column, and Gusto's settings reach it** |
+| **the refund investigation** | *"refunds have never been built or specified"* | 🔴 **built end to end, plus eight specification documents** |
+
+**Two over-rides were declared rather than taken silently:** the delta's *"do not apply the obvious
+fix"* was honoured by finding the real cause, and *"do not use the AgentTool"* held throughout.
+
+✅ **THE PATTERN WORTH KEEPING: a stop is cheap and a wrong edit on a live-money surface is not.** In
+every one of the four, the instruction was **specific, confident and wrong** — which is exactly the
+shape that gets built without checking. **"The premise did not hold" is a RESULT. State it plainly and
+do not proceed.**
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -8264,6 +8533,39 @@ encryption**, and it is Apple's own library. The PBKDF2 backup PIN is **JavaScri
 `lib/native/appLock.ts`), not in the binary, and authentication-only.
 ⚠️ **It is a DECLARATION, not a default. Re-run the audit if a plugin is added.**
 
+
+## ✅ THE LAUNCH SCREEN NOW CARRIES THE HATCHGRAB WORDMARK (V11.18)
+
+**Three PNGs replaced at `ios/App/App/Assets.xcassets/Splash.imageset/`** — 2732 × 2732,
+**41,273 → 57,598 bytes** each, still byte-identical to each other. 🔴 **Rasterised from VECTOR**
+(`public/logos/hatchgrab-wordmark-white.svg`), **so there is no upscaling and no softness** — the stop
+condition for this work was "if the only source is a small raster, stop", and it did not apply.
+
+**Background `#0F172A`, and the reasoning is the point:**
+
+| Surface | Colour | When |
+|---|---|---|
+| **`/app`** — `bg-slate-900` | **`#0F172A`** | 🔴 **the ACTUAL first screen on cold launch** |
+| native host view | `#1C1C1E` | between the splash and the WebView |
+| dashboard — `bg-slate-50` | `#F8FAFC` | third |
+
+⚠️ **Using the dashboard's `#F8FAFC` would flash light → dark → dark → light.** `#0F172A` is **also the
+existing ground of `public/icons/hatchgrab-icon.svg`**, so it was **inherited, not invented**.
+
+**Logo occupies 33% of the width and 7.2% of the height, centred.** The `scaleAspectFill`
+guaranteed-visible region is the central **~69.5%** in both orientations, so **nothing is near an edge**.
+Corners probe `#0F172A`; the centre probes `#FFFFFF`.
+
+🔴 **`project.pbxproj` byte-identical (`37ab0184…`); the storyboard and `Contents.json` untouched.**
+`Assets.xcassets` already has **both a `PBXBuildFile` and a Resources-phase entry**, so the catalogue
+ships and **no project change was needed** — the same both-halves check the privacy manifest required.
+
+🔴 **STILL DO NOT INSTALL `@capacitor/splash-screen`** — it would activate `launchShowDuration: 1000`
+and make the splash **linger a second longer**. ⚠️ The storyboard declares `1366 × 1366` while the files
+are `2732 × 2732` — **generator residue, harmless under `scaleAspectFill`, left alone.**
+
+⚠️ **NEVER SEEN ON A DEVICE.** The crop safety is arithmetic; the colour handoff is reasoned from three
+READ values.
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -9054,7 +9356,7 @@ That is the **EXACT INVERSE** of our model. It makes **HatchGrab** pay Stripe's 
 
 - **The account id belongs on `operators`** — 13 columns today and **no `stripe_*` column among them** (§13's correction stands; do not assume a column is waiting).
 - 🔴 **Readiness must resolve to `charges_enabled`, NEVER to a row existing.** An account can exist and be mid-verification for days. Keep it fresh from the `account.updated` webhook, and **guard that update on `livemode`** — a production endpoint receives both modes, and without the guard a **test** event could flip a **live** operator's readiness.
-- **UNBUILT:** onboarding, PaymentIntents, the customer payment path, refunds, Terminal, Locations, subscription billing.
+- ~~**UNBUILT:** onboarding, PaymentIntents, the customer payment path, refunds,~~ **Terminal, Locations, subscription billing.** 🔴 **STRUCK V11.18 — the first four are BUILT.** Refunds: `lib/payments/refund.ts` + `PaymentActionsModal.tsx` + the webhook, with eight `docs/refund-*.md` reports specifying them.
 
 ## The commercial model — locked
 
@@ -9294,6 +9596,108 @@ PRODUCER ANYWHERE** — the kinds actually enqueued are `create`, `status`, `sto
 there is no offline edit path carrying the same defect. **The KDS has zero occurrences of
 `deviceQueuedOrders`, `onOrderPlaced` or `AddOrderPanel`** and passes `hidePayments`, so the optimistic
 object has no route there.
+
+
+## 🔴 OFFLINE PAYMENT MODIFICATION — THE MODAL WAS ASSERTING A FALSEHOOD (V11.18)
+
+**DEVICE-OBSERVED:** offline, the payment actions modal showed the payment as made by card with nothing
+to undo. **The reality was worse than "a control silently absent".** It rendered:
+
+> *"Order #N was paid by card, so there is no payment record to remove here — the money is already on
+> the customer's card."*
+
+🔴 **FOR A CASH ORDER TAKEN AT THE HATCH, EVERY CLAUSE OF THAT IS UNTRUE — and it is WORD-FOR-WORD what
+the modal says truthfully about a real card order.** That is exactly why the operator could not
+distinguish *"you can't do this offline"* from *"this order can't be refunded"*: **the app was actively
+asserting the second.**
+
+**CAUSE.** `hasReversibleInPersonPayment` and `canRefund` are both derived from `ledgerRows`, which come
+from `/api/dashboard`. **Offline they are stale or absent**, so both resolve false/zero and **Branch 3
+was reached by ELIMINATION rather than by evidence.**
+
+> ## 🔴 RECORD THIS AS A CLASS, NOT AS THREE INCIDENTS.
+> **A SERVER-DERIVED INPUT IS EMPTY OFFLINE, AND THE CODE READS ITS ABSENCE AS A FACT RATHER THAN AS
+> MISSING INFORMATION.** Three instances on 14 August alone: the offline "Mark paid" defect, the missing
+> order number, and this. **All three read empty data as an answer.**
+
+### The decision, and Branch 0
+
+🔴 **PAYMENT MODIFICATION — REFUNDS, AND UNDOING A RECORDED PAYMENT — REQUIRES CONNECTIVITY. NEVER
+QUEUED.**
+
+**Why never queued:** every other offline op fails safe — a queued order that does not land is visible
+as unsynced. **A queued REFUND fails toward *"money shown as returned that has not been"***, the
+direction this section forbids: the customer walks away believing they have been refunded, and **nobody
+investigates an order that looks settled.** 🔴 **There is no refund op kind in the outbox and none should
+be added.** `OutboxKind` remains `'create' | 'status' | 'edit' | 'stock' | 'buzzer'`.
+
+**IMPLEMENTED — a Branch 0 in `PaymentActionsModal`, tested BEFORE every other branch**, because offline
+the data the other branches reason from is untrustworthy:
+
+- **Payment changes need a connection**
+- **Payment changes can't be made while offline.**
+- *Refunds and removing a recorded payment both have to reach the payment provider, so they can't be
+  saved on this device and sent later.*
+- *Order #N is unchanged. Reconnect and open this again.*
+
+✅ **`{howPaidBlock}` is kept — how the customer paid is a FACT, not an action.** Nothing to press but
+"Got it", and **no `onUndoPayment`, `onRefund`, `gatedAction` or `enqueue` is reachable from it.**
+
+✅ **IT CLEARS ON RECONNECT** because `offline={isOffline}` traces to
+`onReachabilityChange(online => setIsOffline(!online))` — a React state setter **read at render, never
+cached in a ref or a `useMemo`.** 🔴 **Deliberately the SAME state the offline banner reads, so the
+banner clearing and the controls returning are ONE event, not two.** ⚠️ Given §35 records three
+detectors, **two things that could disagree about connectivity on one screen would be a defect in
+itself.**
+
+✅ **RECORDING A NEW PAYMENT IS UNTOUCHED, AND THE SEPARATION IS STRUCTURAL, NOT CONDITIONAL:** `offline`
+is passed to the modal **and nowhere else**. The card's Mark paid / Cash / Card buttons still queue
+through the gate exactly as before.
+
+### ⚠️ `undo_mark_paid` would STILL queue if Branch 1 were ever reached offline
+
+**INFERRED from `doAction`, not observed** — the branch is unreachable offline, so it has probably never
+fired. 🔴 **It was one stale ledger row away from being live**, and it is the exact failure direction
+Branch 0 exists to prevent.
+
+⚠️ **It is unreachable BY ACCIDENT of the same bug that caused the false message.** Branch 0 makes it
+doubly unreachable, **but the gate itself still accepts the op.** **BACKLOG: the gate should refuse
+`undo_mark_paid` outright rather than relying on a UI branch being unreachable.**
+
+## ✅ REFUNDS ARE BUILT END TO END (V11.18 — correcting this section's own stale text)
+
+**READ, 14 August 2026:**
+
+- **`lib/payments/refund.ts`** (14.8 KB) calls `stripe.refunds.create` on the connected account with an
+  **idempotency key** and an **audit row for every outcome, including pending**.
+- **The refund UI exists** — `PaymentActionsModal.tsx`: reasons, notes, a clamped amount.
+- **The webhook, the emails and `getOrderBalance` all handle refunded states.**
+- 🔴 **Eight `docs/refund-*.md` reports already specify it.**
+
+🔴 **THE REFUNDABLE FIGURE COMES FROM STRIPE, NOT FROM OUR LEDGER** — a PENDING refund (which a Connect
+direct charge produces whenever the connected account's balance is short) **writes no ledger row at
+all**, so a second refund issued in that window would be measured against a ledger that has not moved.
+`refunds.list` counts the pending one.
+
+### 🔴 HATCHGRAB TAKES NO APPLICATION FEE — AND THAT IS A LANDMINE IN WORKING CODE
+
+**`application_fee_amount` is NEVER sent.** `authorize.ts:23` and `capture.ts:39` both record *"this
+build charges no platform fee… absence, never zero"*, and §44 states **0% on every tier**.
+
+> ⚠️ **THE FUTURE-TENSE TRAP, PLANTED IN CODE THAT WORKS TODAY:** the day a platform fee is introduced,
+> the **existing refund call becomes silently wrong IN THE TRUCK'S DISFAVOUR.** Stripe's default on a
+> direct-charge refund without an explicit `refund_application_fee` **leaves the fee with the platform**,
+> so the truck refunds the full amount while HatchGrab keeps its cut.
+> 🔴 **Defuse it with a comment AT THE REFUND CALL SITE now, not with a memory later.**
+
+### The ledger schema was designed around refunds from the start
+
+**READ:** `amount_minor > 0` is a **CHECK**, so **no negative rows** — and none are needed, because
+`kind in ('charge','refund')` was in the **first** migration. 🔴 **The schema was designed for refunds,
+not merely tolerant of them.**
+
+⚠️ **Cash refunds:** `channel` distinguishes them, and a cash refund is **necessarily an out-of-band
+operator action** — the refund UI gates on `cardChargeMinor > 0`.
 
 
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
@@ -9939,4 +10343,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.9
+HatchGrab Engineering Reference Manual · V11.18

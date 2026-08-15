@@ -12,6 +12,9 @@ import { CapacitorConfig } from '@capacitor/cli'
 // artifact is ios/App/App/capacitor.config.json, regenerated on every `cap sync`.
 const CAP_SERVER_BASE = process.env.CAP_SERVER_URL || 'https://www.hatchgrab.com'
 const IS_LOCAL_HTTP = CAP_SERVER_BASE.startsWith('http://')
+// The ONE host the shell is already loading, derived from the line above so it can never drift from
+// server.url. Production bakes 'www.hatchgrab.com'; a local sync bakes 'localhost'. See allowNavigation.
+const CAP_SERVER_HOST = new URL(CAP_SERVER_BASE).hostname
 
 const config: CapacitorConfig = {
   appId: 'com.hatchgrab.app',
@@ -20,6 +23,27 @@ const config: CapacitorConfig = {
   server: {
     url: `${CAP_SERVER_BASE}/app`,
     cleartext: IS_LOCAL_HTTP,   // http (localhost) needs cleartext; https production stays false
+    // ── HARD NAVIGATIONS MUST STAY IN THE WEBVIEW ────────────────────────────────────────────────
+    // WITHOUT THIS, EVERY TOP-LEVEL NAVIGATION TO A SIBLING PATH IS HANDED TO SAFARI. Capacitor's iOS
+    // policy (WebViewDelegationHandler.decidePolicyFor) decides "is this our app?" with a STRING PREFIX
+    // match on the full serverURL INCLUDING ITS PATH:
+    //     navURL.absoluteString.starts(with: bridge.config.serverURL.absoluteString)
+    // Because `url` above ends in /app, https://www.hatchgrab.com/dashboard/<token> does NOT start with
+    // https://www.hatchgrab.com/app, so the bridge cancels the load and calls UIApplication.shared.open
+    // — the operator lands in Safari, signed out, on the same origin. THE PATH IS WHAT DAMNS IT.
+    // allowNavigation is checked BEFORE that prefix test and matches on HOSTNAME ONLY, so one entry
+    // covers every path on this host. (Android never had the bug: Bridge.launchIntent compares host +
+    // scheme, not the path. This entry is a no-op there, and is shared config rather than ios-only so the
+    // two shells cannot diverge.)
+    // ONE EXACT HOST, NO WILDCARD: CAPInstanceConfiguration.doesHost splits both sides on '.' and requires
+    // an EQUAL SEGMENT COUNT, so 'www.hatchgrab.com' matches that host and nothing else — not the apex
+    // hatchgrab.com, not any other subdomain, and no third-party host. Stripe, Tally and every external
+    // link still leave for Safari exactly as before, which is what they should do.
+    // NOTE: router.push was NEVER affected — a soft navigation creates no navigationAction and never
+    // reaches this policy. That is why some controls worked and others did not.
+    // DO NOT "FIX" THE PREFIX MATCH BY DROPPING /app FROM `url` ABOVE: /app is the cold-launch route, and
+    // / is the Village Foodie consumer map — a different product with no way back.
+    allowNavigation: [CAP_SERVER_HOST],
   },
   ios: {
     // 'never' = don't let the OS auto-inset the scroll view for safe areas; the WEB layer owns the inset
