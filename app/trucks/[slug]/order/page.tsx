@@ -3010,7 +3010,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           const optBlockedName = optionAddBlocked(v.modifiers.map(m => m.name))
                           const plusBlocked = isOrderingBlocked || atStockLimit || !!optBlockedName
                           return (
-                            <div key={v.cartKey} className="flex items-center gap-2 bg-orange-50 rounded-xl px-3 py-2 border border-orange-100">
+                            /* ── THE ORANGE BOX WAS REMOVED HERE, 15 August 2026 ─────────────────────
+                               This row used to be bg-orange-50 + border-orange-100 + rounded-xl, i.e. a
+                               tinted card inside the menu list. The OPERATOR's equivalent row
+                               (components/dashboard/AddOrderPanel.tsx, the per-line rows) has no fill, no
+                               border and no radius — its controls sit on the row's own background — and
+                               the two surfaces are now matched on that point.
+                               PADDING: px-3 became pl-3. A box needs even inset; a bare row does not, and
+                               the right inset was holding the price away from the row edge, which is not
+                               what the operator row does. py-2 is KEPT (slightly more generous than the
+                               operator's py-1.5) because this is a phone surface and the rows would
+                               otherwise sit tight; the parent's space-y-1.5 still separates them.
+                               ⚠️ NOTHING ELSE WAS RESTYLED. The +/- keep their orange treatment, the
+                               children keep their order, and every handler is untouched — see the report
+                               for the differences that were left deliberately. */
+                            <div key={v.cartKey} className="flex items-center gap-2 pl-3 py-2">
                               <div className="flex items-center gap-1 shrink-0">
                                 <button onClick={() => !isOrderingBlocked && removeItem(v.cartKey)} disabled={isOrderingBlocked} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none disabled:opacity-40">−</button>
                                 <span className="w-5 text-center font-black text-slate-900 text-sm">{v.quantity}</span>

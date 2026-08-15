@@ -40,6 +40,8 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Unlock HatchGrab with Face ID.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>HatchGrab uses Bluetooth to connect to your kitchen receipt printer so order tickets can be printed automatically. It is not used for anything else.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

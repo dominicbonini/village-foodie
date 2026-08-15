@@ -1234,9 +1234,24 @@ export function OrderCard({
             </div>
           )}
 
-          {/* Quick time adjust — pending, non-cook only */}
+          {/* Quick time adjust — pending, non-cook only.
+              ── 🔴 THE CAPTION WRAPS; IT DOES NOT CLIP. FIXED 15 August 2026 ──────────────────────
+              OBSERVED on a physical iPad (order #16): the grey caption ran past the card and was cut
+              mid-word — "new time ser… to custome…". Nothing in this row could yield. The label is
+              `shrink-0`, the three buttons are intrinsically sized, and the caption had neither
+              `min-w-0` nor `truncate`, so a flex item's default `min-width:auto` stopped it shrinking
+              below its longest word; the row simply outgrew the card, whose root carries
+              `overflow-hidden`, and the overflow was chopped.
+              THE FIX IS `flex-wrap` ON THE ROW: when the caption will not fit beside the buttons it
+              takes its own line, where it has the card's full inner width and every word survives.
+              `min-w-0 truncate` on the caption is the LAST RESORT for a width narrower than any
+              layout reaches today — an ellipsis is a legible failure, a mid-word chop is not.
+              🔴 THE BUTTONS ARE DELIBERATELY UNTOUCHED. They are the tap targets of a money path
+              (adjust_slot confirms the order and captures a held authorisation), so nothing here may
+              make them smaller. Wrapping moves whole items to a new line and never compresses them,
+              and the label plus the three buttons fit the narrowest column with room to spare. */}
           {order.status === 'pending' && order.slot && viewMode !== 'cook' && (
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex flex-wrap items-center gap-1.5 mb-2">
               <span className="text-xs text-slate-400 font-medium shrink-0">Adjust time:</span>
               {[5, 10, 20].map(mins => (
                 <button key={mins}
@@ -1245,7 +1260,7 @@ export function OrderCard({
                   +{mins}m
                 </button>
               ))}
-              <span className="text-xs text-slate-300 ml-1">→ new time sent to customer</span>
+              <span className="text-xs text-slate-300 ml-1 min-w-0 truncate">→ new time sent to customer</span>
             </div>
           )}
 

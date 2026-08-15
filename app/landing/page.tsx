@@ -71,7 +71,7 @@ const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
 // FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
 const DETAIL_OVERRIDES: Record<string, string> = {
-  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -201,7 +201,7 @@ export default function LandingPage() {
                 LAUNCH — applied to two features with different readiness. It is NOT an inconsistency; do
                 not "harmonise" the tenses. */}
             <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill. Messenger and Instagram coming soon.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPad and Android app.</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
           </div>
         </div>
       </section>

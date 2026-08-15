@@ -64,7 +64,7 @@ export function NotificationSettings({ token }: { token: string }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-slate-800">🔔 Notifications</p>
-          <p className="text-xs text-slate-500 mt-0.5">Alerts on this iPad. Turn on to choose which alerts you get.</p>
+          <p className="text-xs text-slate-500 mt-0.5">Alerts on this device. Turn on to choose which alerts you get.</p>
         </div>
         <Toggle on={master} onToggle={() => toggleMaster(!master)} />
       </div>

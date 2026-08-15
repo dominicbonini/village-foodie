@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { hasFeature } from '@/lib/features'
+import { hasFeature, canAccess } from '@/lib/features'
 import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
@@ -81,6 +81,7 @@ import { getOrderBalance, hasUnrecordedPayment } from '@/lib/payments/ledger'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
+import { usePrinting } from '@/lib/printing/usePrinting'   // the ONE mount of the print watcher — dashboard only, never the KDS
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
@@ -2287,6 +2288,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Fall back to the last known event when upcomingEvents is transiently empty
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
+
+  // ── 🔴 KITCHEN TICKET PRINTING — THE ONE MOUNT OF THE PRINT WATCHER ────────────────────────────────
+  // MOUNTED HERE AND NOWHERE ELSE. The dedupe record is device-local Capacitor Preferences; there is no
+  // print_jobs table and no orders.printed_at, so a SECOND mounted watcher does not race this one, it
+  // duplicates it — two devices at one event would each print every ticket, at the same moment, because
+  // the trigger mode is truck-level and both agree on when a ticket is due. DO NOT MOUNT ON THE KDS.
+  // ⚠️ CLIENT-SIDE, AND THAT IS A KNOWN LIMIT, NOT AN OVERSIGHT: the watcher is a 20s interval inside this
+  // page. Backgrounding the app suspends it (Info.plist declares NO UIBackgroundModes), and navigating to
+  // the KDS unmounts this page and stops it. Keep-awake holds the SCREEN on, not the app foregrounded.
+  // Nothing is lost by that — an order that did not print is still DUE and prints on the next tick once
+  // this screen is live again — but tickets do not appear while the dashboard is not on screen.
+  // 🔴 THE PLAN GATE IS THE SAME PREDICATE THE SETTINGS CARD USES, resolved once here and passed down, so
+  // the card and the watcher can never disagree about whether this truck may print.
+  const canPrintTickets = canAccess(truck?.plan ?? 'starter', 'ticket_printing', truck?.feature_overrides ?? {}, truck?.trial_expires_at ?? null)
+  const printing = usePrinting({
+    token,
+    orders,
+    truck,
+    event: activeEvent,
+    payments,
+    heldAuthorisations,
+    canPrint: canPrintTickets,
+    mode: truck?.print_trigger_mode==='on_confirmed' ? 'on_confirmed' : 'lead_time',
+  })
+
   // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
   // the collected/undo toast wording) must agree with the card and the server.
   const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash,completionPresses:effectiveCompletionPresses}=resolvePaidStep(truck,activeEvent)
@@ -3534,6 +3560,72 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )}
             </div>
+            {/* == ORDER SCREEN — THE FOUR SETTINGS THAT SHAPE IT ========================================
+                GROUPED 15 August 2026, COMPLETED the same day. Four cards that were scattered down this tab,
+                now adjacent and in a fixed order: Menu layout, the paid-step card, the order-ready step, the
+                buzzer prompt. Every card is MOVED VERBATIM -- same label, same helper text, same handler, same
+                column, same default, same render gate. Nothing about what any of them writes changed.
+            
+                THE PAID-STEP CARD MOVED AS A WHOLE UNIT, AND THAT IS THE POINT. An earlier pass moved only the
+                other three and stopped, because "Take orders without payment" is that card TITLE ROW -- the
+                card header below records that the card is titled by its setting, with the cash row nested
+                beneath it as a child. Moving the row alone would have left a card with no title whose two
+                remaining rows both name it. Moving the CARD keeps that structure intact and orphans nothing.
+            
+                THE HEADING FOLLOWS THE ORDERS-TAB PATTERN (see the "New -- action needed" and "Confirmed"
+                headings): same classes, minus the outer mb-4, because this tab space-y-4 already separates
+                siblings and mb-4 would double it. The inner gap-3 is deliberately tighter than that space-y-4
+                so the four read as one family rather than four neighbours. */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Order screen</p>
+              <div className="flex flex-col gap-3">
+            {/* ── MENU LAYOUT — trucks.add_order_layout (MOVED HERE 14 August 2026) ────────────────────
+                It was in Manage → Settings and is now here, in ONE place, because this is the screen it
+                changes: an operator judging tabs against one scrolling list is standing at the hatch
+                looking at the Add order tab, not in Manage. The Manage sub-panel, its resolver constant
+                and its update_truck allow-list entry were all removed in the same change — see the note
+                left at app/api/manage/route.ts.
+
+                🔴 TRUCK-WIDE ON A MOSTLY-PER-EVENT TAB. Read the amended scope note on the card above
+                before assuming otherwise. It writes trucks.add_order_layout through
+                `set_add_order_layout` (app/api/dashboard/action/route.ts), the same one-action-one-column
+                shape as set_auto_accept — this route has no update_truck and no shared allow-list.
+
+                ⚠️ ITS OWN CARD, not a row in the payment card above: that card's rows are per-event
+                payment overrides and this is neither. RADIO rather than a toggle — two named
+                alternatives that each need their own explanation, and neither is the "on" state of the
+                other. DRAWN radio, never <input type="radio">: a native one paints in the browser's
+                accent instead of this page's orange and reads as a foreign control. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Menu layout</p>
+                  <p className="text-slate-500 text-xs mt-0.5">How items appear on the Add order screen.</p>
+                </div>
+                {savingAddOrderLayout&&<span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>}
+              </div>
+              <div className="flex flex-col gap-2 mt-3">
+                {([
+                  ['tabs','Separate categories','Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.'],
+                  ['scroll','One page','Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.'],
+                ] as const).map(([v,lbl,help])=>{
+                  // Anything that is not exactly 'scroll' reads as 'tabs' — the SAME expression
+                  // AddOrderPanel uses, so this control and that screen cannot show different answers.
+                  const active=(truck?.add_order_layout==='scroll'?'scroll':'tabs')===v
+                  return (
+                    <button type="button" key={v} disabled={isOffline}
+                      onClick={()=>saveAddOrderLayout(v)}
+                      className={`w-full text-left flex items-start gap-2 ${isOffline?'opacity-50 cursor-not-allowed':'cursor-pointer'}`}>
+                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${active?'border-orange-500':'border-slate-300'}`}>{active&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}</span>
+                      <span className="text-sm">
+                        <span className="font-medium text-slate-700">{lbl}</span>
+                        <span className="block text-xs text-slate-400">{help}</span>
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
             {/* ── TAKING PAYMENT — PER-EVENT OVERRIDES (V9.5) ────────────────────────────────────────
                 BOTH settings are now truck DEFAULT + per-event override, so they group cleanly and the
                 mixed-scope problem that blocked this grouping is gone. Each writes truck_events only and
@@ -3676,52 +3768,46 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             </div>
-
-            {/* ── MENU LAYOUT — trucks.add_order_layout (MOVED HERE 14 August 2026) ────────────────────
-                It was in Manage → Settings and is now here, in ONE place, because this is the screen it
-                changes: an operator judging tabs against one scrolling list is standing at the hatch
-                looking at the Add order tab, not in Manage. The Manage sub-panel, its resolver constant
-                and its update_truck allow-list entry were all removed in the same change — see the note
-                left at app/api/manage/route.ts.
-
-                🔴 TRUCK-WIDE ON A MOSTLY-PER-EVENT TAB. Read the amended scope note on the card above
-                before assuming otherwise. It writes trucks.add_order_layout through
-                `set_add_order_layout` (app/api/dashboard/action/route.ts), the same one-action-one-column
-                shape as set_auto_accept — this route has no update_truck and no shared allow-list.
-
-                ⚠️ ITS OWN CARD, not a row in the payment card above: that card's rows are per-event
-                payment overrides and this is neither. RADIO rather than a toggle — two named
-                alternatives that each need their own explanation, and neither is the "on" state of the
-                other. DRAWN radio, never <input type="radio">: a native one paints in the browser's
-                accent instead of this page's orange and reads as a foreign control. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Menu layout</p>
-                  <p className="text-slate-500 text-xs mt-0.5">How items appear on the Add order screen.</p>
+            {/* Order-ready step — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
+                order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
+                master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
+                Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
+                consistency with Offline protection / Auto-accept above.
+                FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
+                headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
+                emails, so it stays non-interactive. */}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
                 </div>
-                {savingAddOrderLayout&&<span className="text-xs text-slate-400 animate-pulse shrink-0">Saving…</span>}
+                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
               </div>
-              <div className="flex flex-col gap-2 mt-3">
-                {([
-                  ['tabs','Separate categories','Show one category at a time. Tap a category to switch. Best for longer menus, where every item stays in the same place.'],
-                  ['scroll','One page','Show every item in one scrolling list, with a heading for each category. There are no category buttons - you scroll to move around. Best for shorter menus, where you can see most of it at once.'],
-                ] as const).map(([v,lbl,help])=>{
-                  // Anything that is not exactly 'scroll' reads as 'tabs' — the SAME expression
-                  // AddOrderPanel uses, so this control and that screen cannot show different answers.
-                  const active=(truck?.add_order_layout==='scroll'?'scroll':'tabs')===v
-                  return (
-                    <button type="button" key={v} disabled={isOffline}
-                      onClick={()=>saveAddOrderLayout(v)}
-                      className={`w-full text-left flex items-start gap-2 ${isOffline?'opacity-50 cursor-not-allowed':'cursor-pointer'}`}>
-                      <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${active?'border-orange-500':'border-slate-300'}`}>{active&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}</span>
-                      <span className="text-sm">
-                        <span className="font-medium text-slate-700">{lbl}</span>
-                        <span className="block text-xs text-slate-400">{help}</span>
-                      </span>
-                    </button>
-                  )
-                })}
+            )}
+            {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
+                Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
+                — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and
+                this dashboard must not write it. Resolution is resolveBuzzerPrompt (lib/buzzer.ts),
+                the same override-then-default idiom resolvePaidStep uses, and the ONLY place that
+                chain lives.
+                ⚠️ RENDERED ONLY WHEN THE VAN HAS BUZZERS (vanBuzzerCount != null). A van with no
+                buzzers has nothing to prompt for, and a disabled toggle would advertise a feature the
+                operator cannot reach from this screen.
+                ⚠️ NO PER-EVENT SCOPE WORDING in the copy — scope is a property of THIS SCREEN, not of
+                each row. See the 🔴 note above the paid-step card. */}
+            {activeEvent&&vanBuzzerCount!=null&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don’t.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
+                </div>
+              </div>
+            )}
               </div>
             </div>
 
@@ -3788,47 +3874,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
             )}
 
-            {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
-                Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
-                — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and
-                this dashboard must not write it. Resolution is resolveBuzzerPrompt (lib/buzzer.ts),
-                the same override-then-default idiom resolvePaidStep uses, and the ONLY place that
-                chain lives.
-                ⚠️ RENDERED ONLY WHEN THE VAN HAS BUZZERS (vanBuzzerCount != null). A van with no
-                buzzers has nothing to prompt for, and a disabled toggle would advertise a feature the
-                operator cannot reach from this screen.
-                ⚠️ NO PER-EVENT SCOPE WORDING in the copy — scope is a property of THIS SCREEN, not of
-                each row. See the 🔴 note above the paid-step card. */}
-            {activeEvent&&vanBuzzerCount!=null&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Remind me to add a buzzer</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. With it off you can still add a buzzer any time by tapping the order, but nothing will prompt you. Useful where you hand buzzers out, easy to switch off where you don’t.</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
-                </div>
-              </div>
-            )}
-
-            {/* Order-ready step — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
-                order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
-                master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
-                Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
-                consistency with Offline protection / Auto-accept above.
-                FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
-                headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
-                emails, so it stays non-interactive. */}
-            {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
-                </div>
-                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
-              </div>
-            )}
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.
                 DEMO: HIDDEN. Was briefly shown-but-locked; reverted because the sound model is moving to
@@ -3986,7 +4031,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
                 printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local.
                 DEMO: both hidden — hardware/device configuration a prospect has nothing to point at. */}
-            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode}/>}
+            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount}/>}
             {!isDemo&&<NotificationSettings token={token}/>}
           </div>
         )}

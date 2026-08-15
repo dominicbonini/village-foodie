@@ -79,7 +79,7 @@ export function DeviceSetupGate({ token }: { token: string }) {
           <>
             <div>
               <h2 className="text-base font-black text-slate-900">Couldn&apos;t load device setup</h2>
-              <p className="text-xs text-slate-500 mt-0.5">We couldn&apos;t reach the server to set up <strong>this iPad</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
+              <p className="text-xs text-slate-500 mt-0.5">We couldn&apos;t reach the server to set up <strong>this device</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => void runSetup()} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">Retry</button>
@@ -103,7 +103,7 @@ export function DeviceSetupGate({ token }: { token: string }) {
           <>
             <div>
               <h2 className="text-base font-black text-slate-900">Set up this device</h2>
-              <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this iPad</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
+              <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this device</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
             </div>
             <div>
               <p className="text-sm font-bold text-slate-800 mb-1.5">Which screen should this device open to?</p>
