@@ -113,17 +113,26 @@ export default function ManageOrderPage() {
     return new Date() > cutoff
   }
 
+  // 'modified' is an edited-but-live order and belongs here — it must match the server's allow-list in
+  // app/api/orders/cancel/route.ts exactly, or the button and the endpoint disagree and one of them lies.
   const canCancel =
     order.allow_cancellation &&
-    ['pending', 'confirmed'].includes(order.status) &&
+    ['pending', 'confirmed', 'modified'].includes(order.status) &&
     !isPastCutoff()
 
+  // Every branch names a REASON, and the order they are tested in is the order a customer would ask them.
+  // The final line is the truck-policy sentence and must only be reached when the truck has genuinely
+  // switched cancellation off — it used to catch 'modified' as well, telling a customer whose truck DOES
+  // accept cancellations that it does not.
   const statusLabel = () => {
     if (order.status === 'cancelled') return 'This order has already been cancelled.'
     if (order.status === 'ready' || order.status === 'collected')
       return 'This order can no longer be cancelled.'
     if (isPastCutoff()) return 'The cancellation window has passed.'
-    return 'Cancellations are not accepted for this order.'
+    if (!order.allow_cancellation) return 'Cancellations are not accepted for this order.'
+    // Any remaining status (rejected, or one added later) is genuinely past cancelling. Same wording as
+    // the server's 409 for the same case, so the two layers cannot say different things.
+    return 'This order can no longer be cancelled.'
   }
 
   return (

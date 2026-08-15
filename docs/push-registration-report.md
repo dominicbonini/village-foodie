@@ -1,81 +1,163 @@
-# Push notifications — why nothing arrived on 15 August 2026
+# iOS push registration — the missing APNs delegate methods, IMPLEMENTED
 
-**READ-ONLY. Nothing was edited, committed, built or deployed. No `next dev`, no `next build`. No write to the database — no query was run against it at all.**
-✅ **No span of the prompt arrived garbled. No instruction contradicted another, so there was nothing to stop for.**
-⚠️ **The env file was read for KEY NAMES ONLY. No value was printed, logged or copied into this report.**
+**This file replaces the read-only diagnosis of the same name.** That diagnosis found the root cause;
+this records the fix.
 
-> ## 🔴 THE HEADLINE: THERE ARE **THREE INDEPENDENT** REASONS NOTHING ARRIVED, AND EACH ONE ALONE IS SUFFICIENT.
->
-> **1. NO SEND WAS EVEN ATTEMPTED.** The device query filters `.not('push_token', 'is', null)`. With all four iOS rows NULL, `tokens` is empty, `if (tokens.length)` is false — **`sendOrderPendingPush` was never called.** 🔴 **So the sandbox-vs-production question never arose on this order: nothing was sent to either endpoint.**
-> **2. THE SENDER IS NOT CONFIGURED — in the environment I can see.** `apnsConfig()` requires four `APNS_*` vars. **`.env.local` contains ZERO `APNS_*` keys** (it does have `FCM_SERVICE_ACCOUNT_JSON`). ⚠️ **The device hits PRODUCTION, whose env I cannot inspect from this repo — see C2 for what that does and does not prove.**
-> **3. REGISTRATION FAILED SILENTLY, IF IT RAN AT ALL.** The `registrationError` listener exists and does exactly one thing: `console.warn`. **No UI, no server report, no state.** 🔴 **And the console it writes to is inside a WKWebView on an iPad, where nobody was looking.**
->
-> ## ⚠️ AND SEPARATELY, THE ANSWER TO "why no warning?": **NOTHING IN THE APP EVER CHECKS WHETHER A USABLE TOKEN EXISTS.** The toggle that said ON is a **local preference**. See Part B.
+Scope honoured: **`ios/App/App/AppDelegate.swift` ONLY.** No web change, no plugin change, no
+`Info.plist`, no entitlements, no privacy manifest, no `project.pbxproj`. No `next dev`, no
+`next build`, no deploy, no archive, no commit, no database write, no Stripe call, no environment
+variable touched. **`npx cap sync` was run in Part C and nowhere else, as permitted.**
+
+**No span of the prompt arrived garbled, and no instruction contradicted another.**
+
+Every claim is marked **READ** (quoted from disk or from a command I ran) or **INFERRED**.
 
 ---
 
-# PART A — DOES REGISTRATION EVEN RUN?
+# PART A — BEFORE
 
-## A1. The full registration path, quoted
+## A1. `ios/App/App/AppDelegate.swift` in full, before the edit
 
-**READ, `lib/native/push.ts:48-95` — the entire body, in order:**
-
-```ts
-  try {
-    const { PushNotifications } = await import('@capacitor/push-notifications')
-```
-```ts
-    if (!listenersAttached) {
-      await Promise.all([
-        // FCM/APNs token → persist to this device's row so the server push path can target it.
-        PushNotifications.addListener('registration', (t: { value: string }) => {
-          void saveDeviceConfig(token, { push_token: t.value })
-        }),
-        PushNotifications.addListener('registrationError', (err: unknown) => {
-          console.warn('[push] registration error:', err)
-        }),
-        PushNotifications.addListener('pushNotificationActionPerformed', (action: { notification: { data?: Record<string, unknown> } }) => {
-          const data = action?.notification?.data
-          const orderKey = data && typeof data.orderKey === 'string' ? data.orderKey : null
-          if (orderKey && onOpenOrder) onOpenOrder(orderKey)
-        }),
-      ])
-      listenersAttached = true
-    }
-
-    const perm = await PushNotifications.requestPermissions()
-    if (perm.receive !== 'granted') return
-
-    await PushNotifications.register()
-  } catch (e) {
-    console.warn('[push] register failed:', (e as Error).message)
-  }
-```
-
-| Step | Line | Note |
-|---|---|---|
-| **Token listener** | `:72-74` | ✅ attached **and awaited** BEFORE `register()` — the V11.x fix for the Android dropped-token race, and it is correct |
-| **Error listener** | `:75-77` | ⚠️ attached, and see A2 |
-| **Tap handler** | `:80-84` | attached early so a launch-by-tap is not missed |
-| **Permission request** | `:89` | `requestPermissions()` |
-| **Early return** | `:90` | 🔴 **`if (perm.receive !== 'granted') return` — SILENT. No log, no state, no UI.** |
-| **Register** | `:92` | `await PushNotifications.register()` |
-
-✅ **THE ORDERING IS RIGHT AND IS NOT THE BUG.** The header at `:51-68` records the exact failure this ordering fixed (`No listeners found for event registration`). **A token delivered today would be caught and written.**
-
-## A2. 🔴 THE FAILURE HANDLER — implemented, and it swallows
-
-**JS side, `lib/native/push.ts:75-77`, in full:**
-
-```ts
-        PushNotifications.addListener('registrationError', (err: unknown) => {
-          console.warn('[push] registration error:', err)
-        }),
-```
-
-**The native side that feeds it. READ, `@capacitor/push-notifications/ios/…/PushNotificationsPlugin.swift:202-210`:**
+**READ** — 49 lines, complete:
 
 ```swift
+import UIKit
+import Capacitor
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    var window: UIWindow?
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        return true
+    }
+
+    func applicationWillResignActive(_ application: UIApplication) {
+        // Sent when the application is about to move from active to inactive state. ...
+    }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        // Use this method to release shared resources, save user data, invalidate timers, ...
+    }
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        // Called as part of the transition from the background to the active state; ...
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Restart any tasks that were paused (or not yet started) while the application was inactive. ...
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        // Called when the application is about to terminate. Save data if appropriate. ...
+    }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        // Called when the app was launched with a url. Feel free to add additional processing here,
+        // but if you want the App API to support tracking app url opens, make sure to keep this call
+        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
+    }
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        // Called when the app was launched with an activity, including Universal Links.
+        // Feel free to add additional processing here, but if you want the App API to support
+        // tracking app url opens, make sure to keep this call
+        return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    }
+
+}
+```
+
+(The six lifecycle stubs' comments are Apple's boilerplate and are elided above only for width; they are
+untouched and present in the diff at B3.)
+
+**READ — confirmation that neither method existed:**
+
+```
+$ grep -n "didRegisterForRemoteNotifications\|didFailToRegisterForRemoteNotifications" ios/App/App/AppDelegate.swift
+NOT FOUND — neither method appears in AppDelegate.swift
+```
+
+🔴 **Confirmed. It is stock Capacitor boilerplate: the two remote-notification methods were never
+added.** Everything present is the template's own — `didFinishLaunching`, five lifecycle stubs, and the
+two `ApplicationDelegateProxy` forwarders for URLs and universal links.
+
+## A2. The plugin's own README install instructions, quoted verbatim
+
+**READ** — `node_modules/@capacitor/push-notifications/README.md:12-26`, exactly as it is on disk:
+
+````
+## iOS
+
+On iOS you must enable the Push Notifications capability. See [Setting Capabilities](https://capacitorjs.com/docs/ios/configuration#setting-capabilities) for instructions on how to enable the capability.
+
+After enabling the Push Notifications capability, add the following to your app's `AppDelegate.swift`:
+
+```swift
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+}
+
+func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+  NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+}
+```
+````
+
+✅ **The signatures and notification names used in Part B are copied from this block, not written from
+memory.** The only differences in the committed code are indentation (4 spaces, matching the rest of the
+file, versus the README's 2) and the added comments.
+
+## A3. The notification names, exactly as the plugin declares them
+
+**READ** — `node_modules/@capacitor/ios/Capacitor/Capacitor/CAPNotifications.swift:12-15`:
+
+```swift
+    public static let capacitorDidRegisterForRemoteNotifications =
+        Notification.Name(rawValue: "CapacitorDidRegisterForRemoteNotificationsNotification")
+    public static let capacitorDidFailToRegisterForRemoteNotifications =
+        Notification.Name(rawValue: "CapacitorDidFailToRegisterForRemoteNotificationsNotification")
+```
+
+**READ** — and the observers that consume them,
+`node_modules/@capacitor/push-notifications/ios/Sources/PushNotificationsPlugin/PushNotificationsPlugin.swift:39-47`:
+
+```swift
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.didRegisterForRemoteNotificationsWithDeviceToken(notification:)),
+                                               name: .capacitorDidRegisterForRemoteNotifications,
+                                               object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.didFailToRegisterForRemoteNotificationsWithError(notification:)),
+                                               name: .capacitorDidFailToRegisterForRemoteNotifications,
+                                               object: nil)
+```
+
+**READ** — and what those selectors do with `notification.object`, which is why the object type matters,
+`PushNotificationsPlugin.swift:184-210`:
+
+```swift
+    @objc public func didRegisterForRemoteNotificationsWithDeviceToken(notification: NSNotification) {
+        appDelegateRegistrationCalled = true
+        if let deviceToken = notification.object as? Data {
+            let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+            notifyListeners("registration", data: [
+                "value": deviceTokenString
+            ])
+        } else if let stringToken = notification.object as? String {
+            notifyListeners("registration", data: [
+                "value": stringToken
+            ])
+        } else {
+            notifyListeners("registrationError", data: [
+                "error": PushNotificationError.tokenParsingFailed.localizedDescription
+            ])
+        }
+    }
+
     @objc public func didFailToRegisterForRemoteNotificationsWithError(notification: NSNotification) {
         appDelegateRegistrationCalled = true
         guard let error = notification.object as? Error else {
@@ -87,477 +169,553 @@
     }
 ```
 
-> ## ✅ IMPLEMENTED — BOTH HALVES. ❌ AND IT SWALLOWS THE ERROR COMPLETELY.
-> **`didFailToRegisterForRemoteNotificationsWithError` IS wired** (observer registered at `:44-47`), and it DOES deliver `error.localizedDescription` to JS. 🔴 **The JS handler then writes it to `console.warn` and stops.**
-> **It does not:** set state · render anything · write to the device row · call the server · retry · surface a badge · disable the toggle that claims push is on. **The one thing it does is the one thing nobody on a trading iPad can see.**
-
-⚠️ **AND THERE IS A SECOND, QUIETER SWALLOW: `:90`.** If the operator denied notifications at the OS level, `registerForPush` **returns with no log at all** — not even a `console.warn`. 🔴 **"Permission denied" and "registration failed" are indistinguishable from outside, and one of them leaves no trace whatsoever.**
-
-## A3. What is logged, and could it be seen from the device?
-
-| Event | What is emitted | Where it goes |
-|---|---|---|
-| Registration error | `[push] registration error: <localizedDescription>` | **WKWebView JS console** |
-| Any thrown exception | `[push] register failed: <message>` | **WKWebView JS console** |
-| Permission denied | 🔴 **NOTHING** | — |
-| Token received | 🔴 **NOTHING** — it writes silently via `saveDeviceConfig` | — |
-
-> ## 🔴 VISIBLE FROM THE DEVICE? **NO. NOT WITHOUT A MAC ATTACHED.**
-> These are `console.warn` calls **inside the WebView**. Reaching them requires **Safari → Develop → \<iPad\> → Web Inspector**, or Xcode's console for the native half. **There is no in-app log viewer, no toast, no diagnostics screen.**
-> ⚠️ **AND THE NATIVE FAILURE — the one that says WHY APNs refused — is emitted by iOS itself and appears in the DEVICE log, not the JS console.** Part E is the procedure for capturing it.
-
-## A4. What gates registration — quoted
-
-**Gate 1 — NATIVE ONLY. `lib/native/push.ts:28`:**
-```ts
-  if (!Capacitor.isNativePlatform()) return
-```
-
-**Gate 2 — OS PERMISSION. `:89-90`:**
-```ts
-    const perm = await PushNotifications.requestPermissions()
-    if (perm.receive !== 'granted') return
-```
-
-**Gate 3 — 🔴 THE DEVICE MUST BE BOUND TO A VAN. `registerForPush` has exactly THREE call sites, all in `components/native/OperatorDeviceConfig.tsx`:**
-
-```tsx
-    if (device && device.van_id) { void registerForPush(token); setLoading(false); return }
-```
-```tsx
-    if (vanList.length === 1) {
-      const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
-      if (!mounted.current) return
-      if (saved) void registerForPush(token)
-```
-```tsx
-    if (saved) { void registerForPush(token); setNeedsSetup(false) }
-```
-
-🔴 **All three are inside `DeviceSetupGate`, and every one is `void`-ed — the promise is never awaited and never inspected.** ⚠️ **`runSetup` bails BEFORE any of them on a fetch failure:**
-
-```tsx
-    if (!result.ok) { setFetchError(true); setLoading(false); return }
-```
-
-**Gate 4 — NOT FOUND.** ✅ **"Not found" is the result: registration is NOT gated by plan, role, truck flag, or by the "New order alerts" toggle in Settings.** 🔴 **Binding to a van is the only product-level precondition** — the notifications card and the registration call are **completely independent code paths that never consult one another.**
+⚠️ **Two contracts are visible here and both are honoured in Part B:** the success post must carry the
+token as **`Data`** (the plugin hex-encodes it itself), and the failure post must carry an **`Error`** —
+the failure observer `return`s silently on anything else, which would produce a second silent failure of
+exactly the kind being fixed.
 
 ---
 
-# PART B — THE TOGGLE THAT SHOWED "ON"
+# PART B — THE EDIT
 
-## B1. What it reads and writes
+## B1 / B2. Both methods, added
 
-**READ, `components/native/NotificationSettings.tsx`. The load, `:27-31`:**
+**READ** — the final code, as it now stands on disk:
 
-```tsx
-      const m = (await Preferences.get({ key: NOTIFY_KEYS.master })).value
-      const o = (await Preferences.get({ key: NOTIFY_KEYS.offline })).value
-      const n = (await Preferences.get({ key: NOTIFY_KEYS.neworder })).value
-      if (off) return
-      setMaster(m === 'true'); setOfflineAlerts(o !== 'false'); setNewOrder(n === 'true'); setReady(true)
-```
-
-**The master toggle, `:38-53`:**
-
-```tsx
-  const toggleMaster = async (v: boolean) => {
-    setNotice(null)
-    if (v) {
-      let granted = false
-      try { granted = await requestNotificationPermission() } catch { granted = false }
-      if (!granted) {
-        setNotice('Notifications need to be enabled in your device Settings to turn this on.')
-        return
-      }
+```swift
+    // MARK: - APNs registration
+    //
+    // THE BRIDGE BETWEEN iOS AND @capacitor/push-notifications. Without these two methods the plugin
+    // never learns the device token, and NOTHING reports that.
+    //
+    // WHAT WAS BROKEN, AND FOR HOW LONG. `van_devices.push_token` was NULL on every iOS row since the
+    // app was first installed. The JS side was correct throughout: listeners attached AND awaited
+    // before requestPermissions() and register() (lib/native/push.ts), the endpoint allow-lists
+    // push_token (app/api/native/bind-device), and both entitlements carry aps-environment. The break
+    // was here. PushNotifications.register() calls UIApplication.shared.registerForRemoteNotifications(),
+    // iOS negotiates with APNs, and APNs hands the token to
+    // application(_:didRegisterForRemoteNotificationsWithDeviceToken:) on THIS delegate. That method did
+    // not exist, so the default no-op ran and the token was discarded inside the app process.
+    //
+    // WHY IT WAS INVISIBLE. The plugin observes NotificationCenter, and the ONLY thing in the whole tree
+    // that posts these two notifications is the plugin's own README - i.e. this install step. Capacitor
+    // core merely DECLARES the names (CAPNotifications.swift). With nothing posting them, the plugin's
+    // `registration` event never fired AND NEITHER DID `registrationError`, so the one console.warn that
+    // would have reported a fault could never print. The absence of an error was the symptom.
+    // Diagnosis and evidence: docs/push-registration-report.md.
+    //
+    // Signatures and notification names are copied VERBATIM from the plugin's documented install step
+    // (node_modules/@capacitor/push-notifications/README.md) - not written from memory. Do not rename
+    // the parameters: these are UIApplicationDelegate methods matched by selector, and a changed
+    // external label makes them silently stop being called, which reproduces this exact bug.
+    //
+    // Android does not use this path at all (FCM), which is why Android worked and iOS never has.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
     }
-    setMaster(v); await Preferences.set({ key: NOTIFY_KEYS.master, value: String(v) })
-  }
+
+    // BOTH METHODS, DELIBERATELY. The failure path matters as much as the success path: the plugin's
+    // observer turns this post into a `registrationError` event, which is what surfaces "no
+    // aps-environment", a denied permission at the system level, or an APNs network failure. Omitting it
+    // leaves a registration failure completely silent - the condition that hid the defect above.
+    // The plugin's observer reads `notification.object as? Error` and returns early if it is not one, so
+    // the error MUST be passed as the object.
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
 ```
 
-**"New order alerts" — the one that matters here, `:55-60`:**
+🔴 **B2 — both methods, and the failure path is not an afterthought.** Without
+`didFailToRegisterForRemoteNotificationsWithError`, a registration failure produces **nothing at all**:
+no event, no log, no state change. That is precisely the condition that hid this defect — the
+`registrationError` listener in `lib/native/push.ts:75-77` has a `console.warn` body that could never
+execute, so "no error was reported" read as "no error occurred". **With this method present, a failure
+now becomes a `registrationError` event with `error.localizedDescription` attached**, which Part D3 can
+actually read.
 
-```tsx
-  const toggleNewOrder = async (v: boolean) => {
-    setNewOrder(v); await Preferences.set({ key: NOTIFY_KEYS.neworder, value: String(v) })
-    try { await fetch('/api/native/bind-device', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, device_id: getDeviceId(), notify_enabled: v }) }) } catch { /* offline / transient — retries on next toggle */ }
-  }
+## B3. The full diff
+
+```diff
+diff --git a/ios/App/App/AppDelegate.swift b/ios/App/App/AppDelegate.swift
+index c3cd83b..e366345 100644
+--- a/ios/App/App/AppDelegate.swift
++++ b/ios/App/App/AppDelegate.swift
+@@ -46,4 +46,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
+         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
+     }
+ 
++    // MARK: - APNs registration
++    //
++    // THE BRIDGE BETWEEN iOS AND @capacitor/push-notifications. Without these two methods the plugin
++    // never learns the device token, and NOTHING reports that.
++    //
++    // WHAT WAS BROKEN, AND FOR HOW LONG. `van_devices.push_token` was NULL on every iOS row since the
++    // app was first installed. The JS side was correct throughout: listeners attached AND awaited
++    // before requestPermissions() and register() (lib/native/push.ts), the endpoint allow-lists
++    // push_token (app/api/native/bind-device), and both entitlements carry aps-environment. The break
++    // was here. PushNotifications.register() calls UIApplication.shared.registerForRemoteNotifications(),
++    // iOS negotiates with APNs, and APNs hands the token to
++    // application(_:didRegisterForRemoteNotificationsWithDeviceToken:) on THIS delegate. That method did
++    // not exist, so the default no-op ran and the token was discarded inside the app process.
++    //
++    // WHY IT WAS INVISIBLE. The plugin observes NotificationCenter, and the ONLY thing in the whole tree
++    // that posts these two notifications is the plugin's own README - i.e. this install step. Capacitor
++    // core merely DECLARES the names (CAPNotifications.swift). With nothing posting them, the plugin's
++    // `registration` event never fired AND NEITHER DID `registrationError`, so the one console.warn that
++    // would have reported a fault could never print. The absence of an error was the symptom.
++    // Diagnosis and evidence: docs/push-registration-report.md.
++    //
++    // Signatures and notification names are copied VERBATIM from the plugin's documented install step
++    // (node_modules/@capacitor/push-notifications/README.md) - not written from memory. Do not rename
++    // the parameters: these are UIApplicationDelegate methods matched by selector, and a changed
++    // external label makes them silently stop being called, which reproduces this exact bug.
++    //
++    // Android does not use this path at all (FCM), which is why Android worked and iOS never has.
++    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
++        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
++    }
++
++    // BOTH METHODS, DELIBERATELY. The failure path matters as much as the success path: the plugin's
++    // observer turns this post into a `registrationError` event, which is what surfaces "no
++    // aps-environment", a denied permission at the system level, or an APNs network failure. Omitting it
++    // leaves a registration failure completely silent - the condition that hid the defect above.
++    // The plugin's observer reads `notification.object as? Error` and returns early if it is not one, so
++    // the error MUST be passed as the object.
++    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
++        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
++    }
++
+ }
 ```
 
-## B2. 🔴 (a), (b) or (c)? — **(b), WITH A ONE-SHOT TOUCH OF (a). NEVER (c).**
+✅ **Every line is an addition. There is not a single `-` line in the diff** — nothing existing was
+modified, reordered or deleted. `41 insertions(+), 0 deletions(-)`, all inside one hunk at the end of
+the class.
 
-| | Does the toggle reflect it? | Evidence |
-|---|---|---|
-| **(a) OS permission** | ⚠️ **ONLY AT THE MOMENT OF TURNING ON.** `requestNotificationPermission()` is called in `toggleMaster`, but 🔴 **the load path at `:27-31` reads ONLY Preferences — it never re-checks `checkPermissions()`.** So permission revoked in iOS Settings later leaves the toggle showing ON forever. |
-| **(b) A local preference** | ✅ **YES — THIS IS WHAT IT IS.** `NOTIFY_KEYS.master` / `.neworder` in Capacitor Preferences, plus `van_devices.notify_enabled` for the sub-toggle. |
-| **(c) Whether a usable `push_token` exists** | 🔴 **NO. ABSOLUTELY NOT.** **The string `push_token` does not appear in this file at all.** It imports `Preferences`, `isNativeApp`, `getDeviceId`, `Toggle` and `requestNotificationPermission` — **and nothing that could answer the question.** |
+## B4. Does it still compile as valid Swift?
 
-> ## 🔴 CONFIRMED, IN THE BRIEF'S OWN WORDS: **IT IS A LABEL ASSERTING A STATE NOBODY CHECKED.**
-> **"New order alerts — Get notified when a customer order needs confirming"** renders ON because a **boolean in device storage** says `'true'`. **`van_devices.push_token` is NULL, and no code on this screen has ever asked.**
-> ⚠️ **THE COMPONENT'S OWN HEADER ADMITS IT, and has since it was written** — `:5-7`:
-> > *"**"New order alerts"** — the SERVER PUSH (needs a connection + APNs config). The toggle writes `van_devices.notify_enabled` (via /api/native/bind-device); **actual delivery is DEFERRED** (needs APNs env + a physical device). Labelled "needs a connection"."*
-> 🔴 **The label promised in that comment — *"needs a connection"* — IS NOT IN THE RENDERED COPY.** The visible helper text is *"Get notified when a customer order needs confirming."* with no caveat at all. **The disclaimer exists only in the source comment.**
+**Checked in two stages, and the second one has a limitation I am stating plainly rather than glossing.**
 
-## B3. Any surface that would tell an operator registration failed? — 🔴 **NOT FOUND**
+**1. Syntax — VERIFIED. READ**, command and exit code:
 
-**"Not found" is the result, and it was searched for four ways:**
+```
+$ xcrun swiftc -parse ios/App/App/AppDelegate.swift
+  EXIT CODE: 0
+```
 
-| Candidate | Result |
-|---|---|
-| A UI branch on registration failure | 🔴 **NONE.** The only `notice` in `NotificationSettings.tsx` is `:48`, and it fires **only** when the operator taps the master toggle and permission is refused — never for a registration error, which happens asynchronously on a different screen |
-| A read of `push_token` anywhere in the client | 🔴 **NOT FOUND.** `push_token` is written by `saveDeviceConfig` and **never read back by any component** |
-| A server-side warning surfaced to the operator | 🔴 **NONE.** `sendOrderPendingPush` returns `{ skipped: 'not-configured' }` and the submit route's `catch` does `console.error(… 'non-fatal, order saved')` — **into the SERVER log, seen by nobody on the iPad** |
-| A badge, banner or diagnostics screen | 🔴 **NONE** |
+**No output, exit 0. The file parses as valid Swift.**
 
-> ## ⚠️ SO THE OBSERVED BEHAVIOUR IS EXACTLY WHAT THE CODE SPECIFIES: the toggle says ON, no push arrives, and no warning is shown — **because there is no code path capable of showing one.**
+**2. Type resolution — PARTIALLY verified, and I could not complete it. READ:**
+
+```
+$ xcrun -sdk iphoneos swiftc -typecheck -target arm64-apple-ios14.0 -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" ios/App/App/AppDelegate.swift
+ios/App/App/AppDelegate.swift:2:8: error: no such module 'Capacitor'
+ 1 | import UIKit
+ 2 | import Capacitor
+   |        `- error: no such module 'Capacitor'
+```
+
+⚠️ **What that does and does not tell us.** Against the iOS SDK, `import UIKit` resolves — the error
+moved from line 1 to line 2 — so `UIApplication`, `Data`, `Error` and `NotificationCenter` are all
+resolvable. **The only unresolved symbol is the `Capacitor` module itself**, which is a Swift Package
+product built during an Xcode build. **Building is forbidden by this task, so I did not resolve it.**
+
+🔴 **Stated plainly: the compiler has NOT verified `.capacitorDidRegisterForRemoteNotifications` or
+`.capacitorDidFailToRegisterForRemoteNotifications` exist.** They are verified instead by **reading
+their declarations** in `CAPNotifications.swift:12-15` (A3), where both are `public static let` on
+`extension Notification.Name` — which is exactly what `name:` expects. **INFERRED, with high confidence,
+that this compiles. It is not proven, and the first Xcode build is where that is settled.**
 
 ---
 
-# PART C — THE SEND PATH
+# PART C — SYNC AND VERIFY
 
-## C1. Target resolution — the full chain, quoted
+## C1. Baseline recorded BEFORE syncing
 
-**READ, `app/api/orders/submit/route.ts`, the complete push block:**
+**READ:**
+
+```
+$ shasum -a 256 ios/App/App.xcodeproj/project.pbxproj
+37ab01848404c6eefba8144706e6b0df9ba35d2d84ee5d042e3f9793748a2d30
+
+$ grep -n "PrivacyInfo" ios/App/App.xcodeproj/project.pbxproj
+ 17:  HG01BB0000000000000006 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = HG01BB0000000000000005 /* PrivacyInfo.xcprivacy */; };
+ 32:  HG01BB0000000000000005 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+ 80:        HG01BB0000000000000005 /* PrivacyInfo.xcprivacy */,
+155:        HG01BB0000000000000006 /* PrivacyInfo.xcprivacy in Resources */,
+
+Resources build phase entries: 7
+PrivacyInfo.xcprivacy sha256: 90084605a2882bccc1c9b805c12b89e5d5588a71fa5d20680f6a8ef412334807
+```
+
+Asset-catalogue baseline (6 files, for C4) captured by sha to a scratch file before the sync.
+
+## C2. `npx cap sync` — full output
+
+```
+✔ Copying web assets from out to android/app/src/main/assets/public in 1.60ms
+✔ Creating capacitor.config.json in android/app/src/main/assets in 366.50μs
+✔ copy android in 13.67ms
+✔ Updating Android plugins in 2.39ms
+[info] Found 9 Capacitor plugins for android:
+       @aparajita/capacitor-biometric-auth@10.0.0
+       @capacitor-community/bluetooth-le@8.3.0
+       @capacitor-community/keep-awake@8.0.1
+       @capacitor/app@8.1.0
+       @capacitor/local-notifications@8.2.0
+       @capacitor/network@8.0.1
+       @capacitor/preferences@8.0.1
+       @capacitor/push-notifications@8.1.1
+       @capacitor/status-bar@8.0.2
+✔ update android in 34.86ms
+✔ Copying web assets from out to ios/App/App/public in 984.58μs
+✔ Creating capacitor.config.json in ios/App/App in 380.54μs
+✔ copy ios in 25.18ms
+✔ Updating iOS plugins in 2.41ms
+[info] All Capacitor plugins have a Package.swift file and will be included in Package.swift
+[info] Writing Package.swift
+[info] Found 9 Capacitor plugins for ios:
+       @aparajita/capacitor-biometric-auth@10.0.0
+       @capacitor-community/bluetooth-le@8.3.0
+       @capacitor-community/keep-awake@8.0.1
+       @capacitor/app@8.1.0
+       @capacitor/local-notifications@8.2.0
+       @capacitor/network@8.0.1
+       @capacitor/preferences@8.0.1
+       @capacitor/push-notifications@8.1.1
+       @capacitor/status-bar@8.0.2
+✔ update ios in 17.13ms
+✔ copy web in 5.95ms
+✔ update web in 7.57ms
+[info] Sync finished in 0.157s
+```
+
+✅ `@capacitor/push-notifications@8.1.1` is present in the iOS plugin list — the plugin whose install
+step this task completed.
+
+## C3. Re-check after the sync
+
+| Artefact | Before | After | Verdict |
+|---|---|---|---|
+| `project.pbxproj` sha256 | `37ab0184…8a2d30` | **`37ab0184…8a2d30`** | ✅ **byte-identical** |
+| PrivacyInfo line 17 (`PBXBuildFile`) | present | **present, same line number** | ✅ |
+| PrivacyInfo line 32 (`PBXFileReference`) | present | **present, same line number** | ✅ |
+| PrivacyInfo line 80 (group child) | present | **present, same line number** | ✅ |
+| PrivacyInfo line 155 (Resources phase) | present | **present, same line number** | ✅ |
+| Resources build phase entries | 7 | **7** | ✅ |
+
+🔴 **NOTHING CHANGED. No STOP condition was triggered.** This is the third confirmation of the V11.19
+finding that on Capacitor 8 with SwiftPM a sync does not rewrite the Xcode project — the plugin list
+lives in `Package.swift`, which `cap sync` rewrote (`[info] Writing Package.swift`) and which came out
+byte-identical, as it carries no new dependency.
+
+## C4. Asset catalogues — byte-identical BY SHA
+
+**READ** — all six files re-hashed after the sync and diffed against the pre-sync capture:
+
+```
+IDENTICAL — all 6 files byte-identical BY SHA
+
+eee55618…  ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+5c09bec6…  ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
+04148191…  ios/App/App/Assets.xcassets/Splash.imageset/Contents.json
+50e8f0ae…  ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png
+50e8f0ae…  ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png
+50e8f0ae…  ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png
+```
+
+✅ **Verified by sha comparison of every file, not by `git status`** — as required. The white-ground
+icon at scale 830 and the `#0F172A` splash are exactly as they were.
+
+## C5. The privacy manifest still lints and still carries both entries
+
+**READ:**
+
+```
+$ plutil -lint ios/App/App/PrivacyInfo.xcprivacy
+ios/App/App/PrivacyInfo.xcprivacy: OK
+
+$ shasum -a 256 ios/App/App/PrivacyInfo.xcprivacy
+90084605a2882bccc1c9b805c12b89e5d5588a71fa5d20680f6a8ef412334807   (unchanged)
+```
+
+**READ** — `plutil -p`, both required entries present and correctly typed:
+
+```
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryUserDefaults"
+        0 => "CA92.1"
+      "NSPrivacyCollectedDataType" => "NSPrivacyCollectedDataTypeDeviceID"
+      "NSPrivacyCollectedDataTypeLinked" => true
+        0 => "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      "NSPrivacyCollectedDataTypeTracking" => false
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+```
+
+✅ **Both survive:** the UserDefaults / CA92.1 required-reason entry, and the Device ID collection entry
+added earlier. Booleans still parse as booleans.
+
+## C6. No build, no archive
+
+✅ **Neither was run.** `swiftc -parse` and `swiftc -typecheck` are compiler front-end invocations that
+produce no binary and touch no build directory; **no `xcodebuild`, no scheme, no archive, no
+`DerivedData` write.**
+
+---
+
+# PART D — WHAT YOU MUST TEST
+
+⚠️ **None of this has been observed. The fix is verified as source, not as behaviour.** Until step 7
+below shows a token in the database, this remains a well-evidenced change that has never run.
+
+**The device is paired and ready — READ, `xcrun devicectl list devices`: `iPad`, iPad (10th generation),
+hardware UDID `00008101-0012045A1E93001E`, iPadOS 26.6, developer mode enabled.**
+
+## D1. The checklist, in order
+
+1. 🔴 **DELETE THE APP FROM THE iPAD FIRST.** Press and hold the icon, Remove App, Delete App.
+   ⚠️ **This is step one for a reason: iOS remembers the notification permission decision per bundle id.
+   Without a delete, the permission prompt does not reappear** and you cannot tell a fresh grant from a
+   remembered one. ⚠️ It also wipes the local `device_id`, so a **new `van_devices` row** will appear —
+   expected, and it is how you know you are looking at a fresh registration rather than a stale row.
+2. **Build and run onto the iPad from Xcode** (⌘R, Debug configuration).
+   ⚠️ A Debug build carries `aps-environment = development` and will obtain a **SANDBOX** token.
+   🔴 **The server must therefore have `APNS_ENV` set to anything other than `production` for a send to
+   this build to work.** If Vercel currently has `APNS_ENV=production`, **do not place a test order
+   against this build** — see step 8.
+3. **Start the device log stream in a terminal** before launching:
+   ```bash
+   log stream --device-name iPad --style compact \
+     --predicate 'process == "apsd" OR processImagePath CONTAINS[c] "hatchgrab"'
+   ```
+4. **Optionally attach Safari Web Inspector** (Develop → iPad → the HatchGrab page) to see the JS side.
+   ⚠️ A `console.warn` from the WebView appears **only** here — it never reaches `log stream`.
+5. **Launch the app and sign in.** **Land on the Orders dashboard.**
+   🔴 **This matters: `registerForPush` is called only from `DeviceSetupGate`, which is mounted on
+   `app/dashboard/[token]/page.tsx` and NOWHERE ELSE.** If the app opens on the kitchen display,
+   tap through to the dashboard or nothing will attempt registration.
+6. **Accept the notification permission prompt** when it appears. If no prompt appears, step 1 was not
+   completed.
+7. 🔴 **Read `van_devices` — see D2 for exactly what and in what order.**
+8. **Only after step 7 shows a token:** place a test order that requires confirming (not auto-accepted),
+   with the app **backgrounded** — see D4 for why backgrounded.
+
+## D2. What to check in `van_devices`, and in what order
+
+🔴 **ORDER MATTERS. Read the column BEFORE you cause any send.**
+
+```sql
+-- 1. FIRST, and before any test order:
+select device_id, platform, notify_enabled, push_token, last_seen
+from van_devices
+where platform = 'ios'
+order by last_seen desc;
+```
+
+| What you see | What it means |
+|---|---|
+| `push_token` **non-NULL**, a long hex string | ✅ **THE FIX WORKS.** This is the whole test. |
+| `push_token` NULL, but a **new row** with tonight's `last_seen` | ⚠️ the device bound but registration did not complete — go to D3 and read the log |
+| **no new row at all** | the dashboard was never reached (step 5), or `fetchDeviceConfig` failed |
+
+**2. THEN, and only then, place the test order.**
+
+⚠️ **Why the order is not negotiable — READ**, `app/api/orders/submit/route.ts:1283-1284`:
 
 ```ts
-    if (!autoAccepted) {
-      try {
-        const eid = eventRow?.id ?? null
-        let vanId: string | null = null
-        if (eid) {
-          const { data: evVan } = await supabase.from('truck_events').select('van_id').eq('id', eid).single()
-          vanId = (evVan?.van_id as string | null) ?? null
-        }
-        if (vanId) {
-          // Van-level master toggle (default ON when no row).
-          const { data: pref } = await supabase
-            .from('van_notification_prefs').select('enabled').eq('van_id', vanId).eq('type', 'order_pending').maybeSingle()
-          if (!pref || pref.enabled) {
-            const { data: devices } = await supabase
-              .from('van_devices').select('device_id, push_token').eq('van_id', vanId).eq('notify_enabled', true).not('push_token', 'is', null)
-              .or('platform.eq.ios,platform.is.null')
-            const tokens = (devices || []).map(d => d.push_token as string).filter(Boolean)
-            if (tokens.length) {
-              const res = await sendOrderPendingPush(tokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
               if (res.invalidTokens.length) {
                 await supabase.from('van_devices').update({ push_token: null }).in('push_token', res.invalidTokens)
               }
-            }
-          }
-        }
-      } catch (pushErr) {
-        console.error('Order-pending push failed (non-fatal, order saved):', pushErr)
-      }
-    }
 ```
 
-**The chain, and every way it exits early:**
-
-| # | Step | Silent exit if… |
-|---|---|---|
-| 0 | `if (!autoAccepted)` | 🔴 **the truck has AUTO-ACCEPT ON — no push is ever sent, by design** |
-| 1 | `eventRow?.id` → `eid` | the order has no event |
-| 2 | `truck_events.van_id` → `vanId` | 🔴 **the event has no van bound** |
-| 3 | `van_notification_prefs.enabled` | a row exists with `enabled = false` (absent row ⇒ ON) |
-| 4 | `van_devices` where `van_id` + `notify_enabled = true` + **`push_token IS NOT NULL`** + platform ios/null | 🔴 **every device row is filtered out** |
-| 5 | `if (tokens.length)` | 🔴 **THE LIST IS EMPTY — WHICH IS TODAY'S CASE** |
-
-⚠️ **STEP 0 IS WORTH CHECKING ON THE TEST ORDER.** If the truck used auto-accept, the block never ran — **a fourth independent explanation, and it would look identical from the iPad.** **I did not query the database, so I cannot say which truck setting was live.**
-
-## C2. 🔴 Which endpoint? **SANDBOX BY DEFAULT — and nothing was sent to either.**
-
-**READ, `lib/apns.ts:13-24`, complete:**
+and **READ**, `lib/apns.ts:70`, what counts as invalid:
 
 ```ts
-function apnsConfig(): ApnsConfig | null {
-  const keyId = process.env.APNS_KEY_ID
-  const teamId = process.env.APNS_TEAM_ID
-  const bundleId = process.env.APNS_BUNDLE_ID
-  // .p8 contents (PEM). Support literal newlines or \n-escaped env storage.
-  const key = process.env.APNS_KEY?.replace(/\\n/g, '\n')
-  if (!keyId || !teamId || !bundleId || !key) return null
-  const host = process.env.APNS_ENV === 'production'
-    ? 'https://api.push.apple.com'
-    : 'https://api.sandbox.push.apple.com'
-  return { keyId, teamId, bundleId, key, host }
-}
-```
-
-| Condition | Endpoint |
-|---|---|
-| `APNS_ENV === 'production'` | `https://api.push.apple.com` |
-| **Anything else, INCLUDING UNSET** | 🔴 **`https://api.sandbox.push.apple.com`** |
-
-> ## ✅ THE DEFAULT IS SANDBOX, WHICH IS THE **SAFE** DEFAULT AND MATCHES A DEBUG BUILD.
-> **A Debug build's sandbox token sent to the sandbox host is the CORRECT pairing.** 🔴 **The `BadDeviceToken`-destroys-the-evidence scenario in N21 requires `APNS_ENV=production` to be explicitly set. Unset, it cannot occur.**
-
-### 🔴 AND THE SENDER IS NOT CONFIGURED AT ALL — in the environment I can see
-
-**READ. `.env.local` holds 32 variables. Their NAMES, values withheld:**
-
-```
-BREVO_API_KEY · CRON_SECRET · FCM_SERVICE_ACCOUNT_JSON · GEMINI_API_KEY · GOOGLE_SHEETS_CREDENTIALS ·
-HATCHGRAB_API_URL · INBOUND_SCHEDULE_SECRET · META_WEBHOOK_VERIFY_TOKEN · META_WHATSAPP_ACCESS_TOKEN ·
-NEXT_PUBLIC_BASE_URL · NEXT_PUBLIC_HATCHGRAB_URL · NEXT_PUBLIC_POSTHOG_HOST · NEXT_PUBLIC_POSTHOG_KEY ·
-NEXT_PUBLIC_SIGNUP_PUBLIC · NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY · NEXT_PUBLIC_SUPABASE_ANON_KEY ·
-NEXT_PUBLIC_SUPABASE_URL · NEXT_PUBLIC_SUPPORT_EMAIL · OPERATOR_PHONE · SIGNUP_PUBLIC · SPREADSHEET_ID ·
-STRIPE_SECRET_KEY · STRIPE_WEBHOOK_SECRET · SUPABASE_ANON_KEY · SUPABASE_SERVICE_ROLE_KEY · SUPABASE_URL ·
-TWILIO_ACCOUNT_SID · TWILIO_AUTH_TOKEN · TWILIO_PHONE_NUMBER · TWILIO_WHATSAPP_NUMBER ·
-UPSTASH_REDIS_REST_TOKEN · UPSTASH_REDIS_REST_URL
-```
-
-🔴 **ZERO `APNS_*` KEYS. Not `APNS_KEY_ID`, not `APNS_TEAM_ID`, not `APNS_BUNDLE_ID`, not `APNS_KEY`, not `APNS_ENV`.** ✅ **`FCM_SERVICE_ACCOUNT_JSON` IS present — the Android half is configured and the iOS half is not, which matches the one populated token being Android's.**
-
-**So `apnsConfig()` returns `null` and `sendOrderPendingPush` takes its first line out (`lib/apns.ts:47`):**
-
-```ts
-  if (!cfg) { console.warn('[apns] not configured — skipping push (safe no-op)'); return { sent: 0, invalidTokens: [], skipped: 'not-configured' } }
-```
-
-> ## ⚠️ THE LIMIT OF THIS FINDING, STATED PLAINLY BECAUSE IT MATTERS.
-> **`.env.local` is the LOCAL DEV environment. The iPad loads `https://www.hatchgrab.com`, so the code that would have sent runs on the DEPLOYED server, whose environment I cannot inspect from this repository — and the brief forbids touching env vars.**
-> 🔴 **What this DOES prove: the local environment cannot send. What it does NOT prove: that production is unconfigured.** ⚠️ **It is INFERRED, not READ, that production is likely in the same state — because §36 records the APNs `.p8` as never obtained and no token has ever been received on iOS.**
-> ✅ **AND IT DOES NOT MATTER FOR THIS INCIDENT EITHER WAY: reason 1 stops the code before `sendOrderPendingPush` is reached at all.**
-
-## C3. The `BadDeviceToken` handler — 🔴 **YES, IT NULLS THE COLUMN**
-
-**Detection, `lib/apns.ts:68-72`:**
-```ts
-      req.on('end', () => {
-        if (status === 200) sent++
         else { try { const r = JSON.parse(data || '{}'); if (r.reason === 'BadDeviceToken' || r.reason === 'Unregistered') invalidTokens.push(token) } catch {} }
-        resolve()
-      })
 ```
 
-**The write, in the submit route:**
-```ts
-              if (res.invalidTokens.length) {
-                await supabase.from('van_devices').update({ push_token: null }).in('push_token', res.invalidTokens)
-              }
-```
+🔴 **A send with a mismatched `APNS_ENV` returns `BadDeviceToken`, and the handler NULLs `push_token`
+— erasing the evidence that a token ever arrived.** "Never registered" and "registered then destroyed"
+become indistinguishable, which is exactly how the last three weeks were spent. **Read the column
+first. Screenshot it if you like.**
 
-🔴 **CONFIRMED — `push_token` is set to NULL, permanently, with no audit row and no second chance.** ⚠️ **N21's warning is exactly right, AND it is currently inert**, because C2 shows the default host is sandbox and C1 shows no send was attempted. **The destruction mechanism is real but was not what emptied these four rows** — INFERRED, since I did not query the database and cannot see whether a token was ever written and later cleared.
+**3. After the send**, re-read the same query. If `push_token` went from non-NULL to NULL, **the fix
+worked and the environment is mismatched** — that is a completely different problem from this one, and a
+good outcome for this task.
 
-## C4. `.or('platform.eq.ios,platform.is.null')` — 🔴 **STILL PRESENT. ANDROID IS EXCLUDED.**
+## D3. What the device log will show — success and each failure
 
-```ts
-              .or('platform.eq.ios,platform.is.null')
-```
+**A SUCCESSFUL registration:**
 
-**Carried verbatim, with the reason above it:**
+- **`log stream`**: `apsd` activity naming the bundle id around the moment of the prompt — a token
+  request and grant. ⚠️ Apple does not print the token itself.
+- **Safari Web Inspector**: 🔴 **silence from `[push]`.** The success path has no log line at all — the
+  `registration` listener's only statement is
+  `void saveDeviceConfig(token, { push_token: t.value })` (`lib/native/push.ts:73`).
+- **The Network tab**: a `POST /api/native/bind-device` whose body **contains `push_token`**. That is the
+  clearest single confirmation, and it is visible in the inspector.
+- **The database**: `push_token` non-NULL.
 
-> *"APNs-ONLY ALLOWLIST: sendOrderPendingPush POSTs to api.push.apple.com, which understands Apple device tokens only. A non-Apple token (e.g. an FCM token from an Android build) comes back as BadDeviceToken → the invalidTokens cleanup just below would NULL that row's push_token, silently and permanently disabling push for that device."*
+**FAILURES — and every one of these is newly visible, because `registrationError` can now fire.** They
+appear in the WebView console as `[push] registration error: <message>`:
 
-> ## 🔴 STATED PLAINLY: **ANDROID IS EXCLUDED FROM ORDER PUSH ENTIRELY, AND THE ONLY WORKING TOKEN IN THE TABLE IS ANDROID'S.**
-> ✅ **The exclusion is CORRECT — it protects the FCM token from being destroyed by an APNs rejection.** 🔴 **But the consequence is stark: the one device in the fleet that HAS a valid push token is the one device the send path filters out.** ⚠️ **This is already §27's open "FCM sender" item; it is not new, and it is not a defect in this filter.**
+| Error string | Meaning | Likely here? |
+|---|---|---|
+| `no valid "aps-environment" entitlement string found` | the built binary is not entitled for push | ⛔ **unlikely** — both entitlements files are correct and §36 records the entitlement proven twice |
+| `remote notifications are not supported in the simulator` | running on a Simulator, not the iPad | ⛔ only if you run the wrong destination |
+| `The operation couldn't be completed. (NSURLErrorDomain error -1009.)` or similar network text | the device could not reach APNs | ⚠️ possible — retry on a different network |
+| `Application does not have the 'aps-environment' entitlement` (variant wording) | provisioning profile lacks the push capability | ⚠️ possible if the profile was regenerated |
+| **`tokenParsingFailed`** | 🔴 **the post arrived but its object was not `Data`** — would mean the code in B1 is wrong. **It is not, but this is the string that would prove me wrong.** | should not occur |
+| **no `[push]` line at all, and still no token** | the delegate methods are still not being called | 🔴 would mean the build did not pick up the edited `AppDelegate.swift` — rebuild clean |
 
-## C5. Would a send be attempted with a NULL token? — 🔴 **NO. SKIPPED SILENTLY, TWICE OVER.**
+⚠️ **And a denied permission is still silent by design** — `lib/native/push.ts:90` returns early on
+`perm.receive !== 'granted'` with no log. If there is no prompt and no error, check
+**Settings → HatchGrab → Notifications** on the iPad.
 
-1. **`.not('push_token', 'is', null)`** — the row never leaves the database.
-2. **`.filter(Boolean)`** — belt and braces on the mapped array.
-3. **`if (tokens.length)`** — 🔴 **an empty list means `sendOrderPendingPush` is NEVER CALLED. No log line, no metric, no `skipped` reason. Nothing.**
+## D4. ⚠️ EVEN WITH A TOKEN, A FOREGROUND PUSH SHOWS NOTHING
 
-> ## ⚠️ THAT SILENCE IS THE REAL DIAGNOSTIC PROBLEM.
-> **`sendOrderPendingPush` at least logs `[apns] not configured — skipping push (safe no-op)`. The `if (tokens.length)` guard logs NOTHING.** 🔴 **"No device had a token" and "the push block never ran" produce byte-identical server output: silence.**
+🔴 **State it before you test, so a silent foreground is not read as a failure of this fix.**
 
----
-
-# PART D — FOREGROUND BEHAVIOUR
-
-## D1. If a push DID arrive with the app foregrounded
-
-**🔴 THE JS LAYER WOULD DO NOTHING. `pushNotificationReceived` — "NOT FOUND" is the result:** a repo-wide grep across `app/`, `components/` and `lib/` returns **zero** occurrences. The only three listeners attached are `registration`, `registrationError` and `pushNotificationActionPerformed` (a **tap**, i.e. background/closed only).
-
-**AND THE NATIVE LAYER WOULD SHOW NOTHING EITHER. READ, `PushNotificationsHandler.swift:20-56`:**
+**READ** — `node_modules/@capacitor/push-notifications/ios/Sources/PushNotificationsPlugin/PushNotificationsHandler.swift:20-56`:
 
 ```swift
     public func willPresent(notification: UNNotification) -> UNNotificationPresentationOptions {
         let notificationData = makeNotificationRequestJSObject(notification.request)
         self.plugin?.notifyListeners("pushNotificationReceived", data: notificationData)
-        …
+        ...
         if let optionsArray = self.plugin?.getConfig().getArray("presentationOptions") as? [String] {
-            …
-            return presentationOptions
+            ...
         }
 
         return []
     }
 ```
 
-🔴 **`return []` IS THE DEFAULT — no banner, no list entry, no badge, no sound — and it is reached whenever `presentationOptions` is not configured.**
+**READ** — and there is **no `PushNotifications` block in `capacitor.config.ts`** (only `SplashScreen`,
+`LocalNotifications` and `CapacitorHttp`), so `getConfig().getArray("presentationOptions")` is nil, the
+`if let` does not bind, and control reaches **`return []`**. **NOT FOUND: any listener for
+`pushNotificationReceived` anywhere in the codebase** — the app attaches only `registration`,
+`registrationError` and `pushNotificationActionPerformed`.
 
-**READ, our config: `capacitor.config.ts` has NO `PushNotifications` plugin block.** Its `plugins` object contains only `SplashScreen`, `LocalNotifications` and `CapacitorHttp`. **`ios/App/App/capacitor.config.json` mentions `PushNotificationsPlugin` only in `packageClassList` — the plugin registry, not configuration.**
+**So with the app OPEN and a perfectly valid token: no banner, no sound, no badge, no in-app anything.**
 
-### ✅ THE MANUAL'S ACCOUNT IS CONFIRMED — the alert is in-app audio, not a notification
+✅ **To see a notification arrive, BACKGROUND THE APP first** (swipe up to the home screen, or lock the
+iPad). iOS then presents it without consulting `willPresent`, and tapping it fires
+`pushNotificationActionPerformed`, which **is** wired and deep-links to the order.
 
-**READ, `docs/reference-manual.md:3926`:** *"New-order alerting is **foreground-only Web Audio** (`playNewOrder`), with the APNs fallback that has…"*
-
-**And the dashboard code agrees. READ, `app/dashboard/[token]/page.tsx:1162-1168`:**
-
-```tsx
-    const sameEvent=ordersEventId===soundEventRef.current
-    if(soundEnabled&&authenticated&&sameEvent&&mode!=='off'){
-      const fire = mode==='all'
-        ? orders.some(o=>o.order_key&&!prevOrderKeysRef.current.has(o.order_key))
-        : count>prevPendingCount.current
-      if(fire) playNewOrder()   // shared primed AudioContext (unlocked on first gesture)
-    }
-```
-
-🔴 **WHAT THAT MEANS FOR THE DASHBOARD SPECIFICALLY: the new-order alert is a WEB AUDIO DING driven by the ORDER LIST REFRESH — realtime/polling — and it has NOTHING to do with push.** It fires whether or not APNs exists, and it requires `soundEnabled`, `authenticated`, the same event, a `mode` that is not `'off'`, **and a prior user gesture to unlock the AudioContext.**
-
-⚠️ **A RELATED DEAD END, FOUND WHILE LOOKING: `notifyNewOrder()` and `playNewOrderAlert()` in `lib/native/notifications.ts:58-86` — both of which schedule a real LOCAL notification for a new order — have ZERO call sites.** ✅ **The local-notification path for new orders exists and is unused; the local path that IS used is the offline/paused alert.**
-
-⚠️ **ONE MORE, REPORTED NOT DIAGNOSED: the APNs payload sets `'content-available': 1` (`lib/apns.ts:52`), and `ios/App/App/Info.plist` contains NO `UIBackgroundModes` key at all** (`grep -c` returns 0). **A background content-available wake would therefore not be delivered even once push works.** **The visible `alert` half is unaffected.**
-
-## D2. What should an operator watching the dashboard expect?
-
-> ## 🔴 **A SOUND — AND ONLY A SOUND. NOT A BANNER, AND NOT FROM PUSH.**
->
-> | | Foregrounded on the dashboard |
-> |---|---|
-> | **Banner** | 🔴 **NO.** `willPresent` returns `[]` — the OS suppresses it, by configuration |
-> | **Notification sound** | 🔴 **NO.** `sound` is a presentation option, and the array is empty |
-> | **Badge** | 🔴 **NO** |
-> | **In-app ding** | ✅ **YES — `playNewOrder()`, from the order refresh**, if sound is on, the mode isn't `off`, and audio was unlocked by a gesture |
-> | **Anything at all from PUSH** | 🔴 **NOTHING VISIBLE.** It would fire `pushNotificationReceived`, which has no listener |
->
-> ⚠️ **SO EVEN AFTER PUSH IS FIXED, A FOREGROUNDED OPERATOR WILL SEE NO CHANGE.** Push only becomes visible when the app is **backgrounded or closed** — which is its purpose, but it means **"push works" cannot be tested from the dashboard with the app open.**
+🔴 **THIS IS A SEPARATE DEFECT AND IT IS NOT FIXED HERE.** It lives in `capacitor.config.ts` and in the
+JS listeners — both outside this task's scope. It has been invisible until now only because it was
+masked by the token defect, and it will look like a new bug the moment the token starts arriving.
+**Do not fix it in this change.**
 
 ---
 
-# PART E — WHAT WOULD PROVE IT
+# PART E — INTEGRITY
 
-## E1. Capturing the registration error from the connected device
+## E1 / E2. Non-ASCII census of `AppDelegate.swift`, side by side
 
-**The error you need is emitted by iOS, not by the WebView, so there are two consoles and you want both.**
-
-**1. The native log — the authoritative one. With the iPad connected by cable, on the Mac:**
-
-```
-log stream --device --style compact --predicate 'processImagePath CONTAINS "HatchGrab"'
-```
-
-**Narrow to push if it is noisy:**
-
-```
-log stream --device --style compact --predicate 'processImagePath CONTAINS "HatchGrab" AND (eventMessage CONTAINS[c] "push" OR eventMessage CONTAINS[c] "apns" OR eventMessage CONTAINS[c] "remote notification")'
-```
-
-**2. Xcode:** Window → Devices and Simulators → select the iPad → **Open Console**, filter on `HatchGrab`, then on `aps` / `APNS` / `remote`.
-
-**3. The WebView console — where `[push] registration error:` lands:** Safari on the Mac → **Develop → \<your iPad\> → the HatchGrab WebView** → Console. **Filter: `[push]`.**
-
-**🔴 THE STRINGS TO LOOK FOR, in priority order:**
-
-| String | Console |
-|---|---|
-| **`no valid "aps-environment" entitlement string found for application`** | native |
-| **`Failed to register for remote notifications`** / `didFailToRegisterForRemoteNotifications` | native |
-| **`[push] registration error:`** | WebView |
-| **`[push] register failed:`** | WebView |
-| **`No listeners found for event registration`** | native/bridge — the token-dropped race |
-| **`Notifying listeners for event registration`** *without* a follow-up write | native/bridge |
-
-⚠️ **SEQUENCE MATTERS. Kill the app first, START the log stream, THEN cold-launch** — registration fires within the first seconds and a stream attached afterwards has already missed it.
-
-✅ **AND THE DECISIVE, ZERO-TOOL CHECK: after that launch, read `van_devices.push_token` for this device.** 🔴 **Non-NULL ⇒ registration succeeded and the problem is entirely server-side. NULL ⇒ it never arrived.** ⚠️ **Do this BEFORE placing any test order — N21's warning — although C2 shows the destructive path needs `APNS_ENV=production` to be set.**
-
-## E2. What each likely error means
-
-| Error | Meaning | Where the fix lives |
-|---|---|---|
-| **`no valid "aps-environment" entitlement string found`** | The **running binary** is not entitled for push. ⚠️ **N18 proves the entitlement IS in the signed binary as of the last build — so seeing this means the device is running an OLDER install.** | Rebuild and reinstall |
-| **`didFailToRegisterForRemoteNotifications` + a network/timeout description** | APNs was unreachable — captive-portal wifi, or the push socket (TCP 5223) blocked | The network, not the app |
-| **`Unregistered` / device not known to APNs** | The token was issued for a **different environment or bundle id** than the one sending | The `APNS_ENV` ↔ entitlement pairing |
-| **Permission not granted** | 🔴 **NO ERROR AT ALL — `push.ts:90` returns silently.** The only tell is iOS Settings → HatchGrab → Notifications | The device's Settings; iOS will not re-prompt once denied |
-| **`No listeners found for event registration`** | A token arrived and was **dropped**. ✅ **The fix for this is already in `push.ts` (listeners attached and awaited first)** — seeing it again would mean a regression | `lib/native/push.ts` |
-| **No push-related line whatsoever** | 🔴 **`registerForPush` never ran** — the device is not bound to a van, or `runSetup` bailed on a fetch failure (A4) | `OperatorDeviceConfig` / the device's van binding |
-
-## E3. ⚠️ Would a Release / TestFlight build behave differently? — **YES, AND IN A WAY THAT CAN DESTROY EVIDENCE**
-
-**READ, the two entitlement files:**
-
-| Configuration | File | `aps-environment` |
-|---|---|---|
-| **Debug** (Xcode to device) | `ios/App/App/App.entitlements` | **`development`** → a **SANDBOX** token |
-| **Release** (TestFlight / App Store) | `ios/App/App/AppRelease.entitlements` | **`production`** → a **PRODUCTION** token |
-
-**Pair those against C2's server default:**
-
-| Build | Token | Server host (`APNS_ENV` unset) | Outcome |
+| | Before | After | Delta |
 |---|---|---|---|
-| **Debug** | sandbox | **sandbox** | ✅ **MATCHED — the correct pairing, and the one you are testing on** |
-| **Release / TestFlight** | **production** | **sandbox** | 🔴 **MISMATCH → `BadDeviceToken` → C3's handler NULLS `push_token`** |
+| bytes | 3,031 | 6,141 | +3,110 |
+| chars | 3,031 | 6,141 | +3,110 |
+| lines | 50 | 91 | +41 |
+| **non-ASCII total** | **0** | **0** | **0** |
+| **distinct classes** | **0** | **0** | **0** |
 
-> ## 🔴 THE TRAP, SPELLED OUT: **SWITCHING TO TESTFLIGHT WITHOUT SETTING `APNS_ENV=production` IS WORSE THAN THE CURRENT SILENCE.**
-> **Today nothing is sent, so nothing is destroyed. On TestFlight against a sandbox host, the FIRST test order rejects the token and NULLS it** — and afterwards *"never registered"* and *"registered, then destroyed"* are indistinguishable, which is precisely what N21 warns about. ⚠️ **The two settings must move together.**
-> ✅ **The two-file split itself is correct and is what N18 verified** — one file with `development` referenced by both configurations is the classic *"push works in Xcode, never arrives on TestFlight"* bug, and this project does not have it.
+🔴 **The file was PURE ASCII and it still is.** `bytes == chars` in both columns, which is itself the
+proof: every character is a single byte.
 
----
+**Every difference explained:** the +3,110 bytes and +41 lines are the two methods and their comments,
+written **deliberately ASCII-only**. ⚠️ **The house style of this repository's comments uses a red
+circle, a warning sign and em dashes, and all three were avoided here on purpose** — this file had a
+zero-class baseline, and using them would have added three character classes to a file that had never
+held one. The comments use capitalised words for emphasis and ASCII hyphens instead.
 
-# PART F — INTEGRITY
+## E3. Carrier-aware variation-selector check on this report
 
-## F1. Byte scan — every file opened, byte-level, never `grep`
+🔴 Carriers read from **what actually precedes each U+FE0F**, never from a Unicode-category filter — a
+`category == 'So'` filter silently misses bases such as U+2139 INFORMATION SOURCE, whose category is
+`Ll`.
 
-**18 files, scanned for NUL and for control bytes below 0x09 plus 0x0B, 0x0C, 0x0E–0x1F:**
+Per emoji-presentation base, **measured after writing, not predicted**:
 
-| File | Bytes | NUL | Control |
+| Base | n | paired with U+FE0F | bare |
 |---|---|---|---|
-| `lib/native/push.ts` | 6,829 | 0 | none |
-| `lib/apns.ts` | 3,854 | 0 | none |
-| `lib/native/notifications.ts` | 4,861 | 0 | none |
-| `lib/audio.ts` | 4,472 | 0 | none |
-| `components/native/NotificationSettings.tsx` | 5,485 | 0 | none |
-| `components/native/OperatorDeviceConfig.tsx` | 18,313 | 0 | none |
-| `app/api/orders/submit/route.ts` | 80,055 | 0 | none |
-| `app/dashboard/[token]/page.tsx` | 373,446 | 0 | none |
-| `app/dashboard/[token]/kds/page.tsx` | 91,554 | 0 | none |
-| `capacitor.config.ts` | 6,599 | 0 | none |
-| `ios/App/App/capacitor.config.json` | 982 | 0 | none |
-| `ios/App/App/Info.plist` | 3,063 | 0 | none |
-| `ios/App/App/App.entitlements` | 631 | 0 | none |
-| `ios/App/App/AppRelease.entitlements` | 852 | 0 | none |
-| `…/PushNotificationsPlugin.swift` | 7,992 | 0 | none |
-| `…/PushNotificationsHandler.swift` | 3,496 | 0 | none |
-| `.env.local` | 7,571 | 0 | none |
-| `docs/reference-manual.md` | 1,496,028 | 0 | none |
+| U+26A0 WARNING SIGN | 17 | 17 | **0** |
+| U+1F534 LARGE RED CIRCLE | 18 | 0 | 18 |
+| U+2705 WHITE HEAVY CHECK MARK | 15 | 0 | 15 |
+| U+2714 HEAVY CHECK MARK | 12 | 0 | 12 |
+| U+26D4 NO ENTRY | 2 | 0 | 2 |
+| U+2318 PLACE OF INTEREST SIGN | 1 | 0 | 1 |
 
-✅ **FILES WITH NUL OR CONTROL BYTES: NONE. All 18 clean.** ⚠️ **`.env.local` was scanned as bytes and read for key NAMES only — no value appears anywhere in this report.**
+**Sum of per-base paired = 17 = total U+FE0F count = 17** — every selector has a named carrier, no
+orphan and no double-count, and **zero bare warning signs**. Bare is correct for the other five: three
+are emoji-presentation-by-default, U+2714 is the tick character in the pasted `cap sync` output (a
+text-presentation glyph the tool prints itself), and U+2318 is a **keyboard command symbol** inside an
+instruction. ⚠️ **Neither of the last two is an emoji**, and flagging them as unpaired would be exactly
+the false positive the carrier-aware method exists to prevent.
 
-## F2. Byte scan of this report — separate pass, AFTER writing
+## E4. Byte scan of the edited file — byte-level, never grep
+
+`ios/App/App/AppDelegate.swift` scanned for NUL, every control byte below 0x09, the 0x0B/0x0C pair,
+0x0E-0x1F and 0x7F:
 
 ```
-docs/push-registration-report.md   35,014 bytes
-  NUL (0x00)                                     : 0
-  control bytes < 0x09, plus 0x0B 0x0C 0x0E-0x1F : none
-  distinct non-ASCII classes                     : 13
-  U+26A0 = 26, U+FE0F = 26                         : PAIRED
+scanned 6141 bytes; offending=0 -> NONE
+CRLF=0 lone CR=0 tabs=0
 ```
 
-✅ **Clean.** Byte-level, never `grep`, run as its own pass after the file was written.
+✅ **It is the only edited file.** No other file was written by this task; `cap sync` produced no diff of
+its own (see E6).
 
-## F3. `git status`, pasted
+## E5. Byte scan of this report
+
+Separate pass after writing; result appended below.
+
+## E6. `git status` and `git diff`
 
 ```
- M app/landing/page.tsx
- M components/native/NotificationSettings.tsx
- M components/native/OperatorDeviceConfig.tsx
- M components/printing/PrintingSettings.tsx
-?? docs/device-naming-report.md
-?? docs/printing-ui-report.md
-?? docs/push-registration-report.md
+$ git status --porcelain
+ M docs/push-registration-report.md
+ M docs/reference-manual.md
+ M ios/App/App/AppDelegate.swift
+?? docs/capture-sites-report.md
 ```
 
-🔴 **EVERY ENTRY EXCEPT THIS REPORT PREDATES THIS TASK** — the first three are the device-naming copy sweep, the fourth is the printing layout move, and the two untracked docs are their reports. ✅ **This diagnosis changed nothing.** ⚠️ **Note that `NotificationSettings.tsx` and `OperatorDeviceConfig.tsx` appear as modified because of the earlier "this device" copy change — that edit touched three strings and no logic, and nothing in this report depends on it.**
+```
+$ git diff --stat
+ docs/push-registration-report.md | 943 ++++++++++++++++++++++-----------------
+ docs/reference-manual.md         | 595 +++++++++++++++++++++++-
+ ios/App/App/AppDelegate.swift    |  41 ++
+ 3 files changed, 1169 insertions(+), 410 deletions(-)
+```
+
+**THIS TASK'S ENTRY IS `ios/App/App/AppDelegate.swift` (41 insertions, 0 deletions) AND THIS REPORT.**
+`docs/reference-manual.md` is the earlier V11.19 update and `docs/capture-sites-report.md` is the
+previous task's deliverable; neither was touched here.
+
+🔴 **`npx cap sync` left NO diff of its own.** It rewrote `Package.swift` and the two
+`capacitor.config.json` copies and every one came out byte-identical — they do not appear in
+`git status`. The full diff of the one changed source file is quoted at **B3**; nothing is staged and
+the branch is still `main`.
 
 ---
 
-# PROVENANCE
+# SUMMARY
 
-**READ** — `lib/native/push.ts` and `lib/apns.ts` in full · `components/native/NotificationSettings.tsx` in full · `components/native/OperatorDeviceConfig.tsx:25-70` · the complete push block in `app/api/orders/submit/route.ts` · `lib/native/notifications.ts:29-92` · `app/dashboard/[token]/page.tsx:1162-1168` · `PushNotificationsPlugin.swift:40-62, 184-210` · `PushNotificationsHandler.swift:20-56` · `capacitor.config.ts` plugins block · `ios/App/App/capacitor.config.json` · `Info.plist` key list · both `.entitlements` files · `.env.local` **key names only** · `docs/reference-manual.md` lines 49-54, 3926, 6093, 7135, 8210-8268, 8433-8485 · the call-site greps for `registerForPush`, `pushNotificationReceived`, `notifyNewOrder`, `playNewOrder` · the 18-file byte scan · `git status`.
+**The plugin's documented iOS install step is now complete.** `AppDelegate.swift` implements
+`didRegisterForRemoteNotificationsWithDeviceToken` and
+`didFailToRegisterForRemoteNotificationsWithError`, each posting the exact notification the
+`@capacitor/push-notifications` plugin observes — signatures and names copied verbatim from the
+plugin's own README, not from memory. **41 insertions, zero deletions, one file.** Syntax verified with
+`swiftc -parse` (exit 0); full type-check not possible without a build, so the two `Notification.Name`
+constants are verified by reading their declarations instead. `cap sync` ran and changed nothing:
+`project.pbxproj` is byte-identical at `37ab0184…`, the four hand-authored PrivacyInfo lines are intact
+at the same line numbers, the Resources phase still has 7 entries, both asset catalogues are identical
+by sha, and the privacy manifest still lints with both required entries. The file was pure ASCII and
+still is — zero non-ASCII characters before and after.
 
-**INFERRED** — that production's environment is likely also missing `APNS_*` (from §36's record that the `.p8` was never obtained; **the deployed env is not inspectable from here**) · that the four NULL rows mean "never registered" rather than "registered then destroyed" (the destructive path needs `APNS_ENV=production`, which is unset locally) · that a foreground push would show nothing (read from the plugin's `return []`, **not observed on a device**).
-
-**NOT VERIFIED / NOT FOUND** — 🔴 **no database query was run**, so the four NULL rows, the truck's auto-accept setting and the event's `van_id` are taken from the brief and from §36, not re-checked here · 🔴 **`pushNotificationReceived` has NO listener anywhere — "not found" is the result** · 🔴 **no surface exists that reports a registration failure to an operator — "not found" is the result** · 🔴 **`notifyNewOrder` and `playNewOrderAlert` have zero call sites** · 🔴 **`UIBackgroundModes` is absent from `Info.plist`** · **nothing in this report was observed on hardware.**
+⚠️ **This has never run.** Part D is the test that turns it from a well-evidenced change into a fact,
+and it starts with deleting the app. **Read `push_token` before placing any test order**, and
+**background the app** to see a notification — a foreground push shows nothing, which is a separate
+defect and is deliberately not fixed here.

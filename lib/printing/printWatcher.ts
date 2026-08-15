@@ -53,8 +53,12 @@
 import { useEffect, useRef } from 'react'
 import { Preferences } from '@capacitor/preferences'
 
-/** Statuses that mean "this order has been ACCEPTED and should be made". Excludes pending/cancelled/rejected. */
-const DEFAULT_ELIGIBLE = ['confirmed', 'cooking', 'ready']
+/** Statuses that mean "this order has been ACCEPTED and should be made". Excludes pending/cancelled/rejected.
+ *  🔴 'modified' BELONGS BY THIS LIST'S OWN DEFINITION and was missing: it means accepted AND CHANGED SINCE,
+ *  which is an order the kitchen must make — and the one most worth putting on paper, because it is the one
+ *  whose contents differ from whatever the cook last saw. Without it an operator who edited an order before
+ *  it printed never got a ticket for it, in either trigger mode, silently. */
+const DEFAULT_ELIGIBLE = ['confirmed', 'modified', 'cooking', 'ready']
 
 export type PrintTriggerMode = 'on_confirmed' | 'lead_time'
 

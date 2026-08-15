@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml, paymentNote, sendRefundEmail, cancellationPaymentSentence } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence } from '@/lib/email'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -889,11 +889,9 @@ export async function POST(req: NextRequest) {
       }
 
       if (order.customer_email) {
-        // ── 🔴 THE ONE SITE THAT DOES NOT USE formatConfirmationEmail, AND THE ONLY ONE WHERE THE
-        //    SENTENCE WAS A STRING LITERAL RATHER THAN AN UNPASSED PARAMETER. ─────────────────────
-        // It builds its own HTML, so the fix is the same resolver feeding `paymentNote().short` into
-        // the footer line and the plain text. 'hatch' renders "Pay at the truck on collection", which
-        // is byte-identical to the literal it replaces.
+        // ── 🔴 WAS "THE ONE SITE THAT DOES NOT USE formatConfirmationEmail". IT DOES NOW. ────────
+        // The hand-built template that stood here is gone; see the note at the send below for what it
+        // rendered and why 12px grey was the wrong place for the only fact this email exists to carry.
         // ⚠️ NO CAPTURE HAPPENS ON THIS PATH, so this reads. An edit does not confirm anything.
         // ⚠️ AND A LIMIT, STATED RATHER THAN PAPERED OVER: editing an order whose card is ALREADY
         // CAPTURED changes the total, and the captured amount does not follow it. The customer is told
@@ -913,7 +911,9 @@ export async function POST(req: NextRequest) {
         const payAmounts = typeof payFacts.paidMinor === 'number' && typeof payFacts.balanceMinor === 'number'
           ? { paidMinor: payFacts.paidMinor, balanceMinor: payFacts.balanceMinor, heldMinor: payFacts.heldMinor }
           : undefined
-        const payNote = paymentNote(paymentState, truck.name, payAmounts)
+        // ⚠️ `paymentNote` is no longer called here — formatConfirmationEmail resolves the same sentence
+        // from `paymentState` + the figures below and renders its PROMINENT form. One resolution, one
+        // renderer; this call site no longer picks which of the four strings to show.
         // The SERVER-priced items/deals — the same figures that were just persisted, so the
         // customer's email can never quote a price the order row doesn't hold.
         const finalItems = repriced.items.map(i => ({
@@ -923,32 +923,80 @@ export async function POST(req: NextRequest) {
           modifiers: i.modifiers,
           specialInstructions: typeof i.specialInstructions === 'string' ? i.specialInstructions : undefined,
         }))
-        // Route through the SHARED renderer (renderOrderLinesHtml) so the deal bundle price (£15)
-        // and per-modifier prices (+£1.50) render — the inline fork omitted them.
         const emailDeals = dealsCanonical
-        const linesHtml = renderOrderLinesHtml(finalItems, emailDeals)
         const slotToShow = slot !== undefined ? slot : order.slot
-        const html = `<body style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b">
-            <h2>Your order has been updated ✓</h2>
-            <p><strong>${truck.name}</strong> has updated order #${order.id}.</p>
-            ${slotToShow ? `<p><strong>Collection time:</strong> ${slotToShow}</p>` : ''}
-            <p style="font-size:12px;color:#64748b;margin-bottom:4px">Updated order:</p>
-            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
-              ${linesHtml}
-              <tr style="border-top:1px solid #e2e8f0">
-                <td style="padding-top:8px;font-weight:700">New total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:700">£${newTotal.toFixed(2)}</td>
-              </tr>
-            </table>
-            <p style="color:#94a3b8;font-size:12px">${payNote.short} · Powered by HatchGrab · hatchgrab.com</p>
-          </body>`
+
+        // ── 🔴 THIS EMAIL NOW USES formatConfirmationEmail, LIKE EVERY OTHER ONE. ────────────────────
+        // ── WHAT IT REPLACES, AND WHY THE HAND-BUILT TEMPLATE HAD TO GO ─────────────────────────────
+        // It built its own HTML and rendered `payNote.short` into
+        //     <p style="color:#94a3b8;font-size:12px">... · Powered by HatchGrab · hatchgrab.com</p>
+        // — 12px, grey, sharing a line with the footer credit. So the ONE email whose entire purpose is
+        // that the money changed put the money sentence where a reader's eye goes last, styled as
+        // boilerplate. The shared template renders the SAME sentence as `payNote.html`: a bordered,
+        // centred, 16px box — amber when something is still to pay, indigo for a hold, green when it is
+        // settled. The sentence, the figures and the colours already existed; only the placement moves.
+        // ⚠️ NOTHING ABOUT THE MONEY CHANGES. No amount, no arithmetic, no capture — `payFacts` above is
+        // the same single resolution it always was, and it is passed through rather than re-derived.
+        // ✅ It also brings the cancel link, the venue and the contact block this template never had —
+        // and that link is now honest, because 'modified' can be cancelled again (orders/cancel/route.ts).
+        // ⚠️ Venue is passed as null: the hand-built template showed none, so nothing is lost, and looking
+        // it up would add a query to the edit path for a field this email has never carried.
+        const { html, text } = formatConfirmationEmail({
+          orderId: order.id,
+          orderKey,
+          customerName: order.customer_name,
+          truckName: truck.name,
+          items: finalItems,
+          deals: emailDeals,
+          slot: slotToShow,
+          discountAmt: newDiscountAmt,
+          total: newTotal,
+          notes: notes !== undefined ? notes : order.notes,
+          autoAccepted: true,
+          paymentState,
+          paidMinor: payAmounts?.paidMinor,
+          balanceMinor: payAmounts?.balanceMinor,
+          heldMinor: payAmounts?.heldMinor,
+          venueName: null,
+          venueTown: null,
+          venuePostcode: null,
+          preferredContactMethod: truck.preferred_contact_method ?? null,
+          contactPhone: truck.contact_phone ?? null,
+          whatsappSender: truck.whatsapp_sender ?? null,
+          socialFacebook: truck.social_facebook ?? null,
+          socialInstagram: truck.social_instagram ?? null,
+          contactEmail: truck.contact_email ?? null,
+          allowCancellation: truck.allow_customer_cancellation ?? true,
+          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+          baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+          truckSlug: truck.slug ?? undefined,
+        })
+
+        // ── 🔴 THE DIRECTION OF THE CHANGE GOES IN THE SUBJECT LINE. ────────────────────────────────
+        // The body says what is still to pay; it does not say whether this edit made the order dearer or
+        // cheaper, and the shared template has no "previous total" to show without changing a template
+        // every other email depends on. The subject is this call site's own, so the plainest possible
+        // English goes there — it is also the only part a customer reads before deciding to open anything.
+        //   dearer   "Order #12 updated - now £13.00 (was £10.00)"
+        //   cheaper  "Order #12 updated - now £6.50 (was £10.00)"
+        //   same     "Order #12 updated"
+        // ⚠️ NO WORD ABOUT CHARGING OR REFUNDING. A downward edit RELEASES part of a hold, which is not a
+        // refund, and an upward one may be owed at the hatch rather than taken from the card. Both facts
+        // belong to the payment box, which states them from the resolver. This line states the totals and
+        // stops — two numbers a customer can check against their own memory of the order.
+        const oldTotal = Number(order.total)
+        const totalMoved = Number.isFinite(oldTotal) && Math.abs(oldTotal - newTotal) >= 0.005
+        const subject = totalMoved
+          ? `Order #${order.id} updated - now £${newTotal.toFixed(2)} (was £${oldTotal.toFixed(2)})`
+          : `Order #${order.id} updated`
+
         // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
         // confirmation/new-order emails) — replaces the inline notifyCustomer (Village Foodie).
         await sendEmailUnlessDemo(truck, {
           to: order.customer_email,
-          subject: `Order #${order.id} updated`,
+          subject,
           html,
-          text: `${truck.name} has updated your order #${order.id}. New total £${newTotal.toFixed(2)}. ${payNote.short}. — HatchGrab`,
+          text,
           truckName: truck.name,
         })
       }

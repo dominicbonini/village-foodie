@@ -55,8 +55,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Can only cancel pending or confirmed orders
-    if (!['pending', 'confirmed'].includes(order.status)) {
+    // Can only cancel an order that has not been made or handed over yet.
+    // 'modified' ADDED: an edited order is a LIVE order. Editing it is the operator changing an item or a
+    // time; it is not the customer giving up their right to cancel, and every other consumer in the
+    // codebase already treats 'modified' as the accepted-and-changed sibling of 'confirmed' (the capture
+    // sweep's allow-list, the dashboard's active set, the slot engine, buzzers). This one did not, so an
+    // edit silently removed a customer's cancel button AND returned 409 to anyone who reached the endpoint
+    // anyway, while their confirmation email still invited them to cancel.
+    // The two gates either side of this are unchanged: the truck must allow cancellation, and the cutoff
+    // window still applies. The held-card release below has no status gate at all and refuses a captured
+    // order, so this admits nothing that could strand money.
+    if (!['pending', 'confirmed', 'modified'].includes(order.status)) {
       return NextResponse.json(
         { error: 'This order can no longer be cancelled' },
         { status: 409 }

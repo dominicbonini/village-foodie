@@ -1178,18 +1178,61 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // based, authenticates natively; van preserved via query) so it stays in the webview — window.open('_blank')
   // escapes to Safari / no-ops in WKWebView. WEB: unchanged — new tab (van's standalone /kds/[kds_token], or
   // the in-app KDS when the van has no kds_token).
+  // 🔴 THE EVENT TRAVELS WITH THE HANDOFF, EXACTLY AS THE VAN ALREADY DOES. Without it the KDS
+  // re-derived its own answer and the two screens could sit on different events — observed 15 August:
+  // this dashboard on tomorrow's event while the KDS held today's finished one with unserved orders.
+  // The KDS treats this as a SEED it applies once and then holds; it does not follow later changes here,
+  // which is deliberate (see the seed note in kds/page.tsx). Nothing about how THIS page picks its event
+  // is touched — `selectedEventId` is read, never written, by this function.
+  // ⚠️ Both routes carry it. The web branch opens a NEW TAB, which has no other way to know.
+  // 🔴 THE EVENT ID COMES FROM `activeEvent`, NOT FROM `selectedEventId`, AND THAT IS THE SAME OBJECT
+  // handleOpenKDS BELOW TAKES THE VAN FROM. `activeEvent` IS the resolution (`= resolvedEvent =
+  // selectedOrDefaultEvent`), so when a selection exists the two are identical, and when one has not
+  // committed yet this hands over the event the dashboard is ACTUALLY SHOWING rather than nothing at all.
+  // ⚠️ A van derived from one event and an event id from another would be worse than asking every time —
+  // the kitchen screen would open on event A scoped to event B's van. Deriving both from one value makes
+  // that unrepresentable rather than merely unlikely.
   const openKDS=(van?:{id?:string;name?:string;kds_token?:string|null})=>{
+    const ev=activeEvent?.id?`event_id=${encodeURIComponent(activeEvent.id)}`:''
     if(isNativeApp()){
-      const q=van?.id?`?van_id=${encodeURIComponent(van.id)}${van.name?`&van_name=${encodeURIComponent(van.name)}`:''}`:''
-      router.push(`/dashboard/${token}/kds${q}`)
+      const parts=[
+        van?.id?`van_id=${encodeURIComponent(van.id)}`:'',
+        van?.id&&van.name?`van_name=${encodeURIComponent(van.name)}`:'',
+        ev,
+      ].filter(Boolean)
+      router.push(`/dashboard/${token}/kds${parts.length?`?${parts.join('&')}`:''}`)
       return
     }
-    window.open(van?.kds_token?`/kds/${van.kds_token}`:`/dashboard/${token}/kds`,'_blank')
+    // ⚠️ The van's STANDALONE /kds/[kds_token] surface is a different page and is left exactly as it
+    // was — it has no dashboard behind it to hand anything over. Only the in-app KDS gains the seed.
+    window.open(van?.kds_token?`/kds/${van.kds_token}`:`/dashboard/${token}/kds${ev?`?${ev}`:''}`,'_blank')
   }
 
+  // ── 🔴 SKIP WHEN UNAMBIGUOUS, ASK WHEN NOT ──────────────────────────────────────────────────────
+  // WHAT WAS WRONG: this keyed on `vans.length` ALONE, so a truck with two vans was asked which kitchen
+  // screen to open EVERY time — even when the event on screen already named one. Device-observed: pick
+  // Van1, go back to the dashboard, open the KDS again, get asked again. Nothing remembered anything
+  // because nothing had to: the answer was already on the page and was not being read.
+  // ⚠️ LIVE-VERIFIED that this changes NOTHING for either live truck — Pizzeria Gusto and Tikka Tonic
+  // each have exactly one van, so both already took the first branch and never saw the picker.
+  //
+  // THE RULE, IN THE ORDER IT IS ASKED:
+  //   1. no vans          -> open with none, exactly as before
+  //   2. exactly one van  -> open with it, exactly as before
+  //   3. the event names a van -> 🔴 NEW. Use it. An event bound to a van is not ambiguous, and this page
+  //      already trusts `activeEvent.van_id` for the capacity writes and the van chip beside them
+  //      (saveKitchenCapacity, saveCapacityWindow, and the "Total capacity" badge). Reading it here is
+  //      consistency, not a new source of truth.
+  //   4. several vans and the event names none -> ASK. That is the case the picker exists for.
+  // 🔴 THE VAN AND THE EVENT COME FROM THE SAME `activeEvent`. See openKDS above.
+  // ⚠️ The van must still be one of THIS truck's vans: `vans.find` is the membership test, so an event
+  // carrying a stale or foreign van_id falls through to the picker rather than opening on a van that is
+  // not in the list.
   const handleOpenKDS=()=>{
-    if(vans.length===1){openKDS(vans[0]);return}
     if(vans.length===0){openKDS();return}
+    if(vans.length===1){openKDS(vans[0]);return}
+    const eventVan=activeEvent?.van_id?vans.find(v=>v.id===activeEvent.van_id):undefined
+    if(eventVan){openKDS(eventVan);return}
     setShowKDSPicker(true)
   }
 
@@ -2332,7 +2375,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const scan=()=>{
       const seen=new Set<string>()
       for(const o of orders){
-        if(o.status!=='pending'&&o.status!=='confirmed'){ prevUrgencyRef.current.delete(o.order_key); continue }
+        // 'modified' JOINS THE SCAN. An edited order is still an order somebody is waiting for, and it was
+        // being skipped AND having its remembered urgency deleted — so an edit permanently silenced that
+        // order's due alert, on the one surface an operator relies on to hear about lateness.
+        if(o.status!=='pending'&&o.status!=='confirmed'&&o.status!=='modified'){ prevUrgencyRef.current.delete(o.order_key); continue }
         seen.add(o.order_key)
         const slotDt=resolveCollectionTime(o,activeEvent)
         const lead=cookAmberLeadMins(getOrderCookSecs(o.items,itemCategoryMap,catConfigs))

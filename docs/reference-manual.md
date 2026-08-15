@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.18
+HatchGrab Engineering Reference Manual · V11.19
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.18**
+**Version 11.19**
 
 August 2026
 
@@ -15,6 +15,71 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.19 — 15 August 2026
+
+Delta over V11.18 — **printing went from unreachable to wired end to end, a Bluetooth transport exists,
+and the integrity check this manual mandates was itself found to be wrong.**
+
+- 🔴 **THE VARIATION-SELECTOR CHECK WAS WRONG ALL DAY, AND IT IS THIS MANUAL'S OWN CHECK.** Comparing a
+  raw count of warning signs against a raw count of variation selectors is invalid **the moment any
+  other emoji carries its own selector** — a pencil does, so ten paired warning signs plus one pencil
+  reads as *"10 against 11, one bare glyph"* when nothing is bare. **It produced at least two false
+  defect reports, one nearly propagated into this manual.** Replaced by the **carrier-aware** form:
+  per emoji-presentation base, count how many occurrences are FOLLOWED by a selector, and report bare
+  vs paired **per base**. ⚠️ **This manual is the proof:** its own totals are 605 warning signs and 605
+  selectors — which the old check reads as *perfectly paired* — while the carrier-aware form shows
+  **7 bare warning signs**, the missing 7 selectors belonging to a pencil, a chilli, a gear, a
+  high-voltage sign and a plate. §35, P13.
+- 🔴 **NOTHING PRINTED BECAUSE NOTHING WAS CONNECTED.** `usePrintWatcher` and `createStubTransport` had
+  **zero call sites**; `renderTicket` had been emitting printer-ready ESC/POS all along, unreachable.
+  Now mounted on the **dashboard only**, gated on native + `canAccess('ticket_printing')` + the
+  per-device toggle. **NEVER MOUNT IT ON THE KDS** — dedupe is device-local, so a second watcher
+  duplicates rather than races. §42.
+- 🔴 **THE STUB'S DISHONESTY WAS THE DANGEROUS PART.** It returned `ok: true` and `connected: true`
+  unconditionally; wired to a live watcher it would have marked every ticket permanently printed while
+  no paper moved, and device-local dedupe makes that unrecoverable. **A stub that lies is worse than no
+  stub, because the moment it is wired the lie becomes state.** §42.
+- **Bluetooth LE is the transport** — `@capacitor-community/bluetooth-le` pinned at `8.3.0`, write
+  characteristic **discovered not hard-coded**, chunked at 180 bytes with 12 ms pacing. 🔴 **The failure
+  split is the load-bearing part:** failure before any byte is `'failed'` (clean reprint); failure after
+  at least one chunk **throws** and becomes `'unknown'`, so the next ticket carries POSSIBLE DUPLICATE.
+  **Honest about the one thing the system cannot know — whether paper moved.** §36, §42.
+- 🔴 **RANK, DO NOT FILTER.** The scan offered *"Dominic's Apple Watch"* and *"Dominic's AirPods Pro"*
+  with Connect buttons — a 2.1 exposure arriving as a list full of the **wrong** things. **An allow-list
+  of service UUIDs was rejected**: an unlisted printer becomes invisible, which the operator cannot fix.
+  **A cluttered list is untidy; an invisible printer is unusable.** §42.
+- 🔴 **THE TICKET HAD NO LEADING WHITESPACE AT ALL** — five bytes before the first glyph, none of which
+  move paper, against rail clips that grip 15–25 mm. ⚠️ The 4-line trailing feed is emitted **before**
+  the cut, so it is that ticket's tail and does not help the next one. Fixed with
+  `TICKET_LEADING_FEED_LINES = 2`. **Every number is arithmetic — measure the first real ticket.** §42.
+- ⚠️ **THE LEAD TIME IS MEASURED FROM COLLECTION, NOT COOK TIME.** A 10-minute lead on a 15-minute dish
+  prints five minutes **after** cooking should have started. `calcQueueAwareReadySecs` already exists and
+  already drives the kitchen board's amber threshold — **it is simply not consulted here.** Design gap,
+  BACKLOG. §42, §6.
+- 🔴 **`TRIAL_FEATURES = [...MAX_FEATURES]`, AND BOTH LIVE TRUCKS ARE ON TRIAL.** Every *"that is
+  Max-only, so no live truck sees it"* claim made this session was reasoning from a false premise.
+  **Blast-radius assessments for anything plan-gated must check `TRIAL_FEATURES` first.** §4, §27.
+- ✅ **Sign in with Apple is OPTIONAL, not a submission blocker** — `signInWithOAuth` appears **zero
+  times**, `config.toml` declares `[auth.email]` and no external provider, and customers have no
+  accounts at all. **Decided: not building it**, on account-linking and private-relay grounds. §36.
+- **`NSPrivacyCollectedDataTypes` now declares Device ID** (App Functionality, linked, not tracking).
+  ⚠️ Needs a `cap sync` and rebuild before it ships. §36.
+- ✅ **`cap sync` does NOT rewrite `project.pbxproj` on Capacitor 8 with SPM** — adding a real native
+  plugin left it byte-identical; the plugin lands in `Package.swift`. **The standing fear over the four
+  hand-authored privacy-manifest lines relaxes to a verification — but keep verifying**, this is a
+  property of the current toolchain, not a guarantee. §36.
+- 🔴 **N42's cold-start-race hypothesis is REFUTED**, read from Capacitor's own source: the bridge
+  handler is registered **before** the WebView is constructed. **Three explanations survive** —
+  SSR/first-frame, an iframe, a foreign WebView. `isNativeApp()` was **not** widened: instrument, do not
+  trade a guarantee for a heuristic. §11.
+- 🔴 **`adjust_slot_+N` IS CAPTURE SITE 3 OF 4 — a proposal to delete it was correctly refused.** It
+  writes `status: 'confirmed'`, calls `moveSlotBooking` **and** calls
+  `captureOnConfirmation(trigger: 'time_adjust')`; the Edit branch does none of those. **Removing it
+  would have removed a Stripe capture path from a live money flow, compiled clean, and looked tidier.**
+  §37, §10.
+- ⚠️ **A summary of a report is not the report — a third and fourth time**, both planning-side briefs
+  built on premises that were read somewhere rather than verified. §22, P14.
 
 ## V11.18 — 14 August 2026 (late session)
 
@@ -2530,6 +2595,20 @@ The in-repo paths share lib/schedule-extract.ts:
 | **future date** | running | the full trial set |
 | **past date** | **EXPIRED** | **`false` for EVERY feature** |
 
+> 🔴 **V11.19 — `TRIAL_FEATURES = [...MAX_FEATURES]`, AND THIS IS A BLAST-RADIUS TRAP, NOT A TRIVIA
+> ITEM.** LIVE-VERIFIED 15 August: **`pizzeria-gusto` and `tikka-tonic` are BOTH `plan = 'trial'`**
+> (Tikka Tonic additionally `excluded = true`). **So "that feature is Max-only, therefore no live truck
+> can see it" is FALSE — a trial truck sees every Max feature.** Every such claim made during that
+> session was reasoning from a false premise, including one about ticket printing that would have let a
+> half-built feature loose on a truck trading with real money. **Any blast-radius assessment for a
+> plan-gated change must check `TRIAL_FEATURES` FIRST**, and the only thing that actually protected the
+> live trucks was an unrelated per-device toggle defaulting to off. §42.
+>
+> ⚠️ **AND THE CLIFF HAS NO RECORDED HANDLING.** When `trial_expires_at` passes, a truck drops from
+> **every Max feature** to `false` for **everything** — not to Starter, per the rows above. **Gusto's
+> expiry is 17 October 2026.** There is no cron, no warning path and no downgrade; **nothing in the
+> product prepares an operator for that cliff or tells them it has happened.** BACKLOG.
+
 ```ts
 if (plan === 'trial') {
   if (!trialExpiresAt) return PLAN_FEATURES.trial.has(feature)   // not started
@@ -4045,6 +4124,14 @@ product.
 ⚠️ **It is a native config change: `cap sync` and a rebuild.** §36's standing warning applies —
 **re-check the four hand-authored `PrivacyInfo.xcprivacy` lines in `project.pbxproj` afterwards.**
 
+> ✅ **RELAXED V11.19 — a fear became a verification.** Adding `@capacitor-community/bluetooth-le`, a
+> **real native plugin**, left `project.pbxproj` **byte-identical**. On Capacitor 8 with Swift Package
+> Manager the plugin lands in `ios/App/CapApp-SPM/Package.swift` (+2 lines) and the baked iOS config
+> gains one entry in `packageClassList`; **the Xcode project file is not rewritten at all.** So the four
+> hand-authored lines were never at risk from a sync. ⚠️ **Keep checking anyway** — this is a property
+> of the current toolchain, not a guarantee, and the check is one `shasum` (`37ab0184…`) plus four
+> `grep`s against a file whose loss silently drops the privacy manifest out of the app bundle.
+
 ## ⚠️ `isNativeApp()` MAY BE INTERMITTENTLY FALSE IN THE SHELL — UNRESOLVED (V11.18)
 
 **Two ejections, two surfaces, both consistent with one cause:**
@@ -4061,6 +4148,42 @@ so on a full-screen iPad it should not render. **Either the device was under 640
 
 **Neither has reproduced.** **Leading hypothesis, INFERRED and untested: a cold-start race —
 `isNativeApp()` evaluating before Capacitor's bridge is injected, on the first launch after install.**
+
+> 🔴 **REFUTED V11.19. THE COLD-START RACE CANNOT HAPPEN.** Read from Capacitor's own source: the
+> `bridge` message handler is registered on the WebView's content controller **before the WebView is
+> constructed**, and before `loadWebView()` fires. **There is no window in which the page runs and the
+> bridge is absent.** ⚠️ **This hypothesis was carried in two deltas as "leading, INFERRED and
+> untested". It is now dead, and it is struck rather than deleted because it shaped two rounds of
+> proposed work.**
+>
+> **Three explanations survive, all better than the one lost:** an **SSR / first-frame** evaluation, an
+> **iframe** (`forMainFrameOnly: true` means the handler is not injected into sub-frames), or a
+> **foreign WebView**. **Any instrumentation should target those three.**
+>
+> 🔴 **AND `allowNavigation` FIXES ONLY ONE OF THE TWO EJECTIONS.** It is now set
+> (`allowNavigation: ["www.hatchgrab.com"]`, `server.url` unchanged), and it closes **case 2** — hard
+> navigations to sibling paths, which failed because Capacitor prefix-matches the whole `serverURL`
+> **including the path**. **It does NOT close case 1.** `window.open('_blank')` reaches
+> `createWebViewWith`, and **that handler calls `UIApplication.shared.open` unconditionally, with no
+> host check** — `allowNavigation` cannot reach it. ⚠️ **So the KDS path still depends entirely on
+> `isNativeApp()` returning the right answer.**
+
+### ⚠️ `isNativeApp()` WAS APPRAISED FOR WIDENING AND DELIBERATELY NOT WIDENED (V11.19)
+
+The proposal was to make it a **disjunction** with the `HatchGrabNativeApp` User-Agent marker, closing
+the cold-start race. **Appraised and rejected**, on three grounds:
+
+1. **The race it closes is refuted** (above), so it buys nothing that was proven to be broken.
+2. It **moves ~50 call sites at once**, on a helper that gates navigation, printing and offline paths.
+3. 🔴 **It converts "wrongly true on web" from PROVABLY UNREACHABLE — a `typeof` guard no browser can
+   satisfy — into one Safari menu item.** A user-agent string is user-controllable.
+
+✅ **Commerce is unaffected either way, and this was checked rather than assumed:** `purchaseCtaAllowed()`
+reaches `Capacitor.isNativePlatform()` and `getPlatform()` **directly in its own file**, and all eleven
+§40 gates consume **that** predicate, not this helper.
+
+> 🔴 **THE RULE: TRADING A GUARANTEE FOR A HEURISTIC IS A LOSS YOU DO NOT GET BACK.** Instrument the
+> three surviving explanations instead.
 
 ✅ **THE COMMERCE GATES ARE NOT AFFECTED. DEVICE-VERIFIED:** `/manage` lands on **Menu**, not Billing.
 **No 3.1.1 exposure.**
@@ -6091,7 +6214,20 @@ The strongest structural clue for the two iPad display defects was that they app
 | `ITSAppUsesNonExemptEncryption` + screenshots (iPhone **and** iPad sets) | 🔴 **OPEN** |
 | 2.1(a) review account | 🔴 **OPEN** |
 | APNs proven end to end on hardware | 🔴 **OPEN** — the strongest 4.2 evidence, and a token has never been obtained |
-| `NSPrivacyCollectedDataTypes` decision | 🔴 **OPEN** — §36, and it is a commercial/legal call, not a developer's |
+| ~~`NSPrivacyCollectedDataTypes` decision~~ | ~~🔴 **OPEN** — §36, and it is a commercial/legal call, not a developer's~~ → **CLOSED, see the row below** |
+| `NSPrivacyCollectedDataTypes` declared | ✅ **DECIDED AND DECLARED 15 Aug 2026 (V11.19)** — Device ID, App Functionality, linked, not tracking. ⚠️ **Needs a `cap sync` + rebuild to reach a binary.** §36 |
+| **Sign in with Apple (Guideline 4.8)** | ✅ **NOT A BLOCKER, ESTABLISHED 15 Aug 2026** — no third-party login is offered anywhere, and customers have no accounts. **Decided: not building it.** §36 |
+| Printer hardware for the BLE path | ⚠️ **NOT A SUBMISSION BLOCKER, but the feature is advertised on the Billing tab and has never printed.** §42 |
+
+> 🔴 **STATE AT CLOSE, 15 AUGUST 2026: ONE BLOCKER REMAINS — SCREENSHOTS**, both the iPhone and the
+> iPad sets.
+>
+> **Waiting on hardware, not on code:** a printer for the entire BLE path (§42) · a device round-trip
+> to confirm APNs (§36) · the app icon seen on a light home-screen wallpaper (§38) · the two iPad
+> display defects, whose four-for-four evidence base changed when the Orders `<main>` stopped being
+> `overflow-y-auto` at `lg`.
+>
+> **Waiting on a `cap sync` + rebuild:** the privacy manifest's Device ID declaration.
 
 ### 🔴 THE GUIDELINE 2.1 DECISION RULE — apply this, do not re-derive it
 
@@ -6412,6 +6548,20 @@ Test and live mode are almost entirely separate in Stripe. **Before a real truck
 - ~~🔴 **`app/order/[id]/manage`'s `canCancel` ignores `payment_status`**~~ — ⚠️ **SUPERSEDED (V11.10). The gate was built and deliberately reverted byte-exactly:** the customer cancellation window is a truck-configured feature and must keep working for paid orders. See §5. **The underlying concern moved rather than closed** — it is now the refund copy and the refund UI, not the gate.
 - ~~🔴 **There is no customer-facing confirmation ROUTE**~~ — ✅ **BUILT (V11.10).** `?confirm=<order_key>` renders the same extracted `<OrderConfirmation>`, above `loading`, `error` and the feature gate. See §5.
 - 🔴 **"Adjust time: +5m" IS AN ACCEPT.** `action/route.ts:1516` writes `status: 'confirmed'` **unconditionally**, in the same statement as the slot. The SELECT at `:1501` **does not fetch `status`**, so the handler cannot branch on it; the only guard is `if (!ord?.slot)`. It then sends a full `formatConfirmationEmail` with **`autoAccepted: true`** under the subject *"Your order … has been updated"*. ⚠️ `moveSlotBooking` runs first and **its result is discarded** — INFERRED: a full destination slot does not stop the confirm. **The control is offered on `pending` orders only** — the exact population that will hold authorizations. **Live today, Gusto-reachable, own merits.** ⚠️ **PARTLY ADDRESSED (V11.10):** it is now **capture site 3**, so a held authorisation is taken there, and its email resolves payment state through the shared resolver. **The unconditional `status: 'confirmed'` write and the discarded `moveSlotBooking` result are unchanged.**
+
+> 🔴 **V11.19 — A PROPOSAL TO DELETE THIS ROW WAS MADE AND CORRECTLY REFUSED.** The Add Order card's
+> "Adjust time" row was described as a duplicate of Edit and slated for removal. It is not:
+> `adjust_slot_+N` writes `status: 'confirmed'`, calls `moveSlotBooking`, **and calls
+> `captureOnConfirmation(trigger: 'time_adjust')`**. **The Edit branch contains none of those three and
+> writes `status: 'modified'`.**
+>
+> 🔴 **Removing that row would have removed a Stripe capture path from a live money flow.** It would
+> have compiled, looked tidier, passed `tsc`, and **nobody would have noticed until money did not
+> arrive.** ⚠️ **The code gives no hint** — the two rows sit side by side and read as siblings. **The
+> visible defect was only cosmetic:** a grey caption clipping mid-word, with no `truncate` and no
+> `min-w-0` in a flex row where nothing could shrink; fixed with `flex-wrap` plus `truncate` as a floor.
+> **A tidy-up brief on a money surface must enumerate what each branch WRITES before deciding two
+> controls are the same control.**
 - 🔴 **Microsoft/Outlook deliverability.** Confirmation emails are **accepted by Brevo and silently dropped by Microsoft**; the same message to Gmail arrives. ⚠️ **RECLASSIFY the existing `HATCHGRAB_SENDER.email = hello@villagefoodie.co.uk` item from "brand inconsistency" to a DELIVERABILITY DEFECT** — mail branded as one domain and authenticated as another is the classic silent-drop profile, and Microsoft is the strictest major provider about it. ✅ **The block has lifted** — the hatchgrab.com mailboxes are live. Needs SPF/DKIM verified in Brevo. **DNS has a lead time; start it rather than schedule it.**
 - 🔴 **`submit/route.ts:625` reads `item_modifier_groups` with NO truck filter** — a **full-table read on the money path**, linear in total menu size. Harmless at twelve trucks. **Do not copy this pattern** (the price-book re-key deliberately did not).
 - **The menu load failure is UNEXPLAINED.** *"We couldn't load the menu right now — Retry"* on the customer order page, plus the event picker failing to render its calendar, minutes after the deploy. **Cleared on retry rather than being fixed.** Candidates: a 429 (§27 already records *"a 429 on /api/events/manage was wiping upcomingEvents to []"* — never setState from a failed fetch), or the changed `/api/menu` path. **Not diagnosed.**
@@ -7193,6 +7343,35 @@ and nothing in the build can substitute for them. Everything else below is work,
   and the artwork is authoritative; `#EA580C` is the action colour. ✅ **No correction was needed — the
   manual already stated it correctly**, and the splash work took its colours from existing assets
   rather than minting new ones.
+
+## BACKLOG ADDED 15 AUGUST 2026 (V11.19)
+
+- 🔴 **The print lead time is measured from COLLECTION, not from cook time** (§42, §6).
+  `calcQueueAwareReadySecs` already exists and is simply not consulted. **Design gap, not a bug.**
+- 🔴 **The trial-expiry cliff has no recorded handling** (§4). Both live trucks are on `trial`, which
+  grants every Max feature; Gusto's expiry is **17 October 2026**, after which `canAccess` returns
+  `false` for **everything**. No cron, no warning, no downgrade path.
+- **`All {n} changes synced.`** — the offline consolidation replaced `Synced {n} ✓` with
+  `All changes synced.` and **the count went with it. The number is the load-bearing part**; restore it
+  with the count. ⚠️ **And four `Stock saved` toasts still do not name their subject**, where one call
+  site was fixed to `${category} availability saved`.
+- **The customer deal-row tint and the 24 px quantity controls** (§7, §23). The orange-box treatment
+  survives on **three other customer-journey sites**, sharpest at the applied-deal row — **an added deal
+  is tinted while an added item is not.** ⚠️ Separately, the `+`/`−` controls are **24 px on BOTH
+  surfaces**, well under the 44 pt target, with a correct 44 px pencil beside them. **Pre-existing, not
+  a regression.**
+- **The WhatsApp "Connect" relabel and its silent no-op** (§20) — carried, and now with a named likely
+  cause: `saveWhatsappSender` **returns silently when the value is unchanged**, which is the most
+  plausible source of the *"it doesn't work"* report.
+- **The order flow's primary action now carries the recorded `orange-600` contrast debt** (§38). The
+  operator "Review order" button moved from teal to the app action colour; **contrast moved the wrong
+  way, 3.74:1 → 3.56:1, both below AA.** Accepted deliberately — it now shares the app's existing
+  exception rather than sitting outside it — **but the exception now covers the primary action of the
+  order flow.** The real fix is `orange-700` (5.18:1) applied across all ~228 sites as one decision.
+- **`mapOrderToTicket:79` hardcodes Pizzeria Gusto as having no paid step** while the database says
+  `show_paid_step = true`.
+- **Android: the push send path excludes it entirely**, `ic_stat_icon_config_sample` is missing, and
+  there is **no hardware-back handler**. ⚠️ **Own session.**
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -8203,6 +8382,87 @@ every one of the four, the instruction was **specific, confident and wrong** —
 shape that gets built without checking. **"The premise did not hold" is a RESULT. State it plainly and
 do not proceed.**
 
+## P13 — 🔴 THE VARIATION-SELECTOR CHECK WAS WRONG. THIS IS THE CORRECTED FORM (V11.19)
+
+🔴 **The check mandated by P11 and used across every task of 15 August was invalid.** It compared a
+**raw count** of warning signs against a **raw count** of variation selectors and treated any
+difference as unpaired warning signs.
+
+**That test is wrong whenever any OTHER emoji-presentation base carries its own selector**, which is
+common — a pencil takes one too. A file with ten paired warning signs and one pencil reads as *"10
+against 11 — one bare glyph"* when nothing is bare at all.
+
+**THE CORRECTED FORM — carrier-aware, per base:**
+
+```
+for each emoji-presentation base in the file:
+    occurrences = count(base)
+    paired      = count(base immediately followed by a variation selector)
+    bare        = occurrences - paired
+report bare vs paired PER BASE, never as a file-wide total
+```
+
+🔴 **AND THE CARRIERS MUST BE READ FROM WHAT ACTUALLY PRECEDES EACH SELECTOR, NOT FROM A UNICODE
+CATEGORY FILTER.** Gathering candidate bases by *general category = Symbol, other* silently misses
+bases that are categorised otherwise — the information-source glyph is a **lowercase letter** by
+category and takes a selector like any emoji. A category-filtered scan reports a phantom orphan
+selector, which is the same false-positive class this correction exists to kill.
+
+⚠️ **THIS MANUAL IS THE WORKED PROOF.** Its own totals are **605 warning signs and 605 variation
+selectors** — which the old check reads as *perfectly paired, nothing wrong*. The carrier-aware form
+shows **598 paired and 7 BARE**, the other 7 selectors belonging to a pencil, a chilli, a gear, a
+high-voltage sign and a plate. **The old check did not merely mis-measure; on this very file it
+returned a clean result over a real defect.**
+
+⚠️ **Emoji-presentation-by-default bases take NO selector** — the heavy check mark and the coloured
+circles among them. **Zero paired is CORRECT for those and must not be reported as a defect.** This
+manual carries 828 bare coloured circles and 156 bare check marks, all correct.
+
+✅ **This correction came from the executing side pushing back on a planning-side claim rather than
+accepting it.** Recorded deliberately: **the reflex to accept a correction from the planning chat is
+exactly what would have entrenched the wrong check.** §1's *a cross-reference is not provenance* applies
+to instructions as well as to facts.
+
+## P14 — 🔴 A SUMMARY OF A REPORT IS NOT THE REPORT — A THIRD AND FOURTH TIME (V11.19)
+
+**Two more planning-side briefs this session asserted facts they had read a summary of rather than
+verified:**
+
+| The brief said | What was true |
+|---|---|
+| *"printing is Max-only, so no live truck is affected"* | 🔴 **false** — `TRIAL_FEATURES = [...MAX_FEATURES]` and **both live trucks are on trial** |
+| *"the transport is untested"* | 🔴 **it was not connected at all** — zero call sites, and a stub whose `sendBytes` always returned `ok: true` |
+
+✅ **In both cases the executor established the truth and said so before building.** **The pattern is
+now four instances across two sessions and it always has the same shape: a brief asserts a fact it read
+somewhere rather than one it verified.** The remedy is unchanged and cheap — **quote the code, mark
+every claim READ or INFERRED, and treat "not found" as a result.**
+
+## P15 — ⚠️ READ THE SCREEN, NOT THE DESCRIPTION OF IT (V11.19)
+
+**Two Apple-console instructions in a planning brief were wrong:** it invented a column name
+(`trial_ends_at`; the real column is `trial_expires_at`) and described an APNs key-creation screen that
+no longer matches Apple's UI — **the Environment and Key Restriction dropdowns are new as of February
+2025.**
+
+🔴 **Apple's console changes faster than any recollection of it.** Where a step depends on a third-party
+console, **the screen is the authority**; a described screen is a stale artefact the moment the vendor
+ships a redesign, and nothing in the repository will ever flag it.
+
+## P16 — ⚠️ THE GARBLE RULE PROVED ITSELF, IN THE INPUT DIRECTION (V11.19)
+
+**The delta document that produced this version arrived MOJIBAKE-ENCODED** — every non-ASCII glyph
+rendered as its UTF-8 bytes read through a single-byte codepage (the section sign as two characters,
+the warning sign as four, the coloured circle as five). §22's standing rule already names this in the
+outbound direction: *any file containing `§`, `£`, `—` or emoji must reach the planning chat by
+DOWNLOAD-TO-DISK, never as a chat attachment.*
+
+✅ **The rule holds identically INBOUND, and the recovery is the same:** the corruption is a
+deterministic byte-level mapping, so the meaning is recoverable — but **the glyphs must be re-decoded
+before they are written into this manual, never copied through.** Copying mojibake into a file that
+runs a character census turns a transport defect into a permanent content defect, and the census would
+then report the corrupted classes as legitimately present.
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -8566,6 +8826,102 @@ are `2732 × 2732` — **generator residue, harmless under `scaleAspectFill`, le
 
 ⚠️ **NEVER SEEN ON A DEVICE.** The crop safety is arithmetic; the colour handoff is reasoned from three
 READ values.
+
+## ✅ SIGN IN WITH APPLE IS OPTIONAL, NOT A BLOCKER — AND IS DELIBERATELY NOT BUILT (V11.19)
+
+**Guideline 4.8 mandates Sign in with Apple only when the app offers a third-party or social login as an
+alternative to its own account system.** It was never checked which limb applied, so it sat as an
+unquantified submission risk. **READ, 15 August, and the answer is unambiguous:**
+
+- 🔴 **`signInWithOAuth` appears ZERO times in the codebase.** It is the only Supabase method that can
+  begin a provider flow. **That single fact settles it.**
+- `supabase/config.toml` declares `[auth]` and `[auth.email]` and **no `[auth.external.*]` block of any
+  kind.** ⚠️ Noted honestly: that file governs the *local* stack, and hosted providers are toggled in
+  the Supabase dashboard — but **a provider enabled server-side that no code path can initiate is not
+  something the app "offers"**, which is what 4.8 asks about.
+- The login page holds **exactly one button** ("Sign in", submitting `signInWithPassword`) and **one
+  link** ("Forgot your password?"). The signup page holds one submit button and four internal links.
+  **No divider, no "or continue with", no provider icon.**
+- 🔴 **Customers have NO ACCOUNTS AT ALL** — guest checkout, with name, email and optional phone typed
+  into a form. **A surface with no authentication cannot trigger 4.8.**
+- The only Google/Facebook strings anywhere are a **preferred-contact dropdown**, an **add-to-calendar
+  link** and a **line of copy in an email**. None touches `supabase.auth`.
+
+⚠️ **`app/auth/callback/route.ts` is the one thing that superficially resembles OAuth** — it calls
+`exchangeCodeForSession`, which is the shape an OAuth redirect would land on. **It is not evidence of a
+provider:** its default `next` is `/reset-password`, and nothing in the application produces a provider
+code for it to exchange. **A callback route is a necessary condition for OAuth, not a sign of it.**
+
+**DECIDED: not building it.** ⚠️ **The reasons are product-specific and are recorded so the decision is
+not silently revisited:**
+
+- **Account linking.** An operator with an email account who later signs in with Apple at the same
+  address risks a **duplicate account owning a truck, a menu and a payment configuration.**
+- **Apple private relay.** `@privaterelay.appleid.com` forwarders break handover, welcome and
+  notification email if the user disables forwarding — **a real cost on a B2B platform** where the
+  operator's address is an operational channel, not a login artefact.
+
+✅ **4.8 also requires account deletion, which §41 already provides** — so the hard prerequisite is done
+if a social provider is ever added. 🔴 **If a "Continue with Google" button is ever added to the operator
+login, 4.8 becomes mandatory AT THAT MOMENT** and Sign in with Apple must ship in the same release.
+
+## `NSPrivacyCollectedDataTypes` NOW DECLARES DEVICE ID (V11.19)
+
+The array was **empty**, and an empty array is not a neutral placeholder — **it is a positive claim that
+the binary collects nothing.** The app obtains an APNs token and a `device_id` UUID and transmits both
+to `/api/native/bind-device`, where they are stored in `van_devices` **against a truck and an
+operator**.
+
+**Declared, one entry:** `NSPrivacyCollectedDataTypeDeviceID`, purpose
+`NSPrivacyCollectedDataTypePurposeAppFunctionality`, **`Linked = true`** (the row carries a truck and an
+operator), **`Tracking = false`** (same evidence as `NSPrivacyTracking`: no third-party data joined, no
+broker, no ad network, no IDFA, no ATT prompt). `plutil -lint` reads OK and `plutil -p` confirms the
+booleans parsed **as booleans**. The UserDefaults / CA92.1 entry and both tracking keys are untouched.
+
+⚠️ **A misspelt key here does NOT fail the lint** — it parses as valid plist and is silently ignored,
+which reads to Apple as **no declaration at all**. **Check names against Apple's documented list and
+read the file back structurally**, not just for syntax.
+
+🔴 **THE MANIFEST AND THE APP STORE CONNECT QUESTIONNAIRE MUST AGREE, AND THEY DESCRIBE DIFFERENT
+SCOPES.** The manifest covers the **binary**; the questionnaire covers the **product** — email, name,
+phone and payment info collected by the website inside the WebView. **The questionnaire declaring MORE
+is normal and is not a discrepancy; the manifest declaring LESS than the binary does is exactly the
+failure this edit closes.** ⚠️ *Used for tracking* must be answered **No** consistently on every row, or
+it contradicts `NSPrivacyTracking` and pulls in ATT.
+
+⚠️ **A `cap sync` and a rebuild are required before this ships**, and the four hand-authored `pbxproj`
+lines re-checked immediately afterwards (see §11's relaxed note — a sync no longer rewrites that file,
+but the check is cheap and its failure mode is silent).
+
+## APNs CONFIGURATION — FIVE VARIABLES, AND A SILENT FAILURE (V11.19)
+
+READ, `lib/apns.ts:13-24`:
+
+| Variable | Required | If absent |
+|---|---|---|
+| `APNS_KEY_ID` | yes | 🔴 `apnsConfig()` returns `null` |
+| `APNS_TEAM_ID` | yes | 🔴 same |
+| `APNS_BUNDLE_ID` | yes | 🔴 same |
+| `APNS_KEY` | yes | 🔴 same |
+| `APNS_ENV` | no | ⚠️ **anything but the exact string `production` selects SANDBOX** |
+
+🔴 **An empty string counts as absent, and any ONE missing disables push ENTIRELY**, logging
+`skipped: 'not-configured'` — **a silent no-op.** **That is why push has never appeared to fail: it was
+not failing, it was skipping.** A silent skip and a broken send are indistinguishable from the outside,
+which is why the first diagnostic step is the configuration, not the device.
+
+`APNS_KEY` is **raw PEM including the BEGIN/END lines** — not base64, not a path. Literal newlines and
+`\n`-escaped both work.
+
+**Apple-side key configuration:** Environment **Sandbox & Production** (one key serves both), Key
+Restriction **Team Scoped (All Topics)**. ⚠️ **Neither can be changed after saving.**
+
+**`APNS_ENV`: `sandbox` for Debug builds from Xcode; `production` for TestFlight AND the App Store.**
+⚠️ **TestFlight sits on the PRODUCTION side — the usual trap.**
+
+🔴 **A mismatch returns `BadDeviceToken`, and the handler NULLs `push_token`** — **destroying the
+evidence that a token ever arrived.** **Always read `van_devices.push_token` BEFORE placing a test
+send**, or "never registered" and "registered then destroyed" become indistinguishable.
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -9889,7 +10245,75 @@ Several days of payments work and the whole of this branding arc are uncommitted
 
 **Never rendered — verify before trusting.** Most of this arc was carried by source reading, not observation. Confirmed live: the operator header (white variant correct on slate-900), `/login` (navy on white card), the landing nav and footer. **Not** confirmed: the QR poster with the new asset; `/setup`; `/reset-password`; the legal pages; the landing nav at exactly 640px, which is the tightest horizontal fit; any email. The 640px nav fit (~59px spare), the 60px bar height, the 273px name budget and the ~23-character overlap threshold are **all arithmetic**, with ±10-15% on any text-width estimate.
 
-**Update, 31 July 2026 (V9.9).** The illustration and copy changes are **live-verified on the landing page**. Colour values were confirmed by measurement, not inspection. ⚠️ Everything above from the previous session remains as recorded — check whether the six brand assets and the wordmark work have been committed since. If `HEAD` still predates them, the branding and illustration arcs are now stacked in one working tree and the diff is getting harder to read with each pass.
+**Update, 31 July 2026 (V9.9).** The illustration and copy changes are **live-verified on the landing page**. Colour values were confirmed by measurement, not inspection.
+
+## UI, COPY AND ASSETS — 15 AUGUST 2026 (V11.19)
+
+### The app icon is white-ground. ⚠️ Contrast is the open question.
+
+`AppIcon.appiconset` regenerated: **white ground, mark unchanged at `#EF8B2C`, scale 830** (mark 816 px
+tall, 79.7% of canvas, 104 px vertical margin). **3-channel RGB, no alpha** — Apple rejects icons
+containing transparency. Square corners; iOS rounds them.
+
+🔴 **The mark's contrast against its ground dropped from 7.14:1 to 2.50:1**, and the mark is a **thin
+diagonal bolt**. ⚠️ **Enlarging does not change contrast**, and 830 is already at the margin floor —
+scale 880 was generated and **rejected** because it left 78 px of margin against an 80 px floor.
+**If it does not read on a light home-screen wallpaper, the answer is an ORANGE ground, not a larger
+mark.**
+
+⚠️ **The launch screen (`Splash.imageset`, `#0F172A`) is a DIFFERENT ASSET and was deliberately left
+alone** — it matches `/app`'s `bg-slate-900`, so there is no flash on launch. **An earlier brief
+confused the two**; they are not the same asset and must not be changed together by reflex.
+
+### The operator "Review order" button is now `orange-600`
+
+`bg-teal-600` → `bg-orange-600`. ✅ **The sweep proved teal is NO commit convention** — teal appears
+overwhelmingly as pale chips, panels, borders and focus rings, the two other solid teal buttons each sit
+**inside an already-teal container**, and **the same "Start Event" action is teal on the KDS and orange
+in the very same file.** Prior art clinched it: a solid teal button on the manage page had already been
+converted to `bg-orange-600` / `hover:bg-orange-700`, with a comment recording it as a one-off.
+
+**The stronger justification is the flow, not the sweep:** Review order opens `submitPanel`, whose **Take
+payment button is already `bg-orange-600` one tap later.** The teal was a colour change mid-flow with
+nothing behind it.
+
+⚠️ **Contrast moved the wrong way — 3.74:1 → 3.56:1, both below AA** — and this was accepted
+deliberately: it now shares the app's **already-recorded `orange-600` exception** rather than sitting
+outside it. 🔴 **Record that the primary action of the order flow now carries that known debt.** §27.
+
+✅ **There is no shared button component, no class helper and no colour token to inherit from** —
+buttons are hand-written class strings per site, and `lib/brand.ts` **explicitly forbids** app buttons
+inheriting `HATCHGRAB_ORANGE_HEX` (that value is EMAIL-ONLY, and lower-contrast at 2.50:1). **The class
+was copied from the active category chip on the same screen. No hex was written.**
+
+### Device naming: "iPhone, iPad and Android", except the kitchen display
+
+`TARGETED_DEVICE_FAMILY = "1,2"` (universal), so marketing that said "iPad" **under-claimed**. Two
+landing-page prose claims now read **"iPhone, iPad and Android"**, and three **"this iPad"** labels
+became **"this device"**.
+
+⚠️ **Five kitchen-display claims were deliberately left UNCHANGED** — a kitchen display *is* a tablet
+experience and that copy is already accurate. 🔴 **The distinction is deliberate and should not be
+"tidied" later: taking orders runs on iPhone, iPad and Android; the kitchen display is for tablets.**
+
+⚠️ `content/legal/privacy-policy.md` correctly says **"iOS"** — that is the operating system, not a
+device. ⚠️ The `ipad_kds` feature **KEY** is unchanged; renaming it would be a migration for no benefit.
+
+### Customer quantity row: box removed, spacing matched BY MEASUREMENT
+
+The customer expanded-quantity row lost `bg-orange-50 rounded-xl border border-orange-100` to match the
+operator's cleaner treatment. ⚠️ **The first attempt left visibly more vertical space, and it was caught
+on a device, not in review.**
+
+**Measured:** the customer was **20/22/16 px** (above/between/below) against the operator's
+**10/16/14**. 🔴 **The excess came from TWO contributors, and the second is the instructive one: the
+item wrapper's `py-3` stacked on the row's own `py-2`, because on the CUSTOMER side the variant list
+sits OUTSIDE the item's padded wrapper while on the OPERATOR side the rows sit INSIDE it.** The same
+class on both surfaces therefore produces different spacing. Fixed to 10/16/14 with `py-1.5`,
+`space-y-1` and `-mt-2`.
+
+✅ **Above is deliberately tighter than below** — that is what makes the row read as **belonging to the
+item above** rather than floating between two items. ⚠️ Everything above from the previous session remains as recorded — check whether the six brand assets and the wordmark work have been committed since. If `HEAD` still predates them, the branding and illustration arcs are now stacked in one working tree and the diff is getting harder to read with each pass.
 
 # 39. Buzzers — physical pagers against orders (V10)
 
@@ -10199,6 +10623,12 @@ Typed truck-name confirmation; **no `<form>`, so Enter cannot submit**; focus la
 
 **Renderer, mapper, scheduler, trigger modes and harness are built. 🔴 NOTHING CALLS ANY OF IT** — `usePrintWatcher` and `createStubTransport` have **zero call sites**.
 
+> 🔴 **SUPERSEDED V11.19 — IT IS NOW WIRED END TO END, AND THE TRANSPORT IS BLUETOOTH LE.** The line
+> above was true through V11.18 and is struck rather than deleted, per §1: it is the reason the whole
+> renderer sat finished and unreachable for four versions. **What replaced it is Phase B, recorded
+> below.** ⚠️ **What has NOT changed: no printer has ever been connected. Nothing has been seen on
+> paper.** Read the *UNEXERCISED* block at the end of this section before treating any of it as done.
+
 ## 🔴 THE PREVIEW WAS LYING, AND IT WAS THE ONLY INSTRUMENT
 Four fidelity gaps, all now fixed: **double-width rendered at 1.727× instead of exactly 2×** (19px against an 11px base); **every large line rendered bold** regardless of `l.bold`; **`invert` used a block-level background**, so every emphasised block previewed as a solid full-width bar rather than the ragged-right cells `GS B` actually produces; and **the character rule was never applied**, so `José` previewed perfectly and prints `Jos?`. **Every ticket review before this — including all of that session's — was of something the printer would not produce.** See the §35 invariant.
 
@@ -10214,15 +10644,160 @@ Everything on the Orders tab **except timing-to-start**, plus the total and paym
 `lead_time` (default) and `on_confirmed`, **both anchored on ACCEPTANCE** via `DEFAULT_ELIGIBLE`. `trucks.print_trigger_mode` is **truck-level** — a workflow policy, not a device capability; the other four printing settings stay **device-local in Preferences**. Dedup persists in Preferences and **carries the mode it was primed under**.
 
 ## 🔴 OPEN
-- **Priming vs flush-on-connect are the same event with opposite intended outcomes and nothing distinguishes them.** UNRESOLVED, blocked on a real connection state.
-- **`transport.ts` cannot fail** — `sendBytes` always returns `ok: true` and `status()` hard-codes `connected: true` — so **`failed`/`unknown` are unexercised**.
-- **No retry, backoff or pacing.**
-- **Ordering is acceptance order, not collection-time order** — `selectDueToPrint` does not sort.
-- 🔴 **NOTHING HAS BEEN SEEN ON PAPER.**
+- **Priming vs flush-on-connect are the same event with opposite intended outcomes and nothing distinguishes them.** UNRESOLVED, blocked on a real connection state. — ✅ **RESOLVED V11.19: priming. See below.**
+- **`transport.ts` cannot fail** — `sendBytes` always returns `ok: true` and `status()` hard-codes `connected: true` — so **`failed`/`unknown` are unexercised**. — ✅ **CLOSED V11.19: the honest stub and the BLE transport both fail truthfully.**
+- **No retry, backoff or pacing.** — ⚠️ **PARTLY CLOSED V11.19: 12 ms chunk pacing exists; there is still no retry or backoff.**
+- **Ordering is acceptance order, not collection-time order** — `selectDueToPrint` does not sort. — **STILL OPEN.**
+- 🔴 **NOTHING HAS BEEN SEEN ON PAPER.** — 🔴 **STILL TRUE AT V11.19. This is the one that matters.**
+
+# PHASE B — WIRED, WITH A BLUETOOTH LE TRANSPORT (V11.19)
+
+## 🔴 NOTHING PRINTED BECAUSE NOTHING WAS CONNECTED
+
+`usePrintWatcher` and `createStubTransport` had **zero call sites**, and the only consumers of
+`mapOrderToTicket` / `renderTicket` were four lines in a dev page that `notFound()`s in production.
+**`renderTicket` was already emitting printer-ready ESC/POS — the hard part was finished and
+unreachable.** The diagnosis question *"can an operator print a kitchen ticket today?"* had a one-word
+answer, and it was **no**, for a reason no amount of reading the renderer would surface.
+
+**Now wired through one bridge (`lib/printing/usePrinting.ts`):** the watcher mounts on the
+**dashboard only**, gated on `isNativeApp()` **and** `canAccess('ticket_printing')` **and** the
+per-device toggle **and** readiness.
+
+🔴 **NEVER MOUNT THE WATCHER ON THE KDS.** Dedupe is device-local Capacitor Preferences
+(`hg_printed_keys_<token>`), so a second mounted watcher does **not** race the first — it
+**duplicates**. Two mounts print every ticket twice, and there is no `print_jobs` table and no
+`printed_at` column to arbitrate between them.
+
+## 🔴 THE STUB'S DISHONESTY WAS THE DANGEROUS PART
+
+The stub returned `ok: true` and `connected: true` **unconditionally**. Read as a placeholder that is
+harmless; it was not. **Wired to a live watcher it would have marked every ticket permanently printed
+while no paper moved** — and because dedupe is device-local Preferences with no server record, that
+state is **unrecoverable**: the tickets are simply never due again on that device.
+
+**Now:** a refusal reads as `'failed'`, the order stays due, and the retry is the queue.
+
+> 🔴 **THE PRINCIPLE, WORTH MORE THAN THE FIX: A STUB THAT LIES IS WORSE THAN NO STUB, BECAUSE THE
+> MOMENT IT IS WIRED THE LIE BECOMES STATE.** An absent transport fails loudly at the call site. A
+> cheerful one fails silently into a dedupe set. **Stubs must return the pessimistic answer.**
+
+## Priming over flush-on-connect — DECIDED
+
+Switching printing on mid-service must **not** print the day's backlog. Tickets generated while nothing
+was connected do **not** accumulate for a later flush; the watcher primes its dedupe set instead.
+
+⚠️ **The cost, stated rather than hidden: a ticket generated during a brief disconnection is not
+recovered by reconnecting.** That is the deliberate trade — a wrong-direction failure here is twenty
+tickets spraying out of a printer mid-service, which is worse than one missing ticket the operator can
+see is missing on the board.
+
+## Bluetooth LE — the transport
+
+`@capacitor-community/bluetooth-le` **pinned at `8.3.0`** (peer `>=8.0.0`; the project is on Capacitor
+8.4.0). ✅ **It ships no privacy manifest and uses no required-reason API**, so the app-level manifest
+did not need touching for it.
+
+- The **write characteristic is DISCOVERED, not hard-coded** — no vendor UUID assumption.
+- **Chunked at 180 bytes with 12 ms pacing.** BLE MTU is 20–512 bytes and a ticket is far larger.
+- `NSBluetoothAlwaysUsageDescription` added. 🔴 **No `UIBackgroundModes`** — printing is
+  **foreground-only by design**, and a background mode invites review questions that cannot be
+  answered honestly.
+- ⚠️ **BLE only.** Classic Bluetooth SPP on iOS requires enrolment in Apple's MFi Program; it is not a
+  code decision and cannot be worked around.
+
+### 🔴 THE FAILURE SPLIT IS THE LOAD-BEARING PART
+
+| When the send fails | Result | What the operator sees |
+|---|---|---|
+| **before any byte leaves** | `ok: false` → `'failed'` | order stays due; **clean reprint**, unmarked |
+| **after at least one chunk** | **throws** → `'unknown'` | next ticket carries **POSSIBLE DUPLICATE** |
+
+**This is honest about the one thing the system genuinely cannot know — whether paper moved — instead
+of guessing in either direction.** A guess toward `'failed'` double-prints silently; a guess toward
+`'printed'` loses the ticket silently. **The banner is the only answer that is true.**
+
+## 🔴 PRINTER DISCOVERY: RANK, DO NOT FILTER
+
+**DEVICE-OBSERVED:** the scan list offered **"Dominic's Apple Watch"** and **"Dominic's AirPods Pro"**
+with Connect buttons beside them. ⚠️ **A reviewer seeing that concludes the feature is broken** — a 2.1
+completeness exposure arriving not as an empty list but as a list full of the **wrong** things.
+
+🔴 **AN ALLOW-LIST OF SERVICE UUIDs WAS REJECTED, and the reason is in the code's own comment: an
+unlisted printer becomes INVISIBLE, and the operator cannot fix that.** **A cluttered list is merely
+untidy; an invisible printer is unusable.** The asymmetry decides it.
+
+**Implemented instead:** a `likely` flag derived from advertised service UUIDs (the strongest signal)
+plus name patterns, splitting the list into **"Likely printers"** and a collapsed **"Other devices
+(N)"**. Everything remains listed and connectable. When nothing ranks likely there is no empty box —
+the copy becomes *"No printers recognised yet. Everything nearby is listed below…"* and the other list
+renders open.
+
+**Three connect gates, in order:** link → a writable characteristic exists → an `ESC @` (`0x1B 0x40`)
+probe. **`session` is assigned only after all three pass**, and the Preferences write happens after
+that — so a failed device can never be reported connected, nor silently reconnected on resume.
+
+> ⚠️ **THE LIMIT, STATED PLAINLY: `ESC @` IS ONE-WAY.** A passing probe proves a device **accepted two
+> bytes** — not that a printer is present, and not that paper moved. **It rules things OUT; it cannot
+> rule them in.** An AirPod that accepts a write can still be connected to. What the ranking guarantees
+> is that it is no longer *offered* as a printer.
+
+## 🔴 THE TICKET HAD NO LEADING WHITESPACE AT ALL
+
+Kitchen rails use spring clips that grip **15–25 mm** of paper. The ticket emitted **five bytes** before
+its first glyph — `ESC @` and `ESC t 16` — **none of which move paper.** The only margin was the
+printer's own head-to-cutter gap (INFERRED 10–15 mm, **never measured**), so a clip landed directly on
+the double-width `#id  COLLECT hh:mm` header — **the two things a cook reads at a glance.**
+
+⚠️ **The 4-line trailing feed is emitted BEFORE the cut**, so it belongs to that ticket's **tail**, not
+to the next ticket's leading edge. It contributes nothing to the problem it looks like it should solve.
+
+**Fixed:** `TICKET_LEADING_FEED_LINES = 2`, emitted as `ESC d 2` after the init and before the first
+glyph. ~8 mm added for ~20 mm total. **Cost: +3 bytes and ~1.6 m of paper per 200-ticket service.**
+The constant is a count of **lines**, so it is width-independent and needs no separate 58 mm value.
+
+🔴 **EVERY NUMBER IN THAT PARAGRAPH IS ARITHMETIC.** Dots per millimetre, default line spacing and the
+head-to-cutter gap are all standard assumptions, not observations. **Measure the first real ticket with
+a ruler** — one observation replaces the whole estimate, and it is one constant to change.
+
+## ⚠️ THE LEAD TIME IS MEASURED FROM COLLECTION, NOT FROM COOK TIME — DESIGN GAP
+
+READ: `selectDueToPrint` computes `nowMins >= timeToMins(order.slot) - leadMins`, and `slot` is the
+**same field the ticket prints as the collection line**. **`lib/printing/` contains no call to any prep
+function.**
+
+🔴 **So a 10-minute lead on a 15-minute dish prints five minutes AFTER cooking should have started.**
+The available workaround — setting the lead to the longest prep time — prints every quick item far too
+early, which is the same defect in the other direction.
+
+⚠️ **`calcQueueAwareReadySecs` already exists**, already knows per-category prep, and already drives the
+kitchen board's amber threshold. **It is simply not consulted here.** **Design gap, not a bug.**
+BACKLOG (§6, §27).
+
+## 🔴 PRINTING IS UNEXERCISED — SAY SO WHEREVER IT IS DESCRIBED AS DONE
+
+**No printer has ever been connected.** The chunk size, the 12 ms pacing, the partial-write `'unknown'`
+path, the `ESC @` probe, the leading feed and the resume-reconnect are **all arithmetic and reasoning**.
+⚠️ **Those are exactly the places BLE printing fails in practice.**
+
+⚠️ **`lib/plan-features.ts` advertises ticket printing as included on Max**, restored from
+`'coming_soon'` at Dominic's explicit decision with the risk stated and accepted. ✅ **Restoring `true`
+also restored `findPlanParityViolations()` coverage on that row** — **the guard short-circuits on
+`row[tier] === true`, so `'coming_soon'` had silently removed the automated check.** 🔴 **Record the
+class: any `coming_soon` cell is INVISIBLE to the parity guard.**
+
+🔴 **AND BOTH LIVE TRUCKS ARE ENTITLED TO IT.** `TRIAL_FEATURES = [...MAX_FEATURES]` and both are on
+`plan = 'trial'`, so *"printing is Max-only, so no live truck is affected"* is false. **Only the
+per-device toggle — `hg_print_enabled`, default off — stands between a live truck and this code.** §4.
 
 The Settings card **no longer manufactures a connection**. ⚠️ The settings were previously gated behind a paired printer, **which is WHY the stub existed** — the only way to reach real settings was to fake a connection.
 
 ⚠️ **`lib/plan-features.ts` still marks Kitchen ticket printing as `max: true`** — a live claim for an unbuilt feature, **on Gusto's Billing tab today**. Same class as Online payments (Stripe Connect) marked with a plain check.
+
+> ⚠️ **UPDATED V11.19 — the claim is no longer for an *unbuilt* feature, but it is still for an
+> *unexercised* one.** The row is deliberately `true` (see the Phase B block above), which also
+> restored parity-guard coverage that `'coming_soon'` had silently removed. **The billing-tab exposure
+> stands until a ticket has come out of a real printer.**
 
 **`/dev` is now gated by `app/dev/layout.tsx`, which `notFound()`s in production** — the **directory**, so future dev pages are covered by default. ⚠️ Known limit: **a layout does not gate Route Handlers.**
 
@@ -10343,4 +10918,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.18
+HatchGrab Engineering Reference Manual · V11.19

@@ -24,7 +24,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
-import { formatTime, formatTimeRange } from '@/lib/time-utils'
+import { formatTime, formatTimeRange, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playNewOrder } from '@/lib/audio'
@@ -72,6 +72,9 @@ export default function KdsPage() {
   const kdsView: KdsView = searchParams.get('view') === 'cook' ? 'cook' : 'window'
   const vanId = searchParams.get('van_id') ?? ''
   const vanName = searchParams.get('van_name') ?? ''
+  // 🔴 THE SEED FROM THE DASHBOARD. Same handoff mechanism as van_id above. Read ONCE, into the initial
+  // state below; nothing re-reads it, so a later navigation cannot move an event out from under a cook.
+  const seedEventId = searchParams.get('event_id') ?? ''
 
   // Native: remember this device is on KDS so a cold-launch reopens here (restart-to-last-screen, §33).
   useEffect(() => { if (isNativeApp()) setLastScreen('kds') }, [])
@@ -191,8 +194,17 @@ export default function KdsPage() {
     const o = orders.find(x => x.order_key === c.order_key)
     return o ? `#${o.id}` : (c.provisional_id ? `#${c.provisional_id}` : null)
   }, [orders])
-  const [todayEvents, setTodayEvents] = useState<TruckEvent[]>([])
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  // ── THE CANDIDATE SET ────────────────────────────────────────────────────────────────────────
+  // Every upcoming event (today onward) — the SAME set the dashboard resolves over, so the id it hands
+  // us can always be found. This was `todayEvents`, filtered to today with a UTC date string: it could
+  // not hold tomorrow's event, which is why a handoff alone would not have been enough.
+  const [events, setEvents] = useState<TruckEvent[]>([])
+  // 🔴 SEEDED FROM THE URL AT MOUNT, so a KDS opened from the dashboard is scoped on its FIRST fetch.
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(seedEventId || null)
+  // 🔴 THE LATCH THAT MAKES THIS "SEED ONCE, THEN HOLD". Set the first time an event is resolved and
+  // never cleared. Every path that resolves an event checks it, so a refetch, a poll, a re-render or a
+  // resume after hours in the background CANNOT pick a different event. See the seed effect below.
+  const seededRef = useRef(false)
   const [showEventMenu, setShowEventMenu] = useState(false)
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const [finishConfirm, setFinishConfirm] = useState<{ eventId: string; early: boolean; endTime: string } | null>(null)
@@ -211,9 +223,17 @@ export default function KdsPage() {
       const params = new URLSearchParams({ token })
       if (currentPin) params.set('pin', currentPin)
       if (vanId) params.set('van_id', vanId)
-      // event_id scopes the slot projection to the active event (re-key fix). Null on the
-      // first load → the server falls back to the sole event on the date; once an event is
-      // selected, fetchAll's identity changes and the effect re-fetches event-scoped.
+      // event_id scopes the slot projection to the active event (re-key fix).
+      // 🔴 OPENED FROM THE DASHBOARD THIS IS SET ON THE VERY FIRST FETCH, because `selectedEventId` is
+      // initialised from ?event_id= at mount rather than left null until an operator taps something. That
+      // closes the old hole: the control that used to be the only way to set it is a chip row that does
+      // not render at all when a truck has one event, so a single-event day fetched unscoped forever and
+      // relied on a server-side date fallback to guess.
+      // ⚠️ HONEST LIMIT — A COLD LAUNCH STILL MAKES ONE UNSCOPED FETCH. The seed for that path comes from
+      // `pickDefaultEventByTime` over the events list, and that list arrives INSIDE this same request, so
+      // there is nothing to scope by yet. When it lands, the seed effect sets the id, `fetchAll`'s
+      // identity changes, and the next fetch is scoped. Closing that too would mean fetching events
+      // before orders — a second round trip on the slowest path there is, for one poll of imprecision.
       if (selectedEventId) params.set('event_id', selectedEventId)
       const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
       const data = await res.json()
@@ -260,13 +280,26 @@ export default function KdsPage() {
 
       try {
         const eventsRes = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+        // 🔴 NEVER REPLACE GOOD EVENT STATE WITH DATA FROM A FAILED RESPONSE. A 429 or 500 returns valid
+        // JSON without `.events`, and `?? []` turned that into an EMPTY candidate set — which blanked the
+        // active event on a kitchen screen mid-service until the next successful poll. The dashboard has
+        // carried this guard for some time; this surface did not. Keep what we have and try again.
+        if (!eventsRes.ok) {
+          console.warn('[kds] events fetch failed:', eventsRes.status, '— keeping the events we already have')
+        } else {
         const eventsData = await eventsRes.json()
-        const todayStr = new Date().toISOString().split('T')[0]
-        const fetched = (eventsData.events ?? []).filter((e: TruckEvent) => e.event_date === todayStr)
-        setTodayEvents(fetched)
+        // The FULL upcoming list, unfiltered — see the candidate-set note on `events`.
+        const fetched: TruckEvent[] = eventsData.events ?? []
+        setEvents(fetched)
+        // ⚠️ THE AUTO-OPEN LOOP IS THE ONE PLACE "TODAY" STILL MATTERS, AND IT MATTERS A LOT: the test is
+        // `start_time <= currentTime`, a bare wall-clock string. Run against the unfiltered list it would
+        // fire `action: 'open'` on TOMORROW's event the moment today's clock passed its start time. So the
+        // date filter stays here, and it is now LOCAL — §7: never use toISOString() (UTC) to decide
+        // whether an event date is "today". In BST the UTC string is still yesterday until 01:00.
+        const todayStr = localTodayIso()
         const currentTime = new Date().toTimeString().slice(0, 5)
         const stale = fetched.filter((e: TruckEvent) =>
-          e.status === 'confirmed' && e.auto_open === true && e.start_time <= currentTime
+          e.event_date === todayStr && e.status === 'confirmed' && e.auto_open === true && e.start_time <= currentTime
         )
         for (const ev of stale) {
           await fetch('/api/events/action', {
@@ -276,11 +309,12 @@ export default function KdsPage() {
           })
         }
         if (stale.length > 0) {
-          setTodayEvents(prev => prev.map(e =>
+          setEvents(prev => prev.map(e =>
             stale.some((s: TruckEvent) => s.id === e.id)
               ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() }
               : e
           ))
+        }
         }
       } catch {}
     } catch (e) {
@@ -417,18 +451,43 @@ export default function KdsPage() {
     })
   }, [])
 
-  // SINGLE active-event resolution (also drives ● Live, the pause/extra-wait target, and the render
-  // below): the selected event, else the live → confirmed → first today event. Declared here, above
-  // the heartbeat effect, so the heartbeat can gate on its live status. "live" = status==='open'
-  // (live-redefinition) — the same rule as the customer page, TruckListCard, the dashboard, and the
-  // heartbeat-monitor.
+  // ── 🔴 SINGLE ACTIVE-EVENT RESOLUTION: A HELD VALUE, NOT A DERIVATION ────────────────────────────
+  // This is a LOOKUP of the seeded id and nothing else. The status-keyed fallback chain that used to sit
+  // here — `open ?? confirmed ?? todayEvents[0]` — is GONE, and its absence is the whole fix.
+  //
+  // 🔴 WHY A FALLBACK HERE WOULD BE A KITCHEN DEFECT. This expression re-evaluates on every render, and
+  // the render is driven by a poll. Anything time- or status-dependent in it is an AUTO-ADVANCE: the
+  // moment an event's end time passed, or its status flipped to 'closed', the board would silently move
+  // to the next event and take a cook's unserved orders off the screen. Nobody is watching this display.
+  // A held value cannot do that. If the seeded event has finished, it STAYS — with its late orders on it
+  // — until a human taps the picker.
+  //
+  // ⚠️ null is a legitimate outcome (no events at all, or the seeded one was cancelled) and is handled by
+  // the render below, exactly as an empty `todayEvents` was before.
+  // "live" = status==='open' (live-redefinition) — the same rule as the customer page, TruckListCard,
+  // the dashboard, and the heartbeat-monitor. Declared above the heartbeat effect so it can gate on it.
   const activeEvent: TruckEvent | null = selectedEventId
-    ? todayEvents.find(e => e.id === selectedEventId) ?? null
-    : (todayEvents.find(e => e.status === 'open')
-      ?? todayEvents.find(e => e.status === 'confirmed')
-      ?? todayEvents[0]
-      ?? null)
+    ? events.find(e => e.id === selectedEventId) ?? null
+    : null
   const activeEventLive = activeEvent?.status === 'open'
+
+  // ── 🔴 THE SEED. RUNS ONCE, EVER. ───────────────────────────────────────────────────────────────
+  // Priority 1: the id handed over by the dashboard (?event_id=), IF it is one of this truck's upcoming
+  //             events. Membership is the validation — an id for another truck, or a deleted, cancelled
+  //             or past event, simply is not in the list and falls through, which is the no-param path.
+  // Priority 2: pickDefaultEventByTime over the SAME candidate set the dashboard uses. Its documented
+  //             order is "in progress by time, else earliest upcoming, else most recent past", which is
+  //             precisely "the current or next event". THE SECOND RESOLVER THAT WAS HERE IS DELETED —
+  //             there is now one implementation of this question and both surfaces call it.
+  // 🔴 `seededRef` is set BEFORE anything else and never cleared, so this body cannot run twice however
+  // many times `events` changes. That is the guarantee behind "seed once, then hold".
+  useEffect(() => {
+    if (seededRef.current) return
+    if (!events.length) return          // nothing to seed FROM yet — wait for the first successful fetch
+    seededRef.current = true
+    if (selectedEventId && events.some(e => e.id === selectedEventId)) return   // the URL seed resolved
+    setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
+  }, [events, selectedEventId])
 
   useEffect(() => {
     // Heartbeat ONLY while this KDS's active event is LIVE (status==='open') — offline protection
@@ -771,14 +830,14 @@ export default function KdsPage() {
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
       if (!res.ok) throw new Error(data.error)
-      setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
       showKdsToast('Event started')
       fetchAllRef.current() // re-sync from the server read so status propagates immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
   const extendEvent = async (eventId: string, addMins: number) => {
-    const ev = todayEvents.find(e => e.id === eventId); if (!ev) return
+    const ev = events.find(e => e.id === eventId); if (!ev) return
     const [h, m] = ev.end_time.split(':').map(Number)
     const total = h * 60 + m + addMins
     const newEnd = `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
@@ -787,7 +846,7 @@ export default function KdsPage() {
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
       if (!res.ok) throw new Error(data.error)
-      setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
       showKdsToast(`Extended to ${newEnd}`)
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
@@ -796,7 +855,7 @@ export default function KdsPage() {
   // the close after Yes. The timing-aware (finishingEarly = now<end_time, minute-parsed) logic is
   // UNCHANGED — only the confirm SURFACE moved to the modal below.
   const finishEvent = (eventId: string) => {
-    const ev = todayEvents.find(e => e.id === eventId)
+    const ev = events.find(e => e.id === eventId)
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     const endMins = ev?.end_time ? (() => { const [h, m] = ev.end_time.split(':').map(Number); return (h || 0) * 60 + (m || 0) })() : null
     const finishingEarly = endMins != null && nowMins < endMins
@@ -810,7 +869,7 @@ export default function KdsPage() {
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
-      setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
       setShowEventMenu(false); showKdsToast('Event finished')
       fetchAllRef.current() // re-sync so the status flips to "Finished" immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -823,8 +882,14 @@ export default function KdsPage() {
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
-      setTodayEvents(prev => prev.filter(e => e.id !== eventId))
-      setSelectedEventId(null); setShowEventMenu(false); showKdsToast('Event cancelled')
+      // 🔴 THE ONE PLACE THE DEFAULT PICK RUNS AGAIN, AND IT IS OPERATOR-INITIATED. The held event has
+      // just been cancelled by a human on this screen, so there is nothing left to hold; leaving
+      // `selectedEventId` null would strand the board on a blank event with no way back (the seed latch
+      // has long since fired). This is a deliberate re-pick at the moment of a deliberate action — it is
+      // NOT the automatic re-resolution the latch exists to prevent, and it cannot fire on a poll.
+      const remaining = events.filter(e => e.id !== eventId)
+      setEvents(remaining)
+      setSelectedEventId(pickDefaultEventByTime(remaining)?.id ?? null); setShowEventMenu(false); showKdsToast('Event cancelled')
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
@@ -835,15 +900,26 @@ export default function KdsPage() {
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
-      setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, customer_note: eventNoteInput || null } : e))
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, customer_note: eventNoteInput || null } : e))
       setShowEventMenu(false); showKdsToast('Note saved')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
+  // ── 🔴 CHANGING EVENT SETS A NEW HELD VALUE. IT DOES NOT RE-ENABLE RESOLUTION. ──────────────────
+  // `seededRef` stays true, so nothing re-derives afterwards: the operator's choice is now the held one
+  // and the board holds it exactly as it held the seed.
+  // ⚠️ THE CONFIRM FIRES ON EVERY SWITCH, not only when the current event is 'open' as it used to. This
+  // control is a row of small chips on a screen that sits on a counter in a working kitchen, and a
+  // mis-tap used to move the whole board silently. The dialog is the accident guard; it names what is
+  // being left and how many orders are on it, because the orders are what an operator actually loses
+  // sight of. Do not soften it back to an `if (open)` — the finished-event case is exactly when unserved
+  // food is still on the screen.
   const switchEvent = (event: TruckEvent) => {
-    const active = todayEvents.find(e => e.id === selectedEventId) ?? (todayEvents.find(e => e.status === 'open') ?? todayEvents.find(e => e.status === 'confirmed') ?? todayEvents[0] ?? null)
-    if (active?.status === 'open' && event.id !== active.id) {
-      if (!window.confirm(`You're currently serving at ${active.venue_name}. Switch to ${event.venue_name}? Tap the current event to switch back.`)) return
+    const active = selectedEventId ? events.find(e => e.id === selectedEventId) ?? null : null
+    if (active && event.id !== active.id) {
+      const onScreen = orders.filter(o => ['pending', 'confirmed', 'modified', 'cooking', 'ready'].includes(o.status)).length
+      const orderPart = onScreen > 0 ? ` ${onScreen} order${onScreen === 1 ? '' : 's'} on this screen will be replaced.` : ''
+      if (!window.confirm(`Switch from ${active.venue_name} to ${event.venue_name}?${orderPart} Tap the current event to switch back.`)) return
     }
     setSelectedEventId(event.id)
   }
@@ -949,14 +1025,14 @@ export default function KdsPage() {
   const cardViewMode = activeView === 'cook' ? 'cook' : 'window'
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen text-slate-400 text-sm">
+    <div className="flex items-center justify-center h-dvh text-slate-400 text-sm">
       Loading kitchen...
     </div>
   )
 
   // PIN prompt
   if (requiresPin) return (
-    <div className="flex flex-col items-center justify-center h-screen bg-slate-50 gap-4">
+    <div className="flex flex-col items-center justify-center h-dvh bg-slate-50 gap-4">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 w-80 flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-slate-900 text-center">Enter PIN</h2>
         <input
@@ -982,7 +1058,7 @@ export default function KdsPage() {
   )
 
   if (error || !truck) return (
-    <div className="flex items-center justify-center h-screen text-red-500 text-sm">
+    <div className="flex items-center justify-center h-dvh text-red-500 text-sm">
       {error ?? 'Truck not found'}
     </div>
   )
@@ -1003,8 +1079,26 @@ export default function KdsPage() {
           lives in the one-time intro popup below, not here. */}
       {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} />} />}
 
-      {/* ── Header ── */}
-      <header className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0">
+      {/* ── Header ──────────────────────────────────────────────────────────────────────────────────
+          🔴 THE SAFE-AREA INSET, AND IT IS THE SAME ONE AppHeader USES — NOT A SECOND MECHANISM.
+          components/shared/AppHeader.tsx:45 carries `style={{ paddingTop: 'env(safe-area-inset-top)' }}`,
+          which is why every dashboard/manage/admin header renders BELOW the status bar. This header is
+          hand-rolled and never had it, so the KDS rendered full-bleed and its top-right control sat UNDER
+          the battery indicator (device-verified).
+          🔴 MOVING THE CONTROL LEFT WOULD NOT HAVE FIXED IT. On iPad landscape the status bar spans the
+          FULL width — clock left, battery right — so a leftward move collides with the clock instead. And
+          any horizontal answer breaks the moment the bar grows taller (call in progress, screen recording,
+          personal hotspot). The inset is the only answer that tracks all of those, because iOS reports the
+          new height and env() follows it.
+          ⚠️ WEB IS BYTE-FOR-BYTE UNCHANGED: env(safe-area-inset-top) resolves to 0 in a normal browser.
+          Pairs with viewport-fit=cover (app/layout.tsx) and contentInset:'never', which let CSS own the
+          safe area — see lib/native/statusBar.ts for why iOS is the only platform where env() is non-zero.
+          ⚠️ The padding goes on the HEADER, not the layout root: the root is the flex column that owns the
+          board's height, and padding there would inset the scroll region as well as the chrome. */}
+      <header
+        className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0"
+        style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top))' }}
+      >
         {/* Back to the orders dashboard — staff are auto-routed to KDS on login and otherwise have no
             way back to place orders. Unconditional (all roles): /dashboard/[token] has no staff block,
             so this can't loop. Label collapses to just ← on narrow widths to avoid crowding. */}
@@ -1238,19 +1332,31 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Multi-event switcher ── */}
-      {todayEvents.length > 1 && (
+      {/* ── Multi-event switcher ──────────────────────────────────────────────────────────────────
+          🔴 THIS IS THE KDS'S OWN WAY TO CHANGE EVENT, and it is the ONLY one — nothing else on this
+          surface moves the board. It now lists the FULL candidate set rather than today's events, so a
+          truck can reach tomorrow's event from the kitchen screen without going back to the dashboard.
+          ⚠️ Every tap goes through switchEvent's confirm; see the note there for why that is not
+          optional on an unattended screen.
+          ⚠️ A date is shown for anything that is not today, because "Nethergate 12:00" and "Old Goat
+          12:00" are indistinguishable otherwise and the whole defect this fixes was two screens on two
+          different days. */}
+      {events.length > 1 && (
         <div className="flex gap-2 px-4 py-2 border-b border-slate-100 overflow-x-auto flex-shrink-0">
-          {todayEvents.map(event => (
-            <button key={event.id} onClick={() => switchEvent(event)}
-              className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                activeEvent?.id === event.id
-                  ? 'bg-slate-900 text-white border-slate-900'
-                  : 'bg-white text-slate-600 border-slate-200'
-              }`}>
-              {event.venue_name.split(',')[0]} {formatTime(event.start_time)}{event.status === 'open' ? ' ●' : ''}
-            </button>
-          ))}
+          {events.map(event => {
+            const isToday = event.event_date === localTodayIso()
+            const dayLabel = isToday ? '' : ` ${new Date(`${event.event_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })}`
+            return (
+              <button key={event.id} onClick={() => switchEvent(event)}
+                className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
+                  activeEvent?.id === event.id
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white text-slate-600 border-slate-200'
+                }`}>
+                {event.venue_name.split(',')[0]} {formatTime(event.start_time)}{dayLabel}{event.status === 'open' ? ' ●' : ''}
+              </button>
+            )
+          })}
         </div>
       )}
 

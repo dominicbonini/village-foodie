@@ -46,4 +46,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 
+    // MARK: - APNs registration
+    //
+    // THE BRIDGE BETWEEN iOS AND @capacitor/push-notifications. Without these two methods the plugin
+    // never learns the device token, and NOTHING reports that.
+    //
+    // WHAT WAS BROKEN, AND FOR HOW LONG. `van_devices.push_token` was NULL on every iOS row since the
+    // app was first installed. The JS side was correct throughout: listeners attached AND awaited
+    // before requestPermissions() and register() (lib/native/push.ts), the endpoint allow-lists
+    // push_token (app/api/native/bind-device), and both entitlements carry aps-environment. The break
+    // was here. PushNotifications.register() calls UIApplication.shared.registerForRemoteNotifications(),
+    // iOS negotiates with APNs, and APNs hands the token to
+    // application(_:didRegisterForRemoteNotificationsWithDeviceToken:) on THIS delegate. That method did
+    // not exist, so the default no-op ran and the token was discarded inside the app process.
+    //
+    // WHY IT WAS INVISIBLE. The plugin observes NotificationCenter, and the ONLY thing in the whole tree
+    // that posts these two notifications is the plugin's own README - i.e. this install step. Capacitor
+    // core merely DECLARES the names (CAPNotifications.swift). With nothing posting them, the plugin's
+    // `registration` event never fired AND NEITHER DID `registrationError`, so the one console.warn that
+    // would have reported a fault could never print. The absence of an error was the symptom.
+    // Diagnosis and evidence: docs/push-registration-report.md.
+    //
+    // Signatures and notification names are copied VERBATIM from the plugin's documented install step
+    // (node_modules/@capacitor/push-notifications/README.md) - not written from memory. Do not rename
+    // the parameters: these are UIApplicationDelegate methods matched by selector, and a changed
+    // external label makes them silently stop being called, which reproduces this exact bug.
+    //
+    // Android does not use this path at all (FCM), which is why Android worked and iOS never has.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    // BOTH METHODS, DELIBERATELY. The failure path matters as much as the success path: the plugin's
+    // observer turns this post into a `registrationError` event, which is what surfaces "no
+    // aps-environment", a denied permission at the system level, or an APNs network failure. Omitting it
+    // leaves a registration failure completely silent - the condition that hid the defect above.
+    // The plugin's observer reads `notification.object as? Error` and returns early if it is not one, so
+    // the error MUST be passed as the object.
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+
 }

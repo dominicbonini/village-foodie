@@ -23,13 +23,15 @@ export async function GET(req: NextRequest) {
 
   if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  // Count active orders for this event
+  // Count active orders for this event.
+  // 'modified' ADDED: this number is shown to an operator before a destructive event action, and an edited
+  // order is every bit as affected as an unedited one. Omitting it under-reported the consequence.
   const { count, error } = await supabase
     .from('orders')
     .select('id', { count: 'exact', head: true })
     .eq('event_id', eventId)
     .eq('truck_id', truck.id)
-    .in('status', ['pending', 'confirmed'])
+    .in('status', ['pending', 'confirmed', 'modified'])
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
