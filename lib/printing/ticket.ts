@@ -428,12 +428,37 @@ function strBytes(s: string): number[] {
   return out
 }
 
-/** ESC/POS bytes for a set of lines. Init → code page → per-line align/size/bold + text + LF → feed + cut. */
+// ── 🔴 LEADING FEED — BLANK PAPER FOR THE RAIL CLIP ───────────────────────────────────────────────────
+// WHY IT EXISTS: kitchen rails use spring clips that grip the top of the ticket and hide roughly 15-25mm
+// of paper. The FIRST thing this ticket prints is the double-width `#id  COLLECT hh:mm` row — the two
+// facts a cook reads at a glance — so a ticket that starts printing immediately gets its header clipped.
+//
+// ⚠️ THIS IS NOT THE ONLY BLANK PAPER. The print head sits BELOW the cutter, so after every cut there is
+// already a head-to-cutter gap of blank paper above the first printable dot — typically 10-15mm on an
+// 80mm thermal printer, but it is MODEL-SPECIFIC AND HAS NOT BEEN MEASURED HERE. This constant is the
+// TOP-UP on that gap, not the whole margin. Over-feeding is not free: it wastes paper on every ticket.
+//
+// THE ARITHMETIC (all of it inferred — no printer was measured):
+//   We never emit ESC 2 / ESC 3, so line height is the printer's default that ESC @ restores: 30 dots
+//   (3.75mm at 203dpi / 8 dots per mm) to 1/6 inch (4.23mm), depending on model.
+//   2 lines  = 7.5-8.5mm  +  a 10-15mm head gap  =  17.5-23.5mm total, i.e. ~20mm.
+//
+// HOW TO CHANGE IT: this is a count of LINES, not millimetres or dots — one integer, 0-255, sent as
+// `ESC d n`. Raise it by 1 to add ~4mm, lower it by 1 to remove ~4mm. Measure a real ticket first (see
+// docs/printing-ticket-layout-report.md, Part G). A per-truck setting can come later if rails differ;
+// deliberately NOT a database column or a settings control today.
+const TICKET_LEADING_FEED_LINES = 2
+
+/** ESC/POS bytes for a set of lines. Init → code page → leading feed → per-line align/size/bold + text + LF → feed + cut. */
 export function encodeEscPos(lines: TicketLine[], config: TicketConfig): Uint8Array {
   const width = colsFor(config.paper_width)
   const b: number[] = []
   b.push(ESC, 0x40)              // ESC @  — initialise
   b.push(ESC, 0x74, 0x10)        // ESC t 16 — code page (Phase-B tunable)
+  // 🔴 BEFORE THE FIRST GLYPH, AFTER THE INIT. ESC @ resets line spacing, so the feed below is measured
+  // in the same line height the ticket body will use. Guarded at 0 so setting the constant to 0 emits
+  // NOTHING rather than `ESC d 0` — a printer-dependent no-op we should not rely on.
+  if (TICKET_LEADING_FEED_LINES > 0) b.push(ESC, 0x64, TICKET_LEADING_FEED_LINES)   // ESC d n — leading feed
 
   for (const line of lines) {
     if (line.divider) {

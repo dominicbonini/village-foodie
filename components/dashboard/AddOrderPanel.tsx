@@ -2132,7 +2132,7 @@ setItemModal({ item, modGroups, editCartKey })
         <button
           onClick={() => setShowOrderSheet(true)}
           disabled={!hasItems}
-          className="flex-1 max-w-xs bg-teal-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 active:scale-95"
+          className="flex-1 max-w-xs bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 active:scale-95"
         >
           Review order →
         </button>

@@ -76,6 +76,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   const [localConnected, setLocalConnected] = useState<boolean | null>(null)
   const [localName, setLocalName] = useState<string | null>(null)
   const [connectingId, setConnectingId] = useState<string | null>(null)
+  const [showOther, setShowOther] = useState(false)      // "Other devices" starts collapsed, never hidden
   const liveConnected = localConnected ?? connected
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   // They call the SAME singleton the dashboard's watcher uses (getPrinterTransport), so a connection made
   // here is the connection tickets are sent over. There is no second transport and no second answer.
   const runScan = async () => {
-    setPairingError(null); setScanning(true); setFound(null)
+    setPairingError(null); setScanning(true); setFound(null); setShowOther(false)
     try {
       const t = getPrinterTransport()
       const avail = await t.availability()
@@ -238,18 +239,62 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   most receipt printers only appear for a minute or two after you turn them on.
                 </p>
               )}
-              {!!found?.length && (
-                <div className="flex flex-col gap-1">
-                  <p className="text-slate-600">Tap your printer to connect:</p>
-                  {found.map(d => (
-                    <button key={d.id} onClick={() => connectTo(d)} disabled={!!connectingId}
-                      className="flex items-center justify-between gap-2 text-left bg-white border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 disabled:opacity-50">
-                      <span className="min-w-0 truncate text-slate-800 font-medium">{d.name}</span>
-                      <span className="shrink-0 text-orange-600 font-semibold">{connectingId === d.id ? 'Connecting...' : 'Connect'}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {/* ── 🔴 RANKED, NEVER FILTERED (15 August 2026) ────────────────────────────────────
+                  The list showed an Apple Watch and AirPods with a Connect button beside each, which
+                  reads as broken. The fix is ORDER, not omission: `likely` splits the rows into two
+                  sections and EVERY device stays reachable, because the ranking signals are
+                  suggestive (advertised service UUIDs and name patterns) and a printer that matches
+                  neither must still be pairable. An allow-list would make such a printer invisible,
+                  which an operator cannot work around; a longer list is merely untidy.
+                  🔴 CONNECTING IS GATED BY CAPABILITY, NOT BY SECTION. A device from "Other devices"
+                  that passes both connect-time checks connects exactly like one from the top. */}
+              {!!found?.length && (() => {
+                const likely = found.filter(d => d.likely)
+                const other = found.filter(d => !d.likely)
+                const row = (d: DiscoveredPrinter) => (
+                  <button key={d.id} onClick={() => connectTo(d)} disabled={!!connectingId}
+                    className="flex items-center justify-between gap-2 text-left bg-white border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 disabled:opacity-50">
+                    <span className="min-w-0 truncate text-slate-800 font-medium">{d.name}</span>
+                    <span className="shrink-0 text-orange-600 font-semibold">{connectingId === d.id ? 'Connecting...' : 'Connect'}</span>
+                  </button>
+                )
+                return (
+                  <div className="flex flex-col gap-1">
+                    {/* 🔴 NO EMPTY BOX. When nothing ranks as likely the heading is replaced by a line
+                        that reads as "not recognised yet, here is everything", and the other list is
+                        shown OPEN — a collapsed empty-looking panel would read as a failure. */}
+                    {likely.length > 0 ? (
+                      <>
+                        <p className="text-slate-600">Likely printers — tap to connect:</p>
+                        {likely.map(row)}
+                      </>
+                    ) : (
+                      <p className="text-slate-600">
+                        No printers recognised yet. Everything nearby is listed below — if your printer is
+                        there, tap it and HatchGrab will check whether it can print.
+                      </p>
+                    )}
+                    {other.length > 0 && (
+                      likely.length === 0 ? (
+                        <>{other.map(row)}</>
+                      ) : (
+                        <>
+                          <button onClick={() => setShowOther(v => !v)} aria-expanded={showOther}
+                            className="text-left text-slate-500 hover:text-slate-700 font-semibold py-1">
+                            {showOther ? 'Hide other devices' : `Other devices (${other.length})`}
+                          </button>
+                          {showOther && (
+                            <>
+                              <p className="text-slate-500">These do not look like printers, but you can still try one.</p>
+                              {other.map(row)}
+                            </>
+                          )}
+                        </>
+                      )
+                    )}
+                  </div>
+                )
+              })()}
             </div>
           )}
           {/* The WHOLE summary row is the disclosure control, with a chevron (▾ collapsed / ▲ expanded) —
@@ -292,7 +337,6 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                     onChange={() => setTriggerMode('lead_time')} className="mt-1 accent-orange-500" />
                   <span className="text-sm">
                     <span className="text-slate-800 font-medium">A set time before collection</span>
-                    <span className="block text-xs text-slate-500">The ticket prints the number of minutes below before collection.</span>
                   </span>
                 </label>
                 {/* ── THE MINUTES INPUT BELONGS TO THE OPTION ABOVE IT ──────────────────────────────
@@ -303,10 +347,23 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                     'lead_time'` condition, the same K.lead Preferences write, the same 0-60 bounds and
                     the same default of 10. Nothing about WHAT it writes changed. */}
                 {mode === 'lead_time' && (
-                  <label className="flex items-center justify-between gap-3 text-sm pl-6">
-                    <span className="text-slate-700">Print tickets this many minutes before collection</span>
+                  // ── ONE LINE, NOT TWO, AND ALIGNED TO THE WORDING (15 August 2026) ──────────────
+                  // The option's helper used to say "The ticket prints the number of minutes below
+                  // before collection" and THIS label said "Print tickets this many minutes before
+                  // collection" — the same sentence twice, three lines apart. The helper is gone and
+                  // this line carries it.
+                  // 🔴 THE WORDING IS MEASURED AGAINST WHAT THE CODE ACTUALLY DOES. selectDueToPrint
+                  // computes `nowMins >= timeToMins(order.slot) - leadMins`, and `slot` is the
+                  // COLLECTION time — no cook time, no prep estimate, nothing per-dish. So "before
+                  // collection" is accurate, and it is deliberately NOT softened into something that
+                  // implies the app allows for cooking. It does not. See docs/printing-ui-report.md.
+                  // LAYOUT: items-start + the input's own mt keeps the number level with the FIRST
+                  // line of the wording when it wraps. items-center floated it against the middle of
+                  // a two-line block, which is what read as adrift.
+                  <label className="flex items-start justify-between gap-3 text-sm pl-6">
+                    <span className="text-slate-700 min-w-0">Minutes before the collection time</span>
                     <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
-                      className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
+                      className="w-20 shrink-0 -mt-1 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
                   </label>
                 )}
                 <label className="flex items-start gap-2 cursor-pointer">

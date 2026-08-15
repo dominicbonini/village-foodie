@@ -73,18 +73,43 @@
 	<array/>
 
 	<!--
-		DELIBERATELY EMPTY, PENDING DOMINIC'S DECISION.
-		This declaration must AGREE with the App Store Connect privacy questionnaire, it carries legal
-		weight, and it is not a developer's call to make. The audit found exactly one candidate — the
-		APNs device token, obtained by @capacitor/push-notifications and stored in
-		van_devices.push_token — and it sits on a genuinely arguable line: the TOKEN is obtained by
-		native code, but it is TRANSMITTED by JavaScript (lib/native/device.ts saveDeviceConfig →
+		DECIDED 15 August 2026 BY DOMINIC. Was DELIBERATELY EMPTY pending this call; an empty array is a
+		positive statement that the binary collects nothing, so it could not be left by default.
+		DECLARED: Device ID. The audit found exactly one candidate and it is now declared rather than
+		argued away — the APNs device token, obtained by @capacitor/push-notifications, plus the
+		device_id UUID, both transmitted to /api/native/bind-device and stored in van_devices against a
+		truck and an operator. It sits on a genuinely arguable line: the TOKEN is obtained by native
+		code, but it is TRANSMITTED by JavaScript (lib/native/device.ts saveDeviceConfig →
 		fetch('/api/native/bind-device')) which ships in the remotely-loaded web bundle, not in this
 		binary. See docs/privacy-manifest-report.md Part B for both readings.
-		An EMPTY array is a positive statement that the binary collects nothing, so this must be
-		revisited before submission — it is not a placeholder that can be left by default.
+		WHY DECLARE IT ANYWAY: the App Store Connect privacy questionnaire will declare collection for
+		the PRODUCT regardless, and a manifest that disagrees with the questionnaire is the failure mode
+		to avoid. Over-declaring here is truthful and costs nothing; under-declaring is a contradiction
+		between two artefacts Apple reads together.
+		THE THREE ANSWERS, AND THEIR EVIDENCE:
+		  - Purpose: App Functionality. The token exists to route a push to the right van's device and
+		    for no other reason. Not analytics, not personalisation, not advertising.
+		  - Linked to identity: TRUE. van_devices rows carry truck and operator, so the identifier is
+		    tied to an identified account, not held anonymously.
+		  - Used for tracking: FALSE. Same evidence as NSPrivacyTracking above — no third-party data is
+		    joined to it, no data broker, no ad network, no IDFA, no ATT prompt.
+		Key names are Apple's documented spellings from "Describing data use in privacy manifests";
+		none is invented. A misspelt key is silently ignored, which reads as no declaration at all.
 	-->
 	<key>NSPrivacyCollectedDataTypes</key>
-	<array/>
+	<array>
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeDeviceID</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

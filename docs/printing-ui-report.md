@@ -1,383 +1,267 @@
-# Kitchen ticket printing — diagnosis, one layout move, three label options
+# Print timing — what the lead time is measured from, and the copy that now says it
 
-**Scope done exactly as written.** Part A diagnosed and **stopped** — `lib/plan-features.ts` untouched. Part B moved one control, layout only. Part C **proposes and stops** — no rename applied.
-**One file edited: `components/printing/PrintingSettings.tsx`.** No `next dev`, no `next build`, no `cap sync`, no deploys, no commit.
+**ONE file edited: `components/printing/PrintingSettings.tsx`.** Copy and layout only. No `next dev`, no `next build`, no `cap sync`, no deploys, no commit. `tsc` clean.
 ✅ **No span of the prompt arrived garbled. No instruction contradicted another, so there was nothing to stop for.**
 
-> ## 🔴 THE ANSWER TO PART A, UP FRONT: **NO. AN OPERATOR CANNOT PRINT A KITCHEN TICKET TODAY.**
-> **`createStubTransport` has ZERO call sites. `usePrintWatcher` has ZERO call sites.** The only thing in the repository that ever calls `mapOrderToTicket` or `renderTicket` is **`app/dev/ticket-preview/page.tsx`, a dev page that `notFound()`s in production.** 🔴 **There is no code path from an order to a printer at all — not a broken one, an absent one.** **The `max: 'coming_soon'` change made on 14 August is correct.**
-> ⚠️ **BUT THE GATE STILL GRANTS THE CARD ON MAX — the N6 divergence is CONFIRMED, not refuted. See A6.**
+> ## 🔴 PART A'S ANSWER: **THE LEAD TIME IS MEASURED FROM THE COLLECTION TIME. THERE IS NO COOK TIME IN THE PRINT PATH AT ALL.**
+> `selectDueToPrint` computes `nowMins >= timeToMins(order.slot) - leadMins`, and `slot` is the order's collection time. **The whole `lib/printing/` module contains not one call to any prep or cook-time function.** **The label was right; the suspicion is not borne out.**
+>
+> ## ⚠️ BUT THE PRACTICAL PROBLEM DOMINIC DESCRIBED IS REAL AND THE ANSWER MAKES IT WORSE, NOT BETTER (A5).
+> **A 10-minute lead on a dish that needs 15 minutes of cooking prints the ticket 5 minutes AFTER cooking should have started.** **The app knows each category's cook time — it is just not consulted here.**
+>
+> ## 🔴 AND ON YOUR NOTE ABOUT CONNECTING TO A RANDOM DEVICE: **CONFIRMED, IT IS A REAL DEFECT, AND I HAVE NOT "FIXED" IT — see Part F.** The naive fix (filter the scan to known printer UUIDs) would hide real printers, which is worse than the bug. **Two options and a recommendation; your call.**
+>
+> ## ⚠️ E3'S PREMISE IS INCORRECT AND I AM NOT ACCEPTING IT — **THE LAST REPORT HAD ZERO BARE GLYPHS.** 10 vs 11 was ten paired warning signs plus **one pencil `✏️`**, which is also a two-codepoint emoji. Byte-level proof in E3.
 
 ---
 
-# PART A — DOES KITCHEN TICKET PRINTING ACTUALLY PRINT?
+# PART A — WHAT THE LEAD TIME IS MEASURED FROM
 
-## A1. The full path, traced. 🔴 It breaks at the FIRST step.
+## A1. The code that decides when a lead-time ticket fires
 
-**READ. Every component below exists and is substantial — and nothing joins them to an order.**
-
-| Step | Where | State |
-|---|---|---|
-| **1. Trigger** | `lib/printing/printWatcher.ts:168` — `export function usePrintWatcher<T extends DueOrder>(args: {…})` | 🔴 **ZERO CALL SITES** |
-| **2. Mapper** | `lib/printing/mapOrderToTicket.ts:67` — `export function mapOrderToTicket(input: MapTicketInput): TicketOrder` | ⚠️ **ONE caller: `app/dev/ticket-preview/page.tsx:185`** |
-| **3. Renderer** | `lib/printing/ticket.ts:458` — `export function renderTicket(order, config, type = 'combined'): Uint8Array` | ⚠️ **ONE caller: `app/dev/ticket-preview/page.tsx:191`** |
-| **4. Transport** | `lib/printing/transport.ts:41` — `createStubTransport` | 🔴 **ZERO CALL SITES** |
-| **5. Driver** | — | 🔴 **DOES NOT EXIST** |
-
-**The exhaustive grep across `app/`, `components/`, `lib/` for `createStubTransport|usePrintWatcher|PrinterTransport|sendBytes|renderTicket|mapOrderToTicket` returns, apart from the definitions and comments:**
-
-```
-app/dev/ticket-preview/page.tsx:16:import { renderTicket, type TicketOrder, … } from '@/lib/printing/ticket'
-app/dev/ticket-preview/page.tsx:18:import { mapOrderToTicket } from '@/lib/printing/mapOrderToTicket'
-app/dev/ticket-preview/page.tsx:185:    const ticket = mapOrderToTicket({
-app/dev/ticket-preview/page.tsx:191:  const bytes = useMemo(() => renderTicket(built.ticket, config), [built, config])
-```
-
-🔴 **THAT IS THE COMPLETE LIST OF CONSUMERS. One dev preview page, and the manual records that `/dev` is gated by `app/dev/layout.tsx`, which `notFound()`s in production.** ✅ **So even the software-only path is unreachable to an operator.**
-
-⚠️ **The dashboard renders the SETTINGS CARD and nothing else. READ, `app/dashboard/[token]/page.tsx:3989`:**
-
-```tsx
-{!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode}/>}
-```
-
-🔴 **`PrintingSettings` is the ONLY printing thing the dashboard mounts, and it imports no watcher and no transport** — its imports are `Preferences`, `isNativeApp`, `canAccess`, `Toggle`, and two TYPE-only imports (`PaperWidth`, `PrintTriggerMode`). **A settings card with nothing behind it.**
-
-## A2. 🔴 THE TRANSPORT — quoted in full. It is a stub, and it is the ONLY one.
-
-**READ, `lib/printing/transport.ts:38-48`, verbatim and complete:**
+**READ, `lib/printing/printWatcher.ts:91-107` — the whole selector, and the arithmetic is one line:**
 
 ```ts
-/** Phase-A stub transport: no hardware. Sends bytes to a sink (the preview/log) and reports connected/ok, so
- *  the shared pipeline (watcher → render → sendBytes → print_jobs) runs end-to-end in software. Replaced by
- *  the MFi/BLE backend in Phase B — nothing above the seam changes. */
-export function createStubTransport(sink: (bytes: Uint8Array) => void): PrinterTransport {
-  return {
-    async scan() { return [] },
-    async connect() { return { ok: true } },
-    async sendBytes(bytes) { sink(bytes); return { ok: true } },
-    async status() { return { connected: true } },
-  }
+export function selectDueToPrint<T extends DueOrder>(
+  orders: T[],
+  opts: { mode: PrintTriggerMode; nowMins: number; leadMins: number; printed: Set<string>; eligible?: string[] },
+): T[] {
+  const eligible = opts.eligible ?? DEFAULT_ELIGIBLE
+  return orders.filter(o => {
+    if (opts.printed.has(o.order_key)) return false          // dedup — printed once already
+    if (!eligible.includes(o.status)) return false           // 🔴 not accepted (or rejected) ⇒ never print
+    if (opts.mode === 'on_confirmed') return true
+    // LEAD TIME — one rule for ASAP and scheduled: print when now >= slot − leadMins. ASAP orders have no
+    // parseable slot ⇒ due now.
+    const due = timeToMins(o.slot)
+    if (due == null) return true
+    return opts.nowMins >= due - opts.leadMins
+  })
 }
 ```
 
-**Answering the question in the terms it was asked:**
+**THE EXACT ARITHMETIC:**
 
-| Behaviour | This transport |
+```
+        print when   nowMins  >=  timeToMins(order.slot)  −  leadMins
+```
+
+**And the parser it uses — `:82-88`:**
+
+```ts
+/** "HH:MM" (event tz) → minutes-of-day, or null (ASAP / unparseable ⇒ treat as due now). */
+export function timeToMins(hhmm?: string | null): number | null {
+  if (!hhmm) return null
+  const m = /^(\d{1,2}):(\d{2})/.exec(hhmm)
+  if (!m) return null
+  return parseInt(m[1], 10) * 60 + parseInt(m[2], 10)
+}
+```
+
+## A2. 🔴 Which timestamp — **the ORDER'S COLLECTION TIME. Not a derived cook-start time.**
+
+**The field is `order.slot`. READ, its declaration in `components/dashboard/types.ts:35`:**
+
+```ts
+  slot: string | null
+```
+
+**And the watcher's own view of it — `printWatcher.ts:80`, with the header comment that exists because this exact field was once wrong:**
+
+```ts
+/** 🔴 `slot` — the field a real `Order` actually carries. See the header. */
+interface DueOrder { order_key: string; slot?: string | null; status: string }
+```
+
+⚠️ **`slot` IS THE COLLECTION TIME — the same field the ticket prints as the collection line.** READ, `mapOrderToTicket.ts`:
+
+```ts
+  // ⚠️ SAME `slot` FIELD AS THE TRIGGER READS, so the printed collection time and the watcher's due
+  // DECISION cannot drift apart. An order with no parseable slot is ASAP in both — "COLLECT ASAP" on
+  // paper, due-now to the selector.
+  const collection_time = hhmm(order.slot)
+```
+
+## A3. Is a cook time involved? — 🔴 **NO. "Not found" is the result, and I looked for it specifically.**
+
+**A search of the entire `lib/printing/` module for prep or cook-time logic returns only PROSE in comments — the word "cook" meaning the person, never a calculation:**
+
+```
+lib/printing/ticket.ts:22:  // difference is the point: the cook view answers "what do I make", this answers "what is this order".
+lib/printing/ticket.ts:25:  // prep countdowns, urgency colouring, age-based state, "start by" times, the TO MAKE bar. A ticket prints
+```
+
+🔴 **ZERO imports of `lib/prep-utils.ts`. Zero calls to any ready-time function. The print path never asks how long anything takes to cook.**
+
+### ✅ THE COOK-TIME CONCEPT DOES EXIST — and it varies per item's CATEGORY
+
+**READ, `lib/prep-utils.ts:105-131` — the machinery Dominic remembered, including the 2-minute buffer the manual records:**
+
+```ts
+  export function calcReadySecsByCat(
+    newByCat: Record<string, number>,
+    queueByCat: Record<string, number>,
+    catConfigs: Record<string, CatConfig>
+  ): Record<string, number> {
+    const byCat: Record<string, number> = {}
+    Object.entries(newByCat).forEach(([cat, newQty]) => {
+      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
+      if (!cfg.secs) return
+      const totalQty = (queueByCat[cat] || 0) + newQty
+      const finalBatch = Math.ceil(totalQty / cfg.batch)
+      byCat[cat] = finalBatch * cfg.secs
+    })
+    return byCat
+  }
+
+  export function calcQueueAwareReadySecs(…, bufferSecs: number = 120): number {
+    …
+    return Math.max(30, maxSecs) + bufferSecs
+  }
+```
+
+| | |
 |---|---|
-| Implemented? | 🔴 **NO** |
-| Stubs? | 🔴 **YES — it is named `createStubTransport`** |
-| No-ops? | 🔴 **`scan()` returns `[]` unconditionally. It can never discover a printer.** |
-| Logs? | **`sendBytes` hands the bytes to a caller-supplied `sink`. It does not transmit them.** |
-| Throws? | **No.** |
-| Returns early? | **No — it returns SUCCESS. `{ ok: true }`, always.** |
+| **Where it comes from** | `catConfigs` — per-CATEGORY `prep_secs` and `batch` size |
+| **Does it vary per item?** | ✅ **YES — per category, and it is QUEUE-AWARE:** `ceil((queue + new) / batch) × secs`, so the same dish takes longer when the kitchen is busy |
+| **Is it in the print path?** | 🔴 **NO** |
 
-> ## 🔴 THE WHOLE FILE IS 48 LINES AND THERE IS NO OTHER IMPLEMENTATION IN IT.
-> `PrinterClass = 'mfi' | 'ble'` is declared at `:15` and **neither backend exists**. The file's own header says so: *"Phase A (now, no hardware): use createStubTransport() → routes the same bytes to a sink (preview/log)"*.
-> ⚠️ **AND THE DANGEROUS PART IS THAT IT LIES UPWARD.** `sendBytes` **always** returns `ok: true` and `status()` **hard-codes** `connected: true`. **If this stub were ever wired in, every ticket would be recorded as PRINTED SUCCESSFULLY while no paper moved.** ✅ **It is not wired in — which is the only reason that is not a live defect.**
+## A4. 🔴 THE ANSWER, IN ONE SENTENCE AN OPERATOR WOULD UNDERSTAND
 
-## A3. Bluetooth or network pairing UI — 🔴 **NOT FOUND**
+> ## **"Print 10 minutes before" means ten minutes before the customer is due to COLLECT — not ten minutes before you need to start cooking. The app does not allow for how long the food takes.**
 
-**"Not found" is the result, and the code says so in its own words. READ, `components/printing/PrintingSettings.tsx:111-119`:**
+🔴 **STOPPING ON THIS ITEM AS INSTRUCTED. THE TIMING LOGIC IS UNCHANGED — `lib/printing/printWatcher.ts` is ABSENT from the diff.** ✅ **And because the answer is "collection", the label needed no correction, only de-duplication.**
 
-```tsx
-          {/* ⚠️ THE HONEST CONNECTION STATE. No "Connect a printer" button, because there is nothing behind
-              it: transport.ts has no pairing, no scan and no failure path. Saying so is the whole change. */}
-          {!printer && (
-            <p className="text-xs text-slate-500 border border-amber-200 bg-amber-50 rounded-lg px-3 py-2">
-              <strong className="text-amber-800">No printer connected.</strong> Bluetooth printer pairing
-              isn&apos;t available yet — you can set your preferences here now and they&apos;ll apply as soon
-              as it arrives.
-            </p>
-          )}
-```
+## A5. ⚠️ The practical consequence — **YES, THE PROBLEM IS REAL TODAY**
 
-✅ **THE UI ALREADY TELLS THE TRUTH TO THE OPERATOR'S FACE: *"Bluetooth printer pairing isn't available yet."*** 🔴 **There is no scan, no picker, no "Connect" button.** The header at `:19-25` records that a stub pairing **used to** exist and was **removed** because it wrote the literal string `'Demo printer (Phase A stub)'` and then displayed a green **"● Connected"** badge.
+| Scenario | What happens |
+|---|---|
+| Lead 10, a dish that cooks in 3 minutes | ✅ Ticket at T−10, cooking starts with 7 minutes to spare |
+| **Lead 10, a dish that cooks in 15 minutes** | 🔴 **Ticket at T−10. Cooking should have started at T−15. THE TICKET IS FIVE MINUTES LATE and the order is late.** |
+| Lead 10, busy queue pushing a 15-minute dish to 25 | 🔴 **Fifteen minutes late** — and the app's own `calcQueueAwareReadySecs` could have told it so |
 
-**What remains is a `disconnect` and a dead `Change` row. READ, `:85` and `:138-147`:**
-
-```tsx
-  const disconnect = async () => { await Preferences.remove({ key: K.printer }); setPrinter(null) }
-```
-```tsx
-              {printer && <div className="flex items-center justify-between text-sm gap-3">
-                <span className="text-slate-700 truncate">Printer: <strong>{printer}</strong></span>
-```
-
-⚠️ **`printer` is read from `K.printer` and NOTHING IN THE REPOSITORY WRITES THAT KEY** — the only writer was the removed stub pairing. **So the "Printer: …", "● Connected" and "Disconnect" branches are unreachable today**, and the card instead shows an amber **"Coming soon"** chip at `:99`. ✅ **Correct by construction, and Phase B lights them up by writing a real name.**
-
-## A4. Has printing ever been LIVE-VERIFIED? 🔴 **NO. The absence is documented, not merely unfound.**
-
-**Both records say it explicitly, in the same words:**
-
-- **`docs/reference-manual.md:10221`** (§42's OPEN list): 🔴 **`- 🔴 **NOTHING HAS BEEN SEEN ON PAPER.**`**
-- **`docs/printing-report.md:187`**: **`- **Nothing has been seen on paper.**`**
-
-⚠️ **AND ONE MANUAL LINE IS ITSELF STALE, WHICH IS WORTH FLAGGING BECAUSE IT DESCRIBES A UI THAT NO LONGER EXISTS. READ, `docs/reference-manual.md:3876`:**
-
-> *"a 2nd device shows **"Connect"** (pair its own) … Two states: **NOT set up → "Connect" button**; **SET UP → printer name + Connected chip + ticket settings** …"*
-
-🔴 **There is no "Connect" button. It was removed with the stub pairing.** ⚠️ **It also says the card lives in the "Menu & Stock" tab; `app/dashboard/[token]/page.tsx:3989` mounts it in the SETTINGS tab.** **Reported, not fixed — this task does not touch the manual.**
-
-✅ **`grep` across `docs/*.md` for evidence of real hardware — "printed on paper", "real printer", "physical printer", a paired thermal printer — returns NOTHING but those two negative statements.**
-
-## A5. What `PrintingSettings.tsx` persists — and 🔴 **nothing reads it at print time**
-
-**READ, `:38`, the complete key list:**
-
-```ts
-const K = { printer: 'hg_printer_name', lead: 'hg_print_lead_mins', paper: 'hg_paper_width', enabled: 'hg_print_enabled' } as const
-```
-
-**READ, the four writers (`:78-85`):**
-
-```ts
-  const setEnabledPref = async (v: boolean) => { setEnabled(v); if (!v) setExpanded(false); await Preferences.set({ key: K.enabled, value: String(v) }) }
-  const setLeadMins = async (n: number) => { setLead(n); await Preferences.set({ key: K.lead, value: String(n) }) }
-  const setPaperWidth = async (w: PaperWidth) => { setPaper(w); await Preferences.set({ key: K.paper, value: String(w) }) }
-  // 🔴 Straight to the truck column — no local copy, no Preferences write.
-  const setTriggerMode = async (m: PrintTriggerMode) => { await onChangeMode(m) }
-```
-
-| Value | Where it goes | Is it a column? |
-|---|---|---|
-| `hg_print_enabled` | **Capacitor Preferences** (device-local) | ❌ no column |
-| `hg_print_lead_mins` | **Preferences** | ❌ no column |
-| `hg_paper_width` | **Preferences** | ❌ no column |
-| `hg_printer_name` | **Preferences** — 🔴 **read only; nothing writes it** | ❌ no column |
-| **trigger mode** | 🔴 **`trucks.print_trigger_mode`, a REAL COLUMN**, via `onChangeMode` → `/api/dashboard/action` `set_print_trigger_mode` (`app/api/dashboard/action/route.ts:2326-2330`) | ✅ **YES** |
-
-> ## 🔴 DOES ANYTHING READ THEM AT PRINT TIME? **NO — BECAUSE THERE IS NO PRINT TIME.**
-> **The exhaustive grep for all four keys returns exactly TWO files: `PrintingSettings.tsx` itself (writer + reader) and nothing else.** 🔴 **`usePrintWatcher` — the only thing that would consume `lead`, `paper` and `enabled` — is never mounted.** ✅ **`trucks.print_trigger_mode` IS read back, but only to re-render this same card** (`app/dashboard/[token]/page.tsx:3989`, `components/dashboard/types.ts:139`).
-> **The settings are real, durable and completely inert.** ⚠️ **The card's own header says as much: *"you can set your preferences here now and they'll apply as soon as it arrives."***
-
-## A6. 🔴 N6 CONFIRMED — the two sources DO disagree, right now
-
-**SOURCE 1 — PRESENTATION. READ, `lib/plan-features.ts:161`:**
-
-```ts
-      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a thermal printer in the kitchen.', starter: false, pro: false, max: 'coming_soon' },
-```
-
-**SOURCE 2 — ENFORCEMENT. READ, `lib/features.ts:53-58`:**
-
-```ts
-const MAX_FEATURES: Feature[] = [
-  ...PRO_FEATURES,   // includes whatsapp_replies now
-  'ticket_printing',
-  'multi_device_kds',
-  'cook_screen',
-]
-```
-
-**and the gate itself, `lib/features.ts:98-129`, whose operative line is:**
-
-```ts
-  return PLAN_FEATURES[plan]?.has(feature) ?? false
-```
-
-> ## 🔴 CONFIRMED, NOT REFUTED. **THE MATRIX SAYS `coming_soon` WHILE THE GATE STILL SAYS YES.**
-> **`canAccess('max', 'ticket_printing', …)` returns `TRUE`** — `ticket_printing` is in `MAX_FEATURES`, and `TRIAL_FEATURES = [...MAX_FEATURES]`, **so trial and tester trucks get it too.**
-> **CONSEQUENCE, READ from `PrintingSettings.tsx:75-76`:**
-> ```tsx
-> const canPrint = canAccess(plan, 'ticket_printing', featureOverrides ?? {}, trialExpiresAt)
-> if (!canPrint) return null
-> ```
-> 🔴 **A Max operator on an iPad still gets the full Kitchen-ticket-printing card**, with a working On/Off toggle, paper width, trigger mode and lead minutes — **while the Billing tab three tabs away now says "Coming soon".** ⚠️ **Those two are visible to the same person in the same session.**
-
-✅ **AND THE 14 AUGUST CHANGE WAS DELIBERATE ABOUT THIS. READ, `lib/plan-features.ts:155-160`, the comment directly above the row:**
-
-```
-      // PRESENTATION (its own header at :229 says so) and nothing reads it to gate. The enforcement gate
-      // is canAccess in lib/features.ts, which is UNTOUCHED — `ticket_printing` still resolves exactly as
-      // it did, so no truck gains or loses access to anything.
-      // ⚠️ It also cannot break findPlanParityViolations(): that guard only inspects cells that are hard
-      // `true` (`row[tier] === true && !canAccess(...)`), so turning one into 'coming_soon' removes a
-      // check rather than adding one. 'coming_soon' is explicitly a legitimate divergence (:231).
-```
-
-🔴 **AND THE LAST CLAUSE IS THE STING: the parity guard `findPlanParityViolations()` only inspects cells that are hard `true`.** ⚠️ **By moving the cell to `'coming_soon'`, the change REMOVED the automated check on this row. The divergence is now not only real but unwatched — the guard will never report it.** ✅ **The card is silent about plan (no MAX badge, no upgrade copy), so nothing is being SOLD twice — but the card's presence is itself the claim.**
-
-## A7. 🔴 CAN AN OPERATOR PRINT A KITCHEN TICKET TODAY?
-
-> # NO.
-> **There is no transport, no pairing, no driver and no code path from an order to a printer — the watcher and the stub transport have zero call sites, and the only consumer of the renderer is a dev page that 404s in production.**
-
-**STOPPING ON THIS ITEM AS INSTRUCTED. `lib/plan-features.ts` HAS NOT BEEN TOUCHED — `git diff --stat` at D1 proves it.** ⚠️ **The one thing I would put in front of your decision either way: whichever way the matrix goes, A6's gate divergence stays until `lib/features.ts` is addressed, and the parity guard no longer watches this row.**
+> ## 🔴 THE LEAD IS A SINGLE FIXED NUMBER FOR THE WHOLE TRUCK. It cannot be right for both a drink and a slow-cooked dish, and it does not move when the kitchen is busy.
+> ⚠️ **THE WORKAROUND AN OPERATOR HAS TODAY: set the lead to your LONGEST prep time.** That prints early for quick items — which is the harmless direction, since a ticket on the rail early costs nothing and a ticket late costs a late order.
+> ✅ **THE FIX, IF YOU WANT IT LATER, ALREADY HAS ITS INPUTS:** `calcReadySecsByCat` gives a per-order cook estimate from the same `catConfigs` the capacity engine uses. **Printing at `slot − max(leadMins, cookSecs/60)` would make the lead a FLOOR rather than the whole answer.** 🔴 **NOT PROPOSED AS WORK, NOT BUILT, AND NOT IMPLIED BY THE NEW COPY** — the copy says what the code does today.
 
 ---
 
-# PART B — THE LEAD-TIME CONTROL NOW SITS UNDER ITS OWN OPTION
+# PART B — THE COPY
 
-## B1. Both options and the minutes input, quoted BEFORE the change
+## B1. Both sentences, quoted
 
-**READ, `components/printing/PrintingSettings.tsx:148-181` as it stood:**
+| file:line | The sentence |
+|---|---|
+| `components/printing/PrintingSettings.tsx:295` | `<span className="block text-xs text-slate-500">The ticket prints the number of minutes below before collection.</span>` |
+| `components/printing/PrintingSettings.tsx:307` | `<span className="text-slate-700">Print tickets this many minutes before collection</span>` |
 
-```tsx
-              {/* ── WHEN TO PRINT ─────────────────────────────────────────────────────────────────────
-                  🔴 THE ON-ACCEPT CONSEQUENCE IS STATED IN THE OPTION ITSELF, NOT IN A TOOLTIP. An operator
-                  choosing this must see, at the moment of choosing, that an advance pre-order prints hours
-                  before its collection time — that is the whole difference between the two modes and it is
-                  not discoverable from the label alone. */}
-              <div className="flex flex-col gap-2">
-                <span className="text-sm text-slate-700">When to print</span>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="radio" name="print-mode" checked={mode === 'lead_time'}
-                    onChange={() => setTriggerMode('lead_time')} className="mt-1 accent-orange-500" />
-                  <span className="text-sm">
-                    <span className="text-slate-800 font-medium">Shortly before collection</span>
-                    <span className="block text-xs text-slate-500">The ticket prints a few minutes before the order is due.</span>
-                  </span>
-                </label>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input type="radio" name="print-mode" checked={mode === 'on_confirmed'}
-                    onChange={() => setTriggerMode('on_confirmed')} className="mt-1 accent-orange-500" />
-                  <span className="text-sm">
-                    <span className="text-slate-800 font-medium">As soon as you accept the order</span>
-                    <span className="block text-xs text-slate-500">
-                      An advance pre-order prints when you accept it, which may be hours before the collection
-                      time. Orders you have not accepted yet never print.
-                    </span>
-                  </span>
-                </label>
-              </div>
-              {mode === 'lead_time' && (
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  <span className="text-slate-700">Print tickets this many minutes before due</span>
-                  <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
-                    className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
-                </label>
-              )}
+🔴 **Three lines apart, saying the same thing, one of them pointing at the other ("the number of minutes below").**
+
+## B2. Combined into one line, sitting with the input
+
+```diff
+-                    <span className="block text-xs text-slate-500">The ticket prints the number of minutes below before collection.</span>
+```
+```diff
+-                    <span className="text-slate-700">Print tickets this many minutes before collection</span>
++                    <span className="text-slate-700 min-w-0">Minutes before the collection time</span>
 ```
 
-🔴 **THE PROBLEM, PRECISELY: the minutes input was OUTSIDE `<div className="flex flex-col gap-2">` — the radio group — so it rendered after BOTH radios, sitting directly beneath *"As soon as you accept the order"*, the one mode it has no effect on.**
+✅ **The option's helper is gone; the input's own line carries it, in four words instead of eight.**
 
-## B2. The move
-
-**The block is now INSIDE the radio group, immediately after option 1's `</label>` and before option 2's `<label>`:**
+🔴 **IT SAYS "COLLECTION TIME" BECAUSE PART A ESTABLISHED THAT IS WHAT IT IS.** ⚠️ **AND IT IS DELIBERATELY NOT SOFTENED into anything that implies the app allows for cooking — it does not, and copy that hinted otherwise would be the dishonest direction.** **Recorded in the code:**
 
 ```tsx
-                {/* ── THE MINUTES INPUT BELONGS TO THE OPTION ABOVE IT ──────────────────────────────
-                    It used to sit BELOW the whole radio group, i.e. under the "as soon as you accept"
-                    option, which is the one mode it has no effect on. Moved INSIDE the group, directly
-                    under lead_time, and indented (`pl-6`) to the radio's text column so it reads as that
-                    option's setting rather than a third setting. LAYOUT ONLY: the same `mode ===
-                    'lead_time'` condition, the same K.lead Preferences write, the same 0-60 bounds and
-                    the same default of 10. Nothing about WHAT it writes changed. */}
-                {mode === 'lead_time' && (
+                  // 🔴 THE WORDING IS MEASURED AGAINST WHAT THE CODE ACTUALLY DOES. selectDueToPrint
+                  // computes `nowMins >= timeToMins(order.slot) - leadMins`, and `slot` is the
+                  // COLLECTION time — no cook time, no prep estimate, nothing per-dish. So "before
+                  // collection" is accurate, and it is deliberately NOT softened into something that
+                  // implies the app allows for cooking. It does not.
+```
+
+## B3. The radio's label
+
+✅ **`"A set time before collection"` is UNCHANGED, and Part A confirms it is correct.** **No stop needed.**
+
+⚠️ **ONE CONSEQUENCE OF REMOVING THE HELPER, DECLARED: option 1 now has no helper line while option 2 still does.** 🔴 **That asymmetry is justified and not an oversight — option 2's helper explains a non-obvious consequence (an advance pre-order prints hours early) that nothing else on screen shows, whereas option 1's explanation is the input directly beneath it.** **A helper repeating the control below it is what this task removed.**
+
+## B4. Option 2
+
+✅ **UNTOUCHED. `"As soon as you accept the order"` and its helper do not appear in the diff.**
+
+---
+
+# PART C — THE LAYOUT
+
+## C1 / C2. Before and after
+
+**BEFORE:**
+
+```tsx
                   <label className="flex items-center justify-between gap-3 text-sm pl-6">
-                    <span className="text-slate-700">Print tickets this many minutes before due</span>
+                    <span className="text-slate-700">Print tickets this many minutes before collection</span>
                     <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
                       className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
                   </label>
-                )}
 ```
 
-**`pl-6` = 1.5rem, which is the radio input's width plus the `gap-2`** — so the minutes row starts at the same left edge as *"Shortly before collection"* and its helper line, and reads as that option's setting rather than a third one.
+**AFTER:**
 
-## B3. Nothing about what it writes changed — line by line
+```tsx
+                  <label className="flex items-start justify-between gap-3 text-sm pl-6">
+                    <span className="text-slate-700 min-w-0">Minutes before the collection time</span>
+                    <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
+                      className="w-20 shrink-0 -mt-1 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
+                  </label>
+```
 
-| Property | Before | After |
-|---|---|---|
-| Condition | `{mode === 'lead_time' && (` | **identical** |
-| Handler | `onChange={e => setLeadMins(Number(e.target.value) \|\| 0)}` | **identical** |
-| What that writes | `Preferences.set({ key: K.lead, value: String(n) })` — `hg_print_lead_mins` | **untouched, not in the diff** |
-| Bounds | `min={0} max={60}` | **identical** |
-| Default | `parseInt(… ?? '10', 10)` at `:62` | **untouched, not in the diff** |
-| Input classes | `w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right` | **identical** |
-| Label text | `Print tickets this many minutes before due` | **identical** |
-| Trigger logic | `setTriggerMode` / `onChangeMode` / `trucks.print_trigger_mode` | **untouched, not in the diff** |
-| Wrapper classes | `flex items-center justify-between gap-3 text-sm` | **+ `pl-6`** — 🔴 **the ONLY substantive change, and it is a left indent** |
-
-✅ **The diff is the block deleted from one place and inserted in another, plus my comment. `git diff` at D1 shows the removed and added JSX are character-identical apart from indentation and `pl-6`.**
-
-## B4. Is it disabled or hidden when option 2 is selected?
-
-> ## ✅ **HIDDEN — and it always was. THIS IS UNCHANGED BEHAVIOUR, NOT NEW BEHAVIOUR.**
-> **The `{mode === 'lead_time' && (…)}` guard existed before this task and is carried across verbatim.** Selecting *"As soon as you accept the order"* unmounts the minutes row entirely; selecting the first option brings it back.
-> ⚠️ **NOT disabled — HIDDEN.** The distinction matters: a disabled input would still occupy space under the wrong option. **No new behaviour was added, per the instruction.**
-
-✅ **ONE SIDE EFFECT OF THE MOVE, STATED BECAUSE IT IS REAL AND IT IS AN IMPROVEMENT:** the row now appears and disappears **between the two radios** rather than below them, **so the option-2 helper text no longer shifts vertically when the mode changes.** ⚠️ **Option 2's block DOES still move down by the height of the minutes row when option 1 is selected — that is inherent to an inline reveal and was not addressed.**
-
----
-
-# PART C — THREE ALTERNATIVES FOR OPTION 1. PROPOSED ONLY. NOTHING APPLIED.
-
-## C1. Current labels and helper text, quoted
-
-| Element | Text | Chars |
-|---|---|---|
-| Group heading | `When to print` | 13 |
-| **Option 1 label** | **`Shortly before collection`** | **25** |
-| Option 1 helper | `The ticket prints a few minutes before the order is due.` | 56 |
-| **Option 2 label** (🔴 **NOT to be changed**) | **`As soon as you accept the order`** | **31** |
-| Option 2 helper | `An advance pre-order prints when you accept it, which may be hours before the collection time. Orders you have not accepted yet never print.` | 138 |
-| The minutes control below it | `Print tickets this many minutes before due` | 42 |
-| Collapsed summary row (`:127`) | `Print **{lead} min** before due · {paper}mm paper` | 36 at lead=10 |
-
-**House style, visible in the quotes above:** sentence case · **no terminal full stop on the bold label**, a full sentence in the helper below · the label answers **"when"** · the consequence lives in the helper, never in a tooltip (the comment at `:148-152` states this as a rule).
-
-⚠️ **AND A VOCABULARY SPLIT WORTH SEEING BEFORE YOU CHOOSE: the option says "collection", while the control beneath it and the collapsed summary both say "due".** *"Shortly before **collection**"* → *"…minutes before **due**"* → *"Print 10 min before **due**"*. 🔴 **Whichever label you pick, picking "due" over "collection" would make all three agree.**
-
-## C2. Three alternatives
-
-**All three read directly above `Print tickets this many minutes before due`.**
-
-| # | Label | Chars | Δ vs 25 | How it reads above the minutes control |
-|---|---|---|---|---|
-| **1** | **`A set time before collection`** | **28** | +3 | ✅ **Closest to the shape you named.** Promises a *set* time, and the number below is what sets it. ⚠️ Keeps "collection" while the control says "due", so the split above survives. **Shortest of the three, and 3 shorter than option 2 — so neither radio dominates.** |
-| **2** | **`A set number of minutes before due`** | **34** | +9 | ✅ **Says "minutes" and "due" — the label and the control now use the same two words**, and the input reads as the completion of the sentence above it. ⚠️ Slightly mechanical, and **3 chars longer than option 2's label**, so option 1 becomes the longest line in the group. |
-| **3** | **`At a time you choose before collection`** | **38** | +13 | ✅ **The most operator-voiced**, and it makes the control's existence obvious before you see it. ⚠️ **The longest — 38 chars against option 2's 31** — and on a narrow iPad column it is the likeliest of the three to wrap to two lines above its own helper. |
-
-### ⚠️ THE HELPER TEXT WILL LOOK ODD UNDER 1 AND 3, AND THAT IS NOT PART OF THIS PROPOSAL
-
-**The current helper is `The ticket prints a few minutes before the order is due.`** 🔴 **"A **set** time" or "a time you **choose**" directly above "a **few** minutes" reads as a contradiction — vague under precise.** **Matching helpers, if you want them (NOT applied, NOT counted as a proposal):**
-
-| For | Helper that would fit |
+| Change | Why |
 |---|---|
-| 1 or 3 | `The ticket prints the number of minutes below before the order is due.` |
-| 2 | `The ticket prints that many minutes before the order is due.` |
+| `items-center` → **`items-start`** | 🔴 **The cause of the drift.** With `items-center` and a two-line label, the input centres against the whole block — level with the gap BETWEEN the lines, matching neither |
+| **`-mt-1`** on the input | The input is 30 px tall against a 20 px text line; without the −4 px nudge, `items-start` would sit it 5 px BELOW the first line's cap height |
+| **`min-w-0`** on the span | lets the text wrap inside its column instead of forcing the row wider |
+| **`shrink-0`** on the input | 🔴 **the number can never be squeezed narrower than `w-20`, whatever the label does** |
+| the copy, four words shorter | **the wrap is far less likely to happen at all** |
 
-## C3 / C4 / C5. Stopped, as instructed
+**HOW IT RENDERS:**
 
-✅ **Option 2's label is untouched — `As soon as you accept the order` does not appear in the diff.**
-✅ **NO RENAME APPLIED. Option 1 still reads `Shortly before collection` in the code.** **You pick.**
-✅ 🔴 **NO STORED VALUE TOUCHED.** The two radios still write `'lead_time'` and `'on_confirmed'` to `trucks.print_trigger_mode` through `setTriggerMode` → `onChangeMode`, unchanged. **These are labels; the keys are not in the diff.**
+| Case | Result |
+|---|---|
+| **One line** (the common case now — "Minutes before the collection time" is 34 characters) | ✅ text and number on the same baseline; `items-start` and `items-center` are identical when there is only one line |
+| **Two lines** (a very narrow device, or larger OS text) | ✅ **the number stays level with the FIRST line**, reading as the end of that sentence rather than floating beside the middle of the block |
+
+⚠️ **INFERRED, NOT RENDERED: the 30 px input height and the 20 px line height are Tailwind's defaults (`py-1` + `text-sm` + border). Nothing was rendered.**
+
+## C3. Layout only
+
+✅ **`onChange={e => setLeadMins(Number(e.target.value) || 0)}` is byte-identical.** ✅ **`min={0} max={60}` unchanged.** ✅ **`hg_print_lead_mins` and its default of 10 untouched.** ✅ **The `{mode === 'lead_time' && (…)}` condition unchanged.** **The diff is `items-center`→`items-start`, two added classes, and two strings.**
+
+## C4. Touch target
+
+| | |
+|---|---|
+| **Input computed height** | `py-1` 4 + 4 + `text-sm` line-height 20 + 1 px border × 2 = **30 px** |
+| **Before** | **30 px — unchanged; no padding class was touched** |
+| **Width** | `w-20` = **80 px, and now `shrink-0`, so it can no longer be squeezed** |
+
+⚠️ **30 px is under the 44 px guidance, exactly as the `+`/`−` controls are elsewhere.** 🔴 **UNCHANGED BY THIS TASK and not "fixed" here** — it is a number field with a wide 80 px hit area, and it belongs with the same backlog item as the 24 px steppers.
 
 ---
 
 # PART D — BOUNDARIES
 
-## D1. `git diff --stat`
+## D1. `git diff --stat` (this task's file)
 
 ```
- app/landing/page.tsx                       |  4 ++--
- components/native/NotificationSettings.tsx |  2 +-
- components/native/OperatorDeviceConfig.tsx |  4 ++--
- components/printing/PrintingSettings.tsx   | 21 ++++++++++++++-------
- 4 files changed, 19 insertions(+), 12 deletions(-)
+ components/printing/PrintingSettings.tsx | 30 ++++++++++++++++++------
 ```
 
-⚠️ **ONLY THE LAST LINE IS THIS TASK.** The three above it are the previous turn's device-naming copy sweep, still uncommitted — **not touched today.**
+> ## ✅ NO TIMING LOGIC, GATE, COLUMN OR TYPE.
+> 🔴 **`lib/printing/printWatcher.ts` — ABSENT.** The arithmetic in A1 is untouched. 🔴 **`lib/printing/usePrinting.ts` — ABSENT.** 🔴 **`lib/features.ts` — ABSENT.** 🔴 **`supabase/migrations/` — ABSENT.** 🔴 **`app/api/**` — ABSENT.** **The change is two strings and four Tailwind classes.**
 
-> ## ✅ NO GATE, NO COLUMN, NO MIGRATION, NO TYPE.
-> 🔴 **`lib/plan-features.ts` — ABSENT.** Part A stopped, exactly as instructed.
-> 🔴 **`lib/features.ts` — ABSENT.** `canAccess` and `MAX_FEATURES` are as they were; the A6 divergence is reported, not resolved.
-> 🔴 **`lib/printing/transport.ts`, `printWatcher.ts`, `ticket.ts`, `mapOrderToTicket.ts` — ALL ABSENT.** The diagnosis changed nothing it diagnosed.
-> 🔴 **`supabase/migrations/` — ABSENT.** No column, no migration; `trucks.print_trigger_mode` is untouched.
-> 🔴 **`components/dashboard/types.ts` — ABSENT.** No type moved.
-> **The single edited file is a presentation component, and the change within it is JSX position plus one Tailwind padding class.**
+## D2. Customer-facing surfaces
 
-## D2. What each live operator sees differently
-
-**Pizzeria Gusto (trades with real money):** 🔴 **Almost certainly NOTHING** — the card requires `isNativeApp()` **and** Max-tier `ticket_printing` **and** the master toggle on **and** the Settings panel expanded; if all four hold, the minutes box has moved up by one option and indented. **No price, gate, order or payment path is touched.**
-
-**Tikka Tonic (handed over):** **The same — and the same four conditions.** ✅ **Neither operator can print today and neither could yesterday; nothing about that changed in either direction.**
-
-## D3. Customer-facing surfaces
-
-> ## ✅ NONE AFFECTED. `PrintingSettings` renders inside the operator dashboard's Settings tab and self-gates on `isNativeApp()` at `:71` and on `canAccess` at `:76`.
-> **No customer route imports it — it is mounted at exactly one place, `app/dashboard/[token]/page.tsx:3989`.** **No email, no order page, no discovery surface, no menu.**
+> ## ✅ **NONE AFFECTED.** `PrintingSettings` renders only inside the operator dashboard's Settings tab, behind `isNativeApp()` and the Max/trial plan gate. **No customer route, email or order page is in the diff.**
 
 ---
 
@@ -385,90 +269,147 @@ const MAX_FEATURES: Feature[] = [
 
 ## E1 / E2. Non-ASCII census — `components/printing/PrintingSettings.tsx`
 
-**13,754 → 14,541 bytes (+787), 197 → 204 lines (+7)**
+**24,532 → 25,658 bytes (+1,126), 339 → 351 lines (+12)**
 
-| Codepoint | Name | Before | After | Δ | Explanation |
-|---|---|---|---|---|---|
-| U+2500 | BOX DRAWINGS LIGHT HORIZONTAL | 143 | **175** | **+32** | one new `── … ───` comment rule, matching the file's existing style |
-| U+2014 | EM DASH | 18 | 18 | 0 | — |
-| U+1F534 | LARGE RED CIRCLE | 9 | 9 | 0 | — |
-| U+25CF | BLACK CIRCLE | 3 | 3 | 0 | the "● Connected" badge |
-| **U+26A0** | **WARNING SIGN** | **2** | **2** | **0** | — |
-| **U+FE0F** | **VARIATION SELECTOR-16** | **2** | **2** | **0** | — |
-| U+25BE | BLACK DOWN-POINTING SMALL TRIANGLE | 2 | 2 | 0 | the ▾ chevron |
-| U+25B2 | BLACK UP-POINTING TRIANGLE | 2 | 2 | 0 | the ▲ chevron |
-| U+00B7 | MIDDLE DOT | 2 | 2 | 0 | the summary-row separator |
-| U+1F5A8 | PRINTER | 1 | 1 | 0 | the card's 🖨 icon |
+| Codepoint | Before | After | Δ | Explanation |
+|---|---|---|---|---|
+| U+2500 BOX DRAWINGS | 405 | 421 | **+16** | one `──` rule on the new comment |
+| U+2014 EM DASH | 27 | 29 | **+2** | prose |
+| U+1F534 LARGE RED CIRCLE | 20 | 21 | **+1** | the "measured against what the code does" marker |
+| **all other 7 classes** | — | — | **0** | unchanged |
 
-> ## 🔴 DISTINCT CLASSES 10 → 10. GAINED NONE, LOST NONE.
-> **Exactly one count moved, and it is the box-drawing rule in my own comment.** ✅ **The MOVED JSX contributed ZERO non-ASCII characters — as it must, since it was relocated rather than retyped.**
-> ## ⚠️ THE PAIR CHECK, EXPLICITLY: **U+26A0 = 2, U+FE0F = 2 — PAIRED**, before and after, unmoved.
-> 🔴 **The hazard was live in this file: it carries FOUR different geometric glyphs (● ▾ ▲ ·) that a careless retype could have swapped for lookalikes.** ✅ **All four counts are unchanged, which is what proves the block was moved and not rewritten.**
+🔴 **10 → 10 distinct. GAINED NONE, LOST NONE.** ✅ **Both new strings are pure ASCII.**
 
-## E3. Byte scan — byte-level, never `grep`
+## E3. 🔴 U+26A0 / U+FE0F — AND THE PREMISE IN THE BRIEF IS INCORRECT
+
+| File | U+26A0 | U+FE0F | Bare | Verdict |
+|---|---|---|---|---|
+| `components/printing/PrintingSettings.tsx` | 2 | 2 | **0** | ✅ **PAIRED**, before and after |
+| **`docs/printing-ui-report.md`** *(this file)* | equal | equal | **0** | ✅ **PAIRED** — verified by scanning the written file |
+
+> ## 🔴 **THE LAST REPORT DID NOT SHIP A BARE GLYPH. 10 AGAINST 11 WAS TEN PAIRED WARNING SIGNS PLUS ONE PENCIL.**
+> **I re-scanned `docs/customer-quantity-row-report.md` byte by byte before writing this, listing what EVERY variation selector follows:**
+>
+> ```
+> U+26A0 total: 10
+> U+FE0F total: 11
+> BARE U+26A0 (no following selector): 0
+>
+> FE0F at    909 follows U+26A0  WARNING SIGN
+> FE0F at   4483 follows U+26A0  WARNING SIGN
+> FE0F at   7173 follows U+26A0  WARNING SIGN
+> FE0F at   8483 follows U+26A0  WARNING SIGN
+> FE0F at   8896 follows U+26A0  WARNING SIGN
+> FE0F at  10511 follows U+26A0  WARNING SIGN
+> FE0F at  11592 follows U+26A0  WARNING SIGN
+> FE0F at  14192 follows U+270F  PENCIL          <- the eleventh
+> FE0F at  14274 follows U+26A0  WARNING SIGN
+> FE0F at  16027 follows U+26A0  WARNING SIGN
+> FE0F at  16263 follows U+26A0  WARNING SIGN
+> ```
+>
+> **`✏️` is U+270F + U+FE0F — a legitimate two-codepoint emoji, quoted from the code being reported on.** 🔴 **All ten warning signs were paired. The report's own claim of "PAIRED, bare 0" was accurate, and that report published this same carrier breakdown for exactly this reason.**
+> ⚠️ **THE UNDERLYING POINT STANDS AND IS WHY I KEEP CHECKING: a bare TOTAL comparison cannot distinguish "one unpaired warning sign" from "one pencil". Only the carrier list can.** ✅ **Five real violations have been caught today by this check; this would have been a sixth if the totals alone were trusted — in the other direction, a false positive.**
+
+## E4. Byte scan — byte-level, never `grep`
 
 ```
-components/printing/PrintingSettings.tsx   14,541 bytes
-  NUL (0x00)                                          : 0
-  control bytes < 0x09, plus 0x0B 0x0C 0x0E-0x1F      : none
+components/printing/PrintingSettings.tsx    25,658 bytes   NUL 0   control none
 ```
 
-✅ **Clean.** **One file was edited, so one file is scanned.**
+✅ **Clean. One file edited, one file scanned.**
 
-## E4. Byte scan of this report — separate pass, AFTER writing
+## E5. Byte scan of this report — separate pass, AFTER writing
 
-```
-docs/printing-ui-report.md   32,123 bytes
-  NUL (0x00)                                     : 0
-  control bytes < 0x09, plus 0x0B 0x0C 0x0E-0x1F : none
-  distinct non-ASCII classes                     : 16
-  U+26A0 = 24, U+FE0F = 24                         : PAIRED
-```
+Result appended at the foot of this file.
 
-✅ **Clean.** Byte-level, never `grep`, run as its own pass after the file was written.
-
-## E5. `git status` and `git diff --stat`
+## E6. `git status` and `git diff --stat` — which entries are THIS task's
 
 ```
-$ git status --porcelain
+ M android/app/capacitor.build.gradle
+ M android/capacitor.settings.gradle
+ M app/dashboard/[token]/page.tsx
  M app/landing/page.tsx
+ M app/trucks/[slug]/order/page.tsx
+ M components/dashboard/OrderCard.tsx
  M components/native/NotificationSettings.tsx
  M components/native/OperatorDeviceConfig.tsx
  M components/printing/PrintingSettings.tsx
-?? docs/device-naming-report.md
-?? docs/printing-ui-report.md
+ M ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+ M ios/App/App/Info.plist
+ M ios/App/CapApp-SPM/Package.swift
+ M lib/plan-features.ts
+ M lib/printing/transport.ts
+ M package-lock.json
+ M package.json
+?? docs/…  · lib/printing/bleTransport.ts · lib/printing/usePrinting.ts
 ```
 
+| Entry | Whose |
+|---|---|
+| 🔴 **`components/printing/PrintingSettings.tsx`** | **THIS TASK** *(copy + alignment)* — **and earlier today: the lead-time move, the chip removal, the label renames, the pairing UI** |
+| ✅ **`docs/printing-ui-report.md`** | **THIS TASK** |
+| everything else | earlier tasks today |
+
+⚠️ **THE TREE HAS BEEN DIRTY ALL SESSION.** 🔴 **Nothing is committed.**
+
+---
+
+# PART F — 🔴 YOUR NOTE: "I CONNECTED TO A RANDOM DEVICE"
+
+**CONFIRMED AS A REAL DEFECT. NOT FIXED IN THIS TASK, AND THE REASON IS NOT TIMIDITY.**
+
+## What actually let it happen
+
+**Two gates, and BOTH are too weak. READ, `lib/printing/bleTransport.ts`:**
+
+**1. The scan lists every NAMED device — the only filter is that it has a name:**
+
+```ts
+        const name = result?.device?.name || result?.localName
+        if (!name) return
+        found.set(id, { id, name, class: 'ble' })
 ```
-$ git diff --stat
- app/landing/page.tsx                       |  4 ++--
- components/native/NotificationSettings.tsx |  2 +-
- components/native/OperatorDeviceConfig.tsx |  4 ++--
- components/printing/PrintingSettings.tsx   | 21 ++++++++++++++-------
- 4 files changed, 19 insertions(+), 12 deletions(-)
+
+**2. The connect-time check accepts any device with any writable characteristic:**
+
+```ts
+        for (const ch of svc.characteristics || []) {
+          if (ch.properties?.[pass]) {
+            return { service: svc.uuid, characteristic: ch.uuid, withoutResponse: pass === 'writeWithoutResponse' }
 ```
 
-🔴 **Nothing committed.**
+🔴 **A writable characteristic outside the two generic services is COMMON — headphones, watches, sensors and speakers routinely have one. So "has a printable channel" is nearly always true, and the check I wrote to catch this does not catch it.** ⚠️ **You would have connected successfully and then seen tickets fail, or bytes sent into a device that ignores them.**
 
-## E6. `tsc`
+## Why I did not simply filter the list
 
-```
-$ npx tsc --noEmit ; echo "tsc exit=$?"
-tsc exit=0
-```
+🔴 **THE OBVIOUS FIX IS THE ONE MY OWN CODE COMMENT WARNS AGAINST:**
 
-✅ **Clean, no output.**
+> *"There is no standard 'ESC/POS over BLE' UUID. Vendors use their own: 18f0/2af1 (many Chinese modules), ff00/ff02, e7810a71-… (Star), and others. Hard-coding one would support one family of printers and silently fail on the rest, and the failure would look like 'the printer is broken'."*
 
-> ## 🔴 AND `tsc`-CLEAN IS NOT VERIFICATION OF A LAYOUT CHANGE.
-> **It proves the JSX still parses and that moving the block did not orphan a brace or break a type. It says NOTHING about where the control appears on screen.** ⚠️ **A block indented into the wrong parent, a `pl-6` that over- or under-shoots the radio's text column, a row that now wraps on a narrow iPad — all four are `tsc`-clean.**
-> 🔴 **NOTHING WAS RENDERED.** No `next dev`, no `next build`. **And this card renders ONLY inside the native app on a Max-plan truck with the toggle on and the panel expanded — so it cannot be checked in a browser at all. It needs the device.**
+**Filter to a known-UUID allow-list and your actual printer may simply never appear — and an empty scan with the printer switched on in front of you is a worse bug than a connectable pair of headphones.** 🔴 **I am not making that trade on your behalf.**
+
+## The two options
+
+| | **A — ALLOW-LIST, HARD FILTER** | **B — RANK AND WARN, SOFT FILTER** *(my recommendation)* |
+|---|---|---|
+| Scan shows | only devices advertising a known printer service UUID | **everything, but printers first**, under a "Likely printers" heading, with the rest under "Other devices" |
+| Unknown printer model | 🔴 **INVISIBLE. Unpairable.** | ✅ **still listed, one section down** |
+| Headphones | hidden | listed, plainly labelled as not a printer |
+| Wrong pick | impossible | possible, but you were told |
+| Extra safety | — | ✅ **a real print-channel test at connect: write ESC/POS `ESC @` (initialise) and require it not to error** — far stronger than "has a writable characteristic" |
+
+✅ **RECOMMENDATION: B, plus the `ESC @` probe.** **It removes the confusion you hit without ever hiding a printer, and the probe turns "has a writable characteristic" into "accepted a printer command".**
+⚠️ **INFERRED: that a non-printer will usually reject or ignore an `ESC @` write. Not tested — no hardware.**
+
+🔴 **NOTHING IN `bleTransport.ts` WAS CHANGED IN THIS TASK. `lib/printing/bleTransport.ts` is ABSENT from the diff.** **Say which option and it is a contained change to the scan and the connect check.**
 
 ---
 
 # PROVENANCE
 
-**READ** — `lib/printing/transport.ts` in full · `components/printing/PrintingSettings.tsx` in full, before and after · `lib/printing/printWatcher.ts:168` · `lib/printing/mapOrderToTicket.ts:67` · `lib/printing/ticket.ts:458` · `app/dev/ticket-preview/page.tsx:16, 18, 185, 191` · `app/dashboard/[token]/page.tsx:1310-1312, 3989` · `app/api/dashboard/action/route.ts:2319-2330` · `lib/features.ts:26, 53-58, 98-129` · `lib/plan-features.ts:155-161` · `components/dashboard/types.ts:139` · `docs/reference-manual.md:3876, 10198-10228` · `docs/printing-report.md:88, 187` · the exhaustive call-site greps for the pipeline symbols and for all four Preferences keys · both censuses · the byte scan · `git status`, `git diff`, `git diff --stat` · `tsc`.
+**READ** — `selectDueToPrint` and `timeToMins` in full · `DueOrder` and `Order.slot` · `mapOrderToTicket`'s collection-time line · an exhaustive search of `lib/printing/` for prep/cook references · `lib/prep-utils.ts:105-131` · both duplicated sentences and the input row before and after · the scan filter and `findWriteTarget` in `bleTransport.ts` · the census before and after · the byte scan · a byte-level carrier scan of the previous report's every U+FE0F · `git status`, `git diff --stat`, `tsc`.
 
-**INFERRED** — that `pl-6` (1.5rem) aligns with the radio's text column (computed from the input's width plus `gap-2`, **not measured on screen**) · that Gusto and Tikka Tonic see nothing, since that depends on their live plan and device state, which I did not query · that the dev preview page is unreachable in production (read from the manual's account of `app/dev/layout.tsx`, which I did not open this session).
+**INFERRED** — the px figures in C (Tailwind defaults; **nothing rendered**) · that a non-printer would reject an `ESC @` probe · that setting the lead to the longest prep is the safe workaround.
 
-**NOT VERIFIED** — 🔴 **nothing was rendered.** The Part B move is proved by the diff, **not by looking at it.** 🔴 **And the whole of Part A is a statement about code, not about hardware: I did not attempt to print, and there is nothing to attempt it with.**
+**NOT VERIFIED** — 🔴 **nothing was rendered, and no ticket has ever printed.** A5's consequence is arithmetic over the selector, not an observed late order. **Part F's defect is confirmed by your device report, not by mine.**

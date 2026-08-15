@@ -39,6 +39,41 @@ const K = { id: 'hg_printer_id', name: 'hg_printer_name', svc: 'hg_printer_svc',
 /** Generic Access (1800) and Generic Attribute (1801) are on every peripheral and carry no printer data. */
 const GENERIC_SERVICES = ['00001800-0000-1000-8000-00805f9b34fb', '00001801-0000-1000-8000-00805f9b34fb']
 
+// ── RANKING, NOT FILTERING ───────────────────────────────────────────────────────────────────────────
+// DEVICE-OBSERVED 15 August: the list offered "Dominic's Apple Watch" and "Dominic's AirPods Pro" with a
+// Connect button beside each, and connecting to one SUCCEEDED. A reviewer who sees a printer list offering
+// AirPods concludes the feature is broken.
+// 🔴 AN ALLOW-LIST IS STILL REJECTED, FOR THE REASON THIS FILE ALREADY GAVE: vendors use their own UUIDs,
+// so an unlisted printer would become INVISIBLE and the operator could do nothing about it. A cluttered
+// list is untidy; an invisible printer is unfixable. So these signals ORDER the list, they never remove
+// a row from it.
+//
+// SERVICE UUIDs seen on ESC/POS BLE printers. INFERRED from the field, NOT read from our code or from any
+// vendor document in the repo — treat as suggestive, never conclusive.
+//   18f0 — very common on the cheap Chinese modules (with 2af1 as the write characteristic)
+//   ff00 / ffe0 — generic serial-over-BLE profiles used by many
+//   49535343-… — the Microchip/ISSC "transparent UART" service a large number of printers ship
+//   e7810a71-… — Star
+const PRINTER_SERVICE_HINTS = ['18f0', 'ff00', 'ffe0', '49535343', 'e7810a71']
+
+// NAME heuristics. INFERRED, and weaker than the UUID signal: a printer is not obliged to say so in its
+// name, and nothing stops another device using one of these words.
+const PRINTER_NAME_HINTS = /print|pos\b|receipt|thermal|star\s|epson|bixolon|munbyn|rongta|sprt|zj-?\d|xp-?\d|mtp-?\d|gp-?\d|rp\d/i
+
+// Names that are almost certainly NOT a printer. Used ONLY to push a row DOWN the list — never to drop it.
+const NOT_PRINTER_NAME_HINTS = /airpod|watch|iphone|ipad|macbook|imac|\bmac\b|beats|buds|headphone|earbud|tv\b|homepod|fitbit|garmin|tile\b|speaker|band\b/i
+
+/** Suggestive only. Two signals, both INFERRED, and the row is listed either way. */
+function looksLikePrinter(name: string, uuids: string[] | undefined): boolean {
+  const advertised = (uuids || []).join(' ').toLowerCase()
+  if (PRINTER_SERVICE_HINTS.some(h => advertised.includes(h))) return true
+  if (NOT_PRINTER_NAME_HINTS.test(name)) return false
+  return PRINTER_NAME_HINTS.test(name)
+}
+
+/** ESC @ — the ESC/POS "initialise printer" command, and the probe in check 3. */
+const ESC_POS_RESET = [0x1B, 0x40]
+
 /** ── CHUNK SIZE ──────────────────────────────────────────────────────────────────────────────────────
  *  180 bytes. The floor for BLE is a 23-byte MTU (20 bytes of payload) and modern stacks negotiate 185+;
  *  the plugin requests a larger MTU on Android and iOS negotiates on its own. 180 sits under a 185 MTU
@@ -136,29 +171,65 @@ export function createBleTransport(): PrinterTransport {
         // every phone and earbud in the venue.
         const name = result?.device?.name || result?.localName
         if (!name) return
-        found.set(id, { id, name, class: 'ble' })
+        // 🔴 EVERY NAMED DEVICE IS STILL LISTED. `likely` only decides WHICH SECTION it lands in.
+        found.set(id, { id, name, class: 'ble', likely: looksLikePrinter(name, result?.uuids) })
       })
       await sleep(6000)
       try { await BleClient.stopLEScan() } catch { /* already stopped */ }
       return [...found.values()]
     },
 
-    // ── CONNECT ──────────────────────────────────────────────────────────────────────────────────────
+    // ── CONNECT — THREE CHECKS, AND NOTHING IS CLAIMED UNTIL ALL THREE PASS ─────────────────────────
+    // 1. the GATT link opens at all
+    // 2. a WRITABLE characteristic exists outside the generic services — without one the device cannot
+    //    receive a ticket under any circumstances, so this rules it out definitively
+    // 3. an ESC/POS `ESC @` (initialise) write is ACCEPTED
+    //
+    // 🔴 WHAT CHECK 3 DOES AND DOES NOT PROVE. `ESC @` is ONE-WAY: ESC/POS sends no reply, and BLE
+    // resolves a write when the peripheral's stack accepts the bytes, not when a printer acts on them.
+    // So a PASS means only "this device accepted a write on its writable characteristic" — it does NOT
+    // prove a printer is there, that it understood, or that paper moved. THE PROBE RULES THINGS OUT;
+    // IT CANNOT RULE THEM IN. Every string this returns is worded to claim no more than that.
+    //
+    // 🔴 `session` IS SET ONLY AFTER ALL THREE PASS, AND THE PREFERENCES WRITE COMES AFTER IT. status()
+    // reads `session`, so a device that failed a check can never be reported as connected, and a failed
+    // device is never persisted for the resume-reconnect to pick up. That property was fixed once in the
+    // stub and must not regress here.
     async connect(printerId: string): Promise<PrintResult> {
       if (!Capacitor.isNativePlatform()) return { ok: false, error: 'Printing is only available in the app' }
+      const BleClient = await ble()
+      /** Leave nothing half-open. Idempotent and never throws. */
+      const abandon = async () => {
+        session = null
+        try { await BleClient.disconnect(printerId) } catch { /* already gone */ }
+      }
       try {
         await ensureInit()
-        const BleClient = await ble()
-        // onDisconnect fires for a drop we did not ask for — dropping the session is what keeps status()
-        // truthful without polling the radio.
+        // CHECK 1 — the link. onDisconnect nulls the session, which is what keeps status() truthful
+        // without polling the radio.
         await BleClient.connect(printerId, () => { session = null })
+
+        // CHECK 2 — a writable characteristic.
         const target = await findWriteTarget(printerId)
         if (!target) {
-          try { await BleClient.disconnect(printerId) } catch { /* best effort */ }
-          return { ok: false, error: 'That device has no printable channel' }
+          await abandon()
+          return { ok: false, error: 'That device does not look like a printer — it has no channel a ticket could be sent on' }
         }
+
+        // CHECK 3 — the ESC @ probe. See the note above for exactly how little a pass proves.
+        try {
+          const { numbersToDataView } = await import('@capacitor-community/bluetooth-le')
+          const view = numbersToDataView(ESC_POS_RESET)
+          if (target.withoutResponse) await BleClient.writeWithoutResponse(printerId, target.service, target.characteristic, view)
+          else await BleClient.write(printerId, target.service, target.characteristic, view)
+        } catch {
+          await abandon()
+          return { ok: false, error: 'That device does not look like a printer — it refused a printer command' }
+        }
+
         const devices = await BleClient.getConnectedDevices([]).catch(() => [] as Array<{ deviceId: string; name?: string }>)
         const name = devices.find(d => d.deviceId === printerId)?.name || 'Printer'
+        // 🔴 ONLY NOW. Session first, then persistence — neither happens for a device that failed above.
         session = { deviceId: printerId, name, ...target }
         await Promise.all([
           Preferences.set({ key: K.id, value: printerId }),
@@ -168,7 +239,7 @@ export function createBleTransport(): PrinterTransport {
         ])
         return { ok: true }
       } catch (e) {
-        session = null
+        await abandon()
         return { ok: false, error: e instanceof Error ? e.message : 'Could not connect' }
       }
     },

@@ -67,7 +67,14 @@ export interface PrinterStatus {
   detail?: string
 }
 
-export interface DiscoveredPrinter { id: string; name: string; class: PrinterClass }
+export interface DiscoveredPrinter {
+  id: string
+  name: string
+  class: PrinterClass
+  /** Suggestive ranking only — the UI groups on it, nothing filters on it. A row with `likely: false`
+   *  is still listed and still connectable; the three connect-time checks are what actually gate. */
+  likely?: boolean
+}
 
 /** The one seam both Phase-B backends implement. Printer-agnostic + order-agnostic — it only moves bytes. */
 export interface PrinterTransport {

@@ -2998,9 +2998,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     </div>
                     </div>{/* end py-3 item-content wrapper */}
 
-                    {/* Per-variant basket rows — modifier items AND notes-enabled items (each note = its own line). */}
+                    {/* Per-variant basket rows — modifier items AND notes-enabled items (each note = its own line).
+                        ── VERTICAL RHYTHM MATCHED TO THE OPERATOR ROW, 15 August 2026 ──────────────────
+                        DEVICE-OBSERVED on iPhone: with the orange box gone these rows sat too far from the
+                        item they belong to. Measured against components/dashboard/AddOrderPanel.tsx, which
+                        is the same control on the operator screen:
+                                          BEFORE   OPERATOR   NOW
+                          above 1st row     20px      10px    10px
+                          between rows      22px      16px    16px
+                          below last row    16px      14px    14px
+                        THREE CLASSES CARRY IT: the row went py-2 -> py-1.5 (matching the operator), the
+                        list gap went space-y-1.5 -> space-y-1, and `-mt-2` pulls the list up through the
+                        item wrapper's py-3 bottom padding.
+                        WHY -mt-2 RATHER THAN A SMALLER py ON THE ITEM: that py-3 is the ITEM's own padding
+                        and every item has it, expanded or not. Trimming it would move every row on the
+                        menu to fix a gap that only exists under an expanded one.
+                        ⚠️ ABOVE (10px) IS DELIBERATELY TIGHTER THAN BELOW (14px), exactly as the operator's
+                        is. Symmetrical spacing is what made the row read as floating between two items;
+                        being nearer the thing above it is what says it belongs to it. */}
                     {(hasModifiers || catAllowNotes) && itemVariants.length > 0 && (
-                      <div className="pl-2 pb-2 space-y-1.5">
+                      <div className="pl-2 pb-2 space-y-1 -mt-2">
                         {itemVariants.map(v => {
                           const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)
                           const modLabel = formatModifiers(v.modifiers)
@@ -3018,13 +3035,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                the two surfaces are now matched on that point.
                                PADDING: px-3 became pl-3. A box needs even inset; a bare row does not, and
                                the right inset was holding the price away from the row edge, which is not
-                               what the operator row does. py-2 is KEPT (slightly more generous than the
-                               operator's py-1.5) because this is a phone surface and the rows would
-                               otherwise sit tight; the parent's space-y-1.5 still separates them.
+                               what the operator row does.
+                               ⚠️ py-2 WAS KEPT AT FIRST AND WAS WRONG — on a real iPhone it left the row
+                               reading as detached from its item. It is now py-1.5, matching the operator
+                               exactly; the measured arithmetic is on the list wrapper above.
                                ⚠️ NOTHING ELSE WAS RESTYLED. The +/- keep their orange treatment, the
                                children keep their order, and every handler is untouched — see the report
                                for the differences that were left deliberately. */
-                            <div key={v.cartKey} className="flex items-center gap-2 pl-3 py-2">
+                            <div key={v.cartKey} className="flex items-center gap-2 pl-3 py-1.5">
                               <div className="flex items-center gap-1 shrink-0">
                                 <button onClick={() => !isOrderingBlocked && removeItem(v.cartKey)} disabled={isOrderingBlocked} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none disabled:opacity-40">−</button>
                                 <span className="w-5 text-center font-black text-slate-900 text-sm">{v.quantity}</span>
