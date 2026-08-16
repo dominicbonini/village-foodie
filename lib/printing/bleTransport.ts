@@ -103,10 +103,23 @@ export function createBleTransport(): PrinterTransport {
   let initialised = false
 
   /** initialize() prompts for permission on first call. Idempotent; safe to call before every operation. */
+  // ── 🔴 androidNeverForLocation: true — WHY AN OPTION APPEARS ON A CALL THAT HAD NONE ───────────────
+  // ANDROID ONLY; iOS ignores it entirely. Without it the flag defaults FALSE, and the plugin's own
+  // initialize() (BluetoothLe.kt, the SDK_INT >= S branch) then requests ACCESS_FINE_LOCATION ALONGSIDE
+  // BLUETOOTH_SCAN and BLUETOOTH_CONNECT. So an operator connecting a RECEIPT PRINTER was asked to share
+  // their location, which is alarming, reasonable to refuse, and indistinguishable from "printing is
+  // broken" once refused.
+  // 🔴 THE ASSERTION IS TRUE OF THIS APP, WHICH IS THE ONLY GROUND FOR MAKING IT. It declares that BLE
+  // scan results are never used to derive physical location. lib/printing reads exactly two fields off a
+  // scan result — deviceId and name (see scan() below) — and nothing anywhere derives position from RSSI,
+  // beacons or anything else. If that ever stops being true this flag must come off in the same change.
+  // ⚠️ IT NARROWS WHAT ANDROID RETURNS, AND THAT IS THE TRADE. Android honours the assertion by filtering
+  // out results whose only purpose could be location inference — chiefly BEACONS. A thermal printer
+  // advertises a name and a GATT service, so it is not in that class. See the report's B3.
   const ensureInit = async (): Promise<void> => {
     if (initialised) return
     const BleClient = await ble()
-    await BleClient.initialize()
+    await BleClient.initialize({ androidNeverForLocation: true })
     initialised = true
   }
 

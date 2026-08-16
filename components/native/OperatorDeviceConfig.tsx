@@ -17,7 +17,14 @@ import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
 // (always asked) + van (single-van → auto-bind silently; multi-van → explicit pick, pre-filled from a
 // single-van staff hint only). Renders null once configured (and on web). Also registers push + applies
 // the keep-awake default once bound.
-export function DeviceSetupGate({ token }: { token: string }) {
+// -- onOpenOrder — THE PUSH TAP HANDLER, THREADED THROUGH FROM THE DASHBOARD ────────────────────
+// registerForPush has ALWAYS accepted this and NO CALLER HAS EVER PASSED IT, so
+// `if (orderKey && onOpenOrder)` in lib/native/push.ts could never fire. The listener was attached, the
+// payload was correct on both platforms, and the callback was undefined — dead on iOS AND Android since
+// the day it was written, invisible only because iOS has never obtained a token.
+// NOTE: OPTIONAL, so nothing that renders this without a handler changes behaviour. The dashboard is the one
+// caller that supplies one; it is also the only surface this component is mounted on.
+export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenOrder?: (orderKey: string) => void }) {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(false)   // fetchDeviceConfig FAILED (network/429/500) — NOT "no van"
   const [needsSetup, setNeedsSetup] = useState(false)
@@ -40,13 +47,13 @@ export function DeviceSetupGate({ token }: { token: string }) {
     const device = result.device
     const vanList = result.vans
     // Already configured (row exists WITH a van) → apply side effects, no card.
-    if (device && device.van_id) { void registerForPush(token); setLoading(false); return }
+    if (device && device.van_id) { void registerForPush(token, onOpenOrder); setLoading(false); return }
     // Single active van → auto-bind SILENTLY (no van question; screen defaults to 'dashboard', changeable in
     // This-device settings). Per spec: single van = no modal.
     if (vanList.length === 1) {
       const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
       if (!mounted.current) return
-      if (saved) void registerForPush(token)
+      if (saved) void registerForPush(token, onOpenOrder)
       setLoading(false); return
     }
     // Genuinely 0 (fetch OK, no active vans) OR >1 → show the card. Pre-fill van from the single-van staff hint.
@@ -55,7 +62,10 @@ export function DeviceSetupGate({ token }: { token: string }) {
     setScreen(device?.default_screen ?? 'dashboard')
     setNeedsSetup(true)
     setLoading(false)
-  }, [token])
+    // NOTE: onOpenOrder IS IN THE DEPS DELIBERATELY. runSetup closes over it, and registerForPush attaches the
+    // listener ONCE per JS context (its `listenersAttached` latch), so a stale closure here would attach a
+    // handler that navigates using yesterday's state and could never be replaced.
+  }, [token, onOpenOrder])
 
   useEffect(() => { void runSetup() }, [runSetup])
 
@@ -66,7 +76,7 @@ export function DeviceSetupGate({ token }: { token: string }) {
     setSaving(true)
     const saved = await saveDeviceConfig(token, { van_id: vanId, default_screen: screen })
     setSaving(false)
-    if (saved) { void registerForPush(token); setNeedsSetup(false) }
+    if (saved) { void registerForPush(token, onOpenOrder); setNeedsSetup(false) }
   }
 
   // NEVER TRAP: every state has an escape — Retry (error), "Go to Settings → Vans" (no van), Continue (picker),
@@ -238,10 +248,15 @@ export function ThisDeviceSettings({ token }: { token: string }) {
         <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked })} />
       </label>
 
-      {/* APP-LOCK — device-level Face ID / Touch ID gate (per-device, default off). SEPARATE from login.
+      {/* APP-LOCK — device-level biometric gate (per-device, default off). SEPARATE from login.
+          NOTE: THE COPY NAMES THE CONCEPT, NOT A VENDOR. lib/native/appLock.ts uses
+          @aparajita/capacitor-biometric-auth, which is registered in android/capacitor.settings.gradle as
+          well as on iOS — so "Face ID / Touch ID" was false on every Android device, in all three strings
+          below. "fingerprint or face unlock" is the one phrase true on both, and it is used verbatim in
+          each of them so they cannot drift apart.
           Enabling opens the backup-PIN setup (required) — it's committed only once a valid PIN is stored. */}
       <label className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">Require Face&nbsp;ID / Touch&nbsp;ID to open</span>
+        <span className="font-semibold text-slate-700">Require fingerprint or face unlock to open</span>
         <input type="checkbox" checked={appLock}
           onChange={async e => {
             const on = e.target.checked
@@ -257,7 +272,7 @@ export function ThisDeviceSettings({ token }: { token: string }) {
       {pinSetup && (
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex flex-col gap-2 -mt-1">
           <p className="text-xs font-semibold text-slate-700">Set a backup PIN (4–6 digits)</p>
-          <p className="text-[11px] text-slate-500 -mt-1">Your way in if Face / Touch ID won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
+          <p className="text-[11px] text-slate-500 -mt-1">Your way in if fingerprint or face unlock won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
           <input type="tel" inputMode="numeric" value={newPin} placeholder="PIN"
             onChange={e => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinSetupErr('') }}
             className="text-center tracking-[0.3em] font-bold border border-slate-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
@@ -280,7 +295,7 @@ export function ThisDeviceSettings({ token }: { token: string }) {
           </div>
         </div>
       )}
-      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. Your backup PIN still works.</p>}
+      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No fingerprint or face unlock set up on this device — add one in your device settings. Your backup PIN still works.</p>}
 
       <p className="text-[11px] text-slate-400 mt-0.5">These settings apply to this device only — other devices are configured separately.</p>
     </div>

@@ -4,4 +4,8 @@
     <string name="title_activity_main">HatchGrab</string>
     <string name="package_name">com.hatchgrab.app</string>
     <string name="custom_url_scheme">com.hatchgrab.app</string>
+    <!-- MUST equal ORDER_CHANNEL_ID in lib/native/push.ts and the channel_id in lib/fcm.ts's payload.
+         This is the channel FCM falls back to for any message arriving WITHOUT its own channel_id;
+         without it the SDK invents an unnamed one whose importance overrides our message priority. -->
+    <string name="default_notification_channel_id">hg_orders</string>
 </resources>

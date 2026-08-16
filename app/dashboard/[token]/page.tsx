@@ -41,6 +41,9 @@ import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfi
 import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+// The ONE event-cancel gate, shared with manage and the KDS. Replaces a window.confirm whose safe
+// button was labelled "Cancel" on the operation that cancels every live order. See the component.
+import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -85,6 +88,7 @@ import { usePrinting } from '@/lib/printing/usePrinting'   // the ONE mount of t
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
+import { useAndroidBack } from '@/lib/native/backHandler'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
@@ -294,6 +298,37 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const[finishConfirm,setFinishConfirm]=useState<{eventId:string;early:boolean;endTime:string}|null>(null)
   const[eventNoteInput,setEventNoteInput]=useState('')
+  // ── 🔴 TAPPING A PUSH NOTIFICATION OPENS THAT ORDER. THIS IS THE HANDLER THAT WAS NEVER PASSED. ────
+  // lib/native/push.ts has accepted an onOpenOrder callback since it was written and all three call sites
+  // in DeviceSetupGate passed only the token, so the tap listener resolved `onOpenOrder` to undefined and
+  // did nothing. BOTH PLATFORMS. It was invisible because iOS has never obtained a push token.
+  // ── WHAT "OPEN THE ORDER" MEANS ON THIS SURFACE ───────────────────────────────────────────────────
+  // The dashboard IS the screen the order lives on, so opening it is two moves: show the orders tab (the
+  // operator may have been on Add/Stock/Settings) and bring the card into view. It deliberately does NOT
+  // open the edit modal or take any action — a notification tap is navigation, never a decision.
+  // ⚠️ THE ORDER MAY NOT BE ON THIS BOARD. It can belong to a different event, or have been confirmed and
+  // cleared from another device, or the board may not have polled yet. `document.getElementById` then
+  // returns null and this MUST NOT leave the operator on a blank screen — so the tab switch stands on its
+  // own and a toast names the order rather than an error appearing. See docs/native-fixes-report.md A5.
+  // ⚠️ TWO ANIMATION FRAMES, NOT ONE. The tab switch is a state change; the card does not exist in the DOM
+  // until React has committed that render. One frame is the commit, the second is after paint.
+  const openOrderFromPush=useCallback((orderKey:string)=>{
+    setActiveTab('orders')
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const el=document.getElementById(`order-${orderKey}`)
+      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});return}
+      showToast('That order is not on this board - check the event','error')
+    }))
+  },[showToast])
+  // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
+  // The TruckEvent itself, not an id: the shared modal names the venue, the date and the time window,
+  // none of which an id carries. `null` is closed — the modal is mounted conditionally, so every open is
+  // a fresh mount with empty reason/note fields and nothing can leak between events.
+  const[eventCancelTarget,setEventCancelTarget]=useState<TruckEvent|null>(null)
+  // Orders that will be cancelled with it. Seeded 0 and filled by /api/events/affected-orders, exactly as
+  // manage does it; 0 renders no line, so an in-flight count never claims "0 orders".
+  const[eventCancelCount,setEventCancelCount]=useState(0)
+  const[eventCancelBusy,setEventCancelBusy]=useState(false)
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
@@ -552,6 +587,28 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[rejectingOrder,setRejectingOrder]=useState<Order|null>(null)
   const[rejectReason,setRejectReason]=useState('')
   const[rejectNote,setRejectNote]=useState('')
+  // ── 🔴 ONE RESET PER MODAL, CALLED BY EVERY ARM. THE DEFECT WAS THREE CALL SITES, NOT ONE OF THEM. ──
+  // Both real arms cleared five pieces of state; the Android back closer cleared ONE (`setShowCancelModal
+  // (false)`), so a back-dismiss carried the reason, the customer-facing note AND the refund decision to
+  // the NEXT order cancelled. The modal has no close glyph, no backdrop dismiss and no Escape, so before
+  // the back handler existed that path did not exist either — the handler created it.
+  // 🔴 THE FIX IS NOT A FOURTH CALL SITE. Three hand-maintained copies is the defect; a fourth copy is
+  // more of it. Every way out of these modals now goes through one function, so a piece of state added
+  // here is cleared by every arm at once and cannot be forgotten by one of them.
+  // ⚠️ `cancelBusy` IS DELIBERATELY NOT RESET HERE. It is owned by the in-flight refund
+  // (confirmCancelOrder sets and clears it around the await), and every arm is unreachable while it is
+  // true — the buttons are `disabled={cancelBusy}`. Clearing it here would be this function reaching into
+  // a request it does not own.
+  const resetCancelModal=()=>{
+    setShowCancelModal(false);setCancellingOrder(null)
+    setCancelReason('');setCancelNote('')
+    setCancelRefund(true)      // 🔴 THE DANGEROUS ONE — back to "refund the customer" every time
+    setCancelError(null)
+  }
+  const resetRejectModal=()=>{
+    setShowRejectModal(false);setRejectingOrder(null)
+    setRejectReason('');setRejectNote('')
+  }
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
   // Slots for the EDITED order's own event — fetched via the shared /api/slots path
@@ -2215,8 +2272,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(res.settled)refundedMinor=refundableMinor
       showToast(res.message)
     }
-    setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
-    setCancelRefund(true);setCancelError(null)
+    resetCancelModal()
     setActionLoading(`cancel-${orderKey}`)
     try{
       // Through the offline GATE (FIX 2): online → normal write; offline → durable outbox + queued. The
@@ -2240,7 +2296,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!fullReason) return
     const orderKey=rejectingOrder.order_key
     const displayId=rejectingOrder.id
-    setShowRejectModal(false);setRejectingOrder(null);setRejectReason('');setRejectNote('')
+    resetRejectModal()
     setActionLoading(`reject-${orderKey}`)
     try{
       // Offline GATE (FIX 2) — reason in the body for faithful replay; expected_from → conflict if it raced.
@@ -2251,15 +2307,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{showToast('Failed to reject','error')}finally{setActionLoading(null)}
   }
 
-  const cancelEventFromMenu=async(eventId:string)=>{
-    if(!window.confirm('Cancel this event? This cannot be undone.')) return
+  // ── OPEN THE GATE. WAS: `if(!window.confirm('Cancel this event? This cannot be undone.')) return` ──
+  // 🔴 THE MENU IS CLOSED ON THE WAY IN, DELIBERATELY. The shared modal renders at z-50 and so does the
+  // event menu it is opened from; closing the menu removes the stacking question entirely rather than
+  // answering it with a z-index, and leaves exactly ONE overlay for the back button to dismiss.
+  // (finishConfirm stacks at z-[60] instead — that is its existing behaviour and is not touched here.)
+  // ⚠️ TAKES THE EVENT, NOT AN ID. The modal names the venue, the date and the window, so it needs the
+  // row; and the one call site is inside a block already gated on `activeEvent`, so handing the object
+  // over is both simpler and safer than a lookup that could miss and silently cancel nothing.
+  const cancelEventFromMenu=async(ev:TruckEvent)=>{
+    setShowEventMenu(false)
+    setEventCancelCount(0); setEventCancelTarget(ev)
     try{
-      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{}})})
+      const res=await fetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
+      const data=await res.json()
+      if(res.ok) setEventCancelCount(data.count??0)
+    }catch{ /* silently fail - the gate still works, the count just stays hidden */ }
+  }
+  // The request itself, UNCHANGED except that the reason and note the modal collected now ride in the
+  // payload the endpoint has always accepted (manage has sent them since the modal was written). Leave
+  // both blank and the body is what `payload:{}` produced.
+  const doCancelEvent=async(eventId:string,cancellationReason:string,cancellationNote:string)=>{
+    setEventCancelBusy(true)
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{cancellationReason,cancellationNote}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
       setSelectedEventId(null); setShowEventMenu(false); showToast('Event cancelled')
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     }catch(err:any){showToast(err.message||'Failed','error')}
+    finally{setEventCancelBusy(false); setEventCancelTarget(null)}
   }
 
   const saveEventNote=async(eventId:string)=>{
@@ -2331,6 +2408,38 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Fall back to the last known event when upcomingEvents is transiently empty
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
+
+  // ── 🔴 ANDROID HARDWARE BACK ───────────────────────────────────────────────────────────────────
+  // ORDERED INNERMOST FIRST, and the ordering here is z-index, read off the overlays themselves. The
+  // four z-[60] modals (finish confirm, edit-ITEM, demo lock) stack over the z-50 ones, and
+  // editItemModal specifically opens FROM the editingOrder modal — so it must come first or back
+  // would close the order editor underneath and strand the item editor on top of nothing.
+  //
+  // 🔴 WITH NOTHING OPEN, BACK DOES NOTHING. No entry navigates, and the handler has no fallback. An
+  // operator cannot leave the dashboard with a gesture, which is what happened before: router.push had
+  // pushed history, canGoBack() was true, and Capacitor navigated the page away with the modal state.
+  // ⚠️ editingOrder and editItemModal HOLD AN EDIT IN PROGRESS. They are registered anyway because
+  // editingOrder already dismisses on a backdrop tap (`onClick={e=>e.target===e.currentTarget&&
+  // setEditingOrder(null)}`), so back is the same existing dismissal by another gesture — and leaving
+  // editItemModal OUT would have been worse than including it, per the nesting note above.
+  // ⚠️ Dismissing a confirm modal is always its CANCEL arm. Nothing here confirms, submits or cancels
+  // an order; every closer is the same setter the modal's own X button calls.
+  useAndroidBack([
+    [!!editItemModal, () => setEditItemModal(null)],
+    [!!finishConfirm, () => setFinishConfirm(null)],
+    [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
+    [showDemoEventLock, () => setShowDemoEventLock(false)],
+    [!!editingOrder, () => setEditingOrder(null)],
+    [showCancelModal && !!cancellingOrder, resetCancelModal],
+    [showRejectModal && !!rejectingOrder, resetRejectModal],
+    [showQRFullscreen, () => setShowQRFullscreen(false)],
+    [showProfileModal, () => setShowProfileModal(false)],
+    [showKDSPicker, () => setShowKDSPicker(false)],
+    [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
+    [showPauseModal && !isDemo, () => setShowPauseModal(false)],
+    [showScreenOffWarning, () => setShowScreenOffWarning(false)],
+    [showOfflinePausedNotice, () => setShowOfflinePausedNotice(false)],
+  ])
 
   // ── 🔴 KITCHEN TICKET PRINTING — THE ONE MOUNT OF THE PRINT WATCHER ────────────────────────────────
   // MOUNTED HERE AND NOWHERE ELSE. The dedupe record is device-local Capacitor Preferences; there is no
@@ -2726,7 +2835,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />
-      <DeviceSetupGate token={token} />
+      <DeviceSetupGate token={token} onOpenOrder={openOrderFromPush} />
       {/* Header */}
       {/* FIX 7 — DEMO hides the truck name. It's a GENERATED internal id ("Demo Kitchen (f1dz70)") that the
           spec says must never be shown; the visitor has no truck of their own yet. */}
@@ -3349,13 +3458,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:`order-${o.order_key}`} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:`order-${o.order_key}`} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -4326,6 +4435,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
+      {/* Event-cancel gate — the SHARED modal (components/shared/EventCancelModal), the same one manage
+          and the KDS use. It replaced a window.confirm whose safe button read "Cancel". */}
+      {eventCancelTarget&&(
+        <EventCancelModal
+          event={eventCancelTarget}
+          affectedOrderCount={eventCancelCount}
+          busy={eventCancelBusy}
+          onKeep={()=>setEventCancelTarget(null)}
+          onConfirm={(reason,note)=>{void doCancelEvent(eventCancelTarget.id,reason,note)}}
+        />
+      )}
+
       {/* Finish-event confirm (styled — replaces window.confirm). Early close warns harder.
           z-[60] so it stacks above the event menu the Finish button lives in. */}
       {finishConfirm&&(
@@ -4530,7 +4651,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
             </div>
             <div className="flex gap-3">
-              <button disabled={cancelBusy} onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('');setCancelRefund(true);setCancelError(null)}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
+              <button disabled={cancelBusy} onClick={resetCancelModal} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm disabled:opacity-50">Keep order</button>
               <button disabled={cancelBusy} onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">{cancelBusy?'Refunding…':'Cancel order'}</button>
             </div>
           </div>
@@ -4560,7 +4681,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <textarea value={rejectNote} onChange={e=>setRejectNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
             </div>
             <div className="flex gap-3">
-              <button onClick={()=>{setShowRejectModal(false);setRejectingOrder(null);setRejectReason('');setRejectNote('')}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
+              <button onClick={resetRejectModal} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
               <button onClick={()=>confirmRejectOrder()} disabled={!((rejectReason!==''&&rejectReason!=='Other')||rejectNote.trim()!=='')} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">Reject order</button>
             </div>
           </div>
@@ -4902,7 +5023,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Extend event +30 min</button>
               <button onClick={()=>finishEvent(activeEvent.id)}
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
-              <button onClick={()=>cancelEventFromMenu(activeEvent.id)}
+              <button onClick={()=>cancelEventFromMenu(activeEvent)}
                 className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
             </div>
           </div>

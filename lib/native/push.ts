@@ -19,6 +19,25 @@ import { saveDeviceConfig } from './device'
 // idempotent upsert.
 let listenersAttached = false
 
+// -- THE ANDROID NOTIFICATION CHANNEL. ONE ID, AND IT IS DECLARED IN THREE PLACES THAT MUST AGREE. --
+// Android 8+ routes every notification through a channel, and a channel the app has not created is
+// supplied by the FCM SDK as an unnamed fallback. It still ARRIVES — that part was never broken — but
+// everything the operator can control belongs to that fallback: importance, sound, vibration, whether it
+// can bypass Do Not Disturb. CHANNEL IMPORTANCE OVERRIDES MESSAGE PRIORITY, so `priority: 'high'` in
+// lib/fcm.ts was being demoted by a channel nobody chose, and an operator muting an unrecognised
+// "Miscellaneous" entry would silence their order alerts with no way to connect the two.
+//
+// THE THREE PLACES, AND ALL THREE USE THIS CONSTANT OR ITS LITERAL VALUE:
+//   1. here — created at registration time, so the channel exists before any notification can arrive;
+//   2. lib/fcm.ts — `android.notification.channel_id`, so our own sends target it explicitly;
+//   3. android/app/src/main/res/values/strings.xml + AndroidManifest.xml's
+//      com.google.firebase.messaging.default_notification_channel_id — the fallback for anything that
+//      arrives WITHOUT a channel_id, which is what stops the SDK inventing one.
+// ⚠️ CHANGING THIS STRING ORPHANS THE OLD CHANNEL RATHER THAN RENAMING IT. Android keys user settings on
+// the id, so a new id arrives at default importance with the operator's tuning lost. It is not a value to
+// tidy.
+export const ORDER_CHANNEL_ID = 'hg_orders'
+
 /**
  * Request push permission, register with APNs, and attach the resulting device token to THIS device's
  * van_devices row (via /api/native/bind-device). Also wires the tap handler → deep-link to the pending
@@ -84,6 +103,33 @@ export async function registerForPush(token: string, onOpenOrder?: (orderKey: st
         }),
       ])
       listenersAttached = true
+    }
+
+    // -- THE CHANNEL, BEFORE register(). ANDROID ONLY — createChannel is a no-op the plugin does not
+    // implement on iOS, so it is guarded rather than called blind. Created BEFORE registration so it
+    // exists before the first notification can be delivered; createChannel is idempotent, so the repeat
+    // on every launch simply re-asserts the same definition.
+    // ⚠️ importance 5 = IMPORTANCE_HIGH — heads-up, with sound. A new order needing confirmation is the
+    // one alert this app sends, and it is time-critical at a hatch. `visibility: 1` is VISIBILITY_PUBLIC:
+    // the content shows on a lock screen, which is the point of an alert on a counter tablet.
+    // ⚠️ A FAILURE HERE MUST NOT STOP REGISTRATION. Without a channel the notification still arrives on
+    // the SDK's fallback — worse-looking, not lost — whereas a throw here would skip register() and cost
+    // the token.
+    if (Capacitor.getPlatform() === 'android') {
+      try {
+        await PushNotifications.createChannel({
+          id: ORDER_CHANNEL_ID,
+          name: 'New orders',
+          description: 'Alerts when an order needs confirming.',
+          importance: 5,
+          visibility: 1,
+          sound: 'default',
+          vibration: true,
+          lights: true,
+        })
+      } catch (chErr) {
+        console.warn('[push] createChannel failed — notifications will use the SDK fallback channel:', (chErr as Error).message)
+      }
     }
 
     const perm = await PushNotifications.requestPermissions()

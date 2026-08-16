@@ -21,6 +21,9 @@ import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } f
 import { isDemoIdentifier } from '@/lib/demo'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
+// The Android mirror. Same signature, same return shape — see lib/fcm.ts's header. Aliased rather than
+// wrapped so the two transports stay visibly separate at the call site below.
+import { sendOrderPendingPush as sendOrderPendingPushFcm } from '@/lib/fcm'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
 // ── PHASE 2b: the card fork. See the block just above the event lock in POST. ──────────────────────
@@ -1268,21 +1271,56 @@ export async function POST(req: NextRequest) {
           const { data: pref } = await supabase
             .from('van_notification_prefs').select('enabled').eq('van_id', vanId).eq('type', 'order_pending').maybeSingle()
           if (!pref || pref.enabled) {
-            // APNs-ONLY ALLOWLIST: sendOrderPendingPush POSTs to api.push.apple.com, which understands
-            // Apple device tokens only. A non-Apple token (e.g. an FCM token from an Android build) comes
-            // back as BadDeviceToken → the invalidTokens cleanup just below would NULL that row's push_token,
-            // silently and permanently disabling push for that device. So allowlist the Apple-compatible
-            // platforms; any future platform value is EXCLUDED by default until a sender exists for it.
-            // NULL is included: legacy rows predate the column being populated and are all iOS.
+            // ── ROUTED BY PLATFORM. THE APNs-ONLY ALLOWLIST IS GONE, AND ONLY BECAUSE A SENDER EXISTS ──
+            // WHAT THE ALLOWLIST WAS FOR: sendOrderPendingPush POSTs to api.push.apple.com, which
+            // understands Apple device tokens only. A non-Apple token (an FCM token from an Android
+            // build) came back as BadDeviceToken → the invalidTokens cleanup below NULLed that row's
+            // push_token, silently and permanently disabling push for that device. The allowlist existed
+            // to stop that, and it was correct for exactly as long as there was nowhere else to send.
+            // 🔴 IT COMES OFF IN THE SAME CHANGE THAT ADDS lib/fcm.ts AND NOT ONE COMMIT EARLIER. An
+            // Android token selected by this query with no FCM sender behind it is the failure the
+            // allowlist was written to prevent, reintroduced.
+            // ⚠️ THE ALLOWLIST'S DEFAULT-DENY SURVIVES IT. Each platform is matched by NAME, never by
+            // negation, so an unrecognised value routes NOWHERE instead of falling into whichever branch
+            // happens to be the `else`. Capacitor's getPlatform() can also return 'web' (device.ts:69),
+            // and a 'web' row must not be posted to APNs just because it is not 'android'.
+            // ⚠️ platform NULL STILL ROUTES TO APNs, unchanged: legacy rows predate the column being
+            // populated and are all iOS. That is the one implicit case, and it is the one the previous
+            // filter also admitted by name.
             const { data: devices } = await supabase
-              .from('van_devices').select('device_id, push_token').eq('van_id', vanId).eq('notify_enabled', true).not('push_token', 'is', null)
-              .or('platform.eq.ios,platform.is.null')
-            const tokens = (devices || []).map(d => d.push_token as string).filter(Boolean)
-            if (tokens.length) {
-              const res = await sendOrderPendingPush(tokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
-              if (res.invalidTokens.length) {
-                await supabase.from('van_devices').update({ push_token: null }).in('push_token', res.invalidTokens)
-              }
+              .from('van_devices').select('device_id, push_token, platform').eq('van_id', vanId).eq('notify_enabled', true).not('push_token', 'is', null)
+            const allDevices = devices || []
+            const iosTokens = allDevices.filter(d => d.platform === 'ios' || d.platform == null).map(d => d.push_token as string).filter(Boolean)
+            const androidTokens = allDevices.filter(d => d.platform === 'android').map(d => d.push_token as string).filter(Boolean)
+            const unroutable = allDevices.filter(d => d.platform != null && d.platform !== 'ios' && d.platform !== 'android')
+            if (unroutable.length) {
+              console.warn(`[push] ${unroutable.length} device(s) have a push_token but an unroutable platform (${[...new Set(unroutable.map(d => d.platform))].join(', ')}) — no sender exists, so nothing was sent and NO token was cleared.`)
+            }
+            // ── 🔴 ONE PLATFORM FAILING MUST NOT STOP THE OTHER ────────────────────────────────────────
+            // Separate awaits in separate try/catch blocks, each collecting into the SAME invalidTokens
+            // list. Neither sender throws by contract, but a contract is not an isolation boundary: an
+            // import-time fault, an OOM in one transport or a future rewrite that does throw must not
+            // cost the other platform its notification. A van running one iPad and one Android tablet
+            // gets both alerts, or the one that worked, never neither.
+            const invalidTokens: string[] = []
+            if (iosTokens.length) {
+              try {
+                const res = await sendOrderPendingPush(iosTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
+                invalidTokens.push(...res.invalidTokens)
+              } catch (iosErr) { console.error('APNs push failed (non-fatal, Android unaffected):', iosErr) }
+            }
+            if (androidTokens.length) {
+              try {
+                const res = await sendOrderPendingPushFcm(androidTokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
+                invalidTokens.push(...res.invalidTokens)
+              } catch (fcmErr) { console.error('FCM push failed (non-fatal, iOS unaffected):', fcmErr) }
+            }
+            // Unchanged in behaviour: one cleanup for both platforms, keyed on the token value itself, so
+            // a dead Android token and a dead Apple token are cleared by the same statement. Skipped
+            // entirely when both senders reported nothing dead — including the fcm.ts circuit-breaker
+            // case, which deliberately reports zero rather than the whole fleet.
+            if (invalidTokens.length) {
+              await supabase.from('van_devices').update({ push_token: null }).in('push_token', invalidTokens)
             }
           }
         }

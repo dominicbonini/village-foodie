@@ -41,6 +41,10 @@ import { detectEventConflicts } from '@/lib/event-conflicts'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
+// The ONE event-cancel gate, now shared with the dashboard and the KDS (which used window.confirm).
+// Lifted from this file unchanged; it owns the reason/note fields, so the two states this page
+// used to carry for them are gone rather than duplicated.
+import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
@@ -6628,8 +6632,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
   const [showPast, setShowPast] = useState(false)
   const [showEventCancelModal, setShowEventCancelModal] = useState(false)
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
-  const [eventCancelReason, setEventCancelReason] = useState('')
-  const [eventCancelNote, setEventCancelNote] = useState('')
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
   const [editingEventConfirmOnSave, setEditingEventConfirmOnSave] = useState(false)
@@ -7032,7 +7034,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
     } catch { /* silently fail — modal still works, count just shows 0 */ }
   }
 
-  const confirmCancelEvent = async () => {
+  // The reason and note now arrive FROM the modal, which owns those fields. Behaviour is unchanged: the
+  // same two keys ride in the same payload to the same endpoint.
+  const confirmCancelEvent = async (cancellationReason: string, cancellationNote: string) => {
     if (!cancellingEvent) return
     setShowEventCancelModal(false)
     try {
@@ -7043,7 +7047,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
           token,
           action: 'cancel',
           eventId: cancellingEvent.id,
-          payload: { cancellationReason: eventCancelReason, cancellationNote: eventCancelNote },
+          payload: { cancellationReason, cancellationNote },
         }),
       })
       const data = await res.json()
@@ -7054,7 +7058,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
         ? `Event cancelled · ${cancelled} order${cancelled !== 1 ? 's' : ''} cancelled`
         : 'Event cancelled')
     } catch (e: any) { showToast(e.message, 'error') }
-    finally { setCancellingEvent(null); setEventCancelReason(''); setEventCancelNote('') }
+    finally { setCancellingEvent(null) }
   }
 
   const handleEventDealToggle = async (eventId: string, bundleId: string, active: boolean) => {
@@ -8197,61 +8201,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
       )}
 
       {showEventCancelModal && cancellingEvent && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Cancel this event?</h3>
-              <p className="text-sm text-slate-500 mt-1">
-                {cancellingEvent.venue_name}{cancellingEvent.town ? `, ${cancellingEvent.town}` : ''}
-                {' · '}
-                {fmtDate(cancellingEvent.event_date)}
-                {cancellingEvent.start_time && cancellingEvent.end_time
-                  ? ` · ${formatTime(cancellingEvent.start_time)}–${formatTime(cancellingEvent.end_time)}`
-                  : ''}
-              </p>
-              {affectedOrderCount > 0 && (
-                <p className="text-sm font-medium text-red-600 mt-2">
-                  {affectedOrderCount} order{affectedOrderCount !== 1 ? 's' : ''} will be cancelled and customers notified.
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
-              <select value={eventCancelReason} onChange={e => setEventCancelReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
-                <option value="">Select a reason</option>
-                <option value="Vehicle breakdown">Vehicle breakdown</option>
-                <option value="Weather">Weather</option>
-                <option value="Venue issue">Venue issue</option>
-                <option value="Personal emergency">Personal emergency</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Message to customers — optional</label>
-              <textarea
-                value={eventCancelNote}
-                onChange={e => setEventCancelNote(e.target.value)}
-                placeholder="e.g. Sorry, our trailer broke down on the way to the venue..."
-                rows={3}
-                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"
-              />
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowEventCancelModal(false); setEventCancelReason(''); setEventCancelNote('') }}
-                className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm"
-              >
-                Keep event
-              </button>
-              <button
-                onClick={() => confirmCancelEvent()}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm"
-              >
-                Cancel event
-              </button>
-            </div>
-          </div>
-        </div>
+        <EventCancelModal
+          event={cancellingEvent}
+          affectedOrderCount={affectedOrderCount}
+          onKeep={() => setShowEventCancelModal(false)}
+          onConfirm={(reason, note) => { void confirmCancelEvent(reason, note) }}
+        />
       )}
     </div>
     )}

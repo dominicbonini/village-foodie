@@ -24,6 +24,14 @@
 
         </activity>
 
+        <!-- The channel FCM uses when a message carries no channel_id of its own. Points at
+             @string/default_notification_channel_id = "hg_orders", created by lib/native/push.ts at
+             registration. Without this the Firebase SDK creates an unnamed fallback channel, and a
+             channel's importance OVERRIDES the message priority we send. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

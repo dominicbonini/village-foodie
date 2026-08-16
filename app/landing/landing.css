@@ -119,7 +119,12 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
 .hg-landing h1 .lean { color: var(--orange); }   /* orange accent, upright (not italic), inherits h1 weight */
 /* Tagline — muted soft-ink with ONLY the accent word (cooking!) in italic-orange (reuses .lean). */
-.hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--ink-soft); letter-spacing: -.015em; max-width: 32ch; margin-bottom: 1.8rem; }
+/* line-height 1.2 OVERRIDES the .hg-landing body default of 1.55, and it is the whole point of this rule.
+   The tagline is ONE <p> with a <br /> — two rhythmic clauses, not two paragraphs — and at 1.55 the
+   0.55em of leading between them (10-13px depending on the clamp) read as two separate thoughts.
+   1.2 sits between h1's 1.05 and .hero-cta-text b's 1.25, so it is the house range, not a new value.
+   ⚠️ SPACING ONLY. Font size, weight, colour and the .lean italic on "cooking." are untouched. */
+.hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--ink-soft); letter-spacing: -.015em; line-height: 1.2; max-width: 32ch; margin-bottom: 1.8rem; }
 .hg-landing .hero-tag .lean { font-style: italic; color: var(--orange); }
 /* CTA row. MOBILE-first (≤939px): stacked column — full-width button, then CENTRED demo text under it.
    DESKTOP (≥940px, below): button LEFT + text RIGHT on one row, top-aligned. */
@@ -310,7 +315,14 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 /* ---------- footer (background = HEADER_BG className) ---------- */
 .hg-landing footer { color: #fff; padding: 3rem 0 2.2rem; }
 .hg-landing .foot-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-start; }
-.hg-landing .foot-tag { color: #8A93A6; font-size: .88rem; margin-top: .5rem; max-width: 28ch; }
+/* Same tightening as .hero-tag, and it STAYS TWO LINES ON PURPOSE. Setting it as one sentence —
+   "Less time booking. More time cooking." — is 37 characters against this rule's own max-width: 28ch,
+   so it would wrap at whatever word ran out of room and break the SECOND clause rather than between
+   the two. A strapline split at a random word is worse than two clean lines, so the fix here is the
+   leading, not the line count. 1.25 rather than the hero's 1.2 because this is 14px body text, where
+   smaller type wants marginally more relative leading; it matches .th-sub and .hero-cta-text b.
+   ⚠️ SPACING ONLY. Colour, size and max-width are unchanged, and no other footer content is touched. */
+.hg-landing .foot-tag { color: #8A93A6; font-size: .88rem; line-height: 1.25; margin-top: .5rem; max-width: 28ch; }
 .hg-landing .foot-links { display: flex; flex-wrap: wrap; gap: 1.4rem; }
 .hg-landing .foot-links a { color: #C3CAD8; text-decoration: none; font-size: .9rem; }
 .hg-landing .foot-links a:hover { color: #fff; }

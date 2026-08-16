@@ -1,487 +1,582 @@
-# Device naming — census, then a copy-only sweep
+# iPhone added to the kitchen-app claims, and the biometric copy made true on both platforms
 
-**Result: FIVE strings changed, in THREE files. `git diff --stat` = 5 insertions, 5 deletions.**
-No `next dev`, no `next build`, no `cap sync`, no deploys, no commit.
-✅ **No span of the prompt arrived garbled. No instruction contradicted another, so there was nothing to stop for.**
+Scope honoured: **three files edited, copy and comments only.** No `next dev`, no `next build`, no
+`cap sync`, no deploy, no commit, no package installed, no migration, no native config, **no feature
+key**, no gate, no type.
 
-**TWO EDITS IN TWO PASSES, and the second was your call, not mine:**
+**No span of the prompt arrived garbled, and no instruction contradicted another.**
 
-1. **The brief's substitution — 2 strings, `app/landing/page.tsx`:** `iPad and Android` → **`iPhone, iPad and Android`**, on the two marketing claims about taking orders on a device.
-2. 🔴 **YOUR MID-TURN DECISION — 3 strings, two `components/native/` files:** *"in dashboard settings it shows 'alerts on this ipad' … i think alerts on this device will be better. anywhere else theres mentions like that as well."* **Applied to all three: `this iPad` → `this device`.** ✅ **They are exactly the three sites C5 had flagged as fitting no rule in the brief, and they were the ones most likely to be wrong on a phone.**
+Landing, manage → billing and admin are reported **separately**. Every claim is marked **READ**,
+**INFERRED** or **EXECUTED** (run against the real module).
 
-🔴 **STILL SMALLER THAN THE BRIEF ANTICIPATED, AND THAT REMAINS THE FINDING.** Of the user-visible strings naming a device, **five are KITCHEN-DISPLAY claims that rule B3 says to leave and flag** — those are untouched and listed with their exact text so you can decide. **Nothing was silently skipped.**
-
-⚠️ **AND THE AMPERSAND WAS NOT USED.** B1 allows "and" where a surface's house style clearly uses it, and **at both changed sites the existing copy is literally *"the iPad and Android app"***. Justification, with the competing evidence, is in B1.
+> ✅ `npx tsc --noEmit` exits 0.
+> ✅ **The parity guard was EXECUTED, not reasoned about** — `findPlanParityViolations()` returns **0**.
+> 🔴 **And the counterfactual was executed too: with the map key left behind it ALSO returns 0.** C3.
 
 ---
 
-# PART A — THE CENSUS
+# PART A — THE KITCHEN-APP CLAIMS
 
-## A1. Case-insensitive sweep: `iPad`, `iOS`, `iPhone`, `Apple`
+## A1. The four claims, quoted BEFORE
 
-**READ. Method:** word-boundary regex `\b(ipad|ios|iphone|apple)\b`, case-insensitive, across the whole repo excluding `node_modules`, `.git`, `.next`, `out`, `build`, `Pods`, `DerivedData` and binaries. ⚠️ **A word-boundary sweep MISSES `ipad_kds`** — `_` is a word character — **so a second identifier-shaped sweep (`ipad[_a-z0-9]|[_a-z0-9]ipad`) was run to catch it. Without that second pass `lib/features.ts` would not have appeared at all.**
-
-**Totals: 950 hits in 139 files** — **731 in `docs/`, 219 everywhere else.**
-
-| Bucket | Hits | In scope? |
-|---|---|---|
-| **(a) USER-VISIBLE COPY** | **20** | 🔴 **THE ONLY BUCKET IN SCOPE** |
-| **(b) IDENTIFIERS** | 27 | ❌ frozen |
-| **(c) NATIVE CONFIG** | 31 | ❌ frozen (B5) |
-| **(d) COMMENTS AND DOCS** | **872** (731 in `docs/`, 141 in source comments) | ❌ out of scope |
-
-⚠️ **ONE DELIBERATE DEVIATION FROM THE BRIEF, DECLARED RATHER THAN TAKEN QUIETLY.** The brief asks for every hit as `file:line`. **Buckets (a), (b) and (c) are listed in full below — all 78 of them.** **Bucket (d) is 872 lines, 731 of them in `docs/*.md` reports that are not shipped to anyone**, so it is reported as counts per file rather than 872 quoted lines. **Say the word and I will produce the full (d) listing.**
-
-### 🔴 BUCKET (a) — USER-VISIBLE COPY. All 20, complete.
-
-**MARKETING (customer-facing — `app/landing/page.tsx`, plus the shared matrix it renders):**
-
-| # | Site | The string | Verdict |
-|---|---|---|---|
-| a1 | `app/landing/page.tsx:74` | `'Offline Order Protection': "…The iPad and Android app keeps you taking orders offline; the web dashboard needs a connection."` | ✅ **CHANGED** |
-| a2 | `app/landing/page.tsx:204` | `…Carry on taking orders with the iPad and Android app.` | ✅ **CHANGED** |
-| a3 | `app/landing/page.tsx:315` | `<li>iPad and Android kitchen app</li>` | 🔴 **B3 — kitchen app. FLAGGED, NOT CHANGED** |
-| a4 | `lib/plan-features.ts:121` | `{ name: 'iPad and Android kitchen app', footnote: '3', … }` | 🔴 **B3 — FLAGGED, NOT CHANGED** |
-| a5 | `lib/plan-features.ts:222` | footnote 3: `'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser.'` | 🔴 **B3 — FLAGGED, NOT CHANGED** |
-| a6 | `app/trucks/[slug]/order/page.tsx:3514` | `'You'll pay securely by card on this page · Apple Pay and Google Pay supported'` | ❌ a payment method, not a device |
-| a7 | `components/EventListCard.tsx:302` | `<option value="ics">Apple / Mobile / Outlook</option>` | ❌ a calendar format |
-| a8 | `components/EventListCard.tsx:379` | `<option value="ics">Apple / Mobile / Outlook</option>` | ❌ same |
-
-**OPERATOR-FACING (in-app labels and an email):**
-
-| # | Site | The string | Verdict |
-|---|---|---|---|
-| a9 | `components/native/NotificationSettings.tsx:67` | `Alerts on this iPad. Turn on to choose which alerts you get.` | ✅ **CHANGED → "this device" (your mid-turn call)** |
-| a10 | `components/native/OperatorDeviceConfig.tsx:82` | `We couldn't reach the server to set up **this iPad**. …` | ✅ **CHANGED → "this device"** |
-| a11 | `components/native/OperatorDeviceConfig.tsx:106` | `One-time setup for **this iPad**: the screen it opens to and which van it runs. …` | ✅ **CHANGED → "this device"** |
-| a12 | `components/native/OperatorDeviceConfig.tsx:283` | `No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. …` | ❌ **B2 — "iOS Settings" is the OS, and it is the literal name of the app you tap** |
-| a13 | `app/api/admin/create-operator/route.ts:132` | `<li>Add the dashboard to your iPad home screen for the kitchen display</li>` | 🔴 **B3 — says "for the kitchen display". FLAGGED, NOT CHANGED** |
-
-**LEGAL (customer AND operator — `content/legal/`):**
-
-| # | Site | The string | Verdict |
-|---|---|---|---|
-| a14 | `content/legal/privacy-policy.md:10` | `It also covers the HatchGrab mobile and tablet apps for iOS and Android.` | ❌ **B2 — "iOS" as the operating system.** ✅ **And it already says "mobile and tablet", so it is the one surface that was never iPad-only** |
-| a15 | `content/legal/privacy-policy.md:106` | `\| Apple and Google \| Delivering push notifications to your device \|` | ❌ processor names in a data table |
-
-**RENDERED-BUT-INTERNAL (admin console only, no operator or customer sees it):** a16–a20 are the same five `lib/plan-features.ts` strings re-rendered by `app/admin/page.tsx`; **counted once above, noted here so the census reconciles.**
-
-### BUCKET (b) — IDENTIFIERS (27). 🔴 FROZEN.
-
-`lib/features.ts:7` (`| 'ipad_kds'` — type member) · `:34` (`PRO_FEATURES`) · `:67` (`starter` set) · `lib/plan-features.ts:261` (`'iPad and Android kitchen app': 'ipad_kds'` — map key **and** value) · `app/api/orders/submit/route.ts:1279` (`.or('platform.eq.ios,platform.is.null')`) · `supabase/migrations/20260701_van_devices.sql:16` (`platform text -- 'ios' | 'web'`) · `lib/commerce-policy.ts:45` (`Capacitor.getPlatform() !== 'ios'`) · `lib/native/appLock.ts:82` (`iosFallbackTitle`) · `lib/stripe/connect.ts:502, :545, :557` (`applePay`) · `app/trucks/[slug]/order/page.tsx:1743` (`wallets: { applePay: 'auto' … }`) · `app/api/stripe/connect/route.ts:376` (`applePay=`) · `app/layout.tsx:60` (`apple: "/apple-touch-icon.png"`) · `public/manifest.json:11` · `proxy.ts:236` (matcher) · `components/EventListCard.tsx:164, :165, :235` and `app/venues/[slug]/VenueClient.tsx:50, :51` (UA sniffing + `maps.apple.com`) · `package.json:19` and 4 in `package-lock.json` (`@capacitor/ios`) · font stacks (`-apple-system`) in `lib/email.ts:374`, `lib/generateQRCode.ts:115`, `public/offline.html:10`, `app/globals.css`, `app/api/dashboard/action/route.ts:931`, `app/api/inbound-schedule/route.ts:320`, `scripts/run-scraper.js:1101`.
-
-### BUCKET (c) — NATIVE CONFIG (31). 🔴 FROZEN BY B5.
-
-`capacitor.config.ts` (8) · `ios/App/App/Info.plist` (4, incl. `UISupportedInterfaceOrientations~ipad`) · `ios/App/App.xcodeproj/project.pbxproj` (3, incl. `CODE_SIGN_IDENTITY = "iPhone Developer"`) · `App.entitlements` (2) · `AppRelease.entitlements` (3) · `PrivacyInfo.xcprivacy` (7) · both storyboards (6) · `ios/App/App/capacitor.config.json`, `android/app/src/main/assets/capacitor.config.json`, `Package.swift`, `AppIcon.appiconset/Contents.json`, `HGBridgeViewController.swift:303`, `ios/.gitignore`, 2 xcscheme plists.
-
-✅ **NOT ONE BYTE OF BUCKET (b) OR (c) WAS TOUCHED — proved by `git diff --stat` at D5: one file changed, and it is a landing page.**
-
-### BUCKET (d) — COMMENTS AND DOCS (872). Counts, per the declared deviation.
-
-**`docs/` — 731 hits across ~62 report files.** **Source comments — 141**, the largest being `app/manage/[token]/page.tsx` (26 of its 28 hits are comments, nearly all `🔴 iOS (App Store 3.1.1/3.1.3)` gate annotations), `app/dashboard/[token]/page.tsx` (13), `lib/native/keepAwake.ts` (6), `lib/native/statusBar.ts` (5), `lib/commerce-policy.ts` (7).
-
-## A2. 🔴 `ipad_kds` — the key and the label are in DIFFERENT FILES
-
-**READ. `lib/features.ts` contains the KEY and NOTHING ELSE. Three occurrences, all identifier:**
-
-```ts
-export type Feature =
-  // Core — all plans
-  | 'discovery_map'
-  | 'web_dashboard'
-  | 'ipad_kds'                    // ← lib/features.ts:7 — TYPE MEMBER
-```
-```ts
-const PRO_FEATURES: Feature[] = [
-  …
-  'ipad_kds',                     // ← lib/features.ts:34 — gate membership
-```
-```ts
-  starter: new Set([
-    …
-    'ipad_kds',                   // ← lib/features.ts:67 — gate membership
-```
-
-> ## ✅ CONFIRMED: `lib/features.ts` HOLDS NO USER-VISIBLE LABEL AT ALL.
-> Its only human strings are the plan names in `PLAN_META` (`'Starter'`, `'Pro'`, `'Max'`, …). **There is no `ipad_kds` label in this file to move.**
-
-**The USER-VISIBLE LABEL lives in `lib/plan-features.ts:121`, a different file:**
+**READ** — `lib/plan-features.ts:121`, the plan-matrix row:
 
 ```ts
       { name: 'iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
 ```
 
-**And the two are joined at `lib/plan-features.ts:261`, keyed on the DISPLAY NAME:**
+**READ** — `app/landing/page.tsx:315`, the Starter pricing-card bullet:
+
+```tsx
+                <li>iPad and Android kitchen app</li>
+```
+
+**READ** — `lib/plan-features.ts:222`, footnote 3:
 
 ```ts
-  // ⚠️ Keyed on the ROW NAME, so renaming a row here without renaming it above silently drops that row
-  // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
-  // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
-  // renamed: it gates one KDS capability on both platforms, and changing it would need a data migration.
+    text: 'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser.',
+```
+
+**READ** — `lib/plan-features.ts:261`, the `ROW_FEATURE_MAP` twin:
+
+```ts
   'iPad and Android kitchen app': 'ipad_kds',
 ```
 
-🔴 **WHICH IS WHICH, STATED PLAINLY:** **`ipad_kds` is the KEY** — a `Feature` type member and a gate identifier, referenced in `PLAN_FEATURES`, admin overrides and potentially plan data. **`'iPad and Android kitchen app'` is the LABEL** — and it is *also* a map key in `ROW_FEATURE_MAP`.
+## A2. Changed — and 36 IS now the longest cell, by two
 
-> ⚠️ **THE TRAP THE FILE ALREADY WARNS ABOUT, AND IT BINDS THIS TASK.** `ROW_FEATURE_MAP` is keyed on the **row name**. **Changing the label at `:121` WITHOUT changing the identical string at `:261` silently disables the drift guard for that row** — `findPlanParityViolations()` stops checking it and reports clean. **So the label is not a free-standing string: any rename is a TWO-SITE edit.** ✅ **Since B3 keeps the label unchanged, both sites are untouched and the guard still fires.**
+**READ, after:**
 
-## A3. Character lengths — every cell I considered
+```ts
+      { name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+```
 
-| Surface | Before | After (if changed) | Δ | Status |
+```tsx
+                <li>iPhone, iPad and Android kitchen app</li>
+```
+
+```ts
+    text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
+```
+
+```ts
+  'iPhone, iPad and Android kitchen app': 'ipad_kds',
+```
+
+**EXECUTED** — the real module loaded and sorted by length:
+
+```
+longest cell: "iPhone, iPad and Android kitchen app" 36
+runner-up   : "Messenger & Instagram auto-replies" 34
+```
+
+✅ **CONFIRMED: it is now the longest cell, by TWO characters.** ⚠️ **That is a change of state and it
+is stated rather than glossed** — before this edit the row was 28 and third-equal; the 34-character row
+already renders on all three surfaces, so 36 is two characters past a width that demonstrably fits, not
+two characters past anything measured to fail. **INFERRED: it fits. Nothing has been rendered since to
+prove it, and that is the one claim in this report resting on inference rather than execution.**
+
+🔴 **FOOTNOTE 3 NEEDED MORE THAN THE INSERTION, AND THE REASON IS THE ONE THE PREVIOUS REPORT
+PREDICTED.** *"Tablet not supplied … also runs on any tablet"* is a paragraph built entirely around
+tablets. Inserting "iPhone" into it would have produced a **phone app listed inside a tablet
+footnote** — the exact incoherence flagged as the argument for leaving it alone. The caveat was never
+about tablets; **it is about not supplying HARDWARE.** So `Tablet not supplied` → `Device not
+supplied`, and `any tablet` → `any phone or tablet`. **The reasoning is recorded at the line:**
+
+```ts
+    // ⚠️ "Device not supplied", NOT "Tablet not supplied", AND THE CHANGE IS FORCED BY THE ROW ABOVE.
+    // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
+    // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
+    // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
+```
+
+⚠️ **The standing editorial rule above it was READ and honoured** — *"DO NOT ADD 'coming soon' HERE…
+the native apps are in the PRESENT TENSE deliberately"* — the new text keeps the present tense and adds
+no tense marker.
+
+## A3. 🔴 The row name as a map key — all five sites, and every one confirmed
+
+**READ** — every place a feature row name is used as a key or compared, found by sweeping `row.name`
+across the whole tree:
+
+| # | Site | Kind | Contains the kitchen row? | Action |
 |---|---|---|---|---|
-| **Plan-matrix row name** `iPad and Android kitchen app` | **28** | `iPhone, iPad and Android kitchen app` = **36** | **+8 (+29%)** | 🔴 **NOT CHANGED (B3)** |
-| **Pricing-card bullet** (same string, `<li>`) | **28** | **36** | +8 | 🔴 **NOT CHANGED (B3)** |
-| **Footnote 3** | **142** | **150** | +8 | 🔴 **NOT CHANGED (B3)** |
-| **Landing detail override** (a1) | **185** | **193** | +8 | ✅ **CHANGED** |
-| **Landing "No signal" paragraph** (a2) | **157** | **165** | +8 | ✅ **CHANGED** |
+| **1** | `lib/plan-features.ts:271` `ROW_FEATURE_MAP` | `Record<string, Feature>` keyed by row name | 🔴 **YES** | ✅ **UPDATED in the same commit** |
+| **2** | `app/landing/page.tsx:73` `DETAIL_OVERRIDES` | `Record<string, string>` keyed by row name | **no** — one key, `'Offline Order Protection'` | ✅ nothing to change, confirmed by reading it |
+| **3** | `app/landing/page.tsx:50-51` `trialFeatureValue` | two `row.name ===` comparisons | **no** — `'Online ordering — Pay at Hatch'`, `'SMS order alerts'` | ✅ nothing to change |
+| **4** | `app/manage/[token]/page.tsx:10402` | one `row.name ===` comparison | **no** — `'Online ordering — Pay at Hatch'` | ✅ nothing to change |
+| **5** | `app/admin/page.tsx:813` `isPayAtHatch` | one `row.name ===` comparison | **no** — `'Online ordering — Pay at Hatch'` | ✅ nothing to change |
 
-**The phrase substitutions themselves:**
+⚠️ **`FOOTNOTE_TEXT_OVERRIDES` (`landing/page.tsx:67`) is keyed by FOOTNOTE NUMBER, not row name** —
+one key, `'2'` — so footnote 3's text change reaches all three surfaces unmodified. **Checked because
+a footnote override would have silently kept the old wording on the landing page only.**
 
-| From | To | Δ |
-|---|---|---|
-| `iPad` (4) | `iPhone, iPad` (12) | +8 |
-| `iPad` (4) | `iPhone & iPad` (13) | +9 |
-| `iPad and Android` (16) | `iPhone, iPad and Android` (24) | +8 |
+🔴 **PROOF THAT NO MAP WAS MISSED, PARSED RATHER THAN ASSERTED.** Both files were re-parsed and the two
+sets cross-checked:
 
-> ## ⚠️ THE TRUNCATION QUESTION, ANSWERED HONESTLY: IT DOES NOT ARISE, BECAUSE NO MATRIX CELL WAS CHANGED.
-> ✅ **Both changed strings are flowing PROSE — a table `detail` tooltip and a `<p>` inside `.does-item`. Neither is a fixed-width cell; both already wrap.** At 185 and 157 characters, eight more changes nothing about how they lay out.
-> 🔴 **BUT THE MEASUREMENT MATTERS FOR THE DECISION YOU ARE BEING ASKED TO MAKE.** The row name is **+29% on a 28-character cell in a three-column comparison table**, and it is **the longest row name in its section** at 28 already (against `'Automatic schedule import'` at 25 and `'Automated stock countdown'` at 25). **At 36 it would be the longest name in the entire matrix.** ⚠️ **I have NOT measured it in a browser** — no `next dev` was run — **so whether it wraps to two lines or clips is UNVERIFIED. If you approve the B3 sites, that cell needs looking at on a narrow viewport before it ships.**
+```
+  FEATURE_SECTIONS rows: 27 | ROW_FEATURE_MAP keys: 22
+  rows with NO map entry (guard silently skips these): 5
+     - 'Automatic schedule import' · 'SMS order alerts' · 'Multi-user access'
+     - 'Event & festival pricing' · 'Digital loyalty stamp cards'
+  map keys matching NO row (dead keys): 0
+  kitchen row: 'iPhone, iPad and Android kitchen app'  -> maps to 'ipad_kds'
+```
 
-## A4. Strings shared between customer-facing and operator-facing surfaces
+**A missed map would show up as BOTH a dead key and an unmapped row. There are zero dead keys, and the
+kitchen row resolves.**
 
-🔴 **YES — AND IT IS THE WHOLE PLAN MATRIX. READ, the import sites:**
+✅ **AND THE FIVE UNMAPPED ROWS ARE PRE-EXISTING, NOT COLLATERAL.** The identical parse against
+`git show HEAD:lib/plan-features.ts` returns **the same five, and zero dead keys** — they are rows for
+capabilities with no `Feature` enum member, which the guard has always skipped.
 
-| Consumer | Audience |
-|---|---|
-| `app/landing/page.tsx:21` — imports `FEATURE_SECTIONS`, `FOOTNOTES`, `TRANSACTION_ROWS` | 🔴 **MARKETING — public, customer-facing** |
-| `app/manage/[token]/page.tsx:24` — imports the same | 🔴 **OPERATOR — the Billing tab Gusto and Tikka Tonic both see** |
-| `app/admin/page.tsx:9` — imports the same | internal admin |
+## A4. 🔴 The hand-written pricing-card bullet
 
-> ## 🔴 CHANGING `lib/plan-features.ts:121` WOULD CHANGE THE LANDING PAGE, EVERY OPERATOR'S BILLING TAB AND THE ADMIN CONSOLE IN ONE EDIT.
-> **That is a live-operator surface on a handover week. It is a further reason the B3 sites are flagged rather than guessed.**
+**READ, before** — `app/landing/page.tsx:310-315`. These are literal `<li>` elements; **nothing
+imports them and nothing checks them against `FEATURE_SECTIONS`:**
 
-✅ **THE TWO STRINGS I DID CHANGE ARE NOT SHARED. READ, `app/landing/page.tsx:71-72`, the comment above the override map:**
+```tsx
+                <li>Sold-out toggle &amp; stock countdown</li>
+                <li>QR code &amp; discovery map listing</li>
+                <li>iPad and Android kitchen app</li>
+```
 
-> *"RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — **Billing/Admin keep the original text**."*
+**READ, after — updated, with the hazard recorded at the line so the next person does not have to
+rediscover it:**
 
-🔴 **So a1 is a LANDING-ONLY override and a2 is landing-only JSX. NEITHER APPEARS ON ANY OPERATOR SURFACE.** ⚠️ **CONSEQUENCE, stated because it is a real side effect: the landing page's Offline-Order-Protection tooltip now reads "iPhone, iPad and Android" while Billing's version of the same row still reads the shared `FEATURE_SECTIONS` text. They were already different strings by design — this widens that gap by eight characters.**
+```tsx
+                {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
+                    matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
+                    must be changed in the SAME commit or the same page shows two different claims. */}
+                <li>iPhone, iPad and Android kitchen app</li>
+```
+
+⚠️ **Had this been missed, the SAME PAGE would have carried both claims** — the Starter card saying
+"iPad and Android" three hundred lines above a matrix row saying "iPhone, iPad and Android". **No guard
+would have reported it.**
+
+## A5. All three renderers show the new wording
+
+**EXECUTED** — the real `lib/plan-features.ts` module was loaded (only the `@/` path alias rewritten,
+`diff` confirming the copy is otherwise byte-identical) and asked what the renderers read:
+
+```
+  row.name   = "iPhone, iPad and Android kitchen app" | footnote 3 | starter/pro/max true true true
+  footnote 3 = "Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser."
+  parity     = 0 violations
+```
+
+**And the three render sites, READ, each reading that same value:**
+
+```tsx
+// LANDING — app/landing/page.tsx:395 and :410
+<span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
+// LANDING footnotes — :425
+{FOOTNOTES.map(f => (
+
+// MANAGE → BILLING — app/manage/[token]/page.tsx:10346 and :10395
+                {row.name}
+// billing footnotes — :10427
+      {FOOTNOTES.map(f => (
+
+// ADMIN — app/admin/page.tsx:789 and :809
+                      {row.name}
+// admin footnotes — :832
+              {FOOTNOTES.map(f => (
+```
+
+✅ **Landing:** matrix row and footnote 3 both new; **plus** the hand-written Starter bullet (A4).
+✅ **manage → billing:** matrix row and footnote 3 both new. **No override exists on this surface.**
+✅ **Admin console:** matrix row and footnote 3 both new.
+
+## A6. ✅ `ipad_kds` — byte-identical
+
+**READ** — every occurrence, and the diff line that contains it:
+
+```
+lib/features.ts:7        "| 'ipad_kds'"
+lib/features.ts:34       "'ipad_kds',"
+lib/features.ts:67       "'ipad_kds',"
+lib/plan-features.ts:271 "'iPhone, iPad and Android kitchen app': 'ipad_kds',"
+```
+
+```diff
+-  'iPad and Android kitchen app': 'ipad_kds',
++  'iPhone, iPad and Android kitchen app': 'ipad_kds',
+```
+
+🔴 **THE KEY CHANGED; THE VALUE DID NOT.** `'ipad_kds'` appears character-for-character on both sides
+of that pair. ✅ **`git diff --stat -- lib/features.ts` produces no output — the enforcement identifier's
+own file is untouched**, so no gate, no allow-list and no `Feature` union member moved.
+
+## A7. ✅ The onboarding email — untouched
+
+**READ** — `app/api/admin/create-operator/route.ts:132`, unchanged:
+
+```html
+        <li>Add the dashboard to your iPad home screen for the kitchen display</li>
+```
+
+✅ **`git status --porcelain` for that file returns nothing.** It is an instruction to a named operator
+about the device in their hand, not a claim about availability — and *"Add to Home Screen"* is Safari's
+exact menu wording, so a platform-neutral rewrite would make it vaguer without making it more useful.
 
 ---
 
-# PART B — THE EDIT
+# PART B — THE BIOMETRIC COPY
 
-## B1. What changed, and why "and" rather than "&"
+## B1. The string and its render conditions
 
-**Both sites, before → after:**
+**READ, before** — `components/native/OperatorDeviceConfig.tsx:283`:
+
+```tsx
+{appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. Your backup PIN still works.</p>}
+```
+
+**Three conditions, all READ, all required:**
+
+1. **The component renders at all** — `ThisDeviceSettings` (`:145`), reached from the dashboard's
+   device card and the KDS's device sheet, both gated on `isNativeApp()`.
+2. **`appLock`** — `isAppLockEnabled()` (`:163`), the per-device toggle, **default off**.
+3. **`!bioAvailable`** — `:164`, `void isBiometricAvailable().then(setBioAvailable)`.
+
+**READ** — and `isBiometricAvailable` is cross-platform, which is what makes the copy false:
+
+```ts
+lib/native/appLock.ts:64   const { BiometricAuth } = await import('@aparajita/capacitor-biometric-auth')
+lib/native/appLock.ts:65   const info = await BiometricAuth.checkBiometry()
+```
+
+**READ** — registered in the Android build:
+
+```
+android/capacitor.settings.gradle:5   include ':aparajita-capacitor-biometric-auth'
+android/capacitor.settings.gradle:6   project(':aparajita-capacitor-biometric-auth').projectDir = new File('../node_modules/@aparajita/capacitor-biometric-auth/android')
+```
+
+## B2. ✅ The whole sentence replaced — and it was not the only one
+
+🔴 **THE SCAN FOUND THREE USER-VISIBLE APPLE-BRAND STRINGS IN THIS COMPONENT, NOT ONE.** The brief
+names `:283`; **`:244` is the toggle's own label and is the most prominent of the three.** All three
+are replaced, with **one shared phrase** so they cannot drift:
 
 ```diff
--  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
-+  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+-        <span className="font-semibold text-slate-700">Require Face&nbsp;ID / Touch&nbsp;ID to open</span>
++        <span className="font-semibold text-slate-700">Require fingerprint or face unlock to open</span>
 ```
 
 ```diff
--            <div className="does-item"><h3>No signal? Keep serving.</h3><p>…Carry on taking orders with the iPad and Android app.</p></div>
-+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>…Carry on taking orders with the iPhone, iPad and Android app.</p></div>
+-          <p …>Your way in if Face / Touch ID won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
++          <p …>Your way in if fingerprint or face unlock won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
 ```
-
-**Why these two are in scope and the others are not:** both are claims about **taking orders** on a device you own — *"keeps you taking orders offline"*, *"Carry on taking orders with"*. **Neither mentions the kitchen screen.** Every string that does is flagged in B3.
-
-### 🔴 THE AMPERSAND WAS NOT USED, AND HERE IS THE EVIDENCE BOTH WAYS
-
-**FOR `&` — READ, the landing pricing cards, which use it consistently in SHORT LABELS:**
-
-```
-                <li>Walk-up orders &amp; kitchen screen</li>
-                <li>Menu, meal deals &amp; upsells</li>
-                <li>Sold-out toggle &amp; stock countdown</li>
-                <li>QR code &amp; discovery map listing</li>
-                <li>Pre-orders &amp; collection times</li>
-                <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
-```
-**and `lib/plan-features.ts` row names:** `'Meal deals & upsells'`, `'Messenger & Instagram auto-replies'`, `'Event & festival pricing'`.
-
-**AGAINST `&` at THESE two sites — READ, the copy being edited, which is PROSE and uses "and":**
-
-> *"The **iPad and Android** app keeps you taking orders offline"* · *"Carry on taking orders with the **iPad and Android** app."*
-
-**And the decisive point: the pair is not standing alone here — Android follows it.** `iPhone & iPad and Android` is not English. The alternatives were:
-
-| Candidate | Verdict |
-|---|---|
-| `iPhone & iPad and Android app` | ❌ **ungrammatical — two conjunctions, one clause** |
-| `iPhone, iPad & Android app` | ⚠️ compact and readable, **but it rewrites an existing "and" that the brief did not put in scope** |
-| **`iPhone, iPad and Android app`** | ✅ **CHOSEN — adds one product name and touches nothing else in the sentence** |
-
-> ## THE RULE I APPLIED, STATED SO IT CAN BE OVERRULED IN ONE LINE
-> **Name the products, never the OS. Where the pair stands ALONE in a short label → `iPhone & iPad` (the card house style). Where Android follows in a list → `iPhone, iPad and Android` (the prose house style, and the style already at both sites).**
-> ✅ **CONSISTENT: both changed sites are the list form and both read identically.** ⚠️ **The `&` form is therefore used NOWHERE in this diff — there was no site for it. If you want `iPhone, iPad & Android` instead, it is two more one-word edits.**
-
-## B1b. 🔴 YOUR MID-TURN DECISION — `this iPad` → `this device`, all three sites
-
-**You wrote:** *"in dashboard settings it shows 'alerts on this ipad' make sure this is accounted for in review. i think alerts on this device will be better. anywhere else theres mentions like that as well."*
-
-✅ **Applied to all three, and a fresh targeted sweep (`this (iPad|iPhone)|on the iPad|your iPad` across `app/` and `components/`) confirms THREE user-visible sites and no fourth.** The only other hit is `components/dashboard/UserMenu.tsx:190`, which is **a code comment** (bucket d).
 
 ```diff
--          <p className="text-xs text-slate-500 mt-0.5">Alerts on this iPad. Turn on to choose which alerts you get.</p>
-+          <p className="text-xs text-slate-500 mt-0.5">Alerts on this device. Turn on to choose which alerts you get.</p>
+-      {appLock && !bioAvailable && <p …>No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. Your backup PIN still works.</p>}
++      {appLock && !bioAvailable && <p …>No fingerprint or face unlock set up on this device — add one in your device settings. Your backup PIN still works.</p>}
 ```
+
+⚠️ **`Face&nbsp;ID` went with it.** The non-breaking spaces existed to stop "Face ID" wrapping mid-brand;
+the new label has no two-word brand to protect, so they are simply gone rather than moved.
+
+**And the comment that documents the control was corrected too, because leaving it would have made the
+file contradict itself:**
+
 ```diff
--              <p …>We couldn&apos;t reach the server to set up <strong>this iPad</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
-+              <p …>We couldn&apos;t reach the server to set up <strong>this device</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
+-      {/* APP-LOCK — device-level Face ID / Touch ID gate (per-device, default off). SEPARATE from login.
++      {/* APP-LOCK — device-level biometric gate (per-device, default off). SEPARATE from login.
++          NOTE: THE COPY NAMES THE CONCEPT, NOT A VENDOR. lib/native/appLock.ts uses
++          @aparajita/capacitor-biometric-auth, which is registered in android/capacitor.settings.gradle as
++          well as on iOS — so "Face ID / Touch ID" was false on every Android device, in all three strings
++          below. "fingerprint or face unlock" is the one phrase true on both, and it is used verbatim in
++          each of them so they cannot drift apart.
 ```
-```diff
--              <p …>One-time setup for <strong>this iPad</strong>: the screen it opens to and which van it runs. Applies to this device only — …</p>
-+              <p …>One-time setup for <strong>this device</strong>: the screen it opens to and which van it runs. Applies to this device only — …</p>
-```
 
-### ✅ THE SURROUNDING COPY ALREADY SAID "DEVICE" — `this iPad` WAS THE ODD ONE OUT
+## B3. The final wording, and its length
 
-**READ, `components/native/OperatorDeviceConfig.tsx`, the strings AROUND the two that changed — none of them was ever edited:**
+| Site | Before | chars | After | chars |
+|---|---|---|---|---|
+| Toggle label `:244` | `Require Face ID / Touch ID to open` | 34 | **`Require fingerprint or face unlock to open`** | **42** |
+| PIN help `:265` | `Your way in if Face / Touch ID won't work — …` | — | **`Your way in if fingerprint or face unlock won't work — …`** | — |
+| Warning `:288` | `No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. Your backup PIN still works.` | 104 | **`No fingerprint or face unlock set up on this device — add one in your device settings. Your backup PIN still works.`** | **115** |
 
-- `:104` heading — **"Set up this device"**
-- `:94` — *"then **this device** sets up automatically — no further steps here"*
-- `:106` — *"Applies to **this device** only — other devices are set separately"*
-- `:109` — *"Which screen should **this device** open to?"*
-- `:106` again — *the profile menu → **"This device"***
+**Why this wording, against B3's two requirements:**
 
-🔴 **The component's heading and four of its own sentences already said "device". Two strings said "iPad". The change makes the panel internally consistent rather than introducing a new word.** ✅ **And it matches the convention written down at `components/native/OfflineBanner.tsx:4`: *"Copy uses "device" (not "iPad") per the offline UX convention."***
+- ✅ **It names the concept, not a vendor.** *"fingerprint or face unlock"* describes what the operator
+  actually does on either platform. **"Biometric" was considered and rejected** — it is the accurate
+  technical word and the wrong one for a card an operator reads once at a hatch.
+- ✅ **It says what is not set up AND where to set it up.** *"add one in your device settings"* is true
+  on both: iOS Settings and Android Settings are both reached that way, and neither is named.
+- ⚠️ **`enrolled` → `set up`, deliberately.** "Enrolled" is Apple's and Android's internal vocabulary,
+  not an operator's.
+- ⚠️ **The warning grew 104 → 115 characters** in an `text-[11px]` amber paragraph that already wraps.
+  **INFERRED: it wraps to one more line at most.**
 
-⚠️ **ONE COPY OBSERVATION, REPORTED NOT ACTED ON.** `:106` now reads *"One-time setup for **this device**: … Applies to **this device** only"* — **"this device" twice in one paragraph, under a heading that already says "Set up this device".** ✅ **It is accurate and it reads fine.** **The tighter version drops the phrase entirely — *"One-time setup: the screen it opens to and which van it runs."* — but that is a rewrite rather than a substitution, so I left it. Say the word.**
+## B4. Every other platform-specific string in the component
 
-## B2. `iOS` left alone where it means the operating system
-
-✅ **Two user-visible sites, both correct as they stand:**
-
-- `components/native/OperatorDeviceConfig.tsx:283` — *"set one up in **iOS Settings**"*. 🔴 **This is a wayfinding instruction naming the Settings app. "iPhone & iPad Settings" would be wrong on both devices.**
-- `content/legal/privacy-policy.md:10` — *"the HatchGrab mobile and tablet apps for **iOS** and Android"*. ✅ **A legal document naming platforms, and it already says "mobile and tablet" — the one surface that never claimed iPad-only.**
-
-✅ **All 141 source-comment uses of `iOS` also left alone** — comments are bucket (d).
-
-## B3. ⚠️ KITCHEN-DISPLAY SITES — FLAGGED FOR YOUR DECISION, NOT CHANGED
-
-**All five, with their exact text:**
-
-| # | Site | Exact text | Why it is a kitchen claim |
+| Site | String | Now wrong? | Action |
 |---|---|---|---|
-| **1** | `lib/plan-features.ts:121` | `name: 'iPad and Android kitchen app'` | 🔴 the words **"kitchen app"**, and its `detail` is *"a live kitchen screen"* |
-| **2** | `app/landing/page.tsx:315` | `<li>iPad and Android kitchen app</li>` | same phrase, on the Starter pricing card |
-| **3** | `lib/plan-features.ts:222` | `'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser.'` | 🔴 **"Tablet not supplied"** and **"any tablet"** — the whole footnote is framed around tablets |
-| **4** | `app/api/admin/create-operator/route.ts:132` | `<li>Add the dashboard to your iPad home screen for the kitchen display</li>` | 🔴 says **"for the kitchen display"** outright |
-| **5** | `lib/plan-features.ts:261` | `'iPad and Android kitchen app': 'ipad_kds'` | **the map key that MUST mirror #1** (A2) |
+| `:244` toggle label | `Require Face ID / Touch ID to open` | 🔴 **YES — false on Android** | ✅ **FIXED** (B2) |
+| `:260` PIN help | `Your way in if Face / Touch ID won't work…` | 🔴 **YES — same** | ✅ **FIXED** (B2) |
+| `:283` warning | `No Face ID / Touch ID… iOS Settings` | 🔴 **YES — both clauses** | ✅ **FIXED** (B2) |
+| `:241` comment | `device-level Face ID / Touch ID gate` | ⚠️ incomplete | ✅ **FIXED** — it documents the control being changed |
+| `:94`, `:97` | `Activate one in Settings → Vans` · `Go to Settings → Vans` | ✅ **no** | none — HatchGrab's **own** Settings tab, not an OS settings app |
+| `:285` | `These settings apply to this device only — other devices are configured separately.` | ✅ **no** | none — already platform-neutral |
 
-⚠️ **NOTE ON #3 — IT IS THE STRONGEST ARGUMENT FOR LEAVING ALL FIVE.** *"Tablet not supplied … also runs on any tablet"* is a coherent paragraph **about tablets**. Inserting "iPhone" into it produces *"native kitchen apps for iPhone, iPad and Android … also runs on any tablet"* — **which invites the reader to ask why a phone app is listed in a tablet footnote.** 🔴 **That is a copy rewrite, not a substitution, and it is not mine to make.**
+🔴 **AND THREE MORE OF THE SAME CLASS EXIST OUTSIDE THIS COMPONENT. REPORTED AND STOPPED, BECAUSE THE
+SCOPE SAYS "in that component".**
 
-⚠️ **AND THE CONSISTENCY COST OF MY OWN EDIT, STATED PLAINLY: the landing page now carries BOTH forms.** The comparison table's Offline-Order-Protection tooltip says *"iPhone, iPad and Android"* while the Starter card three sections above says *"iPad and Android kitchen app"*. ✅ **Defensible — the first is about taking orders, the second about the kitchen screen — but a reader scanning one page will see two device lists.** 🔴 **If you decide the kitchen claim should also name the iPhone, sites 1, 2, 3 and 5 change together, and #5 must change in the same commit or the drift guard goes quiet.**
+**READ** — `components/native/AppLockGate.tsx`, the lock screen itself:
 
-## B4 / B5. Nothing frozen was touched
+```tsx
+AppLockGate.tsx:76      Can&apos;t use Face / Touch ID?
+AppLockGate.tsx:95      className="text-white/50 text-xs underline">Try Face / Touch ID instead</button>
+AppLockGate.tsx:2       // Biometric APP-LOCK overlay. When enabled (per-device), covers the screen and prompts Face ID / Touch ID
+```
 
-✅ **No identifier, key, type member, column value, CSS class or filename changed.** ✅ **`Info.plist`, `capacitor.config.ts`, both `.entitlements` and `project.pbxproj` were READ during the census and NOT modified — proved at D5: the diff is one `.tsx` file.**
+⚠️ **THIS CREATES A DRIFT I AM FLAGGING RATHER THAN HIDING: the settings card now says "fingerprint or
+face unlock" while the lock screen it configures still says "Face / Touch ID".** Both are wrong on
+Android in the same way, and the fix is the same two words — but `AppLockGate.tsx` is a different file
+and the instruction scoped B4 to *"that component"*. 🔴 **STOPPED. It is one edit whenever you want
+it**, and `lib/native/appLock.ts:5,71` carries the same phrase in two comments.
+
+## B5. ✅ Nothing about the behaviour changed
+
+**READ** — the diff for `OperatorDeviceConfig.tsx` touches **four `<span>`/`<p>`/comment lines and
+nothing else.** No import, no state, no handler, no condition:
+
+- `isBiometricAvailable`, `verifyIdentity`, `setAppLockPin`, `clearAppLockPin`, `setAppLockEnabled` —
+  **all still imported at `:8` and called at exactly the same sites.**
+- The render condition `{appLock && !bioAvailable && …}` is **character-for-character unchanged**.
+- The toggle's `onChange`, the PIN-length checks and the PIN-match check are **outside the diff**.
+
+✅ **`npx tsc --noEmit` exits 0**, and `lib/native/appLock.ts` is not in the diff.
 
 ---
 
 # PART C — BOUNDARIES
 
-## C1. `git diff --stat`
+## C1. `git diff --stat` — this task's three files
 
 ```
- app/landing/page.tsx                       | 4 ++--
- components/native/NotificationSettings.tsx | 2 +-
- components/native/OperatorDeviceConfig.tsx | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ app/landing/page.tsx                       |  5 ++++-
+ components/native/OperatorDeviceConfig.tsx | 13 +++++++++----
+ lib/plan-features.ts                       | 16 +++++++++++++---
+ 3 files changed, 26 insertions(+), 8 deletions(-)
 ```
 
-🔴 **THREE FILES, FIVE LINES, ALL `.tsx` PRESENTATION COMPONENTS — one page and two native UI cards.** ✅ **No file under `lib/`, `supabase/migrations/`, `ios/` or `android/` appears. `lib/features.ts` and `lib/plan-features.ts` are absent, so no plan gate and no matrix data moved.** ✅ **Insertions equal deletions on every file: five strings replaced, nothing added or removed structurally.**
-
-## C2. `ipad_kds` — byte-identical
+✅ **Boundary greps against this task's diff — every one zero except the one that must not be:**
 
 ```
-$ git diff --stat lib/features.ts lib/plan-features.ts
-(no output — neither file is modified)
+  ipad_kds               3   <-- the map line's VALUE, unchanged on both sides (A6)
+  supabase/migrations    0
+  capacitor.config       0
+  Info.plist             0
+  AndroidManifest        0
+  package.json           0
+  export type            0
+  canAccess              0
 ```
 
-✅ **The KEY is byte-identical at all three sites** (`lib/features.ts:7, :34, :67`) **and at the map value** (`lib/plan-features.ts:261`). ✅ **The label did not move either** — B3 flagged it instead. **Nothing moved at all in either file.**
+**No gate, no feature key, no migration, no type and no native config changed.** `lib/features.ts` is
+absent from the diff entirely.
 
-## C3. What each live operator now sees differently
+## C2. What each operator sees differently
 
-⚠️ **THIS ANSWER CHANGED WITH THE SECOND PASS AND IS NO LONGER "nothing".**
+**Pizzeria Gusto (live, trading, and — per the brief — running service on PHONES):**
+On the **landing page** their Starter card bullet and the comparison-table row now read *"iPhone, iPad
+and Android kitchen app"* with footnote 3 saying *"Device not supplied…"* instead of *"Tablet not
+supplied…"*, so the page finally names the device they actually use; in **manage → billing** the same
+row and footnote change identically; in **device settings** the app-lock toggle now reads *"Require
+fingerprint or face unlock to open"* instead of *"Require Face ID / Touch ID to open"* — the same
+control, doing the same thing, described without a brand name.
 
-**Pizzeria Gusto (trades with real money):** **On the WEB — nothing.** Their manage pages, Billing tab, plan matrix and every price and gate are byte-identical. **In the NATIVE APP, two words:** the dashboard Settings notification card now reads *"Alerts on this **device**"* instead of *"this iPad"*, and the device-setup panel says *"set up this **device**"*. 🔴 **DISPLAY-ONLY. No control, toggle, gate, price or payment path is touched — the toggles do exactly what they did.**
+**Tikka Tonic (handed over):**
+Exactly the same three changes and nothing else — their plan, their gates and their KDS access are
+untouched, because `ipad_kds` did not move and `canAccess` was not called differently; on **iPhone or
+iPad specifically**, the only visible difference is that the app-lock card stops saying *"Face ID /
+Touch ID"* and says *"fingerprint or face unlock"*, which is still true of Face ID and Touch ID.
 
-**Tikka Tonic (handed over):** **The same two words in the app, and nothing else.** ✅ **Their onboarding email — the one string that names the iPad in an operator-facing message — is `app/api/admin/create-operator/route.ts:132` and was flagged under B3, NOT edited.**
+## C3. 🔴 The guard passes — and it would NOT have caught a missed map
 
-✅ **Neither operator sees the landing-page change unless they visit the public marketing site.**
+**EXECUTED, on the real module:**
 
-## C4. Every changed string, before and after
+```
+PARITY GUARD EXECUTED. VIOLATIONS: 0
+```
 
-| # | File:line | Before | After |
-|---|---|---|---|
-| 1 | `app/landing/page.tsx:74` | If you lose signal, online ordering pauses so customers can't place orders you won't see. **The iPad and Android app** keeps you taking orders offline; the web dashboard needs a connection. | If you lose signal, online ordering pauses so customers can't place orders you won't see. **The iPhone, iPad and Android app** keeps you taking orders offline; the web dashboard needs a connection. |
-| 2 | `app/landing/page.tsx:204` | If you lose signal, online ordering pauses automatically so customers can't place orders you won't see. Carry on taking orders with **the iPad and Android app**. | If you lose signal, online ordering pauses automatically so customers can't place orders you won't see. Carry on taking orders with **the iPhone, iPad and Android app**. |
-| 3 | `components/native/NotificationSettings.tsx:67` | Alerts on **this iPad**. Turn on to choose which alerts you get. | Alerts on **this device**. Turn on to choose which alerts you get. |
-| 4 | `components/native/OperatorDeviceConfig.tsx:82` | We couldn't reach the server to set up **this iPad**. Check the connection and try again — your orders and settings are unaffected. | We couldn't reach the server to set up **this device**. Check the connection and try again — your orders and settings are unaffected. |
-| 5 | `components/native/OperatorDeviceConfig.tsx:106` | One-time setup for **this iPad**: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → "This device". | One-time setup for **this device**: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → "This device". |
+🔴 **AND THE COUNTERFACTUAL WAS EXECUTED TOO, BECAUSE ASSERTING THIS WOULD HAVE BEEN WORTHLESS.** A
+scratch copy was made with **only** the `ROW_FEATURE_MAP` key reverted — the exact mistake the brief
+warns about — and the guard re-run:
 
-**That is the complete list. Five strings, three files. Rows 1–2 add 8 characters each; rows 3–5 add 2 characters each (`iPad` 4 → `device` 6).**
+```
+  WITH THE MAP KEY LEFT BEHIND -> violations: 0
+  VERDICT: THE GUARD REPORTS CLEAN. It would NOT have caught it.
+```
 
-## C5. ⚠️ EVERY user-visible "iPad" I did NOT change, and why
+**The mechanism, READ, at `lib/plan-features.ts:284`:**
 
-| Site | Text | Why not |
-|---|---|---|
-| `lib/plan-features.ts:121` | `iPad and Android kitchen app` | **B3** — kitchen app |
-| `app/landing/page.tsx:315` | `iPad and Android kitchen app` | **B3** — same string, pricing card |
-| `lib/plan-features.ts:222` | footnote 3, `native kitchen apps for iPad and Android` | **B3** — a tablet-framed footnote |
-| `lib/plan-features.ts:261` | `'iPad and Android kitchen app'` map key | **must mirror :121, which B3 froze** |
-| `app/api/admin/create-operator/route.ts:132` | `Add the dashboard to your iPad home screen for the kitchen display` | **B3** — says "for the kitchen display" |
-| `components/native/OperatorDeviceConfig.tsx:283` | `set one up in iOS Settings` | **B2** — the OS, and the literal app name |
-| `content/legal/privacy-policy.md:10` | `apps for iOS and Android` | **B2** — the OS, in a legal document |
+```ts
+      const feature = ROW_FEATURE_MAP[row.name]
+      if (!feature) continue
+```
 
-### ✅ THE THREE THAT FIT NO RULE IN THE BRIEF — RESOLVED BY YOUR MID-TURN CALL
+**A renamed row simply stops being looked up. `continue` skips it, the violations array stays empty,
+and the module-load check that throws in dev never fires.** ⚠️ **So the guard verifies that MAPPED rows
+agree with the gate; it cannot notice that a row stopped being mapped.** The file's own comment says
+so, and it is now demonstrated rather than believed:
 
-**These were flagged here as *"not changed, and the ones I most want you to look at"*. You looked, and decided: `this iPad` → `this device`. All three are now CHANGED — see B1b and C4 rows 3–5.**
+```ts
+  // ⚠️ Keyed on the ROW NAME, so renaming a row here without renaming it above silently drops that row
+  // from findPlanParityViolations() — the guard stops checking and reports clean.
+```
 
-🔴 **WHY THEY NEEDED A DECISION RATHER THAN A GUESS: they are not availability claims — they are SELF-REFERENCES to the device in the operator's hand.** B1's substitution would have produced *"Alerts on this iPhone & iPad"*, which is nonsense. ⚠️ **But they were also the strings that would ACTUALLY BE WRONG on a phone:** an operator running the universal build reads *"One-time setup for this iPad"* **on the phone**. ✅ **"Device" is the only word that is true on both.**
-
-✅ **AND THE HOUSE ANSWER WAS ALREADY WRITTEN DOWN — your instinct matched the existing convention. READ, `components/native/OfflineBanner.tsx:4`:**
-
-> *"Copy uses **"device"** (not "iPad") per the offline UX convention."*
-
-**Nothing user-visible now names a device where it means "the one in your hand". The only remaining user-visible `iPad` strings are the five kitchen-display claims in the table above.**
+🔴 **WHAT CAUGHT IT INSTEAD, AND WHAT WOULD CATCH IT NEXT TIME:** the cross-parse in A3 —
+**zero dead keys** in `ROW_FEATURE_MAP` and the kitchen row resolving. **A dead key is the signature of
+this exact mistake, and it is one line of code the guard does not have.** Reported, not built.
 
 ---
 
 # PART D — INTEGRITY
 
-## D1 / D2. Non-ASCII census of the THREE edited files, before and after
-
-**`app/landing/page.tsx` — 34,842 → 34,858 bytes (+16), 509 → 509 lines (+0)**
-
-| Codepoint | Name | Before | After | Δ |
-|---|---|---|---|---|
-| U+2500 | BOX DRAWINGS LIGHT HORIZONTAL | 93 | 93 | 0 |
-| U+2014 | EM DASH | 56 | 56 | 0 |
-| U+2019 | RIGHT SINGLE QUOTATION MARK | 22 | 22 | 0 |
-| U+2192 | RIGHTWARDS ARROW | 12 | 12 | 0 |
-| U+00A3 | POUND SIGN | 11 | 11 | 0 |
-| **U+26A0** | **WARNING SIGN** | **11** | **11** | **0** |
-| **U+FE0F** | **VARIATION SELECTOR-16** | **11** | **11** | **0** |
-| U+1F534 | LARGE RED CIRCLE | 6 | 6 | 0 |
-| U+00D7 | MULTIPLICATION SIGN | 6 | 6 | 0 |
-| U+201C | LEFT DOUBLE QUOTATION MARK | 3 | 3 | 0 |
-| U+2713 | CHECK MARK | 2 | 2 | 0 |
-| U+2248 | ALMOST EQUAL TO | 2 | 2 | 0 |
-| U+201D | RIGHT DOUBLE QUOTATION MARK | 2 | 2 | 0 |
-| U+2605 | BLACK STAR | 2 | 2 | 0 |
-| U+2728 | SPARKLES | 2 | 2 | 0 |
-| U+2265 | GREATER-THAN OR EQUAL TO | 1 | 1 | 0 |
-| U+2026 | HORIZONTAL ELLIPSIS | 1 | 1 | 0 |
-| U+00B7 | MIDDLE DOT | 1 | 1 | 0 |
-| U+00A9 | COPYRIGHT SIGN | 1 | 1 | 0 |
-
-> ## 🔴 DISTINCT CLASSES 19 → 19. GAINED NONE, LOST NONE — **AND NOT ONE COUNT CHANGED EITHER.**
-> **Every one of the +16 bytes is ASCII: `iPhone, ` twice, 8 characters each.** ✅ **A census where nothing at all moved is the strongest possible pass, and it is exactly what a pure ASCII insertion should produce.**
-
-> ## ⚠️ THE PAIR CHECK, EXPLICITLY: **U+26A0 = 11, U+FE0F = 11 — PAIRED**, before and after.
-> 🔴 **AND THE HAZARD D2 NAMES WAS LIVE HERE.** This file already contains **22 typographic apostrophes (U+2019)** — the sentence I edited at `:204` literally reads *"customers can't place orders you won't see"* with **curly** apostrophes. **A straight `'` typed into that copy would have been invisible on screen and a silent inconsistency in the source; a new curly one in the other string would have been a class change.** ✅ **Neither happened: U+2019 is still exactly 22, because the inserted text contains no punctuation at all.**
-
-### `components/native/NotificationSettings.tsx` — 5,483 → 5,485 bytes (+2), 96 → 96 lines
-
-| Codepoint | Name | Before | After | Δ |
-|---|---|---|---|---|
-| U+2014 | EM DASH | 6 | 6 | 0 |
-| U+2022 | BULLET | 3 | 3 | 0 |
-| U+2192 | RIGHTWARDS ARROW | 2 | 2 | 0 |
-| U+1F514 | BELL | 1 | 1 | 0 |
-
-🔴 **4 → 4 distinct. GAINED NONE, LOST NONE, and no count changed.** ⚠️ **U+26A0 = 0, U+FE0F = 0 — PAIRED (trivially). This file has never held a warning glyph, and the new copy adds none.**
-
-### `components/native/OperatorDeviceConfig.tsx` — 18,309 → 18,313 bytes (+4), 288 → 288 lines
-
-| Codepoint | Name | Before | After | Δ |
-|---|---|---|---|---|
-| U+2500 | BOX DRAWINGS LIGHT HORIZONTAL | 311 | 311 | 0 |
-| U+2014 | EM DASH | 23 | 23 | 0 |
-| U+2192 | RIGHTWARDS ARROW | 15 | 15 | 0 |
-| U+2026 | HORIZONTAL ELLIPSIS | 3 | 3 | 0 |
-| U+2013 | EN DASH | 2 | 2 | 0 |
-| U+2019 | RIGHT SINGLE QUOTATION MARK | 1 | 1 | 0 |
-
-🔴 **6 → 6 distinct. GAINED NONE, LOST NONE, and no count changed.** ⚠️ **U+26A0 = 0, U+FE0F = 0 — PAIRED.**
-
-> ## 🔴 ALL THREE EDITED FILES: NOT ONE CODEPOINT COUNT MOVED IN ANY OF THEM.
-> **+16, +2 and +4 bytes, every byte of it ASCII** — `iPhone, ` twice, and `iPad` → `device` three times. ✅ **This file carries an em dash AND an en dash one line apart (`:82` and elsewhere); a substitution that reached for the wrong dash would show here as a count change. None did.**
-
-## D3. Byte scan — byte-level, never `grep`
+## D1. Non-ASCII census BEFORE
 
 ```
-app/landing/page.tsx                          34,858 bytes   NUL 0   control none
-components/native/NotificationSettings.tsx     5,485 bytes   NUL 0   control none
-components/native/OperatorDeviceConfig.tsx    18,313 bytes   NUL 0   control none
+lib/plan-features.ts                       12 classes  U+2500:129 U+2014:47 U+26A0:13 U+FE0F:13 U+00A3:11 U+1F534:7 U+2192:5 U+2022:3 U+2019:2 U+00A7:1 U+21D2:1 U+2194:1
+app/landing/page.tsx                       19 classes  U+2500:93 U+2014:56 U+2019:22 U+2192:12 U+00A3:11 U+26A0:11 U+FE0F:11 U+1F534:6 U+00D7:6 U+201C:3 U+2713:2 U+2248:2 U+201D:2 U+2605:2 U+2728:2 U+2265:1 U+2026:1 U+00B7:1 U+00A9:1
+components/native/OperatorDeviceConfig.tsx  6 classes  U+2500:311 U+2014:23 U+2192:15 U+2026:3 U+2013:2 U+2019:1
 ```
 
-✅ **Clean.** **Three files were edited, so three files are scanned.**
+⚠️ **Note the shape of the risk before the edit: `app/landing/page.tsx` already carries U+2019 ×22 and
+U+201C/U+201D — typographic quotes are its house style**, so a hand-typed curly apostrophe there would
+have been invisible in review. **The edits to that file contain no apostrophe at all.**
 
-## D4. Byte scan of this report — separate pass, AFTER writing
+## D2. Census AFTER — every difference explained
 
-```
-docs/device-naming-report.md   37,355 bytes
-  NUL (0x00)                                     : 0
-  control bytes < 0x09, plus 0x0B 0x0C 0x0E-0x1F : none
-  distinct non-ASCII classes                     : 12
-  U+26A0 = 23, U+FE0F = 23                         : PAIRED
-```
+| File | Classes | Gained | Lost |
+|---|---|---|---|
+| `lib/plan-features.ts` | **12 → 12** | **none** | **none** |
+| `app/landing/page.tsx` | **19 → 19** | **none** | **none** |
+| `components/native/OperatorDeviceConfig.tsx` | **6 → 6** | **none** | **none** |
 
-✅ **Clean.** Byte-level, never `grep`, run as its own pass after the file was written.
-
-## D5. `git status` and `git diff --stat`
+**Every count that moved, and why:**
 
 ```
-$ git status --porcelain
+plan-features.ts   U+2014  47 -> 49   em dashes in the two new comment blocks
+                   U+1F534  7 ->  8   one new red header on the iPhone note
+                   U+26A0  13 -> 15   two new warning notes (the 36-char note, the footnote-3 note)
+                   U+FE0F  13 -> 15   tracks U+26A0 exactly
+landing/page.tsx   U+26A0  11 -> 12   one new warning note on the hand-written bullet
+                   U+FE0F  11 -> 12   tracks U+26A0 exactly
+OperatorDeviceConfig.tsx
+                   U+2014  23 -> 24   one em dash in the new comment
+```
+
+🔴 **THE AFTER-CENSUS CAUGHT A VIOLATION AND IT WAS FIXED BEFORE THIS REPORT WAS WRITTEN.** The first
+draft of the app-lock comment opened with `⚠️`, which added **U+26A0 and U+FE0F — two new classes — to
+a file that had neither**, taking it from 6 to 8. It was rewritten to a plain `NOTE:`. ⚠️ **This is the
+ninth consecutive task where the after-census caught what reading the diff did not**, and the second
+where the offending glyph was inside a comment about correctness.
+
+✅ **No typographic apostrophe and no en dash was introduced.** The only apostrophes added are inside
+`&apos;` entities carried over verbatim from the strings being replaced, and `U+2013 EN DASH` in
+`OperatorDeviceConfig.tsx` stayed at **2** — both in `(4–6 digits)`, untouched.
+
+## D3. 🔴 Carrier-aware variation-selector check
+
+| File | U+2705 | U+1F534 | U+2500 | U+26A0 n / paired / **bare** | sum paired = FE0F? |
+|---|---|---|---|---|---|
+| `lib/plan-features.ts` | absent | 8, none paired | 129, none paired | 15 / 15 / **0** | ✅ 15 = 15 |
+| `app/landing/page.tsx` | absent | 6, none paired | 93, none paired | 12 / 12 / **0** | ✅ 12 = 12 |
+| `components/native/OperatorDeviceConfig.tsx` | absent | absent | 311, none paired | **0 / 0 / 0** | ✅ 0 = 0 |
+
+✅ **Every warning sign in every edited file is paired; ZERO are bare, and every file balances exactly.**
+⚠️ **U+1F534 and U+2500 take no selector** — reporting them as unpaired would be the false positive this
+method exists to prevent.
+
+## D4. Byte scan of every edited file
+
+Byte-level scan for NUL and every control byte below 0x09 (plus 0x0B, 0x0C, 0x0E–0x1F, 0x7F). **Never
+grep.**
+
+```
+  lib/plan-features.ts                             24100 bytes offending=0 CR=0
+  app/landing/page.tsx                             35192 bytes offending=0 CR=0
+  components/native/OperatorDeviceConfig.tsx       18781 bytes offending=0 CR=0
+  lib/features.ts                                   6402 bytes offending=0 CR=0   (control — not edited)
+```
+
+✅ **Zero offending bytes, zero CR in all four.**
+
+## D5. Byte scan of this report
+
+Separate pass, run after writing: **28,753 bytes, offending = 0** — no NUL, no control byte below
+0x09, no CRLF, no lone CR. Its own carrier-aware check:
+
+| Base | n | paired with U+FE0F | bare |
+|---|---|---|---|
+| U+2705 WHITE HEAVY CHECK MARK | 34 | 0 | 34 |
+| U+1F534 LARGE RED CIRCLE | 19 | 0 | 19 |
+| U+2500 BOX DRAWINGS LIGHT HORIZONTAL | 0 | 0 | 0 |
+| U+26A0 WARNING SIGN | 17 | 17 | **0** |
+
+**Every warning sign is paired; ZERO are bare.** **Sum of per-base paired = the total U+FE0F count** - no orphan, no double-count.
+
+## D6. `git status` and `git diff --stat`
+
+```
+M app/api/orders/submit/route.ts
+ M app/api/webhooks/instagram/route.ts
+ M app/api/webhooks/messenger/route.ts
+ M app/api/webhooks/meta/whatsapp/route.ts
+ M app/dashboard/[token]/kds/page.tsx
+ M app/dashboard/[token]/page.tsx
  M app/landing/page.tsx
- M components/native/NotificationSettings.tsx
+ M app/manage/[token]/page.tsx
+ M components/dashboard/AddOrderPanel.tsx
  M components/native/OperatorDeviceConfig.tsx
-?? docs/device-naming-report.md
+ M docs/device-naming-report.md
+ M docs/reference-manual.md
+ M lib/plan-features.ts
+?? components/shared/EventCancelModal.tsx
+?? docs/android-audit-report.md
+?? docs/android-back-handler-report.md
+?? docs/event-cancel-holds-report.md
+?? docs/event-cancel-refunds-report.md
+?? docs/fcm-sender-report.md
+?? docs/overlay-audit-report.md
+?? docs/overlay-fixes-report.md
+?? docs/whatsapp-onboarding-report.md
+?? docs/whatsapp-routing-report.md
+?? docs/whatsapp-signature-report.md
+?? lib/fcm.ts
+?? lib/meta/
+?? lib/native/backHandler.ts
+?? supabase/migrations/20260816_trucks_phone_number_id.sql
 ```
 
-⚠️ **THIS CHANGED UNDER ME MID-TASK, AND IT IS WORTH RECORDING RATHER THAN QUIETLY RESTATING.** An earlier draft of this section listed `capacitor.config.ts`, `lib/payments/refund.ts`, `docs/reference-manual.md` and four report files as modified/untracked — the previous turns' work. **They are gone from `git status` because you committed them while this task was running:**
-
 ```
-$ git log --oneline -3
-ccc5a2d ipad again
-15e0020 ipad fixes
-52adca0 ipad
-```
-
-✅ **So the working tree above is now EXACTLY this task's five copy edits and this report — nothing else is outstanding.** 🔴 **I did not commit anything: all three commits are yours.**
-
-```
-$ git diff --stat        (this task's three files)
- app/landing/page.tsx                       | 4 ++--
- components/native/NotificationSettings.tsx | 2 +-
- components/native/OperatorDeviceConfig.tsx | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+app/api/orders/submit/route.ts             |  66 ++-
+ app/api/webhooks/instagram/route.ts        |  48 +-
+ app/api/webhooks/messenger/route.ts        |  48 +-
+ app/api/webhooks/meta/whatsapp/route.ts    | 173 +++++--
+ app/dashboard/[token]/kds/page.tsx         |  70 ++-
+ app/dashboard/[token]/page.tsx             | 117 ++++-
+ app/landing/page.tsx                       |   5 +-
+ app/manage/[token]/page.tsx                |  75 +--
+ components/dashboard/AddOrderPanel.tsx     |  22 +
+ components/native/OperatorDeviceConfig.tsx |  13 +-
+ docs/device-naming-report.md               | 725 ++++++++++++++++-------------
+ docs/reference-manual.md                   | 519 ++++++++++++++++++++-
+ lib/plan-features.ts                       |  16 +-
+ 13 files changed, 1432 insertions(+), 465 deletions(-)
 ```
 
-⚠️ **`capacitor.config.ts`, `lib/payments/refund.ts` and `docs/reference-manual.md` are EARLIER TURNS' work and were not touched today** — the `allowNavigation` entry, the refund fee comment and the V11.18 manual update. **Nothing is committed.**
+🔴 **THIS TASK'S ENTRIES ARE FOUR:** `lib/plan-features.ts`, `app/landing/page.tsx`,
+`components/native/OperatorDeviceConfig.tsx` and `docs/device-naming-report.md` (a tracked file,
+overwritten, so it appears as modified rather than untracked).
 
-## D6. `tsc`
-
-```
-$ npx tsc --noEmit ; echo "tsc exit=$?"
-tsc exit=0
-```
-
-✅ **Clean, no output.**
-
-> ## 🔴 AND `tsc`-CLEAN IS NOT VERIFICATION OF A COPY CHANGE. EVERY STRING COMPILES.
-> **A typo, a wrong product name, a clipped table cell and a sentence that contradicts the footnote three sections below it are all `tsc`-clean.** ⚠️ **The real checks for this change are: read C4's before/after as prose, and — for the B3 sites if you approve them — look at the 36-character row name in a narrow viewport.** 🔴 **NOTHING WAS RENDERED. No `next dev`, no `next build`, so no string in this report has been seen on a screen.**
-
----
-
-# PROVENANCE
-
-**READ** — the full four-term census (two passes: word-boundary, then identifier-shaped) · the follow-up targeted sweep `this (iPad|iPhone)|on the iPad|your iPad` · all 78 bucket (a)/(b)/(c) hits listed above · `lib/features.ts:1-75` and `:140-150` · `lib/plan-features.ts:110-135, 205-265` · `app/landing/page.tsx:60-80, 200-210, 305-335` · `components/native/OperatorDeviceConfig.tsx:82, 106, 283` · `components/native/NotificationSettings.tsx:67` · `components/native/OfflineBanner.tsx:4` · `app/api/admin/create-operator/route.ts:132` · `content/legal/privacy-policy.md:10, 106` · the three `plan-features` import sites · both censuses · the byte scan · `git status`, `git diff`, `git diff --stat` · `tsc`.
-
-**INFERRED** — that the flagged strings are kitchen-display claims (read from their own wording, not from product intent) · that a 36-character row name is the longest in the matrix (measured in characters, **not rendered**).
-
-**NOT VERIFIED** — 🔴 **nothing was rendered in a browser or on a device.** The truncation answer in A3 rests on the changed strings being flowing prose, read from the markup, **not observed**. ✅ **The two `components/native/` cards render ONLY inside the native app** (both self-gate on `isNativeApp()`), **so their new copy cannot be checked in a browser at all — it needs the device.** ⚠️ **`device` is two characters longer than `iPad`, inside `<p className="text-xs">` paragraphs that already wrap, so no clipping is expected — but expected is not seen.**
+**Everything else is prior turns' work, uncommitted as instructed and untouched here:**
+`app/api/orders/submit/route.ts`, the three Meta webhook routes, the two dashboard pages,
+`app/manage/[token]/page.tsx`, `components/dashboard/AddOrderPanel.tsx`, `docs/reference-manual.md`,
+and the untracked `lib/fcm.ts`, `lib/meta/`, `lib/native/backHandler.ts`,
+`components/shared/EventCancelModal.tsx`, the `20260816` migration and the nine other reports.

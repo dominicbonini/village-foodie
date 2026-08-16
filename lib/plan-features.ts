@@ -118,7 +118,13 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // (coming_soon/coming_soon/coming_soon) beneath it. Android now launches alongside iPad, so the second
       // row became a duplicate of this one and was removed. Both rows were UNIFORM across all three plans,
       // so the merge needed no per-plan decision — see the report.
-      { name: 'iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+      // 🔴 iPhone ADDED (was 'iPad and Android kitchen app'). The kitchen app is the SAME app with the same
+      // features on a phone, and Pizzeria Gusto run their service on phones rather than tablets — so naming
+      // only tablets under-claimed what a live operator does every day. This is the claim, not the form
+      // factor: footnote 3 carries the browser fallback and the "not supplied" caveat.
+      // ⚠️ AT 36 CHARACTERS THIS IS NOW THE LONGEST CELL IN THE MATRIX, two ahead of
+      // 'Messenger & Instagram auto-replies' (34), which already renders on all three surfaces.
+      { name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
     ],
   },
   {
@@ -219,7 +225,11 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // page describes the product AT LAUNCH, and neither app ships before both are ready. This is a
     // STANDING EDITORIAL RULE for the landing copy, not an oversight. (It is the opposite of footnote 1,
     // where "coming soon" is correct because Stripe walk-ups are a LATER addition to a shipped product.)
-    text: 'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser.',
+    // ⚠️ "Device not supplied", NOT "Tablet not supplied", AND THE CHANGE IS FORCED BY THE ROW ABOVE.
+    // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
+    // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
+    // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
+    text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
   },
   {
     number: '4',
@@ -258,7 +268,7 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
   // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
   // renamed: it gates one KDS capability on both platforms, and changing it would need a data migration.
-  'iPad and Android kitchen app': 'ipad_kds',
+  'iPhone, iPad and Android kitchen app': 'ipad_kds',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',

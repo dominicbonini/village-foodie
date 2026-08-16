@@ -8,6 +8,9 @@ import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
 import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer, buzzerPill } from '@/lib/buzzer'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+// The ONE event-cancel gate, shared with manage and the dashboard. Replaces a window.confirm whose
+// safe button was labelled "Cancel" on the operation that cancels every live order.
+import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { isDemoIdentifier } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -25,6 +28,7 @@ import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 import { formatTime, formatTimeRange, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
+import { useAndroidBack } from '@/lib/native/backHandler'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playNewOrder } from '@/lib/audio'
@@ -209,6 +213,12 @@ export default function KdsPage() {
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const [finishConfirm, setFinishConfirm] = useState<{ eventId: string; early: boolean; endTime: string } | null>(null)
   const [eventNoteInput, setEventNoteInput] = useState('')
+  // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
+  // The TruckEvent itself, not an id: the shared modal names the venue, the date and the time window.
+  // `null` is closed, and the modal is mounted conditionally, so every open is a fresh mount.
+  const [eventCancelTarget, setEventCancelTarget] = useState<TruckEvent | null>(null)
+  const [eventCancelCount, setEventCancelCount] = useState(0)
+  const [eventCancelBusy, setEventCancelBusy] = useState(false)
   const [kdsToast, setKdsToast] = useState<string | null>(null)
 
   const fetchAllRef = useRef<() => void>(() => {})
@@ -470,6 +480,25 @@ export default function KdsPage() {
     ? events.find(e => e.id === selectedEventId) ?? null
     : null
   const activeEventLive = activeEvent?.status === 'open'
+
+  // ── 🔴 ANDROID HARDWARE BACK — THE KDS IS THE HIGH-RISK SURFACE ────────────────────────────────
+  // ORDERED INNERMOST FIRST, which here means highest z-index first: the demo intro (z-70) sits over
+  // the device sheet and the finish confirm (both z-60), which sit over the event menu and the
+  // screen-off warning (z-50). Back closes exactly the top one and consumes the press.
+  //
+  // 🔴 AND WITH NOTHING OPEN, BACK DOES NOTHING. There is no navigation entry in this list and no
+  // fallback in the handler — an operator mid-service CANNOT lose the board to a stray edge-swipe,
+  // which is what happened before: canGoBack() was true and Capacitor navigated the page away.
+  // ⚠️ Do not add a "go back to the dashboard" entry here. The Dashboard control in the header is the
+  // deliberate way off this screen; a gesture is not.
+  useAndroidBack([
+    [isDemo && showKdsIntro, () => dismissKdsIntro()],
+    [deviceOpen && !isDemo, () => setDeviceOpen(false)],
+    [!!finishConfirm, () => setFinishConfirm(null)],
+    [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
+    [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
+    [showScreenOffWarning, () => setShowScreenOffWarning(false)],
+  ])
 
   // ── 🔴 THE SEED. RUNS ONCE, EVER. ───────────────────────────────────────────────────────────────
   // Priority 1: the id handed over by the dashboard (?event_id=), IF it is one of this truck's upcoming
@@ -875,10 +904,30 @@ export default function KdsPage() {
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
-  const cancelEventFromMenu = async (eventId: string) => {
-    if (!window.confirm('Cancel this event? This cannot be undone.')) return
+  // ── OPEN THE GATE. WAS: `if (!window.confirm('Cancel this event? This cannot be undone.')) return` ──
+  // 🔴 THE MENU IS CLOSED ON THE WAY IN, matching the dashboard: the shared modal and the event menu are
+  // both z-50, so closing the menu removes the stacking question rather than answering it with a z-index,
+  // and leaves exactly ONE overlay for the back button to dismiss. On a KDS a stray edge-swipe over a
+  // half-stacked pair of overlays is precisely the accident the back handler exists to prevent.
+  // ⚠️ TAKES THE EVENT, NOT AN ID — the modal needs the venue, date and window, and the one call site is
+  // already gated on `activeEvent`. No lookup means no way to silently cancel nothing.
+  const cancelEventFromMenu = async (ev: TruckEvent) => {
+    setShowEventMenu(false)
+    setEventCancelCount(0); setEventCancelTarget(ev)
     try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: {} }) })
+      const res = await fetch(`/api/events/affected-orders?eventId=${ev.id}&token=${token}`)
+      const data = await res.json()
+      if (res.ok) setEventCancelCount(data.count ?? 0)
+    } catch { /* silently fail - the gate still works, the count just stays hidden */ }
+  }
+
+  // The request itself, UNCHANGED — including the offline `queued` branch, which must keep working: the
+  // KDS is the surface most likely to be offline mid-service. Only the reason and note are new, and both
+  // are optional; leave them blank and the body is what `payload: {}` produced.
+  const doCancelEvent = async (eventId: string, cancellationReason: string, cancellationNote: string) => {
+    setEventCancelBusy(true)
+    try {
+      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: { cancellationReason, cancellationNote } }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
@@ -892,6 +941,7 @@ export default function KdsPage() {
       setSelectedEventId(pickDefaultEventByTime(remaining)?.id ?? null); setShowEventMenu(false); showKdsToast('Event cancelled')
       fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    finally { setEventCancelBusy(false); setEventCancelTarget(null) }
   }
 
   const saveEventNote = async (eventId: string) => {
@@ -1576,10 +1626,22 @@ export default function KdsPage() {
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
               <button onClick={() => finishEvent(activeEvent.id)} className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
-              <button onClick={() => cancelEventFromMenu(activeEvent.id)} className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
+              <button onClick={() => cancelEventFromMenu(activeEvent)} className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Event-cancel gate — the SHARED modal (components/shared/EventCancelModal), the same one manage
+          and the dashboard use. It replaced a window.confirm whose safe button read "Cancel". */}
+      {eventCancelTarget && (
+        <EventCancelModal
+          event={eventCancelTarget}
+          affectedOrderCount={eventCancelCount}
+          busy={eventCancelBusy}
+          onKeep={() => setEventCancelTarget(null)}
+          onConfirm={(reason, note) => { void doCancelEvent(eventCancelTarget.id, reason, note) }}
+        />
       )}
 
       {/* Finish-event confirm (styled — replaces window.confirm). Stacks above the event menu; early

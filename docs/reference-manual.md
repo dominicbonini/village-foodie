@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.19
+HatchGrab Engineering Reference Manual · V11.20
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.19**
+**Version 11.20**
 
 August 2026
 
@@ -15,6 +15,71 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.20 — 16 August 2026
+
+Delta over V11.19 — **the push root cause found after three weeks of correct-but-downstream
+investigation, the KDS taught to hold its event, and a five-instance status omission named as a
+pattern.**
+
+- 🔴 **PUSH HAS NEVER WORKED BECAUSE `AppDelegate.swift` IMPLEMENTED NEITHER APNs DELEGATE METHOD.**
+  `didRegisterForRemoteNotificationsWithDeviceToken` and
+  `didFailToRegisterForRemoteNotificationsWithError` were both absent — the two methods
+  `@capacitor/push-notifications` observes. **iOS delivered the token and the app discarded it before
+  Capacitor ever saw it.** 🔴 **The second-order proof is the elegant part: `registrationError` could
+  not fire EITHER, which is why its `console.warn` had never once printed. The missing log line was the
+  symptom, not a dead end.** ⚠️ Everything previously investigated — entitlements, provisioning profile,
+  `APNS_ENV`, the endpoint allow-list, a suspected JS ordering race — **was downstream of a plugin
+  install step that was never completed, and every one was ruled out on evidence first.** §11, §36.
+- ⚠️ **FOREGROUND PUSH SHOWS NOTHING, AND IT IS A SEPARATE DEFECT.** `willPresent` returns `[]` with no
+  `presentationOptions` and nothing listens to `pushNotificationReceived`. **The ding heard on the
+  dashboard is `playNewOrder()` off the order refresh — not push.** ⚠️ Registration is wired to the
+  **dashboard only**, so a device whose `default_screen` is the KDS never attempts it. §36.
+- 🔴 **THE DASHBOARD AND THE KDS RESOLVED THE EVENT INDEPENDENTLY, AND BOTH WERE BEHAVING AS WRITTEN.**
+  Device-observed: the dashboard on *"Nethergate · Tomorrow 16th August"* while the KDS held **today's
+  finished Old Goat event** with orders reading *"340m late"*. The dashboard resolves over
+  `upcomingEvents` with a **local** date via `pickDefaultEventByTime`; the KDS used `todayEvents` only,
+  a **UTC** date, and a status-keyed chain. **Nothing carried the event between them** — `openKDS`
+  passed `van_id` and `van_name` and no event, **proving the handoff mechanism already existed and had
+  simply never been used for events.** §11.
+- 🔴 **THE TRAP, AND IT IS THE REASON THIS NEEDED CARE: the KDS did not auto-advance ONLY because it
+  could not see tomorrow.** That was an accident, not a design — widening its candidate set to fix the
+  divergence would have **removed the very thing producing the wanted behaviour.** 🔴 **THE SHAPE IS
+  SEED ONCE, THEN HOLD:** `activeEvent` is now a bare `events.find(id)` with the status-keyed chain
+  **DELETED, not guarded** — *a guard can be bypassed by a future edit; an absent condition cannot* —
+  and a `seededRef` latch runs the resolution **once ever**. §11.
+- 🔴 **A LATENT AUTO-OPEN HAZARD SURFACED WHILE WIDENING THAT CANDIDATE SET:** the auto-open loop
+  compares a **bare `HH:MM` string**, so without keeping a date filter on it the change **would have
+  opened tomorrow's event a day early**. **The bug was latent and became reachable only because of the
+  change that would have exposed it.** §11.
+- 🔴 **FIVE ORDER-STATUS ALLOW-LISTS INCLUDED `'confirmed'` AND OMITTED `'modified'`. A PATTERN, NOT
+  TWO BUGS.** Customer cancellation was **genuinely blocked** at the server as well as the UI while the
+  confirmation email still **invited** the customer to cancel; the due-alert scan dropped edited orders
+  **and deleted their remembered urgency**; and 🔴 **`printWatcher`'s `DEFAULT_ELIGIBLE` meant an edited
+  order NEVER PRINTED a kitchen ticket** — against its own docstring defining the list as *"accepted and
+  should be made"*. ⚠️ **That one shipped WITH the printing wiring, so the hole was built in on day
+  one.** §37.
+- 🔴 **A FIFTH LIST WAS FOUND AND DELIBERATELY NOT FIXED, BECAUSE IT STRANDS MONEY TODAY.**
+  `events/action/route.ts:210` selects orders **and cancels them** while making **no payment call of any
+  kind**, so it already strands held authorisations on `'confirmed'` card orders. **Adding `'modified'`
+  would have extended a money-stranding defect rather than fixing anything.** §37, BACKLOG.
+- ✅ **THE EDIT AMOUNT HANDLING WAS ALREADY CORRECT AND FULLY GUARDED** — `Math.min(balance, authorised)`
+  clamps an upward edit, `amount_to_capture` takes the lower figure on a downward one, and four
+  independent layers make capturing more, or twice, impossible. **Nothing was built. Only the TELLING
+  was wrong:** the edit email was the one template not using `formatConfirmationEmail`, so it rendered
+  the money sentence in **12px grey beside "Powered by HatchGrab"**. §37.
+- ✅ **THE KDS's DASHBOARD CONTROL WAS ALREADY CORRECT — A STOP, NOT A FIX.** It is already an
+  `AppLink`, already gated, already routing through `router.push`. ⚠️ **Most likely cause of the Safari
+  ejection: a PRE-`allowNavigation` build on the device.** ✅ **And the reassuring part, worth telling an
+  operator: the "sign in" page was almost certainly the PIN gate, and the native session lives in
+  Capacitor Preferences — a store Safari CANNOT READ — so the answer mid-service is to RETURN TO THE
+  APP, not to sign in.** §11.
+- ⚠️ **THE DELTA THAT PRODUCED THIS VERSION ARRIVED MOJIBAKE-ENCODED FOR THE SECOND CONSECUTIVE TIME.**
+  §22's outbound rule holds identically inbound. P17.
+- ✅ **THE CARRIER-AWARE CENSUS PROVED ITSELF ON THIS MANUAL:** the old raw-count check reads it as
+  perfectly paired while the carrier-aware form finds **7 genuinely bare warning signs**. 🔴 **The old
+  check produced false NEGATIVES here and false POSITIVES on reports — worse than useless in both
+  directions.** P18.
 
 ## V11.19 — 15 August 2026
 
@@ -4266,6 +4331,149 @@ the label would have left stock ops counted under a heading that said "orders".
 ⚠️ **The earlier inventory's "eleven toasts" was an undercount** — **twelve call sites, thirteen
 strings** once the two buzzer ternaries are counted per arm.
 
+## 🔴 THE KDS AND THE DASHBOARD RESOLVED THE EVENT INDEPENDENTLY (V11.20)
+
+**DEVICE-OBSERVED, 15 August ~22:43:** the dashboard header read *"Nethergate Brewery · 12:00-17:30 ·
+Tomorrow 16th August"* with **one** order, while the KDS simultaneously showed **multiple orders from
+today's FINISHED Old Goat event**, marked *"340m late"*. **Two screens of the same truck, two different
+events.**
+
+🔴 **BOTH WERE BEHAVING EXACTLY AS WRITTEN.** They are two independent implementations of one question,
+and they disagreed about the question:
+
+| | Dashboard | KDS |
+|---|---|---|
+| Candidate set | `upcomingEvents` — today onward | `todayEvents` — **today only** |
+| "today" computed with | `localTodayIso()` (Europe/London) | 🔴 `new Date().toISOString()` — **UTC** |
+| How it picks | time-based, via the shared `pickDefaultEventByTime` | status-keyed: `open` → `confirmed` → `[0]` |
+| Past a finished event | **advances to the next, any date** | **stays put** |
+| Selection persisted | yes — `?event=` in the URL | **nowhere** |
+
+**Nothing carried the event between them.** `openKDS` passed `van_id` and `van_name` and **no event** —
+⚠️ **which proves the handoff mechanism already existed and had simply never been used for events.** The
+dashboard's choice lived only in React state and `?event=`, neither reachable from the KDS.
+
+### 🔴 THE TRAP: THE KDS DID NOT AUTO-ADVANCE ONLY BECAUSE IT COULD NOT SEE TOMORROW
+
+**That was an accident, not a design — and it is the single most important thing about this fix.**
+Widening the candidate set to close the divergence would have **removed the very property that produced
+the wanted behaviour**: a kitchen screen that holds a finished event and its unserved orders instead of
+switching away from them mid-service, unattended.
+
+> 🔴 **THE SHAPE: SEED ONCE, THEN HOLD.** Resolve at mount, then never re-resolve on a timer, a refetch,
+> a poll or a resume.
+
+**IMPLEMENTED (V11.20):**
+
+- `openKDS` now carries **`event_id`** alongside the van params. ✅ **All three routes — one van, no van,
+  and the picker — funnel through that one function**, so the two cannot drift.
+- The KDS reads it into `selectedEventId` **at mount**, so **the first fetch is already scoped**.
+- 🔴 **`activeEvent` is now a bare `events.find(id)` — the status-keyed chain is DELETED, NOT GUARDED.**
+  With no time test and no status test left in an expression the poll re-evaluates, **nothing can
+  auto-advance.** ⚠️ **A guard can be bypassed by a future edit; an absent condition cannot.**
+- A **`seededRef` latch** means the resolution effect runs **once ever**. A two-hour background/resume
+  re-polls, re-renders and shows the **same** event, with its late orders, possibly reading "Finished".
+- Cold launch seeds from **`pickDefaultEventByTime`** — ✅ **the existing helper was ADOPTED, not
+  duplicated.** Its documented order is already "current by time, else earliest upcoming".
+
+⚠️ **JUDGEMENT CALL, RECORDED:** the switch-confirm now fires on **every** event change rather than only
+when the current event is `'open'`. **A finished event was previously switchable on one silent tap —
+precisely the case where unserved food is still on the screen.**
+
+### 🔴 A LATENT AUTO-OPEN HAZARD, FOUND WHILE WIDENING THE CANDIDATE SET
+
+The KDS's auto-open loop tests `start_time <= currentTime` — **a bare `HH:MM` string with no date in
+it**. Run against an unfiltered list it would fire `action: 'open'` on **TOMORROW's event** the moment
+today's clock passed its start time. **The date filter stays on that loop, and is now local-dated.**
+
+> 🔴 **RECORD THE CLASS: the bug was latent and became reachable ONLY because of the change that would
+> have exposed it.** A widening change must be checked against every consumer of the thing being
+> widened, not only the one being fixed.
+
+### Three incidental KDS defects, fixed in the same pass
+
+- 🔴 **UTC "today"** — against §7's explicit rule not to use one. Now the same local-date helper the
+  dashboard uses. ⚠️ In BST the UTC string is still yesterday until 01:00.
+- **Missing failed-fetch guard** — a transient 429 returns valid JSON without `.events`, and `?? []`
+  turned that into an **empty candidate set**, blanking the active event mid-service. The dashboard has
+  carried this guard for some time; the KDS did not.
+- **Unscoped first order fetch** — it went out unscoped until an operator tapped a control that **a
+  single-event day never renders**.
+
+## 🔴 THE KDS STATUS-BAR OVERLAP, AND WHY MOVING THE CONTROL IS NOT THE FIX (V11.20)
+
+**DEVICE-OBSERVED:** the KDS header's top-right control sat **under the iPad's battery indicator**; the
+dashboard rendered correctly below the status bar. **The dashboard renders `AppHeader`, which carries the
+inset; the KDS hand-rolls its own `<header>` and never had it.**
+
+🔴 **MOVING THE CONTROL LEFT IS NOT THE FIX.** On iPad **landscape the status bar spans the FULL width**
+— clock left, battery right — so moving left collides with the clock instead. **And any horizontal
+position breaks the moment the bar grows taller** (call in progress, screen recording, personal
+hotspot). **INSET THE HEADER.**
+
+**FIXED:** `max(0.625rem, env(safe-area-inset-top))` — **the same mechanism `AppHeader:45` uses, not a
+second one.**
+
+⚠️ **THE `max()` FLOOR IS LOAD-BEARING AND IS THE ONE DIVERGENCE FROM `AppHeader`.** That component
+puts its padding on an inner `<div>`, so a bare `env()` adds to zero. **This header's `py-2.5` sits on
+the element itself, so a bare `env()` would have REPLACED that 10px with 0 everywhere `env()` resolves
+to 0** — the web, mobile Safari and Android. `0.625rem` **is** `py-2.5`.
+
+**Also fixed:** the root `h-screen` → **`h-dvh`**, plus three early-return states. **Zero `h-screen`
+remains in the file.** ✅ In the shell the two agree; it matters in **mobile Safari**, where `100vh` is
+the largest viewport and the bottom of the board sat under the address bar inside an `overflow-hidden`
+shell that could not scroll to it.
+
+## The KDS van picker now skips when unambiguous (V11.20)
+
+`handleOpenKDS` keyed only on `vans.length` and **ignored `activeEvent.van_id`** — which the same page
+already trusts at **three other sites**, two of them WRITES of van capacity settings. So a multi-van
+truck was asked which kitchen screen to open **every time**, even when the event on screen already named
+one.
+
+**RULE APPLIED: skip when unambiguous, ask when not.** No vans → open with none. One van → open with it.
+**The event names one of this truck's vans → use it.** Several vans and no van on the event → **ask,
+which is the case the picker exists for.**
+
+🔴 **The van and the event id are both derived from `activeEvent`, so they cannot disagree.** ⚠️ **A van
+from one event with an event id from another would have been worse than asking every time** — the
+kitchen screen would open on event A scoped to event B's van. Deriving both from one value makes that
+**unrepresentable rather than merely unlikely.**
+
+⚠️ **LIVE-VERIFIED that this changes nothing for either live truck** — Gusto and Tikka Tonic have one van
+each and already took the first branch.
+
+⚠️ **PERSISTENCE REPORTED, NOT IMPLEMENTED.** `van_devices.van_id` exists and is **already written by
+`DeviceSetupGate`**, so a device is already bound to a van — but adopting it needs a **precedence rule**
+against the event's van (a device bound to Van1 viewing an event on Van2 is a real state) and **could
+change push routing**, since `van_devices` scopes it. BACKLOG.
+
+## ✅ THE KDS's "DASHBOARD" CONTROL WAS ALREADY CORRECT — A STOP, NOT A FIX (V11.20)
+
+**DEVICE-OBSERVED:** tapping it did nothing, then produced a brief Safari page asking to sign in, then
+returned to the dashboard.
+
+**READ: it is already an `AppLink`** — already gated by `isNativeApp()`, already routing through
+`router.push`, already the mechanism `AppHeader` uses. **NOT a `window.open`, NOT an ungated anchor.
+Nothing was changed.**
+
+🔴 **The Safari step PROVES the click was not handled natively** — `router.push` cannot open Safari — so
+on that tap `isNativeApp()` returned false and the plain `<a>` performed a hard navigation.
+
+⚠️ **MOST LIKELY CAUSE: the iPad was running a PRE-`allowNavigation` build.** That config landed in
+V11.18 and **needs a sync AND a rebuild to reach a binary**. The alternative is this section's
+unresolved intermittent-false `isNativeApp()`. **The next rebuild is the test that separates them.**
+
+✅ **AND THE REASSURING PART, WORTH TELLING AN OPERATOR:** the "sign in" screen was almost certainly the
+**PIN gate** — `/dashboard/[token]` authenticates by **token + PIN**, and the PIN is `useState` only,
+**never persisted**, so a fresh Safari tab has none. 🔴 **The native session lives in Capacitor
+Preferences under `hg-native-auth` — a NATIVE store Safari cannot read at all**, not via cookies and not
+via localStorage.
+
+> ⚠️ **SO THE MID-SERVICE ANSWER IS: RETURN TO THE APP, DO NOT SIGN IN.** The app's session was never
+> touched and the board is as it was. **The real cost is attention, not access** — an unattended kitchen
+> screen that has jumped to Safari is not showing orders, and nobody is watching it.
+
 
 # 12. Authentication and access
 
@@ -6229,6 +6437,25 @@ The strongest structural clue for the two iPad display defects was that they app
 >
 > **Waiting on a `cap sync` + rebuild:** the privacy manifest's Device ID declaration.
 
+> 🔴 **STATE AT CLOSE, 16 AUGUST 2026 (V11.20): STILL ONE BLOCKER — SCREENSHOTS**, both sets.
+>
+> 🔴 **AND THE THING THAT MATTERS MORE THAN THE BLOCKER: NOTHING FROM THE LAST TWO DAYS IS ON THE
+> DEVICE.** The AppDelegate APNs fix, the KDS event seed, the KDS safe-area inset, the van picker,
+> printing end to end, the `'modified'` fixes and `allowNavigation` **all require commit, deploy AND
+> rebuild before any of them can be judged.** ⚠️ **The tree has been dirty for two days**, so "it is
+> fixed" and "it is running" are further apart than usual.
+>
+> **AWAITING HARDWARE:**
+> - **push registration** — ⚠️ **delete the app first** so the prompt is fresh, and read
+>   `van_devices.push_token` **BEFORE** any test send
+> - **the entire BLE printing path** — chunking, 12 ms pacing, the partial-write `'unknown'`, the
+>   `ESC @` probe, the leading feed
+> - **the KDS event seed** — ⚠️ **background for two hours and resume; that is what proves the latch**
+> - **the app icon on a light wallpaper** — contrast is 2.50:1 and **enlarging cannot fix it**
+> - the two iPad display defects, whose four-for-four evidence base changed when Orders' `<main>`
+>   stopped being `overflow-y-auto` at `lg`
+> - **whether the Safari ejection stops once a post-`allowNavigation` build is installed**
+
 ### 🔴 THE GUIDELINE 2.1 DECISION RULE — apply this, do not re-derive it
 
 > **"Coming soon" against a FACT ABOUT A PLAN is fine and stays.**
@@ -7373,6 +7600,26 @@ and nothing in the build can substitute for them. Everything else below is work,
 - **Android: the push send path excludes it entirely**, `ic_stat_icon_config_sample` is missing, and
   there is **no hardware-back handler**. ⚠️ **Own session.**
 
+## BACKLOG ADDED 16 AUGUST 2026 (V11.20)
+
+- 🔴 **`events/action/route.ts:210` cancels orders WITHOUT releasing held authorisations** (§37). **A
+  live money defect on its own merits, independent of the `'modified'` question that surfaced it:
+  cancelling an event must release every hold.** It is also why `'modified'` was deliberately NOT added
+  to that list.
+- ⚠️ **An edited order is left ORPHANED on a cancelled event** — the affected-orders count now includes
+  it while the cancel still skips it. **Resolve with the item above, not separately.**
+- 🔴 **Foreground push shows nothing** (§36) — `willPresent` returns `[]` with no `presentationOptions`
+  and nothing listens to `pushNotificationReceived`. ⚠️ **Currently masked by the token defect; it will
+  look like a new bug the moment tokens start arriving.**
+- ⚠️ **Push registration is DASHBOARD-ONLY** (§36) — a device whose `default_screen` is the KDS never
+  attempts it.
+- ✅ **The Adjust-time row can now be removed** (§37) — **both of its blocking defects are fixed.** A
+  product decision, not a technical one: it is the only one-tap accept-and-reschedule.
+- **KDS van persistence via `van_devices.van_id`** (§11) — needs a precedence rule against the event's
+  van, and ⚠️ **could change push routing.**
+- ⚠️ **The KDS Dashboard control's Safari ejection is UNRESOLVED, not fixed** (§11) — the control is
+  correct; the next rebuild is the test.
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -8463,6 +8710,87 @@ before they are written into this manual, never copied through.** Copying mojiba
 runs a character census turns a transport defect into a permanent content defect, and the census would
 then report the corrupted classes as legitimately present.
 
+## P17 — ⚠️ IT HAPPENED AGAIN, AND THE SECOND TIME IS THE ONE THAT MAKES IT A RULE (V11.20)
+
+**The V11.20 delta arrived mojibake-encoded too — two consecutive deltas, same corruption.** P16
+recorded the first as an incident; **two makes it the expected behaviour of that transport, not an
+accident.**
+
+🔴 **THE REMEDY IS THE ONE §22 ALREADY STATES, AND IT IS ABOUT THE CHANNEL, NOT THE CONTENT: a file
+produced by the planning chat must reach the executing side by DOWNLOAD-TO-DISK, never by copying text
+out of a chat preview.** Re-decoding works, and it worked twice, but **it is a repair, not a
+transport** — and every repair is a chance to introduce exactly the silent substitution the census
+exists to catch.
+
+### ⚠️ THE DELTA CARRIED ITS OWN STOP CONDITION, AND IT DID NOT MATCH WHAT ARRIVED
+
+**Worth recording as a method, because the judgement was not obvious.** The V11.20 delta opened with a
+transit warning instructing the reader to **STOP and re-request** on seeing a *double*-encoded pattern.
+What actually arrived was **single-level** mojibake, which is a different and more recoverable defect —
+so the stop condition was not met, and the work proceeded.
+
+**THE TEST THAT SETTLES IT, AND IT IS ONE LINE:** take a corrupted sample, encode it back to the
+single-byte codepage, and decode it as UTF-8.
+
+- **Single-level** — one pass yields the correct glyph. ✅ Deterministic, lossless, safe to repair.
+- **Double-level** — one pass yields *more mojibake*, or throws. 🔴 **STOP: a second pass is guesswork
+  and can be lossy.**
+
+⚠️ **Do not judge this by eye.** A section sign preceded by **one** stray capital-A-with-circumflex and
+the same sign preceded by **a capital-A-with-tilde AND a capital-A-with-circumflex** look like the same
+kind of damage in a chat preview and are not: **the first is repairable arithmetic, the second is a
+request to re-send.** Count the stray leading characters, or run the one-pass test above.
+
+> 🔴 **AND THIS PARAGRAPH IS ITSELF THE WORKED EXAMPLE OF §35's RULE, BECAUSE THE FIRST DRAFT BROKE IT.**
+> The characters above were originally **reproduced** here to illustrate them — and the after-census
+> caught **two new codepoint classes** in this manual, both of them mojibake artefacts, introduced by the
+> section explaining mojibake. ⚠️ **A CODEPOINT LIST CANNOT BE QUOTED, ONLY DESCRIBED. Naming a character
+> is not the same as reproducing it**, and on this rule the difference is the whole point.
+
+## P18 — ✅ THE CARRIER-AWARE CENSUS PROVED ITSELF ON THIS MANUAL (V11.20)
+
+**P13 introduced the carrier-aware check and used this manual as the worked example. V11.20 confirms it
+against a second, larger measurement, and the result is worth stating as a claim about the OLD check
+rather than the new one.**
+
+Applied to `docs/reference-manual.md`:
+
+| Check | Reads (measured at V11.19) | Verdict |
+|---|---|---|
+| **OLD, raw counts** | 605 warning signs against 605 selectors | *"perfectly paired, nothing wrong"* |
+| **CARRIER-AWARE, per base** | 598 paired, **7 genuinely bare** | 🔴 **a real defect the old check reported as clean** |
+
+⚠️ **Re-measured at V11.20 and the property is stable, which is the point:** 654 warning signs against
+654 selectors — **still "perfectly paired" to the old check** — while the carrier-aware form reads
+**647 paired and the same 7 bare.** **The totals moved by 49 and the defect did not**, because every
+glyph added since was correctly paired. **A check that cannot see a defect also cannot see it stay
+still.**
+
+The 7 missing selectors sit on a **pencil, a chilli, a gear, a high-voltage sign and a plate** — other
+emoji carrying their own, which is exactly the arithmetic the raw comparison cannot see.
+
+> 🔴 **SO THE OLD CHECK FAILED IN BOTH DIRECTIONS: false NEGATIVES on this manual, false POSITIVES on
+> reports.** ⚠️ **A check that produces false positives erodes trust in the true ones**, which is the
+> more expensive of the two failures — a defect reported on a clean file teaches the reader to stop
+> reading the check.
+
+## P19 — ⚠️ TWO MORE PLANNING-SIDE PREMISES CORRECTED. SIX INSTANCES, THREE SESSIONS (V11.20)
+
+| The brief asserted | What was true |
+|---|---|
+| a correction was needed to this manual's `trucks.print_trigger_mode` entry | ✅ **the manual already recorded it as Applied, at three sites.** The stale "WRITTEN, NOT RUN" marker was a session note, not manual text — **the live verification was recorded without inventing a correction to strike** |
+| *"printing is untested"* | 🔴 **it was not connected at all** — zero call sites, and a stub whose `sendBytes` always returned `ok: true` |
+
+🔴 **That is SIX instances across THREE sessions, and the shape has never varied: a brief asserts a fact
+it read somewhere rather than one it verified.** ⚠️ **The second row is the instructive one — "untested"
+and "unreachable" are different problems with different fixes, and only one of them is discoverable by
+reading the module under test.**
+
+✅ **The counter-measure is unchanged and cheap: quote the code, mark every claim READ or INFERRED, and
+treat "not found" as a result.** ⚠️ **Note that the first row is a correction in the OTHER direction —
+the executor declined to make a change the brief asked for, because the premise for it did not exist.
+Both directions count.**
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -8922,6 +9250,74 @@ Restriction **Team Scoped (All Topics)**. ⚠️ **Neither can be changed after 
 🔴 **A mismatch returns `BadDeviceToken`, and the handler NULLs `push_token`** — **destroying the
 evidence that a token ever arrived.** **Always read `van_devices.push_token` BEFORE placing a test
 send**, or "never registered" and "registered then destroyed" become indistinguishable.
+
+## 🔴 THE ROOT CAUSE, FOUND: `AppDelegate.swift` IMPLEMENTED NEITHER APNs DELEGATE METHOD (V11.20)
+
+**This is why push never obtained a token on iOS, across three weeks and every other hypothesis. It was
+not a configuration problem, an entitlement problem, an environment problem or a race.**
+
+**READ:** `ios/App/App/AppDelegate.swift` implemented neither
+`application(_:didRegisterForRemoteNotificationsWithDeviceToken:)` nor
+`application(_:didFailToRegisterForRemoteNotificationsWithError:)` — **the two methods
+`@capacitor/push-notifications` observes**, via `.capacitorDidRegisterForRemoteNotifications` and its
+failure counterpart. `PushNotifications.register()` succeeded, iOS negotiated with APNs, APNs handed
+the token to the app delegate, **and the default no-op ran. The token was discarded inside the app
+process.**
+
+🔴 **THE SECOND-ORDER PROOF IS THE PART WORTH KEEPING, BECAUSE IT INVERTS HOW THE EVIDENCE READ.**
+`registrationError` **could not fire either** — it is emitted from the same missing delegate method. So
+the `console.warn` in that listener had never once printed, and its silence had been read as *"no error
+occurred"*. **It actually meant "no error CAN occur". The missing log line was the symptom, not a dead
+end.**
+
+⚠️ **EVERYTHING PREVIOUSLY INVESTIGATED WAS DOWNSTREAM OF A PLUGIN INSTALL STEP THAT WAS NEVER
+COMPLETED** — and every one of them was **ruled out on evidence** before the real cause surfaced: the
+entitlements (present and correct, `development` / `production`), the provisioning profile, `APNS_ENV`,
+the `/api/native/bind-device` allow-list (`push_token` is explicitly named), and a suspected JS ordering
+race (listeners are attached **and awaited** before `requestPermissions()` and `register()`).
+
+🔴 **THE DECISIVE SEARCH, AND IT IS THE ONE TO REACH FOR WITH ANY CAPACITOR PLUGIN:** the only place in
+the entire tree that **POSTS** `.capacitorDidRegisterForRemoteNotifications` was
+`node_modules/@capacitor/push-notifications/README.md` — **the plugin's own installation instructions.**
+Capacitor core merely **declares** the name; the plugin **observes** it; **the app is required to post
+it, and nothing did.** ⚠️ **A plugin that needs a native install step will not tell you it is missing —
+it will simply never fire.**
+
+**FIXED (V11.20):** both methods added, **41 insertions, one file, zero deletions**. Signatures and
+notification names copied **verbatim from the plugin's README** rather than written from memory, and the
+comment block written **ASCII-only** to match that file's zero-non-ASCII baseline.
+
+⚠️ **VERIFICATION IS PARTIAL AND IS STATED AS SUCH.** `swiftc -parse` exits 0, but that is a **syntax**
+check, not a type-check: against the iOS SDK the only unresolved symbol is `import Capacitor`, which
+needs a build. **The two `Notification.Name` constants were verified by READING their declarations in
+`CAPNotifications.swift:12-15`** — not by a compiler.
+
+🔴 **STILL UNPROVEN. No token has yet been obtained.** ⚠️ **Delete the app from the device first**, so
+the permission prompt appears fresh (iOS remembers the decision per bundle id), and **read
+`van_devices.push_token` BEFORE any test send** — a mismatched `APNS_ENV` returns `BadDeviceToken` and
+the handler NULLs the column, erasing the evidence.
+
+✅ **And it explains the platform asymmetry that had looked mysterious:** Android worked because the FCM
+path does not go through `AppDelegate` at all.
+
+## ⚠️ FOREGROUND PUSH SHOWS NOTHING. A SEPARATE DEFECT, AND IT IS CURRENTLY MASKED (V11.20)
+
+**READ:** `willPresent` returns `[]` — there is **no `PushNotifications` block in `capacitor.config.ts`**,
+so `getConfig().getArray("presentationOptions")` is nil and control falls to the bare return — **and
+NOT FOUND: any listener for `pushNotificationReceived` anywhere in the codebase.**
+
+🔴 **So with the app OPEN and a perfectly valid token: no banner, no sound, no badge, no in-app anything.
+Background the app to observe a notification arriving.**
+
+⚠️ **THE DING HEARD ON THE DASHBOARD IS NOT PUSH.** It is `playNewOrder()` firing off the order refresh.
+**Anyone testing push by listening for a sound will get a false positive.**
+
+⚠️ **AND REGISTRATION IS WIRED TO THE DASHBOARD ONLY** — `registerForPush` is called from
+`DeviceSetupGate`, mounted on `app/dashboard/[token]/page.tsx` and nowhere else. **A device whose
+`default_screen` is the KDS never attempts registration at all.**
+
+🔴 **This defect is invisible until the token defect above is fixed, and will then look like a new bug.
+It is recorded here so it is not diagnosed twice.**
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -10055,6 +10451,123 @@ not merely tolerant of them.**
 ⚠️ **Cash refunds:** `channel` distinguishes them, and a cash refund is **necessarily an out-of-band
 operator action** — the refund UI gates on `cardChargeMinor > 0`.
 
+## 🔴 `adjust_slot_+N` IS ALWAYS THE SOLE CAPTURE — AND THE ROW CAN STILL BE REMOVED (V11.20)
+
+**Both halves of that sentence are true, and the earlier framing treated them as one question.**
+
+**READ:** the "Adjust time" row renders **only** on `order.status === 'pending'`
+(`OrderCard.tsx:1253`), and that is **precisely the one status no other site captures.** Both
+auto-accept sites are gated on `autoAccepted` (which writes `'confirmed'`), Confirm requires its own
+tap, and the stranded sweep excludes `'pending'` by an explicit allow-list.
+
+🔴 **SO IT IS NEVER REDUNDANT: whenever it fires, no earlier site has captured.** ⚠️ And the two
+sequences that would make it redundant are **UNREACHABLE THROUGH THE UI** — "adjust after a confirm"
+and "adjust twice" both require a non-`pending` order, and **the first tap writes `'confirmed'`, at
+which point the row stops rendering. It can be tapped at most once per order.**
+
+✅ **But nothing is left permanently uncaptured by removing it.** Confirm captures inline, and Edit
+writes `'modified'`, which **is** in the sweep's allow-list
+(`'confirmed','modified','cooking','ready','collected'`). **`lib/payments/` needs no change, and no
+capture site has to move first.**
+
+⚠️ **THE COST IS TIMING AND NOISE, NOT MONEY.** Edit's capture is deferred **up to ~25 minutes**
+(10-minute grace + a 15-minute cron) and arrives via a backstop whose own comments call a recovery
+*"a defect report, not a success story"*. 🔴 **Removal makes that path ROUTINE rather than exceptional,
+which degrades the alarm built to detect the real defect.**
+
+## 🔴 FIVE ORDER-STATUS ALLOW-LISTS OMITTED `'modified'`. A PATTERN, NOT TWO BUGS (V11.20)
+
+**`'modified'` means ACCEPTED AND CHANGED SINCE.** Eleven-plus consumers treat it as accepted — the
+capture sweep, the dashboard's active set, the slot engine, buzzers, the customer slot availability —
+and five did not. ⚠️ **`lib/buzzer.ts:27` even records the shape of the problem: the set
+`['pending','confirmed','modified','cooking']` *"appears VERBATIM in five places"*. A set that is
+COPIED rather than SHARED is a set that drifts.**
+
+| Site | Effect of the omission |
+|---|---|
+| `orders/cancel/route.ts:59` **and its UI twin** | 🔴 **customer cancellation GENUINELY BLOCKED** — server 409 as well as a hidden button |
+| the dashboard due-alert scan | edited orders raised no alert **and had their remembered urgency DELETED**, so the transition became unobservable |
+| 🔴 `printWatcher` `DEFAULT_ELIGIBLE` | **an edited order NEVER PRINTED a kitchen ticket**, in either trigger mode |
+| `events/affected-orders` count | under-counted the consequence of a destructive action |
+
+🔴 **THE PRINTING ONE IS THE SHARPEST, AND IT WAS SHIPPED WITH THE PRINTING WIRING — the hole was built
+in on day one.** Its own docstring defines the list as *"statuses that mean this order has been ACCEPTED
+and should be made"*. **The list disagreed with its comment, and the comment was right.** ⚠️ **An edited
+order is the one MOST worth putting on paper, because its contents differ from whatever the cook last
+saw.**
+
+### Cancellation was FUNCTIONAL, not copy — and the product contradicted itself
+
+**READ:** the confirmation email **invites** the customer to cancel — its link is gated only on the
+truck's `allow_cancellation`, **never on order status** — and then the server refused with a message
+**blaming a policy the truck does not have**.
+
+✅ **CHECKED BEFORE ENABLING, and this is the order the check must happen in:**
+`releaseHoldForCancelledOrder` has **no order-status gate at all** — it keys on the draft's payment
+intent and the ledger, and **refuses outright on a captured order**. 🔴 **So enabling cancel for
+`'modified'` strands nothing.** ⚠️ **Never widen a cancel before establishing what happens to the
+money.**
+
+**The "Cancellations are not accepted for this order" sentence now renders under EXACTLY ONE
+condition** — the truck has switched cancellation off — with every other path naming its real reason
+**in the same words the server's 409 uses**, so the two layers can no longer say different things.
+
+## 🔴 A FIFTH LIST, FOUND AND DELIBERATELY NOT FIXED. IT STRANDS MONEY TODAY (V11.20)
+
+**READ:** `app/api/events/action/route.ts:210` selects orders **and cancels them** —
+`.in('status', ['confirmed', 'pending'])` — and **makes no payment call of any kind.** Searching that
+file for `releaseHold`, `refund`, `cancelAuthorization` or `payments` returns **nothing**; its imports
+are email, van-utils, slot-bookings and time-utils.
+
+🔴 **SO CANCELLING AN EVENT ALREADY STRANDS HELD AUTHORISATIONS ON `'confirmed'` CARD ORDERS**, unlike
+both the customer-cancel path and the operator-cancel path, which each call
+`releaseHoldForCancelledOrder`.
+
+> 🔴 **ADDING `'modified'` WOULD HAVE EXTENDED A MONEY-STRANDING DEFECT RATHER THAN FIXING ANYTHING.**
+> Correctly stopped and reported.
+
+⚠️ **HONEST CONSEQUENCE, RECORDED RATHER THAN HIDDEN:** the affected-orders **count** now includes
+edited orders while that **cancel** still skips them — **so an edited order is left ORPHANED on a
+cancelled event.** The count is the more truthful of the two, but the pair is visibly out of step.
+
+🔴 **BACKLOG, AND IT IS A LIVE MONEY DEFECT ON ITS OWN MERITS: cancelling an event must release every
+hold.**
+
+## ✅ EDIT AMOUNT HANDLING WAS ALREADY CORRECT AND FULLY GUARDED (V11.20)
+
+**Verified, not assumed. Nothing was built — the money was already right.**
+
+- **UPWARD edit:** `captureMinor = Math.min(balance.balanceMinor, authorisedMinor)` clamps capture to
+  the authorised amount. ⚠️ **`authorisedMinor` is read from `order_drafts`, WHICH THE EDIT NEVER
+  WRITES** — that separation is what makes the clamp possible. `recalcOrderPayment` then marks the
+  balance due, and the pre-capture state has its own name, `held_short`.
+- **DOWNWARD edit:** `amount_to_capture` sends the lower figure and **Stripe releases the rest.**
+  ⚠️ It is **one shot** — a partial capture cannot be repeated for the difference — which is why the
+  amount is a `Math.min` and never a first instalment.
+- 🔴 **FOUR INDEPENDENT LAYERS make capturing MORE, or TWICE, impossible:** the `Math.min` arithmetic,
+  the ledger pre-check, Stripe's own refusal, and the unique index on `idempotency_key`. **Plus the
+  `balance <= 0` refusal, which is the 12 August double-charge fix.**
+
+## Only the TELLING was wrong — the edit email (V11.20)
+
+**The customer sentences for both directions already existed** — `held_short` and `part_paid`, with
+figures — **but the edit email was the ONE template not using `formatConfirmationEmail`.** It rendered
+`payNote.short` into `<p style="color:#94a3b8;font-size:12px">… · Powered by HatchGrab …</p>`:
+🔴 **12px grey, sharing a line with the footer credit, in the one email whose entire purpose is that the
+money changed.** Every other email renders that same fact as a **bordered amber box**.
+
+**FIXED:** the edit email now goes through `formatConfirmationEmail`, and **the direction of the change
+lands in the SUBJECT LINE** — `Order #12 updated - now £13.00 (was £10.00)` — because that is the only
+part a customer reads before deciding to open anything, and the shared template has no "previous total"
+to show without changing a template every other email depends on.
+
+⚠️ **NO WORD ABOUT CHARGING OR REFUNDING IN THAT SUBJECT, DELIBERATELY.** A downward edit **releases**
+part of a hold, which is not a refund; an upward one may be **owed at the hatch** rather than taken from
+the card. **Both facts belong to the payment box, which states them from the resolver. The subject
+states two totals and stops.**
+
+✅ **No amount, no arithmetic, no `lib/email.ts` and nothing under `lib/payments/` was touched.**
+
 
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
@@ -10918,4 +11431,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.19
+HatchGrab Engineering Reference Manual · V11.20

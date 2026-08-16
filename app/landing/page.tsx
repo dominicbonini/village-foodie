@@ -312,7 +312,10 @@ export default function LandingPage() {
                 <li>Menu, meal deals &amp; upsells</li>
                 <li>Sold-out toggle &amp; stock countdown</li>
                 <li>QR code &amp; discovery map listing</li>
-                <li>iPad and Android kitchen app</li>
+                {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
+                    matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
+                    must be changed in the SAME commit or the same page shows two different claims. */}
+                <li>iPhone, iPad and Android kitchen app</li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
@@ -348,6 +351,7 @@ export default function LandingPage() {
                 <li>Multi-staff logins</li>
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
+                <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>

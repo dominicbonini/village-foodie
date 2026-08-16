@@ -22,6 +22,7 @@ import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, nextProvisionalId, seedProvisionalSeq } from '@/lib/native/orderGate'
 import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
@@ -414,6 +415,27 @@ export function AddOrderPanel({
     thisOrderQty: number
     override: boolean
   } | null>(null)
+
+  // ── 🔴 ANDROID HARDWARE BACK — AND THIS IS THE SURFACE THAT HOLDS UNFINISHED WORK ──────────────
+  // ORDERED INNERMOST FIRST. Every entry below dismisses EXACTLY what tapping outside that overlay
+  // already does today, so back is not a new way to lose anything — it is the existing dismissal
+  // reached by a different gesture.
+  //
+  // 🔴 THE BASKET IS NEVER TOUCHED. Closing the order sheet returns to the menu with every line
+  // intact; closing the item modal discards only the modifiers chosen for THAT item, which is what
+  // its own backdrop tap already does (`onClick={() => setItemModal(null)}` on that overlay).
+  // Nothing here clears `manualItems`, and no entry submits anything.
+  // ⚠️ `capacityConfirm` is a DECISION modal — dismissing it is the CANCEL arm, never the "place it
+  // anyway" arm. Back must never become a way to commit an order past a capacity warning.
+  // ⚠️ DECLARED HERE, BELOW ALL FOUR useState CALLS, AND THAT IS LOAD-BEARING: the array is built
+  // during render, not inside a closure, so a placement above any of them is a temporal-dead-zone
+  // error. tsc caught exactly that on the first attempt.
+  useAndroidBack([
+    [!!capacityConfirm, () => setCapacityConfirm(null)],
+    [!!itemModal, () => setItemModal(null)],
+    [showEventPicker, () => setShowEventPicker(false)],
+    [showOrderSheet, () => setShowOrderSheet(false)],
+  ])
 
   // ── derived ─────────────────────────────────────────────────────────────────
   const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date, eventTz)
