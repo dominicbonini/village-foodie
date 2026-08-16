@@ -148,8 +148,28 @@ export default function KdsPage() {
   useEffect(() => subscribeWakeState(setWakeState), [])
   const [showScreenOffWarning, setShowScreenOffWarning] = useState(false)
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
-  const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
-  const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(null)
+  // ── VIEW + LAYOUT: LAZY INITIALISERS, THE SAME PATTERN AS keepScreenOn ABOVE ────────────────────
+  // 🔴 THESE READ localStorage SYNCHRONOUSLY AT FIRST PAINT. They used to start `null` and be filled by a
+  // mount effect, which persisted correctly but restored ONE FRAME LATE — and for the VIEW that frame is
+  // not cosmetic. `activeView` falls back to `kdsView` (the URL, default 'window') while the override is
+  // null, so a device configured as the COOK screen painted a WINDOW board first: prices visible
+  // (showPrices = viewMode !== 'cook'), ready tickets on the board, and the window button set. On an
+  // unattended grill screen that is a frame of money UI on a device deliberately configured never to
+  // show it. The lazy read closes the gap by construction — there is no frame in which the stored
+  // preference is not yet applied.
+  // ⚠️ NO SECOND MECHANISM. Same localStorage keys, same token scoping, same writer effects below; only
+  // the READ moved from an effect into the initialiser, exactly as keepScreenOn does it.
+  // ⚠️ SSR-GUARDED and validated, so a corrupt value falls through to null = today's default resolution.
+  const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(() => {
+    if (typeof window === 'undefined') return null
+    const v = localStorage.getItem(`hg_kds_view_${token}`)
+    return v === 'window' || v === 'cook' ? v : null
+  })
+  const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(() => {
+    if (typeof window === 'undefined') return null
+    const l = localStorage.getItem(`hg_kds_layout_${token}`)
+    return l === 'list' || l === 'grid' ? l : null
+  })
   // ── "TAKE PAYMENTS ON THIS DEVICE" — PER-DEVICE, CAPACITOR PREFERENCES ──────────────────────────
   // 🔴 PER DEVICE, DELIBERATELY — NOT a trucks column and NOT a per-event override. Two iPads on one
   // truck must be able to disagree: the window iPad takes money, the grill iPad never shows a price it
@@ -169,7 +189,12 @@ export default function KdsPage() {
   const [showPaymentsPref, setShowPaymentsPref] = useState<boolean | null>(null)
   // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON. A ref mirrors it for the
   // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
-  const [soundEnabled, setSoundEnabled] = useState(true)
+  // Lazy initialiser, same pattern as keepScreenOn / view / layout: restore at first paint rather than
+  // one frame later. Default ON when nothing is stored, unchanged.
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem(`hg_kds_sound_${token}`) !== 'off'
+  })
   const soundEnabledRef = useRef(true)
   // Per-truck sound policy, mirrored to a ref so the realtime callback (a stale closure) reads the
   // current value. The header toggle stays the per-device MASTER; this is WHICH new orders ding.
@@ -212,6 +237,16 @@ export default function KdsPage() {
   const [showEventMenu, setShowEventMenu] = useState(false)
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const [finishConfirm, setFinishConfirm] = useState<{ eventId: string; early: boolean; endTime: string } | null>(null)
+  // ── CHANGE EVENT FINISH TIME (replaces the removed "+30 min") ────────────────────────────────────
+  // 🔴 TWO STATES, AND THE SPLIT IS THE SAFETY. `finishTimePicker` is the PICKER — open it, choose a
+  // time, change your mind, close it, and NOTHING has been written. `finishTimeConfirm` is the second,
+  // explicit step that actually commits. The old control was a single "+30 min" tap that wrote
+  // immediately with no undo, which is exactly how it got pressed by accident.
+  // ⚠️ `selected` lives in the picker state, so closing the picker discards it. There is no draft to
+  // leak back in on the next open — every open starts from the event's CURRENT finish time.
+  const [finishTimePicker, setFinishTimePicker] = useState<{ eventId: string; current: string; selected: string } | null>(null)
+  const [finishTimeConfirm, setFinishTimeConfirm] = useState<{ eventId: string; current: string; next: string; affected: number } | null>(null)
+  const [finishTimeBusy, setFinishTimeBusy] = useState(false)
   const [eventNoteInput, setEventNoteInput] = useState('')
   // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
   // The TruckEvent itself, not an id: the shared modal names the venue, the date and the time window.
@@ -339,17 +374,11 @@ export default function KdsPage() {
   }, [token, pin, selectedEventId])
 
   // Per-DEVICE KDS prefs (localStorage, keyed by token so two trucks on one device don't collide):
-  // restore the saved view/layout on mount, then persist on change. A restored 'cook' still passes
-  // through the activeView gate (can('cook_screen'), Max-plan only — Stage 1 de-coupled it from
-  // show_cooking_step), so a non-Max device falls back to Window automatically — no extra guard needed.
+  // the RESTORE now happens in the useState initialisers above (first paint, no flash); these two effects
+  // are the WRITERS and are unchanged. A restored 'cook' still passes through the activeView gate
+  // (can('cook_screen'), Max-plan only — Stage 1 de-coupled it from show_cooking_step), so a non-Max
+  // device falls back to Window automatically — no extra guard needed.
   // null overrides are never written, so a first-ever-mount default isn't clobbered.
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const v = localStorage.getItem(`hg_kds_view_${token}`)
-    if (v === 'window' || v === 'cook') setViewOverride(v)
-    const l = localStorage.getItem(`hg_kds_layout_${token}`)
-    if (l === 'list' || l === 'grid') setLayoutOverride(l)
-  }, [token])
   useEffect(() => {
     if (typeof window === 'undefined' || viewOverride === null) return
     localStorage.setItem(`hg_kds_view_${token}`, viewOverride)
@@ -381,14 +410,12 @@ export default function KdsPage() {
     void Preferences.set({ key: `hg_kds_payments_${token}`, value: next ? 'on' : 'off' }).catch(() => {})
   }, [token])
 
-  // Per-device SOUND pref (hg_kds_sound_<token>): install audio-unlock + restore on mount, persist on
-  // change, and mirror into a ref the realtime INSERT callback reads. Default ON when no stored pref.
+  // Per-device SOUND pref (hg_kds_sound_<token>): the RESTORE moved into the useState initialiser above
+  // (first paint), so this effect now only installs the audio unlock. Persist-on-change and the ref
+  // mirror for the realtime INSERT callback are unchanged. Default ON when no stored pref.
   useEffect(() => {
     installAudioUnlock()
-    if (typeof window === 'undefined') return
-    const s = localStorage.getItem(`hg_kds_sound_${token}`)
-    if (s !== null) setSoundEnabled(s === 'on')
-  }, [token])
+  }, [])
   useEffect(() => {
     soundEnabledRef.current = soundEnabled
     if (typeof window !== 'undefined') localStorage.setItem(`hg_kds_sound_${token}`, soundEnabled ? 'on' : 'off')
@@ -498,8 +525,16 @@ export default function KdsPage() {
   // which is what happened before: canGoBack() was true and Capacitor navigated the page away.
   // ⚠️ Do not add a "go back to the dashboard" entry here. The Dashboard control in the header is the
   // deliberate way off this screen; a gesture is not.
+  // 🔴 THE TWO FINISH-TIME ARMS ARE NON-COMMITTING, AND THEY ARE FIRST BECAUSE THEY STACK HIGHEST
+  // (z-70 confirm over z-60 picker). Back DISMISSES the confirm without writing and DISCARDS the
+  // picker's selection — it can never be the thing that changes an event's finish time. That is the
+  // §38 rule verbatim: back may dismiss a decision, never make one.
+  // ⚠️ The confirm's arm is gated on `!finishTimeBusy` so a press mid-write cannot unmount the modal
+  // while its POST is in flight, matching the eventCancelTarget arm below.
   useAndroidBack([
     [isDemo && showKdsIntro, () => dismissKdsIntro()],
+    [!!finishTimeConfirm && !finishTimeBusy, () => setFinishTimeConfirm(null)],
+    [!!finishTimePicker, () => setFinishTimePicker(null)],
     [deviceOpen && !isDemo, () => setDeviceOpen(false)],
     [!!finishConfirm, () => setFinishConfirm(null)],
     [showEventPicker, () => setShowEventPicker(false)],
@@ -888,6 +923,30 @@ export default function KdsPage() {
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
+  // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
+  // 🔴 THE SAME WRITE `extendEvent` MAKES, AND NOTHING MORE: one POST to /api/events/action with
+  // action:'update' and a payload of exactly `{ end_time }`. That handler's allow-list is
+  // ['venue_name','venue_address','start_time','end_time','customer_note','auto_open','auto_close','notes']
+  // and its only other write is `updated_at`. It touches NO order, NO status, NO production slot and
+  // imports nothing from lib/payments/. This control changes WHICH TIMES A NEW ORDER CAN BE PLACED FOR
+  // and nothing else.
+  // ⚠️ ABSOLUTE, NOT RELATIVE. `extendEvent` takes `addMins` and can only ever push the finish LATER;
+  // this takes the finish time itself, so a truck that sells out early can bring it forward. The two
+  // coexist deliberately — extendEvent is still what the recently-closed banner calls.
+  const applyFinishTime = async (eventId: string, newEnd: string) => {
+    setFinishTimeBusy(true)
+    try {
+      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeConfirm(null); return }
+      if (!res.ok) throw new Error(data.error)
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
+      showKdsToast(`Finish time now ${newEnd}`)
+      setFinishTimeConfirm(null)
+    } catch (err: any) { showKdsToast(err.message || 'Failed') }
+    finally { setFinishTimeBusy(false) }
+  }
+
   // Styled finish confirm (replaces window.confirm). finishEvent OPENS the modal; doFinishEvent runs
   // the close after Yes. The timing-aware (finishingEarly = now<end_time, minute-parsed) logic is
   // UNCHANGED — only the confirm SURFACE moved to the modal below.
@@ -1081,6 +1140,33 @@ export default function KdsPage() {
 
   // KDS always uses window or cook — never solo
   const cardViewMode = activeView === 'cook' ? 'cook' : 'window'
+
+  // ── FINISH-TIME OPTIONS: EVERY 15-MIN BOUNDARY STILL IN THE FUTURE ──────────────────────────────
+  // 🔴 "FUTURE" MEANS FUTURE RELATIVE TO NOW, NOT TO THE CURRENT FINISH TIME. That distinction is the
+  // whole point: a truck that has sold out at 19:20 must be able to set the finish to 19:30 even though
+  // the event is scheduled until 21:00 — an EARLIER time that is still ahead of the clock. Filtering
+  // against `end_time` instead would offer only extensions, which is the control that already exists.
+  // ⚠️ Built against the EVENT'S DATE, not today's, so a past-dated event yields an empty list and the
+  // control says so rather than offering times that have already gone.
+  // ⚠️ Runs on every render, which is correct here — the list must shrink as the clock passes each
+  // boundary, and an operator holding the picker open through 19:45 must not still be offered 19:45.
+  const finishTimeOptions = (() => {
+    if (!activeEvent?.event_date) return [] as string[]
+    const now = Date.now()
+    const out: string[] = []
+    for (let mins = 0; mins < 24 * 60; mins += 15) {
+      const hh = String(Math.floor(mins / 60)).padStart(2, '0')
+      const mm = String(mins % 60).padStart(2, '0')
+      if (new Date(`${activeEvent.event_date}T${hh}:${mm}`).getTime() > now) out.push(`${hh}:${mm}`)
+    }
+    return out
+  })()
+
+  // Orders this event still owes that are due AFTER a proposed finish time. Shown in the confirm so a
+  // shortening is never silent — see the confirm modal and docs/kds-preferences-report.md (C5).
+  // ⚠️ NULL-SLOT (ASAP) ORDERS ARE DELIBERATELY EXCLUDED: they have no promised time to fall after.
+  const ordersDueAfter = (endTime: string) =>
+    activeOrders.filter(o => !!o.slot && o.slot.slice(0, 5) > endTime).length
 
   if (loading) return (
     <div className="flex items-center justify-center h-dvh text-slate-400 text-sm">
@@ -1424,9 +1510,17 @@ export default function KdsPage() {
                 lib/payments/ at all. The same control remains on the dashboard's event menu.
                 ⚠️ The "Extend 30 min" button in the recently-closed banner below is a DIFFERENT
                 affordance (recovering an event that has already ended) and is deliberately left. */}
+            {/* ── LABELLED "Event actions", MATCHING THE DASHBOARD EXACTLY ─────────────────────────
+                It was a bare "⋯", which named nothing: the menu behind it starts and finishes services,
+                changes the event and cancels it, and on an unattended screen a glyph is the weakest
+                possible warning about what is behind a tap. The dashboard's own control for the SAME
+                menu already reads "Event actions ▾" (page.tsx, the header) — one name for one thing
+                across both surfaces, so an operator who learns it on the dashboard finds it here.
+                ⚠️ The word collapses below `sm` and the ▾ carries it, because this sits in the event
+                header row beside the venue name and the time range on a 240px-column kitchen screen. */}
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
-              className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
-              ⋯
+              className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
+              <span className="hidden sm:inline">Event actions </span>▾
             </button>
           </div>
           )}
@@ -1653,6 +1747,16 @@ export default function KdsPage() {
               <button onClick={() => saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
+              {/* ── CHANGE EVENT FINISH TIME — WHAT "+30 min" BECAME ─────────────────────────────────
+                  🔴 THE CURRENT FINISH TIME IS IN THE LABEL, not behind the tap. The control it replaces
+                  said "+30 min" and named neither the time it was moving FROM nor the one it moved TO, so
+                  a stray press changed the event silently and the only way to see what had happened was to
+                  read the header afterwards.
+                  ⚠️ OPENS A PICKER, WRITES NOTHING. See the picker + confirm modals below. */}
+              <button onClick={() => { setShowEventMenu(false); setFinishTimePicker({ eventId: activeEvent.id, current: (activeEvent.end_time || '').slice(0, 5), selected: (activeEvent.end_time || '').slice(0, 5) }) }}
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">
+                Change event finish time{activeEvent.end_time ? ` (now ${activeEvent.end_time.slice(0, 5)})` : ''}
+              </button>
               <button onClick={() => finishEvent(activeEvent.id)} className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
               <button onClick={() => cancelEventFromMenu(activeEvent)} className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
             </div>
@@ -1686,6 +1790,102 @@ export default function KdsPage() {
             <div className="flex gap-2 mt-5">
               <button onClick={() => doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">Yes</button>
               <button onClick={() => setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CHANGE FINISH TIME, STEP 1: THE PICKER. WRITES NOTHING. ──────────────────────────────────
+          🔴 EARLIER TIMES ARE OFFERED, AND THAT IS DELIBERATE. A truck that has run out of dough at 19:20
+          needs to stop taking orders for 20:45, and until now the only control moved the finish time in
+          one direction. The list is every 15-min boundary still AHEAD OF THE CLOCK (finishTimeOptions),
+          so it spans both sides of the current finish.
+          ⚠️ THE CURRENT TIME IS STATED TWICE — in the sentence and as the select's starting value — so the
+          change is visible before it is made, which is the thing "+30 min" could not do.
+          ⚠️ z-[60] to sit over the event menu, matching the finish confirm. */}
+      {finishTimePicker && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setFinishTimePicker(null)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="font-black text-slate-900 text-base mb-1">Change finish time</h3>
+            <p className="text-sm text-slate-600">
+              {finishTimePicker.current
+                ? <>This event is currently set to finish at <span className="font-bold text-slate-900">{finishTimePicker.current}</span>.</>
+                : 'This event has no finish time set.'}
+            </p>
+            {finishTimeOptions.length === 0 ? (
+              <p className="text-sm text-slate-500 mt-4">There are no times left today. Use Finish event instead.</p>
+            ) : (
+              <>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mt-4 mb-1">New finish time</label>
+                <select
+                  value={finishTimePicker.selected}
+                  onChange={e => setFinishTimePicker(p => p ? { ...p, selected: e.target.value } : p)}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                >
+                  {/* The current value is kept as an option even once it is in the past, so the select is
+                      never showing a blank while the operator decides. It cannot be SUBMITTED — the
+                      button below is disabled while selected === current. */}
+                  {!finishTimeOptions.includes(finishTimePicker.selected) && (
+                    <option value={finishTimePicker.selected}>{finishTimePicker.selected || '--:--'} (current)</option>
+                  )}
+                  {finishTimeOptions.map(t => (
+                    <option key={t} value={t}>{t}{t === finishTimePicker.current ? ' (current)' : ''}</option>
+                  ))}
+                </select>
+                {finishTimePicker.current && finishTimePicker.selected < finishTimePicker.current && (
+                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-2">
+                    That is earlier than the current finish time. Customers will not be able to order for times after it.
+                  </p>
+                )}
+              </>
+            )}
+            <div className="flex gap-2 mt-5">
+              <button
+                disabled={finishTimeOptions.length === 0 || finishTimePicker.selected === finishTimePicker.current}
+                onClick={() => { setFinishTimeConfirm({ eventId: finishTimePicker.eventId, current: finishTimePicker.current, next: finishTimePicker.selected, affected: ordersDueAfter(finishTimePicker.selected) }); setFinishTimePicker(null) }}
+                className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400">
+                Review change
+              </button>
+              <button onClick={() => setFinishTimePicker(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CHANGE FINISH TIME, STEP 2: THE CONFIRM. THIS IS THE ONLY THING THAT WRITES. ─────────────
+          🔴 A CONFIRMATION, NOT AN UNDO — the reasoning is in docs/kds-preferences-report.md (C4). An undo
+          toast expires, and this screen runs UNATTENDED: a tap nobody was standing in front of would be
+          undoable only by someone who saw the toast in the seconds it was up.
+          🔴 THE AFFECTED-ORDER COUNT IS ON THIS SCREEN because shortening an event does NOT touch the
+          orders already taken for the times being removed — the update handler writes end_time and
+          updated_at and nothing else. Those orders stay live, stay on the board and are still owed. This
+          count is what stops that being SILENT; it does not change what the write does.
+          ⚠️ THE SAFE BUTTON NAMES THE TIME IT KEEPS. "Cancel" beside an event control is the word this
+          codebase has been burned by before (the event-cancel window.confirm). z-[70] so it stacks over
+          the picker it came from. */}
+      {finishTimeConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="font-black text-slate-900 text-base mb-1">Change finish time?</h3>
+            <p className="text-sm text-slate-600">
+              This event will finish at <span className="font-bold text-slate-900">{finishTimeConfirm.next}</span>
+              {finishTimeConfirm.current ? <> instead of <span className="font-bold text-slate-900">{finishTimeConfirm.current}</span></> : null}.
+            </p>
+            {finishTimeConfirm.affected > 0 && (
+              <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-3">
+                <span className="font-bold">{finishTimeConfirm.affected} order{finishTimeConfirm.affected === 1 ? ' is' : 's are'} due after {finishTimeConfirm.next}.</span>{' '}
+                {finishTimeConfirm.affected === 1 ? 'It stays' : 'They stay'} on the board and still {finishTimeConfirm.affected === 1 ? 'needs' : 'need'} making. Changing the finish time only stops NEW orders being placed for later times.
+              </p>
+            )}
+            <div className="flex gap-2 mt-5">
+              <button disabled={finishTimeBusy} onClick={() => { void applyFinishTime(finishTimeConfirm.eventId, finishTimeConfirm.next) }}
+                className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-300">
+                {finishTimeBusy ? 'Saving...' : 'Change finish time'}
+              </button>
+              <button disabled={finishTimeBusy} onClick={() => setFinishTimeConfirm(null)}
+                className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">
+                {finishTimeConfirm.current ? `Keep ${finishTimeConfirm.current}` : 'Keep as is'}
+              </button>
             </div>
           </div>
         </div>
