@@ -1,6 +1,28 @@
 import { Capacitor } from '@capacitor/core'
 
-export async function configureStatusBar() {
+/**
+ * The status bar's CONTENT colour, named for what the operator sees rather than for the plugin's enum.
+ *
+ * THE PLUGIN'S NAMES ARE INVERTED AND THAT IS THE WHOLE REASON THIS TYPE EXISTS. `Style.Dark` means
+ * "light text FOR dark backgrounds" (definitions.d.ts:46-52) and `Style.Light` means dark text. A call
+ * site reading `setStyle({ style: Style.Dark })` looks like it asks for dark glyphs and asks for the
+ * opposite, which is exactly how the KDS ended up with light text on a white header.
+ */
+export type StatusBarContent = 'light' | 'dark'
+
+/**
+ * @param content 'light' (default) for a DARK header - the dashboard, manage and the cold-launch entry,
+ *                all of which render AppHeader at HEADER_BG #0F172A. 'dark' for a LIGHT header - the KDS,
+ *                whose top bar is bg-white and where light glyphs are invisible.
+ *
+ * WHICH SURFACE AM I ON? THE CALLER ALREADY KNOWS, AND THAT IS DELIBERATELY THE ONLY ANSWER.
+ * Section 35 records this codebase's habit of one question acquiring several answers, so no route test,
+ * no pathname sniff and no "am I the KDS" helper is introduced here. Each of the four call sites is
+ * inside the page it configures - the dashboard effect that also calls setLastScreen('dashboard'), the
+ * KDS effect that owns the status bar, manage's mount effect, and /app's cold-launch entry - so the
+ * surface is stated where it is already known and nothing has to work it out.
+ */
+export async function configureStatusBar(content: StatusBarContent = 'light') {
   if (!Capacitor.isNativePlatform()) return
   try {
     const { StatusBar, Style } = await import('@capacitor/status-bar')
@@ -47,7 +69,8 @@ export async function configureStatusBar() {
     // (WebView >= 140 AND viewport-fit=cover), where env() is populated natively and AppHeader already works
     // unchanged — so even then the variable is not needed. Passthrough is UNVERIFIED on our devices.
     await StatusBar.setOverlaysWebView({ overlay: true })
-    await StatusBar.setStyle({ style: Style.Dark })
+    // Style.Dark = LIGHT glyphs, Style.Light = DARK glyphs. Inverted, hence StatusBarContent above.
+    await StatusBar.setStyle({ style: content === 'dark' ? Style.Light : Style.Dark })
     console.log('[statusBar] configureStatusBar: done ✓')                              // TEMP
   } catch (e) {
     console.warn('[statusBar] configureStatusBar FAILED:', e)                          // TEMP: surface a plugin/bridge error

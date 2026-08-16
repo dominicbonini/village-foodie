@@ -216,6 +216,9 @@ export default function KdsPage() {
   // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
   // The TruckEvent itself, not an id: the shared modal names the venue, the date and the time window.
   // `null` is closed, and the modal is mounted conditionally, so every open is a fresh mount.
+  // The event picker the three-dot menu opens. Replaces the permanent chip strip; the list, the tap
+  // target and switchEvent's confirm are all unchanged, only where they live.
+  const [showEventPicker, setShowEventPicker] = useState(false)
   const [eventCancelTarget, setEventCancelTarget] = useState<TruckEvent | null>(null)
   const [eventCancelCount, setEventCancelCount] = useState(0)
   const [eventCancelBusy, setEventCancelBusy] = useState(false)
@@ -405,7 +408,11 @@ export default function KdsPage() {
   }, [storedSoundCfg, truck?.sound_config])
 
   useEffect(() => {
-    configureStatusBar()
+    // 'dark' CONTENT, AND THIS IS THE ONE SURFACE THAT ASKS FOR IT. The KDS's top bar is bg-white and
+    // fills the safe-area strip, so the shared default (light glyphs, correct against the dashboard's
+    // navy AppHeader) rendered the clock and indicators invisible - only the battery, whose filled
+    // outline survives, remained readable. The header stays white by decision; the glyphs change.
+    configureStatusBar('dark')
     // 🔴 NO `prepareKeepAwake()` HERE — it used to run UNCONDITIONALLY on mount, before anything had read
     // the operator's setting. The [keepScreenOn] effect below runs on mount too and is the single owner of
     // acquire/release; this effect owns the status bar only.
@@ -495,6 +502,7 @@ export default function KdsPage() {
     [isDemo && showKdsIntro, () => dismissKdsIntro()],
     [deviceOpen && !isDemo, () => setDeviceOpen(false)],
     [!!finishConfirm, () => setFinishConfirm(null)],
+    [showEventPicker, () => setShowEventPicker(false)],
     [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
     [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
     [showScreenOffWarning, () => setShowScreenOffWarning(false)],
@@ -1382,34 +1390,6 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Multi-event switcher ──────────────────────────────────────────────────────────────────
-          🔴 THIS IS THE KDS'S OWN WAY TO CHANGE EVENT, and it is the ONLY one — nothing else on this
-          surface moves the board. It now lists the FULL candidate set rather than today's events, so a
-          truck can reach tomorrow's event from the kitchen screen without going back to the dashboard.
-          ⚠️ Every tap goes through switchEvent's confirm; see the note there for why that is not
-          optional on an unattended screen.
-          ⚠️ A date is shown for anything that is not today, because "Nethergate 12:00" and "Old Goat
-          12:00" are indistinguishable otherwise and the whole defect this fixes was two screens on two
-          different days. */}
-      {events.length > 1 && (
-        <div className="flex gap-2 px-4 py-2 border-b border-slate-100 overflow-x-auto flex-shrink-0">
-          {events.map(event => {
-            const isToday = event.event_date === localTodayIso()
-            const dayLabel = isToday ? '' : ` ${new Date(`${event.event_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })}`
-            return (
-              <button key={event.id} onClick={() => switchEvent(event)}
-                className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                  activeEvent?.id === event.id
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-600 border-slate-200'
-                }`}>
-                {event.venue_name.split(',')[0]} {formatTime(event.start_time)}{dayLabel}{event.status === 'open' ? ' ●' : ''}
-              </button>
-            )
-          })}
-        </div>
-      )}
-
       {/* ── Start Event banner ── */}
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
         <div className="bg-white border-2 border-teal-500 m-3 rounded-2xl p-5 text-center flex-shrink-0">
@@ -1435,10 +1415,15 @@ export default function KdsPage() {
               several of them can leave the demo looking broken. */}
           {!isDemo && (
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button onClick={() => extendEvent(activeEvent.id, 30)}
-              className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
-              +30 min
-            </button>
+            {/* ── "+30 min" REMOVED FROM THIS HEADER ───────────────────────────────────────────────
+                It called `extendEvent(id, 30)`, which is CHARACTER-FOR-CHARACTER the dashboard's own
+                extendEvent: the same POST to /api/events/action with action:'update' and a payload of
+                exactly `{ end_time }`. 🔴 ESTABLISHED BEFORE REMOVING, because the dashboard's
+                Adjust-time row turned out to be capture site 3 of 4: this writes NO status, books NO
+                slot and makes NO payment call — app/api/events/action/route.ts imports nothing from
+                lib/payments/ at all. The same control remains on the dashboard's event menu.
+                ⚠️ The "Extend 30 min" button in the recently-closed banner below is a DIFFERENT
+                affordance (recovering an event that has already ended) and is deliberately left. */}
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
               className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
               ⋯
@@ -1609,6 +1594,35 @@ export default function KdsPage() {
         </div>
       )}
 
+      {/* ── Event picker (opened from the three-dot menu) ────────────────────────────────────────
+          The chip strip's list, moved. Same `switchEvent`, so the confirm that names the event being
+          left and the orders on screen still fires on every switch. Closing changes nothing. */}
+      {showEventPicker && !isDemo && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventPicker(false)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-slate-900">Change event</h3>
+              <button onClick={() => setShowEventPicker(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {events.map(event => {
+                const isToday = event.event_date === localTodayIso()
+                const dayLabel = isToday ? 'Today' : new Date(`${event.event_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })
+                const isCurrent = activeEvent?.id === event.id
+                return (
+                  <button key={event.id} onClick={() => { setShowEventPicker(false); switchEvent(event) }}
+                    className={`w-full text-left py-2.5 px-3 rounded-xl border text-sm transition-colors ${isCurrent ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-800 border-slate-200 hover:border-slate-400'}`}>
+                    <span className="font-medium">{event.venue_name.split(',')[0]}</span>
+                    <span className={isCurrent ? 'text-white/70' : 'text-slate-500'}> · {dayLabel} {formatTime(event.start_time)}{event.status === 'open' ? ' ●' : ''}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <button onClick={() => setShowEventPicker(false)} className="mt-3 w-full text-sm text-slate-400 hover:text-slate-600 py-2">Cancel</button>
+          </div>
+        </div>
+      )}
+
       {/* ── Event menu modal ── */}
       {showEventMenu && activeEvent && !isDemo && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventMenu(false)}>
@@ -1617,6 +1631,20 @@ export default function KdsPage() {
               <h3 className="font-semibold text-slate-900">{activeEvent.venue_name}</h3>
               <button onClick={() => setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
+            {/* ── CHANGE EVENT — WAS A PERMANENT STRIP OF CHIPS ABOVE THE BOARD ────────────────────
+                🔴 THE STRIP LISTED EVERY UPCOMING EVENT AND THE HEADER DIRECTLY BELOW IT ALREADY NAMED
+                THE SELECTED ONE, so it spent a row of a kitchen screen restating what the next row
+                said. It also put a row of small tap targets permanently on a counter surface, which is
+                the accident switchEvent's confirm exists to catch. Moved behind this menu, mirroring
+                the dashboard's own "Change event" entry.
+                ⚠️ PRESENTATION ONLY. It calls the SAME switchEvent, with the SAME confirm, and the seed
+                (seededRef) is not touched — see the seed note. */}
+            {events.length > 1 && (
+              <button onClick={() => { setShowEventMenu(false); setShowEventPicker(true) }}
+                className="w-full text-left py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 border border-slate-100 rounded-xl px-3 mb-4">
+                Change event
+              </button>
+            )}
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Customer note</label>
               <input type="text" value={eventNoteInput} onChange={e => setEventNoteInput(e.target.value)}

@@ -1234,35 +1234,26 @@ export function OrderCard({
             </div>
           )}
 
-          {/* Quick time adjust — pending, non-cook only.
-              ── 🔴 THE CAPTION WRAPS; IT DOES NOT CLIP. FIXED 15 August 2026 ──────────────────────
-              OBSERVED on a physical iPad (order #16): the grey caption ran past the card and was cut
-              mid-word — "new time ser… to custome…". Nothing in this row could yield. The label is
-              `shrink-0`, the three buttons are intrinsically sized, and the caption had neither
-              `min-w-0` nor `truncate`, so a flex item's default `min-width:auto` stopped it shrinking
-              below its longest word; the row simply outgrew the card, whose root carries
-              `overflow-hidden`, and the overflow was chopped.
-              THE FIX IS `flex-wrap` ON THE ROW: when the caption will not fit beside the buttons it
-              takes its own line, where it has the card's full inner width and every word survives.
-              `min-w-0 truncate` on the caption is the LAST RESORT for a width narrower than any
-              layout reaches today — an ellipsis is a legible failure, a mid-word chop is not.
-              🔴 THE BUTTONS ARE DELIBERATELY UNTOUCHED. They are the tap targets of a money path
-              (adjust_slot confirms the order and captures a held authorisation), so nothing here may
-              make them smaller. Wrapping moves whole items to a new line and never compresses them,
-              and the label plus the three buttons fit the narrowest column with room to spare. */}
-          {order.status === 'pending' && order.slot && viewMode !== 'cook' && (
-            <div className="flex flex-wrap items-center gap-1.5 mb-2">
-              <span className="text-xs text-slate-400 font-medium shrink-0">Adjust time:</span>
-              {[5, 10, 20].map(mins => (
-                <button key={mins}
-                  onClick={() => onAction(`adjust_slot_+${mins}`, order.order_key)}
-                  className="text-xs bg-slate-100 hover:bg-orange-100 hover:text-orange-700 text-slate-600 font-bold px-2 py-1 rounded-lg transition-colors active:scale-95">
-                  +{mins}m
-                </button>
-              ))}
-              <span className="text-xs text-slate-300 ml-1 min-w-0 truncate">→ new time sent to customer</span>
-            </div>
-          )}
+          {/* ── 🔴 THE QUICK TIME-ADJUST ROW (+5m/+10m/+20m) WAS REMOVED HERE, 16 August 2026 ────────
+              It rendered on `order.status === 'pending' && order.slot && viewMode !== 'cook'` and each
+              button fired `onAction('adjust_slot_+N')`, which is NOT a display action: it writes
+              `status: 'confirmed'` unconditionally, calls `moveSlotBooking`, and calls
+              `captureOnConfirmation(trigger: 'time_adjust')` — capture site 3 of 4, and the ONLY site
+              that ever fires on a 'pending' order.
+              🔴 IT WAS DELIBERATELY KEPT ONCE BEFORE, and the thing that changed is not this file.
+              The reason for keeping it was that removing it would route every time change through EDIT,
+              whose capture arrives via the stranded-authorisation backstop — and that backstop skipped
+              'modified' orders, which is what Edit writes. All four of those omissions are now closed
+              (the sweep's allow-list, printWatcher's DEFAULT_ELIGIBLE, the customer cancel path and the
+              due-alert scan all name 'modified'), so Edit's capture is now collected rather than
+              stranded. Re-verified from those four files before this row was deleted, not from a report.
+              ⚠️ THE ACCEPTED COST, STATED RATHER THAN DISCOVERED LATER: Edit's capture is deferred up
+              to ~25 minutes (a 10-minute grace plus a 15-minute cron) and arrives through a mechanism
+              whose own comments call a recovery "a defect report, not a success story". Removing this
+              row makes that path ROUTINE rather than exceptional, which degrades the alarm value of a
+              sweep hit. That is a known trade, not an oversight.
+              ⚠️ NOTHING ELSE WAS DELETED. `adjust_slot_+N` still exists server-side, and both
+              `moveSlotBooking` and `captureOnConfirmation` keep every other call site. */}
 
           {/* Action buttons — rarely-used Edit/Cancel sit ABOVE as de-emphasised GHOST buttons
               (transparent, light border, muted text — visually quiet but kept full-width + py-2.5

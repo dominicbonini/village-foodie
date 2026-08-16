@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.20
+HatchGrab Engineering Reference Manual · V11.21
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.20**
+**Version 11.21**
 
 August 2026
 
@@ -15,6 +15,71 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.21 — 16 August 2026
+
+Delta over V11.20 — **Android became buildable and was audited for capability parity rather than for
+its own requirements; a WhatsApp routing defect that a LIVE-VERIFIED test was structurally incapable
+of detecting; 82 overlays audited with the money handling clean; and a notification tap that had
+never worked on either platform.**
+
+- 🔴 **THE ANDROID BACK-BUTTON PREMISE WAS REFUTED, AND THE REAL DEFECT IS WORSE.** Capacitor's
+  `AppPlugin` registers an **enabled** `OnBackPressedCallback` that CONSUMES the press and never calls
+  `finish()`, so back does **not** close the app. With no JS listener it calls `goBack()` — and this is
+  a remote-URL SPA where `router.push` creates history and **modals are React state, not history**. So
+  a back press over an open modal **threw away the page underneath**. On the KDS that is one stray
+  edge-swipe and the board is gone. §36.
+- ✅ **`lib/native/backHandler.ts` — one listener, a LIFO registry, and a DO-NOTHING fallback.** 22
+  overlays wired innermost-first across three surfaces, so nesting falls out of the ordering. 🔴 **The
+  fallback is the safety property:** no `router.back()`, no `exitApp()`, no `goBack()`, and every KDS
+  entry is a `setState`, so **with nothing open the board cannot be lost.** ⚠️ **Partial coverage is
+  SAFE here and that corrects an assumption** — registering ANY listener moves Capacitor to the
+  `notifyListeners` branch app-wide, so an unwired modal goes from **destructive to inert**. §36.
+- 🔴 **ANDROID WAS THE EXACT MIRROR OF iOS: a token and no sender.** `lib/fcm.ts` now sends via FCM
+  HTTP v1 with an RS256 service-account JWT exchanged for a cached OAuth2 bearer — **zero packages
+  installed**, `node:crypto` and `fetch` only. ✅ **PROVEN, NOT WRITTEN BLIND: a `validate_only` probe
+  signed the key, obtained a live access token and had FCM validate the exact payload, objecting to one
+  field only — `message.token`, the deliberately fake input. Nothing was delivered to any device.**
+  §36.
+- 🔴 **TAPPING A PUSH NOTIFICATION DID NOTHING, ON BOTH PLATFORMS.**
+  `registerForPush(token, onOpenOrder?)` was called at three sites and **none passed the handler**, so
+  `if (orderKey && onOpenOrder)` never fired. The payload was correct on both platforms; the handler
+  was simply never supplied. ⚠️ **Invisible because push had never delivered on iOS to expose it.**
+  Now wired, and ✅ **cold launch works — READ from both plugins, which each retain the event until a
+  listener consumes it.** §36.
+- 🔴 **ANDROID ASKED FOR LOCATION PERMISSION TO CONNECT A RECEIPT PRINTER**, because
+  `BleClient.initialize()` was called with no options and `androidNeverForLocation` defaults false.
+  **A refusal is indistinguishable from "printing doesn't work".** Fixed. ⚠️ **The prompt is gone and
+  the DECLARATION is not** — the plugin's manifest carries no `usesPermissionFlags="neverForLocation"`,
+  so a Play listing would still show Location. §36.
+- 🔴 **A WHATSAPP ROUTING DEFECT THAT A LIVE TEST COULD NOT DETECT.** The Meta webhook matched the
+  **customer's** number against `trucks.whatsapp_sender` — the **truck's own** number. 🔴 **It passed a
+  LIVE-VERIFIED test because the tester's own mobile occupied that field, so the two values were the
+  same.** The claim was true and the test was **structurally blind**. Fixed by keying on
+  `phone_number_id` with a TO-based fallback. §20, §1.
+- 🔴 **THE THREE META WEBHOOKS HAD NO SIGNATURE VERIFICATION AT ALL** — an unauthenticated POST spent
+  real money with no metering. `lib/meta/webhook-signature.ts` now verifies, **fail-closed on a missing
+  secret**, ✅ **verified by execution against nine cases** including the re-serialisation trap and a
+  SHA-1 downgrade. §20.
+- ✅ **82 OVERLAYS AUDITED AND THE MONEY HANDLING CAME BACK CLEAN** — no backdrop tap anywhere commits
+  anything, no Undo reverses a UI without its money, and all 22 back closers are non-committing. §38.
+- 🔴 **THE CANCEL-ORDER MODAL LEAKED STATE BETWEEN ORDERS, AND THE BACK HANDLER CREATED THE PATH.**
+  Both real arms reset five state pieces; the back closer reset one — carrying the reason, the
+  customer-facing note **and the refund checkbox** to the next order cancelled. The modal has no close
+  glyph, no backdrop and no Escape, **so that path did not exist until back was wired.** Fixed with one
+  reset per modal called by every arm. §38.
+- 🔴 **"CANCEL EVENT" WAS GATED BY A `window.confirm` WHOSE SAFE BUTTON SAID "Cancel"** — on the
+  operation that strands card holds. The same endpoint was gated three ways. Fixed by lifting manage's
+  modal to `components/shared/EventCancelModal.tsx` for all three surfaces. §38.
+- 🔴 **REFUNDS, NOT RELEASES, ARE THE MAIN EVENT ON EVENT CANCELLATION.** Capture happens at
+  **confirmation**, so any order already confirmed has had its money **taken** — the normal case, not
+  an edge. **A hold expires by itself in about a week; a captured payment never comes back.** The
+  engine exists and the decision-carrying does not; 🔴 **the unsolved problem is partial execution
+  mid-loop.** §37.
+- ✅ **A RETRACTION WORTH MORE THAN THE FIX IT REPLACED.** The overlay audit reported the refund form
+  as having no named dismissal arm. **It has one.** 🔴 **The method was the defect** — a fixed 55-line
+  read window that never reached the buttons it reported missing — **and the same technique produced
+  the other 81 rows.** §38, §35.
 
 ## V11.20 — 16 August 2026
 
@@ -198,6 +263,11 @@ things that source-reading had got wrong.
 - 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED**, and a report marked "reachable" as READ when only the
   source had been read. **The device is the authority.** Joins the same family as *tsc-clean is not
   done* and *a cross-reference is not provenance*. §1.
+- 🔴 **A PASSING TEST IS NOT A CORRECT MECHANISM (V11.21).** The WhatsApp routing defect survived a
+  **LIVE-VERIFIED** test because the tester's own mobile occupied the field being wrongly matched, so
+  the customer number and the truck number were the same value. **The claim was true and the test was
+  structurally blind.** *A live test proves the path RAN, not that it ran for the RIGHT REASON.*
+  Newest member of the family above. §1, §20.
 - **The capacity panel is fixed** — `max-h-[60vh]` measured the viewport's SHORT dimension in landscape.
   ⚠️ **The fix changes §27's four-for-four evidence base for the two iPad display defects**, which makes
   the next build a natural experiment with a built-in control.
@@ -5904,6 +5974,76 @@ smallest fix.**
 ✅ **Pizzeria Gusto is NOT set up on WhatsApp yet** (confirmed 14 August), so the national-format vs
 E.164 sender question is **not a live defect**. **Recheck at onboarding.**
 
+## 🔴 A ROUTING DEFECT A LIVE TEST COULD NOT DETECT (V11.21)
+
+The Meta webhook looked the truck up by matching the **CUSTOMER's** phone number against
+`trucks.whatsapp_sender` — **the TRUCK's own number.** The older Twilio webhook in the same repo
+correctly matches the number messaged **TO**.
+
+🔴 **WHY "LIVE-VERIFIED" DID NOT CATCH IT: the tester's own mobile was in `whatsapp_sender`, so the
+customer number and the truck number were the same value. The test passed because the configuration
+made the wrong field look right.**
+
+⚠️ **RECORD THIS AS A CLASS, NOT AS AN INCIDENT.** It is not a stale claim — it is a **correct** claim
+whose test was **structurally incapable** of detecting the defect. *A live test proves the path ran,
+not that it ran for the right reason.* With two trucks it routes one truck's messages to another.
+
+**FIXED:** primary lookup on `trucks.phone_number_id` — **opaque, so there is no format to normalise**
+— with a `display_phone_number` → `whatsapp_sender` fallback that is **also TO-based** and logs loudly
+every time it fires. 🔴 **`from` no longer participates in routing at all**; it survives only as the
+send recipient, which is what it always should have been.
+
+**Two trucks route independently by three mechanisms:** the key is the business number, a **partial
+unique index makes a collision unrepresentable in the database**, and the fallback is equally TO-based.
+An unmatched message replies to nobody and logs both identifiers plus the remedy. ✅ **The customer's
+phone number is no longer logged** — it was personal data and useless for diagnosing a TO-based lookup.
+
+🔴 **THE MIGRATION IS DEPLOY-COUPLED — RUN THE SQL FIRST, THEN DEPLOY.** The route uses a **named
+select**, so a missing column raises 42703 and **drops every delivery.** `select('*')` would have
+degraded safely; this does not. **APPLIED 16 August 2026.**
+
+⚠️ **`phone_number_id` has no UI and must be hand-set**, so the fallback fires until it is populated.
+
+## Signature verification on all three Meta webhooks (V11.21)
+
+**There was NONE.** An unauthenticated POST spent real money — Meta send costs plus Gemini calls on
+the tier-3 path — **with no metering.**
+
+**FIXED:** `lib/meta/webhook-signature.ts`, one shared helper modelled on the Stripe module — whose own
+header says it is *"deliberately written to be the thing they are eventually fixed against"*. Same
+pure module, same closed union of greppable failure reasons, same `timingSafeEqual` with a length
+pre-check.
+
+🔴 **FAIL-CLOSED ON A MISSING SECRET, AND THE APNs LESSON CUTS THE OTHER WAY HERE.** Fail-open would
+leave the endpoint permanently unauthenticated **with nobody ever finding out**; fail-closed produces
+retries, a flagged subscription and the log line `reason=no_secret_configured secretsConfigured=0`.
+⚠️ **The direction of a safe default depends on what the failure costs, not on a habit.**
+
+⚠️ **A `req.json()` → `req.text()` refactor was REQUIRED** — the stream is single-read and
+re-serialising breaks the HMAC even with a correct secret. **It presents as "my signing secret must be
+wrong."**
+
+✅ **VERIFIED BY EXECUTION:** the real module run against **nine** cases — valid signature,
+second-of-two secrets, tampered body, wrong secret, no secret, missing header, SHA-1 downgrade, bare
+hex, and the re-serialisation trap. **All nine passed.** Bad signatures return **401**, deliberately
+not 200 and deliberately not Stripe's 400.
+
+## What is still missing for WhatsApp (V11.21)
+
+- **No OAuth / Embedded Signup in any form.** `phone_number_id` must be hand-set.
+- **Messenger and Instagram are verify-handshake + `console.log` stubs** with `// TODO: Route to
+  classifier` — no truck lookup, no classifier call, no send module. They key on `entry.id` (a Page ID
+  / IG account ID), and **nothing stores those either** — `social_facebook`/`social_instagram` hold
+  URLs.
+- ⚠️ **Gusto's `whatsapp_sender` (`07380736226`) is almost certainly the TESTER's mobile**, not a
+  Business API sender — `lib/email.ts:333` notes their real number lives in `contact_phone`. **At
+  onboarding that field needs REPLACING, not reusing** — 🔴 **it is the value that made the routing
+  defect look correct.**
+- ✅ Incorporation unblocks Meta business verification, which gates the Meta-configuration layer
+  entirely — **but it does not touch the routing defect, the missing identifier, or the absent signup
+  flow.**
+
+
 # 21. Competitive positioning
 
 ## Hatches Up cost model
@@ -8741,6 +8881,35 @@ the same sign preceded by **a capital-A-with-tilde AND a capital-A-with-circumfl
 kind of damage in a chat preview and are not: **the first is repairable arithmetic, the second is a
 request to re-send.** Count the stray leading characters, or run the one-pass test above.
 
+### 🔴 A THIRD CASE THE TWO-WAY TEST DOES NOT COVER: LOSSY, AND THEREFORE NOT REVERSIBLE (V11.21)
+
+**The V11.21 delta — a third consecutive mojibake arrival — was neither of the two above.** The test
+was run before transcribing anything, as this section instructs, and it returned a case the section
+had not anticipated.
+
+**What a LOSSLESS single-level arrival looks like**, measured: an em dash arrives as **three**
+characters, a check mark as **three**, a red circle as **four** — every byte preserved, and the
+one-pass reverse round-trips exactly.
+
+🔴 **WHAT ACTUALLY ARRIVED WAS SHORTER THAN THAT.** The em dash arrived as **one** character, the check
+mark as **one**, the red circle as **two**. **Bytes were dropped in transit** — the codepage has no
+mapping for them, and the pipeline discarded rather than preserved them.
+
+🔴 **AND THAT MAKES THE MAPPING NOT ONE-TO-ONE, WHICH IS THE PART THAT MATTERS.** An em dash and a
+check mark **both arrive as the same single character**, and the delta used that character for both.
+**No mechanical reverse can tell them apart.** A one-pass repair would have silently substituted one
+for the other throughout.
+
+✅ **SO THE THIRD CASE IS REPAIRED BY CONTEXT, NEVER BY ARITHMETIC** — and it is safe here only because
+position disambiguates: the character opening a bold clause is a check mark, the same character between
+two words is an em dash. ⚠️ **Record the distinction: lossless damage is repaired by a function;
+LOSSY damage is repaired by a reader, and must be declared as such rather than presented as a clean
+transcription.**
+
+⚠️ **The three-case test, restated:** count the characters a known glyph arrives as. **Full width →
+single-level, repair it. More mojibake or a throw → double-level, STOP and re-request. SHORTER than the
+lossless form → lossy, repair by meaning and say so.**
+
 > 🔴 **AND THIS PARAGRAPH IS ITSELF THE WORKED EXAMPLE OF §35's RULE, BECAUSE THE FIRST DRAFT BROKE IT.**
 > The characters above were originally **reproduced** here to illustrate them — and the after-census
 > caught **two new codepoint classes** in this manual, both of them mojibake artefacts, introduced by the
@@ -8790,6 +8959,49 @@ reading the module under test.**
 treat "not found" as a result.** ⚠️ **Note that the first row is a correction in the OTHER direction —
 the executor declined to make a change the brief asked for, because the premise for it did not exist.
 Both directions count.**
+
+## 🔴 AN AUDIT'S METHOD IS A FINDING (V11.21)
+
+The overlay audit's retraction — a fixed 55-line read window that never reached the buttons it
+reported missing — **matters more than the item it retracted, because the same technique produced the
+other 81 rows.**
+
+🔴 **WHEN AN AUDIT REPORTS AN ABSENCE, RECORD HOW IT LOOKED.** An absence found by a bounded window is
+a **weaker claim** than one found by parsing. *"Not found" is a result only when the search was capable
+of finding it.*
+
+⚠️ **This generalises the existing family:** a summary of code is not the code, a cross-reference is
+not provenance, and now **a bounded search is not an exhaustive one.**
+
+## ✅ VERIFICATION BY EXECUTION BEAT VERIFICATION BY REASONING, THREE TIMES (V11.21)
+
+- **The FCM `validate_only` probe** — a real signed request, authenticated by Google, validated against
+  the live endpoint, **delivering nothing.** It proved the key signs, the OAuth exchange works, the
+  endpoint authenticates and the payload schema is right, all in one call.
+- **The Meta signature helper** run against **nine** cases including the re-serialisation trap and a
+  SHA-1 downgrade.
+- **The parity-guard counterfactual** — a scratch copy with only the map key reverted, re-run, proving
+  the guard **would NOT** have caught it.
+
+🔴 **WHERE A CLAIM CAN BE EXECUTED RATHER THAN ARGUED, EXECUTE IT.** Each of the three replaced a
+paragraph of confident reasoning with a measured result, and in two of the three **the reasoning would
+have been wrong.**
+
+## ⚠️ THE NON-ASCII CENSUS CAUGHT SEVEN MORE REAL VIOLATIONS (V11.21)
+
+Across seven consecutive tasks: house glyphs in `transport.ts`; `'Scanning…'` in a file that had never
+held an ellipsis; a close glyph in a comment **about a missing close glyph**; a box rule in a
+`whatsapp` comment; a warning sign in a device-naming comment; box rules and red circles in **three
+files at once**; and — **twice** — glyphs written into a paragraph explaining the rule against them.
+
+🔴 **NOT ONE WAS CAUGHT BY READING THE DIFF.** Every one was caught by the after-census, which is the
+argument for measuring rather than reviewing.
+
+🔴 **AND THE CARRIER-AWARE FORM WAS ITSELF CORRECTED BY THE EXECUTOR** after the raw-count version
+produced a false mismatch on files legitimately containing box-drawing characters. **A check that
+produces false positives erodes trust in the true ones**, which is why the per-base form counts
+selectors against their own carrier rather than against a total.
+
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -8844,6 +9056,185 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 - ⚠️ **iOS HAS NEVER BEEN CAPABLE OF REGISTERING FOR PUSH.** There is **no `.entitlements` file** and **no `aps-environment` key** in the iOS project. The APNs path has been written, deployed and reasoned about, and has never been able to obtain a token. Discovered while wiring the Android side — a second platform is an audit of the first.
 
 ⚠️ **CORRECTION — a native helper written for one platform must be RE-VERIFIED against the other, not assumed.** `lib/native/statusBar.ts` carried **three calls that are verified no-ops on modern Android** — `setBackgroundColor` (ignored for API >= 36) and `setOverlaysWebView` (ignored on Android 15+) — plus a **hardcoded colour matching nothing in the brand**. The helper was correct for iOS and had simply been assumed to generalise. The status-bar strip is instead handled at the platform layer (`android/app/src/main/res/values/styles.xml`'s `windowBackground`, painted with `@color/hgHeaderNavy` = `#0F172A`, which MUST match `HEADER_BG` in `lib/brand.ts`). See §35's safe-area invariant for the related trap.
+
+## 🔴 ANDROID IS BUILDABLE, AND THE BACK BUTTON WAS THE FIRST THING AUDITED (V11.21)
+
+### The premise was refuted before anything was built
+
+**READ** — `node_modules/@capacitor/app/android/.../AppPlugin.java:50-66`. Capacitor registers an
+**ENABLED** `OnBackPressedCallback` and **consumes** the press:
+
+```java
+            public void handleOnBackPressed() {
+                if (!hasListeners(EVENT_BACK_BUTTON)) {
+                    if (bridge.getWebView().canGoBack()) { bridge.getWebView().goBack(); }
+                } else { … notifyListeners(EVENT_BACK_BUTTON, data, true); … }
+            }
+```
+
+🔴 **IT NEVER CALLS `finish()`, SO BACK DOES NOT CLOSE THE APP.** The feared behaviour was not the
+behaviour. **What it did instead is worse for an operator:** this is a remote-URL SPA where
+`router.push` creates history entries and **modals are React state, not history**, so a back press
+over an open buzzer grid or order sheet did not dismiss the modal — **it navigated the page underneath
+away and took the modal's state with it.** On the KDS one stray edge-swipe lost the board mid-service.
+
+### The handler — one listener, a LIFO registry, a DO-NOTHING fallback
+
+`lib/native/backHandler.ts` holds **one** `App.addListener('backButton')` over a **LIFO stack of
+resolvers**. Three surfaces register ordered `[isOpen, close]` lists — **KDS 5, Add Order 4, dashboard
+13** — all innermost-first by z-index, **so nesting falls out of the ordering** rather than needing
+special handling.
+
+🔴 **THE FALLBACK IS DO NOTHING.** No `router.back()`, no `exitApp()`, no `goBack()`. Every KDS entry
+is a `setState` and none navigates, **so with nothing open the board cannot be lost.** Same shape as
+deleting the KDS status chain rather than guarding it: *an absent condition cannot be bypassed by a
+future edit.*
+
+✅ **`canGoBack` is not merely unused but UNBOUND.** It arrives on the event and is exactly the wrong
+signal: it is true on nearly every operator screen **precisely because `router.push` pushed history,
+and acting on it is what caused the bug.** Not binding it stops a future reader using the parameter
+sitting right there.
+
+🔴 **THE RULE: BACK CAN DISMISS A DECISION, NEVER MAKE ONE.** Every registered closer is the
+X/Cancel arm, so a stray swipe can never confirm, submit or delete.
+
+⚠️ **PARTIAL COVERAGE IS SAFE HERE, AND THAT CORRECTS AN ASSUMPTION.** Registering ANY listener moves
+Capacitor from the `goBack()` branch to `notifyListeners` **app-wide**, so an unwired modal goes from
+**DESTRUCTIVE to INERT**. Manage's 31 overlays were deliberately left for a later pass; they are a
+missing convenience, not a live hazard.
+
+⚠️ `editItemModal` gains a dismissal it never had — no backdrop dismiss existed. **Registered anyway,
+because omitting it would have closed the order editor underneath.**
+
+## 🔴 THE FCM SENDER — ANDROID WAS THE EXACT MIRROR OF iOS (V11.21)
+
+**iOS had a sender and no token. Android had a token and no sender** — no `lib/fcm.ts`, nothing read
+`FCM_SERVICE_ACCOUNT_JSON`, and the send path carried `.or('platform.eq.ios,platform.is.null')`.
+
+`lib/fcm.ts` sends via **FCM HTTP v1** with an RS256 service-account JWT exchanged for a cached OAuth2
+bearer. **Zero packages installed** — `node:crypto` and global `fetch` only. It mirrors `lib/apns.ts`'s
+config-returns-null shape, `(tokens, payload)` signature and `{ sent, invalidTokens, skipped? }`
+return, so the two senders are interchangeable at the call site.
+
+✅ **PROVEN, NOT WRITTEN BLIND.** A `validate_only` probe signed the key, obtained a live access token
+(`expires_in: 3599`) and had FCM validate the exact payload — **objecting to one field only,
+`message.token`, the deliberately fake input.** Nothing was delivered to any device. **A 400 naming
+one field proves more than a 200 would: it proves authentication, schema and every other field.**
+
+🔴 **ROUTING IS BY NAME, NOT BY NEGATION.** `'ios'`/null → APNs, `'android'` → FCM, **anything else
+routes nowhere and is logged** — preserving the old allow-list's default-deny while adding Android.
+Capacitor's `getPlatform()` can write `'web'`, which negation-routing would have posted to APNs.
+
+🔴 **INVALID-TOKEN HANDLING IS THREE-WAY AND DELIBERATE:**
+
+| Code | Action | Why |
+|---|---|---|
+| `UNREGISTERED` | **null the token** | app uninstalled or token rotated; unambiguous |
+| `SENDER_ID_MISMATCH` | 🔴 **KEEP the token** | the DEPLOYMENT is wrong, not the device — **nulling erases the evidence**, the `BadDeviceToken` lesson generalised rather than copied |
+| `INVALID_ARGUMENT` | ⚠️ **two layers** | FCM returns it for a bad MESSAGE as well as a bad token, so **one bad deploy would otherwise null an entire fleet** |
+
+⚠️ **FCM HAS NO SANDBOX/PRODUCTION SPLIT** — one credential covers debug and release, unlike APNs.
+The Android trap is different: the credential and `google-services.json` must be from the **same
+Firebase project**, or every send returns `SENDER_ID_MISMATCH`.
+
+⚠️ **`.env.local` truncates `FCM_SERVICE_ACCOUNT_JSON` to a single `{`** because the JSON is
+pretty-printed across 14 lines and dotenv stops at the first newline. **Local testing needs it on one
+line; Vercel is unaffected.** The same file truncates `APNS_KEY` to 27 characters for the same reason.
+
+## Corrections to the Android backlog (V11.21)
+
+- 🔴 **`targetSdk` is 36**, `allowNavigation` and `server.url` are already baked identically to iOS,
+  and **all nine plugins have Android classes.** The shortest path to an installable test build is
+  `cap sync` plus a Gradle debug build — **no keystore work.**
+- ⚠️ **`ic_stat_icon_config_sample` is configured under `LocalNotifications`, NOT `PushNotifications`.**
+  The "white square push icon" item was miscategorised, and the named asset does not exist either.
+- ⚠️ **Android icons and splash are Capacitor stock and NOT shared with iOS** — proven by md5, not by
+  inspection. That white ground is Android Studio's template, **not** the deliberate choice made for
+  the iOS icon (which carries its own recorded 2.50:1 contrast concern).
+
+## 🔴 CAPABILITY PARITY — NINETEEN CAPABILITIES AUDITED (V11.21)
+
+**Most plumbing is symmetric.** The shared `lib/native/*` modules branch only on `isNativePlatform()`,
+never on the platform name.
+
+✅ **A real merged manifest from a completed build proves `USE_BIOMETRIC`, `USE_FINGERPRINT`,
+`POST_NOTIFICATIONS`, `ACCESS_NETWORK_STATE` and `WAKE_LOCK` all arrive by PLUGIN MERGE** despite our
+own manifest declaring only `INTERNET`.
+
+🔴 **BUT THAT ARTEFACT IS DATED 27 JULY AND THE BLE PLUGIN ENTERED `capacitor.settings.gradle` ON 15
+AUGUST.** So the capability with the largest permission surface **has no build evidence at all** —
+everything about Bluetooth is inferred from the plugin's own manifest. ⚠️ **Absence in that artefact
+is not evidence of exclusion; it is evidence the plugin was not there yet.**
+
+### 🔴 Tapping a notification did nothing. BOTH platforms.
+
+`registerForPush(token, onOpenOrder?)` was called at **three sites and none passed the handler**, so
+`if (orderKey && onOpenOrder)` never fired. **The payload was correct on both platforms; the handler
+was simply never supplied.** ⚠️ **Invisible because push had never delivered on iOS to expose it** —
+a defect hidden behind a second defect.
+
+**FIXED:** `DeviceSetupGate` gained an optional `onOpenOrder` prop threaded to all three call sites.
+The dashboard passes a handler that switches to the orders tab and scrolls the card into view via a
+stable `order-<key>` id — **the demo id preserved character-for-character so `DemoLoopComplete` is
+untouched.** 🔴 **It navigates and does nothing else:** no modal opens, no action fires. *A
+notification tap is a request to look at something, never a decision.*
+
+✅ **COLD LAUNCH WORKS, AND IT IS READ FROM BOTH PLUGINS RATHER THAN ASSUMED.** iOS
+`notifyListeners(…, retainUntilConsumed: true)` and Android `notifyListeners(…, true)` both **retain
+the event until a listener consumes it**, so a tap that launches the app is replayed once `push.ts`
+attaches. **That is exactly why its listeners-first-and-awaited ordering matters** — the retention is
+the plugin's, the timely attach is ours.
+
+⚠️ **RESIDUAL: the listener attaches only when the DASHBOARD mounts**, so a cold launch routing to the
+KDS still does nothing. Pre-existing — the KDS has never called `registerForPush`.
+
+### 🔴 Android asked for LOCATION to connect a receipt printer
+
+`BleClient.initialize()` was called with no options, so `androidNeverForLocation` defaulted FALSE and
+the plugin's `SDK_INT >= S` branch requested `ACCESS_FINE_LOCATION` alongside `BLUETOOTH_SCAN` and
+`BLUETOOTH_CONNECT`. **An operator was asked to share their location to connect a printer — alarming,
+reasonable to refuse, and once refused indistinguishable from "printing is broken".**
+
+**FIXED:** `androidNeverForLocation: true`. ✅ **The assertion is true of this app and that is the only
+ground for making it** — `lib/printing` reads `deviceId`, `name`, `localName` and `uuids` off a scan
+result and nothing derives position from anything.
+
+⚠️ **THE PROMPT IS GONE AND THE DECLARATION IS NOT.** The plugin's manifest carries no
+`usesPermissionFlags="neverForLocation"`, so the merged manifest still declares the location
+permissions and a Play listing would still show Location. **That manifest half is a separate change.**
+
+⚠️ **No runtime permission handling exists in our code.** The plugin's `initialize()` raises the
+prompt; we map a throw to the single word `'unauthorised'`. **A manifest declaration is not a granted
+permission on modern Android.**
+
+### The notification channel, and a corrected fear
+
+⚠️ **"Notifications are silently dropped without a channel" is PRE-SDK behaviour.** FCM's SDK supplies
+a fallback, so pushes **do arrive** — but as a **white silhouette in an unnamed channel whose
+importance OVERRIDES our `priority: 'high'`.** An operator muting an unrecognised entry silences their
+order alerts with no way to connect the two.
+
+**FIXED:** a channel at importance 5 named **"New orders"**, with `hg_orders` agreeing across **four
+places** — the exported constant, the FCM payload's `channel_id`, `strings.xml`, and the manifest's
+`default_notification_channel_id` meta-data. ⚠️ **Changing that id orphans the channel rather than
+renaming it**, because Android keys the operator's own settings on it.
+
+🔴 **THE WHITE SQUARE IS A MISSING ASSET AND WAS DELIBERATELY NOT CREATED.** ⚠️ **Do NOT reuse the app
+icon:** an Android status-bar icon must be a **single-colour silhouette with transparency** — every
+non-transparent pixel is painted white — **which is the exact opposite of the App Store icon's
+no-alpha requirement.**
+
+### Gaps and asymmetries the parity audit found
+
+- **No `VIEW`/`BROWSABLE` intent filter**, so no hatchgrab.com link ever opens the Android app.
+- 🔴 **Of 40 `isNativeApp()` call sites, exactly ONE reads as an accident:** the WhatsApp Auto-replies
+  hide at `manage:8938`. Its comment weighs only iPad and App Review consequences, while the predicate
+  hides a control **the same comment records as live for Pizzeria Gusto.** **An Android operator loses
+  a working control for an iOS review reason.**
+- §40's commerce gates remain iOS-only **by design** — the Android build **shows** the upgrade CTAs,
+  and `purchaseCtaAllowed()` says so by construction rather than by enumeration.
+- ✅ **Android is ahead of iOS on exactly one row: it has a push token and iOS still has none.**
+
 
 ## VERIFICATION STATUS (V9.3, 28 July 2026)
 
@@ -10569,6 +10960,83 @@ states two totals and stops.**
 ✅ **No amount, no arithmetic, no `lib/email.ts` and nothing under `lib/payments/` was touched.**
 
 
+## 🔴 EVENT CANCELLATION: REFUNDS ARE THE MAIN EVENT, RELEASES ARE THE SMALLER HALF (V11.21)
+
+Earlier work addressed **releases** only. **Capture happens at CONFIRMATION** (`captureOnConfirmation`),
+so **any order the operator has already confirmed has had its money TAKEN.** An operator cancelling
+tomorrow's event having confirmed last night's pre-orders is in the **captured** case — **the normal
+one, not an edge.**
+
+🔴 **A HOLD EXPIRES BY ITSELF IN ABOUT A WEEK. A CAPTURED PAYMENT NEVER COMES BACK.**
+
+### What already exists, and what does not
+
+✅ **`refundOrder` is a complete bulk-ready engine** — guarded, idempotent, audited, and **it cannot
+throw past its guards**, so it needs no change to be called in a loop. The ledger genuinely holds what
+was **actually captured** (`amount_received` from Stripe, never the order total — the writer's own
+comment says so).
+
+**What does not exist is the DECISION-CARRYING.** The endpoint accepts no per-order input and imports
+nothing from `lib/payments/`. ⚠️ **Its loop has no per-item isolation because nothing in it can
+currently fail** — `sendConfirmationEmail` swallows every error by design, **so isolation was never
+needed and never written. Adding a call that CAN fail is what creates the requirement.**
+
+⚠️ **THE ROW DEFAULT MUST BE `remainingMinor`, NOT `capturedMinor`** — a part-refunded order would
+otherwise pre-fill an amount the server refuses. 🔴 **And that remainder can only be computed correctly
+by asking Stripe, one `refunds.list` per order, because A PENDING REFUND WRITES NO LEDGER ROW AT ALL.**
+
+### 🔴 THE UNSOLVED PROBLEM: partial execution
+
+§37 says **refund-then-cancel**, and the single-order path does exactly that. **But that ordering
+depends on an all-or-nothing property the loop destroys.** Sixteen refunds sent and #17 failing leaves
+a **partially executed cancellation with no sweep watching** — and refunds are irreversible, so there
+is no rollback.
+
+**Three candidate strategies, none chosen:**
+
+1. **Cancel first, then refund** — inverts §37 for the bulk path; a failure leaves
+   cancelled-but-unrefunded orders, recoverable by retrying. **Contradicts a written rule,
+   deliberately.**
+2. **Record intent first, then execute** — a durable list, so a partial run is resumable and visible.
+   More machinery; **the only genuinely safe one.**
+3. **Accept partial execution and report it loudly** — simplest; puts recovery on the operator with a
+   list of order numbers.
+
+⚠️ **PENDING IS THE LIKELY OUTCOME, NOT AN EDGE CASE.** Bulk refunds draw on a balance that has not
+paid out, and **nothing in the product surfaces a pending refund to anyone.** *"It worked"* and *"it is
+queued behind your balance"* look identical today.
+
+⚠️ **"Cancels every order" would require the cancel to reach `'collected'`, `'ready'` and `'cooking'`
+— statuses it has never touched.** That is a **scope change to the destructive statement itself**, not
+an addition to it.
+
+⚠️ **The surfaces invert:** manage has the good modal and holds **no** ledger or held-authorisation
+data; the dashboard and KDS hold both but **only for the loaded event**; and **the KDS deliberately
+shows no money at all.**
+
+### Verified from Stripe's own documentation — for operator copy
+
+- 🔴 **Processing fees from the original charge are NOT returned on a refund.** A truck cancelling an
+  event refunds customers in full **and absorbs the original fee.**
+- ✅ **Cancelling a payment BEFORE it completes costs nothing — so releasing a hold is FREE.** Same
+  event cancellation, **two very different costs** depending on whether the operator had confirmed.
+- ⚠️ **Refunds draw on the available Stripe balance**; if it is short they sit **PENDING** rather than
+  failing. A truck cancelling a big event on a quiet week could have refunds stuck pending.
+
+### The decided design, not yet built
+
+- **Cancelling an event cancels EVERY order. Not optional.** Checkboxes control whether each is
+  **REFUNDED**, not whether it is cancelled. An unticked order is cancelled and not refunded — the rare
+  case where the operator has settled another way.
+- **Incomplete orders ticked by default; COMPLETED orders unticked** — food was made and collected.
+- **Step 1:** the existing `EventCancelModal`, now showing a money summary.
+- **Step 2:** an **OPTIONAL "Edit refunds"** view — per-order list, editable amount per row.
+  ⚠️ **Progressive disclosure deliberately:** if they are cancelling, they are refunding everything
+  incomplete. **Forcing a list review on every cancellation slows the common path to serve the rare
+  one.**
+- One line of copy: *"Card fees on refunded orders aren't returned by Stripe."*
+
+
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
@@ -10827,6 +11295,131 @@ class on both surfaces therefore produces different spacing. Fixed to 10/16/14 w
 
 ✅ **Above is deliberately tighter than below** — that is what makes the row read as **belonging to the
 item above** rather than floating between two items. ⚠️ Everything above from the previous session remains as recorded — check whether the six brand assets and the wordmark work have been committed since. If `HEAD` still predates them, the branding and illustration arcs are now stacked in one working tree and the diff is getting harder to read with each pass.
+
+## 🔴 THE OVERLAY AUDIT — 82 OVERLAYS, FIVE SURFACES (V11.21)
+
+✅ **ALL THREE PREDICTED FAILURES CAME BACK NEGATIVE**, and they were the ones that would have mattered
+most: **no backdrop tap anywhere commits anything**; **no Undo reverses a UI without its money** (both
+money undos delete or compensate a **ledger row**, never a Stripe call, and `.neq('channel','online')`
+means an online card payment cannot reach that path); and **all 22 registered back closers are
+non-committing.** *The failures found are at the edges of good work, not on top of bad work.*
+
+### 🔴 The Cancel-order modal leaked state between orders — and the back handler created the path
+
+Both real arms reset **five** state pieces. `setShowCancelModal(false)` reset **one**. So
+back-dismissing carried the reason, the customer-facing note **and the refund checkbox** to the next
+order cancelled. 🔴 **The modal has no close glyph, no backdrop dismiss and no Escape, so that path did
+not exist until back was wired** — the fix introduced the defect.
+
+**FIXED:** one reset function per modal, called by all three arms; **the back closer is the same
+function object as the "Keep order" button**, not a fourth hand-kept copy. ✅ **The refund checkbox
+resets to `true` (offer the refund) rather than to the last operator's decision** — so the worst a
+future leak can do is **OFFER** a refund that can still be declined.
+
+⚠️ **Three other reset mismatches found and deliberately left:** `capacityConfirm` leaves the refused
+slot selected, `showOfflinePausedNotice` skips its ack write, and `editItemModal` is harmless because
+its opener re-initialises. **None moves money.**
+
+### 🔴 "Cancel event" was gated by a `window.confirm` whose SAFE button said "Cancel"
+
+On the operation that strands card holds, **"Cancel" meant "do not cancel"** — in the dialog where
+being wrong costs most. The **same endpoint was gated three ways**: `window.confirm` from the dashboard
+and the KDS, and a proper modal from manage that counts affected orders.
+
+**FIXED:** manage's modal lifted verbatim to `components/shared/EventCancelModal.tsx` and used by all
+three surfaces. Labels: **"Keep event" / "Cancel event"** — neither is the bare word *Cancel*.
+
+✅ `/api/events/affected-orders` authenticates on `dashboard_token`, which all three surfaces already
+hold — **and if the fetch fails the count line is simply ABSENT, so the modal never claims "0 orders"
+about an event it could not count.**
+
+✅ **The component owns its own fields and callers mount it conditionally, so every open is a fresh
+mount — the leak above is STRUCTURALLY IMPOSSIBLE there rather than merely fixed.**
+
+⚠️ Behaviour change: the dashboard and KDS can now send the optional reason and customer message the
+endpoint has always accepted. **Blank behaves identically to before.**
+
+### ⚠️ There is NO shared modal primitive. `components/ui/` holds one file: `Tooltip.tsx`
+
+**So the End-event confirm putting the destructive red "Yes" on the LEFT — one of twelve — is not a
+mistake against a standard. It is the absence of one.**
+
+🔴 **RECOMMENDATION ON RECORD: do NOT extract one now.** 82 hand-rolled overlays on live operator
+surfaces is a large, risky refactor for a mostly-cosmetic payoff. **Adopt a primitive for NEW overlays
+only**, so the drift stops growing without a big-bang rewrite.
+
+⚠️ **Corrections to the counts:** manage has **31** overlays, not 33 — two matches were prose inside
+comments. And the dashboard carries **27, not 13**: `PaymentActionsModal`, `DealsModal`, `BuzzerGrid`
+and the UserMenu sheet render from child components and were never in the wiring list. **Inert, not
+harmful.**
+
+### ✅ A RETRACTION WORTH MORE THAN THE FIX IT REPLACED
+
+The audit reported the refund form as having **no named dismissal arm**. **It has a "Cancel" button at
+`PaymentActionsModal.tsx:316`.**
+
+🔴 **THE METHOD WAS THE DEFECT.** Overlays were located by `fixed inset-0` and read through a **fixed
+55-line window**. The match was the shared `shell()` helper at `:152`; the refund branch's buttons sit
+**163 lines below**, so the window never reached them. **The audit reported the absence of something it
+had never looked at.**
+
+⚠️ **The same technique produced the other 81 rows.** Any *"no dismissal arm"* or *"no close glyph"*
+finding from that audit inherits the same blind spot.
+
+## Copy and the landing page (V11.21)
+
+### Kitchen-app claims now name iPhone
+
+All four read **"iPhone, iPad and Android kitchen app"** — the matrix row, its `ROW_FEATURE_MAP` twin,
+the hand-written Starter bullet, and footnote 3. ⚠️ **Footnote 3 needed REWRITING, not insertion:**
+*"Tablet not supplied… runs on any tablet"* would have listed a phone app inside a tablet footnote. It
+became *"Device not supplied… any phone or tablet"*.
+
+**Rationale: Pizzeria Gusto currently use PHONES, not tablets** — a claim naming only tablets
+under-sold what a live operator was doing every day.
+
+🔴 **THE PARITY GUARD HAS A HOLE, PROVEN BY COUNTERFACTUAL.** Reverting **only** the map key in a
+scratch copy **still returned 0 violations** — `if (!feature) continue` means a rename reports
+**CLEAN**. ✅ **What caught it was a cross-parse showing zero dead keys, which is one line the guard
+does not have.**
+
+⚠️ The row is now the longest cell at 36 characters, ahead of `Messenger & Instagram auto-replies`
+(34) — which already renders on all three surfaces.
+
+### Biometric copy was wrong on Android — three strings, not one
+
+`OperatorDeviceConfig.tsx` carried **three** user-visible Apple-brand strings; the toggle label was the
+most prominent. The biometric plugin is registered in `android/capacitor.settings.gradle`, so on an
+Android tablet **both clauses of *"No Face ID / Touch ID… set one up in iOS Settings"* were false.**
+
+🔴 **A MINIMAL SUBSTITUTION WAS REJECTED:** changing only *"iOS Settings"* leaves two Apple trademarks
+naming biometrics that do not exist there, **and a half-fix reads as reviewed-and-approved.**
+
+**All three now share one phrase: "fingerprint or face unlock".**
+
+⚠️ **`AppLockGate.tsx:76,95` still carries "Face / Touch ID"** and was outside scope — **so the
+settings card and the lock screen it configures now disagree, one two-word edit apart.**
+
+### Loyalty stamp cards, and the tagline
+
+**Digital loyalty stamp cards** added to the Max pricing card with the card's own `.soon-inline` badge.
+✅ **The comparison table already had the row** (`max: 'coming_soon'`), so card and table agree
+**without the DRY table being touched.**
+
+✅ **Guideline 2.1 clean:** the badge is a bare `<span>` with no `onClick`, `href`, `role` or
+`cursor: pointer`, and `/landing` redirects non-admins server-side in production.
+
+**Tagline:** both slots were already **one `<p>` with a `<br />`** — **the whole gap was inherited
+`line-height: 1.55`.** Fixed with two declarations in `landing.css`: hero **1.2**, footer **1.25**,
+both values already present in the file.
+
+🔴 **The footer stayed TWO lines, measured not assumed:** 37 characters against `.foot-tag`'s own
+`max-width: 28ch` — about 17.9em into a 16.8em cap — **so one line would have wrapped mid-clause**,
+which is worse than two clean lines.
+
+⚠️ **The Starter card was never missed** — the iPhone wording is in the working tree and simply
+**uncommitted and undeployed.** The live page still shows the old text.
+
 
 # 39. Buzzers — physical pagers against orders (V10)
 
@@ -11431,4 +12024,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.20
+HatchGrab Engineering Reference Manual · V11.21
