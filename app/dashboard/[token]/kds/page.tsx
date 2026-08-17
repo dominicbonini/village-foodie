@@ -123,6 +123,37 @@ export default function KdsPage() {
   // Absent ⇒ no guard; present-with-null ⇒ a pending DESELECT. Do not collapse those two.
   const pendingBuzzersRef = useRef<Record<string, number | null>>({})
   const peekPendingBuzzer = useCallback((orderKey: string) => pendingBuzzersRef.current[orderKey], [])
+  // ── OPTIMISTIC SCALAR GUARD — the flip-back guard, carried over from the dashboard ────────────────
+  // 🔴 WHY IT EXISTS HERE AT ALL. This board's pause handler refetches IMMEDIATELY after its own write.
+  // Without a guard, a refetch that started before the server committed returns the OLD value and
+  // silently undoes the operator's tap — the dashboard's own comment names it "the write-round-trip
+  // clobber (the flip-back bug)" (page.tsx:252-257). The dashboard has had this guard since that bug;
+  // the KDS never did.
+  // 🔴 A LOCAL EQUIVALENT, NOT AN EXTRACTION, AND THAT IS A DELIBERATE CHOICE. The dashboard's version
+  // is INLINE — a useCallback over `pendingWritesRef`, which it also shares with the buzzer guard
+  // (`buzzer:${key}`) and with category-availability (`catavail:`, which stores a `meta`). Extracting
+  // it would mean rewriting the dashboard's ref, its 12 call sites and two composite-key conventions,
+  // on the surface Pizzeria Gusto trades on — and the brief forbids changing the dashboard's use of it.
+  // ⚠️ THE PRECEDENT FOR THIS SHAPE IS FOUR LINES ABOVE: `pendingBuzzersRef` is the same decision, taken
+  // for the same reason, and its comment says so. The MECHANISM is copied exactly; if the dashboard's
+  // ever changes, this must change with it.
+  // ⚠️ `key in p`, NOT a truthiness test — the dashboard boxes its value as `{v}` so that a pending
+  // NULL (a Resume) is still truthy. Storing the bare value here means the "absent" and "pending null"
+  // cases would collapse under `if (!p[key])`, and a Resume is exactly a pending null.
+  const pendingWritesRef = useRef<Record<string, unknown>>({})
+  /** Return the value to use for `key`, releasing the guard once the server echoes the desired value. */
+  const applyPending = useCallback(<T,>(key: string, serverVal: T): T => {
+    const p = pendingWritesRef.current
+    if (!(key in p)) return serverVal
+    if (serverVal === p[key]) { delete p[key]; return serverVal }
+    return p[key] as T
+  }, [])
+  /** Register an optimistic write BEFORE its setState, so a refetch mid-write cannot clobber it. */
+  const markPending = useCallback((key: string, value: unknown) => { pendingWritesRef.current[key] = value }, [])
+  // 🔴 THE MANUAL EVENT PAUSE — `data.vanPausedUntil`, i.e. `truck_events.paused_until`. It used to be
+  // read from `data.truck.paused_until`, which /api/dashboard hardcodes to `null` on every response
+  // (route.ts:711), so this state was permanently null however many times the operator paused. See
+  // docs/kds-pause-fix-report.md. The state NAME is kept; only its source and its guard changed.
   const [pausedUntil, setPausedUntil] = useState<string | null>(null)
   const [extraWaitMins, setExtraWaitMins] = useState(0)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -396,7 +427,13 @@ export default function KdsPage() {
       const incomingOrders = data.orders ?? []
       for (const k of echoedBuzzerKeys(incomingOrders, peekPendingBuzzer)) delete pendingBuzzersRef.current[k]
       setOrders(prev => applyPendingBuzzers(mergeOrders(prev, incomingOrders), peekPendingBuzzer))
-      setPausedUntil(data.truck?.paused_until ?? null)
+      // 🔴 THE LIVE EVENT COLUMN, GUARDED. `data.vanPausedUntil` is `truck_events.paused_until` — the
+      // value `set_paused` actually writes and the customer ordering gate actually reads. The old
+      // `data.truck?.paused_until` is hardcoded `null` by the API, which is why the banner vanished
+      // roughly one second after every pause: this line was the thing that wiped it.
+      // ⚠️ `extra_wait_mins` on the line below is NOT the same case and is NOT changed — the same
+      // override block sources it from the selected EVENT (route.ts:712), so it already carries live data.
+      setPausedUntil(applyPending('vanPausedUntil', data.vanPausedUntil ?? null))
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
       setCategoryOrder(data.categoryOrder ?? [])
       setItemCategoryMap(data.itemCategoryMap ?? {})
@@ -457,7 +494,10 @@ export default function KdsPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, pin, selectedEventId])
+    // `applyPending` listed for the same reason as in togglePause: it is a `useCallback` with an empty
+    // dep array, so its identity is fixed and this cannot re-create fetchAll. Listing it keeps this
+    // hook's pre-existing exhaustive-deps warning naming exactly the two it named before this change.
+  }, [token, pin, selectedEventId, applyPending])
 
   // Per-DEVICE KDS prefs (localStorage, keyed by token so two trucks on one device don't collide):
   // the RESTORE now happens in the useState initialisers above (first paint, no flash); these two effects
@@ -970,6 +1010,13 @@ export default function KdsPage() {
     const paused_until = isPaused
       ? null
       : new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+    // 🔴 markPending BEFORE the setState, exactly as the dashboard does it. The `fetchAllRef.current()`
+    // at the bottom of this handler is a refetch of our own write; without this registration it would
+    // apply whatever the server happened to return and undo the tap. The guard releases itself as soon
+    // as the server echoes this value back.
+    // ⚠️ A RESUME REGISTERS A PENDING `null`, and that is a real guard, not an absent one — which is why
+    // applyPending tests `key in p` rather than truthiness.
+    markPending('vanPausedUntil', paused_until)
     setPausedUntil(paused_until)
     const res = await fetch('/api/dashboard/action', {
       method: 'POST',
@@ -982,7 +1029,10 @@ export default function KdsPage() {
       return
     }
     fetchAllRef.current()
-  }, [token, pin, pausedUntil])
+    // `markPending` is a useCallback with an empty dep array, so its identity never changes and adding
+    // it here cannot re-create this handler. It is listed only so this edit introduces no new lint
+    // finding — the file's pre-existing findings are left exactly as they were.
+  }, [token, pin, pausedUntil, markPending])
 
   const handleSetWait = useCallback(async (mins: number) => {
     setExtraWaitMins(mins)
@@ -1012,7 +1062,10 @@ export default function KdsPage() {
     setTruck(data.truck)
     setShowCookingStep(data.vanShowCookingStep ?? false)
     setOrders(prev => applyPendingBuzzers(mergeOrders(prev, data.orders ?? []), peekPendingBuzzer))
-    setPausedUntil(data.truck?.paused_until ?? null)
+    // The SECOND read path, and it had the identical defect. Same field, same guard — the guard is a
+    // no-op here in practice (nothing can be pending before the PIN is accepted) but the two seeds must
+    // not diverge; a field fixed in one place and not the other is how this class of bug survives.
+    setPausedUntil(applyPending('vanPausedUntil', data.vanPausedUntil ?? null))
     setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
     // Seeded here too, not just in fetchAll: this response is the FIRST board an operator sees after
     // entering the PIN. Without it the first paint would resolve every order unpaid until the next poll.

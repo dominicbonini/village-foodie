@@ -1101,10 +1101,26 @@ export function OrderCard({
 
       {/* Full-width coloured header — age-driven */}
       {cardStyle === 'cook' ? (
-        /* Cook: non-interactive two-line header, no collapse */
+        /* ── COOK: non-interactive two-line header, no collapse. ───────────────────────────────────
+           🔴 COOK AND FULL CARRY IDENTICAL TYPE. `cardStyle` decides WHETHER an element renders here —
+           no amount does — and it decides which item renderer runs below. It decides NO size, NO weight
+           and NO padding, in this block or anywhere else on the card. Every class below is Full's own
+           value, taken from the window arm a few lines down; the two are compared row by row in
+           docs/kds-type-equalise-report.md.
+           ⚠️ THIS BLOCK HAS BEEN WRONG IN BOTH DIRECTIONS. It carried `text-lg` against Full's
+           `text-3xl` (Cook smaller), then `text-4xl` against it (Cook larger). Neither was designed;
+           both were a size branching on a PRESENTATION flag. If a size here ever differs from the
+           window arm again, that is the defect — do not "rebalance" it, match it. */
         <div className={`w-full px-3 py-2 ${headerCls}`}>
-          <div className="flex items-baseline justify-between gap-1">
-            <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
+          {/* 🔴 `font-medium text-sm` SITS ON THE ROW, NOT ON THE CHILD — the same place Full's window
+              arm puts it. The time readout below used to SET `text-xs` while Full's INHERITED `text-sm`,
+              and that inherit-vs-set asymmetry is what let the two drift apart unnoticed. Both now
+              INHERIT from their row. Every other child of this row states its own size (`text-3xl`
+              order number, `text-[10px]` buzzer chip, `text-xs` status badge, `text-[10px]` late pill),
+              so none of them can see this declaration. */}
+          <div className="flex items-baseline justify-between gap-1 font-medium text-sm">
+            {/* Full's window arm renders `text-3xl font-bold` for the order number. So does this. */}
+            <span className="text-3xl font-bold text-slate-900 truncate">#{order.id}</span>
             {/* Buzzer chip — row 1, beside the order number. See the buzzerChip note. */}
             {buzzerChip}
             {/* The status badge — the same row that already carries the buzzer chip and the late pill,
@@ -1113,15 +1129,19 @@ export function OrderCard({
                 — see statusBadgeKds. ⚠️ A STATUS IS NOT AN AMOUNT: this renders in Cook, where no
                 monetary element does. */}
             {statusBadgeKds}
-            <span className="text-xs text-slate-600 flex-shrink-0 inline-flex items-center gap-1 ml-auto">
+            {/* Time — INHERITS `font-medium text-sm` from the row, exactly as Full's does. */}
+            <span className="text-slate-600 flex-shrink-0 inline-flex items-center gap-1 ml-auto">
               {timeLabel}
               {offsetLabel && (isLate
                 ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
                 : <>{` · ${offsetLabel}`}</>)}
             </span>
           </div>
-          <div className="flex items-center gap-1 mt-0.5">
-            {nameEl('text-xs text-slate-600 min-w-0')}
+          {/* Row 2 — `font-medium text-sm` on the row, the same as Full's row 2. The customer name
+              INHERITS it (it used to set `text-xs`, a step BELOW Full); the ✓ states `font-black
+              text-xs`, which is character-for-character what Full's ✓ states. */}
+          <div className="flex items-center gap-1 font-medium text-sm mt-0.5">
+            {nameEl('text-slate-600 min-w-0')}
             {allStruck && <span className="text-green-700 font-black text-xs ml-1">✓</span>}
           </div>
         </div>
@@ -1181,7 +1201,18 @@ export function OrderCard({
               {/* Row 1 — order # (left) + total (right) */}
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-1.5 min-w-0">
-                  <span className="text-3xl font-bold">#{order.id}</span>
+                  {/* 🔴 `text-slate-900` IS STATED, NOT INHERITED — and it is COOK'S value, adopted here
+                      on purpose. Without it this span inherits `headerCls`, which tints the number with
+                      the urgency state (text-green-900 / text-amber-900 / text-red-900 / text-slate-900,
+                      helpers.ts:149). Cook has always overridden that to slate-900, so the SAME ticket
+                      read the same number in two colours depending on which display the device was set
+                      to. It is now slate-900 on both.
+                      ⚠️ THE URGENCY SIGNAL IS NOT LOST — it was never carried by this glyph alone. The
+                      header keeps its coloured ground and its 4px coloured top border, and the name and
+                      time on row 2 still inherit the tint. Only the ticket number goes neutral.
+                      ⚠️ SOLO IS NOT THIS BRANCH. The dashboard's `text-2xl` order number is in the solo
+                      arm above and still inherits headerCls exactly as it always has. */}
+                  <span className="text-3xl font-bold text-slate-900">#{order.id}</span>
                   {/* Buzzer chip — left cluster with the order number. At the 240px KDS column this is
                       the only row with slack; row 2 already carries name + time + late pill.
                       See the buzzerChip note. */}
@@ -1254,6 +1285,8 @@ export function OrderCard({
             <div className="mb-2">
               {itemGroups.map(({ cat, lines }, gi) => (
                 <div key={cat}>
+                  {/* Category heading — Full's own `text-xs font-bold … uppercase tracking-widest`,
+                      character-identical to the window/solo arm's heading below. */}
                   <div className={`flex items-center gap-2 mb-1 ${gi > 0 ? 'mt-3' : ''}`}>
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
                       {cat === '__other__' ? 'Other' : cat}
@@ -1262,9 +1295,17 @@ export function OrderCard({
                   </div>
                   {lines.map((line, j) => (
                     <div key={j} className="mb-0.5">
-                      <p className="text-sm font-normal text-slate-900">{line.quantity}× {line.name}</p>
+                      {/* 🔴 FULL'S ITEM ROW IS `text-sm … py-1.5` ON THE ROW, with `font-normal` on the
+                          name run. This <p> is that row: same size, same weight, same vertical padding.
+                          It is a <p> and not a <button> because Full's row is a tick target carrying a
+                          price column and this one is neither — that is the ITEM RENDERER differing,
+                          which is deliberate and stays. The TYPE does not differ. */}
+                      <p className="text-sm font-normal text-slate-900 py-1.5">{line.quantity}× {line.name}</p>
                       {(line.modifiers?.length || line.note) && (
-                        <div className="pl-3">
+                        /* `pl-4` is Full's indent for this block (it read `pl-3` here). */
+                        <div className="pl-4">
+                          {/* Modifiers and notes — Full's `text-xs text-slate-500`, and the note keeps
+                              its `italic`, which is a style and not a size. */}
                           {line.modifiers?.map(m => (
                             <p key={m.name} className="text-xs text-slate-500">+ {m.name}</p>
                           ))}
@@ -1354,10 +1395,16 @@ export function OrderCard({
                     const allDone = ITEM_TICK_ENABLED && struck >= line.quantity
                     const partDone = ITEM_TICK_ENABLED && struck > 0 && !allDone
                     return (
+                      /* ⚠️ THE TYPE SIZE BELOW WAS
+                         `cardStyle === 'solo' || cardStyle === 'window' ? 'text-sm' : 'text-base'`.
+                         The `text-base` arm was DEAD — it is the cook arm of a ternary inside the renderer
+                         COOK NEVER RUNS, since Cook takes the itemGroups block above. Both live values
+                         were `text-sm`, so the literal is character-identical for solo and for Full and
+                         the misleading branch is gone. */
                       <div key={j}>
                         <button
                           onClick={ITEM_TICK_ENABLED ? () => itemIndex >= 0 && tapItem(itemIndex, line.quantity) : undefined}
-                          className={`w-full flex justify-between items-baseline gap-2 ${cardStyle === 'solo' || cardStyle === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 text-left ${
+                          className={`w-full flex justify-between items-baseline gap-2 text-sm rounded py-1.5 text-left ${
                             ITEM_TICK_ENABLED
                               ? `transition-all active:scale-[0.99] select-none ${allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'}`
                               : 'cursor-default'
