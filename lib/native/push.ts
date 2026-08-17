@@ -17,7 +17,34 @@ import { saveDeviceConfig } from './device'
 // exactly the bug this file is fixing. The cost of set-after is a theoretical concurrent double-attach,
 // which is harmless: two listeners both call saveDeviceConfig with the same token, and that write is an
 // idempotent upsert.
-let listenersAttached = false
+// ── 🔴 ONE ATTACH PER JS CONTEXT, AND THE GUARD IS NOW SYNCHRONOUS ─────────────────────────────────
+// WHAT WAS WRONG: the guard was a boolean CHECKED after `await import(...)` and SET after
+// `await Promise.all([...])`. Every call that reached the check before any one of them set the flag
+// attached its own full set — and `registerForPush` was being called from an effect whose dependency
+// chain was unstable, so it ran on every dashboard render. Six listener sets turned ONE notification tap
+// into SIX identical toasts, stacked over the Confirm and Reject buttons.
+//
+// 🔴 THE FIX IS A HELD PROMISE, NOT A BOOLEAN, AND THAT IS WHY IT CANNOT INTERLEAVE. `attachPromise` is
+// ASSIGNED SYNCHRONOUSLY, in the same tick as the test that reads it — there is no `await` between
+// `if (!attachPromise)` and `attachPromise = attachListeners()`, so JavaScript's single-threaded run-to-
+// completion guarantees no second caller can observe it null. Every subsequent call AWAITS THE SAME
+// PROMISE instead of starting a second attach. A boolean set after an await can be raced; a promise
+// assigned before one cannot.
+//
+// ⚠️ THE OLD COMMENT CALLED THE RACE HARMLESS, AND IT WAS WRONG BY THE TIME IT MATTERED. That reasoning
+// was scoped to the `registration` listener, whose handler is an idempotent upsert — two of them write
+// the same token twice and nothing notices. It was written when the TAP callback was still dead
+// (`onOpenOrder` had no caller), so nobody weighed a non-idempotent handler. A tap handler is not an
+// upsert: N listeners produce N navigations and N toasts.
+let attachPromise: Promise<void> | null = null
+// The handles, kept so they can actually be removed. `addListener` returns one per listener and they were
+// previously fed straight into Promise.all and discarded — nothing in this file could detach anything.
+let attachedHandles: Array<{ remove: () => void }> = []
+// 🔴 THE LIVE TAP HANDLER, HELD IN MODULE STATE RATHER THAN CAPTURED IN THE LISTENER'S CLOSURE. The
+// listener is attached ONCE and reads this on every press, so the newest mount's callback is always the
+// one that runs and a stale closure over an unmounted screen is structurally impossible. It also means a
+// changed callback costs no re-attach — which is what lets the effect depend on `token` alone.
+let currentOnOpenOrder: ((orderKey: string) => void) | undefined
 
 // -- THE ANDROID NOTIFICATION CHANNEL. ONE ID, AND IT IS DECLARED IN THREE PLACES THAT MUST AGREE. --
 // Android 8+ routes every notification through a channel, and a channel the app has not created is
@@ -39,11 +66,33 @@ let listenersAttached = false
 export const ORDER_CHANNEL_ID = 'hg_orders'
 
 /**
+ * Stop routing taps to a handler that is going away, and drop the plugin listeners.
+ *
+ * 🔴 THE HANDLER IS CLEARED UNCONDITIONALLY; THE LISTENERS ARE ONLY REMOVED WHEN ASKED. A dashboard
+ * unmount must stop its own callback firing — that is the leak this closes — but tearing the plugin
+ * listeners down on every unmount would also throw away the `registration` listener, and a token
+ * delivered while nothing is listening is GONE (no queue, no replay — see the note below). So the
+ * default is the cheap, correct half.
+ *
+ * @param full also remove the plugin listeners and allow a fresh attach. For teardown, not for a remount.
+ */
+export function releasePushHandlers(full = false): void {
+  currentOnOpenOrder = undefined
+  if (!full) return
+  for (const h of attachedHandles) { try { h.remove() } catch { /* already gone */ } }
+  attachedHandles = []
+  attachPromise = null
+}
+
+/**
  * Request push permission, register with APNs, and attach the resulting device token to THIS device's
  * van_devices row (via /api/native/bind-device). Also wires the tap handler → deep-link to the pending
  * order. Safe no-op on web. Call once the device is bound to a van (Package 3).
  */
 export async function registerForPush(token: string, onOpenOrder?: (orderKey: string) => void): Promise<void> {
+  // 🔴 SET SYNCHRONOUSLY, BEFORE ANY AWAIT, so the attached listener is pointing at the newest handler
+  // even if the attach below is already in flight or long finished.
+  currentOnOpenOrder = onOpenOrder
   if (!Capacitor.isNativePlatform()) return
   // ⚠️ INVARIANT (still true, do not delete): A JS try/catch CANNOT protect against a NATIVE throw from a
   // Capacitor plugin. On Android, @capacitor/push-notifications is FCM-backed: with no valid Firebase
@@ -85,25 +134,36 @@ export async function registerForPush(token: string, onOpenOrder?: (orderKey: st
     // SAME FAMILY AS the manual's "wiring is not data flow": every layer existed and every layer was
     // correct — permission, registration, listener, save, endpoint, column — and the event had no
     // receiver at the instant it fired. Do not reorder these back above the awaits.
-    if (!listenersAttached) {
-      await Promise.all([
-        // FCM/APNs token → persist to this device's row so the server push path can target it.
-        PushNotifications.addListener('registration', (t: { value: string }) => {
-          void saveDeviceConfig(token, { push_token: t.value })
-        }),
-        PushNotifications.addListener('registrationError', (err: unknown) => {
-          console.warn('[push] registration error:', err)
-        }),
-        // Tapped a notification (app was background/closed) → deep-link into the pending order. Attached
-        // here too: a tap that LAUNCHES the app can fire this before any later attach point is reached.
-        PushNotifications.addListener('pushNotificationActionPerformed', (action: { notification: { data?: Record<string, unknown> } }) => {
-          const data = action?.notification?.data
-          const orderKey = data && typeof data.orderKey === 'string' ? data.orderKey : null
-          if (orderKey && onOpenOrder) onOpenOrder(orderKey)
-        }),
-      ])
-      listenersAttached = true
+    // 🔴 SINGLE-FLIGHT. The test and the assignment are in one synchronous step — see the note on
+    // `attachPromise` above — so N concurrent callers produce exactly ONE listener set and the other
+    // N-1 await it.
+    if (!attachPromise) {
+      attachPromise = (async () => {
+        const handles = await Promise.all([
+          // FCM/APNs token → persist to this device's row so the server push path can target it.
+          PushNotifications.addListener('registration', (t: { value: string }) => {
+            void saveDeviceConfig(token, { push_token: t.value })
+          }),
+          PushNotifications.addListener('registrationError', (err: unknown) => {
+            console.warn('[push] registration error:', err)
+          }),
+          // Tapped a notification (app was background/closed) → deep-link into the pending order. Attached
+          // here too: a tap that LAUNCHES the app can fire this before any later attach point is reached.
+          // 🔴 IT CALLS `currentOnOpenOrder`, NOT A CAPTURED ARGUMENT. One listener, always the newest
+          // handler — which is what makes N mounts produce N-times-nothing instead of N navigations.
+          PushNotifications.addListener('pushNotificationActionPerformed', (action: { notification: { data?: Record<string, unknown> } }) => {
+            const data = action?.notification?.data
+            const orderKey = data && typeof data.orderKey === 'string' ? data.orderKey : null
+            if (orderKey && currentOnOpenOrder) currentOnOpenOrder(orderKey)
+          }),
+        ])
+        attachedHandles = handles
+      })()
+      // ⚠️ A FAILED ATTACH MUST NOT LATCH. Clearing the holder on rejection restores the retry the old
+      // set-after-success boolean gave us, without restoring its race.
+      attachPromise.catch(() => { attachPromise = null })
     }
+    await attachPromise
 
     // -- THE CHANNEL, BEFORE register(). ANDROID ONLY — createChannel is a no-op the plugin does not
     // implement on iOS, so it is guarded rather than called blind. Created BEFORE registration so it

@@ -4,7 +4,7 @@
 // van_devices row via /api/native/bind-device (truck-scoped server-side).
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, type DeviceConfig, type VanRef } from '@/lib/native/device'
-import { registerForPush } from '@/lib/native/push'
+import { registerForPush, releasePushHandlers } from '@/lib/native/push'
 import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity, setAppLockPin, clearAppLockPin } from '@/lib/native/appLock'
 import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
 
@@ -36,6 +36,23 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
   const mounted = useRef(true)
   useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
 
+  // ── 🔴 THE TAP HANDLER, HELD IN A REF SO THE EFFECT DOES NOT DEPEND ON IT ───────────────────────
+  // `onOpenOrder` is `openOrderFromPush`, a useCallback over `showToast`. `showToast` is memoised now,
+  // so this is stable in practice — but the ref makes the effect's independence STRUCTURAL rather than
+  // conditional on a hook two files away staying memoised. registerForPush reads the handler from module
+  // state at press time, so passing the ref's current value is enough and a change costs no re-attach.
+  // ⚠️ WRITTEN IN AN EFFECT, NOT DURING RENDER — a ref write during render is the `react-hooks/refs`
+  // finding this file already carries elsewhere, and there is no reason to add another. Effects run
+  // top-down, so this one lands before runSetup's effect below reads the ref.
+  const onOpenOrderRef = useRef(onOpenOrder)
+  useEffect(() => { onOpenOrderRef.current = onOpenOrder }, [onOpenOrder])
+
+  // 🔴 CLEAR THE HANDLER ON UNMOUNT. Without this an unmounted dashboard's callback stays reachable from
+  // the module-level listener and fires into a screen that no longer exists. Handles are captured and
+  // removable in lib/native/push.ts (releasePushHandlers(true)); the plugin listeners themselves are
+  // deliberately NOT torn down here — see that function's note on the registration listener.
+  useEffect(() => () => { releasePushHandlers() }, [])
+
   const runSetup = useCallback(async () => {
     if (!isNativeApp()) { setLoading(false); return }
     setFetchError(false); setLoading(true)
@@ -47,13 +64,13 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     const device = result.device
     const vanList = result.vans
     // Already configured (row exists WITH a van) → apply side effects, no card.
-    if (device && device.van_id) { void registerForPush(token, onOpenOrder); setLoading(false); return }
+    if (device && device.van_id) { void registerForPush(token, onOpenOrderRef.current); setLoading(false); return }
     // Single active van → auto-bind SILENTLY (no van question; screen defaults to 'dashboard', changeable in
     // This-device settings). Per spec: single van = no modal.
     if (vanList.length === 1) {
       const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
       if (!mounted.current) return
-      if (saved) void registerForPush(token, onOpenOrder)
+      if (saved) void registerForPush(token, onOpenOrderRef.current)
       setLoading(false); return
     }
     // Genuinely 0 (fetch OK, no active vans) OR >1 → show the card. Pre-fill van from the single-van staff hint.
@@ -62,10 +79,15 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     setScreen(device?.default_screen ?? 'dashboard')
     setNeedsSetup(true)
     setLoading(false)
-    // NOTE: onOpenOrder IS IN THE DEPS DELIBERATELY. runSetup closes over it, and registerForPush attaches the
-    // listener ONCE per JS context (its `listenersAttached` latch), so a stale closure here would attach a
-    // handler that navigates using yesterday's state and could never be replaced.
-  }, [token, onOpenOrder])
+    // ── 🔴 `token` ONLY. `onOpenOrder` IS DELIBERATELY *OUT* OF THE DEPS NOW, AND THAT IS THE FIX. ────
+    // It used to be in them, on the reasoning that a stale closure would otherwise be attached forever.
+    // That reasoning was right about the problem and wrong about the remedy: `onOpenOrder` changed
+    // identity on every dashboard render, so this callback did too, so the effect below re-ran on every
+    // render — and each run raced the attach latch until SIX listener sets were live and one tap produced
+    // six toasts. The staleness is now handled where it belongs, by module state that the listener reads
+    // at press time (see onOpenOrderRef above and `currentOnOpenOrder` in lib/native/push.ts), so this
+    // effect can be stable AND current at once.
+  }, [token])
 
   useEffect(() => { void runSetup() }, [runSetup])
 
@@ -76,7 +98,7 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     setSaving(true)
     const saved = await saveDeviceConfig(token, { van_id: vanId, default_screen: screen })
     setSaving(false)
-    if (saved) { void registerForPush(token, onOpenOrder); setNeedsSetup(false) }
+    if (saved) { void registerForPush(token, onOpenOrderRef.current); setNeedsSetup(false) }
   }
 
   // NEVER TRAP: every state has an escape — Retry (error), "Go to Settings → Vans" (no van), Continue (picker),

@@ -1,7 +1,7 @@
 'use client'
 // app/dashboard/[token]/page.tsx
 
-import { useState, useEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
@@ -18,7 +18,7 @@ import { STATUS, DEFAULT_CAT_CONFIG, DEFAULT_SOUND_CONFIG } from '@/components/d
 import {
   getAsapSlot, getCatConfig, catCookSecs,
   calcMinsFromNow, getAllDayCounts, resolveCollectionTime,
-  getOrderCookSecs, getCombinedUrgency, cookAmberLeadMins
+  getOrderCookSecs, getCombinedUrgency, cookAmberLeadMins, orderAnchorId
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { PaymentActionsModal } from '@/components/dashboard/PaymentActionsModal'
@@ -202,6 +202,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
   const[orders,setOrders]=useState<Order[]>([])
+  // 🔴 THE ORDERS, READABLE FROM A CALLBACK THAT OUTLIVES ITS RENDER. `openOrderFromPush` awaits a
+  // refetch and then has to read the RESULT — the `orders` it closed over is by then a render old. Written
+  // during render (the same pattern this file already uses for fetchAllRef), so it is current by the time
+  // any awaited continuation resumes.
+  const ordersRef=useRef<Order[]>([])
   // Offline walk-ups optimistically added here (isolated from `orders`/fetchAll). Merged into the display
   // list below; cleared on the reconnect drain (OfflineBanner onSynced), when the real orders arrive.
   const[deviceQueuedOrders,setDeviceQueuedOrders]=useState<Order[]>([])
@@ -313,14 +318,41 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // own and a toast names the order rather than an error appearing. See docs/native-fixes-report.md A5.
   // ⚠️ TWO ANIMATION FRAMES, NOT ONE. The tab switch is a state change; the card does not exist in the DOM
   // until React has committed that render. One frame is the commit, the second is after paint.
-  const openOrderFromPush=useCallback((orderKey:string)=>{
+  // ── 🔴 THE TAP FETCHES. IT DOES NOT WAIT AND HOPE. ────────────────────────────────────────────────
+  // WHAT WAS WRONG, AND WHY A LONGER TIMEOUT WOULD NOT HAVE FIXED IT: this push exists to announce an
+  // order created WHILE THE WEBVIEW WAS SUSPENDED. The board's `orders` state predates that order by
+  // definition — Realtime's socket was down and `postgres_changes` does not replay — so the card cannot
+  // be in the DOM. The old lookup ran two animation frames (~32ms) after the tap and then declared the
+  // order missing; the 60s poll brought it in some time later, which is why the operator saw the card
+  // and a stack of "not on this board" toasts at the same time. Waiting 200ms, or 2s, would have been
+  // the same bug with a different constant.
+  // 🔴 SO THE TAP CAUSES THE DATA TO EXIST: await a refetch, then resolve against the FETCHED ORDERS
+  // rather than against the DOM, and only scroll once we know the order is there.
+  // ⚠️ THAT IS ALSO WHAT MAKES THE TOAST HONEST. After an awaited refetch, "not in `orders`" is no longer
+  // ambiguous between "not loaded yet" and "not on this board" — the fetch is the discriminator, and only
+  // the second survives it. The toast now fires exactly when its own copy is true.
+  const openOrderFromPush=useCallback(async(orderKey:string)=>{
     setActiveTab('orders')
+    // The SAME fetch the 60s poll and the Realtime handler call. ⚠️ It can coincide with either — both
+    // are plain GET-then-setState with no accumulation, so a double fetch costs one request and lands the
+    // same rows twice. It is not guarded, deliberately: a guard would make the tap wait on someone else's
+    // in-flight request and inherit its age.
+    try{ await fetchAllRef.current() }catch{ /* offline / 429 — fall through and resolve on what we have */ }
+    // 🔴 THE CHECK IS INSIDE THE FRAMES, AND THAT ORDERING IS LOAD-BEARING. `await fetchAll()` resolves
+    // when the REQUEST is done, not when React has committed the rows — `setOrders` is asynchronous, so
+    // reading the ref immediately after the await would see the PRE-FETCH list and reproduce the very bug
+    // this replaces, one layer down. `ordersRef` is written in a LAYOUT effect (below the state), which
+    // runs synchronously after commit and therefore before any requestAnimationFrame callback. So by the
+    // time this runs, the ref holds what the fetch produced and the card is in the DOM.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const el=document.getElementById(`order-${orderKey}`)
-      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});return}
-      showToast('That order is not on this board - check the event','error')
+      // 🔴 RESOLVED AGAINST THE FETCHED DATA, NOT THE DOM. The DOM is then only used to SCROLL to
+      // something we already know exists — which is what makes the toast's copy true when it fires.
+      const found=ordersRef.current.some(o=>o.order_key===orderKey)
+      if(!found){showToast('That order is not on this board - check the event','error');return}
+      const el=document.getElementById(orderAnchorId(orderKey,isDemo))
+      if(el)el.scrollIntoView({behavior:'smooth',block:'center'})
     }))
-  },[showToast])
+  },[showToast,isDemo])
   // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
   // The TruckEvent itself, not an id: the shared modal names the venue, the date and the time window,
   // none of which an id carries. `null` is closed — the modal is mounted conditionally, so every open is
@@ -687,6 +719,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // auto-select effect (priority 0) and must not react to the replaceState the sync effect performs,
   // or the URL would re-select on every change. Null when absent ⇒ the no-param path is untouched.
   const urlEventParamRef=useRef<string|null>(searchParams.get('event'))
+  // 🔴 THE ORDERS, READABLE FROM AN AWAITED CALLBACK. useLayoutEffect, not useEffect: it runs
+  // SYNCHRONOUSLY after commit and therefore strictly before any requestAnimationFrame callback, which is
+  // the ordering openOrderFromPush depends on. A plain effect would be flushed after paint and could lose
+  // that race.
+  useLayoutEffect(()=>{ordersRef.current=orders},[orders])
   const fetchAllRef=useRef<()=>void>(()=>{})     // LIVE refetch (poll / orders-realtime / vans-realtime) — never re-seeds config
   const reseedRef=useRef<()=>void>(()=>{})       // CONFIG reseed (event-switch / trucks-realtime / reconnect) — forceSeed
   // CONFIG is seeded on nav/auth/trucks-change ONLY, never by the order poll. Flag flips true after the first
@@ -3403,13 +3440,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:`order-${o.order_key}`} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:`order-${o.order_key}`} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={orderAnchorId(o.order_key,isDemo)} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onRefund={submitRefund} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} heldAuthorisation={heldAuthorisations.has(o.order_key)} pendingPayment={paymentOverlay.get(o.order_key)??queuedPayment(o)} conflict={cardConflict(o)} offline={isOffline} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -3437,7 +3474,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // "money went wrong on this order", never a second alerting mechanism.
                   const unrecorded=hasUnrecordedPayment(o as never,payments[o.order_key]??[],paymentFailures.has(o.order_key))
                   return (
-                    <div key={o.order_key} className={`bg-white rounded-xl px-4 py-3 flex items-center justify-between ${unrecorded?'border-2 border-red-600':'border border-slate-200'}`}>
+                    /* 🔴 THE DONE BUCKET NOW CARRIES AN ANCHOR TOO. It had none, so a tap on an order
+                       someone else had already completed could never find it and always toasted — a
+                       second, independent miss on top of the demo-prefix one. This row is not an
+                       OrderCard, so the id goes on the row itself rather than through `anchorId`. */
+                    <div key={o.order_key} id={orderAnchorId(o.order_key,isDemo)} className={`bg-white rounded-xl px-4 py-3 flex items-center justify-between ${unrecorded?'border-2 border-red-600':'border border-slate-200'}`}>
                       <div className="min-w-0 flex-1">
                         {unrecorded&&(
                           <p className="text-[11px] font-black text-red-700 mb-1 tracking-wide">⚠ PAYMENT NOT RECORDED</p>

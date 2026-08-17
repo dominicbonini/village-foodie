@@ -185,3 +185,18 @@ export function getAllDayCounts(orders: Order[]): Record<string, number> {
   }
   return counts
 }
+// ── 🔴 THE ORDER CARD'S DOM ANCHOR — ONE BUILDER, BOTH SIDES ────────────────────────────────────────
+// The push-tap deep link finds a card with `document.getElementById(...)`, and the card sets that id from
+// its `anchorId` prop. Those were two hand-written template literals in two places and they DISAGREED:
+// the render prefixed `demo-order-` on a demo truck while the search always looked for `order-`, so a
+// tap on a demo board could never find anything. A second miss came from the Done bucket passing no
+// anchorId at all.
+//
+// 🔴 BOTH SIDES CALL THIS NOW, so the prefix cannot drift again — a change here moves the render and the
+// lookup together, which is the property the two literals never had.
+// ⚠️ KEYED ON `order_key`, THE UUID, NEVER ON `id`. `id` is a per-event display number that restarts at
+// 1, so two events' order #10 would collide in the DOM. That was already right on both sides; it is
+// written down here so it stays right.
+export function orderAnchorId(orderKey: string, isDemo: boolean): string {
+  return isDemo ? `demo-order-${orderKey}` : `order-${orderKey}`
+}
