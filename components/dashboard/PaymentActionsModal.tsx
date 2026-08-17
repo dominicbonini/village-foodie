@@ -21,6 +21,7 @@
 // operator's benefit; lib/payments/refund recomputes it from Stripe and refuses anything that does not
 // fit. Nothing this component sends decides how much money moves.
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 /** Our seven, mirrored from lib/payments/refund — the labels an operator reads are only here. */
 const REASONS: { value: string; label: string }[] = [
@@ -148,14 +149,42 @@ export function PaymentActionsModal({
     else setError(res.message)
   }
 
-  const shell = (children: React.ReactNode) => (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={e => e.target === e.currentTarget && !busy && onClose()}>
-      <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-        {children}
+  // ── 🔴 PORTALLED TO <body>, AND THAT IS THE BACKDROP FIX — NOT A Z-INDEX CHANGE ─────────────────
+  // 🔴 THE DEFECT: on the dashboard at `lg:` and up, the Orders list lives inside
+  // `<div className="@container lg:flex-1 …">` (app/dashboard/[token]/page.tsx). Tailwind's
+  // `@container` is `container-type: inline-size`, which applies `contain: layout style inline-size` —
+  // and LAYOUT CONTAINMENT MAKES THAT ELEMENT THE CONTAINING BLOCK FOR ITS FIXED-POSITION DESCENDANTS.
+  // This modal is rendered FROM INSIDE an OrderCard, so `fixed inset-0` resolved against the orders
+  // COLUMN rather than the viewport: the dim stopped at the column's right edge and the `lg:w-48`
+  // Kitchen capacity sidebar beside it stayed undimmed — the lighter vertical strip reported from an
+  // iPad. Portrait and phone never showed it, because the sidebar and the `lg:` column only exist above
+  // that breakpoint.
+  // ⚠️ THE COMMENT IN OrderCard THAT SAYS THIS "centres on the VIEWPORT" WAS WRITTEN BEFORE
+  // `@container` WAS ADDED TO THAT COLUMN, and stopped being true when it was. It is left as it is —
+  // this is the fix that makes it true again.
+  // 🔴 WHY A PORTAL AND NOT A HIGHER Z-INDEX. Nothing is painting OVER the backdrop; the backdrop is
+  // not reaching. No z-index can extend an element beyond its own containing block, so raising it would
+  // have changed nothing while looking like a fix — and the containment is deliberate (the order-card
+  // grids size their columns off that container), so removing `@container` would change the grid
+  // layout. Moving the modal out of the container is the only change that fixes the cause and touches
+  // no layout.
+  // ⚠️ NOTHING ELSE MOVES. Same markup, same classes, same z-50, same opacity, same handlers. React
+  // events still bubble through the REACT tree, not the DOM tree, so every parent handler behaves
+  // exactly as before; only the DOM node's position changes.
+  // ⚠️ NULL ON THE SERVER, NOT RENDERED IN PLACE. This component already returns null unless `open`,
+  // and `open` is only ever true after a client interaction — so the server never emits this shell and
+  // there is nothing for hydration to mismatch against.
+  const shell = (children: React.ReactNode) => {
+    const overlay = (
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        onClick={e => e.target === e.currentTarget && !busy && onClose()}>
+        <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+          {children}
+        </div>
       </div>
-    </div>
-  )
+    )
+    return typeof document === 'undefined' ? null : createPortal(overlay, document.body)
+  }
 
   // ── AFTER A REFUND: ONE SCREEN, AND IT SAYS WHICH OF THE TWO THINGS HAPPENED. ───────────────────
   // 🔴 "Refund sent" AND "Refunded" ARE NOT THE SAME SENTENCE. Stripe accepts a refund on a Connect

@@ -54,7 +54,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 // collection?" by string equality now asks the shared predicate, so the two new names get the struck-prep
 // clear, the undo affordance, the payment-warning wording and the post-action refresh that `collected`
 // has always had — rather than silently taking the else branch.
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, PLAIN_PAID_ACTIONS } from '@/lib/native/orderGate'
 import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/reachability'
 import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
 import { NotificationSettings } from '@/components/native/NotificationSettings'
@@ -1968,11 +1968,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // fallback (an offline-CREATED order is not in `orders` yet — the KDS has no create path); the two prep
   // callbacks are the solo-operator pill auto-clear, which the KDS has no equivalent of. The KDS's own
   // queued-op counter is the mirror case: it passes onQueued/onQueuedUndone and this surface does not.
+  // ── 🔴 WHAT A PLAIN PAID BUTTON RECORDS ON THIS TRUCK ────────────────────────────────────────────
+  // ONE expression, read twice: it decides what goes in the request body AND what the toast says, so the
+  // two can never disagree about what the ledger received.
+  // 🔴 `takes_cash` IS A DECLARATION, NOT AN UNKNOWN. It is a live control in Manage -> Order settings
+  // ("Do you take cash?"), always reachable, with a per-event override on this page. OFF therefore means
+  // the operator has said they do not take cash — so a plain "Mark paid" here is a card payment, and is
+  // recorded as one. ON means the card renders the explicit Cash/Card pair instead, the plain names are
+  // not what an operator taps, and nothing is asserted: a plain `mark_paid` reaching the server on such a
+  // truck is the PAYMENT NOT RECORDED repair, where nobody was asked. NULL is the honest value there.
+  // ⚠️ "CARD" HERE IS THE OPERATOR'S OWN TERMINAL, NEVER STRIPE. A Stripe-settled order books
+  // `channel:'online'` from lib/payments/online.ts and never reaches these actions at all — and the 409
+  // held-authorisation guard refuses `mark_paid` outright while a card hold is live.
+  // ⚠️ `selectedOrDefaultEvent` is the SAME object `activeEvent` resolves to (`resolvedEvent` below is
+  // assigned from it); it is read here because this sits above that assignment.
+  const plainPaidMethod:'card'|null=resolvePaidStep(truck,selectedOrDefaultEvent).takesCash?null:'card'
   const handleGateResult=useGatedActionResult<Order>({
     showToast,
     findOrder:(k)=>orders.find(o=>o.order_key===k)??deviceQueuedOrders.find(o=>o.order_key===k),
     refreshPendingStatus,dropOverlayEntry,scheduleReadyEmail,undoReady,
     runAction:(a,k)=>doAction(a,k),
+    plainPaidMethod,
     refetch:fetchAll,setActionLoading,refreshPendingPayment,
     onPrepStrike:(orderKey,order)=>{
       setStruckPrep(prev=>{
@@ -1994,7 +2010,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setActionLoading(`${action}-${orderKey}`)
     try{
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
-      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
+      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{}),...(PLAIN_PAID_ACTIONS.has(action)&&plainPaidMethod?{method:plainPaidMethod}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
       await handleGateResult(result,action,orderKey)
     }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
   }

@@ -32,6 +32,35 @@ import { isCollectAction, type GateResult } from '@/lib/native/orderGate'
 import { removePendingStatusOp } from '@/lib/native/outbox'
 import type { ShowToast } from '@/lib/useToasts'
 
+// ── 🔴 THE PAYMENT-METHOD VOCABULARY. ONE SET OF WORDS, TAKEN FROM PaymentActionsModal. ─────────────
+// That modal is where an operator already reads how an order was paid, and it prints exactly:
+//     methods.has('cash') → `Paid in cash`
+//     methods.has('card') → `Paid on your card machine`
+//     method NULL/mixed   → `Paid in person` + the hint `Cash or your card machine — not recorded`
+// These are the same two phrases, lower-cased to sit inside a sentence. 🔴 DO NOT INVENT A SHORTER ONE
+// HERE: "paid card" would be a second vocabulary for one fact, and the modal is the one an operator
+// opens when the money is in question.
+const METHOD_PHRASE: Record<'cash' | 'card', string> = {
+  cash: 'paid in cash',
+  card: 'paid on your card machine',
+}
+/** The three names that BOOK a payment. ⚠️ `undo_mark_paid` is deliberately NOT here — it has its own
+ *  branch below and this predicate runs first, so including it would swallow the undo's own wording. */
+const PAY_ACTIONS = new Set(['mark_paid', 'mark_paid_cash', 'mark_paid_card'])
+function isPayAction(action: string): boolean { return PAY_ACTIONS.has(action) }
+/**
+ * The phrase for what was recorded, or `null` when nothing was — in which case every caller keeps the
+ * wording it had before this existed.
+ * 🔴 THE SUFFIXED NAMES ANSWER FOR THEMSELVES. `mark_paid_cash` IS the operator's answer, so it needs
+ * no help from the caller and cannot disagree with what the server derives from the same string.
+ * The PLAIN names have no answer in them, so they take the surface's own — see `plainPaidMethod`.
+ */
+function payMethodPhrase(action: string, plain: 'cash' | 'card' | null | undefined): string | null {
+  if (action.endsWith('_cash')) return METHOD_PHRASE.cash
+  if (action.endsWith('_card')) return METHOD_PHRASE.card
+  return plain ? METHOD_PHRASE[plain] : null
+}
+
 /** The minimum a resolved order must carry for the shared branches: its display number and its buzzer.
  *  Anything else a surface needs (the dashboard's `items`, for the prep strike) reaches its own callback
  *  through the generic, never through this shape. */
@@ -70,6 +99,20 @@ export interface GatedActionEffects<TOrder extends GatedOrderLike> {
   onPrepStrike?: (orderKey: string, order: TOrder) => void
   /** Un-strike them, for the offline Undo. Pair it with `onPrepStrike` or pass neither. */
   onPrepUnstrike?: (orderKey: string) => void
+  /**
+   * 🔴 WHAT THE PLAIN PAID BUTTONS RECORD ON THIS SURFACE, RIGHT NOW — and it is the SAME expression
+   * the caller uses to decide what to put in the request body. One source of truth per surface, so the
+   * toast can never claim a method the ledger did not receive.
+   *
+   * `'card'` on a truck whose `takes_cash` is OFF: that setting is a DECLARATION ("Do you take cash?"),
+   * so a plain "Mark paid" there is a card payment by the operator's own configuration.
+   * `null` on a truck that DOES take cash — the plain names are not what its card renders (it renders
+   * `mark_paid_cash` / `mark_paid_card`), so a plain `mark_paid` reaching here is the PAYMENT NOT
+   * RECORDED repair, where nobody has been asked how the money arrived. NULL means "not recorded",
+   * which is the truth, and the copy stays silent.
+   * ⚠️ OMITTED ⇒ null ⇒ today's wording, byte for byte. It cannot change a surface that does not pass it.
+   */
+  plainPaidMethod?: 'cash' | 'card' | null
 }
 
 /**
@@ -86,7 +129,7 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
   const {
     showToast, findOrder, refreshPendingStatus, dropOverlayEntry, scheduleReadyEmail, undoReady,
     runAction, refetch, setActionLoading,
-    refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike,
+    refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike, plainPaidMethod,
   } = fx
 
   return useCallback(async (result: GateResult, action: string, orderKey: string): Promise<void> => {
@@ -154,14 +197,30 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
         'error',
         { duration: 20000, action: { label: 'Record payment', run: () => runAction('mark_paid', orderKey) } },
       )
-    } else if (action === 'mark_paid') {
-      showToast(`Order #${num} marked paid`, 'success', { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_mark_paid', orderKey) } })
+    } else if (isPayAction(action)) {
+      // ── 🔴 THE METHOD, IN THE MODAL'S OWN WORDS ──────────────────────────────────────────────────
+      // `mark_paid_cash` and `mark_paid_card` MATCHED NO BRANCH and fell to the `labels[action] || action`
+      // fallback at the end of this chain, so an operator who tapped Cash was shown the literal
+      // string "Order #12 mark_paid_cash" — a variable name, on a counter, with no Undo offered at all.
+      // That is what this branch replaces.
+      // 🔴 THE WORDING IS PaymentActionsModal's, NOT A SECOND VOCABULARY. That modal already prints
+      // `Paid in cash` and `Paid on your card machine` for these two values; the same phrases are used
+      // here so an operator meets one set of words for one fact.
+      // ⚠️ NULL STAYS SILENT AND THE STRING IS UNCHANGED — `Order #N marked paid`, byte for byte, which
+      // is what a truck that takes cash still sees for the repair action. The modal is silent about
+      // method in that case too ("Paid in person — Cash or your card machine — not recorded").
+      showToast(`Order #${num} ${payMethodPhrase(action, plainPaidMethod) ?? 'marked paid'}`, 'success',
+        { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_mark_paid', orderKey) } })
     } else if (action === 'undo_mark_paid') {
       showToast('Undone — payment removed')
     } else if (action === 'undo_collected') {
       showToast('Undone — order not collected')
     } else if (isCollectAction(action)) {
-      showToast(`Order #${num} collected`, 'success', { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_collected', orderKey) } })
+      // Same rule for the one-press completion: the method rides beside "collected" when there is one,
+      // and the sentence is unchanged when there is not.
+      const phrase = payMethodPhrase(action, plainPaidMethod)
+      showToast(`Order #${num} collected${phrase ? ` — ${phrase}` : ''}`, 'success',
+        { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_collected', orderKey) } })
     } else if (action === 'ready') {
       // Status commits now but the customer email is DEFERRED 4s (defer_email on the request): an Undo
       // within 4s cancels the email AND reverts the status.
@@ -191,6 +250,6 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
   }, [
     showToast, findOrder, refreshPendingStatus, dropOverlayEntry, scheduleReadyEmail, undoReady,
     runAction, refetch, setActionLoading,
-    refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike,
+    refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike, plainPaidMethod,
   ])
 }

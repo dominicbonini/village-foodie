@@ -483,11 +483,24 @@ export async function POST(req: NextRequest) {
       // 'in_person_other' for all three — the money arrived at the hatch, outside the platform, either
       // way — and 'card' here means THE TRUCK'S OWN CARD MACHINE, never an online payment. A method is a
       // label on a money event and no arithmetic reads it (20260730_takes_cash_and_payment_method.sql).
-      // ⚠️ THE PLAIN NAME STAYS NULL. A one-press truck that has not opted into the cash/card split is
-      // never asked, so there is no answer to record — and NULL means "not recorded", which is the truth.
-      // Defaulting it to 'cash' would be a fabricated fact in the money ledger.
+      // ⚠️ THE PLAIN NAME NO LONGER FORCES NULL — IT NOW HONOURS `body.method`, exactly as `mark_paid`
+      // has since the split was built. It could not before, so a ONE-PRESS truck using
+      // "Mark paid & collected" could never record a method however it was configured.
+      // 🔴 THE CLIENT ONLY SENDS ONE WHEN THE TRUCK'S OWN SETTING ANSWERS THE QUESTION. `takes_cash` is a
+      // DECLARATION — Manage → Order settings, "Do you take cash?" — so with it OFF a plain completion is
+      // a card payment by the operator's own configuration, and the client says so. With it ON the plain
+      // names are not what the card renders, nothing is sent, and this stays NULL.
+      // ⚠️ ABSENT OR UNRECOGNISED ⇒ NULL, AND THE `CHECK` CANNOT BE VIOLATED. The only values that can
+      // reach the column are the two string literals in this expression — anything else, including a
+      // hand-rolled POST sending `method: 'cheque'`, falls to null. This is the SAME shape mark_paid uses
+      // (route.ts:~2273); the vocabulary is validated here rather than relying on a 23514.
+      // ⚠️ NOTHING ELSE IN THIS BRANCH MOVED: `channel` is still 'in_person_other', the amount is still
+      // the outstanding balance, the three idempotency layers still key on order + amounts, and the
+      // held-authorisation guard above still skips the money write entirely.
       const collectMethod: 'cash' | 'card' | null =
-        action === 'collected_cash' ? 'cash' : action === 'collected_card' ? 'card' : null
+        action === 'collected_cash' ? 'cash'
+        : action === 'collected_card' ? 'card'
+        : (body.method === 'cash' || body.method === 'card' ? body.method : null)
       const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       // Record the from-status so Undo reverts ONE stage to the ACTUAL previous status (ready if it was

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.23
+HatchGrab Engineering Reference Manual · V11.24
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.23**
+**Version 11.24**
 
 August 2026
 
@@ -15,6 +15,227 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.24 — 17 August 2026
+
+Delta over V11.23 — **push works end to end and the cause was a key that never parsed; a
+notification tap fired six toasts and looked for an order that could not yet exist; an event pause
+that never reverted, only its display; and three planning over-reaches on Cook's type size, all
+mine.**
+
+🔴 **THIS IS THE FIRST ENTRY IN THE ARC CONTAINING DEVICE-VERIFIED ITEMS.** Everything in V11.23
+rested on source reads. Provenance is marked throughout: LIVE-VERIFIED (SQL against prod),
+LOG-VERIFIED (a production function log), DEVICE-VERIFIED (seen on the iPad), EXECUTION-VERIFIED (a
+harness was run), READ, INFERRED.
+
+- 🔴 **PUSH NEVER REACHED APPLE, AND THE CAUSE WAS THE PRIVATE KEY FAILING TO PARSE.**
+  LOG-VERIFIED from `/api/orders/submit`: `error:1E08010C:DECODER routines::unsupported` — Node's
+  OpenSSL refusing the key **at JWT signing, before any network call.** ✅ **Everything else in the
+  chain was already correct** and was cleared one by one: the trigger condition, the van resolution
+  `event_id → truck_events.van_id → van_devices`, `notify_enabled`, and two 64-character tokens.
+  **One key parse away from working.** ⚠️ **The variable is `APNS_KEY`** — a planning-side guess of
+  `APNS_PRIVATE_KEY` was wrong, the same invented-identifier habit as `truck_events.name`. §36.
+- 🔴 **THE STATED CAUSE WAS REFUTED BY EXECUTION: `\n` WAS ALREADY HANDLED.** Against a throwaway
+  P-256 key, literal `\n` alone was **already accepted** — the previous line did that exact replace.
+  What actually failed, all proven and all now handled: wrapping double quotes · wrapping single
+  quotes · surrounding whitespace · **escaped `\r\n`, the likely live candidate, because it is what a
+  Windows-side copy produces and it looks identical in Vercel's editor.** Real CRLF needs no handling.
+  One operation beyond the four requested — `.replace(/\\r\\n/g,'\n')` — because expanding `\n` alone
+  leaves a stray literal backslash-r and merely **moves** the error. 🔴 **THE LESSON: the diagnosis
+  asserted a fix without checking whether it was already present.** §36.
+- 🔴 **TWO THROWS ESCAPED A FUNCTION DOCUMENTED AS NEVER THROWING.** `providerToken` and
+  `http2.connect` sat **outside** the send function's own `try`, which is how the failure escaped a
+  path whose contract is "non-fatal"; a session-error listener was added for the one unhandled
+  `'error'` event that could have taken an order submission down. **Generalise it: a function
+  documented as never throwing needs its SETUP inside the try, not just its body.** §36.
+- 🔴 **THE FAILURE WAS INVISIBLE BY CONSTRUCTION.** Every APNs rejection was swallowed — 400, 403 and
+  410 produced **no log line at all**; `res.sent` was computed, returned and **discarded at the call
+  site**, so a successful send was recorded **nowhere, in no table**; a missing variable logged one
+  `console.warn` and returned a **success-shaped object** — the `EMAIL_FROM_ADDRESS` shape again.
+  **Push had been broken since the key was set, and only a hand-placed test order with a Vercel log
+  open found it.** Now every outcome logs at `error` with status and Apple's `reason`, a per-send
+  summary carries attempted/succeeded/failed and the host, and three distinct messages separate
+  missing key, missing armour and unparseable key. ⚠️ **A durable record is feasible WITHOUT a
+  migration** — `action_audit_log` fits as-is — but needs a client threaded in from the submit route.
+  **Reported, unbuilt.** §36.
+- 🔴 **`BadDeviceToken` NO LONGER NULLS THE TOKEN.** APNs returns it **both** for a dead token **and**
+  for a valid token sent to the wrong host, and the old cleanup nulled it either way. **No send had
+  ever reached Apple, so the host had never been exercised — the first working send would have
+  destroyed two valid tokens.** APNs adopts `fcm.ts`'s shape: keep the token, log loudly.
+  ⚠️ **BOTH FILES ALREADY NAMED WHICH SHAPE APPLIED** — `SENDER_ID_MISMATCH`'s comment says nulling
+  there would be *"the exact failure mode APNs's BadDeviceToken handling has"*. **A note from a
+  previous session doing exactly the work it was written for.** The `INVALID_ARGUMENT` circuit
+  breaker was declined with reasons: its `> 1` clause would leave a **single-device van unprotected,
+  which is the common case here.** EXECUTION-VERIFIED over eight batch shapes → `nulled: 0`, where
+  the old code destroyed both. **`410 Unregistered` still nulls, and that is itself a parity
+  requirement.** §36.
+- ✅ **DEVICE-VERIFIED: PUSH WORKS END TO END.** Token, key, host, delivery and tap-through all
+  confirmed on the iPad. **This closes the first of the three long-standing hardware questions.**
+  ⚠️ **Vercel environment changes require a redeploy** — saving the variable does not reach running
+  functions. ⚠️ **Sandbox-vs-production remains unrecordable, and the column is not the hard part:
+  the Capacitor plugin does not report `aps-environment`.** Described, nothing built. §36.
+- 🔴 **THE PUSH PAYLOAD CARRIES ONLY `type` AND `orderKey`** — APNs and FCM alike. No `event_id`, no
+  `van_id`, no `truck_id`, so a tap cannot collide with `seededRef`. 🔴 **THE PLANNING ERROR THIS
+  CORRECTS:** the manual records the trigger resolving `event_id → van_id → van_devices`, which is
+  how the **send target** is chosen; that was carried into an assumption about **payload contents**
+  without being read. **Server-side resolution is not payload contents.** §36.
+- 🔴 **THE TAP'S ORDER LOOKUP WAS STRUCTURALLY UNSATISFIABLE, NOT UNLUCKY.** The push exists to
+  announce an order created while the WebView was suspended; the lookup ran ~32ms after the tap and
+  the order arrives on the **60-second poll**. **The one path that most needs to find a new order was
+  the one guaranteed not to — and a longer timeout would not have fixed it.** The tap must CAUSE the
+  data to be there: refetch, then resolve against the **fetched data**, not the DOM. ⚠️ An identifier
+  hypothesis was **REFUTED** — both sides are `order_key`. Two secondary misses on the same line: the
+  **Done bucket passes no `anchorId`**, and **`isDemo` flips the prefix to `demo-order-`** while the
+  tap always searched `order-`. `DeviceSetupGate` mounts **once**, on the dashboard, so the red
+  banner was a dashboard surface — the KDS's own toast is **hardcoded green even on failure**. §11, §36.
+- 🔴 **SIX TOASTS MEANT SIX LISTENERS, AND THE ROOT WAS AN UNMEMOISED `showToast`.** DEVICE-VERIFIED:
+  one tap produced six identical stacked toasts **covering the Confirm and Reject buttons.** The
+  effect had no cleanup and its dependency chain was unstable at the root, so
+  `openOrderFromPush → runSetup →` the effect re-created on **every dashboard render**; each run
+  called `registerForPush`, whose latch was **checked after an `await import` and set after an
+  `await Promise.all`**, and **no handle was ever captured or removed.** 🔴 **THE COMMENT ANTICIPATED
+  THE RACE AND SCOPED IT WRONG** — it called the race "harmless", true of an idempotent upsert, and
+  **a tap handler is not idempotent.** Fixed with a promise assigned synchronously alongside its own
+  test, captured handles, a `releasePushHandlers` cleanup, module-state for the handler, and a
+  memoised `showToast`. EXECUTION-VERIFIED — 12 concurrent calls plus 5 remounts gave **3
+  `addListener` calls total, 1 handler run per tap.** §11, §36.
+- ⚠️ **A NEAR-MISS WORTH RECORDING: THE FIX ALMOST REPRODUCED THE BUG ONE LAYER DOWN.** The first
+  version read `ordersRef` **immediately after `await fetchAll()`**, which reproduces the same defect
+  because `setOrders` is async — **same shape, different clock, and it would have looked fixed on
+  every test that did not race.** Now a `useLayoutEffect` ref write, checked inside the frames. §11.
+- 🔴 **TOASTS NOW CAP AT 3 AND COLLAPSE IDENTICAL CONSECUTIVE STRINGS.** Previously appended
+  unconditionally with no dedup and no cap at `fixed bottom-6 z-50`. **On a kitchen screen a toast
+  must never cover an action control.** Collapse **replaces**, so six identical errors become one
+  while three distinct Ready/Mark-paid/Collected toasts keep **three separate Undos**, and the
+  survivor runs the newer closure. ⚠️ **BOUNDED RESIDUAL, DELIBERATE AND COMMENTED:** when the
+  refetch itself throws offline, a toast can still fire on an order that exists — **wrong-but-visible
+  beats silent**, and the offline banner already carries that state. §11.
+- 🔴 **THE EVENT PAUSE NEVER REVERTED. ONLY THE KDS'S DISPLAY OF IT DID.** DEVICE-VERIFIED symptom:
+  pause pressed, banner appeared, event unpaused itself about a second later. The server correctly
+  wrote `truck_events.paused_until` and the customer gate reads exactly that column — ✅ **customers
+  were genuinely blocked throughout** — but the KDS reads `data.truck?.paused_until`, and
+  🔴 **`/api/dashboard` sets that field to a hardcoded `null` on every response**, in a block whose
+  own comment says the legacy `trucks.*` columns are left unread. ⚠️ **That comment is true of the
+  SERVER and false of the KDS. A hardcoded `null` in an API response is worse than a missing guard,
+  because it is invisible to anything reading the client.** **Cleared, not causes:** no timezone bug,
+  no minutes/timestamp confusion, and nothing server-side clears a manual pause but an explicit
+  resume. §5, §11, §27.
+- 🔴 **`isPaused` WAS PERMANENTLY FALSE, SO INVESTIGATING DESTROYED THE EVIDENCE.** Deriving from the
+  same always-null value, it could never be true — **so the toggle could never take its resume arm,
+  and every further tap sent another 2-hour pause**, overwriting the timestamp. **LIVE-VERIFIED:**
+  `paused_until = 17:13:19` against `now = 17:47` — 15:13 plus exactly two hours, the KDS's hardcoded
+  duration from an earlier tap, already expired; two reads seven minutes apart showed **no movement
+  at all.** *Recorded as a diagnostic hazard: when a control cannot reach its resume arm, pressing it
+  to investigate rewrites the state you are investigating.* §11.
+- 🔴 **THE DASHBOARD'S OWN COMMENT NAMES THIS BUG, AND THE GUARD WAS NEVER CARRIED ACROSS.** The
+  dashboard reads `data.vanPausedUntil` — the live event column — ORs it with two others and guards
+  each through `applyPending`, *"the write-round-trip clobber (the flip-back bug)"*. **Third time in
+  this session a hazard was solved on one surface, documented in a comment, and left unsolved on the
+  other** — after the six status badges and the six pre-gate steps. ⚠️ **The guard alone would not
+  have saved it: the column mismatch is primary; the missing guard only makes it surface in one
+  second rather than sixty.** §11.
+- **THE PAUSE FIX, AND WHAT WAS DELIBERATELY NOT COPIED.** Both KDS read paths now take
+  `data.vanPausedUntil` through a **local** `applyPending`/`markPending` guard, and `togglePause`
+  registers its intent **before** the setState. 🔴 **Of the dashboard's three OR'd sources only one
+  was taken** — `data.truck.paused_until` is the hardcoded null, and **`vanOnlinePausedUntil` was
+  excluded with reasons: the dashboard gates it on `deviceOnline && activeEventLive` rather than
+  OR-ing it raw**, so copying the expression would have imported a condition without its guard. **A
+  local equivalent was chosen over extraction** because the dashboard's `applyPending` is inline over
+  a ref shared with the buzzer and category-availability conventions across **17 call sites**, and
+  the KDS's existing `pendingBuzzersRef` already documents the same decision for the same reason.
+  EXECUTION-VERIFIED — 19 assertions, **including reproducing the old defect first.** ⚠️ **THE LIMIT
+  OF THAT PROOF: a harness over a transcription proves the state machine and says nothing about the
+  wiring** — if `vanPausedUntil` were absent from the real response every assertion still passes and
+  the banner still vanishes. ✅ **`data.truck?.paused_until` now has exactly ONE consumer left in the
+  repo.** §5, §11, §27.
+- 🔴 **REJECT SKIPPED THE REASON MODAL ON THE KDS, AND THE REASON REACHES THE CUSTOMER.** The
+  interception sits **before** `gatedAction`, so the shared post-gate handler could not carry it. **A
+  KDS rejection sent a reasonless email and left `rejection_reason` NULL**, and **no undo path exists
+  for a rejection.** 🔴 **The first parity gap in the arc producing a WRONG OUTWARD-FACING ARTEFACT**
+  rather than a missing confirmation. ✅ **The review bounded it:** of thirteen dispatchable actions
+  only two have a pre-gate step, and `undo_mark_paid` was **already at parity because its guard lives
+  inside the shared `OrderCard` rather than in a page** — *the argument for shared components stated
+  as evidence rather than principle.* Cancel is **latent, not live**, and was left unwired
+  deliberately: its modal carries a refund decision, not just a reason. §11, §37.
+- **`RejectOrderModal` IS SHARED — three judgements worth keeping.** The component owns the reasons,
+  their order, their labels, the "Other promotes the note to required" rule and `composeRejectReason`;
+  each surface keeps its own request; **the reason rides in the body BEFORE `gatedAction`, so an
+  offline reject replays with it.** 🔴 **THE BACK-HANDLER INSTRUCTION WAS WRONG AND WAS NOT
+  FOLLOWED** — registering from the component would move the entry out of the dashboard's **ordered
+  priority list**, so back would start closing a system-driven notice instead of the modal. Each page
+  keeps its own entry. **No price is passed in the KDS modal**, since that surface has a mode whose
+  whole definition is hiding amounts. §11.
+- 🔴 **A THIRD POST-GATE COPY EXISTS: THE BUZZER HANDLER, ON BOTH SURFACES.** Found by the same
+  duplication proof that found the second. Out of scope, **unfixed.** §11.
+- 🔴 **THE TWO AXES, AND THE CROSSING THAT REMAINED.** *Payment/Collected (a SWITCH) decides only when
+  the order leaves this screen, and therefore whether the payment and collected buttons exist.
+  Full/Cook (a DISPLAY control) decides only what the card shows. Neither crosses.* The crossing:
+  `hideAmounts` followed Full/Cook but `viewMode` followed `boardMode`, so a Payment/Collected-**off**
+  device rendered the cook card **stripping prices regardless of what Full said** — a lifecycle switch
+  overruling a display control. Fixed: `viewMode` keeps the three lifecycle references, a new
+  **`cardStyle`** takes all seven presentation ones. ✅ **`cardStyle` defaults to `viewMode`, so the
+  dashboard — which passes neither — resolves both to `'solo'` and is untouched by construction
+  rather than by care;** `grep -c cardStyle` on the dashboard page returns **0**. ⚠️ **THE COLLISION
+  IN THE BRIEF, RESOLVED:** *"Full means everything"* named the part-paid row and refund amounts, but
+  **both are `<button>`s opening `PaymentActionsModal`** — payment controls, not display. **Where the
+  two rules meet, the switch wins.** *The error was calling a button an amount because it has a number
+  in it.* §9, §11.
+- 🔴 **THREE PLANNING OVER-REACHES ON COOK'S TYPE SIZE, ALL MINE.** *"Cook should be larger, it is
+  read from a metre away"* was argued into three separate briefs from my own reasoning, **never from a
+  stated requirement. The actual requirement was: same sizes, and nothing shrinks.** Cook and Full
+  differ in **what is shown**, not how big it is. Final state: all thirteen elements match Full
+  exactly, EXECUTION-VERIFIED by source extraction (`EVERY ROW IDENTICAL: True`), with **both modes
+  inheriting** rather than both setting — because both-set would have meant editing Full. 🔴 **THE
+  MECHANICAL FORM OF THE RULE, WHICH IS CHECKABLE: `cardStyle` may decide WHETHER an element renders.
+  It may never decide HOW LARGE it is.** ⚠️ **The shrink diagnosis, worth keeping:** it was `text-lg`
+  against `text-3xl` on the order number and `text-xs` against inherited `text-sm` on the name and
+  time. **Padding was never in play** — window and cook both use `px-3 py-2`, and padding had been
+  assumed to be part of it in three briefs. §9.
+- ⚠️ **TWO BRANCHES READ AS COOK-vs-FULL BUT SEPARATE SOLO-vs-KDS.** `OrderCard.tsx:1151` gates a
+  padding on `cardStyle === 'window' ? 'px-3 py-2' : 'px-4 py-3'` and `:1451` a margin; **both
+  separate SOLO from the KDS, and Cook and Full take the same arm of each.** Collapsing either would
+  change solo's header on the live dashboard. 🔴 **They are MIS-NAMED, not mis-written** — a branch
+  reading `cardStyle === 'window'` where the real question is *"is this the dashboard or a kitchen
+  screen?"* invites exactly the misreading it caused. **Left as-is; a comment on each is the right
+  fix, not an edit to the expression.** §9.
+- **THE EMPTY PRICE COLUMN TOOK THREE SITES, NOT ONE.** Row D (observed), Row A (whose gate moved from
+  inside the span to around it, **incidentally restoring the span's original child expression** —
+  evidence the earlier build was compensating for the wrong structure), and 🔴 **Row B, the deal-slot
+  spacer — a bare `w-16` span EMPTY IN BOTH MODES**, which would have reserved the very column the
+  task existed to reclaim. **A row empty in both modes is invisible to a before/after comparison of
+  the mode being changed. Enumerate the space; do not diff the symptom.** §9.
+- ⚠️ **METHOD.** 🔴 **THE QUERY MUST MATCH THE SHAPE OF WHAT IT IS CHECKING — third instance in one
+  day:** `information_schema.columns` against a CHECK-constraint migration · `net._http_response`
+  against an APNs send that goes out via **`node:http2` from a Next.js route**, where the empty
+  result was **noise, not evidence, and was the premise the whole first diagnosis was built on** ·
+  `getElementById` against an order the poll had not yet fetched. **A check that cannot fail is not a
+  check.** · **EXECUTION KEEPS BEATING ARGUMENT** — four instances here, and its limit stated in the
+  same report. · **A COMMENT'S QUALIFIER CAN STOP BEING TRUE**: "harmless" was correct until a
+  non-idempotent consumer joined. · **Three more contradictory briefs, all mine, all caught by
+  stopping** — plus **a `git stash` run and immediately reversed, reported unprompted rather than
+  buried.** · **"Do not copy the expression blindly" earned its place twice**, and both were found
+  only because the brief asked for the derivation to be quoted before it was reused. M8–M12.
+
+**STATE AT CLOSE, 17 AUGUST 2026.** ✅ **PUSH IS DEVICE-VERIFIED END TO END** — the first hardware
+question of three, closed. 🔴 **ELEVEN TASKS' WORK IS UNCOMMITTED** across `OrderCard.tsx`, the KDS
+page, the dashboard page, `lib/apns.ts`, `lib/native/push.ts`, `lib/useToasts.ts` and the new
+`components/shared/RejectOrderModal.tsx`. ⚠️ **Q9 WAS NEVER RUN** — one pause on the deployed build,
+banner surviving past a second. **The harness cannot reach it.** 🔴 **"The dashboard is unchanged in
+every branch" is Gusto's live card and remains the strongest claim across twenty-plus reports still
+resting on a source read.**
+
+**AWAITING A DECISION:** whether `data.truck.paused_until` — now down to one consumer — is removed or
+kept · whether the KDS pause gets the dashboard's duration picker, and whether `window.confirm`
+stays on a native surface · the third post-gate copy in the buzzer handler · comments on
+`OrderCard.tsx:1151` and `:1451` · the APNs durable record in `action_audit_log` · the phone-width
+button labels, where `Ready step` and `Payment/Collected` collapse to bare icons.
+
+**AWAITING HARDWARE:** the tap landing on a freshly-pushed order · a cold launch, which **likely
+drops the deep link entirely** and needs the plugin's launch-payload path rather than a React effect
+· the toast cap on a real screen · Full and Cook across both switch settings · reject opening its
+modal from all three configurations · **the two iPad display defects and the Safari-ejection
+experiment, both predating this session — the tree has moved substantially since they were framed,
+so attribution degrades with each deploy.**
 
 ## V11.23 — 17 August 2026
 
@@ -830,7 +1051,7 @@ The brief stated that **§16 records "No FK cascade on `order_payments` — deli
 - **`order_payments` has TWO foreign keys, BOTH `ON DELETE CASCADE`** — to `orders(order_key)` and to `trucks(id)`. Deleting the orders destroys the ledger; deleting the truck destroys it again independently. **The cascade was deliberate, but written to prevent orphaned money events — not with retention in mind.** `action_audit_log` has **zero** foreign keys, which remains correct.
 - **Applied:** `trucks.hide_pricing`, `trucks.print_trigger_mode`, `trucks.deletion_requested_at`; on **`operators`**: `deletion_requested_at`, `deletion_due_at`, `deletion_requested_by`, `deletion_last_notified_at`.
 - ⚠️ **`deletion_requested_by` and `deletion_last_notified_at` are on `operators`, NOT `trucks`.** A check against `trucks` alone finds neither and wrongly concludes they are missing. This happened.
-- ⚠️ **`trucks.paused_until` is DEAD** — nothing has written it since the truck-level guard was removed from order submission. A column that looks live and is not.
+- ⚠️ **`trucks.paused_until` is DEAD** — nothing has written it since the truck-level guard was removed from order submission. A column that looks live and is not. 🔴 **AND IT WAS WORSE THAN DEAD (V11.24): `/api/dashboard` sets the RESPONSE field `truck.paused_until` to a hardcoded `null`, and the KDS read that field for its entire pause display** — so an operator's pause vanished about a second later while customers stayed correctly blocked. Fixed by pointing the KDS at `data.vanPausedUntil`. **The response field now has exactly ONE consumer left** (the dashboard's guarded three-way OR), which makes removing it a much smaller decision than it looked. ⚠️ **`update_truck`'s allow-list still names `paused_until`, so the column is WRITABLE in principle — no client posts the key.** Section 5, Section 11.
 
 ### Delta
 - **Account deletion built** (new §41) — anonymisation plus identity removal, never row deletion.
@@ -2747,7 +2968,9 @@ Two valid paths create an order: Manual (operator via Add Order; lands confirmed
 
 ### OrderCard component
 
-There is ONE OrderCard component for all order ticket rendering. It accepts a viewMode prop (solo / window / cook) and branches internally. Never create WindowOrderCard/CookOrderCard, never duplicate render logic, never have a layout page build its own ticket display. The KDS page is a thin layout wrapper that composes OrderCard.
+There is ONE OrderCard component for all order ticket rendering. Never create WindowOrderCard/CookOrderCard, never duplicate render logic, never have a layout page build its own ticket display. The KDS page is a thin layout wrapper that composes OrderCard.
+
+🔴 **IT TAKES TWO MODE PROPS, NOT ONE (V11.24), AND THE SPLIT IS THE POINT.** `viewMode` (solo / window / cook) is **LIFECYCLE** — it follows `boardMode`, i.e. the Payment/Collected switch, and decides **which buttons exist** (`renderButtons`, `completionBtn`). `cardStyle` (solo / window / cook) is **PRESENTATION** — it follows the Full/Cook display control and decides **which header renders, which item renderer runs, and whether an element is present at all**. `hideAmounts` carries money only. ⚠️ **`cardStyle` DEFAULTS TO `viewMode`**, so the dashboard — which passes neither — resolves both to `'solo'` and is untouched by construction rather than by care. **They were ONE prop until V11.23/V11.24, and while they were, a Payment/Collected-off device rendered the cook card and stripped prices regardless of what Full said** — a lifecycle switch overruling a display control. 🔴 **THE CHECKABLE RULE: `cardStyle` may decide WHETHER an element renders. It may NEVER decide how large it is** — no text size, font weight or padding may branch on it. Cook and Full carry **identical** type; they differ in what is shown.
 
 ### Single dropdown component (V4)
 
@@ -3394,7 +3617,7 @@ New columns on `truck_events`: `paused_until`, `online_paused_until`, `extra_wai
 
 - **Vestigial** — `trucks.paused_until`, `truck_vans.paused_until`, `truck_vans.online_paused_until`, `trucks.extra_wait_mins`, `trucks.extra_wait_started_at` are now unwritten/unread for these features. LEFT IN PLACE (removal post-trial, not mid-stack).
 
-> **BACKLOG (V6.6)** — the KDS pause badge still reads `data.truck?.paused_until` (now null post event-scoping) → it under-reports the event pause on the kitchen screen (display-only; ordering is still blocked server-side). Event-source it like the dashboard badge (Section 27).
+> **BACKLOG (V6.6) — ✅ CLOSED IN V11.24, AND IT COST MORE THAN THE BACKLOG NOTE PREDICTED.** The note said the KDS pause badge "under-reports the event pause (display-only)". 🔴 **The display was the smaller half.** `isPaused` derives from the same always-null value, so it was **permanently false** — the toggle could never reach its resume arm and **every further tap sent another 2-hour pause**, overwriting the timestamp. **A permanently-false boolean is not a display bug when a control branches on it.** Both KDS read paths now take `data.vanPausedUntil` through a local `applyPending`/`markPending` guard, and `togglePause` registers its intent before the setState. ⚠️ **This note sat here from V6.6 to V11.24 while the defect was live** — a backlog entry that named the field and the fix, and was read only after the symptom was reported from hardware. Section 11.
 
 > **DEFERRED (V6.6) — "per-event operating overrides".** kitchen capacity, `time_selection_enabled`, slot cadence, and `auto_accept` are truck-wide and COULD optionally vary per event (festival vs quiet pub). These are NOT cross-event contamination (they're set-once operating modes, not live-event activities), so they were deliberately left truck-scoped; making them per-event-overridable is a post-trial config feature (Section 27).
 
@@ -3794,7 +4017,7 @@ show_cooking_step lives per vehicle (truck_vans). It adds a "Cooking" step betwe
 
 The dashboard Menu & Stock tab edits category prep and batch inline on the category header. Prep time is a minutes input plus a 0s/30s seconds select; batch size is a number input that is blank when null (placeholder ∞). updateCategoryField saves on blur/change. The category rename, allow-notes toggle, and full category settings remain on the Manage page only.
 
-> **KDS pause badge note (V6.6)** — the KDS reads its pause indicator from `data.truck?.paused_until`, which is now null because pause moved to `truck_events` (Section 5). The KDS controls write correctly (event-scoped) but the badge can under-report the event pause. Event-source it like the dashboard badge (backlog, Section 27).
+> **KDS pause badge note (V6.6) — ✅ FIXED IN V11.24.** The KDS read its pause indicator from `data.truck?.paused_until`, which is null because pause moved to `truck_events` (Section 5) **and because `/api/dashboard` hardcodes that response field to `null`**. The controls always wrote correctly (event-scoped); it was only the READ that was wrong. Both read paths now take `data.vanPausedUntil` — the live event column — through a local `applyPending`/`markPending` guard. 🔴 **Do not re-point anything on this page at `data.truck.paused_until`: it is a constant `null`, not a stale value, so a new reader gets an empty banner and no error.** Section 5, Section 11.
 
 ## Payment state on the KDS (V11.5) — fixed
 
@@ -4866,8 +5089,13 @@ two bugs.** One counterfactual proves it: assert the reverse direction and confi
 divergence"*, so the reverse direction is a **WARN class** — over-delivering is not a breach, but an
 unadvertised grant is a pricing-integrity and support problem.
 
-🔴 **THE COOK CARD HAS NO HOME.** Non-interactive header, category-grouped items at larger type, wider
-padding, the "To make" bar — **legibility at a grill, not lifecycle.** And `showPrices = viewMode !==
+🔴 **THE COOK CARD HAS NO HOME.** Non-interactive header, category-grouped items, the "To make" bar.
+⚠️ **"AT LARGER TYPE, WIDER PADDING" WAS WRONG AND IS CORRECTED (V11.24)** — Cook was actually
+SMALLER than Full (`text-lg` against `text-3xl` on the order number, `text-xs` against an inherited
+`text-sm` on the name and time), **padding was never in play at all** (window and cook both use
+`px-3 py-2`), and the two now carry **identical** type. *"Cook should be larger, it is read from a
+metre away" was argued into three separate briefs from planning-side reasoning and was never a stated
+requirement.* And `showPrices = viewMode !==
 'cook'` **names no payment flag**, so ⚠️ **a payments-off window device SHOWS PRICES today** — the
 adjacent `partPaidRow` checks both, which is what makes the asymmetry deliberate rather than an
 oversight.
@@ -10052,8 +10280,16 @@ READ, `lib/apns.ts:13-24`:
 not failing, it was skipping.** A silent skip and a broken send are indistinguishable from the outside,
 which is why the first diagnostic step is the configuration, not the device.
 
-`APNS_KEY` is **raw PEM including the BEGIN/END lines** — not base64, not a path. Literal newlines and
-`\n`-escaped both work.
+`APNS_KEY` is **raw PEM including the BEGIN/END lines** — not base64, not a path.
+
+🔴 **THIS VARIABLE IS WHAT BROKE PUSH, AND IT FAILED AT JWT SIGNING BEFORE ANY NETWORK CALL (V11.24)**
+— LOG-VERIFIED as `error:1E08010C:DECODER routines::unsupported`. `normaliseApnsKey` now handles, all
+EXECUTION-VERIFIED against a throwaway P-256 key: **wrapping double quotes · wrapping single quotes ·
+surrounding whitespace · escaped `\r\n`.** ⚠️ **Literal `\n` and real CRLF were ALREADY accepted** —
+the stated cause was refuted by execution, and the escaped-`\r\n` case is the likely live culprit
+because it is what a Windows-side copy produces and **it looks identical in Vercel's editor.**
+🔴 **UNRECOVERABLE, AND IT NOW SAYS SO BY NAME:** newlines stripped or replaced with spaces.
+⚠️ **Saving a Vercel environment variable does not reach running functions — it needs a redeploy.**
 
 **Apple-side key configuration:** Environment **Sandbox & Production** (one key serves both), Key
 Restriction **Team Scoped (All Topics)**. ⚠️ **Neither can be changed after saving.**
@@ -10061,9 +10297,15 @@ Restriction **Team Scoped (All Topics)**. ⚠️ **Neither can be changed after 
 **`APNS_ENV`: `sandbox` for Debug builds from Xcode; `production` for TestFlight AND the App Store.**
 ⚠️ **TestFlight sits on the PRODUCTION side — the usual trap.**
 
-🔴 **A mismatch returns `BadDeviceToken`, and the handler NULLs `push_token`** — **destroying the
-evidence that a token ever arrived.** **Always read `van_devices.push_token` BEFORE placing a test
-send**, or "never registered" and "registered then destroyed" become indistinguishable.
+🔴 **A mismatch returns `BadDeviceToken` — AND THE HANDLER NO LONGER NULLS `push_token` (V11.24).**
+Apple returns that reason **both** for a dead token **and** for a valid token sent to the wrong host,
+and the old cleanup could not tell them apart, so it destroyed the evidence that a token ever arrived.
+⚠️ **No send had ever reached Apple, so the host had never been exercised — the first working send
+would have destroyed two valid tokens.** APNs now adopts `lib/fcm.ts`'s `SENDER_ID_MISMATCH` shape:
+**keep the token, log loudly.** `invalidTokens.push` appears **exactly once**, in the `Unregistered`
+arm. ✅ **`410 Unregistered` still nulls, and keeping it that way is itself a parity requirement** —
+FCM's circuit breaker is deliberately blind to `UNREGISTERED` for the mirror reason.
+**Still read `van_devices.push_token` BEFORE placing a test send** — the advice outlives the bug.
 
 ## 🔴 THE ROOT CAUSE, FOUND: `AppDelegate.swift` IMPLEMENTED NEITHER APNs DELEGATE METHOD (V11.20)
 

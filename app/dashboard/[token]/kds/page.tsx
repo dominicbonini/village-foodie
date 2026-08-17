@@ -40,7 +40,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, PLAIN_PAID_ACTIONS } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
@@ -371,6 +371,15 @@ export default function KdsPage() {
   // The event picker the three-dot menu opens. Replaces the permanent chip strip; the list, the tap
   // target and switchEvent's confirm are all unchanged, only where they live.
   const [showEventPicker, setShowEventPicker] = useState(false)
+  // ── 🔴 THE TWO STEP SWITCHES, BEHIND ONE CONTROL — BELOW THE `sm:` BREAKPOINT ONLY ──────────────
+  // At phone width the two switches collapse to a bare `✓` and a bare `💷`. Those two decide when a
+  // ticket leaves this screen and whether the money buttons exist, and an unlabelled glyph for that is
+  // unreadable — an operator cannot discover what it does by looking. This panel is where they get
+  // their full labels and a sentence each.
+  // ⚠️ AT AND ABOVE `sm:` NOTHING CHANGES: the switches stay on the header and this opener is hidden.
+  // See the `hidden sm:contents` wrapper — `contents` means the two buttons remain DIRECT children of
+  // the header's flex row at wide width, so their spacing is the header's own `gap-x-3`, unchanged.
+  const [showStepsPanel, setShowStepsPanel] = useState(false)
   const [eventCancelTarget, setEventCancelTarget] = useState<TruckEvent | null>(null)
   const [eventCancelCount, setEventCancelCount] = useState(0)
   const [eventCancelBusy, setEventCancelBusy] = useState(false)
@@ -381,6 +390,49 @@ export default function KdsPage() {
   const handleActionRef = useRef<(action: string, orderKey: string) => Promise<void>>(async () => {})
   const prevOrderCountRef = useRef(0)
   const initialLoadDoneRef = useRef(false)
+
+  // ── 🔴 THE EVENT SCOPE SENT WITH EVERY /api/dashboard READ ──────────────────────────────────────
+  // 🔴 INVARIANT 1 — THE ID AND THE DATE COME FROM ONE RESOLVED EVENT OBJECT, NEVER TWO LOOKUPS.
+  // This ref holds a PAIR taken from `activeEvent` in a single expression, so `event_id` and `date`
+  // cannot describe different events. Two independent lookups — `selectedEventId` for the id and a
+  // separate `events.find(...)` for the date — would be one poll away from disagreeing, and a request
+  // whose date does not contain its id is exactly the shape the server silently rejects.
+  // 🔴 INVARIANT 2 — WRITTEN IN AN EFFECT KEYED ON THAT OBJECT, so the value in flight is always the
+  // COMMITTED selection. The write is in the effect beside `activeEvent`, which is declared BEFORE the
+  // effect that calls fetchAll — React runs passive effects in declaration order, so on the commit that
+  // changes the event this ref is current before the request is built.
+  // ⚠️ A REF AND NOT A DEPENDENCY, DELIBERATELY. `activeEvent` is `events.find(...)`, and `setEvents`
+  // installs fresh objects on EVERY poll, so its identity changes every 60s. In `fetchAll`'s dep array
+  // that would re-create fetchAll → re-run the fetch effect → fetch again: an unbounded loop. The
+  // dashboard reaches for a ref here for the same reason and says so ("cheap — no fetch, runs on every
+  // event-list poll"). `selectedEventId` STAYS in fetchAll's deps — it is what makes a switch refetch.
+  const eventScopeRef = useRef<{ id: string; date: string | null } | null>(null)
+
+  /** Put this read's event scope on `params` and return the id we are REQUESTING (null if unscoped).
+   *  🔴 ONE IMPLEMENTATION, BOTH FETCHES. The PIN-submit path builds its own params and used to send
+   *  neither id nor date; a copy of the main path would have missed it, so there is no copy.
+   *  ⚠️ THE FALLBACK IS NOT A SECOND LOOKUP — it is the PRE-RESOLUTION case. Before the first events
+   *  response `activeEvent` is null while `selectedEventId` may already hold the ?event_id= handover, and
+   *  sending that bare id is EXACTLY what this file did before this change. No date accompanies it, so
+   *  there is nothing for it to disagree with, and the behaviour on that path is unchanged rather than
+   *  newly weakened. Once events land, the pair takes over. */
+  const applyEventScope = useCallback((params: URLSearchParams, fallbackId: string | null): string | null => {
+    const scope = eventScopeRef.current
+    if (scope) {
+      params.set('event_id', scope.id)
+      // ⚠️ `event_date` is nullable on TruckEvent. No date ⇒ send the id alone rather than a bare
+      // `date=` the route would read as an empty string and fail to match any row.
+      if (scope.date) params.set('date', scope.date)
+      return scope.id
+    }
+    if (fallbackId) { params.set('event_id', fallbackId); return fallbackId }
+    return null
+  }, [])
+
+  // ── 🔴 FIX 2: WHAT THE SERVER ACTUALLY SERVED, WHEN IT IS NOT WHAT WE ASKED FOR ─────────────────
+  // Non-null ⇒ the last response was scoped to a DIFFERENT event from the one this board believes it
+  // is showing. The board renders a notice and NO orders; see the render and the check in fetchAll.
+  const [eventScopeMismatch, setEventScopeMismatch] = useState<{ requested: string; served: string | null } | null>(null)
 
   const fetchAll = useCallback(async (currentPin = pin) => {
     if (!token) return
@@ -399,7 +451,11 @@ export default function KdsPage() {
       // there is nothing to scope by yet. When it lands, the seed effect sets the id, `fetchAll`'s
       // identity changes, and the next fetch is scoped. Closing that too would mean fetching events
       // before orders — a second round trip on the slowest path there is, for one poll of imprecision.
-      if (selectedEventId) params.set('event_id', selectedEventId)
+      // 🔴 FIX 1 — `date` RIDES WITH `event_id`, FROM THE SAME OBJECT. Without it the route defaults
+      // `date` to today, builds `todayEvents` as `.eq('event_date', date)`, and an `event_id` outside
+      // that set is not rejected — it falls through to `todayEvents[0]` and the orders query runs
+      // against THAT event. See docs/kds-event-isolation-report.md.
+      const requestedEventId = applyEventScope(params, selectedEventId)
       const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
       const data = await res.json()
 
@@ -414,6 +470,34 @@ export default function KdsPage() {
 
       if (!res.ok) throw new Error('Failed to fetch')
 
+      // ── 🔴 FIX 2: VERIFY WHAT WE WERE SERVED, BEFORE ANY OF IT REACHES STATE ──────────────────
+      // 🔴 THE FORBIDDEN STATE IS ORDERS FROM ONE EVENT UNDER ANOTHER EVENT'S NAME, so this returns
+      // BEFORE `setTruck`, `setOrders`, the pause read and every other event-scoped field. A partial
+      // apply would be the same defect with fewer symptoms.
+      // 🔴 WHY IT RENDERS NOTHING RATHER THAN FOLLOWING THE SERVER. Adopting the served id would move
+      // the board to an event the operator did not choose — and "seed once, then hold" exists precisely
+      // to stop the board auto-advancing off a cook's unserved orders while nobody is watching. A silent
+      // correction here would be that auto-advance wearing a different hat. So: no orders, and a notice
+      // that names both events.
+      // ⚠️ `offlinePauseEventId` IS A NAME/MEANING MISMATCH AND IT IS BEING USED ANYWAY. The route
+      // documents it as "the event the marker belongs to (ack key)" for the offline-pause popup; it
+      // happens to be assigned the route's own `selectedEventId`, i.e. the exact id the orders query
+      // filtered on. It is the only field that carries that value. NOT RENAMED HERE — renaming is a
+      // server change and the server is out of scope. Reported in docs/kds-event-isolation-fix-report.md.
+      // ⚠️ `undefined` IS NOT A MISMATCH — an older server that does not send the field must not blank a
+      // working board. Only a PRESENT-and-different value counts.
+      const servedEventId = data.offlinePauseEventId
+      if (requestedEventId && servedEventId !== undefined && servedEventId !== requestedEventId) {
+        console.error(`[kds] event scope mismatch — requested ${requestedEventId}, served ${servedEventId ?? 'null'}; rendering no orders`)
+        setEventScopeMismatch({ requested: requestedEventId, served: servedEventId ?? null })
+        // Clearing is part of the guarantee: leaving the previous array on screen under the new header
+        // IS the reported defect.
+        setOrders([])
+        setLoading(false)
+        return
+      }
+      setEventScopeMismatch(null)
+
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
       // Buzzers: the VAN's rack size, resolved server-side (lib/buzzer.ts). Null ⇒ this van has no
@@ -424,7 +508,20 @@ export default function KdsPage() {
       // the truck row (which never carried it in the /api/dashboard map anyway).
       // Buzzer guard: release against the RAW SERVER ROWS first, then apply what is still pending over
       // the merge so a poll that started before a write cannot revert an open grid. See lib/buzzer.ts.
-      const incomingOrders = data.orders ?? []
+      // ── FIX 3: DEFENCE IN DEPTH — THE PER-ORDER `event_id` FILTER ────────────────────────────────
+      // 🔴 THIS SHOULD NEVER FIRE. The route's orders query is `.eq('event_id', selectedEventId)`, so
+      // every row it returns already carries the served id; Fix 1 makes the served id the requested one
+      // and Fix 2 refuses the response outright when it is not. If this filter ever drops a row, one of
+      // those three statements is false — which is why it logs rather than dropping silently.
+      // ⚠️ IT IS SKIPPED WHEN WE ASKED FOR NOTHING (the cold-launch unscoped read), because with no
+      // requested event there is no id to test against and the server's choice is legitimate.
+      const rawOrders = data.orders ?? []
+      const incomingOrders = requestedEventId
+        ? rawOrders.filter((o: Order) => o.event_id === requestedEventId)
+        : rawOrders
+      if (incomingOrders.length !== rawOrders.length) {
+        console.error(`[kds] ${rawOrders.length - incomingOrders.length} order(s) dropped by the event_id filter for ${requestedEventId} — Fixes 1 and 2 should have made this unreachable`)
+      }
       for (const k of echoedBuzzerKeys(incomingOrders, peekPendingBuzzer)) delete pendingBuzzersRef.current[k]
       setOrders(prev => applyPendingBuzzers(mergeOrders(prev, incomingOrders), peekPendingBuzzer))
       // 🔴 THE LIVE EVENT COLUMN, GUARDED. `data.vanPausedUntil` is `truck_events.paused_until` — the
@@ -497,7 +594,7 @@ export default function KdsPage() {
     // `applyPending` listed for the same reason as in togglePause: it is a `useCallback` with an empty
     // dep array, so its identity is fixed and this cannot re-create fetchAll. Listing it keeps this
     // hook's pre-existing exhaustive-deps warning naming exactly the two it named before this change.
-  }, [token, pin, selectedEventId, applyPending])
+  }, [token, pin, selectedEventId, applyPending, applyEventScope])
 
   // Per-DEVICE KDS prefs (localStorage, keyed by token so two trucks on one device don't collide):
   // the RESTORE now happens in the useState initialisers above (first paint, no flash); these two effects
@@ -679,6 +776,18 @@ export default function KdsPage() {
     : null
   const activeEventLive = activeEvent?.status === 'open'
 
+  // 🔴 THE PAIR, TAKEN FROM ONE OBJECT, IN ONE EXPRESSION. See `eventScopeRef` for both invariants.
+  // ⚠️ THIS EFFECT IS DECLARED HERE, IMMEDIATELY BELOW ITS SOURCE, AND THAT POSITION IS LOAD-BEARING:
+  // the effect that calls `fetchAll` is declared further down, and React runs passive effects in
+  // declaration order within a commit — so on the render where the operator's switch lands, this ref is
+  // written before the request that reads it is built. Moving either effect past the other reopens the
+  // one-poll window this fix exists to close.
+  // ⚠️ It runs on every events poll (fresh objects each time) and writes a ref only — no state, no
+  // fetch, no loop.
+  useEffect(() => {
+    eventScopeRef.current = activeEvent ? { id: activeEvent.id, date: activeEvent.event_date ?? null } : null
+  }, [activeEvent])
+
   // ── 🔴 ANDROID HARDWARE BACK — THE KDS IS THE HIGH-RISK SURFACE ────────────────────────────────
   // ORDERED INNERMOST FIRST, which here means highest z-index first: the demo intro (z-70) sits over
   // the device sheet and the finish confirm (both z-60), which sit over the event menu and the
@@ -703,6 +812,11 @@ export default function KdsPage() {
     [deviceOpen && !isDemo, () => setDeviceOpen(false)],
     [!!finishConfirm, () => setFinishConfirm(null)],
     [showEventPicker, () => setShowEventPicker(false)],
+    // The steps panel — a consequence of adding a modal to this surface, not a separate change. It is
+    // registered HERE, in this page's ordered list, for the reason the reject gate is: `useAndroidBack`
+    // keeps ONE LIFO stack and the ORDER of this array is the nesting. Beside the event picker because
+    // it is the same kind of thing — a chooser opened from the header, over the board, under nothing.
+    [showStepsPanel, () => setShowStepsPanel(false)],
     [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
     // 🔴 THE REJECT GATE. It is registered HERE, in this page's ordered list, and NOT from inside
     // RejectOrderModal — `useAndroidBack` keeps ONE LIFO stack and the ORDER of this array is the
@@ -928,6 +1042,14 @@ export default function KdsPage() {
   // ⚠️ THE TWO CALLBACKS BELOW ARE THIS SURFACE'S ALONE — the pending-sync set and its counter, which the
   // dashboard has no equivalent of. The dashboard's prep-pill callbacks are the mirror case and are not
   // passed here, because this screen has no prep pills. An omitted callback omits the effect.
+  // ── 🔴 WHAT A PLAIN PAID BUTTON RECORDS ON THIS TRUCK ────────────────────────────────────────────
+  // The SAME expression the dashboard uses, for the same reason: it decides both what the request body
+  // carries and what the toast says, so the two cannot disagree. `takes_cash` is a DECLARATION (Manage ->
+  // Order settings, "Do you take cash?"), so OFF means a plain "Mark paid" is a card payment on the
+  // operator's own terminal; ON means the card renders the explicit Cash/Card pair and nothing is
+  // asserted here. ⚠️ Never Stripe: an online payment books `channel:'online'` and never reaches these.
+  const plainPaidMethod: 'card' | null = resolvePaidStep(truck, activeEvent).takesCash ? null : 'card'
+
   const handleGateResult = useGatedActionResult<Order>({
     showToast,
     findOrder: (k) => orders.find(o => o.order_key === k),
@@ -937,7 +1059,7 @@ export default function KdsPage() {
     // the same offline gate.
     runAction: (a, k) => { void handleActionRef.current(a, k) },
     refetch: () => fetchAllRef.current(),
-    setActionLoading, refreshPendingPayment,
+    setActionLoading, refreshPendingPayment, plainPaidMethod,
     onQueued: (k) => { setPendingSyncCount(c => c + 1); setPendingSync(prev => new Set(prev).add(k)) },
     onQueuedUndone: (k) => {
       setPendingSync(prev => { const n = new Set(prev); n.delete(k); return n }); setPendingSyncCount(c => Math.max(0, c - 1))
@@ -983,14 +1105,19 @@ export default function KdsPage() {
       const result = await gatedAction({
         url: '/api/dashboard/action',
         // 'ready' defers the customer email so the undo toast can cancel it (mirrors the dashboard).
-        body: { token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}) },
+        body: { token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}),
+          // The plain paid buttons carry the method this truck's own setting declares — see plainPaidMethod.
+          ...(PLAIN_PAID_ACTIONS.has(action) && plainPaidMethod ? { method: plainPaidMethod } : {}) },
         kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
       })
       // 🔴 THE EMPTY `catch {}` IS GONE. The shared handler throws on a server rejection exactly as the
       // dashboard always did, and this catch is what surfaces it.
       await handleGateResult(result, action, orderKey)
     } catch (err: any) { showToast(err.message || 'Failed', 'error') } finally { setActionLoading(null) }
-  }, [token, pin, handleGateResult, showToast, rejectFromCard])
+    // `plainPaidMethod` is listed because this body reads it. It is a plain derived value, so it changes
+    // only when the truck's setting or the active event does — exactly when this handler SHOULD be
+    // rebuilt, since a stale copy would attach the previous truck's declaration to a new request.
+  }, [token, pin, handleGateResult, showToast, rejectFromCard, plainPaidMethod])
   // Kept current so the PAYMENT NOT RECORDED toast's "Record payment" can re-enter this same handler
   // (and therefore the same offline gate) without handleAction depending on itself.
   // ⚠️ In an EFFECT, not during render. The `fetchAllRef.current = fetchAll` assignment above writes during
@@ -1052,16 +1179,38 @@ export default function KdsPage() {
   const submitPin = async () => {
     setPinError('')
     const params = new URLSearchParams({ token, pin: pinInput })
+    // 🔴 THE SITE A COPY OF `fetchAll` WOULD HAVE MISSED. This path builds its own params and sent
+    // `{token, pin}` and nothing else — no `event_id`, no `date` — so its response, which is the FIRST
+    // board an operator sees after entering the PIN, was resolved entirely by the route's fallback.
+    // It goes through the SAME `applyEventScope`, not a second copy of the same three lines.
+    // ⚠️ AT PIN TIME THE SCOPE IS USUALLY ABSENT — `events` has not been fetched — so this most often
+    // sends the ?event_id= handover alone or nothing at all, exactly as before. It is correct on the
+    // re-auth case, where a board that has been running hands over its committed pair.
+    // ⚠️ `van_id` IS STILL NOT SENT HERE and is NOT added by this task — it was not in scope. Reported.
+    const requestedEventId = applyEventScope(params, selectedEventId)
     const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
     const data = await res.json()
     if (!res.ok) {
       setPinError('Incorrect PIN')
       return
     }
+    // The same served-versus-requested check as fetchAll, before anything reaches state. Same reasons,
+    // same `undefined`-is-not-a-mismatch rule — see the note there.
+    const servedEventId = data.offlinePauseEventId
+    if (requestedEventId && servedEventId !== undefined && servedEventId !== requestedEventId) {
+      console.error(`[kds] event scope mismatch on PIN submit — requested ${requestedEventId}, served ${servedEventId ?? 'null'}`)
+      setEventScopeMismatch({ requested: requestedEventId, served: servedEventId ?? null })
+      setOrders([])
+      setPin(pinInput)
+      setRequiresPin(false)
+      return
+    }
+    setEventScopeMismatch(null)
     setPin(pinInput)
     setTruck(data.truck)
     setShowCookingStep(data.vanShowCookingStep ?? false)
-    setOrders(prev => applyPendingBuzzers(mergeOrders(prev, data.orders ?? []), peekPendingBuzzer))
+    // Fix 3's filter applies here too — same reasoning, same expectation that it can never fire.
+    setOrders(prev => applyPendingBuzzers(mergeOrders(prev, (data.orders ?? []).filter((o: Order) => !requestedEventId || o.event_id === requestedEventId)), peekPendingBuzzer))
     // The SECOND read path, and it had the identical defect. Same field, same guard — the guard is a
     // no-op here in practice (nothing can be pending before the PIN is accepted) but the two seeds must
     // not diverge; a field fixed in one place and not the other is how this class of bug survives.
@@ -1475,8 +1624,16 @@ export default function KdsPage() {
         {/* Back to the orders dashboard — staff are auto-routed to KDS on login and otherwise have no
             way back to place orders. Unconditional (all roles): /dashboard/[token] has no staff block,
             so this can't loop. Label collapses to just ← on narrow widths to avoid crowding. */}
+        {/* 🔴 IT HAD NO ACCESSIBLE NAME AT ALL. Below `sm:` the word is hidden and the arrow is
+            `aria-hidden`, so this — the ONLY route off this screen — announced as nothing. `aria-label`
+            is the exact visible string, not a longer paraphrase: WCAG 2.5.3 (Label in Name) wants the
+            visible text contained in the accessible name, and a voice-control user saying "Dashboard"
+            must match. The `title` carries the longer wording for pointer users instead.
+            ⚠️ POSITION, ICON AND VISIBLE TEXT ARE UNCHANGED — attributes only. */}
         <AppLink
           href={`/dashboard/${token}`}
+          aria-label="Dashboard"
+          title="Back to the dashboard"
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
         >
           <span aria-hidden>←</span>
@@ -1548,16 +1705,12 @@ export default function KdsPage() {
           </button>
         </div>
 
-        {/* Sound toggle — per-device new-order ding. Enabling is a gesture → prime the audio so dings play. */}
-        <button
-          onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
-          title={soundEnabled ? 'Sound on' : 'Sound off'}
-          className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
-            soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
-          }`}
-        >
-          {soundEnabled ? '🔔' : '🔕'}
-        </button>
+        {/* ── SOUND MOVED INTO THE DEVICE SHEET ────────────────────────────────────────────────────
+            🔴 The per-device new-order ding now lives behind the device button, with a full label, and
+            its OFF state shows as a 🔕 badge on that button. It is per-device configuration exactly like
+            the default screen and the notification switch already in that sheet, and this header does
+            not have the width for it — see docs/kds-header-group-report.md. The handler is unchanged
+            (enabling is a gesture, so it still primes the audio). */}
 
         {/* ── THE TWO STEP SWITCHES — WHICH STEPS THIS SCREEN PERFORMS ─────────────────────────────
             🔴 WINDOW VIEW ONLY. In Cook view the lifecycle is forced to marks-ready / no-handover, which
@@ -1575,7 +1728,15 @@ export default function KdsPage() {
         {/* ⚠️ NO LONGER GATED ON THE VIEW. The view is now DERIVED FROM THESE SWITCHES, so gating them
             on it would be circular — and hiding them in "cook" would leave a making screen with no way
             back. They are the only lifecycle control on this header now, so they are always visible. */}
-        <>
+        {/* 🔴 `hidden sm:contents` AND NOT `hidden sm:flex`, AND THE DIFFERENCE IS THE WHOLE POINT.
+            `display: contents` makes this wrapper produce no box of its own, so at and above `sm:` the
+            two buttons are still DIRECT children of the header's flex row — same `gap-x-3` between them
+            and their neighbours, same wrap behaviour, same widths. A `flex` wrapper would have introduced
+            one flex item where there were two and changed the spacing at every width above the
+            breakpoint, which is exactly what "at wider widths nothing changes" forbids.
+            ⚠️ Below `sm:` it is `display: none` and the opener below takes over. The two buttons are the
+            SAME markup either way — nothing was duplicated, so they cannot drift. */}
+        <div className="hidden sm:contents">
             <button
               onClick={() => { if (handoverOn) setReady(!readyOn) }}
               disabled={!handoverOn}
@@ -1617,7 +1778,37 @@ export default function KdsPage() {
                   rescinded for this switch deliberately, for exactly that reason. */}
               <span className="hidden sm:inline text-xs">Payment/Collected</span>
             </button>
-        </>
+        </div>
+
+        {/* ── 🔴 PHONE WIDTH ONLY: ONE LABELLED CONTROL IN PLACE OF TWO BARE GLYPHS ─────────────────
+            🔴 THE STATE IS ON THE BUTTON, NOT BEHIND IT. These two switches decide when a ticket
+            disappears from this screen; an operator must never have to open a menu to find out what
+            their own board is doing. So the label carries the answer in words — "Ready + payment",
+            "Ready only", "Payment only" — and the panel behind it is only for CHANGING them.
+            ⚠️ WORDS, NOT COLOURED GLYPHS. Two tinted icons would be the same defect one layer down: a
+            glyph an untrained operator has to decode, plus colour as the only state channel.
+            ⚠️ "None" IS UNREACHABLE and is written anyway. Each switch is `disabled` while it is the
+            only step left, so the pair cannot both be off — but a label that silently has no branch for
+            a state is how a future change to that rule produces a blank button.
+            ⚠️ NO `aria-label`: the button has real visible text, so it already has an accessible name,
+            and an aria-label would have to repeat it to satisfy Label in Name. `title` carries the
+            longer sentence for pointer users instead. */}
+        <button
+          onClick={() => setShowStepsPanel(true)}
+          title="Which steps this screen does — marking orders ready, and taking payment and handing over"
+          className="sm:hidden flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+        >
+          <span className="font-semibold">Steps</span>
+          <span className="text-slate-400">·</span>
+          {/* 🔴 THE `'None'` ARM IS DEFENSIVE AND UNREACHABLE. DO NOT DELETE IT AS DEAD, AND DO NOT
+              BUILD A PATH TO IT. Each switch is `disabled` while it is the only step left, so the pair
+              cannot both be off — a screen performing no steps has no buttons at all (renderButtons ends
+              in `return null`), which on an unattended board is a dead ticket. The arm exists because a
+              label with no branch for a state is how a future change to that `disabled` rule ships a
+              BLANK button instead of a visible wrong one. If you ever see "None" on a real screen, the
+              rule has been broken and the board is not performing any step. */}
+          <span>{readyOn && handoverOn ? 'Ready + payment' : readyOn ? 'Ready only' : handoverOn ? 'Payment only' : 'None'}</span>
+        </button>
 
         {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
             screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
@@ -1625,15 +1816,40 @@ export default function KdsPage() {
         {/* DEMO: hidden. ThisDeviceSettings is pure CONFIGURATION (default screen, van binding, notification
             prefs) — the KDS counterpart of the NotificationSettings card hidden on the dashboard. Already
             native-only, so a web demo never saw it; gated here so a native demo doesn't either. */}
-        {isNativeApp() && !isDemo && (
-          <button
-            onClick={() => setDeviceOpen(true)}
-            title="This device"
-            className="text-sm px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
-          >
-            📱
-          </button>
-        )}
+        {/* 🔴 THE ONLY HEADER CONTROL WITH NO TEXT AT ANY WIDTH, so its name has to come from the
+            attributes. `aria-label` gives it an accessible name; `title` gives pointer users the same
+            words on hover. Both say "Device settings" — the SAME words as the sheet's heading, because a
+            control and the thing it opens disagreeing about their own name is worse than either wording.
+            🔴 NO VISIBLE LABEL ON THE BUTTON, DELIBERATELY. It would not fit at phone width, which is
+            exactly the width at which this header already wraps.
+            ⚠️ THE GLYPH IS `aria-hidden` — the file's own idiom (see the ← on the Dashboard link). With
+            `aria-label` set the children are not used for the name anyway; this stops a screen reader
+            announcing the emoji's own name alongside it. */}
+        {/* 🔴 THE GATE CHANGED, AND IT IS A CONSEQUENCE OF THE MOVE, NOT A SEPARATE DECISION. This
+            button was `isNativeApp() && !isDemo`, because the sheet held nothing but native device
+            config. It now also holds SOUND and KEEP-SCREEN-ON, which are per-device browser settings
+            that every KDS has — web, native and demo alike. Leaving the old gate would have DELETED
+            both controls on web and in demo rather than moving them.
+            ⚠️ NOTHING WAS UNGATED INSIDE THE SHEET. `ThisDeviceSettings` keeps its own
+            `isNativeApp() && !isDemo` gate at its mount point below, so a web or demo operator opens
+            this and sees exactly the two new rows and nothing else. The demo still shows no device
+            configuration, which is what that gate was for.
+            🔴 THE BADGES ARE THE WHOLE SAFETY ARGUMENT FOR MOVING TWO CONTROLS BEHIND A TAP. An OFF
+            state is never hidden: 🔕 shows when the ding is off, 🌙 shows when the wake lock is not
+            held. Both on ⇒ neither badge ⇒ the bare 📱. A cook glancing at the header still learns
+            "this screen will go dark" and "this screen will not ding" without opening anything.
+            ⚠️ THE ACCESSIBLE NAME STATES BOTH IN WORDS, always — a badge is a visual channel only, and
+            "Device settings" alone would announce nothing about either state. */}
+        <button
+          onClick={() => setDeviceOpen(true)}
+          aria-label={`Device settings — sound ${soundEnabled ? 'on' : 'off'}, screen ${screenHeld ? 'staying on' : 'not held on'}`}
+          title={`Device settings — sound ${soundEnabled ? 'on' : 'off'}, screen ${screenHeld ? 'staying on' : 'not held on'}`}
+          className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+        >
+          <span aria-hidden>📱</span>
+          {!soundEnabled && <span aria-hidden className="text-xs">🔕</span>}
+          {!screenHeld && <span aria-hidden className="text-xs">🌙</span>}
+        </button>
 
         {/* ⚠️ `basis-0` SO IT CANNOT FORCE A WRAP. As a bare `flex-1` this spacer has an `auto` basis; on
             a wrapping row that lets it claim width and push the next chip onto a new line while space
@@ -1666,7 +1882,23 @@ export default function KdsPage() {
             DEMO: the PAUSE direction is hidden, the RESUME direction is NOT. This is one toggle button, so
             `!isDemo || isPaused` keeps the recovery path open: offline auto-pause (heartbeat-monitor) can
             still pause a demo event without anyone touching this, and hiding the button outright would
-            strand the demo paused with no way back — the exact failure we're avoiding, just caused by us. */}
+            strand the demo paused with no way back — the exact failure we're avoiding, just caused by us.
+
+            ── 🔴 THIS BUTTON IS NOT A DUPLICATE OF THE EVENT-ACTIONS ITEM. DO NOT DELETE IT. ──────────
+            It looks like one: `⏸ Pause orders` also lives in EventActionsModal, gated there on
+            `event.status === 'open'`. But the MODAL is mounted on `showEventMenu && activeEvent &&
+            !isDemo`, and the only control that opens it is `!isDemo` too — so on a PAUSED DEMO the menu
+            cannot be reached at all and THIS BUTTON IS THE ONLY RESUME CONTROL ON THE SCREEN. That is
+            the whole reason the gate reads `(!isDemo || isPaused)` rather than `!isDemo`, and it is why
+            a request to remove this button as a duplicate was refused rather than carried out.
+            ⚠️ AND THE ROUTE INTO THAT STATE NAMED ABOVE HAS SINCE MOVED, WHICH IS NOT A REASON TO
+            DELETE THIS. The offline auto-pause writes `truck_events.online_paused_until`, and since the
+            event-pause fix this board's `pausedUntil` reads `data.vanPausedUntil` — the MANUAL column —
+            with `vanOnlinePausedUntil` deliberately excluded. So `isPaused` no longer turns true from a
+            heartbeat auto-pause. 🔴 THE GATE IS RETAINED DELIBERATELY ANYWAY: the branch is a recovery
+            path, its cost is one hidden button, and the cost of being wrong is a demo stuck paused with
+            no way back. If the KDS ever reads the offline column again, this is live once more with no
+            further change. Check both facts before touching it — do not assume it is dead. */}
         {activeEvent?.status === 'open' && (!isDemo || isPaused) && (
           <button
             onClick={togglePause}
@@ -1688,16 +1920,15 @@ export default function KdsPage() {
             turning "Payment/Collected" off, which is per-device and survives a reload.
             ⚠️ REMOVED AS A CONSEQUENCE OF CHANGE 1, NOT AS A FOURTH CHANGE — see the report. */}
 
-        {/* BINARY: teal "Screen on" ONLY when the lock is actually HELD; grey "Screen off" otherwise. Failure
-            is a plain-English toast on the tap (screenFailMsg), never a hedged label. */}
-        <button
-          onClick={toggleKeepScreenOn}
-          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${screenHeld ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
-          title={screenHeld ? 'Screen will stay on' : 'Tap to keep the screen on'}
-        >
-          <span>{screenHeld ? '☀️' : '🌙'}</span>
-          <span className="hidden sm:inline">{screenHeld ? 'Screen on' : 'Screen off'}</span>
-        </button>
+        {/* ── KEEP-SCREEN-ON MOVED INTO THE DEVICE SHEET ───────────────────────────────────────────
+            🔴 Same reasoning as sound, and the same safety requirement: the OFF state shows as a 🌙
+            badge on the device button, because a screen-off device that LOOKS screen-on is a dark
+            screen mid-service. The binary rule is unchanged — the badge follows `screenHeld` (the lock
+            actually held), not the stored preference, so belief and reality cannot diverge on the
+            header any more than they could on the old chip.
+            ⚠️ `KeepAwakePrompt` STILL SITS DIRECTLY BELOW THIS HEADER and is untouched: when the pref
+            is on but the lock is not held, the full-width bar is still there to be tapped. Moving the
+            toggle did not move the recovery path. */}
       </header>
       {/* Keep-screen-on prompt — full-width bar right under the header, unmissable on the cook screen. Shows
           only when the pref is on but the lock isn't held; the operator's first tap dismisses AND acquires it. */}
@@ -1730,6 +1961,26 @@ export default function KdsPage() {
             No connection — showing last known orders. Online ordering has been paused for customers.
             {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
           </span>
+        </div>
+      )}
+
+      {/* ── 🔴 EVENT SCOPE MISMATCH — THE BOARD IS EMPTY AND THIS SAYS WHY ────────────────────────
+          🔴 THE ONE THING THIS SCREEN MUST NEVER DO IS SHOW ONE EVENT'S ORDERS UNDER ANOTHER EVENT'S
+          NAME. When the server answers with a different event from the one requested, `fetchAll`
+          returns before any order reaches state and sets this — so the grid below renders EMPTY, and
+          an empty grid on a kitchen screen reads as "no orders", which would be a lie. This is the
+          sentence that stops it being one.
+          ⚠️ IT NAMES THE EVENT THE OPERATOR CHOSE, not the one the server picked: the operator's
+          question is "where are my orders", and the answer is "not loaded", not "renamed".
+          ⚠️ RED, AND ABOVE THE PAUSE BANNER. It outranks pause — a paused board still shows the right
+          orders; this one shows none. */}
+      {eventScopeMismatch && (
+        <div className="bg-red-700 text-white text-sm font-medium px-4 py-3 flex-shrink-0">
+          <div className="font-black">⚠️ Orders not loaded for this event</div>
+          <div className="text-xs mt-0.5 text-red-100">
+            The server answered with a different event, so nothing is shown rather than the wrong
+            orders{activeEvent ? ` for ${activeEvent.venue_name}` : ''}. Pick the event again, or reload.
+          </div>
         </div>
       )}
 
@@ -1803,8 +2054,21 @@ export default function KdsPage() {
               ⚠️ THIS IS THE ONLY OPENER OF THE SHARED MENU ON THIS SURFACE, which is why the gate above
               mattered so much: with it, Start Event, Change event, Finish and Cancel were all
               unreachable on any event that was not already running. */}
+          {/* 🔴 IT HAD NO ACCESSIBLE NAME AT ALL. Below `sm:` the words are hidden and the only child
+              left is a bare `▾`, so the ONLY route to Start Event, pause, change-event, change finish
+              time, finish and cancel announced as nothing at phone width.
+              🔴 `aria-label` IS THE EXACT VISIBLE STRING AT WIDE WIDTH — the precedent set for the
+              Dashboard link. WCAG 2.5.3 (Label in Name) wants the visible text contained in the
+              accessible name, and a voice-control user saying "Event actions" has to match. A longer
+              paraphrase would read better in a screen reader and BREAK voice control at wide width, so
+              the longer wording goes in `title`, for pointer users, where it costs nothing.
+              ⚠️ POSITION, ICON AND THE WIDE-WIDTH LABEL ARE UNCHANGED — attributes only. Whether
+              "Event actions" is the right WORDING is a separate question, proposed in
+              docs/kds-copy-report.md and not applied here. */}
           {!isDemo && (
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
+              aria-label="Event actions"
+              title="Start, pause, change or finish this event"
               className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
               <span className="hidden sm:inline">Event actions </span>▾
             </button>
@@ -2175,19 +2439,158 @@ export default function KdsPage() {
         </div>
       )}
 
+      {/* ── 🔴 ORDER STEPS — THE PHONE-WIDTH PANEL ───────────────────────────────────────────────────
+          The two header switches, with the labels and the sentences the header has no room for. Same
+          handlers, same guards, same `disabled` rule — this is a second PLACE, never a second
+          implementation, and nothing about the switches' behaviour, keys, defaults or persistence is
+          touched by it.
+          ⚠️ NOT GATED ON WIDTH IN JS. The opener is `sm:hidden`, so this can only be opened from a phone
+          — but if a rotation crosses the breakpoint while it is open it simply stays open and closes on
+          tap, which is better than vanishing mid-decision.
+          ⚠️ COPY IS FOR REVIEW. The two sentences below are written to be read by someone who has never
+          been trained: they say what the operator SEES and what HAPPENS to the ticket, not what the flag
+          is called. Proposed, not settled — see docs/kds-phone-controls-report.md §3. */}
+      {showStepsPanel && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowStepsPanel(false)}>
+          <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-white font-bold text-base">What this screen does</h2>
+              <button onClick={() => setShowStepsPanel(false)} aria-label="Close"
+                className="text-white/80 hover:text-white text-3xl leading-none">×</button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto p-4 flex flex-col gap-4">
+              {/* ROW 1 — the ready step. */}
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-slate-700">Mark orders ready</span>
+                  <button
+                    type="button"
+                    onClick={() => { if (handoverOn) setReady(!readyOn) }}
+                    disabled={!handoverOn}
+                    aria-pressed={readyOn}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
+                  >
+                    <span aria-hidden>✓</span>
+                    <span>{readyOn ? 'On' : 'Off'}</span>
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  This screen gets a Ready button. Tap it when the food is up and the customer is told
+                  their order is ready to collect.
+                </p>
+                {!handoverOn && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    This is the only thing this screen does, so it can&apos;t be turned off.
+                  </p>
+                )}
+              </div>
+              {/* ROW 2 — the handover step. */}
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-slate-700">Take payment and hand over</span>
+                  <button
+                    type="button"
+                    onClick={() => { if (readyOn) setHandover(!handoverOn) }}
+                    disabled={!readyOn}
+                    aria-pressed={handoverOn}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
+                  >
+                    <span aria-hidden>💷</span>
+                    <span>{handoverOn ? 'On' : 'Off'}</span>
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  This screen gets the payment and Collected buttons. Orders leave this screen when
+                  they&apos;re collected. Turn it off and another screen hands the food over.
+                </p>
+                {!readyOn && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    This is the only thing this screen does, so it can&apos;t be turned off.
+                  </p>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 border-t border-slate-100 pt-3">
+                These are set on this device only. Another screen in the same van can do the other step.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* "This device" sheet — same pattern as the dashboard UserMenu. ThisDeviceSettings self-guards on
           isNativeApp and renders its own card + "this device only" note. `token` here is the dashboard
           token (this route runs on it), so its bind-device calls authenticate. */}
-      {deviceOpen && !isDemo && (
+      {/* 🔴 NO LONGER `!isDemo` — see the device button's note. The sheet now carries two controls every
+          KDS has, so it must open on every KDS; the native-only CONFIG inside it keeps its own gate. */}
+      {deviceOpen && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
           onClick={() => setDeviceOpen(false)}>
           <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-end mb-1">
+            {/* 🔴 THE WORDING LIVES HERE, WHERE THERE IS ROOM FOR IT. The button that opens this sheet is
+                a bare 📱 by necessity, so this heading is where an operator finds out what they opened.
+                Same two words as the button's aria-label and title.
+                ⚠️ IT IS ADDED ON THE SHEET, NOT INSIDE THE CARD. The card is `ThisDeviceSettings`, which
+                lives in components/native/OperatorDeviceConfig.tsx and is ALSO mounted by the dashboard's
+                UserMenu — editing its own `<h3>This device</h3>` would change the dashboard, which this
+                task must not do. So the sheet supplies the heading and the shared card is untouched.
+                ⚠️ CONSEQUENCE, STATED: the sheet now reads "Device settings" and the card below it still
+                reads "This device" as its first line. Not a contradiction — the inner one labels the
+                viewing/ID block — but they are two headings where one would do. Reported, not resolved. */}
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-white font-bold text-base">Device settings</h2>
               <button onClick={() => setDeviceOpen(false)} aria-label="Close"
                 className="text-white/80 hover:text-white text-3xl leading-none">×</button>
             </div>
             <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
-              <ThisDeviceSettings token={token} />
+              {/* ── 🔴 THE TWO CONTROLS MOVED OFF THE HEADER, WITH THE FULL LABELS THAT WAS THE POINT ──
+                  On the header these were a bare 🔔/🔕 at every width and an emoji-only ☀️/🌙 below
+                  `sm:`. Here they get sentences.
+                  🔴 WRITTEN HERE, IN THE KDS'S OWN SHEET, AND **NOT** INSIDE `ThisDeviceSettings`.
+                  That component is SHARED — components/dashboard/UserMenu.tsx mounts it too — and a
+                  screen-wake or new-order-ding row has no meaning on the dashboard's copy. Putting them
+                  in it would have changed what the dashboard renders, which this task forbids. The
+                  dashboard's UserMenu is byte-for-byte unaffected by everything in this task.
+                  ⚠️ THE ROW GRAMMAR IS COPIED FROM THAT CARD ON PURPOSE — `flex items-center
+                  justify-between gap-3 text-sm` with a `font-semibold text-slate-700` label — so the
+                  two blocks read as one sheet rather than as a bolted-on strip.
+                  ⚠️ BOTH HANDLERS ARE THE ORIGINALS, UNCHANGED: `toggleKeepScreenOn` (which owns the
+                  failure toast) and the sound setter that primes the audio when enabling, because
+                  enabling is the user gesture the browser requires. */}
+              <div className="rounded-2xl border border-slate-200 p-4 flex flex-col gap-3 mb-3">
+                <h3 className="text-sm font-bold text-slate-900">This screen</h3>
+                <label className="flex items-center justify-between gap-3 text-sm">
+                  <span className="font-semibold text-slate-700">Keep the screen on</span>
+                  <button
+                    type="button"
+                    onClick={toggleKeepScreenOn}
+                    aria-pressed={screenHeld}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${screenHeld ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+                  >
+                    <span aria-hidden>{screenHeld ? '☀️' : '🌙'}</span>
+                    <span>{screenHeld ? 'On' : 'Off'}</span>
+                  </button>
+                </label>
+                {/* ⚠️ SAME BINARY RULE AS THE OLD CHIP: it reads `screenHeld` — the lock ACTUALLY held —
+                    not the stored preference, so "On" can never claim something the device is not doing.
+                    The plain-English failure toast still fires from the handler on a failed tap. */}
+                <p className="text-xs text-slate-500 -mt-1">Stops this device dimming or locking during service. This device only.</p>
+                <label className="flex items-center justify-between gap-3 text-sm">
+                  <span className="font-semibold text-slate-700">New-order sound</span>
+                  <button
+                    type="button"
+                    onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
+                    aria-pressed={soundEnabled}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
+                  >
+                    <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
+                    <span>{soundEnabled ? 'On' : 'Off'}</span>
+                  </button>
+                </label>
+                <p className="text-xs text-slate-500 -mt-1">Dings when a new order lands on this board. This device only.</p>
+              </div>
+              {/* The native-only device configuration, gate intact — see the device button's note. */}
+              {isNativeApp() && !isDemo && <ThisDeviceSettings token={token} />}
             </div>
           </div>
         </div>

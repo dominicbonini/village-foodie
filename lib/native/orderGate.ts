@@ -36,6 +36,13 @@ const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooki
 export const COLLECT_ACTIONS = new Set(['collected', 'collected_cash', 'collected_card'])
 export function isCollectAction(action: string): boolean { return COLLECT_ACTIONS.has(action) }
 
+/** 🔴 THE TWO PLAIN IN-PERSON PAYMENT ACTIONS — the ones whose NAME carries no method.
+ *  `mark_paid_cash` / `mark_paid_card` / `collected_cash` / `collected_card` answer for themselves and
+ *  are deliberately absent: the server derives their method from the string and a body field would be a
+ *  second source for one fact. These two are the only names a surface may attach `method` to, and it may
+ *  only do so when the truck's own `takes_cash` setting answers the question. */
+export const PLAIN_PAID_ACTIONS = new Set(['mark_paid', 'collected'])
+
 /**
  * Compute the optimistic local order-status change for an offline-QUEUED status action, so the UI advances
  * immediately (deferred sync). SHARED by the dashboard (doAction) and the KDS (handleAction) so both behave
