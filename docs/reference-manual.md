@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.22
+HatchGrab Engineering Reference Manual · V11.23
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.22**
+**Version 11.23**
 
 August 2026
 
@@ -15,6 +15,94 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.23 — 17 August 2026
+
+Delta over V11.22 — **a display control was choosing the button branch; a status badge that was
+inline instead of placed cost six labels; the post-gate feedback layer was a partial copy on one
+surface; and five migrations recorded as pending have all been applied.**
+
+- 🔴 **A DISPLAY CONTROL WAS PICKING THE BUTTON SET.** The Full/Cook toggle fed `cardMode` into
+  `OrderCard`'s `viewMode`, and `renderButtons` reads that same prop — observed as **no buttons at
+  all in Cook**. 🔴 **TWO DEFECTS WORE ONE SYMPTOM:** the cook branch also has **no `'ready'` case**
+  and falls through to `return null`; the observed card was at `ready`, not `confirmed`. Fixing the
+  prop alone would have left it. `viewMode` is `boardMode` again and a new `hideAmounts` prop carries
+  the display choice — **eleven occurrences, all money, zero in `renderButtons`,
+  `completionBtn` or `completionBtnDisabled`.** §9, §11.
+- 🔴 **THE STATUS BADGE WAS AN INLINE-vs-PLACED DEFECT, AND IT COST SIX LABELS.** `paidChip` reached
+  the KDS because it is computed once and **placed** by each header; the badge was written **inline
+  inside `solo`**, so the KDS had no badge at all — `Modified`, `Cooking`, `Ready`, `Collected`,
+  `Rejected`, `Cancelled`. **An absence, not a gate; nothing in the code recorded a decision about
+  it.** Fixed by reproducing the pattern that worked. `Cooking` is suppressed on the two KDS headers
+  — the action row already says it, in the same pill classes a card's height apart. §9.
+- 🔴 **THE OUTBOX WAS SHARED; THE FEEDBACK LAYER WAS NOT.** Thirteen modules byte-identical to HEAD,
+  and **every divergence was downstream of the gate returning**: the KDS toasted for `'ready'` only,
+  so `mark_paid` and `collected` queued **silently**; it had no payment overlay; and its `catch {}`
+  was **empty**. Now one shared `lib/native/useGatedActionResult.tsx`, surface-specific effects as
+  optional callbacks. §11.
+- 🔴 **FIVE MIGRATIONS RECORDED AS "NOT YET RUN" ARE ALL APPLIED — LIVE-VERIFIED.** Including the
+  **deploy-coupled** `modifier_group_hide_name`, where a wrong belief means every customer menu read
+  400s. ⚠️ **A COLUMN QUERY CANNOT VERIFY A CONSTRAINT MIGRATION**, and the first attempt here
+  didn't: it returned a clean four-row pass while structurally blind to the fifth. §27, C7.
+- 🔴 **`can('cook_screen')` IS NOT A SOLD MAX FEATURE.** Its marketing row is `max: 'coming_soon'` —
+  advertised as undelivered on **every** column — and the row and the flag **describe different
+  products**. ⚠️ **The parity checker structurally cannot catch it:** it tests `row[tier] === true`,
+  and `'coming_soon'` is not `true`, so the reverse direction is unchecked by construction. **Second
+  instance, not first** — §26 already records `ticket_printing` with the identical shape. §4.
+- 🔴 **`kds_mode` IS FALSE ON ALL THIRTEEN TRUCKS, AND IT DOES TWO OPPOSITE JOBS** — it produces the
+  `cooking` status on Cook and forces the WAIT on Window. So **`cooking` has zero possible writers in
+  production**, the wait interlock has never run, and the known `return null` fall-through is
+  unreachable. ⚠️ **`takes_cash` is false on all thirteen too** — the Cash/Card split has never
+  rendered. §9.
+- 🔴 **`effectiveOrderReady` IS NEVER READ ON THE KDS.** Its only read sits in `OrderCard`'s `solo`
+  branch, which the KDS never produces. **LIVE-VERIFIED consequence on Tikka Tonic:** no ready step
+  anywhere in their configuration, and their kitchen screen renders a Ready button — which emails the
+  customer, because the ready email is model A. §9, §64.
+- 🔴 **N112's PREMISE WAS FALSE — `Start Event` WAS UNREACHABLE.** The strip was removed because
+  *"the header line below already named the selected event"*, but that line is gated on
+  `status === 'open'` and **the only control that opens `EventActionsModal` sat inside the gate**. A
+  not-started event had no event line, no Event actions and no way to press Start Event. Fixed. §11.
+- 🔴 **THE KDS BOARD FILTER CHAIN IS SEVEN PREDICATES, NOT THREE**, and `overlayedOrders` **rewrites
+  `o.status` before every downstream test** — every exit rule operates on the offline overlay status,
+  not the server's. `visibleOrders` hard-caps grid at **8 with no scroll**. §9.
+- 🔴 **THE NATIVE SHELL HAS NO OFFLINE FALLBACK.** `server.url` overrides `webDir`; no `errorPath`,
+  no local bundle. Queued ops survive in Preferences, **but every drainer is JavaScript inside that
+  page** — so a force-quit-offline relaunch gives a failed shell with queued money invisible and
+  undrainable. **The largest hole in the offline story, on the device about to be submitted.** §11.
+- 🔴 **`undo_collected` REVERSES STATUS BUT NOT MONEY.** Replay is guarded three ways, so a replayed
+  `collected` is safe; **the undo is a separate, undecided question.** §37.
+- 🔴 **§16's `truck_events` LIST WAS STALE BY TWELVE COLUMNS** — and `truck_events.name` is a phantom
+  this manual **already recorded**, reproduced anyway. **A recorded phantom is only useful if the
+  column list itself is current.** §16, C5.
+- **`show_paid_step` is FOUR of THIRTEEN, not three of twelve** — Tikka was flipped after 10 August,
+  presumably at handover. `completion_presses` tracks it exactly. §37.
+- **`showPrices` was dead code with zero consumers, cited as load-bearing in three separate
+  reports.** Deleted. **`truck_vans.show_cooking_step` is dormant and NOT uniform in prod** — Gusto
+  `true`, Tikka `false` — so "restore the toggle later" is not a no-op. §9.
+- **The settings copy claimed the order-ready setting emails customers. Verified false** — the email
+  is guarded only by `body.defer_email`, a client timing flag. Both copies replaced. §27.
+- ⚠️ **METHOD.** A pure de-duplication nets **negative** on the non-ASCII census, not zero — a zero
+  net means something was **retyped**. · A prop that suppresses X is not evidence that X exists. · A
+  row empty in **both** modes is invisible to a before/after of the mode being changed. · A report
+  filename must never be one the same prompt says to read. · **A contradictory brief must be stopped
+  on, not resolved.** P26–P31.
+
+**STATE AT CLOSE, 17 AUGUST 2026.** **SUBMISSION: ONE BLOCKER — SCREENSHOTS.** 🔴 **EIGHT TASKS'
+WORK IS UNCOMMITTED** across `OrderCard.tsx`, the KDS page and the dashboard page, plus the new
+`lib/native/useGatedActionResult.tsx`. 🔴 **NOTHING IN THIS ENTRY IS DEVICE-VERIFIED, and much is not
+even observed on localhost** — including *"the dashboard is unchanged in every branch"*, which is
+Gusto's live card and is the strongest claim across every report still sitting at source-read.
+
+**AWAITING A DECISION:** N1, the dual-write reconciliation defect (narrowed, not closed) · whether
+`undo_collected` should reverse money · the KDS never sending `date` · the `cook_screen` /
+"Customer-facing display" mapping · the parity checker's reverse direction · whether the KDS READY
+switch should default FROM `effectiveOrderReady` · whether the "To make" bar and "Done today" strip
+should follow `boardMode` · whether large-type Cook comes back as its own control.
+
+**AWAITING HARDWARE:** one Airplane Mode launch to characterise the shell with no fallback · queued
+`mark_paid`/`collected` toasts and the payment overlay, both unreachable in a browser · push after
+the AppDelegate fix · the two iPad display defects · **whether the Safari ejection stops, where
+iPhone and portrait are the control and that experiment exists only on this build.**
 
 ## V11.22 — 16 August 2026
 
@@ -1507,13 +1595,15 @@ When the AI menu import groups items into a CUSTOM EXTRA (the "show as a custom 
 All applied by hand; on the Supabase dashboard confirm project ref `ffphgwonshgxamtvefcv` first, and read counts, not "success".
 
 - `20260629_lactose_allergen_to_dietary.sql` — **RUN + VERIFIED** (0/22/29). DONE.
-- `20260629_allergen_audit_card_match.sql` — **ADDITIVE** (run-anytime). NOT YET RUN. Until run, card_match audit inserts 23514-reject (non-fatal; the allergen write still succeeds, logging is best-effort).
-- `20260629_preorder_open_rule.sql` — **ADDITIVE** (run-anytime). NOT YET RUN. `trucks.preorder_open_rule`, backfills `'on_confirm'` (= today's behaviour). Until run, the open-window feature has no column to read.
-- `20260630_modifier_group_hide_name.sql` — **\*\*\* DEPLOY-COUPLED — MUST PRECEDE THE CODE DEPLOY \*\*\*** or every customer menu 400s + import group-inserts fail. `modifier_groups.hide_name bool NOT NULL DEFAULT false`. Verify: `SELECT column_name FROM information_schema.columns WHERE table_name='modifier_groups' AND column_name='hide_name'`.
+- `20260629_allergen_audit_card_match.sql` — **ADDITIVE** (run-anytime). ~~NOT YET RUN.~~ ✅ **APPLIED — LIVE-VERIFIED 17 AUGUST (V11.23).** Until run, card_match audit inserts 23514-reject (non-fatal; the allergen write still succeeds, logging is best-effort).
+- `20260629_preorder_open_rule.sql` — **ADDITIVE** (run-anytime). ~~NOT YET RUN.~~ ✅ **APPLIED — LIVE-VERIFIED 17 AUGUST (V11.23).** `trucks.preorder_open_rule`, backfills `'on_confirm'` (= today's behaviour). Until run, the open-window feature has no column to read.
+- `20260630_modifier_group_hide_name.sql` — ✅ **APPLIED — LIVE-VERIFIED 17 AUGUST (V11.23); the coupling below is SATISFIED, not pending.** **\*\*\* DEPLOY-COUPLED — MUST PRECEDE THE CODE DEPLOY \*\*\*** or every customer menu 400s + import group-inserts fail. `modifier_groups.hide_name bool NOT NULL DEFAULT false`. Verify: `SELECT column_name FROM information_schema.columns WHERE table_name='modifier_groups' AND column_name='hide_name'`.
 
 ### Deploy state (updated)
 
 LARGE undeployed batch (everything since the last deploy) — the whole allergen card-matching (staged + committed/standalone), the per-dish visibility gate (+ preview/live `trucks.active` design, backlog), event time gates, scraper work, Reports lock, the pre-order open-window, the Pre-orders card, the custom-extra naming + `hide_name`, plus all the wizard layout/nav/sizing fixes. Much verified by CODE-TRACE, not live use → integration risk is dominant; the footer-drop-off bug (a tsc-clean change that only showed on the rendered page) is the cautionary example — live smoke-test on test-truck before RTF.
+
+ 🔴 **[CORRECTED V11.23 — ALL FIVE OF THESE ARE APPLIED. LIVE-VERIFIED, 17 August.** `modifier_groups.hide_name` EXISTS (**the deploy-coupled blocker is CLEAR**), `trucks.preorder_open_rule` EXISTS, `van_devices` and `van_notification_prefs` both EXIST as tables, and `20260629_allergen_audit_card_match` is APPLIED — `'card_match'` is present in the CHECK. **This is the recorded-as-pending / actually-applied class the manual itself names as the MORE DANGEROUS direction**: it invites someone to "finally apply" a migration that already ran, or to rewrite the file expecting it to land. ⚠️ **A COLUMN QUERY CANNOT VERIFY A CONSTRAINT MIGRATION, AND THE FIRST ATTEMPT HERE DIDN'T.** `allergen_audit_card_match` widens a CHECK and adds no column, so `information_schema.columns` is structurally blind to it — the first query covered the other four and **returned a clean four-row result that read as a full pass.** It took `pg_get_constraintdef(oid)` on `allergen_audit_log` to settle it: `CHECK (change_type = ANY (ARRAY['confirm','edit','card_save','import','card_match']))`. 🔴 **STANDING RULE, WITH A NEW HALF: the database is the authority, a manual entry about the database is not a fact about the database — AND THE QUERY MUST MATCH THE SHAPE OF WHAT THE MIGRATION CHANGED. A column query against a constraint migration does not fail; it silently omits, which is the more dangerous of the two.**]
 
 **DEPLOY ORDER (because of the coupling):** (1) run `20260630_modifier_group_hide_name.sql` FIRST + verify the column; (2) run the two additive migrations (card_match, preorder_open_rule); (3) deploy the code; (4) verify every allergen/status column via `count(*)` on the correct ref; (5) smoke-test the code-trace-verified paths on test-truck — the visibility gate, event time gate, grouping union, pre-order open-window, card-matching end-to-end, AND render every wizard step (the footer-drop bug only shows live); (6) THEN share to RTF. The BST stale-deploy (auto-event-scheduler) is already FIXED/redeployed.
 
@@ -1611,7 +1701,7 @@ POSSIBLE FOLLOW-UPS (BACKLOG, elevated by this recurrence): (1) a deploy-version
 
 MUST-RUN (Dominic-by-hand, dashboard, confirm project ref `ffphgwonshgxamtvefcv` first; read counts, not "success"):
 - `20260629_lactose_allergen_to_dietary.sql` — RUN + VERIFIED (0/22/29). **DONE.**
-- `20260629_allergen_audit_card_match.sql` — widens the `allergen_audit_log` `change_type` CHECK to accept `'card_match'`. **NOT YET RUN** — until applied, committed card-merge audit inserts 23514-reject (non-fatal; the allergen write still succeeds, only the audit row is dropped).
+- `20260629_allergen_audit_card_match.sql` — widens the `allergen_audit_log` `change_type` CHECK to accept `'card_match'`. ✅ **APPLIED — LIVE-VERIFIED 17 AUGUST via `pg_get_constraintdef` (V11.23); a column query cannot see this one.** ~~**NOT YET RUN**~~ — until applied, committed card-merge audit inserts 23514-reject (non-fatal; the allergen write still succeeds, only the audit row is dropped).
 
 UNDEPLOYED CODE (all the above except the auto-event-scheduler redeploy): the warn-not-block + table rebuild + auto-restore + A/B/C + truck-scoping fixes + card→dish matching + the import Allergens step (staged/atomic) + standalone card parity + the grouping union fix + the per-dish visibility gate; the event time gates; the scraper `SCRAPE_TRUCK_ID`/prompt/dedup fixes; the Reports lock; the empty-menu wording. Much verified by CODE-TRACE not live use → **integration risk is the dominant risk.** DEPLOY: run the `card_match` migration first; verify EVERY allergen/status column via `count(*)` on the correct project; the **event time gate + grouping union fix are live-affecting PRIORITIES**. The BST stale-deploy is FIXED (the one Edge-Function deploy already done).
 
@@ -1985,6 +2075,11 @@ Full-session V7.5 (16 Jun 2026): capacity-engine corrections + operator-dashboar
 - **Test event config:** Nethergate Brewery & Distillery — Long Melford, 20 Jun, `slot_duration_mins=10`, `collection_interval_mins=5` (they DIFFER — see #3).
 - **Time engine confirmed sound** (event-tz-pinned, BST-aware via Intl Europe/London; DB UTC vs operator BST is pure display, zero engine impact). Latent pre-multi-tz backlog (non-engine `new Date().getHours()` spots) unchanged — not pre-trial.
 - **Offline = deliverability only** (post-trial, native Capacitor app) — unchanged from prior.
+  **[CORRECTED V11.23 — THIS PHRASE NOW SUBSTANTIALLY UNDERSTATES THE CODE and has been quoted as a
+  CONSTRAINT in later sessions.** What is built is a durable outbox in Capacitor Preferences, a FIFO
+  drain, an `expected_from` 409 conflict guard, a sticky status overlay, a payment overlay, a conflict
+  signal that names orders, and three-layer replay idempotency on `collected`. **Anyone reasoning from
+  "deliverability only" will under-estimate what already works and re-derive it.** See §11.]
 
 ### SYSTEMIC THEME worth carrying (banked)
 The prod `trucks` schema has columns/constraints the CODE doesn't always match. This session: `truck_events.name` doesn't exist; `trucks.website` didn't exist (added); `trucks.whatsapp` is NOT NULL (the code sent null); the UI "WhatsApp" maps to `whatsapp_sender`, not `whatsapp`. Prior: `is_test` phantom refs. STRUCTURAL GUARD: the `update_settings` allowlist now drops unknown fields so a phantom column can't poison a multi-field write — worth extending the allowlist pattern to other multi-field writes (backlog). When onboarding/working in prod, expect schema-vs-code mismatches; allowlist + IF-NOT-EXISTS migrations + honest error logging are the defences.
@@ -2048,7 +2143,10 @@ Booking-core slot-correctness session (additive on V7.1/V7.2). Headline: the **s
 **5. Closed backlog (resolved).** Modifiers/Upsells safe-by-design (confirmed V7.1): modifiers are nested `{name,price}`, never a capacity unit; `normaliseOrderLines` ignores `.modifiers`; Upsells are real menu items governed by their category prep; no per-modifier setting needed. Server ASAP placement floor: resolved by the now-clamp (V7.2) applying to submit placement.
 
 **6. Post-trial design decisions (banked, NOT pre-trial).**
-- **6.1 Offline protection: screen-presence → connectivity, tied to the iPad/native app.** Principle: offline protection = **deliverability only** (can an order physically reach the device); NOT operator attentiveness (an operator ignoring a CONNECTED phone is out of scope). Correct signal = device→server **reachability**, not screen-presence (which wrongly trips on tab-switch/backgrounding/lock when online). Constraints: `navigator.onLine` insufficient (interface-up ≠ reachable) → a real heartbeat is still needed; **iOS Safari PWA CANNOT keep a background heartbeat alive** (no Background/Periodic Sync; backgrounded JS suspended; Chrome Periodic Sync ~12h min) → the full model effectively **REQUIRES the native Capacitor app** (tie to the iPad app). The offline core was just LIVE-VERIFIED → re-architecting pre-trial is high-risk. Cheap interim ONLY if false pauses are observed in trial prep: lengthen the stale threshold (30s→~90-180s) + a `visibilitychange`/`online` recovery ping (isolated/reversible but re-test). No hybrid/operator-absence handling needed.
+- **6.1 Offline protection: screen-presence → connectivity, tied to the iPad/native app.** Principle: offline protection = **deliverability only** (can an order physically reach the device); NOT operator attentiveness (an operator ignoring a CONNECTED phone is out of scope). Correct signal = device→server **reachability**, not screen-presence (which wrongly trips on tab-switch/backgrounding/lock when online). Constraints: `navigator.onLine` insufficient (interface-up ≠ reachable) → a real heartbeat is still needed; **iOS Safari PWA CANNOT keep a background heartbeat alive** (no Background/Periodic Sync; backgrounded JS suspended; Chrome Periodic Sync ~12h min) → the full model effectively **REQUIRES the native Capacitor app** (tie to the iPad app). The offline core was just LIVE-VERIFIED → re-architecting pre-trial is high-risk. Cheap interim ONLY if false pauses are observed in trial prep: lengthen the stale threshold (30s→~90-180s) + a `visibilitychange`/`online` recovery ping (isolated/reversible but re-test). No hybrid/operator-absence handling needed. **[CORRECTED V11.23 — the DESIGN DECISION below stands as
+the decision that was taken; the phrase "deliverability only" no longer describes the CODE. The outbox,
+its FIFO drain, the conflict guard and both overlays all ship. Read §11 before quoting this entry as a
+constraint.]**
 - **6.2 Multi-van heartbeat scoping (prerequisite for 6.1):** the heartbeat is per-van but a no-`vanId` dashboard/Manage ping stamps ALL the truck's vans → one online screen keeps every van "online" (per-truck-presence, not per-van-attendance). A correct connectivity model needs each *attended* van's device to report reachability for ITS van. Unresolved. No cross-truck leak (different `dashboard_token`s).
 
 **7. Test status (session end).** **[LIVE-VERIFIED]:** offline protection pauses a stale van's live event; live-redefinition; amber = real-load-only; Specials data fix; the now-clamp ASAP curve; the slot-mismatch fix (post-fix order filed correctly); the 16:55 multi-window seating (audit-confirmed correct). **[BUILT — pending live test]:** the slot-mismatch first-order-after-clear path; the KDS suite (§3); the Manage heartbeat; offline-toggle persistence; reconnect-display; silent-blank retry. **Deploy:** `heartbeat-monitor` edge function via CLI; app fixes via git push → Vercel; confirm the push + **hard-refresh the operator PWA** before testing (a stale service-worker bundle previously masked a deployed fix). **Data note:** Test Kitchen cleared for fresh testing (orders + `production_slot_usage` + counters reset to #1 + pause/wait cleared). Re-run the same clear block (swap to Gusto's `trucks.id`) before onboarding the first real operator.
@@ -4745,8 +4843,28 @@ cash and pay-at-hatch only.**
 🔴 **ALL-OFF LEAVES `renderButtons` RETURNING `null`** — no buttons at all, reachable **by tapping
 three chips**, where today's single stuck state needs a truck-level misconfiguration.
 
-🔴 **`can('cook_screen')` IS A SOLD MAX FEATURE** — *"Customer-facing display"*. Three free per-device
-switches give every plan what Max charges for. **A commercial hole, not a technical one.**
+🔴 **[CORRECTED V11.23 — THIS IS WRONG. `cook_screen` IS NOT SOLD.]** The line below was written on
+the premise that `can('cook_screen')` gates a sold Max feature. **Its marketing row is
+`{ name: 'Customer-facing display', … max: 'coming_soon' }` — advertised as NOT-YET-DELIVERED on every
+plan column, Max included.** ⚠️ **Worse than a stale claim: the row and the flag describe different
+products.** The row's `detail` describes a screen CUSTOMERS see showing order numbers; `cook_screen`
+gates an OPERATOR grill view with no prices. **One key, two products.** Both live trucks are
+`plan = 'trial'` with `TRIAL_FEATURES = [...MAX_FEATURES]`, so **no live entitlement turns on this
+either way**, and removing the gate gives away nothing currently sold. ⚠️ **`can('cook_screen')` now
+gates nothing reachable on the KDS — the making screen is available on every plan.**
+~~🔴 `can('cook_screen')` IS A SOLD MAX FEATURE — *"Customer-facing display"*. Three free per-device
+switches give every plan what Max charges for. **A commercial hole, not a technical one.**~~
+
+🔴 **AND THE PARITY CHECKER STRUCTURALLY CANNOT CATCH IT (V11.23).** `findPlanParityViolations` tests
+only `row[tier] === true && !canAccess(tier, feature)`. **`'coming_soon'` is not `=== true`, so the row
+is never examined** — the reverse direction, **gate grants while marketing says coming_soon**, is
+unchecked by construction. **SECOND INSTANCE, NOT FIRST:** §26 already records `ticket_printing` with
+the identical shape and names the cause — *the display list and the gate list are maintained
+separately*. **Two instances with an automated guard that cannot see either is a gap in the guard, not
+two bugs.** One counterfactual proves it: assert the reverse direction and confirm it fires on
+`cook_screen` and `ticket_printing` today. ⚠️ The file's own comment calls `coming_soon` *"a legitimate
+divergence"*, so the reverse direction is a **WARN class** — over-delivering is not a breach, but an
+unadvertised grant is a pricing-integrity and support problem.
 
 🔴 **THE COOK CARD HAS NO HOME.** Non-interactive header, category-grouped items at larger type, wider
 padding, the "To make" bar — **legibility at a grill, not lifecycle.** And `showPrices = viewMode !==
@@ -5353,7 +5471,7 @@ eight call sites, not a class tweak.
 - **modifier_options** — available boolean (V4) — defaults true.
 - **bundles_db** — bundle_price, original_price, slot_1..6_category, apply_to_new_events, is_available, start/end_time.
 - **event_deals** — event_id, bundle_id, active, overridden.
-- **truck_events** — event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3), auto_open / auto_close (per-event, seeded from trucks.default_auto_* at confirm), **venue_id** (V6.6, uuid, FK venues(id) ON DELETE SET NULL), **venue_id_source** (V6.6, text: scraper|operator|manual|backfill — only operator|manual count as validated for history-prior), **venue_match_confidence** (V6.6, text: high|low|none→NULL), **paused_until** (V6.6, timestamptz — event-scoped manual pause), **online_paused_until** (V6.6, timestamptz — event-scoped offline auto-pause), **extra_wait_mins** (V6.6, integer), **extra_wait_started_at** (V6.6, timestamptz). (V6.5: `town`/`postcode` are what the venue matcher resolves. V6.6 added `venue_id` as the keystone for anchors/history-prior, and the four pause/extra-wait columns to make those event-scoped — Sections 5, 25.) Index `idx_truck_events_venue_id`.
+- **truck_events** — 🔴 **[EXTENDED V11.23 — THIS LIST WAS STALE BY TWELVE COLUMNS. LIVE-VERIFIED against `information_schema`, 17 August. ALSO PRESENT IN PROD: `venue_address`, `customer_note`, `cancellation_note`, `van_label`, `opened_at`, `closed_at`, `last_offline_pause_at`, `order_ready_override`, `show_paid_step_override`, `takes_cash_override`, `buzzer_prompt`, `completion_presses_override`.** Most are described in changelog entries, so the facts existed — **but THIS is where anyone checks a column before writing SQL, and it is the list that would have prevented the error below.** ⚠️ **`venue_name` is `NOT NULL`, and it is the column a human reaches for `name` to find.** 🔴 **`truck_events.name` IS A PHANTOM THIS MANUAL ALREADY RECORDED (§22) — and it was reproduced anyway, in the same message that quoted the rule against inventing column names. A recorded phantom is only useful if the column list itself is current.]** event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3), auto_open / auto_close (per-event, seeded from trucks.default_auto_* at confirm), **venue_id** (V6.6, uuid, FK venues(id) ON DELETE SET NULL), **venue_id_source** (V6.6, text: scraper|operator|manual|backfill — only operator|manual count as validated for history-prior), **venue_match_confidence** (V6.6, text: high|low|none→NULL), **paused_until** (V6.6, timestamptz — event-scoped manual pause), **online_paused_until** (V6.6, timestamptz — event-scoped offline auto-pause), **extra_wait_mins** (V6.6, integer), **extra_wait_started_at** (V6.6, timestamptz). (V6.5: `town`/`postcode` are what the venue matcher resolves. V6.6 added `venue_id` as the keystone for anchors/history-prior, and the four pause/extra-wait columns to make those event-scoped — Sections 5, 25.) Index `idx_truck_events_venue_id`.
 - **orders** — **forty columns as of V10. The list below is COMPLETE and live-verified (29 July). Earlier manual versions listed ten and read as exhaustive, which is how `payment_status` stayed invisible for two months — if you extend this table, extend this list.**
 
   `order_key` (uuid, **PRIMARY KEY** — the only identifier in any WHERE/URL/FK/dedupe/React key), `id` (text — per-event DISPLAY number, restarts at 1, **NEVER a lookup key**), `truck_id` (text FK), `customer_name`, `customer_phone`, `customer_email`, `slot`, `order_type` (CHECK `collection|table`), `table_ref`, `event_date` (date NOT NULL), `items` (JSONB — frozen item NAMES, no item id), `extras` (JSONB), `bundle`, `discount_code`, `subtotal` **numeric(8,2)**, `discount_amt` **numeric(8,2)**, `total` **numeric(8,2)**, **`total_minor` (integer, V9.4 — the authoritative charge amount in pence)**, **`deal_savings` (numeric(8,2), V9.4)**, `notes`, `status`, `modify_type`, `modify_data`, **`payment_status`**, **`amount_paid`** (numeric(8,2)), `created_at`, `updated_at`, `deals` (JSONB), **`source`**, `paid_at`, `collected_at`, `event_id` (uuid FK), `cancellation_reason`, `van_id` (uuid FK), `rejection_reason`, `status_before_collected`, **`capacity_ack_at` (timestamptz, V9.4)**, **`buzzer_number` (smallint, null, V10)**, **`placed_at` (timestamptz, null, V10)**, **`buzzer_lost_at` (timestamptz, null, V10)**.
@@ -10888,7 +11006,7 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 | `trucks.completion_presses` | truck default **+ per-event override** | Whether completing an **unpaid** order takes **one** press or **two** — and **what `undo_collected` reverses** |
 | `trucks.takes_cash` | truck default **+ per-event override** | Whether the payment button splits into **Cash / Card** |
 
-**Live values, verified 10 August:** `show_paid_step` is **TRUE on three of twelve trucks** (`pizzeria-gusto`, `test-kitchen`, `village-spice`). `completion_presses` was **backfilled per row** from it — those three to `'two'`, the other nine to `'one'` — so **no truck's behaviour changed**. **93 of 95 events inherit**; 2 carry the forward-carried coupling; **0 events changed behaviour**.
+**Live values, verified 10 August:** `show_paid_step` is **TRUE on three of twelve trucks** (`pizzeria-gusto`, `test-kitchen`, `village-spice`). 🔴 **[SUPERSEDED V11.23 — LIVE-VERIFIED 17 AUGUST: FOUR of THIRTEEN.** `tikka-tonic` was flipped after 10 August, presumably at handover, joining the three above. `real-thai-food` and the eight demo/test trucks are false. **`completion_presses` still tracks `show_paid_step` exactly — four `'two'`, nine `'one'` — so the backfill has not drifted.** ⚠️ **`takes_cash` and `kds_mode` are FALSE on all thirteen, so `completionBtn`'s four shapes are two in practice and the Cash/Card split has never rendered.**] `completion_presses` was **backfilled per row** from it — those three to `'two'`, the other nine to `'one'` — so **no truck's behaviour changed**. **93 of 95 events inherit**; 2 carry the forward-carried coupling; **0 events changed behaviour**.
 
 ### 🔴 THE RULE THAT OUTRANKS THE SETTINGS: the button reads the ORDER
 

@@ -91,6 +91,9 @@ export function OrderCard({
   itemCategoryMap,
   catConfigs,
   viewMode = 'solo',
+  // ⚠️ DEFAULTS TO `viewMode`, WHICH IS WHAT KEEPS EVERY EXISTING CALLER BYTE-IDENTICAL. The dashboard
+  // passes neither, so both resolve to 'solo' and every branch below behaves exactly as it did.
+  cardStyle = viewMode,
   hideAmounts = false,
   kdsMode = false,
   showCookingStep = false,
@@ -125,7 +128,25 @@ export function OrderCard({
    *  — drives the PREP-AWARE green→amber threshold. Absent ⇒ the card falls back to the
    *  old fixed 5-min amber lead (getCombinedUrgency's default). */
   catConfigs?: Record<string, CatConfig>
+  /** ── THE LIFECYCLE AXIS: WHICH BUTTONS EXIST ────────────────────────────────────────────────────
+   *  🔴 BUTTONS AND STATUS BRANCHES ONLY. On the KDS this is `boardMode`, derived from the two switches,
+   *  and it decides which button set `renderButtons` produces and when an order leaves the board. It
+   *  decides NOTHING about appearance — that is `cardStyle`. */
   viewMode?: ViewMode
+  /** ── THE PRESENTATION AXIS: WHAT THE CARD LOOKS LIKE ────────────────────────────────────────────
+   *  🔴 WHY THIS EXISTS. `viewMode` used to do both jobs, so a LIFECYCLE switch was choosing the header,
+   *  the type size and the item renderer. A Payment/Collected-off device resolves `boardMode` to 'cook',
+   *  so it rendered the COOK card — a `text-lg` order number instead of `text-3xl`, a `text-xs` customer
+   *  name, no prices — EVEN WITH `Full` SELECTED. The display control was being overruled by a switch
+   *  that is supposed to decide nothing about appearance.
+   *
+   *  🔴 THE TWO AXES, AND NOTHING MAY CROSS THEM:
+   *    `viewMode`  — Payment/Collected. When the order leaves, and therefore which buttons exist.
+   *    `cardStyle` — Full / Cook. What the card shows. Full shows everything; Cook hides amounts.
+   *
+   *  ⚠️ DEFAULTS TO `viewMode`, so a caller that passes only `viewMode` gets exactly today's behaviour.
+   *  The dashboard passes neither and both resolve to 'solo'. */
+  cardStyle?: ViewMode
   /** ── THE DISPLAY CHOICE: HIDE EVERY MONETARY AMOUNT ─────────────────────────────────────────────
    *  🔴 MONEY ONLY, AND THAT BOUNDARY IS THE WHOLE POINT OF THIS PROP. It hides line prices, the order
    *  total, the part-paid row and the refund amount. It appears in NO button branch, NO status test and
@@ -658,7 +679,7 @@ export function OrderCard({
   //
   // ⚠️ IT KEEPS THE CHIP'S TAP TARGET, so the correction path is unchanged: the same modal, the same
   // card-vs-cash branch. Moving the information must not remove the way to fix it.
-  const partPaidRow = (hidePayments || viewMode === 'cook' || hideAmounts || !effectivePartPaid) ? null : (
+  const partPaidRow = (hidePayments || cardStyle === 'cook' || hideAmounts || !effectivePartPaid) ? null : (
     <button
       onClick={() => setConfirmRemovePayment(true)}
       title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
@@ -1079,7 +1100,7 @@ export function OrderCard({
       {removePaymentModal}
 
       {/* Full-width coloured header — age-driven */}
-      {viewMode === 'cook' ? (
+      {cardStyle === 'cook' ? (
         /* Cook: non-interactive two-line header, no collapse */
         <div className={`w-full px-3 py-2 ${headerCls}`}>
           <div className="flex items-baseline justify-between gap-1">
@@ -1107,8 +1128,8 @@ export function OrderCard({
       ) : (
         /* Window / solo: header (non-collapsing — content always shown). Window uses Cook's compact
            px-3 py-2 for KDS grid density; Solo keeps its roomier px-4 py-3 (gate is 'window'-only). */
-        <div className={`w-full text-left ${viewMode === 'window' ? 'px-3 py-2' : 'px-4 py-3'} ${headerCls}`}>
-          {viewMode === 'solo' ? (
+        <div className={`w-full text-left ${cardStyle === 'window' ? 'px-3 py-2' : 'px-4 py-3'} ${headerCls}`}>
+          {cardStyle === 'solo' ? (
             /* Solo (dashboard + mobile): two-row header. Row 1 is the identity+WHEN cluster — #order
                and the collection TIME together and prominent (the time is key info, so it sits beside
                the big order#, not demoted), then the status badge; offset/✓ go right. Row 2 gives the
@@ -1229,7 +1250,7 @@ export function OrderCard({
                   below, at its four price sites.
               ⚠️ Both arms remain inert for ticking: ITEM_TICK_ENABLED is false, so the <button> in the
               window/solo arm has an undefined onClick and neither arm is an action. That is unchanged. */}
-          {viewMode === 'cook' ? (
+          {cardStyle === 'cook' ? (
             <div className="mb-2">
               {itemGroups.map(({ cat, lines }, gi) => (
                 <div key={cat}>
@@ -1336,7 +1357,7 @@ export function OrderCard({
                       <div key={j}>
                         <button
                           onClick={ITEM_TICK_ENABLED ? () => itemIndex >= 0 && tapItem(itemIndex, line.quantity) : undefined}
-                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' || viewMode === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 text-left ${
+                          className={`w-full flex justify-between items-baseline gap-2 ${cardStyle === 'solo' || cardStyle === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 text-left ${
                             ITEM_TICK_ENABLED
                               ? `transition-all active:scale-[0.99] select-none ${allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'}`
                               : 'cursor-default'
@@ -1391,7 +1412,7 @@ export function OrderCard({
               note sat mb-2 (8px) above "Mark paid & done" in the DENSEST layout, with nothing between
               them. Raised to mb-3 (12px) in window mode only; solo is untouched. Do not reduce it. */}
           {order.notes && (
-            <div className={`bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 mx-3 rounded-md flex items-start gap-2 text-sm ${viewMode === 'solo' ? 'mb-2' : 'mb-3'}`}>
+            <div className={`bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 mx-3 rounded-md flex items-start gap-2 text-sm ${cardStyle === 'solo' ? 'mb-2' : 'mb-3'}`}>
               <span className="flex-shrink-0 mt-0.5">📝</span>
               <span>{order.notes}</span>
             </div>

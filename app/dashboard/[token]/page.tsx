@@ -37,6 +37,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 // The ONE event-cancel gate, shared with manage and the KDS. Replaces a window.confirm whose safe
 // button was labelled "Cancel" on the operation that cancels every live order. See the component.
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
+import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
@@ -585,8 +586,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Reject (pending-order review) — REQUIRED reason, mirrors the cancel modal pattern.
   const[showRejectModal,setShowRejectModal]=useState(false)
   const[rejectingOrder,setRejectingOrder]=useState<Order|null>(null)
-  const[rejectReason,setRejectReason]=useState('')
-  const[rejectNote,setRejectNote]=useState('')
+  // 🔴 `rejectReason` / `rejectNote` MOVED INTO components/shared/RejectOrderModal — the modal is mounted
+  // conditionally, so it UNMOUNTS on every exit and those two fields are cleared by construction rather
+  // than by three arms remembering to call one reset. That is strictly stronger than what resetRejectModal
+  // did for them, and it is why they are not replaced here.
   // ── 🔴 ONE RESET PER MODAL, CALLED BY EVERY ARM. THE DEFECT WAS THREE CALL SITES, NOT ONE OF THEM. ──
   // Both real arms cleared five pieces of state; the Android back closer cleared ONE (`setShowCancelModal
   // (false)`), so a back-dismiss carried the reason, the customer-facing note AND the refund decision to
@@ -605,9 +608,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setCancelRefund(true)      // 🔴 THE DANGEROUS ONE — back to "refund the customer" every time
     setCancelError(null)
   }
+  // ⚠️ TWO FIELDS FEWER THAN BEFORE, AND NOT BECAUSE THEY STOPPED BEING CLEARED. The reason and the note
+  // now live inside the shared modal, which unmounts on every exit — see the state note above. This
+  // function still runs from all three arms (confirm, "Keep order", Android back), unchanged.
   const resetRejectModal=()=>{
     setShowRejectModal(false);setRejectingOrder(null)
-    setRejectReason('');setRejectNote('')
   }
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
@@ -2184,7 +2189,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const confirmCancelOrder=async()=>{
     if(!cancellingOrder) return
     const orderKey=cancellingOrder.order_key
-    const displayId=cancellingOrder.id
+    // (`displayId` removed with the inline post-gate block — the shared handler resolves the display
+    //  number itself via findOrder, exactly as it does for every other action.)
     // The single reason, in both vocabularies: the LABEL is what the customer reads on the cancellation,
     // the VALUE is what the refund path and the audit log record. One question, asked once.
     const reasonLabel=CANCEL_REASONS.find(([v])=>v===cancelReason)?.[1]??''
@@ -2221,29 +2227,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // than hedging: the amount when a refund settled, and the DECLINE when they were offered one and
       // kept the money. Neither is inferred server-side — only this modal knows.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null,refunded_minor:refundedMinor,refund_declined:refundableMinor>0&&!cancelRefund},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved`);return}
-      if(!result.ok)throw new Error((result.data as any)?.error)
-      showToast(`Order #${displayId} cancelled`);await fetchAll()
+      // 🔴 THE SHARED POST-GATE HANDLER — the second half of closing the duplicate. `labels.cancel` is
+      // 'cancelled', so the committed toast is the same string; the queued branch produces the same
+      // `Order #N saved`. ⚠️ The refund decision above is UNTOUCHED: it happens before the gate, it is
+      // this modal's alone, and nothing in the shared handler knows or needs to know about it.
+      await handleGateResult(result,'cancel',orderKey)
     }catch{showToast('Failed to cancel','error')}finally{setActionLoading(null)}
   }
 
-  const confirmRejectOrder=async()=>{
+  // 🔴 THE COMPOSED REASON ARRIVES FROM THE MODAL. The composition rule (preset, preset + note, or the
+  // note alone for "Other") moved into components/shared/RejectOrderModal so both surfaces compose it
+  // identically — see composeRejectReason there.
+  // ⚠️ ENFORCEMENT LAYER 2 OF 2 IS THE `if(!fullReason) return` BELOW, and it stays. Layer 1 is the
+  // modal's disabled button. Two layers, because this is the last gate before an email reaches a customer.
+  const confirmRejectOrder=async(fullReason:string)=>{
     if(!rejectingOrder) return
-    const note=rejectNote.trim()
-    // REQUIRED reason: a concrete preset → preset (+ optional note); "Other" or no preset → the note
-    // (mandatory). fullReason is never empty (the confirm button is also disabled until valid).
-    const fullReason=(rejectReason&&rejectReason!=='Other')?[rejectReason,note].filter(Boolean).join(' — '):note
     if(!fullReason) return
     const orderKey=rejectingOrder.order_key
-    const displayId=rejectingOrder.id
     resetRejectModal()
     setActionLoading(`reject-${orderKey}`)
     try{
-      // Offline GATE (FIX 2) — reason in the body for faithful replay; expected_from → conflict if it raced.
+      // 🔴 THE REASON RIDES IN THE BODY, BEFORE THE GATE. That ordering is the whole offline story: the
+      // outbox persists this body verbatim, so a reject queued on a dead connection replays WITH its
+      // reason. There is no prompt left to attach one to afterwards.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'reject',order_key:orderKey,rejectionReason:fullReason},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved`);return}
-      if(!result.ok)throw new Error((result.data as any)?.error)
-      showToast(`Order #${displayId} rejected`);await fetchAll()
+      // 🔴 THE SHARED POST-GATE HANDLER, NOT A SECOND COPY. This used to carry its own queued branch, its
+      // own `!result.ok` throw and its own two toasts — a second implementation of the shape
+      // useGatedActionResult exists to be the only one. `labels.reject` is 'rejected', so the committed
+      // toast is the same string it always was.
+      await handleGateResult(result,'reject',orderKey)
     }catch{showToast('Failed to reject','error')}finally{setActionLoading(null)}
   }
 
@@ -4608,34 +4620,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {/* Reject order modal — REQUIRED reason (shown to the customer). Mirrors the cancel modal. */}
+      {/* Reject order modal — REQUIRED reason (shown to the customer). EXTRACTED to
+          components/shared/RejectOrderModal so the KDS shows the SAME gate; its Reject button used to
+          reject immediately and email the customer with no reason. The mount condition, the order it
+          reads and resetRejectModal are unchanged, so this surface renders exactly what it rendered. */}
       {showRejectModal&&rejectingOrder&&(
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Reject order #{rejectingOrder.id}?</h3>
-              <p className="text-sm text-slate-500 mt-1">{rejectingOrder.customer_name} · £{rejectingOrder.total.toFixed(2)}</p>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — required (shown to the customer)</label>
-              <select value={rejectReason} onChange={e=>setRejectReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
-                <option value="">Select a reason</option>
-                <option value="Sold out of an item">Sold out of an item</option>
-                <option value="Too busy — can't make it in time">Too busy — can&apos;t make it in time</option>
-                <option value="Closing soon">Closing soon</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{rejectReason==='Other'?'Reason — required':'Additional note — optional'}</label>
-              <textarea value={rejectNote} onChange={e=>setRejectNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={resetRejectModal} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
-              <button onClick={()=>confirmRejectOrder()} disabled={!((rejectReason!==''&&rejectReason!=='Other')||rejectNote.trim()!=='')} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">Reject order</button>
-            </div>
-          </div>
-        </div>
+        <RejectOrderModal
+          orderId={rejectingOrder.id}
+          customerName={rejectingOrder.customer_name}
+          totalLabel={` · £${rejectingOrder.total.toFixed(2)}`}
+          onConfirm={confirmRejectOrder}
+          onDismiss={resetRejectModal}
+        />
       )}
 
       {/* Edit order modal */}

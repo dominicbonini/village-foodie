@@ -13,6 +13,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
+import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { isDemoIdentifier } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -312,6 +313,11 @@ export default function KdsPage() {
   // never cleared. Every path that resolves an event checks it, so a refetch, a poll, a re-render or a
   // resume after hours in the background CANNOT pick a different event. See the seed effect below.
   const seededRef = useRef(false)
+  // ── REJECT: THE REASON GATE THIS SURFACE NEVER HAD ──────────────────────────────────────────────
+  // 🔴 Until now the KDS's Reject button called handleAction directly, which rejected the order and
+  // emailed the customer with NO reason — the server drops the reason line rather than refusing. The
+  // dashboard has intercepted `reject` before the gate since it was written; this is that interception.
+  const [rejectingOrder, setRejectingOrder] = useState<Order | null>(null)
   const [showEventMenu, setShowEventMenu] = useState(false)
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const [finishConfirm, setFinishConfirm] = useState<{ eventId: string; early: boolean; endTime: string } | null>(null)
@@ -658,6 +664,11 @@ export default function KdsPage() {
     [!!finishConfirm, () => setFinishConfirm(null)],
     [showEventPicker, () => setShowEventPicker(false)],
     [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
+    // 🔴 THE REJECT GATE. It is registered HERE, in this page's ordered list, and NOT from inside
+    // RejectOrderModal — `useAndroidBack` keeps ONE LIFO stack and the ORDER of this array is the
+    // nesting, so a registration made from the component would sit at its own position rather than the
+    // one this surface chose. Above the event menu because it is opened from a card, over everything.
+    [!!rejectingOrder, () => setRejectingOrder(null)],
     [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
     [showScreenOffWarning, () => setShowScreenOffWarning(false)],
   ])
@@ -893,7 +904,37 @@ export default function KdsPage() {
     },
   })
 
+  // ── 🔴 THE PRE-GATE INTERCEPTION. IT MUST RETURN BEFORE `gatedAction`. ──────────────────────────
+  // The dashboard's `doAction` opens a modal and returns for `reject`; this is the same shape. It is
+  // ABOVE the gate for a reason that only shows up offline: the outbox freezes the request body, so a
+  // reason not captured here can never be added later.
+  // ⚠️ `cancel` IS NOT INTERCEPTED HERE, AND IT IS NOT AN OVERSIGHT — see the note at the modal mount.
+  const rejectFromCard = useCallback((orderKey: string) => {
+    setRejectingOrder(orders.find(o => o.order_key === orderKey) ?? null)
+  }, [orders])
+
+  // ⚠️ ENFORCEMENT LAYER 2 OF 2 — the modal's disabled button is layer 1. Both survive on both surfaces.
+  const confirmRejectOrder = useCallback(async (fullReason: string) => {
+    if (!rejectingOrder) return
+    if (!fullReason) return
+    const orderKey = rejectingOrder.order_key
+    setRejectingOrder(null)
+    setActionLoading(`reject-${orderKey}`)
+    try {
+      // 🔴 THE REASON IS IN THE BODY, BEFORE THE GATE — byte-identical to the dashboard's call, so a
+      // queued reject replays with its reason on this surface too.
+      const result = await gatedAction({
+        url: '/api/dashboard/action',
+        body: { token, pin, action: 'reject', order_key: orderKey, rejectionReason: fullReason },
+        kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
+      })
+      await handleGateResult(result, 'reject', orderKey)
+    } catch { showToast('Failed to reject', 'error') } finally { setActionLoading(null) }
+  }, [token, pin, rejectingOrder, handleGateResult, showToast])
+
   const handleAction = useCallback(async (action: string, orderKey: string) => {
+    // 🔴 THE ONE PRE-GATE STATEMENT THIS SURFACE HAS, AND IT MIRRORS THE DASHBOARD'S LINE FOR LINE.
+    if (action === 'reject') { rejectFromCard(orderKey); return }
     setActionLoading(`${action}-${orderKey}`)
     try {
       // Through the offline GATE: online → normal write; offline (native, unreachable) → durable outbox +
@@ -909,7 +950,7 @@ export default function KdsPage() {
       // dashboard always did, and this catch is what surfaces it.
       await handleGateResult(result, action, orderKey)
     } catch (err: any) { showToast(err.message || 'Failed', 'error') } finally { setActionLoading(null) }
-  }, [token, pin, handleGateResult, showToast])
+  }, [token, pin, handleGateResult, showToast, rejectFromCard])
   // Kept current so the PAYMENT NOT RECORDED toast's "Record payment" can re-enter this same handler
   // (and therefore the same offline gate) without handleAction depending on itself.
   // ⚠️ In an EFFECT, not during render. The `fetchAllRef.current = fetchAll` assignment above writes during
@@ -1770,9 +1811,15 @@ export default function KdsPage() {
                 actionLoading={actionLoading}
                 onAction={handleAction}
                 onEdit={() => {}}
-                /* 🔴 `boardMode`, NOT the display control. The two switches decide the button branch
-                   and the layout; the Full/Cook toggle decides only `hideAmounts` below. */
+                /* 🔴 THE LIFECYCLE AXIS — `boardMode`, from the two switches. It decides the button
+                   branch and NOTHING about appearance. `cardStyle` below is the presentation axis. */
                 viewMode={boardMode}
+                /* 🔴 THE PRESENTATION AXIS — the Full/Cook control, and it now owns the header, the type
+                   size and the item renderer. Before this it did not: `viewMode` carried both jobs, so a
+                   Payment/Collected-off device rendered the COOK card even with `Full` selected — a
+                   text-lg order number instead of text-3xl, and no prices. A switch was overruling a
+                   display control. `Full` now means everything on every switch combination. */
+                cardStyle={cardMode}
                 kdsMode={kdsMode}
                 showCookingStep={showCookingStep}
                 categoryOrder={categoryOrder}
@@ -1994,6 +2041,33 @@ export default function KdsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── REJECT: THE SHARED REASON GATE ───────────────────────────────────────────────────────
+          🔴 THE SAME COMPONENT THE DASHBOARD MOUNTS, so the reasons, their order, their labels and the
+          mandatory-reason rule cannot drift between the two surfaces. The Reject button that opens it
+          sits ABOVE every `viewMode` branch in OrderCard, so this gate now stands in all three switch
+          configurations rather than only where the dashboard happened to render.
+          ⚠️ `cancel` HAS NO INTERCEPTION HERE, DELIBERATELY. This surface CANNOT DISPATCH IT: the Cancel
+          control lives inside OrderCard's `viewMode === 'solo'` branch and the KDS renders only 'window'
+          and 'cook'. Wiring a modal for an action no control can fire would be dead code that reads as
+          coverage — and the cancel modal is not just a reason, it is a REFUND DECISION, which is a money
+          flow this screen has never had. If Cancel is ever surfaced here, that is the change that needs
+          it, not this one. */}
+      {rejectingOrder && (
+        <RejectOrderModal
+          orderId={rejectingOrder.id}
+          customerName={rejectingOrder.customer_name}
+          /* ⚠️ NO TOTAL ON THIS SURFACE, DELIBERATELY, AND IT IS A JUDGEMENT I AM FLAGGING RATHER THAN
+             BURYING. The dashboard shows " · £12.00" here and this screen has a display mode whose whole
+             definition is that no monetary amount renders (`hideAmounts`). Adding an UNCONDITIONAL price
+             to a KDS overlay would be the first money render on this surface that the Cook toggle does
+             not govern. The order is identified by its number and the customer's name, which is what a
+             rejection decision needs. One prop reverses it if you disagree. */
+          totalLabel=""
+          onConfirm={confirmRejectOrder}
+          onDismiss={() => setRejectingOrder(null)}
+        />
       )}
 
       {/* ── CHANGE FINISH TIME — THE SHARED MODAL ────────────────────────────────────────────────
