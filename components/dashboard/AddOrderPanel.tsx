@@ -22,6 +22,7 @@ import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { fmtVenue } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, nextProvisionalId, seedProvisionalSeq } from '@/lib/native/orderGate'
 import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
@@ -69,13 +70,6 @@ type EventRecord = {
 }
 
 /** "Village Hall - Wickhambrook", but skip town if already in venue name */
-function fmtVenue(venueName?: string | null, town?: string | null): string {
-  if (!venueName && !town) return ''
-  if (!venueName) return town!
-  if (!town) return venueName
-  if (venueName.toLowerCase().includes(town.toLowerCase())) return venueName
-  return `${venueName} — ${town}`
-}
 
 // ─── props ────────────────────────────────────────────────────────────────────
 

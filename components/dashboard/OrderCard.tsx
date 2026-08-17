@@ -91,9 +91,11 @@ export function OrderCard({
   itemCategoryMap,
   catConfigs,
   viewMode = 'solo',
+  hideAmounts = false,
   kdsMode = false,
   showCookingStep = false,
   effectiveOrderReady = false,
+  readyStepOn = false,
   pendingSync = false,
   anchorId,
   highlight = false,
@@ -124,6 +126,25 @@ export function OrderCard({
    *  old fixed 5-min amber lead (getCombinedUrgency's default). */
   catConfigs?: Record<string, CatConfig>
   viewMode?: ViewMode
+  /** ── THE DISPLAY CHOICE: HIDE EVERY MONETARY AMOUNT ─────────────────────────────────────────────
+   *  🔴 MONEY ONLY, AND THAT BOUNDARY IS THE WHOLE POINT OF THIS PROP. It hides line prices, the order
+   *  total, the part-paid row and the refund amount. It appears in NO button branch, NO status test and
+   *  NO layout rule — `viewMode` still owns all three, and `viewMode` is driven by the KDS's two
+   *  SWITCHES, never by this.
+   *
+   *  🔴 WHY IT EXISTS AS A SECOND PROP INSTEAD OF A THIRD `viewMode` VALUE. The KDS's Full/Cook control
+   *  used to be fed into `viewMode` directly. `renderButtons` reads `viewMode`, so a display toggle was
+   *  choosing the button set — and at status 'ready' it chose the cook branch, which has no 'ready'
+   *  case and returns null: a card on a live board with no way to advance it. A display control must
+   *  not be able to do that, and the only structural guarantee is that it never reaches the same value.
+   *
+   *  ⚠️ `PAID` AND `CARD HELD` SURVIVE IN COOK, DELIBERATELY. They are STATES, not amounts, and they
+   *  tell the operator whether to take money — which is exactly the question a hatch is asking. The
+   *  part-refund chip is hidden entirely rather than reworded: a refund is not actionable at a hatch,
+   *  and inventing a new string to avoid printing a number is the wrong trade.
+   *
+   *  ⚠️ DEFAULTS FALSE, so the DASHBOARD — which passes nothing — is character-identical. */
+  hideAmounts?: boolean
   kdsMode?: boolean
   /** Van "show cooking step" preference — when false the cook view skips the intermediate
    *  "Start cooking" stage (confirmed → ready directly). Defaults off. */
@@ -132,6 +153,14 @@ export function OrderCard({
    *  default ?? false). Gates the orders-screen (solo) Ready button — NOT the email (model A: the email
    *  always fires on ready). Defaults off. */
   effectiveOrderReady?: boolean
+  /** KDS PER-DEVICE "Marks ready" switch, ON. Window view only, and only meaningful alongside
+   *  handover — a handover-off device takes the cook branch above and never reaches it. True renders
+   *  Ready on confirmed/modified/cooking and the completion control on 'ready', which also DERIVES the
+   *  wait away (Invariant A): a screen that marks ready never shows the waiting treatment.
+   *  Deliberately NOT the same prop as `effectiveOrderReady` — that one is the DASHBOARD's
+   *  server-resolved event/van setting, read only in solo mode, so the two surfaces stay independent by
+   *  construction. Defaults false = today's behaviour everywhere. */
+  readyStepOn?: boolean
   pendingSync?: boolean
   /** DEMO ONLY — DOM id on the card root so the loop-complete card can scroll to this order.
    *  Undefined everywhere else, and React omits the attribute entirely for undefined, so a live
@@ -524,7 +553,14 @@ export function OrderCard({
   // "part refunded" without a figure sends an operator to Stripe to find out how much.
   const paidChipStatic = hidePayments ? null
     : balance.status === 'refunded' ? <span title="Refunded in full. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">REFUNDED</span>
-    : balance.status === 'part_refunded' ? <span title="Charged in full, then partly refunded. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{money(balance.balanceMinor)} REFUNDED</span>
+    // 🔴 THE ONE ARM OF THIS CHAIN THAT CARRIES AN AMOUNT, AND THE ONLY ONE `hideAmounts` TOUCHES.
+    // Hidden ENTIRELY in Cook rather than reworded to a bare "REFUNDED": that would make a part-refunded
+    // order read identically to a fully refunded one, and the second still has money outstanding. A
+    // refund is not actionable at a hatch, so nothing is lost by its absence and a new string invented
+    // to avoid printing a number would be the wrong trade.
+    // ⚠️ NULL HERE DOES NOT FALL THROUGH TO `PAID`. This is a ternary cascade: a part_refunded order
+    // matches HERE and stops, so hiding the chip shows no chip, never a different one.
+    : balance.status === 'part_refunded' ? (hideAmounts ? null : <span title="Charged in full, then partly refunded. Nothing to collect." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 flex-shrink-0 whitespace-nowrap">{money(balance.balanceMinor)} REFUNDED</span>)
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : heldAuthorisation ? <span title="Card authorised — do not collect. Payment is taken when you confirm." className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 flex-shrink-0 whitespace-nowrap">CARD HELD</span>
     // 🔴 PART-PAID HAS LEFT THE HEADER ROW ENTIRELY — see `partPaidRow` below. It read
@@ -611,13 +647,18 @@ export function OrderCard({
   // of six-fifty — and on an order edited from £6.50 to £13.00 the two happen to be equal, which is the
   // worst case for a reader. "£6.50 paid, £6.50 due" cannot be misread.
   //
-  // ⚠️ NOT IN COOK MODE, AND NOT WHEN `hidePayments`. Cook shows no prices at all (`showPrices` is
-  // false there) and its header carries no payment chip today; adding a money line would put money on
-  // the one screen deliberately without it. It is absent there rather than overflowing there.
+  // ⚠️ NOT IN COOK MODE, NOT WHEN `hidePayments`, AND NOT WHEN `hideAmounts`. Cook's header carries no
+  // payment chip today; adding a money line would put money on the one screen deliberately without it.
+  // It is absent there rather than overflowing there.
+  // 🔴 `hideAmounts` IS THE THIRD DISJUNCT AND IT IS NOT REDUNDANT: a HANDOVER device (viewMode
+  // 'window') whose display is set to Cook has neither of the first two true, and this row is a pure
+  // monetary amount — "£6.50 paid, £6.50 due" — so it must go with the rest of the money.
+  // ⚠️ The old clause here cited `showPrices` as the reason cook shows no prices. That variable had
+  // ZERO consumers and has been deleted; the cook item renderer below is what omits prices.
   //
   // ⚠️ IT KEEPS THE CHIP'S TAP TARGET, so the correction path is unchanged: the same modal, the same
   // card-vs-cash branch. Moving the information must not remove the way to fix it.
-  const partPaidRow = (hidePayments || viewMode === 'cook' || !effectivePartPaid) ? null : (
+  const partPaidRow = (hidePayments || viewMode === 'cook' || hideAmounts || !effectivePartPaid) ? null : (
     <button
       onClick={() => setConfirmRemovePayment(true)}
       title={hasReversibleInPersonPayment ? 'Tap to remove this payment' : 'Tap for how to refund this'}
@@ -725,6 +766,40 @@ export function OrderCard({
   const s         = STATUS[order.status] || STATUS.pending
   const isPub     = truck?.mode === 'pub'
 
+  // ── THE STATUS BADGE — COMPUTED ONCE, PLACED THREE TIMES ────────────────────────────────────────
+  // 🔴 THIS IS `paidChipStatic`'s PATTERN, AND REPRODUCING IT IS THE POINT OF THE CHANGE. The paid chip
+  // survived into both KDS headers because it is computed once here and PLACED by each header that
+  // wants it. The status badge did not, because it was written INLINE inside the `viewMode === 'solo'`
+  // branch — so the KDS, which never renders 'solo', silently had no badge at all, in every value it
+  // can take: Modified, Cooking, Ready, Collected, Rejected, Cancelled. That was an absence, not a
+  // gate; no comment anywhere recorded a decision to omit it.
+  //
+  // ⚠️ IT SITS HERE RATHER THAN BESIDE `paidChipStatic` FOR ONE REASON: it needs `s`, and `s` is
+  // declared on the line above. Moving `s` up to reach the chip would be a change nobody asked for.
+  // Same SHAPE, same "computed outside every branch" property — one expression, three placements.
+  //
+  // ⚠️ NOT MONEY, SO `hideAmounts` DOES NOT GATE IT. A status is not an amount. It renders in Cook
+  // exactly as `PAID` and `CARD HELD` do, and for the same reason: it tells the operator what the order
+  // is doing. The only "not in cook" rule in this file is about money.
+  const statusBadgeStatic = !['confirmed', 'pending'].includes(order.status) ? (
+    <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
+  ) : null
+
+  // ── 🔴 THE KDS SUPPRESSES ONE VALUE, AND `Cooking` IS NOT A REDUNDANT LABEL — READ BEFORE "FIXING" ──
+  // The two elements are not two labels for one thing. `🔥 Cooking…` sits in the ACTION ROW, where it
+  // stands in for a button the operator cannot press yet; the badge is a HEADER LABEL. On the DASHBOARD
+  // nothing else states the cooking state, so the badge carries it and still does. On the KDS the action
+  // row already says it — and in the `kds_mode`-true window case it says it in the SAME PILL CLASSES
+  // (`text-xs font-bold px-2 rounded-full bg-amber-100 text-amber-700`, differing only in py-1 vs
+  // py-0.5), a card's height apart, with no collapse between them. Two identical amber pills reading
+  // the same word is what this suppression exists to prevent.
+  // 🔴 IT IS A DELIBERATE PER-SURFACE DIVERGENCE. This comment is here so the next reader does not
+  // "restore" the missing value and re-create the duplicate.
+  // ⚠️ LATENT, NOT OBSERVABLE, TODAY: `kds_mode` is false on all thirteen trucks and gates the only
+  // Start cooking button, so nothing can currently reach status 'cooking'. That is why this costs
+  // nothing now and why it must be written down rather than discovered later.
+  const statusBadgeKds = order.status === 'cooking' ? null : statusBadgeStatic
+
   const sortedItems = [...order.items].sort((a, b) =>
     getCategoryTime(b.name) - getCategoryTime(a.name)
   )
@@ -739,8 +814,6 @@ export function OrderCard({
       return { ...prev, [i]: current >= qty ? 0 : current + 1 }
     })
   }
-
-  const showPrices = viewMode !== 'cook'
 
   type CookLine = { name: string; quantity: number; modifiers?: { name: string; price: number }[]; note?: string; dealName?: string; dealPrice?: number }
   const itemGroups: { cat: string; lines: CookLine[] }[] = (() => {
@@ -856,6 +929,39 @@ export function OrderCard({
     }
 
     if (viewMode === 'window') {
+      // ── 🔴 THIS SCREEN MARKS READY *AND* HANDS OVER — the KDS's "Marks ready" + "Takes payment" ────
+      // The third configuration, and the only NEW one: reachable only by deliberately turning READY on
+      // while HANDOVER is also on. It renders the sequence the DASHBOARD's solo mode has always
+      // rendered — Ready on confirmed/modified, then the completion control once the order is ready.
+      //
+      // 🔴 INVARIANT A — THE WAIT IS DERIVED, AND THIS BRANCH IS WHERE IT IS DERIVED AWAY. Returning
+      // here for confirmed/modified/cooking means the `kdsMode` "⏳ Waiting" + disabled treatment below
+      // is UNREACHABLE whenever this screen marks ready itself. A screen never waits for a ready it
+      // produces. There is no stored value for the wait and there must not be one.
+      //
+      // ⚠️ 'cooking' IS LISTED so a truck whose cooking gate is on can still advance an order this
+      // screen (or a cook screen) put into it — without it, such an order would fall past the window
+      // block into the solo block, which has no 'cooking' case, and reach `return null`.
+      // ⚠️ NO TRUCK EMOJI, unlike solo's Ready. The KDS has never carried it on this control and the
+      // cook branch above does not either; this matches the cook branch, not solo.
+      // ⚠️ DEFAULTS FALSE, so every existing caller — the dashboard (solo) included — is byte-identical.
+      // The dashboard never reaches this branch at all: it renders viewMode 'solo'.
+      if (readyStepOn) {
+        if (['confirmed', 'modified'].includes(order.status)) {
+          return <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+        }
+        if (order.status === 'cooking') {
+          return (
+            <>
+              <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 Cooking…</span>
+              <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+            </>
+          )
+        }
+        if (order.status === 'ready') {
+          return completionBtn()
+        }
+      }
       if (!kdsMode) {
         if (['confirmed', 'modified'].includes(order.status)) {
           return completionBtn()
@@ -980,6 +1086,12 @@ export function OrderCard({
             <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
             {/* Buzzer chip — row 1, beside the order number. See the buzzerChip note. */}
             {buzzerChip}
+            {/* The status badge — the same row that already carries the buzzer chip and the late pill,
+                which is this header's small-indicator row. It sits before the ml-auto time group, so
+                that group stays hard right and nothing below row 1 moves. `Cooking` is suppressed here
+                — see statusBadgeKds. ⚠️ A STATUS IS NOT AN AMOUNT: this renders in Cook, where no
+                monetary element does. */}
+            {statusBadgeKds}
             <span className="text-xs text-slate-600 flex-shrink-0 inline-flex items-center gap-1 ml-auto">
               {timeLabel}
               {offsetLabel && (isLate
@@ -1028,11 +1140,15 @@ export function OrderCard({
                 {/* Status BADGE (moved here from row 1) — sits between channel/name and price. Same
                     condition as before: shown for modified/cooking/ready (incl. the blue "Ready"),
                     suppressed for the baseline confirmed/pending the section heading already says. This
-                    is the status BADGE, NOT the Ready ACTION button (that stays in the bottom row). */}
-                {!['confirmed', 'pending'].includes(order.status) && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
-                )}
-                <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>
+                    is the status BADGE, NOT the Ready ACTION button (that stays in the bottom row).
+                    ⚠️ THE MARKUP MOVED, IT WAS NOT REWRITTEN. `statusBadgeStatic` holds the identical
+                    span under the identical condition, so this renders the same element or nothing —
+                    `false` and `null` are both skipped by React. Solo is unchanged. */}
+                {statusBadgeStatic}
+                {/* ⚠️ SOLO IS THE DASHBOARD AND `hideAmounts` DEFAULTS FALSE THERE, so this guard is a
+                    constant-false test and this span renders exactly as it always has. The gate is here
+                    only because the same header serves any future caller that sets the prop. */}
+                {!hideAmounts && <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>}
                 {paidChip}
               </div>
             </>
@@ -1051,7 +1167,16 @@ export function OrderCard({
                   {buzzerChip}
                 </div>
                 <div className="flex items-baseline gap-1.5 flex-shrink-0">
-                  <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>
+                  {/* The status badge — FIRST in this cluster, mirroring solo, where it precedes the
+                      price and the paid chip. This is the row that already carries the small
+                      indicators (paidChip, ✓) and is already flex-shrink-0, which the badge is sized
+                      for. `Cooking` is suppressed here — see statusBadgeKds. */}
+                  {statusBadgeKds}
+                  {/* 🔴 THIS IS THE ONE THAT MATTERS. With `viewMode` back on `boardMode`, a HANDOVER
+                      device renders this header even when its display is set to Cook — so without this
+                      guard the order total would print on a Cook card, which is the first thing Cook
+                      exists to remove. */}
+                  {!hideAmounts && <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>}
                   {paidChip}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
@@ -1092,7 +1217,18 @@ export function OrderCard({
               the buzzer chip are all untouched. Null in every state but part-paid. */}
           {partPaidRow}
 
-          {/* ── Items: cook view vs window/solo view ── */}
+          {/* ── Items: cook view vs window/solo view ─────────────────────────────────────────────────
+              🔴 THIS TEST DECIDES THE RENDERING, NOT THE MONEY. It used to decide both at once — the cook
+              arm hid every price AND changed what an item IS — which made it impossible to hide money
+              without also changing the layout. The two were separated by hand:
+                • WHICH ARM RUNS follows `viewMode` (the two switches). The kitchen rendering —
+                  `itemGroups`, deals DISSOLVED into category batches, `line.note`, the plain <p> — is the
+                  right rendering for a kitchen screen and is kept exactly as it was.
+                • WHETHER PRICES PRINT inside whichever arm runs follows `hideAmounts` (the Full/Cook
+                  control). The cook arm has never printed a price, so the gate appears only in the arm
+                  below, at its four price sites.
+              ⚠️ Both arms remain inert for ticking: ITEM_TICK_ENABLED is false, so the <button> in the
+              window/solo arm has an undefined onClick and neither arm is an action. That is unchanged. */}
           {viewMode === 'cook' ? (
             <div className="mb-2">
               {itemGroups.map(({ cat, lines }, gi) => (
@@ -1135,9 +1271,19 @@ export function OrderCard({
                 <div key={di} className="mb-2">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="text-sm font-normal text-slate-900 flex-1">🎁 {deal.name}</span>
-                    <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
-                      {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
-                    </span>
+                    {/* 🔴 THE COLUMN GOES WITH THE AMOUNT — CORRECTED. It was first written to stay and
+                        render empty, on the reasoning that the `w-16` span is LAYOUT and removing it
+                        would re-flow the list. Re-flowing the list is exactly what was wanted: with the
+                        column reserved, a name kept its narrower width and wrapped to two lines beside
+                        64px of nothing. The name span is `flex-1`, so removing this sibling hands it the
+                        w-16 plus the `gap-2` and it reflows into the space. Nothing else in the row is
+                        sized against this column — see the report.
+                        ⚠️ THE FALSE ARM IS THE ORIGINAL SPAN, CHILD FOR CHILD, so solo is untouched. */}
+                    {!hideAmounts && (
+                      <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
+                        {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
+                      </span>
+                    )}
                   </div>
                   {Object.entries(deal.slots).filter(([, v]) => v).map(([slotCat, itemName]) => {
                     const mods = (deal.slotModifiers ?? {})[slotCat] ?? []
@@ -1146,14 +1292,19 @@ export function OrderCard({
                       <div key={slotCat} className="pl-4 mt-0.5">
                         <div className="flex items-baseline justify-between gap-2 text-sm">
                           <span className="flex-1 font-normal text-slate-900">1× {itemName}</span>
-                          <span className="w-16 flex-shrink-0" />
+                          {/* ⚠️ THIS SPAN IS THE PRICE COLUMN, ALREADY EMPTY — a deal slot never carries
+                              a price and this reserves the width so its name lines up with the priced
+                              rows above. With every price gone there is nothing left to line up with, so
+                              it goes too; leaving it would reserve the column this task exists to
+                              reclaim. */}
+                          {!hideAmounts && <span className="w-16 flex-shrink-0" />}
                         </div>
                         {(mods.length > 0 || note) && (
                           <div className="pl-3 flex flex-col gap-y-0.5">
                             {mods.map(m => (
                               <div key={m.name} className="flex items-baseline justify-between gap-2">
                                 <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
-                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
                               </div>
                             ))}
                             {note && <span className="text-xs text-slate-500 italic">📝 {note}</span>}
@@ -1194,9 +1345,21 @@ export function OrderCard({
                             {line.quantity}× {line.name}
                             {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{line.quantity})</span>}
                           </span>
+                          {/* ⚠️ THE `✓` ARM IS NOT MONEY AND IS UNTOUCHED — it is the all-struck mark,
+                              which the brief lists as UNCHANGED. It keeps its own w-16 column, because a
+                              tick is not a price and is not what Cook removes.
+                              🔴 THE HIDDEN ARM IS NOW `null`, NOT AN EMPTY SPAN. This is the row the
+                              defect was observed on: "1× Chicken wings Thai style" wrapped to two lines
+                              with 64px of nothing beside it. The name span is `flex-1`; deleting this
+                              sibling gives it the w-16 and the `gap-2` back, so a name that fits renders
+                              on one line and the card gets shorter. `justify-between` with one flex-1
+                              child is a no-op, so no other child moves.
+                              ⚠️ THE PRICE ARM IS BYTE-IDENTICAL, which is what keeps solo unchanged. */}
                           {allDone
                             ? <span className="text-right tabular-nums w-16 flex-shrink-0 text-xs text-green-500 font-bold">✓</span>
-                            : <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">£{(line.unit_price * line.quantity).toFixed(2)}</span>
+                            : hideAmounts
+                              ? null
+                              : <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">£{(line.unit_price * line.quantity).toFixed(2)}</span>
                           }
                         </button>
                         {(line.modifiers?.length || line.specialInstructions) && (
@@ -1204,7 +1367,7 @@ export function OrderCard({
                             {line.modifiers?.map(m => (
                               <div key={m.name} className="flex items-baseline justify-between gap-2">
                                 <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
-                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                                {!hideAmounts && m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
                               </div>
                             ))}
                             {line.specialInstructions && (

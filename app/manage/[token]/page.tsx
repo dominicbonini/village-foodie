@@ -29,6 +29,7 @@ import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { CuisinePicker, cuisinesToStored, storedToCuisineSlots, type CuisineSlot } from '@/components/shared/CuisinePicker'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
@@ -8300,6 +8301,13 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   onOpenWalkthrough: () => void
 }) {
   const [form, setForm] = useState({ ...truck })
+  // ── CUISINE ROWS, SEEDED ONCE FROM THE STORED STRING ────────────────────────────────────────────
+  // 🔴 SEEDED, NOT DERIVED PER RENDER. Deriving would rebuild the rows on every keystroke elsewhere in
+  // the form and throw away a half-typed "Other" value the instant it did not yet resolve. `form` is
+  // itself seeded from `truck` on this component's mount, so this matches its lifetime exactly.
+  // ⚠️ storedToCuisineSlots NEVER returns an empty array, so the control always has a row to render,
+  // and a value outside the canonical list comes back as an "Other" row holding that exact text.
+  const [cuisineSlots, setCuisineSlots] = useState<CuisineSlot[]>(() => storedToCuisineSlots(truck.cuisine_type))
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
@@ -8788,7 +8796,32 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} onBlur={() => saveFormField()} placeholder="Tell customers about your food..."
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
         </div>
-        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} onBlur={() => saveFormField()} placeholder="e.g. Italian, Thai, Burgers" />
+        {/* ── CUISINE — THE WIZARD'S CONTROL, NOT A SECOND ONE ─────────────────────────────────────
+            🔴 WAS FREE TEXT: `<Input label="Cuisine type" … placeholder="e.g. Italian, Thai, Burgers" />`.
+            The signup wizard has always offered a dropdown from the canonical 26 with up to three
+            choices; Settings let the same column be re-typed into anything. That matters beyond tidiness
+            because the PUBLIC discovery map builds its cuisine filter out of these strings, so a typo
+            here becomes a filter option there.
+            ⚠️ SAVES ON CHANGE, NOT ON BLUR, because a <select> has no meaningful blur — the operator's
+            choice IS the commit. `saveFormField({cuisine_type})` is passed the new value explicitly
+            (the saveContactPhone pattern) so it cannot send the stale `form` from this render.
+            🔴 AN OFF-LIST STORED VALUE IS PRESERVED, NOT DROPPED — storedToCuisineSlots loads anything
+            outside the list into an "Other" row carrying its exact text, so it stays visible and
+            round-trips unchanged. A silently emptied cuisine_type would remove this truck from its own
+            filter on the live map. */}
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1">Cuisine type <span className="text-red-500">*</span></label>
+          <CuisinePicker
+            slots={cuisineSlots}
+            onChange={next => {
+              setCuisineSlots(next)
+              const joined = cuisinesToStored(next)
+              setForm(p => ({ ...p, cuisine_type: joined }))
+              void saveFormField({ cuisine_type: joined })
+            }}
+            idPrefix="settings"
+          />
+        </div>
 
         {/* Menu icon */}
         <div className="mt-1">

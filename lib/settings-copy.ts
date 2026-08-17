@@ -124,9 +124,9 @@ export const SETTING_COPY = {
   /** Settings → Your trucks → Display settings. */
   orderReady: {
     label: 'Order-ready step',
-    help: 'Show a “Mark ready” button on the orders screen and notify customers when their order is ready. '
-      + 'Useful for collection at pubs and festivals. Applies to all events — you can still turn it on or '
-      + 'off for a single event on its dashboard.',
+    help: 'Show a “Mark ready” button on the orders screen. Kitchen screens are set separately, on each '
+      + 'device. Customers are emailed whenever an order is marked ready. Applies to all events — you can '
+      + 'still turn it on or off for a single event on its dashboard.',
   } as SettingCopy,
 
   /** Settings → Your trucks → Display settings. `countLabel` is the nested count row.

@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Preferences } from '@capacitor/preferences'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
-import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer, buzzerPill } from '@/lib/buzzer'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 // The ONE event-cancel gate, shared with manage and the dashboard. Replaces a window.confirm whose
 // safe button was labelled "Cancel" on the operation that cancels every live order.
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
+import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
+import { EventActionsModal } from '@/components/shared/EventActionsModal'
 import { isDemoIdentifier } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
@@ -28,18 +30,21 @@ import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { readSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 import { formatTime, formatTimeRange, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
+import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT, EVENT_STATUS_DOT } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playNewOrder } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
-import { countOps, removePendingStatusOp } from '@/lib/native/outbox'
+import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
+import { useOfflinePaymentOverlay } from '@/lib/native/useOfflinePaymentOverlay'
+import { useGatedActionResult } from '@/lib/native/useGatedActionResult'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
@@ -73,7 +78,9 @@ export default function KdsPage() {
     setShowKdsIntro(false)
   }
   const searchParams = useSearchParams()
-  const kdsView: KdsView = searchParams.get('view') === 'cook' ? 'cook' : 'window'
+  // `?view=cook` IS NO LONGER READ. The view is derived from the handover switch, so the URL param
+  // decides nothing; a stale bookmark carrying it simply opens the KDS. Left unparsed rather than
+  // parsed-and-ignored, so nothing suggests it still has an effect.
   const vanId = searchParams.get('van_id') ?? ''
   const vanName = searchParams.get('van_name') ?? ''
   // 🔴 THE SEED FROM THE DASHBOARD. Same handoff mechanism as van_id above. Read ONCE, into the initial
@@ -149,22 +156,23 @@ export default function KdsPage() {
   const [showScreenOffWarning, setShowScreenOffWarning] = useState(false)
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
   // ── VIEW + LAYOUT: LAZY INITIALISERS, THE SAME PATTERN AS keepScreenOn ABOVE ────────────────────
-  // 🔴 THESE READ localStorage SYNCHRONOUSLY AT FIRST PAINT. They used to start `null` and be filled by a
+  // 🔴 THIS READS localStorage SYNCHRONOUSLY AT FIRST PAINT. It used to start `null` and be filled by a
   // mount effect, which persisted correctly but restored ONE FRAME LATE — and for the VIEW that frame is
-  // not cosmetic. `activeView` falls back to `kdsView` (the URL, default 'window') while the override is
-  // null, so a device configured as the COOK screen painted a WINDOW board first: prices visible
-  // (showPrices = viewMode !== 'cook'), ready tickets on the board, and the window button set. On an
+  // not cosmetic. The same hazard now lives on the handover switch, which the view is derived from, and
+  // is closed the same way: a device configured as a MAKING screen must not paint a WINDOW board first —
+  // prices visible (showPrices = viewMode !== 'cook'), ready tickets on the board, the window set. On an
   // unattended grill screen that is a frame of money UI on a device deliberately configured never to
   // show it. The lazy read closes the gap by construction — there is no frame in which the stored
   // preference is not yet applied.
   // ⚠️ NO SECOND MECHANISM. Same localStorage keys, same token scoping, same writer effects below; only
   // the READ moved from an effect into the initialiser, exactly as keepScreenOn does it.
   // ⚠️ SSR-GUARDED and validated, so a corrupt value falls through to null = today's default resolution.
-  const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(() => {
-    if (typeof window === 'undefined') return null
-    const v = localStorage.getItem(`hg_kds_view_${token}`)
-    return v === 'window' || v === 'cook' ? v : null
-  })
+  // ── `hg_kds_view_` IS READ ONCE, FOR THE MIGRATION, AND NEVER WRITTEN AGAIN ─────────────────────
+  // 🔴 THE WINDOW/COOK CONTROL IS GONE. `viewMode` is now DERIVED from the handover switch
+  // (`handoverOn ? 'window' : 'cook'`), so this key no longer decides anything. It is still READ,
+  // exactly once, because a device that chose Cook must not silently become a window screen — see the
+  // migration in the reconcile effect below. The value is left in place, harmless and unread thereafter.
+  const storedView = typeof window === 'undefined' ? null : localStorage.getItem(`hg_kds_view_${token}`)
   const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(() => {
     if (typeof window === 'undefined') return null
     const l = localStorage.getItem(`hg_kds_layout_${token}`)
@@ -183,10 +191,64 @@ export default function KdsPage() {
   // KDS persists too. This toggle changes which orders LEAVE THE BOARD, so losing it silently is worse
   // than losing a list/grid preference.
   //
-  // Keyed by token like every other KDS device pref, so two trucks on one iPad do not collide.
-  // null = not read yet. Resolved as NOT-on (see `hidePayments`): the safe direction is to withhold
-  // money UI for a frame, never to flash it on a device configured not to show it.
-  const [showPaymentsPref, setShowPaymentsPref] = useState<boolean | null>(null)
+  // ── THE TWO PER-DEVICE STEP SWITCHES ────────────────────────────────────────────────────────────
+  // 🔴 "Marks ready" and "Takes payment" — which STEPS this screen performs. An order leaves this
+  // board once the last selected step is done. Both stored per device, keyed by token so two trucks on
+  // one iPad do not collide.
+  //
+  // 🔴 TRI-STATE, AND THE `null` IS LOAD-BEARING. `null` means NOTHING IS STORED, which is NOT the same
+  // as stored-false: the unset default differs by truck (see `handoverOn` below), so collapsing null to
+  // a boolean here would erase the distinction the acceptance test depends on.
+  //
+  // ⚠️ LAZY INITIALISERS READ localStorage AT FIRST PAINT. `Preferences.get` is async and cannot run in
+  // an initialiser, so localStorage carries the first frame and Preferences reconciles on mount — see
+  // the dual-write effects below for which wins and why.
+  const readLocalPref = (key: string): boolean | null => {
+    if (typeof window === 'undefined') return null
+    const v = localStorage.getItem(key)
+    return v === 'on' ? true : v === 'off' ? false : null
+  }
+  // 🔴 THE MIGRATION'S SYNCHRONOUS HALF. A device holding view='cook' with NEITHER switch stored is a
+  // MAKING screen, and must paint as one from the first frame — otherwise, on a show_paid_step-FALSE
+  // truck, `handoverOn` would fall to its unset default of TRUE and paint the window branch: prices on a
+  // grill screen. That is the exact failure this exists to prevent, and it is a first-paint failure, so
+  // a mount effect alone cannot close it.
+  // ⚠️ IN-MEMORY ONLY HERE. The PERSIST happens in the reconcile effect, after Preferences has had its
+  // say — writing from an initialiser would commit a decision made without the store that wins.
+  const migrateFromCook = storedView === 'cook'
+    && readLocalPref(`hg_kds_payments_${token}`) === null
+    && readLocalPref(`hg_kds_readystep_${token}`) === null
+  const [handoverPref, setHandoverPref] = useState<boolean | null>(
+    () => migrateFromCook ? false : readLocalPref(`hg_kds_payments_${token}`),
+  )
+  const [readyPref, setReadyPref] = useState<boolean | null>(
+    () => migrateFromCook ? true : readLocalPref(`hg_kds_readystep_${token}`),
+  )
+  // Has the Preferences reconcile completed? Used ONLY to keep the board from narrowing during the
+  // window where localStorage was cleared by a cold kill but Preferences still holds the real value.
+  const [prefsReconciled, setPrefsReconciled] = useState(false)
+  // ── THE CARD-DISPLAY PREFERENCE — localStorage ONLY, AND THAT IS A RULE, NOT AN OVERSIGHT ───────
+  // 🔴 A PREFERENCE THAT MOVES THE BOARD IS DUAL-WRITTEN; A PREFERENCE THAT ONLY CHANGES APPEARANCE IS
+  // localStorage. The two step switches above decide which orders leave this screen, so losing one to a
+  // WKWebView cold kill would silently change what a kitchen can see — they are written to Capacitor
+  // Preferences as well, and reconciled. This one decides how a card LOOKS. A one-frame flash of the
+  // wrong card size is cosmetic and self-corrects on the next paint; a one-frame flash of the wrong
+  // board membership is not. The cheaper store is the correct store here, and pairing it with the
+  // switches would blur the distinction that makes the dual write meaningful.
+  // ⚠️ TRI-STATE. `null` means the operator has never chosen, which is NOT the same as choosing 'window'
+  // — unset follows `boardMode`, and a stored value overrides it. Collapsing it would freeze a making
+  // screen on Full cards the first time anyone glanced at the control.
+  // ⚠️ A NEW KEY, deliberately. `hg_kds_view_` is read by the one-time migration, and giving it a second
+  // meaning would make a display choice look like a migration input.
+  const [cardModePref, setCardModePref] = useState<KdsView | null>(() => {
+    if (typeof window === 'undefined') return null
+    const v = localStorage.getItem(`hg_kds_cardmode_${token}`)
+    return v === 'window' || v === 'cook' ? v : null
+  })
+  const setCardMode = useCallback((next: KdsView) => {
+    setCardModePref(next)
+    try { localStorage.setItem(`hg_kds_cardmode_${token}`, next) } catch { /* private mode — resets next session */ }
+  }, [token])
   // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON. A ref mirrors it for the
   // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
   // Lazy initialiser, same pattern as keepScreenOn / view / layout: restore at first paint rather than
@@ -213,6 +275,22 @@ export default function KdsPage() {
   // the outbox, applied at render over the merged orders, HELD until the server reflects the status (no
   // reconnect flash). Web/non-native → empty → no-op. dropEntry = the offline UNDO.
   const { overlay: kdsOverlay, refresh: refreshPendingStatus, dropEntry: dropOverlayEntry } = useOfflineStatusOverlay(orders)
+  // ── THE PAYMENT OVERLAY — THE SIBLING THIS SURFACE NEVER HAD ────────────────────────────────────
+  // 🔴 IT WAS NEVER BLOCKED HERE, ONLY NEVER CALLED. The hook needs `order_key` + a `confirmedPaid`
+  // computed from getOrderBalance, and this file already holds `orders`, already holds `payments`, and
+  // already imports getOrderBalance for the conflict marker below. Wiring it is three lines.
+  // 🔴 WHY IT MATTERS ON THIS SURFACE IN PARTICULAR: the window person takes the money. Without this, an
+  // operator who took cash offline and tapped Mark paid saw an unpaid card and a button still inviting
+  // the tap — and the rational response is to tap again. The server's idempotency absorbed the second
+  // press; that is not a reason to keep showing them something false.
+  // ⚠️ `confirmedPaid` is computed HERE from the SAME resolver the card uses, so the overlay knows when
+  // the server has caught up without re-deriving a balance anywhere. It is the ledger, not the status,
+  // that clears a pending payment chip. 'part_refunded' counts as settled: nothing is outstanding.
+  const paymentOrders = useMemo(() => orders.map(o => ({
+    order_key: o.order_key,
+    confirmedPaid: (() => { const b = getOrderBalance(o as never, payments[o.order_key] ?? []); return b.status === 'paid' || b.status === 'refunded' || b.status === 'part_refunded' })(),
+  })), [orders, payments])
+  const { overlay: paymentOverlay, refresh: refreshPendingPayment } = useOfflinePaymentOverlay(paymentOrders)
   // ── THE CONFLICT SIGNAL ──────────────────────────────────────────────────────────────────────────
   // 🔴 ONE source for BOTH the banner and the per-order card marker, so they cannot disagree. The KDS
   // fetches the SAME /api/dashboard order set as the dashboard, so it CAN resolve display ids — see
@@ -244,8 +322,10 @@ export default function KdsPage() {
   // immediately with no undo, which is exactly how it got pressed by accident.
   // ⚠️ `selected` lives in the picker state, so closing the picker discards it. There is no draft to
   // leak back in on the next open — every open starts from the event's CURRENT finish time.
-  const [finishTimePicker, setFinishTimePicker] = useState<{ eventId: string; current: string; selected: string } | null>(null)
-  const [finishTimeConfirm, setFinishTimeConfirm] = useState<{ eventId: string; current: string; next: string; affected: number } | null>(null)
+  // ⚠️ ONE STATE NOW, NOT TWO. The picker/confirm split moved INSIDE EventFinishTimeModal, which is
+  // where it belongs — it is the safety property of the control, not of this screen. Non-null means the
+  // modal is mounted for that event; every open is a fresh mount, so there is no draft to leak back in.
+  const [finishTimeTarget, setFinishTimeTarget] = useState<{ id: string; end_time: string | null; event_date: string | null } | null>(null)
   const [finishTimeBusy, setFinishTimeBusy] = useState(false)
   const [eventNoteInput, setEventNoteInput] = useState('')
   // ── EVENT-CANCEL GATE (was window.confirm) ──────────────────────────────────────────────────────
@@ -380,35 +460,73 @@ export default function KdsPage() {
   // device falls back to Window automatically — no extra guard needed.
   // null overrides are never written, so a first-ever-mount default isn't clobbered.
   useEffect(() => {
-    if (typeof window === 'undefined' || viewOverride === null) return
-    localStorage.setItem(`hg_kds_view_${token}`, viewOverride)
-  }, [viewOverride, token])
-  useEffect(() => {
     if (typeof window === 'undefined' || layoutOverride === null) return
     localStorage.setItem(`hg_kds_layout_${token}`, layoutOverride)
   }, [layoutOverride, token])
 
-  // ── LOAD + PERSIST "take payments on this device" ───────────────────────────────────────────────
-  // Read ONCE on mount. Deliberately NOT a lazy useState initialiser like the localStorage prefs above —
-  // Preferences.get is async and cannot be read synchronously at first render. That is not a hazard here:
-  // the whole board is gated behind `loading`, which does not clear until the /api/dashboard round-trip
-  // returns, and a native-storage read beats a network fetch. Should it ever lose that race, `null`
-  // resolves to NOT-on, which withholds money UI rather than flashing it. Never the unsafe direction.
-  // A read failure (plugin missing, private mode) lands on `false` = OFF = today's behaviour.
+  // ── RECONCILE THE TWO STEP SWITCHES FROM Capacitor Preferences, WHICH WINS ──────────────────────
+  // 🔴 WHY BOTH STORES. Preferences persists to UserDefaults on iOS and survives the hard navigations
+  // and cold kills that can hand a WKWebView a FRESH localStorage; localStorage is the only one that
+  // can be read synchronously in an initialiser, so it is the only one that can make the FIRST PAINT
+  // correct. Neither alone is sufficient, so both switches write both on every change, and Preferences
+  // wins on reconcile because it is the store that survives.
+  // ⚠️ A missing Preferences value does NOT clobber a localStorage value — `value == null` leaves the
+  // state alone. Only an explicit 'on'/'off' overrides, so a device that has only ever written
+  // localStorage keeps its setting.
+  // ⚠️ A read failure (plugin missing, private mode) still marks the reconcile DONE, or the board would
+  // stay permanently un-narrowed on web. See `boardKeepsReady`.
   useEffect(() => {
     let cancelled = false
-    void Preferences.get({ key: `hg_kds_payments_${token}` })
-      .then(({ value }) => { if (!cancelled) setShowPaymentsPref(value === 'on') })
-      .catch(() => { if (!cancelled) setShowPaymentsPref(false) })
+    const readOne = (key: string) => Preferences.get({ key }).then(({ value }) => value).catch(() => null)
+    void Promise.all([
+      readOne(`hg_kds_payments_${token}`),
+      readOne(`hg_kds_readystep_${token}`),
+      readOne(`hg_kds_view_${token}`),
+    ]).then(([pay, rdy, view]) => {
+      if (cancelled) return
+      if (pay === 'on' || pay === 'off') setHandoverPref(pay === 'on')
+      if (rdy === 'on' || rdy === 'off') setReadyPref(rdy === 'on')
+      setPrefsReconciled(true)
+
+      // ── 🔴 THE MIGRATION'S PERSISTING HALF. ONCE PER DEVICE, AND IDEMPOTENT BY CONSTRUCTION. ──────
+      // A device that chose Cook, with NEITHER switch stored in EITHER store, is a making screen: write
+      // READY on / HANDOVER off to both stores so the choice survives as a switch setting.
+      // 🔴 ONCE-ONLY NEEDS NO FLAG, AND THAT IS THE POINT. The guard is "both keys unset", and the write
+      // sets both — so a second run cannot satisfy its own precondition. Re-running is a no-op rather
+      // than a correction, which is what makes it safe on every mount, on every reload, forever.
+      // ⚠️ A STORED SWITCH ALWAYS WINS. Either key holding a value in either store aborts the migration,
+      // so an operator who has already used the switches is never overridden by an old view value.
+      // ⚠️ IF THE Preferences READ FAILED, `readOne` returned null for all three — indistinguishable
+      // from "not stored". The localStorage values then decide alone, which is the best available
+      // evidence and is exactly what the synchronous seed above already painted. The risk is bounded:
+      // the only way to migrate wrongly is for Preferences to hold a switch value that localStorage
+      // lacks AND its read to fail, and the next successful reconcile corrects it because Preferences
+      // wins there.
+      // ⚠️ 'window' IS NOT MIGRATED. Only 'cook' carries information the switches cannot already express.
+      const effPay = (pay === 'on' || pay === 'off') ? pay : (localStorage.getItem(`hg_kds_payments_${token}`) ?? null)
+      const effRdy = (rdy === 'on' || rdy === 'off') ? rdy : (localStorage.getItem(`hg_kds_readystep_${token}`) ?? null)
+      const effView = view ?? storedView
+      if (effView === 'cook' && effPay === null && effRdy === null) {
+        setReady(true)
+        setHandover(false)
+      }
+    })
     return () => { cancelled = true }
   }, [token])
 
-  // Write-through on toggle. State first so the board responds to the tap immediately; the persist is
-  // fire-and-forget because a failed write costs the operator a re-tap next session, not this one.
-  const togglePayments = useCallback((next: boolean) => {
-    setShowPaymentsPref(next)
-    void Preferences.set({ key: `hg_kds_payments_${token}`, value: next ? 'on' : 'off' }).catch(() => {})
-  }, [token])
+  // Write-through on toggle — BOTH stores, state first so the board responds to the tap immediately.
+  // The persists are fire-and-forget: a failed write costs the operator a re-tap next session, not this
+  // one. localStorage is wrapped because private mode throws on write.
+  const writePref = useCallback((key: string, next: boolean) => {
+    try { if (typeof window !== 'undefined') localStorage.setItem(key, next ? 'on' : 'off') } catch { /* private mode */ }
+    void Preferences.set({ key, value: next ? 'on' : 'off' }).catch(() => {})
+  }, [])
+  const setHandover = useCallback((next: boolean) => {
+    setHandoverPref(next); writePref(`hg_kds_payments_${token}`, next)
+  }, [token, writePref])
+  const setReady = useCallback((next: boolean) => {
+    setReadyPref(next); writePref(`hg_kds_readystep_${token}`, next)
+  }, [token, writePref])
 
   // Per-device SOUND pref (hg_kds_sound_<token>): the RESTORE moved into the useState initialiser above
   // (first paint), so this effect now only installs the audio unlock. Persist-on-change and the ref
@@ -529,12 +647,13 @@ export default function KdsPage() {
   // (z-70 confirm over z-60 picker). Back DISMISSES the confirm without writing and DISCARDS the
   // picker's selection — it can never be the thing that changes an event's finish time. That is the
   // §38 rule verbatim: back may dismiss a decision, never make one.
-  // ⚠️ The confirm's arm is gated on `!finishTimeBusy` so a press mid-write cannot unmount the modal
-  // while its POST is in flight, matching the eventCancelTarget arm below.
+  // ⚠️ Gated on `!finishTimeBusy` so a press mid-write cannot unmount the modal while its POST is in
+  // flight, matching the eventCancelTarget arm below. ONE arm covers both of the modal's steps now that
+  // the step lives inside it — and the OUTCOME is unchanged: back at the picker dismissed it, back at
+  // the confirm dismissed it, and back at either still does exactly that.
   useAndroidBack([
     [isDemo && showKdsIntro, () => dismissKdsIntro()],
-    [!!finishTimeConfirm && !finishTimeBusy, () => setFinishTimeConfirm(null)],
-    [!!finishTimePicker, () => setFinishTimePicker(null)],
+    [!!finishTimeTarget && !finishTimeBusy, () => setFinishTimeTarget(null)],
     [deviceOpen && !isDemo, () => setDeviceOpen(false)],
     [!!finishConfirm, () => setFinishConfirm(null)],
     [showEventPicker, () => setShowEventPicker(false)],
@@ -749,6 +868,31 @@ export default function KdsPage() {
     } finally { setSavingBuzzer(false) }
   }, [token, pin, showToast, orders, buzzerTarget])
 
+  // ── POST-GATE HANDLING — THE SHARED HANDLER (lib/native/useGatedActionResult) ────────────────────
+  // 🔴 THIS SURFACE USED TO CARRY A PARTIAL COPY OF THE DASHBOARD'S POST-GATE BLOCK, AND THE GAPS WERE
+  // NOT DESIGN. It toasted only for 'ready' — a queued or committed `mark_paid`/`collected` produced
+  // nothing at all, live-verified on the KDS — it offered Undo only for 'ready', it had no payment
+  // overlay, and its `catch {}` was empty, so a server rejection was swallowed whole. All four are gone:
+  // this now runs the DASHBOARD'S code, not a matched-looking second copy of it.
+  // ⚠️ THE TWO CALLBACKS BELOW ARE THIS SURFACE'S ALONE — the pending-sync set and its counter, which the
+  // dashboard has no equivalent of. The dashboard's prep-pill callbacks are the mirror case and are not
+  // passed here, because this screen has no prep pills. An omitted callback omits the effect.
+  const handleGateResult = useGatedActionResult<Order>({
+    showToast,
+    findOrder: (k) => orders.find(o => o.order_key === k),
+    refreshPendingStatus, dropOverlayEntry, scheduleReadyEmail, undoReady,
+    // Through the REF, not a direct self-call: handleAction is a useCallback, and naming itself in its
+    // own body would put it in its own dependency array. The retry/Undo is the SAME handler, so it takes
+    // the same offline gate.
+    runAction: (a, k) => { void handleActionRef.current(a, k) },
+    refetch: () => fetchAllRef.current(),
+    setActionLoading, refreshPendingPayment,
+    onQueued: (k) => { setPendingSyncCount(c => c + 1); setPendingSync(prev => new Set(prev).add(k)) },
+    onQueuedUndone: (k) => {
+      setPendingSync(prev => { const n = new Set(prev); n.delete(k); return n }); setPendingSyncCount(c => Math.max(0, c - 1))
+    },
+  })
+
   const handleAction = useCallback(async (action: string, orderKey: string) => {
     setActionLoading(`${action}-${orderKey}`)
     try {
@@ -761,69 +905,11 @@ export default function KdsPage() {
         body: { token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}) },
         kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
       })
-      if (result.queued) {
-        // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the customer email (a phantom
-        // email must not fire for an uncommitted ready). Advance the KDS board via the DURABLE outbox overlay
-        // (FIX 2) — refreshPendingStatus reflects the just-queued op instantly; the overlay outlives reads and
-        // is held until the server reflects it. Shared with the dashboard so the two surfaces never diverge.
-        refreshPendingStatus()
-        setPendingSyncCount(c => c + 1)
-        setPendingSync(prev => new Set(prev).add(orderKey))
-        setActionLoading(null)
-        // OFFLINE UNDO (ISSUE 1) for 'ready' (matching KDS's online undo affordance): remove the still-pending
-        // op → the overlay reverts as-if-never-happened; if it already synced, fall back to the online undo.
-        if (action === 'ready') {
-          const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
-          const offlineUndo = async () => {
-            const removed = await removePendingStatusOp(orderKey)
-            if (removed) {
-              dropOverlayEntry(orderKey); refreshPendingStatus()
-              setPendingSync(prev => { const n = new Set(prev); n.delete(orderKey); return n }); setPendingSyncCount(c => Math.max(0, c - 1))
-              showToast(`Order #${num} reverted`)
-            } else { undoReady(orderKey, num) }
-          }
-          showToast(`Order #${num} saved`, 'success', { duration: 7000, action: { label: '↩ Undo', run: offlineUndo } })
-        }
-        return
-      }
-      // ── THE MONEY HALF FAILED, ON A 200 ──────────────────────────────────────────────────────────
-      // 🔴 The window person is the one holding the cash, so this surface needs the same signal the
-      // dashboard gets — same words, same 20s, same repair. Without it the KDS swallowed it entirely:
-      // this handler checks `result.ok` only for 'ready', and its `catch {}` is empty.
-      // The card marker (see the `conflict` prop below) is the durable record; this is the catch-in-the-
-      // act. 'mark_paid' charges the outstanding balance under the same idempotency key — safe to
-      // re-fire, a no-op if the money did land.
-      const payWarn = (result.data as { paymentWarning?: string } | undefined)?.paymentWarning
-      if (payWarn && result.ok) {
-        const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
-        showToast(
-          `⚠ Order #${num} — PAYMENT NOT RECORDED. The order went through; the money did not.`,
-          'error',
-          // ⚠️ Through the REF, not a direct self-call: handleAction is a useCallback, and naming itself
-          // in its own body would put it in its own dependency array. Same fetchAllRef pattern this file
-          // already uses. The retry is the SAME handler, so it takes the same offline gate.
-          { duration: 20000, action: { label: 'Record payment', run: () => { void handleActionRef.current('mark_paid', orderKey) } } },
-        )
-      }
-      // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
-      // reverts the status; the order then re-appears in the cook list on refetch).
-      if (action === 'ready' && result.ok) {
-        const readyOrder = orders.find(o => o.order_key === orderKey)
-        const num = readyOrder?.id ?? ''
-        scheduleReadyEmail(orderKey)
-        // Buzzer in the ready toast — see the dashboard copy of this call for the full reasoning.
-        // 🔴 The pill markup below is BYTE-IDENTICAL to the dashboard's so the two surfaces cannot
-        // render differently; no buzzer ⇒ the original string, unchanged.
-        showToast(
-          readyOrder?.buzzer_number != null
-            ? <>Order #{num} ready · {buzzerPill(readyOrder.buzzer_number)}</>
-            : `Order #${num} ready`,
-          'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
-      }
-    } catch {}
-    setActionLoading(null)
-    fetchAllRef.current()
-  }, [token, pin, orders, scheduleReadyEmail, undoReady, showToast])
+      // 🔴 THE EMPTY `catch {}` IS GONE. The shared handler throws on a server rejection exactly as the
+      // dashboard always did, and this catch is what surfaces it.
+      await handleGateResult(result, action, orderKey)
+    } catch (err: any) { showToast(err.message || 'Failed', 'error') } finally { setActionLoading(null) }
+  }, [token, pin, handleGateResult, showToast])
   // Kept current so the PAYMENT NOT RECORDED toast's "Record payment" can re-enter this same handler
   // (and therefore the same offline gate) without handleAction depending on itself.
   // ⚠️ In an EFFECT, not during render. The `fetchAllRef.current = fetchAll` assignment above writes during
@@ -908,20 +994,14 @@ export default function KdsPage() {
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
-  const extendEvent = async (eventId: string, addMins: number) => {
-    const ev = events.find(e => e.id === eventId); if (!ev) return
-    const [h, m] = ev.end_time.split(':').map(Number)
-    const total = h * 60 + m + addMins
-    const newEnd = `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
-    try {
-      const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
-      const data = await res.json()
-      if (data?.queued) { setPendingSyncCount(c => c + 1); return }
-      if (!res.ok) throw new Error(data.error)
-      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
-      showKdsToast(`Extended to ${newEnd}`)
-    } catch (err: any) { showKdsToast(err.message || 'Failed') }
-  }
+  // ── `extendEvent` DELETED (16 August) ───────────────────────────────────────────────────────────
+  // 🔴 IT HAD NO CALLERS LEFT once this screen's recently-closed banner lost its "Extend 30 min". The
+  // Event actions menu moved to `applyFinishTime` when the shared picker replaced the +30 control.
+  // ⚠️ NOTHING QUEUED CAN LAND ON IT. It was a CLIENT function; an offline replay carries the POST body
+  // to /api/events/action and is served by that route's `update` handler, which is untouched — so an op
+  // queued before this change still replays, and `pendingSyncCount` is still incremented by
+  // `applyFinishTime`'s own `data?.queued` branch below.
+  // 🔴 THE CAPABILITY IS NOT GONE — `applyFinishTime` makes the identical write.
 
   // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
   // 🔴 THE SAME WRITE `extendEvent` MAKES, AND NOTHING MORE: one POST to /api/events/action with
@@ -930,19 +1010,19 @@ export default function KdsPage() {
   // and its only other write is `updated_at`. It touches NO order, NO status, NO production slot and
   // imports nothing from lib/payments/. This control changes WHICH TIMES A NEW ORDER CAN BE PLACED FOR
   // and nothing else.
-  // ⚠️ ABSOLUTE, NOT RELATIVE. `extendEvent` takes `addMins` and can only ever push the finish LATER;
-  // this takes the finish time itself, so a truck that sells out early can bring it forward. The two
-  // coexist deliberately — extendEvent is still what the recently-closed banner calls.
+  // ⚠️ ABSOLUTE, NOT RELATIVE — and now the ONLY writer of this column on this screen. The deleted
+  // `extendEvent` took `addMins` and could only ever push the finish LATER; this takes the finish time
+  // itself, so a truck that sells out early can bring it forward.
   const applyFinishTime = async (eventId: string, newEnd: string) => {
     setFinishTimeBusy(true)
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
       const data = await res.json()
-      if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeConfirm(null); return }
+      if (data?.queued) { setPendingSyncCount(c => c + 1); setFinishTimeTarget(null); return }
       if (!res.ok) throw new Error(data.error)
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
       showKdsToast(`Finish time now ${newEnd}`)
-      setFinishTimeConfirm(null)
+      setFinishTimeTarget(null)
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
     finally { setFinishTimeBusy(false) }
   }
@@ -1059,9 +1139,6 @@ export default function KdsPage() {
   // came for (orders to make, in the order to make them); Grid because a wall of cards reads as a working
   // kitchen where a list reads as a spreadsheet. Still OVERRIDABLE — the switcher works, and once they
   // pick something it persists per-token like any operator's preference.
-  const activeView: KdsView = can('cook_screen')
-    ? (viewOverride ?? (isDemo ? 'window' : kdsView))
-    : 'window'
   const activeLayout = layoutOverride ?? (isDemo ? 'grid' : displayMode)
 
   // ── DOES THIS DEVICE DO MONEY? ──────────────────────────────────────────────────────────────────
@@ -1078,7 +1155,50 @@ export default function KdsPage() {
   // a frame is recoverable; flashing a paid chip on a grill screen is the thing this setting exists to
   // prevent.
   const { showPaidStep } = resolvePaidStep(truck, activeEvent)
-  const hidePayments = showPaidStep && showPaymentsPref !== true
+
+  // ── 🔴 THE TWO SWITCHES, RESOLVED. THIS IS THE ACCEPTANCE TEST IN FOUR LINES. ────────────────────
+  // HANDOVER's unset default is `!showPaidStep`, and that is NOT arbitrary — it is exactly what HEAD
+  // rendered. HEAD computed `hidePayments = showPaidStep && showPaymentsPref !== true`, so with nothing
+  // stored a show_paid_step-TRUE truck got the COOK button set (handover off) and a show_paid_step-FALSE
+  // truck got the WINDOW branch (handover on). Both are reproduced here by construction.
+  //
+  // READY's unset default is the COMPLEMENT of handover, which is also what HEAD rendered: HEAD had no
+  // third combination at all, so every device was ready-on XOR handover-on. Since `hg_kds_readystep_` is
+  // absent from HEAD — never committed, never written on any device — `readyPref` is null everywhere on
+  // first load and every existing device lands on that complement.
+  //
+  // 🔴 THE ONE DIVERGENCE FROM HEAD, DECLARED RATHER THAN HIDDEN: a device that stored payments 'off'
+  // while the truck had show_paid_step TRUE, on a truck that has SINCE turned show_paid_step off, gets
+  // handover OFF here where HEAD gave it the window branch. That is the widening this change is for —
+  // the stored preference now means something on every truck — and it is the only combination in which
+  // an existing device renders differently. See docs/kds-two-switches-build-report.md.
+  const handoverOn = handoverPref ?? !showPaidStep
+  const readyOn = readyPref ?? !handoverOn
+  // `hidePayments` now means exactly "this screen does not do the handover step". Every existing
+  // consumer — the cook-branch condition, partPaidRow, the money chips below — keeps its meaning,
+  // because "does not take money" and "does not hand over" were already the same thing on this screen.
+  const hidePayments = !handoverOn
+
+  // ── 🔴 THE VIEW IS NOW DERIVED FROM THE HANDOVER SWITCH. THE CONTROL IS GONE. ───────────────────
+  // A screen that hands over is a WINDOW; a screen that only makes food is a COOK screen. That was
+  // always the relationship — the old Window/Cook control and the payments chip were two ways of saying
+  // the same thing, which is why a payments-off window device already rendered the cook button set.
+  // Deriving it means every existing consumer keeps working untouched: `showPrices`, the cook card's
+  // header shape, padding, item grouping and type size, and the cook-branch condition all read
+  // `viewMode` and none of them needs to know where it came from.
+  // ⚠️ `can('cook_screen')` NO LONGER GATES ANYTHING HERE — see the report. The making screen is now
+  // reachable on every plan, because the control that was gated no longer exists.
+  // ── 🔴 TWO VALUES, NOT ONE. THIS SPLIT IS THE POINT OF THE CHANGE. ──────────────────────────────
+  // `boardMode` decides WHICH ORDERS ARE ON THE BOARD and nothing about appearance. `cardMode` decides
+  // WHAT A CARD LOOKS LIKE and nothing about membership. They used to be one value, which meant a
+  // display preference could not exist without moving tickets.
+  // 🔴 `displayOrders` READS boardMode AND MUST NEVER READ cardMode. A display control that changes
+  // which orders are visible is not a display control; on an unattended board it is a way to lose a
+  // ticket by choosing a font size.
+  const boardMode: KdsView = handoverOn ? 'window' : 'cook'
+  // ⚠️ UNSET FOLLOWS THE BOARD: a making screen defaults to Cook cards, a handover screen to Full. Once
+  // the operator picks, their choice sticks — which is why this is tri-state and `null` is not `false`.
+  const cardMode: KdsView = cardModePref ?? boardMode
 
   // FIX 2 — apply the durable offline status overlay (sticky; held until the server reflects it) over the
   // merged orders BEFORE the view split, so an offline-advanced card moves columns and no stale/intermediate
@@ -1109,11 +1229,26 @@ export default function KdsPage() {
   // and on any other KDS whose device toggle is on. Nothing is written that could hide it there — the
   // filter is a local render-time predicate over a SHARED status, so two devices disagreeing about what
   // they show is exactly the intended consequence and costs no state.
-  const windowOrders = hidePayments
-    ? activeOrders.filter(o => o.status !== 'ready')
-    : activeOrders
+  //
+  // 🔴 AND THE ONE GUARD THE DUAL WRITE NEEDS. After a WKWebView cold kill localStorage can be empty
+  // while Preferences still holds "handover on". For the frames before the reconcile lands, `handoverOn`
+  // would fall to its unset default and — on a show_paid_step-true truck — DROP every 'ready' order from
+  // the board. Showing MORE orders than configured is visible and harmless; showing fewer silently drops
+  // a ticket. So while nothing is stored locally AND the reconcile has not returned, the board does not
+  // narrow. It costs one render pass and only on that path: with anything in localStorage, or once the
+  // reconcile lands, this term is false and the filter is HEAD's exactly.
+  const boardKeepsReady = handoverOn || (handoverPref === null && !prefsReconciled)
+  const windowOrders = boardKeepsReady
+    ? activeOrders
+    : activeOrders.filter(o => o.status !== 'ready')
 
-  const displayOrders = (activeView === 'cook' ? cookOrders : windowOrders)
+  // 🔴 THE GUARD NOW HAS TO COVER THE COOK PATH TOO, AND THIS IS THE ONE PLACE THE DERIVATION MOVED A
+  // BOARD DECISION. `activeView` used to be independent of the switches, so an unreconciled device
+  // always took `windowOrders` and got `boardKeepsReady` for free. With the view derived, an
+  // unreconciled device on a show_paid_step-TRUE truck resolves to 'cook' and would take `cookOrders`,
+  // which has no guard — dropping every 'ready' order for the frames before Preferences lands. The
+  // guard is UNCHANGED (H7); it is applied on both paths rather than one.
+  const displayOrders = (boardMode === 'cook' ? (boardKeepsReady ? activeOrders : cookOrders) : windowOrders)
     .slice()
     .sort((a, b) => {
       const ta = a.slot ? new Date(`1970-01-01T${a.slot}`).getTime() : 0
@@ -1138,35 +1273,20 @@ export default function KdsPage() {
   const allDayCounts = getAllDayCounts(activeOrders)
   const allDayPills = Object.entries(allDayCounts)
 
-  // KDS always uses window or cook — never solo
-  const cardViewMode = activeView === 'cook' ? 'cook' : 'window'
+  // ── THE DISPLAY CHOICE, AND ONLY THE DISPLAY CHOICE ─────────────────────────────────────────────
+  // 🔴 THIS USED TO BE `cardViewMode`, FED STRAIGHT INTO OrderCard's `viewMode`. That was the defect:
+  // `renderButtons` reads `viewMode`, so a DISPLAY control was picking the BUTTON branch — and at status
+  // 'ready' it picked the cook branch, which has no 'ready' case and returns null. A card with no
+  // buttons at all, on a live board. `viewMode` is `boardMode` again (the two switches), and the
+  // display choice now produces ONE boolean that drives MONEY and nothing else.
+  // ⚠️ IT REACHES NO FILTER, NO BUTTON AND NO DIMENSION. `boardMode` still decides which orders are on
+  // the board; `viewMode` still decides the header, the padding, the type size and which item renderer
+  // runs. This decides only whether an AMOUNT is printed.
+  const hideAmounts = cardMode === 'cook'
 
-  // ── FINISH-TIME OPTIONS: EVERY 15-MIN BOUNDARY STILL IN THE FUTURE ──────────────────────────────
-  // 🔴 "FUTURE" MEANS FUTURE RELATIVE TO NOW, NOT TO THE CURRENT FINISH TIME. That distinction is the
-  // whole point: a truck that has sold out at 19:20 must be able to set the finish to 19:30 even though
-  // the event is scheduled until 21:00 — an EARLIER time that is still ahead of the clock. Filtering
-  // against `end_time` instead would offer only extensions, which is the control that already exists.
-  // ⚠️ Built against the EVENT'S DATE, not today's, so a past-dated event yields an empty list and the
-  // control says so rather than offering times that have already gone.
-  // ⚠️ Runs on every render, which is correct here — the list must shrink as the clock passes each
-  // boundary, and an operator holding the picker open through 19:45 must not still be offered 19:45.
-  const finishTimeOptions = (() => {
-    if (!activeEvent?.event_date) return [] as string[]
-    const now = Date.now()
-    const out: string[] = []
-    for (let mins = 0; mins < 24 * 60; mins += 15) {
-      const hh = String(Math.floor(mins / 60)).padStart(2, '0')
-      const mm = String(mins % 60).padStart(2, '0')
-      if (new Date(`${activeEvent.event_date}T${hh}:${mm}`).getTime() > now) out.push(`${hh}:${mm}`)
-    }
-    return out
-  })()
-
-  // Orders this event still owes that are due AFTER a proposed finish time. Shown in the confirm so a
-  // shortening is never silent — see the confirm modal and docs/kds-preferences-report.md (C5).
-  // ⚠️ NULL-SLOT (ASAP) ORDERS ARE DELIBERATELY EXCLUDED: they have no promised time to fall after.
-  const ordersDueAfter = (endTime: string) =>
-    activeOrders.filter(o => !!o.slot && o.slot.slice(0, 5) > endTime).length
+  // (finishTimeOptions + ordersDueAfter moved into components/shared/EventFinishTimeModal as exported
+  //  functions, so the dashboard's copy of this control cannot drift from this one. The modal takes the
+  //  event and this screen's order list and derives both itself — see the modal below.)
 
   if (loading) return (
     <div className="flex items-center justify-center h-dvh text-slate-400 text-sm">
@@ -1239,8 +1359,23 @@ export default function KdsPage() {
           safe area — see lib/native/statusBar.ts for why iOS is the only platform where env() is non-zero.
           ⚠️ The padding goes on the HEADER, not the layout root: the root is the flex column that owns the
           board's height, and padding there would inset the scroll region as well as the chrome. */}
+      {/* ── 🔴 THE HEADER WRAPS. IT USED TO CLIP, AND CLIPPING IS THE ONE OUTCOME A KITCHEN SCREEN
+          CANNOT HAVE. ──────────────────────────────────────────────────────────────────────────────
+          The root is `overflow-hidden` and this was a nowrap row whose widest chips are `shrink-0`, so
+          past a certain width the LAST child — Screen on/off — was pushed outside the box and cut, with
+          no scrollbar and no hint that a control existed. `flex-wrap` moves the overflow onto a second
+          line instead, where it is visible and reachable.
+          🔴 NOT `overflow-x-auto`. A horizontally scrolling strip hides controls behind a swipe with no
+          affordance, on a screen that runs unattended and is operated with one thumb.
+          ⚠️ THE WORST CASE IS JUST ABOVE 640px, NOT AT THE NARROWEST. Below `sm:` every chip label
+          collapses to its glyph and the row gets SHORTER; at 641px they all appear at once. Wrapping
+          covers that discontinuity without needing to know where it falls.
+          ⚠️ `gap-y-2` so a wrapped second line is not flush against the first, and `content-start` so
+          the lines pack upward rather than spreading.
+          ⚠️ THE SAFE-AREA paddingTop IS UNCHANGED — it is what keeps this header below the iOS status
+          bar, and it is the same mechanism AppHeader uses. */}
       <header
-        className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0"
+        className="flex flex-wrap content-start items-center gap-x-3 gap-y-2 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0"
         style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top))' }}
       >
         {/* Back to the orders dashboard — staff are auto-routed to KDS on login and otherwise have no
@@ -1260,33 +1395,13 @@ export default function KdsPage() {
           </span>
         </div>
 
-        {/* View / layout switcher */}
+        {/* ── LAYOUT SWITCHER. THE WINDOW/COOK PAIR THAT SAT HERE IS GONE. ──────────────────────────
+            🔴 The two step switches replaced it: a screen that hands over IS the window, a screen that
+            only makes food IS the cook screen, so `activeView` is derived from the handover switch and
+            an operator no longer picks a role and a set of steps separately. The divider that separated
+            the two pairs went with it. `hg_kds_view_` is still READ ONCE for the migration and is never
+            written again. */}
         <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-          <button
-            onClick={() => setViewOverride('window')}
-            className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
-              activeView === 'window'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            Window
-          </button>
-          {/* Stage 1: Cook tab gated on the Max-plan feature ONLY (cooking always-on; de-coupled from
-              show_cooking_step — restore `&& showCookingStep` to re-add the toggle). */}
-          {can('cook_screen') && (
-            <button
-              onClick={() => setViewOverride('cook')}
-              className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
-                activeView === 'cook'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Cook
-            </button>
-          )}
-          <div className="w-px h-4 bg-slate-300 mx-1" />
           <button
             onClick={() => setLayoutOverride('list')}
             className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
@@ -1307,6 +1422,36 @@ export default function KdsPage() {
           >
             Grid
           </button>
+          {/* ── 🔴 CARD DISPLAY: Full / Cook. A DISPLAY CONTROL, BESIDE THE OTHER DISPLAY CONTROL. ─────
+              It sits with List/Grid and NOT with the two step switches, because that is what it is: it
+              changes how a card LOOKS — prices, the part-paid row, padding, item grouping, type size —
+              and it changes NOTHING about which orders are on the board. Putting it beside the switches
+              would imply it moves tickets, which is the one thing it must never do.
+              ⚠️ UNSET FOLLOWS THE BOARD, so this reads as already-correct on both kinds of screen
+              before anyone touches it; pressing either button commits a choice that then sticks. */}
+          <div className="w-px h-4 bg-slate-300 mx-1" />
+          <button
+            onClick={() => setCardMode('window')}
+            title="Full cards — prices and payment details, as the hatch sees them."
+            className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
+              cardMode === 'window'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Full
+          </button>
+          <button
+            onClick={() => setCardMode('cook')}
+            title="Cook cards — bigger type, grouped by category, no prices."
+            className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
+              cardMode === 'cook'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Cook
+          </button>
         </div>
 
         {/* Sound toggle — per-device new-order ding. Enabling is a gesture → prime the audio so dings play. */}
@@ -1320,35 +1465,65 @@ export default function KdsPage() {
           {soundEnabled ? '🔔' : '🔕'}
         </button>
 
-        {/* ── TAKE PAYMENTS ON THIS DEVICE ──────────────────────────────────────────────────────────
-            🔴 RENDERED ONLY WHEN THE TRUCK HAS THE PAID STEP ON. With it off there is no payment step to
-            opt out of — "Paid & collected" is one tap — so a toggle here would offer a choice that
-            changes nothing, on the screen where a control that does nothing is most expensive. Gusto and
-            every other default truck never see it.
-            NO PLAN GATE, deliberately: this is where the operator physically stands, not a paid tier.
-            Placed beside Sound because both are per-DEVICE, and away from Window/Cook because those pick
-            a LAYOUT while this decides whether the device handles money. Same chip shape as Sound so it
-            reads as a sibling; the word is spelled out (not icon-only) because it moves tickets off the
-            board and an icon alone cannot carry that.
-            ⚠️ WINDOW VIEW ONLY. Cook view has no prices, no chip and no payment action by design (§9) and
-            is UNCHANGED by this setting in every combination — so on the cook screen this button would be
-            a control that visibly does nothing, which is the same failure as showing it to a truck with
-            the paid step off. `hidePayments` itself is still computed and still passed to cook cards
-            (where it changes nothing), so switching back to Window applies the stored preference. */}
-        {showPaidStep && activeView === 'window' && (
-          <button
-            onClick={() => togglePayments(hidePayments)}
-            title={hidePayments
-              ? 'Payments off — this screen finishes at Ready. Tap to take payment here.'
-              : 'Payments on — tickets stay until paid & collected. Tap to finish at Ready instead.'}
-            className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
-              hidePayments ? 'bg-slate-100 text-slate-400' : 'bg-green-100 text-green-700'
-            }`}
-          >
-            <span aria-hidden>💷</span>
-            <span className="hidden sm:inline text-xs">{hidePayments ? 'No payments' : 'Payments'}</span>
-          </button>
-        )}
+        {/* ── THE TWO STEP SWITCHES — WHICH STEPS THIS SCREEN PERFORMS ─────────────────────────────
+            🔴 WINDOW VIEW ONLY. In Cook view the lifecycle is forced to marks-ready / no-handover, which
+            is what Cook has always done, so a switch there would be a control that visibly does nothing.
+            NO PLAN GATE and NO TRUCK GATE, deliberately: this is a property of WHERE THE DEVICE STANDS.
+            🔴 THE HANDOVER SWITCH IS NOW SHOWN ON EVERY TRUCK, where the old payments chip was hidden
+            unless the truck had the paid step on. That is the widening: an operator on a
+            show_paid_step-false truck can now say this screen does not hand over, which they could not
+            before. Nothing changes for them until they use it — the unset default reproduces exactly
+            what they render today.
+            ⚠️ BOTH OFF IS FORBIDDEN, AND THE REFUSAL IS `disabled`, NOT A SILENT NO-OP. With one switch
+            left on, that switch cannot be turned off: a screen performing no steps has no buttons at all
+            (renderButtons ends in `return null`), which on an unattended board is a dead ticket.
+            ⚠️ Same chip shape as Sound so they read as siblings. Green = this screen does the step. */}
+        {/* ⚠️ NO LONGER GATED ON THE VIEW. The view is now DERIVED FROM THESE SWITCHES, so gating them
+            on it would be circular — and hiding them in "cook" would leave a making screen with no way
+            back. They are the only lifecycle control on this header now, so they are always visible. */}
+        <>
+            <button
+              onClick={() => { if (handoverOn) setReady(!readyOn) }}
+              disabled={!handoverOn}
+              title={!handoverOn
+                ? 'This screen only marks orders ready, so this cannot be turned off — it is the only step it performs.'
+                : readyOn
+                  ? 'This screen marks orders ready. Tap so another screen does it instead.'
+                  : 'Another screen marks orders ready. Tap so this one does it.'}
+              className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 disabled:opacity-60 ${
+                readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              {/* ⚠️ U+2713, a glyph THIS FILE ALREADY CARRIES, chosen over a new emoji deliberately: the
+                  census rule for this codebase is that an edited file must not gain a character class.
+                  It must never be dropped — below `sm` the word hides and this glyph is the whole
+                  button. */}
+              <span aria-hidden>✓</span>
+              {/* ⚠️ "Ready step", MATCHING THE DASHBOARD'S SETTINGS ENTRY "Order-ready step" — the same
+                  step named the same way on both surfaces, even though the two are set independently.
+                  Label text only: the key, the default and the behaviour are unchanged. */}
+              <span className="hidden sm:inline text-xs">Ready step</span>
+            </button>
+            <button
+              onClick={() => { if (readyOn) setHandover(!handoverOn) }}
+              disabled={!readyOn}
+              title={!readyOn
+                ? 'This screen only takes payment, so this cannot be turned off — it is the only step it performs.'
+                : handoverOn
+                  ? 'This screen takes payment and hands over. Tap so another screen does it instead.'
+                  : 'Another screen takes payment. Tap so this one does it.'}
+              className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 disabled:opacity-60 ${
+                handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              <span aria-hidden>💷</span>
+              {/* ⚠️ "Payment/Collected" NAMES THE BUTTONS THE OPERATOR ACTUALLY SEES on the card —
+                  "Mark paid", "Collected", "Mark paid & collected" — rather than describing the step in
+                  the abstract. The earlier rule against labelling a control with a status word was
+                  rescinded for this switch deliberately, for exactly that reason. */}
+              <span className="hidden sm:inline text-xs">Payment/Collected</span>
+            </button>
+        </>
 
         {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
             screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
@@ -1366,7 +1541,11 @@ export default function KdsPage() {
           </button>
         )}
 
-        <div className="flex-1" />
+        {/* ⚠️ `basis-0` SO IT CANNOT FORCE A WRAP. As a bare `flex-1` this spacer has an `auto` basis; on
+            a wrapping row that lets it claim width and push the next chip onto a new line while space
+            remains. With a zero basis it takes only leftover slack and disappears entirely when there is
+            none, which is exactly what a spacer should do. */}
+        <div className="flex-1 basis-0" />
 
         {/* Extra wait selector.
             DEMO: hidden. A visitor with no mental model of the system sets +30 min, forgets, then sees
@@ -1407,17 +1586,13 @@ export default function KdsPage() {
           </button>
         )}
 
-        {/* Link to cook screen — window view + full crew mode only */}
-        {activeView === 'window' && truck.crew_mode === 'full' && (
-          <AppLink
-            href={`/dashboard/${token}/kds?view=cook${pin ? `&pin=${pin}` : ''}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-slate-400 hover:text-slate-600 underline"
-          >
-            Open cook screen
-          </AppLink>
-        )}
+        {/* ── "Open cook screen" REMOVED — IT BECAME A LINK THAT LIED. ──────────────────────────────
+            🔴 It opened `?view=cook` in a second tab, and `?view=cook` is no longer read by anything:
+            the view is derived from the handover switch, not from the URL. The link would therefore
+            have opened an ordinary window board under a label promising a cook screen — worse than not
+            offering it. A second making screen is now made by opening the KDS on that device and
+            turning "Payment/Collected" off, which is per-device and survives a reload.
+            ⚠️ REMOVED AS A CONSEQUENCE OF CHANGE 1, NOT AS A FOURTH CHANGE — see the report. */}
 
         {/* BINARY: teal "Screen on" ONLY when the lock is actually HELD; grey "Screen off" otherwise. Failure
             is a plain-English toast on the tap (screenFailMsg), never a hedged label. */}
@@ -1435,7 +1610,9 @@ export default function KdsPage() {
       <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={() => { void applyKeepScreenOn(true) }} />
 
       {/* ── To Make bar ── */}
-      {allDayPills.length > 0 && activeView === 'window' && (
+      {/* ⚠️ ON boardMode, DELIBERATELY — the card toggle must not hide it. Unchanged from the
+          previous build; whether it should be ungated is a separate decision. */}
+      {allDayPills.length > 0 && boardMode === 'window' && (
         <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-slate-200 flex-shrink-0 overflow-x-auto">
           <span className="text-xs font-medium text-slate-400 uppercase tracking-wide flex-shrink-0">
             To make
@@ -1488,50 +1665,73 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Event header when open ── */}
-      {activeEvent?.status === 'open' && (
-        <div className="flex items-center justify-between px-4 py-2.5 bg-white border-b border-slate-100 flex-shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-            <span className="text-sm font-medium text-slate-900 truncate">{activeEvent.venue_name}</span>
-            <span className="text-xs text-slate-400 flex-shrink-0">{formatTimeRange(activeEvent.start_time, activeEvent.end_time)}</span>
+      {/* ── THE EVENT BAR — MIRRORS THE DASHBOARD'S, AND NO LONGER HIDES ITSELF ────────────────────
+          🔴 IT WAS GATED ON `activeEvent?.status === 'open'`, AND THAT WAS THE DEFECT. A truck whose
+          event had not started got no event line, no Event actions, no way to change event and no way
+          to press Start Event — from the one screen that is standing in the kitchen. The gate is now
+          simply "is there an event", which is the only thing the bar actually needs to render.
+          🔴 AND IT NOW CARRIES WHAT THE DASHBOARD'S CARRIES: venue · time range, the date line, and the
+          STATUS. The old row showed a green dot that silently meant "open" — meaningless the moment the
+          row renders for other statuses, so it is replaced by the dashboard's own status vocabulary.
+          ⚠️ THE STATUS BRANCHES ARE THE DASHBOARD'S, IN THE DASHBOARD'S ORDER — paused, then open,
+          closed, cancelled, else "Not started". Only the COLOURS differ, because this header is white
+          where the dashboard's is dark: `-400` on dark becomes `-600` here so the text keeps its
+          contrast. Same words, same order, same meaning.
+          ⚠️ `fmtVenue` and `eventDateLabel` are IMPORTED from lib/event-display, not copied — see that
+          file for why.
+          ⚠️ DEMO still hides Event actions and the date line, exactly as before. */}
+      {activeEvent && (() => { const eventStatus = eventStatusDisplay(activeEvent.status, isPaused); return (
+        <div className="flex items-center gap-3 px-4 py-2 bg-white border-b border-slate-100 flex-shrink-0">
+          {/* ── THE STATUS DOT, COLOURED PER STATUS ────────────────────────────────────────────────
+              🔴 IT USED TO BE A HARDCODED GREEN DOT, WHICH WAS ONLY HONEST WHILE THE ROW RENDERED FOR
+              'open' ALONE. Now that the row renders for every status the dot has to carry the same
+              distinction the label does, or it contradicts the words beside it.
+              ⚠️ THE COLOURS ARE THE DASHBOARD'S, DARKENED FOR A WHITE HEADER — the same shift the status
+              labels take (`-400` on dark becomes `-500`/`-600` here). Same hue per status, same meaning.
+              ⚠️ Paused wins over open, exactly as it does in the label chain below, so the two can never
+              disagree. */}
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${EVENT_STATUS_DOT[eventStatus.tone]}`} />
+          <div className="flex-1 min-w-0">
+            <span className="block text-sm font-medium text-slate-900 truncate">
+              📍 {fmtVenue(activeEvent.venue_name, activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+            </span>
+            {activeEvent.event_date && !isDemo && (
+              <span className="hidden sm:block text-xs font-medium text-slate-500 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
+            )}
           </div>
-          {/* FIX 3 — DEMO removes both. Same reasoning as the dashboard's Event actions: extend/finish/
+          {/* ⚠️ THE SECOND COPY OF THIS CHAIN IS GONE. Words and branch order come from
+              lib/event-display, shared with the dashboard; only the palette below is this surface's,
+              because this header is white where the dashboard's is dark. */}
+          <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_LIGHT[eventStatus.tone]} flex-shrink-0`}>{eventStatus.label}</span>
+          {/* FIX 3 — DEMO removes it. Same reasoning as the dashboard's Event actions: extend/finish/
               cancel/note are operator event-lifecycle controls with nothing to offer a prospect, and
-              several of them can leave the demo looking broken. */}
+              several of them can leave the demo looking broken.
+              ⚠️ THIS IS THE ONLY OPENER OF THE SHARED MENU ON THIS SURFACE, which is why the gate above
+              mattered so much: with it, Start Event, Change event, Finish and Cancel were all
+              unreachable on any event that was not already running. */}
           {!isDemo && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* ── "+30 min" REMOVED FROM THIS HEADER ───────────────────────────────────────────────
-                It called `extendEvent(id, 30)`, which is CHARACTER-FOR-CHARACTER the dashboard's own
-                extendEvent: the same POST to /api/events/action with action:'update' and a payload of
-                exactly `{ end_time }`. 🔴 ESTABLISHED BEFORE REMOVING, because the dashboard's
-                Adjust-time row turned out to be capture site 3 of 4: this writes NO status, books NO
-                slot and makes NO payment call — app/api/events/action/route.ts imports nothing from
-                lib/payments/ at all. The same control remains on the dashboard's event menu.
-                ⚠️ The "Extend 30 min" button in the recently-closed banner below is a DIFFERENT
-                affordance (recovering an event that has already ended) and is deliberately left. */}
-            {/* ── LABELLED "Event actions", MATCHING THE DASHBOARD EXACTLY ─────────────────────────
-                It was a bare "⋯", which named nothing: the menu behind it starts and finishes services,
-                changes the event and cancels it, and on an unattended screen a glyph is the weakest
-                possible warning about what is behind a tap. The dashboard's own control for the SAME
-                menu already reads "Event actions ▾" (page.tsx, the header) — one name for one thing
-                across both surfaces, so an operator who learns it on the dashboard finds it here.
-                ⚠️ The word collapses below `sm` and the ▾ carries it, because this sits in the event
-                header row beside the venue name and the time range on a 240px-column kitchen screen. */}
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
-              className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
+              className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
               <span className="hidden sm:inline">Event actions </span>▾
             </button>
-          </div>
           )}
         </div>
-      )}
+      ) })()}
 
       {/* ── Recently closed banner ── */}
+      {/* ⚠️ "Extend 30 min" REMOVED FROM THIS BANNER ON THE KDS, ON INSTRUCTION (16 August). It called
+          `extendEvent(activeEvent.id, 30)` — one tap, relative, no confirm, no undo, sitting ~14px above
+          the order grid on a screen that runs UNATTENDED. It was left in place during the finish-time
+          extraction on the reasoning that recovering an already-closed event is a different job from
+          adjusting a live one; that reasoning is now overruled and the button is gone.
+          🔴 RECOVERY IS NOT LOST. Event actions -> "Change event finish time" reaches the same write with
+          a picker and a confirm, and it can set any future time rather than only +30.
+          ⚠️ THE BANNER ITSELF STAYS — it is how an operator knows the event has ended.
+          ⚠️ THE DASHBOARD'S BANNER NOW MATCHES: its copy was removed in the same sweep, and `extendEvent`
+          itself is deleted from both files — it had no callers left. */}
       {recentlyClosed && activeEvent && (
         <div className="mx-3 mt-2 mb-1 bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between flex-shrink-0">
           <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
-          <button onClick={() => extendEvent(activeEvent.id, 30)} className="text-sm font-medium text-teal-600 hover:text-teal-700 ml-3 flex-shrink-0">Extend 30 min</button>
         </div>
       )}
 
@@ -1570,7 +1770,9 @@ export default function KdsPage() {
                 actionLoading={actionLoading}
                 onAction={handleAction}
                 onEdit={() => {}}
-                viewMode={cardViewMode}
+                /* 🔴 `boardMode`, NOT the display control. The two switches decide the button branch
+                   and the layout; the Full/Cook toggle decides only `hideAmounts` below. */
+                viewMode={boardMode}
                 kdsMode={kdsMode}
                 showCookingStep={showCookingStep}
                 categoryOrder={categoryOrder}
@@ -1586,7 +1788,23 @@ export default function KdsPage() {
                    pay buttons, Ready in their place. Always FALSE when the truck's paid step is off, so
                    a show_paid_step-false truck renders exactly what it rendered before. */
                 hidePayments={hidePayments}
+                /* 🔴 THE THIRD CONFIGURATION: this screen marks ready AND hands over. Window view only,
+                   and only when handover is on — a handover-off device takes the cook branch above and
+                   never reaches the window block, so `readyOn && handoverOn` is the only combination the
+                   card needs told about. `effectiveOrderReady` is still NOT passed: the dashboard's
+                   setting and this one are independent by construction, not by coincidence. */
+                readyStepOn={boardMode === 'window' && readyOn && handoverOn}
+                /* 🔴 THE DISPLAY CHOICE — MONEY ONLY. Hides line prices, the order total, the
+                   part-paid row and the refund amount. It does NOT touch buttons, board membership,
+                   the item grouping, the card's size, PAID or CARD HELD. */
+                hideAmounts={hideAmounts}
                 pendingSync={pendingSync.has(order.order_key)}
+                /* 🔴 THE PAYMENT OVERLAY, NEWLY WIRED ON THIS SURFACE. A queued `mark_paid` now renders
+                   as paid here, exactly as it has on the dashboard — same chip, same colour, same
+                   buttons, deliberately indistinguishable from a confirmed payment (see OrderCard's own
+                   note on this prop). The alternative was what this screen did until now: show nothing
+                   and rely on the server's idempotency to absorb the second press. */
+                pendingPayment={paymentOverlay.get(order.order_key)}
                 /* 🔴 TWO SOURCES, ONE MARKER — the SAME fold the dashboard makes (page.tsx, cardConflict).
                    A failed offline replay and a failed server-side ledger write are one fact to an
                    operator; they must not produce two different red bars. Payment wins over status,
@@ -1606,7 +1824,8 @@ export default function KdsPage() {
           )}
 
           {/* Done strip — window view, list mode only */}
-          {activeView === 'window' && activeLayout === 'list' && doneOrders.length > 0 && (
+          {/* ⚠️ ON boardMode, DELIBERATELY — see the To-make bar above. */}
+          {boardMode === 'window' && activeLayout === 'list' && doneOrders.length > 0 && (
             <div className="mt-2 border-t border-slate-200 pt-2">
               <div className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
                 Done today · {doneOrders.length}
@@ -1717,51 +1936,33 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Event menu modal ── */}
+      {/* ── EVENT ACTIONS — THE SHARED MODAL, the same one the dashboard mounts ─────────────────────
+          🔴 EXTRACTED so the two menus cannot drift again. The KDS's copy was MISSING Start / Restart
+          Event entirely — a truck whose event had not auto-opened could not start it from the kitchen
+          screen — and styled "Change event" as a bordered list row while its siblings were filled
+          buttons. Both are fixed by using the dashboard's modal rather than patching this one.
+          ⚠️ EVERY ACTION IS STILL THIS SCREEN'S OWN: switchEvent's confirm, the styled finish confirm and
+          the shared cancel modal are all unchanged — only the MENU that launches them is shared.
+          ⚠️ `onChangeEvent` is omitted when there is only one event, which is what this file did before.
+          ⚠️ IT CALLS THE SAME switchEvent, WITH THE SAME CONFIRM, AND THE SEED (seededRef) IS NOT TOUCHED
+          — carried over from the note that lived on the old inline markup, because it is the thing most
+          worth re-checking whenever this menu changes. */}
       {showEventMenu && activeEvent && !isDemo && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventMenu(false)}>
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900">{activeEvent.venue_name}</h3>
-              <button onClick={() => setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
-            </div>
-            {/* ── CHANGE EVENT — WAS A PERMANENT STRIP OF CHIPS ABOVE THE BOARD ────────────────────
-                🔴 THE STRIP LISTED EVERY UPCOMING EVENT AND THE HEADER DIRECTLY BELOW IT ALREADY NAMED
-                THE SELECTED ONE, so it spent a row of a kitchen screen restating what the next row
-                said. It also put a row of small tap targets permanently on a counter surface, which is
-                the accident switchEvent's confirm exists to catch. Moved behind this menu, mirroring
-                the dashboard's own "Change event" entry.
-                ⚠️ PRESENTATION ONLY. It calls the SAME switchEvent, with the SAME confirm, and the seed
-                (seededRef) is not touched — see the seed note. */}
-            {events.length > 1 && (
-              <button onClick={() => { setShowEventMenu(false); setShowEventPicker(true) }}
-                className="w-full text-left py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 border border-slate-100 rounded-xl px-3 mb-4">
-                Change event
-              </button>
-            )}
-            <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Customer note</label>
-              <input type="text" value={eventNoteInput} onChange={e => setEventNoteInput(e.target.value)}
-                placeholder="e.g. Park in the main car park"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-              <button onClick={() => saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
-            </div>
-            <div className="space-y-2 border-t border-slate-100 pt-3">
-              {/* ── CHANGE EVENT FINISH TIME — WHAT "+30 min" BECAME ─────────────────────────────────
-                  🔴 THE CURRENT FINISH TIME IS IN THE LABEL, not behind the tap. The control it replaces
-                  said "+30 min" and named neither the time it was moving FROM nor the one it moved TO, so
-                  a stray press changed the event silently and the only way to see what had happened was to
-                  read the header afterwards.
-                  ⚠️ OPENS A PICKER, WRITES NOTHING. See the picker + confirm modals below. */}
-              <button onClick={() => { setShowEventMenu(false); setFinishTimePicker({ eventId: activeEvent.id, current: (activeEvent.end_time || '').slice(0, 5), selected: (activeEvent.end_time || '').slice(0, 5) }) }}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">
-                Change event finish time{activeEvent.end_time ? ` (now ${activeEvent.end_time.slice(0, 5)})` : ''}
-              </button>
-              <button onClick={() => finishEvent(activeEvent.id)} className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
-              <button onClick={() => cancelEventFromMenu(activeEvent)} className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
-            </div>
-          </div>
-        </div>
+        <EventActionsModal
+          event={{ id: activeEvent.id, venue_name: activeEvent.venue_name, status: activeEvent.status }}
+          noteValue={eventNoteInput}
+          onNoteChange={setEventNoteInput}
+          onSaveNote={() => saveEventNote(activeEvent.id)}
+          onStartEvent={() => { setShowEventMenu(false); void openEvent(activeEvent.id) }}
+          onChangeEvent={events.length > 1 ? () => { setShowEventMenu(false); setShowEventPicker(true) } : undefined}
+          paused={isPaused}
+          onPause={() => { setShowEventMenu(false); togglePause() }}
+          onResume={() => { setShowEventMenu(false); togglePause() }}
+          onChangeFinishTime={() => { setShowEventMenu(false); setFinishTimeTarget({ id: activeEvent.id, end_time: activeEvent.end_time ?? null, event_date: activeEvent.event_date ?? null }) }}
+          onFinishEvent={() => finishEvent(activeEvent.id)}
+          onCancelEvent={() => cancelEventFromMenu(activeEvent)}
+          onClose={() => setShowEventMenu(false)}
+        />
       )}
 
       {/* Event-cancel gate — the SHARED modal (components/shared/EventCancelModal), the same one manage
@@ -1795,100 +1996,21 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── CHANGE FINISH TIME, STEP 1: THE PICKER. WRITES NOTHING. ──────────────────────────────────
-          🔴 EARLIER TIMES ARE OFFERED, AND THAT IS DELIBERATE. A truck that has run out of dough at 19:20
-          needs to stop taking orders for 20:45, and until now the only control moved the finish time in
-          one direction. The list is every 15-min boundary still AHEAD OF THE CLOCK (finishTimeOptions),
-          so it spans both sides of the current finish.
-          ⚠️ THE CURRENT TIME IS STATED TWICE — in the sentence and as the select's starting value — so the
-          change is visible before it is made, which is the thing "+30 min" could not do.
-          ⚠️ z-[60] to sit over the event menu, matching the finish confirm. */}
-      {finishTimePicker && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setFinishTimePicker(null)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 text-base mb-1">Change finish time</h3>
-            <p className="text-sm text-slate-600">
-              {finishTimePicker.current
-                ? <>This event is currently set to finish at <span className="font-bold text-slate-900">{finishTimePicker.current}</span>.</>
-                : 'This event has no finish time set.'}
-            </p>
-            {finishTimeOptions.length === 0 ? (
-              <p className="text-sm text-slate-500 mt-4">There are no times left today. Use Finish event instead.</p>
-            ) : (
-              <>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mt-4 mb-1">New finish time</label>
-                <select
-                  value={finishTimePicker.selected}
-                  onChange={e => setFinishTimePicker(p => p ? { ...p, selected: e.target.value } : p)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400"
-                >
-                  {/* The current value is kept as an option even once it is in the past, so the select is
-                      never showing a blank while the operator decides. It cannot be SUBMITTED — the
-                      button below is disabled while selected === current. */}
-                  {!finishTimeOptions.includes(finishTimePicker.selected) && (
-                    <option value={finishTimePicker.selected}>{finishTimePicker.selected || '--:--'} (current)</option>
-                  )}
-                  {finishTimeOptions.map(t => (
-                    <option key={t} value={t}>{t}{t === finishTimePicker.current ? ' (current)' : ''}</option>
-                  ))}
-                </select>
-                {finishTimePicker.current && finishTimePicker.selected < finishTimePicker.current && (
-                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-2">
-                    That is earlier than the current finish time. Customers will not be able to order for times after it.
-                  </p>
-                )}
-              </>
-            )}
-            <div className="flex gap-2 mt-5">
-              <button
-                disabled={finishTimeOptions.length === 0 || finishTimePicker.selected === finishTimePicker.current}
-                onClick={() => { setFinishTimeConfirm({ eventId: finishTimePicker.eventId, current: finishTimePicker.current, next: finishTimePicker.selected, affected: ordersDueAfter(finishTimePicker.selected) }); setFinishTimePicker(null) }}
-                className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400">
-                Review change
-              </button>
-              <button onClick={() => setFinishTimePicker(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── CHANGE FINISH TIME, STEP 2: THE CONFIRM. THIS IS THE ONLY THING THAT WRITES. ─────────────
-          🔴 A CONFIRMATION, NOT AN UNDO — the reasoning is in docs/kds-preferences-report.md (C4). An undo
-          toast expires, and this screen runs UNATTENDED: a tap nobody was standing in front of would be
-          undoable only by someone who saw the toast in the seconds it was up.
-          🔴 THE AFFECTED-ORDER COUNT IS ON THIS SCREEN because shortening an event does NOT touch the
-          orders already taken for the times being removed — the update handler writes end_time and
-          updated_at and nothing else. Those orders stay live, stay on the board and are still owed. This
-          count is what stops that being SILENT; it does not change what the write does.
-          ⚠️ THE SAFE BUTTON NAMES THE TIME IT KEEPS. "Cancel" beside an event control is the word this
-          codebase has been burned by before (the event-cancel window.confirm). z-[70] so it stacks over
-          the picker it came from. */}
-      {finishTimeConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 text-base mb-1">Change finish time?</h3>
-            <p className="text-sm text-slate-600">
-              This event will finish at <span className="font-bold text-slate-900">{finishTimeConfirm.next}</span>
-              {finishTimeConfirm.current ? <> instead of <span className="font-bold text-slate-900">{finishTimeConfirm.current}</span></> : null}.
-            </p>
-            {finishTimeConfirm.affected > 0 && (
-              <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-3">
-                <span className="font-bold">{finishTimeConfirm.affected} order{finishTimeConfirm.affected === 1 ? ' is' : 's are'} due after {finishTimeConfirm.next}.</span>{' '}
-                {finishTimeConfirm.affected === 1 ? 'It stays' : 'They stay'} on the board and still {finishTimeConfirm.affected === 1 ? 'needs' : 'need'} making. Changing the finish time only stops NEW orders being placed for later times.
-              </p>
-            )}
-            <div className="flex gap-2 mt-5">
-              <button disabled={finishTimeBusy} onClick={() => { void applyFinishTime(finishTimeConfirm.eventId, finishTimeConfirm.next) }}
-                className="flex-1 bg-teal-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-teal-700 disabled:bg-slate-300">
-                {finishTimeBusy ? 'Saving...' : 'Change finish time'}
-              </button>
-              <button disabled={finishTimeBusy} onClick={() => setFinishTimeConfirm(null)}
-                className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">
-                {finishTimeConfirm.current ? `Keep ${finishTimeConfirm.current}` : 'Keep as is'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* ── CHANGE FINISH TIME — THE SHARED MODAL ────────────────────────────────────────────────
+          🔴 EXTRACTED, NOT REWRITTEN. The picker, the confirm, the validation, the affected-order count
+          and every word of copy moved verbatim into components/shared/EventFinishTimeModal so the
+          DASHBOARD offers the same control — it had `Extend event +30 min`, one tap, relative, with no
+          confirm. Both surfaces now gate the same action the same way.
+          ⚠️ THE COMPONENT OWNS THE TWO STEPS; this file owns the WRITE, because the KDS routes it through
+          the offline outbox (`data?.queued`) and the dashboard does not. */}
+      {finishTimeTarget && (
+        <EventFinishTimeModal
+          event={finishTimeTarget}
+          orders={overlayedOrders}
+          busy={finishTimeBusy}
+          onClose={() => setFinishTimeTarget(null)}
+          onConfirm={newEnd => { void applyFinishTime(finishTimeTarget.id, newEnd) }}
+        />
       )}
 
       {kdsToast && (

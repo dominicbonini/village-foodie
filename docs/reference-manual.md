@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.21
+HatchGrab Engineering Reference Manual · V11.22
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.21**
+**Version 11.22**
 
 August 2026
 
@@ -15,6 +15,51 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.22 — 16 August 2026
+
+Delta over V11.21 — **a capture-site count that was wrong every time it was quoted; three shared
+components extracted rather than duplicated; every one-tap extend removed; and a proposed KDS model
+reviewed in full and NOT built, on six findings.**
+
+- 🔴 **"CAPTURE SITE 3 OF 4" WAS WRONG — THERE ARE FIVE.** The in-code numbering is stale and the
+  phrase was quoted repeatedly across two sessions without ever being counted. §37, C15.
+- 🔴 **THE ADJUST-TIME ROW IS GONE, AND NONE OF ITS OBJECTIONS SURVIVED.** `'pending'` also captures
+  at `confirm`; removing a button does not remove a capture site; and **LIVE-VERIFIED, 448 audit rows
+  over three weeks contain no `adjust_slot_+N` of any kind.** `moveSlotBooking` was not the problem
+  either — **Edit rebooks capacity anyway**, via the two primitives that wrapper's body consists of.
+  §37, C16.
+- 🔴 **A REAL CAPTURE INCIDENT IS SITTING IN THE AUDIT LOG** — `capture_failed` ×5, `capture_missing`
+  ×2, `capture_recovered` ×2 inside eight minutes. The money was recovered; **the alarm is now normal
+  traffic.** §37, C17.
+- 🔴 **THREE `extendEvent` CALL SITES, NOT ONE.** All removed; both copies of the function deleted
+  after proving the shared modal never calls it and a queued replay lands on the untouched server
+  handler. **Extending an event is now two presses everywhere.** §11, N113.
+- **Three shared components extracted, not duplicated:** `EventFinishTimeModal`, `EventActionsModal`
+  and `CuisinePicker`. The KDS gained **Start / Restart Event**, which it lacked entirely. §11, §38.
+- 🔴 **THE KDS TOGGLES MODEL WAS REVIEWED AND NOT BUILT.** `ORDER_STATUS` has **no `paid` member**, so
+  the proposed Ready → Paid → Collected pipeline does not hold; the proposed constraint would have
+  **deleted a feature shipped the previous week**; and **"Collected off" is a money choice, not a
+  display one.** §11, N118–N124.
+- 🔴 **A DEFAULT IS NOT A VALUE.** A report claimed the payments chip was the order-ready control by
+  reasoning from a column default to a live value. A screenshot refuted it. §1, P24.
+- ⚠️ **The planning chat invented three schema names in one week.** Query `information_schema` first.
+  P25.
+
+**STATE AT CLOSE, 16 AUGUST 2026.** **SUBMISSION: ONE BLOCKER — SCREENSHOTS**, both iPhone and iPad
+sets. 🔴 **FIVE TASKS' WORK IS UNCOMMITTED**, with `app/dashboard/[token]/page.tsx` and the KDS page
+each carrying four of them — **they can no longer be committed separately without splitting hunks by
+hand.** Three new shared components are untracked: `CuisinePicker`, `EventActionsModal`,
+`EventFinishTimeModal`.
+
+**AWAITING A DECISION:** the KDS toggles model (N118–N124) · event-cancellation refunds, the
+partial-execution strategy and whether `'collected'` orders are cancelled · whether the dashboard's
+Start/Restart, Pause/Resume and Add extra wait should appear on the KDS.
+
+**AWAITING HARDWARE:** push after the AppDelegate fix · the whole BLE printing path · the KDS event
+seed (background two hours, resume) · the app icon on a light wallpaper · **the two iPad display
+defects, with iPhone and portrait as a control that exists only on this build** · whether the Safari
+ejection stops.
 
 ## V11.21 — 16 August 2026
 
@@ -2452,7 +2497,7 @@ Read this before every coding session. Update it after every meaningful change. 
 
 - 🔴 **A SECTION'S CROSS-REFERENCE TO ANOTHER SECTION'S STATUS IS NOT PROVENANCE. Open the code, or mark the claim READ-FROM-MANUAL.** This manual is large enough that a fact can be current in one section and stale in its restatement three sections away, and the restatement is usually the one you find first. ⚠️ **Precedent, 14 August 2026:** an App Store gap analysis reported account deletion and the legal pages as *"confirmed still open"*, having read that from §27 and §40 without opening `lib/account-deletion.ts` or `content/legal/`. **Both had been built in V11.4** — §41 and §43 describe them in detail — and neither §27 nor §40 had been updated. **This is the same failure V11.4 already recorded once**, which is why it is now a rule rather than an anecdote. **"Confirmed" must mean verified. If a claim's only source is this manual, say so in those words.**
 
-- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED. THE DEVICE IS THE AUTHORITY.** Reading a branch in a file and marking the resulting claim READ is a category error: what was read is the SOURCE, not the BEHAVIOUR. ⚠️ **Precedent, 14 August 2026:** `docs/kds-native-report.md` marked the KDS *"already native-ready and already reachable"* as READ — its own caveats said nothing had been run on a device — and the iPad then ejected an operator to Safari from that exact control. The source was correct and the claim was still wrong. **This joins a family, and the family is the point:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a cross-reference is not provenance* · **source-read is not behaviour-verified**. 🔴 **Each is a weaker check wearing a stronger label.** When only source has been read, say READ-FROM-SOURCE and state that the behaviour is unobserved.
+- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED. THE DEVICE IS THE AUTHORITY.** Reading a branch in a file and marking the resulting claim READ is a category error: what was read is the SOURCE, not the BEHAVIOUR. ⚠️ **Precedent, 14 August 2026:** `docs/kds-native-report.md` marked the KDS *"already native-ready and already reachable"* as READ — its own caveats said nothing had been run on a device — and the iPad then ejected an operator to Safari from that exact control. The source was correct and the claim was still wrong. **This joins a family, and the family is the point:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a cross-reference is not provenance* · **source-read is not behaviour-verified** · **a default is not a value** (P24). 🔴 **Each is a weaker check wearing a stronger label.** When only source has been read, say READ-FROM-SOURCE and state that the behaviour is unobserved.
 
 - 🔴 **A SUMMARY OF A REPORT IS NOT THE REPORT.** The standing rule *a summary of code is not the code* extends to this manual's own reports. ⚠️ **Precedent, 14 August 2026:** a fix was briefed from a chat summary of `docs/offline-paid-state-report.md` rather than from the report. The summary said *"two independent causes"*; the report's own section B3 said the first cause **was not load-bearing at all**, so the resulting one-line fix could not have worked — **and the same mistake was then made a second time on the same defect.** **Read the artefact, not the précis of it.**
 
@@ -4544,6 +4589,209 @@ via localStorage.
 > touched and the board is as it was. **The real cost is attention, not access** — an unattended kitchen
 > screen that has jumped to Safari is not showing orders, and nobody is watching it.
 
+
+## N112 — EVENT STRIP REMOVED; EVENT ACTIONS IS NOW ONE SHARED MENU (V11.22)
+
+The horizontal all-events strip is gone — **the header line directly below it already named the
+selected event**, so the strip spent a row of a kitchen screen restating the next row, and put a row
+of small tap targets permanently on a counter surface.
+
+The `⋯` is now **`Event actions ▾`**, matching the dashboard exactly, and **the whole menu is one
+shared component** (`components/shared/EventActionsModal.tsx`, following `EventCancelModal`'s
+precedent). The KDS therefore finally has **Start / Restart Event**, which it lacked entirely — a
+truck whose event had not auto-opened could not start it from the kitchen screen at all.
+
+**How two surfaces share one menu when their actions differ:** each item is a callback, and an
+**omitted callback hides that item**. "Change event" opens a tab on the dashboard and a picker overlay
+on the KDS; pausing goes through a duration modal on one and a toggle on the other. What must NOT
+differ — the order of the items, their labels, their colours, and which statuses reveal which — lives
+in the component and only there.
+
+⚠️ **Two deliberate remaining differences:** Add extra wait stays dashboard-only in the menu (the KDS
+has it one tap closer in its header), and the dashboard's calendar emoji on "Change event" is gone
+because one label cannot have it both ways.
+
+✅ `seededRef` and `setSelectedEventId` are **provably absent from the diff** — SEED ONCE THEN HOLD is
+intact. ⚠️ One diff line mentions `seededRef` and it is a COMMENT moved with the old markup; the
+reassurance it carried was restored at the new call site, because it is the thing most worth
+re-checking whenever this menu changes.
+
+## N113 — 🔴 `+30 min` REPLACED BY A FINISH-TIME CONTROL, NOW SHARED (V11.22)
+
+**There were THREE `extendEvent` call sites, not one:** the KDS header button, the KDS recently-closed
+banner, and the dashboard's Event actions button — the last calling `extendEvent(id, 30)` **with no
+confirm**, the same one-tap-no-undo shape that caused an accidental press. ⚠️ **A sweep found the
+third; two earlier passes had each assumed the count they were told.**
+
+**`components/shared/EventFinishTimeModal.tsx`:**
+
+- an **absolute** picker — every 15-minute boundary ahead of the clock, **in both directions**
+- 🔴 validated with `.getTime() > now`, **not against the current finish** — so a truck that sells out
+  early may finish EARLIER than advertised, which the control it replaced could never do
+- **picker-then-confirm**, so an accidental tap writes nothing and back can only dismiss
+- the confirm **names the count of orders due after the new finish time**
+
+🔴 **THE TERMINAL-STATUS FILTER MOVED INTO THE COMPONENT**, because taking a pre-filtered list from
+each caller would have let the two surfaces quietly disagree about what "live" means. The component
+writes nothing: `onConfirm` hands back a validated `HH:MM` and each surface owns its own request, so
+the KDS keeps its offline-outbox branch and the dashboard keeps its toast path.
+
+**Once every one-tap control was removed, `extendEvent` had no callers on either surface and both
+copies were deleted** — after checking that the shared modal never calls it (it fetches nothing) and
+that **a queued offline replay carries an HTTP body to the untouched server handler, not a reference
+to a client function.**
+
+⚠️ **Extending an event is now two presses everywhere.** A real workflow change for anyone who used
+the one-tap version.
+
+⚠️ **`+30 min` at `kds:1424` and `page:2802` is the Add-extra-wait selector** — it writes
+`set_extra_wait`, not `end_time`. **Different feature, same-looking string. Do not remove it.**
+
+## N114 — 🔴 THE STATUS BAR WAS LIGHT-ON-WHITE. `Style.Dark` MEANS LIGHT GLYPHS (V11.22)
+
+The safe-area inset fixed the overlap and exposed the next defect: the KDS header is `bg-white` and
+both surfaces called the same `configureStatusBar()` requesting light glyphs.
+
+**FIXED:** `configureStatusBar()` now takes a semantic `'light' | 'dark'` parameter rather than the
+plugin's inverted enum. Only the KDS asks for `'dark'`.
+
+✅ **No second "which surface am I on" mechanism was introduced** — all four call sites already sit
+inside the page they configure, and each re-asserts on mount, so KDS → dashboard → KDS flips
+correctly. ✅ `setStyle` is **NOT** one of `@capacitor/status-bar` 8.0.2's three known no-ops.
+
+⚠️ **ANDROID REGRESSION IN WAITING:** its strip is painted by the **window background** (navy
+`@color/hgHeaderNavy`), not by the header, so `'dark'` would give dark-on-navy — **worse than today.**
+Unobservable now; reported rather than worked around with a platform branch.
+
+## N115 — KDS VIEW PREFERENCES RESTORED ONE FRAME LATE. NOT A PERSISTENCE BUG (V11.22)
+
+All five toggles already persisted. **View, layout and sound restored via a mount effect**, which runs
+AFTER the first paint — so a device configured as **Cook painted a WINDOW board first: prices visible,
+ready tickets on the board, and the window button set, on the unattended grill screen configured never
+to show any of them.**
+
+**FIXED:** moved onto `keep_screen_on`'s lazy-initialiser pattern — same keys, same writers, same SSR
+guard; only the READ moved out of an effect and into the initialiser.
+
+⚠️ **The payments toggle stays on Capacitor `Preferences`** — async by necessity, so it cannot take
+the lazy pattern, and its one-frame gap already resolves the safe way (money hidden). **A correct
+exception rather than forced consistency.**
+
+## N116 — THE KDS VAN PICKER: THE CODE IS RIGHT, THE DATA IS NOT (V11.22)
+
+`handleOpenKDS` is committed and byte-identical in HEAD; every link reads clean. **Asking is correct
+behaviour** — the events have **no van assigned**.
+
+**Two hypotheses:** `van_id` NULL, **or `van_id` naming an INACTIVE van** — `get_vans` filters
+`.eq('active', true)`.
+
+⚠️ **The consequence is bigger than a picker: events with no van also have no kitchen capacity,
+cooking-step or buzzer settings resolved.** A setup gap presenting as a navigation annoyance.
+
+🔴 **`/api/events` omits `van_id` entirely** while `/api/events/manage` uses `select('*')` — a
+plausible-looking cause that the read refutes, and a trap for the next investigator.
+
+**UNRESOLVED: the query naming which events lack a usable van has not been run.**
+
+## N118 — 🔴 THE KDS TOGGLES PROPOSAL: REVIEWED IN FULL, NOT BUILT (V11.22)
+
+The proposal was to replace Window/Cook with three per-device toggles — **READY, PAID, COLLECTED** —
+so an operator configures which steps this screen handles rather than picking a role that half
+determines them. **Six findings, any of which alone is decisive. Nothing was built.**
+
+## N119 — 🔴 "PAID" IS NOT A STAGE. THE PIPELINE DOES NOT HOLD (V11.22)
+
+`ORDER_STATUS` has **no `paid` member**. Ready and Collected are statuses; **Paid is a derived cache
+over the ledger** (`orders.payment_status` / `amount_paid`). The three actions confirm the split:
+
+| Action | Writes a status? | Books money? |
+|---|---|---|
+| `ready` | ✅ | 🔴 **NO** |
+| `mark_paid*` | 🔴 **NO** — *"status untouched"* | ✅ `recordCollectionPayment` |
+| `collected*` | ✅ | ✅ **also** `recordCollectionPayment` |
+
+🔴 **AND THE ORDER IS WRONG FOR CARD ORDERS**, which capture at **confirmation** — so they are paid
+**before** they are ready. "Ready → Paid → Collected" describes exactly one case: an unpaid order
+settled at the hatch.
+
+✅ **What DOES hold is the phrase behind it** — the toggles decide **where this screen hands over** —
+and that is a claim about the STATUS axis only, where Ready and Collected genuinely are ordered.
+
+## N120 — 🔴 THE PROPOSED CONSTRAINT WOULD DELETE A SHIPPING FEATURE (V11.22)
+
+"Ready off forces Paid and Collected off" removes **row 5** of the eight-combination table — which is
+the **`readyStepOff` hatch device built the previous week on request**: *"no ready step, this screen
+takes money and hands over."*
+
+⚠️ A different constraint — **Collected requires Paid** — removes the two genuinely nonsensical rows
+without that cost, but makes Collected not independent, **which was the premise of the change.**
+
+## N121 — 🔴 "COLLECTED OFF" IS A MONEY CHOICE, NOT A DISPLAY ONE (V11.22)
+
+`collected` books the **full outstanding balance** — `amountMinor: before.balanceMinor` — with
+**`livemode: true` hardcoded**: *"There is no test mode for cash."*
+
+🔴 **Rows 3 and 7 (Collected on, Paid off) tell the operator this screen does not handle payment and
+then take the money anyway.** The contradiction is between the **label and the server**, not between
+two toggles — **so no constraint between toggles can fix it.**
+
+🔴 **With Paid AND Collected both off, a cash balance can go UNBOOKED ENTIRELY** unless another surface
+fires it, and **nothing checks that such a surface exists.** ✅ Online card orders are unaffected —
+captured at confirmation, so `before.balanceMinor <= 0` makes the booking a no-op. **The exposure is
+cash and pay-at-hatch only.**
+
+## N122 — THREE MORE BLOCKERS (V11.22)
+
+🔴 **ALL-OFF LEAVES `renderButtons` RETURNING `null`** — no buttons at all, reachable **by tapping
+three chips**, where today's single stuck state needs a truck-level misconfiguration.
+
+🔴 **`can('cook_screen')` IS A SOLD MAX FEATURE** — *"Customer-facing display"*. Three free per-device
+switches give every plan what Max charges for. **A commercial hole, not a technical one.**
+
+🔴 **THE COOK CARD HAS NO HOME.** Non-interactive header, category-grouped items at larger type, wider
+padding, the "To make" bar — **legibility at a grill, not lifecycle.** And `showPrices = viewMode !==
+'cook'` **names no payment flag**, so ⚠️ **a payments-off window device SHOWS PRICES today** — the
+adjacent `partPaidRow` checks both, which is what makes the asymmetry deliberate rather than an
+oversight.
+
+⚠️ **"Leaves the board when paid" has NO STATUS TO FILTER ON** — the board filters `o.status`, and
+paid-ness is not a status. It would need a ledger-derived filter, unlike every other filter on that
+screen.
+
+## N123 — THE NAMING EVIDENCE, AND THE RECOMMENDATION ON RECORD (V11.22)
+
+🔴 **The codebase has ALREADY REFUSED bare `Paid` as a control label, in writing** —
+`OrderCard.tsx`: *"'Mark paid' is an instruction; 'Paid' is a status"* — **decided because the press
+books money.** All three words are status-chip labels verbatim, so bare they name states, and the
+board already groups by status. A header chip reading `PAID` would sit a few rows above the card's own
+green `PAID` chip.
+
+**RECOMMENDATION ON RECORD, NOT YET ACCEPTED: keep the role picker, fix the naming, add a third
+option.**
+
+> **This screen handles:** `Making` · `Hatch` · `Everything`
+
+Mapping onto rows 4, 5 and 1 — the three real configurations. The cook card rides on the named mode
+with no fourth control. Rows 3, 7 and 8 do not exist. The Max gate keeps working. **Nothing changes on
+the money path.**
+
+⚠️ **The evidence leans this way on SAFETY and away from it on the stated GOAL** — it is a role picker,
+which is what Window/Cook already is, so the gain is the naming and the third option.
+
+## N124 — ⚠️ TWO PERSISTENCE MECHANISMS, AND NO SAFE DEFAULT FOR COLLECTED (V11.22)
+
+`localStorage` restores on the **first frame** but does **not** survive a WKWebView cold-kill.
+Capacitor `Preferences` survives the cold-kill but **cannot run in a `useState` initialiser** because
+`Preferences.get` is async. **Unifying them forces a choice between the two, for all three switches at
+once.**
+
+🔴 **Each switch's safe direction differs**, which is why this cannot be settled once for all three.
+Payments resolves `null` to hide money — safe. **For Collected there is no obviously safe direction:**
+defaulting ON for a frame risks a premature money booking; defaulting OFF strands an operator
+mid-tap.
+
+⚠️ **Any migration must be ACTIVE, not passive:** leaving `hg_kds_view_<token>` unread silently
+converts every cook screen into a window screen — **prices and payment buttons on a grill.**
 
 # 12. Authentication and access
 
@@ -7760,6 +8008,26 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **The KDS Dashboard control's Safari ejection is UNRESOLVED, not fixed** (§11) — the control is
   correct; the next rebuild is the test.
 
+## BACKLOG ADDED 16 AUGUST 2026 (V11.22)
+
+- 🔴 **The KDS toggles model is AWAITING A DECISION** (§11, N118–N124) — three toggles, or the
+  named-mode picker. **Nothing built.**
+- 🔴 **Events with no usable van** (§11, N116) — **the query naming them has not been run.** Bigger
+  than a picker: those events resolve no capacity, cooking-step or buzzer settings.
+- 🔴 **The Android status-bar regression in waiting** (§11, N114) — its strip is painted by the window
+  background, so the KDS's `'dark'` would give dark-on-navy.
+- 🔴 **An empty `cuisine_type` drops a truck from every filtered map view** (§38, N117) — newly easier
+  to do by accident with a dropdown. A required-field check on save would close it.
+- ⚠️ **`order_payments` records no capture trigger** (§37, C18) — a capture's cause cannot be audited.
+- ⚠️ **The order-ready toggles claim to control a customer email that is not gated at all** (§37) —
+  `deliverReadyEmail` is guarded only by `defer_email`, a client timing flag.
+- ⚠️ **A `kds_mode` truck with ONE Window tablet has a stuck state** — every order shows a disabled
+  completion button until another surface writes `'ready'`. **The per-device Ready chip resolves it,
+  but only where that chip is visible.**
+- ⚠️ **`AppLockGate.tsx` still says "Face / Touch ID".**
+- ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
+  the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -9002,6 +9270,43 @@ produced a false mismatch on files legitimately containing box-drawing character
 produces false positives erodes trust in the true ones**, which is why the per-base form counts
 selectors against their own carrier rather than against a total.
 
+
+⚠️ **NUMBERING NOTE — P20 to P23 WERE NEVER ISSUED.** The V11.22 delta numbered its process items from
+the planning chat's own count. **Their numbers are kept so the two sides cross-reference**, and the gap
+is recorded here so nobody hunts for four missing entries.
+
+## P24 — 🔴 REASONING FROM A COLUMN DEFAULT TO A LIVE VALUE (V11.22)
+
+A report claimed the KDS payments chip **was** the order-ready control and was **wrong**: it reasoned
+from `show_paid_step`'s column DEFAULT to that truck's LIVE value, concluding the chip was invisible
+for a truck that could plainly see it. **A screenshot refuted it.**
+
+🔴 **The correct inference runs the other way** — from an observed rendering back to the value that
+must produce it. A greyed chip reading "No payments" is only reachable when `hidePayments` is true,
+which settles the question without reading the database at all.
+
+⚠️ **Joins the family in §1:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a
+cross-reference is not provenance* · *source-read is not behaviour-verified* · and now **a default is
+not a value.**
+
+## P25 — ⚠️ THE PLANNING CHAT INVENTED THREE SCHEMA NAMES IN ONE WEEK (V11.22)
+
+`trucks.trial_ends_at` (real: `trial_expires_at`) · `payment_audit` (real: `action_audit_log`) ·
+`trucks.cuisine` (real: `cuisine_type`).
+
+**Rule: query `information_schema` FIRST. A plausible name is not a read one.** ⚠️ Each of the three
+was plausible enough to survive review and would have produced a query that returned nothing, which
+reads as "no rows" rather than as "wrong table".
+
+## P26 — ✅ A STALE COMMENT IS A SECOND CLAIM (V11.22)
+
+While removing `extendEvent`, a comment written by an earlier report in this same session was found
+claiming it *"still has one caller and is NOT dead"* — **true when written, false once the dashboard's
+button went.** Corrected in place rather than left beside its correction.
+
+**§40's rule applies to CODE COMMENTS as well as to manual sections: a correction sitting next to the
+claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
+diff, which is the same argument the census makes.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -11037,6 +11342,67 @@ shows no money at all.**
 - One line of copy: *"Card fees on refunded orders aren't returned by Stripe."*
 
 
+## 🔴 C15 — "CAPTURE SITE 3 OF 4" IS WRONG. THERE ARE FIVE (V11.22, correcting this section)
+
+The in-code numbering is stale. **READ: five call sites of `captureOnConfirmation`** — `confirm`,
+`time_adjust`, `auto_accept` (submit), `stranded_sweep` and `promote_auto_accept`, carrying five
+distinct triggers. **The phrase "3 of 4" was quoted repeatedly across two sessions and was never
+right.**
+
+⚠️ **Anyone auditing captures by following those comments will look for four and stop.**
+
+## 🔴 C16 — `adjust_slot_+N` NEVER BLOCKED REMOVAL. THE ROW IS GONE (V11.22, correcting the V11.20 entry above)
+
+The objection was true and did not block anything, on **three independent grounds**:
+
+1. `'pending'` orders **also capture at `confirm`** — the confirm handler's own comment says so.
+2. **Removing the button does not remove the capture site.** The handler, `captureOnConfirmation` and
+   `moveSlotBooking` all remained; only one caller of one action was deleted.
+3. 🔴 **LIVE-VERIFIED: `action_audit_log` holds 448 rows over three weeks and contains NO
+   `adjust_slot_+N` action of any kind.** The path has never fired.
+
+⚠️ **Limit of that evidence, stated precisely:** that table records *payment* actions, so the absence
+proves **no capture ever fired through it** — not strictly that nobody ever tapped it. The handler
+writes no audit row of its own.
+
+✅ **`moveSlotBooking` was NOT the problem either.** It has one call site, but **Edit rebooks capacity
+anyway** by calling `removeOrderFromProductionSlot` and `addOrderToProductionSlot` directly — the two
+primitives that wrapper's entire body consists of — and additionally handles item and deal changes the
+wrapper cannot. ⚠️ **A bounded grep for `moveSlotBooking` alone would have produced the opposite
+finding.**
+
+**REMOVED.** ⚠️ **The accepted cost:** capture on a time change moves from immediate to **up to ~25
+minutes**, arriving via a backstop whose own comments call a recovery *"a defect report, not a success
+story"*. The server-side handler was left intact so a queued offline replay still lands.
+
+## 🔴 C17 — A REAL CAPTURE INCIDENT IS IN THE AUDIT LOG (V11.22)
+
+`action_audit_log`, 12–13 August, within about eight minutes:
+
+| Action | Count |
+|---|---|
+| `capture_failed` | 5 |
+| `capture_missing` | 2 |
+| `capture_recovered` | 2 |
+| `refund_pending` | 3 |
+| `refund_reversed_failed` | 1 |
+| `refund_failed` | 1 |
+
+🔴 **The deferred capture path now made routine has a NON-ZERO REAL-WORLD FAILURE RATE.** The money was
+not lost — the sweep recovered it — but **that alarm is now normal traffic rather than exceptional**,
+which makes a real failure harder to notice. ✅ The backstop works: `capture_missing` is written
+BEFORE any repair, and two became `capture_recovered`.
+
+⚠️ **`refund_pending` ×3 is the balance-shortfall case that nothing in the product surfaces to
+anyone.**
+
+## ⚠️ C18 — `order_payments` RECORDS NO CAPTURE TRIGGER (V11.22)
+
+Columns are `kind`, `channel`, `state`, `method`, `note`, `external_ref` — **nothing recording WHY a
+capture happened.** So a capture's cause cannot be audited after the fact on any of the five sites.
+
+**Not urgent while Stripe is not live; it is the kind of gap noticed during a dispute.**
+
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
@@ -11420,6 +11786,34 @@ which is worse than two clean lines.
 ⚠️ **The Starter card was never missed** — the iPhone wording is in the working tree and simply
 **uncommitted and undeployed.** The live page still shows the old text.
 
+
+## N117 — `CuisinePicker` — EXTRACTED, NOT DUPLICATED (V11.22)
+
+`trucks.cuisine_type` was **free text in manage** and a **dropdown in the setup wizard**, where a truck
+may pick more than one.
+
+✅ **LIVE-VERIFIED, eight trucks, every one a SINGLE value with no commas:** Pizza · Thai · Pizza ·
+Fish & Chips · Tacos · Indian · Chinese · Burgers. **So the multi-value path had never been used**, and
+both surfaces write a comma-joined string through the same `update_settings` endpoint — **no
+array/string defect.**
+
+✅ **`Fish & Chips` is in the canonical list character-for-character** — plain `U+0026`, one `U+0020`
+either side, no entity, no "and" — **verified by running the real list through the real algorithm.**
+All eight round-trip byte-identically.
+
+**Extracted the wizard's INLINE JSX into `components/shared/CuisinePicker.tsx`** and used it on both
+surfaces; `lib/cuisines.ts` had already anticipated this in its own header. `join(', ')` preserved —
+**comma-space, not comma**, because only one of the two round-trips byte-identically. **An off-list
+value loads into an "Other" row carrying its exact text**, so it stays visible and saves back unchanged
+instead of being wiped, reusing the escape hatch the wizard already had rather than injecting a
+pseudo-option that would bless a typo as canonical.
+
+⚠️ **Nothing saves unless the operator changes a selection**, so opening Settings is safe.
+
+🔴 **BUT clearing the field is now easier by accident with a dropdown than with a text box, and an
+empty `cuisine_type` DROPS A TRUCK OUT OF EVERY CUISINE-FILTERED MAP VIEW** while leaving it under
+"All Food" — **the discovery filter derives its options from live data.** Reported, not guarded; a
+required-field check on save would close it.
 
 # 39. Buzzers — physical pagers against orders (V10)
 

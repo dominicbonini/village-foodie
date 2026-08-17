@@ -27,13 +27,6 @@ import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
 import { ToastStack } from '@/components/ToastStack'
 
 /** "Village Hall — Wickhambrook", skip town if already in venue name */
-function fmtVenue(venueName?: string | null, town?: string | null): string {
-  if (!venueName && !town) return ''
-  if (!venueName) return town!
-  if (!town) return venueName
-  if (venueName.toLowerCase().includes(town.toLowerCase())) return venueName
-  return `${venueName} — ${town}`
-}
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
@@ -44,6 +37,8 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 // The ONE event-cancel gate, shared with manage and the KDS. Replaces a window.confirm whose safe
 // button was labelled "Cancel" on the operation that cancels every live order. See the component.
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
+import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
+import { EventActionsModal } from '@/components/shared/EventActionsModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -58,8 +53,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 // collection?" by string equality now asks the shared predicate, so the two new names get the struck-prep
 // clear, the undo affordance, the payment-warning wording and the post-action refresh that `collected`
 // has always had — rather than silently taking the else branch.
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, isCollectAction } from '@/lib/native/orderGate'
-import { removePendingStatusOp } from '@/lib/native/outbox'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/reachability'
 import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
 import { NotificationSettings } from '@/components/native/NotificationSettings'
@@ -74,11 +68,12 @@ import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
 import { BuzzerLostBanner, type BuzzerLoss } from '@/components/dashboard/BuzzerLostBanner'
-import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer, buzzerPill } from '@/lib/buzzer'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { useOfflinePaymentOverlay } from '@/lib/native/useOfflinePaymentOverlay'
+import { useGatedActionResult } from '@/lib/native/useGatedActionResult'
 import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
 import { getOrderBalance, hasUnrecordedPayment } from '@/lib/payments/ledger'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
@@ -88,6 +83,7 @@ import { usePrinting } from '@/lib/printing/usePrinting'   // the ONE mount of t
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
+import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_DARK } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -292,6 +288,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[upcomingEvents,setUpcomingEvents]=useState<TruckEvent[]>([])
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
   const[showEventMenu,setShowEventMenu]=useState(false)
+  // Change-event-finish-time target. Non-null mounts the SHARED modal, which owns the picker/confirm
+  // split internally — so there is no draft state on this screen to leak between opens.
+  const[finishTimeTarget,setFinishTimeTarget]=useState<{id:string;end_time:string|null;event_date:string|null}|null>(null)
+  const[finishTimeBusy,setFinishTimeBusy]=useState(false)
   // DEMO: event actions are shown-but-locked; clicking any of them (event bar OR AddOrderPanel) opens this
   // one explainer instead of mutating anything. Centralised here so both surfaces share it.
   const[showDemoEventLock,setShowDemoEventLock]=useState(false)
@@ -1917,6 +1917,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
   }
 
+  // ── POST-GATE HANDLING — THE SHARED HANDLER (lib/native/useGatedActionResult) ────────────────────
+  // 🔴 EXTRACTED, NOT REWRITTEN. Every branch, string, duration and Undo target below used to sit inline
+  // in doAction; they moved verbatim and this surface is the reference the module was built from, so
+  // nothing here renders or fires differently. What changed is that the KDS now runs the SAME code
+  // instead of its own partial copy (it toasted only for 'ready' and swallowed errors entirely).
+  // ⚠️ THE FOUR CALLBACKS BELOW ARE THIS SURFACE'S ALONE. `findOrder` keeps the deviceQueuedOrders
+  // fallback (an offline-CREATED order is not in `orders` yet — the KDS has no create path); the two prep
+  // callbacks are the solo-operator pill auto-clear, which the KDS has no equivalent of. The KDS's own
+  // queued-op counter is the mirror case: it passes onQueued/onQueuedUndone and this surface does not.
+  const handleGateResult=useGatedActionResult<Order>({
+    showToast,
+    findOrder:(k)=>orders.find(o=>o.order_key===k)??deviceQueuedOrders.find(o=>o.order_key===k),
+    refreshPendingStatus,dropOverlayEntry,scheduleReadyEmail,undoReady,
+    runAction:(a,k)=>doAction(a,k),
+    refetch:fetchAll,setActionLoading,refreshPendingPayment,
+    onPrepStrike:(orderKey,order)=>{
+      setStruckPrep(prev=>{
+        const n=new Set(prev)
+        order.items.forEach((item:any)=>{
+          for(let u=0;u<item.quantity;u++) n.add(`${orderKey}:${item.name}:${u}`)
+        })
+        return n
+      })
+    },
+    onPrepUnstrike:(orderKey)=>{
+      setStruckPrep(prev=>{const n=new Set(prev);prev.forEach(k=>{if(k.split(':')[0]===orderKey)n.delete(k)});return n})
+    },
+  })
+
   const doAction=async(action:string,orderKey:string)=>{
     if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
     if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
@@ -1924,114 +1953,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){
-        // OFFLINE: the optimistic advance is now a DURABLE render-time overlay derived from the outbox (FIX 2),
-        // NOT a one-shot setOrders patch (a stale poll / SW-cache read would wipe that — the revert bug). We
-        // just refresh the overlay so the card advances instantly; it outlives reads and auto-clears on drain.
-        const q=orders.find(o=>o.order_key===orderKey)??deviceQueuedOrders.find(o=>o.order_key===orderKey)
-        refreshPendingStatus(); refreshPendingPayment()
-        // Mirror the online prep-board auto-clear on ready/collected.
-        if((action==='ready'||isCollectAction(action))&&q){
-          setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
-        }
-        setActionLoading(null)
-        // OFFLINE UNDO (ISSUE 1): remove the still-pending op → the overlay reverts as-if-never-happened. If it
-        // already synced within the toast window (removePendingStatusOp → false), fall back to the ONLINE
-        // compensating undo. Offered for ready/collected (matching the online undo affordance).
-        const offlineUndo=async()=>{
-          const removed=await removePendingStatusOp(orderKey)
-          if(removed){
-            dropOverlayEntry(orderKey); refreshPendingStatus()
-            // Un-strike this order's prep pills (the onUndoRestore side-effect).
-            setStruckPrep(prev=>{const n=new Set(prev);prev.forEach(k=>{if(k.split(':')[0]===orderKey)n.delete(k)});return n})
-            showToast(`Order #${q?.id??''} reverted`)
-          }else if(action==='ready'){undoReady(orderKey,q?.id??'')}
-          else if(isCollectAction(action)){doAction('undo_collected',orderKey)}
-          else{fetchAll()}
-        }
-        const savedMsg=`Order #${q?.id??''} saved`
-        if(action==='ready'||isCollectAction(action)){
-          showToast(savedMsg,'success',{duration:7000,action:{label:'↩ Undo',run:offlineUndo}})
-        }else{showToast(savedMsg)}
-        return
-      }
-      const data=result.data??{}; if(!result.ok)throw new Error(data.error)
-      const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
-      const done=orders.find(o=>o.order_key===orderKey)
-      const num=done?.id??''
-      // ── THE MONEY HALF FAILED, ON A 200 ──────────────────────────────────────────────────────────
-      // 🔴 `result.ok` IS TRUE HERE AND THE ACTION DID PARTLY SUCCEED. 'collected' books the ledger row,
-      // then logs, then writes the status; the ledger write FAILS OPEN (caught, execution continues) so
-      // the operator is never stranded at the hatch. The response carries `paymentWarning` and until now
-      // nothing read it — an order completed with no payment recorded looked EXACTLY like a successful
-      // one: green toast, card cleared, done.
-      // 🔴 IT REPLACES THE SUCCESS TOAST, never sits beside it. Two toasts for one tap — one green, one
-      // red — is the operator reading whichever their eye lands on, and the green one is the lie. So this
-      // is the FIRST branch of the toast chain below and the others are `else if`; everything AFTER the
-      // chain (the prep-pill auto-clear, the refetch) still runs, because the order really did advance.
-      // The 20s duration is a deliberate outlier against the 3.5s default: this is the only toast that
-      // reports missing money, and it must survive a glance away at a hatch. It is NOT the durable
-      // record — the card marker is (see cardConflict) — it is the thing that catches them in the act.
-      // ⚠️ The repair is the SAME 'mark_paid' the card offers, charging the outstanding balance under the
-      // same idempotency key: safe to re-fire, and a no-op if the money did land after all.
-      const moneyFailed=!!data.paymentWarning
-      // "Paid & collected" → a 7s Undo toast (undo_collected reverts ONE stage to the order's actual
-      // previous status — ready if it was ready, else confirmed — AND rebuilds capacity to match).
-      // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
-      // within 4s cancels the email (clears the per-order timer) AND reverts the status. The toast's tap
-      // auto-dismisses it (handled in the render), so the run handlers only do the action.
-      // ── TWO-STAGE UNDO (V9.4) ──────────────────────────────────────────────────────────────────
-      // With the paid step split there are TWO undoable actions, so each gets its OWN toast naming the
-      // stage it reverses. Undo is never ambiguous after a fast double tap: whichever toast is on screen
-      // is the one for the tap you just made, and it reverses exactly that stage. Undoing "Done" leaves
-      // the payment standing (the server does the same — see undo_collected's splitPaidStep branch).
-      if(moneyFailed){
-        showToast(
-          `⚠ Order #${num} — PAYMENT NOT RECORDED. ${isCollectAction(action)?'The order completed':'The order was saved'}; the money did not.`,
-          'error',
-          {duration:20000,action:{label:'Record payment',run:()=>doAction('mark_paid',orderKey)}},
-        )
-      }else if(action==='mark_paid'){
-        showToast(`Order #${num} marked paid`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_mark_paid',orderKey)}})
-      }else if(action==='undo_mark_paid'){
-        showToast('Undone — payment removed')
-      }else if(action==='undo_collected'){
-        showToast('Undone — order not collected')
-      }else if(isCollectAction(action)){
-        showToast(`Order #${num} collected`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
-      }else if(action==='ready'){
-        scheduleReadyEmail(orderKey)
-        // READY IS THE MOMENT THE BUZZER IS PRESSED, so the number belongs here and not only on the card.
-        // 🔴 NO BUZZER ⇒ THE ORIGINAL STRING, BYTE-IDENTICAL. A conditional suffix, never a placeholder:
-        // "Buzzer —" or an empty pill would be noise on the majority of orders.
-        // The pill is SOLID WHITE, not the undo button's bg-white/20: it echoes that button's shape
-        // vocabulary (rounded, padded, font-black) but has to carry text at 17.85:1, because the toast
-        // ground is bg-green-600 + white = 3.30:1 — below the 4.5:1 floor for its 14px bold text.
-        // ⚠️ That 3.30:1 is a REAL pre-existing defect on EVERY success toast in the app. It is
-        // deliberately NOT fixed here (darkening to green-700 would reach 5.02:1 but touches every
-        // toast) — it is its own change.
-        showToast(
-          done?.buzzer_number!=null
-            ? <>Order #{num} ready · {buzzerPill(done.buzzer_number)}</>
-            : `Order #${num} ready`,
-          'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
-      }else{
-        showToast(`Order #${num} ${labels[action]||action}`)
-      }
-      // Auto-clear prep board on collected (solo operator workflow)
-      if(isCollectAction(action)||action==='ready'){
-        if(done){
-          // Auto-clear unit pills for this specific order
-          setStruckPrep(prev=>{
-            const n=new Set(prev)
-            done.items.forEach(item=>{
-              for(let u=0;u<item.quantity;u++) n.add(`${orderKey}:${item.name}:${u}`)
-            })
-            return n
-          })
-        }
-      }
-      await fetchAll()
+      await handleGateResult(result,action,orderKey)
     }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
   }
 
@@ -2205,18 +2127,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
-  const extendEvent=async(eventId:string,addMins:number)=>{
-    const ev=todayEvents.find(e=>e.id===eventId); if(!ev) return
-    const[h,m]=ev.end_time.split(':').map(Number)
-    const total=h*60+m+addMins
-    const newEnd=`${String(Math.floor(total/60)%24).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`
+  // ── CHANGE EVENT FINISH TIME ────────────────────────────────────────────────────────────────────
+  // 🔴 THE SAME WRITE `extendEvent` MAKES, AND NOTHING MORE: one POST to /api/events/action with
+  // action:'update' and a payload of exactly `{ end_time }`. That handler's allow-list is
+  // ['venue_name','venue_address','start_time','end_time','customer_note','auto_open','auto_close','notes']
+  // and its only other write is `updated_at`. It touches NO order, NO status, NO production slot and
+  // imports nothing from lib/payments/.
+  // ⚠️ ABSOLUTE, NOT RELATIVE — and now the ONLY writer of this column on this screen. The deleted
+  // `extendEvent` took `addMins` and could only push the finish LATER; this takes the time itself.
+  const applyFinishTime=async(eventId:string,newEnd:string)=>{
+    setFinishTimeBusy(true)
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,end_time:newEnd}:e))
-      showToast(`Extended to ${newEnd}`)
+      showToast(`Finish time now ${newEnd}`)
+      setFinishTimeTarget(null)
     }catch(err:any){showToast(err.message||'Failed','error')}
+    finally{setFinishTimeBusy(false)}
   }
+
+  // ── `extendEvent` DELETED (16 August) ───────────────────────────────────────────────────────────
+  // 🔴 IT HAD NO CALLERS LEFT. Its last one was the recently-closed banner's "Extend 30 min", removed
+  // above; the Event actions menu moved to `applyFinishTime` when the shared picker replaced it. A
+  // relative, unconfirmed +30 writer left sitting in a money screen is an invitation to re-add a button
+  // to it, which is the thing being removed.
+  // ⚠️ NOTHING QUEUED CAN LAND ON IT. It was a CLIENT function; an offline replay carries the POST body
+  // to /api/events/action and is served by that route's `update` handler, which is untouched. Any op
+  // queued before this change still replays correctly.
+  // 🔴 THE CAPABILITY IS NOT GONE — `applyFinishTime` makes the identical write (action:'update',
+  // payload `{ end_time }`), from an absolute picker behind a confirm.
 
   // Styled finish confirm (replaces window.confirm). finishEvent OPENS the modal; doFinishEvent runs
   // the close after Yes. The timing-aware (finishingEarly = now<end_time, minute-parsed) logic is
@@ -2426,6 +2366,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // an order; every closer is the same setter the modal's own X button calls.
   useAndroidBack([
     [!!editItemModal, () => setEditItemModal(null)],
+    // NON-COMMITTING, and FIRST because the finish-time modal stacks highest (z-70 confirm over z-60
+    // picker). Back dismisses it without writing — it can never be the thing that changes a finish time.
+    // Gated on !busy so a press mid-write cannot unmount the modal while its POST is in flight.
+    [!!finishTimeTarget && !finishTimeBusy, () => setFinishTimeTarget(null)],
     [!!finishConfirm, () => setFinishConfirm(null)],
     [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
     [showDemoEventLock, () => setShowDemoEventLock(false)],
@@ -2723,19 +2667,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // resolved in the EVENT tz (Europe/London) via getLocalDateInTz, NOT device-local / toISOString, so a
   // future pre-order event reads correctly. event_date is a pure calendar date ('YYYY-MM-DD'); we format
   // its parts under timeZone:'UTC' so the weekday/month never shift.
-  const eventDateLabel=(dateStr:string):string=>{
-    const ordinal=(n:number)=>{const v=n%100;const s=['th','st','nd','rd'];return `${n}${s[(v-20)%10]||s[v]||s[0]}`}
-    const todayStr=getLocalDateInTz('Europe/London')
-    const [ty,tm,td]=todayStr.split('-').map(Number)
-    const tmw=new Date(Date.UTC(ty,tm-1,td+1))
-    const tomorrowStr=`${tmw.getUTCFullYear()}-${String(tmw.getUTCMonth()+1).padStart(2,'0')}-${String(tmw.getUTCDate()).padStart(2,'0')}`
-    const [ey,em,ed]=dateStr.split('-').map(Number)
-    const d=new Date(Date.UTC(ey,em-1,ed))
-    const dayLabel=`${ordinal(ed)} ${d.toLocaleDateString('en-GB',{month:'long',timeZone:'UTC'})}`
-    if(dateStr===todayStr)return `Today ${dayLabel}`
-    if(dateStr===tomorrowStr)return `Tomorrow ${dayLabel}`
-    return `${d.toLocaleDateString('en-GB',{weekday:'long',timeZone:'UTC'})} ${dayLabel}`
-  }
+  // (fmtVenue + eventDateLabel moved to lib/event-display.ts — fmtVenue existed byte-identically here
+  //  and in AddOrderPanel, and the KDS event bar would have been a third copy.)
 
   // Extra-wait control (select, or the active "tap to clear" button) — ONE definition reused in two
   // responsive placements so the set/clear logic never diverges: mobile keeps it in the top controls
@@ -2977,18 +2910,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
                 {/* "Change" button removed — event-switching lives in Event actions ▾ → "📅 Change event"
                     (redundant here on every viewport). The no-event "Select event" path below is unaffected. */}
-                {paused?(
-                  <span className="text-xs font-medium text-amber-400 flex-shrink-0">⏸ Paused</span>
-                ):activeEvent.status==='open'?(
-                  <span className="text-xs font-medium text-green-400 flex-shrink-0">● Live</span>
-                ):activeEvent.status==='closed'?(
-                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">● Finished</span>
-                ):activeEvent.status==='cancelled'?(
-                  <span className="text-xs font-medium text-red-400 flex-shrink-0">Cancelled</span>
-                ):(
-                  // 'confirmed' (or any not-yet-started status) — NOT finished; pairs with Start Event.
-                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">Not started</span>
-                )}
+                {/* Status label — the words and the branch order live in lib/event-display, shared with the
+                    KDS; only the palette is per-surface (this header is dark). Output is unchanged. */}
+                {(()=>{const st=eventStatusDisplay(activeEvent.status,paused);return(
+                  <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_DARK[st.tone]} flex-shrink-0`}>{st.label}</span>
+                )})()}
                 {/* Labeled, obviously-tappable trigger for the event-level actions (pause / +30 / finish /
                     cancel / note) — names the menu so those actions are discoverable, not hidden behind ⋯. */}
                 {/* DEMO: SHOW, don't hide (§3 Stage 3 — "a prospect can't want what they can't see"). Event
@@ -3150,10 +3076,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             {/* Recently closed banner */}
+            {/* ⚠️ "Extend 30 min" REMOVED FROM THIS BANNER (16 August), matching the KDS's, which lost
+                its copy first. It called `extendEvent(activeEvent.id,30)` — one tap, relative, with no
+                confirm and no undo, which is the shape that got pressed by accident.
+                🔴 RECOVERY IS NOT LOST. Event actions ▾ -> "Change event finish time" reaches the same
+                write behind a picker and a confirm, and can set any future time rather than only +30.
+                ⚠️ THE BANNER ITSELF STAYS — it is how an operator knows the event has ended. It keeps
+                `justify-between` so the sentence sits exactly where it did; there is no empty slot,
+                because a single flex child with that class simply starts at the left edge. */}
             {recentlyClosed&&activeEvent&&(
               <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
                 <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
-                <button onClick={()=>extendEvent(activeEvent.id,30)} className="text-sm font-medium text-teal-600 hover:text-teal-700">Extend 30 min</button>
               </div>
             )}
             {/* Mobile controls row REMOVED to reclaim vertical space (was: inline Add-extra-wait + Prep).
@@ -3935,7 +3868,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Order-ready step{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Show a “Mark ready” button on the orders screen. Kitchen screens are set separately. Customers are emailed whenever an order is marked ready.</p>
                 </div>
                 <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
               </div>
@@ -4444,6 +4377,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           busy={eventCancelBusy}
           onKeep={()=>setEventCancelTarget(null)}
           onConfirm={(reason,note)=>{void doCancelEvent(eventCancelTarget.id,reason,note)}}
+        />
+      )}
+
+      {/* ── CHANGE FINISH TIME — THE SHARED MODAL, the same one the KDS mounts ───────────────────────
+          🔴 THIS IS THE REPLACEMENT FOR `Extend event +30 min`. Same component, same validation, same
+          confirm copy, same affected-order count as the KDS — the divergence was the point of the change.
+          ⚠️ `eventOrders` is this screen's per-event list; the modal excludes terminal statuses itself, so
+          both surfaces count "due after" the same way rather than each pre-filtering to its own idea of
+          live. This screen holds ledger data the KDS does not, and NONE of it is passed — the control
+          decides nothing about money. */}
+      {finishTimeTarget&&(
+        <EventFinishTimeModal
+          event={finishTimeTarget}
+          orders={eventOrders}
+          busy={finishTimeBusy}
+          onClose={()=>setFinishTimeTarget(null)}
+          onConfirm={newEnd=>{void applyFinishTime(finishTimeTarget.id,newEnd)}}
         />
       )}
 
@@ -4967,67 +4917,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {/* Event menu */}
+      {/* ── EVENT ACTIONS — THE SHARED MODAL, the same one the KDS mounts ───────────────────────────
+          🔴 EXTRACTED so the two menus cannot drift again. This screen's copy was the more complete of
+          the two, so it is the one that moved into components/shared/EventActionsModal; the KDS was
+          missing Start / Restart Event entirely.
+          ⚠️ EVERY ACTION IS STILL THIS SCREEN'S OWN — the pause write, the extra-wait control and the
+          tab switch behind "Change event" are unchanged; only the MENU is shared.
+          ⚠️ DEMO: Pause is withheld and Resume is not, exactly as before — `onPause` is omitted while
+          `onResume` is passed, so recovery stays reachable and only the trap is removed. */}
       {showEventMenu&&activeEvent&&!isDemo&&(
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowEventMenu(false)}>
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black text-slate-900">{activeEvent.venue_name}</h3>
-              <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
-            </div>
-            {/* Start / Restart — visible whenever the event isn't live yet (confirmed) or has finished
-                (closed), on ALL viewports incl. mobile. Was gated `confirmed && !auto_open`, so a not-started
-                event was un-startable from the mobile menu — the only Start button was the Add-order banner,
-                which is hidden on mobile (hidden sm:block). Now mirrors that banner's condition. */}
-            {(activeEvent.status==='confirmed'||activeEvent.status==='closed')&&(
-              <button onClick={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
-                className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm mb-3">
-                {activeEvent.status==='closed'?'Restart Event':'Start Event'}
-              </button>
-            )}
-            <button onClick={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
-              className="w-full text-left py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 border border-slate-100 rounded-xl px-3 mb-4">
-              📅 Change event
-            </button>
-            <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Note for customers</label>
-              <input type="text" value={eventNoteInput} onChange={e=>setEventNoteInput(e.target.value)}
-                placeholder="e.g. Park in the main car park, look for the orange gazebo"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"/>
-              <p className="text-xs text-slate-500 mt-1.5">Shown to customers on the order page below your event details.</p>
-              <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
-            </div>
-            <div className="space-y-2 border-t border-slate-100 pt-3">
-              {/* Pause / Resume orders (moved here from the full-width row). Only for a LIVE event. Same handler:
-                  paused → clear paused_until (resume); else → open the pause-duration modal. */}
-              {activeEvent.status==='open'&&(
-                paused?(
-                  <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
-                    className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ Resume orders</button>
-                ):(
-                  /* DEMO: Pause hidden, Resume (the branch above) kept — see the KDS header for the full
-                     reasoning. Recovery must always be reachable; only the trap is removed. */
-                  !isDemo&&(
-                  <button onClick={()=>{setShowEventMenu(false);setShowPauseModal(true)}}
-                    className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ Pause orders</button>
-                  )
-                )
-              )}
-              {/* Add extra wait — event-level buffer added to NEW-order time quotes (set_extra_wait). Moved
-                  here from the removed mobile controls row; desktop/iPad keep their inline copy beside the
-                  stat boxes. Active state stays visible via the "⏱ +N min extra wait active" banner above. */}
-              {renderExtraWait('w-full')}
-              {/* Extends the event's END TIME by 30 min (extendEvent → end_time) — NOT an order-wait buffer.
-                  Labelled explicitly so it isn't confused with "Add extra wait" now sitting beside it. */}
-              <button onClick={()=>{extendEvent(activeEvent.id,30);setShowEventMenu(false)}}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Extend event +30 min</button>
-              <button onClick={()=>finishEvent(activeEvent.id)}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
-              <button onClick={()=>cancelEventFromMenu(activeEvent)}
-                className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
-            </div>
-          </div>
-        </div>
+        <EventActionsModal
+          event={{id:activeEvent.id,venue_name:activeEvent.venue_name,status:activeEvent.status}}
+          noteValue={eventNoteInput}
+          onNoteChange={setEventNoteInput}
+          onSaveNote={()=>saveEventNote(activeEvent.id)}
+          onStartEvent={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
+          onChangeEvent={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
+          paused={paused}
+          onPause={isDemo?undefined:()=>{setShowEventMenu(false);setShowPauseModal(true)}}
+          onResume={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
+          extraWaitControl={renderExtraWait('w-full')}
+          onChangeFinishTime={()=>{setShowEventMenu(false);setFinishTimeTarget({id:activeEvent.id,end_time:activeEvent.end_time??null,event_date:activeEvent.event_date??null})}}
+          onFinishEvent={()=>finishEvent(activeEvent.id)}
+          onCancelEvent={()=>cancelEventFromMenu(activeEvent)}
+          onClose={()=>setShowEventMenu(false)}
+        />
       )}
 
       <ToastStack toasts={toasts} dismissToast={dismissToast}/>

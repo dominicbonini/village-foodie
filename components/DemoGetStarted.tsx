@@ -45,7 +45,8 @@ import { useState, useEffect, useRef, Fragment } from 'react'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { CUISINES, CUISINE_OTHER, emojiForCuisine } from '@/lib/cuisines'
+import { emojiForCuisine } from '@/lib/cuisines'
+import { CuisinePicker, resolveCuisines, type CuisineSlot } from '@/components/shared/CuisinePicker'
 // I4: the SAME validator Manage Settings uses (app/manage/[token]/page.tsx) and the same one
 // /api/setup now runs server-side — one rule, three surfaces, so a number accepted here cannot be
 // rejected there.
@@ -225,7 +226,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // CUISINE — up to 3 slots, each a <select> value ('' | a cuisine name | 'Other'); an "Other" slot carries
   // free text. Resolved cuisines (dedup, non-empty) are comma-joined to trucks.cuisine_type — the format the
   // live discovery filter splits on (see lib/cuisines.ts). Slots start at one empty select.
-  const [cuisineSlots, setCuisineSlots] = useState<{ value: string; other: string }[]>([{ value: '', other: '' }])
+  const [cuisineSlots, setCuisineSlots] = useState<CuisineSlot[]>([{ value: '', other: '' }])
   // No emoji field in the wizard — the truck emoji is auto-derived from the first cuisine at submit
   // (emojiForCuisine) and changeable later in Settings.
 
@@ -250,14 +251,10 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   const emailRef = useRef<HTMLInputElement>(null)
 
   // Resolved cuisine list (dedup, non-empty). An 'Other' slot resolves to its free text.
-  const resolvedCuisines = (() => {
-    const out: string[] = []
-    for (const s of cuisineSlots) {
-      const v = s.value === CUISINE_OTHER ? s.other.trim() : s.value.trim()
-      if (v && !out.includes(v)) out.push(v)
-    }
-    return out
-  })()
+  // Moved into CuisinePicker as the exported `resolveCuisines`, character-for-character, so Settings
+  // resolves slots the same way this wizard does. Still computed here because the wizard needs it for
+  // validation, for the emoji it derives, and for the string it submits.
+  const resolvedCuisines = resolveCuisines(cuisineSlots)
 
   // waFromPhone — replicated VERBATIM from Settings (app/manage/[token]/page.tsx:6676; it is not exported).
   // Customer-facing `whatsapp` = the phone WHEN "this number is on WhatsApp" is ticked; else '' (NOT null —
@@ -389,16 +386,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
 
   // The truck emoji is NOT chosen here — it's auto-derived from the first cuisine at submit (emojiForCuisine),
   // and changeable later in Settings. So the cuisine handlers just update the slots + clear the error.
-  const setCuisineValue = (i: number, value: string) => {
-    setCuisineSlots(prev => prev.map((s, j) => j === i ? { ...s, value } : s))
-    clearFieldErr('cuisine')
-  }
-  const setCuisineOther = (i: number, other: string) => {
-    setCuisineSlots(prev => prev.map((s, j) => j === i ? { ...s, other } : s))
-    clearFieldErr('cuisine')
-  }
-  const addCuisineSlot = () => setCuisineSlots(prev => prev.length >= 3 ? prev : [...prev, { value: '', other: '' }])
-  const removeCuisineSlot = (i: number) => setCuisineSlots(prev => prev.length <= 1 ? prev : prev.filter((_, j) => j !== i))
+  // (setCuisineValue / setCuisineOther / addCuisineSlot / removeCuisineSlot moved into CuisinePicker —
+  //  it owns the row mutations now and hands back the whole array. `clearFieldErr('cuisine')` still fires
+  //  on every change, at the component's onChange, exactly as these four did.)
 
   const onLogoPick = (file: File | null) => {
     if (logoPreview) { try { URL.revokeObjectURL(logoPreview) } catch { /* noop */ } }
@@ -848,44 +838,18 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       (it's changeable later in Settings). */}
                   <div>
                     <label htmlFor="demo-cuisine-0" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Cuisine</label>
-                    <div className="flex flex-col gap-2">
-                      {cuisineSlots.map((slot, i) => (
-                        <div key={i} className="flex flex-col gap-1.5">
-                          <select
-                            id={`demo-cuisine-${i}`} ref={i === 0 ? cuisineRef : undefined} value={slot.value}
-                            onChange={e => setCuisineValue(i, e.target.value)}
-                            className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.cuisine ? 'border-red-400' : 'border-slate-200'}`}>
-                            <option value="">Choose a cuisine…</option>
-                            {CUISINES.map(c => <option key={c} value={c}>{c === CUISINE_OTHER ? 'Other…' : c}</option>)}
-                          </select>
-                          {slot.value === CUISINE_OTHER && (
-                            <input type="text" value={slot.other} onChange={e => setCuisineOther(i, e.target.value)}
-                              placeholder="Tell us your cuisine"
-                              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {cuisineSlots.length < 3 && (
-                      <button type="button" onClick={addCuisineSlot}
-                        className="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700">+ Choose another</button>
-                    )}
-                    {/* Chips — only once 2+ cuisines are chosen; each removable. */}
-                    {resolvedCuisines.length >= 2 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {cuisineSlots.map((slot, i) => {
-                          const label = slot.value === CUISINE_OTHER ? slot.other.trim() : slot.value.trim()
-                          if (!label) return null
-                          return (
-                            <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">
-                              {label}
-                              <button type="button" aria-label={`Remove ${label}`} onClick={() => removeCuisineSlot(i)}
-                                className="text-orange-400 hover:text-orange-700 leading-none">×</button>
-                            </span>
-                          )
-                        })}
-                      </div>
-                    )}
+                    {/* ⚠️ EXTRACTED, NOT REWRITTEN. This markup moved verbatim into
+                        components/shared/CuisinePicker so Settings offers the same control; the ids, the
+                        classes, the "Other…" behaviour, the 3-row cap and the chips are byte-identical to
+                        what stood here. `clearFieldErr` is applied at the onChange below, where the inline
+                        setters used to call it — the component itself owns no error state. */}
+                    <CuisinePicker
+                      slots={cuisineSlots}
+                      onChange={next => { setCuisineSlots(next); clearFieldErr('cuisine') }}
+                      idPrefix="demo"
+                      firstSelectRef={cuisineRef}
+                      invalid={!!fieldErrors.cuisine}
+                    />
                     {fieldErrors.cuisine && <p className="text-xs text-red-600 mt-1">{fieldErrors.cuisine}</p>}
                   </div>
 
