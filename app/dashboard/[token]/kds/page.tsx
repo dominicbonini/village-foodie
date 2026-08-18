@@ -926,7 +926,11 @@ export default function KdsPage() {
     // nesting, so a registration made from the component would sit at its own position rather than the
     // one this surface chose. Above the event menu because it is opened from a card, over everything.
     [!!rejectingOrder, () => setRejectingOrder(null)],
-    [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
+    // 🔴 `isPaused` IS DECLARED BELOW THIS LINE (:~1534) AND CANNOT BE READ HERE — this array is
+    // evaluated during render, so referencing it would be a TDZ ReferenceError. The identical
+    // expression is inlined from `pausedUntil` (:165) instead. It must stay in step with the modal's
+    // mount gate: back/escape has to dismiss exactly what can be opened.
+    [showEventMenu && !!activeEvent && (!isDemo || (pausedUntil ? new Date(pausedUntil) > new Date() : false)), () => setShowEventMenu(false)],
     [showScreenOffWarning, () => setShowScreenOffWarning(false)],
   ])
 
@@ -2063,7 +2067,10 @@ export default function KdsPage() {
             that figure, and the alternatives, and chose the two lines over moving the control. `Manage
             event` is kept verbatim rather than shortened to `Manage`, because `Manage` saves 46px and the
             row still wraps — the rename would have cost a word and bought nothing. */}
-        {activeEvent && !isDemo && (
+        {/* 🔴 `(!isDemo || isPaused)`, NOT `!isDemo` — THIS CARRIES THE ARM THE HEADER'S PAUSE BUTTON
+            USED TO. With `Pause orders` off the header, a PAUSED DEMO reaches Resume only through this
+            menu, so the opener has to admit exactly the case the old button's gate admitted. */}
+        {activeEvent && (!isDemo || isPaused) && (
           <button
             onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
             aria-label="Manage event"
@@ -2139,50 +2146,45 @@ export default function KdsPage() {
             "Clear" is unchanged, so an active extra wait is still visible and clearable without opening
             anything. */}
 
-        {/* Pause — both views.
-            DEMO: the PAUSE direction is hidden, the RESUME direction is NOT. This is one toggle button, so
-            `!isDemo || isPaused` keeps the recovery path open: offline auto-pause (heartbeat-monitor) can
-            still pause a demo event without anyone touching this, and hiding the button outright would
-            strand the demo paused with no way back — the exact failure we're avoiding, just caused by us.
-
-            ── 🔴 THIS BUTTON IS NOT A DUPLICATE OF THE EVENT-ACTIONS ITEM. DO NOT DELETE IT. ──────────
-            It looks like one: `⏸ Pause orders` also lives in EventActionsModal, gated there on
-            `event.status === 'open'`. But the MODAL is mounted on `showEventMenu && activeEvent &&
-            !isDemo`, and the only control that opens it is `!isDemo` too — so on a PAUSED DEMO the menu
-            cannot be reached at all and THIS BUTTON IS THE ONLY RESUME CONTROL ON THE SCREEN. That is
-            the whole reason the gate reads `(!isDemo || isPaused)` rather than `!isDemo`, and it is why
-            a request to remove this button as a duplicate was refused rather than carried out.
-            ⚠️ AND THE ROUTE INTO THAT STATE NAMED ABOVE HAS SINCE MOVED, WHICH IS NOT A REASON TO
-            DELETE THIS. The offline auto-pause writes `truck_events.online_paused_until`, and since the
-            event-pause fix this board's `pausedUntil` reads `data.vanPausedUntil` — the MANUAL column —
-            with `vanOnlinePausedUntil` deliberately excluded. So `isPaused` no longer turns true from a
-            heartbeat auto-pause. 🔴 THE GATE IS RETAINED DELIBERATELY ANYWAY: the branch is a recovery
-            path, its cost is one hidden button, and the cost of being wrong is a demo stuck paused with
-            no way back. If the KDS ever reads the offline column again, this is live once more with no
-            further change. Check both facts before touching it — do not assume it is dead. */}
-        {/* 🔴 REMOVED FROM THE PHONE ROW, ON REQUEST — AND KEPT AT `sm:` AND ABOVE, WHERE NOTHING MAY
-            CHANGE. `hidden sm:block` is the whole edit: at `sm:`+ a flex child is blockified anyway, so
-            `display:block` is what this button already computed to and the tablet row is untouched.
-            🔴 ONE ARM SURVIVES BELOW `sm:`, AND IT IS THE RECOVERY ONE. On a PAUSED DEMO the Manage event
-            menu cannot be opened at all — its mount and its only opener are both `!isDemo` — so this
-            button is the ONLY resume control that exists in that state. Hiding it outright on a phone
-            would strand a paused demo with no way back, which is the failure this gate was written for.
-            `isDemo && isPaused` therefore keeps it visible at phone width in that one case and in no
-            other. ⚠️ THE GATE, THE HANDLER, THE COLOURS AND BOTH LABELS ARE UNCHANGED.
-            ⚠️ FOR A REAL TRUCK ON A PHONE, PAUSE IS NOW IN MANAGE EVENT — the shared menu's `⏸ Pause
-            orders` row, reachable from the button that moved onto line 1. Nothing lost, one tap deeper. */}
-        {activeEvent?.status === 'open' && (!isDemo || isPaused) && (
-          <button
-            onClick={togglePause}
-            className={`${isDemo && isPaused ? '' : 'hidden sm:block'} text-xs px-3 py-1.5 rounded-md border font-medium ${
-              isPaused
-                ? 'bg-red-50 text-red-700 border-red-200'
-                : 'bg-white text-slate-600 border-slate-200'
-            }`}
-          >
-            {isPaused ? 'Paused — tap to resume' : 'Pause orders'}
-          </button>
-        )}
+        {/* ── 🔴 THE HEADER PAUSE BUTTON THAT STOOD HERE IS DELETED. ITS COMMENT SAID "DO NOT DELETE
+            IT" AND THAT COMMENT WAS RIGHT UNTIL ITS RECOVERY ARM WAS MOVED — WHICH THIS EDIT DOES. ──
+            The old block argued the button was not a duplicate of the EventActionsModal row because on a
+            PAUSED DEMO the modal's mount and both its openers were `!isDemo`, so the menu could not be
+            opened and this button was the only way back. That argument is discharged, not ignored: the
+            same `(!isDemo || isPaused)` condition now sits on the mount, on both openers and on the
+            back/escape entry, and `onPause` is `undefined` in demo so the asymmetry (resume yes, pause
+            no) is preserved exactly.
+            ⚠️ ONE CLAIM IN THE OLD COMMENT WAS ALREADY WRONG AND IS CORRECTED RATHER THAN INHERITED:
+            this button was NOT "the ONLY resume control on the screen". The red pause banner below
+            carries `{pauseReason === 'manual' && <button onClick={togglePause}>Resume</button>}` and is
+            gated on `anyPaused` alone — no `isDemo` term — so a paused demo could always resume from it.
+            The banner is untouched by this edit; it is named here so the next reader does not re-derive
+            a false premise from a comment. */}
+        {/* ── 🔴 `Pause orders` IS GONE FROM THIS HEADER AT EVERY WIDTH. `Screen on` HAS ITS SLOT. ────
+            The header wrapped to two rows on an iPad in landscape with `Screen on` alone on the second.
+            Pause lives in **Manage event** — the shared `EventActionsModal`'s `⏸ Pause orders` row,
+            still gated there on `event.status === 'open'`, unchanged.
+            🔴 AND THE RECOVERY PATH THE OLD GATE PROTECTED IS PRESERVED, NOT DELETED. That gate read
+            `(!isDemo || isPaused)` because on a PAUSED DEMO this button was the ONLY resume control:
+            the modal's mount and both its openers were `!isDemo`, so the menu could not be reached at
+            all. Removing the button without moving that arm would have stranded a paused demo with no
+            way back — the exact failure the gate was written for, and the reason a previous removal was
+            refused. So the SAME `(!isDemo || isPaused)` condition now sits on the modal's mount and on
+            both openers, and `onPause` is `undefined` in demo — a demo can RESUME and still cannot
+            PAUSE, which is precisely what this button did.
+            ⚠️ NOT ASSERTED UNREACHABLE. `set_paused` carries no server-side demo guard, so
+            `truck_events.paused_until` can hold a value on a demo row whatever the UI offers today.
+            Betting on unreachability is what the earlier refusal was protecting against.
+            ⚠️ `togglePause`, `applyPending`, `markPending`, the `vanPausedUntil` read, the offline-pause
+            derivation and the banner are all UNTOUCHED. This is reachability, not the pause mechanism. */}
+        {/* 🔴 SCREEN ON, IN THE SLOT PAUSE VACATED — AND IT IS STILL THE ACQUISITION MECHANISM.
+            `screenOnBtn` and `toggleKeepScreenOn` are unchanged: a real `<button>` whose `onClick` runs
+            the acquire, because Safari grants `wakeLock` only on a completed gesture and drops it on
+            visibility loss. Moving where it sits in the row cannot change that — the element, its
+            handler, its `aria-pressed` and its classes are byte-identical, only its position moved.
+            ⚠️ It keeps `hidden sm:block`, so the phone row is untouched; the phone's own `sm:hidden`
+            mount on the expanded line is a separate call to the same helper and is not touched either. */}
+        <div className="hidden sm:block shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off')}</div>
 
         {/* ── "Open cook screen" REMOVED — IT BECAME A LINK THAT LIED. ──────────────────────────────
             🔴 It opened `?view=cook` in a second tab, and `?view=cook` is no longer read by anything:
@@ -2218,9 +2220,10 @@ export default function KdsPage() {
             one state is deliberate: this is the CONTROL, that is the at-a-glance summary, and the
             summary must not vanish just because the control is visible. */}
         {/* The sound master, beside the screen control it belongs with. Same helper as the phone's
-            mount, so the two can never drift. */}
+            mount, so the two can never drift. ⚠️ THE TWO ARE STILL ADJACENT — `Screen on` moved into the
+            slot `Pause orders` vacated, a few lines up, so the pair simply swapped order. Nothing else
+            renders between them. */}
         {soundBtn('hidden sm:flex')}
-        <div className="hidden sm:block shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off')}</div>
 
         {/* ── 🔴 THE EXPANDED REGION — IN NORMAL FLOW, PUSHING THE BOARD DOWN ──────────────────────
             🔴 `w-full` INSIDE THE HEADER'S OWN `flex-wrap` ROW. It is an ordinary flex child claiming the
@@ -2549,7 +2552,8 @@ export default function KdsPage() {
               ONLY EVER BE ONE. Below `sm:` this rendered as a bare `▾`; that is the copy that goes. At
               `sm:` and above it is untouched — a flex child is blockified, so `display:block` is what it
               already computed to, and the words, the border, the position and the gate are unchanged. */}
-          {!isDemo && (
+          {/* 🔴 `(!isDemo || isPaused)` — see the phone opener. A paused demo must reach Resume. */}
+          {(!isDemo || isPaused) && (
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
               aria-label="Manage event"
               title="Manage event — start, pause, change or finish it"
@@ -2795,7 +2799,12 @@ export default function KdsPage() {
           ⚠️ IT CALLS THE SAME switchEvent, WITH THE SAME CONFIRM, AND THE SEED (seededRef) IS NOT TOUCHED
           — carried over from the note that lived on the old inline markup, because it is the thing most
           worth re-checking whenever this menu changes. */}
-      {showEventMenu && activeEvent && !isDemo && (
+      {/* 🔴 MOUNT WIDENED TO `(!isDemo || isPaused)` — the resume path for a paused demo, carrying the
+          arm the removed header pause button used to hold.
+          🔴 AND `onPause` IS `undefined` IN DEMO, DELIBERATELY. EventActionsModal renders its pause row
+          only when `onPause` is passed (`onPause && (…)`), so a demo gets RESUME and never PAUSE — the
+          exact asymmetry the old header button had via `(!isDemo || isPaused)` on a single toggle. */}
+      {showEventMenu && activeEvent && (!isDemo || isPaused) && (
         <EventActionsModal
           // ⚠️ THE FOUR EXTRA FIELDS ARE READ STRAIGHT OFF THE SAME `activeEvent` THE BAR RENDERS, so the
           //    menu and the bar above it can never describe two different events. The modal formats them
@@ -2807,7 +2816,7 @@ export default function KdsPage() {
           onStartEvent={() => { setShowEventMenu(false); void openEvent(activeEvent.id) }}
           onChangeEvent={events.length > 1 ? () => { setShowEventMenu(false); setShowEventPicker(true) } : undefined}
           paused={isPaused}
-          onPause={() => { setShowEventMenu(false); togglePause() }}
+          onPause={isDemo ? undefined : () => { setShowEventMenu(false); togglePause() }}
           onResume={() => { setShowEventMenu(false); togglePause() }}
           // EXTRA WAIT — the control that used to sit on this header, in the slot the dashboard already
           //    fills. 🔴 THE DEMO GATE IS THE DASHBOARD'S, NOT THE HEADER'S: the header hid it outright in

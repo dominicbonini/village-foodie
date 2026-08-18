@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.28
+HatchGrab Engineering Reference Manual · V11.29
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.28**
+**Version 11.29**
 
 August 2026
 
@@ -15,6 +15,137 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.29 — 18 August 2026
+
+Delta over V11.28 — **a KDS guard that was doing exactly its job and reported itself as a missing
+truck; a safe-area inset applied twice and painted once; and two live-path defects found incidentally
+while preparing App Store screenshots.**
+
+- 🔴 **"TRUCK NOT FOUND" WAS A CORRECT GUARD WITH A LYING FAILURE MODE.** DEVICE-VERIFIED: tapping
+  **Kitchen screen** from the dashboard failed on a truck whose token, slug, vans and `kds_token`s were
+  all LIVE-VERIFIED intact. **The chain:** `openKDS` handed over `event_id` **with no `date`** →
+  `/api/dashboard` defaulted `date` to today → the 21 August event was not in today's set → the route
+  honestly served a different or `null` id → the mismatch guard hit
+  `setOrders([]); setLoading(false); return` → **one statement before `setTruck(data.truck)`** → `truck`
+  null, `error` null → the render printed its bare fallback `{error ?? 'Truck not found'}`. §10, §33.
+- 🔴 **SEVENTEEN STATEMENTS WERE SKIPPED, NOT ONE, AND THE FAILURE WAS SELF-PERPETUATING.** The early
+  `return` also skipped **both pause columns and the whole `/api/events/manage` fetch** — so
+  `activeEvent` never resolved, `eventScopeRef` stayed null, and **every subsequent poll repeated the
+  identical bare-id request.** ⚠️ **NOT A FIRST-LOAD BLIP — A LOOP THAT COULD NOT RECOVER.** The guard
+  now gates the event-scoped apply instead of abandoning the handler, so the board recovers on the next
+  poll. ✅ **The truck-level fields are hoisted above it and the event-scoped ones stay inside, so the
+  forbidden state — one event's data under another event's name — is still impossible.**
+- 🔴 **V11.25's LAYER 1 WAS NEVER APPLIED TO THE PATH IT WAS WRITTEN FOR.** V11.25 identified the
+  **`openKDS` handoff** as the injector — the dashboard's candidate set is `upcomingEvents`, so it can
+  hand a non-today id to a client that never sends `date` — and then **sent `date` on the KDS's own
+  fetches and did not touch `openKDS`.** ⚠️ **So the layer intended to prevent the mismatch was absent
+  from the one path that creates it, and layer 2 was left catching what layer 1 should have prevented.**
+  **Now `openKDS` builds `event_id` and `date` from ONE resolved event object in ONE expression** —
+  EXECUTION-verified as `event_id=ev-2108&date=2026-08-21` — **and the KDS forwards that date on its
+  very first fetch, pre-resolution.**
+- 🔴 **THE NULL CASE BROKE EVERY OPEN ON A DAY WITH NO EVENT.** With a future event handed over and no
+  event today, `selectedEventId` resolves to **`null`, which is `!== undefined`**, so the guard fired
+  identically. ⚠️ **Every KDS open from the dashboard would fail on a day with no event — and Gusto has
+  days like that.** **Fixed: a served `null` is no longer a mismatch**, EXECUTION-verified by truth
+  table — the no-event-today row flips to ok while a genuinely wrong served event still trips. ✅ **Safe
+  to exclude rather than merely convenient: the route wraps both order queries in `if (selectedEventId)`,
+  so a null selection returns no orders at all. There is no wrong-event data to protect against.**
+- 🔴 **THE MISMATCH NOTICE WAS UNREACHABLE BY CONSTRUCTION** — it rendered **below** the
+  `if (error || !truck)` early return **that the same guard caused to fire**. **A notice that can only
+  appear in a state that prevents it appearing, and it reads as tested.** ⚠️ **AND THE FIX WAS BETTER
+  THAN THE INSTRUCTION: moving it above the early return would have shown a banner while leaving `truck`
+  null and seventeen statements skipped — treating the symptom.** With `setTruck` running on every path
+  that can set the notice, *"notice set ∧ truck null"* is **unreachable by construction** — the same
+  shape as the strip marker reusing the detector's output (V11.28).
+- ✅ **LAYER 3 IS STRICTLY STRONGER AND UNTOUCHED.** The per-order `event_id` filter now sits inside the
+  `else`, so it runs only when the ids agree, are null, or nothing was requested — **unreachable in the
+  failure case rather than merely unused.**
+- **WHAT GUSTO SEES:** an event today **unchanged** (the explicit `date` equals the route's own default);
+  a future event handed over goes from 🔴 **"Truck not found"** to a board scoped to that event; no event
+  at all goes from 🔴 **"Truck not found"** to an empty board with the normal no-orders treatment. ⚠️
+  **This needs a DEPLOY, not a rebuild** — both files are served from `server.url`, so the iPad picks
+  them up on the next load. No `cap sync`, no Xcode.
+- 🔴 **THE STATUS-BAR INSET WAS APPLIED TWICE AND PAINTED ONCE.** DEVICE-VERIFIED on a fresh iPad build:
+  a **white strip** with the clock barely legible, and **the whole page shifted down**. **The cause:** the
+  banner-stack wrapper — an **unconditional `<div>` with no background** carrying
+  `paddingTop: env(safe-area-inset-top)`, whose four banners all return `null` independently, **so the box
+  and its padding existed on every load, painting nothing** — letting the root's `bg-slate-50` show as the
+  strip while `AppHeader` added the same inset again. ✅ **`contentInset: 'never'` and `viewport-fit=cover`
+  were both intact, so the native side was refuted rather than assumed.** ⚠️ **And the wrapper landed in
+  `f9c6972`, not `acb13d1`** — it had been live longer than the investigation first supposed. ⚠️ **TWO
+  EARLIER ATTEMPTS READ AS "THE INSET ISN'T APPLYING" WHEN IT WAS APPLYING TWICE** — to the wrong element
+  and the right one simultaneously. §33.
+- ✅ **THE FIX: THE BANNERS MOVED BELOW THE HEADER AND THE WRAPPER'S `paddingTop` IS GONE ENTIRELY** —
+  not conditionalised, not painted — with the stack sitting below the header, tabs and event bar, where
+  the card-payments banner already sat. 🔴 **A comment-stripped scan of all 325 source files now finds TWO
+  executable `env(safe-area-inset-top)` occurrences in the whole codebase, on two different pages, and
+  ZERO in the dashboard** — its one remaining inset is `AppHeader`'s, inside `bg-slate-900`, **which
+  paints what it reserves.** ⚠️ **TWO BARS WERE MOVED THAT THE BRIEF DID NOT LIST — `DemoModeBanner` and
+  `KeepAwakePrompt`** — because both were plain in-flow blocks above `AppHeader`, so *"no banner ever
+  reaches the strip"* was still false without them: **fixing four of six would have left the defect
+  intermittent.** ✅ A per-component audit shows every remaining pre-header child is `position: fixed` or
+  returns `null`, and a byte-identical comparison against HEAD proves all six banner invocations kept
+  their props, order and conditions. ⚠️ **THE KDS'S WHITE STRIP IS BY DESIGN** — its own `bg-white` header
+  paints it with dark glyphs. **The discriminating symptom was the SHIFT, not the colour.**
+- 🔴 **`app/api/events/action/route.ts:181` SELECTS A COLUMN THAT DOES NOT EXIST, AND DISCARDS THE
+  ERROR.** It selects **`village` from `truck_events`**, which is not on that table, and the error is not
+  caught but **DISCARDED** — `const { data: eventRow } = …`, with no `error` binding. **So `eventRow` goes
+  null and three things break on the event-cancel and scraped-event-reject paths:** the suppression
+  signature is never written, **so rejected events come back on the next bridge run**; customer
+  cancellation emails **lose venue, village and date**, telling a customer an event is cancelled without
+  saying which; and `rebuildProductionSlotUsage` is skipped, **so cancelled load keeps bleeding into other
+  same-date events.** ⚠️ **THE CANCEL ITSELF STILL SUCCEEDS, SO NOTHING SURFACES IT.** ✅ **And twenty
+  lines below, `:265` does the same fetch WITHOUT `village` and DOES check its result — the correct
+  pattern is already in the file.** **NOT FIXED.** §5, §11.
+- ✅ **`resolveTruckLogo` FELL BACK TO `discovery_trucks.logo_url`, SO CLEARING A LOGO IN SETTINGS DID NOT
+  CLEAR IT ANYWHERE.** Fixed — the fallback is removed and clearing now clears the header on all four
+  surfaces. ⚠️ **Found while preparing screenshots; it is an operator-facing bug on the live path, not a
+  screenshot fix.** ⚠️ **Stated cost: a truck that never uploaded a logo now shows none, because "removed"
+  and "never uploaded" are the same database state and no fallback can honour both.**
+- ✅ **THE SCREENSHOT SEED REUSES THE DEMO SEEDER'S PLANNER RATHER THAN A HAND-DRAWN BOARD.** Its
+  constants, 12-shape cycle, `FILL_PATTERN`, stride, packing and renumber were transcribed and run for the
+  event — **37 orders, 43 mains, 94 item lines** — then fed to the real engine: **3 red, 4 amber, 0 over
+  capacity, `cantFit = []`**, no negative remaining in any window, across three slot grids. 🔴
+  **`peakPerSlot = 5` EQUALS THE BATCH, WHICH IS WHY NOTHING CAN GO OVER** — a slot never exceeds one
+  batch, so it seats into exactly one cooking window, and the twelve loaded slots are ≥10 minutes apart.
+  **Structural, not tuned.**
+- 🔴 **A CEILING BELOW THE BATCH IS THE ONLY CEILING THAT BINDS: `kitchen_capacity = 8` IS INERT AT
+  `batch_size = 5`.** Cooking windows are on the 5-minute prep grid, so the Mains batch binds long before
+  the global ceiling. ⚠️ **So on a truck whose category batches are smaller than its ceiling, the ceiling
+  is decorative and every "over capacity" is a CATEGORY breach.** ✅ **Gusto's ceiling of 2 is below any
+  plausible batch, so theirs binds the other way round.** §14, §31.
+- ⚠️ **37 ORDERS AND "THE KDS UNDER THE 8-ITEM GRID CAP" CANNOT BOTH HOLD** — capacity load requires
+  non-collected statuses, and non-collected statuses are exactly what the KDS board counts; 22 sit on it.
+  **The escape is the LAYOUT, not the seed:** the cap applies only to `activeLayout === 'grid'`, and the
+  list layout is uncapped. **Capture the KDS in list layout and both hold.**
+- **SEED DETAILS WORTH KEEPING.** ⚠️ **`ready` sits in the CONFIRMED bucket, not Done** — five
+  `collected` orders were added to light the third counter rather than reclassifying anything. ✅ **No dish
+  is named in the SQL**: the pools are read from the live menu, so a menu edit cannot abort the script —
+  **a hardcoded name would have failed exactly as `village` did.** ⚠️ **The status cut assumes a capture
+  around 18:00 on 21 August**, which is what puts all seven coloured slots ahead of "now". ⚠️
+  **`truck_events.village` does not exist** — the same phantom as the cancel-path defect, caught here by a
+  preflight.
+- **METHOD.** 🔴 **IDENTIFYING AN INJECTOR IS NOT CLOSING IT** — V11.25 named `openKDS` as the source of
+  unservable event ids and then fixed everything except `openKDS`. **When a diagnosis names a path, the
+  fix must be checked against that path by name.** 🔴 **A CORRECT GUARD CAN HAVE A LYING FAILURE MODE:
+  check what a guard's early return SKIPS, not just what it catches** — here it was seventeen statements
+  and a self-perpetuating loop. ✅ **REMOVE THE STATE, DON'T MOVE THE SYMPTOM** — the third instance this
+  session of "make them agree by construction" beating "keep them in sync". 🔴 **A REBUILD IS NOT A
+  DEPLOY: the iPad app is a remote-URL shell, so an Xcode rebuild reinstalls the wrapper while the web
+  code comes from Vercel.** ⚠️ **Two symptoms were investigated tonight that were simply undeployed code,
+  and the same confusion cost two months on `heartbeat-monitor` for the opposite reason (V11.28).**
+- ✅ **DEVICE-VERIFIED THIS BLOCK: the status-strip symptoms, and the KDS failure and its cold-launch
+  control** — the accidental relaunch that isolated the handover was the cheapest discriminating check
+  available, and it was run by chance rather than by design.
+- **NEW OPEN ITEMS:** `events/action/route.ts:181` selecting `village` and discarding the error — three
+  breakages on event-cancel, none surfaced, **the most serious untouched item** · `auto-event-scheduler`'s
+  502s, still undiagnosed on the auto-open path · a ceiling above the batch size being decorative, worth
+  stating wherever capacity is configured · 37 orders and the 8-item grid cap being mutually exclusive ·
+  the screenshot seed's status cut assuming ~18:00 on 21 August.
+- 🔴 **VERIFICATION DEBT UNCHANGED:** the dashboard heartbeat through `useHeartbeat` remains source-read
+  on Gusto's ordering path, and the two oldest items — the iPad display defects against the Orders
+  `<main>` change, and whether the Safari ejection stops — are still untouched.
 
 ## V11.28 — 21 August 2026
 
@@ -97,7 +228,10 @@ one problem per collection time.**
   zeroes the insets, the strip is painted by the window background, and `env()` resolves to 0 — adding
   CSS would pad twice and reproduce the two-band bug V8.7 removed.** **The iOS overlap was reported
   again after the wrapper shipped; the wrapper IS committed and pushed, so the open question is whether
-  the deployed build contains it.**
+  the deployed build contains it.** 🔴 **ANSWERED IN V11.29 (S1) — THE BUILD DID CONTAIN IT, AND THE
+  WRAPPER WAS THE DEFECT.** It reserved the strip and painted nothing while `AppHeader` claimed the same
+  inset again, so the page sat at twice the inset. **"Is it deployed?" was the wrong question; "what does
+  it paint?" was the right one.**
 - ✅ **THE LANDING PAGE HAS AN UNLISTED URL FOR FEEDBACK** — a 22-character `secrets.choice` path
   re-exporting the same module, so the page, its `noindex` metadata and its CSS cannot drift. 🔴 **IT
   WAS NECESSARY BECAUSE `/landing` IS ADMIN-ONLY IN PRODUCTION: `app/landing/layout.tsx` redirects any

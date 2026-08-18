@@ -2960,19 +2960,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       >
         {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
         {/* Sound toggle — per-device new-order ding. Enabling is a user gesture → prime the audio so
-            subsequent dings play (the autoplay-unlock moment). */}
-        <button onClick={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})} className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-500 select-none">
-            {soundEnabled ? '🔔 New-order sound' : '🔕 New-order sound'}
-          </span>
-          {/* CANONICAL toggle values (w-11 h-6 · teal-500 · translate-x-6) — matched to the shared
-              <Toggle> in components/dashboard/OrderCard.tsx. This site is a BESPOKE inline copy because the
-              label + track share one click target and <Toggle> is itself a <button> (nesting them is
-              invalid HTML). Hand-matched classes are how this drifts — it was w-10/green-500 — so the
-              durable fix is a `label` prop on the shared component; logged as a follow-up. */}
-          <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${soundEnabled ? 'bg-green-500' : 'bg-slate-300'}`}>
-            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${soundEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
-          </div>
+            subsequent dings play (the autoplay-unlock moment). The handler is UNCHANGED.
+            ── 🔴 GLYPH ONLY. THE WORDS AND THE TOGGLE TRACK ARE GONE, ON REQUEST. ────────────────────
+            The header carried "🔔 New-order sound" plus a bespoke toggle track. What the ding actually
+            DOES — which events fire it — is configured in Settings; this control is only the per-device
+            on/off, so the header does not need to re-explain it. Same shape the KDS header already uses
+            (`soundBtn`), so the two operator surfaces now read the same way.
+            ⚠️ TWO DISTINCT GLYPHS, NEVER ONE STRUCK THROUGH: 🔔 and 🔕 each read as themselves, so the
+            state is legible without the track that used to carry it.
+            🔴 AND THE ACCESSIBLE NAME IS NOW LOAD-BEARING, WHICH IS WHY IT IS ADDED HERE RATHER THAN
+            LEFT OUT. With the visible label removed the only child is an emoji: without `aria-label` this
+            button would announce as "🔔" or as nothing at all, and a voice-control user would have no
+            name to say. `aria-pressed` carries the on/off state, and `title` puts the same words on hover
+            for pointer users. Removing a visible label without replacing it is how a control becomes
+            unreachable to a screen reader — the label moved, it was not deleted. */}
+        <button
+          type="button"
+          onClick={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})}
+          aria-pressed={soundEnabled}
+          aria-label={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+          title={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+          className="hidden sm:flex items-center text-base leading-none select-none"
+        >
+          <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
         </button>
         {/* Screen toggle — desktop only (mobile → UserMenu). BINARY: green "Screen on" ONLY when the lock is
             actually HELD; grey "Screen off" otherwise. Failure is a toast on the tap, never a hedged label. */}

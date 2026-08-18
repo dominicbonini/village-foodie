@@ -1486,29 +1486,30 @@ export async function POST(req: NextRequest) {
         // provisional) take the next server sequential exactly as before.
         const provisionalId: string | null =
           typeof manualOrder?.provisional_id === 'string' && manualOrder.provisional_id ? manualOrder.provisional_id : null
-        // WAS THIS PLACED OFFLINE? `placed_offline` is stamped onto the QUEUED body by gatedAction, so it
-        // is true for every replayed create and false for every live one -- including the route that
-        // carries no provisional_id at all, which is how order 5 reached the queue unmarked.
-        const placedOffline = (manualOrder as { placed_offline?: unknown })?.placed_offline === true || provisionalId !== null
-        // THE NUMBER IS ALWAYS THE NEXT UNUSED EVENT NUMBER. The client's provisional number is NEVER
-        // adopted as the display id and NEVER written to the counter: a device's own sequence is lifelong
-        // and per-device, the event counter is per-event and starts at 1, and adopting one into the other
-        // is what left order_counter at 19 with seven rows on 21 August.
-        try {
-          newOrderId = await nextOrderId(orderEventId, truck.id)
-        } catch (err: any) {
-          console.error('[manual] order counter failed:', err.message)
-          return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
-        }
-        // THE PREFIX NOW MEANS "PLACED OFFLINE", WHICH IS WHAT AN OPERATOR ACTUALLY NEEDS TO KNOW.
-        // 'O' says offline. The DEVICE letter is kept after it when the provisional carried one (ON20 =
-        // offline, device N, event number 20), because a two-van truck tells its screens apart by that
-        // letter and it costs one character. No provisional (the route-2 case) => plain 'O20'.
-        // The NUMBER after the prefix is the real event number, so it can never collide with an online
-        // one and never skips: two devices offline at once now converge on the server's own sequence.
-        if (placedOffline) {
-          const deviceLetter = provisionalId && /^[A-Za-z]/.test(provisionalId) ? provisionalId[0].toUpperCase() : ''
-          newOrderId = `O${deviceLetter}${newOrderId}`
+        // ── 🔴 AN ISSUED NUMBER IS NEVER CHANGED. THE PROVISIONAL ID IS ADOPTED VERBATIM. ──────────
+        // The customer was shown 'N4' on the device the moment the order was taken. That number is an
+        // IDENTIFIER, not a count, and it is final: not renumbered on sync, not re-prefixed, not
+        // reassigned. So a submit carrying a provisional_id takes it EXACTLY as given — no prefixing,
+        // no stripping, no re-casing, no transformation of any kind.
+        // 🔴 AND THE COUNTER IS NOT CALLED FOR IT. A prefixed order consumes no counter value and the
+        // counter is never advanced to compensate: while a device is offline, customers keep taking bare
+        // numbers (4, 5, 6) and the next online order after an N4/N5 replay is simply the next unused
+        // counter value. The two sequences are independent by design.
+        // ⚠️ THIS REPLACES THE f9c6972 SCHEME, WHICH IS DELETED. That block called the counter for an
+        // offline order and then prefixed the RESULT ('N38' on the device became 'ON40' in the database)
+        // — it replaced the number the customer had already been given, which is the one thing this rule
+        // forbids. Do not reintroduce it.
+        // ⚠️ Collision is structurally impossible against online numbers: 'N4' and '4' are different
+        // strings under UNIQUE (event_id, id). A genuine duplicate now FAILS LOUDLY — see the 409 below.
+        if (provisionalId) {
+          newOrderId = provisionalId
+        } else {
+          try {
+            newOrderId = await nextOrderId(orderEventId, truck.id)
+          } catch (err: any) {
+            console.error('[manual] order counter failed:', err.message)
+            return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+          }
         }
 
         // (c) INSERT — walk-up/manual orders ALWAYS confirm (operator present). .select() returns
@@ -1584,6 +1585,18 @@ export async function POST(req: NextRequest) {
         } else {
           const ins = await supabase.from('orders').insert(insertPayload).select('order_key').single()
           insertErr = ins.error; manualOrderRow = ins.data
+        }
+        // ── 🔴 A DUPLICATE DISPLAY NUMBER FAILS LOUDLY. IT IS NEVER SILENTLY RENUMBERED. ───────────
+        // 23505 = unique_violation. On this insert that means UNIQUE (event_id, id) — the display number
+        // is already taken on this event. Renumbering to dodge it is exactly what this change removes,
+        // so it is refused instead, with a 409.
+        // 🔴 409 IS DELIBERATE AND IS THE OUTBOX'S DEAD-LETTER TRIGGER — confirmed in the drain
+        // (lib/native/orderGate.ts): `if (res.status === 409) { await saveOp({ …, state: 'conflict' }) }`.
+        // A 500 would be retried to MAX_ATTEMPTS against an insert that can never succeed; a 409 parks
+        // the op immediately and surfaces it to the operator for review. The op is never deleted.
+        if (insertErr && (insertErr as { code?: string }).code === '23505') {
+          console.error('[manual] duplicate display number refused (never renumbered):', newOrderId, insertErr.message)
+          return NextResponse.json({ error: `Order number ${newOrderId} is already used on this event.`, duplicateOrderId: true }, { status: 409 })
         }
         if (insertErr || !manualOrderRow) {
           console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)

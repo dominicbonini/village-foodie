@@ -13,7 +13,23 @@ import { Preferences } from '@capacitor/preferences'
 import { isNativeApp } from '@/lib/native/device'
 import { enqueue, listOps, removeOp, saveOp, deviceLetter, type OutboxKind } from '@/lib/native/outbox'
 
-const PROV_SEQ_KEY = 'hg_prov_seq'
+// ── 🔴 THE PROVISIONAL SEQUENCE IS PER EVENT, NOT PER DEVICE-LIFETIME. ─────────────────────────────
+// It used to be ONE lifelong key, `hg_prov_seq`, that `seedProvisionalSeq` only ever RAISED — so it never
+// came back down when the event changed. A device sitting at 39 after one service minted N40 on the next
+// event, whose orders run 1, 2, 3. That was invisible while the server renumbered offline orders on sync;
+// adopting the provisional VERBATIM promoted it to customer-facing, which is what forced this.
+// One key per event id. The no-event case gets its OWN key rather than sharing one, so a truck with no
+// event selected cannot drag an event's sequence up or be dragged up by it.
+// ⚠️ THE OLD GLOBAL KEY IS DELIBERATELY NOT MIGRATED — see seedProvisionalSeq. Carrying 39 forward into
+// an event key is precisely the defect.
+const PROV_SEQ_PREFIX = 'hg_prov_seq_'
+const PROV_SEQ_NO_EVENT_KEY = 'hg_prov_seq_noevent'
+
+/** The Preferences key holding the provisional sequence for ONE event. A null/empty event id (the
+ *  no-event fallback the server handles via increment_order_counter) gets its own separate key. */
+function provSeqKey(eventId: string | null | undefined): string {
+  return eventId ? PROV_SEQ_PREFIX + eventId : PROV_SEQ_NO_EVENT_KEY
+}
 const MAX_ATTEMPTS = 5
 
 // Statuses a replayed status-op may apply FROM (incl. its own target → idempotent re-apply). It EXCLUDES the
@@ -166,26 +182,35 @@ export interface GateResult {
   order_key: string
 }
 
-/** Device-prefixed provisional display number for an offline-created order (e.g. 'A13'), CONTINUING the
- *  sequence — seed the counter from the highest known order first (seedProvisionalSeq) so orders 1-4 mint
- *  M5, M6 rather than restarting. The M-number is KEPT as the permanent id on sync (server uses provisional_id
- *  as the order id). */
-export async function nextProvisionalId(): Promise<string> {
+/** Device-prefixed provisional display number for an offline-created order (e.g. 'A13'), CONTINUING
+ *  THAT EVENT'S sequence — seed from the event's highest known order first (seedProvisionalSeq) so orders
+ *  1-3 mint N4, not N40. The number is KEPT as the permanent id on sync (the server adopts provisional_id
+ *  verbatim as orders.id), so it is shown to a customer and can never be revised.
+ *  🔴 MONOTONIC WITHIN THE EVENT: read-add-persist on that event's key alone, so this can never return a
+ *  value it has already returned for the same event. The device letter is unchanged and still
+ *  distinguishes two devices minting into the same event. */
+export async function nextProvisionalId(eventId: string | null | undefined): Promise<string> {
   const letter = await deviceLetter()
-  const cur = parseInt((await Preferences.get({ key: PROV_SEQ_KEY })).value ?? '0', 10) || 0
+  const key = provSeqKey(eventId)
+  const cur = parseInt((await Preferences.get({ key })).value ?? '0', 10) || 0
   const next = cur + 1
-  await Preferences.set({ key: PROV_SEQ_KEY, value: String(next) })
+  await Preferences.set({ key, value: String(next) })
   return `${letter}${next}`
 }
 
-/** Seed the provisional counter so offline numbers CONTINUE from the highest known order (not restart at 1).
- *  MONOTONIC — only ever raises hg_prov_seq (max), never rewinds; the running increment in nextProvisionalId
- *  still prevents multi-offline-order collisions (the panel's `orders` doesn't refetch while offline). Call on
- *  each sync/load with the highest known order number (letter prefix STRIPPED, e.g. "M5"→5, "4"→4). */
-export async function seedProvisionalSeq(highestKnown: number): Promise<void> {
+/** Seed THIS EVENT'S provisional counter so offline numbers continue from that event's highest known
+ *  order (not restart at 1, and not continue from a different event's). Call on each sync/load with the
+ *  highest order number IN THAT EVENT (letter prefix STRIPPED, e.g. "N5"→5, "4"→4).
+ *  🔴 STILL ONLY EVER RAISES, within that event's key — never lowers an existing value. That is what makes
+ *  re-issue impossible: a reconnect re-seeds ABOVE the numbers already shown, never below them.
+ *  🔴 AND THE OLD GLOBAL `hg_prov_seq` IS NEVER READ HERE. Its value is deliberately not migrated into any
+ *  event key: a device at 39 must start the next event from that event's own orders, which is the entire
+ *  point of the change. The stale key is simply left in place, orphaned and unread. */
+export async function seedProvisionalSeq(eventId: string | null | undefined, highestKnown: number): Promise<void> {
   if (!Number.isFinite(highestKnown) || highestKnown <= 0) return
-  const cur = parseInt((await Preferences.get({ key: PROV_SEQ_KEY })).value ?? '0', 10) || 0
-  if (highestKnown > cur) await Preferences.set({ key: PROV_SEQ_KEY, value: String(highestKnown) })
+  const key = provSeqKey(eventId)
+  const cur = parseInt((await Preferences.get({ key })).value ?? '0', 10) || 0
+  if (highestKnown > cur) await Preferences.set({ key, value: String(highestKnown) })
 }
 
 async function post(url: string, body: Record<string, unknown>): Promise<Response> {

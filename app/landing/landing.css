@@ -174,7 +174,16 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .trust-strip { background: var(--wash); border-block: 1px solid var(--line); }
 /* Desktop: one centred horizontal row of three, evenly spaced. */
 .hg-landing .trust-in { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2.8rem; padding-block: 1.1rem; }
-.hg-landing .trust-in li { display: flex; align-items: flex-start; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--head); letter-spacing: -.01em; }
+/* `text-align: center` IS LOAD-BEARING AND IS NOT A DUPLICATE OF THE `align-items: center` BELOW.
+   Those two centre DIFFERENT THINGS. The mobile rule centres each <li> BOX in the column; this centres
+   the TEXT LINES inside the box. While an item fits on one line the box hugs its text, so the box being
+   centred is indistinguishable from the text being centred — and the missing text-align is invisible.
+   The moment an item WRAPS, the box grows to the width the column allows and the second line falls back
+   to the inherited `start`, so that item reads as left-aligned while its one-line neighbours still read
+   as centred. That is the reported defect: wrapping revealed a default the centred layout was hiding.
+   UNGATED BY BREAKPOINT, deliberately — an item can wrap at any width, so the fix has to hold at any
+   width. It is inert wherever the text does not wrap. */
+.hg-landing .trust-in li { display: flex; align-items: flex-start; gap: .6rem; text-align: center; font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--head); letter-spacing: -.01em; }
 /* Mobile: stack, each bullet centred on its own line (tick + text as one centred unit). */
 @media(max-width:720px){
   .hg-landing .trust-in { flex-direction: column; align-items: center; gap: .8rem; }

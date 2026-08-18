@@ -293,19 +293,31 @@ export function AddOrderPanel({
   const [activeMenuCat, setActiveMenuCat] = useState<string | null>(null)
   const [manualItems, setManualItems] = useState<BasketItem[]>([])
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
-  // Seed the offline provisional counter so offline order numbers CONTINUE from the highest known order
-  // (e.g. orders 1-4 → offline M5, M6) instead of restarting. Native only; monotonic (seedProvisionalSeq
-  // uses max). The running increment in nextProvisionalId handles multiple offline orders (the panel's
-  // `orders` doesn't refetch while offline). id letter prefix is stripped ("M5"→5, "4"→4).
-  useEffect(() => {
-    if (!isNativeApp()) return
-    const highest = orders.reduce((m, o) => Math.max(m, parseInt(String(o.id).replace(/^\D+/, ''), 10) || 0), 0)
-    void seedProvisionalSeq(highest)
-  }, [orders])
   const [loading, setLoading] = useState(false)
 
   // ── event / slot state ──────────────────────────────────────────────────────
   const [manualEvent, setManualEvent] = useState<EventRecord | null>(todayEvent)
+
+  // Seed THIS EVENT'S offline provisional counter so offline numbers continue from that event's highest
+  // known order (orders 1-3 → offline N4) instead of restarting at 1 or continuing another event's run.
+  // Native only; still monotonic — seedProvisionalSeq only ever RAISES, within this event's key.
+  // 🔴 FILTERED TO `manualEvent`, AND THAT FILTER IS LOAD-BEARING. The `orders` prop is the dashboard's
+  // UNSCOPED list (page.tsx passes `orders`, not `eventOrders`), so seeding an event's key from all of
+  // them would carry the highest number across every event straight back in — exactly the defect the
+  // per-event key exists to remove. No event selected ⇒ nothing to seed from, so the no-event key is
+  // left alone rather than seeded with a foreign maximum.
+  // 🔴 DECLARED HERE, BELOW `manualEvent`, NOT WITH THE OTHER EFFECTS ABOVE. The dep array is evaluated
+  // during render, so referencing `manualEvent` from its old position (above the useState) would be a
+  // TDZ ReferenceError on every render, not a stale value.
+  // id letter prefix is stripped ("N5"→5, "4"→4).
+  useEffect(() => {
+    if (!isNativeApp()) return
+    if (!manualEvent?.id) return
+    const highest = orders
+      .filter(o => o.event_id === manualEvent.id)
+      .reduce((m, o) => Math.max(m, parseInt(String(o.id).replace(/^\D+/, ''), 10) || 0), 0)
+    void seedProvisionalSeq(manualEvent.id, highest)
+  }, [orders, manualEvent])
   const [apiSlots, setApiSlots] = useState<Slot[]>([])   // raw /api/slots; `manualSlots` below derives the offline fallback
   // Event timezone from /api/slots (default London); ASAP + isSlotPast derive in this tz.
   const [eventTz, setEventTz] = useState('Europe/London')
@@ -1116,7 +1128,7 @@ setItemModal({ item, modGroups, editCartKey })
       // Client-mint the identity so an OFFLINE create is idempotent on replay (order_key) and carries a
       // stable device-prefixed provisional number until the server assigns the real one.
       const orderKey = newUuid()
-      const provisional = isOnline() ? '' : await nextProvisionalId()
+      const provisional = isOnline() ? '' : await nextProvisionalId(manualEvent?.id ?? null)
       // ── placed_at — CLIENT-MINTED AT THE MOMENT OF COMMIT ────────────────────────────────────────
       // Minted HERE, beside order_key, for the same reason order_key is: this is the instant the
       // operator committed, and it is the only instant the server can never reconstruct. created_at is
@@ -1216,7 +1228,7 @@ setItemModal({ item, modGroups, editCartKey })
         // payload, which is the outbox's business and out of scope here.
         // 🔴 NOTHING HERE IS LOAD-BEARING. `order_key` (minted at :1030) is the identity key and is
         // untouched; `id` is the human display number and is never a lookup key.
-        const displayId = provisional || await nextProvisionalId()
+        const displayId = provisional || await nextProvisionalId(manualEvent?.id ?? null)
         const optimistic = {
           id: displayId, order_key: orderKey,
           customer_name: manualName || 'Walk-up', customer_phone: manualPhone || null, customer_email: manualEmail || null,

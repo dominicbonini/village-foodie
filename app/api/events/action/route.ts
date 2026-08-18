@@ -176,11 +176,46 @@ export async function POST(req: NextRequest) {
     const fullNote = [cancellationReason, cancellationNote].filter(Boolean).join(' — ')
 
     // Fetch event details before cancelling (for email + reject-memory).
-    const { data: eventRow } = await supabase
+    // ── 🔴 THIS SELECTED `village`, A COLUMN truck_events DOES NOT HAVE, AND THREW THE ERROR AWAY. ──
+    // `const { data: eventRow } = …` with no `error` binding meant PostgREST's 42703 was discarded,
+    // `eventRow` came back null on EVERY cancel, and three things below silently stopped happening:
+    // the `rejected_event_signatures` write (its branch is `payload?.suppress && eventRow`), the
+    // locality/date on the customer cancellation email, and the `rebuildProductionSlotUsage` call
+    // (`if (eventRow?.event_date)`). The cancel itself still returned `ok: true`, so nothing surfaced it
+    // — and `rejected_event_signatures` has never received a single row.
+    // 🔴 THE LOCALITY COLUMN ON THIS TABLE IS `town`. `village` exists on venues / discovery_events /
+    // subscribers, never here. NOT joined from `venues`: across all 103 events a venue join rescues ZERO
+    // of the 13 events with no town, and disagrees with `town` on 12 — it would add no coverage and a
+    // second source of truth. Two other reads in this codebase already select `town` from this table
+    // (dashboard/action and manage), which is the pattern followed here.
+    // ⚠️ BEST-EFFORT, NOT FATAL. A failure here is logged and the cancel continues, because the cancel
+    // succeeding is existing behaviour: the UPDATE below is its own statement with its own checked error.
+    // What a null `eventRow` costs is the three effects above, which is what the log is for.
+    // ── 🔴 AND IT IS ALSO THE OWNERSHIP GATE. ONE GATE, NOT FOUR FILTERS. ──────────────────────────
+    // This branch had NO ownership check. The truck_events UPDATE below carries `.eq('truck_id', …)`,
+    // but a Supabase update matching ZERO rows returns NO error, so `if (error)` did not fire and
+    // execution simply continued — into an orders query filtered on `.eq('event_id', eventId)` with no
+    // ownership filter at all. A caller authenticated for truck A, posting truck B's event uuid, left
+    // B's event untouched while CANCELLING EVERY ONE OF B'S LIVE ORDERS and emailing B's customers a
+    // cancellation carrying truck A's name — and still returned `ok: true` with a count.
+    // 🔴 GATED HERE, ONCE, BEFORE ANY WRITE — so every write below is unreachable for a foreign event
+    // BY CONSTRUCTION. Deliberately NOT four `.eq('truck_id', …)` filters that all have to agree: the
+    // orders writes cannot carry one anyway (orders are reached through `event_id`), which is exactly
+    // how the hole opened. `truck_id` is added to the select this branch ALREADY makes, so the gate
+    // costs no extra round trip.
+    // ⚠️ A NULL ROW MUST ALSO 404, AND THAT IS A DELIBERATE BEHAVIOUR CHANGE. Ownership cannot be
+    // confirmed without the row, and "could not verify" must fail closed. Previously a missing or
+    // unreadable row fell through and the branch carried on writing.
+    const { data: eventRow, error: eventRowErr } = await supabase
       .from('truck_events')
-      .select('venue_name, village, event_date, scraped_signature')
+      .select('truck_id, venue_name, town, event_date, scraped_signature')
       .eq('id', eventId)
       .single()
+    if (eventRowErr) console.warn('[cancel] event detail fetch failed — suppression, email locality and slot-usage rebuild will be skipped:', eventRowErr.message)
+    if (!eventRow || eventRow.truck_id !== truck.id) {
+      console.warn(`[cancel] refused: event ${eventId} is not owned by truck ${truck.id} (or could not be read)`)
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    }
 
     const { error } = await supabase
       .from('truck_events')
@@ -232,7 +267,10 @@ export async function POST(req: NextRequest) {
             orderId: order.id,
             truckName: truck.name ?? '',
             venueName: eventRow?.venue_name ?? null,
-            village: eventRow?.village ?? null,
+            // The email's parameter is named `village` (lib/email.ts) and is consumed only as
+            // `[venueName, village].filter(Boolean).join(', ')` — a locality string. Fed from `town`,
+            // this table's actual locality column. Parameter name, copy and template are unchanged.
+            village: eventRow?.town ?? null,
             eventDate: eventRow?.event_date ?? null,
             note: fullNote || null,
             paymentStatus: order.paid_at ? 'paid' : null,
