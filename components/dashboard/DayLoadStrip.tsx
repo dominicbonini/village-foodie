@@ -25,7 +25,7 @@ const TONE: Record<'green' | 'amber' | 'red', { dot: string; text: string }> = {
   red: { dot: 'bg-red-500', text: 'text-red-700' },
 }
 
-export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }: {
+export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London', breachedSlots }: {
   /** The dashboard's existing full-day slot series (already carries tone + counts). */
   slots: Slot[]
   /** Active event's date — drives the cross-day guard (only floor by "now" when the event is today). */
@@ -33,6 +33,13 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
   /** 'sidebar' = desktop vertical list; 'strip' = mobile horizontal scroll. */
   variant: 'sidebar' | 'strip'
   tz?: string
+  /** Collection times that are STRICTLY OVER a ceiling -- `capacityBreaches.map(b => b.collection_time)`
+   *  from /api/dashboard, i.e. the breach detector's OWN OUTPUT rather than a second rule computed here.
+   *  lib/capacity-breach.ts tests `remainingTotal < -EPS`; `tone === 'red'` cannot answer this because it
+   *  also fires on a legitimately FULL window (`conc >= ceiling`), which is why a full slot and an
+   *  over-subscribed one look identical today. OPTIONAL: omitted or empty => no markers, and the strip
+   *  renders exactly as it did. */
+  breachedSlots?: Set<string>
 }) {
   // Cross-day guard mirrors the engine: only exclude past slots when the event IS today; a
   // pre-order event (future date) shows its whole day. nowMins is event-local minute-of-day.
@@ -58,6 +65,16 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
               <div key={s.collection_time} className="flex-shrink-0 flex flex-col items-center gap-1 bg-white border border-slate-200 rounded-lg px-1.5 py-1 min-w-[42px]">
                 <span className="text-[11px] font-bold text-slate-600 tabular-nums">{s.collection_time}</span>
                 <span className={`w-2.5 h-2.5 rounded-full ${TONE[tone].dot}`} />
+                {/* THE OVER-CAPACITY MARKER. It sits BESIDE the dot and replaces nothing: the dot is
+                    still the tone, the time is still the time. The marker only says that the load behind
+                    them is a promise the kitchen cannot keep.
+                    NOT A BARE GLYPH -- `role="img"` + `aria-label` give it a name in words, the same rule
+                    the KDS header's controls follow, and `title` puts those words on hover.
+                    The banner names WHICH slot and WHICH orders; this is the at-a-glance half only. */}
+                {breachedSlots?.has(s.collection_time) && (
+                  <span role="img" aria-label="Over capacity" title="Over capacity"
+                    className="text-[11px] font-black leading-none text-red-600">!</span>
+                )}
               </div>
             )
           })}
@@ -95,6 +112,12 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
             <div key={s.collection_time} className="flex items-center gap-2 py-1 px-1 rounded-lg hover:bg-slate-50">
               <span className="text-xs font-bold text-slate-600 tabular-nums w-10 flex-shrink-0">{s.collection_time}</span>
               <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${TONE[tone].dot}`} />
+              {/* Same marker, same rule, same accessible name as the mobile strip above -- one component,
+                  two variants, and the wording lives in exactly one place. */}
+              {breachedSlots?.has(s.collection_time) && (
+                <span role="img" aria-label="Over capacity" title="Over capacity"
+                  className="text-xs font-black leading-none text-red-600 flex-shrink-0">!</span>
+              )}
               {/* One line per slot: nowrap + truncate so a typical label ("2 Pizzas, 1 Other") fits and
                   an edge-case long composition ellipsis-truncates rather than wrapping to a 2nd line. */}
               {s.label

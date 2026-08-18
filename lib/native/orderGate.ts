@@ -212,7 +212,13 @@ export async function gatedAction(opts: {
 
   const queue = async (): Promise<GateResult> => {
     // expected_from rides ONLY on the replayed op → online requests are unchanged; the server guards replays.
-    const queuedBody = { ...body, ...(expectedFrom ? { expected_from: expectedFrom } : {}), ...(queuedExtra ?? {}) }
+    // PLACED OFFLINE, STAMPED HERE AND NOWHERE ELSE. This is the ONE place every queued body passes
+    // through, which is why the flag lives here rather than at the call sites: an order queued because
+    // reachability flipped AFTER its body was built (the 'route 2' case that produced an unmarked order
+    // 5 on 21 August) is stamped just the same as one built while already offline. The panel cannot know
+    // at body-build time; this function knows at queue time, which is the moment that is actually true.
+    // It rides on the QUEUED body only, exactly like expected_from -- an online request is untouched.
+    const queuedBody = { ...body, placed_offline: true, ...(expectedFrom ? { expected_from: expectedFrom } : {}), ...(queuedExtra ?? {}) }
     await enqueue({ kind, order_key, url, body: queuedBody, provisional_id })
     return { ok: false, queued: true, provisional_id, order_key }
   }

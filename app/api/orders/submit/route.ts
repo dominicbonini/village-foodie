@@ -517,10 +517,15 @@ export async function POST(req: NextRequest) {
         }
       }
     }
-    const eventCols = 'id, start_time, end_time, venue_name, town, postcode, van_id'
+    // ⚠️ `offline_no_autoaccept_until` IS ADDED BY 20260818_offline_protection_mode.sql AND THIS IS A
+    // NAMED SELECT — PostgREST answers 42703 for a column it cannot see and fails the whole statement,
+    // which here means no event row and every order falling to the date fallback. MIGRATION FIRST.
+    // 🔴 IT COSTS NOTHING: this select already runs, and one more column on it is not a round trip.
+    const eventCols = 'id, start_time, end_time, venue_name, town, postcode, van_id, offline_no_autoaccept_until'
     let eventRow: {
       id: string; start_time: string | null; end_time: string | null
       venue_name: string | null; town: string | null; postcode: string | null; van_id: string | null
+      offline_no_autoaccept_until?: string | null
     } | null = null
     if (eventId) {
       const { data } = await supabase
@@ -975,9 +980,26 @@ export async function POST(req: NextRequest) {
             (Array.isArray(items) && items.some((i: any) => i?.specialInstructions?.trim())) ||
             (Array.isArray(deals) && deals.some((d: any) =>
               Object.values(d?.slotNotes ?? {}).some((n: any) => typeof n === 'string' && n.trim())))
+          // ── 🔴 OFFLINE PROTECTION, MODE B: THE VAN IS OFFLINE, SO NOTHING AUTO-CONFIRMS ────────────
+          // `offline_no_autoaccept_until` is written by heartbeat-monitor when the van has gone stale AND
+          // the resolved mode is 'no_auto_accept', and cleared by /api/heartbeat on the van's next ping.
+          // While it is in the FUTURE this behaves exactly like `truck.auto_accept === false`: the order
+          // is still placed, the slot is still claimed and held by placeOrderInSlotLocked above, and the
+          // customer still sees "Order received! — {truck} will confirm your order shortly". NOTHING in
+          // the lifecycle is new; the only change is that this one boolean goes false.
+          // 🔴 THE SUBMIT PATH DOES NOT COMPUTE STALENESS ITSELF, DELIBERATELY. The 30-second threshold
+          // lives once, in the edge function that owns it (STALE_THRESHOLD_SECONDS), and this reads the
+          // decision rather than re-deriving it — see Stage 1 Q2 of docs/offline-protection-modes-build.md.
+          // ⚠️ AN EXPIRY, NOT A FLAG: a monitor that stops running cannot strand a truck here, because
+          // the marker it wrote (now + 2h) simply lapses.
+          // ⚠️ ABSENT / NULL / PAST MEANS NO EFFECT, so a pre-migration deploy and mode A are both identical
+          // to today.
+          const noAutoAcceptUntil = eventRow?.offline_no_autoaccept_until ?? null
+          const vanOfflineNoAutoAccept = !!noAutoAcceptUntil && new Date(noAutoAcceptUntil).getTime() > Date.now()
           if (
             truck.auto_accept && allItemsAutoAccept && !anyForcesPending
             && !((truck as any).notes_require_review !== false && orderHasNotes)
+            && !vanOfflineNoAutoAccept
           ) {
             autoAccepted = true
           }

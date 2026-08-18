@@ -1486,15 +1486,29 @@ export async function POST(req: NextRequest) {
         // provisional) take the next server sequential exactly as before.
         const provisionalId: string | null =
           typeof manualOrder?.provisional_id === 'string' && manualOrder.provisional_id ? manualOrder.provisional_id : null
-        if (provisionalId) {
-          newOrderId = provisionalId
-        } else {
-          try {
-            newOrderId = await nextOrderId(orderEventId, truck.id)
-          } catch (err: any) {
-            console.error('[manual] order counter failed:', err.message)
-            return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
-          }
+        // WAS THIS PLACED OFFLINE? `placed_offline` is stamped onto the QUEUED body by gatedAction, so it
+        // is true for every replayed create and false for every live one -- including the route that
+        // carries no provisional_id at all, which is how order 5 reached the queue unmarked.
+        const placedOffline = (manualOrder as { placed_offline?: unknown })?.placed_offline === true || provisionalId !== null
+        // THE NUMBER IS ALWAYS THE NEXT UNUSED EVENT NUMBER. The client's provisional number is NEVER
+        // adopted as the display id and NEVER written to the counter: a device's own sequence is lifelong
+        // and per-device, the event counter is per-event and starts at 1, and adopting one into the other
+        // is what left order_counter at 19 with seven rows on 21 August.
+        try {
+          newOrderId = await nextOrderId(orderEventId, truck.id)
+        } catch (err: any) {
+          console.error('[manual] order counter failed:', err.message)
+          return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+        }
+        // THE PREFIX NOW MEANS "PLACED OFFLINE", WHICH IS WHAT AN OPERATOR ACTUALLY NEEDS TO KNOW.
+        // 'O' says offline. The DEVICE letter is kept after it when the provisional carried one (ON20 =
+        // offline, device N, event number 20), because a two-van truck tells its screens apart by that
+        // letter and it costs one character. No provisional (the route-2 case) => plain 'O20'.
+        // The NUMBER after the prefix is the real event number, so it can never collide with an online
+        // one and never skips: two devices offline at once now converge on the server's own sequence.
+        if (placedOffline) {
+          const deviceLetter = provisionalId && /^[A-Za-z]/.test(provisionalId) ? provisionalId[0].toUpperCase() : ''
+          newOrderId = `O${deviceLetter}${newOrderId}`
         }
 
         // (c) INSERT — walk-up/manual orders ALWAYS confirm (operator present). .select() returns
@@ -1528,6 +1542,15 @@ export async function POST(req: NextRequest) {
           // narrowing the breach banner to unacknowledged breaches is a later task.
           capacity_ack_at: manualOrder?.capacityAcknowledged === true ? new Date().toISOString() : null,
           notes: notes || null, status: 'confirmed',
+          // WHICH ROUTE THIS ROW TOOK. Written explicitly rather than left to the column default, which
+          // is what made `source` useless: every row read 'web' whatever created it.
+          // orders_source_check  CHECK (source = ANY (ARRAY['web', 'manual', 'whatsapp']))
+          // 'manual' is in that list and is honest -- these are operator-created orders, placed at the
+          // hatch or replayed from this device's outbox. OFFLINE-NESS IS NOT CARRIED HERE: 'offline' is
+          // NOT an allowed value, and the O-prefix on the display id says it instead.
+          // A FOURTH VALUE NEEDS THE CHECK CHANGED FIRST -- a value outside that list is a 23514 that
+          // fails the whole insert, i.e. the order is lost, not degraded.
+          source: 'manual',
           payment_status: 'unpaid',
           // ── placed_at — THE MOMENT OF SALE, CLIENT-MINTED ────────────────────────────────────────
           // ⚠️ This one IS taken from the client, unlike capacity_ack_at directly above, and the
@@ -1568,23 +1591,17 @@ export async function POST(req: NextRequest) {
         }
         manualOrderKey = manualOrderRow.order_key
 
-        // (c2) OFFLINE-ORIGIN order KEEPS its device number (e.g. M5) — so ADVANCE the event's order counter
-        //      to max(current, provisionalNumber). Otherwise the counter stays behind the offline numbers and
-        //      the next ONLINE order restarts at 5 and numerically overlaps M5. Under the SAME event lock as
-        //      the online increment_event_order_counter, so read-then-max is race-safe here. Idempotent on
-        //      replay (max never regresses). Null-event → the truck-level counter fallback.
-        if (provisionalId) {
-          const provNum = parseInt(provisionalId.replace(/^\D+/, ''), 10)
-          if (Number.isFinite(provNum) && provNum > 0) {
-            if (orderEventId) {
-              const { data: ev } = await supabase.from('truck_events').select('order_counter').eq('id', orderEventId).maybeSingle()
-              if (ev && provNum > (ev.order_counter ?? 0)) await supabase.from('truck_events').update({ order_counter: provNum }).eq('id', orderEventId)
-            } else {
-              const { data: tr } = await supabase.from('trucks').select('order_counter').eq('id', truck.id).maybeSingle()
-              if (tr && provNum > ((tr as { order_counter?: number }).order_counter ?? 0)) await supabase.from('trucks').update({ order_counter: provNum }).eq('id', truck.id)
-            }
-          }
-        }
+        // (c2) THE COUNTER ADOPTION THAT SAT HERE IS DELETED.
+        //      It read: if (provNum > order_counter) update order_counter = provNum -- raising the EVENT
+        //      counter to whatever number a device had minted locally. That is what put Test Kitchen's
+        //      counter at 19 with seven rows: the device's lifelong hg_prov_seq was transplanted onto a
+        //      per-event sequence, and numbers 6-17 were never consumed by anything, only skipped.
+        //      THE COUNTER NOW ADVANCES BY EXACTLY ONE PER SUCCESSFUL ROW AND BY NOTHING ELSE. The only
+        //      writers left are the two RPCs (increment_event_order_counter / increment_order_counter),
+        //      both UPDATE .. SET order_counter = order_counter + 1 .. RETURNING. No client value reaches
+        //      the column by any path.
+        //      Existing rows are NOT renumbered and existing counters are NOT rewound: Test Kitchen stays
+        //      at 19 and its next order is 20.
 
         // (c3) BUZZER TAKEN FROM ANOTHER ORDER. The number is already ON the new row (it went in with
         //      the insert), so this call exists only to CLEAR it from whichever other order in this
@@ -2469,6 +2486,14 @@ export async function POST(req: NextRequest) {
       }
       const patch: Record<string, unknown> = { offline_protection_override: value }
       if (value === false) patch.online_paused_until = null // disabling clears the offline pause too
+      // 🔴 AND IT CLEARS THE OTHER MODE'S MARKER TOO. `offline_no_autoaccept_until` is what makes new
+      // orders arrive `pending`; turning the whole feature off must stop that as immediately as it stops
+      // the pause, or an operator would switch off and still see nothing auto-confirm.
+      if (value === false) patch.offline_no_autoaccept_until = null
+      // The MODE, optional and independent: `mode` may arrive with or without a `value`, and an absent or
+      // unrecognised mode leaves the column untouched (null = inherit the van, exactly like `value`).
+      const { mode } = body as { mode?: unknown }
+      if (mode === 'pause' || mode === 'no_auto_accept' || mode === null) patch.offline_protection_mode_override = mode
       const { error } = await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })

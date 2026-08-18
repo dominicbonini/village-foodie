@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
-import { OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_PROTECTION_REMINDER } from '@/lib/copy/offlineProtection'
+import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_SWITCH_HELP, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_PROTECTION_REMINDER } from '@/lib/copy/offlineProtection'
 import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
 import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { useToasts, type ShowToast } from '@/lib/useToasts'
@@ -70,7 +70,7 @@ interface Subcategory { id: string; category_id: string; name: string; sort_orde
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -8689,11 +8689,14 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count',
-    value: boolean | number | null
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode',
+    value: boolean | number | string | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
-    await api('update_van_settings', { vanId, [field]: value })
+    // ⚠️ THE MODE'S REQUEST KEY IS NOT ITS COLUMN NAME. update_van_settings destructures
+    // `offlineProtectionMode` (camel, like `autoPauseOnOffline`) while the state field is the column.
+    // A key the handler does not name is dropped SILENTLY — the allowlist warning in that file.
+    await api('update_van_settings', { vanId, ...(field==='offline_protection_mode'?{offlineProtectionMode:value}:{[field]:value}) })
   }
 
   // Toggle a NO-PREP category's "counts toward kitchen capacity" flag from the capacity tickbox list.
@@ -9810,10 +9813,12 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   }`}>
                     Offline order protection
                   </p>
+                  {/* 🔴 THE SWITCH'S OWN HELP, NOT A MODE'S. "Enabled — online orders pause…" described
+                      ONE of the two behaviours; the mode rows below say which is chosen. */}
                   <p className="text-xs text-slate-500 mt-0.5">
                     {van.auto_pause_on_offline
-                      ? 'Enabled — online orders pause if kitchen device loses connection'
-                      : 'Disabled — online orders continue even if kitchen device goes offline'
+                      ? OFFLINE_PROTECTION_SWITCH_HELP
+                      : 'Off — online orders continue even if this device goes offline'
                     }
                   </p>
                 </div>
@@ -9828,6 +9833,31 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   }`} />
                 </button>
               </div>
+
+              {/* ── 🔴 THE TWO MODES — ONLY WHEN THE SWITCH IS ON, AND THE SAME SHAPE AS THE DASHBOARD'S ──
+                  Switch OFF ⇒ this does not render and the card is exactly what it was. Both surfaces map
+                  the SAME `OFFLINE_PROTECTION_MODES` array, so a wording change is one edit in
+                  lib/copy/offlineProtection.ts and neither screen can drift from the other. */}
+              {van.auto_pause_on_offline && (
+                <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
+                  {OFFLINE_PROTECTION_MODES.map(m => {
+                    const selected = (van.offline_protection_mode ?? 'pause') === m.value
+                    return (
+                      <button key={m.value} type="button" role="radio" aria-checked={selected}
+                        onClick={() => { if (!selected) void updateVanSetting(van.id, 'offline_protection_mode', m.value) }}
+                        className="flex items-start gap-2.5 w-full text-left">
+                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-teal-600' : 'border-slate-300'}`}>
+                          {selected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-xs font-semibold text-teal-800">{m.label}</span>
+                          <span className="block text-xs text-slate-500">{m.help}</span>
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
 
               {van.auto_pause_on_offline && (
                 <p className="mt-2 text-xs font-semibold text-amber-700">

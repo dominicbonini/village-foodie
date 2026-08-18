@@ -5,7 +5,7 @@ import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
-import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
+import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -31,6 +31,12 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
+
+// 🔴 HOW OLD AN OFFLINE-PAUSE MARKER MAY BE AND STILL RAISE THE NOTICE. MODULE SCOPE, NOT COMPONENT
+// SCOPE: a const declared inside the component is a new binding every render, which the exhaustive-deps
+// rule then wants in the dependency array — and a value that never changes has no business being a
+// dependency. See the effect that reads it for why 24 hours.
+const OFFLINE_NOTICE_MAX_AGE_MS=24*60*60*1000
 import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
@@ -455,6 +461,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
+  // ── THE MODE, BESIDE THE SWITCH — SAME null-MEANS-INHERIT CHAIN ────────────────────────────────
+  // `eventOfflineModeOverride` is truck_events.offline_protection_mode_override (null = inherit the
+  // van); `vanOfflineMode` is the van's own default from /api/dashboard. Resolved once, below.
+  const[eventOfflineModeOverride,setEventOfflineModeOverride]=useState<OfflineProtectionMode|null>(null)
+  const[vanOfflineMode,setVanOfflineMode]=useState<OfflineProtectionMode>('pause')
+  // ── 🔴 EFFECTIVE OFFLINE PROTECTION — ONE RESOLUTION, IN heartbeat-monitor's ORDER ──────────────
+  // 🔴 THE MONITOR'S OWN EXPRESSION, QUOTED BEFORE REUSING IT (supabase/functions/heartbeat-monitor):
+  //     const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
+  //       ? ev.offline_protection_override
+  //       : (van.auto_pause_on_offline ?? false)
+  // Event override wins; `null` inherits the van; absent falls to false. `vanAutoPause` is already
+  // initialised `false`, so the third link is carried by its useState rather than repeated here.
+  // 🔴 THIS FILE HAD THE EXPRESSION TWICE — the offline-alert hook and the settings card. Both now read
+  // this, so there is ONE resolution on this surface and it matches the function that does the pausing.
+  // Two places resolving one setting is how they come to disagree.
+  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
+  // 🔴 THE SAME ORDER AS heartbeat-monitor's — event override ?? van default ?? 'pause'. Two places
+  // resolving one setting is how they come to disagree, and this one mirrors the function that acts.
+  const effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride??vanOfflineMode
   // Order-ready (master-switch model): the van DEFAULT (order_ready_enabled — the Settings master switch +
   // seed for new events) + the per-event value (order_ready_override, concrete true/false). effectiveOrderReady
   // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
@@ -896,6 +921,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         if(data.capacityWindowMins !== undefined) setCapacityWindowMins(applyPending('capacityWindowMins',data.capacityWindowMins ?? 5))
         if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
         if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
+      if(data.vanOfflineMode !== undefined) setVanOfflineMode(data.vanOfflineMode==='no_auto_accept'?'no_auto_accept':'pause')
         if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
         setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
         // Buzzers — CONFIG, so they sit inside the seed gate with the rest of the van/event settings.
@@ -992,7 +1018,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // LOCAL offline/paused notification (iPad-only, reachability-driven, debounced, Settings-gated). Message
   // depends on whether auto-pause is on (effectiveOfflineProtection = event override ?? van default).
-  useOfflineAlert(eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause)
+  useOfflineAlert(effectiveOfflineProtection)
 
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
@@ -1075,10 +1101,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // [upcomingEvents]) so a routine events poll no longer re-reads and CLOBBERS a just-set optimistic
     // toggle value mid-change. Query by id directly (not via upcomingEvents.find) so it doesn't need
     // that list. cancelled guard drops a stale in-flight read after a fast event switch.
-    if(!selectedEventId){setEventOfflineOverride(null);setEventOrderReadyOverride(null);return}
+    if(!selectedEventId){setEventOfflineOverride(null);setEventOfflineModeOverride(null);setEventOrderReadyOverride(null);return}
     let cancelled=false
-    supabaseBrowser.from('truck_events').select('offline_protection_override, order_ready_override').eq('id',selectedEventId).single()
-      .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
+    supabaseBrowser.from('truck_events').select('offline_protection_override, offline_protection_mode_override, order_ready_override').eq('id',selectedEventId).single()
+      .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);const mo=(data as {offline_protection_mode_override?:string|null}|null)?.offline_protection_mode_override;setEventOfflineModeOverride(mo==='no_auto_accept'||mo==='pause'?mo:null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
     return()=>{cancelled=true}
   },[selectedEventId])
   useEffect(()=>{fetchAllRef.current=()=>fetchAll();reseedRef.current=()=>fetchAll(pin,true)},[fetchAll,pin])
@@ -1183,12 +1209,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Fire the popup when the durable marker is NEWER than this device's ack for that event. ALWAYS
   // shows (no per-device suppression pref — an operator must never miss that their orders were paused
   // while away); the per-event ack (hg_offline_pause_ack_*) still prevents re-firing for the same event.
+  // ── 🔴 TWO GATES ADDED: PROTECTION MUST BE ON, AND THE PAUSE MUST BE RECENT ─────────────────────
+  // 🔴 GATE 1 — A DISABLED FEATURE MUST NOT ANNOUNCE THAT IT ACTED. `set_offline_protection(false)`
+  // clears `online_paused_until` and DELIBERATELY LEAVES `last_offline_pause_at`, so the marker outlives
+  // the switch; without this gate a fresh device replayed "Offline protection kept you covered" for a
+  // feature that is off. Resolved through `effectiveOfflineProtection` — the monitor's own order, one
+  // expression on this surface.
+  // 🔴 GATE 2 — A WINDOW, BECAUSE ANY NON-NULL MARKER USED TO FIRE HOWEVER OLD. 24 hours: an operator
+  // who shut the laptop at 22:00 and opens it at 09:00 (11h) still learns their ordering was paused,
+  // and so does one who opens the next morning before service; a marker from the previous week, or from
+  // an event that has since been re-run, never surfaces. The pause itself lasts 2h, so 24h is already
+  // twelve times the thing it reports on — anything longer is describing a state the truck has left.
+  // ⚠️ SUPPRESSING IT WHEN IT SHOULD FIRE IS WORSE THAN SHOWING IT WHEN IT SHOULD NOT, so both gates are
+  // deliberately narrow: they remove the OFF case and the ANCIENT case and nothing else. Protection on
+  // plus a pause inside the day still shows, on every device that has not acked it.
+  // ⚠️ THE PER-DEVICE ACK IS UNCHANGED — see the report: making it per-operator needs a column or an API
+  // change, and neither was built.
   useEffect(()=>{
     if(typeof window==='undefined') return
     if(!offlinePauseEventId||!lastOfflinePauseAt) return
+    if(!effectiveOfflineProtection) return
+    const markerMs=new Date(lastOfflinePauseAt).getTime()
+    if(!Number.isFinite(markerMs)||Date.now()-markerMs>OFFLINE_NOTICE_MAX_AGE_MS) return
     const ack=localStorage.getItem(`hg_offline_pause_ack_${offlinePauseEventId}`)
-    if(!ack||new Date(lastOfflinePauseAt).getTime()>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
-  },[lastOfflinePauseAt,offlinePauseEventId])
+    if(!ack||markerMs>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
+  },[lastOfflinePauseAt,offlinePauseEventId,effectiveOfflineProtection])
   useEffect(()=>{
     // Track the device's connectivity reactively so the UI re-renders on reconnect (offline-pause
     // suppression) and the heartbeat effect re-fires immediately (its dep below).
@@ -1749,6 +1794,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!writeSoundConfig(token,next)) showToast('Sound saved for now, but this device could not store it — it will reset on reload','error')
   }
 
+  // Writes the per-event MODE override. Same choke point shape as toggleOfflineProtection: demo hard
+  // stop, optimistic set, revert on failure. No confirm — switching mode changes WHAT protection does,
+  // not WHETHER it is on, so there is nothing to warn about.
+  const setOfflineMode=async(mode:OfflineProtectionMode)=>{
+    if(!activeEvent||isDemo)return
+    const prev=eventOfflineModeOverride
+    setEventOfflineModeOverride(mode)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,mode,eventId:activeEvent.id})})
+      if(!res.ok)throw new Error('write failed')
+    }catch{ setEventOfflineModeOverride(prev); showToast('Could not save that — try again','error') }
+  }
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
     // DEMO HARD STOP. The card renders disabled, but styling is not enforcement — a disabled prop can be
@@ -2542,6 +2599,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       })
     }catch{return {}}
   },[slots,orders,deviceQueuedOrders,statusOverlay,activeEvent,itemCategoryMap])
+  // The slots the breach detector flagged as STRICTLY OVER, as a lookup for the strip's marker. It is
+  // the detector's OWN OUTPUT (`capacityBreaches` from /api/dashboard) — no second predicate, no API
+  // change, and the banner and the marker therefore agree by construction rather than by inspection.
+  const breachedSlotTimes=useMemo(()=>new Set((capacityBreaches||[]).map(b=>b.collection_time)),[capacityBreaches])
   const displaySlots=useMemo(()=>{
     // FAIL-SAFE: the capacity STRIP must NEVER crash the dashboard. Any not-yet-loaded input OR any thrown
     // error → return the plain server `slots` (the online/normal path). Worst case the strip shows
@@ -2665,7 +2726,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     (activeEvent.event_date&&activeEvent.end_time&&
       Date.now()>new Date(`${activeEvent.event_date}T${activeEvent.end_time}`).getTime())
   ))
-  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
   // orders resolve to the event-date-aware ASAP base, so they interleave with
@@ -2794,23 +2854,41 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
-      {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
-          (renders null on native, where OfflineBanner owns the offline state). */}
-      <WebOfflineBanner />
-      {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
-          the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
-      <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
-      {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
-          looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
-          null by definition here); if it has since left the fetched window the banner row simply does
-          nothing rather than opening a grid against a phantom. */}
-      <BuzzerLostBanner
-        losses={buzzerLosses}
-        dismissedKeys={dismissedBuzzerLosses}
-        onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
-        onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
-      />
+      {/* ── 🔴 THE BANNER STACK — ONE SAFE-AREA INSET FOR ALL OF THEM ─────────────────────────────
+          These bars render ABOVE `AppHeader`, so on a native iPad — where `viewportFit: 'cover'` and
+          Capacitor's `contentInset: 'never'` hand the safe area to CSS — WHICHEVER ONE SHOWS FIRST is
+          the element under the system clock, wifi and battery. Putting the inset on each banner would
+          mean the SECOND one carries a redundant inset whenever two show, so it lives here, once, on
+          the box that is actually at the top of the viewport.
+          🔴 A BARE `env(safe-area-inset-top)`, AND THE `max(0.5rem, …)` FLOOR IS DELIBERATELY NOT USED
+          HERE. That floor exists for the case where the inset sits ON a banner and overrides its own
+          `py-2` top half — the 8px it restores IS that banner's padding. On a WRAPPER there is nothing
+          to restore: every banner keeps its own `py-2`/`py-3` inside this box, so a floor would ADD 8px
+          that nothing had before, on web, where the inset is 0. 🔴 BARE `env()` IS THEREFORE THE ONE
+          FORM THAT LEAVES WEB BYTE-IDENTICAL: 0 on web and desktop, 0 on Android by design (see
+          lib/native/statusBar.ts), the true inset on iOS.
+          ⚠️ NO BANNER'S OWN PADDING, COLOUR, COPY, DISMISS OR CONDITIONS CHANGED — only where the inset
+          lives. ⚠️ `WebOfflineBanner` NEEDS NOTHING EITHER WAY: it returns null on native, and native is
+          the only place an inset exists. It is inside the wrapper because the wrapper is the stack. */}
+      <div style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
+        {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
+            (renders null on native, where OfflineBanner owns the offline state). */}
+        <WebOfflineBanner />
+        {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
+            the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
+        <CapacityBreachBanner breaches={capacityBreaches} orders={orders} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
+        {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
+            looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
+            null by definition here); if it has since left the fetched window the banner row simply does
+            nothing rather than opening a grid against a phantom. */}
+        <BuzzerLostBanner
+          losses={buzzerLosses}
+          dismissedKeys={dismissedBuzzerLosses}
+          onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
+          onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
+        />
+      </div>
       {/* ── 🔴 THE DARK OFFLINE CHIP WAS DELETED HERE (14 August 2026). DO NOT REINSTATE IT. ──────────
           It read "Offline — orders & stock save on this device; settings are locked" and stacked directly
           under OfflineBanner, which was already saying the same thing with a count. Both read the SAME
@@ -3205,7 +3283,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             <div className="lg:hidden">
-              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" />
+              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" breachedSlots={breachedSlotTimes} />
             </div>
             {/* "To make" aggregate box removed (2026-06) — a cook-per-order truck doesn't work from a
                 day-wide item total. getAllDayCounts is retained (still used by the completed-order
@@ -3617,7 +3695,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   keeping. The panel is now simply a bounded flex sibling: pinned by structure, not by
                   position. NO hardcoded offset was introduced to replace it, and none is needed. */}
               <aside className="hidden lg:flex lg:flex-col lg:w-48 lg:flex-shrink-0 lg:min-h-0">
-                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
+                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" breachedSlots={breachedSlotTimes} />
               </aside>
               </div>
               </>
@@ -3703,13 +3781,41 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
                 swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
             {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Offline protection{demoLockChip}</p>
+                  <p className="text-sm font-semibold text-slate-800">{OFFLINE_PROTECTION_SWITCH_LABEL}{demoLockChip}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
                   {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
                 </div>
                 <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
+                </div>
+                {/* ── 🔴 THE TWO MODES — SHOWN ONLY WHEN THE SWITCH IS ON ────────────────────────────
+                    WITH THE SWITCH OFF THIS BLOCK DOES NOT RENDER AT ALL: there is nothing to choose
+                    between, and a visible mode picker under an off switch reads as a setting that is
+                    doing something. The card is then exactly what it was before this change.
+                    ⚠️ SAME SHAPE AS MANAGE'S — one radio row per mode, label then help, from the SAME
+                    `OFFLINE_PROTECTION_MODES` array, so the two surfaces cannot drift.
+                    ⚠️ `role="radio"` + `aria-checked` in a `radiogroup`: these are one choice with two
+                    states, not two toggles. */}
+                {!isDemo&&effectiveOfflineProtection&&(
+                  <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                    {OFFLINE_PROTECTION_MODES.map(m=>(
+                      <button key={m.value} type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
+                        onClick={()=>{if(effectiveOfflineMode!==m.value)void setOfflineMode(m.value)}}
+                        disabled={isOffline}
+                        className="flex items-start gap-2.5 w-full text-left disabled:opacity-50">
+                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${effectiveOfflineMode===m.value?'border-orange-500':'border-slate-300'}`}>
+                          {effectiveOfflineMode===m.value&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-slate-800">{m.label}</span>
+                          <span className="block text-xs text-slate-500">{m.help}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same

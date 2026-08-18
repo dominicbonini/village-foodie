@@ -33,7 +33,10 @@ Deno.serve(async () => {
   // (event.offline_protection_override ?? van.auto_pause_on_offline).
   const { data: stalledVans, error } = await supabase
     .from('truck_vans')
-    .select('id, name, auto_pause_on_offline, last_heartbeat_at')
+    // NOTE: NAMED SELECT — `offline_protection_mode` is added by 20260818_offline_protection_mode.sql.
+    // PostgREST answers 42703 for a column it cannot see and fails the WHOLE statement, which here means
+    // the monitor pauses nothing at all. APPLY THAT MIGRATION BEFORE DEPLOYING THIS.
+    .select('id, name, auto_pause_on_offline, offline_protection_mode, last_heartbeat_at')
     .eq('active', true)
     .or(`last_heartbeat_at.lt.${staleThreshold},last_heartbeat_at.is.null`)
 
@@ -64,7 +67,8 @@ Deno.serve(async () => {
     // over-pause guard. cancelled/closed are excluded because they aren't 'open'. No clock filter.
     const { data: liveEvents } = await supabase
       .from('truck_events')
-      .select('id, online_paused_until, offline_protection_override, status, event_date, start_time')
+      // NOTE: Same named-select caveat as the van query above — migration first, then deploy.
+      .select('id, online_paused_until, offline_no_autoaccept_until, offline_protection_override, offline_protection_mode_override, status, event_date, start_time')
       .eq('van_id', van.id)
       .eq('status', 'open')
 
@@ -81,6 +85,12 @@ Deno.serve(async () => {
         console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — already offline-paused (until ${ev.online_paused_until}, still active)`)
         continue // still genuinely paused — leave it
       }
+      // The same already-acted skip for the OTHER mode: a live no-auto-accept marker is this mode's
+      // equivalent of an active pause, and re-writing it every 30s would only push its expiry forward.
+      if (ev.offline_no_autoaccept_until && new Date(ev.offline_no_autoaccept_until).getTime() > now.getTime()) {
+        console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — already in no-auto-accept (until ${ev.offline_no_autoaccept_until}, still active)`)
+        continue
+      }
       const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
         ? ev.offline_protection_override
         : (van.auto_pause_on_offline ?? false)
@@ -88,18 +98,31 @@ Deno.serve(async () => {
         console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — offline protection OFF (override=${ev.offline_protection_override}, vanDefault=${van.auto_pause_on_offline})`)
         continue // offline protection off for this event → don't pause
       }
+      // -- ONE SWITCH, TWO MODES. THE SWITCH DECIDED ABOVE; THIS DECIDES WHICH WRITE. --
+      // Event override ?? van default ?? 'pause' — the SAME null-means-inherit chain the switch itself
+      // uses two lines up, so the two cannot resolve against different events.
+      // 'pause' IS THE FALLBACK FOR EVERY UNKNOWN VALUE, including a column that does not exist yet:
+      // it is what offline protection has always done, so a partial deploy behaves exactly like today.
+      const modeRaw = ev.offline_protection_mode_override ?? van.offline_protection_mode ?? 'pause'
+      const mode = modeRaw === 'no_auto_accept' ? 'no_auto_accept' : 'pause'
+      // THE TWO WRITES ARE DELIBERATELY DIFFERENT COLUMNS, AND MUST STAY SO.
+      //   pause          → online_paused_until, which the CUSTOMER GATE reads. Writing it IS the pause.
+      //   no_auto_accept → offline_no_autoaccept_until, which /api/orders/submit reads to force `pending`.
+      //     It must NEVER touch online_paused_until: this mode exists so customers CAN still order.
+      // NOTE: AND last_offline_pause_at IS WRITTEN ONLY IN PAUSE MODE. It drives the dashboard's "Orders
+      // were paused while your device was offline" notice, which would be a false statement here.
+      const patch = mode === 'no_auto_accept'
+        ? { offline_no_autoaccept_until: autoPauseUntil }
+        : { online_paused_until: autoPauseUntil, last_offline_pause_at: now.toISOString() }
       const { error: updErr } = await supabase
         .from('truck_events')
-        // last_offline_pause_at = a DURABLE marker of this offline auto-pause. /api/heartbeat clears
-        // online_paused_until on reconnect but NOT this column, so the dashboard can surface a
-        // one-time "you were offline-paused while away" popup after the device is back online.
-        .update({ online_paused_until: autoPauseUntil, last_offline_pause_at: now.toISOString() })
+        .update(patch)
         .eq('id', ev.id)
       if (updErr) {
         console.error(`[heartbeat-monitor]     event ${ev.id}: PAUSE FAILED — ${updErr.message}`)
       } else {
         pausedCount++
-        console.log(`[heartbeat-monitor]     event ${ev.id}: PAUSED until ${autoPauseUntil} (van ${van.name} stale; started=${ev.status}, published ${ev.event_date} ${ev.start_time})`)
+        console.log(`[heartbeat-monitor]     event ${ev.id}: ${mode === 'no_auto_accept' ? 'NO-AUTO-ACCEPT' : 'PAUSED'} until ${autoPauseUntil} (van ${van.name} stale; started=${ev.status}, published ${ev.event_date} ${ev.start_time})`)
       }
     }
   }

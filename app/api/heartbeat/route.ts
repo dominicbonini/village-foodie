@@ -23,6 +23,19 @@ async function clearOfflinePauseForVans(vanIds: string[]) {
     .update({ online_paused_until: null })
     .in('van_id', vanIds)
     .not('online_paused_until', 'is', null)
+  // -- THE OTHER MODE'S MARKER, CLEARED THE SAME WAY AND FOR THE SAME REASON --
+  // `offline_no_autoaccept_until` is what /api/orders/submit reads to force new orders `pending` while
+  // the van is offline. A returning ping means the van is back, so auto-accept must resume on the very
+  // next order — exactly as ordering resumes above.
+  // NOTE: A SEPARATE STATEMENT, NOT A SECOND FIELD IN THE ONE ABOVE: each is filtered on its own column
+  // being non-null, so neither touches rows the other owns and neither widens the other's row set.
+  // NOTE: Best-effort like its sibling — an error here leaves a marker that EXPIRES on its own (the monitor
+  // writes now + 2h), so the failure mode is "auto-accept resumes late", never "ordering stays blocked".
+  await supabaseAdmin
+    .from('truck_events')
+    .update({ offline_no_autoaccept_until: null })
+    .in('van_id', vanIds)
+    .not('offline_no_autoaccept_until', 'is', null)
 }
 
 export async function POST(req: NextRequest) {

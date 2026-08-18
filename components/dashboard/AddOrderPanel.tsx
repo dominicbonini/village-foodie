@@ -430,6 +430,10 @@ export function AddOrderPanel({
     /** Orders collecting at the slots that feed this window, with their OWN quantities.
      *  🔴 NOT an attribution of spilled units — see contributingProductionSlots. */
     contributors: Array<{ id: string; slot: string; qty: number }>
+    /** TRUE when the projection came from CACHED inputs because the device was offline. The modal says
+     *  so: a stale check can MISS a breach (an order placed since the last poll is invisible to it), so
+     *  the operator must know the answer is provisional rather than authoritative. */
+    stale?: boolean
     thisOrderQty: number
     override: boolean
   } | null>(null)
@@ -967,16 +971,38 @@ setItemModal({ item, modGroups, editCartKey })
     // refetch below still refreshes the dots). FAILS OPEN — a flaky/missing check never stops a
     // manual order. skipFitCheck re-entry (the "use anyway" path + the stock-override re-entry)
     // avoids re-looping the prompt. Null/ASAP-unresolved slot → nothing to check.
-    if (!skipFitCheck && effectiveSlot && manualEvent && isOnline()) {
+    // -- THE FIT CHECK NO LONGER STOPS AT THE DEVICE'S CONNECTION -----------------------------------
+    // IT USED TO READ `... && isOnline()`, so an order placed offline never consulted capacity at all:
+    // no modal, no `capacity_ack_at`, and two customers could hold the same slot with nobody told. The
+    // check belongs wherever an order ENTERS THE QUEUE, not wherever the device happens to be online.
+    // ONLINE IS UNCHANGED, BYTE FOR BYTE: the fresh no-store `/api/slots` read below still runs and its
+    // result still drives the modal. OFFLINE now falls back to the SAME cached inputs the capacity strip
+    // in this panel already renders from -- `capacityInputs` and `serverCatConfigs`, which the panel
+    // already resolves as `apiCapacityInputs ?? offlineForThisEvent`. No new data source, no new fetch.
+    // NOTE: THE OFFLINE ANSWER IS PROVISIONAL AND THE MODAL SAYS SO. Cached occupancy is as fresh as the
+    // last successful poll and cannot see orders placed since -- by a customer, or on another device.
+    // It can therefore MISS a breach. It cannot invent one that the cached data does not show.
+    // NOTE: NO CACHED INPUTS => NO CHECK, exactly as before. An offline device that has never loaded this
+    // event has nothing to project from, and a check with no data must not pretend to have run.
+    if (!skipFitCheck && effectiveSlot && manualEvent) {
       try {
-        const p = new URLSearchParams({ date: manualEvent.event_date })
-        if (manualEvent.start_time) p.set('start', manualEvent.start_time)
-        if (manualEvent.end_time) p.set('end', manualEvent.end_time)
-        if (manualEvent.id) p.set('event_id', manualEvent.id)
-        const checkRes = await fetch(`/api/slots/${truck.id}?${p}`, { cache: 'no-store' })
-        const checkData = await checkRes.json()
-        const ci = checkData.capacityInputs
-        const freshCfgs = checkData.catConfigs || {}
+        let ci: { productionSlotUnits?: Record<string, Record<string, number>>; kitchenCapacity?: number | null; eventStartMins: number; capacityWindowMins?: number } | null = null
+        let freshCfgs: Record<string, { secs: number; batch: number }> = {}
+        let stale = false
+        if (isOnline()) {
+          const p = new URLSearchParams({ date: manualEvent.event_date })
+          if (manualEvent.start_time) p.set('start', manualEvent.start_time)
+          if (manualEvent.end_time) p.set('end', manualEvent.end_time)
+          if (manualEvent.id) p.set('event_id', manualEvent.id)
+          const checkRes = await fetch(`/api/slots/${truck.id}?${p}`, { cache: 'no-store' })
+          const checkData = await checkRes.json()
+          ci = checkData.capacityInputs
+          freshCfgs = checkData.catConfigs || {}
+        } else if (capacityInputs) {
+          ci = capacityInputs
+          freshCfgs = serverCatConfigs as Record<string, { secs: number; batch: number }>
+          stale = true
+        }
         if (ci) {
           const back = projectBackwardOccupancy(
             ci.productionSlotUnits || {},
@@ -1076,6 +1102,7 @@ setItemModal({ item, modGroups, editCartKey })
               contributors,
               thisOrderQty,
               override,
+              stale,
             })
             return // NOTHING is submitted — the modal's buttons decide.
           }
@@ -2342,6 +2369,14 @@ setItemModal({ item, modGroups, editCartKey })
                   Deliberately not an attribution of which order caused the overage — see the 🔴 note
                   in contributingProductionSlots. Variant 'over' only: on 'filled' the point is that
                   something arrived late, and on 'toosoon' the list is meaningless. */}
+              {/* THE PROVISIONAL NOTE -- offline placements only. The check ran against the last data
+                  this device pulled, so it can miss an order placed since. Never shown online, where the
+                  read is fresh and no-store. */}
+              {capacityConfirm.stale && (
+                <p className="mt-3 text-xs font-semibold text-amber-700">
+                  Checked against the last data this device downloaded -- you&apos;re offline, so a newer order may not be counted.
+                </p>
+              )}
               {capacityConfirm.variant === 'over' && capacityConfirm.contributors.length > 0 && (
                 <div className="mt-3 border-t border-slate-100 pt-3 space-y-1">
                   {capacityConfirm.contributors.map(c => (
