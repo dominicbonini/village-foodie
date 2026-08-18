@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.29
+HatchGrab Engineering Reference Manual · V11.30
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.29**
+**Version 11.30**
 
 August 2026
 
@@ -15,6 +15,69 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.30 — 18 August 2026 (evening session)
+
+Delta over V11.29 — **a phantom column fixed and a cross-truck hole found underneath it; a suppression
+table that has never held a row; order numbering made immutable; and an offline queue that can wedge
+permanently on a fetch with no timeout.**
+
+🔴 **NOTHING IN THIS SESSION HAS BEEN LIVE-VERIFIED ON A DEVICE OR AGAINST A REAL CANCEL.** Every item is
+either live-database-verified, verified by execution in a report, or explicitly marked unobserved.
+
+- 🔴 **THE `village` PHANTOM IS FIXED, AND THE REPLACEMENT WAS SETTLED BY QUERY, NOT BY PLAUSIBILITY.**
+  The cancel branch's event fetch now binds its error and selects `town`. **`venues.village` was
+  considered and REJECTED on data:** across all 103 events, a `venues` join via `venue_id` rescues **ZERO**
+  of the 13 events with no `town`, and where both exist they **DISAGREE on 12**. A join would have added no
+  coverage, introduced a second source of truth and changed the locality on twelve rows. **`town` is the
+  answer and the codebase already agreed** — two other `truck_events` fetches select it.
+- 🔴 **UNDERNEATH THE PHANTOM WAS A CROSS-TRUCK WRITE HOLE, AND IT WAS THE MORE SERIOUS FINDING.** The
+  cancel branch established ownership **nowhere**. A caller authenticated for truck A, posting truck B's
+  event uuid, left B's event untouched while **cancelling all of B's live orders and emailing B's customers
+  a cancellation carrying A's truck name** — response `ok: true` with a `cancelledOrders` count. ⚠️ **The
+  `truck_id` guard on the UPDATE did not save it: a Supabase update matching ZERO rows returns NO error**,
+  so the error check never fired and execution continued into an orders select filtered on `event_id`
+  alone.
+- ✅ **CLOSED BY ONE GATE, NOT FOUR FILTERS.** `truck_id` added to the select the branch already made, then
+  a single ownership check before any write — **all five downstream writes are now unreachable for a
+  foreign event by construction.** Six changed executable lines. The 404 shape is reused verbatim from the
+  `restore_rejected` branch, which had the correct pattern all along. §15.
+- 🔴 **THE SUPPRESSION TABLE HAS NEVER HELD A ROW. NOT ONE, ON ANY TRUCK, EVER.** `rejected_event_signatures`
+  returns zero rows, no min or max `created_at`, no trucks. **The write is correctly formed** — right
+  table, all three NOT NULL columns supplied, awaited, error bound and logged — **and a caller genuinely
+  sends `suppress: true`.** The single conjunct `&& eventRow` accounts for the emptiness entirely.
+- ⚠️ **THE CAPACITY BLEED IS LATENT, NOT HISTORICAL.** All 27 cancelled events across every truck carry
+  **zero live orders**, so no cancelled load is bleeding into any other event. **No data repair was
+  performed and none is needed.** The skipped rebuild was a real defect with no accumulated damage.
+- 🔴 **ORDER NUMBERING IS NOW IMMUTABLE: AN ISSUED NUMBER IS NEVER CHANGED.** A submit carrying a
+  `provisional_id` adopts it **verbatim** as `orders.id` and does not call the counter. The `O`-prefix
+  scheme added earlier the same day is **deleted** — it replaced the number the customer was already
+  holding. A duplicate display number now returns **409**, which is the outbox's dead-letter trigger, so a
+  conflict parks for review instead of being retried against an insert that can never succeed. §5.
+- 🔴 **ADOPT-VERBATIM PROMOTED A LIFELONG PER-DEVICE COUNTER INTO A CUSTOMER-FACING TICKET.** The
+  provisional sequence only ever RAISED and was never event-scoped, so a device sitting at 39 would have
+  minted **N40 on an event whose orders ran 1, 2, 3.** Invisible while the server replaced the number.
+  ✅ **Fixed by scoping the sequence per event.**
+- ⚠️ **AND THE PER-EVENT FIX WOULD HAVE DONE NOTHING WITHOUT ONE FILTER.** The panel receives the
+  dashboard's **unfiltered** `orders`, not `eventOrders`. Seeding a per-event key from that maximum would
+  have reinstated the global behaviour **through a per-event key** — compiled, read as correct, changed
+  nothing. **Caught by reading the prop rather than trusting its name.**
+- 🔴 **THE OFFLINE QUEUE CAN WEDGE PERMANENTLY, AND THE MECHANISM IS A `fetch` WITH NO TIMEOUT.** A hung
+  fetch never resolves and never rejects, so it never reaches the `catch`, `attempts` never climbs toward
+  `MAX_ATTEMPTS`, the op never flips to `conflict`, **`drainInFlight` never clears, and every later
+  `drainOutbox()` returns the same dead promise.** There are only **two** drain triggers in the whole app.
+  §11.
+- 🔴 **THE DEPLOYED BUNDLE WAS NOT THE REPO, PROVEN BY A DISPLAY NUMBER.** An offline order replayed as a
+  bare `38` where the committed code produces an `O`-prefixed id. **Two explanations fit equally** — a
+  Vercel deploy older than the commit, or a current deploy with stale cached client JS on the iPad. ⚠️ **So
+  every source reading of the outbox describes code the device demonstrably was not running.**
+- ✅ **THE TRUST STRIP'S CAUSE WAS `align-items: center` CENTRING A BOX AND NEVER ITS TEXT.** An item that
+  fits on one line hugs its text and looks centred; one that wraps grows to the column width and its second
+  line falls back to `start`. **iPhone was never a control** — it just had enough width to avoid the wrap.
+- **NEW OPEN ITEMS:** the offline-queue wedge, undiagnosed on the deployed build · the `.proof` list
+  carrying the identical trust-strip defect, unfixed · the N1 cold-start window · the device-letter
+  collision at ~3.8% for two devices · `close` and `update` returning `ok: true` for writes that changed
+  nothing.
 
 ## V11.29 — 18 August 2026
 
@@ -4439,6 +4502,55 @@ every line now has a leader. **Zero horizontal pixels**, inside rows widened by 
 ⚠️ **Deliberate loss:** the line no longer states the cap for a `max_choices: 2` group. That reaches the
 customer in the modal, as it did before.
 
+## V11.30 — ORDER NUMBERING: an issued number is never changed (NEW INVARIANT)
+
+🔴 **THE RULE. Once a display number is shown to a customer it is FINAL** — never renumbered, re-prefixed
+or reassigned, not on sync, not on replay, not ever.
+
+- **Online** orders take the next atomic counter value: 1, 2, 3.
+- **Offline** orders take a device-prefixed number minted on the device: N4, N5.
+- Customers keep taking bare counter numbers while a device is dark: 4, 5, 6.
+- On replay the offline order **keeps its number exactly**; the server adopts the provisional verbatim.
+- **The next online order is the next unused COUNTER value.**
+
+🔴 **DECIDED: the counter is NOT advanced to compensate for offline orders.** With N4, N5 replayed and
+online orders at 4, 5, 6, the next number is **7, not 9**. Three reasons, and they are the general
+argument: *the "correct" jump is unknowable at issue time* (the server cannot know how many offline orders
+exist until they replay); *advancing on replay produces gaps that look exactly like lost orders on a
+board*; and *with two devices replaying, the jump becomes non-deterministic* — the same real-world sequence
+yields different numbers depending on reconnect order. **A display number is an identifier, not a count.
+"How many orders" is answered by counting rows.**
+
+⚠️ **CONSEQUENCE: the number is no longer chronological.** N4 may be placed between 5 and 6 in real time.
+**`placed_at` is the time field** and it works — an offline order observed this session carried
+`placed_at` 44 seconds before `created_at`. ⚠️ **`sortByTimeThenId` does not sort by id despite its name;
+it falls back to `created_at`, which for a replayed order is arrival time, not placement time.**
+
+**`'N4'` and `'4'` are different TEXT values and cannot collide on the `(event_id, id)` partial unique
+index.** No migration was needed.
+
+**A duplicate returns 409** — the outbox's dead-letter trigger — so a genuine conflict parks at
+`state: 'conflict'` on first occurrence instead of being retried five times against an impossible insert.
+
+🔴 **THE SEQUENCE IS PER EVENT.** It was lifelong per-device and only ever raised, so adopt-verbatim
+would have put **N40 on an event whose orders ran 1, 2, 3.** ⚠️ **And the per-event key alone would have
+changed nothing:** the panel receives the dashboard's **unfiltered** `orders`, so seeding from that maximum
+reinstates global behaviour through an event-scoped key. **The filter is load-bearing; the key is not
+sufficient.** See §11 for the device-side sequence.
+
+**OPEN — the N1 cold-start window.** A device that mints before ever loading that event's orders seeds
+from nothing and starts at **N1**, which can coexist with a server-issued **1**. Not a database collision;
+**two tickets showing the same digit**, distinguished only by the letter. ⚠️ **Per-event scoping makes a
+fresh key the normal case at the start of every event, so the window is entered far more often than
+before.** The realistic scenario is ordinary: arrive at a pitch with no signal, open the app, take the
+first walk-up. **Preferred fix (not built): persist the last known highest per event, so an offline cold
+launch has something to seed from.** Refusing to mint until orders load is useless in exactly that case.
+
+**OPEN — the device letter collides.** It is a char-code sum mod 26 with **no truck scoping**: two devices
+share a letter about **3.8%** of the time, three about **11%**, and whether `device_id` distributes
+uniformly is unknown. 🔴 **This is the two-van-offline scenario and nothing here makes it safe. A hard
+blocker before multi-van offline.**
+
 # 6. Prep time and queue logic
 
 ## Queue-aware ready time formula
@@ -4828,6 +4940,20 @@ The dashboard Menu & Stock tab edits category prep and batch inline on the categ
 - **Cook view is unaffected in every combination** — it has never rendered a price or a payment action, and the toggle does not change that.
 
 ⚠️ **The Done-today strip's `✓ paid` was a hardcoded literal**, printed for every collected order and derived from nothing — not the ledger, not `payment_status`, not even `show_paid_step`, which is why it was the one payment claim that survived the paid-step gate. **Now derived.** Same class as `PrinterStatus.connected` hardcoding `true`: **a label asserting a state nobody checked.**
+
+## V11.30 — KITCHEN SCREEN "Truck not found": recorded as UNCLOSED, not fixed
+
+The symptom **stopped reproducing** and no cause was established for the stop. ⚠️ **The day's data could
+not discriminate**: with an event today, the fixed and unfixed paths behave identically, because the
+explicit date equals the route's own default. **"It works now" is consistent with the fix being deployed,
+with it sitting undeployed, and with the failing case simply not being exercised.**
+
+✅ **One thing did narrow it:** the dashboard page carrying `openKDS` was **not** in the working tree's
+dirty list, so **that change is committed** — leaving only whether the commit reached Vercel.
+
+**The discriminating check, if it recurs:** open the dashboard in a desktop browser, choose a **future**
+event, press Kitchen screen, and read the URL. A `date` parameter alongside `event_id` means the fix is
+live; a bare `event_id` means it is not.
 
 # 10. Add Order panel
 
@@ -5930,6 +6056,64 @@ mid-tap.
 ⚠️ **Any migration must be ACTIVE, not passive:** leaving `hg_kds_view_<token>` unread silently
 converts every cook screen into a window screen — **prices and payment buttons on a grill.**
 
+## V11.30 — THE OFFLINE OUTBOX: mechanism, and how it wedges
+
+**Storage:** Capacitor `Preferences` → iOS `NSUserDefaults`, app sandbox, one key per op. **Operator path
+only** (`AddOrderPanel` → the dashboard action route). **The customer submit path has no offline queue and
+nothing here generalises to it.**
+
+🔴 **SURVIVAL MATRIX — this governs what is safe to do to a device holding an unsynced order:**
+
+| Action | Order survives? |
+|---|---|
+| Backgrounding, force-quit, device restart | ✅ **Yes, by design** — not WebKit storage, never evicted under storage pressure |
+| Clearing Safari / WebKit website data | ✅ **Yes** — different store |
+| 🔴 **Delete and reinstall the app** | 🔴 **NO. THE SANDBOX GOES WITH THE APP AND THE ORDER IS IN NO OTHER PLACE.** |
+| 🔴 **Offload the app / "clear storage"** | 🔴 **NO. Treat as destructive.** |
+
+**Only two drain triggers exist in the entire app:** a **reachability edge** to online, and a **backoff
+chain that re-arms only from inside its own completed callback**. ⚠️ **The 5-second interval only
+re-counts; it does not drain.** 🔴 **The reachability trigger is EDGE-triggered, so a device that has
+simply been online for an hour never gets another tick.**
+
+🔴 **THE WEDGE.** `post()` is a bare `fetch` with **no timeout and no `AbortController`**, sitting behind
+`drainInFlight`, a promise-coalescing lock. A hung fetch never resolves and never rejects → never reaches
+the `catch` → `attempts` never climbs to `MAX_ATTEMPTS` → never flips to `conflict` → **`drainInFlight`
+never clears** → every later `drainOutbox()` returns the same dead promise → **the retry chain awaits it
+forever and never re-arms.** **One hung request stops the queue permanently.**
+
+**Failure handling otherwise:** 409 → immediate dead-letter. Any other non-2xx → retry to 5 attempts, then
+dead-letter. **4xx and 5xx are not distinguished.** A thrown fetch below the attempt limit does `break`,
+blocking the queue behind it until the next drain. **An op is never deleted except on a 2xx.**
+
+⚠️ **THE BADGE IS NOT A NETWORK STATE.** "N changes saved on this device, syncing…" is hard-coded into the
+branch that renders whenever any non-conflict op exists. **The count is accurate; the word "syncing" is
+the untrue part.** There is **no elapsed-time escalation and no stuck state** — it reads identically at one
+minute and at forty. `last_error` is surfaced only in a dev-only inspector that returns null in
+production.
+
+### The incident — an order that never synced, 18 August 2026
+
+**Observed on physical hardware, `test-truck`, screenshot-seed event.** An offline order labelled `N38`
+synced in 44 seconds and was renumbered to `38`. A second offline order labelled `N39` **never reached the
+server**; the badge read one change for over 40 minutes while the device was confirmed online. A third
+order placed **online** inserted in **450 ms** and took display id `39`. **Both `N39` and `39` were visible
+on the dashboard simultaneously.**
+
+✅ **NARROWED BY OBSERVATION, NOT BY READING: the POST is not completing-and-failing.** Any completed
+failure climbs `attempts`, and with backoff capped at 60 seconds it dead-letters within about five minutes,
+dropping the badge to zero and raising the conflict banner. **Neither happened in forty minutes.** So the
+request is either **wedged in flight** or **never sent** — which eliminates every repeated-rejection
+theory: capacity refusal, auth expiry, unique-index conflict.
+
+✅ **A live order and a queued one share the endpoint but not the caller** — the live path never enters the
+drain's lock, **which is why a wedged queue has no effect on new online orders.** ⚠️ The queued body is not
+byte-identical to the live one; it carries extra fields.
+
+🔴 **`drainInFlight` is a module-level variable, so a page reload clears it.** A reload is what unwedges
+the queue — **and it consumes the only specimen of this failure.** Reading the op's `state`, `attempts` and
+`last_error` first would discriminate hung-fetch from stopped-chain, but needs a dev build.
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
@@ -6466,6 +6650,58 @@ usability defect on a tablet-first operator screen, which is where it actually c
 **Logged, not fixed:** the fix is a prop the component does not have, so it is a component change plus
 eight call sites, not a class tweak.
 
+## V11.30 — EVENT-CANCEL: the hole, the gate, and the class
+
+**The mechanism, worth carrying because it generalises:** a Supabase UPDATE matching zero rows returns
+**no error**. Any branch that treats `if (error)` as proof the write landed will continue past a write that
+did nothing. Here that carried execution into an orders select scoped by `event_id` alone.
+
+**The five writes reachable from the cancel branch:** the `truck_events` UPDATE (`id` + `truck_id`); the
+suppression INSERT (values mixing the caller's `truck_id` with the target's date and signature); the orders
+SELECT (`event_id` + status, **no ownership filter**); the orders UPDATE (`order_key` list derived from
+that select, **no error binding**); and the slot-usage rebuild (caller's truck id against the other truck's
+date).
+
+✅ **THE GATE:** `truck_id` added to the fetch the branch already made, then a single check before any
+write, returning the `restore_rejected` branch's existing 404 shape. **No per-write filters were added** —
+the class being removed is "four filters that must all agree".
+
+🔴 **DELIBERATE: an unverifiable owner FAILS CLOSED.** A null row, a foreign row and a transient read
+failure all return the same 404. **Distinguishing "not yours" from "does not exist" would leak whether an
+arbitrary uuid is a real event on another truck.**
+
+⚠️ **Two behaviour changes on the legitimate side, both improvements, both worth knowing before an
+operator calls:**
+- A **nonexistent** event id used to return `ok: true, cancelledOrders: 0`. It now returns 404.
+- A **transient read failure** used to proceed best-effort — which produced the worst outcome available:
+  orders cancelled and customers emailed with no venue or date, no suppression row, no rebuild, and
+  `ok: true`. **All-or-nothing beats half-done on a path that emails customers.** The operator sees "Event
+  not found", which is terse for a database blip; the `console.warn` distinguishes the cases in logs.
+
+**PROPOSED REFINEMENT, not built:** branch on the `.single()` no-rows error code so that no-rows and
+wrong-owner keep the 404 while a genuine read failure returns a 503 with a retry message. Separates "not
+yours or not there" from "we couldn't check" without leaking anything.
+
+**THE CLASS — six action branches, one exploitable:**
+
+| Branch | Ownership before writing? |
+|---|---|
+| `confirm` | ⚠️ Incidentally — a *time* check happens to 400 first. Correct outcome, wrong reason. |
+| `open` | ⚠️ No explicit gate; write is scoped; worst case a silent no-op. |
+| `close` | ❌ No gate. Silent no-op, **returns `ok: true` for a write that changed nothing.** |
+| `update` | ❌ No gate. Same. |
+| `cancel` | 🔴 **None — the defect. Now gated.** |
+| `restore_rejected` | ✅ Explicit 404 gate. |
+
+🔴 **Why only `cancel` was exploitable: it is the only branch that writes to a table reached through
+`event_id` rather than `truck_id`.** The others degrade to harmless no-ops. **`close` and `update` lying
+`ok: true` is backlog, not risk.**
+
+**Design observation, recorded not acted on:** suppression is keyed on `(truck_id, event_date,
+scraped_signature)`, so **a rejected event returning on a DIFFERENT date is not suppressed even when the
+write works.** One truck shows five cancelled rows on one signature across five dates, June to August.
+**Anyone reading "rejected events come back" will expect this fix to stop that. It will not.**
+
 # 16. Database schema essentials
 
 ## Core tables
@@ -6960,6 +7196,30 @@ now share one predicate.
 - **`truck_vans.kitchen_capacity`** — nullable, **default null**. `capacity_window_mins` — NOT NULL,
   default 5. `order_ready_enabled` — NOT NULL, default **false** (not null; the `?? false` at the read
   site is belt-and-braces).
+
+## V11.30 — LIVE SCHEMA FACTS, verified against `information_schema` and row counts (18 August 2026)
+
+**These were READ, not inferred.**
+
+- 🔴 **`truck_events` has NO `village` column.** Its locality column is **`town`** (text, nullable).
+  `village` exists in this schema on **`venues`**, **`discovery_events`** and **`subscribers`** only.
+- 🔴 **`truck_events.id` is `uuid NOT NULL DEFAULT gen_random_uuid()`.** ⚠️ **A display handle such as
+  `ev-2108` appearing in a URL or a report is NOT a row id** — anything claiming to have verified against
+  one has not read the table.
+- **`truck_events.event_date` is `date NOT NULL`.** This retires a residual risk raised during the cancel
+  fix: a suppression insert cannot receive a null `event_date` from this source, because the source column
+  forbids null.
+- **Locality coverage, all 103 events:** `town` present on **90**; `venue_id` present on **56**; venue
+  `village` present on exactly those **56**; **13 have no locality at all**. A `venues` join rescues **zero**
+  null towns and **disagrees with `town` on 12 events**.
+- **`rejected_event_signatures`** — `id`, `truck_id`, `event_date`, `scraped_signature`, `created_at`.
+  The middle three are **NOT NULL**. 🔴 **The table has never contained a row.**
+- **`production_slot_usage`** — `truck_id`, `event_date`, `production_slot`, `units_by_cat`, `updated_at`,
+  `event_id`.
+- ⚠️ **`truck_events.scraped_signature` is an INGEST artefact, not a suppression record.** Every
+  scraper-sourced row carries one, in every status; the 29 manual rows never had one. **Reasoning from its
+  population to whether suppression works is a category error** — the planning chat made exactly that
+  mistake and was refuted by finding the dedicated table.
 
 # 17. Menu API behaviour
 
@@ -9165,6 +9425,23 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
 
+## V11.30 — VERIFICATION DEBT, carried forward
+
+🔴 **Nothing in the V11.30 session has been exercised.** Specifically unproven:
+
+- **That a real cancel now writes a suppression row.** The table has never held one, so there is no
+  precedent that the insert works end to end. **The acceptance test:** reject a scraped event on the test
+  truck, confirm one new row and no `[cancel] suppression write failed:` in the logs. **Not on the live
+  trading truck.**
+- **That the ownership gate refuses a foreign event in a running system.** The test: post a cancel with
+  another truck's event uuid and confirm a 404, the `[cancel] refused:` log line, and that the victim's
+  orders are untouched.
+- **That an offline order now keeps its number.** The test: place one offline and read the resulting
+  `orders.id`. ⚠️ **This also closes the deployed-versus-repo question**, which nothing else can.
+- **The offline-queue wedge**, undiagnosed on the deployed build.
+- **Carried from before:** the dashboard heartbeat remains source-read on the live trading truck's ordering
+  path; the iPad display defects against the changed Orders `<main>`; whether the Safari ejection stops.
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -10446,6 +10723,30 @@ button went.** Corrected in place rather than left beside its correction.
 **§40's rule applies to CODE COMMENTS as well as to manual sections: a correction sitting next to the
 claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
 diff, which is the same argument the census makes.
+
+## V11.30 — METHOD: what this session adds
+
+- ✅ **SQL-FIRST PAID FOR ITSELF TWICE.** The replacement column was chosen on measured coverage rather
+  than plausibility, and `venues.village` was **rejected on data** after looking like the obvious answer.
+- 🔴 **THE PLANNING CHAT REASONED FROM THE WRONG TABLE AND SAID SO.** A census of
+  `truck_events.scraped_signature` was offered as evidence against the manual's suppression claim. **The
+  column is an ingest artefact and the suppression record lives in its own table** — the evidence was
+  irrelevant, the manual's mechanism stood, and the correction is recorded rather than quietly dropped.
+- ✅ **THE PLANNING SIDE CLOSED A RISK THE EXECUTOR COULD NOT.** A report flagged a possible NOT NULL
+  failure on `event_date`; the schema read already in hand showed the source column is itself NOT NULL.
+  **Retired, not deferred.** ⚠️ **This only worked because the executor was told not to re-query — which
+  means the planning side owns any fact it withholds.**
+- 🔴 **A DIAGNOSIS WRITTEN AGAINST THE REPO IS NOT A DIAGNOSIS OF THE DEVICE.** The offline-queue reading
+  is thorough and describes code the iPad demonstrably was not running. **This is the deployment family's
+  newest member:** *tsc-clean is not done · a fix in the repo is not deployed · a rebuild is not a deploy ·
+  a cross-reference is not provenance · source-read is not behaviour-verified · a default is not a value ·*
+  **and a reading of HEAD is not a reading of what shipped.**
+- ✅ **AN EXECUTOR RECORDED ITS OWN FALSE READING RATHER THAN ONLY THE CORRECTED ONE** — a filter count
+  that appeared to change turned out to be an artefact of the report's own comment text quoting the
+  expression. **Comment-stripped comparison is now the standard for any count over source.**
+- ⚠️ **A CHANGE CAN COMPILE, READ AS CORRECT, AND DO NOTHING.** The per-event key would have reinstated the
+  global behaviour through an event-scoped key had the unfiltered `orders` prop not been noticed. **The
+  prop's name was the trap.**
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -12967,6 +13268,31 @@ pseudo-option that would bless a typo as canonical.
 empty `cuisine_type` DROPS A TRUCK OUT OF EVERY CUISINE-FILTERED MAP VIEW** while leaving it under
 "All Food" — **the discovery filter derives its options from live data.** Reported, not guarded; a
 required-field check on save would close it.
+
+## V11.30 — LANDING PAGE: the trust strip, and a second copy of the same defect
+
+🔴 **THE CAUSE: `align-items: center` in the mobile media query centres each `<li>` BOX and never its
+text.** A one-line item hugs its text and *looks* centred; a wrapping item grows to the column width and
+its second line falls back to the inherited `start`. **Fixed with one ungated `text-align: center` on the
+trust-strip list item.** ⚠️ **iPhone was never a control — it simply had enough width to avoid the wrap**,
+so "correct on iPhone" was the wrap threshold being kind, not the layout being right.
+
+⚠️ **The identical defect exists a second time on the same page** — the final CTA's `.proof` list carries
+the same three strings with `justify-items: center` and no `text-align`. **REPORTED, NOT FIXED. Shipping
+one and not the other means the visitor sees it corrected under the hero and reproduced at the bottom of
+the same scroll.** One line.
+
+**Feature-block headings were centred and then reverted on request** — the section is byte-identical to its
+pre-task state. **Recorded because the reasoning stands: centred headings over left-aligned body is the
+readable pairing; a centred multi-line paragraph moves the left edge on every line.**
+
+**Routes, re-confirmed:** the root is the discovery map and does not render this page at all. **Two routes
+serve the landing module** — the admin-gated one, and an **unlisted ungated path** — both carrying the same
+re-exported noindex metadata. ⚠️ **A phone reporting a landing defect is almost certainly on the unlisted
+path**, since the gated one redirects a non-admin away.
+
+⚠️ **The hero still renders three dashed placeholder boxes reading "Screenshot".** Blocked on the same
+capture session as the App Store screenshots — **one session unblocks both.**
 
 # 39. Buzzers — physical pagers against orders (V10)
 

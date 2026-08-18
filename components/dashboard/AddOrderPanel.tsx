@@ -24,7 +24,7 @@ import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { fmtVenue } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
-import { gatedAction, nextProvisionalId, seedProvisionalSeq } from '@/lib/native/orderGate'
+import { gatedAction, seedProvisionalSeq } from '@/lib/native/orderGate'
 import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { isNativeApp } from '@/lib/native/device'
@@ -1128,7 +1128,12 @@ setItemModal({ item, modGroups, editCartKey })
       // Client-mint the identity so an OFFLINE create is idempotent on replay (order_key) and carries a
       // stable device-prefixed provisional number until the server assigns the real one.
       const orderKey = newUuid()
-      const provisional = isOnline() ? '' : await nextProvisionalId(manualEvent?.id ?? null)
+      // 🔴 NO PROVISIONAL IS MINTED HERE ANY MORE. It used to be `isOnline() ? '' : mint()`, deciding
+      // the customer's number from a DEBOUNCED BANNER SIGNAL that stays true for ~30s after real
+      // connectivity loss — so an order placed in that window was sent unmarked, queued unmarked, and
+      // renumbered by the server while the card showed a number minted somewhere else entirely.
+      // The mint now happens at ENQUEUE time inside gatedAction's queue(), which is the only moment
+      // that knows the order is actually going to the outbox, and its value is returned for display.
       // ── placed_at — CLIENT-MINTED AT THE MOMENT OF COMMIT ────────────────────────────────────────
       // Minted HERE, beside order_key, for the same reason order_key is: this is the instant the
       // operator committed, and it is the only instant the server can never reconstruct. created_at is
@@ -1144,7 +1149,9 @@ setItemModal({ item, modGroups, editCartKey })
         buzzerNumber: manualBuzzer,
         // Offline → send the device-prefixed provisional (e.g. 'M3') so the server KEEPS it as the permanent
         // display id (skips its counter) → no renumber on sync. Online → '' → null → server assigns normally.
-        provisional_id: provisional || null,
+        // Null on the wire for a LIVE submit — an online order takes the server counter, unchanged.
+        // gatedAction's queue() overwrites this key when (and only when) the order is enqueued.
+        provisional_id: null,
         customerName: manualName,
         customerPhone: manualPhone || null,
         customerEmail: manualEmail || null,
@@ -1201,7 +1208,7 @@ setItemModal({ item, modGroups, editCartKey })
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
         url: '/api/dashboard/action',
-        kind: 'create', order_key: orderKey, provisional_id: provisional, online: isOnline(),
+        kind: 'create', order_key: orderKey, eventId: manualEvent?.id ?? null, online: isOnline(),
         body: { token, pin, action: 'manual', manualOrder },
       })
       // OFFLINE → durably queued. Optimistically add to the isolated device-queued list so the walk-up shows
@@ -1218,17 +1225,18 @@ setItemModal({ item, modGroups, editCartKey })
         // order queues anyway. The card then rendered `#{order.id}` over an empty string: a bare '#'.
         // 🔴 `result.queued` IS THE AUTHORITY, because it is the thing that queued it. One decision, one
         // answer — and it is available here, before the optimistic object exists.
-        // ⚠️ FALLBACK ONLY. `provisional || …` keeps route 1 EXACTLY as it was: when reachability had
-        // already flipped, the number minted at :1031 is the one that went into the queued body, and it
-        // must stay the one shown or the card would disagree with what the server will keep.
-        // ⚠️ THE ROUTE-2 NUMBER IS DISPLAY-ONLY, AND THAT ASYMMETRY IS DELIBERATE. The body was built at
-        // :1039 and is already in the outbox carrying `provisional_id: null`, so on replay the server
-        // assigns an ordinary sequential number — a route-2 order shows 'N8' now and '#7' after sync,
-        // where a route-1 order keeps its N permanently. Changing that would mean rewriting a queued
-        // payload, which is the outbox's business and out of scope here.
-        // 🔴 NOTHING HERE IS LOAD-BEARING. `order_key` (minted at :1030) is the identity key and is
-        // untouched; `id` is the human display number and is never a lookup key.
-        const displayId = provisional || await nextProvisionalId(manualEvent?.id ?? null)
+        // ── 🔴 THE DISPLAY READS WHAT WAS SENT. THERE IS NO SECOND MINT. ─────────────────────────
+        // This line used to mint a FRESH number whenever the pre-mint had been skipped — so the card
+        // showed N41 while the queued body carried null and the server assigned 41. Two expressions, two
+        // answers, and the customer held the one that lost.
+        // 🔴 THE REASSURING COMMENT THAT STOOD HERE IS DELETED, NOT ANNOTATED. It declared this number
+        // inconsequential, which was true when written — the server renumbered EVERY offline order then,
+        // so a display-only number cost nothing. Adopt-verbatim turned the displayed number into a
+        // promise to a customer and nothing re-examined the claim. Removed rather than left standing
+        // beside its correction: a stale reassurance is worse than no comment at all.
+        // ⚠️ `result.provisional_id` is set by queue() for every queued create, so this cannot be empty
+        // on this branch; the `?? ''` is a type guard, not a fallback path.
+        const displayId = result.provisional_id ?? ''
         const optimistic = {
           id: displayId, order_key: orderKey,
           customer_name: manualName || 'Walk-up', customer_phone: manualPhone || null, customer_email: manualEmail || null,

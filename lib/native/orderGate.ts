@@ -213,8 +213,27 @@ export async function seedProvisionalSeq(eventId: string | null | undefined, hig
   if (highestKnown > cur) await Preferences.set({ key, value: String(highestKnown) })
 }
 
-async function post(url: string, body: Record<string, unknown>): Promise<Response> {
-  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+/** Live-submit bound. An operator is WAITING on this one, and the panel holds seven controls disabled
+ *  until it settles — 83 seconds was observed on hardware. 10s is comfortably inside reachability's own
+ *  ~30s offline verdict, so a genuinely dead uplink still falls through to the queue rather than being
+ *  pre-empted, while a slow-but-working one has ample time to answer a small POST. */
+const LIVE_TIMEOUT_MS = 10_000
+/** Drain bound. Nobody is waiting on a replay, so this is generous — but it MUST exist: an unbounded
+ *  fetch here never settles, `drainInFlight` never clears, and every later drainOutbox() returns the same
+ *  dead promise. That is what stranded an order for 39 minutes. */
+const DRAIN_TIMEOUT_MS = 30_000
+
+/** 🔴 BOUNDED. `AbortSignal.timeout` rejects the fetch, so a hang becomes an ORDINARY THROWN FETCH and
+ *  lands in the callers' existing `catch` — gatedAction queues it, the drain marks it pending and retries.
+ *  Nothing about failure CLASSIFICATION changes: an abort is not a response, so it can never be read as a
+ *  409 and can never dead-letter on its own. It only dead-letters via the pre-existing MAX_ATTEMPTS rule. */
+async function post(url: string, body: Record<string, unknown>, timeoutMs: number = DRAIN_TIMEOUT_MS): Promise<Response> {
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(timeoutMs),
+  })
 }
 
 /** The GATE. `online` is a hint from reachability — when false on native we skip a doomed attempt and queue
@@ -225,6 +244,9 @@ export async function gatedAction(opts: {
   kind: OutboxKind
   order_key: string
   provisional_id?: string
+  /** Event the order belongs to — used ONLY to key the provisional sequence when queue() mints. Passed by
+   *  the create caller; every other kind mints nothing and can omit it. */
+  eventId?: string | null
   online?: boolean
   expectedFrom?: string[]   // merged into the QUEUED body only (the online attempt stays byte-identical)
   /** Extra keys merged into the QUEUED body only, same contract as expectedFrom. Used by 'buzzer' ops
@@ -233,26 +255,50 @@ export async function gatedAction(opts: {
    *  was present and their decision is not something to arbitrate. */
   queuedExtra?: Record<string, unknown>
 }): Promise<GateResult> {
-  const { url, body, kind, order_key, provisional_id, online, expectedFrom, queuedExtra } = opts
+  const { url, body, kind, order_key, provisional_id, eventId, online, expectedFrom, queuedExtra } = opts
 
   const queue = async (): Promise<GateResult> => {
-    // expected_from rides ONLY on the replayed op → online requests are unchanged; the server guards replays.
     // PLACED OFFLINE, STAMPED HERE AND NOWHERE ELSE. This is the ONE place every queued body passes
     // through, which is why the flag lives here rather than at the call sites: an order queued because
     // reachability flipped AFTER its body was built (the 'route 2' case that produced an unmarked order
     // 5 on 21 August) is stamped just the same as one built while already offline. The panel cannot know
     // at body-build time; this function knows at queue time, which is the moment that is actually true.
     // It rides on the QUEUED body only, exactly like expected_from -- an online request is untouched.
-    const queuedBody = { ...body, placed_offline: true, ...(expectedFrom ? { expected_from: expectedFrom } : {}), ...(queuedExtra ?? {}) }
-    await enqueue({ kind, order_key, url, body: queuedBody, provisional_id })
-    return { ok: false, queued: true, provisional_id, order_key }
+    // ── 🔴 THE NUMBER IS MINTED HERE, ONCE, AND NOWHERE ELSE. ────────────────────────────────────
+    // It used to be decided at BODY-BUILD time on `isOnline()` — a DEBOUNCED BANNER signal that stays
+    // true for ~30s after real connectivity loss. An order placed inside that window was sent with
+    // `provisional_id: null`, failed, and was queued UNMARKED, while the panel separately minted a label
+    // from a second expression. The server then correctly assigned a counter value and the customer's
+    // number changed under them: an order labelled N41 landed as 41.
+    // 🔴 MINTING AT ENQUEUE IS THE ONLY MOMENT THAT IS ACTUALLY TRUE. This function is the one place
+    // every queued body passes through, and it is reached from BOTH routes — the known-offline check and
+    // the thrown-fetch catch. The same seam already stamps `placed_offline` for exactly this reason.
+    // 🔴 AND IT IS RETURNED, SO THE CALLER DISPLAYS WHAT WAS SENT. The second mint at the call site is
+    // deleted; there is now one value, used for the body and the card. Minting a FRESH number here while
+    // the panel kept its own would have traded a renumber for a mismatch, which is worse.
+    // ⚠️ ONLY FOR `create`, and only when the caller supplied none — a status/stock/buzzer op has no
+    // display number, and a caller that already has one keeps it.
+    // ⚠️ NO SEQUENCE VALUE IS CONSUMED BY AN ORDER THAT ENDS UP ONLINE: this runs only on the queue path.
+    let mintedProvisional = provisional_id ?? ''
+    if (!mintedProvisional && kind === 'create') mintedProvisional = await nextProvisionalId(eventId ?? null)
+    // expected_from rides ONLY on the replayed op → online requests are unchanged; the server guards replays.
+    const queuedBody: Record<string, unknown> = { ...body, placed_offline: true, ...(expectedFrom ? { expected_from: expectedFrom } : {}), ...(queuedExtra ?? {}) }
+    // 🔴 STAMPED WHERE THE SERVER ACTUALLY READS IT — inside `manualOrder`, not at the body root. The
+    // server reads `manualOrder.provisional_id`; a root-level key would be silently ignored and the
+    // order would replay unmarked, which is the defect this exists to close. Shape-specific on purpose,
+    // and guarded by `kind === 'create'`, which is the only kind with that shape.
+    if (mintedProvisional && kind === 'create' && queuedBody.manualOrder && typeof queuedBody.manualOrder === 'object') {
+      queuedBody.manualOrder = { ...(queuedBody.manualOrder as Record<string, unknown>), provisional_id: mintedProvisional }
+    }
+    await enqueue({ kind, order_key, url, body: queuedBody, provisional_id: mintedProvisional })
+    return { ok: false, queued: true, provisional_id: mintedProvisional, order_key }
   }
 
   // Native + known-offline → don't burn a timeout, queue immediately.
   if (isNativeApp() && online === false) return queue()
 
   try {
-    const res = await post(url, body)
+    const res = await post(url, body, LIVE_TIMEOUT_MS)
     const data = await res.json().catch(() => ({}))
     // A server RESPONSE (even an error) is NOT an offline case — return it as-is (web behaviour unchanged).
     return { ok: res.ok, queued: false, status: res.status, data, provisional_id, order_key }
