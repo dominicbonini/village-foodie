@@ -2189,7 +2189,14 @@ setItemModal({ item, modGroups, editCartKey })
             {eventBanner}
             {dealsButton}
           </div>
-          <div className="flex-1 min-h-0 min-w-0 overflow-y-auto pb-24">
+          {/* ⚠️ `scrollbar-hide` HIDES THE BAR, NEVER THE SCROLLING. The utility (app/globals.css:58)
+              sets `scrollbar-width: none` and the WebKit pseudo-element to `display: none` and nothing
+              else — the box is still `overflow-y-auto`, so the wheel, the swipe, the keyboard and the
+              scroll position all behave exactly as they did. It is the same utility the customer order
+              page uses on its category row, so this is the file's existing answer to this, not a new one.
+              ⚠️ SCOPED TO THIS ONE-PAGE SCROLLER. The tabs layout's box is untouched — it was not what
+              was asked about, and a truck on that layout sees exactly what it saw yesterday. */}
+          <div className="flex-1 min-h-0 min-w-0 overflow-y-auto scrollbar-hide pb-24">
             {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
           </div>
         </div>
