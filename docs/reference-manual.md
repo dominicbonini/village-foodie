@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.24
+HatchGrab Engineering Reference Manual · V11.26
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.24**
+**Version 11.26**
 
 August 2026
 
@@ -15,6 +15,402 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.26 — 18 August 2026
+
+Delta over V11.25 — **a regex that deleted 690 lines and was caught by luck; offline protection the
+KDS already had and four defects that hid it; a phone header that took five rounds and four of my own
+briefs to settle; and a van name that only earns its place when there are two screens to tell apart.**
+
+🔴 **EVERY WIDTH FIGURE IN THIS ENTRY IS MODELLED — Helvetica advance widths scaled to the Tailwind
+size in force, ±5%. NOTHING WAS RENDERED OR MEASURED AT ANY POINT THIS SESSION.**
+
+- 🔴 **A REGEX DELETED 690 LINES OF `app/dashboard/[token]/page.tsx` IN ONE EDIT, AND `tsc` CATCHING IT
+  WAS LUCK, NOT A SAFETY NET.** A regex meant to remove one inline effect matched far too much; five
+  "cannot find name" errors exposed it, and it was reconstructed from `git show HEAD:…` and spliced back
+  **by line number**, with the removals then redone by exact literal matching. 🔴 **HAD THE DELETED SPAN
+  BEEN SELF-CONTAINED — a block of JSX, or effects nothing else references — IT WOULD HAVE COMPILED
+  CLEAN, MATCHED ON LINT COUNTS AND SHIPPED.** **THE RULE: exact literal matching, never a regex, on any
+  file of size.** §38.
+- ✅ **THE HAND-SPLICE WAS PROVED LOSSLESS FOUR WAYS, AND THE DECISIVE ONE IS STRUCTURAL:** 🔴 **no diff
+  hunk falls anywhere inside the spliced span except the intended one** — a dropped, doubled or
+  reordered line would necessarily appear as a hunk there. That is the check to reach for after any
+  hand-splice. ⚠️ **AND THE TRAP IT EXPOSED IS STANDING: "before" figures must come from the WORKING
+  TREE, not `HEAD`.** Two byte counts failed to reconcile purely because a mid-session commit
+  (`7672bae`) moved `HEAD` while the tree was ahead of it; **the figures were measured correctly against
+  the wrong thing.** Reports since carry session-cumulative deltas and say so.
+- 🔴 **"ADD OFFLINE PROTECTION TO THE KDS" WAS A FALSE PREMISE — IT WAS NEVER ABSENT.** The KDS emits
+  the same 15-second POST to `/api/heartbeat` as the dashboard. **What looked like a gap was four
+  separate defects**, the worst being that 🔴 **the KDS showed NOTHING when offline protection fired:**
+  its banner read `vanPausedUntil` — the MANUAL column — only, so **ordering was paused for customers
+  while the kitchen screen looked entirely normal.** ⚠️ **AND THAT WAS A DIRECT CONSEQUENCE OF THE
+  V11.24 PAUSE FIX** — excluding `vanOnlinePausedUntil` was correct there, because the dashboard *gates*
+  it rather than OR-ing it raw and the KDS had no `deviceOnline` to gate with. **The decision left a
+  hole nobody named at the time.** Fixed by adding the gate rather than dropping it —
+  `offlinePausedRaw && !(deviceOnline && activeEventLive)` — with `pauseReason` distinguishing offline
+  from manual in the dashboard's own words, and **Resume offered only for a manual pause**, because an
+  offline pause is cleared by the next heartbeat. §11, §29.
+- 🔴 **`deviceOnline` IS A NEW `navigator.onLine` + LISTENER PAIR, NOT THE OUTBOX'S `isOffline`.** That
+  signal answers *"should I queue this write?"* — deliberately conservative and dev-toggleable. **A
+  truck's ordering banner must not depend on a write-queuing heuristic. Two jobs, two signals.**
+- **THE MECHANISM, END TO END:** emit (both surfaces, 15s) → `/api/heartbeat` stamps
+  `truck_vans.last_heartbeat_at` → the `heartbeat-monitor` Edge Function (**`STALE_THRESHOLD_SECONDS =
+  30`**, `lt.<now-30s>` **OR `is.null`**) → writes `truck_events.online_paused_until = now + 2h` → the
+  customer gate reads it. **Authoritative: `online_paused_until`.** `last_offline_pause_at` is a
+  display/forensics marker only; `last_heartbeat_at` is the input, not the state. ✅ **The pause
+  SELF-CLEARS** — a returning ping runs `clearOfflinePauseForVans`. ⚠️ **`net._http_response` IS THE
+  WRONG TABLE for the heartbeat** — it is a browser `fetch` to a Next.js route and never passes through
+  `pg_net`; rows there prove the MONITOR ran, never that a device pinged.
+- ✅ **ONE SHARED EMITTER — `lib/native/useHeartbeat.ts`.** Every difference between the two inline
+  versions was something the dashboard **had** and the KDS **lacked**: `deviceOnline` in deps, the
+  `onAppResume` re-ping, the logging. ⚠️ **BACKGROUNDING IS INDISTINGUISHABLE FROM OFFLINE** —
+  `setInterval` suspends in a backgrounded WebView and the van goes stale in 30 seconds, **which is why
+  the keep-screen-on control exists**, now a stated dependency rather than an implicit one. ⚠️ **The
+  switch gap could be closed safely because the `activeEventLive` gate's purpose was established before
+  it was weakened:** the monitor only pauses `status='open'` events, so an off-event stamp cannot cause
+  a wrong pause — the guard was avoiding pointless traffic, not preventing a wrong write.
+- 🔴 **THE KDS PHONE HEADER TOOK FIVE ROUNDS, FOUR OF THEM CAUSED BY MY OWN BRIEFS, AND THE SEQUENCE IS
+  THE LESSON.** A `View` sheet — **wrong, because a sheet HIDES THE BOARD while the operator changes
+  what the board shows.** Expand-in-place with state badges — **wrong, because a struck-through glyph
+  reads as "unavailable" or "cancelled" and these are SETTINGS: a screen deliberately set to make-only
+  is not in an error state.** Then the underlying error, named: 🔴 **trying to encode FOUR settings in a
+  collapsed row is what forced badges at all.** A sheet returned unasked, was reverted again, and the
+  shape settled. §5.
+- **THE SETTLED SHAPE.** Always visible below `sm:`: back · truck (and van, conditionally) · sound
+  `🔔` / a bell-with-slash (U+1F515) · `Screen on` / `Screen off` **in words** · `Screen settings` · `Manage event`. Behind
+  `Screen settings`, expanding **in normal flow and pushing the board down**: `View settings` →
+  `List`/`Grid` · `Full`/`Cook` → `Ready step On` · `Payment & handover Off` → `Sound settings` → the
+  two scope chips → due-to-cook → the native `Device settings` opener. 🔴 **NO STATE BADGES ANYWHERE:
+  the two controls an operator changes mid-service are REAL CONTROLS where the control IS the
+  indicator.** 🔴 **The labels are the wide-width labels, verbatim, and there are no helper sentences** —
+  expanded in place the operator sees the effect immediately, so the words earn nothing. ⚠️ One of
+  them, *"Sounds when a ticket turns amber"*, was rendering **cut off mid-sentence** in the sheet.
+- 🔴 **WORDS BEAT GLYPHS FOR SCREEN-ON, DECIDED THE HARD WAY: A SUN (U+2600), A CRESCENT MOON (U+1F319)
+  AND A STRUCK SUN WERE ALL REJECTED IN TURN.** `Screen on` / `Screen off` costs ~70px and removes all guesswork. ⚠️ **Two
+  rejected glyph attempts is a signal, not a coincidence.** **And it reversed a problem I created:**
+  screen-on is an **ACQUISITION MECHANISM** on web — Safari grants `wakeLock` only on a completed
+  gesture and drops it on visibility loss — so putting it behind a panel made re-acquiring a three-tap
+  job. **It belongs on the row.**
+- **`display: contents`, NOT A FLEX WRAPPER.** `hidden sm:contents` produces **no box**, so the wrapped
+  buttons stay direct children of the header's flex row with the same `gap-x-3`. 🔴 **A flex wrapper
+  would have replaced two flex items with one and shifted spacing at EVERY width above the breakpoint —
+  a wide-width regression caused by a phone-only change, which nobody would have attributed correctly.**
+  ⚠️ **UNVERIFIED AND WORTH ONE LOOK:** `display: contents` has real accessibility-tree quirks in some
+  Safari versions; "no box" is true by spec and the wide header has never been rendered.
+- 🔴 **A TOGGLE AND A RADIO PAIR NOW LOOK THE SAME, AND IT IS REPORTED RATHER THAN SHIPPED QUIETLY.**
+  `Ready step On` is a toggle — green means on, tapping turns it off. The two sound-scope chips are a
+  **radio pair** — green means selected, and tapping the green one does nothing. **Semantics were made
+  correct (`role="radio"`, `aria-checked`, a real `radiogroup`, and a first-statement
+  `if (selected) return` so the selected chip writes nothing), but visually only the shared grey track
+  distinguishes them.**
+- **WIDTH FINDINGS, ALL MODELLED.** 🔴 **`self-start` was needed** — the parent's `align-items: stretch`
+  ran the segmented track to the screen edge, leaving dead space after the words. ⚠️ **The collapsed row
+  must never wrap: only the truck NAME shrinks** (`min-w-0` + `truncate`), the van and every button are
+  `shrink-0`, **because a two-van truck tells its screens apart by that word.** 🔴 **`Test Kitchen— Van1`
+  — a missing space — was caused by splitting the name into two spans: each became a flex item, and a
+  flex item's LEADING WHITESPACE IS STRIPPED.** Fixed with a no-break space **written as an ASCII
+  escape**, so the file gains no character class and the next reader can see it. ⚠️ **The four-line
+  target was missed and reported rather than met by shortening a label** — 4 logical lines render as 6
+  visual rows at 375–390px. **Labels matching the wide width was judged worth more than the row count.**
+- 🔴 **THE VAN NAME IS NOW HIDDEN ON A ONE-VAN TRUCK, VIA ONE ADDITIVE FIELD: `/api/dashboard`'s
+  `activeVanCount`** — a `head: true` / `count: 'exact'` count over `truck_vans` filtered
+  `.eq('truck_id', …).eq('active', true)`, **the truck's vans and not the event's**, matching
+  `get_vans`'s existing rule so the two surfaces cannot disagree. 🔴 **THE URL-PASSING SHORTCUT WAS
+  CORRECTLY REJECTED:** only the dashboard's own link would carry a count, so a QR, a bookmark, a native
+  cold launch or a typed URL would silently fall back to showing the van — **a rule that holds on one
+  entry path is worse than no rule.** ✅ **The KDS drops the entire ternary ARM, not the span**, so the
+  no-break space leaves with the element it belongs to and the missing-space bug is structurally
+  excluded. **`null` means unknown and SHOWS the van** — removing once is quieter than adding once — and
+  the dashboard's gate covers `AppHeader`'s `alt` for free, since both render the same prop. ⚠️
+  **Reactivation lands on the next poll, not instantly**, because `truck_vans` is deliberately outside
+  realtime. ⚠️ **A head-count now runs on the hottest endpoint in the product**, polled every 15s by both
+  surfaces — cheap, but worth watching function duration after deploy. §5, §11.
+- **THE SHEET HEADING FOLLOWS THE BREAKPOINT:** `Sound settings` at `sm:` and above, where the view
+  controls, step switches, screen-on and the sound master are all on the header and only which-sounds
+  and due-to-cook remain behind it; `Device settings` below `sm:`, where the sheet holds only the native
+  card. **One `<h2>`, two spans, no JS branch.**
+- 🔴 **TWO STORAGE KEYS WERE SHARED BETWEEN THE SURFACES WITHOUT ANYONE INTENDING IT.**
+  `hg_keepawake_${token}` was written by **both** pages with the identical expression, so one iPad did
+  **not** have a separate dashboard and KDS screen-on. **Split: the KDS moved to
+  `hg_kds_keepawake_${token}`** with an `own ?? shared` fallback, so a device whose screen is currently
+  staying on **does not go dark because a key was renamed.** 🔴 **ONCE-ONLY AND IDEMPOTENT BY
+  CONSTRUCTION — no flag, no timestamp:** the guard is *"my own key is unset"*, and the only writer of
+  that key is this surface's toggle. **A guard that is a consequence of the data rather than bookkeeping
+  laid on top.** ⚠️ **`hg_soundcfg_` STAYS SHARED, DELIBERATELY** — 🔴 **the defect was never the
+  sharing; it was that only ONE SURFACE COULD WRITE a shared value.** The KDS now has the control. ⚠️
+  **No cross-surface sync was built:** a change on the KDS reaches an already-open dashboard only after
+  that page reloads; both are correct on next load.
+- **WHAT ALIGNED AND WHAT DELIBERATELY DID NOT.** Aligned: the master's label — `New-order sound` on
+  both, the KDS's more precise wording winning. Not aligned, on purpose: each surface keeps its own
+  control shape. 🔴 **And the KDS's sound master stays off the header at wide widths, recorded in a
+  comment so it is not "aligned" later** — the dashboard has header room; that header is ~375px over at
+  iPad portrait. **Same setting, two surfaces, two constraints — a legitimate divergence.**
+- 🔴 **THE ADD-ORDER OVERFLOW: THE OPERATOR'S OBSERVATION DID MORE THAN THE SOURCE READING.** *"Only the
+  one-page layout scrolls; separate categories doesn't, same width, same items"* eliminated the shell,
+  the header, the body and `viewportFit: 'cover'` in one sentence — **a controlled experiment four
+  questions of source analysis could not replace.** **The rule that explains it:** 🔴 **a box with
+  `overflow` set on one axis computes the OTHER to `auto`**, so the tabs layout is a scroll container on
+  both axes and absorbs any wide descendant, while the one-page layout lifts the banner and deals button
+  **out of the scroller** into a plain box whose parent cannot shrink below its content. ⚠️ **The first
+  diagnosis ruled out the wrong class entirely** — both the shell and `<main>` are `overflow-hidden`, so
+  a too-wide descendant *inside* them would be clipped, not scrollable. 🔴 **AND THE FIX NAMES THE ESCAPE
+  ROUTE, NOT THE ESCAPEE:** three `min-w-0` classes, no `overflow-x-hidden`, **"correct-if-the-mechanism-
+  is-right and inert otherwise"** — it cannot make anything worse, but it is not a demonstrated cure.
+  **OPEN until a swipe says otherwise.** §5.
+- ✅ **THE PRIVACY MANIFEST WAS ALREADY COMPLETE; THE MANUAL ENTRY WAS STALE** — see the correction at
+  §36's changelog line. ⚠️ **AND THE STANDING NOTE IS REFINED: `Package.swift` IS REWRITTEN ON EVERY
+  `cap sync`** and only reproduced identical bytes because the plugin list is unchanged. **That is where
+  a plugin change lands, not the pbxproj.**
+- 🔴 **`FeatureRow` HAS NO `id` — THE LABEL IS THE JOIN KEY, AND SO RENAMING A ROW SILENTLY DROPS IT
+  FROM THE PARITY CHECKER.** Two coming-soon rows were added (`Order page on your own website` on Max;
+  `Take payment on your phone` on Pro and Max, per the file's checked `pro ⇒ max` convention) and **both
+  briefs named row ids; there is nowhere to put them** — `name` is the identifier *and* the
+  `ROW_FEATURE_MAP` key. **Third instance of the same family** after `cook_screen`'s mismatched mapping
+  and the one-directional check: **marketing copy doubling as a lookup key is fragile by construction.**
+  ✅ `findPlanParityViolations()` EXECUTION-verified after each row: `PARITY: 0 []`. ⚠️ **`Walk-up order
+  processing`'s detail reads *"paid on your own card terminal"* — precisely what tap-to-pay replaces:
+  true today, half-stale the day it ships, and the first stale-text instance this session that is
+  OPERATOR-FACING COPY rather than a code comment.**
+- 🔴 **A LANDING FIX THAT WOULD HAVE COMPUTED TO NOTHING.** Anchor jumps parked 72px of the target under
+  the sticky nav; fixed with `.hg-landing section[id] { scroll-margin-top: var(--nav-h); }`. **`scroll-
+  padding-top` on the scroller would have resolved to NOTHING** — `--nav-h` is declared on
+  `.hg-landing`, and `html` is not that element. **A rule that silently computes to zero looks correct
+  in source** — the same family as the z-index-against-a-containing-block finding. ✅ `var(--nav-h)`
+  rather than a repeated `4.5rem`, so the offset cannot desync from the nav. ⚠️ **`Log in` moved from
+  `href="#"` to `/login`; `Contact` is still `href="#"`** and should not stay that way on a domain an
+  app reviewer will visit.
+- **`EventActionsModal` NEVER NAMED ITSELF, WHICH IS WHY THE NAMES DIVERGED.** Its heading is
+  `{event.venue_name}` — a prop — 🔴 **so the control's name existed ONLY in the two openers, edited in
+  separate tasks, with nothing linking them.** Both now read `Manage event`, both gained an `aria-label`
+  matching the exact visible string, and **the coupling is recorded in the file: label, `aria-label` and
+  `title` change together or not at all.** ⚠️ A JSX comment could not be used beside the dashboard's
+  opener — it sits in a ternary arm where a JSX comment is a parse error. **A `//` comment, forced, not
+  chosen.**
+- **METHOD.** ⚠️ **A SIXTH CONTRADICTORY BRIEF** — *"only `docs/reference-manual.md` may be modified"*
+  shipped alongside three fixes that could not be made under it. **Stopped and reported rather than
+  resolved; stopping has been correct every time.** ⚠️ Separately, **a `git stash push` was run while
+  counting lint errors, caught immediately, popped, and reported unprompted.** ✅ **"Quote the derivation
+  before reusing it" has now earned its place four times**, catching `vanOnlinePausedUntil`'s gate, the
+  back-handler's ordered priority list, the PIN-submit fetch building its own params, and the
+  dashboard's one-resolved-event-object invariant. ✅ **AND THERE IS NOW A CENSUS BASELINE FOR
+  "COPY-ONLY": +3 occurrences across four files, no class gained or lost.** ⚠️ **Census deltas can be
+  innocent** — a pair once appeared as a *quotation inside a comment* explaining a suppression, not a
+  fifth render site. **Read what the delta IS before treating it as a defect.**
+- 🔴 **VERIFICATION DEBT, THE LARGEST IT HAS BEEN, AND ONE ITEM IS DIFFERENT IN KIND: the dashboard's
+  heartbeat through `useHeartbeat` is SOURCE-READ ONLY, AND IT DECIDES WHETHER PIZZERIA GUSTO'S
+  CUSTOMERS CAN ORDER.** One query with their dashboard open on a live event — `now() -
+  last_heartbeat_at` under 15s — settles it. **Everything else on the list costs a visual defect or a
+  wasted tap; this one costs orders.** The KDS offline banner has never been seen firing · the
+  screen-on key migration has never read a stored value · the Add-order fix has never been swiped · the
+  event-isolation notice, the toast cap, reject's modal and the type equalisation are all unobserved. ✅
+  **One thing IS partly verified: the MULTI-van header path renders correctly with its separator and
+  spacing — Test Kitchen has two active vans, LIVE-VERIFIED. The one-van path is not.** 🔴 **And the
+  oldest items are still untouched: the two iPad display defects, and whether the Safari ejection stops
+  — checked against the SYNCED `ios/App/App/capacitor.config.json`, not the repo.**
+- **NEW OPEN ITEMS:** the van-scope heartbeat narrowing (the route should own it) · the Add-order fix
+  possibly inert · the toggle/radio visual ambiguity · the four-line target missed at 375–390px ·
+  `manage`'s third heartbeat emitter outside the shared hook · `Walk-up order processing`'s detail going
+  half-stale when tap-to-pay ships · `Contact` still `href="#"` · **the step switches sitting under a
+  `View settings` heading though they are lifecycle, not display.**
+
+## V11.25 — 17 August 2026
+
+Delta over V11.24 — **the KDS asked for one event and was silently served another; a header deficit
+no single control could close; a payment method the schema had been carrying with nobody writing it;
+and a modal backdrop that was never painted over because it never reached.**
+
+⚠️ **STANDING NOTE ADDED THIS SESSION:** every manual delta from here is accompanied by a one-line
+prompt naming the version and the file location, and a downloadable file where one is needed.
+
+- 🔴 **THE SERVER SILENTLY SERVED A DIFFERENT EVENT'S ORDERS. DEVICE-VERIFIED.** Switching event on
+  the KDS showed **the orders from the event already selected, under the new event's name.** The KDS
+  sends `event_id` and **no `date`**; the server honours an id only if it appears in `todayEvents`
+  (`.eq('event_date', date)`, defaulting to today), and 🔴 **an id it cannot honour does not error and
+  does not return null — it falls through to `todayEvents[0]` and runs the orders query against THAT
+  event.** The response *does* carry the served id (as `offlinePauseEventId`) and **the KDS never read
+  it**; every order row carries `event_id` and **neither surface filtered on it**; the header comes
+  from a **separate source**, the local `events` array, so the two can disagree with nothing to
+  reconcile them. 🔴 **AND `seededRef` MADE IT STABLE, NOT TRANSIENT** — every 60-second poll repeats
+  the same rejected request. ⚠️ **An operator cannot see it: `id` restarts at 1 per event, so a stale
+  card carries a plausible ticket number.** §5, §11.
+- 🔴 **A PREMISE HELD FOR THREE PROMPTS WAS FALSE: THE KDS PICKER IS NOT TODAY-ONLY.** V11.20 records
+  the KDS's **seed** candidate set as today-only, deliberately; that was carried into three successive
+  briefs as a fact about the **picker**. It is `/api/events/manage?upcoming=true` (`event_date >=
+  today`), rendered unfiltered with each row labelled `Today` or a weekday — **so tomorrow's event is
+  one tap away and unservable by construction.** ⚠️ **Same shape as the APNs payload assumption
+  (V11.24, T1): a fact about one mechanism carried into a claim about a neighbouring one without being
+  re-read.** §11.
+- **THE FIX IS THREE LAYERS AND THE ORDER IS THE POINT.** (1) The KDS **sends `date`**, from a single
+  `eventScopeRef` pair taken from `activeEvent` **in one expression** — so the two can never describe
+  different events — written in an effect keyed on `[activeEvent]` and declared **immediately above**
+  the effect that calls `fetchAll`. **A ref rather than a dependency, because `activeEvent`'s identity
+  changes every poll and would otherwise loop `fetchAll`.** (2) The client **verifies what it was
+  served** and on mismatch **returns before any state is written**, clears `orders` and shows a red
+  notice — 🔴 **it renders nothing rather than following the server, because adopting the served id
+  would be the auto-advance "seed once, then hold" exists to prevent.** (3) A **per-order `event_id`
+  filter** on both read paths, logging at `error` if it ever drops one; **it should never fire.**
+  ⚠️ **`offlinePauseEventId` is a NAME/MEANING MISMATCH** — its contract is the offline-pause ack key —
+  **used anyway as the only field carrying that value, and deliberately not renamed.** §5, §11.
+- **BOTH CALLERS WENT THROUGH ONE HELPER, INCLUDING THE ONE A COPY WOULD HAVE MISSED.** 🔴 **`submitPin`
+  builds its own params and sent `{token, pin}` only**, so a copy of the main fetch alone would have
+  left the PIN path unscoped. **Found because the brief required the dashboard's derivation to be
+  QUOTED before reuse — the third time that instruction has caught something.** Two of the dashboard's
+  properties were carried as **invariants**: id and date from **one resolved event object, never two
+  lookups**; and the ref written in an effect keyed on that object. ⚠️ **Invariant 2 rests on a
+  source-level argument about React effect ordering — if it is wrong, layer 2 catches it as a mismatch
+  and the board goes empty with a notice rather than showing wrong orders.** §11.
+- **BEHAVIOUR CHANGE, STATED:** a KDS handed tomorrow's event now **shows** tomorrow's, where it
+  silently showed today's. Correct — the operator chose it — **but a kitchen screen sitting on
+  tomorrow during today's service is now a reachable state.** ⚠️ **The BST 00:00–01:00 window is
+  REPORTED, NOT FIXED:** layer 1 removes it for every scoped KDS read (the `||` default is never
+  reached); **the two unscoped first-reads stay exposed for one poll, and the dashboard stays exposed
+  on the same shape when no event is selected at all.** §5, §27.
+- 🔴 **THE KDS PAUSE BUTTON IS REACHABLE WHERE EVENT ACTIONS IS NOT — AN INSTRUCTION TO REMOVE IT AS A
+  DUPLICATE WAS CORRECTLY STOPPED.** The menu item is gated `event.status === 'open'`, **but the modal
+  mount and its only opener are both `!isDemo`**, while the header button is
+  `activeEvent?.status === 'open' && (!isDemo || isPaused)` — **so on a PAUSED DEMO the header button
+  is the ONLY resume control.** Retained, with a comment recording all four reasons. ⚠️ **AND THE
+  QUALIFICATION THAT WEAKENED THE STOP'S OWN CASE WAS RAISED ANYWAY:** the route into that state named
+  in the comment — offline auto-pause — **no longer reaches `isPaused`**, because the V11.24 pause fix
+  excluded `vanOnlinePausedUntil`. **The stop still stood.** 🔴 **NEW RULE: M10 was a comment's
+  qualifier silently becoming false; this is a GATE whose JUSTIFICATION moved while the gate still
+  stands. Both need re-reading before acting, never inference from the changed neighbour.** §11.
+- 🔴 **THE HEADER DEFICIT IS ~380px AT IPAD PORTRAIT AND ONE BUTTON CANNOT FIX IT.** Removing the
+  ~110px pause button would simply let `Screen on` (105px) take its place on line 2 — **a 5px window,
+  and that argument needs no width model.** Sound and keep-screen-on **moved into the device sheet**
+  with full labels and helper lines, saving **122–158px against a 532px deficit — still two rows, by
+  375–411px, modelled and not measured.** 🔴 **THE OFF STATES ARE BADGED ON THE DEVICE BUTTON** —
+  a **muted-bell badge** when the ding is off, a **moon badge** when the wake lock is not held, both
+  when both — with the `aria-label` naming both states in words at all times: **a screen-off device
+  that looks screen-on is a dark screen mid-service.** ⚠️ **Absence carries the good state — the header
+  stays quiet when everything is normal.** §11.
+- **A FORCED CHANGE THAT WOULD HAVE DELETED CONTROLS ON WEB.** The device button and its sheet were
+  gated `isNativeApp() && !isDemo`, so **moving two ungated controls behind it would have deleted them
+  on web and in demo.** The gate moved **inward** to `ThisDeviceSettings`'s own mount; **that component
+  was not touched — the two rows went into the KDS's own sheet wrapper — so the dashboard's UserMenu
+  is untouched.** ⚠️ **`No extra wait` STAYS ON THE HEADER:** it is the control reached for **under
+  pressure**, and a two-tap dropdown is the wrong home for a pressure valve. 🔴 **THE REMAINING
+  DEFICIT IS ACCEPTED, NOT SOLVED** — the two candidates that would close it are constantly-used
+  controls and **how you tell two screens apart in a two-van truck.** **Two rows is the correct outcome
+  for seven controls plus an identity on a portrait tablet; it wraps rather than clips, which was the
+  actual defect.** §11.
+- 🔴 **AT PHONE WIDTH THE TWO STEP SWITCHES WERE BARE ICONS** — `💷` and `✓` — **for controls that
+  decide when an order leaves the screen and whether the money buttons exist.** Now one labelled
+  control carrying the state **in words** (`Steps · Ready + payment` / `Ready only` / `Payment only`,
+  plus a written-but-unreachable `None`), with a panel giving each switch a full label and a plain
+  sentence — *"Orders leave this screen when they're collected."* **Same handlers, same `disabled`
+  guard, not a second implementation.** 🔴 **THE MECHANISM IS `hidden sm:contents`, NOT `sm:flex`:**
+  `display: contents` produces **no box**, so the two buttons stay direct children of the header's flex
+  row — **a flex wrapper would have replaced two flex items with one and shifted spacing at EVERY width
+  above the breakpoint, a wide-width regression caused by a phone-only change.** ⚠️ **UNOBSERVED:
+  `display: contents` has real-world accessibility-tree quirks in some Safari versions.** §11.
+- **ACCESSIBLE NAMES: 14 OF 14.** `Event actions` was a bare `▾` with **no accessible name at any
+  width**, and it is the only route to Start Event, pause and change-event. Now
+  `aria-label="Event actions"` — **the exact visible string at wide width, following the Dashboard-link
+  precedent so voice control still matches** — plus a `title`. **All five glyph-only controls
+  (the back arrow, the tick, the coin, the device icon and the caret) now carry one.** §11.
+- **LABEL DECISIONS, TAKEN:** `Payment/Collected` → **`Payment & handover`** · `Event actions` →
+  **`Manage event`** · `Steps` → **`This screen`**. 🔴 **`Cook` → `Kitchen` REJECTED — it collides with
+  "Kitchen screen", the control that OPENS the KDS, and adds ~18px to a row already ~375px over.**
+  🔴 **`Ready step` UNCHANGED, DELIBERATELY** — it matches the dashboard's "Order-ready step", and the
+  settings copy tells operators the two are set separately per device; **renaming here breaks that
+  thread.** **Rejected candidates on record:** `Hand over` and `No prices` **under-describe**;
+  `Cook screen` and `Takes payment` **overstate**. *A label that overstates is worse than one that
+  under-describes.* ⚠️ **DECIDED, NOT YET APPLIED IN CODE.** §11.
+- 🔴 **`order_payments.method` ALREADY EXISTED — THIS WAS NEVER A SCHEMA CHANGE.** ⚠️ **The modal
+  string was a NULL FALLBACK, not a stance:** *"Paid in person — cash or your card machine — not
+  recorded"* renders **only when method is NULL**, and with one present the modal already printed
+  **"Paid in cash"** and **"Paid on your card machine"**. The recorded decision is narrower than it
+  reads — *"inventing 'cash' or 'card' … would be fabricating a financial record"* is **about a truck
+  that was never asked, not about the method being unknowable.** §37.
+- 🔴 **"CARD" MEANS TWO THINGS AND THE SCHEMA ALREADY SEPARATES THEM — WITH `channel`.** Online is
+  `channel:'online'` with `method` NULL; the operator's own terminal is `channel:'in_person_other'`
+  with `method:'card'`. **The fee engine reads the first and is forbidden the second**, and the two
+  **cannot land on one order by accident** because `mark_paid` returns **409 against a live card
+  hold**, after the 12 August double-charge. **One field is never asked to carry both.** §37.
+- 🔴 **THE GATE THAT DECIDED THE BUILD: `takes_cash` IS A DECLARATION, NOT AN UNASKED DEFAULT.** LIVE,
+  READ: Manage → Order settings, **"Do you take cash?"**, helper text naming till reconciliation, an
+  always-reachable `Toggle`, plus a separate per-event override; the column defaults `not null default
+  false`. **Had it been unexposed, FALSE would have meant "never asked" and recording `card` off it
+  would have been reasoning from a COLUMN DEFAULT to a LIVE VALUE — the error §1 records being refuted
+  by a screenshot.** Because it IS exposed, **a truck with it off has declared card-only and the
+  inference is sound.** §27, §37.
+- **THE BUILD.** Plain "Mark paid" and "Mark paid & collected" send **`method:'card'`, gated on
+  `takesCash` being OFF**; on a cash-taking truck the PAYMENT-NOT-RECORDED repair still sends nothing
+  and stays NULL **rather than fabricating one**. **`collected` now honours `body.method`** — it
+  previously **hardcoded NULL**, so a one-press truck could never record a method whatever it tapped —
+  and **the CHECK is unviolable because only two string literals can reach the column.** ✅ **Stripe
+  untouched:** a different writer, a byte-identical 409, and a held `collected` still books no money.
+  **Existing rows keep NULL; nothing backfills.** §37.
+- 🔴 **A CASH TAP PRINTED ITS OWN ACTION NAME AND OFFERED NO UNDO.** `mark_paid_cash` **matched no
+  branch** and fell to `labels[action] || action`, so the toast read the literal
+  **`Order #12 mark_paid_cash`** — **with no Undo at all.** ⚠️ **It survived because it is only
+  reachable on a truck with `takes_cash` ON, which is none of them** — *a fall-through that looks like
+  a label bug and is actually a missing capability.* Now **`Order #12 paid in cash` / `paid on your
+  card machine`, reusing PaymentActionsModal's exact phrases** — one vocabulary across modal and toast.
+  **EXECUTION-VERIFIED: 34 assertions**, including the idempotency key being identical for card, cash
+  and NULL. §11, §37.
+- ⚠️ **ONE OPERATOR-VISIBLE CHANGE ON GUSTO'S LIVE PATH: their plain "Mark paid" toast becomes "paid on
+  your card machine" where it said "marked paid".** Correct by their own configuration, and **the first
+  time the platform tells them what method it recorded.** 🔴 **If any of their trades are cash taken in
+  hand, that copy is where they will notice — worth telling them rather than letting them find it.**
+  Source-read, not observed. ⚠️ **`method`'s stated purpose is till reconciliation and it STILL has no
+  consumer at all.** §37.
+- 🔴 **THE MODAL BACKDROP WAS NEVER PAINTED OVER — IT NEVER REACHED.** DEVICE-VERIFIED: a vertical
+  strip down the right stayed light, aligning with the Kitchen Capacity sidebar. **The Orders column is
+  `<div className="@container lg:flex-1 …">`, and Tailwind's `@container` is
+  `container-type: inline-size`, which applies `contain: layout style inline-size` — and LAYOUT
+  CONTAINMENT MAKES THAT ELEMENT THE CONTAINING BLOCK FOR ITS `fixed` DESCENDANTS.**
+  `PaymentActionsModal` renders **from inside an OrderCard**, so `fixed inset-0` resolved to the orders
+  column and the dim stopped at its right edge. ✅ **It predicts the geometry exactly and predicts
+  `lg:`-and-above only.** ⚠️ **The leading hypothesis was refuted where it was pointed: the panel and
+  every ancestor carry no transform, filter, opacity, will-change, backdrop-filter, isolation or
+  z-index — the containment is on the SIBLING column.** §11.
+- **FIXED BY PORTALLING, AND NO Z-INDEX COULD HAVE HELPED** — 🔴 **`z-index` cannot extend an element
+  past its own containing block**, and removing `@container` would have changed the order-grid layout.
+  The one modal was portalled to `<body>`; overlay JSX character-identical, React event propagation
+  unaffected. **The KDS has no `@container` and was never affected.** 🔴 **AND THE SURVEY IS THE
+  FINDING: 84 hand-rolled backdrops across EIGHT z-index tiers**, `/50` and `/60` used **exactly as
+  often as each other**, and **seven putting the dim on a nested child.** ⚠️ **Any of those seven could
+  carry the same containing-block exposure, and nobody would connect it to a Tailwind utility on a
+  sibling column.** **Not unified — real work, later, not during a submission window.** §11.
+- 🔴 **A THIRD COMMENT FALSIFIED BY A LATER CHANGE.** OrderCard's *"centres on the VIEWPORT"* was **true
+  when written and falsified when `@container` was added** — joining `registerForPush`'s *"harmless"*
+  (V11.24) and the pause button's justification moving underneath its gate. **Three instances in two
+  days: a comment that states a CONSEQUENCE rather than an INTENTION goes stale silently when its
+  precondition moves.** §1.
+- ⚠️ **METHOD.** **A FIFTH CONTRADICTORY BRIEF** — *"only `docs/reference-manual.md` may be modified"*,
+  a stale edit of the standing dirty-tree line shipped alongside three fixes that could not be made
+  under it — **stopped and reported rather than resolved; stopping has been correct every time.** ·
+  **A planning-side misattribution corrected:** *"iPhone and portrait are the control"* belongs to the
+  **two iPad DISPLAY DEFECTS**, not to the Safari ejection; §1's wording was unambiguous and was
+  misread, then repeated. · **The Safari ejection restated:** the cause is `server.url`'s **path** in
+  Capacitor's prefix match, the fix is `allowNavigation` + `cap sync`, and 🔴 **the check is the SYNCED
+  FILE, `ios/App/App/capacitor.config.json`, not the repo** — the latest config commit `ccc5a2d`
+  predates this session. M13, M14.
+
+**STATE AT CLOSE, 17 AUGUST 2026.** 🔴 **SEVEN SOURCE FILES ARE UNCOMMITTED** — both dashboard pages,
+`lib/native/orderGate.ts`, `lib/native/useGatedActionResult.tsx`,
+`components/dashboard/PaymentActionsModal.tsx`, `app/api/dashboard/action/route.ts` and this manual.
+🔴 **NOTHING IN THIS ENTRY'S KDS OR BACKDROP WORK HAS BEEN SEEN RUNNING** — the phone step control,
+`sm:contents` at wide width, the device-sheet badges, the backdrop portal in landscape and the
+event-isolation mismatch notice are all source-read. ✅ **The three DEVICE-VERIFIED items are the
+symptoms, not the fixes: the wrong-event board, the lighter backdrop strip, and the two-row header.**
+
+**AWAITING A DECISION:** whether the three taken label renames are applied now or after submission ·
+whether `data.truck.paused_until` is removed · the KDS pause duration and its `window.confirm` · the
+buzzer's third post-gate copy · the APNs durable record · whether `method` gets the till-reconciliation
+consumer it exists for.
+
+🔴 **SUBMISSION — THE ONLY LIST WITH AN EXTERNAL CLOCK:** `ITSAppUsesNonExemptEncryption` ·
+**screenshots, iPhone AND iPad sets** · **the privacy manifest needs a `cap sync` + rebuild to reach
+the binary — decided is not shipped, and its absence rejects the UPLOAD with ITMS-91053 before a human
+opens it** · the two `BrandHomeLink` control sites · the launch-screen asset · 🔴 **the reviewer's demo
+credentials — an operator-gated app with no working route in is rejected on that alone** · ✅ **APNs
+proven end to end on hardware, the strongest 4.2 evidence available.**
+⚠️ **The app is a remote-URL shell pointing at PRODUCTION, so whatever is deployed during review is
+what the reviewer sees. A deploy mid-review changes the app under them — freeze from submission to
+verdict, which argues for taking the observation pass BEFORE submitting.**
 
 ## V11.24 — 17 August 2026
 
@@ -322,8 +718,11 @@ should follow `boardMode` · whether large-type Cook comes back as its own contr
 
 **AWAITING HARDWARE:** one Airplane Mode launch to characterise the shell with no fallback · queued
 `mark_paid`/`collected` toasts and the payment overlay, both unreachable in a browser · push after
-the AppDelegate fix · the two iPad display defects · **whether the Safari ejection stops, where
-iPhone and portrait are the control and that experiment exists only on this build.**
+the AppDelegate fix · **the two iPad display defects, where iPhone and portrait are the control and
+that experiment exists only on this build** · whether the Safari ejection stops.
+⚠️ **CORRECTED IN V11.25 (M13).** The "iPhone and portrait are the control" clause belongs to the
+DISPLAY DEFECTS, not to the Safari ejection, and was misread and then repeated across several turns.
+§1's own wording was unambiguous; the misattribution was planning-side.
 
 ## V11.22 — 16 August 2026
 
@@ -548,7 +947,14 @@ and the integrity check this manual mandates was itself found to be wrong.**
   times**, `config.toml` declares `[auth.email]` and no external provider, and customers have no
   accounts at all. **Decided: not building it**, on account-linking and private-relay grounds. §36.
 - **`NSPrivacyCollectedDataTypes` now declares Device ID** (App Functionality, linked, not tracking).
-  ⚠️ Needs a `cap sync` and rebuild before it ships. §36.
+  🔴 **CORRECTED IN V11.26 (F1) — THIS LINE READ AS "NOT YET WRITTEN" AND MEANT "NOT YET IN A BINARY".**
+  The declaration is **present and correct in the file** — Device ID · App Functionality · Linked true ·
+  Tracking false, beside `UserDefaults`/`CA92.1` — and the manifest is **registered in all four
+  `project.pbxproj` places including the Resources build phase**, the one that actually ships it. What
+  remains is a `cap sync` and an archive, and 🔴 **the manifest reaching the BINARY cannot be verified
+  without one: a clean upload is the proof, because ITMS-91053 is raised at upload time.** ⚠️ **Same
+  family as §27's migrations reading NOT YET RUN when they were applied — a note about the next step,
+  mistaken for a note about the current state.** §36.
 - ✅ **`cap sync` does NOT rewrite `project.pbxproj` on Capacitor 8 with SPM** — adding a real native
   plugin left it byte-identical; the plugin lands in `Package.swift`. **The standing fear over the four
   hand-authored privacy-manifest lines relaxes to a verification — but keep verifying**, this is a
@@ -574,6 +980,11 @@ Delta over V11.17 — **a root cause found, two of this manual's own claims stru
   match including the path** — so every hard navigation to a sibling route is handed to
   `UIApplication.shared.open`. **Same origin; the PATH damns it.** `router.push` is immune, which is why
   some controls worked and others did not. **The fix is `allowNavigation`, and it needs a `cap sync`.**
+  🔴 **AND THE CHECK IS THE SYNCED FILE, NOT THE REPO (V11.25, M14): `ios/App/App/capacitor.config.json`.**
+  The latest config commit is `ccc5a2d`, which predates the V11.25 session — **"I have not seen it for a
+  while" is not evidence the fix is in the binary.** ✅ **Operator reassurance worth repeating: the "sign
+  in" page is almost certainly the PIN gate, and the native session lives in Capacitor Preferences, which
+  Safari cannot read — the answer mid-service is RETURN TO THE APP, never sign in again in Safari.**
 - 🔴 **A CLASS, NOT THREE INCIDENTS: a server-derived input is EMPTY OFFLINE, and the code reads its
   absence as a FACT rather than as MISSING INFORMATION.** Three instances in one day — the "Mark paid"
   defect, the missing order number, and a payment modal that told an operator their cash order "was
@@ -1235,7 +1646,7 @@ Delta over V9.4 — the **29–30 July payments phase 1a/1b workstream**. Paymen
 
 - **THE WRITE PATH DISCARDED AN IDENTITY IT ALREADY HAD.** `/api/dashboard/action`'s entire auth was `verifyToken(token, pin)` — no cookie, no `getUser`, no `truck_users` read — while the sibling GET route resolved name, role and membership in full and the browser displayed it. **The read path knew who you were; the write path never asked.** Fixed with one shared resolver, split into `resolveActor` (may throw, GET, preserved byte-for-byte) and `resolveActorSafe` (action route). ⚠️ **A blanket try/catch around the GET resolver would have converted a genuine auth failure into a silent success**, letting a foreign operator through during an auth outage — caught before shipping.
 
-- **THE PAID STEP.** `trucks.show_paid_step` (**column** default false; ⚠️ **"Gusto unaffected" was WRONG — corrected V11.6: Gusto is `show_paid_step` TRUE**, and three of twelve trucks are) splits "Mark paid and done" into a relabelling single button: unpaid → `Mark paid`, paid → `Done`, part-paid → `Mark £X.XX paid`. **No double-tap gesture** — one tap advances a stage, so two quick taps do both with no timing window, no debounce and no delayed first action. `trucks.takes_cash` (default false) splits the paid action into `💷 Cash` / `💳 Card`, one tap either way, recording `order_payments.method`. **`method` is a SEPARATE axis from `channel`** — `channel` answers "does the 0.99% apply and does this count toward the allowance", and cash and own-PDQ are identical on it. Widening `channel` would make every fee query an `in (...)` over a growing list, and one forgotten member silently charges a fee on cash.
+- **THE PAID STEP.** `trucks.show_paid_step` (**column** default false; ⚠️ **"Gusto unaffected" was WRONG — corrected V11.6: Gusto is `show_paid_step` TRUE**, and three of twelve trucks are) splits "Mark paid and done" into a relabelling single button: unpaid → `Mark paid`, paid → `Done`, part-paid → `Mark £X.XX paid`. **No double-tap gesture** — one tap advances a stage, so two quick taps do both with no timing window, no debounce and no delayed first action. `trucks.takes_cash` (default false) splits the paid action into `💷 Cash` / `💳 Card`, one tap either way, recording `order_payments.method`. 🔴 **AND SINCE V11.25 THE PLAIN BUTTONS WRITE IT TOO: `takes_cash` is a DECLARATION** — a live, labelled control ("Do you take cash?") — **so a truck with it OFF has said it is card-only, and a plain "Mark paid" / "Mark paid & collected" there records `method:'card'`.** With it ON the plain names are not what the card renders, nothing is sent, and the value stays NULL — **the PAYMENT-NOT-RECORDED repair must never fabricate a method nobody was asked for.** `collected` honours `body.method` from V11.25; **it hardcoded NULL before, so a one-press truck could never record one whatever it tapped.** ⚠️ **The toasts now name it, reusing PaymentActionsModal's own phrases — "paid in cash" / "paid on your card machine" — one vocabulary across modal and toast.** **`method` is a SEPARATE axis from `channel`** — `channel` answers "does the 0.99% apply and does this count toward the allowance", and cash and own-PDQ are identical on it. Widening `channel` would make every fee query an `in (...)` over a growing list, and one forgotten member silently charges a fee on cash.
 
 - **`default_walkup_payment` WAS ADDED AND REMOVED WITHIN A DAY.** A truck-level default for "walk-ups usually pay at order / at collection" is wrong about half the time, because walk-ups and phone orders arrive through the SAME panel with OPPOSITE timings — so the operator must check and flip on every order anyway, which is worse than no default. Replaced with **two equal confirm actions, neither remembered**: `Confirm order` and `Cash £X` / `Card £X`. This is open-check semantics and matches how a POS actually behaves.
 
@@ -4016,6 +4427,16 @@ show_cooking_step lives per vehicle (truck_vans). It adds a "Cooking" step betwe
 ## Inline stock and category editing in the dashboard (V6)
 
 The dashboard Menu & Stock tab edits category prep and batch inline on the category header. Prep time is a minutes input plus a 0s/30s seconds select; batch size is a number input that is blank when null (placeholder ∞). updateCategoryField saves on blur/change. The category rename, allow-notes toggle, and full category settings remain on the Manage page only.
+
+> 🔴 **KDS EVENT SCOPING — THE READ MUST CARRY `date`, NOT ONLY `event_id` (V11.25).** `/api/dashboard`
+> honours an `event_id` only if it appears in `todayEvents`, which is `.eq('event_date', date)` with
+> `date` defaulting to today — and **an id it cannot honour does not error and does not return null: it
+> falls through to `todayEvents[0]` and runs the orders query against THAT event.** The KDS sent no
+> `date`, so switching to a non-today event served the previous event's orders under the new event's
+> name, stably, every 60-second poll. **Both KDS read paths now send the selected event's own
+> `event_date` beside its id, from ONE resolved object so the two can never disagree**, verify the
+> served id against the requested one (`offlinePauseEventId`), and filter incoming rows on `event_id`.
+> ⚠️ **Do not add a caller to this endpoint that sends `event_id` without `date`.** Section 5, Section 11.
 
 > **KDS pause badge note (V6.6) — ✅ FIXED IN V11.24.** The KDS read its pause indicator from `data.truck?.paused_until`, which is null because pause moved to `truck_events` (Section 5) **and because `/api/dashboard` hardcodes that response field to `null`**. The controls always wrote correctly (event-scoped); it was only the READ that was wrong. Both read paths now take `data.vanPausedUntil` — the live event column — through a local `applyPending`/`markPending` guard. 🔴 **Do not re-point anything on this page at `data.truck.paused_until`: it is a constant `null`, not a stale value, so a new reader gets an empty banner and no error.** Section 5, Section 11.
 
@@ -9044,6 +9465,8 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 **🔴 Trace the WRITE layer, not just the READ layer.** A visibility gate can be enforced where rows are CREATED rather than where they are read. Grepping the customer menu route for `is_available`, finding only item-related hits, and concluding "so an Off deal is not hidden from customers" produced a **wrong finding** — the gate is `.eq('is_available', true)` on the `event_deals` SEEDING query in `upsert_event`, one hop upstream. The read path does not need to filter on it because a deal that fails it never enters the set being filtered. **Concluding from the absence of a filter requires first asking how the rows got there.**
 
 **A stale callback in page-level state can fire in a later, unrelated context.** A completion callback stored when the setup wizard triggers a shared modal would, if never cleared, still be sitting in state months later — so an unrelated Settings import would run the wizard's "advance to the next step" and reopen setup chrome over a live truck. **Set it on every trigger, including the triggers that do not need one** (storing `null`), rather than only on the one that does. A conditional write leaves the previous value; an unconditional write cannot.
+
+🔴 **AND ITS SIBLING, FOUND IN V11.25: A Z-INDEX ANSWER TO A CONTAINING-BLOCK QUESTION IS ALSO A BUG, AND IT CANNOT EVEN WORK.** A modal backdrop dimmed everything except a right-hand strip, and the instinct is to raise it. **`z-index` cannot extend an element past its own containing block.** The cause was `@container` on a SIBLING column — `container-type: inline-size` applies `contain: layout style inline-size`, and **layout containment makes that element the containing block for its `fixed` descendants** — so a `fixed inset-0` rendered from inside it stops at that column's edge. **The fix is to remove the containing ancestor (portal to `<body>`), never to out-rank something that is not there.** ⚠️ **Before reaching for a z-index, ask whether the element is FAILING TO REACH rather than being PAINTED OVER.**
 
 **A stacking answer to a sequencing question is a bug.** Two overlays visible at once were "fixed" once by giving the front one a higher `z-index` — which is a correct answer to "which is on top" and the wrong answer to "should both exist". **Both being mounted is the fault.** The remedy is a render gate on the one that should not be there yet, never a z-index; raising the z-index leaves the second overlay alive behind a translucent backdrop, which is what the operator actually saw.
 

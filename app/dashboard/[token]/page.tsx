@@ -40,6 +40,7 @@ import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
+import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -47,7 +48,7 @@ import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategor
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
-import { onAppResume } from '@/lib/native/app'
+import { useHeartbeat } from '@/lib/native/useHeartbeat'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { configureStatusBar } from '@/lib/native/statusBar'
 // 🔴 `collected_cash` / `collected_card` ARE COLLECTIONS. Every branch below that asked "was this a
@@ -486,6 +487,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[capacityBreaches,setCapacityBreaches]=useState<CapacityBreach[]>([])
   const[breachDismissedSig,setBreachDismissedSig]=useState<string|null>(null)
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
+  // 🔴 THE TRUCK'S ACTIVE VAN COUNT, FROM THE SAME RESPONSE AS `activeVanName`. ONE SOURCE FOR ONE FACT:
+  // this surface also holds `vans` from /api/manage's get_vans, and reading the count from THAT would
+  // give the two surfaces two sources for one number — which is exactly how they come to disagree. The
+  // `vans` list keeps its own job (which van to open the KDS for, :1311) and is not consulted here.
+  // `null` = not known yet, and null SHOWS the van name.
+  const[activeVanCount,setActiveVanCount]=useState<number|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   // 🔴 THE COMPLETED ROW'S MODAL, WHICH IS THE ACTIVE LIST'S MODAL. One order_key at a time — the row
   // has no card and no local state of its own, so the page holds which one is open.
@@ -570,6 +577,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // cached orders/stock/capacity, so ordering against it would be unsafe. Online → not consulted (no gating).
   const[loadedEventIds,setLoadedEventIds]=useState<Set<string>>(new Set())
   const[showPauseModal,setShowPauseModal]=useState(false)
+  const[showExtraWaitPicker,setShowExtraWaitPicker]=useState(false)
   // Offline-pause notification: durable marker from /api/dashboard (set only by heartbeat-monitor,
   // survives the reconnect clear). Fires a one-time popup when it's NEWER than this device's ack.
   const[lastOfflinePauseAt,setLastOfflinePauseAt]=useState<string|null>(null)
@@ -929,6 +937,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
+      if(data.activeVanCount !== undefined) setActiveVanCount(data.activeVanCount)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
@@ -1190,37 +1199,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(typeof window==='undefined')return
     return addNetworkListener(s=>setDeviceOnline(s==='online'))
   },[])
-  // Package 6: on native app FOREGROUND, ping the heartbeat immediately (don't wait for the 15s tick) so a
-  // returning device clears any offline-pause fast. No-op on web. Only meaningful while a live event is
-  // heartbeating; the /api/heartbeat call is idempotent so an off-event ping is harmless.
-  useEffect(()=>{
-    return onAppResume(()=>{
-      if(typeof navigator!=='undefined'&&!navigator.onLine)return
-      fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,vanId:vanId||undefined})}).catch(()=>{})
-    })
-  },[token,vanId])
-  useEffect(()=>{
-    // Heartbeat ONLY while the active event is LIVE (status==='open'). Offline protection only
-    // matters for a live event — a confirmed/pre-order event is unaffected by the truck being
-    // offline, and the monitor only pauses status='open' events, so a non-live van going stale is
-    // harmless. Keyed on activeEventLive so the effect re-runs on the flip: STARTING an event
-    // (confirmed→open) fires an IMMEDIATE ping (no 15s wait) then the interval; FINISHING it
-    // (open→closed) runs cleanup → interval cleared, no re-arm. No stale closure — the gate is the
-    // dep, so the interval only ever exists during a live window.
-    if(!activeEventLive)return
-    const sendHeartbeat=async()=>{
-      if(typeof navigator!=='undefined'&&!navigator.onLine)return
-      console.log('[Heartbeat] sending token:',token,'vanId:',vanId||'(none)')
-      try{
-        const res=await fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,vanId:vanId||undefined})})
-        const data=await res.json()
-        console.log('[Heartbeat] response:',data)
-      }catch(err){console.error('[Heartbeat] failed:',err)}
-    }
-    sendHeartbeat() // immediate ping on the confirmed→open flip OR an offline→online reconnect (deviceOnline dep)
-    const id=setInterval(sendHeartbeat,15000)
-    return()=>clearInterval(id)
-  },[token,vanId,activeEventLive,deviceOnline])
+  // ── HEARTBEAT — ONE SHARED EMITTER (lib/native/useHeartbeat) ──────────────────────────────────────
+  // 🔴 EXTRACTED, NOT REWRITTEN. The 15s interval gated on `activeEventLive`, the `navigator.onLine`
+  // skip, the immediate ping on the confirmed→open flip, the `deviceOnline` dep and the native
+  // foreground re-ping were ALL this surface's, and all moved verbatim. This page's behaviour is
+  // unchanged in every branch; the KDS now runs the same code instead of a copy that lacked the last
+  // two. ⚠️ `earlyPing` is NOT passed here — this surface never had one and does not need one: its
+  // interval is already running before any navigation away.
+  useHeartbeat({ token, vanId, activeEventLive, deviceOnline })
   // Sound pref: install the audio-unlock (prime the shared AudioContext on first user gesture) +
   // restore the per-device localStorage pref on mount; persist on change. Per-token so two trucks on
   // one device don't collide. Default ON when no stored pref.
@@ -1982,7 +1968,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // held-authorisation guard refuses `mark_paid` outright while a card hold is live.
   // ⚠️ `selectedOrDefaultEvent` is the SAME object `activeEvent` resolves to (`resolvedEvent` below is
   // assigned from it); it is read here because this sits above that assignment.
-  const plainPaidMethod:'card'|null=resolvePaidStep(truck,selectedOrDefaultEvent).takesCash?null:'card'
+  // 🔴 THE `takesCash` GATE IS GONE, AND THE RULE IS SIMPLER THAN THE ONE IT REPLACES: A PLAIN PAID
+  // PRESS ALWAYS RECORDS `card`. It used to read `resolvePaidStep(...).takesCash ? null : 'card'`, so a
+  // truck that HAD enabled cash recorded nothing on a plain press — on the reasoning that the operator
+  // had not been asked. 🔴 THAT WAS OVER-CAUTIOUS AND IS OVERRULED: `takes_cash` adds a BUTTON, it does
+  // not change what the plain button MEANS. An operator with a Cash button in front of them who presses
+  // plain paid instead has taken a card payment; recording `card` is the honest reading, not a
+  // fabrication. The explicit controls still answer for themselves — `mark_paid_cash` / `collected_cash`
+  // record cash, `mark_paid_card` / `collected_card` record card, and the SERVER derives those from the
+  // name so this value never reaches them.
+  // ⚠️ IT IS STILL TYPED `'card' | null` AND STILL PASSED, deliberately: the type is the shape the hook
+  // and the body spread already expect, and a future rule that needs a null again has somewhere to put
+  // it. Nothing else in this file consults `takesCash` for this decision any more.
+  // ⚠️ STRIPE IS UNTOUCHED. An online payment books `channel:'online'` from lib/payments/online.ts and
+  // never reaches these actions; the 409 held-authorisation guard still refuses `mark_paid` outright
+  // while a card hold is live.
+  const plainPaidMethod:'card'|null='card'
   const handleGateResult=useGatedActionResult<Order>({
     showToast,
     findOrder:(k)=>orders.find(o=>o.order_key===k)??deviceQueuedOrders.find(o=>o.order_key===k),
@@ -2207,7 +2208,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // ── `extendEvent` DELETED (16 August) ───────────────────────────────────────────────────────────
   // 🔴 IT HAD NO CALLERS LEFT. Its last one was the recently-closed banner's "Extend 30 min", removed
-  // above; the Event actions menu moved to `applyFinishTime` when the shared picker replaced it. A
+  // above; the Manage event menu moved to `applyFinishTime` when the shared picker replaced it. A
   // relative, unconfirmed +30 writer left sitting in a money screen is an invitation to re-add a button
   // to it, which is the thing being removed.
   // ⚠️ NOTHING QUEUED CAN LAND ON IT. It was a CLIENT function; an offline replay carries the POST body
@@ -2446,6 +2447,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     [showKDSPicker, () => setShowKDSPicker(false)],
     [showEventMenu && !!activeEvent && !isDemo, () => setShowEventMenu(false)],
     [showPauseModal && !isDemo, () => setShowPauseModal(false)],
+    // Above the event menu in this list because it opens FROM it and stacks over it (z-70/z-50).
+    [showExtraWaitPicker, () => setShowExtraWaitPicker(false)],
     [showScreenOffWarning, () => setShowScreenOffWarning(false)],
     [showOfflinePausedNotice, () => setShowOfflinePausedNotice(false)],
   ])
@@ -2758,12 +2761,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Renders nothing outside demo, so call sites need no conditional of their own.
   const demoLockChip = isDemo ? <DemoLockChip className="ml-2" /> : null
 
-  const renderExtraWait=(cls:string)=> (isDemo&&waitMinutes<=0)?null:waitMinutes>0?(
+  // ── EXTRA WAIT — ONE WRITE, TWO CONTROLS ─────────────────────────────────────────────────────
+  // 🔴 THE FETCH, THE OPTIMISTIC `markPending` PAIR AND THE `startedAt` STAMP ARE THE ORIGINALS, LIFTED
+  // OUT OF THE <select>'s onChange UNCHANGED. They are extracted so the picker can call the SAME write
+  // the select called; nothing about the body, the action name, the values or the pending keys moved.
+  const applyExtraWait=(m:number)=>{const startedAt=new Date().toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});markPending('extraWaitMins',m);markPending('extraWaitStartedAt',startedAt);setExtraWaitMins(m);setExtraWaitStartedAt(startedAt)}
+  // 🔴 `variant` DEFAULTS TO 'select', SO THE HEADER MOUNT IS UNCHANGED. Only the EventActionsModal
+  // mount passes 'button' — the menu is the place a <select> among filled buttons looked wrong, and the
+  // dashboard header was not part of that request. Both forms call `applyExtraWait`, so there is one
+  // write with two openers, never two writes.
+  const renderExtraWait=(cls:string,variant:'select'|'button'='select')=> (isDemo&&waitMinutes<=0)?null:waitMinutes>0?(
     <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
       ⏱ +{waitMinutes}m active · Tap to clear
     </button>
+  ):variant==='button'?(
+    <button onClick={()=>{setShowEventMenu(false);setShowExtraWaitPicker(true)}} className={`bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm ${cls}`}>
+      ⏱ Add extra wait
+    </button>
   ):(
-    <select defaultValue="" onChange={e=>{const m=parseInt(e.target.value);if(!m)return;const startedAt=new Date().toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});markPending('extraWaitMins',m);markPending('extraWaitStartedAt',startedAt);setExtraWaitMins(m);setExtraWaitStartedAt(startedAt);e.target.value=''}} className={`border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${cls}`}>
+    <select defaultValue="" onChange={e=>{const m=parseInt(e.target.value);if(!m)return;applyExtraWait(m);e.target.value=''}} className={`border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${cls}`}>
       <option value="">⏱ Add extra wait</option>
       <option value={10}>+10 min</option>
       <option value={20}>+20 min</option>
@@ -2843,7 +2859,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           WebKit's sticky compositing hint. See AppHeader and docs/native-shell-report.md. */}
       <AppHeader
         sticky={false}
-        truckName={isDemo ? null : (truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null)}
+        // 🔴 ONE STRING, TWO RENDER SITES — AppHeader puts it in the <p> AND in the logo's `alt`
+        //    (components/shared/AppHeader.tsx:119,126), so gating it HERE covers the accessible name
+        //    too; there is no second place to fix. `activeVanCount !== 1` hides the van on a one-van
+        //    truck and `null` (not yet known) falls through to showing it.
+        truckName={isDemo ? null : (truck?.name ? ((vanName && activeVanCount!==1) ? `${truck.name} — ${vanName}` : truck.name) : null)}
         truckLogoUrl={truck?.logo || null}
         subtitle={truck?.venue_name || undefined}
       >
@@ -2852,7 +2872,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             subsequent dings play (the autoplay-unlock moment). */}
         <button onClick={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})} className="hidden sm:flex items-center gap-2">
           <span className="text-xs font-medium text-slate-500 select-none">
-            {soundEnabled ? '🔔 Sound on' : '🔕 Sound off'}
+            {soundEnabled ? '🔔 New-order sound' : '🔕 New-order sound'}
           </span>
           {/* CANONICAL toggle values (w-11 h-6 · teal-500 · translate-x-6) — matched to the shared
               <Toggle> in components/dashboard/OrderCard.tsx. This site is a BESPOKE inline copy because the
@@ -2973,7 +2993,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <span className="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
                   )}
                 </div>
-                {/* "Change" button removed — event-switching lives in Event actions ▾ → "📅 Change event"
+                {/* "Change" button removed — event-switching lives in Manage event ▾ → "📅 Change event"
                     (redundant here on every viewport). The no-event "Select event" path below is unaffected. */}
                 {/* Status label — the words and the branch order live in lib/event-display, shared with the
                     KDS; only the palette is per-surface (this header is dark). Output is unchanged. */}
@@ -2990,13 +3010,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // Padlock only — no chip. The explainer on click carries the "why"; a chip here too would
                   // double the message on a control they haven't engaged with yet.
                   <button onClick={()=>setShowDemoEventLock(true)}
+                    aria-label="Manage event"
                     className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-slate-700/60 border border-slate-600 rounded px-2.5 py-1 cursor-pointer">
-                    <span aria-hidden>🔒</span> Event actions
+                    <span aria-hidden>🔒</span> Manage event
                   </button>
                 ):(
+                  // 🔴 THE NAME AND THE ACCESSIBLE NAME MOVE TOGETHER, ALWAYS. This read "Event actions"
+                  // until the V11.25 rename; the KDS's opener for the SAME shared EventActionsModal carries
+                  // `aria-label="Manage event"`, and one control may not answer to two names. The label is
+                  // the exact visible string minus the caret, so voice control matches what is on screen.
                   <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
+                    aria-label="Manage event"
                     className="flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2.5 py-1 transition-colors">
-                    Event actions ▾
+                    Manage event ▾
                   </button>
                 )}
               </>
@@ -3144,7 +3170,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* ⚠️ "Extend 30 min" REMOVED FROM THIS BANNER (16 August), matching the KDS's, which lost
                 its copy first. It called `extendEvent(activeEvent.id,30)` — one tap, relative, with no
                 confirm and no undo, which is the shape that got pressed by accident.
-                🔴 RECOVERY IS NOT LOST. Event actions ▾ -> "Change event finish time" reaches the same
+                🔴 RECOVERY IS NOT LOST. Manage event ▾ -> "Change event finish time" reaches the same
                 write behind a picker and a confirm, and can set any future time rather than only +30.
                 ⚠️ THE BANNER ITSELF STAYS — it is how an operator knows the event has ended. It keeps
                 `justify-between` so the sentence sits exactly where it did; there is no empty slot,
@@ -3155,7 +3181,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             {/* Mobile controls row REMOVED to reclaim vertical space (was: inline Add-extra-wait + Prep).
-                "Add extra wait" now lives in the Event actions ▾ menu (below); Prep is mobile-dropped (the
+                "Add extra wait" now lives in the Manage event ▾ menu (below); Prep is mobile-dropped (the
                 KDS covers live prep). Desktop/iPad are unchanged — they keep both inline in the right-hand
                 stack beside the stat boxes (md:block extra-wait + Prep, below). Stat boxes stay on all sizes. */}
             {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>
@@ -4141,7 +4167,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <div className={`${KITCHEN_CAPACITY_GRID} items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-slate-800">Total capacity</span>
-                      {activeEvent.van_id&&activeVanName&&(
+                      {/* The van chip beside Total capacity — same rule, same field: on a one-van truck
+                          it names the only van there is. Q4 of docs/van-name-visibility-report.md listed
+                          this site; it is covered here rather than left as the header's odd one out. */}
+                      {activeEvent.van_id&&activeVanName&&activeVanCount!==1&&(
                         <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5 flex-shrink-0">🚐 {activeVanName}</span>
                       )}
                     </div>
@@ -4953,7 +4982,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowDemoEventLock(false)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="flex items-start justify-between gap-3 mb-3">
-              <h3 className="font-black text-slate-900 flex items-center gap-2"><span aria-hidden>🔒</span> Event actions</h3>
+              <h3 className="font-black text-slate-900 flex items-center gap-2"><span aria-hidden>🔒</span> Manage event</h3>
               <button onClick={()=>setShowDemoEventLock(false)} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center leading-none">×</button>
             </div>
             <p className="text-sm text-slate-600 mb-3">
@@ -4980,7 +5009,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           `onResume` is passed, so recovery stays reachable and only the trap is removed. */}
       {showEventMenu&&activeEvent&&!isDemo&&(
         <EventActionsModal
-          event={{id:activeEvent.id,venue_name:activeEvent.venue_name,status:activeEvent.status}}
+          event={{id:activeEvent.id,venue_name:activeEvent.venue_name,status:activeEvent.status,town:activeEvent.town,event_date:activeEvent.event_date,start_time:activeEvent.start_time,end_time:activeEvent.end_time}}
           noteValue={eventNoteInput}
           onNoteChange={setEventNoteInput}
           onSaveNote={()=>saveEventNote(activeEvent.id)}
@@ -4989,12 +5018,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           paused={paused}
           onPause={isDemo?undefined:()=>{setShowEventMenu(false);setShowPauseModal(true)}}
           onResume={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
-          extraWaitControl={renderExtraWait('w-full')}
+          extraWaitControl={renderExtraWait('w-full','button')}
           onChangeFinishTime={()=>{setShowEventMenu(false);setFinishTimeTarget({id:activeEvent.id,end_time:activeEvent.end_time??null,event_date:activeEvent.event_date??null})}}
           onFinishEvent={()=>finishEvent(activeEvent.id)}
           onCancelEvent={()=>cancelEventFromMenu(activeEvent)}
           onClose={()=>setShowEventMenu(false)}
         />
+      )}
+
+      {/* The extra-wait picker — opened from the event menu's "Add extra wait" row, which closes as it
+          opens (the same hand-off pause and change-finish-time already make). It writes through
+          `applyExtraWait`, the select's own write. */}
+      {showExtraWaitPicker&&(
+        <ExtraWaitModal onPick={m=>{applyExtraWait(m);setShowExtraWaitPicker(false)}} onClose={()=>setShowExtraWaitPicker(false)}/>
       )}
 
       <ToastStack toasts={toasts} dismissToast={dismissToast}/>

@@ -13,6 +13,7 @@ import { AppLink } from '@/components/native/AppLink'   // internal-route anchor
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
+import { ExtraWaitModal } from '@/components/shared/ExtraWaitModal'
 import { RejectOrderModal } from '@/components/shared/RejectOrderModal'
 import { isDemoIdentifier } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
@@ -29,7 +30,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
-import { readSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
+import { readSoundConfig, seedSoundConfig, effectiveSoundConfig, writeSoundConfig } from '@/lib/sound-prefs'
 import { formatTime, formatTimeRange, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
 import { fmtVenue, eventDateLabel, eventStatusDisplay, EVENT_STATUS_TEXT_ON_LIGHT, EVENT_STATUS_DOT } from '@/lib/event-display'
 import { useAndroidBack } from '@/lib/native/backHandler'
@@ -40,6 +41,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
+import { useHeartbeat } from '@/lib/native/useHeartbeat'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, PLAIN_PAID_ACTIONS } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
@@ -155,6 +157,8 @@ export default function KdsPage() {
   // (route.ts:711), so this state was permanently null however many times the operator paused. See
   // docs/kds-pause-fix-report.md. The state NAME is kept; only its source and its guard changed.
   const [pausedUntil, setPausedUntil] = useState<string | null>(null)
+  /** `truck_events.online_paused_until` — the OFFLINE auto-pause. Gated, never OR'd raw. */
+  const [onlinePausedUntil, setOnlinePausedUntil] = useState<string | null>(null)
   const [extraWaitMins, setExtraWaitMins] = useState(0)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -176,9 +180,22 @@ export default function KdsPage() {
   // Per-device keep-screen-on pref — SAME rule as the dashboard (see its comment for the full reasoning):
   // operators default ON (opt-out), demo defaults OFF (opt-in) so KeepAwakePrompt never renders unasked on
   // a demo. The Screen on/off toggle stays fully functional either way.
+  // ── 🔴 THE KDS'S OWN KEY. IT USED TO WRITE THE DASHBOARD'S. ────────────────────────────────────
+  // Both pages wrote `hg_keepawake_${token}` with the identical expression, so screen-on was ONE
+  // setting pretending to be two: turning it on here turned it on there. The KDS moves to
+  // `hg_kds_keepawake_${token}`; 🔴 THE DASHBOARD'S KEY IS UNTOUCHED and its behaviour does not move.
+  // 🔴 MIGRATE ON FIRST READ, ONCE-ONLY AND IDEMPOTENT BY CONSTRUCTION — no flag, no timestamp. The
+  // guard is "my own key is unset"; the migration's own effect is to SET it, so a second run cannot
+  // satisfy its own precondition. An operator whose screen currently stays on keeps it; the first
+  // write from this surface then makes the two independent for ever.
+  // ⚠️ localStorage AND NOT Preferences, deliberately, and the rule holds: Preferences is for values
+  // that must survive a WKWebView cold kill because they decide BOARD MEMBERSHIP (the two step
+  // switches). This decides appearance and a hardware lock — losing it costs one tap, not a wrong
+  // board — so it stays where the dashboard's equivalent is.
   const [keepScreenOn, setKeepScreenOn] = useState(() => {
     if (typeof window === 'undefined') return !isDemo
-    const pref = localStorage.getItem(`hg_keepawake_${token}`)
+    const own = localStorage.getItem(`hg_kds_keepawake_${token}`)
+    const pref = own ?? localStorage.getItem(`hg_keepawake_${token}`)
     return isDemo ? pref === 'on' : pref !== 'off'
   })
   // ACTUAL keep-awake state, not intent — so the KDS Screen chip can't lie. No grace needed: with
@@ -187,6 +204,11 @@ export default function KdsPage() {
   useEffect(() => subscribeWakeState(setWakeState), [])
   const [showScreenOffWarning, setShowScreenOffWarning] = useState(false)
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
+  // 🔴 THE TRUCK'S ACTIVE VAN COUNT, FROM `/api/dashboard` — the header uses it to decide whether the
+  // van name says anything. `null` = NOT KNOWN YET (or the count query failed), and null SHOWS the van:
+  // before the first response there is nothing to decide on, and removing a name once on the first poll
+  // is quieter than adding one once. This surface had no way to know this fact until the field existed.
+  const [activeVanCount, setActiveVanCount] = useState<number | null>(null)
   // ── VIEW + LAYOUT: LAZY INITIALISERS, THE SAME PATTERN AS keepScreenOn ABOVE ────────────────────
   // 🔴 THIS READS localStorage SYNCHRONOUSLY AT FIRST PAINT. It used to start `null` and be filled by a
   // mount effect, which persisted correctly but restored ONE FRAME LATE — and for the VIEW that frame is
@@ -301,6 +323,20 @@ export default function KdsPage() {
   )
   const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
   const [isOffline, setIsOffline] = useState(false)
+  // ── 🔴 `deviceOnline` — A SECOND SIGNAL, AND IT IS NOT `isOffline`. ─────────────────────────────
+  // `isOffline` comes from the OUTBOX's reachability (getNetworkStatus / subscribeNetworkStatus) and
+  // answers "should I queue this write?". This one answers "is this device on the network right now?"
+  // and is the dashboard's own expression — `navigator.onLine` plus its two listeners — reproduced so
+  // the offline-pause gate below is the SAME derivation on both surfaces rather than a lookalike.
+  // ⚠️ THEY ARE NOT INTERCHANGEABLE. The outbox signal is deliberately conservative and can lag or be
+  // forced by the dev toggle; using it here would make a truck's ordering banner depend on a write-
+  // queuing heuristic. Two jobs, two signals, stated rather than merged.
+  const [deviceOnline, setDeviceOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true)
+  useEffect(() => {
+    const on = () => setDeviceOnline(true), off = () => setDeviceOnline(false)
+    window.addEventListener('online', on); window.addEventListener('offline', off)
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off) }
+  }, [])
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
   const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
   // FIX 2 — durable offline pending-status overlay (shared with the dashboard). Optimistic advances live in
@@ -379,7 +415,19 @@ export default function KdsPage() {
   // ⚠️ AT AND ABOVE `sm:` NOTHING CHANGES: the switches stay on the header and this opener is hidden.
   // See the `hidden sm:contents` wrapper — `contents` means the two buttons remain DIRECT children of
   // the header's flex row at wide width, so their spacing is the header's own `gap-x-3`, unchanged.
-  const [showStepsPanel, setShowStepsPanel] = useState(false)
+  // 🔴 THE STEPS PANEL'S STATE IS GONE — the panel was ABSORBED, not deleted. Its two rows now open
+  // inside the one `View` panel below `sm:` (which is `deviceOpen`), so a second piece of state for a
+  // second sheet would be the thing that lets one phone show two panels again.
+  const [showExtraWaitPicker, setShowExtraWaitPicker] = useState(false)
+  // ── 🔴 THE PHONE HEADER'S EXPAND STATE — IN FLOW, NOT A SHEET ─────────────────────────────────
+  // 🔴 A SHEET COVERS THE BOARD WHILE THE OPERATOR CHANGES WHAT THE BOARD SHOWS. `List`/`Grid` and
+  // `Full`/`Cook` change the tickets underneath; behind an overlay the change cannot be seen being
+  // made. This flag drives an ordinary flex child instead, so the header grows and the board moves
+  // down. DO NOT PUT THESE CONTROLS BACK IN A MODAL.
+  // ⚠️ REACT STATE, NOT localStorage: it survives every render and poll — nothing writes it but the
+  // toggle — and does NOT survive a reload, which reopens collapsed. 🔴 NO AUTO-COLLAPSE: `setPhoneOpen`
+  // has exactly one caller, the toggle's own onClick.
+  const [phoneOpen, setPhoneOpen] = useState(false)
   const [eventCancelTarget, setEventCancelTarget] = useState<TruckEvent | null>(null)
   const [eventCancelCount, setEventCancelCount] = useState(0)
   const [eventCancelBusy, setEventCancelBusy] = useState(false)
@@ -500,6 +548,7 @@ export default function KdsPage() {
 
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
+      setActiveVanCount(data.activeVanCount ?? null)
       // Buzzers: the VAN's rack size, resolved server-side (lib/buzzer.ts). Null ⇒ this van has no
       // buzzers and the chip is never rendered. The KDS does NOT read effectiveBuzzerPrompt — the
       // after-order prompt belongs to Add Order, which the KDS does not have.
@@ -531,6 +580,13 @@ export default function KdsPage() {
       // ⚠️ `extra_wait_mins` on the line below is NOT the same case and is NOT changed — the same
       // override block sources it from the selected EVENT (route.ts:712), so it already carries live data.
       setPausedUntil(applyPending('vanPausedUntil', data.vanPausedUntil ?? null))
+      // 🔴 THE OFFLINE AUTO-PAUSE COLUMN. V11.24 EXCLUDED IT DELIBERATELY AND THIS ADDS IT BACK
+      // CORRECTLY — WITH THE GATE, NOT RAW. That exclusion was right at the time: the dashboard does
+      // not OR `vanOnlinePausedUntil` in, it gates it on `deviceOnline && activeEventLive`, and
+      // copying the OR without the gate would have shown a stale offline banner on a reconnected
+      // device. The gate is now here too (see `offlinePausedDisplay`), so the column can be read.
+      // ⚠️ DO NOT RE-EXCLUDE THIS. Without it the KDS shows NOTHING while customers cannot order.
+      setOnlinePausedUntil(data.vanOnlinePausedUntil ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
       setCategoryOrder(data.categoryOrder ?? [])
       setItemCategoryMap(data.itemCategoryMap ?? {})
@@ -809,14 +865,15 @@ export default function KdsPage() {
   useAndroidBack([
     [isDemo && showKdsIntro, () => dismissKdsIntro()],
     [!!finishTimeTarget && !finishTimeBusy, () => setFinishTimeTarget(null)],
-    [deviceOpen && !isDemo, () => setDeviceOpen(false)],
+    // 🔴 NO LONGER `&& !isDemo`, AND THAT IS A CONSEQUENCE OF THE MERGE, NOT A NEW DECISION. This
+    // panel is now the phone's ONLY route to the two step switches, and the steps panel it absorbed
+    // was registered unconditionally — keeping the demo clause would have TAKEN BACK Android-back
+    // closing from a demo operator who has it today.
+    [deviceOpen, () => setDeviceOpen(false)],
     [!!finishConfirm, () => setFinishConfirm(null)],
     [showEventPicker, () => setShowEventPicker(false)],
-    // The steps panel — a consequence of adding a modal to this surface, not a separate change. It is
-    // registered HERE, in this page's ordered list, for the reason the reject gate is: `useAndroidBack`
-    // keeps ONE LIFO stack and the ORDER of this array is the nesting. Beside the event picker because
-    // it is the same kind of thing — a chooser opened from the header, over the board, under nothing.
-    [showStepsPanel, () => setShowStepsPanel(false)],
+    // The extra-wait picker — opened FROM the event menu and stacked over it, so it dismisses first.
+    [showExtraWaitPicker, () => setShowExtraWaitPicker(false)],
     [!!eventCancelTarget && !eventCancelBusy, () => setEventCancelTarget(null)],
     // 🔴 THE REJECT GATE. It is registered HERE, in this page's ordered list, and NOT from inside
     // RejectOrderModal — `useAndroidBack` keeps ONE LIFO stack and the ORDER of this array is the
@@ -845,27 +902,17 @@ export default function KdsPage() {
     setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
   }, [events, selectedEventId])
 
-  useEffect(() => {
-    // Heartbeat ONLY while this KDS's active event is LIVE (status==='open') — offline protection
-    // only matters for a live event; a confirmed/pre-order event isn't affected by going offline,
-    // and the monitor only pauses status='open' events. Keyed on activeEventLive so STARTING an
-    // event fires an immediate ping then the interval, and FINISHING it clears the interval (no
-    // re-arm). No stale closure — the gate is the dep.
-    if (!activeEventLive) return
-    const sendHeartbeat = async () => {
-      if (typeof navigator !== 'undefined' && !navigator.onLine) return
-      try {
-        await fetch('/api/heartbeat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, vanId: vanId || undefined }),
-        })
-      } catch {}
-    }
-    sendHeartbeat() // immediate ping on the confirmed→open flip
-    const heartbeatInterval = setInterval(sendHeartbeat, 15000)
-    return () => { clearInterval(heartbeatInterval) }
-  }, [token, vanId, activeEventLive])
+  // ── HEARTBEAT — THE SHARED EMITTER (lib/native/useHeartbeat) ────────────────────────────────────
+  // 🔴 THREE DEFECTS CLOSED BY ONE CALL. This was an inline near-duplicate of the dashboard's effect
+  // that lacked two of its parts: no `deviceOnline` dep, so a reconnect waited up to 15s for the next
+  // tick; and no native foreground re-ping, so a BACKGROUNDED KDS — a sleeping kitchen iPad — went
+  // stale in 30 seconds and paused a truck's ordering. Both now come from the shared hook.
+  // 🔴 `earlyPing` IS THE SWITCH-GAP FIX, AND IT IS THIS SURFACE'S ALONE. The dashboard's interval
+  // clears the instant it unmounts; a KDS mount then needs auth, `/api/dashboard` AND a second
+  // `/api/events/manage` round trip before `activeEvent` exists — against a 30-SECOND threshold. One
+  // ping on mount, ungated, closes that. See the hook for why weakening the gate is safe: the monitor
+  // only pauses `status='open'` events, so an off-event stamp cannot cause a wrong pause.
+  useHeartbeat({ token, vanId, activeEventLive, deviceOnline, earlyPing: true })
 
   useEffect(() => {
     fetchAllRef.current = fetchAll
@@ -946,7 +993,7 @@ export default function KdsPage() {
     if (value) { st = await keepAwake() } else { await allowSleep() }
     // PER-DEVICE pref (localStorage, per-token) — mirrors sound + the dashboard. No DB round-trip; read
     // synchronously on mount so the KeepAwakePrompt can't flash for an operator who turned it off.
-    try { localStorage.setItem(`hg_keepawake_${token}`, value ? 'on' : 'off') } catch {}
+    try { localStorage.setItem(`hg_kds_keepawake_${token}`, value ? 'on' : 'off') } catch {}
     return st
   }
   // 🔴 BRANCHES ON THE SETTING, NOT ON `wakeState`. It used to test `screenHeld`, so once belief diverged
@@ -968,6 +1015,69 @@ export default function KdsPage() {
     }
   }
   const confirmScreenOff = async () => { setShowScreenOffWarning(false); await applyKeepScreenOn(false) }
+
+  // ── 🔴 ONE BUTTON, TWO MOUNTS — THE HEADER AND THE DEVICE SHEET ─────────────────────────────────
+  // 🔴 IT IS A PLACED VALUE, NOT A COPY. The `paidChip` / `statusBadgeKds` pattern: computed once,
+  // rendered wherever it is needed. Both mounts are THIS element, with THIS `onClick`, so there is one
+  // acquire path and no second implementation to drift.
+  // 🔴 AND THE PATH IS A REAL `click`. `onClick` → `toggleKeepScreenOn` → `applyKeepScreenOn(true)` →
+  // `keepAwake()`, which reaches `navigator.wakeLock.request` with NOTHING awaited before it (the
+  // platform check is synchronous and the only dynamic import is on the native branch). Safari spends
+  // the user activation on the first `await`, so that ordering is the whole reason this works.
+  // 🔴 NEVER A `pointerdown` LISTENER. The global one-shot pointerdown was the previous bug and was
+  // removed; keepAwake.ts's own note says an unreliable pointerdown-triggered request "is exactly what
+  // failed on Safari". Do not reintroduce anything of that shape.
+  // 🔴 WHY IT IS BACK ON THE HEADER (and sound is not): ON WEB THIS BUTTON IS THE ACQUISITION
+  // MECHANISM, not a display. The browser drops the lock whenever the page loses visibility or focus,
+  // so an operator who navigates away and back must RE-ACQUIRE — and a control behind two taps in a
+  // sheet is the wrong place for the recovery action. The native app holds it through the plugin and
+  // never needs this; the web KDS does, every time.
+  // ⚠️ `screenHeld`, NOT THE STORED SETTING. It shows what the lock is ACTUALLY doing, so "on" can
+  // never claim something the device is not doing. `wakeState` may DISPLAY; it must never DECIDE —
+  // which is why `toggleKeepScreenOn` still branches on `keepScreenOn`.
+  // ⚠️ THE LABEL IS THE ONLY THING THAT DIFFERS between the two mounts: the header carries the whole
+  // phrase, the sheet's row already has "Keep the screen on" beside it and needs only the state word.
+  // 🔴 `wordsOnly` IS OPTIONAL AND DEFAULTS TO FALSE, WHICH IS WHY THE `sm:`-AND-ABOVE MOUNT IS
+  // UNCHANGED — without it this renders exactly what it always rendered, ☀️ when the lock is held and 🌙
+  // when it is not. The PHONE mount passes it, and gets no glyph at all: the row carries words.
+  // 🔴 TWO GLYPH ATTEMPTS HAVE NOW BEEN REJECTED — ☀️/🌙 as a pair, then the sun struck through — and the
+  // conclusion recorded here is that a state GLYPH cannot say "this is a setting, not a fault". The
+  // words can. This costs ~70px on the narrowest row in the product and is spent deliberately.
+  // 🔴 ONE IMPLEMENTATION. The handler, the `aria-pressed`, the colours and the binary `screenHeld` rule
+  // are shared, and none of them branches on this flag.
+  // 🔴 THE NEW-ORDER SOUND MASTER, AS A CONTROL RATHER THAN A BADGE — ONE IMPLEMENTATION, TWO MOUNTS,
+  // exactly like `screenOnBtn` below it. It was on the phone row only; at `sm:` and above the master
+  // lived INSIDE the device sheet and the header showed a 🔕 BADGE on the 📱 button instead — a laptop
+  // operator could see that the ding was off but had to open a sheet to change it, which is the wrong
+  // way round for the control an operator hits when the van gets loud.
+  // ⚠️ TWO DISTINCT GLYPHS, NEVER ONE STRUCK THROUGH: 🔔 and 🔕 each read as themselves. Colour carries
+  // the same state a second time, and the accessible name says it in words at both states, because the
+  // glyph is the only visible label. The handler is the original — enabling primes the audio, because
+  // enabling is the gesture the browser requires.
+  const soundBtn = (extra: string) => (
+    <button
+      type="button"
+      onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
+      aria-pressed={soundEnabled}
+      aria-label={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+      title={soundEnabled ? 'New-order sound is on — tap to turn it off' : 'New-order sound is off — tap to turn it on'}
+      className={`${extra} items-center px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
+    >
+      <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
+    </button>
+  )
+
+  const screenOnBtn = (label: string, wordsOnly = false) => (
+    <button
+      type="button"
+      onClick={toggleKeepScreenOn}
+      aria-pressed={screenHeld}
+      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${screenHeld ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+    >
+      {!wordsOnly && <span aria-hidden>{screenHeld ? '☀️' : '🌙'}</span>}
+      <span>{label}</span>
+    </button>
+  )
 
   // Shared stacked-toast + ready-email-undo machinery (the SAME modules the dashboard uses). KDS passes
   // NO onUndoRestore — it has no prep pills; undo just reverts status and the order re-appears in cookOrders
@@ -1048,7 +1158,13 @@ export default function KdsPage() {
   // Order settings, "Do you take cash?"), so OFF means a plain "Mark paid" is a card payment on the
   // operator's own terminal; ON means the card renders the explicit Cash/Card pair and nothing is
   // asserted here. ⚠️ Never Stripe: an online payment books `channel:'online'` and never reaches these.
-  const plainPaidMethod: 'card' | null = resolvePaidStep(truck, activeEvent).takesCash ? null : 'card'
+  // 🔴 ALWAYS `card` — THE `takesCash` GATE IS GONE ON BOTH SURFACES, AND THE REASONING IS THE
+  // DASHBOARD'S, RECORDED THERE IN FULL: `takes_cash` adds a BUTTON, it does not change what the plain
+  // button MEANS. The explicit `*_cash` / `*_card` names still answer for themselves and the server
+  // derives their method from the string, so this value never reaches them.
+  // ⚠️ KEEP THE TWO SURFACES IDENTICAL. This expression and the dashboard's are one rule; if either is
+  // ever changed alone, one truck records two different answers depending on which screen was tapped.
+  const plainPaidMethod: 'card' | null = 'card'
 
   const handleGateResult = useGatedActionResult<Order>({
     showToast,
@@ -1209,6 +1325,7 @@ export default function KdsPage() {
     setPin(pinInput)
     setTruck(data.truck)
     setShowCookingStep(data.vanShowCookingStep ?? false)
+    setActiveVanCount(data.activeVanCount ?? null)
     // Fix 3's filter applies here too — same reasoning, same expectation that it can never fire.
     setOrders(prev => applyPendingBuzzers(mergeOrders(prev, (data.orders ?? []).filter((o: Order) => !requestedEventId || o.event_id === requestedEventId)), peekPendingBuzzer))
     // The SECOND read path, and it had the identical defect. Same field, same guard — the guard is a
@@ -1239,7 +1356,7 @@ export default function KdsPage() {
 
   // ── `extendEvent` DELETED (16 August) ───────────────────────────────────────────────────────────
   // 🔴 IT HAD NO CALLERS LEFT once this screen's recently-closed banner lost its "Extend 30 min". The
-  // Event actions menu moved to `applyFinishTime` when the shared picker replaced the +30 control.
+  // Manage event menu moved to `applyFinishTime` when the shared picker replaced the +30 control.
   // ⚠️ NOTHING QUEUED CAN LAND ON IT. It was a CLIENT function; an offline replay carries the POST body
   // to /api/events/action and is served by that route's `update` handler, which is untouched — so an op
   // queued before this change still replays, and `pendingSyncCount` is still incremented by
@@ -1369,6 +1486,22 @@ export default function KdsPage() {
   const recentlyClosed = !!(activeEvent?.status === 'closed' && activeEvent.closed_at && Date.now() - new Date(activeEvent.closed_at).getTime() < 10 * 60 * 1000)
 
   const isPaused = pausedUntil ? new Date(pausedUntil) > new Date() : false
+  // ── 🔴 THE OFFLINE PAUSE, WITH THE DASHBOARD'S GATE — NOT OR'd RAW ──────────────────────────────
+  // The dashboard's expression, reproduced:
+  //     const offlinePausedDisplay = offlinePaused && !(deviceOnline && activeEventLive)
+  //     const paused = manualPaused || offlinePausedDisplay
+  //     const pauseReason = manualPaused ? 'manual' : offlinePausedDisplay ? 'offline' : null
+  // 🔴 WHY THE GATE AND NOT A RAW OR: `online_paused_until` lingers in the DB for ~15-30s after a
+  // device reconnects, because only the next heartbeat clears it. Showing it raw would tell a working
+  // kitchen its orders are paused when they are not. The gate suppresses the DISPLAY the instant this
+  // device is back and its event is live, exactly as the dashboard does.
+  // ⚠️ MANUAL WINS, in the same order the dashboard uses, so the two can never disagree about which
+  // reason to name. The manual half — `pausedUntil`, its applyPending guard and its resume — is
+  // untouched by this.
+  const offlinePausedRaw = onlinePausedUntil ? new Date(onlinePausedUntil) > new Date() : false
+  const offlinePausedDisplay = offlinePausedRaw && !(deviceOnline && activeEventLive)
+  const anyPaused = isPaused || offlinePausedDisplay
+  const pauseReason: 'manual' | 'offline' | null = isPaused ? 'manual' : offlinePausedDisplay ? 'offline' : null
 
   const kdsMode = truck?.kds_mode ?? false
   const displayMode = truck?.display_mode ?? 'list'
@@ -1639,10 +1772,50 @@ export default function KdsPage() {
           <span aria-hidden>←</span>
           <span className="hidden sm:inline">Dashboard</span>
         </AppLink>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="font-medium text-slate-900">
-            {truck.name}{vanName ? ` — ${vanName}` : ''}
+        {/* ── 🔴 FIX 2 — THE NAME IS THE ONLY THING ON THIS ROW ALLOWED TO GIVE WAY ────────────────
+            The collapsed row wrapped when a long truck+van name met three state badges, and collapsed is
+            the state the operator is in all service. Every other item here is `shrink-0`: the badges are
+            the state and must never be cut. This block is `shrink` with `min-w-0`, so it absorbs the
+            deficit instead of pushing a chip onto a second line.
+            🔴 THE TRUCK TRUNCATES AND THE VAN DOES NOT, AND THAT SPLIT IS THE POINT. A plain `truncate`
+            on one string would eat the END of it — which is exactly where the van name is — and a
+            two-van truck tells its screens apart by that word. So the truck name is its own `truncate`
+            span and the " — Van 2" is a `shrink-0` sibling that is always drawn in full:
+              "The Long Barn Wood-Fired Pizza Co — Van 2"  ->  "The Long Barn Wo... — Van 2" (CSS ellipsis)
+            ⚠️ ONE OUTER SPAN, NOT TWO FLEX CHILDREN. The wrapper's `gap-2` applies to its children, so
+            adding a second child would have inserted 8px between the truck and the van at EVERY width.
+            The two spans are inside the original span instead, which keeps them one run of text.
+            ⚠️ `sm:shrink-0` RESTORES TODAY'S BEHAVIOUR ABOVE THE BREAKPOINT. At `sm:` and up this block
+            cannot shrink, so `truncate` can never engage and the ellipsis cannot appear. */}
+        <div className="flex items-center gap-2 min-w-0 shrink sm:shrink-0">
+          <div className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+          <span className="font-medium text-slate-900 flex min-w-0">
+            {/* 🔴 THE VAN IS A LAST RESORT, NOT A FIXED BLOCK, AND THE TWO SHRINK FACTORS ARE HOW.
+                `shrink-[999]` against `shrink` means flexbox takes ~1000 pixels off the TRUCK name for
+                every one it takes off the van, so in practice the truck is gone before the van loses a
+                character — and at 320px, where even that is not enough, the van clips to "Van 1..." rather
+                than the row wrapping. Both carry `truncate`, so whichever gives way gets an ellipsis and
+                neither ever wraps.
+                ⚠️ AT `sm:` AND ABOVE NEITHER CAN ENGAGE: the wrapper is `sm:shrink-0`, so nothing inside
+                it shrinks and `text-overflow` has nothing to do. */}
+            <span className="truncate shrink-[999] min-w-0">{truck.name}</span>
+            {/* 🔴 `\u00A0` AND NOT A PLAIN SPACE, AND THE BUG IT FIXES WAS MINE. Splitting the name into
+                two spans last task made each of them a FLEX ITEM, and a flex item's own LEADING
+                white-space is stripped — the space before the em dash simply stopped existing, so the
+                header rendered `Test Kitchen— Van1`. A no-break space is not collapsible white-space, so
+                it survives, and in this font it has the SAME advance as the space it replaces, which is
+                why `sm:` and above is pixel-unchanged. ⚠️ WRITTEN AS THE ESCAPE `\u00A0`, deliberately:
+                a literal NBSP in source is invisible to the next reader and would add a character class
+                to this file. The escape is ASCII on disk. */}
+            {/* 🔴 `activeVanCount !== 1` — THE VAN NAME ONLY EARNS ITS PLACE WHEN THERE ARE TWO SCREENS
+                TO TELL APART. One active van and the header reads the truck name alone, separator and
+                all: this whole ternary arm is what disappears, so the `\u00A0` goes with it and cannot
+                strand a dangling dash. More than one van — or a count that has not arrived — renders
+                exactly what it renders today, `\u00A0— Van 1`, space either side of the dash.
+                ⚠️ `!== 1` AND NOT `> 1`, DELIBERATELY: `null` (unknown) and `0` (a truck with no active
+                van, which still has a `van_name` in a stale URL) both fall through to SHOWING the name,
+                which is the direction that never hides something an operator was relying on. */}
+            {vanName && activeVanCount !== 1 ? <span className="truncate shrink min-w-0">{`\u00A0— ${vanName}`}</span> : null}
           </span>
         </div>
 
@@ -1652,7 +1825,11 @@ export default function KdsPage() {
             an operator no longer picks a role and a set of steps separately. The divider that separated
             the two pairs went with it. `hg_kds_view_` is still READ ONCE for the migration and is never
             written again. */}
-        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+        {/* 🔴 `hidden sm:flex` — PHONE ONLY. At `sm:` and above this is `display:flex`, which is what it
+            computed to before, so the segment, its divider and all four buttons are unchanged there.
+            Below `sm:` the same four buttons render inside the `View` panel — the SAME handlers and the
+            SAME words, a second PLACE and never a second implementation. */}
+        <div className="hidden sm:flex items-center gap-1 bg-slate-100 rounded-lg p-1">
           <button
             onClick={() => setLayoutOverride('list')}
             className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
@@ -1772,11 +1949,13 @@ export default function KdsPage() {
               }`}
             >
               <span aria-hidden>💷</span>
-              {/* ⚠️ "Payment/Collected" NAMES THE BUTTONS THE OPERATOR ACTUALLY SEES on the card —
+              {/* ⚠️ "Payment & handover" NAMES WHAT THIS SCREEN DOES, not two of our status values. It was
+                  "Payment/Collected" — two internal statuses and a slash that reads as "or". The buttons an
+                  operator sees are still the ones this names —
                   "Mark paid", "Collected", "Mark paid & collected" — rather than describing the step in
                   the abstract. The earlier rule against labelling a control with a status word was
                   rescinded for this switch deliberately, for exactly that reason. */}
-              <span className="hidden sm:inline text-xs">Payment/Collected</span>
+              <span className="hidden sm:inline text-xs">Payment &amp; handover</span>
             </button>
         </div>
 
@@ -1793,22 +1972,61 @@ export default function KdsPage() {
             ⚠️ NO `aria-label`: the button has real visible text, so it already has an accessible name,
             and an aria-label would have to repeat it to satisfy Label in Name. `title` carries the
             longer sentence for pointer users instead. */}
+        {/* ── PHONE ROW — FOUR CONTROLS, NO INDICATORS ────────────────────────────────────────────
+            🔴 EVERY STATE BADGE IS GONE FROM THIS ROW, AND THE REASON IS NOT SPACE. A struck-through
+            glyph reads as "unavailable" or "cancelled"; these are SETTINGS. A screen deliberately set to
+            make-only is not in an error state, and a cross said it was. The badges existed only because
+            four settings were being encoded in a collapsed row — so the two an operator changes
+            mid-service became REAL CONTROLS here, where the control IS the indicator, and the rest went
+            behind a button where their state is visible in full.
+            🔴 NO `🔕` AS A BADGE, NO `🌙`, NO `☀️`, NO STRUCK `✓` OR `💷` ANYWHERE ON THIS ROW. The one
+            glyph left is the sound toggle's own face, which is the control, not a marker on another one.
+            ⚠️ ALL FOUR ARE `sm:hidden`. At `sm:` and above every one of these is already on this header
+            as its own control and none of this renders. */}
+        {/* SOUND — icon-only, and the two states are TWO DISTINCT GLYPHS. 🔴 NEVER ONE STRUCK THROUGH:
+            🔔 and 🔕 are different characters that both read as themselves, which is exactly what a
+            struck glyph fails to do. The accessible name says the state AND the action in words at both
+            states, because the glyph is the only visible label. The handler is the original — enabling
+            primes the audio, because enabling is the user gesture the browser requires. */}
+        {soundBtn('sm:hidden flex')}
+        {/* SCREEN — WORDS. 🔴 THIS IS THE CONTROL COMING BACK OUT OF A PANEL, AND IT IS A CORRECTION.
+            On web this is the ACQUISITION mechanism, not a display of one: Safari grants `wakeLock` only
+            on a completed gesture and drops the lock on visibility loss, so re-acquiring must be one tap.
+            Putting it behind `Screen & sound` last task made it three. `screenOnBtn` is the SAME function
+            the `hidden sm:block` mount calls and `toggleKeepScreenOn` is untouched — only the label
+            argument and the words-only flag differ. The label is the wide-width label, verbatim. */}
+        <div className="sm:hidden shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off', true)}</div>
+        {/* SCREEN SETTINGS — everything that is NOT changed mid-service. See the panel below for what is
+            in it and why it is a sheet rather than an expanding row. */}
         <button
-          onClick={() => setShowStepsPanel(true)}
-          title="Which steps this screen does — marking orders ready, and taking payment and handing over"
+          type="button"
+          onClick={() => setPhoneOpen(v => !v)}
+          aria-expanded={phoneOpen}
           className="sm:hidden flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
         >
-          <span className="font-semibold">Steps</span>
-          <span className="text-slate-400">·</span>
-          {/* 🔴 THE `'None'` ARM IS DEFENSIVE AND UNREACHABLE. DO NOT DELETE IT AS DEAD, AND DO NOT
-              BUILD A PATH TO IT. Each switch is `disabled` while it is the only step left, so the pair
-              cannot both be off — a screen performing no steps has no buttons at all (renderButtons ends
-              in `return null`), which on an unattended board is a dead ticket. The arm exists because a
-              label with no branch for a state is how a future change to that `disabled` rule ships a
-              BLANK button instead of a visible wrong one. If you ever see "None" on a real screen, the
-              rule has been broken and the board is not performing any step. */}
-          <span>{readyOn && handoverOn ? 'Ready + payment' : readyOn ? 'Ready only' : handoverOn ? 'Payment only' : 'None'}</span>
+          Screen settings
+          {/* ⚠️ A ROTATION, NOT A SECOND CHARACTER — U+25B4 would be a character class this file does not
+              carry. `aria-expanded` above is what actually announces the state. */}
+          <span aria-hidden className={`text-slate-400 transition-transform ${phoneOpen ? 'rotate-180' : ''}`}>▾</span>
         </button>
+        {/* MANAGE EVENT — the same opener as the event bar's, which is `hidden sm:block` from the
+            previous task, so it renders in exactly ONE place at any width. Same handler, same two state
+            writes, same gate, same `aria-label` and `title`, same words.
+            🔴 IT IS ON THIS ROW ON YOUR EXPLICIT DECISION, AND THE ROW WRAPS TO TWO LINES BECAUSE OF IT.
+            The model puts the six-item row at ~442px against 358px available at 390px; you were given
+            that figure, and the alternatives, and chose the two lines over moving the control. `Manage
+            event` is kept verbatim rather than shortened to `Manage`, because `Manage` saves 46px and the
+            row still wraps — the rename would have cost a word and bought nothing. */}
+        {activeEvent && !isDemo && (
+          <button
+            onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
+            aria-label="Manage event"
+            title="Manage event — start, pause, change or finish it"
+            className="sm:hidden text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold shrink-0"
+          >
+            Manage event ▾
+          </button>
+        )}
 
         {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
             screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
@@ -1840,15 +2058,23 @@ export default function KdsPage() {
             "this screen will go dark" and "this screen will not ding" without opening anything.
             ⚠️ THE ACCESSIBLE NAME STATES BOTH IN WORDS, always — a badge is a visual channel only, and
             "Device settings" alone would announce nothing about either state. */}
+        {/* ── 🔴 THE 📱 BUTTON IS NOW A LABELLED `Screen settings` OPENER, AND ITS BADGES ARE GONE ──
+            It was a bare 📱 carrying a 🔕 when the ding was off and a 🌙 when the lock was not held —
+            two INDICATORS for two settings an operator could not change without opening the sheet. Both
+            settings are now REAL CONTROLS on this row (the sound chip and `Screen on`/`Screen off`
+            beside it), so the badges have nothing left to warn about: the control IS the indicator.
+            🔴 AND IT IS NAMED FOR WHAT IT ACTUALLY OPENS: `Sound settings`, NOT `Screen settings`. At
+            this width the view controls, the step switches, the screen-on button and the sound master
+            are ALL on the header already, so what is left behind this button is which-sounds and the
+            due-to-cook setting — sound detail. The phone's expander is `Screen settings` because there
+            it really does hold the view and step controls too; the two names differ because the two
+            panels differ, and a button that overstates its contents is how an operator learns to guess. */}
         <button
           onClick={() => setDeviceOpen(true)}
-          aria-label={`Device settings — sound ${soundEnabled ? 'on' : 'off'}, screen ${screenHeld ? 'staying on' : 'not held on'}`}
-          title={`Device settings — sound ${soundEnabled ? 'on' : 'off'}, screen ${screenHeld ? 'staying on' : 'not held on'}`}
-          className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+          title="Which sounds fire on this device"
+          className="hidden sm:flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
         >
-          <span aria-hidden>📱</span>
-          {!soundEnabled && <span aria-hidden className="text-xs">🔕</span>}
-          {!screenHeld && <span aria-hidden className="text-xs">🌙</span>}
+          Sound settings
         </button>
 
         {/* ⚠️ `basis-0` SO IT CANNOT FORCE A WRAP. As a bare `flex-1` this spacer has an `auto` basis; on
@@ -1857,26 +2083,15 @@ export default function KdsPage() {
             none, which is exactly what a spacer should do. */}
         <div className="flex-1 basis-0" />
 
-        {/* Extra wait selector.
-            DEMO: hidden. A visitor with no mental model of the system sets +30 min, forgets, then sees
-            quoted collection times they can't explain and concludes the product is broken. Neither this nor
-            Pause is part of what the demo is selling, and both can only make the demo look wrong. Safe to
-            hide OUTRIGHT (rather than keep a clear-path like Pause below): extra wait is only ever set from
-            here or the dashboard, and both are gated in demo — so it can never be non-zero to begin with. */}
-        {!isDemo && (
-        <div className="flex items-center gap-1">
-          <select
-            value={extraWaitMins}
-            onChange={e => handleSetWait(parseInt(e.target.value))}
-            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-          >
-            <option value="0">No extra wait</option>
-            <option value="10">+10 min</option>
-            <option value="20">+20 min</option>
-            <option value="30">+30 min</option>
-          </select>
-        </div>
-        )}
+        {/* ── EXTRA WAIT MOVED TO MANAGE EVENT ──────────────────────────────────────────────────────
+            🔴 IT IS AN EVENT-LEVEL WRITE AND IT NOW LIVES WITH THE OTHER EVENT-LEVEL WRITES. It sets a
+            buffer on the collection time quoted to customers of THIS EVENT; pause, finish, cancel and
+            change-finish-time are all in the Manage event menu and this is the same kind of thing. It is
+            passed to `EventActionsModal` as `extraWaitControl`, the slot the dashboard already fills.
+            ⚠️ THE HANDLER IS UNTOUCHED. `handleSetWait` — same values, same POST, same optimistic set —
+            is now called from the shared picker instead of a <select>. And the amber banner with its
+            "Clear" is unchanged, so an active extra wait is still visible and clearable without opening
+            anything. */}
 
         {/* Pause — both views.
             DEMO: the PAUSE direction is hidden, the RESUME direction is NOT. This is one toggle button, so
@@ -1899,10 +2114,21 @@ export default function KdsPage() {
             path, its cost is one hidden button, and the cost of being wrong is a demo stuck paused with
             no way back. If the KDS ever reads the offline column again, this is live once more with no
             further change. Check both facts before touching it — do not assume it is dead. */}
+        {/* 🔴 REMOVED FROM THE PHONE ROW, ON REQUEST — AND KEPT AT `sm:` AND ABOVE, WHERE NOTHING MAY
+            CHANGE. `hidden sm:block` is the whole edit: at `sm:`+ a flex child is blockified anyway, so
+            `display:block` is what this button already computed to and the tablet row is untouched.
+            🔴 ONE ARM SURVIVES BELOW `sm:`, AND IT IS THE RECOVERY ONE. On a PAUSED DEMO the Manage event
+            menu cannot be opened at all — its mount and its only opener are both `!isDemo` — so this
+            button is the ONLY resume control that exists in that state. Hiding it outright on a phone
+            would strand a paused demo with no way back, which is the failure this gate was written for.
+            `isDemo && isPaused` therefore keeps it visible at phone width in that one case and in no
+            other. ⚠️ THE GATE, THE HANDLER, THE COLOURS AND BOTH LABELS ARE UNCHANGED.
+            ⚠️ FOR A REAL TRUCK ON A PHONE, PAUSE IS NOW IN MANAGE EVENT — the shared menu's `⏸ Pause
+            orders` row, reachable from the button that moved onto line 1. Nothing lost, one tap deeper. */}
         {activeEvent?.status === 'open' && (!isDemo || isPaused) && (
           <button
             onClick={togglePause}
-            className={`text-xs px-3 py-1.5 rounded-md border font-medium ${
+            className={`${isDemo && isPaused ? '' : 'hidden sm:block'} text-xs px-3 py-1.5 rounded-md border font-medium ${
               isPaused
                 ? 'bg-red-50 text-red-700 border-red-200'
                 : 'bg-white text-slate-600 border-slate-200'
@@ -1917,7 +2143,7 @@ export default function KdsPage() {
             the view is derived from the handover switch, not from the URL. The link would therefore
             have opened an ordinary window board under a label promising a cook screen — worse than not
             offering it. A second making screen is now made by opening the KDS on that device and
-            turning "Payment/Collected" off, which is per-device and survives a reload.
+            turning "Payment & handover" off, which is per-device and survives a reload.
             ⚠️ REMOVED AS A CONSEQUENCE OF CHANGE 1, NOT AS A FOURTH CHANGE — see the report. */}
 
         {/* ── KEEP-SCREEN-ON MOVED INTO THE DEVICE SHEET ───────────────────────────────────────────
@@ -1928,11 +2154,260 @@ export default function KdsPage() {
             header any more than they could on the old chip.
             ⚠️ `KeepAwakePrompt` STILL SITS DIRECTLY BELOW THIS HEADER and is untouched: when the pref
             is on but the lock is not held, the full-width bar is still there to be tapped. Moving the
-            toggle did not move the recovery path. */}
+            toggle did not move the recovery path.
+
+            ── 🔴 AND KEEP-SCREEN-ON IS BACK ON THE HEADER AT `sm:` AND ABOVE. SOUND IS NOT. ──────────
+            The two were moved together and only one of them should have been. 🔴 ON WEB THIS BUTTON IS
+            THE ACQUISITION MECHANISM, NOT A DISPLAY OF ONE: the browser drops the lock whenever the
+            page loses visibility or focus, so an operator who navigates away and back has to
+            RE-ACQUIRE, and burying the recovery action behind two taps is the wrong place for it. The
+            ding has no such property — it is a setting, set once, and it stays in the sheet.
+            🔴 `sm:` AND NOT `md:`, DELIBERATELY. It is the ONLY breakpoint this header uses — every
+            label collapse and the step switches' `hidden sm:contents` / `sm:hidden` pair are all `sm:`
+            — and a second breakpoint on one row is how a header starts reflowing in ways nobody can
+            predict from reading it. ⚠️ THE STATED COST: 640-767px is a large phone in landscape rather
+            than a tablet, so this appears slightly earlier than "tablet" strictly means. That is the
+            right direction to be wrong in — that band is exactly where a browser KDS runs.
+            ⚠️ THE DEVICE BUTTON'S MOON BADGE STAYS AT EVERY WIDTH, INCLUDING HERE. Two indicators of
+            one state is deliberate: this is the CONTROL, that is the at-a-glance summary, and the
+            summary must not vanish just because the control is visible. */}
+        {/* The sound master, beside the screen control it belongs with. Same helper as the phone's
+            mount, so the two can never drift. */}
+        {soundBtn('hidden sm:flex')}
+        <div className="hidden sm:block shrink-0">{screenOnBtn(screenHeld ? 'Screen on' : 'Screen off')}</div>
+
+        {/* ── 🔴 THE EXPANDED REGION — IN NORMAL FLOW, PUSHING THE BOARD DOWN ──────────────────────
+            🔴 `w-full` INSIDE THE HEADER'S OWN `flex-wrap` ROW. It is an ordinary flex child claiming the
+            full width, so it wraps onto its own line and the header simply gets taller; the header is
+            `flex-shrink-0` in the page's `h-dvh flex-col` column, so the board below — `flex-1 min-h-0` —
+            shortens by exactly this height and scrolls inside what is left. NOTHING here is `fixed`,
+            `absolute`, `z-`ed or backdropped. THE BOARD IS NEVER COVERED.
+            🔴 THAT IS THE WHOLE REASON THIS IS NOT A SHEET: `List`/`Grid` and `Full`/`Cook` change the
+            tickets underneath, and an operator must see the change they are making. A previous build put
+            this behind an overlay; it was wrong and is not to be reinstated.
+            🔴 `sm:hidden` — at `sm:` and above this generates no box at all. Every control below is on the
+            header row itself at those widths.
+            🔴 NO HELPER SENTENCES ANYWHERE IN HERE, and none is to be added. In the sheet the due-to-cook
+            description rendered CUT OFF MID-SENTENCE, which is worse than no words; expanded in place the
+            effect is immediate and the words earn nothing.
+            🔴 STATE LIVES INSIDE THE CHIP — `Ready step On`, `Payment & handover Off`, and line 4's
+            control the same way. That pattern is what removed the need for badges on the row. */}
+        {phoneOpen && (
+          <div className="w-full sm:hidden flex flex-col gap-2 pt-1">
+            {/* 🔴 TWO HEADINGS, ON INSTRUCTION, AND BETWEEN THEM THEY COVER THE WHOLE REGION. `View
+                settings` governs what follows until `Sound settings` — the two display segments AND the
+                two step switches, i.e. everything about what this screen shows and does; `Sound settings`
+                governs the two chips and the due-to-cook control.
+                ⚠️ THE STEP SWITCHES SIT UNDER `View settings` BY POSITION, NOT BY CONVICTION. They decide
+                which BUTTONS this screen gets, which is arguably its own group — but you asked for two
+                headings and nothing here was reordered to make them fit. A third heading over the steps
+                is one line away if you want it.
+                ⚠️ EACH HEADING COSTS A ROW: the region is two rows taller than it was. No label was
+                shortened to pay for them. */}
+            <p className="text-xs font-bold text-slate-500 -mb-1">View settings</p>
+            {/* LINE 1 — `List` `Grid` `Full` `Cook`, the header segments' own button text, verbatim.
+                🔴 SELECTED IS GREEN HERE AND WHITE AT `sm:` AND ABOVE, AND THE SPLIT IS DELIBERATE. The
+                instruction was one colour language across this phone panel; `sm:` and above must stay
+                byte-identical, so the header's own segments keep `bg-white ... shadow-sm`. Same controls,
+                same handlers, two palettes by width — reported rather than quietly aligned.
+                ⚠️ THESE TWO PAIRS ARE CHOICES, NOT TOGGLES, LIKE THE SOUND PAIR — but they are plain
+                buttons with no radio semantics, exactly as they were, because the display controls are on
+                this task's DO-NOT list and only their colour was asked for. The gap is stated in the
+                report rather than closed here. */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                <button onClick={() => setLayoutOverride('list')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'list' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>List</button>
+                <button onClick={() => setLayoutOverride('grid')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${activeLayout === 'grid' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Grid</button>
+              </div>
+              <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                <button onClick={() => setCardMode('window')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'window' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Full</button>
+                <button onClick={() => setCardMode('cook')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${cardMode === 'cook' ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>Cook</button>
+              </div>
+            </div>
+            {/* LINE 2 — the two step switches, their wide-width labels verbatim, state inside the chip.
+                Same handlers and the same `disabled` rule: neither can be turned off while it is the only
+                step this screen performs. */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { if (handoverOn) setReady(!readyOn) }}
+                disabled={!handoverOn}
+                aria-pressed={readyOn}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-60 shrink-0 ${readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
+              >
+                <span>Ready step</span><span className="font-bold">{readyOn ? 'On' : 'Off'}</span>
+              </button>
+              <button
+                onClick={() => { if (readyOn) setHandover(!handoverOn) }}
+                disabled={!readyOn}
+                aria-pressed={handoverOn}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-60 shrink-0 ${handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
+              >
+                <span>Payment &amp; handover</span><span className="font-bold">{handoverOn ? 'On' : 'Off'}</span>
+              </button>
+            </div>
+            {/* LINE 3 — which sounds. 🔴 TWO CHIPS IN ONE BOX, AND THE HEADING IS GONE. The scope is
+                folded into the labels — "Ding: needs confirming" / "Ding: all orders" — so the row that
+                said `New order sound` above them is no longer carrying anything the chips do not. That
+                heading row was one of the two reasons this panel rendered six rows instead of four.
+                🔴 THE WORDING IS THE DASHBOARD'S, WORD FOR WORD, ON INSTRUCTION. A shorter pair
+                ("Ding: needs confirming" / "Ding: all orders", 272.6px) was proposed and REJECTED: one
+                setting must not acquire a second vocabulary on the way to a second surface. The cost is
+                width — these two are 313.7px in this box, which fits 375px and up and is 25.7px too wide
+                for a 320px phone, where `flex-wrap` puts the second chip on a second line INSIDE the
+                track rather than overflowing. That is why the wrap is there; do not remove it.
+                🔴 GREEN = SELECTED, THE SAME `bg-green-100 text-green-700` AS `Ready step On`, because
+                one visual language across this panel was the instruction.
+                🔴 AND THAT IS EXACTLY WHY THE SEMANTICS DIFFER FROM ITS NEIGHBOURS. These two are a RADIO
+                PAIR — tapping the green one does nothing — while `Ready step On` beside them is a TOGGLE
+                that turns off. They look the same on purpose and must NOT sound the same: this is a
+                `role="radiogroup"` with `role="radio"` + `aria-checked` children, so a screen reader says
+                "radio button, selected, 1 of 2" here and "toggle button, pressed" there. The group needs
+                its own `aria-label` because the visible heading was removed.
+                ⚠️ THE VISUAL AMBIGUITY IS REAL AND IS NOT FULLY SOLVED — see the report. A sighted
+                operator sees two green-when-active controls that behave differently; the shared track and
+                the rounded segment behind these two is the only visual cue that they are one choice.
+                🔴 `if (selected) return` — TAPPING THE SELECTED CHIP WRITES NOTHING. No localStorage
+                write, no state set, no ref update. The value and the key are unchanged. */}
+            {/* 🔴 THE SOUND GROUP GETS A VISIBLE HEADING, ON INSTRUCTION. With the scope no longer in
+                the chip labels, nothing on this surface said these controls were about SOUND — only the
+                radiogroup's `aria-label` did, and that is announced to assistive tech alone.
+                ⚠️ `Sound settings` AND NOT `New order sound`: it is the pair to `View settings` above,
+                and it governs BOTH sound controls below it — the two chips and the due-to-cook chip on
+                the next line — where `New order sound` would name only the chips. The radiogroup keeps `aria-label="New order sound"`,
+                the dashboard's sub-heading, so a screen reader still gets the specific name.
+                ⚠️ IT COSTS ONE ROW AT EVERY WIDTH. That is the price of naming the group and it is paid
+                knowingly; no label was shortened to avoid it. */}
+            <p className="text-xs font-bold text-slate-500 -mb-1">Sound settings</p>
+            <div role="radiogroup" aria-label="New order sound" className="flex flex-wrap items-center gap-1 bg-slate-100 rounded-lg p-1 self-start">
+              {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => {
+                const selected = (storedSoundCfg ?? DEFAULT_SOUND_CONFIG).new_orders === val
+                return (
+                  <button key={val} type="button" role="radio" aria-checked={selected}
+                    onClick={() => {
+                      if (selected) return
+                      const next = { ...(storedSoundCfg ?? DEFAULT_SOUND_CONFIG), new_orders: val }
+                      writeSoundConfig(token, next); setStoredSoundCfg(next); soundConfigRef.current = next
+                    }}
+                    className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${selected ? 'bg-green-100 text-green-700' : 'text-slate-500 hover:text-slate-700'}`}>
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+            {/* LINE 4 — the due-to-cook sound, state inside the chip, and the native device opener.
+                🔴 THE DESCRIPTION IS DELETED, NOT MOVED: "Sounds when a ticket turns amber." is gone from
+                this surface. 🔴 THE DEVICE BLOCK IS NOT EXPANDED HERE — truck/van rebinding, default
+                screen, notifications and app-lock are SET-ONCE settings and do not belong among
+                per-service controls, so they stay behind this opener, which carries their own
+                `isNativeApp() && !isDemo` gate so it does not exist on web or in demo. */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const cur = storedSoundCfg ?? DEFAULT_SOUND_CONFIG
+                  const next = { ...cur, order_due: !cur.order_due }
+                  writeSoundConfig(token, next); setStoredSoundCfg(next); soundConfigRef.current = next
+                }}
+                aria-pressed={(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}
+              >
+                <span>Sound when an order is due to be cooked</span>
+                <span className="font-bold">{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'On' : 'Off'}</span>
+              </button>
+              {isNativeApp() && !isDemo && (
+                <button
+                  type="button"
+                  onClick={() => setDeviceOpen(true)}
+                  className="text-xs px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+                >
+                  Device settings
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
-      {/* Keep-screen-on prompt — full-width bar right under the header, unmissable on the cook screen. Shows
-          only when the pref is on but the lock isn't held; the operator's first tap dismisses AND acquires it. */}
-      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={() => { void applyKeepScreenOn(true) }} />
+      {/* ── THE BANNER STACK — ONE CONTAINER, DIRECTLY UNDER THE HEADER ───────────────────────────
+          🔴 THE WAKE-LOCK BAR USED TO RENDER HERE AND THE REST RENDERED FURTHER DOWN, so on a phone the
+          "screen can't be kept on" notice appeared in the MIDDLE of the page, under the controls,
+          nowhere near the other bars. Every status bar this screen can raise is now in this one box,
+          between the header and everything else, so an operator looks in exactly one place.
+          🔴 THE ORDER IS MOST-CONSEQUENTIAL-FIRST, AND THEY STACK RATHER THAN REPLACE. More than one can
+          be true at once — a paused board on an offline device with no wake lock shows all three, in
+          this order, one under the other. Nothing here is exclusive with anything else.
+            1. orders-not-loaded — the board is EMPTY and this says why. It outranks pause because a
+               paused board still shows the right orders and this one shows none. That precedence was
+               already written into its own comment below and is preserved, not re-decided.
+            2. paused — customers cannot order.
+            3. offline — this device is not talking to the server.
+            4. wake-lock — this screen may dim. Least consequential of the four, and the only one that
+               is about the device rather than the orders.
+            5. extra wait — informational, and self-clearing from its own button.
+          ⚠️ NOT ONE CONDITION, ONE WORD OR ONE HANDLER CHANGED. Every block below is the block that was
+          already in this file, moved. The wake-lock bar is still `KeepAwakePrompt` with the same props.
+          ⚠️ `OfflineBanner`, `WebOfflineBanner` and `DemoModeBanner` are NOT in here and deliberately so:
+          they are shared components mounted ABOVE the header on both surfaces (the dashboard mounts them
+          in the same order), they are already at the top of the page rather than mid-page, and moving
+          them would change the app shell rather than this screen's own banners. */}
+      <div className="flex-shrink-0">
+        {/* ── 🔴 EVENT SCOPE MISMATCH — THE BOARD IS EMPTY AND THIS SAYS WHY ────────────────────────
+            🔴 THE ONE THING THIS SCREEN MUST NEVER DO IS SHOW ONE EVENT'S ORDERS UNDER ANOTHER EVENT'S
+            NAME. When the server answers with a different event from the one requested, `fetchAll`
+            returns before any order reaches state and sets this — so the grid below renders EMPTY, and
+            an empty grid on a kitchen screen reads as "no orders", which would be a lie. This is the
+            sentence that stops it being one.
+            ⚠️ IT NAMES THE EVENT THE OPERATOR CHOSE, not the one the server picked: the operator's
+            question is "where are my orders", and the answer is "not loaded", not "renamed".
+            ⚠️ RED, AND ABOVE THE PAUSE BANNER. It outranks pause — a paused board still shows the right
+            orders; this one shows none. */}
+        {eventScopeMismatch && (
+          <div className="bg-red-700 text-white text-sm font-medium px-4 py-3 flex-shrink-0">
+            <div className="font-black">⚠️ Orders not loaded for this event</div>
+            <div className="text-xs mt-0.5 text-red-100">
+              The server answered with a different event, so nothing is shown rather than the wrong
+              orders{activeEvent ? ` for ${activeEvent.venue_name}` : ''}. Pick the event again, or reload.
+            </div>
+          </div>
+        )}
+        {/* ── Pause / wait banners ── */}
+        {/* 🔴 IT NOW FIRES FOR AN OFFLINE PAUSE TOO, AND SAYS WHICH. Until this change the banner read
+            `isPaused` alone — the MANUAL column — so a truck could have ordering paused for customers by
+            the offline monitor while this screen looked completely normal. That was the worst half of
+            docs/offline-protection-kds-report.md.
+            ⚠️ "(device offline)" IS THE DASHBOARD'S OWN WORDING, reused rather than reinvented.
+            ⚠️ RESUME IS OFFERED ONLY FOR A MANUAL PAUSE. `togglePause` writes `paused_until`; an offline
+            pause is cleared by the next successful heartbeat, not by a button, so offering one here
+            would be a control that does not do what it says. */}
+        {anyPaused && (
+          <div className="bg-red-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
+            <span>⏸ Orders paused{pauseReason === 'offline' ? ' (device offline)' : ''} — customers cannot order</span>
+            {pauseReason === 'manual' && <button onClick={togglePause} className="underline text-white text-xs">Resume</button>}
+          </div>
+        )}
+        {/* ── Offline banner ── */}
+        {isOffline && (
+          <div className="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
+            <span className="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+            <span>
+              No connection — showing last known orders. Online ordering has been paused for customers.
+              {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
+            </span>
+          </div>
+        )}
+        {/* Keep-screen-on prompt — full-width bar right under the header, unmissable on the cook screen. Shows
+            only when the pref is on but the lock isn't held; the operator's first tap dismisses AND acquires it. */}
+        <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={() => { void applyKeepScreenOn(true) }} />
+        {extraWaitMins > 0 && (
+          <div className="bg-amber-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
+            <span>⏱ +{extraWaitMins} min extra wait active</span>
+            <button onClick={() => handleSetWait(0)} className="underline text-white text-xs">Clear</button>
+          </div>
+        )}
+      </div>
 
       {/* ── To Make bar ── */}
       {/* ⚠️ ON boardMode, DELIBERATELY — the card toggle must not hide it. Unchanged from the
@@ -1953,50 +2428,8 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Offline banner ── */}
-      {isOffline && (
-        <div className="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
-          <span className="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
-          <span>
-            No connection — showing last known orders. Online ordering has been paused for customers.
-            {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
-          </span>
-        </div>
-      )}
 
-      {/* ── 🔴 EVENT SCOPE MISMATCH — THE BOARD IS EMPTY AND THIS SAYS WHY ────────────────────────
-          🔴 THE ONE THING THIS SCREEN MUST NEVER DO IS SHOW ONE EVENT'S ORDERS UNDER ANOTHER EVENT'S
-          NAME. When the server answers with a different event from the one requested, `fetchAll`
-          returns before any order reaches state and sets this — so the grid below renders EMPTY, and
-          an empty grid on a kitchen screen reads as "no orders", which would be a lie. This is the
-          sentence that stops it being one.
-          ⚠️ IT NAMES THE EVENT THE OPERATOR CHOSE, not the one the server picked: the operator's
-          question is "where are my orders", and the answer is "not loaded", not "renamed".
-          ⚠️ RED, AND ABOVE THE PAUSE BANNER. It outranks pause — a paused board still shows the right
-          orders; this one shows none. */}
-      {eventScopeMismatch && (
-        <div className="bg-red-700 text-white text-sm font-medium px-4 py-3 flex-shrink-0">
-          <div className="font-black">⚠️ Orders not loaded for this event</div>
-          <div className="text-xs mt-0.5 text-red-100">
-            The server answered with a different event, so nothing is shown rather than the wrong
-            orders{activeEvent ? ` for ${activeEvent.venue_name}` : ''}. Pick the event again, or reload.
-          </div>
-        </div>
-      )}
 
-      {/* ── Pause / wait banners ── */}
-      {isPaused && (
-        <div className="bg-red-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
-          <span>⏸ Orders paused — customers cannot order</span>
-          <button onClick={togglePause} className="underline text-white text-xs">Resume</button>
-        </div>
-      )}
-      {extraWaitMins > 0 && (
-        <div className="bg-amber-500 text-white text-sm font-medium px-4 py-2.5 flex items-center justify-between flex-shrink-0">
-          <span>⏱ +{extraWaitMins} min extra wait active</span>
-          <button onClick={() => handleSetWait(0)} className="underline text-white text-xs">Clear</button>
-        </div>
-      )}
 
       {/* ── Start Event banner ── */}
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
@@ -2012,7 +2445,7 @@ export default function KdsPage() {
 
       {/* ── THE EVENT BAR — MIRRORS THE DASHBOARD'S, AND NO LONGER HIDES ITSELF ────────────────────
           🔴 IT WAS GATED ON `activeEvent?.status === 'open'`, AND THAT WAS THE DEFECT. A truck whose
-          event had not started got no event line, no Event actions, no way to change event and no way
+          event had not started got no event line, no Manage event menu, no way to change event and no way
           to press Start Event — from the one screen that is standing in the kitchen. The gate is now
           simply "is there an event", which is the only thing the bar actually needs to render.
           🔴 AND IT NOW CARRIES WHAT THE DASHBOARD'S CARRIES: venue · time range, the date line, and the
@@ -2024,7 +2457,7 @@ export default function KdsPage() {
           contrast. Same words, same order, same meaning.
           ⚠️ `fmtVenue` and `eventDateLabel` are IMPORTED from lib/event-display, not copied — see that
           file for why.
-          ⚠️ DEMO still hides Event actions and the date line, exactly as before. */}
+          ⚠️ DEMO still hides Manage event and the date line, exactly as before. */}
       {activeEvent && (() => { const eventStatus = eventStatusDisplay(activeEvent.status, isPaused); return (
         <div className="flex items-center gap-3 px-4 py-2 bg-white border-b border-slate-100 flex-shrink-0">
           {/* ── THE STATUS DOT, COLOURED PER STATUS ────────────────────────────────────────────────
@@ -2048,7 +2481,7 @@ export default function KdsPage() {
               lib/event-display, shared with the dashboard; only the palette below is this surface's,
               because this header is white where the dashboard's is dark. */}
           <span className={`text-xs font-medium ${EVENT_STATUS_TEXT_ON_LIGHT[eventStatus.tone]} flex-shrink-0`}>{eventStatus.label}</span>
-          {/* FIX 3 — DEMO removes it. Same reasoning as the dashboard's Event actions: extend/finish/
+          {/* FIX 3 — DEMO removes it. Same reasoning as the dashboard's Manage event menu: extend/finish/
               cancel/note are operator event-lifecycle controls with nothing to offer a prospect, and
               several of them can leave the demo looking broken.
               ⚠️ THIS IS THE ONLY OPENER OF THE SHARED MENU ON THIS SURFACE, which is why the gate above
@@ -2059,18 +2492,23 @@ export default function KdsPage() {
               time, finish and cancel announced as nothing at phone width.
               🔴 `aria-label` IS THE EXACT VISIBLE STRING AT WIDE WIDTH — the precedent set for the
               Dashboard link. WCAG 2.5.3 (Label in Name) wants the visible text contained in the
-              accessible name, and a voice-control user saying "Event actions" has to match. A longer
+              accessible name, and a voice-control user saying "Manage event" has to match. A longer
               paraphrase would read better in a screen reader and BREAK voice control at wide width, so
               the longer wording goes in `title`, for pointer users, where it costs nothing.
               ⚠️ POSITION, ICON AND THE WIDE-WIDTH LABEL ARE UNCHANGED — attributes only. Whether
-              "Event actions" is the right WORDING is a separate question, proposed in
-              docs/kds-copy-report.md and not applied here. */}
+              🔴 THE NAME AND THE ACCESSIBLE NAME MOVE TOGETHER, ALWAYS. This read "Event actions" until
+              V11.25 marked the rename; if either the label, the `aria-label` or the `title` is ever changed
+              alone, voice control matches NEITHER. Change all three or none. */}
+          {/* 🔴 `hidden sm:block` — THE PHONE'S COPY OF THIS IS ON THE EXPANDED LINE 1, AND THERE MUST
+              ONLY EVER BE ONE. Below `sm:` this rendered as a bare `▾`; that is the copy that goes. At
+              `sm:` and above it is untouched — a flex child is blockified, so `display:block` is what it
+              already computed to, and the words, the border, the position and the gate are unchanged. */}
           {!isDemo && (
             <button onClick={() => { setEventNoteInput(activeEvent.customer_note || ''); setShowEventMenu(true) }}
-              aria-label="Event actions"
-              title="Start, pause, change or finish this event"
-              className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
-              <span className="hidden sm:inline">Event actions </span>▾
+              aria-label="Manage event"
+              title="Manage event — start, pause, change or finish it"
+              className="hidden sm:block flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400 font-semibold">
+              <span className="hidden sm:inline">Manage event </span>▾
             </button>
           )}
         </div>
@@ -2082,7 +2520,7 @@ export default function KdsPage() {
           the order grid on a screen that runs UNATTENDED. It was left in place during the finish-time
           extraction on the reasoning that recovering an already-closed event is a different job from
           adjusting a live one; that reasoning is now overruled and the button is gone.
-          🔴 RECOVERY IS NOT LOST. Event actions -> "Change event finish time" reaches the same write with
+          🔴 RECOVERY IS NOT LOST. Manage event -> "Change event finish time" reaches the same write with
           a picker and a confirm, and it can set any future time rather than only +30.
           ⚠️ THE BANNER ITSELF STAYS — it is how an operator knows the event has ended.
           ⚠️ THE DASHBOARD'S BANNER NOW MATCHES: its copy was removed in the same sweep, and `extendEvent`
@@ -2133,7 +2571,7 @@ export default function KdsPage() {
                 viewMode={boardMode}
                 /* 🔴 THE PRESENTATION AXIS — the Full/Cook control, and it now owns the header, the type
                    size and the item renderer. Before this it did not: `viewMode` carried both jobs, so a
-                   Payment/Collected-off device rendered the COOK card even with `Full` selected — a
+                   Payment-&-handover-off device rendered the COOK card even with `Full` selected — a
                    text-lg order number instead of text-3xl, and no prices. A switch was overruling a
                    display control. `Full` now means everything on every switch combination. */
                 cardStyle={cardMode}
@@ -2313,7 +2751,10 @@ export default function KdsPage() {
           worth re-checking whenever this menu changes. */}
       {showEventMenu && activeEvent && !isDemo && (
         <EventActionsModal
-          event={{ id: activeEvent.id, venue_name: activeEvent.venue_name, status: activeEvent.status }}
+          // ⚠️ THE FOUR EXTRA FIELDS ARE READ STRAIGHT OFF THE SAME `activeEvent` THE BAR RENDERS, so the
+          //    menu and the bar above it can never describe two different events. The modal formats them
+          //    with `fmtVenue`/`eventDateLabel`/`formatTimeRange` — no formatter was written for it.
+          event={{ id: activeEvent.id, venue_name: activeEvent.venue_name, status: activeEvent.status, town: activeEvent.town, event_date: activeEvent.event_date, start_time: activeEvent.start_time, end_time: activeEvent.end_time }}
           noteValue={eventNoteInput}
           onNoteChange={setEventNoteInput}
           onSaveNote={() => saveEventNote(activeEvent.id)}
@@ -2322,11 +2763,33 @@ export default function KdsPage() {
           paused={isPaused}
           onPause={() => { setShowEventMenu(false); togglePause() }}
           onResume={() => { setShowEventMenu(false); togglePause() }}
+          // EXTRA WAIT — the control that used to sit on this header, in the slot the dashboard already
+          //    fills. 🔴 THE DEMO GATE IS THE DASHBOARD'S, NOT THE HEADER'S: the header hid it outright in
+          //    demo, and this hides the ADD direction while leaving a clear path if a value somehow
+          //    exists — the same shape `renderExtraWait` uses, and the same reasoning as the pause
+          //    button's `(!isDemo || isPaused)` two rows above.
+          extraWaitControl={(isDemo && extraWaitMins <= 0) ? undefined : extraWaitMins > 0 ? (
+            <button onClick={() => { setShowEventMenu(false); void handleSetWait(0) }}
+              className="w-full bg-orange-100 text-orange-700 border border-orange-300 font-black py-2.5 rounded-xl hover:bg-orange-200 text-sm">
+              ⏱ +{extraWaitMins}m active · Tap to clear
+            </button>
+          ) : (
+            <button onClick={() => { setShowEventMenu(false); setShowExtraWaitPicker(true) }}
+              className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">
+              ⏱ Add extra wait
+            </button>
+          )}
           onChangeFinishTime={() => { setShowEventMenu(false); setFinishTimeTarget({ id: activeEvent.id, end_time: activeEvent.end_time ?? null, event_date: activeEvent.event_date ?? null }) }}
           onFinishEvent={() => finishEvent(activeEvent.id)}
           onCancelEvent={() => cancelEventFromMenu(activeEvent)}
           onClose={() => setShowEventMenu(false)}
         />
+      )}
+
+      {/* The shared extra-wait picker — the SAME component the dashboard opens, with the same three
+          options. `handleSetWait` is this surface's own write and is unchanged. */}
+      {showExtraWaitPicker && (
+        <ExtraWaitModal onPick={m => { void handleSetWait(m); setShowExtraWaitPicker(false) }} onClose={() => setShowExtraWaitPicker(false)} />
       )}
 
       {/* Event-cancel gate — the SHARED modal (components/shared/EventCancelModal), the same one manage
@@ -2439,85 +2902,10 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── 🔴 ORDER STEPS — THE PHONE-WIDTH PANEL ───────────────────────────────────────────────────
-          The two header switches, with the labels and the sentences the header has no room for. Same
-          handlers, same guards, same `disabled` rule — this is a second PLACE, never a second
-          implementation, and nothing about the switches' behaviour, keys, defaults or persistence is
-          touched by it.
-          ⚠️ NOT GATED ON WIDTH IN JS. The opener is `sm:hidden`, so this can only be opened from a phone
-          — but if a rotation crosses the breakpoint while it is open it simply stays open and closes on
-          tap, which is better than vanishing mid-decision.
-          ⚠️ COPY IS FOR REVIEW. The two sentences below are written to be read by someone who has never
-          been trained: they say what the operator SEES and what HAPPENS to the ticket, not what the flag
-          is called. Proposed, not settled — see docs/kds-phone-controls-report.md §3. */}
-      {showStepsPanel && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
-          onClick={() => setShowStepsPanel(false)}>
-          <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-white font-bold text-base">What this screen does</h2>
-              <button onClick={() => setShowStepsPanel(false)} aria-label="Close"
-                className="text-white/80 hover:text-white text-3xl leading-none">×</button>
-            </div>
-            <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto p-4 flex flex-col gap-4">
-              {/* ROW 1 — the ready step. */}
-              <div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-slate-700">Mark orders ready</span>
-                  <button
-                    type="button"
-                    onClick={() => { if (handoverOn) setReady(!readyOn) }}
-                    disabled={!handoverOn}
-                    aria-pressed={readyOn}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${readyOn ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
-                  >
-                    <span aria-hidden>✓</span>
-                    <span>{readyOn ? 'On' : 'Off'}</span>
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  This screen gets a Ready button. Tap it when the food is up and the customer is told
-                  their order is ready to collect.
-                </p>
-                {!handoverOn && (
-                  <p className="text-xs text-slate-400 mt-1">
-                    This is the only thing this screen does, so it can&apos;t be turned off.
-                  </p>
-                )}
-              </div>
-              {/* ROW 2 — the handover step. */}
-              <div>
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-slate-700">Take payment and hand over</span>
-                  <button
-                    type="button"
-                    onClick={() => { if (readyOn) setHandover(!handoverOn) }}
-                    disabled={!readyOn}
-                    aria-pressed={handoverOn}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-60 ${handoverOn ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
-                  >
-                    <span aria-hidden>💷</span>
-                    <span>{handoverOn ? 'On' : 'Off'}</span>
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  This screen gets the payment and Collected buttons. Orders leave this screen when
-                  they&apos;re collected. Turn it off and another screen hands the food over.
-                </p>
-                {!readyOn && (
-                  <p className="text-xs text-slate-400 mt-1">
-                    This is the only thing this screen does, so it can&apos;t be turned off.
-                  </p>
-                )}
-              </div>
-              <p className="text-xs text-slate-400 border-t border-slate-100 pt-3">
-                These are set on this device only. Another screen in the same van can do the other step.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* ── 🔴 THE STEPS PANEL WAS ABSORBED INTO THE `View` PANEL BELOW, NOT DELETED ──────────────
+          Its two rows, their sentences, their handlers and the `disabled` rule are all still on this
+          screen — they render inside the one phone panel, under "What this screen does". A phone had
+          TWO sheets behind two buttons for one screen's settings; it now has one. */}
       {/* "This device" sheet — same pattern as the dashboard UserMenu. ThisDeviceSettings self-guards on
           isNativeApp and renders its own card + "this device only" note. `token` here is the dashboard
           token (this route runs on it), so its bind-device calls authenticate. */}
@@ -2538,7 +2926,22 @@ export default function KdsPage() {
                 reads "This device" as its first line. Not a contradiction — the inner one labels the
                 viewing/ID block — but they are two headings where one would do. Reported, not resolved. */}
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-white font-bold text-base">Device settings</h2>
+                {/* 🔴 ONE WORDING AT BOTH WIDTHS AGAIN. The phone opener on line 4 says `Device settings`
+                  and so does the 📱 button's accessible name, so the breakpoint pair this heading carried is
+                  no longer buying anything — and `Device settings` is what it read at `sm:`+ before and
+                  after. The panel holds device configuration on a phone and device configuration plus the
+                  sound detail on a tablet; the name is true of both. */}
+              {/* 🔴 ONE `<h2>`, TWO WORDINGS, AND EACH IS TRUE OF WHAT IS ACTUALLY BELOW IT. Below `sm:`
+                  this sheet holds ONLY the native device card — the sound card inside it is
+                  `hidden sm:flex` — and it is opened by the expander's native-gated `Device settings`
+                  button, so `Device settings` is the honest name there. At `sm:` and above it holds
+                  which-sounds and the due-to-cook setting (plus that same card on a native device), and
+                  it is opened by the header's `Sound settings` chip, so it says `Sound settings` and
+                  matches the control that opened it. */}
+              <h2 className="text-white font-bold text-base">
+                <span className="sm:hidden">Device settings</span>
+                <span className="hidden sm:inline">Sound settings</span>
+              </h2>
               <button onClick={() => setDeviceOpen(false)} aria-label="Close"
                 className="text-white/80 hover:text-white text-3xl leading-none">×</button>
             </div>
@@ -2557,37 +2960,102 @@ export default function KdsPage() {
                   ⚠️ BOTH HANDLERS ARE THE ORIGINALS, UNCHANGED: `toggleKeepScreenOn` (which owns the
                   failure toast) and the sound setter that primes the audio when enabling, because
                   enabling is the user gesture the browser requires. */}
-              <div className="rounded-2xl border border-slate-200 p-4 flex flex-col gap-3 mb-3">
-                <h3 className="text-sm font-bold text-slate-900">This screen</h3>
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-semibold text-slate-700">Keep the screen on</span>
+              {/* 🔴 THE PHONE-ONLY SECTION THAT SAT HERE IS GONE — SUPERSEDED, NOT LOST. The step
+                  switches and the two display segments are on the header's own expanded rows now, where
+                  the operator can see the board change as they tap. A panel that covered the board while
+                  they changed what the board does was the defect; keeping a second copy of those rows in
+                  here would put it straight back. Nothing at `sm:` and above is affected — that section
+                  was `sm:hidden` and generated no box there. */}
+              {/* 🔴 THE PHONE SECTION THAT SAT HERE IS GONE, AND SO IS EVERY SOUND ROW BELOW `sm:`.
+                  All of it is in the header's expanded region now, in flow, where the board stays visible.
+                  What is left in this panel BELOW `sm:` is the native device card and nothing else — which
+                  is why the card wrapper underneath is `hidden sm:flex` and this panel is opened on a phone
+                  only by line 4's native-gated `Device settings` opener.
+                  ⚠️ AT `sm:` AND ABOVE NOTHING CHANGED: every row inside that wrapper renders exactly as it
+                  did, in the same order, opened by the same 📱 button. */}
+              <div className="hidden sm:flex rounded-2xl border border-slate-200 p-4 flex-col gap-3 mb-3">
+                {/* 🔴 THIS IS THE KDS's OWN SHEET WRAPPER, NOT `ThisDeviceSettings` — that shared card is
+                    mounted below and keeps its own "This device" heading, so the dashboard's UserMenu is
+                    untouched by this edit.
+                    🔴 THE HEADING IS `hidden sm:block` NOW, AND THAT IS A CONSEQUENCE OF WHAT IS LEFT IN
+                    THE CARD. At `sm:` and above it holds the master, which-sounds and due-to-cook, so
+                    "Sound" is exactly right and is the word it already carried. Below `sm:` the master and
+                    keep-screen-on are on the header's own line, this card holds only the two set-once
+                    settings, and the panel's `<h2>` above already says "Sounds" — a second heading saying
+                    the same word one line lower is noise, so it does not render there. The `sm:hidden`
+                    "Screen & sound" wording went with the screen row it named. */}
+                <h3 className="hidden sm:block text-sm font-bold text-slate-900">Sound</h3>
+                {/* 🔴 KEEP-SCREEN-ON HAS LEFT THIS PANEL AGAIN, AND THAT IS A CORRECTION, NOT A WOBBLE.
+                    It is the wake-lock ACQUISITION control on web — Safari grants the lock only on a
+                    completed gesture and drops it on visibility loss — so a control the operator re-taps
+                    after every visibility change cannot live behind a button. It is on the header row, in
+                    words. ⚠️ This row was `sm:hidden`, so `sm:` and above never rendered it either way. */}
+                {/* 🔴 THE MASTER ROW THAT SAT HERE IS GONE — IT WAS THIS SHEET'S ONLY REASON TO CARRY
+                    A CONTROL RATHER THAN A SETTING. It was `hidden sm:flex`, i.e. the `sm:`-and-above
+                    home of the new-order ding, and the ding is now a chip on the header at that width
+                    too. Keeping it would be two controls for one setting on one screen. Below `sm:` it
+                    was already hidden, so a phone loses nothing. */}
+                {/* ── 🔴 WHICH SOUNDS — THE CONTROL THIS SURFACE NEVER HAD ──────────────────────────
+                    The KDS has always READ this value and never been able to SET it, so an operator on a
+                    kitchen screen who wanted only needs-confirming orders to ding had to walk to the
+                    dashboard. The rows below are the DASHBOARD'S, reused verbatim — same two options,
+                    same labels, same radio shape — because inventing a second vocabulary for one stored
+                    value is how two surfaces come to disagree about what it means.
+                    🔴 IT WRITES THE SHARED `hg_soundcfg_${token}` KEY, AND THE SHARING STAYS. That is
+                    documented as deliberate — "which sounds fire is one concept in one place on this
+                    device" — and the defect was never the sharing; it was that only ONE surface could
+                    write it.
+                    ⚠️ NO CROSS-SURFACE SYNC IS BUILT, AND THE CONSEQUENCE IS STATED: the dashboard reads
+                    this key into its own state at mount, so a change made here reaches an ALREADY-OPEN
+                    dashboard only after that page reloads. Both surfaces are correct on their next load.
+                    ⚠️ `soundConfigRef` is updated alongside the state so the ding decision — which reads
+                    the ref, not the state — takes effect on the very next order without a re-render. */}
+                <div className="pt-1">
+                  <p className="text-sm font-semibold text-slate-700 mb-1.5">New order sound</p>
+                  <div className="space-y-1">
+                    {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => (
+                      <button key={val} type="button"
+                        onClick={() => {
+                          const next = { ...(storedSoundCfg ?? DEFAULT_SOUND_CONFIG), new_orders: val }
+                          writeSoundConfig(token, next); setStoredSoundCfg(next); soundConfigRef.current = next
+                        }}
+                        className="flex items-center gap-2.5 w-full text-left py-1">
+                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).new_orders === val ? 'border-orange-500' : 'border-slate-300'}`}>
+                          {(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).new_orders === val && <span className="w-2 h-2 rounded-full bg-orange-500" />}
+                        </span>
+                        <span className="text-sm text-slate-700">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* ── 🔴 THE SETTING THIS SURFACE NEVER HAD — "due to be cooked" ─────────────────────
+                    The KDS reads `order_due` when it decides whether to ding an amber ticket and had no
+                    way to SET it, so a cook who wanted that sound had to walk to the dashboard. 🔴 THE
+                    LABEL AND THE SUB-LABEL ARE THE DASHBOARD'S, WORD FOR WORD — "Sound when an order is
+                    due to be cooked" / "Sounds when a ticket turns amber." One setting must not acquire a
+                    second name on the way to a second surface.
+                    ⚠️ THE SHAPE IS THIS SHEET'S, NOT THE DASHBOARD'S `Toggle`. Every other control in this
+                    panel is the same pill button, and importing the dashboard's toggle would put one
+                    stranger among them; the WORDS are what must match, not the widget.
+                    🔴 IT WRITES THE SAME SHARED `hg_soundcfg_` KEY THROUGH `writeSoundConfig`, exactly as
+                    the "which sounds" radios above it do, and updates `soundConfigRef` alongside the state
+                    so the next amber ticket obeys it without waiting for a re-render. */}
+                <label className="flex items-center justify-between gap-3 text-sm pt-1">
+                  <span className="font-semibold text-slate-700">Sound when an order is due to be cooked</span>
                   <button
                     type="button"
-                    onClick={toggleKeepScreenOn}
-                    aria-pressed={screenHeld}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${screenHeld ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+                    onClick={() => {
+                      const cur = storedSoundCfg ?? DEFAULT_SOUND_CONFIG
+                      const next = { ...cur, order_due: !cur.order_due }
+                      writeSoundConfig(token, next); setStoredSoundCfg(next); soundConfigRef.current = next
+                    }}
+                    aria-pressed={(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
                   >
-                    <span aria-hidden>{screenHeld ? '☀️' : '🌙'}</span>
-                    <span>{screenHeld ? 'On' : 'Off'}</span>
+                    <span>{(storedSoundCfg ?? DEFAULT_SOUND_CONFIG).order_due ? 'On' : 'Off'}</span>
                   </button>
                 </label>
-                {/* ⚠️ SAME BINARY RULE AS THE OLD CHIP: it reads `screenHeld` — the lock ACTUALLY held —
-                    not the stored preference, so "On" can never claim something the device is not doing.
-                    The plain-English failure toast still fires from the handler on a failed tap. */}
-                <p className="text-xs text-slate-500 -mt-1">Stops this device dimming or locking during service. This device only.</p>
-                <label className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-semibold text-slate-700">New-order sound</span>
-                  <button
-                    type="button"
-                    onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
-                    aria-pressed={soundEnabled}
-                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
-                  >
-                    <span aria-hidden>{soundEnabled ? '🔔' : '🔕'}</span>
-                    <span>{soundEnabled ? 'On' : 'Off'}</span>
-                  </button>
-                </label>
-                <p className="text-xs text-slate-500 -mt-1">Dings when a new order lands on this board. This device only.</p>
+                <p className="text-xs text-slate-500 -mt-1">Sounds when a ticket turns amber.</p>
               </div>
               {/* The native-only device configuration, gate intact — see the device button's note. */}
               {isNativeApp() && !isDemo && <ThisDeviceSettings token={token} />}

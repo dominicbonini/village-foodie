@@ -131,10 +131,13 @@ export default function LandingPage() {
           </a>
           <div className="nav-r">
             {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm) sits to
-                the LEFT of the CTA so small screens still get a login; the CTA drops its arrow on mobile to fit. */}
+                the LEFT of the CTA so small screens still get a login; the CTA drops its arrow on mobile to fit.
+                ⚠️ BOTH Log in links point at /login — the real page (app/login/page.tsx), not `#`. They are plain
+                <a> like every other link on this page (no next/link is imported here), so it is a full navigation
+                out of the landing route, which is what a login needs. */}
             <a href="#pricing" className="btn btn-quiet nav-hide-sm">Pricing</a>
-            <a href="#" className="btn btn-ghost nav-hide-sm">Log in</a>
-            <a href="#" className="btn btn-quiet nav-only-sm">Log in</a>
+            <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
+            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
             <DemoCta className="btn btn-primary nav-cta">
               <span className="cta-full">Upload my menu →</span>
               <span className="cta-short">Upload menu</span>
@@ -335,6 +338,7 @@ export default function LandingPage() {
                 <li>Auto-accept orders</li>
                 <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
                 <li>Offline order protection</li>
+                <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-primary">Try Free</DemoCta>
             </div>
@@ -352,6 +356,7 @@ export default function LandingPage() {
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
+                <li>Order page on your own website <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
@@ -496,9 +501,15 @@ export default function LandingPage() {
               <a href={PRIVACY_PATH}>Privacy</a>
               <a href={TERMS_PATH}>Terms</a>
               <a href="#">Contact</a>
-              <a href="#">Log in</a>
             </div>
           </div>
+          {/* 🔴 THE APP LINE WAS REMOVED HERE — 18 August 2026, ON REQUEST. The footer no longer mentions
+              the iPhone/iPad apps at all. The rule it used to satisfy still binds anything that brings it
+              back: TEXT ONLY, NO APP STORE OR GOOGLE PLAY BADGE, NO LOGO, NO LINK — Apple's marketing
+              guidelines require a badge to link to a LIVE listing and there is none yet — and "COMING
+              SOON", NEVER "AVAILABLE".
+              ⚠️ NOTHING ELSE IN THE FOOTER MOVED. `.foot-base` is a `space-between` flex row with no
+              nth-child rule (landing.css:329), so the two remaining spans simply sit at the two ends. */}
           <div className="foot-base">
             <span>© 2026 HatchGrab</span>
             <span className="vf">From the people behind <b>Village Foodie</b></span>

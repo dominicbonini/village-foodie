@@ -478,6 +478,15 @@ export async function GET(req: NextRequest) {
   // in (offline-aware capacity, Piece 1). Response-only addition — the online slots computation is unchanged.
   let dashProductionSlotUnits: Record<string, Record<string, number>> = {}
   let activeVanName: string | null = null
+  // ── 🔴 THE TRUCK'S ACTIVE VAN COUNT — ADDITIVE, AND THE ONLY NON-SINGULAR VAN FACT ON THIS RESPONSE
+  // Every other van field here is about the SELECTED EVENT'S van (`activeVanName`, `vanShowCookingStep`,
+  // `vanBuzzerCount`, `vanPausedUntil`). This one is about the TRUCK: how many active vans it has, so a
+  // header can decide whether naming the van tells the operator anything. `activeVanCount` follows
+  // `activeVanName`'s own naming — same prefix, same meaning of "active", one word for what it holds.
+  // 🔴 `null` MEANS NOT KNOWN, NOT ZERO. It stays null if the count query fails, and every client treats
+  // null as "show the van" — the quiet direction, because removing a name once is less visible than
+  // adding one once.
+  let activeVanCount: number | null = null
   // The selected event's van offline-protection DEFAULT (Settings value). The dashboard
   // shows this when there's no per-event override — without it the client's vanAutoPause
   // stays hardcoded false and misreports the toggle/label.
@@ -509,6 +518,26 @@ export async function GET(req: NextRequest) {
   const eventLastOfflinePauseAt: string | null = (selectedEvent as any)?.last_offline_pause_at ?? null
 
   try {
+    // ── 🔴 ONE EXTRA ROUND TRIP, AND THE COST IS STATED RATHER THAN HIDDEN ─────────────────────────
+    // `head: true` + `count: 'exact'` returns NO ROWS — just the count in the Content-Range header — so
+    // this is an index count over `truck_vans` filtered by one truck, not a row fetch. It runs on every
+    // poll of this endpoint (both surfaces, ~15s), which is why it selects nothing.
+    // 🔴 `active = true` IS THE DEFINITION, COPIED FROM `get_vans` (app/api/manage/route.ts:964) SO THE
+    // TWO CANNOT DISAGREE. A truck with a deactivated second van counts 1 and its header drops the van
+    // name; reactivating it counts 2 again on the NEXT POLL — `truck_vans` is deliberately outside the
+    // realtime publication (see the dashboard page's note at :1120), so there is no instant path and
+    // none was engineered.
+    // ⚠️ IT COUNTS THE TRUCK'S VANS, NOT THE EVENT'S. `.eq('truck_id', truck.id)` and no event term.
+    const { count: vanCount, error: vanCountErr } = await supabase
+      .from('truck_vans')
+      .select('id', { count: 'exact', head: true })
+      .eq('truck_id', truck.id)
+      .eq('active', true)
+    // A failure leaves it null, which every client reads as "unknown" and renders exactly what it
+    // renders today. Same degrade-to-today shape as the van select below.
+    if (vanCountErr) console.error(`[dashboard] active van count failed for truck ${truck.id}:`, vanCountErr.message)
+    else activeVanCount = vanCount ?? null
+
     // kitchen_capacity + name from the SELECTED event's van — the same event the
     // production-usage read and slot times are scoped to, so a multi-event-same-date
     // day shows the right event's capacity, not the date's first event.
@@ -742,6 +771,7 @@ export async function GET(req: NextRequest) {
     kitchenCapacity,
     capacityWindowMins,
     activeVanName,
+    activeVanCount,                                // the TRUCK's active van count (null ⇒ unknown ⇒ clients show the van)
     vanAutoPause,
     vanShowCookingStep,
     effectiveOrderReady,                          // event override ?? van default ?? false (gates the Ready button)

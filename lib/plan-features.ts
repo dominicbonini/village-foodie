@@ -143,6 +143,22 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true,           max: true           },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
+      // rows rather than among the shipped payment ones, so the block the file calls "Coming soon
+      // (kept at the bottom of the section)" stays true of every row in it.
+      // ⚠️ FOOTNOTE 1 IS THE CARD-FEE ONE — the single place the in-person rate, the UK/EEA limit and
+      // the tap surcharge live. This row takes a card in person, so it is governed by exactly those
+      // facts and points at the same footnote rather than restating any of them.
+      // 🔴 "A SUPPORTED PHONE", NEVER "PHONE OR TABLET". Tap to Pay on iPhone needs a recent iPhone, a
+      // current iOS and an Apple entitlement, and is NOT available on iPad — an iPad still needs a
+      // physical reader. Widening this to tablets would advertise something that cannot work.
+      // ⚠️ AND NO DEVICE OR OS VERSION IS NAMED. Marketing copy that says "iPhone XS or later on iOS 17+"
+      // is wrong the moment either moves; "supported" stays true and the requirement is checked in-product.
+      // ⚠️ NOT 'Walk-up order processing' AND NOT 'Online payments'. That row is taking the ORDER at the
+      // hatch (and its detail names the operator's OWN terminal, which this would replace); this one is
+      // taking the CARD in person, on the phone itself. 'Online payments' is the customer paying upfront
+      // through Stripe before they arrive. Three different moments, three rows.
+      { name: 'Take payment on your phone', footnote: '1', detail: 'Take card payments on a supported phone, so you don\u2019t need a separate card machine.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
@@ -168,6 +184,12 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Coming soon (kept at the bottom of the section)
       { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', detail: 'Set different prices for specific events or festivals.', starter: false, pro: false, max: 'coming_soon'  },
+      // 🔴 THE PAGE IS SERVED AT THEIR ADDRESS. IT IS NOT AN EMBED. The detail deliberately avoids
+      // "built into your site", "embedded" and "inside your website" — none of those is what this is,
+      // and a marketing string that promises an embed is a promise the product would have to keep.
+      // ⚠️ NOT THE QR CODE AND NOT THE ORDER LINK, both of which operators already have on every plan
+      // ('QR code' → qr_menu above). Those point AT our address; this one IS theirs.
+      { name: 'Order page on your own website', detail: 'Your ordering page available at your own web address, under your own name.', starter: false, pro: false, max: 'coming_soon' },
       // LOYALTY STAMP CARDS — Max only, coming soon
       // Schema: loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at)
       // Stamp rule V1: 1 per order (not per item — avoids redemption complexity)

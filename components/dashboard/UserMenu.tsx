@@ -139,7 +139,13 @@ export default function UserMenu({
             {showScreenToggle && onToggleSound && (
               <div className="sm:hidden px-4 py-2 border-b border-slate-100">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700">{soundEnabled ? '🔔 Sound on' : '🔕 Sound off'}</span>
+                  {/* 🔴 "New-order sound" ON BOTH SURFACES. It read "Sound on"/"Sound off", which named
+                      the STATE and not the thing; the KDS's wording is more precise about what dings and
+                      the dashboard moves to it. ⚠️ ONLY THE WORDS ALIGN — this keeps its `<Toggle>` and
+                      the KDS keeps its chip, because a lone Toggle would be the odd one out in the KDS's
+                      chip family. The state is now carried by the Toggle alone, which is what a switch is
+                      for. */}
+                  <span className="text-sm text-slate-700">{soundEnabled ? '🔔 New-order sound' : '🔕 New-order sound'}</span>
                   <Toggle on={soundEnabled} onToggle={() => onToggleSound()} />
                 </div>
               </div>

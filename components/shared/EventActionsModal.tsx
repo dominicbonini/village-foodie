@@ -16,9 +16,18 @@
 // which — lives here and only here.
 //
 // ⚠️ `extraWaitControl` is a ReactNode rather than a callback because each surface already renders its
-// own extra-wait control with its own state (a button when active, a <select> when not). Passing the
-// node keeps that surface-specific markup where it belongs while fixing its POSITION in this menu.
+// own extra-wait control with its own state, holds its own `waitMinutes`, and performs its own write.
+// Passing the node keeps that surface-specific markup where it belongs while fixing its POSITION here.
+// 🔴 IT IS NOW A BUTTON ON BOTH SURFACES, NOT A <select>. Every row in this menu is a filled button;
+// the add direction opens components/shared/ExtraWaitModal, which offers the SAME 10/20/30 and writes
+// nothing itself. The options, the values and the write are unchanged — only the control is.
 import type { ReactNode } from 'react'
+// ⚠️ IMPORTED, NEVER REWRITTEN. `fmtVenue` and `eventDateLabel` are the SAME formatters both
+// event bars already use (lib/event-display), and `formatTimeRange` is the one both surfaces use
+// for a start-to-finish pair (lib/time-utils). A second formatter here is how the menu's header comes
+// to read a date differently from the bar that opened it.
+import { fmtVenue, eventDateLabel } from '@/lib/event-display'
+import { formatTimeRange } from '@/lib/time-utils'
 
 export function EventActionsModal({
   event,
@@ -36,8 +45,19 @@ export function EventActionsModal({
   onCancelEvent,
   onClose,
 }: {
-  /** The event this menu acts on. The CALLER gates the mount. */
-  event: { id: string; venue_name: string; status: string }
+  /** The event this menu acts on. The CALLER gates the mount.
+   *  ⚠️ THE FOUR DETAIL FIELDS ARE OPTIONAL, AND THE HEADER DEGRADES FIELD BY FIELD. A caller that
+   *  passes none renders exactly the venue name it rendered before this change — no empty line, no
+   *  dangling separator — so adding them cannot break a third caller that has not been updated. */
+  event: {
+    id: string
+    venue_name: string
+    status: string
+    town?: string | null
+    event_date?: string | null
+    start_time?: string | null
+    end_time?: string | null
+  }
   noteValue: string
   onNoteChange: (v: string) => void
   onSaveNote: () => void
@@ -62,9 +82,30 @@ export function EventActionsModal({
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-black text-slate-900">{event.venue_name}</h3>
-          <button onClick={onClose} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
+        {/* ── 🔴 THE FULL EVENT, NOT JUST THE VENUE ───────────────────────────────────────────────
+            The title was `event.venue_name` alone, so a truck with two events at the same venue on
+            different days opened a menu that could finish, cancel or re-time EITHER of them and looked
+            identical for both. The date and the times are the two facts that tell them apart, and they
+            are the facts every destructive button below acts on.
+            ⚠️ THE VENUE LINE IS `fmtVenue`, WHICH IS WHY THE TOWN IS NOT A THIRD LINE. That formatter
+            already appends "— Town" and already suppresses it when the town is inside the venue name,
+            so both event bars read "The Bell — Castle Hedingham" and this now reads the same. Writing
+            the town separately here would have produced "The Bell, Castle Hedingham, Castle
+            Hedingham" on exactly the trucks the containment test exists for.
+            ⚠️ NOTHING BELOW MOVED. This replaces the title's text and adds one line under it; the ×,
+            every button, their order, their colours and their gates are untouched. */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="min-w-0">
+            <h3 className="font-black text-slate-900 truncate">{fmtVenue(event.venue_name, event.town) || event.venue_name}</h3>
+            {(event.event_date || event.start_time || event.end_time) && (
+              <p className="text-xs font-medium text-slate-500 mt-0.5">
+                {event.event_date ? eventDateLabel(event.event_date) : ''}
+                {event.event_date && (event.start_time || event.end_time) ? ', ' : ''}
+                {formatTimeRange(event.start_time, event.end_time)}
+              </p>
+            )}
+          </div>
+          <button onClick={onClose} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center shrink-0">×</button>
         </div>
 
         {/* Start / Restart — visible whenever the event isn't live yet (confirmed) or has finished

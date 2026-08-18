@@ -193,9 +193,11 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
                 Sticky is scoped to this <section>, so each heading releases as its own category ends
                 and the next takes over — the standard nested-sticky behaviour, and the only thing
                 telling the operator where they are now that the chips are gone.
-                ⚠️ COLOUR, SIZE, WEIGHT, TRACKING AND SPACING ARE UNCHANGED: text-xs, font-black,
-                uppercase, tracking-wide, text-orange-600, `-mx-1 px-1 py-1.5`, the translucent
-                backdrop. Only the pin offset moved, from the bar's height to 0.
+                ⚠️ COLOUR, SIZE, WEIGHT AND TRACKING ARE UNCHANGED: text-xs, font-black, uppercase,
+                tracking-wide, text-orange-600, `py-1.5`, the translucent backdrop. 🔴 THE `-mx-1 px-1`
+                THIS LINE USED TO NAME IS GONE — see the block immediately above the element for why it
+                was the horizontal-overflow defect, and note that the pair CANCELLED, so removing both
+                left the text where it was.
                 z-10 (was z-[9], which existed solely to slide UNDER the chip bar's z-10).
                 ⚠️ `bg-slate-50/95`, NOT `bg-white/95` — IT MUST MATCH THE PANE, NOT CONTRAST WITH IT.
                 The app shell is `bg-slate-50` (app/dashboard/[token]/page.tsx) and neither pane sets a
@@ -205,7 +207,29 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
                 no border and would have been the only white thing on the pane.
                 ⚠️ STILL 95% + backdrop-blur, NOT transparent: it is sticky, so items scroll UNDERNEATH
                 it and it has to occlude them. Matching the pane is what makes that invisible. */}
-            <div className="sticky top-0 z-10 -mx-1 px-1 py-1.5 bg-slate-50/95 backdrop-blur-sm flex items-center gap-2">
+            {/* ── 🔴 THE BLEED IS GONE — `-mx-1 px-1` REMOVED. THIS IS THE OVERFLOW. ─────────────────
+                This heading is the ONLY element in the whole one-page branch that is WIDER THAN ITS
+                CONTAINING BLOCK: `-mx-1` pushed it 4px past each edge of a parent chain with NO
+                horizontal padding to absorb it (section -> ScrollMenuSections root -> the
+                `overflow-y-auto pb-24` scroller, none of which sets `px-`). A box with overflow on
+                one axis computes the OTHER to `auto`, so that scroller became scrollable
+                HORIZONTALLY by exactly those 8px. 🔴 THE PREVIOUS PASS EXONERATED THIS ON THE BOX
+                MODEL — "<main>'s px-4 absorbs it" — WHICH IS THE WRONG PARENT. What has to absorb a
+                negative margin is the box that establishes the width, not an ancestor several
+                levels up outside the scroller.
+                🔴 AND THE CUSTOMER ORDER PAGE PROVES IT, BECAUSE IT DOES THE SAME THING AND WORKS:
+                its sticky subcategory heading carries a BIGGER bleed (`-mx-2 px-2 sm:-mx-4 sm:px-4`)
+                and its own comment says that tracks "the card's `px-2 sm:px-4` so the band spans the
+                padding and no further". Matched. Ours was not. The negative margin was never the
+                defect — an UNMATCHED one inside a scroll container is.
+                ⚠️ NOTHING ELSE CHANGES. The text still starts at the same x — it was `-4px` margin
+                plus `4px` padding, which cancelled — and the band still spans the FULL width of the
+                items it occludes, because that width is the container it now ends at. It is 4px
+                narrower on each side than it was, and that 4px was outside the panel.
+                🔴 STICKY IS UNTOUCHED: `sticky top-0 z-10` stays, the headings still pin and still
+                release per section. No `overflow-x-hidden` anywhere — the width is removed, not
+                hidden. */}
+            <div className="sticky top-0 z-10 py-1.5 bg-slate-50/95 backdrop-blur-sm flex items-center gap-2">
               {/* 🔴 orange-600 — THE SAME VALUE AS THE PRIMARY BUTTONS' FILL, AND IT IS A DELIBERATE,
                   SIGHTED DECISION BY THE OPERATOR. DO NOT "CORRECT" IT TO 700.
                   This shipped as orange-700 first, on the contrast reasoning in lib/ui-tokens.ts (orange
@@ -897,7 +921,28 @@ setItemModal({ item, modGroups, editCartKey })
   /** WHICH tender, when the truck splits cash from card. Null when it does not — the payment is still
    *  taken, its method simply is not recorded, which is the honest value. Ref for the same reason as
    *  takePaymentRef: it must survive the override/re-submit recursion. */
+  // ── 🔴 WHAT THE PLAIN "Take payment" BUTTON RECORDS: `card`, ALWAYS ──────────────────────────
+  // Both plain mounts used to set this to `null`, so a walk-up order paid at the hatch booked a ledger
+  // row that said nothing about how the money arrived — while the SAME truck's "Mark paid" on an order
+  // card recorded `card`. Two paid presses, two answers, one truck.
+  // 🔴 THE RULE, AND IT NO LONGER CONSULTS `takes_cash`: an explicit Cash press records `cash`, an
+  // explicit Card press records `card`, and a PLAIN press records `card`. `takes_cash` adds a BUTTON;
+  // it does not change what the plain button MEANS. An operator with a Cash button in front of them who
+  // presses plain instead has taken a card payment, and that is the honest reading.
+  // ⚠️ THIS PANEL CANNOT CREATE A STRIPE-SETTLED ORDER — there is no Stripe path in this file at all
+  // (its only "stripe" is the word in a comment about a colour band). Every order it books is money
+  // taken at the hatch, `channel: 'in_person_other'`, so nothing here can reach an `online` row.
+  // ⚠️ `null` REMAINS REACHABLE AND MUST: it is what rides when `takePaymentRef` is false, i.e. an
+  // order saved UNPAID, where no payment row is written at all.
   const paymentMethodRef = useRef<'cash' | 'card' | null>(null)
+  // 🔴 THE MODAL'S WORDS, NOT A SECOND VOCABULARY. `PaymentActionsModal` prints `Paid in cash` and
+  // `Paid on your card machine`; `useGatedActionResult` reuses the lower-case forms for its toasts, and
+  // so does this. One fact, one set of words, three surfaces.
+  const paidPhrase = () => {
+    if (!takePaymentRef.current) return ''
+    const m = paymentMethodRef.current
+    return m === 'cash' ? ' — paid in cash' : m === 'card' ? ' — paid on your card machine' : ''
+  }
 
   // ── submit ──────────────────────────────────────────────────────────────────
   // override=false: normal submit, runs the atomic stock check. On a shortfall the server
@@ -1171,7 +1216,10 @@ setItemModal({ item, modGroups, editCartKey })
         // where the number belongs.
         // ⚠️ THE SYNC CLAUSE IS GONE ON PURPOSE (14 August 2026): OfflineBanner says "will sync when you're
         // back online" persistently, with a count. The toast's job is IDENTITY — which order was saved.
-        showToast(`Order ${displayId} saved`, 'success')
+        // ⚠️ THE METHOD RIDES BESIDE THE IDENTITY, IN PaymentActionsModal's OWN WORDS — `paid in cash` /
+        //    `paid on your card machine`. Silent when nothing was recorded (an unpaid save), which is
+        //    the string this line always was.
+        showToast(`Order ${displayId} saved${paidPhrase()}`, 'success')
         resetManual(); setShowOrderSheet(false); setLoading(false); setSubmitting(null)
         return
       }
@@ -1259,7 +1307,7 @@ setItemModal({ item, modGroups, editCartKey })
       if (data.paymentWarning) {
         showToast(`⚠ Order #${data.orderId} added — PAYMENT NOT RECORDED. Take payment again on the order card.`, 'error', { duration: 20000 })
       } else {
-        showToast(`Order #${data.orderId} confirmed`)
+        showToast(`Order #${data.orderId} confirmed${paidPhrase()}`)
       }
       if (manualItems.length) {
         const categoryMap: Record<string, string> = {}
@@ -1562,7 +1610,7 @@ setItemModal({ item, modGroups, editCartKey })
             </>
           ) : (
             <button
-              onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = null; void submitManual() }}
+              onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'card'; void submitManual() }}
               disabled={loading || !hasItems || !manualEvent}
               className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
             >
@@ -1606,7 +1654,7 @@ setItemModal({ item, modGroups, editCartKey })
            The label names the ACT and the AMOUNT, matching the primary button in the ON branch, so an
            operator moving between the two states meets the same words for the same outcome. */
         <button
-          onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = null; void submitManual() }}
+          onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'card'; void submitManual() }}
           disabled={loading || !hasItems || !manualEvent}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
@@ -2122,12 +2170,26 @@ setItemModal({ item, modGroups, editCartKey })
           header there is the deals button alone (or, with no deals, nothing at all — an empty
           `shrink-0` div of zero height, which is why it needs no conditional). */}
       {addOrderLayout === 'scroll' ? (
-        <div className="md:hidden flex-1 min-h-0 flex flex-col">
-          <div className="shrink-0">
+        /* ── 🔴 `min-w-0` ON BOTH, AND ONLY THIS SHAPE HAS THE PROBLEM IT SOLVES ────────────────────
+           A flex child's `min-width` is `auto`, which means IT CANNOT SHRINK BELOW ITS CONTENT. The
+           TABS shape below is a single `overflow-y-auto` box, and a box with overflow on one axis
+           computes the other to `auto` too — so it is a scroll container that ABSORBS any wide
+           descendant. This shape is a `flex flex-col` whose header child is a PLAIN `shrink-0` div
+           with no overflow of its own: a wide descendant there is not absorbed, and the column above
+           it cannot shrink to the viewport either. That is the only structural difference between the
+           two layouts, and it is the one that matches the hardware evidence.
+           🔴 `min-w-0` REMOVES THE WIDTH, IT DOES NOT HIDE IT — the boxes may now shrink to their
+           container instead of being forced open by content. No `overflow-x-hidden` anywhere.
+           ⚠️ INERT UNLESS SOMETHING IS ACTUALLY FORCING WIDTH. If nothing is, this changes nothing and
+           the defect is elsewhere — see docs/add-order-overflow-fix-report.md, which states plainly
+           that the wide DESCENDANT was never demonstrated, only the mechanism that would let one
+           escape. ⚠️ BOTH BRANCHES ARE `md:hidden`, so nothing at 768px and above can be affected. */
+        <div className="md:hidden flex-1 min-h-0 min-w-0 flex flex-col">
+          <div className="shrink-0 min-w-0">
             {eventBanner}
             {dealsButton}
           </div>
-          <div className="flex-1 min-h-0 overflow-y-auto pb-24">
+          <div className="flex-1 min-h-0 min-w-0 overflow-y-auto pb-24">
             {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
           </div>
         </div>

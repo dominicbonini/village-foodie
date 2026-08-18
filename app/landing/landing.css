@@ -63,6 +63,16 @@
 /* smooth in-page anchor scroll (scoped to when the landing is mounted) */
 html:has(.hg-landing) { scroll-behavior: smooth; }
 
+/* 🔴 ANCHOR LANDING OFFSET. The nav is `position: sticky; top: 0; height: var(--nav-h)` (4.5rem/72px,
+   :96), so an in-page jump that parks the target's top edge at y=0 parks 72px of it UNDER the nav.
+   `section` padding is `clamp(3.5rem,7vw,5.5rem)` (:174) — 88px on desktop, which hid nothing, but it
+   floors at 56px BELOW ~800px viewport width, so on a phone the nav ate 16px of the section's own
+   content and the "Pricing" eyebrow went under the header. scroll-margin-top on the TARGET fixes it at
+   every width in one line, and reads var(--nav-h) rather than repeating 4.5rem so it can never desync.
+   ⚠️ NOT scroll-padding-top on the scroller: --nav-h is declared on `.hg-landing` (:27), which the
+   scrolling element (html) is not, so it would resolve to nothing there. */
+.hg-landing section[id] { scroll-margin-top: var(--nav-h); }
+
 /* scoped reset — only affects landing content, never the rest of the app */
 .hg-landing * { box-sizing: border-box; margin: 0; padding: 0; }
 .hg-landing a { color: inherit; }

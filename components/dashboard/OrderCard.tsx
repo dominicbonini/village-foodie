@@ -135,13 +135,13 @@ export function OrderCard({
   viewMode?: ViewMode
   /** ── THE PRESENTATION AXIS: WHAT THE CARD LOOKS LIKE ────────────────────────────────────────────
    *  🔴 WHY THIS EXISTS. `viewMode` used to do both jobs, so a LIFECYCLE switch was choosing the header,
-   *  the type size and the item renderer. A Payment/Collected-off device resolves `boardMode` to 'cook',
+   *  the type size and the item renderer. A Payment-&-handover-off device resolves `boardMode` to 'cook',
    *  so it rendered the COOK card — a `text-lg` order number instead of `text-3xl`, a `text-xs` customer
    *  name, no prices — EVEN WITH `Full` SELECTED. The display control was being overruled by a switch
    *  that is supposed to decide nothing about appearance.
    *
    *  🔴 THE TWO AXES, AND NOTHING MAY CROSS THEM:
-   *    `viewMode`  — Payment/Collected. When the order leaves, and therefore which buttons exist.
+   *    `viewMode`  — Payment & handover. When the order leaves, and therefore which buttons exist.
    *    `cardStyle` — Full / Cook. What the card shows. Full shows everything; Cook hides amounts.
    *
    *  ⚠️ DEFAULTS TO `viewMode`, so a caller that passes only `viewMode` gets exactly today's behaviour.
