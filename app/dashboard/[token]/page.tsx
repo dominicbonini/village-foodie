@@ -1347,7 +1347,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // the kitchen screen would open on event A scoped to event B's van. Deriving both from one value makes
   // that unrepresentable rather than merely unlikely.
   const openKDS=(van?:{id?:string;name?:string;kds_token?:string|null})=>{
-    const ev=activeEvent?.id?`event_id=${encodeURIComponent(activeEvent.id)}`:''
+    // ── 🔴 FIX 2 — V11.25 LAYER 1, APPLIED TO THE HANDOVER ITSELF ────────────────────────────────
+    // The handover used to send `event_id` ALONE. /api/dashboard defaults `date` to TODAY and builds
+    // todayEvents as `.eq('event_date', date)`, so an event on any other date is not in that set, is
+    // silently ignored rather than rejected, and the route honestly serves a different (or null) event
+    // — which the KDS's scope guard then reads as a mismatch. Handing a FUTURE event to the KDS
+    // therefore broke it every time. This is the exact injector the V11.25 work identified; layer 1 was
+    // applied to the KDS's own re-fetch and never to the path that seeds it.
+    // 🔴 THE PAIR COMES FROM ONE RESOLVED OBJECT, IN ONE EXPRESSION, so the id and the date can never
+    // describe different events — the invariant the original fix exists to hold (see the manual, and
+    // `eventScopeRef` in the KDS, which states it for the re-fetch side).
+    // ⚠️ `event_date` is nullable on TruckEvent. No date ⇒ send the id alone, exactly as before, rather
+    // than a bare `date=` the route would read as an empty string and match no row.
+    const scope=activeEvent?.id?{id:activeEvent.id,date:activeEvent.event_date??null}:null
+    const ev=scope?[`event_id=${encodeURIComponent(scope.id)}`,...(scope.date?[`date=${encodeURIComponent(scope.date)}`]:[])].join('&'):''
     if(isNativeApp()){
       const parts=[
         van?.id?`van_id=${encodeURIComponent(van.id)}`:'',

@@ -89,6 +89,12 @@ export default function KdsPage() {
   // 🔴 THE SEED FROM THE DASHBOARD. Same handoff mechanism as van_id above. Read ONCE, into the initial
   // state below; nothing re-reads it, so a later navigation cannot move an event out from under a cook.
   const seedEventId = searchParams.get('event_id') ?? ''
+  // 🔴 FIX 2, RECEIVING HALF. openKDS now sends `date` ALONGSIDE `event_id`, from one resolved event
+  // object. Read it here so the FIRST fetch — the one made before the events list has landed and
+  // `eventScopeRef` can supply the pair — forwards both. Without this the sender's half is inert: the
+  // route would still default `date` to today and still fail to match a non-today event.
+  // ⚠️ Read ONCE, exactly like seedEventId, and only ever used together with it (see applyEventScope).
+  const seedEventDate = searchParams.get('date') ?? ''
 
   // Native: remember this device is on KDS so a cold-launch reopens here (restart-to-last-screen, §33).
   useEffect(() => { if (isNativeApp()) setLastScreen('kds') }, [])
@@ -473,9 +479,21 @@ export default function KdsPage() {
       if (scope.date) params.set('date', scope.date)
       return scope.id
     }
-    if (fallbackId) { params.set('event_id', fallbackId); return fallbackId }
+    // 🔴 FIX 2 — THE PRE-RESOLUTION PATH NOW CARRIES THE PAIR TOO. This branch used to send a bare id
+    // and its comment claimed "there is nothing for it to disagree with". There was: the route defaults
+    // `date` to today, so a handed-over event on any other date could never be matched and the server
+    // served a different (or null) event, which the scope check below then read as a mismatch.
+    // ⚠️ THE DATE IS ONLY APPLIED TO THE ID IT ARRIVED WITH. `seedEventDate` describes `seedEventId` and
+    // nothing else, so it is sent only while the fallback id IS that seeded id. Once the operator
+    // switches event, `eventScopeRef` is populated and the branch above owns the pair anyway — this can
+    // never pair a date with an event it does not describe.
+    if (fallbackId) {
+      params.set('event_id', fallbackId)
+      if (seedEventDate && fallbackId === seedEventId) params.set('date', seedEventDate)
+      return fallbackId
+    }
     return null
-  }, [])
+  }, [seedEventDate, seedEventId])
 
   // ── 🔴 FIX 2: WHAT THE SERVER ACTUALLY SERVED, WHEN IT IS NOT WHAT WE ASKED FOR ─────────────────
   // Non-null ⇒ the last response was scoped to a DIFFERENT event from the one this board believes it
@@ -535,17 +553,27 @@ export default function KdsPage() {
       // ⚠️ `undefined` IS NOT A MISMATCH — an older server that does not send the field must not blank a
       // working board. Only a PRESENT-and-different value counts.
       const servedEventId = data.offlinePauseEventId
-      if (requestedEventId && servedEventId !== undefined && servedEventId !== requestedEventId) {
-        console.error(`[kds] event scope mismatch — requested ${requestedEventId}, served ${servedEventId ?? 'null'}; rendering no orders`)
-        setEventScopeMismatch({ requested: requestedEventId, served: servedEventId ?? null })
-        // Clearing is part of the guarantee: leaving the previous array on screen under the new header
-        // IS the reported defect.
-        setOrders([])
-        setLoading(false)
-        return
-      }
-      setEventScopeMismatch(null)
+      // ── 🔴 FIX 3 — A SERVED `null` IS NOT A MISMATCH ────────────────────────────────────────────
+      // `null` means "this truck has no event on the date I resolved", not "I served you a different
+      // event". The old condition tested `!== undefined` only, and `null !== undefined`, so the guard
+      // fired on every no-event day — and because of Fix 1 below that rendered as "Truck not found".
+      // 🔴 IT IS SAFE TO EXCLUDE, NOT MERELY CONVENIENT: /api/dashboard wraps BOTH order queries in
+      // `if (selectedEventId) { … }` (route.ts:249), so a null selection returns NO orders at all.
+      // There is no wrong-event data to protect against, because there is no data.
+      const scopeMismatch =
+        !!requestedEventId && servedEventId !== undefined && servedEventId !== null && servedEventId !== requestedEventId
 
+      // ── 🔴 FIX 1 — TRUCK-LEVEL STATE IS APPLIED BEFORE ANY GUARD, ALWAYS ────────────────────────
+      // 🔴 THE TRUCK WAS NEVER IN DOUBT. It is resolved from `dashboard_token` at the top of the route,
+      // long before any event is chosen, and a bad token returns 401 'Invalid token' — handled above.
+      // The old guard `return`ed one statement BEFORE `setTruck(data.truck)`, so a 200 carrying a
+      // perfectly good truck was discarded and the render fell through to `{error ?? 'Truck not found'}`
+      // — an accurate guard reporting itself as a missing truck.
+      // ⚠️ WHAT IS HOISTED IS EXACTLY WHAT IS NOT EVENT-SCOPED: the truck row, the van's cooking-step
+      // and buzzer settings, the truck's van count, the menu maps, and the auth flag. Every
+      // EVENT-scoped field — orders, both pause columns, extra wait, payments — stays below, inside the
+      // guard, because the forbidden state this guard exists to prevent is one event's data under
+      // another event's name. That guarantee is unchanged; only the truck escapes it.
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
       setActiveVanCount(data.activeVanCount ?? null)
@@ -557,6 +585,28 @@ export default function KdsPage() {
       // the truck row (which never carried it in the /api/dashboard map anyway).
       // Buzzer guard: release against the RAW SERVER ROWS first, then apply what is still pending over
       // the merge so a poll that started before a write cannot revert an open grid. See lib/buzzer.ts.
+      setCategoryOrder(data.categoryOrder ?? [])
+      setItemCategoryMap(data.itemCategoryMap ?? {})
+      setCatConfigs(data.catConfigs ?? {})
+      setRequiresPin(false)
+
+      // ── 🔴 FIX 1/4 — THE GUARD NOW GATES THE EVENT-SCOPED APPLY INSTEAD OF ABANDONING THE HANDLER ──
+      // It used to `return`. That skipped everything below it — including the events fetch at the end of
+      // this handler — so `activeEvent` never resolved, `eventScopeRef` stayed null, and the next poll
+      // repeated the identical unscoped request. The failure was SELF-PERPETUATING, not transient.
+      // 🔴 FIX 4 — AND THIS IS WHY THE NOTICE IS NOW REACHABLE. The notice renders inside the main
+      // return, BELOW `if (error || !truck)`. While the guard left `truck` null, the notice could only
+      // be set in the one state that guaranteed it could not be shown. `setTruck` above makes that state
+      // unreachable, so the notice renders where it was always meant to — no move required, and moving
+      // it would have treated the symptom while leaving the truck unset.
+      if (scopeMismatch) {
+        console.error(`[kds] event scope mismatch — requested ${requestedEventId}, served ${servedEventId ?? 'null'}; rendering no orders`)
+        setEventScopeMismatch({ requested: requestedEventId as string, served: servedEventId ?? null })
+        // Clearing is part of the guarantee: leaving the previous array on screen under the new header
+        // IS the reported defect.
+        setOrders([])
+      } else {
+      setEventScopeMismatch(null)
       // ── FIX 3: DEFENCE IN DEPTH — THE PER-ORDER `event_id` FILTER ────────────────────────────────
       // 🔴 THIS SHOULD NEVER FIRE. The route's orders query is `.eq('event_id', selectedEventId)`, so
       // every row it returns already carries the served id; Fix 1 makes the served id the requested one
@@ -588,19 +638,15 @@ export default function KdsPage() {
       // ⚠️ DO NOT RE-EXCLUDE THIS. Without it the KDS shows NOTHING while customers cannot order.
       setOnlinePausedUntil(data.vanOnlinePausedUntil ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
-      setCategoryOrder(data.categoryOrder ?? [])
-      setItemCategoryMap(data.itemCategoryMap ?? {})
-      setCatConfigs(data.catConfigs ?? {})
       // Guarded on `!== undefined` — the SAME shape the dashboard uses (page.tsx:~710). An older server
       // that does not send the field leaves the previous map intact rather than blanking every card to
       // unpaid; a server that sends an EMPTY map (the payments query failed, route.ts logs it) still
       // clears it, because that is a real "no rows this poll" and must not be masked by a stale copy.
       if (data.payments !== undefined) setPayments(data.payments || {})
-    if (data.heldAuthorisations !== undefined) setHeldAuthorisations(new Set<string>(data.heldAuthorisations || []))
       // ⚠️ Guarded separately, like every sibling: a partial refresh must not clear it.
       if (data.heldAuthorisations !== undefined) setHeldAuthorisations(new Set<string>(data.heldAuthorisations || []))
       if (data.paymentFailures !== undefined) setPaymentFailures(new Set<string>(data.paymentFailures || []))
-      setRequiresPin(false)
+      }
 
       try {
         const eventsRes = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
