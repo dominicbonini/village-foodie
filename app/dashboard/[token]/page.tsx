@@ -2878,41 +2878,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      {/* ── 🔴 THE BANNER STACK — ONE SAFE-AREA INSET FOR ALL OF THEM ─────────────────────────────
-          These bars render ABOVE `AppHeader`, so on a native iPad — where `viewportFit: 'cover'` and
-          Capacitor's `contentInset: 'never'` hand the safe area to CSS — WHICHEVER ONE SHOWS FIRST is
-          the element under the system clock, wifi and battery. Putting the inset on each banner would
-          mean the SECOND one carries a redundant inset whenever two show, so it lives here, once, on
-          the box that is actually at the top of the viewport.
-          🔴 A BARE `env(safe-area-inset-top)`, AND THE `max(0.5rem, …)` FLOOR IS DELIBERATELY NOT USED
-          HERE. That floor exists for the case where the inset sits ON a banner and overrides its own
-          `py-2` top half — the 8px it restores IS that banner's padding. On a WRAPPER there is nothing
-          to restore: every banner keeps its own `py-2`/`py-3` inside this box, so a floor would ADD 8px
-          that nothing had before, on web, where the inset is 0. 🔴 BARE `env()` IS THEREFORE THE ONE
-          FORM THAT LEAVES WEB BYTE-IDENTICAL: 0 on web and desktop, 0 on Android by design (see
-          lib/native/statusBar.ts), the true inset on iOS.
-          ⚠️ NO BANNER'S OWN PADDING, COLOUR, COPY, DISMISS OR CONDITIONS CHANGED — only where the inset
-          lives. ⚠️ `WebOfflineBanner` NEEDS NOTHING EITHER WAY: it returns null on native, and native is
-          the only place an inset exists. It is inside the wrapper because the wrapper is the stack. */}
-      <div style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
-        {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
-            (renders null on native, where OfflineBanner owns the offline state). */}
-        <WebOfflineBanner />
-        {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
-            the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
-        <CapacityBreachBanner breaches={capacityBreaches} orders={orders} dismissedSig={effectiveBreachDismissedSig} onDismiss={dismissBreaches} />
-        {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
-            looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
-            null by definition here); if it has since left the fetched window the banner row simply does
-            nothing rather than opening a grid against a phantom. */}
-        <BuzzerLostBanner
-          losses={buzzerLosses}
-          dismissedKeys={dismissedBuzzerLosses}
-          onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
-          onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
-        />
-      </div>
+      {/* ── 🔴 THE BANNER STACK MOVED BELOW THE CHROME (see docs/status-strip-fix-report.md) ────────
+          It used to sit HERE, above `AppHeader`, wrapped in a div carrying
+          `paddingTop: env(safe-area-inset-top)`. That wrapper was unconditional and painted nothing, so
+          on a native iPad it reserved the status-bar strip and left it showing the app-shell's
+          `bg-slate-50` — a white strip under white system glyphs — while `AppHeader`'s own inset added
+          the SAME height again, putting the whole page at 2 × the inset.
+          🔴 THE INSET IS NOT MANAGED HERE ANY MORE, IT IS GONE. `AppHeader` owns it, alone, and paints
+          it navy, exactly as it did before the wrapper existed. A banner can no longer reach the strip
+          because it is no longer above the header. DO NOT REINTRODUCE AN INSET ON THIS PAGE. */}
       {/* ── 🔴 THE DARK OFFLINE CHIP WAS DELETED HERE (14 August 2026). DO NOT REINSTATE IT. ──────────
           It read "Offline — orders & stock save on this device; settings are locked" and stacked directly
           under OfflineBanner, which was already saying the same thing with a count. Both read the SAME
@@ -2931,7 +2905,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* isAdmin comes from the /api/auth/me call this page ALREADY makes on mount (see the effect above
           — unconditional, so it fires on a demo dashboard too). No new request. It opens the setup path
           for a production tester while public signup stays off; /api/signup re-checks it server-side. */}
-      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null}/>}/>}
+      {/* ⚠️ DemoModeBanner and KeepAwakePrompt MOVED DOWN with the banner stack — see the note below
+          the event bar. Both are plain in-flow `w-full … shrink-0` bars, so above `AppHeader` either one
+          would have been the element under the iOS status bar whenever it showed. DemoWelcome stays here:
+          it is a `fixed inset-0` modal and never participates in the column. */}
       {/* One-time orientation, shown BEFORE they see the board. Carries the customer order link, which is
           the thing most likely to be missed and the one that closes the loop. */}
       {/* isSample reads the SERVER's answer alone (demo_sessions.extraction_source, via /api/dashboard's
@@ -2947,7 +2924,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
-      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={()=>{void applyKeepScreenOn(true)}} />
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />
@@ -3140,6 +3116,45 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         </div>
       )}
+
+      {/* ── 🔴 THE BANNER STACK — NOW BELOW THE HEADER, TABS AND EVENT BAR ───────────────────────
+          A banner is page CONTENT, not chrome, so it belongs under the chrome. It sits exactly where the
+          card-payments banner below already sits: OUTSIDE `<main>`, so it still shows on EVERY tab and is
+          never inside the scroll container — the property the old position had, preserved verbatim.
+          🔴 NO `paddingTop` AND NO BACKGROUND ON THIS WRAPPER, DELIBERATELY, AND NEITHER MAY COME BACK.
+          Nothing here is under the status bar any more: `AppHeader` is, and `AppHeader` paints it. A
+          second `env(safe-area-inset-top)` anywhere in this column is the double-inset defect returning.
+          ⚠️ IT IS ALSO NOT PLACED BETWEEN THE HEADER AND THE TABS. Header, tabs and event bar are three
+          contiguous bars of chrome; a red alert wedged between two navy bars reads as a rendering fault.
+          ⚠️ NOTHING ABOUT ANY BANNER CHANGED — same components, same props, same order, same conditions,
+          same copy, same dismissal. Only the position of the block, and the wrapper losing its padding. */}
+      <div>
+        <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
+        {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
+            (renders null on native, where OfflineBanner owns the offline state). */}
+        <WebOfflineBanner />
+        {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
+            the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
+        <CapacityBreachBanner breaches={capacityBreaches} orders={orders} dismissedSig={effectiveBreachDismissedSig} onDismiss={dismissBreaches} />
+        {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
+            looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
+            null by definition here); if it has since left the fetched window the banner row simply does
+            nothing rather than opening a grid against a phantom. */}
+        <BuzzerLostBanner
+          losses={buzzerLosses}
+          dismissedKeys={dismissedBuzzerLosses}
+          onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
+          onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
+        />
+      </div>
+      {/* DEMO MODE — persistent app-shell strip, on EVERY tab. Deliberately calm rather than alarming:
+          this is a prospect exploring the product, not an operator being warned. Moved below the chrome
+          with the stack; its copy, condition and action are untouched. */}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null}/>}/>}
+      {/* Keep-screen-on prompt — full-width bar in the app-shell (visible on the service screen, not
+          buried). Shows only when the pref is on but the lock isn't held; the operator's first tap
+          dismisses AND acquires it. Moved below the chrome with the stack; conditions untouched. */}
+      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={()=>{void applyKeepScreenOn(true)}} />
 
       {/* ── 🔴 TEMPORARY — CARD PAYMENTS OFF. PERSISTENT BANNER. DELETE WITH THE SWITCH. ─────────────
           ⚠️ IT SITS OUTSIDE <main> ON PURPOSE, so it shows on EVERY tab and is not inside the scroll

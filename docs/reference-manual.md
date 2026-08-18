@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.27
+HatchGrab Engineering Reference Manual · V11.28
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.27**
+**Version 11.28**
 
 August 2026
 
@@ -15,6 +15,104 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.28 — 21 August 2026
+
+Delta over V11.27 — **an edge function 64 days stale because its deploy was blocked; a per-van setting
+whose ping is per-truck; a customer page with no pause poll; and the breach banner finally reading as
+one problem per collection time.**
+
+- 🔴 **`heartbeat-monitor` HAD BEEN DEPLOYED ON 15 JUNE. THE OFFLINE-MODE BRANCH LANDED 18 AUGUST — 64
+  DAYS STALE, AND MODE B WAS CONFIGURED AND INERT FOR EVERY HOUR IN BETWEEN.** ✅ **EXECUTED: `functions
+  list`'s `updated_at` against the commit time is what proved it — a timestamp comparison, not an
+  argument.** 🔴 **AND THE REASON IT WENT UNNOTICED IS THAT THE DEPLOY WAS BLOCKED:**
+  `npx supabase functions deploy` fails with *"failed to parse environment file: .env.local (unexpected
+  character in variable name near ""type": "service_account"")"* — a raw multi-line JSON credential the
+  CLI's env parser reads as a new variable. **The credential never needed changing, only its quoting.**
+  ⚠️ **A DEPLOY THAT IS AWKWARD GETS SKIPPED, AND EDGE FUNCTIONS FAIL SILENTLY: nothing in the product
+  says a function is behind.** §29.
+- ✅ **MODE B IS NOW VERIFIED END TO END ON HARDWARE.** LIVE-VERIFIED after the redeploy:
+  `offline_no_autoaccept_until` written, `online_paused_until` **and** `last_offline_pause_at` left
+  null — the new branch writing the new marker and deliberately not the old ones — and DEVICE-VERIFIED,
+  an order placed while the marker was live arrived **`pending`**. ⚠️ **ONE FALSE ALARM IS RECORDED
+  BECAUSE THE REASONING MATTERS: an earlier order arrived `confirmed` and looked like the mode failing;
+  it was placed at 14:29:51 and the marker was written at 14:31:58, two minutes later. Check the clock
+  before checking the code.** 🔴 **A SUCCESSFUL DEPLOY IS NOT PROOF OF BEHAVIOUR — the proof is the log
+  line `NO-AUTO-ACCEPT until …`, a string that does not exist in the old bundle.**
+- ✅ **`auto-event-scheduler` IS NOT STALE** (deployed 29 June, after its 10 June commit), **so the 18
+  August 502s are not a stale-deploy problem** — an environment, resource or upstream cause is more
+  likely than a code one. **Still open.**
+- 🔴 **THE OFFLINE-PROTECTION SETTING IS PER VAN AND THE HEARTBEAT PING IS PER TRUCK. THAT IS THE
+  DEFECT.** ✅ **The setting is NOT per device, per user or shared between trucks — a grep for it beside
+  `localStorage|Preferences|sessionStorage|cookie` returns nothing, and no `hg_*` key carries it.** 🔴
+  **BUT A DASHBOARD PING SENDS NO `vanId` AND STAMPS EVERY ACTIVE VAN: LIVE-VERIFIED, Test Kitchen's
+  Van1 and Van2 carry the IDENTICAL `last_heartbeat_at` to the millisecond while their settings differ
+  (Van1 true, Van2 false). SO VAN2 CAN NEVER GO STALE WHILE A DEVICE IS ON VAN1'S DASHBOARD.** ✅
+  Harmless today — both live trucks are single-van. 🔴 **The first two-van operator hits it immediately
+  and it will look like offline protection silently not working on one van.** ⚠️ **And it is awkward to
+  fix, which is why it keeps being deferred: the dashboard is not van-scoped, and a dashboard with no
+  event selected has no van to name — stamping nothing is worse than stamping everything.**
+- 🔴 **THE TWO SURFACES WRITE DIFFERENT COLUMNS AT DIFFERENT SCOPES: manage writes
+  `truck_vans.auto_pause_on_offline` (the van default), the dashboard writes
+  `truck_events.offline_protection_override` (one event).** **Two settings wearing one name — which
+  reproduces "enabled on the laptop, not on the phone" with no device-local storage involved, whenever
+  the two screens have different events selected.** ⚠️ **Legitimately per-device: pause state, heartbeat
+  age, the banner, the reconnect notice's ack, the breach dismissal. NEVER per-device: the toggle's
+  position for the same event, the resolved mode, and whether customers can order.**
+- ⚠️ **THE FLAPPING (`paused:1/0` six times in eight minutes) WAS A DEVICE STILL PINGING** — pause,
+  skip, a returning ping clears it, stale again. **Not a bug; the mechanism working against an
+  intermittent device.**
+- 🔴 **THE OFFLINE-PAUSE NOTICE DOES NOT FIRE IN MODE B, AND THAT IS OPEN.** It reads
+  `last_offline_pause_at`, which mode B deliberately does not write — so an operator whose auto-accept
+  was turned off while they were away is told nothing on their return.
+- ✅ **THE CUSTOMER PAUSE GATE IS INTACT AND THE MODE WORK NEVER TOUCHED IT** — `git diff` on
+  `app/api/menu/` across the mode commits is empty, and the gate still resolves
+  `offline_protection_override ?? van default` then compares `online_paused_until` to `now` **server-side
+  on a `timestamptz`, so the BST class of error does not apply.** 🔴 **BUT THERE IS NO PAUSE POLL ON THE
+  CUSTOMER PAGE: the 30-second interval is a clock tick that explicitly does not refetch, so an
+  already-open page NEVER picks up a pause without a reload or the banner's own "check again".** ⚠️
+  **And the no-`event_id` fallback picks the earliest upcoming `open`-OR-`confirmed` event, so a
+  `confirmed` event on an earlier date outranks an open one and the gate reads the wrong row.**
+- 🔴 **THE BREACH BANNER'S `total === 0` FALLBACK WAS WHY IT LOOKED WRONG: `order_keys` held only orders
+  COLLECTING at the breached slot, while a cooking window is fed by orders collecting elsewhere** — so
+  it printed `16:50 over capacity`, naming a slot with nothing booked at it. **Fixed by attributing the
+  window's load to its FEEDING slots via `contributingProductionSlots`, the existing shared inverse —
+  provenance survives at SLOT level, not order level, so no engine change was needed.**
+- ✅ **AND THE BANNER NOW READS AS ONE PROBLEM PER COLLECTION TIME**, grouped by each order's OWN slot,
+  de-duplicated by `order_key`: `Kitchen over capacity — 11 items cooking for 17:00` / `#4 — 5 items ·
+  #N19 — 6 items`. 🔴 **THE NUMBER IS THE ITEM COUNT OF THE ORDERS LISTED, NOT AN OVERAGE — the only
+  figure that can equal the list beneath it. Summing overages would double-count an order feeding two
+  windows; the max would understate two windows breaching differently.** ⚠️ **Grouped DISPLAY-SIDE
+  deliberately: `breachSignature` hashes the detector's output, so grouping server-side would have
+  re-fired every existing dismissal, and the strip must keep marking WINDOWS.**
+- 🔴 **THE BREACH DISMISSAL WAS REACT STATE AND NOTHING ELSE**, so every reload resurrected it — the
+  signature was never the problem (every field is a slot string or a `Math.round`ed integer, and the
+  list is `.sort()`ed). **Now persisted as `hg_breach_ack_<eventId>`, the offline-pause notice's
+  per-device pattern, storing the SIGNATURE so a worse breach re-fires.**
+- ✅ **THE STRIP MARKS SLOTS THAT ARE OVER BY REUSING THE DETECTOR'S OUTPUT, NOT ITS PREDICATE** —
+  `capacityBreaches` passed down as a `Set`, so the banner and the strip agree by construction.
+- ⚠️ **THE SAFE-AREA STACK IS STILL UNPROVEN ON A DEVICE.** One wrapper carries
+  `env(safe-area-inset-top)` for all the banners, `viewportFit: 'cover'` is confirmed set, and 🔴 **ANDROID
+  NEEDS NOTHING AND GOT NOTHING: Capacitor's `SystemBars` plugin already pads the WebView's parent and
+  zeroes the insets, the strip is painted by the window background, and `env()` resolves to 0 — adding
+  CSS would pad twice and reproduce the two-band bug V8.7 removed.** **The iOS overlap was reported
+  again after the wrapper shipped; the wrapper IS committed and pushed, so the open question is whether
+  the deployed build contains it.**
+- ✅ **THE LANDING PAGE HAS AN UNLISTED URL FOR FEEDBACK** — a 22-character `secrets.choice` path
+  re-exporting the same module, so the page, its `noindex` metadata and its CSS cannot drift. 🔴 **IT
+  WAS NECESSARY BECAUSE `/landing` IS ADMIN-ONLY IN PRODUCTION: `app/landing/layout.tsx` redirects any
+  non-admin to `/`, so a reviewer would have landed on the Village Foodie home page.** ⚠️ **Unlisted is
+  not private, and that is accepted.**
+- **METHOD.** 🔴 **A DEPLOY THAT IS AWKWARD GETS SKIPPED — and edge functions fail silently, so their
+  staleness must be CHECKED, not assumed.** ✅ **A TIMESTAMP COMPARISON BEATS AN ARGUMENT: check the
+  clock before checking the code.** ✅ **THE HEADLINE MUST EQUAL THE LIST BENEATH IT — derive a summary
+  FROM its detail so the two cannot disagree**, the same family as reuse-the-output. ⚠️ **Four more
+  ambiguous-column errors in one evening (`id`, `venue_name`, `name` on both sides of a join):
+  QUALIFY EVERY COLUMN IN A JOINED QUERY.**
+- **NEW OPEN ITEMS:** the per-truck ping against a per-van setting · the notice not firing in mode B ·
+  the customer page's missing pause poll · the no-`event_id` fallback outranking an open event · the
+  `.env.local` quoting that blocks edge-function deploys · whether the deployed build carries the
+  safe-area wrapper.
 
 ## V11.27 — 21 August 2026
 
