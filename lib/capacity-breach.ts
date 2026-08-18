@@ -17,7 +17,7 @@
 //   remainingByCat (NOT the /api/slots `remaining` field, which is Math.max(0,…)-clamped and can
 //   NEVER show a breach).
 
-import { projectBackwardOccupancy, backwardWindowStepMins } from '@/lib/slot-availability'
+import { projectBackwardOccupancy, backwardWindowStepMins, contributingProductionSlots } from '@/lib/slot-availability'
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 
@@ -104,7 +104,36 @@ export function detectCapacityBreaches(p: DetectCapacityBreachesParams): Capacit
     }
     if (overTotal <= 0 && overCats.length === 0) continue   // full is fine; only genuine over-subscription flags
 
-    const grp = ordersBySlot.get(s.collection_time) ?? []
+    // -- ATTRIBUTE THE WINDOW'S LOAD TO THE ORDERS THAT ACTUALLY FEED IT ---------------------------
+    // THIS USED TO READ `ordersBySlot.get(s.collection_time)` ALONE, i.e. only orders COLLECTING at this
+    // slot. A cooking window is projected BACKWARD from collection times, so the orders whose items are
+    // in it usually collect somewhere else: orders at 16:30 and 17:00 can put 16:50's window over while
+    // nothing collects at 16:50 at all. `order_keys` came back empty, the banner's quantity summed to
+    // zero, and it printed "16:50 over capacity" -- a slot with nothing booked at it, which reads as
+    // wrong even when the breach is real.
+    // PROVENANCE IS AGGREGATED PER SLOT, NOT PER ORDER: productionSlotUnits is Record<slot, QtyByCat>, so
+    // the engine cannot say which ORDER contributed a unit -- but it can say which COLLECTION SLOTS feed
+    // a window, and `contributingProductionSlots` is the existing shared helper that inverts the
+    // projection. THE ADD-ORDER MODAL ALREADY USES IT FOR THE SAME QUESTION at a different moment; this
+    // reuses it rather than writing a second inversion. NO ENGINE CHANGE, no new arithmetic.
+    // The window's span: the event-start pile sits AT the slot, an ordinary window ENDS at it.
+    const isPile = back.pileByStart.get(slotMins) != null
+    const fromMins = isPile ? slotMins : slotMins - step
+    const feeders = contributingProductionSlots(
+      productionSlotUnits || {}, catConfigs || {}, fromMins, fromMins + step,
+      Math.max(1, Math.round(capacityWindowMins ?? 5)),
+    )
+    // Union of the feeding slots and the slot itself, de-duplicated by order_key so an order that feeds
+    // the window from two of its own lines is named once.
+    const seenKeys = new Set<string>()
+    const grp: Array<{ order_key: string; id: number }> = []
+    for (const feedSlot of [s.collection_time, ...feeders]) {
+      for (const o of ordersBySlot.get(feedSlot) ?? []) {
+        if (seenKeys.has(o.order_key)) continue
+        seenKeys.add(o.order_key)
+        grp.push(o)
+      }
+    }
     breaches.push({
       collection_time: s.collection_time,
       reason: w.bound_by ?? (overTotal > 0 ? 'kitchen capacity' : 'batch'),

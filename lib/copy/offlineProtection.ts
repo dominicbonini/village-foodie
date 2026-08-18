@@ -48,11 +48,11 @@ export const OFFLINE_PROTECTION_CARD_DESCRIPTION =
 // THE SWITCH AND ITS TWO MODES -- VERBATIM, AND THIS BLOCK IS THE ONLY PLACE THEY LIVE.
 // "Offline protection" now names the SWITCH. Pausing is one MODE of it, not the feature — which is why
 // the four constants above stopped saying "paused" and started saying "takes over".
-export const OFFLINE_PROTECTION_SWITCH_LABEL = 'Offline protection'
+export const OFFLINE_PROTECTION_SWITCH_LABEL = 'Offline Order Protection'
 export const OFFLINE_PROTECTION_SWITCH_HELP =
   'What happens when this van loses its connection.'
 
-export const OFFLINE_MODE_PAUSE_LABEL = 'Stop taking orders'
+export const OFFLINE_MODE_PAUSE_LABEL = 'Pause Online Ordering'
 export const OFFLINE_MODE_PAUSE_HELP =
   "Customers can't order until you're back online."
 
@@ -60,7 +60,7 @@ export const OFFLINE_MODE_PAUSE_HELP =
 // setting (Settings → Auto-accept), and consistency with it beats plainer wording. DO NOT REWORD IT.
 export const OFFLINE_MODE_NO_AUTO_ACCEPT_LABEL = 'Keep taking orders, confirm them yourself'
 export const OFFLINE_MODE_NO_AUTO_ACCEPT_HELP =
-  "Auto-accept is turned off, so customers can still order but nothing is confirmed automatically. You'll confirm each one when you're back."
+  "Auto-accept is turned off, so customers can still order but nothing is confirmed automatically. You'll confirm each one when you're back online."
 
 /** The two modes, in the order they render. One array so manage and the dashboard cannot drift. */
 export const OFFLINE_PROTECTION_MODES = [

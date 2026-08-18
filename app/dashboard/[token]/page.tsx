@@ -510,7 +510,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Piece 2 — server-detected over-capacity slots (reconnect flag). Dismiss keyed to the breach set
   // signature so a NEW/worse breach re-shows but an already-reviewed one stays hidden.
   const[capacityBreaches,setCapacityBreaches]=useState<CapacityBreach[]>([])
+  // ── THE CAPACITY-BREACH DISMISSAL — PER DEVICE, PER EVENT, AND IT NOW SURVIVES A RELOAD ─────────
+  // IT WAS COMPONENT STATE AND NOTHING ELSE, so every refresh, every navigation back to this tab and
+  // every cold launch resurrected a banner the operator had already dealt with. That alone explains
+  // "dismissed several times and it keeps coming back" -- the SIGNATURE was never the problem.
+  // THE PATTERN IS THE OFFLINE-PAUSE NOTICE'S, COPIED RATHER THAN INVENTED: `hg_offline_pause_ack_<id>`
+  // is per-device localStorage keyed on the event, and this is `hg_breach_ack_<id>` beside it. Per
+  // device is right for both: it records that THIS operator, on THIS screen, has seen it.
+  // THE VALUE STORED IS THE SIGNATURE, NOT A BOOLEAN, which is what makes a WORSE breach re-fire: the
+  // signature carries the overage, so 15-over hashes differently from 10-over and no longer matches.
   const[breachDismissedSig,setBreachDismissedSig]=useState<string|null>(null)
+  // Restore this event's dismissal on mount and on every event switch. `selectedEventId` in the deps
+  // so switching event cannot carry the previous event's dismissal across.
+  // NO EFFECT AND NO setState-IN-EFFECT: the stored value is DERIVED, read during render from the key
+  // the current event owns. `breachDismissedSig` holds only a dismissal made in THIS session, and the
+  // effective one is whichever of the two is present -- so a reload finds the stored value with no
+  // write, no extra render pass and no cascade warning.
+  const storedBreachAck=typeof window==='undefined'||!selectedEventId?null:(()=>{try{return localStorage.getItem(`hg_breach_ack_${selectedEventId}`)}catch{return null}})()
+  const effectiveBreachDismissedSig=breachDismissedSig??storedBreachAck
+  const dismissBreaches=useCallback((sig:string)=>{
+    setBreachDismissedSig(sig)
+    if(typeof window!=='undefined'&&selectedEventId){
+      try{localStorage.setItem(`hg_breach_ack_${selectedEventId}`,sig)}catch{/* private mode / quota: the
+        dismissal still holds for this session, which is what it did before persistence existed */}
+    }
+  },[selectedEventId])
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
   // 🔴 THE TRUCK'S ACTIVE VAN COUNT, FROM THE SAME RESPONSE AS `activeVanName`. ONE SOURCE FOR ONE FACT:
   // this surface also holds `vans` from /api/manage's get_vans, and reading the count from THAT would
@@ -2877,7 +2901,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         <WebOfflineBanner />
         {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
             the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
-        <CapacityBreachBanner breaches={capacityBreaches} orders={orders} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
+        <CapacityBreachBanner breaches={capacityBreaches} orders={orders} dismissedSig={effectiveBreachDismissedSig} onDismiss={dismissBreaches} />
         {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
             looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
             null by definition here); if it has since left the fetched window the banner row simply does

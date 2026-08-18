@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.26
+HatchGrab Engineering Reference Manual · V11.27
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.26**
+**Version 11.27**
 
 August 2026
 
@@ -15,6 +15,144 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.27 — 21 August 2026
+
+Delta over V11.26 — **a capacity ceiling that was NULL on the truck every capacity test had been run
+against; an over-capacity modal that existed, was tested, and was gated on `isOnline()`; a device's
+lifelong sequence transplanted onto a per-event counter; and offline protection given a second mode.**
+
+- 🔴 **`kitchen_capacity` WAS NULL ON TEST KITCHEN, AND A NULL CEILING IS UNLIMITED. LIVE-VERIFIED:**
+  Gusto Van1 = **2** (window 5) · Tikka = **NULL** · Test Kitchen Van1 = **NULL** at the time of every
+  observation, now 2 with a 10-minute window. The engine reads
+  `remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - conc`, so 🔴 **`remainingTotal
+  < -EPS` can never be true, the breach detector never fires and the fit check's ceiling bind never
+  binds — a NULL-ceiling truck has NO GLOBAL-CEILING PROTECTION ON EITHER PATH.** ⚠️ Per-category batch
+  limits still apply, so such a truck is not entirely unprotected. 🔴 **THIS INVALIDATED THREE EARLIER
+  OBSERVATIONS, AND THE MOMENT A CEILING WAS SET THE BANNER FIRED IMMEDIATELY — DEVICE-VERIFIED, "2
+  slots over capacity — review". THE MECHANISM WAS NEVER BROKEN; THE TRUCK WAS UNCONFIGURED.** §31.
+- 🔴 **THE OVER-CAPACITY MODAL EXISTS, WAS TESTED, AND NEVER FIRED OFFLINE — `if (!skipFitCheck &&
+  effectiveSlot && manualEvent && isOnline())`.** Both accounts were true at once: **a mechanism on a
+  path the offline order never touches.** ✅ **`docs/capacity-modal-review.md` opens with "You are not
+  misremembering", which is why the standing rule is now SEARCH `docs/` BEFORE SEARCHING THE CODE — a
+  previous report names a feature faster than a grep guesses it.**
+- ✅ **THE FIT CHECK NOW RUNS OFFLINE, AGAINST THE CACHED INPUTS THE PANEL'S OWN CAPACITY STRIP ALREADY
+  RENDERS FROM, AND SAYS SO.** Only ONE of its inputs needed the network — the no-store `/api/slots`
+  read — and `capacityInputs`/`serverCatConfigs` already resolve to an offline fallback. Online is
+  byte-identical; offline projects from cache and the modal adds *"Checked against the last data this
+  device downloaded"*. 🔴 **NO CACHED INPUTS ⇒ NO CHECK: a check with no data must not pretend to have
+  run.** ⚠️ **The offline answer can MISS a breach — it cannot see what arrived since — but it cannot
+  invent one.**
+- ⚠️ **`capacity_ack_at` NOW MEANS THREE THINGS WHEN NULL** — never checked, checked and fine, checked
+  provisionally and fine. **A timestamp means "warned and overridden" on both paths and does not record
+  which warning it was. Separating them needs a column, which was not built.**
+- ✅ **THE BREACH BANNER NAMES THE SLOT AND THE ORDERS** — `10 items booked for 17:00 — over capacity ·
+  #4 — 5 · #N19 — 5` — computed from the orders the dashboard already holds, with **no API extended.**
+  🔴 **`collection_time` ON A BREACH WAS ALREADY THE COLLECTION SLOT; those were never raw cooking
+  windows.** ⚠️ It says "items" not "mains" on a global-ceiling breach, because nothing in the payload
+  names a category there. ⚠️ **`order_ids: number[]` is a type that lies for `N19`-style ids.**
+- ✅ **THE STRIP MARKS SLOTS THAT ARE OVER, NOT MERELY FULL** — an `!` with `aria-label="Over capacity"`
+  beside the dot, on both variants, **reusing the breach detector's OUTPUT rather than a second
+  predicate.** 🔴 **`tone === 'red'` fires at `conc >= ceiling`, so full and over-subscribed were
+  indistinguishable.** ⚠️ **The KDS mounts no copy of that strip — out of scope by absence, not by
+  omission.**
+- ✅ **ONE SAFE-AREA INSET FOR THE WHOLE BANNER STACK**, on a wrapper rather than on each banner. 🔴 **A
+  bare `env()` on the WRAPPER is the only form that leaves web byte-identical: the `max(0.5rem, …)`
+  floor exists to restore a banner's own `py-2` when the inset overrides it, and on a wrapper it would
+  ADD 8px that nothing had.** ⚠️ **`OfflineBanner` and `BuzzerLostBanner` shared the defect; the wrapper
+  fixes all of them at once.**
+- 🔴 **A DEVICE'S LIFELONG SEQUENCE WAS TRANSPLANTED ONTO A PER-EVENT COUNTER.** `if (provNum >
+  order_counter) update order_counter = provNum` left Test Kitchen's counter at **19 with seven rows**
+  — numbers 6–17 were **skipped, never consumed.** **The adoption is deleted; the counter now advances
+  by exactly one per successful row and no client value reaches it by any path.** ⚠️ **Existing rows are
+  not renumbered and counters are not rewound.**
+- ✅ **A SYNCED OFFLINE ORDER TAKES THE NEXT UNUSED EVENT NUMBER**, so two devices offline at once
+  converge on the server's own sequence instead of colliding. ⚠️ **THE BAG PROBLEM IS OPEN: the
+  provisional number is persisted nowhere, so a card cannot show both what it is and what it was placed
+  as without a column.**
+- 🔴 **`O` NOW MEANS OFFLINE, AND THE DEVICE LETTER IS KEPT AFTER IT** — `ON20` = offline, device N,
+  event number 20. **`N` never meant offline: it was a checksum of `device_id` mod 26.** 🔴 **THE STAMP
+  IS IN `gatedAction`'s `queue()`, THE ONE PLACE EVERY QUEUED BODY PASSES THROUGH**, so the route whose
+  body was built while the device still believed it was online is marked too. ⚠️ **In-flight route-2
+  orders already in an outbox will sync unmarked.**
+- 🔴 **`orders.source` IS CONSTRAINED — `CHECK (source = ANY (ARRAY['web','manual','whatsapp']))` —
+  SO `'offline'` IS NOT AVAILABLE.** The manual path now writes `'manual'` explicitly with the
+  constraint quoted beside it. 🔴 **THE CUSTOMER PATH CANNOT ASSERT ITS OWN VALUE: its insert is inside
+  `place_order_atomic`, whose fixed column list does not name `source`, so making it explicit is a
+  migration.** ⚠️ **No row is backfilled: everything written before this reads `web` whatever route it
+  took, permanently.** ⚠️ **`lib/seed-demo-orders.ts` still relies on the default.**
+- 🔴 **TWO CUSTOMERS HELD A CONFIRMED 17:00 AND NEITHER WAS TOLD.** The replay route "bypasses
+  auto_accept and ALL capacity gating", so N19 was never evaluated — **not a stale check, not a race:
+  no check ran.** 🔴 **AND NOTHING IN THE PRODUCT DETECTS TWO CUSTOMERS SHARING A COLLECTION TIME —
+  only a window over a CEILING. That remains open.**
+- ✅ **OFFLINE PROTECTION IS NOW ONE SWITCH WITH TWO MODES: `Stop taking orders` and `Keep taking
+  orders, confirm them yourself`.** The no-auto-accept LIFECYCLE was already built — `status =
+  autoAccepted ? 'confirmed' : 'pending'`, the slot claimed by `placeOrderInSlotLocked` **before** the
+  decision and held regardless, and the customer already told *"{truck} will confirm your order
+  shortly"*. 🔴 **THE ONE THING NOT BUILT: the auto-accept decision is made at SUBMIT time from truck
+  and item config, and nothing there knew the van was offline** — so "the monitor does nothing" would
+  have shipped a mode that appears to work and does nothing.
+- 🔴 **THE MONITOR WRITES A MARKER; SUBMIT DOES NOT RE-DERIVE STALENESS.** `STALE_THRESHOLD_SECONDS` is
+  a local const inside a Deno edge function and **cannot be imported by Vercel code**, so computing
+  staleness at submit would put the number 30 in two independently-deployed places. **One owner of the
+  rule; everyone else reads a value.** ✅ **And the marker rides on the EVENT row that route already
+  selects — one column, no round trip.**
+- 🔴 **THE ADDITIVE COLUMN, NOT THE ENUM.** `truck_vans.offline_protection_mode` +
+  `truck_events.offline_protection_mode_override` + `offline_no_autoaccept_until`, all defaulting to
+  today's behaviour. **Gusto's `auto_pause_on_offline = true` keeps meaning ON with no conversion**, and
+  converting a column the deployed edge function reads directly on a live van is the shape that fails at
+  the worst moment.
+- 🔴 **TWO DEPLOY CONDITIONS, ONE LOUD AND ONE SILENT. MIGRATION BEFORE CODE** — three named selects
+  list the new columns, so a code-first deploy gets PostgREST **42703** and breaks visibly. 🔴 **AND THE
+  SILENT ONE: THE MODE DOES NOTHING UNTIL `heartbeat-monitor` IS REDEPLOYED SEPARATELY**, because the
+  deployed body only knows how to write `online_paused_until`. **An operator selecting "Keep taking
+  orders" would get a setting that reads as configured and is inert.** ⚠️ **The BST shape exactly:
+  committed ≠ deployed, silent, findable only by testing the BEHAVIOUR.** **Order: migration → code →
+  `npx supabase functions deploy heartbeat-monitor` → verify the marker is written.**
+- 🔴 **THE "OFFLINE PROTECTION KEPT YOU COVERED" NOTICE FIRED ON A FRESH BUILD FOR A TRUCK WHOSE
+  PROTECTION WAS OFF.** It read only `last_offline_pause_at` and the served event id — **no recency
+  window, no protection-state gate, ack'd only in this device's localStorage** — and
+  `set_offline_protection(false)` clears `online_paused_until` while **deliberately leaving the
+  marker**. ✅ **Now gated on the resolved protection (the monitor's own order) and on a 24-hour
+  window:** long enough that an operator offline overnight still learns their ordering was paused, short
+  enough that a marker from a previous week never surfaces, and **twelve times the 2-hour pause it
+  reports on.**
+- **THE COPY LIVES IN ONE FILE.** `lib/copy/offlineProtection.ts` now carries the switch, both mode
+  labels and both help lines; four constants that described PAUSING rather than the feature were
+  rewritten, **the "keep your screen on" lead survives untouched, and the disable-confirm was reused
+  rather than rewritten because it already described mode B.**
+- 🔴 **THE ADD-ORDER PANEL HARDCODED `method = null` AT BOTH PLAIN "TAKE PAYMENT" MOUNTS**, so a walk-up
+  paid at the hatch recorded nothing while the same truck's "Mark paid" recorded `card`. **Both now
+  record `card`.** 🔴 **AND THE `takesCash` GATE IS REMOVED ENTIRELY, REVERSING MY OWN EARLIER
+  INSTRUCTION: `takes_cash` adds a BUTTON, it does not change what the plain button MEANS.** An operator
+  with a Cash button in front of them who presses plain paid has taken a card payment. ⚠️ **The repair
+  control inherits it, and the inference is stated rather than hidden.**
+- 🔴 **THE ADD-ORDER HORIZONTAL SCROLL WAS THE STICKY HEADING'S UNMATCHED BLEED.** `-mx-1 px-1` against
+  a parent chain with **no horizontal padding**, inside a box whose `overflow-y: auto` makes
+  `overflow-x` compute to `auto` — so that box scrolled by exactly those 8px. 🔴 **THE CUSTOMER PAGE
+  DISPROVED THE OBVIOUS ANSWER: its sticky heading bleeds HARDER (`-mx-2 … sm:-mx-4`) and does not
+  overflow, because its bleed is MATCHED by the card's own `px-2 sm:px-4` — its comment says the two
+  "must agree".** ⚠️ **The previous pass exonerated it on `<main>`'s padding, which is outside the
+  scroll container entirely. The three `min-w-0` from that pass are inert for this defect and were
+  kept.**
+- **METHOD.** ✅ **SEARCH `docs/` BEFORE THE CODE.** ✅ **"It was built and tested" and "it isn't firing"
+  can both be true — the reconciliation is usually a gate, not a deletion.** ✅ **REUSE AN OUTPUT, NOT A
+  PREDICATE: the strip marker consumes `capacityBreaches` rather than re-deriving `remainingTotal <
+  -EPS`, so the banner and the strip agree by construction.** 🔴 **A CONFIGURATION GAP CAN INVALIDATE A
+  DAY OF OBSERVATIONS — confirm the data a mechanism needs EXISTS before concluding it is broken, and
+  GUSTO IS THE REFERENCE TRUCK FOR CONFIGURATION, NOT TEST KITCHEN.** ⚠️ **Two more contradictory briefs
+  and three invented column names (`slot_time`, `channel`, `prep_default_mins`) — `information_schema`
+  first, every time, and when a prompt depends on a fact a query would settle, the SQL goes first and
+  the prompt waits.**
+- 🔴 **DEPLOY STATE AT CLOSE: the migration was run and the code deployed. CONFIRM
+  `npx supabase functions deploy heartbeat-monitor` RAN — without it, mode B is configured and inert.**
+- **NEW OPEN ITEMS:** `capacity_ack_at`'s three NULL meanings · nothing detects two customers sharing a
+  collection time · the bag problem · in-flight route-2 orders syncing unmarked · the customer path
+  unable to assert `source` · `order_ids: number[]` lying · the demo seeder's defaulted `source` ·
+  🔴 **Tikka having no `kitchen_capacity` at all** · whether the deployed monitor consulted the switch
+  on 18 August · **the `auto-event-scheduler` 502s, where a 502 means the pass never ran, an event that
+  should have auto-opened stays `confirmed`, and the monitor only pauses `status='open'` events — so it
+  cannot be offline-paused at all.**
 
 ## V11.26 — 18 August 2026
 
