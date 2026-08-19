@@ -1934,7 +1934,16 @@ export async function POST(req: NextRequest) {
     if (action?.startsWith('adjust_slot_+')) {
       const mins = parseInt(action.replace('adjust_slot_+', ''))
       if (!orderKey || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
-      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('order_key', orderKey).single()
+      // ── 🔴 OWNERSHIP IS ESTABLISHED HERE, ON THE READ, AND NOT ON THE WRITES BELOW. ─────────────
+      // A foreign `order_key` must fail BEFORE any side effect, and this is the only place that can be
+      // true: `ord` gates everything that follows — the re-slot, the status write, moveSlotBooking,
+      // captureOnConfirmation and the customer email all depend on it, and the guard on the next line
+      // returns 400 when it is missing. Scoping the read therefore closes the whole branch.
+      // ⚠️ FILTERING THE WRITE INSTEAD WOULD HAVE BEEN WORSE THAN NOTHING. The status update's result is
+      // discarded and this branch returns `{ success: true, newSlot }` unconditionally, so a filtered
+      // write would report SUCCESS for an order that never moved — while the booking, the capture and
+      // the email still ran. That is the silent-no-op trap the cross-truck cancel hole hid behind.
+      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,event_id,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins

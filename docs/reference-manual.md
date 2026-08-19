@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.32
+HatchGrab Engineering Reference Manual · V11.33
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.32**
+**Version 11.33**
 
 August 2026
 
@@ -15,6 +15,57 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.33 — 19 August 2026 (afternoon)
+
+Delta over V11.32 — **a request for a reject-time picker turned into a money defect: the card path was
+short two terms of the auto-accept decision, so a card order placed while the van was offline
+auto-confirmed and captured. Both order-creation paths now share one decision.**
+
+- 🔴 **THE CARD PATH WAS SHORT TWO TERMS, NOT ONE, AND ONE OF THEM HAD NO RECORDED REASON.**
+  `promote-draft` computed its own `autoAccepted` without the offline marker **and** without the pre-order
+  `force_pending` term. The difference ran one way only. ⚠️ **The event read in that file did not even
+  select `offline_no_autoaccept_until`, so the marker could not enter the function.**
+- 🔴 **WHAT THAT COST: TWO CUSTOMERS, SAME MINUTE, SAME TRUCK, DIFFERENT ANSWERS.** With a van offline in
+  `no_auto_accept` mode, the pay-at-hatch order landed `pending` and waited; **the card order landed
+  `confirmed` and captured in the same invocation** — charged seconds after paying, for food from a truck
+  that had not seen the order. ⚠️ **And because the auto-reject sweep selects `status = 'pending'`, the
+  wrongly-confirmed card order was not even claimable by it** — the customer who paid was the one the
+  feature could not help.
+- ✅ **PROVENANCE READ BEFORE THE FIX, AND THE TWO TERMS HAD DIFFERENT STORIES.** The offline omission is
+  **chronological** — the marker did not exist when `promote-draft` was written, and the commit that added
+  it never touched `lib/payments`. 🔴 **The `force_pending` omission is NOT: the term predated the card
+  path by seven weeks, and in the same commit that created `promote-draft`, submit carried it and the new
+  file did not.** Three of four terms travelled; that one did not, same day, same commit. **The history is
+  silent on why — recorded as silence, not read either way.**
+- 🔴 **THE HAZARD WAS ALREADY DOCUMENTED IN CAPITALS AND RECURRED ANYWAY.** `lib/payments/capture.ts`
+  carried *"THERE ARE TWO AUTO-ACCEPTS, AND THAT COST ONE ORDER ITS CAPTURE"*, written after the previous
+  instance and **before** the offline work repeated it. **That is the argument for one shared decision
+  rather than two conditions kept in agreement by hand**, and it is why the fix was an extraction rather
+  than adding two terms.
+- ✅ **ONE DECISION: `decideAutoAccept` in `lib/orders/auto-accept.ts`.** Both paths call it; neither
+  computes it. **Submit proven UNCHANGED by execution — 96 of 96 combinations identical**, evaluated
+  against a pre-change copy compiled from before the first edit, with the real dependencies rather than
+  stubs. **The card path changes on exactly 12 of 96, all `confirmed` → `pending`, none the other way.**
+  All twelve now hold the authorisation and capture nothing.
+- ⚠️ **THE CARD PATH IS NOT THE WEAKER IMPLEMENTATION.** It enforces sold-out, closed-category and
+  option-ceiling refusals that submit does not. **It was weaker on exactly two terms**, and those refusals
+  stay where they are.
+- ✅ **`force_pending` IS REACHABLE ON A CARD ORDER** — the `payByCard` fork sits after the pre-order *open*
+  gate, which refuses only not-yet-open items, while `force_pending` is the past-deadline case. **Nine of
+  the twelve changed combinations are that term; only three are the marker.** The term with no recorded
+  reason for its absence was the bigger half.
+- ✅ **NOTE REVIEW IS NOW UNCONDITIONAL AND THE TOGGLE IS GONE.** An order carrying a customer note never
+  auto-confirms, on any truck. **Verified against the live database first: all 16 trucks stored `true`**,
+  so no truck's behaviour changed — **94 of 96 combinations identical, the 2 changed being exactly the
+  permitted case.** The reasoning: a note is something the customer took the trouble to write, the
+  dashboard is in front of the operator anyway, and an order that auto-confirms past an unread note is bad
+  service.
+- ⚠️ **THE TWO SURFACES DESCRIBED AUTO-ACCEPT DIFFERENTLY AND NOBODY KNEW.** Manage said *"Incoming web
+  orders are confirmed immediately"*; the dashboard said something else. **They agree now but come from two
+  places** — the dashboard's copy is INLINE rather than in the copy module, so they will drift again.
+- ✅ **THE AUTO-REJECT SWEEP IS BUILT**, with its claim function installed and verified against `pg_proc`.
+  Nothing auto-rejects today: every van stores NULL and all seventeen are in `pause` mode.
 
 ## V11.32 — 19 August 2026
 
@@ -7607,6 +7658,68 @@ app/order/[id]/manage/page.tsx loads the order, shows items and status, offers C
 
 > **V6.3** — the route segment value is the **order_key uuid**, not the display id; `/api/orders/[id]` (GET) + `/api/orders/cancel` resolve by order_key. order_key is globally unique (no slug needed) and not enumerable. As of V6 the ASAP cutoff falls back to event end_time.
 
+### Offline auto-reject — the sweep (V11.33)
+
+**What it does:** in `no_auto_accept` mode, an order that has been `pending` longer than the truck's chosen
+delay, while the van is still offline and the event is still trading, is rejected automatically and the
+customer emailed.
+
+🔴 **IT CALLS `rejectOrder`, THE SAME PATH THE OPERATOR'S REJECT BUTTON USES** — which releases the card
+hold. A second implementation would be a second place to get that wrong.
+
+**The claim is two steps, not one joined `FOR UPDATE`, and the reason generalises:** a joined lock
+re-evaluates the qualifier **only on the locked table's own columns**. The marker lives on `truck_events`,
+so a joined lock would never re-check it. **Step 1 searches; step 2 locks the order `FOR UPDATE SKIP
+LOCKED`; step 3 re-reads the event and re-checks status, marker, trading window and age.** 🔴 **This is
+"a status guard alone guards the wrong column", implemented rather than described.**
+
+**The trading-window test is `status = 'open'`, not a clock comparison** — the same test
+`heartbeat-monitor` already uses. ⚠️ **So no timezone logic enters SQL.** The only clock comparison is on
+`orders.created_at`, a timestamptz — an absolute instant, so `now() - interval` needs no timezone.
+
+⚠️ **TWO WINDOWS REMAIN AND ARE STATED RATHER THAN IMPLIED.** The lock releases when the claim function
+returns, so a van pinging — or an operator confirming — between the claim and `rejectOrder`'s write still
+loses. **Closing that fully would mean the SQL doing the rejection, i.e. a second implementation of the
+hold release.** Partial protection exists one way only: the release refuses if the ledger already shows a
+capture.
+
+**Schedule `*/5`, limit 50 per run** (the capture sweep uses 100; each rejection here is a Stripe call
+plus an email). ⚠️ **`SKIP LOCKED` means overlapping runs never duplicate work — the later run simply does
+less.**
+
+🔴 **NOTHING WOULD NOTICE IF THIS JOB SILENTLY STOPPED.** No alerting exists anywhere in the codebase.
+**Tolerable only because the failure direction is safe** — a stopped sweep leaves orders pending for the
+operator, which is today's behaviour — **and because the backlog self-erases rather than accumulating.**
+⚠️ Precedent: `heartbeat-monitor` ran 64 days stale and `auto-event-scheduler` 502'd five times, both
+unnoticed.
+
+### The auto-reject delay setting (V11.33)
+
+**Columns:** `truck_vans.offline_auto_reject_mins` and `truck_events.offline_auto_reject_mins_override`,
+integer, nullable, CHECK null or 5–30, **no default.** Resolution mirrors the mode's own chain: **event
+override, else van, else off.**
+
+🔴 **NULL MEANS OFF AT THE DATABASE AND IN THE SWEEP — BUT THE UI NO LONGER OFFERS "Off".** The operator's
+reasoning: without a delay, an order placed while the van is offline can sit indefinitely and **the
+customer never learns it was not accepted**, which is the outcome the whole feature exists to prevent.
+
+**Selecting the mode writes both values.** The tap that chooses `no_auto_accept` also writes the 15-minute
+default when the column is NULL, guarded by `== null` so re-selecting never overwrites a chosen delay.
+✅ **So the 15 the picker displays is the 15 that is stored — nothing is left unsaved.**
+
+⚠️ **THE RESIDUAL CASE: a van already in `no_auto_accept` before this shipped never gets that tap** — the
+picker would show 15 while the column stays NULL and the sweep skips it. **No such van exists today; all
+seventeen are `pause`.** Recorded because it becomes a live trap the moment one does.
+
+⚠️ **THE LABELS SAY PLAIN MINUTES, AND THE STORED VALUE IS A FLOOR, NOT A DEADLINE.** The sweep is a `*/5`
+pass rather than a timer, so a 15-minute setting means **15 to 20 minutes — never sooner, sometimes
+later.** Range labels ("15–20 min") were built and rejected as unclear to operators. 🔴 **The fact is kept
+as a comment beside the formatter, with a standing note that nothing in this feature may phrase it as a
+countdown** — the *"resuming in ~119 min"* trap.
+
+⚠️ **THE DASHBOARD WRITES THE EVENT OVERRIDE; SETTINGS → VAN WRITES THE VAN DEFAULT.** Same as the mode
+itself, and an operator will not necessarily expect it.
+
 ### What a rejected customer is told (V11.32)
 
 **Three surfaces, and each was read on its own — no fact was carried between them.**
@@ -7945,6 +8058,34 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
 
 > 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
+
+### Method — additions (V11.33)
+
+- 🔴 **A DOCUMENTED WARNING IN CAPITALS DID NOT PREVENT THE RECURRENCE IT WARNED ABOUT.** The
+  two-auto-accepts hazard was written down after the first divergence and repeated afterwards anyway.
+  ⚠️ **A comment cannot enforce an invariant that the structure permits. Remove the duplication or accept
+  the recurrence.**
+- 🔴 **THERE ARE NO TESTS IN THIS REPOSITORY AT ALL.** Every guarantee in this session came from reading
+  plus one-off harnesses written for a single task and discarded. ⚠️ **The cross-product harness is the
+  only executable check either auto-accept condition has ever had** — and it exists only because a prompt
+  asked for it.
+- ✅ **THE STRONGEST VERIFICATION PATTERN, NOW USED THREE TIMES AND WORTH MAKING STANDARD:** take a copy
+  of the file before the first edit, compile the pre-change logic beside the post-change logic, evaluate
+  both across the **full cross-product of inputs**, and compare as bytes. It converts "I didn't change the
+  other path" from a claim into a falsifiable result.
+- ✅ **AND ITS SIBLING FOR REFACTORS: reconstruct the file from its pre-change copy plus exactly N named
+  edits, and require byte-equality with what is on disk.** Any stray character anywhere in the file breaks
+  the equality.
+- 🔴 **THE PLANNING CHAT PROPOSED A SWEEP WIDENING THAT WOULD HAVE CHARGED CUSTOMERS FOR REFUSED ORDERS**
+  (recorded in the previous delta) **and, this session, described `assign_buzzer_atomic` as `security
+  definer` when it is plain plpgsql.** ⚠️ **Both came from reading a report's summary rather than the
+  thing itself.**
+- ⚠️ **AN EXECUTOR CAUGHT LAYOUT THAT ENCODED A RELATIONSHIP TO THE THING BEING DELETED** — a `pb-3` that
+  was conditional *because* the removed toggle followed it. **Deleting a control is not only deleting its
+  markup.**
+- ⚠️ **TWO SURFACES DESCRIBED THE SAME SETTING DIFFERENTLY AND NEITHER WAS WRONG ENOUGH TO NOTICE.**
+  Duplicated copy drifts silently; the copy module exists for this reason and the dashboard is the odd one
+  out.
 
 ### Method — additions (V11.32)
 
@@ -9659,6 +9800,25 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **`AppLockGate.tsx` still says "Face / Touch ID".**
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
+
+## V11.33 — VERIFICATION DEBT, updated (SUPERSEDES the V11.32 list below)
+
+**DISCHARGED by execution:** the shared decision's equivalence on the submit path (96/96) · the note-review
+change (94/96, the 2 changed being the permitted case) · the reject-path extraction (byte-identical
+reconstruction) · both cancel callers' audit strings.
+
+**STILL UNPROVEN:**
+- **That a timed-out live submit queues WITH its number.** *Place an order with the uplink pulled; confirm
+  the card and the resulting `orders.id` match.* **Still the highest-value outstanding test.**
+- **That the drain un-wedges under a real hang.**
+- **That a real cancel writes a suppression row** — the table has still never held one.
+- **That the ownership gate refuses a foreign event in a running system.**
+- **That the auto-reject sweep claims and rejects anything.** Cannot be exercised until a van is in
+  `no_auto_accept` with a delay set.
+- **That Stripe releases a hold on reject.** Cannot be settled until card payments are live.
+
+**OPEN DECISIONS:** the release-side backstop · the offline-order prefix · moving the dashboard's inline
+auto-accept copy into the copy module · retiring `trucks.notes_require_review`.
 
 ## V11.32 — VERIFICATION DEBT, updated (SUPERSEDES the V11.31 list below)
 
@@ -11943,6 +12103,34 @@ All five now resolve through `lib/payments/email-payment-state.ts`, with a sente
 **Turn it off at Settings → Connect → Payment methods → Connected accounts → the Default configuration.** Options are *On by default* · *Off by default* · **Blocked** (connected accounts cannot re-enable it). ⚠️ **There may be more than one configuration; a setting missed on one leaves Link live.**
 
 ⚠️ **`google_pay` was `off` in both configurations** — the Android equivalent of the Apple Pay button, silently absent for the same reason.
+
+### One auto-accept decision, shared by both order-creation paths (V11.33)
+
+🔴 **RULE: ONE DECISION DECIDES WHETHER A NEW ORDER IS `confirmed` OR `pending`.** `decideAutoAccept` in
+`lib/orders/auto-accept.ts`. Both `app/api/orders/submit` and `lib/payments/promote-draft` call it and
+**neither computes it independently.** A third path added later calls it too.
+
+**Why this is a rule and not a preference:** the two conditions diverged twice. The first divergence cost
+an order its capture and produced a warning in capitals in `capture.ts`. **The second divergence happened
+after that warning was written, in the same file it warns about.** A documented hazard did not prevent the
+recurrence, so the duplication itself had to go.
+
+**The terms, all of them, in one place:** the truck's auto-accept setting · every item's own auto-accept
+flag · the pre-order `force_pending` (past-deadline) term · **an order-level or line-level customer
+note** · the van's offline marker.
+
+⚠️ **WHAT IS NOT IN THE SHARED DECISION, DELIBERATELY:** the card path's own sold-out, closed-category and
+option-ceiling refusals. Those are *refusals to create the order at all*, not auto-accept terms, and the
+module header records why they stay separate.
+
+⚠️ **FOUR PATHS WRITE A NEW ORDER ROW, NOT TWO.** The operator's manual insert writes `'confirmed'` as a
+literal and the demo seeder writes `'confirmed'` unconditionally; **both are deliberately outside the
+shared decision** and are named as such.
+
+🔴 **A CUSTOMER NOTE ALWAYS FORCES `pending`. IT IS NO LONGER A SETTING.** `trucks.notes_require_review`
+is retained in the database, still written `true` at provisioning, and **read by nothing.** Retiring the
+column is its own decision; until then the change is reversible by restoring one condition and two
+toggles.
 
 ### Reject and cancel share one hold-release path (V11.32)
 
