@@ -856,6 +856,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           setConfirmLoading(false)
           return
         }
+        // ⚠️ AND NEITHER IS A REJECTED ORDER, FOR THE SAME REASON, ONE STATUS LATER. Without this it
+        // fell through to the receipt, where `autoAccepted` is `status === 'confirmed'` — false for a
+        // rejected row — so the screen read "Order received! {truck} will confirm your order shortly."
+        // That is a promise about the future of an order the truck has already refused.
+        // 🔴 SAME MECHANISM, SAME SHAPE: one status test, `setConfirmError`, and out. It renders through
+        // the existing 😕 branch below with its "Back to truck page" link; no new component, and the
+        // 'cancelled' guard above is untouched.
+        if (d?.status === 'rejected') {
+          setConfirmError('This order was not accepted by the truck.')
+          setConfirmLoading(false)
+          return
+        }
         setConfirmOrder(d)
         setConfirmLoading(false)
       })

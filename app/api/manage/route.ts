@@ -794,7 +794,7 @@ export async function POST(req: NextRequest) {
     // body are written, so a partial save never nulls omitted fields.
     const ALLOWED = [
       'name', 'description', 'cuisine_type', 'contact_email', 'contact_phone',
-      'social_instagram', 'social_facebook', 'auto_accept', 'notes_require_review', 'logo_storage_path',
+      'social_instagram', 'social_facebook', 'auto_accept', 'logo_storage_path',
       'website', 'allergen_info_url', 'allergen_info_text', 'allergen_display_mode', 'truck_emoji',
       // Customer-facing WhatsApp (the phone number, when the operator ticks "this number is on
       // WhatsApp") + the tick flag. SEPARATE from whatsapp_sender (Auto-replies/Connect) — not written here.
@@ -967,7 +967,7 @@ export async function POST(req: NextRequest) {
       // ⚠️ NAMED SELECT — `buzzer_count` is added by 20260803_buzzer_settings.sql. A named select over
       // a column PostgREST cannot see returns 42703 and fails the whole statement, which here means
       // Manage → Settings renders no vans at all. Apply the migration BEFORE deploying.
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, offline_protection_mode, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins, buzzer_count')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, offline_protection_mode, offline_auto_reject_mins, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins, buzzer_count')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -982,12 +982,23 @@ export async function POST(req: NextRequest) {
   // array allowlist (:854), which carries the same warning. ADD NEW SETTINGS IN BOTH PLACES:
   // here AND in get_vans' named select above, or the value writes but never reads back.
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, offlineProtectionMode, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count } = body
+    const { vanId, autoPauseOnOffline, offlineProtectionMode, offlineAutoRejectMins, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count } = body
     const updates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     // The MODE beside the switch. Validated to the same vocabulary as the DB CHECK so a bad value is a
     // dropped field rather than a 23514 — and an absent field is untouched, per this handler's rule.
     if (offlineProtectionMode === 'pause' || offlineProtectionMode === 'no_auto_accept') updates.offline_protection_mode = offlineProtectionMode
+    // The auto-reject delay beside the mode. 🔴 NULL IS A REAL VALUE HERE AND MEANS OFF, so this is
+    // `!== undefined` like buzzer_count and NOT a truthiness test — a truthy read would make "Off"
+    // unwritable and an operator could never turn it back off. Range-checked to the same 5-30 the DB
+    // CHECK enforces, so a bad number is a dropped field rather than a 23514.
+    if (offlineAutoRejectMins !== undefined) {
+      if (offlineAutoRejectMins === null) updates.offline_auto_reject_mins = null
+      else if (typeof offlineAutoRejectMins === 'number' && Number.isInteger(offlineAutoRejectMins)
+               && offlineAutoRejectMins >= 5 && offlineAutoRejectMins <= 30) {
+        updates.offline_auto_reject_mins = offlineAutoRejectMins
+      }
+    }
     if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
     if (order_ready_enabled !== undefined) updates.order_ready_enabled = order_ready_enabled
     if (kitchen_capacity !== undefined)   updates.kitchen_capacity = kitchen_capacity

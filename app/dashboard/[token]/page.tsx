@@ -5,7 +5,7 @@ import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
-import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
+import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -457,8 +457,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!q)return undefined              // not queued → online path, byte-identical to before
     return q.payment_status==='paid'?'pending_paid':'pending_unpaid'
   },[deviceQueuedOrders])
-  const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
-  const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
   // ── THE MODE, BESIDE THE SWITCH — SAME null-MEANS-INHERIT CHAIN ────────────────────────────────
@@ -466,6 +464,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // van); `vanOfflineMode` is the van's own default from /api/dashboard. Resolved once, below.
   const[eventOfflineModeOverride,setEventOfflineModeOverride]=useState<OfflineProtectionMode|null>(null)
   const[vanOfflineMode,setVanOfflineMode]=useState<OfflineProtectionMode>('pause')
+  // The auto-reject delay, resolved through the SAME chain as the mode above: event override, else the
+  // van's default, else OFF. 🔴 There is no third fallback — null IS the answer and it means off.
+  const[eventAutoRejectOverride,setEventAutoRejectOverride]=useState<number|null>(null)
+  const[vanAutoRejectMins,setVanAutoRejectMins]=useState<number|null>(null)
   // ── 🔴 EFFECTIVE OFFLINE PROTECTION — ONE RESOLUTION, IN heartbeat-monitor's ORDER ──────────────
   // 🔴 THE MONITOR'S OWN EXPRESSION, QUOTED BEFORE REUSING IT (supabase/functions/heartbeat-monitor):
   //     const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
@@ -480,6 +482,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // 🔴 THE SAME ORDER AS heartbeat-monitor's — event override ?? van default ?? 'pause'. Two places
   // resolving one setting is how they come to disagree, and this one mirrors the function that acts.
   const effectiveOfflineMode:OfflineProtectionMode=eventOfflineModeOverride??vanOfflineMode
+  const effectiveAutoRejectMins:number|null=eventAutoRejectOverride??vanAutoRejectMins
   // Order-ready (master-switch model): the van DEFAULT (order_ready_enabled — the Settings master switch +
   // seed for new events) + the per-event value (order_ready_override, concrete true/false). effectiveOrderReady
   // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
@@ -632,6 +635,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[lastOfflinePauseAt,setLastOfflinePauseAt]=useState<string|null>(null)
   const[offlinePauseEventId,setOfflinePauseEventId]=useState<string|null>(null)
   const[showOfflinePausedNotice,setShowOfflinePausedNotice]=useState(false)
+  // ── 🔴 THE OFFLINE PAUSE BLOCK'S DISMISSAL — THE NOTICE'S OWN KEY AND MARKER, NOT A NEW ONE ────────
+  // Same `hg_offline_pause_ack_<eventId>` key, same stored VALUE (`last_offline_pause_at`), same
+  // newer-marker-wins comparison as the popup's effect below. Storing the timestamp rather than a boolean
+  // is what makes a LATER incident re-fire: the monitor writes a fresh `last_offline_pause_at` on every
+  // pause, so `marker > ack` becomes true again and the block returns.
+  // ⚠️ DELIBERATELY THE SAME KEY AS THE POPUP, WHICH COUPLES THEM: acknowledging either one dismisses
+  // both for THAT incident. They report the same event, so one acknowledgement covering both is coherent
+  // — and the ⏸ chip in the event bar stands regardless (it reads `paused`, never this). Reported.
+  const[offlinePauseAcked,setOfflinePauseAcked]=useState(false)
+  const dismissOfflinePauseBlock=()=>{
+    if(typeof window!=='undefined'&&offlinePauseEventId&&lastOfflinePauseAt)
+      localStorage.setItem(`hg_offline_pause_ack_${offlinePauseEventId}`,lastOfflinePauseAt)
+    setOfflinePauseAcked(true)
+    setShowOfflinePausedNotice(false)
+  }
   // OK → record the acknowledged marker for THIS event so a poll tick / reload won't re-pop it; a
   // newer offline pause (newer timestamp) clears the guard and re-fires.
   const ackOfflinePausedNotice=()=>{
@@ -937,7 +955,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // from the truck row. (The trucks.keep_screen_on column is dormant; it was never in the /api/dashboard
         // truck map anyway, so this read always resolved to the default — the bug this fix removes.)
         setAutoAccept(data.truck?.auto_accept || false)
-        setNotesRequireReview(data.truck?.notes_require_review ?? true)
         setShowCookingStep(data.vanShowCookingStep??false)
         // Capacity card + order-ready: van/event-scoped config. applyPending guards them so a reseed that
         // fires DURING the operator's own optimistic edit (before the write commits) can't clobber it.
@@ -946,6 +963,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
         if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
       if(data.vanOfflineMode !== undefined) setVanOfflineMode(data.vanOfflineMode==='no_auto_accept'?'no_auto_accept':'pause')
+      if(data.vanAutoRejectMins !== undefined) setVanAutoRejectMins(typeof data.vanAutoRejectMins==='number'?data.vanAutoRejectMins:null)
         if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
         setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
         // Buzzers — CONFIG, so they sit inside the seed gate with the rest of the van/event settings.
@@ -1127,8 +1145,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // that list. cancelled guard drops a stale in-flight read after a fast event switch.
     if(!selectedEventId){setEventOfflineOverride(null);setEventOfflineModeOverride(null);setEventOrderReadyOverride(null);return}
     let cancelled=false
-    supabaseBrowser.from('truck_events').select('offline_protection_override, offline_protection_mode_override, order_ready_override').eq('id',selectedEventId).single()
-      .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);const mo=(data as {offline_protection_mode_override?:string|null}|null)?.offline_protection_mode_override;setEventOfflineModeOverride(mo==='no_auto_accept'||mo==='pause'?mo:null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
+    supabaseBrowser.from('truck_events').select('offline_protection_override, offline_protection_mode_override, offline_auto_reject_mins_override, order_ready_override').eq('id',selectedEventId).single()
+      .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);const mo=(data as {offline_protection_mode_override?:string|null}|null)?.offline_protection_mode_override;setEventOfflineModeOverride(mo==='no_auto_accept'||mo==='pause'?mo:null);const ar=(data as {offline_auto_reject_mins_override?:number|null}|null)?.offline_auto_reject_mins_override;setEventAutoRejectOverride(typeof ar==='number'?ar:null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
     return()=>{cancelled=true}
   },[selectedEventId])
   useEffect(()=>{fetchAllRef.current=()=>fetchAll();reseedRef.current=()=>fetchAll(pin,true)},[fetchAll,pin])
@@ -1258,6 +1276,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const ack=localStorage.getItem(`hg_offline_pause_ack_${offlinePauseEventId}`)
     if(!ack||markerMs>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
   },[lastOfflinePauseAt,offlinePauseEventId,effectiveOfflineProtection])
+  // The block's mirror of the effect above: same key, same newer-marker-wins rule, opposite sense.
+  // Re-runs when the marker changes, so a NEW pause (new `last_offline_pause_at`) clears the ack and the
+  // block reappears without anything having to reset state by hand.
+  useEffect(()=>{
+    if(typeof window==='undefined') return
+    if(!offlinePauseEventId||!lastOfflinePauseAt){setOfflinePauseAcked(false);return}
+    const markerMs=new Date(lastOfflinePauseAt).getTime()
+    if(!Number.isFinite(markerMs)){setOfflinePauseAcked(false);return}
+    const ack=localStorage.getItem(`hg_offline_pause_ack_${offlinePauseEventId}`)
+    setOfflinePauseAcked(!!ack&&markerMs<=new Date(ack).getTime())
+  },[lastOfflinePauseAt,offlinePauseEventId])
   useEffect(()=>{
     // Track the device's connectivity reactively so the UI re-renders on reconnect (offline-pause
     // suppression) and the heartbeat effect re-fires immediately (its dep below).
@@ -1807,18 +1836,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingBuzzer(false)}
   }
 
-  const saveNotesRequireReview=async(val:boolean)=>{
-    setSavingNotesReview(true)
-    try{
-      await fetch('/api/dashboard/action',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_notes_require_review',value:val})
-      })
-      setNotesRequireReview(val)
-      showToast(val?'Noted orders will need review':'Noted orders auto-accept')
-    }catch{showToast('Failed to save','error')}
-    finally{setSavingNotesReview(false)}
-  }
 
   // PER-DEVICE sound config (V9.5). Writes localStorage for THIS device only and deliberately does NOT
   // write trucks.sound_config — that column is now a one-way SEED for devices that have never loaded.
@@ -1842,6 +1859,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,mode,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
     }catch{ setEventOfflineModeOverride(prev); showToast('Could not save that — try again','error') }
+  }
+  // ── 🔴 THE DELAY'S EVENT OVERRIDE. setOfflineMode's shape, line for line. ──────────────────────
+  // Optimistic, reverted on failure, same endpoint, same event scope. `null` is a WRITE that clears the
+  // override back to inheriting the van — it is how an operator turns it off for one event.
+  const setAutoRejectMins=async(mins:number|null)=>{
+    if(!activeEvent||isDemo)return
+    const prev=eventAutoRejectOverride
+    setEventAutoRejectOverride(mins)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:eventOfflineOverride,autoRejectMins:mins,eventId:activeEvent.id})})
+      if(!res.ok)throw new Error('write failed')
+    }catch{ setEventAutoRejectOverride(prev); showToast('Could not save that — try again','error') }
   }
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
@@ -2099,14 +2128,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     },
   })
 
-  const doAction=async(action:string,orderKey:string)=>{
+  // `opts.booksPayment` is OrderCard's toast hint for the one-press "Mark paid & collected" — carried
+  // straight through to the shared handler and NEVER into the request body: the server sees the same
+  // `collected` action it always has.
+  const doAction=async(action:string,orderKey:string,opts?:{booksPayment?:boolean})=>{
     if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
     if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
     setActionLoading(`${action}-${orderKey}`)
     try{
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{}),...(PLAIN_PAID_ACTIONS.has(action)&&plainPaidMethod?{method:plainPaidMethod}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      await handleGateResult(result,action,orderKey)
+      await handleGateResult(result,action,orderKey,opts?.booksPayment)
     }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
   }
 
@@ -3324,11 +3356,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 "Add extra wait" now lives in the Manage event ▾ menu (below); Prep is mobile-dropped (the
                 KDS covers live prep). Desktop/iPad are unchanged — they keep both inline in the right-hand
                 stack beside the stat boxes (md:block extra-wait + Prep, below). Stat boxes stay on all sizes. */}
-            {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>
+            {/* ── 🔴 THE OFFLINE CASE NO LONGER OFFERS RESUME, AND NO LONGER COUNTS DOWN. ──────────────
+                RESUME: gated on `pauseReason==='manual'`, which is the KDS's existing rule copied rather
+                than reinvented — see its banner: `{pauseReason === 'manual' && <button …>Resume</button>}`.
+                🔴 THE OFFLINE BUTTON COULD NEVER HAVE WORKED. `offlinePausedDisplay` is
+                `offlinePaused && !(deviceOnline && activeEventLive)`, so for an offline pause this block
+                renders ONLY while the device is offline — the button was shown exactly and only in the
+                state where its request cannot leave the device. An offline pause is cleared by the next
+                successful heartbeat, not by a button.
+                COUNTDOWN: `~N min` counts to `online_paused_until`, which the monitor writes as a flat
+                now + 2h BACKSTOP — not a prediction. The real exit is a returning heartbeat, and how long
+                that takes is UNBOUNDED. Showing the backstop presented the exception as the plan, so it is
+                dropped for the offline case. ⚠️ The MANUAL case keeps it: there the deadline IS the
+                operator's own chosen duration, which is a real forecast.
+                DISMISSAL: offline only, via the notice's existing ack (see `dismissOfflinePauseBlock`).
+                ⚠️ THE MANUAL PATH IS UNCHANGED — same copy, same countdown, same Resume button, and it is
+                not dismissible, because a manual pause has an action attached and must stay in view. */}
+            {paused&&pauseUntilEffective&&!(pauseReason==='offline'&&offlinePauseAcked)&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;const offlineCase=pauseReason==='offline';return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center">
+              {offlineCase
+                ? <><p className="text-red-700 font-black text-sm">⏸ Offline protection is on — customers can browse but not order.</p>
+                    <p className="text-red-600 text-xs mt-1.5">Ordering resumes automatically when your connection returns.</p></>
+                : <p className="text-red-700 font-black text-sm">⏸ Orders paused{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>}
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
                   and online_paused_until on the active event (set_paused resume). */}
-              <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ Resume orders</button>
-              {pauseReason==='offline'&&<p className="text-red-500 text-xs mt-1.5">If your connection is unstable, orders may pause again.</p>}
+              {pauseReason==='manual'&&<button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ Resume orders</button>}
+              {offlineCase&&<button onClick={dismissOfflinePauseBlock} className="mt-2 text-red-600 text-xs font-bold underline">Dismiss</button>}
             </div>})()}
             {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p></div>}
             <div className="flex flex-col sm:flex-row sm:items-center lg:items-start sm:justify-between mb-3">
@@ -3847,7 +3899,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">{OFFLINE_PROTECTION_SWITCH_LABEL}{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
                   {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
                 </div>
                 <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
@@ -3862,9 +3914,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     states, not two toggles. */}
                 {!isDemo&&effectiveOfflineProtection&&(
                   <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                    {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as the
+                        options' lead-in rather than as a summary of the whole box. */}
+                    <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
                     {OFFLINE_PROTECTION_MODES.map(m=>(
-                      <button key={m.value} type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
-                        onClick={()=>{if(effectiveOfflineMode!==m.value)void setOfflineMode(m.value)}}
+                      <div key={m.value} className="flex flex-col gap-2">
+                      <button type="button" role="radio" aria-checked={effectiveOfflineMode===m.value}
+                        onClick={()=>{if(effectiveOfflineMode!==m.value){void setOfflineMode(m.value)
+                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE. Choosing this mode IS the
+                          // operator interaction, so a van with no stored delay gets one at that moment
+                          // rather than on render — a van nobody touches keeps NULL and nothing
+                          // auto-rejects for it. Skipped when a delay is already stored, so an existing
+                          // choice is never overwritten by re-selecting the mode.
+                          if(m.value==='no_auto_accept'&&effectiveAutoRejectMins==null)void setAutoRejectMins(OFFLINE_AUTO_REJECT_DEFAULT_MINS)}}}
                         disabled={isOffline}
                         className="flex items-start gap-2.5 w-full text-left disabled:opacity-50">
                         <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${effectiveOfflineMode===m.value?'border-orange-500':'border-slate-300'}`}>
@@ -3875,6 +3937,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           <span className="block text-xs text-slate-500">{m.help}</span>
                         </span>
                       </button>
+                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
+                          Indented under the option's own description and with NO divider above it: a
+                          rule would have made it read as a separate setting, which is what it looked
+                          like before. `pl-6` clears the 16px radio plus its 10px gap so the control
+                          lines up with the label text — the same "indent a dependent control under its
+                          parent" idiom the buzzer count row uses with `pl-4`.
+                          It renders only when this mode is the selected one, and only for this option.
+                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
+                          without one an order can sit indefinitely while the customer is never told it
+                          was not accepted, which is what the feature exists to prevent.
+                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
+                          and stays NULL until the operator picks; the mode itself has already saved. */}
+                      {m.value==='no_auto_accept'&&effectiveOfflineMode==='no_auto_accept'&&(
+                        <div className="pl-6">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-xs font-semibold text-slate-800">{OFFLINE_AUTO_REJECT_LABEL}</span>
+                            <select
+                              value={effectiveAutoRejectMins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
+                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              disabled={isOffline}
+                              onChange={e=>void setAutoRejectMins(parseInt(e.target.value))}
+                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            >
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n=><option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -3886,30 +3977,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 works end-to-end here, and toggling it then placing a test order is one of the more
                 convincing things a prospect can do. NOT locked. */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
-              <div className={`flex items-center justify-between ${autoAccept?'pb-3':''}`}>
+              {/* No conditional bottom padding any more: the notes sub-toggle that used to follow this
+                   row is gone, so `pb-3` would pad against nothing. */}
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity.</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity. Orders with customer notes (e.g. an allergy) will still need to be confirmed.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                   <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)} disabled={isOffline}/>
                 </div>
               </div>
-              {/* DIRECT polarity: ON = notes_require_review = hold NOTED orders for review. Default ON.
-                  pl-4 indents it as a CHILD of auto-accept (only enabled when auto-accept is on). */}
-              {autoAccept&&(
-                <div className="pt-3 pl-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
-                    <p className="text-slate-500 text-xs mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0 ml-3">
-                    {savingNotesReview&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                    <Toggle on={notesRequireReview} onToggle={()=>saveNotesRequireReview(!notesRequireReview)} disabled={isOffline}/>
-                  </div>
-                </div>
-              )}
+              {/* ⚠️ THE "Review orders with notes" TOGGLE WAS REMOVED HERE, and this note is why rather
+                  than a gap. Holding a NOTED order for a human is now unconditional — see
+                  lib/orders/auto-accept. All 16 trucks stored `true`, so no behaviour changed; the
+                  auto-accept description above now says it instead of a switch offering to turn it off. */}
             </div>
             {/* == ORDER SCREEN — THE FOUR SETTINGS THAT SHAPE IT ========================================
                 GROUPED 15 August 2026, COMPLETED the same day. Four cards that were scattered down this tab,

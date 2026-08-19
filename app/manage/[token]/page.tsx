@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
-import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_SWITCH_HELP, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_PROTECTION_REMINDER } from '@/lib/copy/offlineProtection'
+import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
 import { DEFAULT_STOCK_SCOPE_NOTE } from '@/lib/copy/stock'
 import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { useToasts, type ShowToast } from '@/lib/useToasts'
@@ -70,7 +70,7 @@ interface Subcategory { id: string; category_id: string; name: string; sort_orde
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -8322,7 +8322,6 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   const [newVanName, setNewVanName] = useState('')
   const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
   const [renameVanName, setRenameVanName] = useState('')
-  const [showAutoPauseInfo, setShowAutoPauseInfo] = useState<string | null>(null)
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
   const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
@@ -8679,24 +8678,24 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
 
   const handleToggleAutoPause = async (vanId: string, enabled: boolean) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, auto_pause_on_offline: enabled } : v))
-    if (enabled) {
-      setShowAutoPauseInfo(vanId)
-    } else {
-      setShowAutoPauseInfo(null)
-    }
     await api('update_van_settings', { vanId, autoPauseOnOffline: enabled })
   }
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode',
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins',
     value: boolean | number | string | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
     // ⚠️ THE MODE'S REQUEST KEY IS NOT ITS COLUMN NAME. update_van_settings destructures
     // `offlineProtectionMode` (camel, like `autoPauseOnOffline`) while the state field is the column.
     // A key the handler does not name is dropped SILENTLY — the allowlist warning in that file.
-    await api('update_van_settings', { vanId, ...(field==='offline_protection_mode'?{offlineProtectionMode:value}:{[field]:value}) })
+    // ⚠️ TWO FIELDS NOW TAKE A CAMEL KEY THE HANDLER NAMES, not their column name — a key it does not
+    // destructure is dropped SILENTLY.
+    await api('update_van_settings', { vanId, ...(
+      field==='offline_protection_mode' ? { offlineProtectionMode: value }
+      : field==='offline_auto_reject_mins' ? { offlineAutoRejectMins: value }
+      : { [field]: value }) })
   }
 
   // Toggle a NO-PREP category's "counts toward kitchen capacity" flag from the capacity tickbox list.
@@ -9316,21 +9315,15 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             </div>
             <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
           </div>
-          {/* Nested sub-option — meaningful only when auto-accept is ON. Same truck-level column the dashboard
-              live-toggle writes → the two surfaces mirror on next load. DIRECT polarity: ON = notes_require_review
-              = hold NOTED orders for review; default ON (?? true) so a pre-migration/undefined read still reviews. */}
+          {/* ⚠️ THE "Review orders with notes" TOGGLE WAS REMOVED FROM THIS BLOCK, and the block stays
+              because the amber capacity notice below is still in it. Holding a NOTED order for a human is
+              now unconditional — see lib/orders/auto-accept. All 16 trucks stored `true`, so no behaviour
+              changed, and the auto-accept help above now says it instead of a switch offering to turn it off. */}
           {/* pl-4 indents the whole sub-block as a CHILD of auto-accept (only enabled when it's on). */}
           {form.auto_accept && (
             <div className="py-3 pl-4">
               <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
                 ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
-              </div>
-              <div className="flex items-center justify-between gap-3 mt-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
-                  <p className="text-xs text-slate-500 mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
-                </div>
-                <Toggle on={(form as any).notes_require_review ?? true} onToggle={() => { const next = !((form as any).notes_require_review ?? true); setForm(p => ({...p, notes_require_review: next} as any)); saveFormField({ notes_require_review: next }) }} />
               </div>
             </div>
           )}
@@ -9813,14 +9806,19 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   }`}>
                     Offline order protection
                   </p>
-                  {/* 🔴 THE SWITCH'S OWN HELP, NOT A MODE'S. "Enabled — online orders pause…" described
-                      ONE of the two behaviours; the mode rows below say which is chosen. */}
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {van.auto_pause_on_offline
-                      ? OFFLINE_PROTECTION_SWITCH_HELP
-                      : 'Off — online orders continue even if this device goes offline'
-                    }
-                  </p>
+                  {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
+                      Description, then the ⚠️ instruction, then the two modes below — the dashboard's
+                      shape, from the same constants, so an operator meets one explanation of this
+                      feature rather than two that differ by surface.
+                      ⚠️ THE DESCRIPTION IS NO LONGER CONDITIONAL. It previously swapped to "Off — online
+                      orders continue even if this device goes offline" when the switch was off, which
+                      the dashboard never did; the line now says what the setting DECIDES and is true in
+                      both states.
+                      ⚠️ WHAT DOES NOT CHANGE IS THE SCOPE. This card is the VAN default and applies to
+                      every event; the dashboard's is the live event. Same words, same order, and each
+                      still writes what it always wrote. */}
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
+                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
                 </div>
                 <button
                   onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
@@ -9840,11 +9838,24 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   lib/copy/offlineProtection.ts and neither screen can drift from the other. */}
               {van.auto_pause_on_offline && (
                 <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
+                  {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as
+                      the options' lead-in rather than as a summary of the whole box. */}
+                  <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
                   {OFFLINE_PROTECTION_MODES.map(m => {
                     const selected = (van.offline_protection_mode ?? 'pause') === m.value
                     return (
-                      <button key={m.value} type="button" role="radio" aria-checked={selected}
-                        onClick={() => { if (!selected) void updateVanSetting(van.id, 'offline_protection_mode', m.value) }}
+                      <div key={m.value} className="flex flex-col gap-2">
+                      <button type="button" role="radio" aria-checked={selected}
+                        onClick={() => { if (!selected) {
+                          void updateVanSetting(van.id, 'offline_protection_mode', m.value)
+                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE — the dashboard does the same
+                          // on its own mode row. Choosing this mode IS the operator interaction, so a van
+                          // with no stored delay gets one then, not on render. A van nobody touches keeps
+                          // NULL and nothing auto-rejects for it. Skipped when a delay is already stored.
+                          if (m.value === 'no_auto_accept' && van.offline_auto_reject_mins == null) {
+                            void updateVanSetting(van.id, 'offline_auto_reject_mins', OFFLINE_AUTO_REJECT_DEFAULT_MINS)
+                          }
+                        } }}
                         className="flex items-start gap-2.5 w-full text-left">
                         <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-teal-600' : 'border-slate-300'}`}>
                           {selected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
@@ -9854,30 +9865,46 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                           <span className="block text-xs text-slate-500">{m.help}</span>
                         </span>
                       </button>
+                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
+                          Indented under the option's own description and with NO divider above it: a
+                          rule made it read as a separate setting, which is what it looked like before.
+                          `pl-6` clears the 16px radio plus its 10px gap so the control lines up with the
+                          label text — the same "indent a dependent control under its parent" idiom the
+                          buzzer count row uses with `pl-4`.
+                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
+                          without one an order can sit indefinitely while the customer is never told it
+                          was not accepted, which is what the feature exists to prevent.
+                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
+                          and stays NULL until the operator picks; the mode itself has already saved.
+                          ⚠️ SWITCHING TO `pause` DOES NOT CLEAR THE VALUE. Only this select writes the
+                          column, so a stored delay survives a mode change and returns with it. */}
+                      {m.value === 'no_auto_accept' && selected && (
+                        <div className="pl-6">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-xs font-semibold text-teal-800">{OFFLINE_AUTO_REJECT_LABEL}</p>
+                            <select
+                              value={van.offline_auto_reject_mins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
+                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              onChange={e => void updateVanSetting(van.id, 'offline_auto_reject_mins', parseInt(e.target.value))}
+                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            >
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      </div>
                     )
                   })}
                 </div>
               )}
 
-              {van.auto_pause_on_offline && (
-                <p className="mt-2 text-xs font-semibold text-amber-700">
-                  {OFFLINE_PROTECTION_REMINDER}
-                </p>
-              )}
-
-              {van.auto_pause_on_offline && showAutoPauseInfo === van.id && (
-                <div className="mt-3 pt-3 border-t border-teal-200">
-                  <p className="text-xs text-teal-700">
-                    <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}
-                  </p>
-                  <button
-                    onClick={() => setShowAutoPauseInfo(null)}
-                    className="mt-3 w-full py-2 bg-teal-600 text-white text-xs font-semibold rounded-lg"
-                  >
-                    Got it
-                  </button>
-                </div>
-              )}
+              {/* ⚠️ THE ON-ENABLE "Got it" EXPLAINER PANEL WAS REMOVED HERE, and this note is why rather
+                  than a gap. It rendered EXACTLY the LEAD + BODY sentence that now sits permanently near
+                  the top of this card, so enabling the switch printed the same paragraph twice, a few
+                  rows apart. The dashboard's card has no such panel — a permanent line is its
+                  acknowledgement — and matching it is what was asked for. The state that drove it
+                  (`showAutoPauseInfo`) and its two setter calls in handleToggleAutoPause went with it. */}
             </div>
             {/* ── VAN-SPECIFIC DISPLAY SETTINGS — its own sub-panel, a SIBLING of Offline order
                 protection and Kitchen capacity rather than a rule-separated run of rows. Display

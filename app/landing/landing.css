@@ -330,6 +330,14 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .final h2 { max-width: 20ch; margin-inline: auto; }
 .hg-landing .final .lede { margin-inline: auto; margin-bottom: 1.6rem; }
 .hg-landing .final .proof { justify-items: center; margin-top: 1.2rem; }
+/* THE TRUST-STRIP RULE'S TWIN, AND IT IS INERT TODAY. `justify-items: center` centres each <li> BOX in
+   the grid column and says nothing about the TEXT LINES inside it — the identical split that left a
+   wrapped trust-strip bullet reading as left-aligned. What saves this list is `.final { text-align:
+   center }` above, which every <li> here inherits, so a wrapped line is already centred and this
+   declaration changes no pixel at any width. It is stated anyway so the centring is a property of the
+   list rather than of an ancestor: move `.proof` out of `.final`, or drop that `text-align`, and the
+   defect returns silently. Same fix, same place (the <li>), same reasoning as .trust-in li. */
+.hg-landing .final .proof li { text-align: center; }
 
 /* ---------- footer (background = HEADER_BG className) ---------- */
 .hg-landing footer { color: #fff; padding: 3rem 0 2.2rem; }

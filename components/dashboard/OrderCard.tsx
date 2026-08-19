@@ -115,7 +115,11 @@ export function OrderCard({
   event?: TruckEvent | null
   slots: Slot[]
   actionLoading: string | null
-  onAction: (action: string, orderKey: string) => void
+  /** ⚠️ `opts.booksPayment` RIDES ON EXACTLY ONE BUTTON — the one-press "Mark paid & collected". It is
+   *  a TOAST HINT ONLY: it is not sent to the server, it changes no action name, and it splits no
+   *  request. The server still receives the unchanged `collected` action, which is the rule the
+   *  completion-button comment below states in capitals. */
+  onAction: (action: string, orderKey: string, opts?: { booksPayment?: boolean }) => void
   /** 🔴 ISSUE A REFUND. Optional: a surface that has not wired one gets the modal exactly as it read
    *  before the refund form existed. NOT routed through `onAction` — that goes through the offline
    *  outbox, and a Stripe refund replayed blind against a position that has since moved is the one
@@ -459,7 +463,12 @@ export function OrderCard({
           </>
         )
       }
-      return <Btn label="Mark paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+      // 🔴 THE ONLY PLACE `booksPayment` IS SET, AND THE BUTTON'S OWN LABEL IS THE REASON. This press
+      // books the outstanding balance AND completes the order, so the toast must say both — it read
+      // "Order #12 collected", which is half of what just happened to a customer's money.
+      // ⚠️ THE CASH/CARD PAIR ABOVE NEEDS NO FLAG: `collected_cash` / `collected_card` say it in their
+      // own names, and the handler tests those directly.
+      return <Btn label="Mark paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key, { booksPayment: true })} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
     // (Ready, ✓ Confirm) and SLATE means completion (Done). Blue was tried here and was foreign to a

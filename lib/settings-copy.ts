@@ -118,7 +118,7 @@ export const SETTING_COPY = {
   /** Settings → Order settings → Accepting orders. */
   autoAccept: {
     label: 'Auto-accept orders',
-    help: 'Incoming web orders are confirmed immediately',
+    help: 'Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity. Orders with customer notes (e.g. an allergy) will still need to be confirmed.',
   } as SettingCopy,
 
   /** Settings → Your trucks → Display settings. */

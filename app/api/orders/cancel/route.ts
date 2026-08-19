@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendCancellationEmail } from '@/lib/email'
 // RELEASE ONLY. It cannot capture and it refuses an order whose money was already taken; see the module.
-import { releaseHoldForCancelledOrder } from '@/lib/payments/release-hold'
+import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
 import { resolveEmailPaymentState } from '@/lib/payments/email-payment-state'
 import {
   removeOrderFromProductionSlot,
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
     // ONLY EVER RELEASES: a captured order is refused by the module, because giving money back is a
     // refund and a refund is somebody's decision, not a side effect of a cancellation.
     const paymentState = await resolveEmailPaymentState(supabase, order.order_key)
-    await releaseHoldForCancelledOrder(supabase, {
+    await releaseHoldForTerminalOrder(supabase, {
       orderKey: order.order_key,
       truckId: order.truck_id,
       trigger: 'customer_cancel',

@@ -120,12 +120,28 @@ export default function ManageOrderPage() {
     ['pending', 'confirmed', 'modified'].includes(order.status) &&
     !isPastCutoff()
 
+  // ── 🔴 THE TWO STATUSES WHERE THERE IS NOTHING LEFT TO PAY FOR. ────────────────────────────────
+  // An order that was refused or called off will never be served, so "Pay at the truck" — which every
+  // non-'paid' order used to print — is an instruction to walk to a window for food nobody is cooking.
+  // ⚠️ IT IS A POSITIVE TEST, NOT A LIST OF EXCEPTIONS. Every OTHER status keeps today's line: a
+  // pending, confirmed, modified, cooking, ready or collected order genuinely does still pay at the
+  // truck, and this must not touch any of them.
+  const isTerminalUnfulfilled = order.status === 'rejected' || order.status === 'cancelled'
+
   // Every branch names a REASON, and the order they are tested in is the order a customer would ask them.
   // The final line is the truck-policy sentence and must only be reached when the truck has genuinely
   // switched cancellation off — it used to catch 'modified' as well, telling a customer whose truck DOES
   // accept cancellations that it does not.
   const statusLabel = () => {
     if (order.status === 'cancelled') return 'This order has already been cancelled.'
+    // 🔴 REJECTED IS A DIFFERENT EVENT FROM CANCELLED AND SAYS SO. It used to reach the fall-through and
+    // be told only that it could no longer be cancelled — true, and an answer to a question the customer
+    // had not asked. Tested here, above the cutoff and policy branches, because being refused outranks
+    // both: the cancellation window is irrelevant to an order nobody is going to make.
+    // ⚠️ IT PROMISES NOTHING. No refund, no timeframe, no "we will be in touch" — the same discipline the
+    // cancelled screen's own comment settled on, for the same reason: HatchGrab is never merchant of
+    // record and cannot keep any of those promises. The money is answered by the Payment row above.
+    if (order.status === 'rejected') return 'This order was not accepted by the truck.'
     if (order.status === 'ready' || order.status === 'collected')
       return 'This order can no longer be cancelled.'
     if (isPastCutoff()) return 'The cancellation window has passed.'
@@ -170,13 +186,30 @@ export default function ManageOrderPage() {
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-500">Payment</span>
             <span className={`font-medium ${order.payment_status === 'paid' ? 'text-green-600' : 'text-slate-900'}`}>
-              {order.payment_status === 'paid' ? 'Paid by card' : 'Pay at the truck'}
+              {/* ── 🔴 'paid' IS TESTED FIRST AND ITS BRANCH IS UNTOUCHED. MONEY THAT MOVED IS NEVER DENIED. ──
+                  🔴 AND THE NEW SENTENCE IS GATED ON 'unpaid', NOT ON "not paid". Those are different
+                  questions once a REFUND exists: a cancelled order that was charged and refunded reads
+                  'refunded', and telling that customer "You have not been charged" would be false about
+                  money that really did leave their account. 'unpaid' is the only value that means
+                  nothing ever moved, which is the only ground this sentence can stand on without the
+                  draft data this page deliberately does not fetch.
+                  ⚠️ SO 'refunded', 'refund_due' AND 'part_paid' STILL FALL TO THE OLD LINE. That line is
+                  wrong for them too, but it is wrong in a way that predates this change and needs copy
+                  nobody has written; it is recorded rather than guessed at. */}
+              {order.payment_status === 'paid'
+                ? 'Paid by card'
+                : isTerminalUnfulfilled && order.payment_status === 'unpaid'
+                  ? 'You have not been charged for this order.'
+                  : 'Pay at the truck'}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-slate-500">Status</span>
+            {/* 🔴 'rejected' JOINS 'cancelled' ON THE EXISTING RED, rather than getting a colour of its
+                own: they are the two ways an order ends without being served, and the convention here
+                already reads red as terminal and green as good news. */}
             <span className={`font-medium capitalize ${
-              order.status === 'cancelled' ? 'text-red-500' :
+              order.status === 'cancelled' || order.status === 'rejected' ? 'text-red-500' :
               order.status === 'ready' ? 'text-green-500' :
               'text-slate-900'
             }`}>

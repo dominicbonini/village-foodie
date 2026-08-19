@@ -494,6 +494,7 @@ export async function GET(req: NextRequest) {
   // The van's offline-protection MODE, beside the switch it belongs to. 'pause' is the fallback for a
   // missing column (pre-migration) as well as for a null, so a partial deploy reads as today.
   let vanOfflineMode: string = 'pause'
+  let vanAutoRejectMins: number | null = null
   // The selected event's van "show cooking step" preference (Settings value). The KDS cook
   // view gates the "Start cooking" button on this — without it the KDS never loads the
   // setting and the cook step shows regardless of the toggle. Defaults off (matches the
@@ -551,7 +552,7 @@ export async function GET(req: NextRequest) {
         // ⚠️ NAMED SELECT — `buzzer_count` is added by 20260803_buzzer_settings.sql. Unlike the events
         // query above, a 42703 here is caught by `vanErr` and every consumer has a `?? <default>`, so
         // the failure degrades to "this van has no buzzers" rather than blanking the board.
-        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, offline_protection_mode, show_cooking_step, order_ready_enabled, buzzer_count')
+        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, offline_protection_mode, offline_auto_reject_mins, show_cooking_step, order_ready_enabled, buzzer_count')
         .eq('id', capacityEvent.van_id)
         .single()
       // Another NAMED select, and every consumer below has a `?? <default>` — so a failure here reads as
@@ -568,6 +569,9 @@ export async function GET(req: NextRequest) {
       activeVanName = van?.name ?? null
       vanAutoPause = van?.auto_pause_on_offline ?? false   // van offline-protection DEFAULT (toggle label)
       vanOfflineMode = (van as { offline_protection_mode?: string } | null)?.offline_protection_mode === 'no_auto_accept' ? 'no_auto_accept' : 'pause'
+      // The van's auto-reject delay. NULL IS THE ANSWER, not a missing one — it means the feature is off
+      // for this van, which is every van today.
+      vanAutoRejectMins = (van as { offline_auto_reject_mins?: number | null } | null)?.offline_auto_reject_mins ?? null
       vanShowCookingStep = van?.show_cooking_step ?? false
       // event override ?? van global default ?? false (mirrors the offline ?? chain).
       vanOrderReadyDefault = van?.order_ready_enabled ?? false
@@ -748,9 +752,9 @@ export async function GET(req: NextRequest) {
 
       // ── SAFE-DEFAULT COERCIONS — preserved verbatim from the old map ──────────────────────────────
       // The spread alone would deliver a NULL column as null; these keep the exact semantics the client
-      // has always seen. notes_require_review in particular is safe-by-default (undefined/null ⇒ ON).
+      // has always seen. ⚠️ `notes_require_review` USED TO BE IN THIS LIST as the safe-by-default example;
+      // it is no longer returned at all — holding a NOTED order for a human is unconditional now.
       auto_accept:          truck.auto_accept ?? false,
-      notes_require_review: truck.notes_require_review ?? true,
       kds_mode:             truck.kds_mode ?? false,
       crew_mode:            truck.crew_mode ?? 'solo',
       display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
@@ -778,6 +782,7 @@ export async function GET(req: NextRequest) {
     activeVanCount,                                // the TRUCK's active van count (null ⇒ unknown ⇒ clients show the van)
     vanAutoPause,
     vanOfflineMode,                                // 'pause' | 'no_auto_accept' — the van's mode, for the Settings card
+    vanAutoRejectMins,                             // integer minutes or null (= off) — the van's auto-reject delay
     vanShowCookingStep,
     effectiveOrderReady,                          // event override ?? van default ?? false (gates the Ready button)
     vanOrderReadyDefault,                          // raw van default (seed for new events; the Settings master switch)

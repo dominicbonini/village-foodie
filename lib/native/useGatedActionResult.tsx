@@ -37,29 +37,16 @@ import type { ShowToast } from '@/lib/useToasts'
 //     methods.has('cash') → `Paid in cash`
 //     methods.has('card') → `Paid on your card machine`
 //     method NULL/mixed   → `Paid in person` + the hint `Cash or your card machine — not recorded`
-// These are the same two phrases, lower-cased to sit inside a sentence. 🔴 DO NOT INVENT A SHORTER ONE
-// HERE: "paid card" would be a second vocabulary for one fact, and the modal is the one an operator
-// opens when the money is in question.
-const METHOD_PHRASE: Record<'cash' | 'card', string> = {
-  cash: 'paid in cash',
-  card: 'paid on your card machine',
-}
+// ── ⚠️ METHOD_PHRASE AND payMethodPhrase WERE REMOVED HERE, and this note is why rather than a gap. ──
+// They put "paid in cash" / "paid on your card machine" into the toast. The toasts now read `paid`,
+// `collected` or `paid and collected` and name no method at all, so both were dead.
+// 🔴 THE RULE THEY CARRIED STILL STANDS AND IS WORTH KEEPING WRITTEN DOWN: the method's vocabulary
+// belongs to PaymentActionsModal, which prints `Paid in cash` and `Paid on your card machine`. If a
+// method ever needs saying here again, take those phrases — do not invent a shorter pair.
 /** The three names that BOOK a payment. ⚠️ `undo_mark_paid` is deliberately NOT here — it has its own
  *  branch below and this predicate runs first, so including it would swallow the undo's own wording. */
 const PAY_ACTIONS = new Set(['mark_paid', 'mark_paid_cash', 'mark_paid_card'])
 function isPayAction(action: string): boolean { return PAY_ACTIONS.has(action) }
-/**
- * The phrase for what was recorded, or `null` when nothing was — in which case every caller keeps the
- * wording it had before this existed.
- * 🔴 THE SUFFIXED NAMES ANSWER FOR THEMSELVES. `mark_paid_cash` IS the operator's answer, so it needs
- * no help from the caller and cannot disagree with what the server derives from the same string.
- * The PLAIN names have no answer in them, so they take the surface's own — see `plainPaidMethod`.
- */
-function payMethodPhrase(action: string, plain: 'cash' | 'card' | null | undefined): string | null {
-  if (action.endsWith('_cash')) return METHOD_PHRASE.cash
-  if (action.endsWith('_card')) return METHOD_PHRASE.card
-  return plain ? METHOD_PHRASE[plain] : null
-}
 
 /** The minimum a resolved order must carry for the shared branches: its display number and its buzzer.
  *  Anything else a surface needs (the dashboard's `items`, for the prep strike) reaches its own callback
@@ -119,7 +106,7 @@ export interface GatedActionEffects<TOrder extends GatedOrderLike> {
  * Handle a `gatedAction` result. Call it inside the caller's own `try`, and let it throw:
  *
  *   const result = await gatedAction({…})
- *   await handleGateResult(result, action, orderKey)
+ *   await handleGateResult(result, action, orderKey, booksPayment)
  *
  * 🔴 IT THROWS ON A SERVER REJECTION, exactly as the dashboard always has (`if(!result.ok)throw new
  * Error(data.error)`), so the caller's `catch` is what surfaces it. That throw is the whole of the KDS's
@@ -132,7 +119,21 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
     refreshPendingPayment, onQueued, onQueuedUndone, onPrepStrike, onPrepUnstrike, plainPaidMethod,
   } = fx
 
-  return useCallback(async (result: GateResult, action: string, orderKey: string): Promise<void> => {
+  return useCallback(async (
+    result: GateResult,
+    action: string,
+    orderKey: string,
+    /** ── 🔴 DID THIS PRESS BOOK THE MONEY? ONLY THE CARD KNOWS, SO ONLY THE CARD MAY SAY. ──────────
+     *  Plain `collected` is fired by three different buttons — "Collected" on an already-paid order,
+     *  "Collected" on one whose card is HELD (which books nothing), and "Mark paid & collected" on a
+     *  one-press truck (which does). The action name is identical in all three and the server's response
+     *  carries no charged amount, so nothing downstream can tell them apart.
+     *  ⚠️ IT IS PASSED, NOT DERIVED, DELIBERATELY. Re-deriving paid-ness here would mean a SECOND
+     *  implementation of `effectivePaid` living beside OrderCard's, free to disagree with the button the
+     *  operator actually saw. The card sets it on exactly the button whose own label says "Mark paid".
+     *  ⚠️ ABSENT MEANS FALSE, so every caller that does not pass it keeps today's wording. */
+    booksPayment?: boolean,
+  ): Promise<void> => {
     // ── QUEUED OFFLINE ────────────────────────────────────────────────────────────────────────────
     // The optimistic advance is a DURABLE render-time overlay derived from the outbox, NOT a one-shot
     // patch (a stale poll or an SW-cache read would wipe that). Refreshing it here is what moves the card
@@ -198,28 +199,35 @@ export function useGatedActionResult<TOrder extends GatedOrderLike>(fx: GatedAct
         { duration: 20000, action: { label: 'Record payment', run: () => runAction('mark_paid', orderKey) } },
       )
     } else if (isPayAction(action)) {
-      // ── 🔴 THE METHOD, IN THE MODAL'S OWN WORDS ──────────────────────────────────────────────────
+      // ── 🔴 THREE TOASTS, THREE WORDS: paid · collected · paid and collected. ─────────────────────
       // `mark_paid_cash` and `mark_paid_card` MATCHED NO BRANCH and fell to the `labels[action] || action`
       // fallback at the end of this chain, so an operator who tapped Cash was shown the literal
       // string "Order #12 mark_paid_cash" — a variable name, on a counter, with no Undo offered at all.
       // That is what this branch replaces.
-      // 🔴 THE WORDING IS PaymentActionsModal's, NOT A SECOND VOCABULARY. That modal already prints
-      // `Paid in cash` and `Paid on your card machine` for these two values; the same phrases are used
-      // here so an operator meets one set of words for one fact.
-      // ⚠️ NULL STAYS SILENT AND THE STRING IS UNCHANGED — `Order #N marked paid`, byte for byte, which
-      // is what a truck that takes cash still sees for the repair action. The modal is silent about
-      // method in that case too ("Paid in person — Cash or your card machine — not recorded").
-      showToast(`Order #${num} ${payMethodPhrase(action, plainPaidMethod) ?? 'marked paid'}`, 'success',
+      // 🔴 THE METHOD IS NO LONGER IN THE TOAST, AND THAT IS THE POINT OF THIS WORDING. It read
+      // "Order #12 paid on your card machine", and the completion below read "Order #12 collected —
+      // paid on your card machine" — a sentence with two clauses for one tap. The method is not what the
+      // operator is checking at a hatch; WHICH ORDER and WHAT HAPPENED are. It is still recorded on the
+      // row, still shown by PaymentActionsModal, and still in the audit log — only the toast is shorter.
+      showToast(`Order #${num} paid`, 'success',
         { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_mark_paid', orderKey) } })
     } else if (action === 'undo_mark_paid') {
       showToast('Undone — payment removed')
     } else if (action === 'undo_collected') {
       showToast('Undone — order not collected')
     } else if (isCollectAction(action)) {
-      // Same rule for the one-press completion: the method rides beside "collected" when there is one,
-      // and the sentence is unchanged when there is not.
-      const phrase = payMethodPhrase(action, plainPaidMethod)
-      showToast(`Order #${num} collected${phrase ? ` — ${phrase}` : ''}`, 'success',
+      // ── 🔴 "paid and collected" ONLY WHEN THE ACTION NAME SAYS MONEY WAS BOOKED. ─────────────────
+      // `collected_cash` / `collected_card` ARE the one-press completion on a truck that distinguishes
+      // the two, so they carry a payment by construction and the toast says both things happened.
+      // ⚠️ PLAIN `collected` IS DELIBERATELY JUST "collected", AND IT IS NOT ALWAYS THE WHOLE TRUTH.
+      // Three different buttons fire it: "Collected" on an already-paid order, "Collected" on one whose
+      // card is HELD (which books nothing — see OrderCard), and "Mark paid & collected" on a one-press
+      // truck that does not take cash (which does). The client cannot tell those apart — the action name
+      // is identical and the response carries no charged amount — so this reports the half it is certain
+      // of. 🔴 THE SAFE DIRECTION IS THE ONE THAT NEVER CLAIMS A PAYMENT THAT MAY NOT HAVE HAPPENED,
+      // and the operator has just pressed a button whose own label said which it was.
+      const paidToo = action === 'collected_cash' || action === 'collected_card' || booksPayment === true
+      showToast(`Order #${num} ${paidToo ? 'paid and collected' : 'collected'}`, 'success',
         { duration: 7000, action: { label: '↩ Undo', run: () => runAction('undo_collected', orderKey) } })
     } else if (action === 'ready') {
       // Status commits now but the customer email is DEFERRED 4s (defer_email on the request): an Undo

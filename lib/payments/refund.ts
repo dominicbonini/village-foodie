@@ -118,7 +118,7 @@ export async function refundOrder(
     reason: RefundReason
     note: string | null
     actor: Pick<ResolvedActor, 'actorKind' | 'actorId' | 'actorLabel'>
-    source: 'web' | 'native' | 'offline_replay'
+    source: 'web' | 'native' | 'offline_replay' | 'system'
   },
 ): Promise<RefundOutcome> {
   const account = await stripeAccountForTruck(supabase, args.truckId)

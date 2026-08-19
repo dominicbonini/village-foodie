@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, sendRefundEmail, cancellationPaymentSentence, notifyCustomer } from '@/lib/email'
 // 🔴 THE ONE RESOLVER EVERY EMAIL IN THIS FILE ASKS. Four sites here used to print "Pay at the truck on
 // collection" unconditionally — to customers whose card was held, and to customers already charged.
 // None of them works the answer out for itself; they all call this. See lib/payments/email-payment-state.
@@ -33,7 +33,10 @@ import { captureOnConfirmation } from '@/lib/payments/capture'
 // renders the outcome; the amount, the already-refunded figure and the fit are decided there.
 import { refundOrder, REFUND_REASONS } from '@/lib/payments/refund'
 // 🔴 THE HOLD BEHIND A CANCELLED ORDER. Release only — it cannot capture and it refuses a captured order.
-import { releaseHoldForCancelledOrder } from '@/lib/payments/release-hold'
+import { releaseHoldForTerminalOrder } from '@/lib/payments/release-hold'
+// 🔴 THE REJECT PATH, EXTRACTED. It releases a card hold, so it must have exactly one implementation —
+// see the module header. Nothing else calls it yet; that is why it was extracted before there is.
+import { rejectOrder } from '@/lib/orders/reject-order'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { assignBuzzer } from '@/lib/buzzer'
@@ -92,13 +95,6 @@ async function verifyToken(token: string, pin?: string) {
   return truck
 }
 
-// Escape operator free-text before interpolating into a customer email's HTML (prevents broken
-// markup / injection from a rejection/cancellation reason). NOTE: the CANCEL email (:cancellation
-// reasonLine) does NOT escape today — same risk there; escape it too if/when that's touched.
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-}
-
 // ── 🔴 DEMO TRUCKS NEVER SEND EMAIL ────────────────────────────────────────────────────────────────────
 // A demo's order addresses are whatever the prospect typed into their own test order — fake or throwaway.
 // Sending produces hard bounces that damage the SHARED sender reputation every real truck's confirmations
@@ -118,41 +114,6 @@ async function sendEmailUnlessDemo(
     return
   }
   await sendConfirmationEmail(params)
-}
-
-// Raw Brevo sender for the reject/cancel notices. Takes the TRUCK (not just its name) so it shares the
-// demo guard above — passing only truckName would have left these two sites unguarded.
-async function notifyCustomer(
-  truck: { id?: string | null; name?: string | null } | null | undefined,
-  email: string,
-  subject: string,
-  html: string,
-  /** ⚠️ OPTIONAL, AND ABSENT MEANS EXACTLY TODAY'S BEHAVIOUR. Every email this helper has ever sent went
-   *  out HTML-only; a client that renders text sees Brevo's own strip of the markup. The CANCELLATION
-   *  passes one, because it now states what happened to a customer's money and that sentence must exist
-   *  in both renderings — the rule lib/email already follows. */
-  text?: string,
-) {
-  const truckName = truck?.name ?? undefined
-  if (isDemoIdentifier(truck?.id)) {
-    console.log(`[dashboard/action] demo truck ${truck?.id} — email to ${email} suppressed`)
-    return
-  }
-  const apiKey = process.env.BREVO_API_KEY
-  if (!apiKey || !email) return
-  try {
-    await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sender:      { name: truckName || 'HatchGrab', email: process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk' },
-        to:          [{ email }],
-        subject,
-        htmlContent: html,
-        ...(text ? { textContent: text } : {}),
-      }),
-    })
-  } catch (err) { console.error('Email failed:', err) }
 }
 
 // Build + send the customer "order ready" email (variant:'ready'). Extracted so BOTH the synchronous path
@@ -314,36 +275,17 @@ export async function POST(req: NextRequest) {
 
     // ── REJECT ────────────────────────────────────────────────────────────────
     if (action === 'reject') {
+      // ⚠️ THE LOGIC MOVED, THE ANSWER DID NOT. Both responses below are the ones this branch already
+      // returned, built from the outcome without re-deriving anything.
       const { rejectionReason } = body
-      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      // Dedicated rejection_reason column (NOT cancellation_reason — a rejected order isn't cancelled).
-      await supabase.from('orders').update({ status: 'rejected', rejection_reason: rejectionReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      if (order.event_date) {
-        // order.slot may be null (ASAP) — removeOrderFromProductionSlot resolves
-        // it to the same event-start window the booking used, so it unbooks cleanly.
-        const itemCatMap = await buildItemCatMap(supabase, truck.id)
-        await removeOrderFromProductionSlot(
-          supabase, truck.id, order.event_id, order.slot,
-          normaliseOrderLines(order.items || [], order.deals), itemCatMap
-        )
-      }
-      // Ceiling model (step 3): NO option-stock reversal needed — nothing was decremented at placement
-      // (the ceiling is computed live from active orders), so removing this order from the live set on
-      // reject IS the credit-back. Was: releaseOptionStock (the decrement pool, removed).
-      if (order.customer_email) {
-        // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
-        const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
-        await notifyCustomer(truck, order.customer_email, `Order #${order.id} update`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Order update</h2>
-            <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
-            ${reasonLine}
-            <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
-            <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
-          </body>`)
-      }
-      return NextResponse.json({ success: true, status: 'rejected' })
+      const rejected = await rejectOrder(supabase, {
+        orderKey, truck, rejectionReason, actor, source: actorSource,
+      })
+      if (!rejected.ok) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      // ⚠️ ADDITIVE FIELD. `success` and `status` are unchanged and mean exactly what they meant; the
+      // rejection did happen. `hold_release` is the money half of the answer, which had no field before
+      // because there was no money half.
+      return NextResponse.json({ success: true, status: 'rejected', hold_release: rejected.holdRelease })
     }
 
     // ── CANCEL ────────────────────────────────────────────────────────────────
@@ -366,7 +308,7 @@ export async function POST(req: NextRequest) {
       // so is the ordering: an operator cancelling mid-service must never be blocked by Stripe being
       // slow or unreachable, and this call cannot fail the request — every outcome is a return value.
       // ⚠️ IT ONLY EVER RELEASES. See lib/payments/release-hold: a captured order is refused outright.
-      const released = await releaseHoldForCancelledOrder(supabase, {
+      const released = await releaseHoldForTerminalOrder(supabase, {
         orderKey, truckId: truck.id, trigger: 'operator_cancel', actor, source: actorSource,
       })
       if (released.status === 'released') {
@@ -2009,7 +1951,14 @@ export async function POST(req: NextRequest) {
       }
       await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('order_key', orderKey)
 
-      // ── 🔴 CAPTURE SITE 3 of 4: QUICK-TIME-ADJUST, WHICH IS A CONFIRMATION IN DISGUISE. ─────────
+      // ── 🔴 CAPTURE SITE: QUICK-TIME-ADJUST, WHICH IS A CONFIRMATION IN DISGUISE. ───────────────
+      // ⚠️ THE NUMBER IS GONE RATHER THAN CORRECTED. This read "3 of 4" when there are FIVE capture
+      // sites — the stranded sweep was added after the numbering and no denominator was updated. A count
+      // maintained by hand in four comments goes stale again; the authoritative list is one command:
+      //     grep -rn "captureOnConfirmation(" app lib
+      // ⚠️ THE SIBLING COMMENTS AT app/api/orders/submit (1 of 4) AND AT THE CONFIRM BRANCH ABOVE
+      // (2 of 4) STILL CARRY THE SAME STALE DENOMINATOR. They were outside this change's stated scope
+      // and are deliberately untouched, not overlooked.
       // The line above writes `status: 'confirmed'` UNCONDITIONALLY alongside the new slot, and the
       // control is offered on PENDING orders only — so pressing "+10m" confirms the order. A held
       // authorisation must capture here exactly as it does at the Confirm button, or a customer who was
@@ -2421,24 +2370,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, print_trigger_mode: mode })
     }
 
-    // ── set_notes_require_review ── hold NOTED orders pending for manual review (allergy safety) ──
-    if (action === 'set_notes_require_review') {
-      const { value } = body
-      await supabase.from('trucks').update({ notes_require_review: !!value }).eq('id', truck.id)
-      return NextResponse.json({ success: true })
-    }
-
-    // ── set_add_order_layout ── the Add order screen's MENU LAYOUT, 'tabs' | 'scroll' (V11.15) ───────
-    // Shape copied from set_auto_accept directly above: one named action, one column, token-scoped by
-    // the same `truck.id` every handler on this route resolves. There is no update_truck action and no
-    // shared allow-list on this route, so a bespoke handler IS the pattern here.
-    //
-    // 🔴 TRUCK-WIDE, on a tab that is otherwise per-event. That is deliberate and is recorded at the
-    // control itself (app/dashboard/[token]/page.tsx) — a layout preference is a property of the
-    // operator's screen, not of one night's trading, and a per-event copy would ask the same question
-    // again at every event.
-    //
-    // 🔴 THE VALUE IS WHITELISTED HERE, NOT COERCED. `notes_require_review` above can take `!!value`
+    // ⚠️ `set_notes_require_review` WAS REMOVED HERE. Holding a NOTED order for a human is
+    // unconditional now (lib/orders/auto-accept), so there is nothing for an action to set. The COLUMN
+    // is deliberately left in place and is now unread — retiring it is its own decision.
+    // 🔴 THE VALUE IS WHITELISTED HERE, NOT COERCED. A BOOLEAN action could take `!!value`
     // because a boolean column cannot hold a wrong string; this is `text` with no CHECK constraint, so
     // an unexpected body would otherwise be stored verbatim and every reader would silently fall back
     // to 'tabs' — a setting that appears to save and does nothing. Anything that is not exactly
@@ -2507,6 +2442,17 @@ export async function POST(req: NextRequest) {
       // unrecognised mode leaves the column untouched (null = inherit the van, exactly like `value`).
       const { mode } = body as { mode?: unknown }
       if (mode === 'pause' || mode === 'no_auto_accept' || mode === null) patch.offline_protection_mode_override = mode
+      // The auto-reject delay's EVENT override, on the same optional-and-independent rule as the mode:
+      // absent leaves the column untouched, null clears it back to inheriting the van, and a number is
+      // range-checked to the same 5-30 the DB CHECK enforces.
+      // 🔴 `autoRejectMins === null` IS A WRITE, NOT AN ABSENCE. That is how an operator turns it off for
+      // one event without changing the van default.
+      const { autoRejectMins } = body as { autoRejectMins?: unknown }
+      if (autoRejectMins === null) patch.offline_auto_reject_mins_override = null
+      else if (typeof autoRejectMins === 'number' && Number.isInteger(autoRejectMins)
+               && autoRejectMins >= 5 && autoRejectMins <= 30) {
+        patch.offline_auto_reject_mins_override = autoRejectMins
+      }
       const { error } = await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })

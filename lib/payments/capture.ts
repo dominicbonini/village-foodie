@@ -7,12 +7,20 @@
 // slot still captures. Auto-accept FAILING leaves the order pending and UNCAPTURED, exactly like any
 // other pending order, and it will capture when a human confirms it.
 //
-// ── 🔴 THERE ARE TWO AUTO-ACCEPTS, AND THAT COST ONE ORDER ITS CAPTURE ──────────────────────────
-// A PAY-AT-HATCH order is auto-accepted inside place_order_atomic, at app/api/orders/submit. A CARD
-// order never reaches that code: its request returns at submit/route.ts:820 with a client secret, and
-// the order is created later by lib/payments/promote-draft, which decides auto-accept itself. The first
-// build of this file hooked only the first of those, so every auto-accepted CARD order was confirmed and
-// never captured — the state this file exists to prevent. `promote_auto_accept` is that second site.
+// ── 🔴 TWO PLACES CONFIRM A NEW ORDER, AND THEY NOW SHARE ONE DECISION ─────────────────────────
+// A PAY-AT-HATCH order is created at app/api/orders/submit. A CARD order never reaches that code: its
+// request returns at submit/route.ts with a client secret, and the order is created later by
+// lib/payments/promote-draft. Both are capture sites, which is why `promote_auto_accept` exists in the
+// trigger list beside `auto_accept`.
+// ⚠️ WHAT THE WARNING HERE USED TO SAY, AND WHY IT IS GONE. It read "THERE ARE TWO AUTO-ACCEPTS, AND
+// THAT COST ONE ORDER ITS CAPTURE" — written after the first build of this file hooked one path and not
+// the other. It then did not prevent the recurrence: the offline-protection work added a term to submit
+// and not to the promotion path, so a card order auto-confirmed and captured where the identical
+// pay-at-hatch order waited for a human.
+// 🔴 THE HAZARD IS ANSWERED BY A MECHANISM NOW, NOT BY A NOTE ASKING TWO CONDITIONS TO BE KEPT IN
+// AGREEMENT BY HAND: both paths call `decideAutoAccept` in lib/orders/auto-accept, and neither computes
+// the decision itself. A term added there reaches both. THE TWO CAPTURE SITES REMAIN TWO — that is a
+// fact about where orders are created, not a duplicated rule.
 // ⚠️ SO THE TRIGGER LIST IS NOT DECORATION. It is how "which confirmations capture" is answerable by
 // grep and by one audit query, instead of by reading two routes and inferring.
 //

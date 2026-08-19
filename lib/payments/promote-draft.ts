@@ -55,6 +55,10 @@ import { checkOptionCeilingShortfall, findSoldOutOption } from '@/lib/option-sto
 import { buildItemCatMap, normaliseOrderLines, rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
+// 🔴 THE ONE AUTO-ACCEPT DECISION, SHARED WITH app/api/orders/submit. This file used to compute its own
+// and the two drifted — see that module's header for what it cost.
+import { decideAutoAccept } from '@/lib/orders/auto-accept'
+import type { PreorderConfig } from '@/lib/preorder'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
@@ -161,17 +165,26 @@ export async function promoteDraft(
     // Per-item auto-accept + the event row, read exactly as app/api/orders/submit reads them.
     const { data: menuItems } = await supabase
       .from('menu_items_db')
-      .select('name, auto_accept')
+      // ⚠️ `preorder_enabled` IS THE ONE COLUMN ADDED HERE, and only because the shared decision's
+      // force-pending term reads it. A NAMED select, so it must exist before this deploys — it does:
+      // the customer submit path has named it since June.
+      .select('name, auto_accept, preorder_enabled')
       .eq('truck_id', draft.truck_id)
     const autoAcceptByName: Record<string, boolean> = {}
     ;(menuItems || []).forEach(m => { autoAcceptByName[m.name] = m.auto_accept !== false })
 
     let eventRow: { id: string; start_time: string | null; end_time: string | null; venue_name: string | null
-                    town: string | null; postcode: string | null; van_id: string | null } | null = null
+                    town: string | null; postcode: string | null; van_id: string | null
+                    offline_no_autoaccept_until: string | null } | null = null
     if (draft.event_id) {
       const { data } = await supabase
         .from('truck_events')
-        .select('id, start_time, end_time, venue_name, town, postcode, van_id')
+        // ⚠️ `offline_no_autoaccept_until` IS THE ONE COLUMN ADDED HERE. Without it the offline term
+        // could not enter this function at all — the marker was not merely unused, it was never fetched.
+        // 🔴 A NAMED SELECT, SO THE MIGRATION MUST LAND FIRST: PostgREST answers 42703 for a column that
+        // does not exist and fails the whole statement, which here would fail the promotion of a card
+        // order whose money is already authorised. 20260818_offline_protection_mode.sql is applied.
+        .select('id, start_time, end_time, venue_name, town, postcode, van_id, offline_no_autoaccept_until')
         .eq('id', draft.event_id)
         .eq('truck_id', draft.truck_id)
         .neq('status', 'cancelled')
@@ -260,20 +273,41 @@ export async function promoteDraft(
           // auto-accepted card order was confirmed and never captured. Do not restore that sentence.
           // ⚠️ AN ORDER THAT STAYS PENDING IS STILL PENDING AND UNCAPTURED, exactly as before. Its hold
           // is correct and stays held until a human confirms it.
-          const allItemsAutoAccept = orderLines.every(l => autoAcceptByName[l.name] !== false)
-          const orderHasNotes =
-            !!(draft.notes && draft.notes.trim()) ||
-            (Array.isArray(items) && items.some(i => {
-              const si = (i as { specialInstructions?: unknown })?.specialInstructions
-              return typeof si === 'string' && si.trim().length > 0
-            })) ||
-            (Array.isArray(deals) && deals.some(d =>
-              Object.values((d as { slotNotes?: Record<string, unknown> })?.slotNotes ?? {})
-                .some(n => typeof n === 'string' && n.trim().length > 0)))
-          const notesRequireReview = (truck as { notes_require_review?: boolean }).notes_require_review !== false
-          if (truck.auto_accept && allItemsAutoAccept && !(notesRequireReview && orderHasNotes)) {
-            autoAccepted = true
+          // ── 🔴 THE SHARED DECISION. THIS PATH USED TO COMPUTE ITS OWN AND IT WAS TWO TERMS SHORT. ──
+          // It had `truck.auto_accept`, the per-item flag and the notes rule — but not the pre-order
+          // force-pending term (which predated this file by seven weeks) and not the offline marker
+          // (which postdated it by six days, and whose column this select did not even fetch). A card
+          // order therefore auto-confirmed, AND CAPTURED at 8a, where the identical pay-at-hatch order
+          // waited for a human. Both terms now arrive with everything else, from one place.
+          // ⚠️ THE REFUSALS ABOVE ARE NOT PART OF THIS AND HAVE NOT MOVED. Sold-out, closed-category and
+          // option-ceiling answer "may this order exist at all" and release the hold; this answers
+          // "should a human look at it first". Different questions, deliberately still separate.
+          const preorderByName: Record<string, PreorderConfig> = {}
+          ;(menuItems || []).forEach(m => {
+            preorderByName[m.name] = {
+              enabled: (m as { preorder_enabled?: boolean | null }).preorder_enabled ?? null,
+              deadlineType: (truck as any).preorder_deadline_type,
+              deadlineValue: (truck as any).preorder_deadline_value,
+              pastAction: (truck as any).preorder_past_action,
+            }
+          })
+          let eventStartMins: number | null = null
+          if (eventRow?.start_time) {
+            const [sh, sm] = String(eventRow.start_time).split(':').map(Number)
+            eventStartMins = (sh || 0) * 60 + (sm || 0)
           }
+          autoAccepted = decideAutoAccept({
+            truck: truck as never,
+            orderLines,
+            autoAcceptByName,
+            preorderByName,
+            eventDate,
+            eventStartMins,
+            offlineNoAutoAcceptUntil: eventRow?.offline_no_autoaccept_until ?? null,
+            notes: draft.notes,
+            items,
+            deals,
+          })
         }
       }
 

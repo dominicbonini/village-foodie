@@ -14,8 +14,11 @@ import {
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCountForGroup } from '@/lib/modifier-rules'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
-import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
-import { isPreorderDeadlinePassed, isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
+// ⚠️ `getNowMinsInTz` LEFT WITH THE AUTO-ACCEPT TERMS — it was read only by the pre-order deadline
+// check, which now lives in lib/orders/auto-accept. The open-window gate below still needs the date one.
+import { getLocalDateInTz } from '@/lib/time-utils'
+import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
+import { decideAutoAccept } from '@/lib/orders/auto-accept'
 import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { isDemoIdentifier } from '@/lib/demo'
@@ -936,73 +939,30 @@ export async function POST(req: NextRequest) {
             // the "your slot was taken" amber path never fires.)
             confirmedSlot = claim.finalSlot
           }
-          // Auto-confirm ONLY when the truck auto-accepts AND every basket item allows it. A single
-          // item flagged auto_accept=false forces the whole order to stay `pending` (manual review) —
-          // reusing the same state an auto-accept-off truck produces. autoAccepted stays false, so the
-          // customer "Order received! … will confirm shortly" messaging + email tone apply unchanged.
-          const allItemsAutoAccept = orderLines.every(l => autoAcceptByName[l.name] !== false)
-          // PRE-ORDER force-pending (Stage 4): a line whose item is past a 'force_pending' pre-order
-          // deadline forces the order pending — the SAME effect as auto_accept=false, via the SAME
-          // helper Stage 3 uses for the menu sold-out (display ⟷ enforcement can't diverge). Event-tz
-          // now (NEVER device-local); plan-gated server-side (a downgraded truck's config is inert).
-          // tz defaults to 'Europe/London' (the documented current state until per-truck tz lands).
-          const preorderTz = (truck as any).timezone || 'Europe/London'
-          const preorderFeatureOn = canAccess(
-            truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null
-          )
+          // The event's start minute-of-day, still computed here: it is the EVENT's shape, and the
+          // shared decision takes it as a number rather than re-parsing a time string of its own.
           let eventStartMins: number | null = null
           if (eventRow?.start_time) {
             const [sh, sm] = String(eventRow.start_time).split(':').map(Number)
             eventStartMins = (sh || 0) * 60 + (sm || 0)
           }
-          // MASTER toggle (V7.8): truck-level preorders_enabled gates ALL pre-order effects. !== false
-          // so null/pre-migration reads as ENABLED. Read-time gate only — per-item config persists.
-          const preorderActive = preorderFeatureOn && eventStartMins != null
-            && (truck as any).preorders_enabled !== false
-          const preNowMins = getNowMinsInTz(preorderTz)
-          const preNowDate = getLocalDateInTz(preorderTz)
-          const anyForcesPending = preorderActive && orderLines.some(l => {
-            const cfg = preorderByName[l.name]
-            if (!cfg) return false
-            const pre = isPreorderDeadlinePassed(cfg, orderEventDate, eventStartMins as number, preNowDate, preNowMins)
-            return pre.isPreorder && pre.passed && pre.pastAction === 'force_pending'
+          // ── 🔴 THE DECISION MOVED TO lib/orders/auto-accept, AND THE TERMS ARE UNCHANGED. ─────────
+          // Every term that stood here now lives in `decideAutoAccept`, which the CARD path calls too.
+          // It was the same rule written twice and the copies drifted — see that file's header.
+          // ⚠️ THIS PATH'S BEHAVIOUR IS UNCHANGED. The inputs below are the ones this block already
+          // computed; nothing was added, removed or reordered on the way out.
+          autoAccepted = decideAutoAccept({
+            truck: truck as never,
+            orderLines,
+            autoAcceptByName,
+            preorderByName,
+            eventDate: orderEventDate,
+            eventStartMins,
+            offlineNoAutoAcceptUntil: eventRow?.offline_no_autoaccept_until ?? null,
+            notes,
+            items,
+            deals,
           })
-          // SAFETY — notes need review: a customer note (order-level OR any line's specialInstructions) is
-          // where allergy requests land, so a truck with notes_require_review ON holds a NOTED order `pending`
-          // for a human to read + accept instead of auto-confirming it unread. Same pending state an
-          // auto_accept=false item already produces (NO new status; customer messaging unchanged). `!== false`
-          // (not a bare truthy read) so a pre-migration/undefined column still REVIEWS — safe-by-default.
-          // Deal-slot free-text notes (deals[].slotNotes: Record<slot, note>) count too — a note on a deal
-          // item is still an allergy request. slotModifiers (a CHOICE, not free text) does NOT count.
-          // Defensive on any shape (null slotNotes / non-string values) — a throw here would fail the order.
-          const orderHasNotes =
-            !!(notes && notes.trim()) ||
-            (Array.isArray(items) && items.some((i: any) => i?.specialInstructions?.trim())) ||
-            (Array.isArray(deals) && deals.some((d: any) =>
-              Object.values(d?.slotNotes ?? {}).some((n: any) => typeof n === 'string' && n.trim())))
-          // ── 🔴 OFFLINE PROTECTION, MODE B: THE VAN IS OFFLINE, SO NOTHING AUTO-CONFIRMS ────────────
-          // `offline_no_autoaccept_until` is written by heartbeat-monitor when the van has gone stale AND
-          // the resolved mode is 'no_auto_accept', and cleared by /api/heartbeat on the van's next ping.
-          // While it is in the FUTURE this behaves exactly like `truck.auto_accept === false`: the order
-          // is still placed, the slot is still claimed and held by placeOrderInSlotLocked above, and the
-          // customer still sees "Order received! — {truck} will confirm your order shortly". NOTHING in
-          // the lifecycle is new; the only change is that this one boolean goes false.
-          // 🔴 THE SUBMIT PATH DOES NOT COMPUTE STALENESS ITSELF, DELIBERATELY. The 30-second threshold
-          // lives once, in the edge function that owns it (STALE_THRESHOLD_SECONDS), and this reads the
-          // decision rather than re-deriving it — see Stage 1 Q2 of docs/offline-protection-modes-build.md.
-          // ⚠️ AN EXPIRY, NOT A FLAG: a monitor that stops running cannot strand a truck here, because
-          // the marker it wrote (now + 2h) simply lapses.
-          // ⚠️ ABSENT / NULL / PAST MEANS NO EFFECT, so a pre-migration deploy and mode A are both identical
-          // to today.
-          const noAutoAcceptUntil = eventRow?.offline_no_autoaccept_until ?? null
-          const vanOfflineNoAutoAccept = !!noAutoAcceptUntil && new Date(noAutoAcceptUntil).getTime() > Date.now()
-          if (
-            truck.auto_accept && allItemsAutoAccept && !anyForcesPending
-            && !((truck as any).notes_require_review !== false && orderHasNotes)
-            && !vanOfflineNoAutoAccept
-          ) {
-            autoAccepted = true
-          }
         }
         // !claim.booked -> event full / lock contended -> finalSlot stays requestedSlot (or ASAP/null),
         // unbooked (p_unit_rows null below). Never rejected, never overfilled.

@@ -45,6 +45,10 @@
     {
       "path": "/api/cron/capture-stranded-authorizations",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/auto-reject-offline-orders",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

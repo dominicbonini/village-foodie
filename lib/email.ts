@@ -1,6 +1,9 @@
 // lib/email.ts
 // Shared email formatting and sending for order confirmations
 import type { EmailPaymentState } from '@/lib/payments/email-payment-state'
+// For notifyCustomer's demo guard, moved here from app/api/dashboard/action. lib/demo imports
+// nothing, so this adds no cycle.
+import { isDemoIdentifier } from '@/lib/demo'
 
 // THE PAYMENT SENTENCE, IN ONE PLACE, FOR EVERY EMAIL THAT NEEDS ONE.
 //
@@ -575,6 +578,46 @@ export async function sendConfirmationEmail(params: {
   }
 }
 
+// ── MOVED HERE FROM app/api/dashboard/action/route.ts (V11.33 extraction). BODY UNCHANGED. ─────────
+// It was route-local while both its callers were in that route. The reject path now lives in
+// lib/orders/reject-order.ts and the cancel path is still in the route, so a shared home is the only
+// way both reach ONE implementation — and a second copy of a sender that carries the demo guard is
+// exactly what that guard's comment says must not happen.
+// Raw Brevo sender for the reject/cancel notices. Takes the TRUCK (not just its name) so it shares the
+// demo guard above — passing only truckName would have left these two sites unguarded.
+export async function notifyCustomer(
+  truck: { id?: string | null; name?: string | null } | null | undefined,
+  email: string,
+  subject: string,
+  html: string,
+  /** ⚠️ OPTIONAL, AND ABSENT MEANS EXACTLY TODAY'S BEHAVIOUR. Every email this helper has ever sent went
+   *  out HTML-only; a client that renders text sees Brevo's own strip of the markup. The CANCELLATION
+   *  passes one, because it now states what happened to a customer's money and that sentence must exist
+   *  in both renderings — the rule lib/email already follows. */
+  text?: string,
+) {
+  const truckName = truck?.name ?? undefined
+  if (isDemoIdentifier(truck?.id)) {
+    console.log(`[dashboard/action] demo truck ${truck?.id} — email to ${email} suppressed`)
+    return
+  }
+  const apiKey = process.env.BREVO_API_KEY
+  if (!apiKey || !email) return
+  try {
+    await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sender:      { name: truckName || 'HatchGrab', email: process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk' },
+        to:          [{ email }],
+        subject,
+        htmlContent: html,
+        ...(text ? { textContent: text } : {}),
+      }),
+    })
+  } catch (err) { console.error('Email failed:', err) }
+}
+
 /**
  * THE ONE SENTENCE A CANCELLATION EMAIL SAYS ABOUT MONEY, FOR BOTH CANCEL PATHS.
  *
@@ -619,6 +662,49 @@ export function cancellationPaymentSentence(args: {
   if (args.paymentState === 'captured' || args.paymentState === 'part_paid') {
     const sentence = `If you paid by card, any refund is handled by ${args.truckName} directly — please contact them about it.`
     return { html: `<p>${sentence}</p>`, text: ` ${sentence}` }
+  }
+  return { html: '', text: '' }
+}
+
+/**
+ * THE ONE SENTENCE A REJECTION EMAIL SAYS ABOUT MONEY.
+ *
+ * A REJECTION IS NOT A CANCELLATION AND CANNOT BORROW ITS SENTENCE. A cancelled order may have been
+ * captured and may be owed a refund; a rejected order was refused before it was ever served, so the only
+ * two states it can honestly be in are "a hold was taken and has gone back" and "nothing was ever taken".
+ * It has no refund case to state, and it must not imply one.
+ *
+ * 🔴 IT REPORTS THE RELEASE THAT HAPPENED, NOT THE ONE THAT WAS ATTEMPTED. `holdReleased` comes from the
+ * release call's own return value, because that call can fail without throwing — Stripe unreachable, a
+ * ledger read that would not answer. Saying "that hold has been released" to somebody whose hold is
+ * still live is the one sentence here that cannot be walked back, so a failed release gets the sentence
+ * that is true either way: nothing was taken, and the hold ends by itself.
+ *
+ * THE FALL-THROUGH IS SILENCE, exactly as cancellationPaymentSentence's is. An unknown state says
+ * nothing rather than guessing, and a caller with no state renders no line at all.
+ */
+export function rejectionPaymentSentence(args: {
+  truckName: string
+  paymentState?: EmailPaymentState
+  /** Did the release actually succeed? From the release call's return value, never assumed. */
+  holdReleased?: boolean
+}): { html: string; text: string } {
+  const wrap = (sentence: string) => ({ html: `<p>${sentence}</p>`, text: ` ${sentence}` })
+  if (args.paymentState === 'held' || args.paymentState === 'held_short') {
+    return wrap(args.holdReleased
+      ? `Your card was held for this order and never charged, and that hold has now been released.`
+      : `Your card was held for this order and never charged, and that hold will clear on its own — please contact ${args.truckName} if it has not cleared within a week.`)
+  }
+  // Pay at the hatch, or a card order whose hold had already gone. Nothing was ever taken, and this is
+  // the case the overwhelming majority of rejections are in.
+  if (args.paymentState === 'hatch') {
+    return wrap(`You have not been charged for this order.`)
+  }
+  // ⚠️ SHOULD NOT HAPPEN AND IS HANDLED ANYWAY. Reject is offered on pending orders, and no capture site
+  // fires before an order is confirmed — but if money HAS moved, the one thing this must not do is print
+  // "you have not been charged" over a real charge.
+  if (args.paymentState === 'captured' || args.paymentState === 'part_paid') {
+    return wrap(`If you paid by card for this order, please contact ${args.truckName} about it.`)
   }
   return { html: '', text: '' }
 }

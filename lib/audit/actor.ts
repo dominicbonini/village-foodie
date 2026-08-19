@@ -31,11 +31,18 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
  *  'token'   — resolution ran cleanly and there was no session. A shared per-truck token acted. This is
  *              the normal, legitimate KDS/anonymous case, and it is a FACT worth recording.
  *  'unknown' — resolution itself failed (auth service error, unexpected throw). We do not know whether a
- *              user was present. "We failed to ask" — distinct from "we asked and nobody was there". */
-export type ActorKind = 'owner' | 'staff' | 'token' | 'unknown'
+ *              user was present. "We failed to ask" — distinct from "we asked and nobody was there".
+ *  'system'  — scheduled or automatic server-side work acted; no request and no human behind it.
+ *  🔴 'system' AND 'unknown' ARE OPPOSITES AND MUST NOT BE COLLAPSED EITHER. 'unknown' means the actor
+ *  could not be determined; 'system' means it is known exactly and is not a person. Reading a sweep's
+ *  rows as 'unknown' would make a deliberate automatic action indistinguishable from a failed lookup. */
+export type ActorKind = 'owner' | 'staff' | 'token' | 'unknown' | 'system'
 
-/** Where the request came from, where determinable. */
-export type ActorSource = 'web' | 'native' | 'offline_replay'
+/** Where the request came from, where determinable.
+ *  'system' — there was no request: scheduled or automatic server-side work, with no human behind it.
+ *  ⚠️ NOTHING RETURNS IT YET. resolveActorSource below reads a request and therefore never produces it;
+ *  it exists so a caller that has no request has an honest value instead of borrowing 'web'. */
+export type ActorSource = 'web' | 'native' | 'offline_replay' | 'system'
 
 export interface ResolvedActor {
   actorKind: ActorKind

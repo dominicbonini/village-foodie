@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.31
+HatchGrab Engineering Reference Manual · V11.32
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.31**
+**Version 11.32**
 
 August 2026
 
@@ -15,6 +15,62 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.32 — 19 August 2026
+
+Delta over V11.31 — **a rejected order's card hold was never released, by anything, ever; the sweep that
+looks like the backstop would have CAPTURED it instead; and three separate customer-facing surfaces were
+telling a refused customer to go and pay.**
+
+- 🔴 **A REJECTED ORDER'S AUTHORISATION WAS NEVER RELEASED — AND NOT LATE, NEVER.** Settled by positive
+  evidence, not absence: the release function's `trigger` was a CLOSED UNION of two cancel members, it had
+  exactly two call sites, and **the stranded-authorisation sweep's status allow-list omits `'rejected'`**,
+  so the one mechanism that exists to catch orphaned holds excluded it by construction. **Only Stripe's own
+  ~7-day expiry would have ended it** — a customer's card held for a week against food they were refused.
+- ✅ **FIXED. Reject now resolves payment state before mutating, then releases**, in the ordering the cancel
+  branch established and for the reason its comments give: releasing stamps the draft, after which the
+  resolver would answer *"Pay at the truck on collection"* about an order the truck just refused.
+- ✅ **ONE FUNCTION, RENAMED SO ITS NAME STOPS CONTRADICTING ITS USE.** `releaseHoldForCancelledOrder` →
+  `releaseHoldForTerminalOrder`, where **terminal means an order that has ended without being fulfilled —
+  cancelled, or rejected.** Exactly five references, proven before the edit.
+- 🔴 **THE AUDIT WORDING IS NOW DERIVED, BECAUSE `action_audit_log` IS THE DESIGNATED RECOVERY RECORD FOR A
+  STRANDED HOLD.** A rejected order writing *"the order was cancelled"* would mislead in the one place
+  somebody looks during a money incident. ✅ **Both cancel callers proven BYTE-IDENTICAL** — real module
+  against a pre-change copy, audit row and captured stderr compared as bytes, both triggers, success and
+  failure paths.
+- 🔴 **THE BACKSTOP INSTRUCTION WAS WRONG AND WAS REFUSED. THIS IS THE MOST IMPORTANT ENTRY HERE.** The
+  planning chat instructed adding `'rejected'` to `find_stranded_authorisations`' allow-list. **That
+  function feeds a CAPTURE cron** — its own `comment on function` says so. ⚠️ **And `getOrderBalance` never
+  reads `orders.status`**, so a rejected £6.50 order computes a £6.50 balance, passes every guard, and
+  reaches `paymentIntents.capture`. **The widening would have CHARGED customers for orders the truck
+  refused** — and would have fired precisely on the orders whose release call had failed, i.e. exactly the
+  ones needing release. **The failure mode was inverted, not merely absent.**
+- ⚠️ **THE ALLOW-LIST IS NOT A LIST OF HOLDS NEEDING RESOLUTION. IT IS A LIST OF HOLDS THAT MAY BE TAKEN.**
+  Every member is an order the truck ACCEPTED and is owed money for. Record this, because the mistake was
+  reasonable-looking and will look reasonable again.
+- 🔴 **A PENDING ORDER IS NEVER CAPTURED — CONFIRMED, NOT ASSUMED.** All five capture sites gated on a
+  confirmation, all five reachable (the body traced past seven guard clauses to the Stripe call). **So
+  "rejected means never charged" is structurally true**; what was missing was releasing the hold rather
+  than leaving it to expire.
+- ✅ **NO DOUBLE-RELEASE RISK.** The webhook dispatch handles account, authorisation, capture and refund
+  events and **releases nothing**; the release function is idempotent on its own stamp. Two independent
+  reasons.
+- ✅ **`purge_order_drafts()` CANNOT ORPHAN A HOLD** — guarded twice, and a rejected order's draft fails a
+  second clause besides. **So the reject gap stood alone**, which narrowed the fix rather than widening it.
+- 🔴 **THREE CUSTOMER SURFACES WERE TELLING A REFUSED CUSTOMER TO PAY.** The manage page's Payment row
+  rendered *"Pay at the truck"* for anything not `paid`; its status ladder had no rejected branch; and the
+  `?confirm=` receipt guarded `'cancelled'` but **not** `'rejected'`, rendering **"Order received! — {truck}
+  will confirm your order shortly."** over an order already refused. ✅ **All fixed from data the pages
+  already had** — no route widened, no draft read.
+- ⚠️ **AND THE FIX WAS DELIBERATELY NARROWED BELOW ITS BRIEF.** "You have not been charged" is gated on
+  `payment_status === 'unpaid'`, not `!== 'paid'`, because a charged-then-refunded order reads `'refunded'`
+  and the literal rule would have denied money that really did leave the customer's account.
+- ✅ **THE OFFLINE SETTINGS BOX** now leads with *"Decides what happens to incoming orders when your device
+  drops offline."* The orange keep-the-screen-on warning is untouched and stays prominent.
+- ⚠️ **A LANDING-PAGE DEFECT I REPORTED DID NOT EXIST.** `.proof` was said to carry the trust strip's
+  centring bug; it sits inside an ancestor with an ungated `text-align: center`, so wrapped lines already
+  centred. **A rule was added anyway, and its comment states it changes no pixel today** — it makes the
+  centring local rather than inherited.
 
 ## V11.31 — 18 August 2026 (late session)
 
@@ -7551,6 +7607,40 @@ app/order/[id]/manage/page.tsx loads the order, shows items and status, offers C
 
 > **V6.3** — the route segment value is the **order_key uuid**, not the display id; `/api/orders/[id]` (GET) + `/api/orders/cancel` resolve by order_key. order_key is globally unique (no slug needed) and not enumerable. As of V6 the ASAP cutoff falls back to event end_time.
 
+### What a rejected customer is told (V11.32)
+
+**Three surfaces, and each was read on its own — no fact was carried between them.**
+
+🔴 **THE MANAGE PAGE WAS NOT SILENT ABOUT MONEY. IT GAVE AN INSTRUCTION, AND THE INSTRUCTION WAS WRONG.**
+Its Payment row rendered *"Pay at the truck"* for anything not `paid`, so a refused customer was told to go
+and pay. ✅ **Now: "You have not been charged for this order."** for a terminal order — and *"Paid by card"*
+is untouched where money moved.
+
+**It also already named the status** — the row prints the raw column capitalised, so `Rejected` was there
+all along, in neutral slate. ✅ **Now red**, following the convention `cancelled` already had.
+
+✅ **A `rejected` branch was added to the ladder: "This order was not accepted by the truck."** ⚠️
+**`cooking` KEEPS the old fall-through sentence** — *"This order can no longer be cancelled"* is TRUE for
+an order on the grill. **This was one misleading status, not a class.**
+
+🔴 **THE `?confirm=` RECEIPT GUARDED `'cancelled'` AND NOT `'rejected'`**, so a refused customer could be
+shown **"Order received! — {truck} will confirm your order shortly."** — a future promise about an order
+already refused, and worse than the manage page's terseness. ✅ **Now guarded in the same shape.**
+
+⚠️ **THE ROUTE WAS DELIBERATELY NOT WIDENED.** `/api/orders/[id]` never reads `order_drafts` and imports no
+payment resolver, so the page cannot distinguish *a card hold released* from *pay-at-hatch* — both read
+`'unpaid'`. **The hold-specific sentence is the email's job and the email already does it.** Adding a draft
+read to a customer route to say something marginally more specific was judged not worth the surface area.
+
+🔴 **KNOWN AND UNFIXED: `refunded`, `refund_due` and `part_paid` still fall through to "Pay at the truck"
+on a terminal order.** Pre-existing, not a regression, and all three require captured money — impossible
+today. ⚠️ **`refund_due` is the worst of the three: it is the double-charge state**, so that customer is
+told to pay again.
+
+⚠️ **NEITHER PAGE POLLS.** A customer holding either open when the operator rejects sees nothing change,
+and the manage page's Cancel button stays live and would then fail against the server's allow-list.
+**Unfixed; recorded.**
+
 ## 18a. Order numbering — the two-id architecture (V6.3)
 
 > **CRITICAL ARCHITECTURE — do not undo.** Orders carry TWO identifiers with opposite jobs. Conflating them caused the 6 June duplicate-key outage (Vercel 23505 on orders_pkey). Never reintroduce `id` into a WHERE clause, nor collapse the two fields.
@@ -7855,6 +7945,33 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
 
 > 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
+
+### Method — additions (V11.32)
+
+- 🔴 **THE PLANNING CHAT PROPOSED A CHANGE THAT WOULD HAVE CHARGED CUSTOMERS FOR REFUSED ORDERS.** It wrote
+  "add `'rejected'` to the allow-list" without checking what CONSUMES the function, when the function's own
+  comment named the capture cron. **Recorded in full rather than as a near-miss** — the stop rule caught
+  it, and the stop rule is why it exists.
+- ⚠️ **"WHAT WRITES THIS" IS NOT THE SAME QUESTION AS "WHAT READS THIS".** A predicate is only as safe as
+  its consumer, and a status list means nothing until you know what the caller does with the rows.
+- 🔴 **THE PLANNING CHAT ALSO ASSERTED A DEFECT THAT DID NOT EXIST**, by analogy from a similar list without
+  checking whether an ancestor already supplied the property. **Repeated twice as established fact.** ⚠️
+  **The general rule: an analogy is a hypothesis, and stating one twice does not promote it.**
+- 🔴 **AND IT DESCRIBED A PAGE FROM A SUMMARY RATHER THAN FROM THE PAGE.** It claimed the customer status
+  page "says nothing about the money" and "does not even say the order was rejected". **Both false** — it
+  said something worse than nothing, and it named the status. **A summary of a report is not the report.**
+- ✅ **AN EXECUTOR NARROWED ITS BRIEF AND SAID SO.** The instruction was `!== 'paid'`; it shipped
+  `=== 'unpaid'` because a charged-then-refunded order would otherwise have been told it was never
+  charged, and it named the three values it left behind rather than inventing copy for them. **The right
+  shape: narrow, state the reason, name what is left.**
+- ✅ **THE STRONGEST VERIFICATION PATTERN SO FAR, WORTH REUSING.** Extract the actual functions from the
+  file text — nothing retyped — evaluate them across the full cross-product of inputs, and byte-compare
+  against a pre-change copy. **20 of 24 combinations identical, the 4 changed being exactly the intended
+  ones.** That is a proof, not a reading.
+- ⚠️ **A STALE COMMENT WITH A HAND-MAINTAINED COUNT.** A capture site read "3 of 4" when there were five.
+  **The number was removed rather than corrected**, replaced by the command that produces the authoritative
+  list — a count maintained by hand in four comments goes stale again. **Two sibling comments still carry
+  the old denominator and are knowingly untouched.**
 
 ### Standing rules (V11.3)
 
@@ -9542,6 +9659,33 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **`AppLockGate.tsx` still says "Face / Touch ID".**
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
+
+## V11.32 — VERIFICATION DEBT, updated (SUPERSEDES the V11.31 list below)
+
+**DISCHARGED:** the reject release path, both cancel callers' byte-identity, and the customer-surface
+behaviour across all eight statuses × three payment values — **all by execution.**
+
+**STILL UNPROVEN, and the observation that would settle each:**
+- **That Stripe actually releases the hold.** The release call itself was stubbed. **Cannot be settled
+  until card payments are live on a truck.**
+- **That any rejected order is currently sitting on a live authorisation.** A read-only query exists and is
+  **unrun**; expect no rows.
+- **That a timed-out live submit queues WITH its number.** *Place an order with the uplink pulled; confirm
+  the card and the resulting `orders.id` match.* **Still the highest-value outstanding test.**
+- **That the drain un-wedges under a real hang.**
+- **That a real cancel writes a suppression row** — the table has still never held one.
+- **That the ownership gate refuses a foreign event in a running system.**
+- **Why offline protection did not engage on a backgrounded phone.** The live hypothesis is that it is
+  gated on the event window and the event had not started. ⚠️ **A pause stamp on that same event from the
+  previous evening is unexplained**; the discriminating query is written and unrun.
+- **Carried:** the dashboard heartbeat remains source-read on the live trading truck's ordering path.
+
+**OPEN DECISIONS:** the release-side backstop · the offline-order prefix · the N1 cold-start window · the
+device-letter collision at ~3.8% · the auto-reject feature, scoped and shelved because the default
+protection mode blocks ordering entirely so it has no orders to act on.
+
+⛔ **SUPERSEDES the V11.31 entry's "`.proof` list carrying the trust-strip defect"** — that defect did not
+exist; see the V11.32 changelog.
 
 ## V11.31 — VERIFICATION DEBT, updated (SUPERSEDES the V11.30 list below)
 
@@ -11800,6 +11944,31 @@ All five now resolve through `lib/payments/email-payment-state.ts`, with a sente
 
 ⚠️ **`google_pay` was `off` in both configurations** — the Android equivalent of the Apple Pay button, silently absent for the same reason.
 
+### Reject and cancel share one hold-release path (V11.32)
+
+🔴 **RULE: AN ORDER THAT ENDS WITHOUT BEING FULFILLED RELEASES ITS HOLD.** Cancelled or rejected, one
+function, one seam: **`releaseHoldForTerminalOrder`**. *Terminal* is defined in that file's header and the
+name is load-bearing — the previous name, `releaseHoldForCancelledOrder`, described only half its callers.
+⚠️ **Earlier entries in this manual use the old name; they are historical and were not rewritten.**
+
+**What it does and does not do, unchanged by this work and worth restating:** it only ever RELEASES; it
+**refuses outright on an order whose money was already taken**, because giving money back is a refund and a
+refund is somebody's decision, not a side effect; and **it refuses on a ledger read failure** — *"I could
+not tell" is a refusal, never a zero.* It cannot throw: every outcome is a return value, because closing an
+order must never fail because Stripe was slow.
+
+**Ordering on both paths: resolve payment state → mutate status → release → unbook → email.** ⚠️ **The
+resolve must come FIRST**, because releasing stamps `authorization_cancelled_at` and the resolver would
+then answer *"Pay at the truck on collection"* about an order that has just ended.
+
+🔴 **THE AUDIT WORDING IS DERIVED FROM THE TRIGGER, NOT WRITTEN AT EACH LOG SITE**, so the two can never
+drift. `action_audit_log` is the designated recovery record for a stranded hold and has a documented query
+against it; **a record naming the wrong action would mislead in the one place somebody looks during an
+incident.**
+
+**The reject response carries `hold_release` alongside `success` and `status`** — additive, and it exists
+so no caller can read `success: true` as "and the card was let go".
+
 ### Stranded authorisations
 
 `find_stranded_authorisations()` — a read-only SQL function plus a `*/15` cron **that can only capture**: `'pending'` is absent from its allow-list, and there is no cancellation verb anywhere in the mechanism. Records `capture_missing` **before** any repair — *a silent self-heal is how a defect survives for months.*
@@ -11807,6 +11976,37 @@ All five now resolve through `lib/payments/email-payment-state.ts`, with a sente
 ⚠️ **The two sweeps partition the space and cannot collide:** `promoted_at IS NULL` for the canceller, `NOT NULL` for the capturer.
 
 🔴 **AND IT MUST EXCLUDE SETTLED ORDERS** — `payment_status not in ('paid', 'refund_due')`, added after orders 18 and 19 were each charged twice.
+
+### 🔴 THE SWEEP CAPTURES. IT DOES NOT RELEASE. (V11.32)
+
+🔴 **`find_stranded_authorisations`' status allow-list is NOT a list of orders whose holds need resolving.
+It is a list of orders whose holds MAY BE TAKEN.** Every member — `confirmed`, `modified`, `cooking`,
+`ready`, `collected` — is an order the truck accepted and is owed money for. The function feeds
+`capture-stranded-authorizations`, which **captures what it returns and never cancels it.**
+
+⚠️ **`'pending'` IS ABSENT DELIBERATELY, AND THAT IS THE SAFETY PROPERTY**: *an order still awaiting a human
+is never named.* Its hold is correct.
+
+🔴 **ADDING A TERMINAL STATUS TO THAT LIST CHARGES THE CUSTOMER.** Nothing downstream stops it:
+`getOrderBalance` **never reads `orders.status`**, so a rejected £6.50 order with no payments computes
+`paid=0, balance=650, status='unpaid'` — an order that OWES — and passes the payment-status clause, the
+ledger clause and `captureOnConfirmation`'s not-owed refusal alike. **The row reaches
+`paymentIntents.capture`.** And because these are Connect direct charges, **the platform cannot refund
+them; only the truck can.**
+
+⚠️ **THE PLANNING CHAT ISSUED EXACTLY THIS INSTRUCTION AND IT WAS REFUSED.** Recorded because it looked
+reasonable — the justification offered was *"a rejected order is terminal, was never captured, and
+definitively owes nothing"*, **every clause of which is true of the ORDER and false of `getOrderBalance`.**
+
+**OPEN — the backstop, undecided.** If the inline release call fails, nothing catches it. Three options:
+- **Widen `cancel-stale-authorizations`**, which already RELEASES rather than captures. It currently owns
+  `promoted_at IS NULL`; extending it to promoted drafts whose order is terminal would cover rejected AND
+  cancelled, which have the same gap today. ⚠️ **The partition survives and arguably improves** — the two
+  jobs would split on *accepted versus dead* rather than *promoted versus not*, and no draft is visible to
+  both. **Not yet read; its predicate may not take the widening cleanly.**
+- **A new release-side sweep.** Correct but adds an unmonitored scheduled job — and `heartbeat-monitor` ran
+  64 days stale while `auto-event-scheduler` 502'd five times unnoticed.
+- **No backstop**, which is what cancel has always had.
 
 ### 🔴 The paid chip and the completion button (V11.11)
 

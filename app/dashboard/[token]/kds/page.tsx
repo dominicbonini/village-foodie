@@ -1260,7 +1260,10 @@ export default function KdsPage() {
     } catch { showToast('Failed to reject', 'error') } finally { setActionLoading(null) }
   }, [token, pin, rejectingOrder, handleGateResult, showToast])
 
-  const handleAction = useCallback(async (action: string, orderKey: string) => {
+  // `opts.booksPayment` is OrderCard's toast hint for the one-press "Mark paid & collected" — carried
+  // straight through to the shared handler and NEVER into the request body, exactly as the dashboard
+  // does it. The server sees the same `collected` action it always has.
+  const handleAction = useCallback(async (action: string, orderKey: string, opts?: { booksPayment?: boolean }) => {
     // 🔴 THE ONE PRE-GATE STATEMENT THIS SURFACE HAS, AND IT MIRRORS THE DASHBOARD'S LINE FOR LINE.
     if (action === 'reject') { rejectFromCard(orderKey); return }
     setActionLoading(`${action}-${orderKey}`)
@@ -1278,7 +1281,7 @@ export default function KdsPage() {
       })
       // 🔴 THE EMPTY `catch {}` IS GONE. The shared handler throws on a server rejection exactly as the
       // dashboard always did, and this catch is what surfaces it.
-      await handleGateResult(result, action, orderKey)
+      await handleGateResult(result, action, orderKey, opts?.booksPayment)
     } catch (err: any) { showToast(err.message || 'Failed', 'error') } finally { setActionLoading(null) }
     // `plainPaidMethod` is listed because this body reads it. It is a plain derived value, so it changes
     // only when the truck's setting or the active event does — exactly when this handler SHOULD be

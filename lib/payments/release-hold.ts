@@ -9,6 +9,12 @@
 // promoted order fails by construction. So a cancelled order's hold sat on a customer's card for about
 // seven days against an order that no longer existed, and nothing told anyone.
 //
+// ── ⚠️ AND REJECT WAS THE SAME HANDLER WITH THE SAME HOLE ───────────────────────────────────────────
+// An operator refusing an order wrote `status = 'rejected'`, unbooked the slot and emailed exactly as
+// cancel did, and touched Stripe exactly as little. Every sentence above applies to it unchanged, which
+// is why this serves both actions rather than being copied for the second one. TERMINAL, here and in
+// the function name, means an order that has ended without being fulfilled: cancelled, or rejected.
+//
 // ── 🔴 THIS FILE ONLY EVER RELEASES. IT CANNOT TAKE MONEY. ─────────────────────────────────────────
 // It imports no capture and no refund, and it makes no Stripe call of its own: the only thing it can do
 // to a PaymentIntent is hand it to promoteDraft's `releaseHold`, which is the SAME function the refusal
@@ -39,22 +45,23 @@ export type ReleaseOutcome =
   | { status: 'failed'; paymentIntentId: string; detail: string }
 
 /**
- * Release the authorisation behind a cancelled order, if there is one.
+ * Release the authorisation behind an order that has ended without being fulfilled, if there is one.
  *
- * 🔴 IT CANNOT THROW. Every failure is a return value, because the caller is a cancellation and a
- * cancellation must never fail because Stripe was slow — see the ordering note at both call sites.
+ * 🔴 IT CANNOT THROW. Every failure is a return value, because the caller is closing an order and
+ * closing an order must never fail because Stripe was slow — see the ordering note at every call site.
  *
- * @param trigger which cancellation asked for it. Recorded, so "did the customer or the operator cancel
- *                this" is answerable from the audit log rather than by inference.
+ * @param trigger which action asked for it. Recorded, so "did the customer cancel this, did the operator
+ *                cancel it, or did the operator reject it" is answerable from the audit log rather than
+ *                by inference.
  */
-export async function releaseHoldForCancelledOrder(
+export async function releaseHoldForTerminalOrder(
   supabase: SupabaseClient,
   args: {
     orderKey: string
     truckId: string
-    trigger: 'operator_cancel' | 'customer_cancel'
-    actor?: { actorKind: 'owner' | 'staff' | 'token' | 'unknown'; actorId: string | null; actorLabel: string | null }
-    source?: 'web' | 'native' | 'offline_replay'
+    trigger: 'operator_cancel' | 'customer_cancel' | 'operator_reject'
+    actor?: { actorKind: 'owner' | 'staff' | 'token' | 'unknown' | 'system'; actorId: string | null; actorLabel: string | null }
+    source?: 'web' | 'native' | 'offline_replay' | 'system'
   },
 ): Promise<ReleaseOutcome> {
   try {
@@ -98,17 +105,35 @@ export async function releaseHoldForCancelledOrder(
     })
 
     const actor = args.actor ?? { actorKind: 'unknown' as const, actorId: null, actorLabel: null }
+    // ── 🔴 THE ONE WORD THAT KEEPS THE AUDIT TRAIL TRUE FOR BOTH ACTIONS. ────────────────────────
+    // `action_audit_log` is the designated recovery record for a stranded hold — its query is quoted
+    // below — so a REJECTED order whose row reads "the order was cancelled" would mislead in the exact
+    // place somebody looks during a money incident. The word is DERIVED here rather than written out at
+    // each log site, so the two can never drift apart.
+    // 🔴 THE CANCEL CALLERS' STRINGS ARE UNCHANGED, BYTE FOR BYTE. Both cancel triggers fall to
+    // 'cancelled' and to the resolves hint that was already there; only 'operator_reject' takes a new
+    // branch. That is verified by execution rather than by reading, in the fix report.
+    const isReject = args.trigger === 'operator_reject'
+    const actionWord = isReject ? 'rejected' : 'cancelled'
+    // ⚠️ THE REMEDY IS THE SAME REMEDY — cancel the intent at Stripe or wait out the week — so the
+    // reject hint EXTENDS it rather than replacing it. What it adds is the fact that decides the case
+    // without further reading: a rejected order was never served and can never owe anything, so a hold
+    // found on one is always wrong and can be released without asking anybody.
+    const resolvesHint = isReject
+      ? 'cancel_this_intent_by_hand_or_let_it_expire_a_rejected_order_owes_nothing'
+      : 'cancel_this_intent_by_hand_or_let_it_expire'
     if (!ok) {
       // ── 🔴 THE HOLD MAY STILL BE LIVE, SO IT IS WRITTEN DOWN WHERE SOMEBODY CAN FIND IT. ────
       // `authorization_cancelled_at` stays NULL, deliberately: the draft still reads as an uncancelled
       // authorisation, which is what any future collector will look for. One query finds every one:
       //     select * from action_audit_log where action = 'hold_release_failed' order by created_at desc;
-      // ⚠️ THE CANCELLATION IS NOT UNDONE. The order is already cancelled by the time this runs, and
-      // reversing a customer's cancellation because Stripe was unreachable would be far worse than a
-      // hold that expires on its own in about a week.
+      // ⚠️ THE CANCELLATION OR REJECTION IS NOT UNDONE. The order has already ended by the time this
+      // runs, and reinstating an order the customer cancelled — or one the truck refused because it
+      // cannot cook it — because Stripe was unreachable would be far worse than a hold that expires on
+      // its own in about a week.
       console.error(
-        `[release-hold] 🔴 COULD NOT RELEASE pi=${draft.payment_intent_id} for cancelled order_key=` +
-        `${args.orderKey} (${args.trigger}). The order IS cancelled and a hold may remain on this ` +
+        `[release-hold] 🔴 COULD NOT RELEASE pi=${draft.payment_intent_id} for ${actionWord} order_key=` +
+        `${args.orderKey} (${args.trigger}). The order IS ${actionWord} and a hold may remain on this ` +
         `customer's card until it expires. Recorded as hold_release_failed.`,
       )
       await logAction(supabase, {
@@ -119,8 +144,8 @@ export async function releaseHoldForCancelledOrder(
         beforeState: { payment_intent_id: draft.payment_intent_id, trigger: args.trigger },
         afterState: {
           released: false,
-          meaning: 'the order was cancelled and its card authorisation was NOT released; the hold may still be live',
-          resolves: 'cancel_this_intent_by_hand_or_let_it_expire',
+          meaning: `the order was ${actionWord} and its card authorisation was NOT released; the hold may still be live`,
+          resolves: resolvesHint,
         },
         actor,
         source: args.source ?? 'web',
@@ -134,7 +159,7 @@ export async function releaseHoldForCancelledOrder(
       orderKey: args.orderKey,
       amountMinor: typeof draft.total_minor === 'number' ? draft.total_minor : null,
       beforeState: { payment_intent_id: draft.payment_intent_id, trigger: args.trigger },
-      afterState: { released: true, meaning: 'the order was cancelled and the card authorisation was released; no money moved' },
+      afterState: { released: true, meaning: `the order was ${actionWord} and the card authorisation was released; no money moved` },
       actor,
       source: args.source ?? 'web',
     })
@@ -144,8 +169,8 @@ export async function releaseHoldForCancelledOrder(
       amountMinor: typeof draft.total_minor === 'number' ? draft.total_minor : null,
     }
   } catch (err) {
-    // 🔴 THE OUTER NET. Nothing above may reach a caller as an exception, because every caller is a
-    // cancellation and a cancellation must not fail over money that has not moved.
+    // 🔴 THE OUTER NET. Nothing above may reach a caller as an exception, because every caller is
+    // closing an order and closing an order must not fail over money that has not moved.
     const detail = err instanceof Error ? err.message : String(err)
     console.error(`[release-hold] 🔴 UNEXPECTED for order_key=${args.orderKey} (${args.trigger}):`, detail)
     return { status: 'failed', paymentIntentId: '', detail }
