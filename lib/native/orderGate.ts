@@ -214,10 +214,10 @@ export async function seedProvisionalSeq(eventId: string | null | undefined, hig
 }
 
 /** Live-submit bound. An operator is WAITING on this one, and the panel holds seven controls disabled
- *  until it settles — 83 seconds was observed on hardware. 10s is comfortably inside reachability's own
+ *  until it settles — 83 seconds was observed on hardware. 5s is comfortably inside reachability's own
  *  ~30s offline verdict, so a genuinely dead uplink still falls through to the queue rather than being
- *  pre-empted, while a slow-but-working one has ample time to answer a small POST. */
-const LIVE_TIMEOUT_MS = 10_000
+ *  pre-empted, while a slow-but-working one has time to answer a small POST. */
+const LIVE_TIMEOUT_MS = 5_000
 /** Drain bound. Nobody is waiting on a replay, so this is generous — but it MUST exist: an unbounded
  *  fetch here never settles, `drainInFlight` never clears, and every later drainOutbox() returns the same
  *  dead promise. That is what stranded an order for 39 minutes. */

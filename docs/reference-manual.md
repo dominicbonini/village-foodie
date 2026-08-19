@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.30
+HatchGrab Engineering Reference Manual · V11.31
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.30**
+**Version 11.31**
 
 August 2026
 
@@ -15,6 +15,63 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.31 — 18 August 2026 (late session)
+
+Delta over V11.30 — **the deploy landed and settled three open questions by observation; then an order
+placed as signal dropped lost the number already on its card, and the cause was a banner signal being used
+as a write decision.**
+
+- ✅ **THE DEPLOYED-VERSUS-REPO QUESTION IS CLOSED, BY A DISPLAY NUMBER.** An offline order placed after the
+  deploy landed as **`N42`** — the provisional adopted verbatim, no counter value consumed. **Adopt-verbatim
+  is live and proven on real hardware.** ⛔ **SUPERSEDES V11.30's "the deployed bundle was not the repo,
+  two explanations fit equally."** That entry recorded a real gap; the gap is now closed and the reason it
+  existed was simply that the work had not been pushed.
+- ✅ **THE WEDGE IS CONFIRMED, AND A PAGE RELOAD IS WHAT CLEARED IT.** The order stranded 39 minutes flushed
+  the instant the webview reloaded — `drainInFlight` is module-level, so a reload discards it. **The
+  stranded order landed renumbered because it was minted and queued under the previous bundle**, whose op
+  body carried no provisional. **Expected, not a new defect.**
+- 🔴 **A NUMBER SHOWN TO A CUSTOMER WAS STILL LOST — AND THE CAUSE WAS A DEBOUNCED BANNER SIGNAL USED AS A
+  WRITE DECISION.** `isOnline()` is deliberately debounced for the banner: **three consecutive failed pings
+  on a 10-second interval, so it keeps returning `true` for roughly 30 seconds after real connectivity
+  loss**, and its own module says it is a banner signal. The submit path used it to decide whether to mint
+  a provisional. **An order placed inside that window was sent with no provisional, failed, and was queued
+  UNMARKED — while the screen had separately minted a label.** The server then correctly assigned a counter
+  value and the customer's number changed.
+- 🔴 **THE PROOF IS THREE ROWS, MINUTES APART, ON ONE DEVICE.** `41` (labelled N41 on screen) and `N42` were
+  created **0.7 seconds apart in the same drain on the same code**, so nothing about deploy timing or the
+  drain distinguishes them. `truck_events.order_counter` stood at **41** — the two bare orders each
+  consumed a counter value, `N42` consumed none. **The server behaved exactly as specified throughout; the
+  defect was entirely client-side.**
+- 🔴 **THE NUMBER WAS DECIDED TWICE, FROM TWO EXPRESSIONS.** One decided what was **sent**
+  (gated on `isOnline()`), another ~90 lines later decided what was **displayed** (gated on the first being
+  falsy). ⚠️ **The result object already carried the authoritative `provisional_id` and nothing read it** —
+  and the code beside it already argued that the gate's return value *"IS THE AUTHORITY, because it is the
+  thing that queued it. One decision, one answer."* **The same reasoning was simply never applied to the
+  number.**
+- ✅ **FIXED BY MINTING ONCE, AT ENQUEUE, IN THE SEAM BOTH QUEUE ROUTES PASS THROUGH.** The panel no longer
+  mints at all; `queue()` mints, stamps and **returns** the value, and the card displays what was sent. **A
+  successful online order still shows the server-assigned number**, because that branch never runs for it,
+  and **no sequence value is consumed by an order that ends up online.** §11.
+- 🔴 **THE STAMP HAD TO GO INSIDE `manualOrder`, AND THAT NEARLY MADE THE WHOLE CHANGE A NO-OP.** The server
+  reads **`manualOrder.provisional_id`**, not a root-level key. A root-level stamp would have been silently
+  ignored and the order would still have replayed unmarked — **behind a change that read as correct and
+  typechecked clean.**
+- 🔴 **AND THAT EXACT BUG IS ALREADY IN THE FILE: `placed_offline` IS WRITTEN AT THE BODY ROOT AND READ FROM
+  `manualOrder`.** It is currently **harmless only because nothing reads it** — the consuming const was
+  deleted with the O-prefix scheme. **A dead stamp, not a wrong one. Reported, not fixed.**
+- ✅ **BOTH FETCHES ARE NOW BOUNDED — ONE MISSING TIMEOUT HAD CAUSED TWO SEPARATE INCIDENTS.** `AbortSignal
+  .timeout` at **10 s live** and **30 s in the drain**. The drain bound is what lets `drainInFlight` clear;
+  an abort lands in the existing `catch` and is treated as an ordinary retryable failure, **never a
+  dead-letter — an abort is not a response, so it can never be read as a 409.**
+- ⚠️ **THE iPad WAS NEVER FROZEN. THE PANEL WAS LOCKED.** `setLoading(true)` disables seven controls for the
+  full duration of an unbounded request — 83 seconds in the observed case, with no timeout, no progress and
+  no cancel. ⚠️ **An unbounded `await` does not block a main thread; that is language semantics, not a
+  property of this codebase.** The banners were suspected and **refuted** — they do only async storage reads
+  on an interval that runs continuously, so if they were the cause the device would be unresponsive always.
+- 🔴 **THE TIMEOUT CAPS THE LOCK; IT DOES NOT REMOVE IT.** An order placed in the stale-true window still
+  locks the panel for the bound. **Reaching zero means not disabling the panel on a request that may not
+  return, which is a UI decision and is NOT built.**
 
 ## V11.30 — 18 August 2026 (evening session)
 
@@ -67,10 +124,12 @@ either live-database-verified, verified by execution in a report, or explicitly 
   `MAX_ATTEMPTS`, the op never flips to `conflict`, **`drainInFlight` never clears, and every later
   `drainOutbox()` returns the same dead promise.** There are only **two** drain triggers in the whole app.
   §11.
-- 🔴 **THE DEPLOYED BUNDLE WAS NOT THE REPO, PROVEN BY A DISPLAY NUMBER.** An offline order replayed as a
-  bare `38` where the committed code produces an `O`-prefixed id. **Two explanations fit equally** — a
-  Vercel deploy older than the commit, or a current deploy with stale cached client JS on the iPad. ⚠️ **So
-  every source reading of the outbox describes code the device demonstrably was not running.**
+- ⛔ **THE DEPLOYED-VERSUS-REPO GAP RECORDED HERE WAS REAL AND IS NOW CLOSED — see V11.31.** At the time,
+  an offline order replayed as a bare `38` where the committed code produced an `O`-prefixed id, and two
+  explanations fit equally. **The answer was the simplest one: the work had not been pushed.** Once it was,
+  an offline order landed as `N42` with its provisional adopted verbatim. **The original wording — that
+  every source reading described code the device was not running — is replaced rather than annotated,
+  because it is no longer true of the deployed build.**
 - ✅ **THE TRUST STRIP'S CAUSE WAS `align-items: center` CENTRING A BOX AND NEVER ITS TEXT.** An item that
   fits on one line hugs its text and looks centred; one that wraps grows to the column width and its second
   line falls back to `start`. **iPhone was never a control** — it just had enough width to avoid the wrap.
@@ -4502,6 +4561,34 @@ every line now has a leader. **Zero horizontal pixels**, inside rows widened by 
 ⚠️ **Deliberate loss:** the line no longer states the cap for a `max_choices: 2` group. That reaches the
 customer in the modal, as it did before.
 
+## V11.31 — 🔴 OPEN PRODUCT DECISION: the prefix on offline orders
+
+**Unresolved and deliberately left open.**
+
+**The operator's stated preference: bare numbers, because a number is better for a customer than one with a
+prefix, and the app is online ~99% of the time.**
+
+🔴 **THE CONFLICT, STATED PLAINLY: a device cannot mint a bare number without asking the server.** That is
+the entire reason the prefix exists. The stated preference and the requirement that ordering continue
+seamlessly when signal drops **cannot both be satisfied** — one has to win.
+
+⚠️ **"99% online" is the wrong shape to design against.** The failure is not spread evenly across orders; it
+is concentrated in a small number of **events** with bad signal, and at those events it is not one order
+that queues but most of the service. **So the prefix appears rarely, and when it appears it is on most of
+that day's tickets.**
+
+**What the current build already delivers:** online — nearly always — the customer gets a bare
+server-assigned number. **Only an order placed while the uplink is genuinely down carries a prefix.**
+
+**The two ways to remove the prefix, and their costs:**
+- **Let the device issue bare numbers offline** ⇒ the server may issue the same number to a customer, so
+  **two people hold the same ticket at one counter, on the day the queue is already stressed.**
+- **Wait for the server to number it** ⇒ that is the panel lock, i.e. the freeze this session removed.
+
+**CHEAPER ALTERNATIVE, not built:** keep the prefixed value as the stored `orders.id` and **present** it
+without the prefix plus a small offline marker on the operator board and the KDS. **A display change, not
+a numbering change** — the identifier keeps its uniqueness guarantee and the customer sees a clean number.
+
 ## V11.30 — ORDER NUMBERING: an issued number is never changed (NEW INVARIANT)
 
 🔴 **THE RULE. Once a display number is shown to a customer it is FINAL** — never renumbered, re-prefixed
@@ -6055,6 +6142,37 @@ mid-tap.
 
 ⚠️ **Any migration must be ACTIVE, not passive:** leaving `hg_kds_view_<token>` unread silently
 converts every cook screen into a window screen — **prices and payment buttons on a grill.**
+
+## V11.31 — THE SUBMIT PATH: one mint, and why the seam matters
+
+🔴 **RULE: THE NUMBER IS MINTED ONCE, AT ENQUEUE, AND RETURNED.** The value stamped into the queued body and
+the value shown on the card are the same value from the same expression. **Two expressions producing a
+customer-facing number is the defect class, not the specific bug.**
+
+**Why `queue()` is the right seam:** every queued body passes through it, and it already stamps the
+placed-offline marker for exactly this reason. The mint is gated to create ops and only when none was
+supplied. **The create path has exactly one caller in the repo** (executed check), so the threading cost is
+one optional field.
+
+🔴 **`isOnline()` IS A BANNER SIGNAL. DO NOT USE IT AS A WRITE DECISION.** Debouncing is correct for a
+banner — don't flicker on a blip — and wrong for deciding whether a number can be sent. **The lag is
+structural, from its own constants: three failed checks on a ten-second interval, up to ~33 seconds of
+stale-true.** ⚠️ **This will recur in ordinary service every time signal drops mid-order, which is the
+normal way it happens at a pitch — not a test artefact.**
+
+**Timeouts, and the reasoning to keep:** the live bound sits **inside** reachability's own ~30 s offline
+verdict, so a dead uplink still falls through to the queue rather than being pre-empted by a bound that
+fires first. The drain bound is longer because nobody waits on a replay — **but it must exist, because an
+unbounded drain fetch is what wedges the queue permanently.**
+
+⚠️ **OPEN — the concurrency edge.** Two truly concurrent submits share a read-add-persist that is not
+atomic across awaits, so they could in principle receive the same provisional. **The panel's disabled
+controls serialise them in practice, but that is a UI property, not a lock.** CANNOT DETERMINE without
+exercising it.
+
+⚠️ **THE TIMEOUT CAPS THE PANEL LOCK; IT DOES NOT REMOVE IT.** An order placed in the stale-true window
+still disables seven controls for the bound. **Reaching zero means not disabling the panel on a request
+that may not return — a UI decision, NOT built.**
 
 ## V11.30 — THE OFFLINE OUTBOX: mechanism, and how it wedges
 
@@ -9425,6 +9543,29 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
 
+## V11.31 — VERIFICATION DEBT, updated (SUPERSEDES the V11.30 list below)
+
+**DISCHARGED this session:**
+- ✅ **Adopt-verbatim works live** — an offline order landed keeping its number, consuming no counter value.
+- ✅ **The queue wedge is real and a reload clears it** — the stranded order flushed on reload.
+- ✅ **Deployed-versus-repo** — closed; the work simply had not been pushed.
+
+**STILL UNPROVEN, and the observation that would settle each:**
+- **That a timed-out live submit now queues WITH its number.** *Place an order with the uplink pulled;
+  confirm the card and the resulting `orders.id` match.* **This is the single highest-value test
+  outstanding.**
+- **That the drain un-wedges under a real hang.** *Point it at a black-holed endpoint; the badge should
+  clear within the drain bound instead of never.*
+- **The concurrency edge on two simultaneous submits.**
+- **That a real cancel writes a suppression row** — the table has still never held one.
+- **That the ownership gate refuses a foreign event in a running system.**
+- **Carried:** the dashboard heartbeat remains source-read on the live trading truck's ordering path; the
+  iPad display defects against the changed Orders `<main>`; whether the Safari ejection stops.
+
+**Also still open from V11.30, unchanged:** the `.proof` list carrying the trust-strip defect · the N1
+cold-start window · the device-letter collision at ~3.8% · `close` and `update` returning `ok: true` for
+writes that changed nothing · the dead root-level `placed_offline` stamp.
+
 ## V11.30 — VERIFICATION DEBT, carried forward
 
 🔴 **Nothing in the V11.30 session has been exercised.** Specifically unproven:
@@ -10723,6 +10864,27 @@ button went.** Corrected in place rather than left beside its correction.
 **§40's rule applies to CODE COMMENTS as well as to manual sections: a correction sitting next to the
 claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
 diff, which is the same argument the census makes.
+
+## V11.31 — METHOD: additions
+
+- 🔴 **A COMMENT CAN DESCRIBE AN INVARIANT THAT A LATER CHANGE SILENTLY REVOKES.** A comment declaring the
+  displayed number inconsequential was **true when written** (the server renumbered every offline order
+  then) and **falsified the moment adopt-verbatim shipped.** Nothing re-examined it. ⚠️ **This is sharper
+  than the usual stale-comment case: the comment was the only place the assumption lived**, so revoking the
+  assumption left no other trace. **Removed, not annotated.**
+- ⚠️ **AN EXECUTOR CAUGHT ITSELF LEAVING A CORRECTION BESIDE ITS CLAIM** — its first replacement comment
+  quoted the false phrase verbatim while explaining it. **Rewritten so the phrase does not appear;
+  `grep -c` returns 0.** The rule works only if the phrase itself goes.
+- ⚠️ **A COUNT ACROSS THE WRONG PAIR OF FILES READS EXACTLY LIKE A REAL DELTA.** A verification check
+  appeared to show a usage count changing when it had not. **Recorded rather than only corrected** — the
+  second such artefact in one session, both from comparisons over the wrong text.
+- ✅ **THE PLANNING CHAT'S OWN PREDICTION WAS WRONG AND THE DATA CORRECTED IT.** It predicted a live submit
+  would show a sub-second lag between placement and arrival, making lag a discriminator. **The failed live
+  submit showed 83 seconds** — a hung request looks exactly like a queued one by that measure. **Lag cannot
+  distinguish "queued at placement" from "attempted live, hung, then queued."**
+- ⚠️ **TESTING A SUSPICION IS WORTH MORE THAN CONFIRMING IT.** The operator suspected the banners for the
+  freeze and the executor was asked to test that rather than assume it. **The banners were refuted and the
+  real cause — a disabled-props lock — was found instead.**
 
 ## V11.30 — METHOD: what this session adds
 
