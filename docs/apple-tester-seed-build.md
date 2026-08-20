@@ -132,16 +132,17 @@ order.** An order collecting at 09:00 would need the 08:55 window, which is befo
 
 ---
 
-# 2. THE ORDER COUNT — 42 per event
+# 2. THE ORDER COUNT — 64 per event
 
 **Justified against what the board and the strip actually show**, which is the test the brief sets.
 
-- 🔴 **42 IS WHAT THE SHAPE COSTS, NOT A ROUND NUMBER PICKED FIRST.** The tone mix in §3 is the target;
-  42 orders carrying 62 pizzas is what produces it. Fewer orders leaves the strip too green; more
-  forces a third pizza into some window, which is a breach.
-- ✅ **THE COUNTERS READ AS A REAL SERVICE.** "6 New / 28 Confirmed / 8 Done" at a glance.
-- ⚠️ **A REVIEWER SEES SIX ORDER CARDS PER SCREEN** on the 13-inch board photographed yesterday. 42 is
-  seven screens — enough that scrolling always finds more, without being absurd.
+- 🔴 **REVISED UP FROM 42 — THE MORNING WAS EMPTY.** At 42 the strip carried a long green stretch from
+  09:00 to 11:45 with everything bunched into 11:50–13:30. **64 orders carrying 101 pizzas** is what it
+  costs to give the whole day a shape. Fewer leaves dead air; more forces a third pizza into some
+  window, which is a breach.
+- ✅ **THE COUNTERS READ AS A REAL SERVICE.** "2 New / 45 Confirmed / 17 Done" at a glance.
+- ⚠️ **A REVIEWER SEES SIX ORDER CARDS PER SCREEN** on the 13-inch board photographed yesterday. 64 is
+  eleven screens — scrolling always finds more, and the board never looks thin.
 - ✅ **AND IT IS THE SAME SET ON ALL EIGHT DAYS**, which the brief permits (h in the earlier round), so
   a reviewer opening any date finds an identical, known-good service.
 
@@ -151,14 +152,17 @@ order.** An order collecting at 09:00 would need the 08:55 window, which is befo
 
 **Simulated against the exact seating and tone rules in §1**, over the 96 windows from 09:00 to 16:55.
 
-| Band | Window | Orders | 🟢 green | 🟡 amber | 🔴 red |
-|---|---|---|---|---|---|
-| **Quiet open** | 09:00–10:30 | 5 | 12 | 5 | 1 |
-| **Building** | 10:30–12:00 | 8 | 9 | 5 | 4 |
-| 🔴 **LUNCH PEAK** | 12:00–13:35 | **18** | **2** | **6** | **11** |
-| **Afternoon plateau** | 13:35–15:05 | 6 | 12 | 4 | 2 |
-| **Quiet close** | 15:05–17:00 | 5 | 18 | 4 | 1 |
-| **TOTAL** | 09:00–16:55 | **42** | **53 (55%)** | **24 (25%)** | **19 (19%)** |
+| Band | Window | Orders | 🟢 green | 🟡 amber | 🔴 red | % red |
+|---|---|---|---|---|---|---|
+| **Morning** | 09:00–11:45 | 22 | 11 | 10 | 13 | 38% |
+| 🔴 **LUNCH PEAK** | 11:50–13:35 | **19** | **2** | **7** | **12** | **57%** |
+| **Afternoon** | 13:35–15:05 | 11 | 7 | 6 | 5 | 27% |
+| **Close** | 15:05–17:00 | 12 | 11 | 6 | 6 | 26% |
+| **TOTAL** | 09:00–16:55 | **64** | **31 (32%)** | **29 (30%)** | **36 (37%)** |
+
+⚠️ **THE LONGEST ALL-GREEN RUN ANYWHERE IS 2 WINDOWS — TEN MINUTES.** That is the measure that matters
+for "the strip doesn't look empty": there is no dead stretch at any hour, and the rush is still
+unmistakably the rush at 57% red against the morning's 38%.
 
 **The lunch peak, window by window — this is what the capacity panel will render:**
 
@@ -182,24 +186,24 @@ the simulation and asserted again inside the SQL before a single row is written.
 
 | | |
 |---|---|
-| **Pizzas** | **62** across 42 orders — **72% of all items** |
-| Drinks | 14 (one on every third order) |
-| Desserts | 9 (one on every fifth order) |
-| **Total items** | **85**, ≈2.0 per order |
-| **Basket sizes (pizzas)** | 1 pizza × 23 orders · 2 pizzas × 18 · 3 pizzas × 1 |
+| **Pizzas** | **101** across 64 orders — **74% of all items** |
+| Drinks | 22 (one on every third order) |
+| Desserts | 13 (one on every fifth order) |
+| **Total items** | **136**, ≈2.1 per order |
+| **Basket sizes (pizzas)** | 1 pizza × 28 orders · 2 pizzas × 35 · 3 pizzas × 1 |
 | **Every order** | ✅ contains at least one pizza — requirement (b) |
 
 ⚠️ **THE SINGLE 3-PIZZA ORDER IS AT 11:55** and is placed deliberately where the 11:45 window is
 otherwise empty, so its spill cannot stack into a breach.
 
-**Status mix:** 7 `collected` · 5 `ready` · 28 `confirmed` · **2 `pending`** (the two carrying customer
-notes, which is what makes them pending). 🔴 **Zero `cooking`.**
+**Status mix:** 10 `collected` · 7 `ready` · 45 `confirmed` · **2 `pending`** (the two carrying customer
+notes, which is what makes them pending, at 12:20 and 14:45). 🔴 **Zero `cooking`.**
 
 ⚠️ **REQUIREMENT (f), "NOTHING LATE", IS TRUE AT SEED TIME AND DEGRADES AFTERWARDS.** All eight events
 are dated 21–28 August; today is 20 August, so **on the day you run this nothing on any board is late**.
 But when a reviewer opens the demo on, say, the 25th, that day's morning slots are behind them and will
 badge late — the live board working correctly, and no static seed can prevent it. **Mitigation built
-in: the seven earliest orders are `collected`, so the first stretch of the day reads as done rather than
+in: the ten earliest orders are `collected`, so the first stretch of the day reads as done rather than
 late.** If review lands mid-afternoon, re-run the seed that morning.
 
 ---
@@ -247,32 +251,50 @@ declare
     date '2026-08-25', date '2026-08-26', date '2026-08-27', date '2026-08-28'];
 
   -- ── THE SERVICE, WRITTEN OUT SO IT CAN BE CHECKED RATHER THAN TRUSTED ──────────────────────────
-  -- Collection slot per order, and how many pizzas that order carries. Index-matched, 42 entries.
+  -- Collection slot per order, and how many pizzas that order carries. Index-matched, 64 entries.
   v_slots text[] := array[
-    '09:10','09:25','09:45','10:00','10:20','10:30','10:40','10:55','11:10','11:20',
-    '11:35','11:45','11:55','12:00','12:05','12:10','12:15','12:20','12:25','12:30',
+    '09:05','09:15','09:25','09:40','09:50','09:55','10:05','10:10','10:20','10:30',
+    '10:35','10:45','10:50','10:55','11:05','11:10','11:15','11:25','11:30','11:35',
+    '11:40','11:45','11:55','12:00','12:05','12:10','12:15','12:20','12:25','12:30',
     '12:35','12:40','12:45','12:50','12:55','13:00','13:05','13:10','13:20','13:25',
-    '13:30','13:45','14:00','14:10','14:20','14:40','14:50','15:10','15:40','15:55',
-    '16:10','16:40'];
+    '13:30','13:40','13:50','13:55','14:05','14:10','14:20','14:30','14:35','14:45',
+    '14:55','15:00','15:10','15:15','15:25','15:35','15:45','15:55','16:05','16:15',
+    '16:25','16:35','16:45','16:55'];
   v_pizza_n integer[] := array[
-    1,1,1,1,1,2,1,1,1,2,
-    2,1,3,2,1,2,1,2,2,1,
+    1,1,2,1,2,1,2,1,2,1,
     2,2,1,2,2,1,2,2,1,2,
-    2,1,1,2,1,1,2,1,1,2,
-    1,1];
+    1,2,3,2,1,2,1,2,2,1,
+    2,2,1,2,2,1,2,2,1,2,
+    2,1,2,1,2,1,2,1,2,1,
+    2,1,2,1,2,1,2,1,2,1,
+    2,1,1,2];
   -- Drinks on every 3rd order, desserts on every 5th. Neither costs capacity (prep 0, not ticked).
   v_drink_n integer[] := array[
-    1,0,0,1,0,0,1,0,0,1, 0,0,1,0,0,1,0,0,1,0, 0,1,0,0,1,0,0,1,0,0, 1,0,0,1,0,0,1,0,0,1, 0,0];
+    1,0,0,1,0,0,1,0,0,1,
+    0,0,1,0,0,1,0,0,1,0,
+    0,1,0,0,1,0,0,1,0,0,
+    1,0,0,1,0,0,1,0,0,1,
+    0,0,1,0,0,1,0,0,1,0,
+    0,1,0,0,1,0,0,1,0,0,
+    1,0,0,1];
   v_dess_n integer[] := array[
-    1,0,0,0,0,1,0,0,0,0, 1,0,0,0,0,1,0,0,0,0, 1,0,0,0,0,1,0,0,0,0, 1,0,0,0,0,1,0,0,0,0, 1,0];
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0,0,1,0,0,0,0,
+    1,0,0,0];
   v_names text[] := array[
     'Amelia','Ben','Chloe','Dan','Ella','Finn','Grace','Harry','Isla','Jack',
     'Kira','Liam','Maya','Noah','Olive','Pete','Rosa','Sam','Tess','Umar',
     'Vik','Will','Yasmin','Zac','Aisha','Callum','Dev','Erin','Frank','Gia',
     'Hugo','Iris','Joel','Kai','Lena','Milo','Nina','Omar','Priya','Reuben',
-    'Sofia','Theo'];
+    'Sofia','Theo','Ava','Blake','Cara','Dylan','Eve','Felix','Gwen','Hana',
+    'Idris','Jonah','Kayla','Leo','Mira','Nate','Orla','Paolo','Quinn','Rhys',
+    'Saskia','Tom','Uma','Vince'];
 
-  v_n_orders  integer := 42;
+  v_n_orders  integer := 64;
   v_load      integer[];          -- pizzas per 5-minute window, indexed from 09:00
   v_n_wins    integer := 96;      -- 09:00..16:55
   i integer; k integer; e integer;
@@ -407,14 +429,14 @@ begin
       -- ── STATUS. 🔴 NEVER 'cooking'. The two NOTE-bearing orders are 'pending', which is what a
       -- note does on the real path — it is the mechanism, not a hand-set status.
       v_notes := null;
-      if i = 18 then
+      if i = 28 then
         v_notes := 'Nut allergy - please keep separate from anything with nuts. Thank you!';
         v_status := 'pending';
-      elsif i = 31 then
+      elsif i = 50 then
         v_notes := 'Could we have this cut into 8 slices please?';
         v_status := 'pending';
-      elsif i <= 7 then v_status := 'collected';
-      elsif i <= 12 then v_status := 'ready';
+      elsif i <= 10 then v_status := 'collected';
+      elsif i <= 17 then v_status := 'ready';
       else v_status := 'confirmed';
       end if;
 
@@ -495,7 +517,7 @@ having sum(items) >= (select batch from cfg)
  order by event_date, window_mins;
 ```
 
-🔴 **NO ROW MAY READ `BREACH`.** Rows reading `red (full)` are the intended peaks — 19 per event.
+🔴 **NO ROW MAY READ `BREACH`.** Rows reading `red (full)` are the intended peaks — 36 per event.
 
 ⚠️ **AND THE AUTHORITATIVE CHECK IS STILL THE BOARD.** Open each date's dashboard and confirm **no red
 "N slots over capacity — review" banner** appears. This SQL reproduces the seating rule; the banner is
@@ -519,7 +541,7 @@ select count(*) filter (where pizzas = 0) as orders_without_pizza,
   ) s;
 ```
 
-**Expect `orders_without_pizza = 0`, `total_orders = 336` (42 × 8), `total_pizzas = 496` (62 × 8).**
+**Expect `orders_without_pizza = 0`, `total_orders = 512` (64 × 8), `total_pizzas = 808` (101 × 8).**
 
 ## 6.3 🔴 Nothing is in `cooking`
 
@@ -531,7 +553,7 @@ select status, count(*)
  order by 2 desc;
 ```
 
-**Expect exactly four rows — `confirmed` 224, `collected` 56, `ready` 40, `pending` 16 — and nothing
+**Expect exactly four rows — `confirmed` 360, `collected` 80, `ready` 56, `pending` 16 — and nothing
 else. Zero `cooking`.**
 
 ## 6.4 Supporting checks
@@ -554,13 +576,13 @@ select e.event_date, e.order_counter, count(o.order_key) as orders, max(o.id::in
    and e.event_date between date '2026-08-21' and date '2026-08-28'
  group by e.event_date, e.order_counter
  order by e.event_date;
--- expect 8 rows, each: order_counter = 42, orders = 42, max_id = 42
+-- expect 8 rows, each: order_counter = 64, orders = 64, max_id = 64
 ```
 
 ```sql
 -- 🔴 nothing collects before 09:05, which is the earliest the engine can seat a pizza
 select min(slot), max(slot) from orders where truck_id = 'test-truck-3-2';
--- expect 09:10 and 16:40
+-- expect 09:05 and 16:55
 ```
 
 ---

@@ -1685,14 +1685,22 @@ export default function KdsPage() {
       return ta - tb
     })
 
-  // Grid (BOTH views, now equally dense) shows up to 8; list views are uncapped (slice n/a below).
-  const MAX_GRID_VISIBLE = activeLayout === 'grid' ? 8 : 6
-  const visibleOrders = activeLayout === 'grid'
-    ? displayOrders.slice(0, MAX_GRID_VISIBLE)
-    : displayOrders
-  const overflowCount = activeLayout === 'grid'
-    ? Math.max(0, displayOrders.length - MAX_GRID_VISIBLE)
-    : 0
+  // 🔴 THE GRID CAP IS GONE. It was `MAX_GRID_VISIBLE = activeLayout === 'grid' ? 8 : 6`, sliced into
+  // `displayOrders` for grid only, with the remainder reported by a "+N more orders in queue" tile.
+  // Two reasons it went, and the second is the one that mattered:
+  //   1. It was NOT viewport-adaptive while the COLUMN COUNT IS. The grid is
+  //      `repeat(auto-fill, minmax(240px, 1fr))`, so a wide screen resolves 5-6 columns and 8 cards
+  //      filled one row and a fragment, leaving the rest of the board empty with orders hidden.
+  //   2. Its tile carried `col-span-2`. At phone width auto-fill resolves to ONE column, and a
+  //      span-2 item forces an IMPLICIT second column sized by `grid-auto-columns: auto` rather than
+  //      the `minmax` - unequal tracks, and cards auto-flowed into the narrow one. That was the
+  //      portrait overlap. See docs/kds-layout-read.md.
+  // ⚠️ SCROLLING IS NOT NEW BEHAVIOUR. The queue panel below already carries `overflow-y-auto` and the
+  // LIST branch has always rendered every order through it. The grid branch was opting out of a
+  // behaviour that already existed; it now does what list does.
+  // ⚠️ `visibleOrders` IS KEPT AS THE NAME rather than pointing the map at `displayOrders`: the
+  // conflict-signal comment above names it, and one binding is a smaller change than two edits.
+  const visibleOrders = displayOrders
 
   // Done orders: last 5 collected (window view only)
   const doneOrders = overlayedOrders
@@ -2670,12 +2678,6 @@ export default function KdsPage() {
                 onBuzzer={buzzerCount != null ? setBuzzerTarget : undefined}
               />
             ))
-          )}
-
-          {overflowCount > 0 && (
-            <div className="col-span-2 text-center text-sm text-slate-500 py-3 bg-slate-100 rounded-lg">
-              +{overflowCount} more order{overflowCount > 1 ? 's' : ''} in queue
-            </div>
           )}
 
           {/* Done strip — window view, list mode only */}
