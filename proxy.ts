@@ -58,6 +58,11 @@ const isGeneralPublic = (p: string) =>
 // (/|$) stops a partial segment match, and the required [a-z0-9]+ stops a bare `/dashboard/demo-`.
 const isDemoDashboard = (p: string) => /^\/dashboard\/demo-[a-z0-9]+(\/|$)/.test(p)
 
+/** hatchgrab.com and any preview/subdomain of it. Deliberately the SAME test as `isHatchGrabHost` in
+ *  lib/brand.ts (`host.includes('hatchgrab')`) so the two cannot disagree. Not imported from there:
+ *  this file runs on the edge runtime and lib/brand.ts is a wider module. */
+const isHatchGrab = (host: string) => host.includes('hatchgrab')
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -226,6 +231,62 @@ export async function proxy(request: NextRequest) {
 
   if (rlRemaining !== null) {
     supabaseResponse.headers.set('X-RateLimit-Remaining', String(rlRemaining))
+  }
+
+  // ── HOST-BRANDED ROOT — merged in from middleware.ts on 20 August 2026, which is now DELETED. ───────
+  // Next 16.1 refuses to build with both a middleware file and a proxy file present ("Please use
+  // ./proxy.ts only"), so the two behaviours below now live here. They are the ONLY thing that moved.
+  //
+  // ── CORRECTION OF A FALSE HISTORY THAT WAS WRITTEN IN THE DELETED FILE ─────────────────────────────
+  // middleware.ts's header claimed this repo "had a middleware once and deleted it" at f4a8ac2 ("vercel
+  // fix", 5 June 2026), and that the Upstash rate limiter it contained is gone. THAT IS WRONG, and
+  // `git show f4a8ac2` disproves it in one command: the SAME COMMIT that deleted middleware.ts created
+  // this file and added that rate limiter to it (`+import { ratelimit, strictRatelimit }`, +40 lines).
+  // It was a RENAME to the Next 16 convention, not a removal. Nothing was deleted; the limiter has run
+  // continuously ever since and is the block above (since rewritten into the public-allowlist form).
+  //
+  // ── 🔴 THE `pathname === '/'` GUARD ON THE REWRITE IS LOAD-BEARING — DO NOT DROP IT ────────────────
+  // In middleware.ts the rewrite was unguarded, because `config.matcher` there was `['/', '/landing']`
+  // and the path could not be anything else. THIS file's matcher is a negative lookahead over nearly
+  // every path, so the same unguarded line would rewrite EVERY page on hatchgrab.com to the landing —
+  // /dashboard, /manage, /kds, /login, /api/*. The operator redirect above sends Village Foodie
+  // operators to `https://www.hatchgrab.com/dashboard`, so that is not hypothetical: it would bounce
+  // every operator into the landing page. The guard restores the old matcher's blast radius exactly.
+  //
+  // ── 🔴 WHY THIS SITS AT THE BOTTOM AND NOT THE TOP ─────────────────────────────────────────────────
+  // Returning early at the top would have skipped `supabase.auth.getUser()` for '/' and '/landing' —
+  // i.e. dropped the session refresh on the two paths. Placed here, every block above has already run
+  // unchanged (rate limiting, session refresh, both auth guards, the native-app exemption), and the
+  // refreshed Set-Cookie headers `setAll` wrote onto `supabaseResponse` are copied onto the response we
+  // return instead of being discarded with it. Nothing above this line was touched.
+  // Losing no rate-limit header here is provable rather than assumed: '/' and '/landing' match none of
+  // isCustomerEvents/isStrictPublic/isGeneralPublic, so `rlRemaining` is always null on both.
+  const carrySessionCookies = (res: NextResponse) => {
+    supabaseResponse.cookies.getAll().forEach(cookie => res.cookies.set(cookie))
+    return res
+  }
+
+  // ── /landing KEEPS WORKING, ON BOTH DOMAINS, BY GOING TO THE ROOT ──────────────────────────────────
+  // Exact equality, as before — '/landing/anything' is not matched, on either matcher. On hatchgrab.com
+  // the 308 lands on '/', which the branch below rewrites straight back to the landing, so the page is
+  // reachable and the address bar reads `https://www.hatchgrab.com/`. On villagefoodie.co.uk it lands
+  // on the discovery map, which is what a non-admin already got there from app/landing/layout.tsx.
+  if (pathname === '/landing') {
+    return carrySessionCookies(NextResponse.redirect(new URL('/', request.url), 308))
+  }
+
+  // ── THE ROOT ───────────────────────────────────────────────────────────────────────────────────────
+  // 🔴 A REWRITE, NOT A REDIRECT. The URL stays `https://www.hatchgrab.com/` — which is what is submitted
+  // to Apple as the Marketing URL — while the landing renders beneath it. A redirect would put '/landing'
+  // in the address bar of the page Apple was given.
+  // ⚠️ NO LOOP: Next.js does not re-invoke the proxy on the path a rewrite targets, so the rewritten
+  // '/landing' render is NOT caught by the redirect above. INFERRED from documented behaviour and
+  // UNVERIFIED here, exactly as it was in middleware.ts — moving the code neither creates nor removes
+  // this risk. Note that app/landing/layout.tsx already relies on the same premise, and redirects a
+  // non-admin to /support rather than to '/' precisely to avoid the loop that would otherwise exist.
+  // 🔴 EVERY OTHER HOST FALLS THROUGH UNTOUCHED. villagefoodie.co.uk's root still renders app/page.tsx.
+  if (pathname === '/' && isHatchGrab(host)) {
+    return carrySessionCookies(NextResponse.rewrite(new URL('/landing', request.url)))
   }
 
   return supabaseResponse
