@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.33
+HatchGrab Engineering Reference Manual · V11.34
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.33**
+**Version 11.34**
 
 August 2026
 
@@ -15,6 +15,59 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.34 — 20 August 2026
+
+Delta over V11.33 — **an order status nobody asked for was found reachable on a live plan and switched
+off across the estate; a capture site was found writable cross-truck and closed at the read; and the
+WhatsApp arc was scoped end to end, revealing that sending is a rewrite rather than an addition.**
+
+- 🔴 **THE `cooking` STATUS EXISTS, WAS NOT ASKED FOR, AND WAS REACHABLE ON A TRIAL PLAN.** One writer,
+  one button — "Start cooking" on the kitchen screen. ⚠️ **The plan gate had already been removed:** the
+  code says in as many words that `can('cook_screen')` no longer gates the cook board, *"reachable on
+  every plan"*. And the trial argument never applied anyway — `TRIAL_FEATURES = [...MAX_FEATURES]`.
+- 🔴 **THE ONLY BARRIER WAS `trucks.kds_mode`, AND IT WAS NOT FALSE EVERYWHERE.** One truck had it on.
+  ✅ **Now false across all sixteen, verified by a zero-row check.** The button cannot render for anyone.
+- ⚠️ **THE COOK BOARD ITSELF IS REACHABLE BY ACCIDENT; THE BUTTON IS NOT.** Three routes land a device on
+  it with nobody choosing: a `hg_kds_payments_<token>` preference set once and dual-written to Preferences
+  so it survives reinstall; a migration that deliberately seeds it from the retired `hg_kds_view_` key;
+  and **no preference at all on a truck whose paid step is on** — `handoverPref ?? !showPaidStep`. 🔴 **Four
+  trucks have `show_paid_step = true`, so their fresh devices default onto the cook board today.**
+- 🔴 **AND THE ORDERS SCREEN RENDERS `cooking` AS A DEAD END.** No Ready, no Mark paid — the branch has no
+  `cooking` case and falls to `return null`. **An absence, not an exclusion.** ⚠️ **The gap was identified
+  while writing the window branch, fixed THERE, and not on the dashboard** — the comment names the exact
+  consequence.
+- ✅ **NOTHING DEPENDS ON IT.** Every occupying, printing, buzzer, capture and active-order list containing
+  `cooking` also contains `confirmed`, so capacity, printing and money behave identically without it. **The
+  only loss would be the operator's view — the amber header and the started-versus-waiting distinction.**
+  🔴 **BACKLOG: remove `kds_mode`, the `cooking` status and the Start-cooking control.**
+- 🔴 **A CAPTURE SITE WAS WRITABLE CROSS-TRUCK, AND IT WAS THE SAME SHAPE AS THE CANCEL HOLE.** The
+  quick-time-adjust branch read, re-slotted, status-wrote, moved a slot booking, **captured** and emailed
+  on an order it never confirmed belonged to the caller — **three unscoped `order_key` lookups**, and
+  `moveSlotBooking` was passed the caller's truck id with the victim's event id.
+- ✅ **CLOSED AT THE PRE-READ, NOT AT THE WRITE, AND THE REASONING IS THE GENERAL ONE.** One
+  `.eq('truck_id', truck.id)` on the first read means a foreign key yields null, the existing guard
+  returns 400, and every side effect is unreachable. ⚠️ **Filtering the WRITE would have been worse than
+  nothing** — its result is discarded and the branch returns `{ success: true }` unconditionally, so a
+  filtered write would have reported success while the booking, the capture and the email still ran.
+- ⚠️ **`captureOnConfirmation` IS STILL UNSCOPED AND THAT IS A KNOWN OPEN ITEM.** It reads the draft on
+  `order_key` alone and picks the Stripe account with `draft.truck_id ?? args.truckId` — a **fallback,
+  never a check**. Reachable from any caller that passes an order key. **The money does not cross accounts;
+  it is an unauthorised trigger, not a misdirected payment**, and the capture's own guards prevent a double
+  charge.
+- ✅ **THE ADD-ORDER INPUT DELAY IS NOT A CHECK ON A KEYSTROKE.** No fetch, no query, no capacity or slot
+  recompute, no effect, no storage write, no native bridge call — `manualName` is in no dependency array
+  and never leaves its component. ⚠️ **The cost is a whole-screen re-render**: the name field and the entire
+  menu grid share one component with **no `React.memo` anywhere in the file**. **Observed once, on first
+  use, and not since — consistent with first-render and cold-memo cost rather than a defect.**
+- ⚠️ **A 30-SECOND TICK RE-RENDERS THE WHOLE ADD-ORDER SCREEN AND DISCARDS ITS OWN VALUE**
+  (`const [, setNowTick]`). It exists solely to force `isSlotPast` to re-evaluate. **Too infrequent to feel
+  as input lag; it would show as an occasional stutter.**
+- 🔴 **WHATSAPP: RECEIVING IS PER-TRUCK AND CORRECT. SENDING IS ONE PLATFORM CREDENTIAL FOR EVERY TRUCK.**
+  So Embedded Signup is an **addition inbound and a rewrite outbound** — a truck that completed onboarding
+  today still could not send.
+- ✅ **A TEMPLATE TOOL IS BUILT FOR META'S APP REVIEW** — admin-gated, platform-credential only, list and
+  create. **`sendMetaWhatsApp` proven unchanged by execution.**
 
 ## V11.33 — 19 August 2026 (afternoon)
 
@@ -5135,6 +5188,27 @@ The dashboard Menu & Stock tab edits category prep and batch inline on the categ
 
 ⚠️ **The Done-today strip's `✓ paid` was a hardcoded literal**, printed for every collected order and derived from nothing — not the ledger, not `payment_status`, not even `show_paid_step`, which is why it was the one payment claim that survived the paid-step gate. **Now derived.** Same class as `PrinterStatus.connected` hardcoding `true`: **a label asserting a state nobody checked.**
 
+## V11.34 — The `cooking` status
+
+🔴 **ONE WRITER, ONE HUMAN ACTION.** `action === 'cooking'` in the dashboard action route, reached only by
+tapping **"Start cooking"** on the kitchen screen, on an order that is `confirmed` or `modified`.
+
+**The full conjunction to reach that button:** the KDS route · `boardMode === 'cook'` · which needs
+`handoverOn === false` · which needs the device preference stored false, **or unset with the truck's paid
+step on** · and 🔴 **`truck.kds_mode === true`.**
+
+⚠️ **ONLY THE LAST IS A DELIBERATE TRUCK-LEVEL SETTING.** Everything above it is a URL plus a device
+preference. **`kds_mode` is now false on all sixteen trucks and must stay that way.**
+
+⚠️ **THE OFFLINE OUTBOX CAN REPLAY A `cooking` ACTION BUT CANNOT ORIGINATE ONE** — it is the same tap
+arriving late.
+
+**The value is constrained by a Postgres CHECK** of eight statuses, so no arbitrary string can be written.
+
+🔴 **BACKLOG — REMOVE IT.** The read established nothing depends on it. ⚠️ **Note when doing so that
+`cook_screen` is still sold as a Max feature while the board is no longer gated at all** — a commercial
+question, not a safety one.
+
 ## V11.30 — KITCHEN SCREEN "Truck not found": recorded as UNCLOSED, not fixed
 
 The symptom **stopped reproducing** and no cause was established for the stop. ⚠️ **The day's data could
@@ -6927,6 +7001,22 @@ scraped_signature)`, so **a rejected event returning on a DIFFERENT date is not 
 write works.** One truck shows five cancelled rows on one signature across five dates, June to August.
 **Anyone reading "rejected events come back" will expect this fix to stop that. It will not.**
 
+## V11.34 — Ownership belongs on the read, not the write
+
+🔴 **RULE, NOW ESTABLISHED TWICE: ESTABLISH OWNERSHIP ON THE FETCH, BEFORE ANY SIDE EFFECT — NOT BY
+FILTERING EACH WRITE.**
+
+**Why the write is the wrong place, stated generally:** a filtered write that matches zero rows returns
+**no error**, and a branch that discards the result reports success anyway. **The caller is told the thing
+happened while the surrounding side effects — bookings, captures, emails — still ran.** Filtering the read
+makes the whole branch unreachable by construction and produces an honest failure.
+
+⚠️ **A foreign id and a non-existent id must be indistinguishable to the caller** — same status, same body
+— so nobody can probe whether another truck's order exists.
+
+**Known and unclosed:** `captureOnConfirmation` performs no ownership check of its own. Five capture sites
+pass a `truckId` that is used as a fallback rather than a test. **Latent while Stripe is not live.**
+
 # 16. Database schema essentials
 
 ## Core tables
@@ -8010,6 +8100,60 @@ not 200 and deliberately not Stripe's 400.
   flow.**
 
 
+## V11.34 — WhatsApp: current state and the shape of the work
+
+**RECEIVING is already per-truck and correct:** the webhook routes on `value.metadata.phone_number_id`
+against `trucks.phone_number_id`, behind a fail-closed HMAC gate. ⚠️ **But that column has NO WRITER
+anywhere and is set by hand in Supabase** — that is the onboarding step being done manually today.
+
+🔴 **SENDING IS ONE PLATFORM CREDENTIAL.** `lib/meta-whatsapp.ts` addresses a per-truck `phone_number_id`
+in the URL but authorises every send with a single `META_WHATSAPP_ACCESS_TOKEN`. ✅ **It has exactly one
+call site**, so the blast radius of the rewrite is one function — **and its only consumer is the inbound
+auto-reply.**
+
+⚠️ **THE WEBHOOK MUST KEEP RETURNING 200 OR META DISABLES THE SUBSCRIPTION FOR EVERY TRUCK.** One truck's
+bad state can take inbound down for all of them.
+
+**Nothing else exists:** no onboarding flow, no OAuth, no code exchange, no callback, no WABA id column,
+no template capability, and **no secure storage of any kind** — every secret in this codebase is a plain
+`process.env` var.
+
+**What Meta requires, from its own documentation:** Embedded Signup is **hosted on our site**; a button
+launches Meta's flow, the JS SDK captures an exchangeable code, and a server-to-server call exchanges it
+for a **business token**. Tech Provider status needs **business verification and app review**, and review
+requires **a video of our app creating a message template**. **Embedded Signup v2 is deprecated on 15
+October 2026 — build v4.** ⚠️ **Onboarded trucks must add a payment method to their own WhatsApp Business
+account** — a friction step in the wizard that cannot be removed.
+
+🔴 **COEXISTENCE IS THE PATH THAT FITS THIS MARKET.** Embedded Signup can onboard a business on its
+**existing WhatsApp Business app account and number**, keeping one-to-one messaging in that app with
+history synced. **Every food truck already has WhatsApp Business on a phone with their number on flyers.**
+
+✅ **STRIPE CONNECT IS THE PRECEDENT AND IT TRANSFERS ALMOST WHOLE** — per-truck third-party credential, an
+onboarding flow we do not control, a status route, a webhook that syncs state. ⚠️ **It breaks on exactly
+one row: Connect stores an IDENTIFIER and calls with the platform key; a Meta business token IS the
+credential.** That single difference is the whole of the new problem.
+
+🔴 **OPEN AND BLOCKING: ONE QUESTION TO META.** Whether a single platform token can address all WABAs our
+app is Tech Provider for. Meta's documentation says Tech Providers use business tokens **exclusively**,
+which points against it — **but a yes deletes the entire token-storage design.** ⚠️ **Ask it as part of the
+Tech Provider application. Do not build token storage before the answer.**
+
+**If storage is needed, the recommendation is a dedicated `whatsapp_connections` table with app-level
+AES-256-GCM** — and **the separate table matters as much as the encryption**, because `operators` and
+`trucks` are read with `select('*')` by live routes and a redaction list fails by omission, silently.
+⚠️ **App-level encryption is not protection against a compromised process; it raises the bar on dumps,
+backups and exports. Say that rather than calling it "encrypted at rest" and stopping.**
+
+**Built and unblocked:** an admin-gated template list/create tool on the platform credential, and a pure
+connection-state machine mirroring `payments-state.ts`, imported by nothing.
+
+⚠️ **THE SENDER IS PINNED TO GRAPH API `v19.0`** and that pin is now shared by the template calls. **Check
+it against Meta's changelog before the review recording.** ⚠️ **A fake-token call reached Meta and returned
+a genuine `OAuthException`, which proves the URL, the path and the error parsing — and proves nothing about
+whether Meta accepts the template payload shape.** 🔴 **The first authenticated call must not be the one on
+camera.**
+
 # 21. Competitive positioning
 
 ## Hatches Up cost model
@@ -8058,6 +8202,21 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
 
 > 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
+
+### Method — additions (V11.34)
+
+- 🔴 **A GREP RUN IN THE WRONG DIRECTORY PRODUCED A CONFIDENT "IT DOES NOT EXIST".** An earlier report
+  concluded there was no Stripe Connect implementation; it is fully built. **Caught only because a later
+  task looked again.** ⚠️ **State the search PATH as well as the pattern, or absence proves nothing.**
+- ⚠️ **A DEAD END CAN BE FIXED ON ONE SURFACE AND LEFT ON ANOTHER, WITH A COMMENT NAMING THE CONSEQUENCE.**
+  The `cooking` fall-through was understood, written down, and fixed only where it was noticed.
+- ⚠️ **LAYOUT CAN ENCODE A RELATIONSHIP TO A CONTROL BEING DELETED** — padding that was conditional
+  *because* the removed toggle followed it. **Deleting a control is not only deleting its markup.**
+- ✅ **AN EXECUTOR REACHED A THIRD-PARTY API WITH A DELIBERATELY INVALID CREDENTIAL TO PROVE THE PATH.**
+  A real error response verifies the URL, the version segment and the error parsing without needing
+  credentials. **Worth reusing wherever an integration cannot otherwise be exercised.**
+- ⚠️ **"IT ONLY HAPPENED THE FIRST TIME" IS DIAGNOSTIC INFORMATION.** First-render and cold-memo cost look
+  identical to a defect from a single observation, and different from one across a session.
 
 ### Method — additions (V11.33)
 
@@ -9800,6 +9959,23 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **`AppLockGate.tsx` still says "Face / Touch ID".**
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
+
+## V11.34 — VERIFICATION DEBT, updated (SUPERSEDES the V11.33 list below)
+
+**DISCHARGED:** the time-adjust ownership gap (closed, one line, executable diff) · that no truck's
+behaviour changed when note review became mandatory (zero-row check) · that `kds_mode` is off estate-wide
+(zero-row check).
+
+**STILL UNPROVEN:** the uplink-pulled order number · the drain un-wedging under a real hang · a real cancel
+writing a suppression row · the cancel ownership gate refusing a foreign event in a running system · the
+auto-reject sweep claiming anything · Stripe releasing a hold on reject · **and every WhatsApp claim, none
+of which has been exercised against Meta with a real credential.**
+
+**OPEN DECISIONS:** the WhatsApp token storage question to Meta · the release-side backstop · the
+offline-order prefix · `captureOnConfirmation`'s missing truck check · removing `kds_mode` and `cooking` ·
+the cross-device offline notice (**backlogged: the current behaviour is the design working, and the
+server-side fix would change its meaning from "this screen has seen it" to "somebody on this truck cleared
+it"**).
 
 ## V11.33 — VERIFICATION DEBT, updated (SUPERSEDES the V11.32 list below)
 

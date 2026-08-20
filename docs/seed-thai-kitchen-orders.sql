@@ -1,36 +1,59 @@
--- seed-thai-kitchen-orders.sql — 40 fresh orders on today's 14:50–18:00 event.
+-- seed-thai-kitchen-orders.sql — 40 fresh orders collecting from 11:10, on today's 11:00–14:00 event
+-- (20 August 2026).
 -- 🚫 NOT RUN. Dominic runs all SQL by hand. Paste the whole file into the Supabase SQL editor.
 --
--- ── WHAT CHANGED THIS TIME ──────────────────────────────────────────────────────────────────────────
---   🔴 THE PACKING WAS THE BUG, AND HERE IS EXACTLY WHAT IT DID. The old version put each order in the
---   FIRST slot with room. Your slots are FIVE minutes apart, so it filled 14:00, 14:05, 14:10 … to the
---   ceiling and stopped around 14:45 — every one of the 40 orders inside the first three quarters of an
---   hour, and the rest of the service empty. That is both the over-capacity warning AND the "orders
---   running to 14:30" you are seeing. It now starts order i's search at slot (i mod slots) and wraps.
---   🔴 THE 15 MINUTES WAS MINE AND IT WAS WRONG. I wrote 15 into the comments as an example cadence;
---   the code always read `collection_interval_mins` from the truck, so the SQL was right and the prose
---   was not. Every derived number is now printed by the script at run time instead of guessed here.
---   🔴 THE WINDOW IS 14:50–18:00. At your 5-minute cadence that is 38 slots, 14:50 through 17:55 — one
---   or two orders each, and 49 mains spread about 1.3 to a slot against your ceiling of 5.
---   🔴 ORDERS CARRY MAINS. The previous version picked the SIX CHEAPEST menu items, which on most
---   trucks are drinks and sides — items whose category has prep_secs = 0 and therefore occupy NO kitchen
---   capacity. The board would have filled with orders and the capacity strip would have stayed empty.
---   Items are now split by their CATEGORY's prep time and every order is composed deliberately.
---   • 33 of 40 orders (82%) contain at least one main. 49 mains, 60 sides, 109 items.
---   • Sizes: 1→4, 2→15, 3→14, 4→3, 5→3, 6→1. Most are 2–4; nothing exceeds 6.
---   • Statuses stay confirmed / ready / collected. No 'pending' (needs approval), no 'cooking'.
+-- ── WHAT IS DIFFERENT FROM THE 19 AUGUST RUN ────────────────────────────────────────────────────────
+--   • 🔴 THE EVENT OPENS AT 11:00; THE FIRST COLLECTION IS 11:10. Those are two different things and the
+--     difference is deliberate — you asked for the orders to start at 11:10. The event window written
+--     below stays 11:00–14:00 (yours), and the collection slots run 11:10 through 13:55: 34 of them at
+--     your 5-minute cadence. The script prints what it actually got rather than trusting this line.
+--   • 🔴 THE CEILING IS NOW 4 MAINS PER 5 MINUTES, and the packer was rebuilt around it. See below.
+--   • 🔴 THE EVENT IS YOURS, NOT THIS SCRIPT'S. You created it. The script FINDS today's event and
+--     refuses if there is none or more than one; it does not create anything.
+--   • Everything else is unchanged and was already proven on the last run: the mains/sides split by
+--     category prep time, the composition arrays, the status mix, notes = NULL.
+--
+-- ── 🔴 NOTHING BREACHES THE CEILING, AND IT IS ASSERTED RATHER THAN HOPED ────────────────────────────
+-- Two changes, because a ceiling of 4 leaves far less slack than 5 did:
+--   1. **The packer charges each order's mains to its own window AND the one before it** (`v_spread`),
+--      a two-window approximation of the backward projection the real engine performs. Counting mains
+--      only at the collection slot understates concurrent load, which is exactly how a run passes this
+--      script and then trips the board's breach banner.
+--   2. **Both peaks are ASSERTED, not printed.** If the projected peak or the per-collection-slot peak
+--      exceeds the van's `kitchen_capacity`, the transaction aborts and NOT ONE ORDER IS WRITTEN.
+--
+-- ✅ SIMULATED BEFORE THIS FILE WAS WRITTEN, over the real composition arrays, 34 slots and a ceiling
+-- of 4: **every one of the 34 slots carries an order, and the per-collection-slot peak is 3 — one main
+-- of headroom against your 4.** At spread 1 it peaks at exactly 4 with no headroom; at spread 3 the
+-- 49 mains cannot be placed at all. Spread 2 was chosen by that simulation, not by feel.
+-- ⚠️ IT IS STILL AN APPROXIMATION OF A BACKWARD-PROJECTION ENGINE, NOT A REPRODUCTION OF ONE. The
+-- authoritative check remains the dashboard's own breach banner after you run it.
+--
+-- ── ⚠️ TIMING, AND IT MATTERS FOR PHOTOGRAPHS ───────────────────────────────────────────────────────
+-- 🔴 THE SERVICE HAS ALREADY STARTED. Starting the collections at 11:10 buys a little room, but once the
+-- clock passes 11:10 the earliest slots are in the PAST and the orders in them render with a red "late"
+-- badge — as #38 Hugo did at 14:52 on the last run, which is what a real mid-service board looks like.
+-- ⚠️ THAT GROWS AS THE CLOCK MOVES. Run this and take the photographs in the same sitting. Leave it an
+-- hour and a third of the board is late; leave it until 14:00 and every order is.
+-- ✅ THE SCRIPT COUNTS IT FOR YOU: a notice prints how many slots are already behind you at run time, so
+-- you know what the board will look like before you open it. It does NOT move the window to hide them —
+-- a board with no past at all has an empty Done-today strip and reads as a service that has not begun.
 --
 -- ── THE SPREAD, AND WHERE IT COMES FROM ─────────────────────────────────────────────────────────────
 -- ⚠️ STATED AS AN ASSUMPTION RATHER THAN DRESSED UP AS RESEARCH: I did not look anything up. This is
 -- ordinary street-food shape — an average of ~1.2 mains per order, most orders one main plus a side or a
--- drink, a minority of two- and three-main family orders, and a small tail of drinks-only. If your real
--- trading data says otherwise, the two arrays below are the only thing to change.
+-- drink, a minority of two- and three-main family orders, and a small tail of drinks-only.
+--   • 33 of 40 orders (82%) contain at least one main. 49 mains, 60 sides, 109 items.
+--   • Sizes: 1→4, 2→15, 3→14, 4→3, 5→3, 6→1. Most are 2–4; nothing exceeds 6.
+--   • Statuses stay confirmed / ready / collected. No 'pending' (needs approval), no 'cooking'.
 --
 -- ── WHAT IT DOES ────────────────────────────────────────────────────────────────────────────────────
 --   1. Pins the truck and resolves TODAY's event, refusing if it is missing or ambiguous.
---   2. Sets that event's window to 14:50–18:00 and its status to 'open'.
+--   2. Sets that event's window to 11:00–14:00 and its status to 'open' (a no-op if already correct).
+--      ⚠️ THE EVENT WINDOW, NOT THE COLLECTION SLOTS. Those start at 11:10 — see step 4.
 --   3. DELETES every order on that truck for today, and its slot-usage rows.
---   4. PACKS the 40 orders across the collection slots BY MAINS, then inserts them.
+--   4. PACKS the 40 orders across the 11:10–13:55 collection slots BY MAINS — spread-aware, and
+--      asserted against the ceiling — then inserts them.
 --   5. Resets the event's order counter so the next real order is #41.
 --
 -- 🔴 ONE TRANSACTION. Any assertion aborts the whole thing and nothing changes.
@@ -49,11 +72,13 @@ declare
   v_truck_name text;
   v_event_id   uuid;
   v_today      date := (now() at time zone 'Europe/London')::date;
+  v_now        time := (now() at time zone 'Europe/London')::time;
   v_van_id     uuid;
   v_interval   integer;
   v_capacity   integer;
   v_slots      text[];
   v_n_slots    integer;
+  v_past       integer;
   v_mains      jsonb;   v_n_mains  integer;
   v_sides      jsonb;   v_n_sides  integer;
   v_left       integer[];
@@ -61,7 +86,22 @@ declare
   i integer; k integer;
   v_placed boolean; v_m integer; v_s integer; v_try integer;
   v_lines jsonb; v_total numeric; v_item jsonb;
-  v_slot text; v_status text; v_peak integer := 0;
+  v_slot text; v_status text; v_peak integer := 0; v_coll_peak integer := 0;
+  -- ── 🔴 THE PREP SPREAD. THIS IS WHAT STOPS THE CEILING BEING BREACHED. ─────────────────────────
+  -- A main collected at 11:40 is not cooked instantly at 11:40 — the real engine projects it BACKWARD
+  -- across the prep windows before its collection. Counting mains only at the collection slot (what the
+  -- previous version did) therefore UNDERSTATES concurrent load, and with a ceiling of 4 there is no
+  -- longer any slack to absorb that.
+  -- ⚠️ SO EACH ORDER'S MAINS ARE CHARGED TO ITS OWN WINDOW *AND* THE ONE BEFORE IT. That is a crude
+  -- two-window approximation of the backward projection, not a reproduction of it — but it is
+  -- conservative in the right direction, and it was chosen by simulation rather than by feel: at
+  -- spread 2 the packer uses all 34 slots and the per-collection-slot peak comes out at 3 against your
+  -- ceiling of 4. At spread 1 it peaks at exactly 4 with zero headroom; at spread 3 it cannot place
+  -- 49 mains at all.
+  -- 🔴 IF YOU LOWER kitchen_capacity BELOW 4 THIS SCRIPT WILL ABORT rather than produce a breach.
+  -- Set v_spread := 1 to pack against collection slots only, and accept the lost headroom.
+  v_spread integer := 2;
+  v_w integer; v_lo integer; v_fits boolean;
   -- ── THE COMPOSITION, WRITTEN OUT SO IT CAN BE CHECKED RATHER THAN TRUSTED ───────────────────────
   -- MAINS per order — 7 orders have none (drinks/sides only), 20 have one, 10 have two, 3 have three.
   v_mains_n integer[] := array[
@@ -94,7 +134,7 @@ begin
     raise exception 'SEED ABORTED: refusing to touch %, the live trading truck.', v_truck_name;
   end if;
 
-  -- ── 1. TODAY'S EVENT ──────────────────────────────────────────────────────────────────────────────
+  -- ── 1. TODAY'S EVENT — FOUND, NEVER CREATED ──────────────────────────────────────────────────────
   select e.id, e.van_id into v_event_id, v_van_id
     from truck_events e
    where e.truck_id = v_truck_id and e.event_date = v_today
@@ -109,40 +149,50 @@ begin
     raise exception 'SEED ABORTED: % has more than one event today. Remove the spare first.', v_truck_name;
   end if;
 
+  -- Idempotent: you already set this window when you created the event. Writing it again costs nothing
+  -- and guarantees the event bar on screen says what this script assumed.
+  -- ⚠️ THE EVENT OPENS AT 11:00 AND THE FIRST COLLECTION IS 11:10 — deliberate, not a mismatch.
   update truck_events
-     set start_time = '14:50', end_time = '18:00', status = 'open',
+     set start_time = '11:00', end_time = '14:00', status = 'open',
          opened_at = coalesce(opened_at, now())
    where id = v_event_id;
 
   -- ── 2. SLOTS ──────────────────────────────────────────────────────────────────────────────────────
   -- 🔴 CADENCE FROM THE TRUCK, NEVER ASSUMED — and never written into a comment as an example either.
-  -- 14:50 up to but NOT including 18:00: the last collection is one interval before the end. At a
-  -- 5-minute cadence that is 38 slots, 14:50 through 17:55; the notice below prints what it actually got.
+  -- 11:10 up to but NOT including 14:00: the last collection is one interval before the end. At a
+  -- 5-minute cadence that is 34 slots, 11:10 through 13:55; the notice below prints what it actually got.
   select coalesce(nullif(t.collection_interval_mins, 0), 15) into v_interval from trucks t where t.id = v_truck_id;
   select array_agg(to_char(ts, 'HH24:MI') order by ts) into v_slots
-    from generate_series((v_today + time '14:50')::timestamp,
-                         (v_today + time '18:00')::timestamp - make_interval(mins => v_interval),
+    from generate_series((v_today + time '11:10')::timestamp,
+                         (v_today + time '14:00')::timestamp - make_interval(mins => v_interval),
                          make_interval(mins => v_interval)) ts;
   v_n_slots := coalesce(array_length(v_slots, 1), 0);
   if v_n_slots < 8 then
-    raise exception 'SEED ABORTED: only % slots between 14:50 and 18:00 at a %-minute interval.', v_n_slots, v_interval;
+    raise exception 'SEED ABORTED: only % slots between 11:10 and 14:00 at a %-minute interval.', v_n_slots, v_interval;
   end if;
-  -- 🔴 THE BOUNDS ARE ASSERTED, NOT ASSUMED. Nothing may land before 14:50 or at/after 18:00 — the
-  -- complaint that produced this version was orders sitting in the past, so the file proves it instead
-  -- of me claiming it.
-  if v_slots[1] < '14:50' then
-    raise exception 'SEED ABORTED: first slot is %, which is before 14:50.', v_slots[1];
+  -- 🔴 THE BOUNDS ARE ASSERTED, NOT ASSUMED. Nothing may land before 11:10 or at/after 14:00.
+  if v_slots[1] < '11:10' then
+    raise exception 'SEED ABORTED: first slot is %, which is before 11:10.', v_slots[1];
   end if;
-  if v_slots[v_n_slots] >= '18:00' then
-    raise exception 'SEED ABORTED: last slot is %, which is not before 18:00.', v_slots[v_n_slots];
+  if v_slots[v_n_slots] >= '14:00' then
+    raise exception 'SEED ABORTED: last slot is %, which is not before 14:00.', v_slots[v_n_slots];
   end if;
   raise notice 'Cadence % min -> % slots, % to %.', v_interval, v_n_slots, v_slots[1], v_slots[v_n_slots];
 
+  -- ── 2b. 🔴 HOW MUCH OF THE SERVICE IS ALREADY BEHIND YOU ─────────────────────────────────────────
+  -- Not a guard and not a refusal — a fact printed before you open the board, so a screen full of red
+  -- "late" badges is something you decided to accept rather than something you discover.
+  select count(*) into v_past from generate_series(1, v_n_slots) g where v_slots[g]::time < v_now;
+  if v_past = 0 then
+    raise notice 'Nothing is in the past yet — the whole run is ahead of you.';
+  else
+    raise notice '⚠️ % of % slots (% to %) are ALREADY PAST at %. Orders in them will show as late. Photograph promptly.',
+      v_past, v_n_slots, v_slots[1], v_slots[v_past], to_char(v_now, 'HH24:MI');
+  end if;
+
   -- ── 3. 🔴 THE MENU, SPLIT BY WHAT THE KITCHEN ACTUALLY COOKS ─────────────────────────────────────
   -- A MAIN is an item whose CATEGORY has prep_secs > 0 — that is what the capacity engine counts and
-  -- what makes a slot fill up. A SIDE is prep_secs 0 or null: a drink, a dip, a bag of crisps. Ordering
-  -- by price alone (the previous version) selected the cheapest items on the menu, which are exactly the
-  -- ones that occupy no capacity.
+  -- what makes a slot fill up. A SIDE is prep_secs 0 or null: a drink, a dip, a bag of crisps.
   -- ⚠️ `counts_toward_capacity` CAN MAKE AN INSTANT CATEGORY OCCUPY TOO. It is deliberately NOT used
   -- here: this split wants the items the kitchen COOKS, and treating a ticked drink as a main would
   -- overstate the load rather than understate it. The board's own engine still counts them correctly.
@@ -175,8 +225,8 @@ begin
   -- 🔴 MAINS ARE WHAT THE CEILING COUNTS, so the packing counts mains and not items.
   -- 🔴 AND IT SPREADS RATHER THAN FILLING. Order i starts looking at slot (i mod slots) and wraps, so
   -- the run lands evenly across the whole service instead of stacking against the ceiling at the front —
-  -- which is what produced the over-capacity warning last time. The cap is still absolute: an order only
-  -- goes where all of its mains fit.
+  -- which is what produced the over-capacity warning two runs ago. The cap is still absolute: an order
+  -- only goes where all of its mains fit.
   -- ⚠️ THIS IS AN APPROXIMATION OF A BACKWARD-PROJECTION ENGINE, NOT A REPRODUCTION OF ONE. The real
   -- check is the dashboard's breach banner after the run.
   select v.kitchen_capacity into v_capacity from truck_vans v where v.id = v_van_id;
@@ -193,26 +243,53 @@ begin
     -- 🔴 THE ROTATION IS THE WHOLE FIX: start at a different slot for every order, then wrap.
     for k in 0..(v_n_slots - 1) loop
       v_try := 1 + ((i + k) % v_n_slots);
-      if v_left[v_try] >= v_m then
-        v_left[v_try] := v_left[v_try] - v_m;
+      -- The windows this order occupies: its own, and the (v_spread - 1) before it, clamped at the
+      -- start of service. EVERY one of them must have room — the cap is absolute, not an average.
+      v_lo := greatest(1, v_try - (v_spread - 1));
+      v_fits := true;
+      for v_w in v_lo..v_try loop
+        if v_left[v_w] < v_m then v_fits := false; end if;
+      end loop;
+      if v_fits then
+        for v_w in v_lo..v_try loop
+          v_left[v_w] := v_left[v_w] - v_m;
+        end loop;
         v_assigned[i] := v_try;
         v_placed := true;
         exit;
       end if;
     end loop;
     if not v_placed then
-      raise exception 'SEED ABORTED: order % needs % mains and no slot has room. % slots x capacity % = % mains of room; 49 mains are needed. Raise kitchen_capacity or shorten the run.',
-        i, v_m, v_n_slots, v_capacity, v_n_slots * v_capacity;
+      raise exception 'SEED ABORTED: order % needs % mains and no window has room at ceiling % with a prep spread of %. % slots x % = % mains of nominal room; 49 mains are needed. Raise kitchen_capacity, lengthen the window, or set v_spread := 1.',
+        i, v_m, v_capacity, v_spread, v_n_slots, v_capacity, v_n_slots * v_capacity;
     end if;
   end loop;
   for k in 1..v_n_slots loop
     v_peak := greatest(v_peak, v_capacity - v_left[k]);
   end loop;
-  -- 🔴 THE LINE TO READ IN THE OUTPUT. Peak must be <= the ceiling, and "slots used" should be ALL of
-  -- them — if it is not, the run is bunched again and the board will say so.
-  raise notice 'Packed 40 orders (49 mains, 109 items) across % slots. Peak mains in one slot: % (ceiling %). Slots used: %.',
-    v_n_slots, v_peak, v_capacity,
-    (select count(*) from generate_series(1, v_n_slots) g where v_left[g] < v_capacity);
+  -- The per-COLLECTION-SLOT peak, counted separately from the projected one above: this is the number
+  -- the dashboard's capacity strip shows against each time.
+  for k in 1..v_n_slots loop
+    v_coll_peak := greatest(v_coll_peak,
+      (select coalesce(sum(v_mains_n[g]), 0)::integer from generate_series(1, 40) g where v_assigned[g] = k));
+  end loop;
+
+  -- ── 🔴 ASSERTED, NOT MERELY PRINTED. THIS IS THE "NOTHING BREACHES" GUARANTEE. ─────────────────
+  -- The previous version only announced the peak in a notice, which nobody has to read. Both peaks are
+  -- now conditions: if either exceeds the van's ceiling the whole transaction aborts and no order is
+  -- written. A breach is not something to discover on the board.
+  if v_peak > v_capacity then
+    raise exception 'SEED ABORTED: projected peak % mains exceeds the ceiling of %. Nothing was written.', v_peak, v_capacity;
+  end if;
+  if v_coll_peak > v_capacity then
+    raise exception 'SEED ABORTED: collection-slot peak % mains exceeds the ceiling of %. Nothing was written.', v_coll_peak, v_capacity;
+  end if;
+
+  -- 🔴 THE LINE TO READ IN THE OUTPUT. Both peaks must be <= the ceiling (they are asserted above), and
+  -- "slots used" should be ALL of them — at spread 2 the simulation puts an order in every slot.
+  raise notice 'Packed 40 orders (49 mains, 109 items) across % slots at ceiling % (spread %). Projected peak: %. Collection-slot peak: %. Slots used: %.',
+    v_n_slots, v_capacity, v_spread, v_peak, v_coll_peak,
+    (select count(distinct v_assigned[g]) from generate_series(1, 40) g);
 
   -- ── 5. CLEAR — SCOPED TO THIS TRUCK AND THIS DATE ────────────────────────────────────────────────
   delete from orders where truck_id = v_truck_id and event_date = v_today;
@@ -261,8 +338,8 @@ begin
       null,                                  -- 🔴 notes: NONE, on every row
       v_status, 'unpaid',
       -- 🔴 PLACED BEFORE ITS OWN COLLECTION, NOT ON A RAMP FROM THE SERVICE START. A fixed offset from
-      -- 14:50 put late orders' "moment of sale" after their collection time; leading each order's own
-      -- slot by 20 minutes is what an order-ahead customer actually does.
+      -- 11:10 would put late orders' "moment of sale" after their collection time; leading each order's
+      -- own slot by 20 minutes is what an order-ahead customer actually does.
       ((v_today + v_slot::time) - interval '20 minutes'),
       'web'
     );
@@ -273,7 +350,7 @@ begin
   -- on (event_id, id).
   update truck_events set order_counter = 40 where id = v_event_id;
 
-  raise notice 'Seeded 40 orders on %. Next order will be #41.', v_truck_name;
+  raise notice 'Seeded 40 orders on % for 11:10-14:00. Next order will be #41.', v_truck_name;
 end $$;
 
 commit;
@@ -284,7 +361,7 @@ commit;
 --    group by status order by 2 desc;
 --     -- expect ONLY confirmed / ready / collected. 🔴 zero pending, zero cooking.
 --
---   -- 🔴 THE ONE THAT MATTERS THIS TIME: how many orders contain a cooked item.
+--   -- 🔴 THE ONE THAT MATTERS: how many orders contain a cooked item.
 --   select count(*) filter (where mains > 0) as with_mains, count(*) as total, sum(mains) as all_mains
 --     from (select o.order_key,
 --                  (select count(*) from jsonb_array_elements(o.items) l
@@ -304,7 +381,7 @@ commit;
 --    where truck_id = 'test-truck' and event_date = (now() at time zone 'Europe/London')::date
 --      and notes is not null;            -- 🔴 expect 0
 --
---   -- 🔴 THE SPREAD — this is the query that would have caught last time's bunching.
+--   -- 🔴 THE SPREAD — this is the query that would have caught the bunching two runs ago.
 --   select o.slot, count(*) as orders,
 --          sum((select count(*) from jsonb_array_elements(o.items) l
 --                join menu_items_db m on m.name = l->>'name' and m.truck_id = o.truck_id
@@ -314,8 +391,8 @@ commit;
 --    where o.truck_id = 'test-truck'
 --      and o.event_date = (now() at time zone 'Europe/London')::date
 --    group by o.slot order by o.slot;
---     -- expect the run to START AT 14:50 and reach 17:55, with 1-2 orders per slot at a 5-minute
---     -- cadence and mains never above 5. 🔴 NOTHING BEFORE 14:50, and no cluster at the front.
+--     -- expect the run to START AT 11:10 and reach 13:55, EVERY slot carrying an order, and mains
+--     -- never above 3 against your ceiling of 4. 🔴 NOTHING BEFORE 11:10, and no cluster at the front.
 --
 --   select * from production_slot_usage
 --    where truck_id = 'test-truck' and event_date = (now() at time zone 'Europe/London')::date;
