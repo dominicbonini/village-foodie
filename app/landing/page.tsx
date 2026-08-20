@@ -1,5 +1,13 @@
-// HatchGrab landing page — HIDDEN preview route at /landing (noindex/nofollow).
-// Root `/` is the live site, so this sits at a hidden path until it's ready to promote.
+// HatchGrab landing page — 🔴 THIS IS hatchgrab.com's ROOT, AND IT IS ADMIN-ONLY.
+// middleware.ts rewrites '/' to this route when the Host is hatchgrab, so an ADMIN sees this at
+// `https://www.hatchgrab.com/`. Everyone else is redirected to /support by the gate in layout.tsx.
+// villagefoodie.co.uk's '/' is untouched and still renders app/page.tsx, the discovery map, for
+// everyone.
+// 🔴 THE GATE AND THE noindex ARE BOTH ON, and layout.tsx records the two things that must be true
+// before either comes off: written permission for the Pizzeria Gusto testimonial, and real screenshots
+// in place of the placeholders below.
+// /landing itself still works: middleware redirects it to '/' (308) rather than breaking the links
+// that exist to it.
 //
 // SINGLE SOURCE: the pricing cards + the full comparison table render from lib/plan-features.ts
 // (FEATURE_SECTIONS + detail + PLAN_ALLOWANCES + PLAN_PRICES + PLAN_DESCRIPTIONS + TRANSACTION_ROWS +
@@ -31,6 +39,11 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 
 export const metadata: Metadata = {
   title: 'HatchGrab — The ordering system built for food trucks',
+  // 🔴 noindex RESTORED. This page is at hatchgrab.com's root but is NOT public: the admin gate in
+  // layout.tsx is back on while the Pizzeria Gusto testimonial is unpermissioned and the screenshots
+  // are placeholders. An indexable page behind a gate would let a search engine surface a URL that
+  // every non-admin is redirected away from, and could cache a snippet of the testimonial itself.
+  // ⚠️ FLIP THIS BACK THE SAME DAY THE GATE COMES OFF, in the same commit. The two belong together.
   robots: { index: false, follow: false },
 }
 
@@ -500,7 +513,9 @@ export default function LandingPage() {
               <a href="#pricing">Pricing</a>
               <a href={PRIVACY_PATH}>Privacy</a>
               <a href={TERMS_PATH}>Terms</a>
-              <a href="#">Contact</a>
+              {/* 🔴 WAS `href="#"` — a control that went nowhere. Now the public support page, which is
+                  also the Support URL given to App Store review. */}
+              <a href="/support">Contact</a>
             </div>
           </div>
           {/* 🔴 THE APP LINE WAS REMOVED HERE — 18 August 2026, ON REQUEST. The footer no longer mentions
