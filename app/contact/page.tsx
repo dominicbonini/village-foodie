@@ -1,36 +1,73 @@
-'use client';
-
+// app/contact/page.tsx
+// ONE ROUTE, TWO BRANDS. /contact is THE support page for both products, and it is the Support URL
+// given to App Store review: https://www.hatchgrab.com/contact
+//
+// ── 🔴 THE BRANCH IS DECIDED ON THE SERVER, FROM THE Host HEADER ────────────────────────────────────
+// `isHatchGrabHost` from lib/brand.ts — the SAME predicate app/layout.tsx already branches metadata on
+// and proxy.ts deliberately mirrors. There is no second host test in this codebase and this file does
+// not add one.
+// 🔴 NOT ON THE CLIENT. A client-side host branch would ship both brands' markup to both audiences and
+// paint the wrong one for a frame; on a page a reviewer opens, that frame is the whole impression.
+// ⚠️ THIS ROUTE WAS ALREADY `ƒ (Dynamic)` BEFORE THIS CHANGE — confirmed in the build route table, and
+// it has to be: useSearchParams in the embed already opted it out of static prerendering. Reading
+// headers() therefore costs NOTHING here. It would have been a real cost on a static route.
+//
+// ── 🔴 THE VILLAGE FOODIE RENDER BELOW IS UNCHANGED, CHARACTER FOR CHARACTER ────────────────────────
+// Same wrapper, same header, same copy, same footer, same classes, same Suspense fallback. The only
+// edit is that the embed now arrives as an imported island instead of a function defined in this file,
+// which changes no markup. Verified by diffing the served HTML before and after — see
+// docs/contact-host-branding.md.
+//
+// ── 🔴 PUBLIC AND UNGATED ON BOTH HOSTS, AND IT MUST STAY THAT WAY ─────────────────────────────────
+// This route sits at the top level, NOT under app/landing/, whose layout.tsx is an admin-only gate in
+// production. A support page behind that gate would redirect Apple's reviewer and the Support URL
+// would be dead on arrival. Nothing in proxy.ts matches /contact either: its root rewrite is guarded
+// on `pathname === '/'`. Do not move this route under a gated segment.
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Script from 'next/script';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { BrandHomeLink } from '@/components/shared/BrandHomeLink';
 import { Suspense } from 'react';
+import { isHatchGrabHost } from '@/lib/brand';
+import { BrandHomeLink } from '@/components/shared/BrandHomeLink';
+import { ContactForm } from './ContactForm';
 
-function ContactForm() {
-  const searchParams = useSearchParams();
-  const topic = searchParams.get('topic') || '';
-  const venue = searchParams.get('venue') || ''; 
-  const truck = searchParams.get('truck') || ''; // 👇 Catch the truck name
-  
-  let tallyUrl = `https://tally.so/embed/7R2Ra2?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1&topic=${encodeURIComponent(topic)}`;
-  if (venue) tallyUrl += `&venue=${encodeURIComponent(venue)}`;
-  if (truck) tallyUrl += `&truck=${encodeURIComponent(truck)}`; // 👇 Pass it to Tally
-
-  return (
-    <iframe 
-      src={tallyUrl}
-      loading="lazy" 
-      width="100%" 
-      height="500" 
-      frameBorder="0" 
-      title="Contact Village Foodie"
-      className="w-full"
-      style={{ minHeight: '500px' }}
-    ></iframe>
-  );
+/** The one place this route asks which brand it is serving. */
+async function onHatchGrab(): Promise<boolean> {
+  const headersList = await headers();
+  return isHatchGrabHost(headersList.get('host') || '');
 }
 
-export default function ContactPage() {
+// ── METADATA ───────────────────────────────────────────────────────────────────────────────────────
+// 🔴 THE VILLAGE FOODIE BRANCH RETURNS AN EMPTY OBJECT ON PURPOSE. That page had no metadata export at
+// all, so its <head> came entirely from app/layout.tsx's host-branched generateMetadata: <title> reads
+// "Village Foodie" and there is no robots meta. Returning {} overrides nothing and keeps that head
+// identical. Adding so much as an explicit robots tag here would change bytes on a page this change is
+// required to leave alone.
+// ⚠️ INDEXABLE ON BOTH HOSTS BY DEFAULT, WHICH IS THE REQUIREMENT. Nothing emits noindex for this
+// route: vercel.json scopes its `X-Robots-Tag: noindex` to `/api/(.*)` and `/trucks/(.*)`, and the
+// landing's `robots: { index: false }` belongs to app/landing/page.tsx alone. The HatchGrab branch
+// states index/follow explicitly anyway — /support did, and this is the page Apple was given.
+// ⚠️ `title: 'Support'` RENDERS AS "Support | HatchGrab" via the root layout's template. /support said
+// 'Support — HatchGrab' and rendered the brand TWICE, "Support — HatchGrab | HatchGrab". Not copied.
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await onHatchGrab())) return {};
+  return {
+    title: 'Support',
+    description: 'Get help with HatchGrab. Send us a message and we will come back to you by email.',
+    robots: { index: true, follow: true },
+  };
+}
+
+export default async function ContactPage() {
+  if (await onHatchGrab()) {
+    // 🔴 DYNAMIC import, NOT A TOP-LEVEL ONE. That module imports the landing's stylesheet and three
+    // next/font faces at module scope; a static import would attach their <link> tags to this route
+    // for BOTH brands. Measured, not assumed — see the note in HatchGrabContact.tsx.
+    const { HatchGrabContact } = await import('./HatchGrabContact');
+    return <HatchGrabContact />;
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
       <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
@@ -64,7 +101,12 @@ export default function ContactPage() {
             </p>
             
             <Suspense fallback={<div className="h-96 bg-slate-50 animate-pulse rounded-lg flex items-center justify-center text-slate-400">Loading form...</div>}>
-              <ContactForm />
+              <ContactForm
+                title="Contact Village Foodie"
+                height="500"
+                className="w-full"
+                style={{ minHeight: '500px' }}
+              />
             </Suspense>
           </div>
         </div>

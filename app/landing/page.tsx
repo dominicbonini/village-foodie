@@ -1,6 +1,6 @@
 // HatchGrab landing page — 🔴 THIS IS hatchgrab.com's ROOT, AND IT IS ADMIN-ONLY.
 // middleware.ts rewrites '/' to this route when the Host is hatchgrab, so an ADMIN sees this at
-// `https://www.hatchgrab.com/`. Everyone else is redirected to /support by the gate in layout.tsx.
+// `https://www.hatchgrab.com/`. Everyone else is redirected to /contact by the gate in layout.tsx.
 // villagefoodie.co.uk's '/' is untouched and still renders app/page.tsx, the discovery map, for
 // everyone.
 // 🔴 THE GATE AND THE noindex ARE BOTH ON, and layout.tsx records the two things that must be true
@@ -513,9 +513,14 @@ export default function LandingPage() {
               <a href="#pricing">Pricing</a>
               <a href={PRIVACY_PATH}>Privacy</a>
               <a href={TERMS_PATH}>Terms</a>
-              {/* 🔴 WAS `href="#"` — a control that went nowhere. Now the public support page, which is
-                  also the Support URL given to App Store review. */}
-              <a href="/support">Contact</a>
+              {/* 🔴 WAS `href="#"` — a control that went nowhere, then /support, which was deleted on
+                  20 August 2026. Now /contact, which serves HatchGrab chrome on this host and is the
+                  Support URL given to App Store review.
+                  ⚠️ `?topic=General%20Enquiry` IS THE TOPIC /support HARDCODED into its embed URL, and
+                  it is the same parameter Village Foodie's own footer Contact link sends
+                  (components/Footer.tsx). Carried across so this link opens the form where it always
+                  did rather than on an empty topic. */}
+              <a href="/contact?topic=General%20Enquiry">Contact</a>
             </div>
           </div>
           {/* 🔴 THE APP LINE WAS REMOVED HERE — 18 August 2026, ON REQUEST. The footer no longer mentions
