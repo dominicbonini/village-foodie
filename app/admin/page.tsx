@@ -964,8 +964,21 @@ export default function AdminPage() {
                         className={`w-4 h-4 accent-orange-500 ${dim ? 'opacity-40' : ''}`}
                         onChange={e => onChange(e.target.checked)} />
                     )
+                    // ── 🔴 SAME TAB. `target="_blank"` WAS REMOVED 24 August 2026 AND MUST NOT COME BACK. ──
+                    // A new-tab link is subject to the browser's popup suppression, which is PER SITE — so
+                    // this worked on localhost and silently did nothing on www.hatchgrab.com: left-click
+                    // opened no tab at all while right-click → "Open link in new tab" worked fine. Nothing
+                    // in our code was preventing it (AppLink only calls preventDefault when
+                    // Capacitor.isNativePlatform() is true, and the service worker's navigate branch is a
+                    // pass-through) — it was the browser, and an admin console has no reason to spend a
+                    // new tab on it. Back returns you to /admin.
+                    // ⚠️ `rel="noopener noreferrer"` went with it: it only means anything alongside a
+                    // target, and leaving it would imply one is still there.
+                    // ⚠️ NATIVE IS UNAFFECTED, and is in fact better served: without a target this is a
+                    // plain internal route, which is exactly what AppLink soft-navigates. `target="_blank"`
+                    // was the case its own doc comment warns escapes the webview to Safari.
                     const linkBtn = (href: string, label: string) => (
-                      <AppLink href={href} target="_blank" rel="noopener noreferrer"
+                      <AppLink href={href}
                         className="inline-block text-xs px-2.5 py-1 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">{label}</AppLink>
                     )
                     // ⚠️ THE TOKEN IS THE CREDENTIAL; AN OPERATOR IS NOT REQUIRED. This read
