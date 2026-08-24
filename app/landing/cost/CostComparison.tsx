@@ -600,8 +600,45 @@ export default function CostComparison() {
           </Card>
         </div>
 
+        {/* ── 🔴 A NAVIGATION AID. IT IS NOT A GATE, AND MUST NEVER BECOME ONE. ─────────────────────
+            The hero below ALREADY renders and updates live as the inputs move. ⚠️ DO NOT hide the
+            results behind this link, DO NOT add a "calculate" step, and DO NOT make the figure appear
+            only on click. Two reasons, both load-bearing:
+              1. THE SLIDER NEEDS LIVE FEEDBACK. A range input whose number does not move as it is
+                 dragged reads as broken, not as deferred.
+              2. A GATED FIGURE GOES STALE THE INSTANT AN INPUT CHANGES AFTERWARDS — it would then be
+                 showing a saving computed from answers that are no longer on screen, which is the one
+                 thing this page cannot afford to do.
+            ⚠️ SHOWN AT EVERY WIDTH, deliberately. The cards are a single `max-w-2xl` column on every
+            screen, so five of them push the results below the fold on a laptop as well as a phone —
+            this is not a phone-only problem, and a cue that disappears at a breakpoint is a second
+            behaviour to reason about for no gain.
+            ⚠️ GATED ON `staff` because the results block below is: without it the link would scroll to
+            an element that does not exist and appear to do nothing.
+            🔴 `scrollIntoView`, NOT ARITHMETIC ON `window.scrollTo`. app/trucks/[slug]/order/page.tsx
+            records why: the browser applies the target's own `scroll-margin-top`, so the offset lives
+            on the destination instead of being recomputed by every caller. The `scroll-mt-4` is on the
+            results wrapper below.
+            ⚠️ `html:has(.hg-landing) { scroll-behavior: smooth }` in landing.css does NOT reach this
+            page — the calculator is deliberately outside that scope — so the behaviour is passed
+            explicitly here, and reduced-motion is honoured by hand rather than inherited. */}
         {staff && (
-          <div className="mt-6 space-y-4">
+          <p className="mt-6 text-center">
+            <button type="button"
+              onClick={() => {
+                const el = document.getElementById('cost-results')
+                if (!el) return
+                const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+                el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+              }}
+              className="text-sm font-semibold text-slate-500 underline underline-offset-4 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
+              See your saving ↓
+            </button>
+          </p>
+        )}
+
+        {staff && (
+          <div id="cost-results" className="mt-6 scroll-mt-4 space-y-4">
             <div className="overflow-hidden rounded-2xl border-2 bg-white shadow-lg" style={{ borderColor: ORANGE }}>
               <div className="px-6 py-9 text-center">
                 {/* ── 🔴 THE BEFORE/AFTER, AND IT IS THE ANCHOR THE FIGURE NEEDS TO MEAN ANYTHING. ────────
@@ -848,13 +885,27 @@ function YearLine({ label, theirs, ours, save, pct }: {
           and is a decision, not a fix. */}
       <p className="mt-1 text-2xl font-black tabular-nums" style={{ color: isRealSaving(save) ? ORANGE : SLATE }}>
         {isRealSaving(save) ? 'Save ' : 'Extra '}{gbp(Math.abs(save))}
-        <span className="ml-2 text-sm font-bold text-slate-400">{Math.abs(pct).toFixed(0)}%</span>
+        {/* ── ⚠️ "(69% less)", NOT A BARE "69%". ────────────────────────────────────────────────
+            A bare percentage beside an amount does not say WHAT it is a percentage of — it can read
+            as a share of the saving, or of our price, or of nothing.
+            🔴 NOT "% off". That is retail-discount language and it implies we are discounting OUR own
+            price; this is a comparison against what they pay ELSEWHERE. "less" also inverts correctly
+            to "more" in the non-saving case, where "off" would be nonsense.
+            ⚠️ "less" IS THE HERO'S OWN WORD — it renders "{n}% less in your first year" — so the two
+            are deliberately the same claim at two sizes. Change one and change both.
+            ⚠️ STILL SUBORDINATE: `text-sm` against the amount's `text-2xl`, and slate against its
+            orange. It explains the number beside it; it is not a second number. */}
+        <span className="ml-2 text-sm font-bold text-slate-400">
+          ({Math.abs(pct).toFixed(0)}% {isRealSaving(save) ? 'less' : 'more'})
+        </span>
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500">
         <span>Current provider <strong className="tabular-nums text-slate-700">{gbp(theirs)}</strong></span>
         <span className="text-slate-300">→</span>
         {/* ⚠️ "HatchGrab", NOT "HatchGrab Pro"/"HatchGrab Max" (23 August 2026). The tier is already
-            stated once, in question 2 ("Pro — £29 per truck per month…"). Repeating it on both year
+            stated once, in question 2 — ⚠️ QUOTATION CORRECTED 24 August 2026: that card now reads
+            "We suggest Pro" / "We suggest Max" above the price, not the old "Pro — £29 per truck per
+            month…". The CLAIM was always true; only the quote had gone stale. Repeating it on both year
             lines made the comparison about which PLAN they would be on, when the line exists to compare
             two TOTALS. `planName` is no longer a prop of this component as a result. */}
         <span>HatchGrab <strong className="tabular-nums" style={{ color: ORANGE }}>{gbp(ours)}</strong></span>
