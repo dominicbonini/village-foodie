@@ -49,7 +49,31 @@ export interface NavCta {
 // <DemoCta> below with byte-identical markup and classes, so app/landing/page.tsx calls `<LandingNav />`
 // unchanged and cannot regress. Do not "simplify" this by giving `cta` a default value: the default is a
 // different ELEMENT, not a different value.
-export function LandingNav({ cta }: { cta?: NavCta } = {}) {
+/**
+ * ── 🔴 WHERE THE LANDING IS, FOR THE IN-PAGE ANCHORS. DEFAULT '' = TODAY'S BEHAVIOUR EXACTLY. ──────
+ * `#pricing` is a BARE FRAGMENT, and a bare fragment resolves against whatever page you are on. On the
+ * landing that scrolls; on any child route that renders this chrome it targets a section which does not
+ * exist, so the link silently does nothing. Three links were in that state: this nav's logo, this nav's
+ * Pricing, and the footer's Pricing.
+ *
+ * 🔴 A PROP RATHER THAN A HARDCODED PATH, AND THE REASON IS THAT NO SINGLE PATH IS CORRECT EVERYWHERE:
+ *
+ *   href              landing on hatchgrab.com (URL '/')   landing at /landing (dev)   from /landing/cost
+ *   ---------------   ----------------------------------   -------------------------   ------------------
+ *   '#pricing'        scrolls OK                           scrolls OK                  NOTHING
+ *   '/landing#...'    NAVIGATES (URL '/' -> '/landing')    scrolls OK                  works OK
+ *   '/#pricing'       scrolls OK                           goes to the VF map          wrong host
+ *
+ * ⚠️ THE MIDDLE ROW IS WHY "just address the landing explicitly" IS NOT FREE. proxy.ts serves the
+ * landing at the site root with `NextResponse.rewrite`, which leaves the URL as '/'. A link to
+ * '/landing#pricing' clicked there is a DIFFERENT PATH, so the browser navigates instead of scrolling —
+ * a nav that reloads the page it is already on. The bottom row fails because '/' is only the landing on
+ * a hatchgrab host; on villagefoodie.co.uk it is the discovery map.
+ *
+ * ✅ SO: the landing passes nothing and keeps bare fragments — byte-identical, no behaviour change — and
+ * a child route passes '/landing', which is a real route on every host.
+ */
+export function LandingNav({ cta, landingHref = '' }: { cta?: NavCta; landingHref?: string } = {}) {
   return (
   <nav className={HEADER_BG}>
     <div className="nav-in">
@@ -74,7 +98,7 @@ export function LandingNav({ cta }: { cta?: NavCta } = {}) {
           so 42px sits inside it with 15px clearance top and bottom.
           w-auto + the component's width/height attributes preserve the aspect ratio → no layout shift.
           Scoped to THIS call site only: the footer, /signup, /setup and legal pages stay at 127×32. */}
-      <a href="#" className="nav-logo" aria-label="HatchGrab home">
+      <a href={landingHref || '#'} className="nav-logo" aria-label="HatchGrab home">
         <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
       </a>
       <div className="nav-r">
@@ -83,7 +107,7 @@ export function LandingNav({ cta }: { cta?: NavCta } = {}) {
             ⚠️ BOTH Log in links point at /login — the real page (app/login/page.tsx), not `#`. They are plain
             <a> like every other link on this page (no next/link is imported here), so it is a full navigation
             out of the landing route, which is what a login needs. */}
-        <a href="#pricing" className="btn btn-quiet nav-hide-sm">Pricing</a>
+        <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">Pricing</a>
         <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
         <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
         {cta ? (

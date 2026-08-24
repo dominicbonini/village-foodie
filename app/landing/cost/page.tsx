@@ -77,13 +77,20 @@ export default async function CostPage() {
             ⚠️ THE SHORT LABEL IS NOT OPTIONAL IN PRACTICE. Below 640px the nav swaps `.cta-full` for
             `.cta-short`, and the nav must never wrap — so the mobile label drops the arrow, exactly as
             the landing's own "Upload my menu →" / "Upload menu" pair does. */}
-        <LandingNav cta={{ href: '/signup', label: 'Start free →', shortLabel: 'Start free' }} />
+        {/* ⚠️ `landingHref` IS NOT OPTIONAL IN PRACTICE ON A CHILD ROUTE. Without it the nav's logo and
+            its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
+            see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
+            landing on a hatchgrab host. */}
+        <LandingNav
+          cta={{ href: '/signup', label: 'Start free →', shortLabel: 'Start free' }}
+          landingHref="/landing"
+        />
       </div>
 
       <CostComparison />
 
       <div className={CHROME}>
-        <LandingFooter />
+        <LandingFooter landingHref="/landing" />
       </div>
     </>
   )

@@ -11,7 +11,9 @@ import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 
-export function LandingFooter() {
+// ⚠️ `landingHref` — see the long note in LandingNav.tsx for why this is a prop and not a hardcoded
+// path. Default '' keeps the bare fragment, which is the landing's own behaviour and is byte-identical.
+export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {}) {
   return (
   <footer className={HEADER_BG}>
     <div className="wrap">
@@ -33,7 +35,7 @@ export function LandingFooter() {
           <p className="foot-tag">Less time booking.<br />More time cooking.</p>
         </div>
         <div className="foot-links">
-          <a href="#pricing">Pricing</a>
+          <a href={`${landingHref}#pricing`}>Pricing</a>
           <a href={PRIVACY_PATH}>Privacy</a>
           <a href={TERMS_PATH}>Terms</a>
           {/* 🔴 WAS `href="#"` — a control that went nowhere, then /support, which was deleted on

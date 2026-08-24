@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.38
+HatchGrab Engineering Reference Manual · V11.39
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.38**
+**Version 11.39**
 
 August 2026
 
@@ -15,6 +15,23 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.39 — 24 August 2026
+
+Delta over V11.38 — **the batch is deployed; extracting the landing's chrome exposed three broken
+links that had been wrong all along; two marketing claims were factually wrong and corrected against
+real figures; and one layout took three attempts because every version depended on a template being
+honoured.**
+
+- ✅ **THE UNDEPLOYED BATCH IS DEPLOYED.** Everything held behind App Store review since 20 August is
+  live.
+- 🔴 **THREE OF NINE LINKS IN THE SHARED CHROME WERE BARE FRAGMENTS**, including a logo labelled
+  "home" that went nowhere. **Duplicating a surface is what revealed them.**
+- 🔴 **TWO SAVING-ANCHOR CLAIMS WERE FACTUALLY WRONG**, one by about ten times.
+- 🔴 **A CARD-PROCESSING ASSUMPTION MADE THE PAGE ARGUE AGAINST ITSELF** — reporting a loss on a
+  provider where the operator would save several hundred pounds a year.
+- 🔴 **AN ANNUAL-LOOKING FIGURE WAS A YEAR-ONE FIGURE**, and said "a year".
+- ⚠️ **A LAYOUT FAILED THREE TIMES**, twice typechecking clean and rendering wrong.
 
 ## V11.38 — 23 August 2026
 
@@ -10731,6 +10748,49 @@ and nothing in the build can substitute for them. Everything else below is work,
   tree and join the queued batch, so production still runs the old behaviour. **What remains on this list
   is deploying them, and then deleting `META_APP_SECRET` from Vercel.**
 
+## V11.39 — VERIFICATION DEBT, updated (SUPERSEDES the V11.38 list below)
+
+**⛔ THE PREVIOUS LIST'S FRAMING IS SUPERSEDED: it was blocked on a deploy. The deploy has happened.
+Everything below is now blocked only on someone looking.**
+
+⛔ **AND SO IS EVERY EARLIER LIST'S BATCH LANGUAGE.** The V11.35, V11.36 and V11.37 lists below each
+carry a standing note — *"a large undeployed batch is queued"*, *"the undeployed batch grew six times
+today"*, *"before it ships, list it"*. 🔴 **NONE OF THOSE IS A CURRENT STATEMENT.** They are retained
+as the record of what was true at each version, per this manual's convention of keeping superseded
+debt lists in place; **the batch they describe is the one that shipped on 24 August.**
+
+**DISCHARGED THIS SESSION, BY EXECUTION:** the anchor bands' completeness by full enumeration · that
+the fee-mode toggle leaves our side byte-identical (per-field, by identity comparison) · every
+override state and the reset, exercised as button presses · that the plan-derived inputs are the only
+plan-dependent memo values and both are in the deps array · all four recommendation variants resolved
+through the constants with no literal present · the three-state hero verb across positive, zero and
+negative.
+
+🔴 **STILL UNOBSERVED — AND NOW CHECKABLE, WHICH IT WAS NOT BEFORE:**
+
+**At a phone width:** the results panel's fit — ⚠️ **the three-truck case has about 7px of margin
+against an error bar of roughly ±12px, so it is inside the noise** · the plan panel's longest
+paragraph · the fee-mode control's wrap · the tallest hero pushing the figure below the fold · the
+fifth question's two-clause title wrapping.
+
+**At desktop:** whether the context rows now support the figure or compete with it · whether the plan
+panel reads as a result or as furniture · the spacing above the two-year summary · the range input's
+focus ring.
+
+**Everywhere:** the shared chrome rendering outside the landing's own page structure · the fixed
+anchors followed from a child route · **whether the landing still renders after ninety-one lines were
+moved out of it** · the pricing gate, which has still never fired.
+
+⚠️ **A SIZE NOW CHANGES AT A BREAKPOINT AND NOTHING ELSE IN THAT CARD DOES.** Whether the block reads
+as deliberately compact below it, or merely smaller than everything around it, is not something a
+class name answers.
+
+**CARRIED, UNCHANGED:** the WhatsApp template create payload · any per-truck send · Embedded Signup ·
+the moved website field never round-tripping a value · the preview route never called · the
+uplink-pulled order number · the drain un-wedging · a real cancel writing a suppression row · the
+ownership gate refusing a foreign event · the auto-reject sweep · Stripe releasing a hold on reject —
+🔴 **and Stripe has still never processed a real customer payment on any truck.**
+
 ## V11.38 — VERIFICATION DEBT, updated (SUPERSEDES the V11.37 list below)
 
 **DISCHARGED THIS SESSION, BY EXECUTION:** that structuring the pricing values moves no rendered
@@ -10761,8 +10821,10 @@ OF IT — IT HAS BARELY BEEN RENDERED:**
 - **The gate has never fired.**
 
 🔴 **AND ON THE LANDING: WHETHER IT STILL RENDERS.** Ninety-one lines were moved out of it. **The
-hash proves the source; nothing has confirmed the page loads.** ⚠️ **It is the main marketing
-surface and it is in the undeployed batch.**
+hash proves the source; nothing has confirmed the page loads.** ✅ **CORRECTED V11.39 — this line
+read *"it is the main marketing surface and it is in the undeployed batch"*. It is no longer in a
+batch: it is DEPLOYED and live.** ⚠️ **That does not discharge the debt — it converts it. The page
+is now the main marketing surface, live, and still never confirmed to render.**
 
 **CARRIED, UNCHANGED:** the template create payload · any per-truck WhatsApp send · Embedded Signup
 · the moved website field never round-tripping a value · the preview route never called · the
@@ -10774,8 +10836,11 @@ demo tiers get an allowance · what the plan footnote should claim · the Connec
 expiry condition · the UTC date reference · the URL-normalisation triplication · the WhatsApp
 token-storage question to Meta · ICO registration.
 
-⚠️ **THE UNDEPLOYED BATCH NOW INCLUDES A PRICING-MODULE REFACTOR AND A NEW MARKETING PAGE ON TOP OF
-EVERYTHING ELSE. IT IS STILL NOT INVENTORIED.** 🔴 **Before it ships, list it.**
+✅ **SUPERSEDED V11.39 — THE BATCH SHIPPED.** These two lines read *"the undeployed batch now
+includes a pricing-module refactor and a new marketing page on top of everything else — it is still
+not inventoried"* and *"before it ships, list it"*. 🔴 **IT SHIPPED WITHOUT EVER BEING
+INVENTORIED.** It grew across roughly ten workstreams over four days and no single list of it ever
+existed. ⚠️ **Recorded as what happened, not as a recommendation.**
 
 ## V11.37 — VERIFICATION DEBT, updated (SUPERSEDES the V11.36 list below)
 
@@ -12279,6 +12344,40 @@ button went.** Corrected in place rather than left beside its correction.
 claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
 diff, which is the same argument the census makes.
 
+## V11.39 — METHOD: additions
+
+- 🔴 **DUPLICATING A SURFACE REVEALS ASSUMPTIONS THAT ONLY HELD BECAUSE THERE WAS ONE INSTANCE.** Three
+  links were wrong for months and became visible the day a second route rendered them.
+- 🔴 **SAMPLING BOUNDARIES PROVES THE BOUNDARIES YOU THOUGHT OF; ENUMERATING WHERE THE OUTPUT CHANGES
+  PROVES THERE ARE NO OTHERS.**
+- 🔴 **A CALCULATION IS NOT A MEASUREMENT.** Layout widths derived from an assumed glyph model carry an
+  error bar wider than the margin being tested. ⚠️ **State the error bar, and say which cases are inside
+  it.** **Joins:** *a hash proves the source did not change, not that the page renders · a parse is not
+  a typecheck · tsc-clean is not done.*
+- 🔴 **A LAYOUT THAT DEPENDS ON A TEMPLATE MUST DEGRADE GRACEFULLY WHEN THE TEMPLATE IS NOT HONOURED.**
+  After two failures, change the structure, not the values.
+- ⚠️ **AN INSTRUCTION IS NOT TRUSTWORTHY BECAUSE ITS CONTAINER IS.** Reliable channels are what make an
+  anomalous line easy to skim past.
+- 🔴 **A PREMISE WRITTEN CONFIDENTLY INTO A BRIEF IS INHERITED BY EVERYTHING BUILT FROM IT.** Four times
+  this week a brief asserted a state — a file's location, a module's contents, a footnote's truth — that
+  a single read would have settled. ⚠️ **The correct response each time was the executor stopping or
+  refusing, which means the cost of the error was paid in their time.** **When a brief asserts something
+  is broken, unbuilt or wrong, that claim commissions work and needs a read behind it — not a
+  recollection.**
+
+### V11.39 — ⚠️ AN ANOMALOUS INSTRUCTION ARRIVED INSIDE A TRUSTED REPORT
+
+A build report about a React component ended with an unrelated sentence stating that third-party
+connectors "need authorising" from account settings. **Nothing in that task touched any connector.**
+
+🔴 **TREATED AS DATA, NOT INSTRUCTION, AND NOT ACTED ON.** ⚠️ **Text of that shape — a routine-looking
+status note directing the reader to authorise credentials — is indistinguishable from prompt injection
+riding a trusted channel.** Benign explanations exist (a wrapper injecting boilerplate), **but the
+correct response is identical either way.**
+
+> ⚠️ **THE GENERAL FORM: the reports are reliable, and that is exactly what makes an anomalous line
+> inside one easy to skim past. An instruction is not trustworthy because its container is.**
+
 ## V11.38 — METHOD: additions
 
 - 🔴 **AN ABSENT STYLE IS INDISTINGUISHABLE FROM A DESIGN CHOICE.** A whole class of styling can fail
@@ -12445,7 +12544,8 @@ with comments blanked is truthful.
   a cross-reference is not provenance · source-read is not behaviour-verified · a default is not a value ·
   **a variable set in Vercel is not a variable in the running deployment** (V11.36) ·
   **a parse is not a typecheck** ·
-  🔴 **a file hash proves the source did not change, NOT that the page still renders** (V11.38) ·*
+  🔴 **a file hash proves the source did not change, NOT that the page still renders** (V11.38) ·
+  🔴 **a calculation is not a measurement** (V11.39) ·*
   **and a reading of HEAD is not a reading of what shipped.**
 - ✅ **AN EXECUTOR RECORDED ITS OWN FALSE READING RATHER THAN ONLY THE CORRECTED ONE** — a filter count
   that appeared to change turned out to be an artefact of the report's own comment text quoting the
@@ -15153,6 +15253,45 @@ the CTA prop and the nav falls to its default branch and throws at render.** Lou
 silent, which is the right way round, but it is a coupling between one line and an import that is no
 longer there.
 
+## V11.39 — 🔴 EXTRACTING A SURFACE REVEALS ASSUMPTIONS THAT ONLY HELD BECAUSE THERE WAS ONE INSTANCE
+
+Sharing the landing's nav and footer with a second route broke **three of their nine links. All three
+were bare fragments** — a fragment resolves against the current page, so on a child route it targets a
+section that does not exist and the link silently does nothing.
+
+🔴 **THE WORST WAS NOT A CONTENT LINK. The logo was `href="#"` with an accessible label reading
+"home".** ⚠️ **On the landing that was survivable** — the landing *is* home, so a link going nowhere
+lands where you already are. **On a child route it is a control that announces itself as home and does
+nothing**, and a screen-reader user is told it is home.
+
+⚠️ **IT HAD BEEN WRONG THE WHOLE TIME. The extraction did not cause it; it gave it a second route on
+which to be visibly wrong.**
+
+> 🔴 **THE GENERAL FORM, FOR THE INVARIANTS SECTION: duplicating a surface is a cheap way to find
+> assumptions that only held because there was one instance of it.** Every "works because there is only
+> one" becomes visible the moment there are two.
+
+### The fix is a prop, because no single href is correct everywhere
+
+🔴 **THE ROOT PATH IS *REWRITTEN* TO THE LANDING, NOT REDIRECTED**, so on the live domain the landing
+renders while the address bar still reads the root. **That single fact decides the whole question:**
+
+- A bare fragment scrolls on the landing and does nothing on a child route.
+- **An explicit path-plus-fragment NAVIGATES on the live domain rather than scrolling**, because the
+  address bar's path differs from the link's — a nav that reloads the page it is already on, and a URL
+  that silently changes away from the canonical root.
+- **A root-relative fragment fails on any non-primary host**, where the root is the discovery map
+  rather than the landing.
+
+✅ **So the chrome takes an optional landing-path prop, defaulting to empty.** The landing passes
+nothing and keeps bare fragments — **byte-identical, no behaviour change on either host.** A child
+route passes the landing's real path, which resolves on every host.
+
+⚠️ **Same shape as the nav's CTA prop: optional, with its ABSENCE being the landing's behaviour.** That
+is why the landing needed no edit at all. **When adding anything to shared chrome, make the default the
+existing caller's behaviour and the existing caller needs no change — which is also the only way to
+prove it did not change.**
+
 # 39. Buzzers — physical pagers against orders (V10)
 
 > Operators hand customers a physical numbered buzzer/pager and record which one against the order. Built in two phases, both deployed and live-verified (3 August 2026). Provenance per claim below: **live-verified** (seen working on screen), **read from code**, or **computed** (unobserved).
@@ -15773,8 +15912,13 @@ total.**
 ### The model, and the one insight the page rests on
 
 🔴 **CARD PROCESSING IS EXCLUDED FROM BOTH SIDES, AND THAT IS WHAT MAKES THE COMPARISON HONEST AND
-STARK AT ONCE.** A competitor's all-in percentage contains the same card processing we charge, so
-subtracting it from both leaves **their platform fee against our plan.** ⚠️ **It also means their
+STARK AT ONCE.** ✅ **CORRECTED V11.39 — this read *"a competitor's all-in percentage contains the
+same card processing we charge, so subtracting it from both leaves their platform fee against our
+plan"*, which assumed EVERY competitor quotes all-in.** 🔴 **That assumption was false for any
+provider quoting a platform fee with card processing billed separately, and it made the page argue
+against itself — see the V11.39 entry below.** **The comparison is still their platform fee against
+our plan; how that platform fee is REACHED now depends on which way the operator's provider
+quotes.** ⚠️ **It also means their
 per-order fee and the card per-order fee cancel exactly, so AVERAGE ORDER VALUE DROPS OUT OF THE
 COMPARISON ENTIRELY** — it is fixed as an assumption and used only to display an approximate order
 count. **Asking the operator for it would be asking for a number that changes nothing.**
@@ -15861,6 +16005,175 @@ has no other way to know the equality is a coincidence.**
 > ⚠️ **THE GENERAL FORM, WORTH THE INVARIANTS SECTION: two numbers that are equal today, semantically
 > opposite, and subtracted from one another. De-duplicating them is a correctness bug that looks like
 > housekeeping.**
+
+## V11.39 — 🔴 THE CARD-PROCESSING ASSUMPTION MADE THE PAGE ARGUE AGAINST ITSELF
+
+The comparison assumed a competitor's quoted rate is **all-in** and subtracted card processing from
+it. **True of the rate defaulted to, false of any provider quoting a platform fee with card
+processing charged separately.**
+
+🔴 **THE CONSEQUENCE, MEASURED:** at a platform-only 3% + 20p on £2,500 a month, the page reported **a
+£143 LOSS and told the operator not to switch.** Read correctly the same provider costs them £1,300 a
+year and the saving is **£707.**
+
+✅ **Fixed with a toggle inside the existing question — not a sixth question.** Two modes, defaulting
+to the previous behaviour.
+
+🔴 **THE MATHS CHANGES ON THEIR SIDE ONLY.** Both modes produce **the competitor's platform fee with
+card processing out of it** — one subtracts it from a rate that contained it, the other does not
+subtract from a rate that never did. ⚠️ **Neither branch ever ADDS card processing to their side,
+which is what keeps the two modes comparable and keeps card processing excluded from both sides under
+both.**
+
+⚠️ **AN INSTRUCTION TO "BALANCE" OUR SIDE WOULD HAVE BROKEN THE COMPARISON SILENTLY**, and was
+explicitly refused. Our figures are proven byte-identical across the toggle.
+
+⚠️ **The second mode does not restate the operator's own input back to them.** In that mode their
+platform fee *is* the number they typed; **the all-in total is the figure that has become new
+information**, so that is what the sentence gives them.
+
+⚠️ **OPEN, UNSMOOTHED: the toggle can flip the page from a loss to a saving instantly**, with no
+transition and no explanation of why the number jumped. **Correct arithmetic; it may read as
+instability.** Adding motion or a note is a decision, not a fix.
+
+## V11.39 — 🔴 TWO MARKETING CLAIMS WERE FACTUALLY WRONG
+
+The saving is translated into a physical comparison — pitch fees, equipment, a van. **Two bands were
+wrong against real UK figures.**
+
+- **Public liability cover:** roughly £50–500 a year, typically about £150 for a sole trader doing
+  events. The band called £80–200 **"about a month's cover"**. 🔴 **Out by roughly ten times — that
+  range is a YEAR's cover.**
+- **Festival pitches:** a standard three-day pitch is around £550, premium around £800, day rates from
+  about £128. The bands called £200–500 **"a couple of pitches"** and £500–1,000 **"a season"**.
+  **Both overstated what the money buys.**
+
+✅ **Every band was widened in the conservative direction**, so a saving that used to earn "a season of
+pitch fees" now earns "a couple of festival pitches".
+
+🔴 **AND THE PROVENANCE IS RECORDED AT THE FUNCTION, INCLUDING WHAT WAS *NOT* CHECKED.** The insurance
+and pitch figures were verified against published UK sources; **the equipment and van figures are
+estimates and the comment says so.** ⚠️ **Otherwise the checked bands lend false authority to the
+unchecked ones.**
+
+> ⚠️ **WHY THIS MATTERS MORE THAN ANYWHERE ELSE ON THE PAGE: an operator knows what a pitch costs. A
+> wrong anchor does not merely fail to land — it makes the headline figure beside it read as
+> invented.**
+
+### ✅ THE TEST TECHNIQUE IS WORTH KEEPING
+
+Boundary probes were run at fourteen points and passed. **Then every integer across the range was
+walked and the points where the output changes were collected** — exactly the declared boundaries, and
+nowhere else.
+
+🔴 **SAMPLING BOUNDARIES PROVES THE BOUNDARIES YOU THOUGHT OF. ENUMERATING WHERE THE OUTPUT CHANGES
+PROVES THERE ARE NO OTHERS.** A silently duplicated band, or an unreachable one, shows up as a missing
+change point and no amount of spot-checking would surface it.
+
+## V11.39 — 🔴 A YEAR-ONE FIGURE THAT SAID "A YEAR"
+
+The results panel read *"With HatchGrab £1,027 a year"*. **That figure contains the free months**, so
+it is lower than every year that follows. 🔴 **Presented as "a year" it implied an ongoing rate. An
+operator budgeting on it would have been misled by us.**
+
+✅ **Fixed by qualifying the AMOUNT, not the label:** *"£1,027 in year one"*. ⚠️ **A label reading
+"first year" plus an amount reading "a year" says year twice.**
+
+✅ **The two rows now carry different qualifiers and that asymmetry is deliberate** — their cost
+genuinely is ongoing, ours is not. **Recorded at the site as "do not harmonise".**
+
+⚠️ **A YEAR-TWO ROW WAS CONSIDERED AND REJECTED**, and the rejection is recorded where someone would
+add one: it dilutes the two-line contrast the panel exists to create, and the detail card already
+carries that figure with its own saving directly beneath.
+
+🔴 **STILL OPEN, SAME CLASS: the primary call to action interpolates the same year-one figure without a
+timeframe.** Defensible — the button is about starting, and starting is year one — but it is the other
+place a year-one number appears unqualified.
+
+> ⚠️ **THE GENERAL FORM: a promotional period inside an annual total makes that total a first-year
+> figure, not a rate. Any surface presenting it must say which.**
+
+## V11.39 — ⚠️ A LAYOUT THAT FAILED THREE TIMES — and what the third one did differently
+
+A two-row comparison block collapsed twice into five stacked lines. **Both versions used a
+multi-column grid template; both collapsed to a single column with the amounts floated to the far
+edge.** ⚠️ **Both typechecked clean.**
+
+- **First attempt: shrink-to-fit sizing** — the box took the width its grid could be *squeezed* to,
+  near minimum content width, so every cell broke onto its own line.
+- **Second attempt: max-content sizing** — the box went full width instead, and the cells still
+  stacked.
+
+🔴 **THE ROOT CAUSE WAS NEVER CONCLUSIVELY ESTABLISHED, AND THE INVESTIGATION SAID SO RATHER THAN
+GUESSING.** ⚠️ **Two greps along the way were themselves wrong — class-name escaping in one, shell
+glob-mangling of filenames containing brackets in the other — and the conclusions drawn from them were
+withdrawn.**
+
+✅ **THE THIRD ATTEMPT REMOVED THE DEPENDENCY RATHER THAN THE SYMPTOM: two plain flex rows, no
+template, no width class at all.** 🔴 **A FLEX ROW HAS NO TEMPLATE TO LOSE — the worst case is a row
+loses its GAP; it cannot lose its LINE.**
+
+⚠️ **CENTRING BELONGS TO THE WRAPPER, NOT TO A WIDTH ON THE BLOCK.** A flex item is content-sized by
+default, so a centring parent centres a content-width child **without the child declaring any width.**
+🔴 **Every width that block ever carried is what broke it**, and the file now says so as a prohibition.
+
+⚠️ **The cost: the two amounts no longer share a right edge**, because aligning them across
+different-length labels needs a fixed width — **another measurement that can fail, which is the whole
+problem.** The rows reading as two clean lines was judged worth more.
+
+> 🔴 **THE LESSON: a layout that depends on a template being honoured must degrade gracefully when it
+> is not. Prefer the structure with less to lose over a third set of values for the structure that has
+> already failed twice.**
+
+## V11.39 — THE RESULTS DESIGN: decisions recorded so they are not reversed as taste
+
+- 🔴 **THE ANCHOR MUST SIT BESIDE THE RESULT, NOT IN A CARD BELOW IT.** The competitor's annual cost
+  was one card away from the saving, where it could not anchor anything. **Research on anchored
+  pricing finds a substantial loss in perceived value when only the result is shown.** Both figures
+  now sit directly above the saving.
+- 🔴 **A SMALL GREY LABEL ABOVE A LARGE NUMBER GETS SKIMMED, AND THE NUMBER THEN ARRIVES UNATTACHED**
+  — readable as a price rather than a saving. ✅ **The verb is now legible and sits tight above the
+  figure so the two read as one unit.** Recorded as "do not shrink it back — its legibility is the
+  fix".
+- **The percentage carries the timeframe.** ⚠️ **Without it the figure can be read as monthly or as a
+  lifetime total, and both misreadings flatter us.**
+- 🔴 **THE HEADLINE STATES WHAT THE PAGE DOES AND ARGUES NOTHING.** It went from a question implying
+  the reader had been careless, to a different question, to a plain statement. ⚠️ **All three wordings
+  are recorded at the site with the test that connects them: a fourth version must not be arguing. The
+  figure carries the argument.**
+- **The plan is presented as a recommendation the operator can change, not a verdict.** ⚠️ **A
+  three-state override — not chosen / chose ours / chose the other — because a boolean cannot
+  distinguish "they have not chosen" from "they chose what we suggested", and the label says something
+  different in each case.**
+- ⚠️ **Selecting an answer clears the override, including re-selecting the current answer.** Otherwise
+  a plan chosen under one set of assumptions drives every figure after those assumptions change — **a
+  stale decision presented as a current one.**
+- ⚠️ **An override that produces a worse fit says so in plain prose, not a warning box.** The operator
+  chose it deliberately; **they need to not be surprised later, not to be alarmed out of it.** The note
+  says what they get instead, not only what is missing.
+- 🔴 **THE EFFECTIVE-RATE COMPARISON STAYS DELETED** (from the previous version) — it published the
+  exact rate a competitor would need to undercut.
+
+## V11.39 — 🔴 COMMERCIAL DECISIONS OPEN, WITH THE PAGE AND THE PRODUCT DISAGREEING
+
+- 🔴 **IS TEAM ACCESS PER TRUCK OR PER ACCOUNT?** The calculator charges the higher tier per truck, so
+  two vans with one person each — **two people, therefore separate logins** — pays the higher tier
+  twice. **If multi-user access is account-level, the page overstates our own cost for exactly the
+  multi-van operator we most want.**
+- 🔴 **DOES THE LOWER PAID TIER INCLUDE TWO TRUCKS?** In-product copy says it does; the calculator
+  charges per truck from the first. **Both are visible to the same operator.**
+- ⚠️ **THE FREE-MONTHS INPUT ACCEPTS UP TO TWELVE AND THE OFFER IS FOUR.** A visitor who drags it past
+  the real maximum sees a saving that will not be honoured. **It began as a demo control and is now on
+  a page a prospect can reach.**
+- **The founding-truck offer stands.** ⚠️ **The saving is not the promotion** — strip the free months
+  and the second year still saves over 60%, so the discount buys the *speed* of conversion rather than
+  the argument. 🔴 **The risk is selection, not margin: a long free period attracts operators who want
+  free software.** The mitigation is who it is offered to, not how long it runs.
+
+**ALSO OPEN, UNCHANGED:** wiring the payments module to the numeric pricing constants · whether the
+non-commercial tiers get an allowance · what the plan footnote should claim · the WhatsApp Connect
+early-return's expiry condition · the UTC date reference · the URL-normalisation triplication · the
+WhatsApp token-storage question to Meta · ICO registration.
 
 # 45. Offline payments and the conflict signal (V11.4)
 
