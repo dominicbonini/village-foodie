@@ -189,6 +189,22 @@ export async function proxy(request: NextRequest) {
   // Refresh session if expired
   const { data: { user } } = await supabase.auth.getUser()
 
+  // ── 🔴 EVERY RESPONSE WE RETURN MUST CARRY THE REFRESHED AUTH COOKIES. ──────────────────────────
+  // `getUser()` above ROTATES an expired access token and `setAll` writes the new pair onto
+  // `supabaseResponse`. A `NextResponse.redirect(...)` is a BRAND-NEW response object that never
+  // receives them — so every redirect below used to throw the refreshed session away and hand the
+  // browser back its old, now-spent cookies.
+  // 🔴 THAT IS WHY AN ADMIN COULD NOT OPEN A TRUCK (24 August 2026). `/manage/<token>` refreshed,
+  // lost the cookies, saw `user` as null, and 307'd to `/login`; `/login` — one hop later, on cookies
+  // that still just about worked — saw a user and bounced to `/dashboard`; `/dashboard` saw an admin
+  // and bounced to `/admin`. Three redirects, ending where it started, with the token discarded.
+  // ⚠️ DEFINED HERE, NOT FURTHER DOWN. It used to live beside the host-branded-root block at the
+  // bottom, which is the only place that used it. Everything from this line on must use it.
+  const carrySessionCookies = (res: NextResponse) => {
+    supabaseResponse.cookies.getAll().forEach(cookie => res.cookies.set(cookie))
+    return res
+  }
+
   // Protected routes — require authentication
   // Note: /kds uses kds_token auth, not session auth — excluded here
   // Note: /dashboard/demo-* is likewise token-authed (anonymous demo, no account to sign in to) — see
@@ -218,15 +234,37 @@ export async function proxy(request: NextRequest) {
   const isNativeApp = (request.headers.get('user-agent') || '').includes('HatchGrabNativeApp')
 
   if (isProtected && !user && !isNativeApp) {
-    // Not logged in (web) — redirect to login with return URL
+    // Not logged in (web) — redirect to login with return URL.
+    // ⚠️ `pathname + search`, not `pathname`: the query string is part of the destination and dropping
+    // it silently lands the operator on the same page with different state.
     const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('next', pathname)
-    return NextResponse.redirect(loginUrl)
+    loginUrl.searchParams.set('next', pathname + request.nextUrl.search)
+    return carrySessionCookies(NextResponse.redirect(loginUrl))
   }
 
   if (pathname === '/login' && user) {
-    // Already logged in — redirect to dashboard
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    // ── 🔴 HONOUR `next`. THIS LINE USED TO IGNORE IT ENTIRELY. ──────────────────────────────────
+    // The guard above sets `next` on the way in; this one threw it away on the way out and sent
+    // everyone to `/dashboard`. For an ADMIN that is a dead end, because app/dashboard/page.tsx
+    // redirects `is_admin` straight to `/admin` — so an admin clicking Dashboard or Manage on a truck
+    // row watched the address bar flicker and land back on the page they started from, every time.
+    // For an operator it is quieter and worse: they arrive at their FIRST truck instead of the one
+    // they asked for, with nothing to say the destination changed.
+    //
+    // 🔴 THE GUARD IS AN OPEN-REDIRECT GUARD AND IS NOT OPTIONAL. `new URL(next, request.url)`
+    // resolves `//evil.com` and `/\evil.com` to a DIFFERENT ORIGIN — a login page that forwards to an
+    // attacker's site after authenticating is a credential-phishing primitive. Only a single leading
+    // slash is accepted. ⚠️ `/login` is excluded too, or `?next=/login` redirects to itself forever.
+    const rawNext = request.nextUrl.searchParams.get('next')
+    const nextIsSafe =
+      !!rawNext &&
+      rawNext.startsWith('/') &&
+      !rawNext.startsWith('//') &&
+      !rawNext.startsWith('/\\') &&
+      !rawNext.startsWith('/login')
+    return carrySessionCookies(
+      NextResponse.redirect(new URL(nextIsSafe ? rawNext! : '/dashboard', request.url))
+    )
   }
 
   if (rlRemaining !== null) {
@@ -261,10 +299,8 @@ export async function proxy(request: NextRequest) {
   // return instead of being discarded with it. Nothing above this line was touched.
   // Losing no rate-limit header here is provable rather than assumed: '/' and '/landing' match none of
   // isCustomerEvents/isStrictPublic/isGeneralPublic, so `rlRemaining` is always null on both.
-  const carrySessionCookies = (res: NextResponse) => {
-    supabaseResponse.cookies.getAll().forEach(cookie => res.cookies.set(cookie))
-    return res
-  }
+  // (`carrySessionCookies` is defined immediately after `getUser()` above — it is needed by the auth
+  //  guards as well as by the two returns below. Moved 24 August 2026; the body is unchanged.)
 
   // ── /landing KEEPS WORKING, ON BOTH DOMAINS, BY GOING TO THE ROOT ──────────────────────────────────
   // Exact equality, as before — '/landing/anything' is not matched, on either matcher. On hatchgrab.com
