@@ -8279,6 +8279,260 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
+// ── WHATSAPP REPLY PREVIEW ──────────────────────────────────────────────────────────────────────────
+// Renders the EXACT reply the live WhatsApp auto-reply would produce for this truck, by calling the same
+// function the webhook calls (via /api/manage/whatsapp-preview). Nothing is sent to Meta and nothing is
+// written to any table.
+//
+// 🔴 DELIBERATELY NOT PLAN-GATED, and deliberately OUTSIDE the `!isNativeApp()` wrapper that hides the
+// Auto-replies subsection — so every operator sees it on every plan, iPad included. Both are decisions,
+// not oversights: hiding a preview behind the tier it advertises is backwards, and the native hide exists
+// for the unbuilt CONNECT flow, which this is not.
+//
+// ── RENDERS AS A SUBSECTION, NOT A CARD ─────────────────────────────────────────────────────────────
+// It is a child of the "Online presence & social" Card, placed after that Card's native-hide wrapper
+// closes. So it uses the same `border-t` + `text-sm font-bold text-slate-700` subsection shape as the
+// Auto-replies block above it rather than nesting a Card inside a Card.
+//
+// ⚠️ THE HEADING IS FORWARD-LOOKING; THE BODY IS NOT. Messenger and Instagram are `coming_soon` and
+// their rows were removed from the Auto-replies subsection on 14 August, so the only channel this can
+// actually preview is WhatsApp. No line below claims otherwise — the copy is channel-neutral rather
+// than multi-channel, which is what keeps a plural heading honest.
+//
+// 🔴 A NULL REPLY IS A CORRECT ANSWER, NOT AN ERROR. It is the IGNORE bucket — spam, gibberish, catering
+// requests — behaving exactly as it does live, where nothing is sent. Rendering it as a blank box or a
+// failure would misrepresent the one bucket an operator is most curious about.
+// ── COMING-SOON STATE, READ FROM THE PRICING MATRIX RATHER THAN HARDCODED ──────────────────────────
+// FEATURE_SECTIONS is already imported by this file for the Billing tab, so no change to
+// lib/plan-features.ts was needed to reach these flags.
+// ⚠️ THERE IS ONE ROW FOR BOTH CHANNELS, NOT TWO. The matrix carries "Messenger & Instagram
+// auto-replies" as a single row with a comment forbidding a re-merge with WhatsApp. So one lookup
+// drives both rows below; there is no per-channel flag to read and inventing one here would be a
+// second source of truth.
+const MESSENGER_INSTAGRAM_ROW = 'Messenger & Instagram auto-replies'
+
+// ── 🔴 THE ONE SWITCH FOR WHATSAPP. FLIP IT TO true WHEN META APPROVES. ────────────────────────────
+// Operator decision, 21 August 2026: WhatsApp auto-replies are shown as "Coming soon" and greyed out
+// until Meta approves the integration. The feature IS built and IS shipped at Pro — this is about
+// approval, not about the plan — which is why it lives here as a local switch and NOT in
+// lib/plan-features.ts (see the long note at the WhatsApp row for what editing that module would break).
+// ⚠️ TYPED `boolean`, NOT INFERRED AS `false`, ON PURPOSE: it keeps both JSX branches type-checked and
+// stops a linter reporting the live branch as unreachable while the switch is off. The live branch is
+// not dead code — it is the code this flag exists to bring back.
+const WHATSAPP_LIVE: boolean = false
+
+function isRowComingSoon(rowName: string): boolean {
+  for (const section of FEATURE_SECTIONS) {
+    const row = section.rows.find(r => r.name === rowName)
+    if (row) return row.pro === 'coming_soon' || row.max === 'coming_soon'
+  }
+  // 🔴 ROW NOT FOUND => TREAT AS COMING SOON, AND THE DIRECTION IS DELIBERATE. This is keyed on a row
+  // NAME STRING, and the manual already records that renaming a row silently disarms
+  // findPlanParityViolations(), which reads the same names. The same fragility applies here. An
+  // unfound row therefore renders as "coming soon" — promising nothing — rather than as live, which
+  // would be a control that does nothing. Fail toward the smaller claim.
+  return true
+}
+
+function WhatsAppReplyPreview({ token }: { token: string }) {
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<{ reply: string | null; classification: string } | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  // The submitted text, held separately from the input so the question stays on screen as a bubble
+  // while the request runs and after it returns. The input is free to be cleared or re-typed.
+  const [asked, setAsked] = useState<string | null>(null)
+
+  // Shapes chosen to exercise DIFFERENT classifier buckets: a schedule question (SPECIFIC_QUERY), an
+  // item question and a menu question (both MENU_QUERY, one of which reaches the grounded answerer).
+  const EXAMPLES = ['Where are you tonight?', 'Do you do pepperoni?', "What's on the menu?"]
+
+  const run = async (text: string) => {
+    const trimmed = text.trim()
+    if (!trimmed || loading) return
+    setLoading(true); setError(null); setResult(null); setAsked(trimmed)
+    try {
+      const res = await fetch('/api/manage/whatsapp-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, message: trimmed }),
+      })
+      const data = await res.json()
+      // The route reports its failures as themselves — rate limited, too long, structural — rather than
+      // as an empty reply, so they are shown as themselves too.
+      if (!data.ok) setError(data.error || 'Could not build a preview just now.')
+      else setResult({ reply: data.reply ?? null, classification: data.classification })
+    } catch {
+      setError('Could not reach the server. Check your connection and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ⚠️ NO `border-t` ON THE ROOT. This block is now the FIRST thing under the card title, so a top rule
+  // would read as a divider immediately beneath a heading. The separator between this and the Connect
+  // subsection lives on THAT subsection instead — which is also what keeps the iPad render free of a
+  // stray rule when Connect is hidden.
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm font-bold text-slate-700 mb-0.5">Try it before you connect</p>
+        {/* ⚠️ SIZE MATCHED, NOT INVENTED. `text-sm text-slate-500` is the class this Settings tab already
+            uses for explanatory copy sitting under a heading — the "Remove {van}?", "Add another truck"
+            and "Upgrade to add more vans" bodies all use it. These are per-element Tailwind utilities,
+            NOT a shared caption class, so raising them here changes nothing anywhere else.
+            ⚠️ THE SECOND LINE ("Built from your live menu and schedule…") WAS DELETED 21 August 2026 —
+            the card description now says "using your menu and schedule", so it repeated it. Do not
+            reinstate it without checking the description first.
+
+            🔴 THE HEADING AND THIS LINE INSTRUCT; THEY DO NOT DESCRIBE. Rewritten 21 August 2026 from
+            "See what a customer gets back" / "Ask anything a customer might ask…", which stated what the
+            block WAS. **The invitation is the point of the block**, so the copy asks the operator to do
+            something. Do not revert this to descriptive phrasing as a stylistic preference — the change
+            of voice is the change.
+
+            🔴 "BEFORE YOU CONNECT" IS DELIBERATELY FORWARD-LOOKING. DO NOT "CORRECT" IT. There is no
+            connect action on this card today — WhatsApp is coming-soon behind WHATSAPP_LIVE — and that
+            is beside the point: the preview exists so an operator can try the feature AHEAD of
+            connecting, which is its purpose whether or not the control is live this week. This is not an
+            oversight and it is not a stale reference to a removed button. */}
+        <p className="text-sm text-slate-500">Type a question like a customer would ask, and see exactly what they&apos;d get back. Nothing is sent to anyone.</p>
+      </div>
+
+      {/* ── INPUT ROW. MOVED ABOVE THE CHIPS AND THE BOX, 21 August 2026. ──────────────────────────
+          The reading order is now: say what this is → give them the box to type in → offer examples →
+          show the result. The input sits ABOVE the box it fills.
+          ⚠️ STACKS ON A PHONE. `flex-col sm:flex-row` with a full-width button below 640px: at 375px an
+          inline button would leave the input around 200px and shrinking further with any longer label.
+          Above `sm` it returns to one line. **"Send" is shorter than "Try it" was, so this is no worse
+          at any width — but it has not been rendered; see the report.**
+          ✅ THE PLACEHOLDER-ECHOES-THE-LINE-ABOVE PROBLEM IS RESOLVED (21 August 2026). It read "Ask
+          something a customer might ask" directly beneath a line beginning "Ask anything a customer
+          might ask". It is now a CONCRETE EXAMPLE — it demonstrates and invites in the same breath,
+          which the abstract restatement did neither of. */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        <input
+          type="text"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); void run(message) } }}
+          placeholder="What desserts do you do?"
+          maxLength={1000}
+          className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+        />
+        <div className="sm:flex-shrink-0">
+          <Btn label="Send" size="sm" loading={loading} disabled={!message.trim()} onClick={() => void run(message)} />
+        </div>
+      </div>
+
+      {/* Chips BELOW the input, ABOVE the box. Tapping one fills the input and runs it — unchanged.
+          `flex-wrap` is what makes them safe at 375px: three chips of ~11-19 characters cannot fit one
+          line on a phone and will wrap rather than overflow. */}
+      <div className="flex flex-wrap gap-2">
+        {EXAMPLES.map(ex => (
+          <button key={ex} onClick={() => { setMessage(ex); void run(ex) }} disabled={loading}
+            className="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 disabled:opacity-50">
+            {ex}
+          </button>
+        ))}
+      </div>
+
+      {/* ── THE CHAT REGION ────────────────────────────────────────────────────────────────────────
+          🔴 ONE BOX, NOT TWO. The preview itself is plain content in the card — only this RESULT AREA
+          is bordered. A panel around the whole preview would be a border inside a border inside a
+          border on a phone.
+          🔴 DELIBERATELY NOT WHATSAPP. No green, no logo, no ticks, no wallpaper — neutral slate plus
+          the page's existing orange accent for the operator's own message. Meta's brand guidelines
+          prohibit imitating their client interface and a Meta app review is pending; a generic chat
+          shape carries the meaning without the risk. **Do not "make it look more like WhatsApp".**
+          ⚠️ `min-h-[8rem]` IS LOAD-BEARING: every state — empty, loading, result, error — renders
+          INSIDE this box, so it never resizes mid-request and the page does not jump.
+          ⚠️ `break-words` + `max-w-[85%]` on the bubbles is what stops a long unbroken string forcing
+          horizontal scroll at 375px. */}
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 min-h-[8rem] flex flex-col gap-2 overflow-hidden">
+        {/* ── THE EMPTY STATE ────────────────────────────────────────────────────────────────────────
+            ⚠️ IT SITS UNDER THE CHIPS, NOT UNDER THE INPUT (reorder, 21 August 2026), and still reads
+            correctly there because it describes THE BOX rather than pointing at a control above it —
+            "will appear here" is positional about itself, not about what precedes it. Had it read "type
+            a question below", the reorder would have made it false.
+            ⚠️ SUBORDINATE ON PURPOSE: `text-sm text-slate-400` — the box's quietest weight, lighter than
+            any real content it will be replaced by. It is a placeholder, not content.
+            🔴 IT CANNOT SHIFT THE BOX HEIGHT, AND THAT IS ARITHMETIC RATHER THAN LUCK. The box is
+            `min-h-[8rem]` = 128px. This state is ONE line of `text-sm` (20px line-height) inside `p-3`
+            (12px top + 12px bottom) = 44px — comfortably under the floor, so the min-height governs and
+            the box renders at exactly 128px while empty. **Anything that makes this state taller than
+            128px would start moving the box; keep it to one short line.** */}
+        {!asked && !loading && !error && !result && (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-sm text-slate-400 text-center">Your reply will appear here</p>
+          </div>
+        )}
+
+        {asked && (
+          <div className="flex justify-end">
+            <p className="max-w-[85%] break-words rounded-2xl rounded-br-sm bg-orange-100 text-orange-900 px-3 py-2 text-sm">{asked}</p>
+          </div>
+        )}
+
+        {loading && (
+          <div className="flex items-center gap-2 text-sm text-slate-400"><Spinner /><span>Working out the reply...</span></div>
+        )}
+
+        {error && !loading && (
+          /* Reported as itself — rate limited, too long, structural — never as an empty reply. */
+          <p className="text-sm text-red-500 break-words">{error}</p>
+        )}
+
+        {result && !loading && (
+          result.reply === null ? (
+            /* 🔴 THE IGNORE BUCKET WORKING, NOT A FAILURE. Rendered as a result, deliberately not as a
+               bubble: the point is that nothing would be sent, so nothing is drawn as a message. */
+            <div className="text-sm">
+              <p className="text-slate-600 font-medium">No reply would be sent.</p>
+              <p className="text-xs text-slate-400 mt-0.5">That reads as spam, a booking request or something unrelated, so the auto-reply stays quiet.</p>
+            </div>
+          ) : (
+            /* ── THE "Read as" BUCKET LABEL WAS REMOVED FROM THE UI, 21 August 2026. ───────────────────
+                Operator decision: the reply is the only thing this box needs to show. An earlier comment
+                here argued the opposite and said "do not remove this as clutter" — that argument is
+                recorded as OVERRULED rather than left standing beside a removed element.
+                ⚠️ WHAT IT COST, SO IT IS NOT REDISCOVERED THE HARD WAY: it was the in-product tell for
+                the missing-API-key degradation. With no key the shared function degrades silently to its
+                deterministic fallbacks and EVERY question — gibberish included — comes back classified
+                as the menu bucket. The label made that visible in one preview; nothing on this screen
+                does now, and the remaining tell is server-side (`[whatsapp-preview] … classification=`
+                in the function logs).
+                ⚠️ `classification` IS STILL RETURNED BY THE ROUTE AND STILL HELD IN STATE. Restoring the
+                label is putting one paragraph back; nothing upstream was removed. */
+            <p className="max-w-[85%] break-words whitespace-pre-wrap rounded-2xl rounded-bl-sm bg-white border border-slate-200 text-slate-700 px-3 py-2 text-sm">{result.reply}</p>
+          )
+        )}
+      </div>
+
+      {/* ── THE AI FOOTNOTE ────────────────────────────────────────────────────────────────────────
+          🔴 WORDING TAKEN VERBATIM FROM THE LANDING PAGE, NOT WRITTEN HERE. Source: `FOOTNOTES` number
+          '4' in lib/plan-features.ts — "Auto-replies require a Business account on each platform.
+          Replies are AI-generated and can occasionally be wrong — you can view every message and reply
+          yourself at any time."
+          🔴 ONLY THE VERIFIED CLAUSE IS REPEATED. The footnote's second half — "you can view every
+          message" — HAS NO PRODUCT BEHIND IT. `whatsapp_logs` stores `message_in` and `response_sent`,
+          but the only reads anywhere select `classification, possible_miss` (the Reports counts) and
+          `created_at` (the greeting check). NOTHING renders a past reply to an operator. Repeating that
+          clause here would put an unbacked claim in front of the one person who could disprove it.
+          🔴 IT NOW DIVERGES FURTHER, AND THAT IS ACCEPTED (decision, 20 August 2026). The separate
+          "wording varies slightly each time" line was MERGED IN HERE — the two caveats were saying one
+          thing in two places. So this string is no longer a substring of FOOTNOTES '4'. It is DELIBERATELY
+          a plain literal: do not import that entry, do not slice it, and do not edit plan-features.ts to
+          match — the shared string still carries the unverified viewing claim. Grep this sentence to find
+          it; nothing links the two automatically.
+          ⚠️ NOT THE DEFERRED CUSTOMER DISCLAIMER. §20 defers an AI disclaimer in the message a CUSTOMER
+          receives, pending Meta's disclosure rules. This line is shown to the OPERATOR in the preview and
+          changes nothing about what is sent. Do not merge the two. */}
+      <p className="text-xs text-slate-400">Replies are AI-generated and vary slightly each time, and can occasionally be wrong.</p>
+    </div>
+  )
+}
+
 function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
@@ -8552,7 +8806,17 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   // pointless writes when nothing changed, so the operator gets exactly one success toast.
   const lastSavedSender = useRef(truck.whatsapp_sender ?? '')
   const saveWhatsappSender = async () => {
-    if (whatsappSender === lastSavedSender.current) return
+    // ── 🔴 AN UNCHANGED VALUE NOW STILL ANSWERS. ────────────────────────────────────────────────────
+    // This used to be a bare `return`, so tapping Connect without editing did VISIBLY NOTHING — no
+    // request, no toast, no error. §20 records that as the likeliest source of the "it doesn't work"
+    // report, and it is the worst shape a control can have: indistinguishable from a dead button.
+    // ⚠️ THE EARLY RETURN ITSELF IS KEPT ON PURPOSE — re-sending an identical value would be a pointless
+    // write, and the whole point of the guard is that it is already saved. Only the SILENCE is fixed.
+    // What is written, which column, and the server allow-list are all untouched.
+    if (whatsappSender === lastSavedSender.current) {
+      showToast('WhatsApp number saved')
+      return
+    }
     try {
       await api('update_truck', { data: { whatsapp_sender: whatsappSender } })
       lastSavedSender.current = whatsappSender
@@ -8825,6 +9089,40 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           />
         </div>
 
+        {/* ── WEBSITE — MOVED HERE 20 August 2026 FROM THE (then) "Online presence & social" card ────
+            It is an IDENTITY fact about the truck, like the name and the cuisine, not a messaging
+            setting. The card it used to live in is now "Auto-replies" and is about one feature.
+            🔴 IT IS NOT DEAD DATA, AND THE ONE-LINE VERSION OF WHY IS IN THE onBlur COMMENT BELOW:
+            it is READ by app/api/discovery/events/route.ts — the `trucks!truck_id (… website …)` join —
+            and RENDERED on two customer surfaces (the truck profile and the event listing card). The
+            operator's value even takes precedence over the discovery row's: `truck?.website || linked.website`.
+            ⚠️ Shape changed from the inline `w-24 label + flex-1 input` row to the shared <Input>, to
+            match "Truck name" above. The HANDLER IS UNCHANGED — same `saveFormField`, same `website`
+            key, same normaliseUrl branch. <Input> hands onChange the STRING, not the event, which is the
+            only reason that line differs. */}
+        <Input
+          label="Website"
+          value={form.website || ''}
+          onChange={v => setForm(p => ({...p, website: v}))}
+          onBlur={() => {
+            // N1: normalised on save for the same reason as the schedule URL, and because this value
+            // is RENDERED AS AN href on two customer-facing pages. Both of those already carry their
+            // own `startsWith('http') ? … : 'https://' + …` patch — the same fix, written twice, at
+            // the display end. Storing a real URL is what makes a third copy unnecessary.
+            // ⚠️ An unrecognisable string is LEFT AS TYPED and still saved: this field is free text
+            // an operator may fill however they like, nothing fetches it, and refusing to save it
+            // would be a new obstacle where there was none. Only a plausible address is corrected.
+            const val = normaliseUrl(form.website)
+            if (val && val !== form.website) {
+              setForm(p => ({ ...p, website: val }))
+              saveFormField({ website: val })
+            } else {
+              saveFormField()
+            }
+          }}
+          placeholder="https://yourtruck.co.uk"
+        />
+
         {/* Menu icon */}
         <div className="mt-1">
           <label className="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">
@@ -8920,35 +9218,41 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
 
       {/* Online presence & social */}
       <Card className="p-4 space-y-3">
-        <p className="text-base font-bold text-slate-800">Online presence &amp; social</p>
+        {/* ── RENAMED 20 August 2026: "Online presence & social" -> "Auto-replies". ──────────────────
+            The card is named for the FEATURE. 🔴 NOT "Socials": Messenger and Instagram are
+            `coming_soon` and their rows were removed on 14 August, and WhatsApp is messaging rather
+            than social media — a "Socials" card containing one messaging channel would be naming a
+            category the product does not have. The website field moved out to "Truck details" for the
+            same reason: it was the only thing here that was not this feature.
+            ⚠️ THE INNER "Auto-replies" SUBSECTION HEADING WAS ABSORBED INTO THIS TITLE rather than
+            nesting the same word twice. Its caption survives below, inside the native hide, where it
+            still reads correctly against the Connect row it describes. */}
+        <p className="text-base font-bold text-slate-800">Auto-replies</p>
+        {/* ── THE DESCRIPTION. OUTSIDE THE NATIVE HIDE, WITH THE TITLE AND THE PREVIEW. ───────────────
+            ⚠️ `text-base` — deliberately LARGER than the preview's `text-sm` body copy, and un-bolded so
+            it does not compete with the title above it.
+            🔴 WORDING SUPPLIED BY THE OPERATOR, 21 August 2026. It previously opened "Auto-replies
+            answer …", which repeated the card title directly above it.
+            ⚠️ IT READS AS AN IMPERATIVE, AND THAT IS WORTH KNOWING BEFORE ANYONE "FIXES" IT. The card
+            renders for every plan, auto-replies are Pro+, and greying the WhatsApp row removed the
+            FeatureGate that was this card's only upgrade affordance — so nothing on screen corrects a
+            reader who cannot use the feature. It survives because it reads as a PRODUCT BULLET (what the
+            feature does) rather than as a statement about this operator's setup, AND because all three
+            channel rows below say "Coming soon", so nothing is claimed to be running.
+            ⚠️ "ON YOUR SOCIAL MEDIA" IS FORWARD-LOOKING. The only implemented channel is WhatsApp, which
+            is messaging rather than social media; the two actual social channels are `coming_soon` and
+            unbuilt. Accurate about the DESTINATION, not about today. Recorded, not corrected.
+            🔴 NAMES NO CHANNEL and 🔴 PROMISES NO VIEWER for past replies: no such surface exists (§20). */}
+        <p className="text-base text-slate-500">Answer customer questions automatically on your social media, using your menu and schedule.</p>
 
-        {/* Website */}
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-600 w-24 flex-shrink-0">Website</label>
-          <input
-            type="text"
-            value={form.website || ''}
-            onChange={e => setForm(p => ({...p, website: e.target.value}))}
-            onBlur={() => {
-              // N1: normalised on save for the same reason as the schedule URL, and because this value
-              // is RENDERED AS AN href on two customer-facing pages. Both of those already carry their
-              // own `startsWith('http') ? … : 'https://' + …` patch — the same fix, written twice, at
-              // the display end. Storing a real URL is what makes a third copy unnecessary.
-              // ⚠️ An unrecognisable string is LEFT AS TYPED and still saved: this field is free text
-              // an operator may fill however they like, nothing fetches it, and refusing to save it
-              // would be a new obstacle where there was none. Only a plausible address is corrected.
-              const val = normaliseUrl(form.website)
-              if (val && val !== form.website) {
-                setForm(p => ({ ...p, website: val }))
-                saveFormField({ website: val })
-              } else {
-                saveFormField()
-              }
-            }}
-            placeholder="https://yourtruck.co.uk"
-            className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
-        </div>
+        {/* ── ⚠️ ORDER: THE DEMO IS FIRST, CONNECT IS SECOND. THIS IS A DATED DECISION, NOT A LAYOUT ──
+            The Connect control does not yet connect anything — it saves a number (§20) — and the demo
+            is the part that works, so the working thing leads.
+            🔴 THIS ORDER IS FOR TODAY ONLY. Once Embedded Signup exists, Connect becomes the PRIMARY
+            action and the demo becomes supporting — at which point swapping these two is correct and
+            expected. Do not reverse it before then, and do not treat the current order as an aesthetic
+            preference: it is a statement about which control currently does something. */}
+
 
         {/* ── 🔴 HIDDEN IN THE NATIVE APP ONLY — NOT REMOVED (14 August 2026) ──────────────────────
             Self-serve WhatsApp onboarding for trucks is not built, so this subsection must not appear
@@ -8970,18 +9274,49 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             `typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()`, which is FALSE in every
             browser. A wrong answer therefore SHOWS the section on iPad (mild); it cannot hide a working
             control from Gusto on the web. */}
+        {/* 🔴 OUTSIDE THE NATIVE HIDE, AND IT MUST STAY THAT WAY. The wrapper below covers the WHOLE
+            Connect subsection; this line sits ABOVE it, so it is not a descendant of the conditional and
+            renders on iPad regardless of what isNativeApp() returns.
+            🔴 DO NOT PULL IT INSIDE THE WRAPPER when tidying. On iPad the card would then render as a
+            TITLE WITH NOTHING UNDER IT — the V11.18 orphaning lesson, in the other direction. */}
+        <WhatsAppReplyPreview token={token} />
+
         {!isNativeApp() && (<>
-        {/* Auto-replies subsection */}
+        {/* Connect subsection. 🔴 ITS OWN HEADING WAS ABSORBED INTO THE CARD TITLE — the caption stays,
+            because it describes the Connect row it sits above and still reads correctly there.
+            ⚠️ THE `border-t` IS THE SEPARATOR BETWEEN THE DEMO ABOVE AND THIS BLOCK. It lives INSIDE the
+            wrapper on purpose: on iPad this whole subsection disappears and the divider goes with it, so
+            there is no stray rule under the demo. That is why the demo itself carries no top border. */}
         <div className="border-t border-slate-100 pt-4 mt-1">
-          <p className="text-sm font-bold text-slate-700 mb-0.5">Auto-replies</p>
+          {/* ── CHANNELS. EVERYTHING FROM THIS HEADING DOWN IS INSIDE THE NATIVE-HIDE WRAPPER. ─────────
+              🔴 THAT IS THE POINT, AND THE NEW ROWS MAKE IT MORE NECESSARY, NOT LESS. Apple rejects
+              non-functional controls and "coming soon" placeholders under Guideline 2.1 — which is
+              exactly what all three rows now are. The 14 August removal took two such rows OUT of the
+              build entirely for that reason; they are back only because the wrapper keeps them off
+              every native build. Do not lift any of this above the wrapper. */}
+          <p className="text-sm font-bold text-slate-700 mb-0.5">Channels</p>
+          {/* Moved under "Channels" — it now has three rows as its subject rather than one. */}
           <p className="text-xs text-slate-400 mb-3">Requires Business accounts on each platform.</p>
 
           <div className="space-y-3">
-            {/* WhatsApp */}
+            {/* ── WhatsApp ────────────────────────────────────────────────────────────────────────────
+                🔴 SHOWN AS COMING SOON AND GREYED, BY OPERATOR DECISION, 21 August 2026, PENDING META
+                APPROVAL. Flip `WHATSAPP_LIVE` to true to restore the editable input and the Connect
+                button; nothing else needs changing and both branches are kept below for that reason.
+                🔴 THIS STATE DELIBERATELY DOES **NOT** COME FROM lib/plan-features.ts, AND MUST NOT.
+                That module's WhatsApp row reads `pro: true, max: true` because the feature IS shipped at
+                Pro — it describes the PLAN TIER, not Meta's approval status. Setting it to
+                'coming_soon' there would rewrite the public landing pricing matrix and the Billing tab
+                for customers, and would make findPlanParityViolations() SKIP the row (it only inspects
+                hard `true` cells), so the gate/marketing cross-check would go quiet on a live feature.
+                Two different facts; two different homes.
+                ⚠️ CONSEQUENCE, RECORDED: the `can('whatsapp_replies')` FeatureGate lived in the live
+                branch, so while this is false the card carries NO upgrade affordance at all. That is
+                what the card description is worded around. */}
             <div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-slate-600 w-20 flex-shrink-0">WhatsApp</label>
-                {can('whatsapp_replies') ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <label className={`text-sm w-20 flex-shrink-0 ${WHATSAPP_LIVE ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
+                {WHATSAPP_LIVE && can('whatsapp_replies') ? (
                   <>
                     <input
                       type="tel"
@@ -8991,19 +9326,17 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                       placeholder="+447700900000"
                       className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     />
-                    {/* ── RELABELLED AND RESTYLED, 10 August 2026 (operator review) — COSMETIC ONLY ──
-                        🔴 BEHAVIOUR IS BYTE-IDENTICAL. Same `onClick={saveWhatsappSender}`, same
-                        save-on-blur beside it, same handler, same request. **It does not connect
-                        anything and must not be made to look as though it does** — the label is the
-                        operator's word for the step they will wire up separately, not a claim about
-                        state. If a real connection is built later, that is when a connected/disconnected
-                        state belongs here; adding one now would be a label asserting a state nobody
-                        checked (§35).
-                        ⚠️ WAS `bg-teal-600 text-white ... rounded-xl` — a one-off on this page: teal
-                        appears elsewhere only as a pale chip/background (`bg-teal-50`), never as a
-                        button fill. It now uses the page's OWN small-button class, copied verbatim from
-                        the three existing instances of it, so it matches every other inline action
-                        beside an input rather than standing out as a different kind of thing. */}
+                    {/* ── THE LABEL "Connect" STAYS. DECISION TAKEN 20 August 2026. ─────────────────
+                        🔴 The 10 August comment arguing for a label that does not promise a connection
+                        has been REPLACED: its premise was that no connection was coming. It now is —
+                        **this control becomes the Embedded Signup launcher**, so renaming it to "Save"
+                        in the interim would mean renaming it back.
+                        ⚠️ STILL BINDING: the button today only writes `whatsapp_sender`. 🔴 DO NOT ADD A
+                        connected/disconnected INDICATOR until the flow exists — that would be a label
+                        asserting a state nobody checked (§35). A forward-looking VERB is a product
+                        decision; a fabricated STATE is a lie.
+                        🔴 BEHAVIOUR IS BYTE-IDENTICAL to 10 August. Same `onClick={saveWhatsappSender}`,
+                        same save-on-blur beside it, same handler, same request, same column. */}
                     <button
                       onClick={saveWhatsappSender}
                       className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
@@ -9013,44 +9346,50 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                   </>
                 ) : (
                   <>
+                    {/* ── ONE ROW: label, number, badge — 21 August 2026. ─────────────────────────────
+                        The number moved back up from its own line, and the badge sits where the Connect
+                        button used to, so the row keeps the shape an operator already knows.
+                        ⚠️ THE PARENT ROW CARRIES `flex-wrap`, WHICH IS WHAT MAKES THIS SAFE NARROW. If
+                        the three items cannot fit, the badge wraps to the next line INSIDE the same
+                        flex row — so it stays associated with WhatsApp and cannot collide with the
+                        field. `min-w-0` lets the input shrink instead of forcing an overflow, and
+                        `flex-shrink-0` on the badge stops it being crushed into an ellipsis.
+                        ⚠️ The input is `disabled` and shows the saved number: an operator who set one
+                        should still be able to see it while the control is frozen. */}
                     <input
                       type="tel"
                       disabled
+                      value={whatsappSender}
                       placeholder="+447700900000"
                       className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
                     />
-                    <FeatureGate
-                      feature="whatsapp_replies"
-                      plan={truck.plan}
-                      overrides={truck.feature_overrides}
-                      trialExpiresAt={truck.trial_expires_at}
-                      showUpgrade={true}
-                    />
+                    <span className="flex-shrink-0"><Badge label="Coming soon" colour="slate" /></span>
                   </>
                 )}
               </div>
-              {/* Distinguishes this from the customer-facing contact number (Contact Details → Phone). */}
-              <p className="text-xs text-slate-400 mt-1.5 sm:pl-[5.5rem]">
-                The WhatsApp Business number used to send automated replies to customers (set up with the WhatsApp Business API). This is separate from your contact number above.
-              </p>
             </div>
 
-            {/* ── 🔴 THE MESSENGER AND INSTAGRAM ROWS WERE REMOVED HERE — 14 August 2026 (Guideline 2.1) ──
-                Both were a `<label>`, a `disabled` `<input>` whose PLACEHOLDER READ "Coming soon", and a
-                `disabled` "Connect" button. That is a control a user can see and cannot operate, which is
-                the definition of an incomplete feature under 2.1 — as distinct from a roadmap LABEL in the
-                plan matrix, which is descriptive product information and deliberately stays.
-                🔴 UI REMOVAL ONLY. Nothing was dropped from the database, the `Truck` interface, or any
-                allow-list: `social_instagram`, `social_facebook`, `whatsapp` and `whatsapp_sender` are all
-                still declared and still written by the Contact Details fields above. Re-adding these rows
-                when the integrations exist is a JSX change and nothing else.
-                ⚠️ THE WHATSAPP ROW ABOVE IS UNTOUCHED AND STILL LIVE — it has a real `can('whatsapp_replies')`
-                gate, a real `onChange`/`onBlur`, and a real `saveWhatsappSender` handler. It is the reason
-                the "Auto-replies" subsection still has a reason to exist, so the heading, its
-                "Requires Business accounts on each platform." caption, the `border-t` divider and the
-                `space-y-3` wrapper all stay: removing them would leave the live row without its label.
-                ⚠️ NO EMPTY SHELL IS LEFT. The two `<div>`s went whole, so the `space-y-3` container now
-                holds exactly one child and renders no residual gap. */}
+            {/* ── Instagram and Messenger ─────────────────────────────────────────────────────────────
+                🔴 RE-ADDED 21 August 2026, AND ONLY BECAUSE THE NATIVE HIDE NOW COVERS THEM. They were
+                removed on 14 August for Guideline 2.1 — a control a user can see and cannot operate.
+                These carry NO input and NO button, so there is no control to operate at all; they are a
+                roadmap LABEL, which the manual distinguishes from an incomplete control. On the web that
+                distinction is ours to make; on native it is Apple's, which is why they stay inside the
+                wrapper regardless.
+                ⚠️ THE LABEL COMES FROM THE MATRIX, NOT FROM HERE — see isRowComingSoon. One row governs
+                both channels because the matrix carries one row for the pair. */}
+            {isRowComingSoon(MESSENGER_INSTAGRAM_ROW) && (
+              <>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-slate-400 w-20 flex-shrink-0">Instagram</label>
+                  <Badge label="Coming soon" colour="slate" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-slate-400 w-20 flex-shrink-0">Messenger</label>
+                  <Badge label="Coming soon" colour="slate" />
+                </div>
+              </>
+            )}
           </div>
         </div>
         </>)}

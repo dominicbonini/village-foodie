@@ -102,7 +102,7 @@ of search indexes**. That does not affect iframes at all (framing and indexing a
 mechanisms), but it is a live decision about those exact URLs that an embed task would sit on top of.
 **Recorded, not interpreted** — I did not establish why it is set.
 
-### 🔴 THERE IS NO MIDDLEWARE, AND IT WAS DELETED RATHER THAN NEVER WRITTEN
+### 🔴 THERE IS NO `middleware.ts` — BECAUSE IT WAS RENAMED TO `proxy.ts`, NOT DELETED
 
 This is the one place a frame header would most plausibly hide, so it was checked three ways:
 
@@ -110,10 +110,19 @@ This is the one place a frame header would most plausibly hide, so it was checke
    **no source file anywhere in the tree.** **READ.**
 2. `git ls-files | grep -i middleware` → **nothing tracked.** `git cat-file -e HEAD:middleware.ts` →
    *"path 'middleware.ts' does not exist in 'HEAD'"*. **READ.**
-3. ⚠️ **BUT IT USED TO EXIST.** `git log --all -- middleware.ts` returns four commits — `f4a8ac2`
-   *"vercel fix"*, `095bada` *"redis"*, `fe04fef` *"proxy fix"*, `805cea1` *"hatchgrab domain setup"* —
-   and `git log --diff-filter=D` names `f4a8ac2` as a deletion commit. **It was removed, not absent by
-   design.** **READ.**
+3. 🔴 **CORRECTED 20 August 2026 — IT WAS RENAMED, NOT DELETED, AND THE ROUTING LAYER IS LIVE.**
+   `git log --all -- middleware.ts` returns four commits — `f4a8ac2` *"vercel fix"*, `095bada`
+   *"redis"*, `fe04fef` *"proxy fix"*, `805cea1` *"hatchgrab domain setup"* — and
+   `git log --diff-filter=D` names `f4a8ac2` as a deletion commit. ⚠️ **`--diff-filter=D` NAMES A
+   RENAME AS A DELETION.** `git show f4a8ac2` disproves the reading in one command: **the same commit
+   that removed `middleware.ts` (−49) created `proxy.ts` and added the Upstash limiter to it (+40).**
+   It was a **rename to the Next 16 convention.** ~~**It was removed, not absent by design.**~~
+   **The rate limiter, the Supabase session refresh, the `/dashboard` and `/manage` auth guards, the
+   Village Foodie → HatchGrab operator redirect and the native-app UA exemption have run continuously
+   in `proxy.ts` the whole time.** **READ.**
+
+⚠️ **AND THE LIVE ROUTING LAYER IS `proxy.ts` AT THE REPO ROOT.** A `find`/`git ls-files` sweep for
+`middleware*` is the wrong search on Next 16 and returns a confident, wrong "there is none".
 
 ⚠️ **A STALE COMPILED ARTEFACT SURVIVES AND MUST NOT BE MISTAKEN FOR A LIVE ONE.**
 `.next/dev/server/middleware.js` exists, is 841 bytes, and is dated **24 July 2026** — a build output

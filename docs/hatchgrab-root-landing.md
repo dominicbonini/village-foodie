@@ -7,6 +7,11 @@
 **THREE FILES: `middleware.ts` (new, 66 lines), `app/landing/layout.tsx` (+18 / -15),
 `app/landing/page.tsx` (+15 / -4).** Nothing else was touched — proven in §4.
 
+🔴 **SUPERSEDED 20 August 2026 — THE `middleware.ts` HALF OF THIS WAS WRONG AND BROKE THE BUILD.** Next
+16 refuses to build with both a middleware file and a proxy file present. **The rewrite and the
+`/landing` redirect now live in `proxy.ts`, with an added `pathname === '/'` guard**, and
+`middleware.ts` is deleted. See §3.g.
+
 ---
 
 # 1. PHASE 1 — READ
@@ -246,10 +251,17 @@ landing itself becomes statically renderable (no more `force-dynamic`), so the r
 cacheable. **CANNOT DETERMINE the net effect on real cache-hit rates** — that needs Vercel's analytics
 after a deploy.
 
-## 3.g ⚠️ THIS REPO DELETED A MIDDLEWARE ONCE, AND YOU SHOULD KNOW BEFORE MERGING
+## 3.g 🔴 CORRECTED 20 August 2026 — THIS REPO NEVER DELETED ITS MIDDLEWARE. IT RENAMED IT.
 
-`git log --diff-filter=D -- middleware.ts` → **commit `f4a8ac2`, "vercel fix", 5 June 2026.** The file
-it removed was an **Upstash Redis rate limiter**:
+~~`git log --diff-filter=D -- middleware.ts` → **commit `f4a8ac2`, "vercel fix", 5 June 2026.** The file
+it removed was an **Upstash Redis rate limiter**~~ — ⚠️ **`--diff-filter=D` NAMES A RENAME AS A
+DELETION, AND THIS WAS A RENAME.** `git show f4a8ac2` settles it in one command: **the same commit
+removes `middleware.ts` (−49) and creates `proxy.ts` with the limiter in it** (`+import { ratelimit,
+strictRatelimit } from '@/lib/ratelimit'`, +40 lines). Next.js 16 renamed the `middleware.ts`
+convention to `proxy.ts`; `f4a8ac2` is that rename. **Nothing was lost. The Upstash rate limiter has
+run continuously ever since, alongside the Supabase session refresh, the `/dashboard` and `/manage`
+auth guards, the Village Foodie → HatchGrab operator redirect and the native-app UA exemption.** The
+limiter this section quotes is the one still running:
 
 ```ts
   const { success, remaining } = await limiter.limit(ip)
@@ -257,15 +269,21 @@ it removed was an **Upstash Redis rate limiter**:
 export const config = { matcher: ['/api/:path*', '/trucks/:path*'] }
 ```
 
-🔴 **A NETWORK ROUND-TRIP ON EVERY API CALL THE PRODUCT MAKES.** ⚠️ **WHY IT WAS DELETED IS NOT
-RECORDED and I could not establish it** — the commit message says only "vercel fix". **CANNOT
-DETERMINE.**
+🔴 **A NETWORK ROUND-TRIP ON EVERY API CALL THE PRODUCT MAKES — AND IT IS STILL MAKING IT.** ~~⚠️
+**WHY IT WAS DELETED IS NOT RECORDED and I could not establish it** — the commit message says only
+"vercel fix". **CANNOT DETERMINE.**~~ **There is nothing to establish: it was never deleted.**
 
-✅ **WHAT IS ESTABLISHABLE: the new file shares none of its cost profile.** No `@upstash` import, no
-`await`, no I/O, and a matcher of two literal paths rather than two prefixes. **If the old one was
-removed for its Redis latency or its failure mode, none of that applies.** But if it was removed
-because middleware itself misbehaved on this Vercel project, that would apply — **and a preview
-deployment is what settles it.**
+🔴 **AND THE REAL HAZARD IS THE OPPOSITE ONE — A SECOND ROUTING FILE.** ⚠️ **Next.js 16 refuses to
+build with both `middleware.ts` and `proxy.ts` present** (*"Both middleware file … and proxy file …
+are detected. Please use ./proxy.ts only."*). **Adding the new `middleware.ts` this report proposes
+would take every deploy offline** — which is exactly what happened on 20 August 2026. The two
+behaviours belong in `proxy.ts`.
+
+🔴 **AND A MATCHER IS A GUARD.** `middleware.ts` matched `['/', '/landing']`, so its root rewrite
+needed no path test — the matcher *was* the test. `proxy.ts`'s matcher covers nearly everything, so
+the same rewrite moved across unguarded **would serve the landing page on every operator route on
+hatchgrab.com** — dashboard, manage, KDS, login. **It carries a `pathname === '/'` guard in
+`proxy.ts` for this reason. Do not drop it.**
 
 ---
 

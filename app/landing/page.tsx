@@ -19,16 +19,17 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
-import { HEADER_BG } from '@/lib/brand'
-import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
+// Chrome EXTRACTED 23 August 2026 so /landing/cost renders the same nav and footer from one definition.
+// 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
+import { LandingNav } from '@/components/landing/LandingNav'
+import { LandingFooter } from '@/components/landing/LandingFooter'
 import {
   FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
   CARD_FEE_ONLINE_LABEL, TRANSACTION_ROWS,
   type FeatureValue,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import './landing.css'
 
 // Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
@@ -116,48 +117,7 @@ export default function LandingPage() {
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
 
       {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <nav className={HEADER_BG}>
-        <div className="nav-in">
-          {/* ── LARGER WORDMARK IN THE NAV — DESKTOP ONLY (V9.7) ─────────────────────────────────────
-              h-8 (32px) is the component's own default, so MOBILE IS BYTE-IDENTICAL to before.
-              From 640px up, sm:w-[168px] + sm:h-auto gives 168px wide ≈ 42px tall.
-              ⚠️ WIDTH is specified rather than height, deliberately: 168px matches the operator
-              dashboard header's own wordmark width exactly, so the two surfaces agree on one number
-              instead of two heights that happen to look similar.
-              🔴 THE MOBILE FLOOR IS DELIBERATE, NOT TIMIDITY. Below 640px this nav is already tuned to
-              its limit — see landing.css's @media(max-width:639px), whose own comment says the compact
-              Log in + CTA are sized "so both fit ~360px with no wrap", and `.nav-r .btn` carries
-              `white-space: nowrap` with the note "the CTA must never wrap the header". At 40px the logo
-              would be ~168px wide and would eat the margin that keeps the CTA on one line.
-              ⚠️ VERIFIED AT 640px, where nav-hide-sm brings Pricing + Log in back and the row is at its
-              widest: gutters (2×25.6px) leave ~589px; logo 168 + nav-in gap 16 + nav-r (Pricing ~76 +
-              Log in ~86 + CTA ~171 + 2×6.4 gap) ≈ 530px. ~59px spare, so the nowrap CTA is safe.
-              640px is not an arbitrary breakpoint: it is the SAME one the nav already switches at, so the
-              logo grows exactly when Pricing + Log in reappear and there is room for it.
-              ⚠️ The nav cannot change height either way — `.hg-landing nav` is a fixed `height: var(--nav-h)`
-              (4.5rem/72px) with align-items:center and NO vertical padding (.nav-in is `padding: 0 var(--gut)`),
-              so 42px sits inside it with 15px clearance top and bottom.
-              w-auto + the component's width/height attributes preserve the aspect ratio → no layout shift.
-              Scoped to THIS call site only: the footer, /signup, /setup and legal pages stay at 127×32. */}
-          <a href="#" className="nav-logo" aria-label="HatchGrab home">
-            <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
-          </a>
-          <div className="nav-r">
-            {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm) sits to
-                the LEFT of the CTA so small screens still get a login; the CTA drops its arrow on mobile to fit.
-                ⚠️ BOTH Log in links point at /login — the real page (app/login/page.tsx), not `#`. They are plain
-                <a> like every other link on this page (no next/link is imported here), so it is a full navigation
-                out of the landing route, which is what a login needs. */}
-            <a href="#pricing" className="btn btn-quiet nav-hide-sm">Pricing</a>
-            <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
-            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
-            <DemoCta className="btn btn-primary nav-cta">
-              <span className="cta-full">Upload my menu →</span>
-              <span className="cta-short">Upload menu</span>
-            </DemoCta>
-          </div>
-        </div>
-      </nav>
+      <LandingNav />
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -490,52 +450,7 @@ export default function LandingPage() {
       </section>
 
       {/* ============ FOOTER ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <footer className={HEADER_BG}>
-        <div className="wrap">
-          <div className="foot-grid">
-            <div>
-              {/* `block` (live at every width — the reset does not touch `display`) puts the wordmark on
-                  its own line instead of an inline baseline.
-                  `foot-logo` is the CENTRING HOOK, and it is a CSS class rather than a Tailwind utility on
-                  purpose: `.hg-landing * { margin: 0 }` in landing.css ties Tailwind's `mx-auto` on
-                  specificity and wins on source order, so `mx-auto` here was silently doing NOTHING. The
-                  rule lives in landing.css's existing @media(max-width:720px) block — mobile only, same
-                  breakpoint that collapses .foot-grid, same margin-inline:auto mechanism as .foot-tag.
-                  ⚠️ Desktop is untouched: above 720px no rule matches, so the wordmark keeps margin:0 and
-                  stays left in its space-between column. */}
-              <HatchGrabWordmark variant="dark" className="block foot-logo" />
-              {/* Same slogan and same line break as the hero tagline (:148), so the two agree.
-                  ⚠️ Deliberately WITHOUT the hero's `.lean` orange accent on "cooking." — the footer tag
-                  is muted #8A93A6 by design and an orange word here was not asked for. */}
-              <p className="foot-tag">Less time booking.<br />More time cooking.</p>
-            </div>
-            <div className="foot-links">
-              <a href="#pricing">Pricing</a>
-              <a href={PRIVACY_PATH}>Privacy</a>
-              <a href={TERMS_PATH}>Terms</a>
-              {/* 🔴 WAS `href="#"` — a control that went nowhere, then /support, which was deleted on
-                  20 August 2026. Now /contact, which serves HatchGrab chrome on this host and is the
-                  Support URL given to App Store review.
-                  ⚠️ `?topic=General%20Enquiry` IS THE TOPIC /support HARDCODED into its embed URL, and
-                  it is the same parameter Village Foodie's own footer Contact link sends
-                  (components/Footer.tsx). Carried across so this link opens the form where it always
-                  did rather than on an empty topic. */}
-              <a href="/contact?topic=General%20Enquiry">Contact</a>
-            </div>
-          </div>
-          {/* 🔴 THE APP LINE WAS REMOVED HERE — 18 August 2026, ON REQUEST. The footer no longer mentions
-              the iPhone/iPad apps at all. The rule it used to satisfy still binds anything that brings it
-              back: TEXT ONLY, NO APP STORE OR GOOGLE PLAY BADGE, NO LOGO, NO LINK — Apple's marketing
-              guidelines require a badge to link to a LIVE listing and there is none yet — and "COMING
-              SOON", NEVER "AVAILABLE".
-              ⚠️ NOTHING ELSE IN THE FOOTER MOVED. `.foot-base` is a `space-between` flex row with no
-              nth-child rule (landing.css:329), so the two remaining spans simply sit at the two ends. */}
-          <div className="foot-base">
-            <span>© 2026 HatchGrab</span>
-            <span className="vf">From the people behind <b>Village Foodie</b></span>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter />
       {/* Mounted ONCE — every DemoCta above drives this one instance. */}
       <DemoModal />
     </div>

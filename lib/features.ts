@@ -133,18 +133,52 @@ export function getPlanFeatures(plan: Plan): Set<Feature> {
   return PLAN_FEATURES[plan] ?? PLAN_FEATURES.starter
 }
 
+// ── 🔴 THE MONTHLY PLAN PRICE, AS A NUMBER. STRUCTURED FIRST, DISPLAYED SECOND. ─────────────────────
+// Added 23 August 2026, following the convention lib/plan-features.ts's CARD_FEES already established
+// and whose comment tells the next person to follow it: "STRUCTURED VALUES, NOT DISPLAY STRINGS … the
+// £1,500 / £2,000 allowances were defined only INSIDE display strings, so lib/payments cannot read a
+// number and therefore cannot apply an allowance at all. Do not repeat that here."
+// `PLAN_META.price` was exactly that mistake for the plan fee: '£29/mo' is unparseable arithmetic, so
+// nothing could compute an annual cost, a saving, or a pro-rata charge without a regex over prose.
+//
+// ⚠️ PENCE, AS AN INTEGER, AND THE REASON IS NOT STYLE. It matches CARD_FEES (`pence: 20`), it matches
+// `orders.total_minor` — which §16 records as "the authoritative charge amount in pence" — and it is the
+// only representation that cannot accumulate a rounding error across twelve months of arithmetic.
+// Money is an integer of the smallest unit everywhere else in this codebase; this is not the place to
+// introduce a float.
+//
+// ⚠️ ONLY THE THREE PURCHASABLE TIERS. `trial`, `tester` and `demo` carry no monthly fee to express —
+// their PLAN_META prices are the words 'Free trial', 'Lifetime' and 'Demo', which are not amounts and
+// are not derived below. Inventing a number for them would be inventing a commercial fact.
+export const PLAN_MONTHLY_PENCE: Record<'starter' | 'pro' | 'max', number> = {
+  starter: 0,
+  pro: 2900,
+  max: 4900,
+}
+
+/** "£29/mo" — the ONLY place a monthly plan fee becomes a string. Pence are shown only when non-zero,
+ *  so a future £29.50 renders correctly without this needing to be revisited. */
+export function planPriceLabel(pence: number): string {
+  const pounds = Math.floor(pence / 100)
+  const rem = pence % 100
+  return rem === 0 ? `£${pounds}/mo` : `£${pounds}.${String(rem).padStart(2, '0')}/mo`
+}
+
 // Plan display metadata — THE SINGLE SOURCE for plan name/price/description across the whole app: upgrade
 // prompts AND the pricing / billing / landing tables. lib/plan-features.ts DERIVES PLAN_PRICES +
 // PLAN_DESCRIPTIONS from this — do NOT re-hardcode those strings anywhere; that divergence was the drift
 // (three text mismatches had already crept in between the two copies).
+// ⚠️ `price` IS NOW ITSELF DERIVED for pro and max — see PLAN_MONTHLY_PENCE above. Change the NUMBER,
+// never this string. `starter` keeps the literal word 'Free' because £0 displays as a word, not as
+// '£0/mo', and that word is also what lib/pricing.ts's NON_SECRET_PRICE set matches on.
 export const PLAN_META: Record<Plan, {
   name: string
   price: string
   description: string
 }> = {
   starter: { name: 'Starter', price: 'Free',       description: 'Weekend traders & walk-up pitches' },
-  pro:     { name: 'Pro',     price: '£29/mo',     description: 'Busy trucks scaling pre-orders' },
-  max:     { name: 'Max',     price: '£49/mo',     description: 'High-volume operations & festivals' },
+  pro:     { name: 'Pro',     price: planPriceLabel(PLAN_MONTHLY_PENCE.pro), description: 'Busy trucks scaling pre-orders' },
+  max:     { name: 'Max',     price: planPriceLabel(PLAN_MONTHLY_PENCE.max), description: 'High-volume operations & festivals' },
   trial:   { name: 'Trial',   price: 'Free trial', description: 'All features included — Max tier + Pay at Hatch ordering' },
   tester:  { name: 'Tester',  price: 'Lifetime',   description: 'Pre-launch tester — full feature access, lifetime discount' },
   demo:    { name: 'Demo',    price: 'Demo',       description: 'Prospect sandbox — full trial before signup (never public)' },

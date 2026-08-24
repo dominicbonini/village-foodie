@@ -39,6 +39,18 @@ interface ClassifierParams {
   // LATER (one-query add): SELECT whatsapp_logs WHERE customer_number=$from AND truck_id=$id AND
   // created_at > now()-interval '4 hours' LIMIT 1 → pass its existence as isFollowUp.
   isFollowUp?: boolean
+  // OPTIONAL ABORT BUDGET FOR THE TWO callGemini SITES THAT NEVER HAD ONE -- the classifier call and the
+  // SPECIFIC_QUERY reply call. The tier-3 menu answerer keeps its own hard-coded 8000 and is NOT touched
+  // by this; harmonising the two would change live behaviour, which this deliberately does not.
+  //
+  // OMITTED => undefined => callGemini's `timeoutMs ? new AbortController() : undefined` builds NOTHING,
+  // exactly as before. An absent argument and an explicit `undefined` are the same binding in JS, so the
+  // two existing webhook callers are byte-unchanged and behave identically. This is additive only.
+  //
+  // WHY IT EXISTS: on a Meta-retried webhook a hung Gemini call is survivable. On an interactive caller
+  // (the operator-facing preview) it is a spinner that never resolves, and the caller cannot reach
+  // callGemini's own parameter from outside. See docs/whatsapp-simulator-seam-report.md 5.a.
+  timeoutMs?: number
 }
 
 function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
@@ -132,7 +144,7 @@ export interface WhatsAppReplyResult {
 }
 
 export async function generateWhatsAppReply(params: ClassifierParams): Promise<WhatsAppReplyResult> {
-  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl, isFollowUp = false } = params
+  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl, isFollowUp = false, timeoutMs } = params
 
   // Greeting toggle, computed ONCE and threaded everywhere (no scattered conditionals).
   // greetingPrefix → literal replies (menuFallback, deterministicReply, allergenRedirect,
@@ -166,7 +178,9 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
 
   let classification: 'SPECIFIC_QUERY' | 'MENU_QUERY' | 'ALLERGEN_QUERY' | 'IGNORE'
   try {
-    const raw = (await callGemini(classifierPrompt, 0.1)).toUpperCase()
+    // timeoutMs is undefined unless a caller opted in -- see ClassifierParams. Undefined here is the
+    // pre-change behaviour exactly: no AbortController, no signal.
+    const raw = (await callGemini(classifierPrompt, 0.1, timeoutMs)).toUpperCase()
     if (
       raw === 'SPECIFIC_QUERY' ||
       raw === 'MENU_QUERY' ||
@@ -399,7 +413,8 @@ Instructions:
   const specificFallback = `${greetingPrefix}Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
 
   try {
-    const reply = await callGemini(replyPrompt, 0.4)
+    // Same opt-in as the classifier call above; undefined => unchanged.
+    const reply = await callGemini(replyPrompt, 0.4, timeoutMs)
     return { reply: reply || specificFallback, classification: 'SPECIFIC_QUERY' }
   } catch (err) {
     console.error('[WhatsApp classifier] Gemini error:', err)

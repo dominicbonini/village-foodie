@@ -26,12 +26,78 @@ export const PLAN_PRICES: Record<Plan, string> =
 export const PLAN_DESCRIPTIONS: Record<Plan, string> =
   Object.fromEntries((Object.keys(PLAN_META) as Plan[]).map(p => [p, PLAN_META[p].description])) as Record<Plan, string>
 
+// ── 🔴 THE ONLINE-ORDER ALLOWANCE AND THE PLATFORM FEE, AS NUMBERS (23 August 2026) ─────────────────
+// These are the values CARD_FEES' own comment names as the mistake it exists not to repeat: "the
+// £1,500 / £2,000 allowances were defined ONLY INSIDE display strings, so lib/payments cannot read a
+// number and therefore cannot apply an allowance at all." That is now fixed at the definition. Every
+// string below is DERIVED; change a NUMBER, never a sentence.
+//
+// ⚠️ PENCE, INTEGER — the same convention as CARD_FEES.pence and `orders.total_minor` (§16: "the
+// authoritative charge amount in pence"). An allowance is compared against order value, which is
+// already pence, so anything else would need a conversion at every comparison site.
+//
+// 🔴 A DISCRIMINATED UNION, NOT A NULLABLE NUMBER, AND THAT IS THE POINT OF TASK 3. "No allowance"
+// (starter) and "no ceiling" (trial) are DIFFERENT facts, and both would collapse to a falsy value if
+// this were `number | null`. The manual records the cost of exactly that shape: a NULL trial expiry read
+// as "expired" would have switched the product off for every self-serve signup, and was only correct
+// once the code stopped asking `if (!trialExpiresAt)`. A consumer of this cannot write `if (!allowance)`
+// — TypeScript makes them name which case they mean.
+export type OnlineAllowance =
+  | { kind: 'amount'; pence: number }   // a real ceiling, then PLATFORM_FEE_OVER_ALLOWANCE applies
+  | { kind: 'none' }                    // no online-order allowance at all (Pay at Hatch)
+  | { kind: 'unlimited' }               // uncapped; no platform fee to apply
+
+// ⚠️ THE FOUR TIERS TRANSACTION_ROWS DOCUMENTS, AND NO MORE. `tester` and `demo` have NO published
+// commercial position — no column in the fee table, no allowance sentence, nothing to derive from — so
+// they are deliberately absent rather than guessed at. Adding them means deciding what they are sold as,
+// which is a commercial decision and not a refactor. See the report.
+export const PLAN_ONLINE_ALLOWANCE: Record<'trial' | 'starter' | 'pro' | 'max', OnlineAllowance> = {
+  trial:   { kind: 'unlimited' },
+  starter: { kind: 'none' },
+  pro:     { kind: 'amount', pence: 150000 },
+  max:     { kind: 'amount', pence: 200000 },
+}
+
+/** HatchGrab's own fee on online-order value ABOVE the plan allowance. 🔴 OURS, unlike CARD_FEES,
+ *  which are Stripe's — do not merge the two constants for looking similar. */
+export const PLATFORM_FEE_OVER_ALLOWANCE = { pct: 0.99 } as const
+
+/** "0.99%" — the ONLY place the platform fee becomes a string. Mirrors feeLabel()'s treatment of pct:
+ *  the number is interpolated as written, so 1.0 would render "1%" exactly as feeLabel already does. */
+export function pctLabel(fee: { pct: number }): string {
+  return `${fee.pct}%`
+}
+
+/** "£1,500" — grouped thousands. ⚠️ DELIBERATELY NOT toLocaleString: this string is compared
+ *  byte-for-byte against the pre-refactor value, and locale/ICU availability differs between the build
+ *  host and the browser. Manual grouping is deterministic everywhere. */
+export function allowanceAmountLabel(pence: number): string {
+  return '£' + String(Math.round(pence / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+export const PLATFORM_FEE_LABEL = pctLabel(PLATFORM_FEE_OVER_ALLOWANCE)
+
+/** The allowance in pence for a tier that has one. 🔴 EXISTS SO NOTHING BELOW RE-STATES A NUMBER —
+ *  every derived string reads through this, so PLAN_ONLINE_ALLOWANCE stays the only place the amounts
+ *  are written. It THROWS rather than falling back: if a future edit makes one of these tiers 'none' or
+ *  'unlimited', this fails loudly at module load instead of rendering "£NaN" on the pricing table. */
+export function allowancePenceFor(tier: 'pro' | 'max'): number {
+  const a = PLAN_ONLINE_ALLOWANCE[tier]
+  if (a.kind !== 'amount') {
+    throw new Error(`[plan-features] PLAN_ONLINE_ALLOWANCE.${tier} is '${a.kind}', but a display string expects an amount.`)
+  }
+  return a.pence
+}
+
 // Included online-order allowance per plan (the £1,500 / £2,000 headline). Additive — Admin/Billing ignore
 // it until they choose to render it; the landing table shows it under the price.
+// ⚠️ DERIVED from PLAN_ONLINE_ALLOWANCE + PLATFORM_FEE_OVER_ALLOWANCE. `starter` stays a literal because
+// 'Pay at hatch' is a description of a MODEL, not a formatted amount, and lib/pricing.ts matches on that
+// exact wording in NON_SECRET_PRICE.
 export const PLAN_ALLOWANCES: Record<'starter' | 'pro' | 'max', string> = {
   starter: 'Pay at hatch',
-  pro: 'First £1,500 of online orders included, then 0.99%',
-  max: 'First £2,000 of online orders included, then 0.99%',
+  pro: `First ${allowanceAmountLabel(allowancePenceFor('pro'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
+  max: `First ${allowanceAmountLabel(allowancePenceFor('max'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
 }
 
 // ── CARD PROCESSING FEES — ONE DEFINITION, STRUCTURED (V11.4) ─────────────────────────────────────────
@@ -97,8 +163,11 @@ export const TRANSACTION_ROWS: {
   cells: Record<'trial' | 'starter' | 'pro' | 'max', string>
 }[] = [
   { name: 'Walk-up orders',         footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%',     max: '0%'     } },
-  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: '£1,500', max: '£2,000' } },
-  { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: '0.99%',  max: '0.99%'  } },
+  // ⚠️ THE FOUR NUMERIC CELLS ARE DERIVED (23 August 2026). 'Unlimited', '—', 'Free' and 'Pay at Hatch'
+  // stay literal: they are words describing a MODEL, not formatted amounts, and lib/pricing.ts matches
+  // on those exact strings in NON_SECRET_PRICE to exempt them from the pre-launch mask.
+  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: allowanceAmountLabel(allowancePenceFor('pro')), max: allowanceAmountLabel(allowancePenceFor('max')) } },
+  { name: 'Fee after that',         footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: PLATFORM_FEE_LABEL,  max: PLATFORM_FEE_LABEL  } },
 ]
 
 export const FEATURE_SECTIONS: FeatureSection[] = [
@@ -231,7 +300,7 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '2',
-    text: `Online payments powered by Stripe Connect. Subject to 0.99% HatchGrab platform fee plus Stripe `
+    text: `Online payments powered by Stripe Connect. Subject to ${PLATFORM_FEE_LABEL} HatchGrab platform fee plus Stripe `
       + `card processing fees (~${CARD_FEE_ONLINE_LABEL} per transaction on standard UK cards).`,
   },
   {

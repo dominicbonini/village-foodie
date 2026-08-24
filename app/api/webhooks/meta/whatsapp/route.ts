@@ -87,8 +87,19 @@ export async function POST(req: NextRequest) {
   // to an unverified body is that its LENGTH is measured for the refusal log. Deliberately no env-var
   // bypass and no development shortcut: this endpoint spends money at Meta AND at Google per request.
   // The SHA-1 `x-hub-signature` header is NOT read. See the downgrade note in the helper.
+  //
+  // THE VARIABLE NAME IS `META_WHATSAPP_APP_SECRET` AND IT IS DELIBERATELY NOT A FALLBACK CHAIN.
+  // It was `META_APP_SECRET` until 20 August 2026, which is a name PRODUCTION HAS NEVER DEFINED --
+  // the Vercel environment defines `META_WHATSAPP_APP_SECRET`, matching the four sibling
+  // `META_WHATSAPP_*` variables and the env RULE in the reference manual's Section 20. The old name
+  // resolved to `undefined`, so `parseMetaAppSecrets` returned `[]` and the gate refused EVERY
+  // genuine delivery with `reason=no_secret_configured` before the truck lookup was ever reached.
+  // A chain reading `META_WHATSAPP_APP_SECRET ?? META_APP_SECRET` would have worked and is REFUSED
+  // ON PURPOSE: accepting either name is what hides this exact drift the next time it happens.
+  // One name, matching the family. Comma-separated multi-secret support is unchanged -- it lives in
+  // the helper's parser, not in the name.
   const signatureHeader = req.headers.get('x-hub-signature-256')
-  const secrets = parseMetaAppSecrets(process.env.META_APP_SECRET)
+  const secrets = parseMetaAppSecrets(process.env.META_WHATSAPP_APP_SECRET)
   const verification = verifyMetaSignature({ rawBody, signatureHeader, secrets })
 
   if (!verification.ok) {
@@ -157,12 +168,25 @@ export async function POST(req: NextRequest) {
     // trucks to claim the same one, so this can never return a second row.
     let truck: TruckRow | null = null
     {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('trucks')
         .select(TRUCK_FIELDS)
         .eq('phone_number_id', phoneNumberId)
         .eq('active', true)
         .maybeSingle()
+      // A QUERY THAT ERRORED IS NOT A QUERY THAT FOUND NOTHING, AND `const { data }` COULD NOT TELL THEM
+      // APART. A failed lookup arrived here as `data: null` and was indistinguishable from an honest
+      // no-match, so the message was dropped with the log line for the wrong cause. maybeSingle() returns
+      // an ERROR rather than a row when MORE THAN ONE row matches; the partial unique index on
+      // phone_number_id makes that unreachable for THIS lookup, but the fallback below has no such index
+      // and the two sites must not diverge in how they read a result.
+      // console.error and the word FAILED, so this is greppable apart from the NO TRUCK warn below.
+      if (error) {
+        console.error(
+          `[webhook/meta-whatsapp] LOOKUP FAILED (primary, phone_number_id) code=${error.code} ` +
+          `message=${error.message} -> treated as no match; falling through to the fallback.`,
+        )
+      }
       truck = (data as TruckRow | null) ?? null
     }
 
@@ -179,12 +203,24 @@ export async function POST(req: NextRequest) {
         digits,
         digits.startsWith('44') ? `0${digits.slice(2)}` : null,
       ].filter((v): v is string => v !== null)
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('trucks')
         .select(TRUCK_FIELDS)
         .or(toVariants.map(v => `whatsapp_sender.eq.${v}`).join(','))
         .eq('active', true)
         .maybeSingle()
+      // THIS IS THE SITE THE ERROR CHECK EXISTS FOR. whatsapp_sender carries NO unique index, so the
+      // moment a SECOND truck is populated with a value matching any of the three variants, maybeSingle()
+      // returns an error and no row. Discarding it made that arrive as a silent drop that looked exactly
+      // like "no truck is set up on WhatsApp" -- the failure would have been diagnosed as configuration.
+      // Logged distinctly, then fallen through: a lookup we could not complete is NOT a match.
+      if (error) {
+        console.error(
+          `[webhook/meta-whatsapp] LOOKUP FAILED (fallback, display_phone_number) code=${error.code} ` +
+          `message=${error.message} variants=${toVariants.length} -> treated as no match. ` +
+          `A "more than one row" error here means two trucks share a whatsapp_sender variant.`,
+        )
+      }
       truck = (data as TruckRow | null) ?? null
       if (truck) {
         console.warn(

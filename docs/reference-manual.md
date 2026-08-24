@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.34
+HatchGrab Engineering Reference Manual · V11.38
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.34**
+**Version 11.38**
 
 August 2026
 
@@ -15,6 +15,103 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.38 — 23 August 2026
+
+Delta over V11.37 — **a cost comparison page was built end to end; the pricing values it needed
+turned out to exist only inside sentences, which was already blocking payments; and three
+separate silent-absence failures were found, none of which produced an error.**
+
+- 🔴 **EVERY PRICING VALUE WAS A DISPLAY STRING.** `lib/payments` could not apply an online-order
+  allowance because the allowance existed only inside a sentence. **Now structured, with the
+  strings derived from the numbers and proven byte-identical.**
+- ✅ **THE COST COMPARISON PAGE IS BUILT** at `/landing/cost`, behind a gate that opens by itself
+  when pricing publishes.
+- 🔴 **THREE SILENT-ABSENCE FAILURES IN ONE SESSION**, each producing a plausible artefact rather
+  than an error.
+- 🔴 **`landing.css` CONTAINS `.hg-landing * { margin: 0 }`** — a trap that would have flattened
+  every margin on any Tailwind content wrapped in that scope.
+- ⚠️ **The landing's nav and footer are now shared components**, extracted with the landing's file
+  hash unchanged.
+
+## V11.37 — 20 August 2026 (late)
+
+Delta over V11.36 — **an operator-facing auto-reply preview was built on the live classifier with
+its equivalence proven by execution; the Settings section around it was restructured; and a
+diagnose-first step killed the premise it was given.**
+
+- ✅ **THE AUTO-REPLY SIMULATOR IS BUILT.** An operator types a question in Manage → Settings and
+  sees the exact reply a customer would get. **It calls the live classifier, not a copy.**
+- ✅ **THE ONE LIVE-PATH EDIT IS PROVEN IDENTICAL WHEN UNUSED — BY EXECUTION, NOT ASSERTION.**
+- 🔴 **`trucks.website` IS NOT A DEAD FIELD.** It is rendered as a link on two customer surfaces.
+  The premise that it was unused was **mine, and wrong**, and the repo already said so at the field.
+- 🔴 **THE LANDING PAGE CARRIES A CLAIM WITH NO PRODUCT BEHIND EITHER HALF OF IT.**
+- ⚠️ **A COMMENT WARNING AGAINST MOVING A BLOCK QUOTES THE TOKEN IT WARNS ABOUT**, so a raw grep
+  now reports a wrapper that does not exist. It fired twice.
+
+## V11.36 — 20 August 2026 (evening)
+
+Delta over V11.35 — **WhatsApp inbound was observed working end to end for the first time, on a
+real handset, against a real Meta credential; the reason it had never worked was a single
+environment-variable name; the first authenticated Graph call in this codebase's history was made;
+and the Meta business account was restructured onto the incorporated entity.**
+
+- ✅ **WHATSAPP INBOUND WORKS. OBSERVED, NOT INFERRED.** A message sent from a real phone to the
+  Meta platform test number routed to Thai Kitchen and returned a correct, priced, grounded reply
+  to the handset. **This is the first end-to-end WhatsApp success this platform has ever had.**
+- 🔴 **IT HAD NEVER WORKED BECAUSE OF ONE VARIABLE NAME.** The webhook read `META_APP_SECRET`;
+  production defines `META_WHATSAPP_APP_SECRET`. The signature gate is fail-closed, so **every
+  inbound POST was refused 401 before the truck lookup was ever reached.**
+- ✅ **THE FIRST AUTHENTICATED GRAPH CALL WAS MADE, AND IT ANSWERED THREE OPEN QUESTIONS AT ONCE.**
+- 🔴 **APP REVIEW REQUIRES TWO VIDEOS, NOT ONE.** The manual recorded one. The missing one needs a
+  send initiated from our app — **a surface that does not exist.**
+- ✅ **THE META BUSINESS PORTFOLIO IS NOW THE INCORPORATED ENTITY**, the domain is verified, and
+  Business Verification is submitted.
+- 🔴 **THIRTEEN TRUCKS, NOT SIXTEEN.**
+
+## V11.35 — 20 August 2026 (evening)
+
+Delta over V11.34 — **the app was submitted to the App Store; a build failure took deploys offline for
+several hours and revealed that a "deleted" middleware had only been renamed; and a routing change nearly
+served marketing copy on every operator route.**
+
+- ✅ **THE APP IS SUBMITTED.** Build 1.0 uploaded and attached, screenshots on the 6.5-inch iPhone and
+  13-inch iPad shelves, privacy questionnaire answered, demo account provided, review notes written.
+- 🔴 **THE SCREENSHOT SHELVES ARE NOT WHAT THIRD-PARTY GUIDES SAY.** App Store Connect asked for
+  **6.5-inch iPhone (1284 × 2778)** and **13-inch / 12.9-inch iPad**, not the 6.9-inch that current
+  guides describe as canonical. ⚠️ **THE SHELVES IN THE ACCOUNT WIN OVER ANY DOCUMENTATION.** Captures at
+  1320 × 2868 were unusable and had to be resized.
+- ⚠️ **SIMULATOR CAPTURES CARRY AN ALPHA CHANNEL** (PNG colour-type 6) even with zero non-opaque pixels.
+  Apple's validator has historically rejected on the channel's presence. Strip it before uploading.
+- 🔴 **THE DEMO ACCOUNT IS THE HIGHEST-RISK PART OF A SUBMISSION FOR THIS PRODUCT.** The app is
+  token-gated and operator-facing, so a reviewer sees a login wall and nothing else. Apple reviews the
+  experience both with and without an account. **A dedicated demo truck — "Apple Tester", pizza menu,
+  eight seeded events — exists for this.**
+- 🔴 **A BUILD FAILURE BLOCKED ALL DEPLOYS, AND ITS CAUSE WAS A FALSE HISTORY.** Next.js 16 renamed the
+  `middleware.ts` convention to `proxy.ts` and refuses to build with both present. A new `middleware.ts`
+  was added believing the repo's previous middleware had been **deleted** at commit `f4a8ac2` "vercel
+  fix". ⚠️ **IT HAD BEEN RENAMED, NOT DELETED.** Everything it was thought to have lost — the rate
+  limiter, the Supabase session refresh, the `/dashboard` and `/manage` auth guards, the Village Foodie →
+  HatchGrab operator redirect, the native-app UA exemption — **was live in `proxy.ts` the whole time.**
+- 🔴 **AND THE NEAR-MISS WAS WORSE THAN THE OUTAGE. A MATCHER IS A GUARD, AND IT DOES NOT TRAVEL WITH THE
+  CODE.** `middleware.ts` matched `['/', '/landing']`, so its root rewrite needed no path test — the
+  matcher *was* the test. Moved into `proxy.ts`, whose matcher covers nearly everything, **an unguarded
+  rewrite would have served the landing page on every operator route on hatchgrab.com** — dashboard,
+  manage, KDS, login. Caught by asking what changes when the matcher widens.
+- ✅ **`/contact` NOW BRANDS BY HOST**, using the existing `isHatchGrabHost` predicate: HatchGrab chrome on
+  hatchgrab.com, Village Foodie chrome elsewhere, one shared Tally form. `/support` — built earlier the
+  same week as a HatchGrab-branded duplicate — **is deleted**, and the landing's non-admin gate now
+  redirects there.
+- ⚠️ **VILLAGE FOODIE'S CONTACT PAGE GAINS ONE STYLESHEET LINK IT DOES NOT USE.** Next collects CSS from a
+  route's whole module graph and a dynamic `import()` did not prevent it. **Every rule is scoped
+  `.hg-landing`, which appears zero times in that output**, so nothing can be styled by it. Accepted
+  deliberately over a proxy rewrite or duplicated styles.
+- 🔴 **THE LANDING IS GATED AGAIN, ON PURPOSE, AND THE REASON IS RECORDED AT THE GATE:** it carries a
+  Pizzeria Gusto testimonial with no permission to publish and three screenshot placeholders. **Both must
+  be resolved before the gate comes off, and `index: true` restored in the same commit.**
+- ⚠️ **RESTORING THE GATE CREATED A REDIRECT LOOP THAT DID NOT EXIST BEFORE.** The old gate redirected
+  non-admins to `/` — which on hatchgrab.com now *is* the landing. **The gate's own comment carried the
+  premise that broke: "`/` … is NOT gated … so there is no redirect loop." True when written.**
 
 ## V11.34 — 20 August 2026
 
@@ -27,7 +124,9 @@ WhatsApp arc was scoped end to end, revealing that sending is a rewrite rather t
   code says in as many words that `can('cook_screen')` no longer gates the cook board, *"reachable on
   every plan"*. And the trial argument never applied anyway — `TRIAL_FEATURES = [...MAX_FEATURES]`.
 - 🔴 **THE ONLY BARRIER WAS `trucks.kds_mode`, AND IT WAS NOT FALSE EVERYWHERE.** One truck had it on.
-  ✅ **Now false across all sixteen, verified by a zero-row check.** The button cannot render for anyone.
+  ✅ **Now false across all thirteen, verified by a zero-row check.** The button cannot render for anyone.
+  ⚠️ **The count read "sixteen" until V11.36; two independent unfiltered queries return THIRTEEN rows.**
+  **The zero-row check itself is unaffected — only the number in this wording was wrong.**
 - ⚠️ **THE COOK BOARD ITSELF IS REACHABLE BY ACCIDENT; THE BUTTON IS NOT.** Three routes land a device on
   it with nobody choosing: a `hg_kds_payments_<token>` preference set once and dual-written to Preferences
   so it survives reinstall; a migration that deliberately seeds it from the retired `hg_kds_view_` key;
@@ -4321,8 +4420,7 @@ Recorded so it is not rediscovered. **Nothing here is broken today; all of it is
 
 - **£29 / £49 are genuinely single-sourced in `PLAN_META`** — `PLAN_PRICES` and `PLAN_DESCRIPTIONS` derive from it with no literals. ✅ That part is right.
 - ⚠️ **But there are 13 literal copies elsewhere**, and the worst is **`VAN_ADDON_PRICE`**, which holds them as **RAW NUMBERS** (`pro: 29, max: 49`) — **invisible to a `£29` grep**, and **read for logic, not only display**.
-- 🔴 **The £1,500 / £2,000 allowances appear 6 times with no owner.** `PLAN_ALLOWANCES` and `TRANSACTION_ROWS` restate them **twenty lines apart in the same file**, with **different consumers** (landing vs Billing), so a divergence would surface on different screens.
-- 🔴 **The allowances exist ONLY inside display strings.** No numeric value exists anywhere in the codebase, so **payments code cannot apply an allowance** even though a ledger comment refers to it.
+- ✅ **CORRECTED V11.38 — THE ALLOWANCES NOW HAVE AN OWNER, AND IT IS A NUMBER.** These two lines read *"the £1,500 / £2,000 allowances appear 6 times with no owner"* and *"the allowances exist ONLY inside display strings — no numeric value exists anywhere in the codebase, so payments code cannot apply an allowance"*. **Both were true and both are now false.** `PLAN_ONLINE_ALLOWANCE` holds them as integer pence, `PLATFORM_FEE_OVER_ALLOWANCE` holds the 0.99%, `PLAN_MONTHLY_PENCE` holds £29/£49, and **every display string — `PLAN_ALLOWANCES`, the `TRANSACTION_ROWS` cells and the footnote — is DERIVED from those numbers.** 🔴 **Proven to move no rendered output: 225 exported leaf values compared before and after, byte-identical.** ⚠️ **The restatement problem is solved at the definition, not by discipline** — there is nowhere left to restate them.
 - `0.99%` appears **9 times**; card processing **4 times in two different wordings** (`~1.5%` vs `currently 1.5%`) — a prospect and an operator are told slightly different things about the same fee.
 - ⚠️ **`findPlanParityViolations()` guards FEATURE ROWS ONLY. Nothing guards any figure.**
 - ⚠️ **Admin and the landing page render prices UNMASKED** — neither has ever called `maskPrice`. Both are access-gated, but it is not recorded anywhere as a decision, and after the global flip an admin sees real prices for every truck including a suppressed one.
@@ -4339,7 +4437,116 @@ Recorded so it is not rediscovered. **Nothing here is broken today; all of it is
 - Trial expiry checked against trucks.trial_expires_at. ⚠️ **CORRECTED V11.1 — this line used to read "expired trials silently drop to Starter". They do not, and never did:** an expired trial gets `false` for every feature, which is *less* than Starter. The error survived from V6 to V11; see *The three trial states* above.
 - UI uses useFeatures(truck); non-React code uses canAccess() directly. ⚠️ **`lib/useFeatures.ts` has NO consumer today** — it is imported once (the KDS page) and only `can` is destructured from it. It carried its own copy of the expiry rule which treated NULL as expired, contradicting `canAccess` in the same render; corrected V11.1. **A second implementation of a rule is a second thing to keep right, and this one was wrong while nothing read it.**
 - Gating happens both UI-side and API-side.
-- WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro.
+- 🔴 **WhatsApp auto-replies are PRO+MAX.** `whatsapp_replies` is a member of `PRO_FEATURES` in `lib/features.ts`, and Max inherits it through the `[...PRO_FEATURES]` spread. ✅ **Verified by execution 20 August 2026:** `canAccess('pro','whatsapp_replies')` is **true**, `requiredPlan('whatsapp_replies')` returns **`'pro'`**, and `findPlanParityViolations()` returns **`[]`**. ⚠️ **CORRECTED 20 August 2026 — this line read *"WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro."* and was wrong on BOTH halves.** It went stale at the V8.9 fix that moved the feature into `PRO_FEATURES`, and survived here for months afterwards. 🔴 **This is the list people check before writing a gate, which is why it is the worst of the five places this claim was stale** — a session was commissioned on 20 August to make a change that had already been made, on the strength of it.
+- **Messenger and Instagram auto-replies are `coming_soon`, not shipping.** The matrix row carries `pro: 'coming_soon', max: 'coming_soon'`, and no integration exists — the webhooks are verify-handshake stubs (§20). ⚠️ **`instagram_messenger_replies` IS nonetheless granted at Pro in the gate**, which is harmless only because nothing consumes it; the marketing cell, not the gate, is what an operator sees.
+
+### 🔴 THE PLAN-PARITY GUARD IS ONE-DIRECTIONAL (recorded 20 August 2026)
+
+`findPlanParityViolations()` in `lib/plan-features.ts` cross-checks the MARKETING matrix against the
+GATE, and runs at module load on every pricing surface — throwing in dev, `console.error` in production.
+✅ **It is the reason the WhatsApp discrepancy is already fixed**, and its own comment names that feature
+as the class it was built for.
+
+🔴 **BUT IT ONLY CHECKS ONE DIRECTION.** The test is
+`if (row[tier] === true && !canAccess(tier, feature))` — *advertised but not allowed*. **It cannot see
+*allowed but not advertised*:** a feature granted to a tier whose matrix cell reads `false` passes
+silently, forever. ⚠️ **"The guard is green" does not mean the two records agree.**
+
+🔴 **AND THE MISSING DIRECTION IS THE COMMERCIAL ONE (sharpened V11.37).** This entry previously called
+it *"the safer direction to miss — the operator receives more than the matrix promises rather than
+less"*, which is true of any one truck and **wrong about the business**: *"a feature quietly granted to
+a tier the pricing table does not mention passes silently — the inverse of the case it was built for,
+**and the direction that gives away paid features.**"* **Safer for the operator is not safer for us, and
+this guard is the only thing that would ever notice.**
+
+⚠️ **Four further limits, so the guard's reach is not overestimated:**
+
+- **`'coming_soon'` cells are skipped entirely.** Only a hard `true` is inspected, so the
+  Messenger/Instagram row is unchecked in both directions today.
+- 🔴 **It is keyed on ROW-NAME STRINGS**, and the file says so itself: renaming a row without renaming
+  its `ROW_FEATURE_MAP` key *"silently drops that row from `findPlanParityViolations()` — the guard stops
+  checking and reports clean."* **A rename disarms the check with no signal.**
+- **Only `starter`/`pro`/`max` are compared.** `trial`, `tester` and `demo` are never checked — correctly,
+  since the matrix has no columns for them, but it means the guard says nothing about the plans **every
+  truck on the estate is actually on.**
+- ⚠️ **THERE IS NO CI STEP AND NO TEST.** The function is exported so one could exist; nothing consumes
+  it. Drift introduced today surfaces when somebody renders a pricing page, not when somebody commits.
+
+### V11.38 — 🔴 THE PRICING VALUES WERE ALL DISPLAY STRINGS: the finding that blocked two consumers
+
+**The state before this session:** the monthly plan price existed as `'£29/mo'`. The online-order
+allowance existed as `'First £1,500 of online orders included, then 0.99%'`. **The 0.99% platform
+fee had no home of its own at all** — it appeared only inside those two sentences, one table cell
+and one footnote. ✅ **The only structured value was card processing**, which was already a number
+pair.
+
+🔴 **THE CODEBASE ALREADY KNEW, IN WRITING, AND HAD ALREADY BEEN BLOCKED BY IT.** The card-fee
+constant carries a comment stating that the allowances were defined only inside display strings,
+**so the payments module cannot read a number and therefore cannot apply an allowance at all**, and
+instructing the next person not to repeat it.
+
+⚠️ **THE CALCULATOR WAS THE SECOND CONSUMER TO HIT THE SAME WALL AND THE FIRST THAT COULD NOT WORK
+AROUND IT** — its entire output is arithmetic on those values. **The only alternative was parsing
+the sentences at runtime, which is a second source of truth wearing a regex.**
+
+### What now exists
+
+- **Plan price in pence, as an integer**, living with the plan metadata rather than beside the card
+  fees — ⚠️ **because the dependency runs one way**: the plan-features module imports the features
+  module to derive its price strings, so putting the number in the importer would have created a
+  cycle. **The number had to go where the string already was.**
+- **The online allowance as a DISCRIMINATED UNION**, not a nullable number.
+- **The platform fee as its own constant.** ⚠️ **DELIBERATELY NOT FOLDED IN WITH THE CARD FEES:**
+  they look alike and are opposites. **Card fees are Stripe's and carry a "not ours, cannot
+  guarantee" warning; this one is ours and we set it.** Merging would put a fee we control under a
+  comment saying we do not.
+- **Every display string is now DERIVED** from those numbers.
+
+### 🔴 THE PROOF STANDARD, WHICH IS THE ONE TO COPY
+
+Both modules were **executed** before the first edit and after the last, **every exported value
+serialised and compared leaf by leaf: 225 leaves, 0 differences, raw JSON byte-identical.** The
+parity guard ran inside both snapshots and returned empty both times — **it throws at module load
+outside production, so a broken import would have failed the snapshot rather than passed quietly.**
+
+⚠️ **DELIBERATELY EXHAUSTIVE RATHER THAN TARGETED.** Capturing only the strings expected to change
+would prove the intended change happened, **not that everything else was left alone.**
+
+### ⚠️ PENCE, AS INTEGERS — and the reason is not consistency
+
+Three reasons, in order of weight: the card-fee constant two lines away already does it; **the
+order total is already pence**, so an allowance compared against order value in pounds would put a
+conversion at every future comparison site; and **it is the only representation that cannot
+accumulate float error across twelve months of arithmetic**, which is exactly what the blocked
+consumers do. ⚠️ **A percentage stays a float — a percentage is not money.**
+
+### 🔴 THE UNION IS WHY THE FALSY TRAP IS UNREPRESENTABLE
+
+**"No allowance" and "no ceiling" are different facts that a nullable number collapses into the same
+falsy value.** The union forces a consumer to name which case they mean and the compiler catches an
+unhandled one. ⚠️ **This is the trial-expiry lesson applied structurally rather than by care** — the
+manual already records a null expiry read as trial-not-started.
+
+⚠️ **TWO TIERS ARE DELIBERATELY ABSENT.** The tester and demo tiers have no published commercial
+position — no table column, no allowance sentence, nothing to derive from. **They are excluded from
+the key type, so a consumer gets a compile error rather than undefined.** 🔴 **Giving them an
+allowance would be inventing a commercial fact. Covering them is a decision about what a tester and
+a demo truck are sold, not a refactor.**
+
+### ⚠️ A LOCALE HELPER WOULD HAVE BROKEN THE BYTE-IDENTITY SILENTLY
+
+The allowance formatter **deliberately does not use `toLocaleString`.** ⚠️ **ICU availability differs
+between build host and browser** — a trimmed-ICU runtime renders `£1500` where a full one renders
+`£1,500`. **Manual grouping is deterministic everywhere.** The calculator uses the same grouping
+expression for its own figures, so the two cannot diverge on the thing that mattered.
+
+⚠️ **AND THE AUTHOR CAUGHT THEMSELF RE-HARDCODING MID-TASK:** a first draft interpolated the
+allowance amount directly into the sentence, **three lines below the map that exists to prevent
+exactly that.** It now reads through an accessor that **throws rather than falling back** — a loud
+module-load failure instead of a malformed price on the pricing table.
+
+✅ **What this unblocks:** the payments module can now read the allowance and platform fee as
+numbers. **It is not wired — that is a separate change with money on the end of it.**
 
 ### FeatureValue type (V4)
 
@@ -7021,7 +7228,7 @@ pass a `truckId` that is used as a fallback rather than a test. **Latent while S
 
 ## Core tables
 
-- **trucks** — one row per truck/brand. Holds plan, settings, dashboard_token, operator_id, default_auto_open/close, qr_code_style (V4), slug (V5, unique, URL-safe — used by /trucks/[slug]/order; prod-verified to EXIST V6.5), active (prod-verified to EXIST V6.5), truck_emoji (V5), logo_storage_path (operator-uploaded logo — note it is NOT mirrored to discovery_trucks.logo_url, Section 14), lifetime_discount_pct / lifetime_discount_note (V6), paused_until (VESTIGIAL post-V6.6 — pause moved to truck_events), extra_wait_mins / extra_wait_started_at (VESTIGIAL post-V6.6 — extra-wait moved to truck_events), order_counter (V6.3, int default 0 — no-event fallback display counter), and the scraper-preference / adaptive-scheduling columns (V6.2).
+- **trucks** — one row per truck/brand. Holds plan, settings, dashboard_token, operator_id, default_auto_open/close, qr_code_style (V4), slug (V5, unique, URL-safe — used by /trucks/[slug]/order; prod-verified to EXIST V6.5), active (prod-verified to EXIST V6.5), truck_emoji (V5), logo_storage_path (operator-uploaded logo — note it is NOT mirrored to discovery_trucks.logo_url, Section 14), lifetime_discount_pct / lifetime_discount_note (V6), paused_until (VESTIGIAL post-V6.6 — pause moved to truck_events), extra_wait_mins / extra_wait_started_at (VESTIGIAL post-V6.6 — extra-wait moved to truck_events), order_counter (V6.3, int default 0 — no-event fallback display counter), and the scraper-preference / adaptive-scheduling columns (V6.2). 🔴 **[ADDED V11.36 — `phone_number_id` (text, nullable, no default, PARTIAL UNIQUE where not null) was applied on 16 August and was MISSING FROM THIS LIST until now. This list is where anyone checks a column before writing SQL, so a real column absent from it is the same failure class as a phantom column present in it, with the sign reversed.]** Also on this table and long absent from this list: `whatsapp_sender`, `messenger_page_id`, `messenger_page_token`, `kds_pin` — the middle two are dead columns, see §20.
 
 > **RULE (V6.5; refs fully removed V7.8 §12) — there is NO `trucks.is_test` column.** Prod verification confirmed `trucks.is_test` does not exist. Code NO LONGER references it anywhere — the discovery/events operator branch was fixed V6.5, and the remaining admin/manage refs were all removed V7.8 §12 (changelog). Declaring or selecting `is_test` errors or silently returns nothing, so NEVER add it back (column or substitute boolean). The "filter test trucks from the public map" effect is achieved via the discovery row `visibility` enum (set a test truck's discovery rows to `hg_only`), NOT a trucks column. See Section 4 (is_test scope) and Section 27.
 
@@ -7536,6 +7743,70 @@ now share one predicate.
   population to whether suppression works is a category error** — the planning chat made exactly that
   mistake and was refuted by finding the dedicated table.
 
+## V11.36 — `truck_emoji`: a DEFAULTED COLUMN HOLDING AN EXPLICIT NULL
+
+Thai Kitchen was the **only** truck of thirteen with a null `truck_emoji`. The column is nullable
+with a pizza-emoji default, so **an explicit null was supplied on that truck's creation path** — a
+default only applies when no value is passed.
+
+The WhatsApp sign-off rendered the null as empty space and was **correct once the value was
+populated**; no code change was needed. ⚠️ **OPEN, low priority: whether provisioning can still
+create a truck with a null emoji.** The column renders on operator and customer surfaces too, so the
+gap is not WhatsApp-specific.
+
+**This is the *a default is not a value* rule recurring**, in the direction the rule already
+predicts.
+
+## V11.36 — 🔴 THIRTEEN TRUCKS, NOT SIXTEEN
+
+Two independent unfiltered queries return **13 rows**. The zero-row check that entry describes may
+still be sound; **the count in its wording is not.**
+
+⚠️ **The V11.34 changelog entry read "across all sixteen" and has been corrected in place.** Recorded
+here as well because **the estate size is a fact people quote from memory**, and a wrong denominator
+turns a complete sweep into an apparently incomplete one — or worse, the reverse.
+
+## V11.36 — THE `trucks` COLUMN LIST WAS MISSING A REAL COLUMN
+
+⚠️ **The `trucks` column list carried no `phone_number_id`**, despite the migration having been
+applied on 16 August. **That list is where anyone checks a column before writing SQL** — a real
+column missing from it is the same failure class as a phantom column present in it, with the sign
+reversed.
+
+✅ **ADDED AT V11.36:** `text`, nullable, no default, partial-unique where not null. **The list earlier
+in this section now carries it**, along with three further columns that had also never been listed —
+`whatsapp_sender`, `messenger_page_id` and `messenger_page_token`.
+
+⚠️ **The gap lasted four days and nobody hit it**, which is the uncomfortable part: **the list is
+consulted often enough to be load-bearing and not often enough for an omission to surface quickly.**
+`trucks` predates `supabase/migrations/`, so its full column set cannot be derived from this
+repository — **only `information_schema` settles what is really on that table.**
+
+## V11.37 — 🔴 `trucks.website` IS NOT DEAD: a premise killed by diagnose-first
+
+The public discovery/events route names the column explicitly in its truck join and maps it so that
+**the operator's own value OUTRANKS the linked discovery copy** — it is the primary source, not a
+fallback. It is then rendered as a link on **two customer surfaces**: the truck profile page and the
+event listing card.
+
+⚠️ **THREE TABLES CARRY A `website` COLUMN** — the operator's, the scraped discovery shadow, and
+venues. **A grep returns all three, and only one is this field.** 🔴 **That is how a live field reads
+as dead**, and it is the phantom-column trap with the sign reversed: not a fake column present, but a
+**real column invisible among its homonyms.**
+
+🔴 **AND THE ANSWER WAS ALREADY WRITTEN AT THE FIELD.** Its own save-time comment states the value
+*"is RENDERED AS AN href on two customer-facing pages."* **The repository knew, in the exact place
+the question would be asked.** ⚠️ **The failure was not that the fact was undocumented — it was that
+a planning premise was formed without opening the file.**
+
+✅ **The field was moved to the truck-details card anyway**, on identity-versus-messaging reasoning
+rather than dead-data reasoning. **It is NOT being retired. Both customer surfaces keep their link.**
+The distinction between the website and schedule-url columns is untouched.
+
+⚠️ **URL NORMALISATION NOW EXISTS IN THREE PLACES** — once on save, and independently at **both**
+display sites, which the field's own comment describes as *"the same fix, written twice, at the
+display end."* **A DRY finding, unfixed, recorded.**
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -7976,7 +8247,9 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 
 > **RULE (V7.6) — sender-routing is a testing convenience; go-live needs recipient-routing.** The auto-reply binding is `trucks.whatsapp_sender` (a single TEXT column, ONE number at a time, stored bare `447…`). The webhook (`app/api/webhooks/meta/whatsapp/route.ts`) matches the inbound SENDER's number against `whatsapp_sender` and replies to that sender. This works ONLY because there is ONE shared US Meta test number during testing — swapping which test phone is "live" means re-pointing `whatsapp_sender` (one number at a time). GO-LIVE MODEL (banked, blocker): customers message the truck's OWN WhatsApp Business number → route by RECIPIENT (`phone_number_id` → truck), reply to sender. Requires per-truck WhatsApp Business number provisioning (not done — the truck-page number is an unconnected US placeholder) + a webhook change from sender-match to recipient-match (Section 27). NOTE: `trucks.whatsapp_sender` (the auto-reply binding) is DISTINCT from `trucks.whatsapp` (the customer-contact number). In Meta dev mode every test sender number must be on the recipient allowlist or delivery silently fails.
 
-> **FEATURE-GATE DISCREPANCY (V7.6, backlog bug).** `whatsapp_replies` is granted as a MAX-tier feature in `lib/features.ts` (max/trial/tester/override only — NOT Pro/Starter), but the marketing table `lib/plan-features.ts` lists it as Pro+Max. The webhook obeys `features.ts`, so a Pro truck would get SILENT no-reply despite the pricing matrix promising it. (Gusto is on trial → granted, so unaffected.) Reconcile the two files (Section 27).
+> **✅ `whatsapp_replies` IS A PRO FEATURE, AND THE CODE HAS SAID SO SINCE V8.9. THERE IS NOTHING TO RECONCILE.** `lib/features.ts` lists it in `PRO_FEATURES` (Max inherits via the spread) and `lib/plan-features.ts` markets it `pro: true, max: true`. **The two agree on all three tiers**, `findPlanParityViolations()` returns `[]`, and `requiredPlan('whatsapp_replies')` returns `'pro'` — so `<FeatureGate>` already renders *"requires the Pro plan"*, generated rather than hand-written.
+>
+> 🔴 **CORRECTED 20 August 2026. THIS ENTRY PREVIOUSLY CLAIMED THE OPPOSITE** — that the gate granted the feature at *"max/trial/tester/override only — NOT Pro/Starter"* and that `lib/features.ts` *"is the file that is wrong"*. **Both were false when written.** ⚠️ **THE FAILURE IS THE INTERESTING PART AND IS RECORDED AS A CLASS, NOT AN ANECDOTE:** the claim came from a session delta that was integrated into this manual **without re-reading `lib/features.ts`**, by someone who had personally grepped that exact line hours earlier and seen the comment *"Pro+Max — moved from Max-only"*. **A summary of a source is not the source, and having read the source once does not survive summarising it.** A build session was then commissioned on the strength of this entry to make a change that already existed.
 
 > **ALLERGEN ROUTING — presence-confirm vs absence-redirect, with a bucket-independent floor (V7.7, LIVE-VERIFIED V7.8). SAFETY-CRITICAL.** Two layers were realigned so they agree. (1) The deterministic `mentionsAllergen` guard was HOISTED to run immediately after classification, before ANY branch and before all three callGemini sites (between the IGNORE return and the MENU_QUERY branch in `generateWhatsAppReply`). It redirects on any absence/safety token, regardless of which bucket Gemini chose — so the probabilistic classifier can NEVER be the safety boundary; the deterministic guard is the floor on every path. The pre-existing in-branch check is left as belt-and-braces. (2) The classifier's ALLERGEN_QUERY trigger list was realigned: PRESENCE tokens (gluten, nuts, peanut, dairy, milk, egg, soy, wheat, ingredient) MOVED to MENU_QUERY (→ the presence-confirm path, which CONFIRMS a tagged allergen via the HAS/CONTAINS rule + the deterministic caveat-append, and DEFERS-never-DENIES for an untagged one); SAFETY tokens (allerg, celiac, coeliac, intoleran, free from, gluten free, safe for, suitable for) and `contain` stay ALLERGEN_QUERY → fixed redirect. `contain` deliberately KEPT as ALLERGEN_QUERY (resolves the ambiguous "does it contain any nuts" toward safety — a wrongly-redirected presence question is a mild helpfulness miss; an absence question reaching the LLM is the dangerous error). NET: "does the tiramisu have gluten" → MENU_QUERY → confirms (tiramisu is tagged Gluten) + caveat; "is the tiramisu gluten free" → guard redirect, no LLM; "does it have sesame" (untagged) → defers, never "no". RESIDUAL RISK: the untagged-defer ("never says no") is a PROMPT-STRENGTH guarantee (DEFER-never-DENY), not deterministic — the floor and the caveat-append ARE code-guaranteed. If an untagged item ever returns "no/free of", tighten the prompt; it is not a floor failure.
 
@@ -7988,7 +8261,7 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 
 ## Platform compliance and tone
 
-Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). Instagram/Messenger are Pro; WhatsApp is Max only.
+Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). 🔴 **WhatsApp auto-replies are PRO+MAX; Messenger and Instagram are `coming_soon` and unbuilt.** ⚠️ **CORRECTED 20 August 2026 — this sentence read *"Instagram/Messenger are Pro; WhatsApp is Max only."*, which was wrong on both halves from the V8.9 fix onwards.** See §4 for the executed verification.
 
 ### Meta webhook endpoints (V5 scaffolded, WhatsApp wired V6.3)
 
@@ -8121,7 +8394,8 @@ no template capability, and **no secure storage of any kind** — every secret i
 **What Meta requires, from its own documentation:** Embedded Signup is **hosted on our site**; a button
 launches Meta's flow, the JS SDK captures an exchangeable code, and a server-to-server call exchanges it
 for a **business token**. Tech Provider status needs **business verification and app review**, and review
-requires **a video of our app creating a message template**. **Embedded Signup v2 is deprecated on 15
+requires **TWO screen recordings: a message created and sent FROM OUR APP and received in the WhatsApp
+client, AND our app being used to create a message template.** **Embedded Signup v2 is deprecated on 15
 October 2026 — build v4.** ⚠️ **Onboarded trucks must add a payment method to their own WhatsApp Business
 account** — a friction step in the wizard that cannot be removed.
 
@@ -8148,11 +8422,462 @@ backups and exports. Say that rather than calling it "encrypted at rest" and sto
 **Built and unblocked:** an admin-gated template list/create tool on the platform credential, and a pure
 connection-state machine mirroring `payments-state.ts`, imported by nothing.
 
-⚠️ **THE SENDER IS PINNED TO GRAPH API `v19.0`** and that pin is now shared by the template calls. **Check
-it against Meta's changelog before the review recording.** ⚠️ **A fake-token call reached Meta and returned
-a genuine `OAuthException`, which proves the URL, the path and the error parsing — and proves nothing about
-whether Meta accepts the template payload shape.** 🔴 **The first authenticated call must not be the one on
-camera.**
+⚠️ **THE SENDER IS PINNED TO GRAPH API `v19.0`** and that pin is shared by the template calls. ✅ **CHECKED
+V11.36 BY AN AUTHENTICATED CALL: `v19.0` IS STILL SERVED**, and the pin deliberately STAYS there through the
+app-review recording — the reasoning is in the first-authenticated-call block later in this section.
+🔴 **The first authenticated call must not be the one on camera** — and it no longer is.
+
+## V11.36 — 🔴 WHATSAPP INBOUND: OBSERVED WORKING END TO END
+
+**The test, exactly as performed.** `trucks.phone_number_id` was set by hand on Thai Kitchen
+(`test-truck`) to the Meta platform test number's id `1179821708546925`. A menu question was sent
+from a real handset on the Meta test-recipient allowlist. A correct reply arrived on the handset.
+
+**What this proves BY OBSERVATION, each of which was previously source-read only:**
+
+- The HMAC signature gate passes with a correctly-named secret.
+- 🔴 **The PRIMARY `phone_number_id` lookup routes.** This path had **never once executed** — the
+  column was null on every truck from its creation until this session, so 100% of routing had
+  always fallen to the fallback. **The 16 August routing fix is now exercised, not merely applied.**
+- The plan gate grants on a `trial` truck.
+- The classifier's menu path, the grounded answerer, and **the price-validation guard** — the
+  reply quoted a live menu price correctly.
+- `sendMetaWhatsApp` delivers to a real handset.
+- The `"— {truckName} {emoji}"` sign-off renders as documented.
+
+**What this does NOT prove, and must not be recorded as proven:** any per-truck sending (still one
+platform credential); any truck's own business number (this was Meta's test number); the template
+CREATE payload; anything about Embedded Signup.
+
+⚠️ **The configuration is LEFT IN PLACE** — Thai Kitchen holds `phone_number_id`
+`1179821708546925`. It is the only working WhatsApp configuration on the platform. **Do not clear
+it without a reason**; the undo is a single null update.
+
+## V11.36 — 🔴 THE ENVIRONMENT-VARIABLE NAME ERROR, AND THE DEBT ITS FIX LEFT BEHIND
+
+**The defect.** The Meta WhatsApp webhook reads `process.env.META_APP_SECRET`. **Production defines
+`META_WHATSAPP_APP_SECRET`** — matching the manual's own env rule and the four sibling
+`META_WHATSAPP_*` variables. The secret parser therefore received `undefined`, returned an empty
+list, and **the fail-closed gate refused every inbound POST with a 401 before the lookup.**
+
+⚠️ **This is the failure mode the gate's own design note anticipated** — it argued fail-closed
+produces retries and a flagged subscription rather than silent swallowing. It was right, and the
+diagnosis still took an environment-variable read rather than a log line, because **no traffic was
+arriving to produce the log line.**
+
+🔴 **THE FIX APPLIED WAS OPERATIONAL, NOT CODE, AND IT LEFT DEBT.** `META_APP_SECRET` was added in
+Vercel carrying the same value, and the **existing production deployment was REDEPLOYED on the same
+commit** — chosen deliberately so that an in-flight App Store review saw byte-identical output and
+the large undeployed batch stayed undeployed.
+
+> **DEBT, WITH ITS REMOVAL CONDITION STATED.** Production now carries **two variables holding one
+> secret**. This is exactly the drift that caused the defect. **When the code fix lands and
+> deploys, DELETE `META_APP_SECRET` from Vercel.** Until then this is temporary state, not
+> configuration.
+
+🔴 **DO NOT "FIX" THIS WITH A FALLBACK CHAIN ACCEPTING BOTH NAMES.** A chain that accepts either
+hides precisely this drift the next time it happens. One name, matching the family.
+
+⚠️ **ENVIRONMENT VARIABLES ARE BAKED IN AT BUILD TIME.** Adding one in Vercel changes nothing until
+a redeploy. **Recorded because this is the second time in this manual a fix existed and was not
+running** — the family already carries *a fix in the repo is not deployed*; this adds **a variable
+set in Vercel is not a variable in the running deployment.**
+
+⚠️ **STATUS CORRECTION, SAME DAY, LATER: THE CODE FIX IS BUILT.** This delta was written against the
+state before it. `app/api/webhooks/meta/whatsapp/route.ts` now reads `META_WHATSAPP_APP_SECRET`, as one
+name with no fallback chain, and both lookups destructure and log `error`. 🔴 **BUILT IN THE WORKING TREE,
+UNCOMMITTED AND UNDEPLOYED** — it joins the queued batch, so **the two-variable state in Vercel and the
+swallowed-error behaviour are both still LIVE in production until that batch ships.** See
+`docs/whatsapp-secret-and-lookup-fixes-report.md`.
+
+## V11.36 — 🔴 META APP REVIEW REQUIRES TWO VIDEOS, AND VIDEO 1 HAS NO SURFACE
+
+Meta's Tech Provider documentation requires **two** screen recordings:
+
+1. **A message created and sent FROM OUR APP and received in the WhatsApp client.**
+2. **Our app being used to create a message template.**
+
+🔴 **VIDEO 1 HAS NO SURFACE.** `sendMetaWhatsApp` has exactly one call site, reachable only after an
+inbound message matches a truck. **Nothing in the product can INITIATE a send.** The inbound
+auto-reply path is currently the only way a message leaves this platform — which means the observed
+inbound test IS video 1's route, and any other framing requires building an initiating surface.
+
+**Video 2 is covered** by the existing admin template tool.
+
+## V11.36 — ✅ THE FIRST AUTHENTICATED GRAPH CALL, AND WHAT IT SETTLED
+
+A template LIST call was executed against the live platform credential and returned successfully.
+
+**Settled by this single call:**
+
+- ✅ **Graph API `v19.0` IS STILL SERVED.** ⚠️ **Note it is PAST its scheduled deprecation date of
+  21 May 2026** — so it is alive on borrowed time, not safe. `v20.0` was scheduled for 24 September
+  2026, so a one-notch bump buys nothing.
+- ✅ The platform access token is valid in production.
+- ✅ **`META_WHATSAPP_BUSINESS_ACCOUNT_ID` IS SET AND CORRECT IN PRODUCTION.** The readiness report
+  explicitly could not determine this from the repository.
+- ✅ URL, auth header and response parsing all work end to end.
+
+🔴 **IT PROVES NOTHING ABOUT THE CREATE PAYLOAD.** List and create are different endpoints, and
+**create is the one being filmed.** The payload's `example.body_text` list-of-lists shape, and the
+omission of `example` when no variables are declared, remain the module's own reading of Meta's
+documentation. **Create one throwaway template off camera before the real take.**
+
+⚠️ **SUPERSEDES the reasoning that the fake-token `OAuthException` proved the version resolves.** It
+proved the router answered. **Version-liveness was settled only by an authenticated call**, which is
+the general lesson: *an authentication failure is evaluated before, or instead of, everything
+downstream of it.*
+
+### DECISION TAKEN — the version pin stays on `v19.0` through the app-review recording
+
+The pin is a **single constant** (`GRAPH_API_VERSION` in the Meta WhatsApp module) with **three
+executable consumers** — the sender, the template list and the template create — and two
+non-executable stale references. **The bump is genuinely one line.**
+
+🔴 **It is deliberately NOT being bumped yet.** Because the pin is shared, a bump would make the
+template path the first thing to meet a new version — and that path has never had an authenticated
+CREATE success on any version. **A bump immediately before the recording would put an unproven
+version and an unproven payload shape on camera together, and Meta's 400 would not say which it
+objected to.** `v19.0` is now proven for LIST, so the recording carries one unknown instead of two.
+**Bump after the recording, not before.**
+
+## V11.36 — 🔴 `whatsapp_logs` CANNOT BE USED AS AN INBOUND MONITOR — TWO INDEPENDENT REASONS
+
+**Reason one: an unmatched message writes no row at all.** The insert is **downstream of the truck
+lookup**, so a message that arrives and fails to route leaves only a `console.warn` in the function
+log. A signature-gate refusal writes nothing either. 🔴 **Therefore silence in `whatsapp_logs` is
+NOT evidence that no messages arrived.**
+
+**Reason two, and it is worse: `response_sent` is written BEFORE the send.** A send throw is caught
+and the route still returns 200 — but the log row has already been inserted with `response_sent`
+populated. 🔴 **A REPLY THAT WAS COMPOSED BUT NEVER DELIVERED IS LOGGED AS THOUGH IT WERE SENT.**
+The column records what the classifier produced, **not what the customer received.**
+
+⚠️ **This is inert only while volume is nil. It becomes a live diagnostic trap the moment trucks are
+onboarded** — the table will look healthy while nothing arrives. **Do not judge the WhatsApp arc by
+that table without fixing this first.**
+
+## V11.36 — 🔴 BOTH TRUCK LOOKUPS SWALLOWED THE SUPABASE ERROR — LATENT, AND IT ARMS ITSELF ON TRUCK TWO
+
+Both the primary and the fallback lookup destructure only `data` and never read `error`. The single-
+row helper returns **an error, not a row**, when more than one row matches.
+
+**Today only one truck has a populated sender, so it cannot fire. The moment a second truck is
+populated with a colliding variant, the lookup yields a null row plus a swallowed error —
+indistinguishable from "no truck" — and drops the message silently.**
+
+🔴 **This is the same lesson this same subsystem already learned once**, recorded as *a swallowed
+supabase-js error is indistinguishable from zero rows; always destructure and check `error`.**
+**Third occurrence of this class in the WhatsApp path.** Fix must keep the 200 — a non-200 lets Meta
+disable the subscription for every truck.
+
+⚠️ **STATUS CORRECTION, SAME DAY, LATER: THE CODE FIX IS BUILT.** This delta was written against the
+state before it. `app/api/webhooks/meta/whatsapp/route.ts` now reads `META_WHATSAPP_APP_SECRET`, as one
+name with no fallback chain, and both lookups destructure and log `error`. 🔴 **BUILT IN THE WORKING TREE,
+UNCOMMITTED AND UNDEPLOYED** — it joins the queued batch, so **the two-variable state in Vercel and the
+swallowed-error behaviour are both still LIVE in production until that batch ships.** See
+`docs/whatsapp-secret-and-lookup-fixes-report.md`.
+
+## V11.36 — THE `display_phone_number` FALLBACK DOES NORMALISE — a premise correction
+
+The fallback digit-strips Meta's value and builds **three** candidates: `+`-prefixed E.164, bare
+international digits, and **a `44`→`0` UK-national variant written specifically for the one truck
+whose sender is stored in national format.** ⚠️ **The normalisation is ONE-SIDED** — applied to
+Meta's value only; the stored column is compared raw.
+
+**So inbound was never dead for a comparison defect.** It was dead for the environment-variable
+error above, and would additionally have failed because no truck's own business number is
+registered as a Cloud API sender.
+
+⚠️ **The stored value violates its own column comment**, which documents E.164 and still describes
+the column as Twilio-registered. Both wrong on both counts; the third variant exists solely to paper
+over the drift.
+
+## V11.36 — ✅ `phone_number_id` HAS NO WRITER — VERIFIED EXHAUSTIVELY
+
+A repo-wide search returned 28 occurrences and **not one is a write.** Confirmed three ways: the
+`update_truck` server allow-list omits the column; no insert/update/upsert object literal names it;
+and none of the truck-provisioning paths reference it.
+
+✅ **The partial unique index EXISTS and is live-verified** — unique on `phone_number_id` where not
+null, so a collision is unrepresentable in the database. **This was previously a manual-only claim;
+it is now a read fact**, and it is the precondition that makes an admin-gated writer safe to build.
+
+⚠️ **Consequence: the column can only ever be populated by hand in Supabase.** That is the
+onboarding step, and it is genuinely manual. **A writer is the smallest useful next build, and it is
+independent of Meta's token answer**, because inbound routes on this column under every design.
+
+## V11.36 — DEAD COLUMNS AND PHANTOM CREDENTIAL STORAGE — a census
+
+🔴 **`trucks.messenger_page_token` IS A DEAD COLUMN.** Null on all 13 trucks. **No reader, no
+writer.** Its only code appearance is a redaction-set membership — ⚠️ **a redaction is not a read**;
+it proves the column is known to exist, not that anything consumes it. Its own column comment
+describes an OAuth flow that was never built. **A column comment is a claim, and this one has never
+been true.**
+
+🔴 **IT IS NOT A CREDENTIAL-STORAGE PRECEDENT AND MUST NOT LATER BE READ AS ONE.** The recommendation
+of a dedicated, separately-tabled, app-encrypted connections store stands unopposed — there is no
+existing pattern here to point at.
+
+**Three siblings in the same condition, recorded so the census is complete:** `trucks.messenger_page_id`
+(referenced nowhere at all); **`META_WHATSAPP_PHONE_NUMBER_ID`** — named in the manual's env rule and
+**read by no code**, because the send path takes its phone number id as an argument from the inbound
+webhook; and **`ENCRYPTION_KEY` with its crypto module**, cited by the manual as the Messenger/Instagram
+token-storage mechanism — **neither exists.**
+
+⚠️ **THE PATTERN IS THE POINT: this manual documents credential storage that was never built, in four
+places.** Every token column that DOES work in this schema is either a capability token we issue, or
+a third-party **identifier** addressed with our own platform key. **Nothing here has ever stored a
+third-party credential.**
+
+## V11.36 — META ACCOUNT STRUCTURE — decisions taken, and the reasoning that must not be re-litigated
+
+- ✅ **HatchGrab Ltd, company number 17381557, is the legal entity.** 🔴 **A Meta Business Portfolio
+  represents a LEGAL ENTITY, NOT A BRAND.** The portfolio previously named for the consumer
+  discovery brand has been **RENAMED to the incorporated company**, and Business Verification
+  submitted against it. Village Foodie remains a Page inside it, unchanged.
+- 🔴 **THE PORTFOLIO NAME AND THE APP NAME ARE SHOWN TO OPERATORS ON THE EMBEDDED SIGNUP CONSENT
+  SCREEN.** This is a second, independent reason the rename was required.
+- 🔴 **A SECOND, RESTRICTED PORTFOLIO CARRYING THE HATCHGRAB NAME IS LEFT DORMANT ON PURPOSE — DO
+  NOT DELETE IT.** Meta's account-integrity policy restricts assets *"created or repurposed to evade
+  a previous account or entity removal."* Deleting a restricted portfolio and then renaming a
+  surviving one to its name produces that pattern exactly: same owner, same device, same domain.
+  ⚠️ **The risk lives in the DELETION, not the rename** — nothing removed means nothing evaded.
+  Deleting also clears nothing, because enforcement is tracked at user, device and payment-profile
+  level. **An unused portfolio costs nothing. Leave it.**
+- ✅ **`hatchgrab.com` IS DOMAIN-VERIFIED via a DNS TXT record.** 🔴 **THAT RECORD MUST NEVER BE
+  DELETED** — Meta re-checks it periodically and removal revokes verification **silently**, which
+  would later surface as an unexplained failure somewhere in Embedded Signup or app review.
+  ⚠️ The domain had to be **released from the dormant portfolio first**; a domain can be verified by
+  only one portfolio at a time.
+- ⚠️ **DNS was chosen over the file-upload and meta-tag methods specifically because it requires no
+  deploy** — an App Store review was running.
+- ✅ App identity set: name, icon, privacy policy URL, app domains. **No Meta trademarks permitted in
+  the app name or icon.**
+
+## V11.36 — WHAT META'S CURRENT DOCUMENTATION SAYS — checked 20 August 2026
+
+- ⚠️ **The Tech Provider token evidence has STRENGTHENED against a single platform token.** Partner
+  documentation states Tech Providers use business tokens **exclusively**, system tokens being for
+  Solution Partners sharing a credit line. 🔴 **The question to Meta should still be asked in
+  writing as part of the application — but PLAN ON THE ANSWER BEING NO.** Holding the storage design
+  open indefinitely is now the more expensive choice.
+- **Onboarding is capped at 10 new business customers per rolling 7-day window**, rising
+  automatically to **200** once Business Verification, App Review and Access Verification are all
+  complete. **Well ahead of current need.**
+- **Coexistence prerequisites:** the business customer must be on WhatsApp Business app 2.24.17 or
+  higher, and **we must already hold Solution Partner or Tech Provider status.**
+- **Embedded Signup v2 is deprecated 15 October 2026 — build v4.** (Unchanged; re-confirmed.)
+- 🔴 **THE WEBSITE IS REVIEWED BY WHATSAPP'S INTEGRITY TEAM** and must be live, publicly accessible,
+  SSL-secured, and clearly describe the business. ⚠️ **An incomplete Business Info section triggers a
+  WABA restriction that takes time to clear.**
+- **Onboarded trucks must add a payment method to their own WhatsApp Business account** — a wizard
+  friction step that cannot be removed. (Unchanged; re-confirmed.)
+
+## V11.36 — 🔴 THE ADMIN TEMPLATE TOOL IS A COMPLIANCE ARTEFACT, NOT A FEATURE — DO NOT POLISH IT
+
+Templates are only required for messages sent **outside** the 24-hour customer-initiated window. Every
+current auto-reply is inside it. **The tool exists solely to be filmed once for app review.** It is
+admin-gated, platform-credential-only, and imported by nothing operator-facing. **Its roughness is
+correct.** If templated messaging ever becomes a product capability, that is a build with an operator
+surface — not a tidy-up of this page.
+
+## V11.37 — ✅ THE AUTO-REPLY SIMULATOR: what it is, and the one property that matters
+
+**An operator-facing preview in the Manage Settings tab.** The operator types a question, or taps
+an example chip, and the page renders **the exact reply the WhatsApp auto-reply would produce for
+their truck**. Nothing is sent to Meta. Nothing is written to any table.
+
+🔴 **THE DESIGN PROPERTY THE WHOLE THING RESTS ON: IT CALLS THE SHARED CLASSIFIER, NOT A COPY.**
+A demo classifier and a live classifier would drift, and the drift would surface as the demo
+promising behaviour the live path does not have. **Any future change that "simplifies" this by
+giving the preview its own reply logic destroys the only reason it is trustworthy.**
+
+**The seam is clean and that is a read fact, not an assumption.** The shared reply function takes
+nine parameters, eight derivable from a truck row; it performs **no database write of any kind**;
+the log insert, the greeting read, the truck lookup, the plan gate and the Meta send are all
+**outside** it in the webhook route. **The sender identity is not a parameter at all** — the
+greeting is passed as a boolean — so a preview is **structurally incapable** of suppressing a real
+customer's once-per-day greeting. ⚠️ **That property survives only while the shared function does
+no logging. If logging is ever moved inside it, this guarantee is lost silently.**
+
+**Decisions taken, recorded so they are not re-opened:** not plan-gated (a Starter operator seeing
+what their menu would answer is the best upgrade prompt available) · no new tab · no
+`whatsapp_logs` write on any path · the preview reproduces live defects faithfully rather than
+fixing them.
+
+## V11.37 — ✅ THE TIMEOUT PARAMETER: the one live-path edit, and how it was proven
+
+**Two of the three model call sites inside the shared reply function passed no timeout**, so no
+abort controller was built and **a caller could not reach them**. A hung call on a webhook is
+survivable because Meta retries; in a browser it is an unbounded spinner.
+
+**An optional timeout was added to the shared function's parameter object and threaded to those two
+sites.** The tier-3 site's existing timeout was deliberately left exactly as it was.
+
+🔴 **THE REQUIRED PROPERTY — IDENTICAL WHEN OMITTED — WAS PROVEN BY EXECUTION, AND THIS IS THE
+STANDARD TO COPY.** A copy of the file was taken **before the first edit**. Both versions were run
+against **the same stubbed fetch** across six inputs covering every classifier bucket and both
+greeting branches. For each run the harness recorded the returned value, any throw, **and every
+outbound call — its temperature, prompt size, and whether an abort signal was attached** — then
+byte-compared the two records. **6/6 identical, 0 mismatches.**
+
+✅ **The shape to read is the per-call signal list**: on the menu path it stays `[false, true]` —
+classifier unsignalled, tier-3 signalled — exactly the pre-change arrangement. **The call counts
+also confirm the cost profile is untouched.**
+
+⚠️ **WHY IT HOLDS MECHANICALLY:** an omitted argument and an explicit undefined are the same
+binding, and the controller is built only when the value is truthy. **Both existing callers contain
+zero occurrences of the parameter**, so both take the proven path.
+
+⚠️ **WHAT THE TIMEOUT ACTUALLY BUYS IS A BOUNDED ROUTE, NOT AN ERROR.** An abort falls to the
+existing deterministic fallbacks, so a slow model yields **a real reply** — which is what a customer
+would get.
+
+> **STANDARD WORTH GENERALISING:** *when an edit to a live path claims to be inert unless opted
+> into, prove it against a pre-edit copy with the side effects instrumented — not by reading the
+> diff.* This is the best-evidenced change in the current undeployed batch.
+
+## V11.37 — THE SHARED EVENTS QUERY, and an honest account of what was NOT achieved
+
+The schedule query the reply function is fed was **already duplicated across two callers**, so a
+third copy was the established pattern — **and the established pattern was the risk**, because
+drift there is silent: a different status filter or a missing limit changes what the model is
+grounded on and the reply still looks plausible.
+
+**A shared helper was added** and the preview calls it. ⚠️ **THE EXISTING CALLERS WERE NOT
+RE-POINTED, DELIBERATELY**, for three reasons: the Meta webhook already carries unreviewed fixes in
+an undeployed batch during an App Store review; **its events binding is reused for the log insert's
+event count, so the substitution is not local**; and the dormant Twilio route is out of scope.
+
+🔴 **SO THE DUPLICATION STILL EXISTS.** This is *"two copies and one shared definition"*, **not
+de-duplication**, and the helper's own header says so. **Recorded in those words because a later
+reader finding three definitions would otherwise assume the helper was canonical.**
+
+✅ **Equivalence was proven rather than asserted:** every clause of the live chain was asserted
+present verbatim **in the route source**, then both chains were run against a stub and **the
+PostgREST request each builds was byte-compared — identical.**
+
+⚠️ **ONE DELIBERATE DIVERGENCE, IN THE ERROR PATH ONLY.** The inline copies discard the query error
+and fall back to an empty array; **the helper logs it.** Same array, but a truck with a full
+schedule and a failing query otherwise reads to the customer as **a truck with no events.** 🔴 **This
+is the third instance of the swallowed-error class in this subsystem** — the preview can now surface
+a condition the live path cannot.
+
+## V11.37 — THE PREVIEW ROUTE: cost, scoping, and the rate-limit correction
+
+- **Truck resolved from the dashboard token.** 🔴 **It must NEVER accept a truck id from the request
+  body** — the menu read inside the shared function uses a service-role client scoped **only** by
+  truck id, so a body-supplied id would read another truck's menu.
+- **Input cap: 1000 characters.** WhatsApp's own limit is 4096, so this sits well inside it. ⚠️ The
+  honest cost: the preview cannot reproduce a message between 1000 and 4096 characters. **There was
+  no cap anywhere before — on the live path the cap is Meta's, which is why it never mattered.**
+- **Rate limit: 30/hour, keyed on the TRUCK, not the IP**, implemented in the route with its own
+  cache prefix. **Better than the public routes can manage, because this route is authenticated** —
+  and the token never reaches the cache or a log line.
+- **Every console line from the route is tagged distinctly**, so nobody later diagnoses live
+  WhatsApp traffic from logs mixing real customer messages with operator previews.
+
+⚠️ **THE RATE-LIMIT MODEL THIS DEPENDS ON WAS STALE IN §28 AND HAS BEEN REPLACED THERE.** The
+correction is recorded at the tiering rule itself rather than restated here, so there is one
+authority for it. In short:
+
+🔴 **THE ROUTING LAYER LIMITS A POSITIVE ALLOWLIST AND NOTHING ELSE.** Its own header states it:
+only the public allowlist is ever limited, **operator surfaces are structurally excluded, and the
+default is NOT-LIMITED.** The manual's tiering section describes a default-limited model — *"GENERAL
+— 60/min — everything else"* — and **the code does the opposite.** REPLACE that text.
+
+⚠️ **CONSEQUENCE FOR EVERY FUTURE OPERATOR ROUTE: it inherits no rate limit by construction.** A
+route that spends money at a third party on every call must implement its own. **Do not add an
+operator route to the allowlist** — that tier is for public bulk-scrapeable data.
+
+## V11.37 — 🔴 THE PREFLIGHT TRAP: a misconfigured preview LOOKS like it works
+
+If the model API key is absent, the URL is built at module load with an undefined key, every call
+returns an error body, the helper yields an empty string, **and the function degrades silently to
+its deterministic fallbacks.** ⚠️ **The preview then appears to work and never exercises the model
+at all.**
+
+✅ **REPRODUCED, NOT DESCRIBED.** With the key removed: every input — **including gibberish** —
+returns the identical category-summary sentence, and the classification label always reads as the
+menu bucket. A schedule question never becomes a schedule query; gibberish never becomes the ignore
+bucket.
+
+🔴 **THE CLASSIFICATION LABEL IN THE PREVIEW UI IS THEREFORE A LIVE DIAGNOSTIC, NOT DECORATION.**
+One preview of a schedule question tells you whether the model is being reached. **Do not remove it
+as clutter.**
+
+## V11.37 — THE AUTO-REPLIES SECTION: restructure, and the reasoning that must not be reversed casually
+
+- **The card is named for the feature: "Auto-replies".** 🔴 **NOT "Socials"** — the other two
+  channels are `coming_soon` with their rows already removed, and WhatsApp is messaging rather than
+  social media. **A card named for a category the product does not have is a promise.**
+- 🔴 **THE PREVIEW IS FIRST AND THE CONNECT ROW SECOND — AND THIS ORDER HAS AN EXPIRY CONDITION.**
+  The Connect control does not yet connect anything; the preview is the part that works. ⚠️ **Once
+  Embedded Signup exists, Connect becomes the primary action and swapping them is correct and
+  expected.** The comment at the ordering site carries that condition. **It is not an aesthetic
+  preference: it is a statement about which control currently does something.**
+- ✅ **THE CONNECT LABEL STAYS "Connect".** ⛔ **The 10 August comment arguing for a label that does not
+  promise a connection HAS BEEN REPLACED IN THE CODE** — that comment's premise was that no connection
+  was coming, and it no longer holds. **Do not go looking for it; it is gone.**
+  **The control will become the Embedded Signup launcher, so renaming it now would mean renaming it
+  back.** ✅ **The half of that comment that still binds was KEPT:** *do not add a
+  connected/disconnected indicator until the flow exists* — a forward-looking verb is a product
+  decision; **a fabricated state is a lie.**
+- **The silent no-op is fixed without changing the write.** Tapping Connect on an unchanged value
+  returned silently; it now always gives feedback. The early return is kept — re-sending an
+  identical value is a pointless write.
+- 🔴 **OPEN, AND IT WILL BITE: THE EARLY RETURN BECOMES WRONG THE DAY CONNECT LAUNCHES THE FLOW.**
+  An operator tapping Connect without editing the field would get a "saved" toast and **no OAuth
+  popup** — the same silent-no-op defect reincarnated somewhere worse. **The guard needs an expiry
+  condition recorded at the guard, not only at the ordering site.**
+
+### The native hide, applied in the opposite direction to the recorded lesson
+
+The wrapper hides the Connect subsection in the native app. **The card title and the preview sit
+OUTSIDE it; the divider, the caption and the Connect row sit INSIDE it.** On iPad the card renders
+as **a titled card containing the preview and nothing else** — not an empty card, not an orphaned
+heading, and **no stray divider, because the rule lives inside the wrapper on the subsection it
+belongs to.**
+
+⚠️ **THE EARLIER LESSON WAS ABOUT HIDING A ROW AND ORPHANING ITS HEADING, DIVIDER AND WRAPPER. THIS
+IS THE SAME LESSON RUN FORWARDS:** decide, per element, which side of the wrapper it belongs on.
+
+🔴 **AND THE PREVIEW'S IMMUNITY IS STRUCTURAL, NOT FAVOURABLE.** Its node is **not a descendant of
+the conditional**, so no value of the native check can remove it. **That is a stronger guarantee than
+the surrounding block's**, which relies on the check's failure direction being safe. **Do not "tidy"
+the preview inside the wrapper — it would vanish from every iPad build, silently.**
+
+## V11.37 — FIDELITY: what a preview can and cannot promise
+
+🔴 **THE PREVIEW CANNOT BE BYTE-IDENTICAL TO A LIVE REPLY, AND THAT IS NOT A DEFECT.** The model runs
+at non-zero temperature, so **two live messages differ from each other too.** ✅ **The DETERMINISTIC
+parts match exactly** — the allergen floor, the fixed safety redirect, the price validation, the
+caveat append, the fallbacks. **The prose varies.**
+
+**This is stated to the operator in the UI**, merged into a single footnote covering both variation
+and fallibility. **Two caveats saying the same thing were collapsed into one.**
+
+⚠️ **The correct fidelity test is CLASSIFICATION AND GUARD OUTCOME, not prose comparison.** Anyone
+later "proving the preview wrong" by diffing wording is testing the wrong thing.
+
+⚠️ **The preview reproduces live defects faithfully — deliberately.** The date-reference defect below
+will show in the preview. **Expect it reported as a preview bug; it is not.**
+
+## V11.37 — 🔴 THE DATE REFERENCE IS COMPUTED IN UTC WHILE THE ROUTE HOLDS A TIMEZONE
+
+**A real latent defect on the live path, not a preview concern.** The shared reply function builds its
+entire date reference from UTC. **Between midnight and 1am British Summer Time, an event this morning
+is labelled TOMORROW**, and the schedule query's own basis can include a day already past locally.
+
+⚠️ **The route's timezone exists but is used only for the greeting and never reaches the date
+reference.** ✅ **The correct primitives already exist in the time utilities and are already used for
+the greeting — they are simply not wired here.**
+
+⚠️ **A quieter second dependency:** date formatting is called without a timezone option in two places,
+so it formats in the **server's** zone. **On the host that is UTC.**
+
+**Left unfixed, in scope terms, and recorded as an open defect.**
 
 # 21. Competitive positioning
 
@@ -8202,6 +8927,28 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
 
 > 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
+
+### Method — additions (V11.35)
+
+- 🔴 **A GUARD CAN LIVE IN THE FILE THE CODE IS LEAVING.** A matcher, a route group, a layout — none of
+  them travel with the lines you copy. **When code moves between files, ask what constrained it where it
+  was.** An unguarded root rewrite under a wide matcher would have served marketing copy on every
+  operator route.
+- 🔴 **"IT WAS DELETED" NEEDS THE SAME EVIDENCE AS "IT EXISTS".** A `git log --diff-filter=D` found a
+  deletion and the reasoning stopped there. **The file had been renamed, and everything it was believed
+  to have taken with it was live in the new one.** ⚠️ **Check for the rename before concluding a
+  capability is gone.**
+- ⚠️ **A COMMENT'S PREMISE CAN BE FALSIFIED BY A CHANGE ELSEWHERE.** The landing gate's "`/` is NOT gated
+  … so there is no redirect loop" was true when written and became a loop when the root started serving
+  the landing. **Third instance this week of a comment describing an invariant a later change revoked.**
+- 🔴 **PROMPT TRANSIT IS CORRUPTING TEXT.** One prompt arrived with **five garbled spans**, reconstructed
+  and listed by the executor. ⚠️ **The manual's own rule already covers this — anything containing `§`,
+  `£`, `—` or emoji must reach the executor by download-to-disk, not as chat text — and prompts
+  themselves fall under it.**
+- ⚠️ **AN INTEGRITY CENSUS CAN CORRUPT THE FILE IT IS CENSUSING.** Writing the census introduced a bare
+  U+26A0 into the report; the census caught it. **Recursion documented rather than quietly fixed.**
+- ⚠️ **A FAILED BUILD IS THE SAFE FAILURE.** Production kept serving the last good build throughout, and
+  the App Store reviewer was never exposed. **Deploys were blocked; nothing was broken.**
 
 ### Method — additions (V11.34)
 
@@ -9126,7 +9873,7 @@ Test and live mode are almost entirely separate in Stripe. **Before a real truck
 
 - 🔴 **SITE LINKS ARE UNCONFIGURED — THIS BLOCKS LIVE-MODE ACCOUNT SESSIONS ENTIRELY.** Stripe: *"Before you can create a live mode Account Session, you must provide the URLs where you have integrated the embedded components"* — Notification banner, Account management, Payments, Payouts, Balances, Documents. **No truck can onboard for real until this form is filled** in Connect settings → Site links. **It is a form, not a build.**
 - ~~🔴 **Authorize-then-capture** — proven, not built. Needs a **server-side draft table + migration**~~ 🔴 **STRUCK V11.18 — BUILT IN V11.10. This backlog item is CLOSED**; the draft table and the extraction both landed. Original text kept struck so the estimate below is not re-quoted as outstanding: **server-side draft table + migration** (the basket cannot survive a hosted-Checkout page navigation) and **extraction of `/api/orders/submit`'s core** from a 1,139-line route handler, on the money path. **~a week.** See §37.
-- 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter: allowances are display strings, 0.99% is hardcoded in five places, nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.**
+- 🔴 **The platform fee** — blocked behind **subscription billing**, not just a counter. ✅ **TWO OF THE FOUR BLOCKERS CLEARED V11.38:** this line read *"allowances are display strings, 0.99% is hardcoded in five places"* — both are now structured numbers (`PLAN_ONLINE_ALLOWANCE`, `PLATFORM_FEE_OVER_ALLOWANCE`). ⚠️ **Structured is not wired**; nothing in `lib/payments` reads them yet. 🔴 **STILL BLOCKING, and neither was ever about representation:** nothing tracks online value per truck, and "period" is undefined. **The ledger preserves the history meanwhile.**
 - **Radar** — guidance copy telling a truck how to change their own tier, plus **two Dashboard reads** (our own Radar tier; any Radar line on our invoices) to settle whether HatchGrab carries a per-connected-account cost.
 - **The onboarding confirmation email** — Stripe sends nothing when an account becomes ready. The trigger already exists: the `account.updated` handler already detects `charges_enabled` flipping false → true. **Small.**
 - **The printed ticket shows NOTHING for a pre-paid order when `show_paid_step` is off** — `mapOrderToTicket` gates all payment fields on that setting, which is about collecting at the hatch, not about an order already paid online. **The ticket is what the hatch works from.**
@@ -9671,7 +10418,7 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 ## Important — before public launch
 
 - **WhatsApp recipient-routing for go-live (V7.6)** — replace sender-match with recipient-match (`phone_number_id` → truck), and provision per-truck WhatsApp Business numbers. Sender-routing works only with one shared test number (Section 20).
-- **whatsapp_replies plan-gate discrepancy (V7.6)** — `plan-features.ts` markets it as Pro+Max; `features.ts` grants Max/trial/tester/override only; the webhook obeys `features.ts` → silent no-reply on Pro. Reconcile (Section 20).
+- ~~**whatsapp_replies plan-gate discrepancy (V7.6)** — `plan-features.ts` markets it as Pro+Max; `features.ts` grants Max/trial/tester/override only; the webhook obeys `features.ts` → silent no-reply on Pro. Reconcile (Section 20).~~ ✅ **CLOSED — and it was closed at V8.9, not on 20 August 2026.** `whatsapp_replies` was moved into `PRO_FEATURES` by that fix and the two files have agreed ever since; `findPlanParityViolations()` returns `[]`. 🔴 **THE ITEM STAYED ON THIS LIST FOR THE WHOLE INTERVAL**, which is what made a resolved problem look open to two later sessions. **Struck rather than deleted, because the false-open history is the point.** See §4 and §20.
 - **Standardise all price inputs on the string-buffer pattern (V7.6)** — the menu/deal/original price inputs still use the milder `|| ''` pattern; move them onto the dedicated-string-state pattern used for the Extras price adjustment (Section 23).
 - **Customer basket-peek remove affordance (V7.6)** — the inline menu-card stepper now restores removal-to-zero, but the footer basket PEEK is display-only; decide whether the peek itself needs a remove control (Section 7).
 - **Nested sticky subcategory headers (V7.6, post-trial)** — a Deliveroo-style swap of subcategory headers within a sticky category band; lower value at truck menu scale and a third sticky layer is fragile. The simple per-subcategory sticky header WAS built (Section 7); this is the richer nested version only.
@@ -9883,8 +10630,12 @@ and nothing in the build can substitute for them. Everything else below is work,
   recorded here so it is not rediscovered by a refund going the truck's way; **the comment is still the
   right defusal and should go in with the next payment-path change.**
 - **`manage` has NO offline detector at all** (§11) — three exist elsewhere and none is wired to it.
-- **The WhatsApp button says Connect while it Saves, and returns silently when unchanged** (§20). Live
-  on the web. **A relabel is the smallest fix.**
+- ~~**The WhatsApp button says Connect while it Saves, and returns silently when unchanged** (§20). Live
+  on the web. **A relabel is the smallest fix.**~~ 🔴 **BOTH HALVES RESOLVED V11.37, AND THE RELABEL WAS
+  REFUSED.** ✅ **The label STAYS "Connect"** — the control becomes the Embedded Signup launcher, so
+  renaming it to "Save" now would mean renaming it back. ✅ **The silence is fixed:** an unchanged value
+  now toasts instead of returning without a sign. ⚠️ **A NEW OPEN ITEM REPLACES IT — see §20:** the early
+  return becomes wrong the day Connect launches the flow.
 - **The launch screen has NEVER BEEN SEEN ON A DEVICE** (§36). The crop safety is arithmetic.
 - **The `#EF8B2C` / `#EA580C` split was RE-CONFIRMED, NOT CHANGED** (§38): `#EF8B2C` is the brand mark
   and the artwork is authoritative; `#EA580C` is the action colour. ✅ **No correction was needed — the
@@ -9960,6 +10711,154 @@ and nothing in the build can substitute for them. Everything else below is work,
 - ⚠️ **Whether the dashboard's Start/Restart, Pause/Resume and Add extra wait should also appear on
   the KDS** (§11, N112) — two are now shared; Add extra wait deliberately is not.
 
+## BACKLOG ADDED 20 AUGUST 2026 (V11.36) — decisions taken, not yet built
+
+- ~~🔴 **`whatsapp_replies` SHOULD BE A PRO FEATURE.** The feature module grants it at Max/trial/tester
+  only; the marketing table lists it as Pro+Max; the webhook obeys the feature module, so **a Pro
+  truck gets a silent no-reply while the pricing matrix promises it.**~~ ✅ **NOT A BACKLOG ITEM. IT IS
+  ALREADY BUILT, AND WAS BEFORE THIS ENTRY WAS WRITTEN.** `whatsapp_replies` sits in `PRO_FEATURES`;
+  gate and matrix agree on starter/pro/max; the parity guard is green. **No code change was made or
+  needed** — the 20 August session commissioned to "move the gate to Pro" found the end state was
+  already the current state and stopped without editing anything.
+  ⚠️ **CORRECTED 20 August 2026, same day it was added**, from a delta integrated without re-reading
+  `lib/features.ts`. **Struck rather than deleted: an item that was never open is a different kind of
+  record from one that was closed, and both are worth being able to find.**
+- **An admin-gated writer for `phone_number_id`** — small, no operator surface, no money path,
+  fork-independent of Meta's token answer.
+- ~~**The three small fixes** identified and deliberately left unmade: the environment-variable name in
+  code, the two swallowed lookup errors, the stale column comment.~~ ✅ **ALL THREE ARE BUILT** — later the
+  same day, after this delta was written. 🔴 **BUILT IS NOT DEPLOYED:** they are uncommitted in the working
+  tree and join the queued batch, so production still runs the old behaviour. **What remains on this list
+  is deploying them, and then deleting `META_APP_SECRET` from Vercel.**
+
+## V11.38 — VERIFICATION DEBT, updated (SUPERSEDES the V11.37 list below)
+
+**DISCHARGED THIS SESSION, BY EXECUTION:** that structuring the pricing values moves no rendered
+output (225 leaves, byte-identical, parity guard clean inside both snapshots) · that the landing is
+byte-identical after the CTA-slot change (SHA-256) · that the extracted blocks are equal to their
+originals · that the sub-penny fallback fires at the formatter's own boundary · that the negative
+and zero CTA branches produce the fallback label · that the sign-up and contact routes are ungated ·
+a full-project typecheck, exit clean · **and, by rendering, that the demo modal opens from the page
+and the corrected CTA is visible.**
+
+🔴 **STILL UNOBSERVED ON THE COST PAGE, AND THE LIST IS SHORT BECAUSE THE ANSWER IS THE SAME FOR ALL
+OF IT — IT HAS BARELY BEEN RENDERED:**
+
+- **The scoped chrome rendering outside the landing's own page structure** — the largest unknown,
+  including whether the fonts resolve from a second declaration.
+- **The nav CTA at narrow widths.** ⚠️ The no-wrap measurement was made for a longer label, so the
+  new one *should* fit with more room — **but that is arithmetic on someone else's measurement.**
+- **The two-button band** — whether an outlined button beside a filled one reads as secondary or as
+  disabled.
+- **The bracket-notation background compiling.** ⚠️ **A typecheck does not validate style classes.**
+  If the button is invisible again, this is the cause.
+- **The range focus ring.** Pseudo-element focus styling is the most browser-divergent thing on the
+  page, and the default outline on a six-pixel track is effectively invisible.
+- **375px behaviour** — the truck buttons and the paired fee inputs. **Wrapping is guaranteed;
+  looking deliberate is not.**
+- **The bottom action's spacing** — ⚠️ **the only gap on the page never set against a visible
+  element**, chosen while the button was invisible and carried through three tasks unexamined.
+- **The gate has never fired.**
+
+🔴 **AND ON THE LANDING: WHETHER IT STILL RENDERS.** Ninety-one lines were moved out of it. **The
+hash proves the source; nothing has confirmed the page loads.** ⚠️ **It is the main marketing
+surface and it is in the undeployed batch.**
+
+**CARRIED, UNCHANGED:** the template create payload · any per-truck WhatsApp send · Embedded Signup
+· the moved website field never round-tripping a value · the preview route never called · the
+uplink-pulled order number · the drain un-wedging · a real cancel writing a suppression row · the
+ownership gate refusing a foreign event · the auto-reject sweep · Stripe releasing a hold on reject.
+
+**OPEN DECISIONS:** wiring the payments module to the new numeric constants · whether the tester and
+demo tiers get an allowance · what the plan footnote should claim · the Connect early-return's
+expiry condition · the UTC date reference · the URL-normalisation triplication · the WhatsApp
+token-storage question to Meta · ICO registration.
+
+⚠️ **THE UNDEPLOYED BATCH NOW INCLUDES A PRICING-MODULE REFACTOR AND A NEW MARKETING PAGE ON TOP OF
+EVERYTHING ELSE. IT IS STILL NOT INVENTORIED.** 🔴 **Before it ships, list it.**
+
+## V11.37 — VERIFICATION DEBT, updated (SUPERSEDES the V11.36 list below)
+
+**DISCHARGED THIS SESSION, BY EXECUTION:** that the timeout parameter is inert when omitted (6/6
+byte-identical against a pre-edit copy, side effects instrumented) · that the events helper builds a
+byte-identical request to the live query · that the operator website field has customer-facing
+consumers · that nothing renders past auto-replies · that the parity guard passes and where it does
+not look · the misconfigured-key degradation, reproduced.
+
+🔴 **STILL UNOBSERVED, AND THE LIST IS SHORT BECAUSE THE ANSWER IS THE SAME FOR ALL OF IT: NOTHING
+HAS BEEN RENDERED.** The development server was not run. Specifically:
+
+- **The restructured card has never been displayed**, and the iPad structure is derived positionally
+  rather than seen.
+- 🔴 **THE MOVED WEBSITE FIELD HAS NEVER ROUND-TRIPPED A VALUE.** It is a **live customer-facing**
+  value converted to a different input primitive. The handler is proven intact by five assertions;
+  **no value has been typed into it and saved.** ⚠️ **This is the highest-risk unobserved item in the
+  batch — type into it first.**
+- **The preview route has never been called**, and no real model call has been made through it.
+- **The Connect toast on the unchanged path has never fired** — one branch, but new behaviour on a
+  live control.
+- **The card's visual balance is unjudged**, and the copy's new size has not been seen against its
+  neighbours.
+- **No typecheck was run** — a parse only.
+
+**CARRIED, UNCHANGED:** the template create payload · any per-truck send · Embedded Signup · the
+Tally embed · the uplink-pulled order number · the drain un-wedging · a real cancel writing a
+suppression row · the ownership gate refusing a foreign event · the auto-reject sweep · Stripe
+releasing a hold on reject.
+
+**OPEN DECISIONS:** what the plan footnote should claim · the Connect early-return's expiry condition
+· the UTC date reference · the URL-normalisation triplication · the token-storage question to Meta ·
+ICO registration.
+
+⚠️ **THE UNDEPLOYED BATCH GREW SIX TIMES TODAY AND IS NOT INVENTORIED ANYWHERE.** 🔴 **Before it
+ships, list it.** *"A large undeployed batch"* is not something anyone can sequence.
+
+## V11.36 — VERIFICATION DEBT, updated (SUPERSEDES the V11.35 list below)
+
+**DISCHARGED THIS SESSION, BY OBSERVATION:** WhatsApp inbound end to end on a real handset · the
+primary `phone_number_id` lookup, executed for the first time ever · the HMAC gate passing with a
+correct secret · the classifier, grounded answerer and price-validation guard on live menu data ·
+Graph `v19.0` still being served · the platform token and WABA id valid in production · the
+`phone_number_id` unique index · that nothing writes `phone_number_id`.
+
+**STILL UNPROVEN:** the template CREATE payload shape · any per-truck SEND (still one platform
+credential) · any truck's own business number as a Cloud API sender · anything about Embedded Signup
+· the Tally embed on either host · `verifyAdmin()` behind a rewrite · the uplink-pulled order number
+· the drain un-wedging under a real hang · a real cancel writing a suppression row · the cancel
+ownership gate refusing a foreign event · the auto-reject sweep claiming anything · Stripe releasing
+a hold on reject.
+
+**OPEN DECISIONS:** the WhatsApp token-storage question to Meta (**now leaning strongly toward
+"storage needed"**) · the release-side backstop · the offline-order prefix · the unscoped capture
+call's missing truck check · removing the unused kitchen mode and status · the landing's testimonial
+permission and screenshot placeholders (**now blocking Meta as well as the App Store**) · ICO
+registration, **still not done, and now with an incorporated company and a Meta review team about to
+read the privacy policy.**
+
+⚠️ **A LARGE UNDEPLOYED BATCH REMAINS QUEUED** while App Store review runs. **The redeploy performed
+this session did NOT ship it** — same commit, environment change only.
+
+## V11.35 — VERIFICATION DEBT, updated (SUPERSEDES the V11.34 list below)
+
+**DISCHARGED:** the build passes with 80/80 pages and `ƒ Proxy (Middleware)` in the manifest · Village
+Foodie's contact `<main>` byte-identical at 1,318 bytes · `/contact` host branching and the single 307
+hop to it · the KDS portrait overlap fixed and observed working on a real phone.
+
+**STILL UNPROVEN:** the Tally embed rendering on either host — **the first real check is opening
+`/contact` on both after deploy** · `verifyAdmin()` behind a rewrite · the uplink-pulled order number ·
+the drain un-wedging under a real hang · a real cancel writing a suppression row · the cancel ownership
+gate refusing a foreign event · the auto-reject sweep claiming anything · Stripe releasing a hold on
+reject.
+
+⚠️ **A LARGE UNDEPLOYED BATCH IS QUEUED** — the KDS cap removal, the auto-reject sweep, the shared
+auto-accept decision, the `/contact` change, the proxy merge — **while an App Store review runs against
+`hatchgrab.com/app`.** Deploying during review changes what the reviewer is testing.
+
+**OPEN DECISIONS:** the WhatsApp token-storage question to Meta · the release-side backstop · the
+offline-order prefix · `captureOnConfirmation`'s missing truck check · removing `kds_mode` and `cooking` ·
+the landing's Gusto testimonial permission and its screenshot placeholders · a stale `/support` mention
+at `proxy.ts:286`.
+
 ## V11.34 — VERIFICATION DEBT, updated (SUPERSEDES the V11.33 list below)
 
 **DISCHARGED:** the time-adjust ownership gap (closed, one line, executable diff) · that no truck's
@@ -9968,8 +10867,7 @@ behaviour changed when note review became mandatory (zero-row check) · that `kd
 
 **STILL UNPROVEN:** the uplink-pulled order number · the drain un-wedging under a real hang · a real cancel
 writing a suppression row · the cancel ownership gate refusing a foreign event in a running system · the
-auto-reject sweep claiming anything · Stripe releasing a hold on reject · **and every WhatsApp claim, none
-of which has been exercised against Meta with a real credential.**
+auto-reject sweep claiming anything · Stripe releasing a hold on reject.
 
 **OPEN DECISIONS:** the WhatsApp token storage question to Meta · the release-side backstop · the
 offline-order prefix · `captureOnConfirmation`'s missing truck check · removing `kds_mode` and `cooking` ·
@@ -10079,15 +10977,51 @@ Layered protection against bulk scraping of the public discovery and event data,
 > **RULE** — The STRICT limiter applies ONLY to public, bulk-scrapeable data. It must NEVER touch an authenticated or ordering route — doing so caused two regressions (events disappearing on the dashboard when /api/events/manage got a 429; customer ordering blocked behind shared café/CGNAT IPs).
 
 - **STRICT — 60/min (raised from 3/min, V7.8 §11)** — /api/discovery and /api/events (public slug lookups) ONLY. RAISED because `/api/discovery/events` is on this tier yet is fired by `useVillageData` on EVERY public page (home, /trucks, each truck, venues) × up to 3 retries × shared/CGNAT IPs — so a fresh visitor tripped the old 3/min on their first journey and got a 429. The bulk endpoints return the same static snapshot each call, so sub-minute repeats give a scraper nothing; 60/min clears human browsing + the retry burst while still capping a tight harvest loop. STRICT and GENERAL are now numerically equal but remain SEPARATE buckets/prefixes for future re-tightening. DURABLE fix (backlogged, Section 27): dedupe/cache the per-page discovery call + soften the retry, then STRICT can drop again.
-- **GENERAL — 60/min** — everything else, including /api/menu and /trucks (these sit behind shared IPs and must stay generous).
+- **GENERAL — 60/min** — 🔴 **NOT "everything else". CORRECTED V11.37 — THIS LINE READ *"everything else, including /api/menu and /trucks"* AND THE CODE DOES THE OPPOSITE.** The tier covers a **positive allowlist** — today `/trucks` and `/trucks/*` — and nothing beyond it. See the replaced model below.
 - **EXEMPT (no limit)** — /api/dashboard/action, /api/orders/submit, /api/webhooks, /api/admin, /api/events/manage, /api/events/action, /api/events/affected-orders, /api/inbound-schedule, /api/heartbeat.
 
-> **RULE** — Any new route handling authenticated operator actions or order placement is EXEMPT by default. Only add a route to STRICT if it serves public bulk-scrapeable data and nothing else.
+> 🔴 **RULE, CORRECTED V11.37 — THE LIMITER IS A POSITIVE ALLOWLIST, NOT A DEFAULT-ON TIERING.** The
+> section above described a default-limited model with an EXEMPT list of named routes. **The routing
+> layer does the opposite and its own header says so:** *"Only the public allowlist … is ever limited —
+> operator surfaces are structurally excluded, so the default is NOT-limited."* The scope is computed as
+> `isStrict || isEvents || isGeneralPublic(pathname)`, where the three predicates match `/api/discovery*`,
+> `/api/events` **exactly**, and `/trucks*`. **A path matching none of them is never limited, and the
+> EXEMPT list is therefore descriptive rather than load-bearing** — those routes are outside the scope by
+> construction, not by enumeration. Three further bypasses (dev, loopback, an authenticated-operator
+> bypass that never applies to STRICT) sit on top and are only consulted once a path is already in scope.
+
+> 🔴 **CONSEQUENCE FOR EVERY FUTURE OPERATOR ROUTE, AND IT IS THE PART THAT MATTERS: IT INHERITS NO RATE
+> LIMIT BY CONSTRUCTION.** A route that spends money at a third party on every call — a model call, an
+> email, a provisioning run — **must implement its own limit in the route.** ⚠️ **DO NOT ADD AN OPERATOR
+> ROUTE TO THE ALLOWLIST to get one:** that tier exists for public bulk-scrapeable data, and widening it
+> to cover an authenticated surface makes a scraper tier responsible for operator traffic. **The
+> auto-reply preview is the worked example — 30/hour keyed on the truck, in the route itself (§20).**
 
 > **NOTE (V6.5)** — the discovery/events route is on the STRICT tier and is the same route whose operator branch was revived (Section 15) and whose HatchGrab scraped-suppression was added (V6.6, Section 7). The behavioural changes change what the route returns, not its rate-limit tier — STRICT still applies and ordering stays exempt.
 
 > **SECURITY NOTE** — the Upstash REST token was pasted in chat during setup; rotate it before trial (Section 27).
 
+
+## V11.35 — `proxy.ts`: the file the routing layer lives in
+
+🔴 **NEXT.JS 16 RENAMED `middleware.ts` TO `proxy.ts`. THE BUILD FAILS IF BOTH EXIST.** Commit `f4a8ac2`
+"vercel fix" is that rename, **not a deletion.**
+
+**`proxy.ts` carries, today:** three-tier rate limiting on a positive allowlist of public endpoints · the
+Supabase session refresh · the `/dashboard` and `/manage` auth guards · the demo-dashboard exception ·
+the native-app UA exemption that stops the iPad login-looping · the Village Foodie → HatchGrab operator
+redirect · and now the hatchgrab root rewrite. **Deleting it would log out every operator and unprotect
+the dashboard.**
+
+🔴 **THE HOSTNAME BRANCH LIVES IN THE PROXY, NOT IN THE PAGE.** `app/page.tsx` is a client component —
+branding by host from inside it would force dynamic rendering for **both** domains and restructure a live
+consumer page. The constraint that villagefoodie.co.uk must not change is what puts the branch outside.
+
+⚠️ **A REWRITE, NOT A REDIRECT, ON THE ROOT.** The URL stays `hatchgrab.com/` while the landing renders
+beneath it. A redirect would put `/landing` in the address bar of the page given to Apple.
+
+⚠️ **Village Foodie's root now passes through an edge invocation it did not before.** Latency, not
+behaviour — but it is the honest answer to "must not change at all".
 
 # 30. Per-event stock — the sparse-override model (V6.5, extended V6.6)
 
@@ -11345,6 +12279,133 @@ button went.** Corrected in place rather than left beside its correction.
 claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
 diff, which is the same argument the census makes.
 
+## V11.38 — METHOD: additions
+
+- 🔴 **AN ABSENT STYLE IS INDISTINGUISHABLE FROM A DESIGN CHOICE.** A whole class of styling can fail
+  to apply and leave something that still looks considered. **Two readers reviewed a rendering bug as
+  a design decision.**
+- 🔴 **WHEN AN ELEMENT BECOMES A COMPONENT, PROPS SURVIVE SELECTIVELY AND THE SURVIVORS LOOK
+  COMPLETE.** A carried-over class list containing a text colour made missing styling look present.
+- 🔴 **A FILE HASH PROVES THE SOURCE DID NOT CHANGE. IT DOES NOT PROVE THE PAGE STILL RENDERS.** Two
+  claims, one proven. **Joins:** *tsc-clean is not done · a fix in the repo is not deployed · a
+  variable set in the host is not a variable in the running deployment · a parse is not a typecheck.*
+- 🔴 **TWO NUMBERS THAT ARE EQUAL TODAY AND SEMANTICALLY OPPOSITE MUST NOT BE DE-DUPLICATED.**
+  Especially when one is subtracted from the other. **The de-duplication looks like housekeeping and
+  is a correctness bug.**
+- ⚠️ **A VALUE THAT EXISTS ONLY INSIDE A SENTENCE IS NOT AVAILABLE TO CODE.** Two consumers were
+  blocked by the same display-string-only definition, and **the file already carried a comment saying
+  so.** **Define the number; derive the sentence.**
+- ⚠️ **A LOCALE FORMATTER IS NOT DETERMINISTIC ACROSS RUNTIMES.** ICU availability differs between
+  build host and browser. **Where two formatters must agree byte for byte, neither may be a locale
+  helper.**
+- ⚠️ **WHEN A GATE CANNOT BE IMPLEMENTED PROPERLY IN SCOPE, THE IN-SCOPE VERSION IS OFTEN A FAKE
+  GATE.** A client-side conditional hides markup, not the bundle. **A gate that looks like protection
+  and is not is worse than none, because the next reader stops asking.**
+- ⚠️ **PROVE INERTNESS EXHAUSTIVELY, NOT TARGETEDLY.** Capturing only the values expected to change
+  proves the intended change happened, not that everything else was left alone.
+
+### V11.38 — 🔴 THREE SILENT-ABSENCE FAILURES IN ONE SESSION: the pattern to internalise
+
+**None produced an error. Each produced a plausible artefact. All three were found by looking, not
+by tooling.**
+
+**ONE — arbitrary style values dropped without a compiler.** A prototype's font sizes used bracket
+notation. In an environment with no Tailwind compiler those classes **do not exist**, so every
+element fell back to inherited size. ⚠️ **The rendered result looked like a bad design decision —
+a percentage outweighing the figure it annotated — and was reviewed as one, by two readers, neither
+of whom had seen the intended layout.** 🔴 **The lesson is not about Tailwind: a whole class of
+styling can vanish and leave something that still looks like a considered design.**
+
+**TWO — a colour that was never specified at all.** Converting an anchor to a component carried the
+class list across and left the inline background behind. The class list still contained the text
+colour, **so the styling looked preserved.** Result: white bold text on a white card, full width,
+full height, **occupying its space and rendering nothing.**
+
+🔴 **AND THE DIAGNOSIS WAS WRONG IN AN INSTRUCTIVE WAY.** The hypothesis was *a prop was passed and
+silently dropped*. **The typecheck proves that impossible** — an unknown prop on a narrowly-typed
+component is an excess property and errors at build. **It was never passed. Which is worse: a
+dropped prop is a build error; an unspecified colour has no error, no warning, and nothing to grep
+for.**
+
+⚠️ **THE GENERAL FORM: WHEN AN ELEMENT BECOMES A COMPONENT, PROPS SURVIVE SELECTIVELY AND THE
+SURVIVORS LOOK COMPLETE.** ✅ **Both call sites had the defect; the second sat on a near-white page
+background and was invisible without a card to make it obvious.**
+
+**THREE — a hex that cannot be interpolated.** The fix repeats the colour literally. 🔴 **The
+obvious tidy-up — interpolating the brand constant into the class — produces no CSS at all**,
+because the class scanner matches complete literal names. ⚠️ **It would fail in precisely the way
+the fix exists to correct**, and it is the kind of change that passes review as a de-duplication.
+
+> 🔴 **THE FAMILY THESE THREE JOIN**, all already in the manual: *a swallowed query error is
+> indistinguishable from zero rows · a guard can live in the file the code is leaving · a redaction
+> is not a read.* **Add: an absent style is indistinguishable from a design choice.**
+
+### V11.38 — THE JSX COMMENT TRAP: third occurrence, caught every time
+
+🔴 **A `{/* */}` comment opened immediately after `&& (`, `? (` or `return (` is a BUILD FAILURE**, because
+those positions take a single expression and a comment there is a second child.
+
+⚠️ **THREE OCCURRENCES NOW, AND THE PARSE OR TYPECHECK CAUGHT IT EVERY TIME — nothing else would
+have.** ✅ **It is invisible to reading and fatal to the build.**
+
+**Adjacent to the standing family, as its weakest but non-empty member:** *a parse is not a
+typecheck · a typecheck is not tsc-clean · tsc-clean is not done.* ⚠️ **A parse is not nothing, and
+on three occasions it was the only thing that ran.**
+
+## V11.37 — METHOD: additions
+
+- 🔴 **A PARSE IS NOT A TYPECHECK, AND IT IS ALSO NOT NOTHING.** A JSX comment placed in the return
+  position is a **build failure** that no amount of reading catches — a return takes one root, and a
+  comment there is a second child. **The parse check caught it; nothing else in the session would
+  have.** **Joins the family as its weakest but non-empty member:** *a parse is not a typecheck · a
+  typecheck is not tsc-clean · tsc-clean is not done · a fix in the repo is not deployed · a variable
+  set in the host is not a variable in the running deployment.*
+- 🔴 **A GREP OVER A FIELD NAME IS NOT A SEARCH FOR A COLUMN.** Three tables carried the same column
+  name; the live one was invisible among its homonyms. ⚠️ **This is the phantom-column trap with the
+  sign reversed — a real column reading as dead — and the answer was already written in a comment at
+  the field.** **Qualify the table, then read the call site.**
+- ⚠️ **BLANK COMMENTS BEFORE ANY STRUCTURAL SCAN OF A FILE WHOSE COMMENTS DISCUSS STRUCTURE.** See
+  above; it fired twice in one evening, in both directions.
+- 🔴 **WHEN AN EDIT TO A LIVE PATH IS CLAIMED INERT UNLESS OPTED INTO, PROVE IT AGAINST A PRE-EDIT
+  COPY WITH SIDE EFFECTS INSTRUMENTED.** Reading the diff establishes the intent, not the property.
+- ⚠️ **A DECISION WITH AN EXPIRY CONDITION MUST CARRY THAT CONDITION AT THE SITE.** Ordering,
+  labelling and guard clauses that are correct *today* and wrong *after a known future event* are a
+  class. **Record the event, not just the choice** — otherwise the next reader restores symmetry and
+  breaks it.
+
+### V11.37 — 🔴 THE GREP TRAP: a comment that quotes the thing it warns about
+
+🔴 **A COMMENT WARNING AGAINST MOVING THE PREVIEW INSIDE THE NATIVE-HIDE WRAPPER QUOTES THE WRAPPER'S
+OPENING TOKEN IN PROSE.** A raw scan therefore reports **two** wrappers where there is one.
+
+⚠️ **IT FIRED TWICE, ON CONSECUTIVE TASKS.** Once as a false positive — a check failing because it
+found a wrapper that did not exist. Once as a **false alarm in the opposite direction**: the raw count
+went 2 → 1 when the comment was removed, **which reads exactly like a deleted wrapper.** Only a scan
+with comments blanked is truthful.
+
+> **THE GENERAL FORM:** *the artefact that documents a constraint becomes indistinguishable from the
+> constraint.* Adjacent to *a guard can live in the file the code is leaving.* **Blank comments before
+> any structural scan of a file whose comments discuss structure.**
+
+## V11.36 — METHOD: additions
+
+- 🔴 **A VARIABLE SET IN VERCEL IS NOT A VARIABLE IN THE RUNNING DEPLOYMENT.** Environment values are
+  baked in at build time. **Joins the family:** *tsc-clean is not done · a fix in the repo is not
+  deployed · a rebuild is not a deploy · a cross-reference is not provenance · source-read is not
+  behaviour-verified · a default is not a value.*
+- 🔴 **AN AUTHENTICATION FAILURE IS EVALUATED BEFORE EVERYTHING DOWNSTREAM OF IT.** A genuine
+  `OAuthException` from a fake token proves the router answered and **proves nothing about the
+  version, the path's validity, or the payload.** Only an authenticated call tests what lies behind
+  the auth check.
+- ⚠️ **AN ABSENCE NEEDS A BASE RATE BEFORE IT NEEDS A THEORY.** Two weeks of empty webhook logs were
+  analysed for three competing failure hypotheses when the correct explanation was that **nothing is
+  rolled out and no customer has ever had the number.** ⚠️ **Recorded because the analysis was
+  internally sound and still wasted effort** — the question *"what would we expect to see if
+  everything were fine?"* was never asked, and it would have closed the matter in one line.
+- ⚠️ **A REDACTION IS NOT A READ.** A column's membership of a redaction set proves it is known to
+  exist, not that anything consumes it. Adjacent to *a guard can live in the file the code is
+  leaving.*
+
 ## V11.31 — METHOD: additions
 
 - 🔴 **A COMMENT CAN DESCRIBE AN INVARIANT THAT A LATER CHANGE SILENTLY REVOKES.** A comment declaring the
@@ -11381,7 +12442,10 @@ diff, which is the same argument the census makes.
 - 🔴 **A DIAGNOSIS WRITTEN AGAINST THE REPO IS NOT A DIAGNOSIS OF THE DEVICE.** The offline-queue reading
   is thorough and describes code the iPad demonstrably was not running. **This is the deployment family's
   newest member:** *tsc-clean is not done · a fix in the repo is not deployed · a rebuild is not a deploy ·
-  a cross-reference is not provenance · source-read is not behaviour-verified · a default is not a value ·*
+  a cross-reference is not provenance · source-read is not behaviour-verified · a default is not a value ·
+  **a variable set in Vercel is not a variable in the running deployment** (V11.36) ·
+  **a parse is not a typecheck** ·
+  🔴 **a file hash proves the source did not change, NOT that the page still renders** (V11.38) ·*
   **and a reading of HEAD is not a reading of what shipped.**
 - ✅ **AN EXECUTOR RECORDED ITS OWN FALSE READING RATHER THAN ONLY THE CORRECTED ONE** — a filter count
   that appeared to change turned out to be an artefact of the report's own comment text quoting the
@@ -12780,12 +13844,12 @@ v2 refuses `dashboard` without a merchant configuration, and refuses a merchant 
 
 ## 🔴 THE PLATFORM FEE — BLOCKED, AND BY MORE THAN A COUNTER (V11.8)
 
-**All three inputs are missing:**
+**All three inputs are missing:** ⚠️ **CORRECTED V11.38 — TWO OF THE FOUR ROWS BELOW ARE NOW UNBLOCKED.** The values are structured; **nothing is wired to them**, which is a separate change with money on the end of it. 🔴 **The remaining blockers are the ones that were never about representation:** nothing tracks online value per truck per period, and "period" is still undefined.
 
 | Input | State |
 |---|---|
-| The allowances (£1,500 / £2,000) | 🔴 **DISPLAY STRINGS ONLY, in four places** — `lib/payments` cannot read a number |
-| The 0.99% rate | 🔴 **hardcoded in five places**, all strings |
+| The allowances (£1,500 / £2,000) | ✅ **UNBLOCKED V11.38** — `PLAN_ONLINE_ALLOWANCE`, integer pence, a discriminated union. Was *"DISPLAY STRINGS ONLY, in four places — `lib/payments` cannot read a number"* |
+| The 0.99% rate | ✅ **UNBLOCKED V11.38** — `PLATFORM_FEE_OVER_ALLOWANCE`. Was *"hardcoded in five places, all strings"* |
 | Online value per truck per period | 🔴 **nothing tracks it** — no column, no table, no query |
 | "Period" | 🔴 **not merely untracked but UNDEFINED** — no `stripe_customer_id`, no subscription, no billing anniversary anywhere |
 
@@ -14020,6 +15084,75 @@ path**, since the gated one redirects a non-admin away.
 ⚠️ **The hero still renders three dashed placeholder boxes reading "Screenshot".** Blocked on the same
 capture session as the App Store screenshots — **one session unblocks both.**
 
+## V11.36 — 🔴 THE LANDING GATE NOW BLOCKS TWO WORKSTREAMS, NOT ONE
+
+The landing is gated because it carries an unpermissioned testimonial and screenshot placeholders.
+**That gate is now also on Meta's critical path**, because the Integrity team reviews
+`hatchgrab.com` and a reviewer meeting a redirect or a login wall is a plausible restriction.
+
+✅ **DECISION TAKEN: WhatsApp will be shown as "coming soon" on the landing when it opens.** Claiming
+a capability that does not exist is the failure mode Integrity looks for; describing the ordering
+platform honestly satisfies the requirement on its own.
+
+## V11.38 — 🔴 `landing.css` IS SCOPED, AND ONE RULE IN IT ZEROES EVERY MARGIN
+
+**All 195 rules are scoped under a single wrapper class, applied on the landing page. Outside that
+wrapper the landing's chrome renders as unstyled markup** — no nav height, no layout, no
+breakpoints.
+
+🔴 **AND ONE OF THOSE RULES IS A UNIVERSAL `margin: 0`.** ⚠️ **Wrapping Tailwind content in that
+scope silently strips every margin utility it uses — including vertical-space stacks, which are
+margins on children.**
+
+⚠️ **THIS IS NOT SPECULATION. The landing's own comment records the rule already having eaten a
+centring margin**, winning on specificity and source order.
+
+✅ **SO ON THE COST PAGE THE WRAPPER GOES ROUND THE CHROME ONLY, TWICE — never round the
+calculator.** 🔴 **The failure it avoids would have presented as a spacing problem, not a scoping
+one**, and would have been chased in the wrong file.
+
+⚠️ **The font declarations are duplicated rather than shared**, because moving them into a common
+module would change the generated class names in the landing's own markup — the one thing the
+extraction could not do. **Two instances of the same config produce the same CSS variable names and
+the font files deduplicate.**
+
+## V11.38 — THE LANDING CHROME IS NOW SHARED: extracted, not copied
+
+The nav and footer were inline. **Both are now components imported by the landing and the cost
+page.** ⚠️ **Neither is interactive** — the responsive nav behaviour is pure CSS — **but the nav
+contains the demo call to action, whose hook throws without a provider.** A loud failure, correctly.
+
+### 🔴 THE PROOF: AN EMPTY DIFF AND AN IDENTICAL FILE HASH
+
+After the CTA-slot change the landing was **byte-identical by SHA-256**. For the extraction itself,
+where lines necessarily moved, **the moved blocks were proven equal to their originals by reversing
+a uniform indent shift** — ⚠️ **a uniform indent shift is the one transformation JSX provably does
+not render.**
+
+⚠️ **AND THE DISTINCTION THAT MATTERS: A HASH PROVES THE SOURCE DID NOT CHANGE. IT SAYS NOTHING
+ABOUT WHETHER THE PAGE STILL RENDERS.** **Two different claims, one proven.** Joins the family
+directly.
+
+### The nav's CTA is a data pair, not a slot — and the reason is a hidden mechanism
+
+**The nav CTA is `{ label, shortLabel?, href }` rather than an arbitrary node.** 🔴 **Because the
+button's two-span structure is a MECHANISM, NOT DECORATION: it sheds its arrow and shortens its
+wording below a breakpoint, and the nav carries a no-wrap rule measured to fit a phone.**
+
+⚠️ **A NODE SLOT DEVOLVES THAT TO EVERY CALLER, AND THE FAILURE IS SILENT AND VISUAL** — forget the
+short label and the nav looks correct on a laptop and wraps on a phone. **The component owning it is
+the whole argument.**
+
+⚠️ **What the shape cannot express, stated at the interface rather than discovered later:** an
+arbitrary element. **The default is a branch in the markup rather than a default value, because the
+landing's own CTA is a button that opens a modal, not a link.** 🔴 **If a third caller ever needs a
+button, widen it then — it was deliberately not widened for a caller that does not exist.**
+
+⚠️ **A COUPLING WORTH KNOWING:** the provider's necessity on a page now depends on a prop. **Drop
+the CTA prop and the nav falls to its default branch and throws at render.** Loud rather than
+silent, which is the right way round, but it is a coupling between one line and an import that is no
+longer there.
+
 # 39. Buzzers — physical pagers against orders (V10)
 
 > Operators hand customers a physical numbered buzzer/pager and record which one against the order. Built in two phases, both deployed and live-verified (3 August 2026). Provenance per claim below: **live-verified** (seen working on screen), **read from code**, or **computed** (unobserved).
@@ -14258,10 +15391,37 @@ product decision.
 restatement while §41 and §43 held the correct fact, and on 14 August the stale one was believed and
 produced two false "confirmed still open" findings.** See §1.
 
-**The one item here that IS still open: the 2.1(a) demo/review account.** Recorded in §27.
+~~**The one item here that IS still open: the 2.1(a) demo/review account.** Recorded in §27.~~
+✅ **CORRECTED V11.35, 20 August 2026 — the demo account was BUILT and the app was SUBMITTED.** The
+dedicated demo truck is described in the V11.35 block at the end of this section.
 **Nothing else in this section discharges the App Store blockers — see §27 for the current list, and
 §36 for the privacy manifest.**
 
+
+## V11.35 — APP STORE SUBMISSION: what this product specifically needs
+
+🔴 **THE SHELVES IN APP STORE CONNECT ARE THE ONLY AUTHORITY ON SCREENSHOT SIZES.** For this account they
+are **6.5-inch iPhone** and **13-inch/12.9-inch iPad**. Third-party guides describing 6.9-inch as
+canonical were wrong for this account. **Check the version page before capturing anything.**
+
+⚠️ **Apple's parser rejects a file that is not exactly an accepted size** — no cropping, no upscaling.
+⚠️ **Simulator PNGs carry an alpha channel** even when fully opaque; strip it.
+⚠️ **One orientation per device slot.** A portrait file among landscapes reads as a mistake.
+
+🔴 **THE SEED DATA IS PART OF THE SUBMISSION.** A reviewer works the demo account, and screenshots show
+seeded orders. **What must not appear:** an over-capacity banner, "Xm late" badges, orders in a status
+with no action buttons, or a board that is mostly empty. **Seed for a healthy service, not a stressed
+one.**
+
+**Review notes are the defence against 4.2 minimum-functionality**, which is the standing risk for a
+remote-URL shell. Name what the app does that a website cannot — **offline order taking on the Orders and
+Add order screens**, push notifications, screen wake lock, kitchen printing on iPad, biometric lock,
+per-device configuration — and state that it is an operator tool for food-truck staff. ⚠️ **Include a
+step-by-step offline test the reviewer can follow, and walk it yourself first: you are handing them a
+script and it must do what it says.**
+
+⚠️ **The Marketing URL is optional and was cleared.** `hatchgrab.com` served the Village Foodie map at the
+time, and **a marketing link to a different product is worse than no link.**
 
 # 41. Account deletion — anonymisation, not row deletion (V11.4)
 
@@ -14576,6 +15736,131 @@ Applied today: **WhatsApp is present tense; Messenger and Instagram carry "comin
 ### The iPad recommendation was REMOVED from footnote 3
 
 It was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and **on current evidence Android is the better-validated of the two** (§36). A recommendation carries the authority of a test result; there was no test.
+
+## V11.37 — 🔴 THE PLAN FOOTNOTE CARRIES A CLAIM WITH NO PRODUCT BEHIND EITHER HALF
+
+The shared plan-features footnote states that an operator *"can view every message and reply yourself
+at any time."*
+
+**Verified: nothing renders past auto-replies.** There are exactly three reads of the log table in
+the repository — a Reports count selecting classification flags, the greeting check selecting a
+timestamp under an existence filter, and the writes. 🔴 **The message and reply columns are written
+and never selected for display anywhere.**
+
+**And the second half fails independently:** *"reply yourself"* depends on coexistence, which is
+unbuilt and gated on Tech Provider status not yet held.
+
+⚠️ **The landing is currently gated**, so the exposure may be limited — **but the same module feeds
+in-product plan surfaces, and that has not been checked.** 🔴 **OPEN DECISION: what that footnote
+should say.** Splitting it so the verified half can be shared is **not** the fix — that leaves the
+unverified half in the place that sells the plan.
+
+**The preview repeats only the verified clause**, as a deliberate plain literal. ⚠️ **Importing the
+shared string would repeat the unverified claim; slicing it by substring would break silently the day
+someone rewords it.** **A short greppable literal was chosen over a fragile reference, and the
+duplication is accepted and noted at the site.**
+
+⚠️ **NOT THE DEFERRED CUSTOMER DISCLAIMER.** The existing decision to defer an AI disclaimer concerns
+**the message a customer receives**, pending Meta's disclosure rules. **This footnote is shown to the
+operator inside a preview. Nothing here changes a byte of what a customer receives.**
+
+## V11.38 — THE COST COMPARISON PAGE
+
+**An operator enters fleet size, staff per van, monthly online orders per truck, their current
+provider's rate, and months free. The page returns a year-one saving, a year two, and a two-year
+total.**
+
+### The model, and the one insight the page rests on
+
+🔴 **CARD PROCESSING IS EXCLUDED FROM BOTH SIDES, AND THAT IS WHAT MAKES THE COMPARISON HONEST AND
+STARK AT ONCE.** A competitor's all-in percentage contains the same card processing we charge, so
+subtracting it from both leaves **their platform fee against our plan.** ⚠️ **It also means their
+per-order fee and the card per-order fee cancel exactly, so AVERAGE ORDER VALUE DROPS OUT OF THE
+COMPARISON ENTIRELY** — it is fixed as an assumption and used only to display an approximate order
+count. **Asking the operator for it would be asking for a number that changes nothing.**
+
+⚠️ **UK street food spend per customer is £6–12; an online order usually covers more than one
+person.** The assumption is set at the midpoint and stated in the small print.
+
+### Where it lives, and a gate that opens by itself
+
+**At `/landing/cost`, as a child of the landing route** — ⚠️ **so the landing layout's admin gate
+applies by construction rather than by copy. There is nothing to keep in sync.**
+
+🔴 **AND A SECOND GATE ON TOP: the page renders only when pricing is published OR the viewer is an
+admin.** The reason, which must survive: **the page reads price NUMBERS, and the publication mask
+only masks rendered strings.** Without the second gate the page is safe *by accident* — safe only
+because the landing happens to be gated — **and if the landing ever ungates before pricing
+publishes, unpublished prices become public with no error and no warning.** With it, the page opens
+by itself at launch and cannot leak before it.
+
+⚠️ **CONSEQUENCE, DECIDED DELIBERATELY:** the page becomes reachable by non-admins once pricing
+publishes, **while the landing itself may still be gated.** That is correct — the two are gated on
+different things: the landing on a testimonial permission and screenshot placeholders, this page on
+whether prices are public.
+
+### 🔴 THE GATE REQUIRED A SERVER/CLIENT SPLIT, AND THE OBVIOUS SHORTCUT IS A FAKE GATE
+
+The admin check reaches request headers, **which cannot be imported into a client module** — and the
+calculator must be a client component. **One file cannot be both.** So the route is a server
+component that gates and renders a client component holding the calculator.
+
+🔴 **A CLIENT-SIDE CONDITIONAL WAS AVAILABLE AND WAS REJECTED, AND THIS IS THE PART THAT MATTERS:
+IT HIDES THE MARKUP, NOT THE BUNDLE.** The price constants are imported into that module and ship to
+the browser in the JavaScript whatever the conditional says. ⚠️ **A gate that looks like protection
+and is not is worse than none, because the next reader sees the conditional and stops asking.**
+
+⚠️ **A copied gate must redirect to the contact page, NEVER to the site root** — the root is
+rewritten to the landing by the proxy, so redirecting there loops forever **on the domain given to
+Apple as the Marketing URL.**
+
+### Design decisions, recorded so they are not reversed as preferences
+
+- 🔴 **THE SAVING IS THE PAGE. THE PRICES ARE SUPPORTING DETAIL.** The saving is one enormous figure
+  with the percentage beneath it as plain text; the two costs are one quiet line per year.
+  ⚠️ **A filled percentage badge was tried and removed — a background makes a small number outweigh
+  a large one.**
+- ⚠️ **"SAVE", NOT "KEEP".** Research shows loss-framed discount wording outperforms gain-framed —
+  and **"save" is itself the loss-framed word** in that literature. "Keep" is ambiguous about money:
+  it can read as retaining a balance. ✅ **The loss frame lives on the other side of the comparison
+  instead**, where the loss actually is.
+- **The year lines read top-down, left-aligned**, so the eye does not cross the card to connect two
+  facts about the same year. **The tier is named once, in the question that sets it** — repeating it
+  on every line made the comparison read as being about which plan rather than about two totals.
+- ⚠️ **The saving is anchored to a recognisable expense** — pitch fees, a fryer, a van deposit —
+  scaled to the figure. **Money in the abstract is weaker than money an operator recognises.**
+- 🔴 **THE EFFECTIVE-RATE LINE WAS DELETED AND MUST NOT RETURN.** It read as a helpful summary and
+  **published the exact rate a competitor would need to undercut, computed from our own pricing, on
+  a page built for people shopping around.** Every other figure is about the operator's situation;
+  that one was about our position in the market.
+- **The plan-price editor was removed.** ⚠️ **An editable price on a page that computes a saving is
+  a page that can be made to say anything.**
+- 🔴 **THE PRIMARY ACTION IS SIGN-UP, NOT THE DEMO UPLOAD.** Someone on the landing is asking *what
+  is this* and an upload answers that. **Someone who has just entered their own trading figures has
+  already decided it is interesting and is asking whether it is cheaper** — a file upload is a
+  heavier ask than the moment warrants and **fails outright on a phone with no menu file.** A
+  secondary contact action sits beside it, outlined rather than filled, so the two do not compete.
+
+### ⚠️ A SUB-PENNY SAVING, AND THE RIGHT WAY TO GATE IT
+
+A saving of a fraction of a penny is positive, so it announced *"save £0"*. 🔴 **THE FIX IS NOT A
+THRESHOLD** — a hardcoded minimum is a second magic number that drifts when the formatter changes,
+and it fails in the other direction too. **The test asks the FORMATTER: take the fallback when the
+formatted value would render as zero.** ✅ **Display and claim then cannot diverge by construction,
+and the behaviour follows the formatter automatically.**
+
+## V11.38 — ⚠️ A COMPETITOR'S FEE THAT EQUALS OURS BY COINCIDENCE
+
+**The comparison prefills the competitor's per-order fee, and that value happens to equal the card
+processing per-order fee exactly. The page subtracts one from the other.**
+
+🔴 **WIRING IT TO THE CARD-FEE CONSTANT WOULD PASS REVIEW AS A TIDY-UP AND WOULD SILENTLY MAKE A
+RIVAL'S PUBLISHED RATE TRACK STRIPE'S.** ✅ **Commented against at the site, because a future reader
+has no other way to know the equality is a coincidence.**
+
+> ⚠️ **THE GENERAL FORM, WORTH THE INVARIANTS SECTION: two numbers that are equal today, semantically
+> opposite, and subtracted from one another. De-duplicating them is a correctness bug that looks like
+> housekeeping.**
 
 # 45. Offline payments and the conflict signal (V11.4)
 
