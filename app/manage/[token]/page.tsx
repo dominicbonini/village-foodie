@@ -10905,35 +10905,38 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const billingCard = (
     <div className="bg-white border border-slate-200 rounded-2xl p-6">
       <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
-      {/* ── 🔴 REWRITTEN AND GATED, 25 August 2026. TWO SEPARATE CHANGES, BOTH DELIBERATE. ───────────
-          (a) THE COPY. It read "Payment setup coming soon / We're setting up our payment system. During
-          early access, billing is handled manually. We'll contact you when automated billing is ready."
-          🔴 "COMING SOON" IN AN APP IS A KNOWN GUIDELINE 2.1 COMPLETENESS TRIGGER, and "we'll contact
-          you when automated billing is ready" is a promise about a date nobody has. It is also the wrong
-          shape for a web operator, who is being told about a thing that does not exist instead of how
-          their billing works today. ⚠️ PRESENT TENSE ONLY. No claim is made that automated billing is
-          coming, because none can be made.
-          (b) THE GATE. `purchaseCtaAllowed()` IS the right predicate HERE — this block describes payment
-          MECHANICS, which is the 3.1.1 subject. ⚠️ CONTRAST WITH THE AUTO-REPLIES HIDE ABOVE, which uses
-          `isNativeApp()` because it is a 2.1 completeness question about a messaging feature. Manual
-          section 40 keeps the two predicates separate; do not merge them.
-          ⚠️ ONLY THIS BLOCK IS GATED. The "Billing & payments" heading and the truck/plan line below it
-          are NOT — they state which plan the operator is on, which is information rather than payment
-          mechanics, and removing them would leave this card empty on iPad.
-          ⚠️ THE AMBER CONTAINER AND THE ⚙️ WERE LEFT ALONE. Amber plus a cog reads as "something is
-          pending", which is arguably the same shape the copy change exists to remove — but restyling was
-          not asked for and is a separate decision. Reported, not taken. */}
-      {purchaseCtaAllowed() && (
+      {/* ── 🔴 THIS BLOCK RENDERS ON EVERY PLATFORM, iOS INCLUDED. DO NOT GATE IT AGAIN. ─────────────
+          It was briefly wrapped in `purchaseCtaAllowed()` (25 August 2026). 🔴 THAT WAS WRONG AND WAS
+          OBSERVED WRONG ON AN iPad THE SAME DAY: with the block suppressed, this card rendered its
+          "Billing & payments" heading and the "Apple Tester · trial plan" line and NOTHING ELSE — an
+          empty shell, which is precisely the Guideline 2.1 completeness shape this build is answering a
+          rejection for. ⚠️ THE COMMENT THAT SHIPPED WITH THE GATE EVEN NAMED THAT OUTCOME — "removing
+          them would leave this card empty on iPad" — and then the gate emptied it anyway, from the other
+          direction. The prediction was right about the failure and wrong about which element caused it.
+          🔴 WHY IT IS SAFE UNGATED, AND THE TEST TO APPLY IF ANYONE EDITS THE COPY: this block carries
+          NO CTA, NO link, NO price and NO purchase instruction. It states how billing works today.
+          FACTS ABOUT THE PRODUCT ARE PERMITTED UNDER 3.1.1; INSTRUCTIONS TO BUY ARE NOT. ⚠️ If a future
+          edit adds a price, a link or a "contact us to upgrade", the calculus changes and the gate
+          becomes right again — but then the block would need rewriting rather than hiding, because an
+          empty card is a worse outcome than a factual one.
+          ⚠️ THE COPY. It originally read "Payment setup coming soon / We're setting up our payment
+          system … We'll contact you when automated billing is ready." "COMING SOON" IS A KNOWN 2.1
+          TRIGGER and that last clause promised a date nobody has. PRESENT TENSE ONLY — no claim is made
+          that automated billing is coming, because none can be made.
+          ⚠️ "There is nothing to configure here." WAS DELETED (25 August, second pass). On a card headed
+          "Billing & payments" it read as an apology for an unfinished screen, which is the same shape the
+          rewrite exists to remove. Do not put it back.
+          ⚠️ THE AMBER CONTAINER AND THE ⚙️ ARE STILL OUT OF SCOPE and were left alone again. Amber plus a
+          cog arguably reads as "something is pending". Reported across three passes now, never taken. */}
       <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
         <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
         <div>
           <p className="text-sm font-medium text-amber-800">Billing is managed by HatchGrab</p>
           <p className="text-xs text-amber-700 mt-0.5">
-            During early access we set up and adjust plans manually. There is nothing to configure here.
+            During early access we set up and adjust plans manually.
           </p>
         </div>
       </div>
-      )}
       <div className="mt-4 pt-4 border-t border-slate-100">
         <p className="text-xs text-slate-400">
           {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}
