@@ -45,6 +45,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { PRIVACY_PATH } from '@/lib/legal'
 import { HATCHGRAB_SENDER } from '@/lib/email-config'
+// ── 🔴 THE NATIVE SHELL CARRIES NO COOKIE. WITHOUT THIS THE WHOLE SECTION DISAPPEARS. ──────────────
+// Observed on an iPad, 25 August 2026: Manage → Settings showed no Danger Zone at all. The shell's
+// Supabase session lives in Preferences and is sent as a Bearer on explicit fetches; it is NOT a cookie.
+// Both fetches below were bare, `/api/account/request-deletion` 403'd, `loadFailed` went true, and
+// `return null` removed the section — silently, with nothing logged.
+// ⚠️ RETURNS `{}` ON WEB, so spreading it changes no browser request. Same helper, same shape, as the
+// six existing session callers in app/manage/[token]/page.tsx.
+import { nativeAuthHeader } from '@/lib/native/session'
 import type { ShowToast } from '@/lib/useToasts'
 
 interface AccountSummary {
@@ -96,10 +104,26 @@ export function DeleteAccountSection({ truckName, showToast }: {
   // react-hooks/set-state-in-effect asks for ("calling setState in a callback function when external
   // state changes"). Written this way deliberately rather than accepting the warning.
   const load = useCallback(() => {
-    fetch('/api/account/request-deletion')
+    // ⚠️ `nativeAuthHeader().then(h => fetch(…, { headers: h }))` — the SAME shape the manage page's
+    // /api/auth/me call uses. setState still lands in a promise callback, which is what
+    // react-hooks/set-state-in-effect asks for; the extra link in the chain does not change that.
+    nativeAuthHeader()
+      .then(h => fetch('/api/account/request-deletion', { headers: h }))
       .then(res => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((data: AccountSummary) => { setSummary(data); setLoadFailed(false) })
-      .catch(() => setLoadFailed(true))
+      .catch((err: unknown) => {
+        // ── 🔴 NAME THE CONSEQUENCE, NOT THE ERROR. ─────────────────────────────────────────────────
+        // This path was a bare `.catch(() => setLoadFailed(true))` with no console.* anywhere in the
+        // file, so the section could vanish leaving no trace — which is why the defect survived from
+        // V11.4 until someone opened an iPad. Shaped like the /api/dashboard logs ("… — the live board
+        // will render EMPTY"), which say what the operator loses rather than what the code did.
+        // ⚠️ IT STILL RETURNS null. This adds a trace; it changes nothing that renders.
+        console.error(
+          '[account-deletion] summary fetch failed — the Danger Zone and the Delete account control will NOT render:',
+          err instanceof Error ? err.message : err,
+        )
+        setLoadFailed(true)
+      })
   }, [])
 
   useEffect(load, [load])
@@ -135,7 +159,7 @@ export function DeleteAccountSection({ truckName, showToast }: {
     try {
       const res = await fetch('/api/account/request-deletion', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ confirm: 'DELETE' }),
       })
       const data = await res.json()

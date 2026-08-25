@@ -9229,6 +9229,26 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
       </Card>
 
       {/* Online presence & social */}
+      {/* ── 🔴 THE WHOLE AUTO-REPLIES CARD IS HIDDEN IN THE NATIVE APP (25 August 2026). ─────────────
+          ALL account types, ALL plans, heading included — so no empty bordered box is left behind.
+          🔴 WHY: the section can currently only SIMULATE a reply. There is no way to connect a number
+          from it (`WHATSAPP_LIVE` is false and self-serve provisioning is not built). A control a user
+          can see and cannot operate is a Guideline 2.1 completeness defect, and this build is answering
+          a 2.1 rejection.
+          ⚠️ THIS IS A HIDE, NOT A REMOVAL. Every line below is intact and unchanged. When WhatsApp
+          provisioning ships, delete this wrapper and the section returns exactly as it was.
+          ⚠️ `isNativeApp()`, THE SAME MECHANISM THE CONNECT SUBSECTION INSIDE ALREADY USES — imported
+          at :63 from lib/native/device, `typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()`.
+          🔴 NOT `purchaseCtaAllowed()`. That predicate answers a COMMERCE question (3.1.1) and
+          deliberately does not re-export `getPlatform()`; using it to hide a messaging feature would make
+          the policy unreadable. Manual section 40 keeps the two separate.
+          ⚠️ FAILURE DIRECTION IS THE SAFE ONE, unchanged: the helper is FALSE in every browser, so a
+          wrong answer SHOWS the section on iPad (mild) and can never hide it from a web operator.
+          ⚠️ NO `mounted` FLAG NEEDED, for the reason already recorded below: SettingsTab renders beneath
+          the `loading` early-return whose state starts `true`, so this appears in no server output and on
+          no first client frame.
+          ⚠️ WEB IS UNTOUCHED — `isNativeApp()` is false there, so the card renders exactly as before. */}
+      {!isNativeApp() && (
       <Card className="p-4 space-y-3">
         {/* ── RENAMED 20 August 2026: "Online presence & social" -> "Auto-replies". ──────────────────
             The card is named for the FEATURE. 🔴 NOT "Socials": Messenger and Instagram are
@@ -9286,11 +9306,17 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             `typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()`, which is FALSE in every
             browser. A wrong answer therefore SHOWS the section on iPad (mild); it cannot hide a working
             control from Gusto on the web. */}
-        {/* 🔴 OUTSIDE THE NATIVE HIDE, AND IT MUST STAY THAT WAY. The wrapper below covers the WHOLE
-            Connect subsection; this line sits ABOVE it, so it is not a descendant of the conditional and
-            renders on iPad regardless of what isNativeApp() returns.
-            🔴 DO NOT PULL IT INSIDE THE WRAPPER when tidying. On iPad the card would then render as a
-            TITLE WITH NOTHING UNDER IT — the V11.18 orphaning lesson, in the other direction. */}
+        {/* ── ⚠️ THIS COMMENT WAS REVERSED ON 25 August 2026 — READ IT, DO NOT ACT ON THE OLD ONE. ────
+            It used to read "🔴 OUTSIDE THE NATIVE HIDE, AND IT MUST STAY THAT WAY … renders on iPad
+            regardless of what isNativeApp() returns" and "DO NOT PULL IT INSIDE THE WRAPPER".
+            🔴 THAT REASONING WAS SOUND AND ITS PREMISE IS GONE. It protected against the V11.18
+            orphaning failure — hiding the preview while leaving the card's title behind, so iPad showed
+            a heading with nothing under it. The card's OWN wrapper now hides the title too, so there is
+            no orphan to protect against: on iPad the entire card disappears, and this line with it.
+            ⚠️ THE INNER `!isNativeApp()` WRAPPER BELOW IS NOW REDUNDANT and was deliberately left in
+            place — removing it changes nothing on either platform (on web both are false; on native the
+            outer one already short-circuits) and touching it would edit the Connect subsection, which
+            this task does not own. */}
         <WhatsAppReplyPreview token={token} />
 
         {!isNativeApp() && (<>
@@ -9406,6 +9432,7 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
         </div>
         </>)}
       </Card>
+      )}
 
       {/* Your schedule */}
       <Card className="p-4 space-y-4">
@@ -10878,16 +10905,35 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const billingCard = (
     <div className="bg-white border border-slate-200 rounded-2xl p-6">
       <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
+      {/* ── 🔴 REWRITTEN AND GATED, 25 August 2026. TWO SEPARATE CHANGES, BOTH DELIBERATE. ───────────
+          (a) THE COPY. It read "Payment setup coming soon / We're setting up our payment system. During
+          early access, billing is handled manually. We'll contact you when automated billing is ready."
+          🔴 "COMING SOON" IN AN APP IS A KNOWN GUIDELINE 2.1 COMPLETENESS TRIGGER, and "we'll contact
+          you when automated billing is ready" is a promise about a date nobody has. It is also the wrong
+          shape for a web operator, who is being told about a thing that does not exist instead of how
+          their billing works today. ⚠️ PRESENT TENSE ONLY. No claim is made that automated billing is
+          coming, because none can be made.
+          (b) THE GATE. `purchaseCtaAllowed()` IS the right predicate HERE — this block describes payment
+          MECHANICS, which is the 3.1.1 subject. ⚠️ CONTRAST WITH THE AUTO-REPLIES HIDE ABOVE, which uses
+          `isNativeApp()` because it is a 2.1 completeness question about a messaging feature. Manual
+          section 40 keeps the two predicates separate; do not merge them.
+          ⚠️ ONLY THIS BLOCK IS GATED. The "Billing & payments" heading and the truck/plan line below it
+          are NOT — they state which plan the operator is on, which is information rather than payment
+          mechanics, and removing them would leave this card empty on iPad.
+          ⚠️ THE AMBER CONTAINER AND THE ⚙️ WERE LEFT ALONE. Amber plus a cog reads as "something is
+          pending", which is arguably the same shape the copy change exists to remove — but restyling was
+          not asked for and is a separate decision. Reported, not taken. */}
+      {purchaseCtaAllowed() && (
       <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
         <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
         <div>
-          <p className="text-sm font-medium text-amber-800">Payment setup coming soon</p>
+          <p className="text-sm font-medium text-amber-800">Billing is managed by HatchGrab</p>
           <p className="text-xs text-amber-700 mt-0.5">
-            We&apos;re setting up our payment system. During early access, billing is handled manually.
-            We&apos;ll contact you when automated billing is ready.
+            During early access we set up and adjust plans manually. There is nothing to configure here.
           </p>
         </div>
       </div>
+      )}
       <div className="mt-4 pt-4 border-t border-slate-100">
         <p className="text-xs text-slate-400">
           {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}

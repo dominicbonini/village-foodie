@@ -48,13 +48,29 @@ async function sendMail(to: string, subject: string, html: string) {
 /** Resolve the session to an operators row. Null = not the account holder (staff/manager have an auth
  *  user but no operators row) or not signed in at all. ONE resolver, used by both handlers, so the GET
  *  preview and the POST can never disagree about who is allowed to see or do this. */
-async function resolveOperator() {
+async function resolveOperator(req: NextRequest) {
   let authUserId: string | null = null
   try {
     const authClient = await createSupabaseServerClient()
-    const { data: { user } } = await authClient.auth.getUser()
+    const { data: { user } } = await authClient.auth.getUser()   // WEB (cookie) — unchanged, resolves first
     authUserId = user?.id ?? null
-  } catch { return null }
+  } catch { /* fall through to the Bearer branch below, then to null */ }
+  // ── ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. ────────────────
+  // 🔴 COPIED FROM app/api/auth/me/route.ts, WHICH IS UNCHANGED. Same three lines, same order, same
+  // guard. Only reached when there is NO cookie user AND an Authorization header is present, so a
+  // browser never enters this branch and the web path is byte-for-byte unchanged.
+  // ⚠️ THIS IS WHY THE DANGER ZONE WAS ABSENT ON iPad: this route was the only auth-gated route in the
+  // app with neither a dashboard_token path nor a Bearer path, so the shell could not authenticate to
+  // it at all. See docs/deletion-auth-fix-report.md.
+  if (!authUserId) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) authUserId = bearerUser.id
+    }
+  }
+
   if (!authUserId) return null
   const { data } = await supabase
     .from('operators')
@@ -69,8 +85,8 @@ async function resolveOperator() {
 // how many orders still need fulfilling, and whether a request is already pending.
 // 🔴 THE UI MUST NOT COMPUTE THE TRUCK LIST ITSELF. The Manage page holds ONE truck; the account may own
 // several. Naming only the truck you happen to be looking at would understate what is being deleted.
-export async function GET() {
-  const operator = await resolveOperator()
+export async function GET(req: NextRequest) {
+  const operator = await resolveOperator(req)
   if (!operator) return NextResponse.json({ error: 'Only the account owner can view this.' }, { status: 403 })
 
   const { data: trucks } = await supabase.from('trucks').select('id, name').eq('operator_id', operator.id)
@@ -104,12 +120,35 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   // ── Who is asking? A real logged-in session, resolved to an operator. ─────────────────────────────
+  // ⚠️ THIS HANDLER RESOLVES THE CALLER INLINE RATHER THAN CALLING `resolveOperator`, AND THE COMMENT
+  // ON THAT FUNCTION CLAIMING "ONE resolver, used by both handlers" HAS THEREFORE ALWAYS BEEN FALSE.
+  // 🔴 NOT COLLAPSED HERE, DELIBERATELY: this handler distinguishes 401 (not signed in) from 403 (signed
+  // in, but no operators row — a staff/manager). `resolveOperator` returns null for both and cannot tell
+  // them apart, so folding this into it would change the 403 the brief says not to touch. The Bearer
+  // fallback is therefore applied in BOTH places — five identical lines, once each — rather than the
+  // handler being rewritten. See docs/deletion-auth-fix-report.md.
   let authUserId: string | null = null
   try {
     const authClient = await createSupabaseServerClient()
-    const { data: { user } } = await authClient.auth.getUser()
+    const { data: { user } } = await authClient.auth.getUser()   // WEB (cookie) — unchanged, resolves first
     authUserId = user?.id ?? null
-  } catch { /* fall through to 401 */ }
+  } catch { /* fall through to the Bearer branch below, then to 401 */ }
+  // ── ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. ────────────────
+  // 🔴 COPIED FROM app/api/auth/me/route.ts, WHICH IS UNCHANGED. Same three lines, same order, same
+  // guard. Only reached when there is NO cookie user AND an Authorization header is present, so a
+  // browser never enters this branch and the web path is byte-for-byte unchanged.
+  // ⚠️ THIS IS WHY THE DANGER ZONE WAS ABSENT ON iPad: this route was the only auth-gated route in the
+  // app with neither a dashboard_token path nor a Bearer path, so the shell could not authenticate to
+  // it at all. See docs/deletion-auth-fix-report.md.
+  if (!authUserId) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) authUserId = bearerUser.id
+    }
+  }
+
   if (!authUserId) return NextResponse.json({ error: 'Sign in to request account deletion.' }, { status: 401 })
 
   const { data: operator } = await supabase
