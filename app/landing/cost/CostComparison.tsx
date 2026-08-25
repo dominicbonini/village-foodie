@@ -671,7 +671,16 @@ export default function CostComparison() {
                     all. ⚠️ DO NOT PUT `w-`, `max-w-` OR `inline-block` BACK ON THE PANEL. Every width this
                     block has ever carried has been the thing that broke it. */}
                 <div className="flex justify-center">
-                  <div className="rounded-xl px-5 py-4 text-left" style={{ backgroundColor: '#F8FAFC' }}>
+                  {/* ── ⚠️ THE FILL WAS STRENGTHENED, AND NO BORDER WAS ADDED. ONE CHANGE, NOT TWO. ──────
+                      `#F8FAFC` (slate-50) against a white card is roughly a 2% step — not enough to read
+                      as an object, which is why the panel looked like a footnote. It is now `#F1F5F9`
+                      (slate-100), a colour ALREADY IN THIS FILE (it is the hairline between the year
+                      blocks), so no new value entered the palette.
+                      🔴 A BORDER WAS THE OTHER OPTION AND WAS REJECTED. This panel sits inside a card
+                      that already carries a 2px ORANGE border; a hairline here would be a second edge
+                      inside it. A fill is a SURFACE — it separates without drawing another line.
+                      ⚠️ DO NOT NOW ADD THE BORDER TOO. The brief allowed one of the two. */}
+                  <div className="rounded-xl px-5 py-4 text-left" style={{ backgroundColor: '#F1F5F9' }}>
                     {/* ⚠️ "a year" IS ON BOTH ROWS, AND THAT IS DELIBERATE. It used to hang off the first row
                         only, as a shared qualifier. Both figures are annual and both must say so — a reader
                         who scans one row must not be able to take that figure as monthly, which is the
@@ -691,9 +700,51 @@ export default function CostComparison() {
                         deliberately matched at `text-base` — THAT MATCH NOW HOLDS ONLY ABOVE 640px, by
                         design: below it the rows drop a step so the panel stays inside a 375px card. The
                         anchor sentence is unchanged and stays `text-base` throughout. */}
-                    <div className="flex items-baseline gap-3 whitespace-nowrap text-sm sm:text-base">
+                    {/* ⚠️ `gap-1`, NOT `gap-3`. 12px between the label and the amount read as a LAYOUT
+                        GUTTER — a large space before the £ — when these rows are meant to read as one
+                        sentence. 4px is a word space at this size. ⚠️ DO NOT WIDEN IT BACK: the two
+                        spans are one phrase, not two columns (and they cannot be columns — see the
+                        report on why alignment costs a width class). */}
+                    <div className="flex items-baseline gap-1 whitespace-nowrap text-sm sm:text-base">
+                      {/* ── 🔴 BALANCE INVERTED INSIDE EACH ROW: LABEL = CAPTION, AMOUNT = SUBSTANCE. ────
+                          Every part of these rows used to be `text-slate-500` at one size, so a label and
+                          a figure carried identical emphasis and the row read as PROSE. The panel had
+                          been pushed quiet twice so it would not compete with the figure, and it
+                          overshot.
+                          🔴 ONE SIZE THROUGHOUT — WEIGHT AND COLOUR CARRY THE HIERARCHY, NOTHING ELSE.
+                          The labels were briefly `text-xs sm:text-sm`, which rendered SMALLER than the
+                          "a year" qualifier beside them and broke the line into two visual sizes. Every
+                          span in these rows now inherits the row's `text-sm sm:text-base`:
+                            label      (row size)  slate-500   font-normal
+                            theirs     (row size)  slate-800   font-semibold
+                            ours       (row size)  slate-800   font-bold      ← the one-step lead
+                            qualifier  (row size)  slate-500   font-normal
+                          ⚠️ slate-500, NOT slate-400 (operator decision, 25 August — "a little grey").
+                          At full row size slate-400 was too faint to read as part of the sentence; it had
+                          only been that light while the labels were also a size smaller. The fleet note
+                          below KEEPS slate-400 — it is genuinely subordinate to these two rows and is now
+                          the only thing in the panel set that light.
+                          ⚠️ DO NOT PUT A SIZE ON ANY SPAN IN THESE ROWS. The row owns the size.
+                          🔴 THE TWO AMOUNTS DIFFER BY WEIGHT ALONE — AND THAT IS THE WHOLE SETTLEMENT
+                          (operator decisions, 25 August, in two steps). They briefly differed by weight
+                          AND colour (`font-bold text-slate-800` against `font-semibold text-slate-600`),
+                          which read as two different KINDS of figure rather than two sides of one
+                          comparison. They were then made identical, which lost our emphasis entirely.
+                          ⚠️ SAME SIZE, SAME COLOUR, ONE STEP OF WEIGHT. Ours leads without looking like a
+                          different sort of number. Do not reintroduce a colour split here.
+                          🔴 STOPPING AT slate-800 IS THE POINT, NOT AN ACCIDENT. The percentage line
+                          below is `text-lg font-semibold`; these amounts are SMALLER than it and stop
+                          short of INK. ⚠️ DO NOT PUSH THEM TO slate-900 OR text-lg — at that point the
+                          hero has two subjects and the contrast it runs on is gone.
+                          ⚠️ "a year" / "in year one" ARE LIGHT ON PURPOSE — the LABEL's colour, not the
+                          amount's. They QUALIFY the amount; in the amount's weight the timeframe would
+                          read as a second figure.
+                          🔴 NO GRID AND NO WIDTH CLASS ENTERED THIS BLOCK, and the two amounts still do
+                          not share a left edge — that cannot be bought without one. See the report. */}
                       <span className="text-slate-500">Right now you pay</span>
-                      <span className="tabular-nums text-slate-500">{gbp(m.theirsYear)} a year</span>
+                      <span className="font-semibold tabular-nums text-slate-800">
+                        {gbp(m.theirsYear)}<span className="font-normal text-slate-500"> a year</span>
+                      </span>
                     </div>
                     {/* ⚠️ `mt-1`, NOT a fractional step — the two rows are ONE PAIR, not two paragraphs.
                         🔴 SEMIBOLD AND DARKER, AND DELIBERATELY NOT ORANGE. Orange belongs to the figure
@@ -702,7 +753,7 @@ export default function CostComparison() {
                         WINNING row, so when we are dearer the emphasis still sits on our number. A weight
                         that flipped with the result would present the same comparison two different ways
                         depending on who won, on a page built to be shown to people shopping around. */}
-                    <div className="mt-1 flex items-baseline gap-3 whitespace-nowrap text-sm sm:text-base">
+                    <div className="mt-1 flex items-baseline gap-1 whitespace-nowrap text-sm sm:text-base">
                       <span className="text-slate-500">With HatchGrab</span>
                       {/* ── 🔴 "in year one", NOT "a year". THIS IS AN HONESTY FIX, NOT A WORDING ONE. ──
                           `m.oursY1` is `oursMonth * (12 - free)` — the free months are IN it, so it is
@@ -714,7 +765,9 @@ export default function CostComparison() {
                           the two-line contrast this panel exists to create, and the detail card's YEAR TWO
                           block already carries that figure with its own saving directly beneath it. The
                           panel's job is one comparison, not a schedule. */}
-                      <span className="font-semibold tabular-nums text-slate-700">{gbp(m.oursY1)} in year one</span>
+                      <span className="font-bold tabular-nums text-slate-800">
+                        {gbp(m.oursY1)}<span className="font-normal text-slate-500"> in year one</span>
+                      </span>
                     </div>
                     {/* ⚠️ THE AMOUNTS NO LONGER SHARE A RIGHT EDGE, AND THAT WAS THE INSTRUCTED TRADE: the
                         two labels are different lengths, so left-packed flex rows cannot align the amounts
@@ -776,12 +829,25 @@ export default function CostComparison() {
                 <a href="/signup" className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>
                   {good ? `Start free and save ${gbp(m.saveY1)} →` : 'Start free →'}
                 </a>
-                <a href="/contact" className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
-                  Talk to us
+                {/* ── ⚠️ "Ask us a question", NOT "Talk to us" — AND NOT "Chat to us" EITHER. ─────────
+                    🔴 EVERY REJECTED LABEL IMPLIED A CHANNEL WE DO NOT HAVE. "Talk to us" implies a
+                    phone number, and we publish none. "Chat to us" implies live chat, and there is
+                    none. This label describes what the operator would actually DO and promises nothing
+                    about how or how fast the answer arrives — which matters more here than on the
+                    landing, because the destination is a form plus an email address, not a person.
+                    🔴 `topic=Cost%20Comparison` USES THE MECHANISM THAT ALREADY EXISTS — it was NOT
+                    built for this. app/contact/ContactForm.tsx reads `topic` from the query string and
+                    passes it to the Tally embed; the landing footer sends `General%20Enquiry`, the
+                    discovery surfaces send `Add%20Business` / `Report%20Issue` / `ClaimVenue`. Title
+                    Case, %20-encoded, matching those four exactly.
+                    ⚠️ An enquiry from this page is now identifiable in Tally without anyone asking
+                    "where did you come from?" in the form itself. */}
+                <a href="/contact?topic=Cost%20Comparison" className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
+                  Ask us a question
                 </a>
               </div>
               <p className="px-6 py-3 text-center text-xs text-slate-500" style={{ backgroundColor: CREAM }}>
-                No card needed to set up · Keep your own customers
+                No card needed to set up
               </p>
             </div>
 

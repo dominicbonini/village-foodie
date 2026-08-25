@@ -8399,17 +8399,39 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
         <p className="text-sm text-slate-500">Type a question like a customer would ask, and see exactly what they&apos;d get back. Nothing is sent to anyone.</p>
       </div>
 
-      {/* ── INPUT ROW. MOVED ABOVE THE CHIPS AND THE BOX, 21 August 2026. ──────────────────────────
-          The reading order is now: say what this is → give them the box to type in → offer examples →
-          show the result. The input sits ABOVE the box it fills.
+      {/* ── CHIPS FIRST, THEN THE INPUT. REORDERED 24 August 2026 (operator decision). ─────────────
+          Reading order is now: say what this is → offer ready-made questions → give them the box to
+          type their own → show the result.
+          🔴 THE EXAMPLES ARE THE LOW-EFFORT PATH AND THEY WERE BEHIND THE HIGH-EFFORT ONE. An operator
+          meeting this card has no idea what the classifier can handle; a tappable "Where are you
+          tonight?" answers that in one tap, whereas an empty box asks them to invent a test first. An
+          option that costs one tap belongs before the one that costs a sentence.
+          ⚠️ THIS REVERSES PART OF THE 21 August REORDER, which moved the input above the chips. That
+          change also fixed the placeholder echoing the line above it — 🔴 THAT HALF STANDS AND IS NOT
+          UNDONE HERE. Only the chip/input order changed.
+          ⚠️ Tapping a chip still fills the input AND runs it, unchanged — so the box below is not
+          skipped, it is pre-filled, and the operator can see what was asked.
+          `flex-wrap` is what makes the chips safe at 375px: three of ~11–19 characters cannot fit one
+          line on a phone and will wrap rather than overflow. */}
+      <div className="flex flex-wrap gap-2">
+        {EXAMPLES.map(ex => (
+          <button key={ex} onClick={() => { setMessage(ex); void run(ex) }} disabled={loading}
+            className="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 disabled:opacity-50">
+            {ex}
+          </button>
+        ))}
+      </div>
+
+      {/* ── INPUT ROW. Sits BELOW the chips and ABOVE the box it fills (24 August 2026). ────────────
           ⚠️ STACKS ON A PHONE. `flex-col sm:flex-row` with a full-width button below 640px: at 375px an
           inline button would leave the input around 200px and shrinking further with any longer label.
-          Above `sm` it returns to one line. **"Send" is shorter than "Try it" was, so this is no worse
-          at any width — but it has not been rendered; see the report.**
-          ✅ THE PLACEHOLDER-ECHOES-THE-LINE-ABOVE PROBLEM IS RESOLVED (21 August 2026). It read "Ask
+          Above `sm` it returns to one line.
+          ✅ THE PLACEHOLDER-ECHOES-THE-LINE-ABOVE PROBLEM STAYS RESOLVED (21 August 2026). It read "Ask
           something a customer might ask" directly beneath a line beginning "Ask anything a customer
-          might ask". It is now a CONCRETE EXAMPLE — it demonstrates and invites in the same breath,
-          which the abstract restatement did neither of. */}
+          might ask". It is a CONCRETE EXAMPLE instead — it demonstrates and invites in the same breath,
+          which the abstract restatement did neither of. ⚠️ The reorder does not disturb this: the
+          placeholder's neighbour above is now a row of chips, not that line, so there is nothing left
+          for it to echo. */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
         <input
           type="text"
@@ -8423,18 +8445,6 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
         <div className="sm:flex-shrink-0">
           <Btn label="Send" size="sm" loading={loading} disabled={!message.trim()} onClick={() => void run(message)} />
         </div>
-      </div>
-
-      {/* Chips BELOW the input, ABOVE the box. Tapping one fills the input and runs it — unchanged.
-          `flex-wrap` is what makes them safe at 375px: three chips of ~11-19 characters cannot fit one
-          line on a phone and will wrap rather than overflow. */}
-      <div className="flex flex-wrap gap-2">
-        {EXAMPLES.map(ex => (
-          <button key={ex} onClick={() => { setMessage(ex); void run(ex) }} disabled={loading}
-            className="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 disabled:opacity-50">
-            {ex}
-          </button>
-        ))}
       </div>
 
       {/* ── THE CHAT REGION ────────────────────────────────────────────────────────────────────────
@@ -8451,8 +8461,10 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
           horizontal scroll at 375px. */}
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 min-h-[8rem] flex flex-col gap-2 overflow-hidden">
         {/* ── THE EMPTY STATE ────────────────────────────────────────────────────────────────────────
-            ⚠️ IT SITS UNDER THE CHIPS, NOT UNDER THE INPUT (reorder, 21 August 2026), and still reads
-            correctly there because it describes THE BOX rather than pointing at a control above it —
+            ⚠️ IT SITS UNDER THE INPUT AGAIN (the 24 August chip/input swap put the input back
+            immediately above this box; it sat under the chips between 21 and 24 August). 🔴 THE POINT
+            SURVIVED BOTH REORDERS UNCHANGED, and that is the useful part: it reads correctly either way
+            because it describes THE BOX rather than pointing at a control above it —
             "will appear here" is positional about itself, not about what precedes it. Had it read "type
             a question below", the reorder would have made it false.
             ⚠️ SUBORDINATE ON PURPOSE: `text-sm text-slate-400` — the box's quietest weight, lighter than

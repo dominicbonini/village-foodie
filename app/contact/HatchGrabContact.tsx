@@ -90,17 +90,29 @@ export function HatchGrabContact() {
             />
           </Suspense>
 
-          {/* ── 🔴 A FALLBACK EMAIL ADDRESS WAS DRAFTED ON /support AND REMOVED. IT STAYS REMOVED. ───
-              `hello@hatchgrab.com` is the obvious candidate, and lib/email-signup.ts:23 says in as many
-              words that it is NOT usable yet: "⚠️ NOT LIVE YET. This mailbox must exist, and
-              hatchgrab.com must be SPF/DKIM-verified in Brevo, before the first real send."
-              lib/email-config.ts carries the matching TODO. Printing an address nobody has confirmed
-              receives mail — on the page an App Store reviewer is told to use — is a label asserting a
-              state nobody checked, which is the one thing this codebase's own rules forbid.
-              The only address proven to work today is the villagefoodie.co.uk one, and this render must
-              carry no Village Foodie branding.
-              ⚠️ SO THE FORM IS THE ONLY CHANNEL, WHICH IS WHAT WAS ASKED FOR. Add a mailto here the day
-              the mailbox is confirmed. */}
+          {/* ── 🔴 THE EMAIL ADDRESS IS BACK, BY OPERATOR DECISION (25 August 2026). READ THIS BEFORE
+              CHANGING IT. ─────────────────────────────────────────────────────────────────────────
+              This block previously said the address STAYS REMOVED, and gave the reason: on 10 August
+              `lib/email-signup.ts` recorded "⚠️ NOT LIVE YET. This mailbox must exist, and
+              hatchgrab.com must be SPF/DKIM-verified in Brevo, before the first real send," and
+              `lib/email-config.ts` still carries the matching TODO with `HATCHGRAB_SENDER.email` and
+              `.replyTo` both pointing at hello@villagefoodie.co.uk.
+              🔴 THOSE TWO COMMENTS WERE NOT VERIFIED BEFORE THIS WAS ADDED AND MAY BE STALE — the
+              operator asked for the address and owns the mailbox; this file cannot check it. What IS
+              already true in code is that `HATCHGRAB_REPLY_TO = 'hello@hatchgrab.com'` is exported by
+              lib/email-signup.ts and set as the reply-to on the signup emails, so replies to those are
+              ALREADY being sent to this address. See docs/contact-email-and-cta-report.md.
+              ⚠️ THE STAKE IS THE SAME AS IT WAS: this is the Support URL given to App Store review. If
+              the mailbox does not receive, a reviewer's message goes nowhere.
+              ⚠️ HATCHGRAB RENDER ONLY. It is deliberately NOT on the Village Foodie branch of
+              app/contact/page.tsx — that render is byte-identical by design and a hatchgrab.com address
+              on it would be the branding leak this split exists to remove.
+              ⚠️ `lede` AND `mt-6`, THE PAGE'S OWN VOCABULARY. No new type style, no new colour, no box —
+              the same class the paragraph above the form uses. */}
+          <p className="lede mt-6">
+            Or just email us at{' '}
+            <a href="mailto:hello@hatchgrab.com">hello@hatchgrab.com</a>
+          </p>
         </div>
       </section>
 
