@@ -4,6 +4,13 @@ import { canAccess, type Plan } from '@/lib/features'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { sendMetaWhatsApp } from '@/lib/meta-whatsapp'
 import { getLocalDateInTz, localDateOfInstant } from '@/lib/time-utils'
+import {
+  decideReplyCap, type ReplyCapDecision, isCapClassification, handoffMessage,
+  CAP_CLASSIFICATIONS,
+  DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, MAX_REPLIES_PER_TRUCK_DAY, MAX_REPLIES_PER_TRUCK_MONTH,
+  CLASSIFICATION_CUSTOMER_CAP, CLASSIFICATION_CUSTOMER_NOTIFIED,
+  CLASSIFICATION_TRUCK_DAY_CAP, CLASSIFICATION_TRUCK_MONTH_CAP,
+} from '@/lib/whatsapp/reply-cap'
 import { parseMetaAppSecrets, verifyMetaSignature, metaRefusalLog } from '@/lib/meta/webhook-signature'
 
 const supabase = createClient(
@@ -247,26 +254,181 @@ export async function POST(req: NextRequest) {
     // FOLLOW-UP GREETING — greet ONCE per calendar day per sender (timezone-correct, never UTC-date).
     // Single tz swap point: → truck.timezone ?? 'Europe/London' once that column exists.
     const truckTz = 'Europe/London'
-    // Read the most-recent PRIOR REPLIED row for this sender+truck. response_sent IS NOT NULL means a
-    // reply actually went out, so an IGNORE/gibberish (logged, unreplied) does NOT suppress the
-    // greeting on a later real question. Runs BEFORE the :116 log insert, so this message's own row
-    // isn't present → no self-suppression. FAIL-OPEN: any error → greet (extra greeting is benign;
-    // a wrongly-suppressed greeting reads as the bot acting mid-conversation when it isn't).
+
+    // ── 🔴 ONE READ SERVES THE GREETING AND THE PER-CUSTOMER CAP. THAT EQUIVALENCE IS ARGUED, NOT
+    //    ASSUMED. ──────────────────────────────────────────────────────────────────────────────────
+    // The greeting previously read the single most-recent replied row for this sender+truck with NO
+    // time bound, then asked whether its LOCAL DATE equals today's. Bounding that read to the rolling
+    // 24 hours cannot change its answer:
+    //   • Any row on the same local calendar day is necessarily LESS than 24 hours old, so no row the
+    //     greeting would have said "yes" to can fall outside the window.
+    //   • A row the window excludes is by definition >24h old, therefore on an earlier local date,
+    //     therefore one the unbounded query would have answered "no" to anyway.
+    // The most-recent row is still taken and the SAME date test is still applied, so the greeting's
+    // behaviour is unchanged. The per-customer count then falls out of the same rows for free.
+    // ⚠️ THE PER-TRUCK COUNT CANNOT SHARE IT — it spans every customer, which is a different scope, so
+    // it is its own read below. Do not "tidy" the two into one.
+    //
+    // ⚠️ CAP ROWS ARE EXCLUDED FROM THE GREETING TOO. A customer-cap notice carries `response_sent`, so
+    // it would otherwise become "the most recent reply" and suppress a later greeting. Today that is a
+    // no-op (no cap rows exist); the exclusion is what keeps it a no-op once they do.
     let isFollowUp = false
+    let capDecision: ReplyCapDecision = 'REPLY'
     try {
-      const { data: prior } = await supabase
-        .from('whatsapp_logs')
-        .select('created_at')
-        .eq('customer_number', from)
-        .eq('truck_id', truck.id)
-        .not('response_sent', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-      isFollowUp = !!prior && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)
+      const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      // ⚠️ 26 HOURS, NOT 24, FOR THE TRUCK READ. The truck window is a LOCAL CALENDAR DAY and a DST
+      // day is 25 hours long, so a 24h fetch could miss the start of it. The rows are then filtered to
+      // the local date in JS using `localDateOfInstant` — THE SAME PRIMITIVE THE GREETING USES — so no
+      // new timezone helper and no migration is needed to express "the truck's day".
+      const since26h = new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString()
+      // ── 🔴 THE LOCAL MONTH BOUNDARY, BUILT FROM THE PRIMITIVE THE DAY BOUNDARY ALREADY USES. ────
+      // NO NEW TIMEZONE HELPER. `localDateOfInstant` is the only tz function touched here; the search
+      // below converts "the 1st of the local month" into an INSTANT, which is what a count-only query
+      // needs (it cannot filter in JS — that is the whole point of it being count-only).
+      // ⚠️ A BINARY SEARCH, NOT A LOOP OVER MINUTES. ~13 `Intl` calls instead of ~2000. The band is
+      // ±18h around UTC midnight of the 1st, which covers every real offset (max is ±14h).
+      // ⚠️ "MONTH" HERE IS A CALENDAR MONTH AND **NOT** THE WABA BILLING CYCLE. Meta's cycle starts on
+      // whatever day the account was created and is not exposed to us. This is a PROXY, deliberately —
+      // it becomes per-truck and real when Embedded Signup ships and we own the account.
+      //
+      // 🔴 `truckTz` IS 'Europe/London', A BARE CONSTANT — AND `trucks.timezone` IS NULL ON ALL TWELVE
+      // TRUCKS. The column exists and nothing populates it, so a `?? 'Europe/London'` would not be a
+      // fallback: it is the ONLY BRANCH THAT EVER RUNS. **This is a UK-ONLY ASSUMPTION, not a defensive
+      // default.**
+      // ⚠️ AND THE MONTH BOUNDARY IS WHERE IT BITES HARDEST. A wrong timezone on the DAY boundary shifts
+      // a cap by an hour. On the MONTH boundary it shifts A WHOLE BILLING PERIOD — silently, and in the
+      // direction of a cap that RESETS EARLY, i.e. a ceiling that quietly stops being a ceiling. The
+      // first non-UK truck is not an edge case here; it is a hole.
+      const monthFirstLocal = `${getLocalDateInTz(truckTz).slice(0, 7)}-01`
+      let lo = Date.parse(`${monthFirstLocal}T00:00:00Z`) - 18 * 3600_000
+      let hi = Date.parse(`${monthFirstLocal}T00:00:00Z`) + 18 * 3600_000
+      while (hi - lo > 60_000) {
+        const mid = lo + Math.floor((hi - lo) / 2)
+        if (localDateOfInstant(new Date(mid), truckTz) < monthFirstLocal) lo = mid
+        else hi = mid
+      }
+      const monthStart = new Date(hi).toISOString()
+
+      const [mine, day, month] = await Promise.all([
+        supabase.from('whatsapp_logs')
+          .select('created_at, classification')
+          .eq('customer_number', from)
+          .eq('truck_id', truck.id)
+          .not('response_sent', 'is', null)
+          .gte('created_at', since24h)
+          .order('created_at', { ascending: false }),
+        supabase.from('whatsapp_logs')
+          .select('created_at, classification')
+          .eq('truck_id', truck.id)
+          .not('response_sent', 'is', null)
+          .gte('created_at', since26h),
+        // ── 🔴 COUNT-ONLY. A MONTH OF ROWS IS NEVER PULLED INTO MEMORY. ──────────────────────────────
+        // `head: true` means the rows never leave Postgres — only the count comes back. At the ceiling
+        // this would otherwise be 2,000 rows fetched on EVERY inbound message, to compute a number.
+        // ⚠️ THE CAP ROWS ARE EXCLUDED IN SQL, WHICH IS WHY THIS CANNOT BE A PLAIN `.not(... 'in' ...)`.
+        // `NOT IN` evaluates to NULL for a NULL classification and Postgres drops those rows, so a row
+        // with no classification would vanish from the count. The `or` keeps them.
+        supabase.from('whatsapp_logs')
+          .select('*', { count: 'exact', head: true })
+          .eq('truck_id', truck.id)
+          .not('response_sent', 'is', null)
+          .gte('created_at', monthStart)
+          .or(`classification.is.null,classification.not.in.(${CAP_CLASSIFICATIONS.join(',')})`),
+      ])
+      if (mine.error) throw mine.error
+      if (day.error) throw day.error
+      if (month.error) throw month.error
+
+      // ⚠️ ONE PREDICATE, FROM THE MODULE. The route never lists the four names.
+      const isCapRow = (c: string | null) => isCapClassification(c)
+      const mineRows = mine.data ?? []
+      const today = getLocalDateInTz(truckTz)
+
+      // The greeting, unchanged in meaning: the most recent NON-CAP replied row, same local date.
+      const priorReply = mineRows.find(r => !isCapRow(r.classification as string | null))
+      isFollowUp = !!priorReply && localDateOfInstant(priorReply.created_at, truckTz) === today
+
+      capDecision = decideReplyCap({
+        customerReplies24h: mineRows.filter(r => !isCapRow(r.classification as string | null)).length,
+        truckRepliesToday: (day.data ?? []).filter(r =>
+          !isCapRow(r.classification as string | null) &&
+          localDateOfInstant(r.created_at, truckTz) === today).length,
+        truckRepliesThisMonth: month.count ?? 0,
+        // "Already notified" is the PRESENCE of a customer-cap row in this customer's window.
+        customerCapNoticeSent: mineRows.some(r => r.classification === CLASSIFICATION_CUSTOMER_CAP),
+        // ⚠️ THE LIMIT IS PASSED, NOT READ FROM MODULE SCOPE INSIDE THE DECISION. When a per-truck
+        // operator-settable value lands (intended ceiling 5), THIS LINE is the one-line change:
+        //   truck.max_replies_per_customer ?? DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H
+        maxRepliesPerCustomer24h: DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H,
+      })
     } catch (err) {
-      console.error('[webhook/meta-whatsapp] follow-up read failed (greeting):', err)
+      // ── 🔴 FAIL OPEN. IF THE COUNT READ ERRORS, WE REPLY. ────────────────────────────────────────
+      // 🔴 THIS IS THE OPPOSITE DIRECTION TO THE SIGNATURE GATE ABOVE, DELIBERATELY, BECAUSE THE COST
+      // OF THE TWO FAILURES IS NOT THE SAME. A signature that cannot be verified may be a forged
+      // request, so that gate refuses — the downside of being wrong is unbounded. A count that cannot
+      // be read is a database blip, and the downside of being wrong here is a handful of messages at
+      // fractions of a penny each. **Failing closed would mean a transient Supabase error silently
+      // muting every truck's auto-replies**, which is a far worse outcome than a small overspend and,
+      // unlike the overspend, would be invisible.
+      // ⚠️ The greeting fails open in the same direction and for the same reason, unchanged.
+      console.error(
+        '[webhook/meta-whatsapp] cap/greeting read failed — FAILING OPEN, replying and greeting:', err)
       isFollowUp = false
+      capDecision = 'REPLY'
+    }
+
+    // ── THE TWO CAP BRANCHES. BOTH RETURN 200. ──────────────────────────────────────────────────────
+    // 🔴 EVERY PATH IN THIS ROUTE RETURNS 200, INCLUDING THESE. A non-200 lets Meta disable the
+    // subscription — for EVERY truck, not just this one. A capped customer is not an error.
+    // ── THE FOUR SILENT/NOTIFY BRANCHES. ALL RETURN 200. ────────────────────────────────────────────
+    // 🔴 EVERY MESSAGE-HANDLING PATH RETURNS 200. A non-200 lets Meta disable the subscription — for
+    // EVERY truck, not just this one. A capped customer is not an error.
+    if (capDecision !== 'REPLY' && capDecision !== 'NOTIFY_CUSTOMER_CAP') {
+      // ⚠️ ONE BRANCH, THREE REASONS, AND THE REASON IS RECORDED HONESTLY IN THE ROW. The three silent
+      // members differ only in WHY nothing was sent, and that difference is the entire value of the log:
+      // `whatsapp_logs` is what we will read to judge whether these limits are set right, so a row must
+      // never claim a cap that did not fire.
+      const silentClassification =
+        capDecision === 'SILENT_TRUCK_MONTH_CAP' ? CLASSIFICATION_TRUCK_MONTH_CAP
+        : capDecision === 'SILENT_TRUCK_DAY_CAP' ? CLASSIFICATION_TRUCK_DAY_CAP
+        : CLASSIFICATION_CUSTOMER_NOTIFIED
+      // Nothing is sent. `response_sent` is NULL, which is also what keeps this row out of every count.
+      await supabase.from('whatsapp_logs').insert({
+        truck_id: truck.id, customer_number: from, message_in: text,
+        classification: silentClassification, events_found: 0,
+        response_sent: null, possible_miss: false,
+      })
+      console.warn(
+        `[webhook/meta-whatsapp] ${capDecision} for truck=${truck.id} — nothing sent. ` +
+        `limits: customer/24h=${DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} ` +
+        `truck/day=${MAX_REPLIES_PER_TRUCK_DAY} truck/month=${MAX_REPLIES_PER_TRUCK_MONTH}`)
+      return NextResponse.json({ ok: true })
+    }
+
+    if (capDecision === 'NOTIFY_CUSTOMER_CAP') {
+      // ⚠️ DETERMINISTIC AND NON-MODEL, ON PURPOSE. The whole point of the cap is to stop paying for
+      // model calls and messages; generating this one through the classifier would defeat it.
+      // 🔴 THE TEMPLATE LIVES IN THE PURE MODULE, WHICH IS WHERE THE CONTACT-CLAUSE RULE IS TESTED.
+      // The route does not decide whether the number is usable — `handoffMessage` treats null, empty and
+      // whitespace-only alike, and emits no clause at all when there is nothing to put in it.
+      const hgUrlCap = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
+      const capMessage = handoffMessage(
+        `${hgUrlCap}/trucks/${truck.slug}/order`, truck.whatsapp)
+      try {
+        await sendMetaWhatsApp(from, capMessage, phoneNumberId)
+      } catch (sendErr) {
+        console.error('[webhook/meta-whatsapp] handoff send failed:', sendErr)
+      }
+      await supabase.from('whatsapp_logs').insert({
+        truck_id: truck.id, customer_number: from, message_in: text,
+        classification: CLASSIFICATION_CUSTOMER_CAP, events_found: 0,
+        response_sent: capMessage, possible_miss: false,
+      })
+      console.warn(
+        `[webhook/meta-whatsapp] CUSTOMER 24H CAP reached ` +
+        `(${DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H}) for truck=${truck.id} — one handoff sent, then ` +
+        `silence for the rest of the window. ⚠️ the handoff is itself billable.`)
+      return NextResponse.json({ ok: true })
     }
 
     const today = new Date().toISOString().split('T')[0]

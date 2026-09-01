@@ -163,6 +163,22 @@ export interface TruckData {
   plan: Plan
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
+  // ── Website embed (Stage 2). OPTIONAL because the payload is spread-and-redact: the values arrive
+  // the moment the columns exist, and are `undefined` until the two 26-August migrations are applied.
+  // Declaring them required would make the type lie about a database that does not have them yet.
+  website?: string | null
+  embed_enabled?: boolean | null
+  embed_plan_answer?: 'yes' | 'no' | 'not_sure' | null
+  // ── Custom domain (Stages 4–5). Optional for the same reason as the embed fields: the payload is
+  // spread-and-redact, so the values arrive the moment the columns exist and are `undefined` until
+  // the two 27-August migrations are applied.
+  custom_domain?: string | null
+  custom_domain_verified_at?: string | null
+  custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null
+  custom_domain_last_checked_at?: string | null
+  custom_domain_last_ok_at?: string | null
+  custom_domain_last_seen_value?: string | null
+  custom_domain_confirmed_at?: string | null
   qr_code_style?: 'standard' | 'branded'
   truck_emoji?: string
   sound_config?: SoundConfig | null

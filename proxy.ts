@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { ratelimit, strictRatelimit, eventsRatelimit } from '@/lib/ratelimit'
+import { ratelimit, strictRatelimit, eventsRatelimit, embedRatelimit, customHostRatelimit } from '@/lib/ratelimit'
+import { isCustomHost, isAllowedOnCustomHost, isAcmeChallenge } from '@/lib/custom-host'
 
 // ── Rate-limit SCOPE = a POSITIVE ALLOWLIST of ONLY the public, scraping-prone endpoints. ───────────────
 // INVERTED by design (NOT "limit every /api/* minus an exempt list"). Operator surfaces — the dashboard /
@@ -27,8 +28,32 @@ import { ratelimit, strictRatelimit, eventsRatelimit } from '@/lib/ratelimit'
 const isCustomerEvents = (p: string) => p === '/api/events'
 const isStrictPublic = (p: string) =>
   p === '/api/discovery' || p.startsWith('/api/discovery/')
+// ⚠️ `/o/` IS HERE TO PRESERVE METERING THAT ALREADY EXISTED, NOT TO ADD ANY (29 August 2026).
+// The printed QR used to encode `/trucks/<slug>/order`, which this predicate already covered at 60/min.
+// Moving the scan target to `/o/<slug>` without this line would have taken the one address on a printed
+// code OUT of the limiter entirely — an unmetered DB read, reachable by anyone, whose redirect
+// discloses a truck's custom domain. That regression would have been introduced by the move, so it is
+// closed by the move. Same bucket, same tier, same reasoning as the path it replaces.
 const isGeneralPublic = (p: string) =>
-  p === '/trucks' || p.startsWith('/trucks/')
+  p === '/trucks' || p.startsWith('/trucks/') ||
+  p === '/o' || p.startsWith('/o/')
+// EMBED (600/min, keyed IP+slug) — the operator-website widget and the endpoint that feeds it.
+// 🔴 BOTH HALVES, DELIBERATELY. The page and its data fetch are one visitor action, so limiting only
+// one of them would leave the other unbounded. It also means one embed view spends TWO tokens; the
+// sizing in lib/ratelimit.ts is done in those units.
+// ⚠️ NOT UNDER /trucks/, WHICH IS THE WHOLE POINT OF THE ROUTE'S LOCATION. `isGeneralPublic` above
+// would otherwise have swallowed it into the 60/min bucket it shares with the discovery pages.
+const isEmbedPublic = (p: string) =>
+  p === '/embed' || p.startsWith('/embed/') || p.startsWith('/api/embed/')
+
+// The rate-limit key's truck component. The slug is a PATH segment on /embed/<slug> and a QUERY
+// parameter on /api/embed/events, so both shapes are read here rather than at the call site.
+// A missing value collapses to '-' — one shared bucket for malformed requests, which is correct:
+// those are not a visitor's traffic.
+const embedSlug = (p: string, params: URLSearchParams) => {
+  if (p.startsWith('/api/embed/')) return params.get('slug') || '-'
+  return p.split('/')[2] || '-'
+}
 
 // ── DEMO DASHBOARD — the ONLY exception to the /dashboard session gate. ─────────────────────────────────
 // A demo visitor is anonymous by design: no account, no signup, therefore no Supabase session. The session
@@ -68,6 +93,66 @@ export async function proxy(request: NextRequest) {
 
   // ── Domain redirect: operator routes on villagefoodie.co.uk → hatchgrab.com ──
   const host = request.headers.get('host') || ''
+
+  // ── 🔴 AN OPERATOR'S OWN DOMAIN. DEFAULT DENY, AND IT RETURNS BEFORE ANYTHING ELSE RUNS. ──────────
+  //
+  // Everything below this block — the villagefoodie redirect, the four rate-limit tiers, the Supabase
+  // session refresh, both auth guards, the /landing redirect and the host-branded root — assumes the
+  // request arrived on one of OUR two domains. On an operator's domain every one of those assumptions
+  // is wrong, and the investigation showed what the wrongness costs: an unknown host reached
+  // `app/page.tsx`, the Village Foodie consumer discovery map, on their address.
+  //
+  // 🔴 SO THIS IS AN ALLOW-LIST OF TWO PATHS AND A 404 FOR EVERYTHING ELSE, worked back from the app's
+  // surfaces rather than forward from the ones expected to matter. See lib/custom-host.ts for the full
+  // list of what that denies. There is no fall-through: a custom host reaches the schedule page or it
+  // reaches nothing.
+  //
+  // ⚠️ RETURNING HERE ALSO MEANS NO SUPABASE SESSION REFRESH RUNS ON AN OPERATOR'S DOMAIN, so no
+  // `sb-…-auth-token` cookie is written for their host. The investigation listed that as undetermined;
+  // this makes it moot rather than answered — the code path that would set it no longer runs.
+  //
+  // ⚠️ A BARE 404 FROM THE EDGE, not a rewrite to a not-found page. It is provably outside every route
+  // in the app, it leaks nothing about what exists, and it costs no render.
+  if (isCustomHost(host)) {
+    // 🔴 THE CERTIFICATE CHALLENGE GOES THROUGH UNTOUCHED AND UNCOUNTED. Vercel's SSL docs: "The
+    // /.well-known path is reserved and cannot be redirected or rewritten." Deny it and the operator's
+    // certificate fails to RENEW — months later, as a browser interstitial on their own domain.
+    if (isAcmeChallenge(pathname)) return NextResponse.next()
+
+    if (!isAllowedOnCustomHost(pathname)) {
+      return new NextResponse('Not found', { status: 404 })
+    }
+
+    // ── The limiter, keyed (address, HOST) ────────────────────────────────────────────────────────
+    // 🔴 EVERY OTHER PREDICATE IN THIS FILE TAKES ONLY `pathname`, so a custom domain serving at '/'
+    // matched none of them and would have been the one public surface with NO limiter at all. Keyed on
+    // the host rather than a slug because the host IS the tenant here, and one operator's traffic must
+    // never be able to exhaust another's budget.
+    const cfIp = request.headers.get('x-forwarded-for')
+    const clientIp = cfIp ? cfIp.split(',')[0].trim() : '127.0.0.1'
+    const skipLimit = process.env.NODE_ENV !== 'production' || !cfIp || clientIp === '127.0.0.1'
+    if (!skipLimit) {
+      const { success } = await customHostRatelimit.limit(`${clientIp}:${host.toLowerCase()}`)
+      if (!success) {
+        console.warn(`[ratelimit] REFUSED limiter=custom-host key=${clientIp}:${host} path=${pathname} — returning 429`)
+        return new NextResponse(JSON.stringify({ error: 'Too many requests' }), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+        })
+      }
+    }
+
+    // The schedule page. `/domain` resolves the host to a truck server-side — the lookup deliberately
+    // does NOT happen here, because this file runs on the edge on every request and has no database
+    // access by design (see the demo-dashboard note above, which makes the same point).
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/domain', request.url))
+    }
+
+    // The one endpoint the page fetches. Nothing else reaches this line.
+    return NextResponse.next()
+  }
+
   const isVillageFoodie =
     host === 'villagefoodie.co.uk' ||
     host === 'www.villagefoodie.co.uk'
@@ -97,7 +182,8 @@ export async function proxy(request: NextRequest) {
 
   const isStrict = isStrictPublic(pathname)
   const isEvents = isCustomerEvents(pathname)
-  const inLimitedScope = isStrict || isEvents || isGeneralPublic(pathname)
+  const isEmbed = isEmbedPublic(pathname)
+  const inLimitedScope = isStrict || isEvents || isEmbed || isGeneralPublic(pathname)
   const isDev = process.env.NODE_ENV !== 'production'
   const isLoopback = !forwarded || ip === '127.0.0.1' || ip === '::1'
   // Cheap, no network: presence of an operator credential. A native Bearer, or a Supabase auth cookie
@@ -131,9 +217,14 @@ export async function proxy(request: NextRequest) {
     // no device id — and inventing one to rate-limit by would be a tracking identifier introduced for the
     // convenience of a limiter. The real defence against a shared address is a threshold a shared address
     // cannot reach, which is what 600/min is for.
-    const limiter = isEvents ? eventsRatelimit : isStrict ? strictRatelimit : ratelimit
-    const limiterName = isEvents ? 'events' : isStrict ? 'strict' : 'general'
-    const truckParam = isEvents ? (request.nextUrl.searchParams.get('truck') || '-') : null
+    // ⚠️ EMBED IS TESTED FIRST. Its paths cannot collide with isEvents or isStrict today, but the
+    // ordering is stated rather than left to luck: an embed request must never fall through to a
+    // bucket sized for a different traffic shape.
+    const limiter = isEmbed ? embedRatelimit : isEvents ? eventsRatelimit : isStrict ? strictRatelimit : ratelimit
+    const limiterName = isEmbed ? 'embed' : isEvents ? 'events' : isStrict ? 'strict' : 'general'
+    const truckParam = isEmbed
+      ? embedSlug(pathname, request.nextUrl.searchParams)
+      : isEvents ? (request.nextUrl.searchParams.get('truck') || '-') : null
     const key = truckParam ? `${ip}:${truckParam}` : ip
 
     const { success, remaining } = await limiter.limit(key)
@@ -233,8 +324,31 @@ export async function proxy(request: NextRequest) {
   // /api/dashboard. Web has no marker → this branch is skipped → web behaviour is byte-identical to before.
   const isNativeApp = (request.headers.get('user-agent') || '').includes('HatchGrabNativeApp')
 
-  if (isProtected && !user && !isNativeApp) {
-    // Not logged in (web) — redirect to login with return URL.
+  // ── 🔴 A STALE TOKEN IS NOT "NO SESSION", AND ONLY ONE OF THEM MAY BOUNCE. ───────────────────────
+  // `getUser()` returns `user: null` for BOTH "this browser has never signed in" and "this operator has
+  // a session whose refresh just failed" — a transient auth outage, a rotated cookie lost in flight, a
+  // tablet whose wifi dropped mid-refresh. Redirecting on both is what put a kitchen tablet on /login
+  // mid-service, which is the outcome this distinction exists to prevent.
+  //
+  // THE DISTINCTION IS THE PRESENCE OF THE CREDENTIAL, NOT ITS VALIDITY. `hasOperatorSession` (line 107,
+  // already computed above for the rate-limiter's operator bypass — reused, not reimplemented) tests for
+  // an `sb-<ref>-auth-token` cookie. A browser that never signed in has none. A browser whose refresh
+  // failed still has one, because auth-js clears it CLIENT-SIDE and the request that raced that clear
+  // still carries it.
+  // ⚠️ SO THIS IS DELIBERATELY NOT A VALIDITY CHECK, AND MUST NOT BECOME ONE. It answers "did someone
+  // sign in on this browser at some point", which is exactly the question that separates a first-time
+  // visitor from an operator having a bad minute.
+  //
+  // 🔴 WHAT THE PAGE DOES INSTEAD: it renders. Every operator surface authenticates its OWN data calls
+  // on the path token (a separate workstream), so the board still loads. The client-side observer
+  // (lib/auth/session-observer.ts) sees the SIGNED_OUT, tries to recover, and offers "Sign in again" as
+  // a CHOICE. Nothing is lost and nobody is moved.
+  // ⚠️ THIS IS NOT A WEAKENING OF ACCESS CONTROL. The edge redirect was never the boundary — proxy.ts
+  // puts `/api` on the public list (line 220), so the API was always reachable without it. It is a
+  // routing convenience, and it is being made to stop firing on the one case where it does harm.
+  const hasStaleButRealSession = hasOperatorSession
+  if (isProtected && !user && !isNativeApp && !hasStaleButRealSession) {
+    // No session at all — a genuine "please sign in", not a mid-service failure.
     // ⚠️ `pathname + search`, not `pathname`: the query string is part of the destination and dropping
     // it silently lands the operator on the same page with different state.
     const loginUrl = new URL('/login', request.url)

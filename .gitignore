@@ -49,3 +49,12 @@ devserver.log
 
 # Generated venue-backfill artifacts (SQL/CSV/JSON) — scripts are tracked, outputs are not
 scripts/backfill-output/
+
+# ── ANDROID SIGNING CREDENTIALS — NEVER COMMIT THESE ────────────────────────────────────────────────
+# These files hold the UPLOAD KEY and its passwords. Committing them publishes the credential that
+# authorises a Play Store upload for com.hatchgrab.app, to anyone who can read the repository.
+# There is no way to un-publish a secret from git history — it has to be revoked instead.
+# See android/SIGNING.md. The committed template is android/keystore.properties.example.
+android/keystore.properties
+android/*.keystore
+android/*.jks

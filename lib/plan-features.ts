@@ -237,6 +237,38 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     rows: [
       { name: 'Multi-device kitchen sync', detail: 'Run several screens — front counter and kitchen — all showing the same live orders.', starter: false, pro: false, max: true           },
       { name: 'Multi-user access',         detail: 'Give staff their own logins with the right level of access.', starter: false, pro: false, max: true           },
+      // ── MOVED HERE 29 August 2026, AND IT IS THE ONE ROW THAT MOVED. ────────────────────────
+      // Previously last-but-one in this section, below 'Event & festival pricing'. Every other row holds
+      // its position relative to every other — only this one was lifted.
+      // ✅ AND THE SECTION'S "coming-soon rows last, in the data itself" CONVENTION STILL HOLDS. The move
+      // put a `coming_soon` row above a hard-`true` one and briefly broke it; the flip to `true` below
+      // restored it. Max tier now reads ✓ ✓ ✓ ✓ then Coming soon × 3 — still a block, not an interleave.
+      //
+      // 🔴 THE PAGE IS SERVED AT THEIR ADDRESS. IT IS NOT AN EMBED. The detail deliberately avoids
+      // "built into your site", "embedded" and "inside your website" — none of those is what this is,
+      // and a marketing string that promises an embed is a promise the product would have to keep.
+      // ⚠️ NOT THE QR CODE AND NOT THE ORDER LINK, both of which operators already have on every plan
+      // ('QR code' → qr_menu above). Those point AT our address; this one IS theirs.
+      // ⚠️ RENAMED 29 August 2026 from 'Order page on your own website'. The surface serves a SCHEDULE
+      // whose order button deep-links back to ours — it is not an ordering page at their address, and the
+      // old name promised one. 🔴 THE LABEL IS THE JOIN KEY (FeatureRow has no `id`): it is the
+      // ROW_FEATURE_MAP key, the isRowComingSoon() key in Manage, and the trialFeatureValue() key on the
+      // landing table. This row appears in NONE of the three, so the rename moved no key — verified by
+      // grep across the tree, not assumed. Add the map entry under the NEW name on the day it flips.
+      // 🔴 FLIPPED 'coming_soon' → true, 29 August 2026, ON AN EXPLICIT OPERATOR DECISION that reversed
+      // this workstream's own brief ("IT STAYS coming_soon"). Recorded because the reversal is the whole
+      // history of this cell: the card bullet had its Coming-soon badge removed first, which left the
+      // pricing card and the comparison table on ONE page disagreeing, and this closes that gap.
+      // 🔴 THE ROW_FEATURE_MAP ENTRY WENT IN THE SAME CHANGE, and it had to. The parity checker only
+      // inspects hard-`true` cells AND only rows carrying a map entry — with the flip but no entry, this
+      // row would be advertised as included with nothing whatsoever verifying it. See 'Your schedule at
+      // your own website' → 'embed_schedule' below. canAccess('max','embed_schedule') is true (EXECUTED).
+      // ⚠️ WHAT THE TICK DOES NOT PROVE. The checker binds MARKETING to the GATE, never either to
+      // REALITY, and this feature has never served a page from a real domain in production. There is also
+      // a SECOND gate the matrix cannot see: `trucks.embed_enabled`, NOT NULL DEFAULT false
+      // (lib/features.ts:64, app/api/embed/events/route.ts:70). A Max truck reading this tick still gets
+      // the fallback page until that column is set for them by domain_provision.
+      { name: 'Your schedule at your own website', detail: 'Your upcoming dates on a page at your own address, under your own name.', starter: false, pro: false, max: true },
       // 🔴 'coming_soon', NOT true — 14 August 2026. A TICK IS A CLAIM THAT IT WORKS, AND IT DOES NOT.
       // components/printing/PrintingSettings.tsx has NO connect(): the Phase-A stub that wrote
       // 'Demo printer (Phase A stub)' and manufactured a connected state was REMOVED, and no real
@@ -253,12 +285,6 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Coming soon (kept at the bottom of the section)
       { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', detail: 'Set different prices for specific events or festivals.', starter: false, pro: false, max: 'coming_soon'  },
-      // 🔴 THE PAGE IS SERVED AT THEIR ADDRESS. IT IS NOT AN EMBED. The detail deliberately avoids
-      // "built into your site", "embedded" and "inside your website" — none of those is what this is,
-      // and a marketing string that promises an embed is a promise the product would have to keep.
-      // ⚠️ NOT THE QR CODE AND NOT THE ORDER LINK, both of which operators already have on every plan
-      // ('QR code' → qr_menu above). Those point AT our address; this one IS theirs.
-      { name: 'Order page on your own website', detail: 'Your ordering page available at your own web address, under your own name.', starter: false, pro: false, max: 'coming_soon' },
       // LOYALTY STAMP CARDS — Max only, coming soon
       // Schema: loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at)
       // Stamp rule V1: 1 per order (not per item — avoids redemption complexity)
@@ -371,6 +397,13 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   'Messenger & Instagram auto-replies': 'instagram_messenger_replies',
   'Advanced reporting': 'advanced_reporting',
   'Multi-device kitchen sync': 'multi_device_kds',
+  // 🔴 ADDED 29 August 2026 IN THE SAME CHANGE AS THE CELL FLIP TO `true`, AND THAT PAIRING IS THE
+  // WHOLE POINT. findPlanParityViolations() `continue`s on any row with no entry here, so a row flipped
+  // to hard-`true` without its entry is advertised as included and checked by nothing. The manual records
+  // this exact trap (§4) — it is why the row was left 'coming_soon' for as long as it was.
+  // ⚠️ The Feature key is 'embed_schedule', NOT a new one: lib/features.ts:69 already carries it in
+  // MAX_FEATURES, and its comment there predicted this rename. Keyed on the NEW row name.
+  'Your schedule at your own website': 'embed_schedule',
   'Kitchen ticket printing': 'ticket_printing',
   'Customer-facing display': 'cook_screen',
 }

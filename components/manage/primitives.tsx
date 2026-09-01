@@ -34,11 +34,18 @@ export function Btn({ label, colour = 'orange', size = 'md', loading = false, di
   )
 }
 
-export function Input({ label, value, onChange, onBlur, type = 'text', inputMode, placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
+// ── 🔴 THREE OPT-IN PROPS THAT SUPPRESS THE PHONE KEYBOARD'S HELPFULNESS (V11.50) ──────────────────
+// A field holding a web address, an email or anything else that is NOT prose must switch them off, or
+// the operating system rewrites what the operator typed: `pizzeriagusto` was being autocapitalised and
+// autocorrected into `Pizzeria Gusto` on iOS.
+// ⚠️ ALL THREE DEFAULT TO undefined, SO EVERY EXISTING CALL SITE RENDERS BYTE-IDENTICALLY. React omits
+// an attribute whose value is undefined; `spellCheck={false}` must be an explicit false, which is why
+// it is `boolean | undefined` rather than defaulted.
+export function Input({ label, value, onChange, onBlur, type = 'text', inputMode, placeholder, required, hint, error, autoCapitalize, autoCorrect, spellCheck }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']; placeholder?: string; required?: boolean; hint?: string; error?: string; autoCapitalize?: string; autoCorrect?: string; spellCheck?: boolean }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}{required && <span className="text-red-400 ml-0.5">*</span>}</label>
-      <input type={type} inputMode={inputMode} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
+      <input type={type} inputMode={inputMode} autoCapitalize={autoCapitalize} autoCorrect={autoCorrect} spellCheck={spellCheck} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
         className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${error ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}

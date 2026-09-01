@@ -27,6 +27,24 @@
           "value": "noindex, noarchive"
         }
       ]
+    },
+    {
+      "source": "/o/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noarchive"
+        }
+      ]
+    },
+    {
+      "source": "/embed/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noarchive"
+        }
+      ]
     }
   ],
   "crons": [
@@ -49,6 +67,10 @@
     {
       "path": "/api/cron/auto-reject-offline-orders",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/custom-domain-check",
+      "schedule": "0 7 * * *"
     }
   ]
 }

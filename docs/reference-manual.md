@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.39
+HatchGrab Engineering Reference Manual · V11.51
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.39**
+**Version 11.51**
 
 August 2026
 
@@ -15,6 +15,517 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.51 — 29 August 2026 (later)
+
+Delta over V11.50 — **the QR cycle is closed by separating two URLs**, the custom-domain page's
+identity block and brand line, and the landing testimonial's typography and attribution.
+
+**Nothing has been deployed. Hosting credentials are still unset, so provisioning has never
+completed. The landing page's admin gate and no-index setting are unchanged and still correct —
+publication permission is recorded nowhere.**
+
+- ✅ **THE QR CYCLE IS CLOSED, AND THE FIX WAS A SEPARATION RATHER THAN A CONDITION.** The scan and
+  the schedule page's Order button targeted the same path, and that path redirected to the operator's
+  domain — so tapping Order returned the customer to the page they were on, silently, with no route
+  to payment. **The operator confirmed no codes have been printed**, which is what made the clean fix
+  available: **`/o/<slug>` DECIDES, `/trucks/<slug>/order` only SERVES.** 🔴 **The five conditions were
+  moved VERBATIM into `lib/custom-domain/redirect-target.ts`, not reimplemented.** The redirect stays
+  temporary, for the same reason as before. §46, §35.
+- 🔴 **A NEW PUBLIC ROUTE INHERITS NOTHING, AND THIS IS THE SAME SHAPE AS THE STATIC-ASSET DENIAL.**
+  Rate limiting and the `noindex` header were attached to the **path prefix** `/trucks/`, not to the
+  route. Moving the scan target outside that prefix **silently dropped both** — a metering hole and an
+  indexable redirector, created by a change that touched neither policy. Restored in the same change.
+  §35, §46.
+- ⚠️ **BOTH URL CONSTRUCTIONS FEED A QR CODE, NOT ONE.** The brief said one; the dashboard's
+  fullscreen code is the second, and updating only the first would have left it encoding the old URL —
+  **the cycle restored, on the surface an operator is most likely to project on a screen.** §46.
+- **THE CUSTOM-DOMAIN PAGE'S IDENTITY BLOCK IS NOW A MASTHEAD** — a much larger logo above the name,
+  both centred. 🔴 **The circular crop had to go, and that is a consequence of the size**: a round
+  frame on a contained image letterboxes anything non-square, and at masthead size a wide wordmark
+  becomes a thin strip in a large empty ring. 🔴 **A low-resolution upload now upscales and will look
+  soft — the real cost of the change, with no markup fix.** §46.
+- 🔴 **THE EMAIL'S BRAND-ORANGE HEX IS NO LONGER THE BRAND ORANGE.** `#ea580c` was `orange-600` under
+  Tailwind v3; the project is on **4.3.1**, where the same token paints **`#f54a00`**. Copying the
+  email's literal hex would have put a different orange on that one word from every other orange on
+  the same page. ⚠️ **`lib/brand.ts:49` and §27's contrast backlog item both still record the old hex
+  and a ratio measured against it. Both are now wrong.** §38, §27, §46.
+- **THE LANDING TESTIMONIAL** — the attribution names the owners with the business name appearing
+  once; the role line reads in the same ink as the names, one step down in weight; the paragraph sets
+  in **three even lines** where a single word used to strand. **Italics were removed and then restored**
+  — the argument for removing them was sound, and in place the quote mark alone did not carry it.
+  ⚠️ **A stylesheet comment claiming the italic face is narrower than the roman was wrong — measured,
+  it is about 1% wider.** §38.
+- **The testimonial logo's `alt` is empty, deliberately, with a comment recording both halves** — the
+  name is announced by the role line beneath, and a *missing* alt would send some readers to the
+  filename. §38.
+
+## V11.50 — 29 August 2026
+
+Delta over V11.49 — **the custom-domain feature was rendered in a browser for the first time, and the
+first load found a fault that had made every custom-domain page impossible.** Six stages were built
+before anything was loaded. ⛔ **THIS SUPERSEDES EVERY "nothing has been rendered in a browser at any
+stage" LINE IN V11.48, V11.49, §27 AND §46** — those lines are corrected in place, not annotated.
+
+**Nothing has been deployed. The six migrations are applied. Hosting credentials are still unset, so
+provisioning has never completed end to end.**
+
+- 🔴 **EVERY FRAMEWORK BUNDLE THE PAGE NEEDS WAS 404 ON A CUSTOM HOST.** The shell rendered and sat on
+  *"Loading schedule"* for ever while the endpoint returned correct data — no JavaScript ran, so the
+  component that fetches it never mounted. **The deny list allowed three paths, and what a browser
+  requests to render a page is not a route.** The 47-surface refusal proof was sound, complete, and of
+  the wrong set. Fixed by allowing exactly one prefix — the framework's static output — and *not* its
+  parent, which would have taken the image optimiser (a server surface that fetches a caller-named URL)
+  out of the deny list as a side effect. **The trailing slash is load-bearing.** §35 (the invariant,
+  already recorded there), §46.
+- 🔴 **A SECOND HOLE RUNNING THE OTHER WAY: the proxy's path matcher has a typo** — two exclusions
+  concatenated with the separator missing, making the first inert — **so eight path families never
+  reach the deny list at all.** Neither allowed nor denied: invisible to the policy. Live on an
+  operator's domain today: our brand mark, our PWA manifest (titled for the other brand, so a visitor
+  can be offered an install prompt for our kitchen display), and **every other truck's logo — 121
+  files.** ⚠️ **Deliberately NOT fixed** — repairing it makes the whole framework path invisible to the
+  proxy on every host, a widening dressed as a correction. **Open, and it is application data on a
+  third party's domain.** §35, §46, §27.
+- ✅ **THE FEATURE HAS BEEN SEEN WORKING.** A hosts-file entry pointing a made-up hostname at loopback,
+  that hostname set as a truck's custom domain, and the dev server: truck name, real event, real venue,
+  working button, brand line. **The rig needs a hostname not containing "hatchgrab"** (the host test
+  matches that substring, so a subdomain of our own site takes the wrong branch and proves nothing)
+  **and a `.test` suffix rather than `.local`**, which macOS resolves by multicast DNS and never
+  consults the hosts file for. **The serving path is testable locally; provisioning is not.** §26, §46.
+- 🔴 **THE TRUCK PROFILE RENDERS "TRUCK NOT FOUND" FOR A LIVE TRADING TRUCK** — while the payload that
+  page just fetched carries two of that truck's events. **A correct exclusion meeting a wrong
+  assumption:** the trucks half of the discovery payload is built from the discovery table alone, and a
+  graduated truck's scraped shadow is marked excluded so the duplicate stops appearing, which is right.
+  Its operator events arrive by a separate path and pass every gate. **The page takes identity from the
+  first and events from the second and joins them by slug**, so a truck whose shadow is suppressed has
+  events and no identity. **One truck today, latent for fifteen other excluded rows.** §33, §25, §15.
+- 🔴 **AND ON OUR OWN HOST THAT PAGE SHOWS A SCHEDULE FOR ZERO TRUCKS.** The temporary trial-scoped
+  `isHG ? []` filter drops every scraped event there, so the feed carries operator events only — and
+  the one operator with events is the one missing from the identity half. **All 120 profiles read "no
+  upcoming events found".** §7, §15, §27.
+- 🔴 **THE LAPSED-PLAN FALLBACK POINTED STRAIGHT AT THAT PAGE.** The single link offered to an
+  operator's customers at the moment their page stops serving. Built from a name-derived slug, which is
+  the wrong space — **seven of twelve trucks differ, and the stored column carries collision suffixes
+  and opaque identifiers no name-munging could reach.** Now points at the ordering page via the shared
+  builder and the stored column. ⚠️ Switching to the shared builder would have silently dropped a
+  default the page had always carried; **the default was added to the builder instead**, so every
+  caller gets the same floor. §46.
+- **PER-PROVIDER DNS INSTRUCTIONS.** Three fields labelled with our vocabulary did not match what an
+  operator sees, and **one provider has no type field at all** — the record kind is chosen by which
+  section you add to — so a "Type: CNAME" row sent them hunting for a box that does not exist. 🔴 **The
+  steps were FETCHED from each provider's current help page, not written from memory**, which found four
+  things memory would have shipped wrong. §46.
+- **THE MARKETING ROW — RENAMED, MOVED AND TICKED.** ⛔ **This supersedes the V11.45/V11.46/V11.48/V11.49
+  entries in §4 that say it must not be renamed and stays coming-soon.** 🔴 **The tick is what arms the
+  parity checker, so the feature-map entry landed in the same change** — before the flip the row was
+  skipped twice over. §4.
+- **TURNING IT OFF** — release first, clear only on success; eight columns in one statement; no plan
+  gate on removal, deliberately. 🔴 **The printed QR code falls back correctly, proven rather than
+  assumed.** §46.
+- **Smaller findings:** web-address fields were being autocorrected into capitalised phrases; the wizard
+  no longer dismisses on backdrop or escape (⚠️ **the premise that this made it inconsistent was wrong**
+  — 22 of 31 overlays in that file already do not); the address field normalises at submission rather
+  than only for display; a deeper `www` label is refused in its own branch; **the favicon was never the
+  brand mark**; the truck identity block is centred. §46, §38, §23.
+
+## V11.49 — 28 August 2026
+
+Delta over V11.48 — **the custom-domain workstream continued**: the iframe embed **removed**, both
+wizards moved into Manage → Settings and the domain one rewritten, the QR code made **dynamic**, the
+`www` hazard closed, the operator-facing errors stripped of our internals, and the landing testimonial
+made real. **Nothing has been deployed and nothing has been rendered in a browser at any stage.**
+⛔ **SUPERSEDED V11.50 — THE PAGE HAS SINCE BEEN RENDERED**, and the first load found a fault that had
+made every custom-domain page impossible. This line is kept as the dated record of what was true on 28
+August.
+🔴 **BUT THE SIX MIGRATIONS ARE NOW APPLIED**, which supersedes every "written and unapplied" claim in
+V11.45, V11.46 and V11.48 — §16 and §27 are corrected rather than annotated.
+
+- 🔴 **THE IFRAME EMBED IS REMOVED, AND NOT FOR THE REASON IT LOOKS LIKE.** The operator asked for
+  traffic on their own website for search visibility; **an iframe does not deliver that** — content
+  inside one is attributed to the source URL, not the parent page, the way a video embed credits the
+  host rather than the site showing it. **So it would have built authority for us, not for them.** It
+  was dropped on that finding, not on the platform problems, which were real but were never the
+  reason. §46, §2, §27.
+- 🔴 **THE FLAG THE EMBED OWNED IS WHAT THE CUSTOM DOMAIN RUNS ON, AND REMOVING BOTH WOULD HAVE FAILED
+  SILENTLY.** The domain page's whole schedule body **is** the embed component, whose only data source
+  refuses unless `embed_enabled` is true — NOT NULL DEFAULT false, and its only writer was the wizard
+  being deleted. Every custom domain would have served its shell, logo, name and brand line **with a
+  permanently empty schedule, returning 200 and logging nothing.** Provisioning now sets the flag.
+  🔴 **The proof required is NON-EMPTY EVENTS from the endpoint, never that the page renders.** §46, §35.
+- 🔴 **A VERIFICATION REQUIREMENT CAN CARRY THE GUARD-VERSUS-RISK FAILURE.** *"Prove the page still
+  renders"* was **true of the broken state**. The wording asked for was the wrong assertion, not a
+  weakly-executed one. §35.
+- 🔴 **BOTH WIZARDS WERE ON THE WRONG SIDE OF A RULE THE FILE STATES ABOUT ITSELF.** The dashboard file
+  declares, ninety lines above where they were mounted, that Dashboard → Settings is **per-event** and
+  Manage → Settings is **truck-wide**. Both wizards write truck-wide columns. Moved. §46.
+- ⚠️ **A STEP THAT RENDERED NOTHING.** The resume path seeds `idle`; no branch matched it, so a
+  part-finished setup reopened to **a blank panel behind a backdrop** — reachable on every resume,
+  because the status fetch cannot supply a target without hosting credentials. Now renders in both the
+  resuming and the failed-fetch cases. §46.
+- 🔴 **THE PREFIX IS FIXED: `events`.** The editable field, its prefill, all four validation rules and
+  their messages are gone — nothing left to type is nothing left to get wrong. **The guards stay and now
+  defend a path the interface cannot reach**, which is correct: anything able to POST reaches the action
+  with no screen in the way. §46.
+- 🔴 **THE COLLISION CASE IS NOW THE ONLY REASON THIS FAILS, AND NOTHING DETECTS IT.** Pre-flight's two
+  lookups target the **parent** domain by design, so neither touches the new name; the only check on the
+  exact name is the hosting provider's own configured-for-us field, null for a name pointing anywhere
+  else. An operator already using `events` gets **no warning**, provisioning succeeds, and the failure
+  lands on their web person with no context — **the bad outcome being that they overwrite the existing
+  record and silently break whatever it served.** §46, §27.
+- 🔴 **THE QR CODE IS DYNAMIC — AND ITS REDIRECT CLOSES A CYCLE THAT BLOCKS PAYMENT.** The encoded URL
+  never changes; the destination resolves per request from the truck row. **But it targets the root of
+  their domain, which serves only the schedule, whose Order button points at the ordering path the
+  redirect guards** — returning the customer to the page they were already on. ⚠️ **It produces no error
+  of any kind**, and 🔴 **it arms on success**: all five conditions include the operator's own
+  confirmation, so **ordering breaks at the exact moment a domain finishes being set up correctly.**
+  §46, §35, §27. ⛔ **CLOSED V11.51 — by giving the scan its own route (`/o/<slug>`) and stopping the
+  ordering path redirecting at all.** Kept as the dated record of the defect, and of why every
+  condition-based fix was rejected.
+- 🔴 **`www` IS THE APEX HAZARD THROUGH A DOOR NEITHER APEX GUARD COVERS.** It is a genuine subdomain —
+  the suffix list parses it as one and there is no SOA at it — so **both guards pass it and both are
+  working correctly.** But it is where most operators' websites already answer. Refused server-side,
+  on the **first label**, before the SOA lookup and well before the hosting call. §46.
+- 🔴 **ERRORS MUST NOT NAME OUR INTERNALS, AND ONE OF THEM NAMED A SECRET.** Two provisioning failures
+  rendered the literal text of a missing environment variable in red on an operator's settings screen —
+  **one of them the name of the credential itself, telling anyone reading which one to go looking for.**
+  Nothing they typed caused it and nothing they can type fixes it. The boundary now branches on the
+  reason and never forwards the raw message; **the raw string stays in the server log, which is where a
+  variable name belongs.** §46, §35.
+- **THE COPY IS HALVED — 751 WORDS TO 428**, the address screen 116 to 42. The website-is-unaffected
+  reassurance appeared **three times on one screen, sixty words apart**. 🔴 **And `Done` claimed
+  completion when the record may never have been added** — the operator who did the task and the one
+  who did not pressed the same button. It says `Close`. §46.
+- 🔴 **THE PLAIN-ENGLISH CHECKER IS COMMITTED**, runnable, with every exclusion printed. ⚠️ **Its corpus
+  is EXPLICIT, NOT SCRAPED**, so it only checks strings somebody added and several pre-existing lines
+  would fail if added — **"the checker passes" says less than it appears to.** §35.
+- ⚠️ **SEO — NEITHER SURFACE DELIVERS WHAT AN OPERATOR MEANS BY "TRAFFIC ON MY WEBSITE".** Iframe
+  content is credited to its source; a subdomain is treated largely as a separate site, so it ranking
+  does not lift their main domain. **What moves a local result is off-platform.** 🔴 **Hidden keyword
+  text was considered and rejected** — the penalty would land on **the operator's domain**, for
+  something we put there. §46.
+- ✅ **THE FIRST RESULT IN THIS FEATURE VERIFIED AGAINST REALITY.** Provider detection was run against a
+  real operator's domain and named their provider correctly — **authoritative nameserver data, not page
+  content.** Everything else remains harness-only. §46.
+- **THE LANDING TESTIMONIAL IS PIZZERIA GUSTO'S OWN WORDS**, replacing an invented placeholder; the
+  logo, name and award are unchanged and the award wording is confirmed. 🔴 **PERMISSION TO PUBLISH IS
+  STILL NOT RECORDED ANYWHERE** — having their words is not written consent. **The gate and the
+  no-index both stand, and the second gate condition (screenshot placeholders) is also still unmet.**
+  ⚠️ **A code comment still said the quote was invented**, inviting someone to delete a real customer's
+  real words as placeholder text; corrected, **with the no-permission reason left standing on its own.**
+- 🔴 **STILL NEVER OBSERVED — NOTHING IN THIS ENTIRE FEATURE HAS BEEN RENDERED IN A BROWSER.** No page,
+  no modal, no certificate, no DNS record, no scan, no redirect followed, no production build. ⚠️ **And
+  the test rig needs a domain that does not contain "hatchgrab"** — the host test matches on that
+  substring, so a subdomain of our own site takes the wrong branch and proves nothing. §27.
+  ⛔ **SUPERSEDED V11.50 — THE PAGE HAS NOW BEEN RENDERED, and the first load found a fault that had
+  made every custom-domain page impossible.** The rig requirement above was correct and is now joined by
+  a second: **a `.test` suffix, not `.local`.** The remaining never-observed list is at §46.
+
+## V11.48 — 27 August 2026 (later)
+
+Delta over V11.47 — **the operator custom-domain workstream**: serving a truck's schedule at a
+subdomain of their own domain, provisioning, the record screen, monitoring, the admin view, and the
+security work that followed. **Nothing deployed, three migrations written and unapplied, and nothing
+rendered in a browser at any stage.** ⛔ **SUPERSEDED V11.49 — THE MIGRATIONS ARE APPLIED.** The rest of
+that sentence still holds.
+
+- 🔴 **THE FEATURE AND THE EMBED NOW HAVE THEIR OWN SECTION (§46), AND THE EMBED HALF MOVED OUT OF §2.**
+  That block's own placement note asked for exactly this. **This is the opposite of discovery** — an
+  operator's own address, no Village Foodie chrome — so filing it under discovery hid it from the only
+  reader looking for it. §46, §2.
+- 🔴 **VILLAGE FOODIE WAS THE `else`, NOT A MATCH.** Every host test asked whether the host contains
+  "hatchgrab"; any unrecognised host therefore *became* Village Foodie — title, canonical, preview logo
+  — and an apex pointed at us fell through to **our directory of competing trucks, on their domain.**
+  Closed by default-deny: 47 surfaces refused, two paths serving. §46.
+- 🔴 **TWO INDEPENDENT APEX GUARDS, BECAUSE THE PRIMARY ONE FAILS PERMISSIVE.** Counting dots passes
+  seven of twelve real apexes; the public-suffix list is a bundled **snapshot**, so a suffix added after
+  it lets an operator's whole website be taken over by the guard built to prevent that. A list-independent
+  SOA check sits beside it. ⚠️ **And the first demonstration of the second guard proved nothing** — it
+  used a case the first guard already caught. §46, §35.
+- 🔴 **THE RECORD VALUE COMES FROM THE HOSTING API, PER DOMAIN.** No fallback constant; the only
+  target-shaped string in the tree is a comment saying why it must not be used. §46.
+- 🔴 **THERE IS NO NOTIFICATION SYSTEM, AND THE READ IS WHAT FOUND THAT.** Operator notifications are
+  **derived state** — no table, no rows, no inserts — so *"no duplicate on repeated runs"* is a property
+  rather than a promise. The domain banner is a fourth instance, not a second system. §46.
+- ⚠️ **THE "STOPPED WORKING" THRESHOLD IS DERIVED FROM THE CADENCE, IN MISSED CHECKS.** That moved it
+  from 36 hours to 60, because the original literal was **one** missed check plus margin, not two.
+  **Two and a half days is a long time for a page an operator has told customers about**, and tightening
+  it is one named constant. §46, §27.
+- 🔴 **THE ORPHAN SWEEP RELEASES FIRST AND CLEARS ONLY ON SUCCESS.** Clearing on a failed release turns
+  a traceable orphan into an untraceable one. ⚠️ **A successful release is NOT visible in the admin
+  view** — that row is filtered out entirely; an earlier report claimed otherwise and was wrong. §46.
+- 🔴 **THE DEMO SHORT-CIRCUIT REACHED THE NEW ACTIONS.** Demo tokens are minted by a public endpoint to
+  anonymous visitors and resolve to **owner with a null user**, so every domain action was reachable
+  with no operator account. **Closed at the action, not at the identity layer** — the carve-out is
+  byte-identical because demos depend on it. §12, §46.
+- 🔴 **THE EXPOSURE WAS NOT SPAM, IT WAS SENDER REPUTATION.** A shared daily mail allowance whose first
+  casualty is **order confirmations for live trucks**. §46.
+- 🔴 **NEW INVARIANT — WHICH WAY A LIMITER FAILS, DECIDED PER BRANCH BY WHAT SURVIVES THE OUTAGE.** Fail
+  open where it protects our own capacity; fail **closed** where it protects a shared allowance another
+  truck's trading depends on. §35.
+- 🔴 **THE MANAGE ROUTE IS ENTIRELY UNMETERED, LIVE, TODAY** — and **the access resolver does not exist
+  at HEAD**, so production still authenticates it on the token alone with the role hardcoded to owner.
+  Neither was created by this workstream. §27, §28.
+- ⚠️ **NO LIMITER CALL ANYWHERE HAS A TIMEOUT**, so every fail-open and fail-closed ruling in the repo
+  is conditional on the cache failing **fast**. §27, §35.
+
+## V11.47 — 27 August 2026
+
+Delta over V11.46 — **the Guideline 2.1(a) camera crash: read from the crash log, fixed with one
+`Info.plist` key, and resubmitted as 1.0 (2).** One native file changed. **No deploy, no `cap sync`, no
+migration, and the web bundle was not touched.**
+
+- 🔴 **THE INFO.PLIST IS A CONTRACT THE WEB BUNDLE CAN BREACH UNILATERALLY.** The binary declares what
+  may be requested; the web bundle decides what IS requested — **and the two ship on completely different
+  timescales. Any web deploy can terminate the shipped app in the field with no native change anywhere in
+  the path.** This is the standing invariant and it outranks the fix. §35, §40.
+- 🔴 **TERMINATION NAMESPACE `TCC`, NAMING `NSCameraUsageDescription`.** Across all sixteen threads
+  **exactly one frame belonged to the app binary** — `UIApplicationMain`. **No app code and no Capacitor
+  plugin was in the crash path.** Confirmed against the SHIPPED binary by UUID match, not against the
+  repo. §40.
+- 🔴 **THERE IS NO "TAKE PHOTO" CONTROL IN THE CODEBASE, AND THE ABSENCE PROVES NOTHING.** WebKit raises
+  its own panel for any `accept` including `image/*`. **Enumerate by CAPABILITY, never by control name.**
+  **Fourteen file inputs, all equally fatal, all fixed by ONE key.** §40, §3.
+- ⛔ **CORRECTED: the V11.16 `Info.plist` gaps entry marked "no camera / photo / location usage
+  descriptions" as INFERRED correct.** The inference was sound and **the conclusion was wrong** — the
+  requirement came from the web bundle, **the exact source that entry said had not been audited**. 🔴 **An
+  entry that names its own unaudited gap is NOT closed. Mark it OPEN, never INFERRED correct.** §36.
+- 🔴 **DO NOT `cap sync` TO FIX A NATIVE-ONLY FILE.** It would have regenerated the synced artefact from
+  an **uncommitted** `capacitor.config.ts` and baked unreviewed drift into a resubmission binary. **Sync
+  only when the thing being changed is what sync produces.** §35.
+- 🔴 **VERIFY IN THE ARCHIVED BUNDLE, NEVER IN THE REPO** — and **the `server.url` check cannot be
+  replaced by a diff**, because that file is gitignored. `plutil -p` sorts keys, so **`grep -A 6`, not
+  `-A 4`.** §40.
+- 🔴 **THE BUILD NUMBER IS SET PER CONFIGURATION, AND THE COLLAPSED XCODE ROW MAY WRITE ONLY ONE.** A
+  half-bump is **silent until the upload dialog**, by which point the archive is already built from the
+  wrong value. §36.
+- 🔴 **TWO ARCHIVES, NINETY MINUTES APART, BYTE-IDENTICAL UUIDs.** Creation date never identifies what
+  shipped; **the UUID does.** ⚠️ **And nothing records whether the tree was clean when an archive was
+  built.** §40, §27.
+- 🔴 **A TEST WHOSE EXPECTED RESULT IS "NOTHING" CANNOT PASS.** A correct empty result and a silently
+  failed request are **indistinguishable outputs**. **Construct the case so the system must produce
+  output.** §35.
+- ⚠️ **iPHONE IS A FIRST-CLASS REVIEW SURFACE**, not a forecast — `"1,2"` ships there and the layout is
+  tablet-first. **The bug class it catches is a wizard that cannot be completed, which appears in no
+  crash report.** §36.
+- 🔴 **ANDROID IS UNTESTED FOR THE SAME TAP** and the signed bundle stays unsubmitted; **`PrivacyInfo`
+  declares no camera or photo entry** while the app now visibly uses the camera. §27.
+
+## V11.46 — 26 August 2026 (night)
+
+Delta over V11.45 — **the website-embed workstream consolidated: the operator wizard, platform
+detection and the plan-requirement screen**, plus the facts about other people's builders that shape
+all three. **This supersedes the earlier website-embed delta; V11.45's entries stand except where
+corrected below.** Nothing deployed, three migrations unapplied, **nothing rendered in a browser at
+any stage.**
+
+⛔ **SUPERSEDED V11.49 — EVERYTHING THIS ENTRY DESCRIBES IS DELETED.** The iframe embed is removed, so
+the wizard, platform detection, the picker and the plan-requirement screen no longer exist, and the
+three migrations ARE applied. **This entry is kept as a dated record of what was true on 26 August, not
+as a description of the code** — the builder facts and the plain-English work in it are still worth
+reading, and the surviving lessons were lifted into §35 and §46. **Do not build from it.**
+
+- 🔴 **THE PLATFORM TEST IS THE OUTSTANDING MEASUREMENT.** Four free trial sites, our schedule box
+  pasted in, in a real browser. **Under an hour, and it converts every remaining platform unknown —
+  including the menu names, which come from published documentation rather than from using the
+  products.** It cannot run until something is deployed. §27.
+- ⛔ **CORRECTED: "the order button escape hatch is CLOSED" (V11.45) WAS TOO STRONG.** Wix's own
+  documentation says new-window links **generally do not work inside their embedded content**, and
+  their embed element is a sandboxed frame. **Our end is closed; whether the browser honours it is
+  unobserved on every builder.** §35, §25.
+- ⛔ **CORRECTED: two platforms shipped the order button as KNOWN-WORKING and now ship UNKNOWN.** The
+  reasoning was an inference about markup, not an observation of a button — **the same standard that
+  correctly held the other two at unknown.** §25.
+- ⚠️ **REFINED: the marketing-row rename costs NOTHING today.** The parity checker skips
+  `'coming_soon'` cells entirely. **The trap is deferred to the day the cell flips to `true`**, when
+  the label-keyed map entry must move in the same change or the row is unchecked by construction. §4.
+- 🔴 **DETECTION IS A FETCH; VERIFICATION IS A LIVE LOAD; NEITHER MAY BE REUSED FOR THE OTHER.**
+  Fingerprints are in the served bytes; our embed is assembled after them. **Headers beat body, and
+  one body hit is not enough.** §35, §25.
+- 🔴 **AN OUTBOUND FETCH TO A USER-SUPPLIED ADDRESS IS AN SSRF SURFACE** — and **the redirect
+  re-check is the part most easily missed**, because validating the typed address and then following
+  redirects validates nothing. Six-second timeout, set by the operator's patience. §35.
+- 🔴 **HOSTED WORDPRESS'S FAILURE MODE IS THE NASTIEST FOUND: the pasted content is SILENTLY REMOVED
+  ON SAVE.** A paid plan is **not sufficient** — hosting features must also be active. **The warning
+  is worth more than the requirement**, because without it an operator concludes they pasted it wrong
+  and tries repeatedly. **Squarespace charges for it too.** §25.
+- 🔴 **THE TWO WORDPRESSES CANNOT BE TOLD APART FROM OUTSIDE**, and the deciding reason is not about
+  fingerprints: **the condition includes runtime account state no external fetch can see.** So one
+  record asks the operator one plain question. §25.
+- 🔴 **ONE COLUMN, TWO QUESTIONS** — `trucks.embed_plan_answer` is written by two different questions,
+  so a stored `yes` means different things on different rows. **Nothing reads it yet.** §16, §27.
+- 🔴 **THE TERMS DO NOT REFLECT THIS FEATURE**, and it is a different shape of gap: the schedule box
+  **cannot be promised to work everywhere**. §43, §27.
+- ✅ **ONE PLATFORM RECORD, THREE SURFACES** — DRY covers copy, not just logic, and **the email is the
+  copy nobody re-reads.** §3.
+- ✅ **PLAIN ENGLISH IS A RULE WITH AN EXACT EXCEPTION**, enforced by a checker that **prints its
+  exclusions**. It has been wrong twice, both times the corpus rather than the copy. §35.
+- ⚠️ **A FOURTH COLUMN AND A THIRD MIGRATION**, plus how to run all three: **outside service hours,
+  with a short `lock_timeout`** — a metadata-only change can still stall a dashboard if it queues. §16.
+
+## V11.45 — 26 August 2026 (later still)
+
+Delta over V11.44 — **the website-embed workstream, and the thing it found on the way that has nothing
+to do with embedding.** Stages 1, 2 and 1b: a public embed route, its link behaviour inside a frame,
+and the operator setup wizard. **Nothing is deployed; two migrations are written and unapplied.**
+⛔ **SUPERSEDED V11.49 — THE MIGRATIONS ARE APPLIED, AND THE OPERATOR SETUP WIZARD DESCRIBED IN THIS
+ENTRY IS DELETED.** The iframe embed is removed; what survived it is documented in §46. **This entry is
+kept as a dated record of what was true then, not as a description of the code.**
+
+- ⛔ **STRUCK, AND IT IS PUBLISHED: "No analytics or tracking cookies, so no consent banner is
+  needed."** `posthog.init` runs at module scope, passes no `persistence`, and therefore takes the
+  library default — `persistence: "localStorage+cookie"`, read out of the installed bundle. **PostHog
+  sets cookies on every route of both domains with no consent gate, and `/privacy` says otherwise.**
+  A LIVE LEGAL EXPOSURE, independent of the embed, and **OPEN**. §43, §27.
+- ⛔ **STRUCK: the §28 tier table.** STRICT is **3/min**, not 60 — its own comment says the 60 "left the
+  strict scraper tier not actually strict" — and **`/api/events` moved to its own 600/min tier on 11
+  August**, after the struck entry was written. New **EMBED** tier: 600/min keyed (IP, slug), covering
+  the page AND its fetch, so one view costs two tokens. §28.
+- ⛔ **STRUCK: the belief that there are TWO public schedule pages.** There is one, and **the HatchGrab
+  "version" carries no HatchGrab chrome at all** — nine of twelve chrome elements and all nine footer
+  items are Village Foodie, on both hosts. **That false premise is what the first embed design rested
+  on.** ⚠️ `isHatchGrab()` returns FALSE on the server, so the first painted frame takes the VF branch.
+  §25.
+- ⚠️ **AMENDED: the Order-button rule.** The gate has three terms, not two — the per-site order-link
+  flag is the one the old rule omitted. It consumes **no** menu columns, **no** time comparison and
+  **no** plan check. §7.
+- 🔴 **TWO SLUG SPACES EXIST AND SHARE A URL SHAPE** — `createSlug(name)` for the profile, the
+  `trucks.slug` column for the order page. They diverge exactly when provisioning suffixes a slug. §16.
+- 🔴 **`order_link_*` IS ON `trucks` ONLY; `show_on_*` IS ON THREE TABLES**, and the third —
+  `discovery_events` — is the row-level gate most easily missed. §16.
+- ✅ **`/embed/[slug]`, gated on `embed_enabled` AND a new Max Feature.** ⚠️ **The plan half is porous
+  by construction** (trial set = Max set, NULL expiry grants); **the column is what bites.** The denial
+  path is a name and a link, not a 404 — and that link lands on the VF chrome page. §4, §25.
+- 🔴 **FOUR NEW INVARIANTS**: a stamp that fires on the fallback is not health · a relative href in a
+  reused component escapes into whatever frame it is in · a server-side fetch cannot verify a
+  client-rendered page · a write on a public route needs a throttle the DATABASE owns. §35.
+- 🔴 **NOTHING IN THIS WORKSTREAM HAS BEEN RENDERED IN A BROWSER** — no page, no iframe, no
+  `document.cookie`, no `next build`. **Recorded in §27 as verification debt**, not buried in a report.
+
+## V11.44 — 26 August 2026 (later)
+
+Delta over V11.43 — **a URL was a full credential, and it had leaked.** Live dashboard tokens were found
+in PostHog. **Four guards that read as protection were discovered wired to nothing.** Three of the four
+leak paths are now closed; **the design that causes them is not.** Plus Android edge-to-edge and the
+Play Console state.
+
+- 🔴 **THE `dashboard_token` IS A FULL CREDENTIAL AND IT WAS IN A THIRD-PARTY ANALYTICS STORE.**
+  Confirmed in production: `$current_url` carried live `/dashboard/` and `/manage/` tokens across
+  `$autocapture` and `$pageview`. **No session, no cookie, no password — it grants refunds, customer
+  PII, price rewrites and menu deletion. The login is not the boundary; the URL is.** §12.
+- ⚠️ **IT WAS FOUND WHILE FILLING IN A PLAY STORE DATA-SAFETY FORM** — **not by any sweep, review or
+  audit of ours.** A compliance questionnaire outperformed the entire review process. §12, §35.
+- ⛔ **FOUR GUARDS STRUCK — ALL FOUND BY ACCIDENT, NONE BY REVIEW.** `dashboard_pin` (written `null`,
+  set by nothing — **there is no PIN gate and never was**, §11, §16) · `kds_pin` (referenced nowhere but
+  a redaction list, §16) · **the plan gate** (denies silently, no log line — **not a security control**,
+  §4) · the `NOT IN` filter (drops NULL rows). **A guard's existence is not evidence anything reaches
+  it. Sweep from the SURFACES, never from the guards.** §35.
+- ⛔ **STRUCK: "dashboard access is granted if the user is the truck owner OR a `truck_users` member."**
+  That describes page routing, not access. **`truck_users` is EMPTY** — the invite path has never been
+  used, so that clause has zero rows behind it. §12, §16.
+- ✅ **`/api/manage` DENIES BY DEFAULT.** The role was initialised `'owner'` and only narrowed on a
+  session, so **the 24-action staff gate never ran for the unauthenticated case.** Now `const`, granted
+  by `resolveTruckAccess` or refused. 🔴 **Demo carve-out is an ID-PREFIX rule — `operator_id IS NULL`
+  was rejected on purpose.** §12.
+- 🔴 **FIVE ROUTE FAMILIES REMAIN OPEN, DELIBERATELY** — the KDS cannot be logged out because it was
+  never logged in. ⚠️ **Refunds and the customer-PII read are on the open side.** §12, §27.
+- ✅ **THE KDS NO LONGER ESCALATES TO THE OWNER CREDENTIAL** — and it was the PRIMARY staff entry, not an
+  edge case. ⚠️ **It widens `kds_token` exposure, stated as a priced trade, not a total fix.** §9, §35.
+- ✅ **SESSION REFRESH NO LONGER BOUNCES TO `/login`.** 🔴 **The retry window was three times the reuse
+  interval.** Reuse interval raised to 60s; a shared observer retries then banners. ⚠️ **This is *no
+  involuntary navigation*, NOT *no involuntary session loss*.** §12.
+- ✅ **ANDROID DRAWS EDGE TO EDGE**, pixel-sampled before and after across five screens. 🔴 **The fix
+  puts KDS route knowledge in `MainActivity` — a renamed route silently reverts it.** §36.
+- ✅ **PLAY CONSOLE STATE RECORDED** — organization account verified (avoids the 12-tester rule),
+  declarations made, the emulator screenshot-geometry trap, and **a physical Android 16 tablet working.**
+  ⚠️ **`/privacy` and the Play data-safety answers now disagree on Gemini.** §36, §43.
+- ⚠️ **TEN WORKSTREAMS UNCOMMITTED AT ONCE, ACROSS TWO PLATFORMS** — **two of them server-side security
+  changes that reach a web reviewer on the first push.** §22.
+
+## V11.43 — 26 August 2026
+
+Delta over V11.42 — **a real security exposure closed on six public tables, and Android moving from
+"built, never submitted" to a signed release bundle with honest permissions** — plus two defects found
+on the way whose shape matters more than either instance.
+
+- 🔴 **SIX PUBLIC TABLES HAD ROW-LEVEL SECURITY DISABLED, INCLUDING `van_devices`.** Found by a Supabase
+  email on 23 August, **not by any process of ours.** Fixed and verified against `pg_class`. §16.
+- 🔴 **A FIELD DERIVED FROM THE CALLER'S IDENTITY MOVES ON EVERY PARTIAL WRITE.** `bind-device` moved a
+  row to another truck while leaving the previous truck's van on it, and returned 200. Fixed, proven by
+  execution. ⚠️ **The push-listener closure that triggers it needs no operator action and is NOT fixed.** §11, §35.
+- 🔴 **FIVE DISTINCT SERVER REJECTIONS ALL ARRIVED AT THE CLIENT AS `null`.** Diagnosing one instance
+  required streaming production logs. Fixed with a discriminated result and a server `reason`. §11.
+- 🔴 **A FIX IN `capacitor.config.ts` IS NOT A FIX IN THE RUNNING APP** until `cap sync` regenerates the
+  artefact. New member of the deployed-versus-repo family. §35, §36.
+- ✅ **A SIGNED RELEASE `.aab` EXISTS**, verified by `keytool` against the artefact. §36.
+- ✅ **31 BRAND ICONS REPLACE THE CAPACITOR DEFAULTS**, and **Play will no longer see a Location
+  declaration**. ⚠️ **`neverForLocation` is Android 12+ — an Android 11 device may now be unable to scan
+  at all.** §36.
+- 🔴 **ANDROID IS NOT A PORT WITH GAPS. IT IS THE SAME APP, UNOBSERVED** — two `getPlatform()` branches
+  in the entire codebase and a bare `BridgeActivity`. §36.
+- ⛔ **THREE STALE ENTRIES STRUCK:** the FCM sender as backlog (§27, §36 — carried since V9.2, the third
+  stale-entry incident in two days), and the "white square" icon claim (§27, §36 — the symptom was the
+  Android system ⓘ; `ic_launcher` never resolved at all).
+- ⚠️ **SIX WORKSTREAMS SIT UNCOMMITTED AT ONCE.** Inventory before the freeze lifts. §22.
+
+## V11.42 — 25 August 2026 (later)
+
+Delta over V11.41 — **a live subsystem stopped working, and every changed thing was investigated before
+the unchanged thing that had silently expired; the Meta app review went in; and the submission forced
+several facts into the open.**
+
+- 🔴 **THE WHATSAPP OUTAGE WAS AN EXPIRED TRIAL, AND THE PLAN GATE SAID NOTHING.** Fixed. ⚠️ **It will
+  recur on a TRADING truck on 17 October.**
+- 🔴 **RANK CANDIDATES BY WHAT THE EVIDENCE EXCLUDES, NOT BY WHAT CHANGED MOST RECENTLY.** "No log lines
+  at all" excluded the leading hypothesis at the start and was not used for four rounds.
+- ✅ **`META_APP_SECRET` DELETED AND PROVEN HARMLESS** — ancestry verified, then a live message.
+- ✅ **META APP REVIEW SUBMITTED** (`whatsapp_business_messaging`, 25 August). ⚠️ **The recording is
+  probably insufficient** and there is no cancel control.
+- 🔴 **THE TOKEN QUESTION IS RESOLVED FROM META'S DOCUMENTATION: Tech Providers use BUSINESS tokens
+  exclusively**, so per-truck credential storage is required and the design is unblocked.
+- 🔴 **THE LANDING GATE IS NOW ON META'S CRITICAL PATH, WITH A REVIEWER INBOUND.**
+- ✅ **Supabase upgraded to Pro.** ⚠️ **The 4.79 GB egress figure is undiagnosed.**
+
+## V11.41 — 25 August 2026
+
+Delta over V11.40 — **Meta's cost model for the only kind of message this platform sends changes on
+1 October 2026, five weeks out; a reply cap was built against it and proven by execution; the live schema
+turned up two null-column facts that changed the build; and a premise carried from this manual into a
+build prompt was false, because a working-tree entry was never superseded when the batch shipped.**
+
+- 🔴 **FROM 1 OCTOBER 2026 SERVICE MESSAGES BECOME BILLABLE PER MESSAGE**, and every auto-reply this
+  platform sends is exactly that. Today they are free. ⚠️ **No defensible UK figure exists until Meta
+  publishes per-country rates by 1 September.**
+- ✅ **A THREE-WINDOW REPLY CAP IS BUILT AND PROVEN BY EXECUTION** — per customer 24h, per truck day, per
+  truck month — **undeployed, joining the queued batch.**
+- 🔴 **THE CAP IS A PROMISE MADE AT ONBOARDING, NOT AN INTERNAL BUDGET CONTROL**, because after Embedded
+  Signup the bill is the operator's.
+- 🔴 **`trucks.timezone` IS NULL ON ALL TWELVE TRUCKS**, which makes a documented "one-line swap" into a
+  UK-only assumption — §20.
+- 🔴 **A STALE WORKING-TREE CLAIM IN THIS MANUAL COMMISSIONED WORK.** The answer was four sections away in
+  the same document. **A status claim inside a subsystem entry must be superseded where it sits.**
+- ✅ **A POSTGREST FILTER WAS PROVEN AGAINST PRODUCTION** — and the specified test would have proved
+  nothing without a probe added beyond it.
+
+## V11.40 — 25 August 2026
+
+Delta over V11.39 — **the iOS app was rejected under Guideline 2.1 Information Needed and answered by a
+reply, not a build; an inward sweep for upgrade surfaces found one that the outward sweep by construction
+could not; the demo account was found to be on a plan with no billing branch and moved twice before
+landing on the plan real operators use; and the account-deletion control was found to be absent in the
+native shell — silently, with no log anywhere.**
+
+- ✅ **THE APP STORE REPLY WAS SENT.** Guideline 2.1 Information Needed — the mildest rejection Apple
+  issues, no bug found and no purpose questioned. Answered by replying in App Store Connect with a screen
+  recording captured on a physical iPad. **No new binary was required and none was uploaded**; every
+  change in the session was web code reaching the device by deploy.
+- 🔴 **AN UNGATED PURCHASE SURFACE EXISTED, AND ONLY AN INWARD SWEEP COULD FIND IT.** §40.
+- 🔴 **THE DELETE ACCOUNT CONTROL WAS ABSENT IN THE NATIVE SHELL AND LOGGED NOTHING.** Found by looking
+  at an iPad, not by reading code. §41.
+- 🔴 **THE DEMO TRUCK'S PLAN VALUE WAS THE WHOLE PROBLEM, AND THE FIX WAS A DATABASE ROW.**
+- ⚠️ **A PLANNING BRIEF ASSERTED A SEEDING PATH THAT DID NOT EXIST** and an executor stopped on the
+  contradiction rather than improvising. The stop was correct and is recorded as the good outcome.
+- ⚠️ **"COMING SOON" IN AN APP IS A GUIDELINE 2.1 TRIGGER IN ITS OWN RIGHT**, independent of whether a
+  control sits behind it.
 
 ## V11.39 — 24 August 2026
 
@@ -2334,7 +2845,11 @@ Delta over V9.7 — **the brand system**: the HatchGrab wordmark, the icon set, 
 
 - **🔴 THE SOURCE ARTWORK IS A REFERENCE, NOT AN ASSET.** It is a *photograph of a logo* — ink on textured paper, drop shadow, soft glow, baked-in caption, 3231 distinct oranges in the wordmark alone. **Do not rebuild the wordmark from the old `HatchGrabWordmark.tsx`**, which described itself as an approximation in its own first line and was wrong three ways that cost three failed rebuild attempts: the swoosh crossed the letters instead of arcing above them, there was **no lightning cut at all**, and the bolt was drawn as a positive filled path.
 
-- **THE WORDMARK CANNOT BE THE ICON — THE BOLT IS.** At 62% height in a square the wordmark is 3.6% ink and **6 orange pixels at 16 × 16**. The icon bolt is a **separate, deliberately heavier path** than the wordmark's negative-space bolt: optical sizing, not drift — **do not "fix" them to match.** ⚠️ Contrast governs the background: orange on slate-900 is 7.14:1, on navy 5.29:1, but on a true mid-blue it collapses to **1.45:1** — orange and blue are near complementary in hue and close in luminance, so **the icon background must stay very dark.**
+- **THE WORDMARK CANNOT BE THE ICON — THE BOLT IS.** At 62% height in a square the wordmark is 3.6% ink and **6 orange pixels at 16 × 16**. The icon bolt is a **separate, deliberately heavier path** than the wordmark's negative-space bolt: optical sizing, not drift — **do not "fix" them to match.** ⚠️ Contrast governs the background: orange on slate-900 is 7.14:1, on navy 5.29:1, but on a true mid-blue it collapses to **1.45:1** — orange and blue are near complementary in hue and close in luminance, so **the icon background must stay very dark.** ⛔ **SUPERSEDED V11.42 — THIS RULE IS OVERRIDDEN AND AS
+WRITTEN IT PROHIBITS WHAT SHIPPED.** The iOS icon went to a LIGHT background on 15 August. 🔴 **The
+contrast arithmetic above is about TEXT and an icon has no WCAG floor to clear** — a mark is not a
+string. ⚠️ **Left in place because the ratios are still correct FOR TEXT; do not "fix" a shipped icon
+back to dark on the strength of them.**
 
 - **ASPECT RATIO IS 4.548:1, AND THE FIRST CUT WAS NOT.** The original crop baked in 13.2% top and 6.8% bottom padding at 3.971:1, which is why the logo looked low in its box and over-padded in headers. The shipped crop is tight — ink fills 95.8% of the box. **Any hardcoded width/height pair must use 4.548:1.** ⚠️ Give email images a **width and no height** so the client derives the rest; the three operator templates self-corrected on the re-crop for exactly this reason.
 
@@ -3995,7 +4510,7 @@ Read this before every coding session. Update it after every meaningful change. 
 
 - 🔴 **A SECTION'S CROSS-REFERENCE TO ANOTHER SECTION'S STATUS IS NOT PROVENANCE. Open the code, or mark the claim READ-FROM-MANUAL.** This manual is large enough that a fact can be current in one section and stale in its restatement three sections away, and the restatement is usually the one you find first. ⚠️ **Precedent, 14 August 2026:** an App Store gap analysis reported account deletion and the legal pages as *"confirmed still open"*, having read that from §27 and §40 without opening `lib/account-deletion.ts` or `content/legal/`. **Both had been built in V11.4** — §41 and §43 describe them in detail — and neither §27 nor §40 had been updated. **This is the same failure V11.4 already recorded once**, which is why it is now a rule rather than an anecdote. **"Confirmed" must mean verified. If a claim's only source is this manual, say so in those words.**
 
-- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED. THE DEVICE IS THE AUTHORITY.** Reading a branch in a file and marking the resulting claim READ is a category error: what was read is the SOURCE, not the BEHAVIOUR. ⚠️ **Precedent, 14 August 2026:** `docs/kds-native-report.md` marked the KDS *"already native-ready and already reachable"* as READ — its own caveats said nothing had been run on a device — and the iPad then ejected an operator to Safari from that exact control. The source was correct and the claim was still wrong. **This joins a family, and the family is the point:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a cross-reference is not provenance* · **source-read is not behaviour-verified** · **a default is not a value** (P24). 🔴 **Each is a weaker check wearing a stronger label.** When only source has been read, say READ-FROM-SOURCE and state that the behaviour is unobserved.
+- 🔴 **SOURCE-READ IS NOT BEHAVIOUR-VERIFIED. THE DEVICE IS THE AUTHORITY.** Reading a branch in a file and marking the resulting claim READ is a category error: what was read is the SOURCE, not the BEHAVIOUR. ⚠️ **Precedent, 14 August 2026:** `docs/kds-native-report.md` marked the KDS *"already native-ready and already reachable"* as READ — its own caveats said nothing had been run on a device — and the iPad then ejected an operator to Safari from that exact control. The source was correct and the claim was still wrong. **This joins a family, and the family is the point:** *tsc-clean is not done* · *a fix in the repo is not deployed* · *a cross-reference is not provenance* · **source-read is not behaviour-verified** · **a default is not a value** (P24) · *an inference scoped to one evidence source is a statement about that source, not about the risk*. 🔴 **Each is a weaker check wearing a stronger label.** When only source has been read, say READ-FROM-SOURCE and state that the behaviour is unobserved.
 
 - 🔴 **A SUMMARY OF A REPORT IS NOT THE REPORT.** The standing rule *a summary of code is not the code* extends to this manual's own reports. ⚠️ **Precedent, 14 August 2026:** a fix was briefed from a chat summary of `docs/offline-paid-state-report.md` rather than from the report. The summary said *"two independent causes"*; the report's own section B3 said the first cause **was not load-bearing at all**, so the resulting one-line fix could not have worked — **and the same mistake was then made a second time on the same defect.** **Read the artefact, not the précis of it.**
 
@@ -4046,6 +4561,52 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 - **Discovery map (/)** — Village Foodie public site, map of trucks and events. No login.
 
 - **Truck profile / schedule page (/trucks/[slug])** — the public schedule + map for a single truck (resolved via discovery_trucks by cleanKey/slug). On HatchGrab, each orderable event shows an Order button (V6.5, Section 7); on Village Foodie the same page is read-only. This is the canonical "see this truck's upcoming events" page and the event chooser the order page links back to.
+  > 🔴 **V11.45 — THERE IS ONE OF THESE PAGES, NOT TWO, AND THE HATCHGRAB "VERSION" CARRIES NO HATCHGRAB
+  > CHROME.** A planning assumption that a Village Foodie page and a HatchGrab page existed side by side
+  > was false, and it was the premise the first embed design rested on. `app/trucks/[slug]/page.tsx`
+  > (metadata only) plus `TruckClient.tsx` (the whole page) is the entire implementation, and
+  > `isHatchGrab()` is called at exactly **three** sites in the render path — all three only REMOVE
+  > Village Foodie affordances or swap which order-link flag is read. **The VF logo, the footer, both
+  > newsletter captures, four contact links, the truck directory link and the vendor disclaimer render
+  > on `hatchgrab.com` unconditionally**: nine of twelve chrome elements, and all nine footer items.
+  > ⚠️ **`isHatchGrab()` RETURNS FALSE ON THE SERVER, ALWAYS** — its first line is
+  > `typeof window === 'undefined'`. The server render on hatchgrab.com therefore produces the Village
+  > Foodie branch and hydration flips it, so the first painted frame shows the VF affordances. **Read
+  > from source; not observed in a browser.** Note the API answers the same question from the `host`
+  > header — **two mechanisms for one question.**
+  > ⚠️ **`generateMetadata` IS HARDCODED TO VILLAGE FOODIE ON BOTH HOSTS**, with a `villagefoodie.co.uk`
+  > canonical URL, so a HatchGrab schedule link shared to WhatsApp previews as Village Foodie. Its data
+  > comes from a published **Google Sheets CSV**, cached an hour — **the page body and the page title
+  > have different sources of truth.**
+
+- ⛔ **Embedded schedule (`/embed/[slug]`) — ROUTE DELETED (V11.49).** It was the chrome-free schedule
+  built to be framed on an operator's own website. **The iframe feature is removed** — an iframe
+  attributes its content to the source URL, not the parent page, so it delivered none of the search
+  visibility the operator wanted (§46). **The route is gone; the SCHEDULE COMPONENT and the events
+  endpoint survive**, because they are what the custom-domain page renders. ⚠️ **Both are still named
+  for the embed** — naming debt recorded, not fixed (§27).
+  🔴 **AND `vercel.json` STILL CARRIES A HEADER RULE FOR `"/embed/(.*)"` — a route that no longer
+  exists (found during the V11.49 merge, not by the workstream).** Harmless today: it matches nothing,
+  so it sets `X-Robots-Tag` on no response. **Dangerous the day anybody adds a route under that path
+  and inherits a `noindex` they did not write.** §27.
+  ⚠️ **The V11.45 finding it carried is still true and still unowned: NOTHING ANYWHERE SETS
+  `X-Frame-Options` OR `frame-ancestors`** — zero hits across the app, `proxy.ts`, `next.config.ts` and
+  `vercel.json`. That was a header-configuration read then and is one now; **no iframe was ever
+  loaded.**
+
+- **Custom domain (`/domain`, never navigated to)** *(V11.48; feature documented in §46)* — `proxy.ts`
+  rewrites `/` to it when the host is not ours, so the address bar reads the operator's own address
+  throughout. Serves the same chrome-free schedule, the truck's own logo, and a "Powered by HatchGrab"
+  line. **`X-Robots-Tag: noindex` for now, deliberately** (§46, SEO).
+
+### Operator-owned surfaces — DOCUMENTED IN §46 (V11.48, corrected V11.49)
+
+⛔ **THE OPERATOR SETUP WIZARD AND EVERYTHING BELOW IT MOVED TO §46.** The route bullets above stay
+here, because Key surfaces is a catalogue of routes and that is what it is; the FEATURE is documented in
+§46. ⛔ **AND THE SCHEDULE BOX HALF OF IT NO LONGER EXISTS (V11.49)** — the iframe embed is removed, so
+§46 documents one surface, not two.
+This move is what the block's own placement note asked for.
+
 
 - **Customer order page (/trucks/[slug]/order)** — pre-orders or pay-at-hatch orders. No login. This is the canonical customer-facing order URL. Online card pre-orders are a Pro/Max feature; Starter is Pay-at-Hatch only. Resolves via /api/events with a slug-then-id fallback (no is_test filter), so it loads by direct URL even for an hg_only truck.
 
@@ -4063,7 +4624,47 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 
 DRY is the most important architectural principle in this codebase. Every audit before every feature must check for DRY violations. The cost of duplication compounds — every duplicate is a future bug.
 
-> **THE RULE** — If the same logic, value, or pattern appears in two places, it belongs in one place. Audit before adding. Extract before duplicating. Use props before re-deriving.
+> **THE RULE** — If the same logic, value, or pattern appears in two places, it belongs in one place. Audit before adding. Extract before duplicating.
+
+> 🔴 **V11.46 — THE RULE COVERS COPY, NOT JUST LOGIC, AND THE WEBSITE-EMBED WIZARD IS THE WORKED
+> EXAMPLE.** Every website builder we support is **ONE RECORD** — display name, detection
+> fingerprints, steps, the link to that platform's own help page, a plan requirement where one
+> exists, whether the order button is known to work, and any caveat. The wizard screen, the
+> escape-hatch email and every operator-facing reference **render from it**; not one step, menu name
+> or caveat is written out a second time. Proven by extracting every string from the records and
+> searching the whole tree: each appears in the one file and nowhere else.
+> 🔴 **THE EMAIL IS WHY THIS MATTERS MORE THAN IT LOOKS. IT IS THE COPY NOBODY RE-READS.** The
+> operator sends it once, to a web person we never hear from, who follows it without the product in
+> front of them. A second copy of a builder's menu path would drift from the first and **nothing would
+> notice** until someone followed steps that stopped existing two redesigns ago.
+> ⚠️ Same principle as the embed sharing `TruckListCard` with the schedule page rather than copying
+> it — see the §35 entry on what that sharing then cost. Use props before re-deriving.
+
+> ✅ **V11.50 — THE PATTERN OUTLIVED THE WIZARD IT WAS WRITTEN FOR, AND NOW GOVERNS DNS PROVIDERS.**
+> The website-embed wizard above is **deleted** (§46), but its one-record rule was re-applied intact:
+> each DNS provider is **one record** holding its steps, its own field labels, a link to its own help
+> page and any caveat, and **the record screen and the escape-hatch email both render from it.** ⚠️ The
+> email point is identical and is why it matters: **it is the copy nobody re-reads.**
+>
+> 🔴 **AND THE SAME WORKSTREAM PRODUCED THE COUNTER-EXAMPLE: A DRY CONSOLIDATION CAN BE A SILENT
+> DOWNGRADE.** The lapsed-plan fallback was switched from composing a URL inline to calling the shared
+> builder — correct by this section's rule — **but the page's own constant carried a fallback default
+> that the shared builder did not.** Adopting the shared thing would have *removed* a protection the
+> duplicate had. **The default was added to the builder instead of special-casing the call site**, so
+> every caller gained it. ✅ **THE RULE: before replacing a duplicate with the shared version, diff what
+> the duplicate was doing that the shared version is not.** "It is the same logic" is the assumption
+> being tested, not the justification.
+>
+> ✅ **AND WHERE THE COMPILER CAN HOLD THE INVARIANT, LET IT.** Collapsing two records that held the
+> same fact left a shape where authoring the old field *or* the new one is valid but **authoring both —
+> or neither — is a compile error**, because the type is a discriminated union. Proven with a throwaway
+> probe rather than asserted. **A convention that says "fill in exactly one of these" is a comment; a
+> union is a guard.**
+>
+> ⚠️ **THE STALE HALF HAD NEVER RENDERED ANYWHERE**, because both surfaces already preferred the other.
+> 🔴 **THAT IS THE MECHANISM, NOT AN INCIDENTAL DETAIL: a field with no reader cannot be observed to be
+> wrong, so duplication is most dangerous exactly where it is least visible.** Two of the four labels
+> checked against reality turned out to be stale. §46.
 
 ## Where logic lives
 
@@ -4185,7 +4786,18 @@ components/dashboard/OrderLineItem.tsx renders a priced line item across all sur
 
 ### Shared discovery/list card + order-summary element (V7.6)
 
-> **RULE (V7.6)** — `components/TruckListCard.tsx` is the SINGLE card used by the truck profile, the event chooser, AND the customer order page's event display. It gained two ADDITIVE, opt-in props this session — `compact?: boolean` (denser flex-row layout: date-left, venue-right, divider removed, venue line-clamped) and `cornerAction?: ReactNode` (an absolute top-right slot, used for the order page's "Change event" link, gated to `events.length > 1`). Both default OFF so the profile and chooser render byte-for-byte identical. Never fork this card for the order page. It renders the area line as "village · POSTCODE" via `areaLine` — which is why the postcode data-gap fix lived in `/api/events` (Section 7), not in the card.
+> **RULE (V7.6)** — `components/TruckListCard.tsx` is the SINGLE card used by the truck profile, the event chooser, AND the customer order page's event display. It gained two ADDITIVE, opt-in props this session — `compact?: boolean` (denser flex-row layout: date-left, venue-right, divider removed, venue line-clamped) and `cornerAction?: ReactNode` (an absolute top-right slot, used for the order page's "Change event" link, gated to `events.length > 1`). Both default OFF so the profile and chooser render byte-for-byte identical. Never fork this card for the order page.
+> ⚠️ **UPDATED V11.45 — THERE ARE NOW FIVE OPT-IN PROPS, ALL DEFAULT-OFF.** `compact` and
+> `cornerAction` (V7.6), plus `assumeHatchGrab`, `openOrderInNewTab` and `plainVenueName`. ⚠️ **V11.49
+> — THE LAST THREE WERE SET ONLY BY `/embed/[slug]`, WHICH IS DELETED**; the surviving caller is the
+> custom-domain page (§46). ⚠️ **`openOrderInNewTab` therefore has no caller at all** — it existed to
+> escape an iframe, and nothing frames us any more. **The default-off discipline is the rule, and it is now PROVEN
+> rather than asserted**: the git-HEAD component and the working-tree component were transpiled and
+> run over the same **1,296-case matrix** (3 existing call-site prop shapes × 432 input combinations)
+> with the WHOLE rendered tree diffed — zero tree differences and zero `isHatchGrab()` call-count
+> differences. Two normalisations were declared: fragments spliced away, `undefined` props dropped.
+> 🔴 **`assumeHatchGrab` EXISTS BECAUSE `isHatchGrab()` IS FALSE ON THE SERVER.** It selects WHICH flag
+> is read; it does not bypass one — `order_link_hg` must still be true. It renders the area line as "village · POSTCODE" via `areaLine` — which is why the postcode data-gap fix lived in `/api/events` (Section 7), not in the card.
 
 > **RULE (V7.6)** — the customer order page's order breakdown is a SINGLE shared element `orderBreakdownEl`, rendered in BOTH the footer basket-peek and the form bottom-sheet, so the two can never drift. `lib/image-utils.ts` `formatImageUrl` (extracted V7.5) is likewise the one logo-URL formatter shared by `/api/discovery/events` and `/api/menu` (Section 14).
 
@@ -4288,6 +4900,111 @@ The in-repo paths share lib/schedule-extract.ts:
 > **every Max feature** to `false` for **everything** — not to Starter, per the rows above. **Gusto's
 > expiry is 17 October 2026.** There is no cron, no warning path and no downgrade; **nothing in the
 > product prepares an operator for that cliff or tells them it has happened.** BACKLOG.
+
+> ⛔ **STRUCK V11.44 — THE PLAN GATE IS NOT A SECURITY CONTROL, AND ANY ENTRY IN THIS MANUAL THAT
+> READS AS THOUGH IT WERE IS WITHDRAWN.** It is a **commercial** gate, and it has two properties that
+> disqualify it from ever being counted as protection:
+>
+> - 🔴 **IT DENIES SILENTLY, WITH NO LOG LINE.** V11.42's WhatsApp outage was an expired trial and
+>   **the gate said nothing** — see §20. A control whose denial is indistinguishable from a dead
+>   webhook, a wrong callback or a network fault is not a control you can audit, and it is not one you
+>   can rely on either.
+> - 🔴 **A `trial` TRUCK CARRIES THE FULL MAX SET**, so "Max-only, therefore no live truck can see it"
+>   was false for both live trucks — the paragraph above. **The one thing that actually protected them
+>   was an unrelated per-device toggle defaulting to off**, which is luck, not design.
+>
+> ⚠️ **AND THE FOUR DECLARED-BUT-UNENFORCED FEATURES ARE THE SAME POINT IN ITS PUREST FORM** —
+> `auto_accept`, `meal_deals`, `upsells` and `offline_protection` appear in the `Feature` union and in
+> the plan sets with **no `canAccess` call anywhere** (§13, §27). **A feature name in a plan set is not
+> a gate; a gate that logs nothing is not evidence.** This is the plan-gate member of the §35 class
+> *four guards read as protection and were wired to nothing*.
+
+> 🔴 **V11.45 — `embed_schedule` ADDED AT MAX, AND IT IS A WORKED EXAMPLE OF THE ENTRY ABOVE.**
+> The website-embed route is gated on **BOTH** `trucks.embed_enabled` AND
+> `canAccess(plan, 'embed_schedule', overrides, trial_expires_at)`. **The plan half is porous by
+> construction and was known to be before it was written**: `TRIAL_FEATURES` is `[...MAX_FEATURES]`,
+> `canAccess` grants the full trial set when `trial_expires_at` is NULL, and self-serve signup writes
+> NULL — so **every self-serve truck passes the plan check on the day it signs up.** It does deny
+> `starter`, `pro` and an expired trial, all proven by execution; it is simply not what stands between
+> a random truck and a public page.
+> **`trucks.embed_enabled`, NOT NULL DEFAULT false, is the condition that actually bites**, and that is
+> why the column exists rather than the plan check being used alone. The reasoning is written into the
+> migration header, the route header and the `features.ts` comment so the next reader cannot mistake
+> one for the other.
+> ⚠️ **THE DENIAL PATH IS NOT A 404 AND NOT A BLANK BOX.** It renders the truck's name and one link to
+> that truck's hatchgrab.com schedule page. **Consequence to hold: that link lands on the Village
+> Foodie chrome page (§25), so the honest description of a lapsed embed is that we send the operator's
+> customer to a Village Foodie page** — not to a bare schedule.
+
+> ⚠️ **V11.45 — THE MARKETING ROW WAS DELIBERATELY NOT RENAMED, AND THERE IS A TRAP IN RENAMING IT.**
+> `lib/plan-features.ts` is presentation and gates nothing — `'coming_soon'` is not a `Feature` in the
+> union at all, and `findPlanParityViolations()` `continue`s on any row with no `ROW_FEATURE_MAP` entry,
+> so adding `embed_schedule` to `features.ts` without a matrix row **cannot** produce a violation. The
+> Max row promising *"Order page on your own website"* is explicitly **not** an embed and its own
+> comment says so. It stayed `'coming_soon'` until the feature was verified working, **because a row
+> advertised hard-true passes the parity checker whether or not the feature exists — the checker binds
+> marketing to the gate, never either to reality.**
+>
+> *(⚠️ **REPAIRED V11.50 — a V11.48/V11.49 insert had been dropped into the middle of the sentence
+> above, splitting it between "no `ROW_FEATURE_MAP` entry," and "so adding `embed_schedule`". The
+> interleaved text is restored to its own paragraphs below, in order. No claim was changed by the
+> repair itself.)*
+>
+> ⚠️ **V11.48 — AND THE ROW IT WILL EVENTUALLY MAP TO IS CURRENTLY WRONG.** *"Order page on your own
+> website"* promises an **ordering** page at the operator's own address. ⚠️ **V11.49 — THERE IS NOW ONE
+> SURFACE, NOT TWO** (the schedule box is deleted), and it serves a **schedule** page whose order button
+> deep-links back to ours. 🔴 **AND THAT BUTTON CURRENTLY CANNOT COMPLETE A PAYMENT AT ALL** — the QR
+> redirect returns the customer to the schedule they came from (§46). §27.
+>
+> ⚠️ **REFINED V11.46 — RENAMING IT COSTS NOTHING *TODAY*, AND THE COST IS DEFERRED RATHER THAN
+> ABSENT.** `findPlanParityViolations()` only inspects cells that are hard `true`, so a
+> `'coming_soon'` cell is skipped entirely — the row can be renamed freely while it stays coming-soon.
+> 🔴 **THE TRAP LANDS THE DAY THE CELL FLIPS TO `true`.** `FeatureRow` has no id: the label is both the
+> identifier and the `ROW_FEATURE_MAP` key. So the flip and the map entry keyed to the new label must
+> happen in the SAME change — **miss it and the row is unchecked by construction**, advertised as
+> included with nothing verifying that it is.
+
+### ✅ RESOLVED V11.50 — RENAMED, MOVED, AND TICKED, AND THE TRAP WAS SPRUNG DELIBERATELY
+
+⛔ **THIS SUPERSEDES "deliberately not renamed" (V11.45), "rewording is the intended resolution and is
+NOT DONE" (V11.49), AND "it stays `'coming_soon'`" ABOVE.** All three were true when written; none is
+true now. The entries are kept because the *reasoning* is what binds — the trap they describe is the
+trap that was then walked into on purpose, with the counter-measure in the same commit.
+
+**The row is now `Your schedule at your own website`**, detail *"Your upcoming dates on a page at your
+own address, under your own name."* It **names the schedule rather than an ordering page**, which is
+what the surface actually serves, and it sits **above the kitchen-ticket-printing row**.
+
+🔴 **THE TICK IS WHAT ARMS THE PARITY CHECKER, SO THE `ROW_FEATURE_MAP` ENTRY LANDED IN THE SAME
+CHANGE.** Before the flip the row was skipped **twice over** — `'coming_soon'` is not `true`, *and* it
+had no map entry — so the flip alone would have advertised it with nothing verifying it. The entry is
+`'Your schedule at your own website': 'embed_schedule'`, keyed on the **new** name;
+`canAccess('max','embed_schedule')` is true, verified by execution.
+
+✅ **AND "THE CHECKER PASSES" WAS NOT ACCEPTED AS PROOF, BECAUSE IT PASSED BEFORE TOO.** Two deliberate
+probes on throwaway copies: **(a)** re-point the map at a `Feature` no tier grants → **1 violation**, so
+the row *is* being inspected; **(b)** delete the map entry and leave the cell `true` → **0 violations**,
+the trap in its pure form. **A green check on a row nothing looks at is indistinguishable from a green
+check on a correct row** — the probes are what tell them apart, and they are cheap.
+
+⚠️ **WHAT THE TICK DOES NOT MEAN.** The checker binds marketing to the **gate**, never either to
+**reality**. **No domain has served a page in production.** And there is a **second gate the matrix
+cannot see** — `trucks.embed_enabled`, `NOT NULL DEFAULT false` — so **a Max truck reading that tick
+gets the fallback page until provisioning sets that column for them.** The plan gate is the weaker half
+and it is the half the matrix reflects. §46.
+
+⚠️ **A HAND-WRITTEN BULLET ON THE PRICING CARD IS A LITERAL TWIN OF THE MATRIX ROW, WITH NOTHING
+CHECKING THE TWO AGAINST EACH OTHER.** Its own comment says so. It was renamed, moved and un-badged in
+the same change — **but only because a human remembered.** Removing its badge *first* left the card
+claiming the feature while the comparison table lower down **the same page** still said "Coming soon";
+the flip closed that. **Still unguarded: the next edit to either can reopen it silently.**
+
+🔴 **AND THE ROW DIRECTLY BELOW IT IS THE SAME TRAP, ALREADY SPRUNG — UNCHANGED, REPORTED.** A
+twelve-line comment heads `Kitchen ticket printing` saying it must stay `'coming_soon'` because **a
+tick is a claim that it works and it does not**. **The row beneath that comment reads `max: true`.**
+Someone flipped it and left the comment standing. It **is** in the map, so the checker inspects it and
+**passes — because the gate allows it**, while the feature has no real transport. **This is the
+marketing-to-gate-not-reality limit with a worked example sitting two lines from its own warning.** §27.
 
 ```ts
 if (plan === 'trial') {
@@ -5229,7 +5946,17 @@ If the customer picks a specific time then adds items that push ASAP past it, th
 
 ## Reaching the order page — the profile page is the event chooser (V6.5)
 
-> **RULE (V6.5)** — On HatchGrab, the truck profile/schedule page (`/trucks/[slug]`) is the canonical place a customer picks WHICH event to order for. Each orderable event renders an Order button, gated `isHatchGrab() && event.source === 'operator'` — so it shows only on hatchgrab.com (Village Foodie's copy of the page is read-only) and only for confirmed operator events (a pending/scraped event is customer-invisible per the status gate, so no button). The button deep-links to `/trucks/[slug]/order?event_id=…`, threading the chosen event straight into the order page (which resolves by that id — Section 5). The cart/trolley emoji on the button was removed (plain "Order" reads cleaner).
+> ⚠️ **AMENDED V11.45 — THE GATE HAS THREE TERMS, NOT TWO, AND THE LABEL FLIPS ON STATUS.** The
+> expression is `!hideOrderButton && (forceOrderButton || ((assumeHatchGrab || isHatchGrab()) ?
+> event.orderLinkHg : event.orderLinkVf)) && event.source === 'operator'` — the **per-site order-link
+> flag** (`trucks.order_link_hg` / `order_link_vf`, §16) is the term the rule below omits, and it is
+> what actually decides whether a given truck's button appears on a given host. `status === 'open'`
+> then chooses **"Order now" (green)** over **"Pre-order" (orange)**.
+> 🔴 **IT CONSUMES NO MENU COLUMNS, NO TIME COMPARISON AND NO PLAN CHECK.** "Live" means the operator
+> STARTED the event; the published clock window is display-only. The date filter is upstream in SQL,
+> not in the card.
+>
+> **RULE (V6.5)** — On HatchGrab, the truck profile/schedule page (`/trucks/[slug]`) is the canonical place a customer picks WHICH event to order for. Each orderable event renders an Order button, ~~gated `isHatchGrab() && event.source === 'operator'`~~ — so it shows only on hatchgrab.com (Village Foodie's copy of the page is read-only) and only for confirmed operator events (a pending/scraped event is customer-invisible per the status gate, so no button). The button deep-links to `/trucks/[slug]/order?event_id=…`, threading the chosen event straight into the order page (which resolves by that id — Section 5). The cart/trolley emoji on the button was removed (plain "Order" reads cleaner).
 
 > **RULE (V6.5)** — The order page's "Change event" control navigates BACK to the profile page (`/trucks/[slug]`), the event chooser, rather than opening a second event picker on the order page itself. One chooser, one place — the profile page lists the events; the order page orders for one. (Piece A of the order-page consolidation; further consolidation of the in-order-page picker is follow-on.)
 
@@ -5336,6 +6063,33 @@ A deal reaches a customer through three columns that are frequently mistaken for
 ## Access
 
 Opens from the dashboard header "Kitchen screen" button. Single-vehicle trucks open directly to /kds/[kds_token]; multi-vehicle trucks get a vehicle picker first. Opens in a new tab.
+
+### ✅ THE KDS NO LONGER ESCALATES TO THE OWNER CREDENTIAL (V11.44)
+
+🔴 **`/kds/<kds_token>` redirected to a URL containing the truck's full `dashboard_token`.** A printed
+kitchen-screen link escalated to the owner credential and put it in the address bar.
+⚠️ **AND IT WAS THE PRIMARY ENTRY, NOT AN EDGE CASE** — `app/dashboard/page.tsx:75` sends staff there,
+so **every staff Open-KDS click was escalating.**
+
+**The KDS cannot run on `kds_token`:** it makes 93 `token` references to four route families that all
+resolve `dashboard_token`. `kds_token` is accepted in exactly two places in the codebase.
+
+✅ **So it became a ROUTE change, not a redirect change.** `/kds/<kds_token>` now resolves server-side
+and renders the KDS, passing `dashboard_token` **as a prop in the RSC payload** — not a URL, not
+captured by history, logs or `$current_url`. Both entry points still work via a `useParams` fallback.
+**Verified rendering at the new route.**
+
+⚠️ **WHAT IT WIDENS, STATED PLAINLY:** `kds_token` now stays in the address bar for the whole session
+rather than one navigation, so it reaches history, logs and PostHog persistently. **The trade is
+asymmetric and deliberate** — a van-scoped screen credential (192 bits, DB-generated) instead of the
+owner credential, and `dashboard_token`'s URL exposure drops to zero. **It removes the escalation, not
+the class.** See §12.
+
+> 🔴 **AND THE COLD-LAUNCH CONSTRAINT RECORDED IN §11 IS NOW LIVE.** That note warned that IF a KDS
+> were ever rendered on a raw `kds_token` without the redirect, the `bind-device` auth mismatch would
+> reappear. **That is exactly what now happens** — the route renders rather than redirecting. It does
+> not bite today because the `dashboard_token` still reaches the client as a prop and every fetch
+> still carries it, **but the redirect that made the warning hypothetical is gone.**
 
 ## View modes
 
@@ -6309,11 +7063,21 @@ on that tap `isNativeApp()` returned false and the plain `<a>` performed a hard 
 V11.18 and **needs a sync AND a rebuild to reach a binary**. The alternative is this section's
 unresolved intermittent-false `isNativeApp()`. **The next rebuild is the test that separates them.**
 
-✅ **AND THE REASSURING PART, WORTH TELLING AN OPERATOR:** the "sign in" screen was almost certainly the
-**PIN gate** — `/dashboard/[token]` authenticates by **token + PIN**, and the PIN is `useState` only,
-**never persisted**, so a fresh Safari tab has none. 🔴 **The native session lives in Capacitor
+✅ **AND THE REASSURING PART, WORTH TELLING AN OPERATOR:** ~~the "sign in" screen was almost certainly
+the **PIN gate** — `/dashboard/[token]` authenticates by **token + PIN**, and the PIN is `useState`
+only, **never persisted**, so a fresh Safari tab has none.~~ 🔴 **The native session lives in Capacitor
 Preferences under `hg-native-auth` — a NATIVE store Safari cannot read at all**, not via cookies and not
 via localStorage.
+
+> ⛔ **STRUCK V11.44 — THERE IS NO PIN GATE. `dashboard_pin` PROTECTS NOTHING AND NEVER HAS.**
+> `provisionTruck` writes it `null` at creation and **nothing anywhere sets it**, so every
+> `if (truck.dashboard_pin && …)` in the codebase is **dead code that always takes the else branch**.
+> `/dashboard/[token]` authenticates on the **token alone** — see §12. **The operator-facing
+> reassurance above was therefore wrong in its reason while right in its conclusion:** a fresh Safari
+> tab is indeed not signed in, but that is because the native session is in Preferences, **not because
+> a PIN stopped anything.** The prompt seen on device was the ordinary login page.
+> ⚠️ **This is the entry that matters most in this strike:** a PIN gate recorded as working is exactly
+> the kind of claim that stops anyone looking. See the §35 class entry.
 
 > ⚠️ **SO THE MID-SERVICE ANSWER IS: RETURN TO THE APP, DO NOT SIGN IN.** The app's session was never
 > touched and the board is as it was. **The real cost is attention, not access** — an unattended kitchen
@@ -6637,12 +7401,53 @@ byte-identical to the live one; it carries extra fields.
 the queue — **and it consumes the only specimen of this failure.** Reading the op's `state`, `attempts` and
 `last_error` first would discriminate hung-fetch from stopped-chain, but needs a dev build.
 
+## 🔴 TWO DEFECTS IN `bind-device`, AND BOTH SHAPES GENERALISE (V11.43)
+
+### The partial patch that moved a row to another truck
+
+**Observed in production:** a `van_devices` row with `truck_id = 'real-thai-food'` carrying
+`van_id 8e38901e-…`, **which belongs to `test-truck`.** The route returned 200.
+
+🔴 **THE ROUTE UNCONDITIONALLY OVERWRITES `truck_id` FROM THE TOKEN, BUT ONLY WRITES AND ONLY VALIDATES
+`van_id` WHEN THE CALLER SUPPLIES ONE.** So a patch of `{push_token}`, `{notify_enabled}` or
+`{default_screen}` moves the row to a new truck and leaves the previous truck's van sitting there. **The
+404 cross-truck guard was never wrong — partial patches never enter it.** The class is in §35.
+
+⚠️ **AND ONE PATH NEEDS NO OPERATOR ACTION AT ALL.** The FCM `registration` listener captures its token
+in a module-level closure that `releasePushHandlers()` never clears — it returns early on its default
+argument — so **a stale truck's token writes `{push_token}` with no `van_id` on the next relaunch.**
+🔴 **THE CLOSURE LIFETIME IS A SEPARATE DEFECT AND IS NOT FIXED.**
+
+✅ **FIXED, PROVEN BY EXECUTION:** when the token resolves to a different truck than the row's existing
+`truck_id` and the patch carries no `van_id`, `van_id` is now set to **null** rather than surviving. The
+real POST was run against an in-memory database across eight outcomes — **5/8 before, 8/8 after, and the
+pre-fix run reproduced the production row verbatim.** ⚠️ **NO BACKFILL: the one bad row does not
+self-heal**, and a repo-wide check confirms it is the only one.
+
+### Every write failure was swallowed, at every level
+
+🔴 **FIVE DISTINCT SERVER REJECTIONS — 401, 400 on a falsy device id, 404 cross-truck, 400 on a bad
+screen value, 400 on an upsert error — ALL ARRIVED AT THE CLIENT AS `null`**, via a bare `catch {}`, with
+no console line, no message and no telemetry. A failed save left the modal on "Continue"; a failed toggle
+silently kept its old value; a failed van switch snapped back with no explanation.
+
+⚠️ **DIAGNOSING ONE INSTANCE REQUIRED STREAMING PRODUCTION LOGS.** And the asymmetry was already visible
+**in the same file: the READ path has a discriminated union and a Retry card. The write got nothing.**
+
+✅ **FIXED.** `saveDeviceConfig` returns a discriminated result mirroring the read's shape, fed by a new
+**additive** `reason` field on all five rejections. ⚠️ **The `reason` field was NECESSARY, established by
+execution: the upsert rejection's body was an unmatched Postgres sentence — distinguishable to a human,
+useless to a client.** The operator sees a plain sentence and a retry; the internal reason goes to
+`console.error` with a `[native/bind-device]` prefix. **The log line lives inside the helper, not at the
+call sites — four callers is four chances to forget.**
+
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
 
 - Operators authenticate via Supabase Auth. The operators table holds account-level data; auth_user_id links to the auth user.
-- Staff are invited via the Team tab and stored in truck_users (owner/manager/staff). Dashboard access is granted if the user is the truck owner OR a truck_users member. A one-van staff member is auto-routed to their vehicle KDS on login, but CAN navigate to the orders dashboard `/dashboard/[token]` to place orders. Staff CANNOT access the Manage page (`/manage`).
+- Staff are invited via the Team tab and stored in truck_users (owner/manager/staff). ~~Dashboard access is granted if the user is the truck owner OR a truck_users member.~~ **⛔ STRUCK V11.44 — THAT SENTENCE DESCRIBES THE *PAGE* ROUTING, AND IT READ AS THOUGH IT DESCRIBED ACCESS.** Dashboard access is granted by **possession of the `dashboard_token`**, with **no session, no cookie and no password**; the owner/member test decides only which trucks a *logged-in* operator is offered on `/dashboard`. **Anyone holding the URL is inside, and the login is not the boundary.** See *The dashboard token is a full credential* below. A one-van staff member is auto-routed to their vehicle KDS on login, but CAN navigate to the orders dashboard `/dashboard/[token]` to place orders. Staff CANNOT access the Manage page (`/manage`).
 
 > **CORRECTION (V7.8)** — the earlier "staff → KDS-only" wording was WRONG. Staff CAN reach the orders dashboard (to take orders); the KDS auto-route on login is a default landing, not a restriction. The only hard block for staff is `/manage`.
 
@@ -6662,6 +7467,146 @@ the queue — **and it consumes the only specimen of this failure.** Reading the
 ## Token-based surfaces
 
 Each truck has a long random dashboard_token; KDS uses per-vehicle kds_token. Customer order URLs use the truck slug.
+
+> 🔴 **V11.44 — READ THE NEXT SUBSECTION BEFORE TREATING ANY OF THESE AS "JUST A URL".** A
+> `dashboard_token` is a **full, unexpiring, unrotatable bearer credential** for the truck. It is not a
+> convenience identifier with a login behind it. **Today none of these tokens expire, rotate or can be
+> revoked — the only writer is the INSERT.**
+
+## 🔴 THE DASHBOARD TOKEN IS A FULL CREDENTIAL, AND IT WAS IN A THIRD-PARTY ANALYTICS STORE (V11.44)
+
+**Confirmed in production, 26 August 2026.** PostHog `$current_url` values included
+`/dashboard/realthaifood-23f80551121b` and `/manage/realthaifood-23f80551121b`, plus
+`test-abc123def456`, repeatedly, across `$autocapture` and `$pageview` events — **with van ids and
+event ids alongside.**
+
+🔴 **A `dashboard_token` authenticates with NO session, NO cookie and NO password.** It grants refunds
+against real card payments, every customer's name, email and phone, price rewrites, menu deletion and
+settings. **The password login is not the security boundary. The URL is.**
+
+### How it was found, and the process failure that matters
+
+⚠️ **IT WAS FOUND WHILE FILLING IN A PLAY STORE DATA-SAFETY FORM.** The form asked what third parties
+receive data from a WebView the developer controls; answering it honestly required reading what PostHog
+actually captures. **Nothing in any sweep, review or audit surfaced it.** The class entry this produced
+lives in §35 — *four guards in three days read as protection and were wired to nothing*.
+
+### The exposure assessment — no evidence of exploitation
+
+✅ **`truck_users` is EMPTY** — `invite_team_member` has never been used, so no leaked token was
+converted into a durable login. **That was the thing that would have survived token rotation.**
+✅ **`operators` holds nine rows, all recognised**, newest 14 August.
+✅ **Only two trucks are `is_customer = true`**: Pizzeria Gusto and Real Thai Food. **The
+confirmed-exposed tokens belong to test trucks.**
+
+⚠️ `real-thai-food` carries `is_customer = true` but is a **test truck** — that column is wrong, and
+other logic may key on it. See §16.
+
+### Every channel the token leaks through — the design, not the instance
+
+🔴 **PostHog initialises UNCONDITIONALLY in the root layout** — no host check, no route check, no
+platform check, no consent gate. It runs on `/dashboard`, `/manage`, `/admin`, `/kds`, `/app` and
+`/login`. **Autocapture and pageview capture are both ON with no overrides; `$current_url` rides on
+anonymous events too.** ⚠️ **And there is not one explicit `posthog.capture()` on any operator route —
+it collects nothing we use while carrying the whole risk.**
+
+🔴 **`app/api/inbound-schedule/route.ts:275` emails a live `/manage/<token>` link in plaintext** to the
+truck's contact address. See §18.
+
+🔴 **Vercel logs every token as a request path**, unavoidably, and there is **no referrer policy set
+anywhere** (zero hits repo-wide).
+
+⚠️ **Google's own data-safety definition names the WebView case explicitly:** transferring user data to
+a third party via a WebView opened from your app, where your app controls the code. **The whole product
+is that WebView.** The open-web exemption does not apply. See §36.
+
+## ✅ `/api/manage` DENIES BY DEFAULT (V11.44)
+
+🔴 **It initialised `requestingUserRole = 'owner'` and only NARROWED on a resolved session.** The role
+system is fully built and enforces three roles across 24 blocked actions — **it simply never ran for the
+unauthenticated case.** The proxy's page gate was cosmetic against a direct API call.
+
+✅ **The role is now `const`, granted by a single `resolveTruckAccess` or the request is refused** — 401
+with no session, 403 for an authenticated caller holding a valid token for someone else's truck. **The
+staff gate on the 24 blocked actions is reachable for the first time.**
+
+🔴 **THE DEMO CARVE-OUT IS AN ID-PREFIX RULE, DELIBERATELY.** `isDemoIdentifier(truck.id)`, matching what
+`demo-cleanup` already enforces. **`operator_id IS NULL` was rejected: `provision-truck` writes null at
+creation, so unowned is the normal post-provisioning state and that shape would silently re-open the
+hole.** Verified: exactly three trucks have a null `operator_id`, all `demo-` prefixed.
+
+🔴 **V11.48 — AND THE CARVE-OUT IS A GRANT, WHICH THE ENTRY ABOVE DOES NOT SAY OUT LOUD.** It returns
+**owner with a NULL user id**, and **demo dashboard tokens are minted by a PUBLIC endpoint and handed to
+anonymous visitors**, so any surface added behind this route is reachable by someone with **no account at
+all**. **That is not a defect in the carve-out — demos require exactly this — it is a standing obligation
+on every action added afterwards.** ⚠️ **It bit immediately:** the five custom-domain actions (§46) were
+reachable anonymously, including one that **attaches a domain at the hosting provider** and one that
+**sends mail to a caller-supplied address**.
+✅ **Closed AT THE ACTION, not at the identity layer.** The short-circuit is byte-identical and
+`resolveTruckAccess` was not touched: narrowing it would change access for ~60 actions and for `GET`,
+which is a live-surface decision. **An opt-out list beside the staff gate changes access for five.**
+🔴 **THE RULE THIS SETS: ANY NEW ACTION ON THIS ROUTE WITH A SIDE EFFECT OUTSIDE THIS DATABASE MUST
+DECIDE, EXPLICITLY, WHETHER A DEMO IDENTITY MAY REACH IT. The default is that it may.**
+
+⚠️ **SCOPE EXTENDED, AND THE PAIR MUST SHIP TOGETHER: the native app sent no Bearer to `/api/manage` and
+the route read none — the native Manage screen DEPENDED ON THE DEFECT.** Two client files, six call
+sites. 🔴 **Reasoned, not observed — the native Manage screen has not been loaded since.**
+
+🔴 **FIVE ROUTE FAMILIES REMAIN OPEN, DELIBERATELY:** `/api/dashboard`, `/api/dashboard/action` and the
+three `/api/events/*`. **A kitchen tablet reached by a copied `kds_token` link has never logged in;
+enforcing them takes the screen offline mid-service.** ⚠️ **Refunds and the customer-PII read are on the
+open side.** The split was clean — **the KDS never calls `/api/manage` (0 hits).**
+
+## ✅ SESSION REFRESH NO LONGER BOUNCES TO /login (V11.44)
+
+🔴 **A failed refresh is non-retryable at the library level → `_removeSession()` → `SIGNED_OUT` →
+`/login`.** And there were **ZERO hits** for `onAuthStateChange`, `TOKEN_REFRESHED` or `SIGNED_OUT`
+across the codebase — the app never observed any of it.
+
+🔴 **THE RETRY WINDOW WAS THREE TIMES THE REUSE INTERVAL.** `auth-js` retries a failed refresh with the
+SAME token for up to 30 seconds; reuse detection fired at 10. **A lost response on a flaky connection —
+the KDS's normal operating environment — replays a spent token and revokes the session.**
+
+✅ **Supabase's reuse interval raised to 60 seconds**, which closes the retry-replay path entirely.
+Confirmed settings: no session time-box, no inactivity timeout, 3600s access token, reuse detection on.
+
+✅ **A shared observer now sits at the app boundary.** An involuntary sign-out **never navigates** — it
+retries on 2s/10s/45s, then shows a non-blocking banner with a "Sign in again" link the operator
+chooses. **Intent is declared, not inferred:** the single sign-out control calls `beginUserSignOut()`
+first.
+
+🔴 **AN HONEST LIMIT: recovery can only succeed if another context repopulated the storage slot**,
+because `auth-js` has already run `_removeSession()` by the time the event fires. **In the single-tab
+case it exhausts all three attempts and shows the banner.** So this is *no involuntary navigation*,
+**not** *no involuntary session loss*.
+
+⚠️ **STILL OPEN: nothing serialises the proxy against browser tabs.** `proxy.ts` refreshes server-side on
+every matched request while a tab's timer refreshes independently, from the same cookie, **with no
+shared lock** — `auth-js` sets `lock: null` and nothing passes one.
+⚠️ **`lib/supabase-browser.ts` is a FOURTH auto-refreshing client** with `detectSessionInUrl: true` on
+default localStorage, imported by the dashboard and KDS for Realtime only. **Retiring it changes what
+credential the socket presents — its own change.** See §11.
+
+## THE MODEL AGREED FOR THE REMAINING AUTH WORK (V11.44)
+
+**One login per device. The session persists indefinitely. Roles decide what is reachable. Biometric
+lock optional on top.**
+
+🔴 **THE KDS IS WHY THE REMAINING ROUTES CANNOT SIMPLY BE CLOSED.** *It cannot be logged out because it
+was never logged in — that is simultaneously the vulnerability and the property required.* A shared,
+unattended kitchen screen's honest answer to "who is the caller" is **the kitchen**, not an operator.
+
+⚠️ **A CONSEQUENCE WORTH KNOWING: the session then belongs to a PERSON on a shared tablet.** If the owner
+enrols the kitchen screen, a staff member using it acts as the owner. **Role separation becomes
+per-device, not per-person, and audit trails attribute everything to whoever enrolled it.**
+
+**Best practice, for when this is built:** a URL says WHAT you are looking at; a session says WHO you
+are. Deny by default. Authenticate on the session, authorise on the resource. Credentials never travel
+in URLs. Tokens must be rotatable and revocable — **today none expire, rotate or can be revoked; the
+only writer is the INSERT.**
+
+⚠️ **Rotation is cheaper than it looks** — QR codes, posters, customer links and the native login all key
+on the **slug**, not the token. Only bookmarks and local UI prefs break.
 
 ## Email change verification
 
@@ -6726,10 +7671,19 @@ route creates an operator without creating anything.
 | `/api/admin/create-operator` | ❌ **an ATTACH** — `trucks.update({operator_id}).eq('id', truckId)` | ✅ auth user + `operators` row | inline `is_admin` |
 
 > 🔴 **CREATING A TRUCK AND CREATING AN ACCOUNT ARE TWO SEPARATE ACTS, AND THE GAP IS USABLE.**
-> `/api/manage` authenticates on `dashboard_token` ALONE and defaults `userRole` to `'owner'`, so a
+> ~~`/api/manage` authenticates on `dashboard_token` ALONE and defaults `userRole` to `'owner'`, so a
 > truck with `operator_id` NULL can be fully built — menu, allergens, capacity, schedule — before any
-> operator exists. **This is the correct sequence for an onboarding truck**, because creating the
+> operator exists.~~ **This is the correct sequence for an onboarding truck**, because creating the
 > operator is also what excludes their Village Foodie shadow.
+>
+> ⛔ **STRUCK V11.44 — THE MECHANISM DESCRIBED IS GONE, AND IT WAS NEVER ONLY AN ONBOARDING
+> CONVENIENCE.** `/api/manage` now denies by default (above): the role is `const`, granted by
+> `resolveTruckAccess` or refused. **The `operator_id IS NULL` shape that made this paragraph true is
+> exactly the carve-out that was REJECTED**, because `provision-truck` writes null at creation, so
+> "unowned" is the normal post-provisioning state and keying the exemption on it would have re-opened
+> the hole for every real truck. 🔴 **THE ONBOARDING SEQUENCE ITSELF IS UNCHANGED AND STILL CORRECT** —
+> what changed is that building an unowned truck now requires an authenticated caller, or a `demo-`
+> prefixed id.
 
 ⚠️ **`create-operator` does not abort on a bad `truckId`.** It reads `trucks.name`, falls back to
 `'your truck'` when the row is missing, then runs an UPDATE matching zero rows — which PostgREST does
@@ -6860,6 +7814,16 @@ truck_user_vans links staff to vehicles. Empty access grants all trucks. Staff s
 
 ## Truck logo (V6.5)
 
+> ⚠️ **V11.45 — THE OPERATOR-OWNED SURFACE IS THE THIRD, AND IT TAKES THE OPPOSITE SOURCE,
+> DELIBERATELY.** ⚠️ **V11.49 — THE RULE IS UNCHANGED BUT THE SURFACE MOVED**: `/embed/[slug]` is
+> deleted and **the custom-domain page (§46) is now the caller**, through the same component. It reads
+> `trucks.logo_storage_path` and **never** `discovery_trucks.logo_url`, falling back to the truck's NAME
+> AS TEXT when the path is null — so it can never render a broken image on a page the operator owns.
+> The reason is ownership rather than availability: the surface sits at the operator's own address, and
+> `logo_storage_path` is the logo **they** uploaded. So the three surfaces now
+> read: profile → discovery only · order page → operator, falling back to discovery · embed → operator
+> only, falling back to text.
+>
 > **NOTE (V6.5)** — The public profile page (`/trucks/[slug]`) reads its truck logo from `discovery_trucks.logo_url` ONLY. The operator-uploaded logo lives in `trucks.logo_storage_path` and is NOT automatically mirrored into the discovery row, so a truck that uploaded a logo in Settings can still show a blank/placeholder logo on its public profile if `discovery_trucks.logo_url` is null. Test-kitchen's null `logo_url` was fixed by SQL this session (pointing it at the storage URL). The systemic fix — the discovery/profile mapping falling back to the linked operator truck's `logo_storage_path` when `logo_url` is null — is on the backlog (Section 27). The header logo SIZE was also enlarged this session (Section 3, AppHeader note).
 
 > **NOTE (V7.5) — order page now falls back the OTHER way (the two surfaces have OPPOSITE default sources).** The customer order page (`/trucks/[slug]/order`, via `/api/menu/[truckId]`) reads its logo from `trucks.logo_storage_path` (the operator upload). When that is null it now falls back to the linked `discovery_trucks.logo_url` (`discovery_trucks.hatchgrab_truck_id = truck.id`, `.maybeSingle()`), resolved through the shared `formatImageUrl(logo_url, 'logos')` helper — so a truck with no operator-uploaded logo shows its Village Foodie discovery logo on the order page, matching the profile. The extra `discovery_trucks` query is **null-gated**: it runs ONLY when `logo_storage_path` is null, so a truck WITH an uploaded logo incurs no extra query (no regression). `formatImageUrl` was EXTRACTED to `lib/image-utils.ts` (was a local copy in `/api/discovery/events`) and is now imported by BOTH `/api/discovery/events` and `/api/menu` — one helper, both callers, so the two surfaces can never drift again (that drift WAS this whole logo bug). Rendering: both the order page and the profile render the logo via next/image `<Image src={truck.logo}>`; the profile already renders this exact discovery URL successfully, and `next.config.ts` `images.remotePatterns` allows `*.supabase.co/storage/v1/object/public/**` (the discovery logos are same-origin `/logos/…` paths or supabase-storage URLs — both already handled), so the order page needs no new allowlist entry. This closes the order-page half of the Section 27 systemic-logo-fallback item. The profile/discovery half (profile reads `discovery_trucks.logo_url` only and does NOT fall back to `logo_storage_path` when null) is STILL open — see Section 27.
@@ -7246,6 +8210,95 @@ pass a `truckId` that is used as a fallback rather than a test. **Latent while S
 ## Core tables
 
 - **trucks** — one row per truck/brand. Holds plan, settings, dashboard_token, operator_id, default_auto_open/close, qr_code_style (V4), slug (V5, unique, URL-safe — used by /trucks/[slug]/order; prod-verified to EXIST V6.5), active (prod-verified to EXIST V6.5), truck_emoji (V5), logo_storage_path (operator-uploaded logo — note it is NOT mirrored to discovery_trucks.logo_url, Section 14), lifetime_discount_pct / lifetime_discount_note (V6), paused_until (VESTIGIAL post-V6.6 — pause moved to truck_events), extra_wait_mins / extra_wait_started_at (VESTIGIAL post-V6.6 — extra-wait moved to truck_events), order_counter (V6.3, int default 0 — no-event fallback display counter), and the scraper-preference / adaptive-scheduling columns (V6.2). 🔴 **[ADDED V11.36 — `phone_number_id` (text, nullable, no default, PARTIAL UNIQUE where not null) was applied on 16 August and was MISSING FROM THIS LIST until now. This list is where anyone checks a column before writing SQL, so a real column absent from it is the same failure class as a phantom column present in it, with the sign reversed.]** Also on this table and long absent from this list: `whatsapp_sender`, `messenger_page_id`, `messenger_page_token`, `kds_pin` — the middle two are dead columns, see §20.
+
+> ⛔ **V11.44 — `dashboard_pin` AND `kds_pin` PROTECT NOTHING, AND BOTH ARE STRUCK AS GUARDS.**
+> `provisionTruck` writes `dashboard_pin` **`null` at creation and nothing anywhere sets it**, so every
+> `if (truck.dashboard_pin && …)` is **dead code that always takes the else branch** — there is no PIN
+> gate on `/dashboard/[token]` and there never was one in service (the §11 entry claiming otherwise is
+> struck there). **`kds_pin` is referenced nowhere in the codebase except the `/api/dashboard`
+> redaction list.**
+> ⚠️ **THE REDACTION IS STILL CORRECT AND MUST STAY.** Both columns remain in the four-column redact
+> list (`dashboard_token`, `dashboard_pin`, `messenger_page_token`, `kds_pin`) — a column that protects
+> nothing today would still be a credential the moment anyone wired it, and spread-and-redact is
+> designed to fail safe. **Redacting a column is not evidence that the column does anything.**
+> 🔴 **BACKLOG: wire them or remove them.** Two nullable columns that read as security are worse than
+> no columns at all — see the §35 class entry.
+
+> ✅ **V11.49 — ALL SIX MIGRATIONS ARE APPLIED.** The three embed columns below and the three
+> custom-domain ones. **This supersedes every "written and unapplied" line in V11.45, V11.46 and
+> V11.48**, here and in §27.
+>
+> **FOUR COLUMNS ADDED TO `trucks` BY THE WEBSITE-EMBED WORKSTREAM (V11.45/V11.46).**
+> `embed_enabled` (boolean **NOT NULL DEFAULT false**) · `embed_last_seen_at` (timestamptz, null) ·
+> `embed_last_referer` (text, null) · `embed_plan_answer` (text, nullable, CHECK
+> `IN ('yes','no','not_sure')`). Files `20260826_trucks_embed_enabled.sql`,
+> `20260826_trucks_embed_seen.sql`, `20260826_trucks_embed_plan_answer.sql`, all additive.
+>
+> 🔴 **V11.49 — THE COLUMNS SURVIVED THE FEATURE, AND `embed_enabled` IS NOW LIT.** The iframe embed is
+> removed (§46), **but the custom-domain page's schedule body IS the embed component and its data source
+> refuses unless `embed_enabled` is true.** NOT NULL DEFAULT false, and its only writer was the wizard
+> that was deleted — **so removing both would have served every custom domain a permanently empty
+> schedule, at 200, logging nothing.** **Domain provisioning now writes it.** Do not drop this column.
+>
+> ⚠️ **`embed_last_seen_at` / `embed_last_referer` NO LONGER HAVE A WRITER** — the load stamp and its
+> throttle went with the iframe route. They are inert, not wrong.
+> ⚠️ **`embed_plan_answer` NO LONGER HAS A WRITER EITHER**, because the question that filled it was the
+> wizard's plan pre-question. **The "one column, two questions" problem below is therefore dormant
+> rather than solved** — it returns the moment anything writes it again.
+> 🔴 **DO NOT DROP ANY OF THE FOUR.** Removing code is reversible; dropping a column on a table a live
+> truck trades on is not, and the embed may return. §27.
+>
+> 🔴 **OPEN — ONE COLUMN, TWO QUESTIONS. SETTLE IT BEFORE ANYTHING READS IT.** That column is written
+> by **two different questions**: one platform asks *"are you on a plan that includes it?"*, another
+> asks *"shall we carry on and try it?"* — because for the second the plan is not sufficient on its
+> own, so a plan question there is one an operator can answer YES to and still fail. **A stored `yes`
+> therefore means different things on different rows, and nothing in the column says which.** That
+> defeats the column's whole purpose: telling apart *"our instructions are wrong"* from *"their plan
+> will not allow it"*. This is the present-but-ambiguous shape §35 already names as dangerous.
+> **Nothing reads it yet.** §27.
+>
+> 🔴 **HOW TO RUN ALL THREE, WHEN THE FREEZE LIFTS.** Each is `ADD COLUMN` with a default or nullable,
+> so the change itself is **metadata-only** on a small table and takes microseconds. ⚠️ **THAT IS NOT
+> THE RISK.** `ALTER TABLE` takes a brief ACCESS EXCLUSIVE lock, and if it has to **queue behind an
+> existing lock**, every subsequent query on `trucks` queues behind IT — a fast migration becomes a
+> stalled dashboard on a truck mid-service. **Run them outside a trading truck's service hours and
+> with a short `lock_timeout`**, so a blocked migration fails fast instead of blocking the table.
+
+> 🔴 **`embed_last_seen_at` IS ALSO ITS OWN THROTTLE, NOT JUST A RECORD.** The public stamp is a
+> conditional UPDATE guarded on this same column, so the column is both the thing recorded and the lock
+> that stops it being recorded too often. **No counter and no history table were added** — monitoring is
+> a later stage whose schema is not designed, and the throttle means a counter could not have counted
+> accurately anyway.
+
+> 🔴 **V11.45 — `order_link_*` AND `show_on_*` ARE NOT ON THE SAME SET OF TABLES, AND THE THIRD ONE IS
+> THE ONE THAT GETS MISSED.**
+> `order_link_vf` / `order_link_hg` exist on **`trucks` ONLY** — NOT on `discovery_trucks`. The admin UI
+> agrees: the order-link checkbox renders only for operator rows and shows `n/a` otherwise.
+> `show_on_vf` / `show_on_hg` exist on **THREE** tables — `trucks`, `discovery_trucks` **and
+> `discovery_events`** — and the third is the ROW-LEVEL gate on the scraped feed, applied in SQL before
+> anything reaches JavaScript.
+> ⚠️ **WHERE BOTH EXIST, THE ANSWER IS BY EVENT KIND, NOT BY TABLE PRECEDENCE.** An operator event never
+> consults `discovery_trucks`; a scraped event never consults `trucks`. The two paths do not overlap, so
+> there is no precedence rule to state. **`excluded` overrides all of them and is the master hide.**
+
+> 🔴 **V11.45 — TWO SLUG SPACES EXIST AND THEY SHARE A URL SHAPE.**
+> `/trucks/[slug]` (the public profile) resolves by **`createSlug(trucks.name)`**; `/trucks/[slug]/order`
+> and `/api/menu/[truckId]` resolve by the **`trucks.slug` COLUMN**. They agree only while
+> `slug === createSlug(name)` — and `operatorIdentity` appends a numeric suffix on collision, which is
+> precisely when they stop agreeing. **The embed keys on the COLUMN** (authoritative, unique, indexed,
+> and the space the order deep-link resolves in) **and uses the name-derived form only for the one link
+> that points at `/trucks/[slug]`.** Anything new that takes a truck "slug" must say which of the two
+> it means.
+
+> ⚠️ **V11.44 — LIVE ROW FACTS, verified 26 August during the token-exposure assessment.**
+> **`truck_users` is EMPTY** — `invite_team_member` has never been used, so **no invited-staff login
+> exists anywhere in production**, and every §12/§13 statement about member-based access describes a
+> code path with zero rows behind it. **`operators` holds nine rows, all recognised**, newest 14
+> August. **Exactly three trucks have a null `operator_id`, all `demo-` prefixed** — which is what made
+> the `/api/manage` prefix carve-out checkable rather than assumed.
+> 🔴 **`is_customer` IS WRONG ON AT LEAST ONE ROW.** `real-thai-food` carries `is_customer = true` and
+> **is a test truck.** Only two rows are `true` at all — Pizzeria Gusto and Real Thai Food — so **half
+> the "customer" set is mislabelled**, and any logic keying on that column inherits the error.
 
 > **RULE (V6.5; refs fully removed V7.8 §12) — there is NO `trucks.is_test` column.** Prod verification confirmed `trucks.is_test` does not exist. Code NO LONGER references it anywhere — the discovery/events operator branch was fixed V6.5, and the remaining admin/manage refs were all removed V7.8 §12 (changelog). Declaring or selecting `is_test` errors or silently returns nothing, so NEVER add it back (column or substitute boolean). The "filter test trucks from the public map" effect is achieved via the discovery row `visibility` enum (set a test truck's discovery rows to `hg_only`), NOT a trucks column. See Section 4 (is_test scope) and Section 27.
 
@@ -7824,6 +8877,32 @@ The distinction between the website and schedule-url columns is untouched.
 display sites, which the field's own comment describes as *"the same fix, written twice, at the
 display end."* **A DRY finding, unfixed, recorded.**
 
+## 🔴 SIX PUBLIC TABLES HAD ROW-LEVEL SECURITY DISABLED. FIXED. (V11.43)
+
+**Found by an email from Supabase on 23 August, not by any process of ours.** `event_option_stock`,
+`allergen_audit_log`, `van_devices`, and three July backup tables were readable **and writable by anyone
+holding the anon key — which ships in the client bundle.**
+
+⚠️ **THIS WAS NOT A LINT NAG.** `van_devices` holds push tokens. `event_option_stock` is reachable from
+the customer menu handler that serves Pizzeria Gusto. **A stranger could have zeroed stock on a trading
+truck.**
+
+✅ **All six now have RLS enabled with no policies**, verified by reading `pg_class` afterwards: **zero
+public tables remain unprotected.**
+
+**The census that made the fix safe:** 55 of 58 tables already had RLS enabled, and **~30 of those sit at
+`policy_count = 0`** — meaning the browser never touches them and everything goes through service-role
+routes. **Enabled-with-no-policies is the established pattern here, not a new one.** The three live
+outliers were created after whatever pass enabled it on the rest, **and nothing checks for that drift.**
+
+⚠️ **TWO COMPARATORS DID NOT COMPARE:** `category_stock` and `device_notification_prefs` have **zero code
+references anywhere.** They show RLS is survivable; they offer no access pattern. **And
+`event_option_stock` holds ZERO ROWS — it has never held data.** Three tables that exist and do nothing.
+
+**BACKLOG: run Supabase's advisor query periodically.** It is the check that would have caught this
+without an email. See §27.
+
+
 # 17. Menu API behaviour
 
 - Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first, fall back to ID.
@@ -8002,6 +9081,14 @@ untested against real data.
 ## Provider
 
 > **V3** — Email via Brevo. Operator-facing sender is hello@hatchgrab.com via NEXT_PUBLIC_SUPPORT_EMAIL. Do NOT fall back to villagefoodie.co.uk.
+
+> 🔴 **V11.44 — ONE EMAIL SENDS A FULL OPERATOR CREDENTIAL IN PLAINTEXT.**
+> **`app/api/inbound-schedule/route.ts:275` emails a live `/manage/<token>` link** to the truck's
+> contact address. A `dashboard_token` authenticates with no session, no cookie and no password (§12),
+> so **that link is the truck's Manage credential sitting in a mailbox, a mail provider's storage, and
+> every forward of it.** ⚠️ **The welcome email was already corrected to link the tokenless `/manage`
+> index, which resolves from the session — this path was missed.** **BACKLOG: send the slug-based
+> index, not the token.**
 
 ## Order ready email
 
@@ -8270,7 +9357,7 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 
 > **ALLERGEN ROUTING — presence-confirm vs absence-redirect, with a bucket-independent floor (V7.7, LIVE-VERIFIED V7.8). SAFETY-CRITICAL.** Two layers were realigned so they agree. (1) The deterministic `mentionsAllergen` guard was HOISTED to run immediately after classification, before ANY branch and before all three callGemini sites (between the IGNORE return and the MENU_QUERY branch in `generateWhatsAppReply`). It redirects on any absence/safety token, regardless of which bucket Gemini chose — so the probabilistic classifier can NEVER be the safety boundary; the deterministic guard is the floor on every path. The pre-existing in-branch check is left as belt-and-braces. (2) The classifier's ALLERGEN_QUERY trigger list was realigned: PRESENCE tokens (gluten, nuts, peanut, dairy, milk, egg, soy, wheat, ingredient) MOVED to MENU_QUERY (→ the presence-confirm path, which CONFIRMS a tagged allergen via the HAS/CONTAINS rule + the deterministic caveat-append, and DEFERS-never-DENIES for an untagged one); SAFETY tokens (allerg, celiac, coeliac, intoleran, free from, gluten free, safe for, suitable for) and `contain` stay ALLERGEN_QUERY → fixed redirect. `contain` deliberately KEPT as ALLERGEN_QUERY (resolves the ambiguous "does it contain any nuts" toward safety — a wrongly-redirected presence question is a mild helpfulness miss; an absence question reaching the LLM is the dangerous error). NET: "does the tiramisu have gluten" → MENU_QUERY → confirms (tiramisu is tagged Gluten) + caveat; "is the tiramisu gluten free" → guard redirect, no LLM; "does it have sesame" (untagged) → defers, never "no". RESIDUAL RISK: the untagged-defer ("never says no") is a PROMPT-STRENGTH guarantee (DEFER-never-DENY), not deterministic — the floor and the caveat-append ARE code-guaranteed. If an untagged item ever returns "no/free of", tighten the prompt; it is not a floor failure.
 
-> **GREETING — once per calendar day per sender (V7.7, LIVE-VERIFIED V7.8).** Previously isFollowUp was hardcoded false → "Hey there 👋" fired on every message. Now the webhook reads whatsapp_logs for the most recent prior REPLIED row (`response_sent is not null`) for this sender (`customer_number`, digits-only exact) + truck, and sets `isFollowUp = prior exists && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)` — i.e. greet on the first replied message of the local day, suppress for the rest of that day. The `response_sent is not null` filter means an IGNORE/gibberish message (logged, unreplied) does NOT suppress the greeting on a later real question the same day. The day boundary is computed in `truckTz` — a single const = 'Europe/London' today, swappable to `truck.timezone ?? 'Europe/London'` in one line when that column exists (the multi-country requirement). DST-safe (both date strings go through Intl tz formatting; no manual UTC-offset math). The read runs BEFORE the message's own log insert (no self-suppression) and is FAIL-OPEN (a read error → greet, never block the reply). The downstream greeting machinery (greetingPrefix/greetingInstruction) was already correct and unchanged. (Supersedes the earlier "greeting follow-up detection gated on the whatsapp_logs migration" note — the migration is applied and detection is wired.)
+> **GREETING — once per calendar day per sender (V7.7, LIVE-VERIFIED V7.8).** Previously isFollowUp was hardcoded false → "Hey there 👋" fired on every message. Now the webhook reads whatsapp_logs for the most recent prior REPLIED row (`response_sent is not null`) for this sender (`customer_number`, digits-only exact) + truck, and sets `isFollowUp = prior exists && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)` — i.e. greet on the first replied message of the local day, suppress for the rest of that day. The `response_sent is not null` filter means an IGNORE/gibberish message (logged, unreplied) does NOT suppress the greeting on a later real question the same day. The day boundary is computed in `truckTz` — a single const = 'Europe/London' today. ⛔ **SUPERSEDED V11.41 — THIS READ "swappable to `truck.timezone ?? 'Europe/London'` in one line WHEN THAT COLUMN EXISTS (the multi-country requirement)", AND IT IS NOW HALF FALSE IN THE DIRECTION THAT INVITES A WRONG FIX. The column EXISTS. It is NULL on all twelve trucks and nothing populates it**, so `truck.timezone ?? 'Europe/London'` would not be a fallback — **the right-hand side is the only branch that ever runs.** 🔴 **IT IS A UK-ONLY ASSUMPTION, NOT A DEFENSIVE DEFAULT.** ⚠️ **A comment in the route still carries the old premise; it was out of the cap's scope and deliberately left, and it will mislead exactly once, expensively.** DST-safe (both date strings go through Intl tz formatting; no manual UTC-offset math). The read runs BEFORE the message's own log insert (no self-suppression) and is FAIL-OPEN (a read error → greet, never block the reply). The downstream greeting machinery (greetingPrefix/greetingInstruction) was already correct and unchanged. (Supersedes the earlier "greeting follow-up detection gated on the whatsapp_logs migration" note — the migration is applied and detection is wired.)
 
 > **RULE** — The Twilio handler at /api/webhooks/whatsapp is DORMANT, not deleted. Do not overwrite it. formatWhatsAppOrder is dead code (delete when Twilio is retired — Section 27).
 
@@ -8502,10 +9589,20 @@ set in Vercel is not a variable in the running deployment.**
 
 ⚠️ **STATUS CORRECTION, SAME DAY, LATER: THE CODE FIX IS BUILT.** This delta was written against the
 state before it. `app/api/webhooks/meta/whatsapp/route.ts` now reads `META_WHATSAPP_APP_SECRET`, as one
-name with no fallback chain, and both lookups destructure and log `error`. 🔴 **BUILT IN THE WORKING TREE,
-UNCOMMITTED AND UNDEPLOYED** — it joins the queued batch, so **the two-variable state in Vercel and the
-swallowed-error behaviour are both still LIVE in production until that batch ships.** See
+name with no fallback chain, and both lookups destructure and log `error`. See
 `docs/whatsapp-secret-and-lookup-fixes-report.md`.
+
+⛔ **SUPERSEDED V11.41 — THIS ENTRY SAID "BUILT IN THE WORKING TREE, UNCOMMITTED AND UNDEPLOYED" AND THAT
+IS NO LONGER TRUE. IT IS COMMITTED: `3c1989b`, 24 August 2026.** The clause claiming *"the two-variable
+state in Vercel and the swallowed-error behaviour are both still LIVE in production until that batch
+ships"* is struck with it — the batch shipped.
+
+🔴 **THIS EXACT SENTENCE WAS CARRIED OUT OF THIS MANUAL INTO A BUILD PROMPT AND WAS FALSE THERE.** A
+prompt asserted the fixes were uncommitted; the executor read the tree, found otherwise, judged the
+discrepancy benign — committed work cannot be clobbered by an additive change — and proceeded while
+flagging it. **The answer was already four sections away in this same document**, in a verification-debt
+list stating that the batch these entries describe shipped on 24 August. **Both statements were here;
+only the stale one travelled.** See the rule recorded in METHOD.
 
 ## V11.36 — 🔴 META APP REVIEW REQUIRES TWO VIDEOS, AND VIDEO 1 HAS NO SURFACE
 
@@ -8590,10 +9687,20 @@ disable the subscription for every truck.
 
 ⚠️ **STATUS CORRECTION, SAME DAY, LATER: THE CODE FIX IS BUILT.** This delta was written against the
 state before it. `app/api/webhooks/meta/whatsapp/route.ts` now reads `META_WHATSAPP_APP_SECRET`, as one
-name with no fallback chain, and both lookups destructure and log `error`. 🔴 **BUILT IN THE WORKING TREE,
-UNCOMMITTED AND UNDEPLOYED** — it joins the queued batch, so **the two-variable state in Vercel and the
-swallowed-error behaviour are both still LIVE in production until that batch ships.** See
+name with no fallback chain, and both lookups destructure and log `error`. See
 `docs/whatsapp-secret-and-lookup-fixes-report.md`.
+
+⛔ **SUPERSEDED V11.41 — THIS ENTRY SAID "BUILT IN THE WORKING TREE, UNCOMMITTED AND UNDEPLOYED" AND THAT
+IS NO LONGER TRUE. IT IS COMMITTED: `3c1989b`, 24 August 2026.** The clause claiming *"the two-variable
+state in Vercel and the swallowed-error behaviour are both still LIVE in production until that batch
+ships"* is struck with it — the batch shipped.
+
+🔴 **THIS EXACT SENTENCE WAS CARRIED OUT OF THIS MANUAL INTO A BUILD PROMPT AND WAS FALSE THERE.** A
+prompt asserted the fixes were uncommitted; the executor read the tree, found otherwise, judged the
+discrepancy benign — committed work cannot be clobbered by an additive change — and proceeded while
+flagging it. **The answer was already four sections away in this same document**, in a verification-debt
+list stating that the batch these entries describe shipped on 24 August. **Both statements were here;
+only the stale one travelled.** See the rule recorded in METHOD.
 
 ## V11.36 — THE `display_phone_number` FALLBACK DOES NORMALISE — a premise correction
 
@@ -8896,6 +10003,549 @@ so it formats in the **server's** zone. **On the host that is UTC.**
 
 **Left unfixed, in scope terms, and recorded as an open defect.**
 
+## V11.41 — 🔴 THE WHATSAPP COST MODEL CHANGES ON 1 OCTOBER 2026 — AND IT LANDS ON EXACTLY WHAT WE SEND
+
+**Checked against Meta's own pricing documentation and multiple partner sources, 25 August 2026.**
+
+**Today, every reply this platform sends is free.** Meta has not charged for non-template messages since
+1 November 2024, and non-template messages can only be sent inside an open customer service window. Every
+auto-reply we produce is a free-form reply inside a customer-initiated 24-hour window. **That is the whole
+of our sending, and its Meta cost has always been zero.**
+
+🔴 **FROM 1 OCTOBER 2026 SERVICE MESSAGES BECOME BILLABLE PER MESSAGE**, at the same per-country rate Meta
+already applies to utility and authentication templates. Utility templates also lose their in-window free
+status on the same date. ⚠️ **It makes no difference whether a human agent or a third-party AI composes
+the reply** — ours is a third-party AI, so we are squarely in the service-message category.
+
+⚠️ **THERE IS NO DEFENSIBLE UK NUMBER TO BUDGET AGAINST YET.** Meta publishes final per-country rates by
+1 September 2026. **Do not put a figure in a plan or a pricing page before then.**
+
+**Two adjacent facts, recorded so nobody later misreads a Meta invoice:**
+- **Meta Business Agent** — Meta's own AI product — is billed per token at $2.00/million since 1 August
+  2026. **We do not use it.** A message falls into exactly one bucket: the per-token Business Agent charge
+  **or** the per-message service charge, **never both**.
+- **The free entry-point window (72 hours)** from Click-to-WhatsApp ads and Facebook Page CTA buttons is
+  expected to survive. ⚠️ **That is AD AND PAGE-CTA ORIGIN SPECIFICALLY. DO NOT ASSUME A PLAIN `wa.me`
+  LINK ON A TRUCK PAGE QUALIFIES** — it is unread, and it matters because truck pages will carry WhatsApp
+  links.
+
+### 🔴 WHO PAYS, AND THE DATE THE BILL CHANGES HANDS
+
+**Today the platform credential pays for everything** — sending is one `META_WHATSAPP_ACCESS_TOKEN`
+against a per-truck phone number id. Volume is nil, so the exposure is nil.
+**After Embedded Signup, Meta bills the truck**, because an onboarded business adds a payment method to
+its own WhatsApp Business account. 🔴 **GEMINI STAYS OURS UNDER EVERY DESIGN.** Model spend never
+transfers.
+
+⚠️ **WE WILL BE ON THE PLATFORM CREDENTIAL ON 1 OCTOBER.** Embedded Signup sits behind Tech Provider
+status, behind app review, behind a recording of a send-initiating surface that does not exist. **We take
+the first bills ourselves, at near-zero volume.**
+
+> 🔴 **AND THE CAP IS THEREFORE NOT AN INTERNAL BUDGET CONTROL — IT IS A PROMISE MADE AT ONBOARDING.**
+> Once the bill is the operator's, an operator whose Meta invoice spikes because our bot answered a
+> spammer forty times will blame us, **correctly**. **Design it as something we can describe to a truck,
+> not as a cost-saving.**
+
+## V11.41 — ✅ THE REPLY CAP — BUILT, PROVEN BY EXECUTION, UNDEPLOYED
+
+**A pure decision module (`lib/whatsapp/reply-cap.ts`, zero imports) plus wiring in the Meta WhatsApp
+webhook. Built during the deploy freeze; joins the queued batch.**
+
+- **Three limits, three windows, NOT interchangeable.** Per customer rolling 24h — the safety cap, and the
+  only thing that stops a loop between two automated systems. Per truck local calendar day. Per truck
+  local calendar month. 🔴 **A monthly cap alone lets one bad day eat the month and then silences the
+  truck for three weeks; a daily cap alone maps to no invoice.**
+- **The daily ceiling is DERIVED as one tenth of the monthly, rounded up** — one free parameter instead of
+  two. ⚠️ **DERIVING IT CHANGED THE NUMBER: 2000 a month yields 200 a day, not the 300 written by hand
+  first. Nobody chose 200 directly.**
+- **The per-customer limit is a PARAMETER of the decision function, not a constant read inside it.** The
+  route passes the default of 3. **An operator-settable value, intended ceiling 5, is one line at the call
+  site** — no column, no UI, no plan tiering built today.
+- **Precedence: month, then day, then customer.** A truck over its ceiling sends nothing at all, **not
+  even the handoff, because the handoff is itself billable.** The wider window wins because it is the one
+  with money attached.
+- **All limits inclusive.** **Five-member closed union**, including a distinct member for an
+  already-notified customer.
+
+### 🔴 THE HANDOFF IS A HANDOFF, NOT A LIMIT NOTICE
+
+At a per-customer limit of 3, hitting the cap is **routine** — a menu question, a schedule question, an
+allergen question, and the next message meets it. **That is not abuse and must not read as a system
+telling a customer off.** The message points at the order link and, when one exists, the contact number.
+**No apology, no mention of a limit.**
+
+⚠️ **THE HANDOFF IS ITSELF BILLABLE, SO A LIMIT OF 3 IS FOUR MESSAGES, NOT THREE.** **State that in any
+operator-facing copy rather than discovering it on an invoice.**
+
+### 🔴 TWO HANDOFF VARIANTS, BECAUSE `trucks.whatsapp` IS BLANK ON MOST TRUCKS
+
+**Live read, 25 August: `whatsapp` is null or blank on 7 of 12 trucks — INCLUDING `test-truck`, the only
+truck with a working WhatsApp configuration and therefore the only one that can reach this cap today.**
+`slug` is non-null on all twelve.
+
+So the order link is unconditional and **the contact number is a WHOLE CLAUSE, present or absent.** Null,
+empty and whitespace-only are all absent, proven byte-identical across all three. ⛔ **The first build
+emitted a fallback reading *"Please contact {name} directly"* — which told the customer to do the one
+thing the message had just failed to help them do. Removed.**
+
+⚠️ **NO PRECONDITION REFUSES TO SEND THE HANDOFF WHEN CONTACT IS MISSING.** Silence at the cap boundary is
+the outcome the cap exists to avoid, and the order link always works.
+
+### Where it sits, and the two load-bearing properties
+
+- 🔴 **THE DECISION RUNS BEFORE THE CLASSIFIER, NOT BEFORE THE SEND.** Classification is itself a model
+  call and the grounded answerer is a second. **Cutting at the send saves Meta's fee and pays for the
+  model anyway.** Position: after the truck lookup and plan gate, before the shared reply function.
+- 🔴 **EVERY MESSAGE-HANDLING PATH RETURNS 200**, including both cap branches and the read-error path. A
+  non-200 lets Meta disable the subscription **for every truck**. The pre-existing 401 in the signature
+  gate and the GET handler's 403/400 are untouched and must stay.
+
+### FAIL OPEN — and it points the opposite way to the signature gate two hundred lines above it
+
+If a count read errors, reply. ⚠️ **The direction of a safe default depends on what the failure costs, not
+on a habit** — an unverifiable signature may be forged and the downside is unbounded; an unreadable count
+is a database blip, and failing closed would silently mute every truck's auto-replies.
+
+🔴 **BUT THE FAIL-OPEN CATCH IS WIDER THAN THE CAP.** It sets the reply decision **AND** clears the
+follow-up flag, so a permanently-failing count read means **all three caps off AND a greeting on every
+message, indefinitely, the only symptom being repeated greetings that nobody monitors.**
+> ⚠️ **A FAIL-OPEN GUARD THAT IS INDISTINGUISHABLE FROM A WORKING ONE IS A GUARD WITH NO OBSERVABILITY.**
+> Record that at the guard, not only here.
+
+### The counts, and a three-valued-logic trap proven rather than argued
+
+**Counts include only rows where `response_sent is not null`, and exclude rows carrying any cap
+classification.** The month count is count-only (`head: true`); no month of rows enters memory.
+
+🔴 **THE CAP-EXCLUSION FILTER MUST BE `classification.is.null` OR `classification.not.in.(…)`, NOT A BARE
+`NOT IN`.** A bare `NOT IN` evaluates to NULL for a NULL classification and Postgres drops those rows — a
+silent undercount.
+
+✅ **PROVEN ON SYNTHETIC VALUES:** the two forms differ on exactly one input. A null classification is
+`true` under the `or` form and **null** under the bare form; null in a WHERE clause is not true, so the row
+vanishes. A cap row is excluded by both; an ordinary reply is kept by both.
+
+⚠️ **RECORDED ACCURATELY: NO CURRENT WRITER CAN PRODUCE A NULL CLASSIFICATION.** The route always writes
+the classifier's output and the cap rows write named constants. The column is nullable with no CHECK, so a
+hand-inserted row, a backfill, or the Messenger/Instagram stubs could. **The guard is right by
+construction, not by rescue — it averted nothing on today's data.**
+
+### The classification values have no CHECK, so the constants are the only guard
+
+**Live read: `whatsapp_logs` carries only a primary key and a truck foreign key. No CHECK on
+`classification`.** That is why cap outcomes needed no migration — and equally why **a typo'd value writes
+silently and reads as data.** All four cap classifications are named exports; a grep for any of them as a
+quoted literal outside the module returns nothing.
+
+## V11.41 — ✅ THE PARSE CHECK, AND A TEST-DESIGN CLASS WORTH GENERALISING
+
+**The `.or()` filter is a PostgREST string. Postgres never sees it.** A malformed one throws, the
+fail-open catch swallows it, and the cap is silently absent. **No SQL can test this**; only a real request
+can.
+
+✅ **EXECUTED AGAINST PRODUCTION, 25 August, read-only, via a throwaway script that IMPORTED the constants
+rather than retyping them** — a hand-copied string would have tested a different string than the one that
+ships. **The filter parses.** The control query without the filter returned the same count, so client,
+table and credentials are all sound.
+
+🔴 **AND THE SPECIFIED TEST WOULD HAVE PROVED NOTHING WITHOUT A PROBE ADDED BEYOND IT.** Real and control
+both returned 4 — equally consistent with a filter that correctly excludes cap rows (of which there are
+none) **and** a filter that parses and matches everything. Feeding the same filter shape a value that
+**does** exist dropped the count from 4 to 1. **That is what turns "it parses" into "it excludes".**
+
+> ⚠️ **CLASS, NOT ANECDOTE — AND IT IS THE THIRD MEMBER IN THIS SUBSYSTEM.** *A test whose pass condition
+> is "the number did not change" cannot distinguish a working filter from an absent one while the thing
+> being filtered does not yet exist.* Same shape as the routing defect whose test passed because the
+> tester's own number sat in `whatsapp_sender` — **a correct claim whose test was structurally incapable
+> of detecting the defect.** **When the population under test is empty, the passing result carries no
+> information: construct a case where the filter must bite.**
+
+⚠️ **ONE ARM REMAINS UNEXERCISED AGAINST REAL DATA:** the `classification.is.null` branch had no NULL row
+to keep. **It is the entire reason the `or` exists.**
+
+## V11.41 — LIVE SCHEMA AND DATA FACTS READ THIS SESSION
+
+**`trucks` column list read from `information_schema` — 97 columns.** Confirms `phone_number_id` (text,
+nullable), `whatsapp_sender`, `whatsapp`, `plan` (text NOT NULL, default `'starter'`), `trial_expires_at`,
+`timezone`, `slug`, `messenger_page_id`, `messenger_page_token`, `kds_pin`. **`name` is text NOT NULL** —
+it is on the table and was absent from this manual's column list.
+
+🔴 **`trucks.timezone` IS NULL ON ALL TWELVE TRUCKS.** The column exists and **nothing populates it.** The
+greeting entry's "one-line swap" note is superseded above.
+
+⚠️ **THE CONSEQUENCE IS ASYMMETRIC BETWEEN THE TWO WINDOWS.** A wrong timezone on the DAY boundary shifts
+a cap by an hour. **On the MONTH boundary it shifts a whole billing period — silently, and in the
+direction of a ceiling that RESETS EARLY**, i.e. one that quietly stops being a ceiling.
+
+⚠️ **"MONTH" IS A CALENDAR MONTH IN THE TRUCK'S ZONE AND IS NOT THE WABA BILLING CYCLE.** Meta's cycle
+starts on whatever day the account was created and is not exposed to us. **A proxy — it becomes per-truck
+and real when Embedded Signup ships.**
+
+**`whatsapp_logs`, read live:** constraints are a PK and a truck FK only. Indexes: **the primary key and
+nothing else.** Total volume since June: **eight rows, every one from the same tester handset
+`447941042253`**, against `test-truck` and `pizzeria-gusto`. **Worst observed burst: four replies in one
+day.**
+
+🔴 **ONLY TWO CLASSIFICATION VALUES HAVE EVER BEEN LOGGED IN PRODUCTION: `MENU_QUERY` and
+`SPECIFIC_QUERY`.** ⚠️ **`ALLERGEN_QUERY` AND `IGNORE` HAVE NEVER PRODUCED A ROW.** Eight menu and
+schedule questions is not evidence of a defect — but **the allergen redirect is the safety floor and has
+never been observed live. Verification debt, not a bug.**
+
+**No rate-limit, quota or usage table exists.** A search returns only `production_slot_usage`, a false
+match on the word.
+
+### An index is required, and it is not deploy-coupled
+
+**The cap's per-customer read runs on every inbound and `whatsapp_logs` has no supporting index.** This
+manual already carried it as an optional post-trial item; **the cap makes it required.** Additive, no code
+reads it, **safe to apply during a deploy freeze**:
+
+```sql
+create index if not exists idx_whatsapp_logs_truck_customer_created
+  on public.whatsapp_logs (truck_id, customer_number, created_at desc);
+
+create index if not exists idx_whatsapp_logs_truck_created
+  on public.whatsapp_logs (truck_id, created_at desc);
+
+notify pgrst, 'reload schema';
+```
+
+✅ **APPLIED AND CONFIRMED V11.42.** This line read *"Application not confirmed at the time of writing.
+Confirm before recording it as applied."* **Both indexes now exist**, confirmed by **reading `pg_indexes`
+— not by a paste appearing to succeed**:
+`idx_whatsapp_logs_truck_customer_created (truck_id, customer_number, created_at DESC)` and
+`idx_whatsapp_logs_truck_created (truck_id, created_at DESC)`.
+
+## V11.41 — THE DUPLICATED VERCEL SECRET: the removal condition, and the one-directional risk
+
+**Production carries two variables holding one secret** — `META_WHATSAPP_APP_SECRET` and the
+`META_APP_SECRET` added operationally when the fail-closed gate was refusing every inbound. **The removal
+condition is that the code fix reading the one correct name is deployed** — which, per the supersession
+above, is commit `3c1989b`.
+
+🔴 **VERIFY BEFORE DELETING, AND THE ORDER MATTERS IN ONE DIRECTION ONLY.** If the running build contains
+`3c1989b`, nothing reads the old name and deletion is safe. If it does not, the running code still reads
+`META_APP_SECRET`, and deleting it **401s every inbound message with no log line to say why** — because no
+traffic arrives to produce one. **Settle it with `git merge-base --is-ancestor` against the deployed
+commit, not by recollection.**
+
+✅ **DONE AND SUPERSEDED V11.42 — THE VARIABLE IS DELETED.** The running build **`1d85241` contains
+`3c1989b`**, verified by ancestry and then **proven by a live inbound message after the redeploy, not
+inferred.**
+
+⛔ **AND ONE CLAIM ABOVE WAS WRONG.** V11.41 said the two-variables-one-secret state was *"still LIVE in
+production"*. 🔴 **IT WAS NOT.** The code fix shipped on 24 August, and **environment variables bake in at
+build time**, so the duplicate was **already inert in the running deployment**. **The deletion protects
+the NEXT build and a future rotation — it fixed nothing that was live.**
+
+⚠️ **VERIFYING ANCESTRY NEEDS A RESOLVE GUARD, AND OMITTING IT COST A ROUND TRIP.**
+`git merge-base --is-ancestor A B` exits non-zero **both** when B does not contain A **and** when either
+SHA fails to resolve — so `|| echo "ABSENT"` **cannot tell a real answer from a typo.** A mistyped hash
+printed a confident, meaningless *"FIX ABSENT"*. 🔴 **ALWAYS `git cat-file -e <sha>^{commit}` BOTH commits
+first and refuse to read the ancestry result unless both resolve.** ⚠️ **Same family as the
+empty-population trap: a check whose failure mode is indistinguishable from its negative answer.**
+
+## V11.41 — TECH PROVIDER, APP REVIEW AND EMBEDDED SIGNUP — the chain, restated
+
+**It is a straight line, not three parallel tasks.** Business verification has passed, so **app review is
+the only thing in front of Tech Provider status**, and **Tech Provider status is a stated prerequisite of
+Embedded Signup** — including the coexistence path, which is the one that fits this market. **There is no
+route to Embedded Signup that goes around app review.**
+
+**The single item at the head of the whole arc is the send-initiating surface**, because app review needs
+two recordings and one requires a message created and sent from our app. **Nothing in the product can
+initiate a send; the auto-reply path is the only way a message leaves the platform.**
+
+⚠️ **A NUMBERING DISCREPANCY WORTH FIXING BEFORE IT REACHES A PROMPT.** This manual numbers the
+send-initiation recording FIRST and the template-creation recording SECOND; a session brief reversed them.
+**Same two artefacts, and the missing surface is the send-initiation one whichever number it carries.**
+
+⚠️ **A FILMING PREREQUISITE, NOT AN AFTERTHOUGHT:** a free-form send only lands inside an open 24-hour
+window. **The take must be handset-in, then initiate from our surface, then arrives on the handset** — or
+it must use an approved template.
+
+**Access Verification** is a fourth Meta step and is **not blocking**: it only raises onboarding from 10
+new business customers per rolling 7 days to 200.
+
+**The landing gate remains on Meta's critical path**, because the Integrity team reviews `hatchgrab.com`
+and a reviewer meeting a redirect or a login wall is a plausible restriction. **Unblocking it is a capture
+session and a testimonial permission, and the un-gate is a commit — so it queues.**
+
+### What can be done while deploys are frozen
+
+**Unaffected by the freeze:** submitting the Tech Provider application, with the token question in
+writing · **creating one throwaway template off camera to prove the CREATE payload** (list and create are
+different endpoints and create is the one being filmed) · completing Meta's Business Info section in full,
+since an incomplete one triggers a WABA restriction that takes time to clear · the screenshot capture
+session, which unblocks the landing hero and the App Store screenshots together · ICO registration ·
+**applying the index above** · building, without shipping.
+
+**Blocked:** the filming itself, since the surface must be in production to be on camera · Embedded Signup
+in any form, being hosted on our site — ⚠️ **and v2 is deprecated 15 October 2026, so build v4** ·
+un-gating the landing · shipping the queued batch.
+
+⚠️ **DO NOT BUMP THE GRAPH VERSION BEFORE THE RECORDING.** The pin is shared with the template calls, and
+a bump would put an unproven version and an unproven payload on camera together.
+
+## V11.42 — 🔴 THE WHATSAPP OUTAGE: ROOT CAUSE WAS AN EXPIRED TRIAL, AND THE PLAN GATE SAYS NOTHING
+
+**Symptom: inbound messages produced no reply.** No error anywhere, no row in `whatsapp_logs`, and
+initially no log line at all.
+
+**Root cause: `test-truck.trial_expires_at` was `2026-08-23`, which had passed.** The plan gate denied
+`whatsapp_replies` and returned 200 **silently**. ✅ **Fixed by extending the expiry to `2026-12-31`,
+matching the demo truck's horizon. Verified working by a live message.**
+
+🔴 **THE GATE'S SILENCE IS THE DEFECT, NOT THE EXPIRY.** The route logs the inbound `phone_number_id`
+**before** the plan gate and logs nothing after it. So an expired trial, a dead webhook, a wrong callback
+URL and a missing field subscription all present **identically: a 200 and no row.** **One log line at the
+gate — truck id, plan, feature, decision — would have made this a thirty-second diagnosis instead of an
+hour.** **Backlog item with a demonstrated cost.**
+
+⚠️ **AND IT WILL RECUR ON A TRADING TRUCK.** **Pizzeria Gusto's trial expires 17 October 2026.** When it
+passes, every Max-inherited feature switches off on a live truck with **no warning, no error and no log
+line** — the operator reports "it's broken" with no way to say what. `real-thai-food` expires
+**30 September**. 🔴 **THESE ARE DATES, NOT A BACKLOG ITEM.** Decide before them: extend, move to a real
+plan, or build the expiry warning.
+
+### What the investigation turned up on the way — all real, none of them the cause
+
+🔴 **THE APEX DOMAIN 307-REDIRECTS TO `www`, AND WEBHOOK POSTs DO NOT FOLLOW REDIRECTS.** A POST to
+`https://hatchgrab.com/api/webhooks/meta/whatsapp` returns 307 with a `www` Location and **the function is
+never invoked.** **Whichever host is registered with Meta is load-bearing in the same way the DNS TXT
+record is:** if the redirect direction ever flips, inbound dies silently because the function never runs.
+The number-level `webhook_configuration.application` already carried the `www` form — **which is why this
+was not the outage, but it is a live trap.**
+
+🔴 **THERE ARE TWO WEBHOOK CONFIGURATIONS IN META'S DASHBOARD — APP LEVEL AND WABA LEVEL — WITH
+INDEPENDENT VALUES.** Saving a correct callback URL in one while the other points elsewhere produces **a
+green tick and no deliveries.** ⚠️ **A verified callback URL is not evidence that Meta is posting to it**
+— same family as *a variable set in Vercel is not a variable in the running deployment*.
+
+✅ **The GET verification handshake, executed against production:** returns **200**, `text/plain`, body
+exactly the echoed `hub.challenge`, on the `www` host, with the token from `META_WEBHOOK_VERIFY_TOKEN`.
+⚠️ **THAT TOKEN WAS PASTED INTO A CHAT SESSION ON 25 AUGUST. ROTATE IT:** change in Vercel, redeploy,
+update in Meta, re-verify. **It gates only the handshake — it signs nothing and cannot send — so the
+exposure is small, but rotation is cheap.**
+
+## V11.42 — 🔴 A NULL TRIAL EXPIRY HAS NEVER BEEN READ
+
+**`village-spice` holds `trial_expires_at = NULL` on `plan = 'trial'`.** Nobody has read whether
+`canAccess` treats that as never-expiring or as expired. **The comparison `NULL < now()` yields NULL**,
+and how the code branches on that decides whether that truck has **everything or nothing.**
+
+⚠️ **SAME CLASS AS THE `NOT IN` FINDING IN V11.41: a null falling through a comparison nobody wrote a
+branch for.** **Neither answer is obviously the intended one. Worth a source read, not a guess.**
+
+**Live trial expiries as at 25 August:** `real-thai-food` 30 Sep · `pizzeria-gusto` 17 Oct ·
+`test-truck`, `test-truck-3-2`, `tikka-tonic` 31 Dec · `village-spice` **NULL**.
+
+## V11.42 — META APP REVIEW: SUBMITTED, AND WHAT IT COST TO ANSWER
+
+**`whatsapp_business_messaging` submitted 25 August. Meta states most reviews complete within 20 days.**
+✅ **The required API test call was already marked Completed**, satisfied by the 20 August inbound test.
+
+⚠️ **NO CANCEL OR EDIT CONTROL COULD BE FOUND for a pending permission submission**, despite the
+confirmation email mentioning one. 🔴 **TREAT A SUBMISSION AS FINAL ONCE SENT.**
+
+### 🔴 THE SUBMITTED RECORDING IS PROBABLY INSUFFICIENT, AND THE REASON GENERALISES
+
+The video shows a message sent from a handset and a reply arriving. **That demonstrates WhatsApp working.
+It does not demonstrate THE APP** — nothing in frame identifies HatchGrab as the source of the reply
+rather than any bot anywhere, and the form asks for a walkthrough of *how your app uses the permission*.
+
+**What a sufficient recording needs is the CORRESPONDENCE:** the operator dashboard first, showing that
+truck's live menu and upcoming event, then the handset, with the reply **visibly quoting a price and a
+venue that are on screen.** 🔴 **That link is the demonstration; two phones exchanging messages proves
+nothing.** ⚠️ **Record the better version now** so a rejection costs a day rather than a cycle.
+
+### The data-handling answers, recorded because they are now declarations
+
+| Question | Answer given |
+|---|---|
+| Data processors with access to Platform Data | **Yes** — Supabase, Vercel, Brevo, **Google (Gemini API)** |
+| Responsible entity / controller | **HatchGrab Ltd**, company number 17381557 |
+| Country | United Kingdom |
+| National security requests, past 12 months | **No** |
+| Policies re public-authority requests | **None of the above** |
+| App category | **Business and pages** — NOT Messaging |
+
+🔴 **GEMINI IS A PROCESSOR AND MUST BE NAMED AS ONE.** Inbound message text is passed to it to generate
+the reply, which makes Google a processor with access to Meta Platform Data. ⚠️ **The privacy policy's
+provider table does not yet name it — nor Stripe.** A reviewer comparing the form answer against
+`/privacy` sees the inconsistency, **and Integrity reads that page regardless.**
+
+**Gemini's hosting is US** (`generativelanguage.googleapis.com` routes globally with no residency
+guarantee). ✅ **Mitigating fact worth stating in both places: the tier-3 payload is menu data plus the
+customer's message text — the customer's phone number is NOT in it.** Gemini sees what was asked, not who
+asked. **The migration path if residency is ever required is Vertex AI**, where a region including
+`europe-west2` can be pinned — same models, different endpoint and auth.
+
+⚠️ **THE CONTROLLER DECLARATION SHARPENS THE ICO ITEM.** HatchGrab Ltd is now declared to Meta **in
+writing** as controller, while **unregistered with the ICO.** That moves the item from *outstanding* to
+**declared but unregistered**.
+
+## V11.42 — META PLATFORM: live facts read 25 August
+
+**App:** `2196172484540444`, Business type, mode **In development** (expected until App Review passes),
+owned by the HatchGrab Ltd portfolio `2952714285078782`.
+
+**WABA `2194175217996537`** — "Test WhatsApp Business Account". Test number **+1 555-644-7483**,
+`code_verification_status: NOT_VERIFIED`, `quality_rating: GREEN`, `platform_type: CLOUD_API`,
+`phone_number_id` **`1179821708546925`** — unchanged, and matching `test-truck`. Its
+`webhook_configuration.application` points at the `www` route.
+
+⚠️ **A SECOND APP IS SUBSCRIBED TO THE WABA WITHOUT HAVING BEEN ADDED:** `WA DevX Webhook Events 1P App`
+(`2202427980234937`), Meta's own first-party app, attached by use of the API testing panel. Probably
+benign — Meta fans events to all subscribed apps — **but it is a second consumer nobody installed.**
+
+⚠️ **A TEST WABA CANNOT TAKE A PAYMENT METHOD AND ITS RECIPIENTS ARE CAPPED TO AN ALLOWLIST.** Fine for
+both recordings and the throwaway template; **it can never serve a real customer, and nothing should be
+built assuming it scales.**
+
+## V11.42 — 🔴 THE TOKEN QUESTION IS RESOLVED, FROM META'S DOCUMENTATION RATHER THAN BY ASKING
+
+**Tech Providers use BUSINESS tokens EXCLUSIVELY.** Meta's Embedded Signup documentation says so
+outright; the Access Tokens guide says **system tokens are for Solution Partners sharing a line of
+credit.** Business tokens are **scoped to individual onboarded customers**, minted by exchanging the code
+returned when a customer completes Embedded Signup.
+
+✅ **SO PER-TRUCK CREDENTIAL STORAGE IS REQUIRED, AND THE DESIGN IS UNBLOCKED.** The recommended shape
+stands: a dedicated `whatsapp_connections` table with app-level AES-256-GCM — 🔴 **the separate table
+matters as much as the encryption**, because live routes read `operators` and `trucks` with `select('*')`
+and **a redaction list fails by omission, silently.**
+
+⚠️ **The existing platform token is not wasted — its scope is just narrower than hoped.** It remains valid
+for our own WABA: the test number, the admin template tool, the app-review recordings. **It simply cannot
+address a customer's WABA. Inbound routing is untouched under every design** — it keys on
+`phone_number_id`.
+
+⚠️ **STILL UNREAD: the token-expiration setting on the Facebook Login for Business configuration screen.**
+It decides whether the connections design needs a refresh path. 🔴 **Read it off the screen; do not take a
+number from a third-party integration guide**, whose whole premise is that they call Graph on your behalf
+and the setting therefore does not apply to them.
+
+## V11.42 — TECH PROVIDER: the remaining steps, corrected
+
+⚠️ **THERE IS NO SINGLE "TECH PROVIDER APPLICATION".** It is a **state reached by completing separate
+steps, each with its own review.** Recorded because a session brief called it an application and sent
+someone looking for a form.
+
+1. **Business Verification** — ✅ done.
+2. **App configuration** — largely done.
+3. 🔴 **Facebook Login for Business configuration — DOES NOT EXIST YET.** Login variation *WhatsApp
+   Embedded Signup*, asset *WhatsApp accounts*, **only** the two WhatsApp permissions. **This is the
+   component that mints business tokens; Embedded Signup cannot exist without it.**
+4. **App Review** for the permissions, at **Advanced** access — `whatsapp_business_messaging` submitted;
+   `whatsapp_business_management` not yet.
+5. **Access Verification** — not blocking; only raises onboarding from 10 per rolling 7 days to 200.
+
+🔴 **`public_profile` ADVANCED ACCESS IS REQUIRED** for Facebook Login for Business before it can go live
+— Meta's FAQ states it. ⚠️ **`email` and `public_profile` must be requested alongside at least one other
+supported business permission**, which is a rule about pairing, **not a reason to add scope.**
+
+⚠️ **DO NOT BUNDLE INSTAGRAM OR MESSENGER PERMISSIONS.** Different login flows, a separate configuration
+each — and **App Review requires demonstrating each permission in use**, while both webhooks are
+verify-handshake plus `console.log` stubs. 🔴 **A permission with no surface cannot be filmed.**
+
+## V11.42 — 🔴 THE LANDING GATE IS NOW ON META'S CRITICAL PATH, WITH A REVIEWER INBOUND
+
+**The submission went in BEFORE the landing was fixed.** WhatsApp's Integrity team reviews
+`hatchgrab.com`, and it currently: redirects non-admins away, shows three dashed *Screenshot*
+placeholders, carries an unpermissioned testimonial, and **promises Messenger and Instagram auto-replies
+that are stubs.**
+
+🔴 **THE FALSE CAPABILITY CLAIM IS THE SHARPEST OF THE FOUR AND THE CHEAPEST TO FIX** — copy, not a
+capture session — and *claims a capability it does not have* is **precisely what Integrity screens for.**
+**A rejection costs the full 20 days again.**
+
+⚠️ **Un-gating requires a commit and a deploy while `hatchgrab.com` is the Marketing URL Apple holds.**
+**The narrow fix — the false capability claim alone — is a small diff and the strongest candidate for
+shipping during the freeze.**
+
+## V11.42 — THE THROWAWAY TEMPLATE: still undone, still the last unproven technical piece
+
+**Create ONE template off camera, on the platform credential, before filming the template recording.** The
+authenticated call that proved `v19.0` was a **list**; 🔴 **create is a different endpoint and has never
+executed.** Its payload shape — the `example.body_text` list-of-lists, and **whether `example` is omitted
+when no variables are declared** — is the module's own reading of the documentation.
+
+⚠️ **ON CAMERA A 400 ARRIVES WITH TWO UNKNOWNS AT ONCE** — payload shape and API version — which is also
+why **the version pin must not be bumped before the recording.** Name it obviously disposable; **expect it
+to sit as PENDING**, since what is under test is whether the CREATE CALL is accepted, not whether Meta
+approves the content.
+
+## V11.42 — INFRASTRUCTURE, 25 AUGUST
+
+✅ **Supabase upgraded to Pro.** Egress had reached **4.79 GB of 5 GB** with days left in the month;
+database was **185 MB of 500 MB** (not a concern).
+
+🔴 **THE EGRESS FIGURE IS UNDIAGNOSED AND THE UPGRADE ONLY REMOVED THE DEADLINE.** **4.79 GB against 356
+orders, twelve trucks and eight WhatsApp messages does not follow from normal traffic.** ⚠️ **It scales
+badly as trucks onboard.** Candidates: **unoptimised logo and cover images served from Storage** on
+customer order pages and the discovery map; **broad reads in the crons** that run every few minutes; and
+**live routes reading `operators` and `trucks` with `select('*')`.** **The dashboard breaks egress down by
+source — start there.**
+
+✅ **The Supabase project was renamed Village Foodie → HatchGrab.** **Display label only**; the ref
+**`ffphgwonshgxamtvefcv`** is unchanged, so URLs, keys and connection strings are unaffected and nothing
+needed redeploying. ⚠️ **Manual entries referring to "the Village Foodie project" no longer match the
+dashboard** — same shape as the Meta portfolio rename: **cosmetic in the tool, quietly stale in the docs.**
+
+## V11.42 — 🔴 THE DORMANT META PORTFOLIO WAS DELETED, AGAINST THE STANDING DECISION
+
+The second portfolio carrying the HatchGrab name **has been deleted.** ⛔ **This reverses a standing
+decision recorded in this manual**, which was NOT to delete, on the grounds that Meta's account-integrity
+policy restricts assets *created or repurposed to evade a previous account or entity removal* — and that
+**the risk lived in the deletion, not the rename**, since enforcement is tracked at user, device and
+payment-profile level and **deleting clears nothing.**
+
+⚠️ **Nothing to do about it now, and it may never surface. But record it as the FIRST CANDIDATE TO EXAMINE
+if App Review or Business Verification later returns an unexplained restriction** — an unexplained Meta
+rejection with no candidate cause is very expensive to debug.
+
+⚠️ **AND CHECK `hatchgrab.com` IS STILL DOMAIN-VERIFIED.** A domain can be verified by **only one
+portfolio at a time** and had to be released from the dormant one. 🔴 **If the deletion disturbed it,
+verification is revoked SILENTLY** and surfaces later as an unexplained Embedded Signup or app-review
+failure. **The DNS TXT record must never be removed either way.**
+
+## V11.42 — ANDROID: two gaps recorded ahead of the inventory
+
+⚠️ **A full read-only inventory was commissioned** covering the push send path, the back-handler registry,
+store-submission readiness, the merged permission set, version skew and every platform branch. **Nothing
+here is verified until that report lands.**
+
+🔴 **NO HANDLER FOR THE HOME BUTTON OR APP BACKGROUNDING IS KNOWN TO EXIST** — pause/resume, keep-awake
+release, state persistence. **Home is not a back press; it exercises a different path entirely and has
+never been tested.**
+
+🔴 **THE BACK-HANDLER COVERAGE COUNT WAS NEVER ESTABLISHED FROM THE SURFACES OUTWARD.** 22 overlays are
+recorded as wired across three surfaces, **but the DENOMINATOR — how many overlays exist — is unknown.**
+⚠️ **Counting from the registry measures coverage of the guard, not coverage of the risk** — the same
+class as V11.40's inward-sweep lesson.
+
+⚠️ **AN EMULATOR CANNOT VERIFY GESTURE NAVIGATION.** Three-button nav and gesture nav are different input
+paths into the same callback, and **the original back defect was an edge-swipe scenario** — one stray
+swipe losing the KDS board. **The emulator proves the handler is wired; hardware must prove the gesture
+reaches it. Both, in that order.**
+
+## V11.42 — 🔴 DATES THAT ARE NOW FIXED
+
+| Date | What |
+|---|---|
+| **~14 Sep 2026** | Meta App Review's 20-day outer bound from submission |
+| **30 Sep 2026** | `real-thai-food` trial expires |
+| **1 Oct 2026** | WhatsApp service messages become billable per message — **the reply cap should ship before this** |
+| **15 Oct 2026** | Embedded Signup v2 deprecated — **build v4** |
+| **17 Oct 2026** | 🔴 **Pizzeria Gusto's trial expires — a TRADING truck, silently** |
+
+## ✅ THE DUPLICATED SECRET IS GONE, AND THE DELETION IS PROVEN HARMLESS (V11.43)
+
+`META_APP_SECRET` deleted from Vercel and the deployment rebuilt. **Proven by a live inbound WhatsApp
+message afterwards, not inferred.** The running build `1d85241` contains `3c1989b`, verified with a
+resolve guard.
+
+
 # 21. Competitive positioning
 
 ## Hatches Up cost model
@@ -9090,6 +10740,31 @@ When a chat hits its limit, open a fresh one, re-prime with file paths and the t
 - New tables get RLS enabled in the same migration.
 - Run large migrations in CHUNKS, not a single full-file paste — a single paste can silently apply nothing.
 - Keep an applied-vs-file reconciliation.
+
+## 🔴 THE UNCOMMITTED BATCH — INVENTORY IT BEFORE IT SHIPS (V11.43)
+
+**Six workstreams are in the working tree at once:** the WhatsApp reply cap, the Android icons, the
+signing config, the bind-device truck guard, the BLE manifest, and the bind-device error surfacing.
+**Plus the queued WhatsApp secret and lookup fixes.**
+
+🔴 **THE LAST BATCH OF THIS SHAPE SHIPPED WITHOUT EVER BEING INVENTORIED.** Before the freeze lifts, read
+`git status` and `git diff --stat` against what was intended — **the Android work is native-only and
+cannot reach a web reviewer, but the reply cap and the bind-device fixes are server-side and can.**
+
+⚠️ **`android/SIGNING.md` and `android/keystore.properties.example` are untracked and SHOULD be
+committed** — they are the documentation layer for files nobody can see.
+
+> 🔴 **UPDATED V11.44 — THE BATCH HAS GROWN, AND IT NOW SPANS TWO PLATFORMS.** The six above have
+> become: **the WhatsApp reply cap, the Android icons, the signing config, the BLE manifest, BOTH
+> bind-device fixes, session resilience, deny-by-default on `/api/manage`, the KDS route change, and
+> edge-to-edge** — **all uncommitted at once.**
+> 🔴 **THE SECURITY WORK IS THE PART THAT CHANGES THE CALCULUS.** Deny-by-default and the KDS route
+> change are **server-side and reach a web reviewer the moment anything is pushed**; the Android work
+> cannot. **A single push therefore ships an access-control change and a credential-handling change
+> together, inside a batch nobody has inventoried.**
+> **Read `git status` and `git diff --stat` against what was intended before the freeze lifts.** The
+> last batch of this shape shipped without ever being inventoried, and this one is larger.
+
 
 # 23. Mobile UX patterns (V4)
 
@@ -9309,6 +10984,18 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 > **REMINDER (V6.8) — test HatchGrab-only flows on a HatchGrab host.** Order buttons, the capacity engine, and operator events must be tested on **hatchgrab.com** or **hatchgrab.localhost:3000** — plain `localhost:3000` renders as Village Foodie and masks these paths (the substring host gate). A capacity bug that "doesn't reproduce on localhost" is usually this.
 
+- 🔴 **TESTING A CUSTOM DOMAIN LOCALLY (V11.50) — AND THE HOSTNAME MUST *NOT* CONTAIN "hatchgrab".**
+  This is the exact inverse of the alias above, and the reason is the same substring check. Add an
+  `/etc/hosts` entry pointing a made-up hostname at `127.0.0.1`, set that hostname as a truck's
+  `custom_domain`, and browse it on `:3000`. **A `*.hatchgrab.*` name takes the HatchGrab branch, renders
+  something that looks right, and proves nothing** — it has exercised the wrong path entirely.
+  🔴 **USE A `.test` SUFFIX, NOT `.local`.** macOS resolves `.local` by **multicast DNS and never
+  consults `/etc/hosts` for it**, so the entry is silently ignored and the name does not resolve. The
+  failure looks like a networking problem and is a naming one.
+  ⚠️ **THIS RIG PROVES THE SERVING PATH ONLY. Provisioning is not locally testable** — it makes a real
+  hosting API call — and **the provisioned page only exists in production**, because DNS points at the
+  deployment. §46.
+
 - **Test Kitchen** test truck: dashboard_token test-abc123def456, **id `test-truck`, slug `test-kitchen`** (the public profile resolves by slug — `/trucks/test-kitchen`; `/trucks/test-truck` 404s, though the order page tolerates the id via a fallback). Contact dominicbonini@hotmail.com. As of V6.5 its discovery rows are `hg_only` (shows on hatchgrab.com, hidden on villagefoodie.co.uk) — there is no `trucks.is_test` column (Section 16).
 
 - iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px. (V6.6 — the trial runs on web/tablet-browser; the native iPad app is post-trial, Section 11.)
@@ -9427,6 +11114,294 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## 🔴 STILL OPEN AFTER V11.48 — CUSTOM DOMAINS, AND THREE THINGS THAT ARE LIVE TODAY
+
+### Live today, and NOT created by this workstream
+
+- 🔴 **THE MANAGE ROUTE IS ENTIRELY UNMETERED.** The proxy's allowlist is inverted, so `/api/manage` is
+  **never even considered** for rate limiting, and the route imports no limiter. **This is not specific
+  to the new actions — it is the whole route, live now.** A guard wired to nothing. §28.
+- 🔴 **THE ACCESS RESOLVER DOES NOT EXIST AT HEAD.** Production authenticates that route **on the token
+  alone, with the role hardcoded to owner**. The resolver and the new actions are in the **same
+  uncommitted batch**, so a security improvement and a new surface would ship together **in a batch that
+  has not been inventoried.** §12.
+- ⚠️ **THE PROXY HAS NO ERROR HANDLING AROUND ITS LIMITER CALL**, so an unreachable cache propagates on
+  the **public serving path**. 🔴 **That is the opposite direction from every call site below it: an
+  outage takes pages DOWN rather than un-metering them.** §35.
+- ⚠️ **NO LIMITER CALL ANYWHERE HAS A TIMEOUT.** Every fail-open and fail-closed decision in the repo is
+  therefore conditional on the cache failing **fast**. If it accepts connections and never answers, **all
+  sites hang regardless of which direction their handler chose** — so the convention has never been
+  tested against the more likely outage mode. §35.
+- ⚠️ **The analytics-cookie contradiction with the published privacy policy remains open** and is
+  unrelated to this work.
+
+### Verification debt
+
+- ✅ **CLOSED V11.49 — APPLIED.** *(Was: three migrations written and unapplied.)* Run any future one **outside a trading truck's service hours
+  with a short lock timeout**: the changes are metadata-only on a small table, **but the brief exclusive
+  lock can queue behind an existing one, and everything else queues behind that.** ⚠️ **Migrations before
+  code is the safe order** — the columns sit unread, and the reverse puts live code in front of columns
+  that do not exist. §16.
+- ⛔ **CORRECTED V11.50 — the page HAS now been rendered**, against a made-up hostname pointed at
+  loopback. 🔴 **Still unobserved: a certificate, a DNS record, a click path, a production build** — and
+  **every card state was rendered by driving state directly, so no button has been pressed.** §46, §26.
+- 🔴 **The riskiest unobserved thing is a build-config import inside a client bundle**, which only a real
+  build will settle.
+- ⚠️ **The test rig must be a domain NOT containing "hatchgrab"** — the host test matches on that
+  substring, **so a subdomain of our own site takes the wrong branch and proves nothing** — plus a test
+  truck that is not a live one.
+- **The test sequence, in order of cheapening failure:** does the page render and the certificate issue ·
+  is the apex refused **before** anything is registered · does the record screen name the right provider
+  with the right field labels · does a deliberately broken record get caught by the next daily check
+  **with a useful diagnostic** · does an abandoned setup get released **while a live one is left alone**.
+- ⚠️ **THE HASHING SECRET IS NOT SET IN ANY ENVIRONMENT.** No unset-variable failure, but **rotating the
+  fallback key would silently stop old and new rows clustering** — the abuse signal keeps writing rows
+  and quietly stops working. §46.
+- ⚠️ **THE "STOPPED WORKING" THRESHOLD IS 60 HOURS AND THAT MAY BE TOO LOOSE.** Two and a half days for a
+  page an operator has told customers about; tightening it is one named constant. §46.
+
+### Still to decide
+
+- **Rewording the Max marketing row** — it promises an *ordering* page at the operator's own address;
+  what exists serves a *schedule* page. §4, §46.
+- **The terms.** ⚠️ **V11.49 — ONE SUBJECT NOW, NOT TWO**: the embed half has no subject, so this is
+  the custom domain alone. §43.
+- ⛔ **ANSWERED V11.49 — THE IFRAME EMBED DOES NOT SURVIVE AS A FALLBACK.** It is removed outright.
+  🔴 **So an operator who cannot reach their DNS at all now has NO operator-owned surface** — the escape
+  hatch on the record screen (email it to whoever holds the domain) is the whole answer, and it assumes
+  such a person exists and replies. §46.
+
+## 🔴 STILL OPEN AFTER V11.47 — THE iOS RESUBMISSION AND ANDROID
+
+**Verification debt opened by the camera-crash workstream.**
+
+- 🔴 **ANDROID IS UNTESTED FOR THE SAME TAP.** The **same fourteen photo-upload inputs** are served into
+  the Android WebView. Android has **no TCC** and cannot fail identically, **but the manifest is
+  mid-edit**, and a **declared-but-never-requested `CAMERA` permission is a known way to break camera
+  intents while declaring nothing at all works.** ⚠️ **THE SIGNED RELEASE BUNDLE STAYS UNSUBMITTED until
+  the merged manifest is read and the same tap is run on PHYSICAL Android hardware — not the emulator.**
+  **Expected failure mode is a silent no-op, which nothing reports.** §36.
+- 🔴 **`PrivacyInfo.xcprivacy` DECLARES NO CAMERA OR PHOTO ENTRY** while the app now **visibly uses the
+  camera and uploads images to the server for AI extraction.** Whether a **"Photos or Videos"**
+  collected-data-type declaration is required **turns on whether the upload path RETAINS the image or
+  discards it after extraction — and that path has NOT been read.** **Not blocking the current
+  resubmission; settle it before a reviewer asks.** §36, §40.
+- ⚠️ **THE FAST "NOTHING FOUND" IS UNEXPLAINED** until the Vercel function log for that invocation is
+  read. §35.
+- ⚠️ **THE BUILD-INVENTORY REPORT'S SUMMARY COUNTS ARE WRONG:** it states **62 untracked where the true
+  figure is 69**, and **30 docs where the figure is 37**. ✅ **The enumerated lists in that report are
+  complete and correct, and no conclusion depends on the totals** — the classification, the archive
+  determination and the surface enumeration all stand. **Recorded so a future reader does not trust the
+  summary line.**
+- ⚠️ **Six migration files remain unread and unapplied** *(⛔ **SUPERSEDED V11.49 — THE SIX ARE
+  APPLIED**; the live schema is still unverified against them)*, and **57 modified tracked files remain
+  undeployed, six of them carrying two workstreams each.** **Nothing in that set was implicated in this
+  crash.**
+
+## 🔴 STILL OPEN AFTER V11.44 — AUTH, ANDROID, PLAY
+
+**AUTH.** The five KDS-adjacent route families (`/api/dashboard`, `/api/dashboard/action`, the three
+`/api/events/*` — **refunds and the customer-PII read are on the open side**) · the device or
+per-login enrolment model · **proxy-vs-tab refresh serialisation** (no shared lock; `auth-js` sets
+`lock: null`) · **the fourth Supabase client** (`lib/supabase-browser.ts`) · **token rotation** — no
+token expires, rotates or can be revoked · **`dashboard_pin` and `kds_pin` wired or removed** (§16) ·
+**scoping PostHog off the operator routes** · **the plaintext `/manage/<token>` link in
+`inbound-schedule`** (§18) · **a referrer policy** — zero hits repo-wide.
+
+**ANDROID.** `hg_device_id` on localStorage · the `push.ts` closure `releasePushHandlers()` never
+clears · 32 unregistered overlays · deep links unclaimed · **the native Bearer verification, still
+unobserved** · **the `MainActivity` route-knowledge duplication** (§36) · gesture navigation on the
+physical tablet · the Bluetooth printer on real hardware · biometric app-lock.
+
+**PLAY.** Play App Signing enrolment unverified · **the release AAB predates all of this work and must
+be rebuilt** · internal testing track before production · whether the operator surfaces should stretch
+past their widest breakpoint (§36).
+
+⚠️ **AND THE BATCH — see §22.** Ten workstreams uncommitted at once across two platforms, **including
+two server-side security changes that reach a web reviewer on the first push.**
+
+## 🔴 STILL OPEN AFTER V11.46 — THE WEBSITE EMBED
+
+**⛔ THIS SUPERSEDES THE V11.45 LIST BELOW**, which is kept because two of its items are unchanged and
+the rest show what the workstream thought it owed before detection and the wizard existed.
+
+- ⛔ **THE PLATFORM TEST IS CLOSED BY DELETION, NOT BY MEASUREMENT (V11.49).** It was the outstanding
+  measurement for the embed — four builder trial sites, the box pasted in, in a real browser. **The
+  iframe embed is removed (§46), so there is nothing to paste and nothing to measure.** ⚠️ **Every
+  platform unknown it would have converted is therefore still unknown**, and returns intact the day
+  anybody revives the embed. **It is recorded as retired, not as done.**
+- ⚠️ **ONE COLUMN, TWO QUESTIONS — DORMANT, NOT SOLVED (V11.49).** `trucks.embed_plan_answer` was
+  written by two different questions, so a stored `yes` means different things on different rows.
+  **Both questions went with the embed wizard, so nothing writes it and nothing reads it** — the
+  ambiguity is parked in the data, not removed from it. **It returns the moment anything writes that
+  column again.** §16.
+- 🔴 **THE TERMS DO NOT YET REFLECT THIS FEATURE.** ⚠️ **REWRITTEN SCOPE (V11.49): the schedule box is
+  gone, so the platform-plan half of this no longer applies — but the custom domain replaces it with
+  its own version.** The operator holds the DNS record and can repoint or drop it at any time, their
+  registrar or web person can change it without telling them, and **their schedule stays available on
+  our own site regardless**; they should confirm they are entitled to point that name at us. What
+  follows was written for the box and is kept because the shape of the obligation is the same:
+  it depends on the operator's own
+  website and their platform's plan, so **it cannot be promised to work everywhere**; changes they or
+  their platform make can stop it working; their schedule stays available on our own site regardless;
+  and they should confirm they are entitled to place it on that site. **This applies to every builder,
+  not one.** ⚠️ The legal content files are the source of truth and **already carry one unmet
+  promise**, so this wants a proper pass rather than an inserted paragraph. §43.
+- ✅ **THE MIGRATIONS ARE APPLIED (V11.49)** — all six: the embed flag, the last-seen/referrer pair,
+  the plan answer, and the three custom-domain ones. **This closes the "unapplied" item here and in
+  §16.** 🔴 **The columns STAY even though the embed is gone** — `embed_enabled` is what the
+  custom-domain page's schedule depends on, and provisioning now writes it. §16, §46.
+- ⛔ **CORRECTED V11.50 — "NOTHING HAS BEEN RENDERED IN A BROWSER AT ANY STAGE" IS NO LONGER TRUE.**
+  The page has been loaded against a real hostname and **renders**: truck name, real event, real venue,
+  working button, brand line. 🔴 **And the first load found a fault that had made every custom-domain
+  page impossible** — every framework bundle 404 on a custom host, so no JavaScript ran. §35, §46.
+  ✅ **THE TEST RIG, NOW WORKING (V11.50).** A hosts-file entry pointing a made-up hostname at loopback,
+  that hostname set as a truck's custom domain, and the dev server. **Two non-obvious requirements:**
+  the hostname **must not contain "hatchgrab"** (the host test matches that substring, so a subdomain of
+  our own site takes the wrong branch and proves nothing), and the suffix **must be `.test`, not
+  `.local`** — macOS resolves `.local` by multicast DNS and never consults the hosts file for it.
+  🔴 **WHAT REMAINS UNOBSERVED, AND IT IS STILL THE VERIFICATION DEBT THIS CARRIES INTO THE FIRST
+  DEPLOY:** provisioning end to end · a certificate issuing · a real DNS record resolving · **a button
+  pressed in a browser** (every card state was rendered by driving state directly) · a production build
+  · what an operator's address serves after being turned off. **The serving path is testable locally;
+  provisioning is not**, because it makes a real hosting API call and the page only exists in
+  production. Still needs a truck that is not a live one, and the hosting credentials. §46.
+  **The sequence, cheapest failure first:** does the page render and the certificate issue · is the
+  apex refused before anything is registered · does the record screen name the right provider with the
+  right field labels · does a deliberately broken record get caught by the daily check with a useful
+  diagnostic · does an abandoned setup get released while a live one is left alone.
+- ⚠️ **The analytics cookie contradiction with the privacy policy is unresolved** and is not an embed
+  problem. §43.
+- ⚠️ **Health monitoring is not built.** Its schema is not designed, and the fallback-stamps finding
+  (§35) is its governing constraint.
+- ✅ **DONE V11.50 — the marketing row rename.** It was renamed, moved above kitchen ticket printing,
+  **and flipped to a tick** — so the trap it was waiting on was walked into deliberately, with the
+  `ROW_FEATURE_MAP` entry in the same change and two probes proving the row is now actually inspected.
+  ⚠️ **The tick does not mean it works** — no domain has served a page in production, and a second gate
+  the matrix cannot see still decides what an operator gets. §4, §46.
+
+## 🔴 STILL OPEN AFTER V11.49 — CUSTOM DOMAINS
+
+- ✅ **CLOSED V11.51 — THE QR REDIRECT CYCLE.** It did need a different shape rather than a patch, and
+  the shape was a **separation**: `/o/<slug>` decides, `/trucks/<slug>/order` only serves. **The five
+  conditions moved verbatim into their own module.** The trace's exact sequence — scan, land on their
+  domain, tap Order — now ends at the ordering page at 200 with no redirect, and the post-payment
+  `?confirm=` return reaches its receipt. **What made it available: the operator confirmed no codes
+  have been printed.** §46, §35.
+- 🔴 **THE COLLISION CASE — nothing detects an existing record on the new name.** The provider's own
+  misconfigured flag is already read by the config helper and then discarded by pre-flight. **Surfacing
+  it is a small change.** §46.
+- ⚠️ **PARTLY CLOSED V11.51 — THE DUPLICATED LIVE-DOMAIN PREDICATE.** The redirect half now lives in
+  one module (`lib/custom-domain/redirect-target.ts`) that both the new scan route and nothing else
+  reads, so **the layout no longer holds a second copy.** 🔴 **The QR card's COPY still describes the
+  same five conditions in prose**, so a rule and a sentence about the rule remain two records of one
+  fact. **Reduced from two implementations to one implementation plus one description** — better, not
+  closed. §3, §46.
+
+## ⚠️ ADDED V11.51
+
+- ⚠️ **`lib/brand.ts:49` AND THE WHITE-ON-ORANGE ITEM ABOVE BOTH RECORD A STALE HEX.** `#ea580c` was
+  `orange-600` under Tailwind v3; the project is on 4.3.1, where it paints `#f54a00`. **The 3.56:1
+  contrast figure was measured against the old colour**, so the backlog item's headline number is
+  unverified. **Re-measure before quoting it.** §38, §46.
+- ⚠️ **NO MINIMUM-RESOLUTION CHECK ON LOGO UPLOAD.** The custom-domain page now renders the operator's
+  logo at 96–112px instead of 44px, so **a small upload upscales up to ×2.8 and looks soft.** No markup
+  fix exists; the durable answer is a check at upload. **Neither current truck is affected** — both
+  upload large. §46.
+- ⚠️ **THE QR CARD'S COPY STILL DESCRIBES THE FIVE CONDITIONS IN PROSE** — see the partly-closed item
+  above. §3, §46.
+
+## 🔴 NEW AND OPEN AFTER V11.50
+
+- 🔴 **THE STATIC-ASSET MATCHER TYPO, AND THE EIGHT PATH FAMILIES INVISIBLE TO THE POLICY.** Two
+  exclusions concatenated with the separator missing, making the first inert. **Live on an operator's
+  domain today: our brand mark, our PWA manifest titled for the other brand, and every other truck's
+  logo — 121 files.** ⚠️ **Deliberately not fixed: the one-character repair makes the whole framework
+  path invisible to the proxy on every host, a widening dressed as a correction.** **It is application
+  data on a third party's domain**, so this is not cosmetic. §35, §46.
+- 🔴 **THE TRUCK PROFILE'S IDENTITY JOIN — a live trading truck renders "Truck not found".** Identity
+  comes from the discovery table alone and a graduated truck's shadow is `excluded`; events come from a
+  separate path and arrive fine. **One truck today, latent for fifteen other excluded rows.** §32, §25.
+- 🔴 **AND THE ZERO-SCHEDULES-ON-OUR-HOST FILTER.** The temporary `isHG ? []` stopgap drops every
+  scraped event on HatchGrab, so **all 120 profiles read "no upcoming events found"** while the one
+  truck with events reads "Truck not found". **A second, independent reason to unwind the stopgap**, on
+  top of the one already recorded. §7, §15, §32.
+- 🔴 **THE KITCHEN-PRINTING ROW IS ADVERTISED `true` AGAINST ITS OWN TWELVE-LINE COMMENT** saying it
+  must stay coming-soon because a tick is a claim that it works and it does not. **It is in the map, so
+  the checker inspects it and passes — because the gate allows it**, while the feature has no real
+  transport. **Unchanged, reported.** §4.
+- 🔴 **FIVE DNS PROVIDERS STILL CARRY UNCHECKED FIELD LABELS, AND THEY ARE THE ONES THAT ACTUALLY
+  RENDER.** **Two of the four that were checked turned out to be wrong**, so the base rate on the
+  unchecked five is not reassuring. §46.
+- ⚠️ **THE RELEASE FUNCTION HAS NEVER BEEN CALLED BY ANYTHING**, sweep included, because the credentials
+  are unset. **The success path of turning off is untested**, and so is what an operator's address
+  serves afterwards. §46.
+- ⚠️ **LINK PREVIEWS ON OUR OWN HOST STILL USE THE OTHER BRAND'S LOGO, FROM A 3.86 MB FILE**, and the
+  installed-app manifest is **titled for the other brand on both hosts.** §38, §46.
+- ⚠️ **WHETHER THE SUBDOMAIN BECOMES INDEXABLE**, once the page has been seen in a browser. Off for now
+  on purpose; un-indexing is slow. §46.
+- 🔴 **THE HOSTING CREDENTIALS ARE NOT SET ANYWHERE**, so nothing in this feature can be exercised end
+  to end — and the resume path fails on every attempt because of it. §46.
+- 🔴 **THE MANAGE ROUTE IS STILL ENTIRELY UNMETERED, AND THE ACCESS RESOLVER STILL DOES NOT EXIST AT
+  HEAD.** Both live, both unchanged by this workstream, both sitting in the uncommitted batch. §27, §28.
+- ⚠️ **THE PROXY STILL HAS NO ERROR HANDLING AROUND ITS LIMITER**, and **no limiter call anywhere has a
+  timeout** — so every fail-open and fail-closed ruling in the repo is conditional on the cache failing
+  fast. §35.
+- ⚠️ **NAMING DEBT: an endpoint and a component named for the embed now serve custom domains.** Renaming
+  waits until it is settled whether the embed ever returns. §2, §46.
+- 🔴 **DEAD CONFIG: `vercel.json` STILL HAS A HEADER RULE FOR `"/embed/(.*)"`**, whose route is deleted.
+  **Found during the V11.49 manual merge, not by the workstream that deleted the route** — which is the
+  point: a route deletion did not sweep the config that named it. It matches nothing today and applies
+  a `noindex` nobody wrote to the first route added under that path. §2, §35.
+- 🔴 **THE LANDING TESTIMONIAL'S PUBLICATION PERMISSION.** The quote and award are real and confirmed;
+  **written consent is not recorded anywhere.** The admin gate and the no-index both stand, and the
+  second gate condition — the screenshot placeholders — is also still unmet. **Lifting the gate and
+  flipping indexing must happen in the same change**, which the route file requires.
+
+## ⛔ STILL OPEN AFTER V11.45 — THE WEBSITE EMBED (RETIRED V11.49)
+
+⛔ **THE IFRAME EMBED IS REMOVED (§46), SO OF THE SEVEN ITEMS BELOW: THREE ARE RETIRED, ONE IS CLOSED,
+AND THREE STAY OPEN.** The retired ones are marked, not deleted — **an item that stops applying because
+a feature was deleted is not an item that was solved**, and each returns intact if the embed ever comes
+back. **The three that stay open were never embed problems** (the analytics cookie, the
+never-rendered-in-a-browser debt, the marketing row), and one of those got worse.
+
+
+- 🔴 **THE POSTHOG COOKIE CONTRADICTION WITH `/privacy` IS UNRESOLVED, AND IT IS NOT AN EMBED PROBLEM.**
+  The policy says there are no analytics or tracking cookies; the code sets them on every route of both
+  domains with no consent gate. §43. **Nothing has been changed in either.** Also unread: which pageview
+  mode `defaults: "unset"` resolves to.
+- ✅ **CLOSED V11.49 — THE MIGRATIONS ARE APPLIED.** All six, not two. 🔴 **And `embed_enabled` STAYS
+  and is now written by domain provisioning**, because the custom-domain schedule depends on it. §16.
+- ⛔ **CORRECTED V11.50 — THE PAGE HAS BEEN RENDERED, AND THE FIRST RENDER PAID FOR ITSELF IMMEDIATELY**
+  by finding a fault that had made every custom-domain page impossible. 🔴 **The debt is smaller, not
+  discharged: no modal, no `document.cookie` inspected, no new tab opened, no `next build`, no
+  certificate, no DNS record — and no button pressed**, because every card state was rendered by driving
+  state directly. ✅ Provider detection against a real domain stands (V11.49). **This is still the
+  verification debt the feature carries into the first deploy after the freeze**, and it is listed here
+  rather than in a report so it cannot be closed by someone who never read one. §46.
+- ⛔ **RETIRED V11.49 — the wizard whose platform menu paths were unverified is deleted.** The finding
+  stands as a lesson (a wrong menu name does not degrade gracefully; it strands an operator mid-task)
+  and would apply again to any future step-by-step instruction we write from documentation rather than
+  from using a product.
+- ⛔ **RETIRED V11.49 — embed health monitoring has nothing left to monitor**, and the load stamp it
+  would have read is deleted. ⚠️ **The custom domain has its own monitoring and it IS built** (§46); the
+  fallback-stamps finding (§35) still governs it.
+- ✅ **CLOSED V11.50 — THE MARKETING ROW RENAME IS DONE.** It is now *"Your schedule at your own
+  website"*, moved above kitchen ticket printing **and ticked**, with its `ROW_FEATURE_MAP` entry added
+  in the same change and **two probes proving the row is genuinely inspected** rather than passing by
+  being skipped. The `FeatureRow`-has-no-id trap was walked into deliberately, with the counter-measure
+  attached. §4.
+  ⚠️ **UPDATED V11.51 — HALF OF THE UNDERLYING COMPLAINT IS NOW FIXED.** The Order button on that
+  surface **can** reach the ordering page: the QR cycle is closed (§46). 🔴 **The other half stands — no
+  domain has served a page in production**, and a second gate the matrix cannot see
+  (`trucks.embed_enabled`, default false) still decides what an operator actually gets. **So the row is
+  still ticked for something never proven end to end**, just no longer for something structurally
+  unable to complete.
+- ⛔ **RETIRED V11.49 — nothing frames us any more.** ⚠️ **But nothing STOPS anyone framing us
+  either**: `X-Frame-Options` and `frame-ancestors` are still unset everywhere (§2), so the sandbox
+  case is unreachable through our own product and reachable through anyone else's page.
 
 ## 🔴 V11.17 — added 14 August 2026 (the iPad build, on hardware)
 
@@ -9980,6 +11955,11 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 - **`trucks.website` carries a display-side URL patch in two customer pages.** Both now call the one shared `hrefFromStoredUrl`, but the underlying stored values are still un-normalised — a value saved with leading whitespace still produces a broken `https:// example.com`. **A data fix, not a render fix**; the renderer is deliberately byte-identical to what it replaced.
 - **Dashboard tokens never rotate.** `trucks.dashboard_token` is a long-lived bearer credential for `/api/manage`, which authenticates on it ALONE with no session. The welcome email no longer carries one (it links to the tokenless `/manage` index, which resolves from the session), but nothing expires or rotates an existing token, and it is in every operator's browser history.
 - **White-on-orange button contrast, app-wide.** `#ea580c` is 3.56:1 and the brand `#EF8B2C` is 2.50:1, both below the 4.5:1 AA floor for normal text. The email deliberately uses the brand value; **the app-wide decision is separate and must not inherit from it.** For reference: orange-700 `#c2410c` is 5.18:1, orange-800 `#9a3412` is 7.31:1.
+  🔴 **CORRECTED V11.51 — `#ea580c` IS NO LONGER THE APP'S `orange-600`, SO THE 3.56:1 FIGURE IS
+  MEASURED AGAINST A COLOUR THE APP NO LONGER PAINTS.** Tailwind 4.3.1's `orange-600` is **`#f54a00`**,
+  read back as rendered sRGB from a canvas. **This item is still open and its headline number is now
+  unverified** — re-measure against `#f54a00` before quoting it. The same stale hex is recorded in
+  `lib/brand.ts:49`. §38, §46.
 
 ## 🔴 V10 — added 3 August 2026 (buzzers)
 
@@ -10004,7 +11984,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 ### Found, reported, not fixed
 - **🔴 `HATCHGRAB_SENDER.email` is `hello@villagefoodie.co.uk`** (`email-config.ts:12`). Every HatchGrab-branded operator email sends from a Village Foodie address. Blocked on **hatchgrab.com not yet being set up**, then `hello@hatchgrab.com` in Brevo with SPF/DKIM. This is the largest remaining brand inconsistency.
 - **QR poster truck name has no `maxWidth`.** `generateQRCode.ts:203` calls `fillText` without clamping, so a long name renders *underneath* the logo. Budget is 273px (down 16px after the re-crop); threshold ~20-25 characters. Live names already at it: "Noodle and Dumpling Bar", "Kezmet Turkish Kitchen". Passing `maxWidth` squashes rather than truncates — the correct fix is a measure-and-ellipsis loop.
-- **Native icons blocked on `minSdkVersion`.** Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
+- ⛔ **DISCHARGED V11.43 — ALL 31 RASTER ASSETS SHIPPED (§36).** `minSdk 24` predates adaptive icons, so **both** the legacy PNGs and the adaptive foregrounds were required, and both were generated. ⚠️ **The background question below was settled on the evidence of what ships (white), and the master SVG still disagrees.** *Original entry retained:* ~~**Native icons blocked on `minSdkVersion`.**~~ Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
 - **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo. **Still open at V9.9** — re-reported in that session and merged here rather than duplicated.
 - **`BRANDS.HATCHGRAB.logo` (`lib/brand.ts:11`) still points at the Village Foodie file** with a now-false "replace when HatchGrab logo exists" comment. Zero consumers, so documentation-only harm.
 - **`VF_LOGO_URL` (`email-config.ts:39`) is dead code** — declared, never imported.
@@ -10593,9 +12573,9 @@ A truck-level master switch that gates ALL per-item pre-order config without los
   - **Any gate is a WEB-BUNDLE change** — the Billing tab renders from `lib/plan-features.ts` — so it must key off the **platform at runtime** (`getPlatform() === 'ios'`), **not** `isNativePlatform()`. Android has no such restriction and a native-vs-web check would strip billing from it for no reason.
   - **If manage is ever scoped down** (not yet investigated): some settings live in manage but govern DASHBOARD behaviour — kitchen capacity is editable from both surfaces, order-ready is a Settings master switch, offline protection has a per-event dashboard override but its default on the van. **An operator must be able to fix capacity mid-service without a laptop.** And `/api/manage` is token-based and authorises as owner, so **removing UI removes the surface, not the route** — hiding a tab is presentation, never access control.
 - 🔴 **NOTIFICATION HONESTY PASS — carries a BLOCKING coupling.** The Settings card must read/write `device_notification_prefs` (§16) instead of the device-local keys. **The one-time migration of `hg_notify_master` / `hg_notify_offline` / `hg_notify_neworder` into that table MUST ship in the SAME RELEASE as the card.** The backfill seeded `offline_protection = false` for all nine devices, so any operator who had enabled offline alerts locally **goes silent** the moment the card ships without it — and silently: no error, and their toggle will show the new server value as though they had chosen it. It is also precondition 4 of the retire/sweep migration.
-- **FCM sender** — the server half of Android push. `sendOrderPendingPush` is APNs-only, and `app/api/orders/submit/route.ts:1077` still carries `.or('platform.eq.ios,platform.is.null')`, which **excludes Android from order push entirely**. The client half is verified end to end, so today the only device in the fleet with a working token is the one the send path filters out.
+- ~~**FCM sender** — the server half of Android push. `sendOrderPendingPush` is APNs-only, and `app/api/orders/submit/route.ts:1077` still carries `.or('platform.eq.ios,platform.is.null')`, which **excludes Android from order push entirely**. The client half is verified end to end, so today the only device in the fleet with a working token is the one the send path filters out.~~ ⛔ **STRUCK V11.43 — THE FCM SENDER IS COMPLETE.** `lib/fcm.ts` sends via FCM HTTP v1 and the send path splits into `iosTokens`/`androidTokens` with a live FCM call; the `.or(...)` predicate is gone. **It was BUILT IN V11.21 and this line survived beside its own correction for two versions** — §36 has carried "🔴 THE FCM SENDER — ANDROID WAS THE EXACT MIRROR OF iOS (V11.21)" the entire time. **This manual carried it as outstanding backlog since V9.2; it is the THIRD stale-entry incident in two days** (see the V11.18 refunds and authorize-then-capture strikes for the same shape). ⚠️ **What remains true and is a DIFFERENT statement:** the sender was proven by a `validate_only` probe with a deliberately fake token — **built and validated, never observed delivering a message to an Android device.**
 - **Android hardware back** — no handler. The system back gesture/button currently does whatever the WebView does, which is not the same as what the app should do.
-- **Notification icon** — `ic_stat_icon_config_sample` **does not exist**, and `ic_launcher` renders as a **white square** in the status bar (Android requires a flat white-on-transparent silhouette; a full-colour launcher icon is flattened to its alpha channel). Needs a purpose-drawn monochrome asset.
+- ~~**Notification icon** — `ic_stat_icon_config_sample` **does not exist**, and `ic_launcher` renders as a **white square** in the status bar (Android requires a flat white-on-transparent silhouette; a full-colour launcher icon is flattened to its alpha channel). Needs a purpose-drawn monochrome asset.~~ ⛔ **STRUCK V11.43 — BUILT, AND THE REASONING WAS WRONG TWICE OVER.** `ic_stat_hatchgrab` now exists at all five densities (88–92% transparent, **zero non-white non-transparent pixels**, measured pixel-by-pixel), and `NOTIFICATION_SMALL_ICON` has one definition referenced by the config and all three local-notification helpers. 🔴 **`ic_launcher` NEVER RENDERED AS A WHITE SQUARE, BECAUSE IT NEVER RESOLVED AT ALL** — it exists only as `mipmap/ic_launcher` while the plugin looks up type `drawable` (`LocalNotification.java:337`), confirmed against the built APK's resource table. **The real symptom was the Android system ⓘ**, via the plugin's `android.R.drawable.ic_dialog_info` fallback. The asset requirement in the struck text is still correct and still worth keeping; only the named symptom was wrong.
 - 🔴 **Kitchen ticket printing: decide between shipping it, marking the compare row `coming_soon`, or accepting the claim.** Currently `Max: ✓` against a stub transport. **The sharpest claim on the pricing page.** See §16's live-schema facts and the onboarding spec's O18.
 - **The KDS demo banner defaults to the `upload` copy variant and to `isAdmin: false`**, because that page makes neither an `/api/auth/me` nor a `/api/dashboard` demo-block call. Fixing it means adding a request that page doesn't make.
 - **`ipad_kds` is now a stale name for a cross-platform feature.** It is the enforcement identifier in `lib/features.ts`, so renaming it needs a data migration — not copy.
@@ -10747,6 +12727,124 @@ and nothing in the build can substitute for them. Everything else below is work,
   same day, after this delta was written. 🔴 **BUILT IS NOT DEPLOYED:** they are uncommitted in the working
   tree and join the queued batch, so production still runs the old behaviour. **What remains on this list
   is deploying them, and then deleting `META_APP_SECRET` from Vercel.**
+
+## V11.42 — VERIFICATION DEBT, updated (SUPERSEDES the V11.41 list below)
+
+**DISCHARGED BY EXECUTION OR LIVE READ:** the WhatsApp outage root cause, fixed and **verified by a live
+message** · `META_APP_SECRET` deleted, ancestry verified **and** proven by a live inbound afterwards · the
+GET verification handshake against production (200, `text/plain`, echoed challenge) · **both
+`whatsapp_logs` indexes, confirmed by reading `pg_indexes`** · the Meta platform census (app, WABA, phone
+number id, subscribed apps) · the Meta icon export, flood-fill proven.
+
+🔴 **STILL UNOBSERVED, AND SOME OF IT IS NOW DATED:**
+
+- **The reply cap has still never fired.** No cap row, no handoff sent. ⚠️ **It should ship before
+  1 October.**
+- **The template CREATE call has never executed** — the last unproven technical piece before filming.
+- **`village-spice`'s NULL `trial_expires_at`** — nobody has read whether `canAccess` treats it as
+  never-expiring or expired. 🔴 **That truck has everything or nothing and we do not know which.**
+- **The submitted app-review recording is probably insufficient** and cannot be edited or cancelled.
+- **The token-expiration setting** on the Facebook Login for Business screen.
+- **`hatchgrab.com`'s domain verification** after the portfolio deletion — **fails silently if disturbed.**
+- **The 4.79 GB egress** is undiagnosed.
+- **Android**: the inventory was commissioned, not answered; Home/backgrounding and the overlay denominator
+  are both unknown; **gesture navigation cannot be verified on an emulator.**
+
+## V11.41 — VERIFICATION DEBT, updated (SUPERSEDES the V11.40 list below)
+
+**DISCHARGED BY EXECUTION — THE REPLY CAP:** the decision function across fifteen boundary cases,
+including all three limits at, under and over; precedence when two and three caps coincide; the
+already-notified case on a truck at zero returning the customer member rather than falsely claiming a
+truck cap; **the per-customer limit passed as 5 returning REPLY at 4 and NOTIFY at 5 — a result the module
+constant cannot produce, so the parameter is honoured rather than inspected** · both handoff variants
+rendered, with null, empty and whitespace-only byte-identical · the derived daily constant equalling one
+tenth of the monthly · **the PostgREST filter parsing against production, and discriminating** · the
+three-valued-logic difference between the two filter forms.
+
+🔴 **STILL UNOBSERVED — AND THE LIST IS SHORT BECAUSE NO INBOUND MESSAGE HAS EVER REACHED THIS CODE:**
+
+- **Neither cap has fired.** No cap row has ever been written. **The handoff has never been sent or seen.**
+- **The two count queries have never run in situ**, and the month-boundary computation has never executed.
+  ⚠️ **A wrong boundary fails as an under-count — a ceiling that resets early.**
+- **The fail-open path has never been exercised.** It is the branch that would hide any future failure of
+  the same queries.
+- **The wiring was typechecked, not run.** Only the pure function was executed.
+- ⚠️ **The monthly ceiling of 2000 has no traffic behind it.** A runaway ceiling chosen without data. **It
+  must not be lowered into budget territory until an operator notification exists.**
+- 🔴 **The truck day and month ceilings cannot be reached by hand and will stay unobserved indefinitely.**
+  **Say so rather than letting them drift onto a tested list.**
+- **`ALLERGEN_QUERY` and `IGNORE` have never produced a production row** — the allergen redirect is the
+  safety floor.
+
+### ✅ THE POST-DEPLOY SEQUENCE, IN ORDER — FOUR MINUTES ON ONE HANDSET
+
+**Send four messages from the allowlisted handset to `test-truck`.** The fourth must return the handoff —
+**order link present, contact clause absent**, because that truck's `whatsapp` is blank. Then confirm a
+customer-cap row exists with `response_sent` populated. Then send a fifth: it must write the
+already-notified classification and **send nothing**.
+✅ **That single pass exercises the customer cap, both log outcomes, the handoff-without-contact variant,
+and the month query in situ.**
+
+### BACKLOG OPENED THIS SESSION
+
+- 🔴 **The per-truck DAY count fetches rows and takes `.length`.** Count-only was scoped to the month
+  deliberately, and the day window genuinely needs the rows because its boundary is applied in JS by local
+  date. ⚠️ **But at a ceiling of 200 that read pulls up to 200 rows on every inbound — the read grows with
+  the traffic it exists to limit.** Not urgent while nothing is onboarded; **it is what "always build for
+  scale" is aimed at.**
+- **The stale timezone comment** at the greeting's `truckTz` constant, now false in the direction that
+  invites a wrong fix.
+- **An operator surface for cap state.** Nothing tells an operator a cap fired. **Until it exists the
+  monthly ceiling is a runaway guard and not a budget lever.**
+- **A per-truck operator-settable per-customer limit**, ceiling 5 — one line at the call site, plus a
+  column, allow-list entry, UI control and validation. **Not built; the parameter exists so it stays one
+  line.**
+- ⚠️ **RETENTION.** A per-customer counter keyed on `customer_number` adds a **second load-bearing reason**
+  to retain customer phone numbers. **The legal section promises logs are retained 90 days; the schema
+  section records `scraper_run_log` as the ONLY pruned table, so `whatsapp_logs` keeps every number
+  indefinitely.** The gap pre-dates the cap. 🔴 **With ICO registration still not done and Meta's Integrity
+  team about to read the privacy policy, close it in the same batch.**
+
+**OPEN DECISIONS CARRIED:** the WhatsApp token-storage question to Meta, **leaning strongly toward storage
+being needed** · the landing's testimonial permission and screenshot placeholders, **blocking Meta as well
+as the App Store** · ICO registration · the Connect early-return's expiry condition · the UTC date
+reference on the live reply path · **whether the send-initiating surface is a compliance artefact filmed
+once or a product capability** — the template tool is the precedent and says artefact.
+
+## V11.40 — VERIFICATION DEBT, updated (SUPERSEDES the V11.39 list below)
+
+**⛔ THE PREVIOUS LIST'S LARGEST STANDING ITEM IS DISCHARGED: the commerce gates and the manage surfaces
+were seen on a physical iPad for the first time.**
+
+**DISCHARGED THIS SESSION, BY OBSERVATION ON HARDWARE:** the eleven commerce gates — **no upgrade surface
+appeared anywhere in the native shell** · the Danger Zone's absence (a defect found *by* looking) · the
+billing tab's empty container on plan `demo` · the billing card's empty shell after the gate mistake.
+
+**DISCHARGED BY EXECUTION OR LIVE READ:** that every seeded event's order counter equals its highest
+display id · that seeded events carry no `production_slot_usage` rows and one hand-worked event does ·
+that no truck in the database is on plan `pro` · that the support mailbox receives.
+
+🔴 **STILL UNOBSERVED:**
+
+- **The two-leg deletion auth fix.** ⚠️ **It was committed after the recording and has never been seen
+  working on the device.** The Danger Zone's presence in the shell is **assumed from the fix, not
+  observed.**
+- **The auto-replies native hide** and **the ungated billing block** — both committed, neither seen on an
+  iPad in their final state.
+- **`showVanBillingModal`** — the ungated purchase surface. Unreachable today because no truck is on
+  `pro`; **that is a data fact, not a code fact, and it changes the day one is.**
+- **The `trial` expiry cliff on the demo truck** — what a reviewer sees after 31 December 2026 has never
+  been rendered.
+
+**CARRIED, UNCHANGED:** the WhatsApp template create payload · any per-truck send · Embedded Signup · the
+moved website field never round-tripping a value · the preview route never called · the uplink-pulled
+order number · the drain un-wedging · a real cancel writing a suppression row · the ownership gate
+refusing a foreign event · the auto-reject sweep · Stripe releasing a hold on reject — 🔴 **and Stripe has
+still never processed a real customer payment on any truck.**
+
+**BACKLOG OPENED THIS SESSION:** the missing `default` branch in the billing tab · the "renews
+automatically" string for real `pro`/`max` operators · `showVanBillingModal`'s iOS branch · the dashboard's
+bare profile-save call · the `demo-` prefix not covering non-prefixed synthetic-trade trucks.
 
 ## V11.39 — VERIFICATION DEBT, updated (SUPERSEDES the V11.38 list below)
 
@@ -11041,7 +13139,41 @@ Layered protection against bulk scraping of the public discovery and event data,
 
 > **RULE** — The STRICT limiter applies ONLY to public, bulk-scrapeable data. It must NEVER touch an authenticated or ordering route — doing so caused two regressions (events disappearing on the dashboard when /api/events/manage got a 429; customer ordering blocked behind shared café/CGNAT IPs).
 
-- **STRICT — 60/min (raised from 3/min, V7.8 §11)** — /api/discovery and /api/events (public slug lookups) ONLY. RAISED because `/api/discovery/events` is on this tier yet is fired by `useVillageData` on EVERY public page (home, /trucks, each truck, venues) × up to 3 retries × shared/CGNAT IPs — so a fresh visitor tripped the old 3/min on their first journey and got a 429. The bulk endpoints return the same static snapshot each call, so sub-minute repeats give a scraper nothing; 60/min clears human browsing + the retry burst while still capping a tight harvest loop. STRICT and GENERAL are now numerically equal but remain SEPARATE buckets/prefixes for future re-tightening. DURABLE fix (backlogged, Section 27): dedupe/cache the per-page discovery call + soften the retry, then STRICT can drop again.
+- ⛔ **STRUCK V11.45 — STRICT IS 3/min AGAIN, AND `/api/events` IS NO LONGER ON IT.** Read from
+  `lib/ratelimit.ts`: `strictRatelimit` is `slidingWindow(3, '1 m')` and its own comment says *"(Was
+  mistakenly 60/min — same as general — which left the 'strict' scraper tier not actually strict.)"*
+  `/api/events` was SPLIT OUT to its own **EVENTS** tier on 11 August after the 60/min entry below was
+  written, and `proxy.ts` now matches it EXACTLY (`p === '/api/events'`). **The tier list that follows
+  described a state that has not existed since 11 August.** The current tiers are STRICT 3/min,
+  EVENTS 600/min keyed (IP, truck), GENERAL 60/min, and EMBED 600/min keyed (IP, slug) — see below.
+  The struck original: ~~**STRICT — 60/min (raised from 3/min, V7.8 §11)** — /api/discovery and /api/events (public slug lookups) ONLY. RAISED because `/api/discovery/events` is on this tier yet is fired by `useVillageData` on EVERY public page (home, /trucks, each truck, venues) × up to 3 retries × shared/CGNAT IPs — so a fresh visitor tripped the old 3/min on their first journey and got a 429. The bulk endpoints return the same static snapshot each call, so sub-minute repeats give a scraper nothing; 60/min clears human browsing + the retry burst while still capping a tight harvest loop. STRICT and GENERAL are now numerically equal but remain SEPARATE buckets/prefixes for future re-tightening. DURABLE fix (backlogged, Section 27): dedupe/cache the per-page discovery call + soften the retry, then STRICT can drop again.~~
+
+- **EVENTS — 600/min, keyed (IP, TRUCK SLUG)** — `/api/events` and nothing else, matched exactly.
+  Split out of STRICT on 11 August 2026 **after it refused real customers**: a normal journey costs
+  exactly 3, so the fourth request in a minute was a 429, and eight of them landed in fifty seconds
+  while `/api/menu` returned 200 throughout. 🔴 **ITS JOB CHANGED WITH ITS TIER — it is a RUNAWAY-LOOP
+  BACKSTOP, not an anti-scraping control**, and the governing principle is recorded in the file: *a
+  scraper getting through is an acceptable cost; a customer who cannot order is not.*
+
+- **EMBED — 600/min, keyed (IP, SLUG)** *(V11.45)* — `/embed`, `/embed/*` and `/api/embed/*`.
+  🔴 **BOTH THE PAGE AND ITS DATA FETCH ARE IN THE BUCKET, SO ONE EMBED VIEW COSTS TWO TOKENS** — 600
+  is therefore 300 views per minute from one address for one truck, and the sizing is done in those
+  units. **Not STRICT**, because an embed sits on a business's homepage and the fourth visitor behind
+  one shared address would see a broken box on their local pizza place's site. **Not GENERAL**, because
+  an embed's traffic is the OPERATOR's traffic and must not be able to exhaust a bucket the discovery
+  pages also draw from. ⚠️ **Sized pessimistically on the CDN**: whether Vercel's Edge Middleware runs
+  before the cache lookup — and therefore spends a token on a cache hit — was NOT verified.
+- **CUSTOM-HOST — 600/min, keyed (IP, HOST)** *(V11.48)* — an operator's own domain (§46).
+  🔴 **IT EXISTS BECAUSE EVERY OTHER PREDICATE IN THIS FILE TAKES ONLY THE PATHNAME**, so a custom domain
+  serving at `/` matched **none** of them and would have been the one public surface with **no limiter at
+  all**. **Keyed on the HOST rather than a slug because the host IS the tenant here**, and one operator's
+  traffic must never be able to exhaust another's budget. ⚠️ **The certificate-challenge path is exempt
+  and passes through unlimited** — denying it breaks renewal months later rather than immediately.
+- **DOMAIN-PREFLIGHT — 10/10min, keyed TRUCK** and **DOMAIN-INSTRUCTIONS — 3/24h, keyed TRUCK**
+  *(V11.48)* — 🔴 **ENFORCED IN THE ROUTE HANDLER, NOT HERE, AND DELIBERATELY SO.** `/api/manage` is
+  structurally outside this allowlist (below); adding it would put **one bucket in front of ~60 actions**,
+  including every menu write an operator makes during service. Checked inside their own action branches
+  so no other action shares them. Sizing and the fail-direction split: §46, §35.
 - **GENERAL — 60/min** — 🔴 **NOT "everything else". CORRECTED V11.37 — THIS LINE READ *"everything else, including /api/menu and /trucks"* AND THE CODE DOES THE OPPOSITE.** The tier covers a **positive allowlist** — today `/trucks` and `/trucks/*` — and nothing beyond it. See the replaced model below.
 - **EXEMPT (no limit)** — /api/dashboard/action, /api/orders/submit, /api/webhooks, /api/admin, /api/events/manage, /api/events/action, /api/events/affected-orders, /api/inbound-schedule, /api/heartbeat.
 
@@ -11393,6 +13525,52 @@ at handover), create the operator, or write `trucks.is_customer`.
 > at all where that truck used to be** — no events, no listing, no placeholder — until the HatchGrab
 > truck has confirmed events. **So promote first, build the truck, confirm the first event, and create
 > the operator LAST.** That collapses the blackout from days to zero.
+
+## 🔴 THE PROFILE PAGE SAYS A LIVE TRADING TRUCK DOES NOT EXIST (V11.50)
+
+⛔ **THE SEQUENCING RULE ABOVE UNDERSTATES THIS. The blackout does not end when the truck confirms its
+first event — for the profile page it never ends at all.** Loaded in a browser on our own host:
+`/trucks/<slug>` for the live trading truck renders **"Truck not found"**, while **the very payload that
+page just fetched carries two of that truck's events.**
+
+🔴 **THE CAUSE IS A CORRECT EXCLUSION MEETING A WRONG ASSUMPTION, AND BOTH HALVES ARE WORKING AS
+DESIGNED.** The discovery payload has two halves that come from different places:
+
+- **Identity** — the `trucks[]` array is built from **`discovery_trucks` alone**, and the code says so
+  in its own comment (*"Trucks list (discovery only)"*). A graduated truck's shadow carries
+  `excluded = true`, so it is filtered out. **That exclusion is right**; it is what stops the duplicate.
+- **Events** — operator `truck_events` arrive by an **entirely separate query** and pass every gate.
+
+**The page takes identity from the first and events from the second, and joins them by slug.** So an
+operator whose shadow is suppressed has **events and no identity**, and the lookup that resolves the
+slug to a truck returns nothing. **Neither half is buggy. The join is.**
+
+⚠️ **AND THE TWO HALVES DO NOT EVEN USE THE SAME SLUG SPACE** — the identity half keys on
+`createSlug(name)`, the operator side stores `trucks.slug`. **Seven of twelve trucks differ**, and the
+stored column carries collision suffixes (`-2`, `-3-2`) and opaque demo identifiers that **no
+name-munging could ever reach**. §46.
+
+🔴 **ONE TRUCK TODAY. LATENT FOR FIFTEEN OTHER EXCLUDED ROWS** — any of them becomes the same failure
+the moment it has an event in the feed. **This is the sweep result, not an estimate.**
+
+### 🔴 AND ON OUR OWN HOST THAT PAGE SHOWS A SCHEDULE FOR ZERO TRUCKS
+
+The temporary `isHG ? []` stopgap (§7, §15) drops **every** scraped event on HatchGrab, so the feed
+there carries operator events only — **and the one operator with events is the one missing from the
+identity half.** The result is that **all 120 profiles read "no upcoming events found"**, and the single
+truck that does have events reads "Truck not found" instead. **Two independent, individually-defensible
+decisions compose into a page that can never show anything.** ⚠️ **This is a second reason to unwind the
+stopgap**, on top of the one already recorded at §7 and §27.
+
+⚠️ **THE PAGE CARRIES EVERY PIECE OF VILLAGE FOODIE CHROME ON OUR HOST** — the logo, two newsletter
+captures, a link to a directory of 120 competing trucks, contact links and the vendor disclaimer. **It
+is no-index in production, so search is not a route in**, but any link we hand an operator's customer is.
+
+⚠️ **ONE CORRECTION TO AN EARLIER ENTRY: the host check appears at TWO sites in that render path, not
+three.** The substance is unchanged — **both only remove affordances**, neither changes the identity
+join, so the count does not affect any conclusion drawn from it.
+
+**Open.** §25, §33, §27, §46.
 
 # 33. Discovery / Visibility / Customer-Trucks-on-VF model + July 2026 data-integrity + DEPLOY-COUPLING LANDMINES
 
@@ -12344,6 +14522,77 @@ button went.** Corrected in place rather than left beside its correction.
 claim it corrects is two claims.** ⚠️ The comment was found by sweeping rather than by reading the
 diff, which is the same argument the census makes.
 
+## V11.42 — METHOD: additions
+
+- 🔴 **RANK CANDIDATES BY WHAT THE EVIDENCE EXCLUDES, NOT BY WHAT CHANGED MOST RECENTLY.** An outage
+  investigation opened on the newest untested change and spent four rounds on it. **"No log lines at all"
+  was already inconsistent with that hypothesis, because the gate logs its refusals** — one observation
+  that excluded the leading candidate at the start and was not used. ⚠️ **Recency of change is a prior,
+  not evidence.**
+- 🔴 **ADJACENT EVIDENCE IS NOT EVIDENCE.** Twice in one session a claim was supported by something merely
+  *near* it: an `{"error":"Invalid signature"}` body offered as proof the app secret was configured (**both
+  gate branches return the same body — only the LOG line distinguishes them**), and **storage**
+  minimisation offered as grounds for claiming a **disclosure** minimisation policy. **The operator caught
+  both.** ⚠️ **Same family as *a calculation is not a measurement* — one layer up, in the reasoning rather
+  than the tooling.**
+- 🔴 **A CHECK WHOSE FAILURE MODE IS INDISTINGUISHABLE FROM ITS NEGATIVE ANSWER IS NOT A CHECK.**
+  `git merge-base --is-ancestor A B` exits non-zero both when B lacks A **and when either SHA fails to
+  resolve**, so `|| echo "ABSENT"` reported a confident, meaningless result for a typo'd hash. **Resolve
+  both first and refuse to read the result otherwise.** ⚠️ **Joins the empty-population trap from V11.41.**
+- ⚠️ **A GREEN TICK IN A THIRD-PARTY DASHBOARD IS NOT DELIVERY.** Meta holds **two independent webhook
+  configurations**; a verified callback URL in one, with the other pointing elsewhere, yields a tick and no
+  deliveries. **Joins:** *a variable set in Vercel is not a variable in the running deployment.*
+- ⚠️ **A SILENT GATE MAKES EVERY UPSTREAM FAILURE LOOK IDENTICAL.** An expired trial, a dead webhook, a
+  wrong callback URL and a missing subscription all presented as **200 and no row.** **One log line at the
+  decision point is the difference between thirty seconds and an hour.**
+
+## V11.41 — METHOD: additions
+
+- 🔴 **AN ENTRY THAT DESCRIBES WORKING-TREE STATE HAS AN EXPIRY DATE BUILT INTO IT. WHEN THE BATCH SHIPS,
+  THE ENTRY MUST BE SUPERSEDED WHERE IT SITS — NOT MERELY CONTRADICTED BY A LATER LIST.** A reader
+  arriving at a subsystem section will not read the debt list four sections down. ⚠️ **The convention of
+  retaining superseded debt lists in place is correct FOR LISTS and WRONG for a status claim inside a
+  subsystem entry.** Added because this is the **second** time a stale entry commissioned work.
+- 🔴 **THE FAMILY GAINS A MEMBER:** *a fix in the repo is not deployed* · *a variable set in Vercel is not
+  a variable in the running deployment* · **now: *a manual entry describing the working tree is not a
+  statement about the working tree tomorrow.***
+- 🔴 **WHEN THE POPULATION UNDER TEST IS EMPTY, A PASSING RESULT CARRIES NO INFORMATION.** A test whose
+  pass condition is *"the number did not change"* cannot distinguish a working filter from an absent one
+  while the thing being filtered does not yet exist. **Construct a case where the filter must bite.**
+  ⚠️ **Third member in one subsystem**, alongside the routing defect whose live test passed because the
+  tester's own number sat in `whatsapp_sender`.
+- ⚠️ **A FAIL-OPEN GUARD THAT IS INDISTINGUISHABLE FROM A WORKING ONE IS A GUARD WITH NO OBSERVABILITY.**
+  Record the consequence at the guard, not only in the manual.
+- ⚠️ **THE DIRECTION OF A SAFE DEFAULT DEPENDS ON WHAT THE FAILURE COSTS, NOT ON A HABIT.** Two guards two
+  hundred lines apart in one file correctly fail in **opposite** directions.
+- ⚠️ **DERIVING A CONSTANT CAN CHANGE ITS VALUE, AND THAT IS THE POINT.** A hand-written 300/day became
+  200 once it was expressed as one tenth of the month. **Nobody chose 200; the relationship did.**
+
+## V11.40 — METHOD: additions
+
+- 🔴 **A SWEEP THAT STARTS AT THE GUARD MEASURES COVERAGE OF THE GUARD, NOT COVERAGE OF THE RISK.**
+  Searching outward from a predicate cannot find a surface that never called it. **To find what is
+  unguarded, enumerate the surfaces and work back.** ⚠️ **The outward sweep reads like the complete
+  answer**, which is what makes it dangerous — it was correct eleven times and blind the whole way.
+- 🔴 **A COMPONENT THAT CAN RENDER NOTHING MUST SAY SO.** A bare `.catch` that sets a flag and returns
+  `null` produces no log, no toast and no empty state — **the feature is simply absent and nothing
+  anywhere explains it.** This one survived three months and was found by looking at hardware.
+  **Joins:** *an absent style is indistinguishable from a design choice · a change can compile, read as
+  correct, and do nothing.*
+- 🔴 **PREDICTING AN OUTCOME IS NOT PREVENTING IT.** A comment shipped alongside a gate named the exact
+  failure the gate then caused, having guarded the wrong element against it. **A warning in the right
+  place about the right risk is not a control.**
+- ⚠️ **A COMMENT CAN ASSERT A SAFETY PROPERTY THE CODE DOES NOT HAVE.** *"ONE resolver, used by both
+  handlers, so they can never disagree"* — and one handler had never called it. **Check the claim, not
+  the confidence.**
+- ⚠️ **AN EXECUTOR STOPPING ON A CONTRADICTORY BRIEF IS THE GOOD OUTCOME, NOT A FAILURE TO DELIVER.** A
+  brief asserted a seeding path that did not exist; the executor found it, stopped, and did not improvise
+  inserts against production. **Joins the standing rule that a premise written confidently into a brief is
+  inherited by everything built from it.**
+- ⚠️ **A PHRASE CAN BE THE DEFECT, WITH NO CONTROL BEHIND IT.** "Coming soon" is treated as evidence of
+  incompleteness in its own right. **The rule "is there a control behind it" is necessary but not
+  sufficient.**
+
 ## V11.39 — METHOD: additions
 
 - 🔴 **DUPLICATING A SURFACE REVEALS ASSUMPTIONS THAT ONLY HELD BECAUSE THERE WAS ONE INSTANCE.** Three
@@ -12554,6 +14803,556 @@ with comments blanked is truthful.
   global behaviour through an event-scoped key had the unfiltered `orders` prop not been noticed. **The
   prop's name was the trap.**
 
+## 🔴 A FIELD DERIVED FROM THE CALLER'S IDENTITY MOVES ON EVERY PARTIAL WRITE (V11.43)
+
+**A field derived from the caller's identity moves on EVERY partial write, while a field supplied by the
+caller is only validated WHEN PRESENT.** Guarding the supplied field is not enough; the two must be
+reconciled explicitly. **Validating a field only when supplied is correct in isolation — the defect is
+that another field moves underneath it.**
+
+*Evidence (V11.43):* `bind-device` rewrote `truck_id` from the token on every request but wrote and
+validated `van_id` only when the caller sent one, so `{push_token}` alone moved a device to a new truck
+and left the old truck's van on the row. **Its 404 cross-truck guard was correct and was simply never
+entered.** §11.
+
+⚠️ **THE SWEEP:** `switch-truck` writes `truck_id` and `van_id` together in one literal and is therefore
+immune by construction — **the shape to prefer.** **STATUS: SWEPT — one member, fixed.**
+
+## 🔴 A DISCRIMINATED READ RESULT BESIDE A `null`-RETURNING WRITE IS A DEFECT IN THE WRITE (V11.43)
+
+When one direction of the same file already distinguishes *failure* from *empty* and the other collapses
+everything to `null`, **the asymmetry is the finding** — the reasoning that produced the good one applies
+unchanged to the bad one, and it is sitting in the same file for anyone to read.
+
+*Evidence (V11.43):* `fetchDeviceConfig` returns `DeviceConfigResult` so a transient 429 shows a Retry
+card instead of masquerading as "no active van". `saveDeviceConfig`, twenty lines below, collapsed five
+distinct server rejections and a network throw into one `null` with **no console line at all** —
+**diagnosing one instance required streaming production logs.** §11.
+
+⚠️ **AND THE SERVER HALF MATTERS:** the client cannot distinguish what the server does not separate.
+**Prose in an `error` string is not a machine-readable field** — one of the five rejections forwarded a
+raw Postgres sentence, distinguishable to a human and useless to a switch. **A closed `reason`
+vocabulary, added additively beside the existing `error`, is the fix.**
+
+## 🔴 A FIX IN `capacitor.config.ts` IS NOT A FIX IN THE RUNNING APP (V11.43)
+
+**`android/app/src/main/assets/capacitor.config.json` is a BUILD ARTEFACT generated by `npx cap sync`,
+and it is what the runtime reads.** It is **gitignored**, so it never appears in `git status` and a
+working tree that looks clean tells you nothing about it.
+
+*Evidence (V11.43):* after the notification icon and colour were corrected in `capacitor.config.ts`, the
+artefact still carried `ic_stat_icon_config_sample`, `#F5A623` and `beep.wav` — **so local notifications
+were showing the Android system ⓘ and the fix was not live.** ✅ Synced and verified by reading the
+artefact: `ic_stat_hatchgrab`, `#EF8B2C`, no `beep.wav`. ⚠️ **`cap sync` touched nothing else.**
+⚠️ **`cap sync android` does NOT regenerate the iOS artefact** — `ios/App/App/capacitor.config.json` is
+still stale.
+
+> ⚠️ **THE FAMILY GAINS A CAPACITOR MEMBER:** *a fix in the repo is not deployed* · *a variable set in
+> Vercel is not a variable in the running deployment* · *a manual entry describing the working tree is
+> not a statement about the working tree tomorrow* · **now: *a fix in `capacitor.config.ts` is not a fix
+> in `assets/capacitor.config.json` until `cap sync` runs*.**
+
+## 🔴 DO NOT `cap sync` TO FIX A NATIVE-ONLY FILE (V11.47)
+
+**The entry above is not a licence to sync defensively.** An `Info.plist` change requires **no** Capacitor
+sync at all — it is a pure Xcode change, and the archive is taken directly.
+
+🔴 **RUNNING `cap sync` "TO BE SAFE" WOULD HAVE BEEN ACTIVELY HARMFUL HERE.** At the time of the camera
+fix, `capacitor.config.ts` was **uncommitted at +21/−3**, and the synced
+`ios/App/App/capacitor.config.json` was **ten days older than its source and disagreed with it**. A sync
+would have regenerated the synced artefact **from the uncommitted source** and baked unreviewed native
+config drift into a **resubmission binary** — the one build where an unexplained change is most expensive.
+
+**RULE: SYNC ONLY WHEN THE THING BEING CHANGED IS WHAT SYNC PRODUCES.** `Info.plist`, project settings
+and native source are **not**. Web assets and plugin configuration **are**. §40.
+
+## 🔴 WHEN A CHANGE LOOKS RISKY, FIND A COMPARATOR ALREADY IN PRODUCTION (V11.43)
+
+**The strongest evidence is not reasoning about what a change does. It is something already in production
+that has taken the same change.** That converts a judgement into an observation.
+
+*Evidence (V11.43):* enabling RLS on `van_devices` looked risky until it was noticed that
+`van_notification_prefs` **already has RLS enabled with zero policies and is read ELEVEN LINES BEFORE
+`van_devices`, in the same function, on the same request, with the same client**, on every customer order
+including Gusto's. Same for `event_option_stock`, whose access pattern is identical to `event_item_stock`
+and `event_category_stock` — same three files, same customer menu handler, both already RLS-enabled. §16.
+
+⚠️ **A COMPARATOR WITH NO CODE REFERENCES DOES NOT COMPARE.** `category_stock` and
+`device_notification_prefs` show the change is survivable; they offer **no access pattern**, which is the
+thing being tested.
+
+## 🔴 A HALF-FIX THAT PASSES ITS OWN TEST AND DOES NOT DO THE THING (V11.43)
+
+*Evidence (V11.43):* the BLE plugin declared **both** `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION`.
+**Removing FINE alone would have left Play's Location declaration exactly as it was** — the grep would
+have come back clean, the merged manifest would have shown one fewer permission, and the stated goal of
+the workstream would have been untouched. **Both were removed.** Same class as the `NOT IN`/NULL trap:
+**a change that satisfies its own check while missing the other half of the set it was aimed at.**
+
+## 🔴 FOUR GUARDS IN THREE DAYS READ AS PROTECTION AND WERE WIRED TO NOTHING (V11.44)
+
+**The members, all four found by accident and none by review:**
+
+| Guard | What it looked like | What it was |
+|---|---|---|
+| `dashboard_pin` | a PIN gate on `/dashboard/[token]` | written `null` at creation, **set by nothing** — every `if (truck.dashboard_pin && …)` is dead code that always takes the else branch |
+| `kds_pin` | a per-screen credential | **referenced nowhere but a redaction list** |
+| the plan gate | a feature boundary | **denies silently, no log line** — and a `trial` truck carries the full Max set |
+| the `NOT IN` filter | an exclusion | **drops NULL rows**, so the thing being excluded escaped through the null case |
+
+🔴 **A GUARD'S EXISTENCE IS NOT EVIDENCE THAT ANYTHING REACHES IT.** Each of these was legible in the
+source, named after what it was for, and returned the shape a reader expects. **Reading the guard tells
+you nothing; only reading its caller does** — and in three of the four cases there is no caller.
+
+> 🔴 **THE METHOD RULE THIS PRODUCES — SWEEP FROM THE SURFACES, NEVER FROM THE GUARDS.**
+> **Enumerate every surface that must be protected, then ask what protects each one.** The opposite
+> direction — enumerate the guards and count their coverage — is what produced four false positives in
+> three days, because a guard nothing calls looks identical to a guard everything calls **until you
+> start at the other end.**
+> ⚠️ **AND THE INSTANCE THAT MAKES THIS NON-NEGOTIABLE:** the `dashboard_token` exposure was found
+> **while filling in a Play Store data-safety form**, not by any sweep, review or audit of ours. **A
+> compliance questionnaire outperformed our entire review process**, because it asked "what reaches a
+> third party from this surface" rather than "is this control correct".
+>
+> **SWEEP: OPEN.** Four members found; `dashboard_pin` and `kds_pin` are **still unwired and still in
+> the schema** (§16), the plan gate is unchanged (§4), the `NOT IN` filter is fixed. **The codebase has
+> NOT been swept surface-first for further members.**
+
+## 🔴 A URL IS NOT AN IDENTIFIER WHEN IT IS ALSO A CREDENTIAL (V11.44)
+
+**`dashboard_token` grants refunds, customer PII, price rewrites and menu deletion with no session, no
+cookie and no password** (§12). Every system that records URLs therefore records credentials: browser
+history, Vercel request logs, `Referer` headers, and — confirmed in production — **PostHog
+`$current_url`**.
+
+⚠️ **THE FAILURE IS NOT THAT ANALYTICS WAS MISCONFIGURED.** PostHog was doing exactly what an analytics
+library does. **The failure is that a credential was placed somewhere analytics would obviously find
+it**, and then a decade of ordinary web instrumentation ran over the top of it.
+
+**The invariants that follow, for any future surface:** a URL says WHAT you are looking at; a session
+says WHO you are. **Deny by default. Authenticate on the session, authorise on the resource.
+Credentials never travel in URLs. Tokens must be rotatable and revocable.** 🔴 **Today none of ours
+expire, rotate or can be revoked — the only writer is the INSERT.**
+
+## ⚠️ FIXING A LEAK BY MOVING THE CREDENTIAL IS A TRADE, AND IT MUST BE PRICED OUT LOUD (V11.44)
+
+The KDS fix (§9) stopped `dashboard_token` reaching the address bar and **increased** `kds_token`'s
+exposure from one navigation to a whole session. **That is a real cost and it was stated in the change
+itself, not discovered later.**
+
+**The trade was accepted because it is asymmetric:** a leaked `kds_token` reaches one kitchen screen; a
+leaked `dashboard_token` reaches refunds and every customer's phone number. **But it removes the
+escalation, not the class** — a bearer credential still travels in a URL. 🔴 **An entry that records
+only the improvement is a half-entry;** the widening belongs beside it or the next reader inherits a
+fix they think was total.
+
+## 🔴 A TELEMETRY STAMP THAT FIRES ON THE FALLBACK IS NOT A HEALTH SIGNAL (V11.45)
+
+The embed route stamps `trucks.embed_last_seen_at` when it is loaded — **and it stamps on the FALLBACK
+path too, deliberately**, because the fact being recorded is "this page was loaded", which is what the
+setup wizard's verification asks. Gating the stamp on the allowed branch would mean an operator
+checking their work before switching on could never get a confirmation and would be told correct work
+had failed. **Proven in two cases: `embed_enabled` false and off-plan both stamp.**
+
+🔴 **SO "LAST SEEN" MEANS THE ROUTE WAS LOADED, NOT THAT THE EMBED IS WORKING.** A lapsed truck whose
+every visitor sees the name-and-link fallback looks **perfectly healthy** to any monitor built on this
+column alone.
+
+> **RULE — A MONITOR MUST KNOW WHICH BRANCH RENDERED, NOT MERELY THAT SOMETHING DID.** A fresh
+> timestamp reporting a broken embed as fine is **worse than no monitoring**, because it converts an
+> absent signal into a false reassurance. This is the governing constraint on the health-monitoring
+> stage, and it is recorded here BEFORE that stage is designed rather than discovered inside it. §27.
+
+## 🔴 A RELATIVE HREF IN A REUSED COMPONENT ESCAPES INTO WHATEVER FRAME IT IS RENDERED IN (V11.45)
+
+`TruckListCard` is shared by the profile, the order page's chooser and now the embed. Two of its links
+are relative, and relative resolves against OUR origin — so inside an iframe on somebody else's website
+they navigate **the operator's widget-sized box** rather than leaving it:
+
+- **The Order button opened the whole ordering flow inside the frame** — card entry included, because
+  the order page mounts Stripe's own iframe inside it. **A customer typing a card two frames deep
+  inside a third party's page is the failure the whole design exists to avoid.** Changed to
+  `target="_blank"` + `rel="noopener noreferrer"`, so checkout is top-level on hatchgrab.com.
+  ⛔ **"CLOSED" WAS TOO STRONG — CORRECTED V11.46.** Wix's own documentation says links set to open in
+  a new window **generally do not work inside their embedded content**, and their embed element is a
+  sandboxed frame. So on at least one builder the fix may not take effect at all. **What is closed is
+  our end of it; whether the browser honours it is a fact about a rendered page** and is unobserved on
+  every builder. §25.
+- **The venue name linked to a full Village Foodie surface** — the chrome problem one hop past the
+  inventory, which only ever looked at what RENDERS. Closed by rendering it as plain text.
+
+> **RULE — WHEN A COMPONENT GAINS A THIRD CONTEXT, RE-READ ITS LINKS, NOT JUST ITS PROPS.** A chrome
+> audit that asks "what renders here" answers a narrower question than "where can this take someone",
+> and the second question is the one an embed makes dangerous. ⚠️ `rel="noopener noreferrer"` travels
+> with every `target="_blank"` as ONE decision: without `noopener` the opened page gets a live
+> `window.opener` handle on the frame that opened it.
+
+## 🔴 THE SAME FETCH THAT IDENTIFIES A PLATFORM CANNOT VERIFY YOUR CONTENT ON IT (V11.46)
+
+Two jobs that look like one, and reusing either mechanism for the other breaks it:
+
+| | Reads | Works because | Fails because |
+|---|---|---|---|
+| **Detection** — which builder is this? | a server-side fetch | fingerprints live in the shell HTML and the response headers, which is exactly what a fetch receives | — |
+| **Verification** — is our content on their page? | a live browser load | by the time the browser requests our route, their page has already rendered | a fetch returns a shell with our content absent on the builders operators actually use |
+
+> **RULE — MATCH THE MECHANISM TO WHERE THE ANSWER LIVES.** A fingerprint is in the served bytes; our
+> embed is assembled after them. **A false negative on the step whose job is to tell the truth lands
+> hardest on the platforms operators actually use**, which is the worst possible distribution of an
+> error.
+> ⚠️ **HEADERS BEAT BODY, AND ONE BODY HIT IS NOT ENOUGH.** A header is set by the platform's own
+> infrastructure; a body string can appear on any page that merely LINKS to a builder, so an agency
+> portfolio mentioning one would match on body alone. Two hits are required before body counts.
+
+## 🔴 AN OUTBOUND FETCH TO A USER-SUPPLIED ADDRESS IS AN SSRF SURFACE (V11.46)
+
+The detection fetch takes an address an operator typed. Fenced: **http and https only** · an explicit
+deny-list for loopback, private ranges, link-local and internal names · **the FINAL url re-checked
+after redirects**, so a redirect into an internal host is caught rather than trusted · a **six-second
+timeout** · a **capped read** so a hostile server cannot stream us out of memory.
+
+> ⚠️ **THE REDIRECT RE-CHECK IS THE ONE MOST EASILY MISSED.** Validating the address the operator
+> typed and then following redirects validates nothing: the request lands wherever the last hop says.
+> The cloud metadata endpoint is the target that matters and it is one redirect away from any host an
+> attacker controls.
+> ⚠️ **THE TIMEOUT IS SET BY THE OPERATOR'S PATIENCE, NOT THE SERVER'S.** Someone is watching a
+> spinner having just typed their own web address; past about six seconds they conclude it is broken.
+> **Because detection is advisory, waiting longer buys a pre-selected radio button and nothing more.**
+
+## 🔴 PLAIN ENGLISH IS A RULE, NOT A PREFERENCE — AND THE EXCEPTION IS EXACT (V11.46)
+
+**Our sentences contain no technical words. Quoted button labels are the platform's words**, in
+quotes, capitalised as the operator will see them on screen.
+
+> *Click the button called "Embed HTML"* is right. *Insert an HTML element* is wrong.
+
+**ONE NAME for the thing being pasted, everywhere including the email: their SCHEDULE BOX.** Never
+code, snippet, embed, iframe, widget or element in our own prose.
+⚠️ **V11.49 — NOTHING IS PASTED ANY MORE**, so that particular name has no referent. **The RULE it
+illustrates is untouched and now binds the custom-domain copy instead**: one name for the thing, in the
+operator's words. There the thing is **their WEB ADDRESS**, never domain, subdomain, DNS, CNAME, record
+or nameserver — see the V11.49 entry on what the committed checker's pass does and does not mean.
+
+> **RULE — ENFORCE IT WITH A CHECKER, AND PRINT THE EXCEPTIONS.** The checker strips quoted labels,
+> URLs and the pasted content itself, searches what remains, and **prints every exclusion** so the
+> exception stays auditable rather than becoming a loophole. It currently stands at **seven quoted
+> labels**.
+> ⚠️ **THE CHECKER HAS BEEN WRONG TWICE AND BOTH TIMES IT WAS THE CORPUS, NOT THE COPY** — once
+> flagging a platform's own help URL (whose PATH contains "embedding-custom-code"), once flagging the
+> pasted content (which contains "iframe" because it IS one). **A checker that reports absence it
+> never looked for is worse than none**, so each narrowing is printed.
+> ✅ **V11.49 — THE CHECKER IS NOW COMMITTED AND RUNNABLE** (`node scripts/check-plain-english.mjs`)
+> rather than a session harness the rule kept being re-derived from. **See the V11.49 entry below for
+> what a pass does and does not mean** — its corpus is explicit, not scraped.
+> ✅ Writing the silent-removal warning without any banned word was the constraint that shaped it —
+> *"your schedule box disappears the moment you save"* rather than any description of what is filtered.
+
+## 🔴 A SERVER-SIDE FETCH CANNOT VERIFY A CLIENT-RENDERED PAGE (V11.45)
+
+The obvious way to confirm an operator has installed the embed is to fetch their page and look for our
+tag. **It does not work, and it fails hardest on the platforms operators actually use.** Wix and
+Squarespace assemble pages client-side, so a fetch returns a shell with the tag absent — **a false
+negative on the one step whose entire job is to tell the truth.**
+
+> **RULE — VERIFY BY LIVE OBSERVATION, NOT BY INSPECTION.** The operator opens their own website; their
+> browser requests our route; the route stamps the row; the wizard polls and confirms, showing the
+> referring domain back. **Client-side rendering cannot defeat this, because by the time the browser
+> requests our route the page has already rendered.**
+> ⚠️ **AND THE BASELINE IS WHAT MAKES IT HONEST.** A truck embedded last week already has a stamp;
+> treating "a stamp exists" as success would congratulate an operator who has pasted nothing. Success
+> is a stamp NEWER than the one present when the step opened.
+> ⚠️ The referrer arrives ORIGIN-ONLY under the default `strict-origin-when-cross-origin` policy, and a
+> site sending `Referrer-Policy: no-referrer` gives nothing — so the column is nullable and the wizard
+> confirms the load without naming the page in that case. **Specification, not observation.**
+
+## 🔴 A WRITE ON A PUBLIC UNAUTHENTICATED ROUTE NEEDS A THROTTLE THE DATABASE OWNS (V11.45)
+
+Every visitor to every operator's website reaches the embed stamp. Three properties, each enforced by a
+specific line rather than by intent: it runs inside `after()` so the response is already sent; the body
+is inside try/catch so a database outage produces a log line and nothing else; and it is throttled to
+**once per five minutes per truck**.
+
+🔴 **THE THROTTLE IS THE COLUMN, NOT A SECOND MECHANISM.** A conditional UPDATE
+(`where embed_last_seen_at is null or < cutoff`) means Postgres arbitrates: a concurrent second UPDATE
+blocks on the row lock, re-evaluates its predicate against what the winner wrote, and matches ZERO
+rows. **Fifty concurrent loads produced fifty statements and exactly one write.**
+
+> **RULE — BEFORE ADDING A LIMITER, CHECK WHETHER AN EXISTING ONE ANSWERS THE SAME QUESTION.** It did
+> not here: the embed rate-limit bucket (§28) answers *"how many requests may ONE ADDRESS make for this
+> truck"*, and this answers *"how often may this TRUCK be written, across all addresses"*. **Different
+> questions, so a second mechanism was justified — but it was made the ROW rather than a Redis key,
+> because a cache and a column can disagree and then nobody knows which is true.**
+> ⚠️ The in-process fast path is an optimisation and is explicitly NOT the correctness mechanism.
+> ⚠️ **The concurrency result is MODELLED, not exercised.** Row-locking and EvalPlanQual are documented
+> properties of Postgres; **no database was contacted.**
+
+
+## 🔴 THE INFO.PLIST IS A CONTRACT THE WEB BUNDLE CAN BREACH UNILATERALLY (V11.47)
+
+**This is the standing invariant the camera-crash workstream produced, and it outranks the specific fix.**
+§40.
+
+The iOS app is a **remote-URL shell**: it loads `https://www.hatchgrab.com/app` at runtime and executes
+whatever is deployed there. **The native binary declares which device capabilities the app is PERMITTED
+to request. The web bundle decides which ones it ACTUALLY requests.** Those two halves are versioned
+independently and released on **completely different timescales** — the web half ships in **minutes** on
+a Vercel deploy with no review, the native half in **days** through App Review.
+
+🔴 **THEREFORE: ANY WEB DEPLOY CAN INTRODUCE A CAPABILITY REQUEST THE SHIPPED BINARY HAS NO PERMISSION TO
+MAKE, AND THE APP WILL BE TERMINATED BY iOS IN THE FIELD — with no native change, no rebuild, and no App
+Review anywhere in the path.** **This is not a theoretical class. It is what happened, and it happened in
+front of an App Review tester.** §40.
+
+**STANDING RULE — before any deploy that adds or changes a device-capability request in the web bundle,
+check that the SHIPPED BINARY already declares the matching usage description.** The additions that
+trigger it:
+
+| Web change | Native key required FIRST |
+|---|---|
+| Any `<input type="file">` whose `accept` includes `image/*` | `NSCameraUsageDescription` |
+| Any `accept` including `video/*` | also `NSMicrophoneUsageDescription` |
+| `getUserMedia` / `navigator.mediaDevices` (QR scanning, live capture) | `NSCameraUsageDescription`, plus microphone if audio is requested |
+| `navigator.geolocation` | `NSLocationWhenInUseUsageDescription` |
+
+🔴 **THE NATIVE RELEASE IS THE LONG POLE.** A web feature needing a new key **cannot ship on the web
+timescale.** It waits behind an App Review cycle, or it is **gated off in the native shell until the
+binary catches up. Plan the native release FIRST, not second.**
+
+> **THE FAMILY GAINS A MEMBER:** *a fix in the repo is not deployed* · *a variable set in Vercel is not a
+> variable in the running deployment* · *a fix in `capacitor.config.ts` is not a fix in
+> `assets/capacitor.config.json` until `cap sync` runs* · **now: *a capability the web bundle requests is
+> not a capability the shipped binary is allowed to use*.**
+
+## 🔴 A TEST WHOSE EXPECTED RESULT IS "NOTHING" CANNOT PASS (V11.47)
+
+The menu import was exercised by uploading a screenshot **containing no menu**. It displayed
+"analysing", then "nothing found" — **which is the correct answer** — in noticeably **less time than
+usual**.
+
+🔴 **A CORRECT EMPTY RESULT AND A SILENTLY FAILED REQUEST ARE INDISTINGUISHABLE OUTPUTS.** A rejected
+upload, an unreached API, or an error swallowed into an empty result **all render as "nothing found"**.
+The only signal available was the unexpected speed, and **speed is not a pass condition.**
+
+**RULE, ADDED TO THE EXISTING FAMILY: CONSTRUCT THE CASE SO THE SYSTEM MUST PRODUCE OUTPUT.** For menu
+import that means **a real menu with several items and prices**, with **populated items in the review
+stepper as the pass condition**. Where a fast negative is suspected, **read the Vercel function log for
+that invocation** — its existence, status code and duration — **rather than inferring from the spinner.**
+
+
+## 🔴 WHICH WAY A LIMITER FAILS IS A DECISION, AND IT IS TAKEN PER BRANCH (V11.48)
+
+**Existing practice is FAIL OPEN at every call site** — and each one justifies the direction in a comment
+**by naming a control that still applies when the limiter is down**: size caps, length caps, the auth
+gate. 🔴 **That test is the invariant, not the direction.** Applying it to each new branch separately is
+what splits them.
+
+**FAIL OPEN where the limiter protects OUR OWN capacity.** The pre-flight branch: the remaining control
+is the auth gate, the blast radius is our own authenticated operators, and the cost is some lookups and
+quota. ⚠️ **Matching the existing sites is worth something on its own — five call sites with one
+convention is a rule; four plus an exception is something someone has to remember.**
+
+**FAIL CLOSED where it protects a SHARED ALLOWANCE ANOTHER TRUCK'S TRADING DEPENDS ON.** The email
+branch: the limiter exists to stop an **authenticated operator** consuming that allowance, so 🔴 **the
+auth gate is UPSTREAM of the risk rather than a mitigation of it.** It is the one branch whose fail-open
+comment would have to read *"and nothing else applies"*. **The losses are not comparable either** — one
+operator delayed on a once-only setup step, against order confirmations failing for a trading truck
+mid-service.
+
+⚠️ **REFUSE WITH A SERVICE-UNAVAILABLE STATUS, NOT A RATE-LIMIT ONE.** Nothing was counted, so *"too many
+requests"* misstates why and **sends whoever debugs it looking for a count that never happened.**
+⚠️ **REFUSE WITH A WAY THROUGH** — here, the operator can send the same details themselves from their own
+address. **A refusal with a way through is not really a refusal.**
+🔴 **AND LOG THE CLOSED FAILURE DISTINCTLY**, so a flapping limiter is **countable next to real sends
+rather than inferred from missing rows.** An absence is not a signal anyone reads.
+
+⚠️ **THE WHOLE CONVENTION RESTS ON AN UNTESTED ASSUMPTION: no limiter call anywhere has a TIMEOUT.**
+Every fail-open and fail-closed ruling in this repository is therefore conditional on the cache failing
+**fast**. If it accepts connections and never answers, **all sites hang regardless of which direction
+their handler chose** — so the convention has never been tested against the more likely outage mode. §27.
+
+## 🔴 ENUMERATE WHAT THE BROWSER REQUESTS, NOT WHAT ROUTES EXIST (V11.50)
+
+**The custom-host deny list was built by the method this section recommends** — enumerate the surfaces
+and work back, rather than forward from an allowlist. **47 application surfaces were constructed and
+every one refused correctly.** The proof was sound, it was complete, **and it was of the wrong set.**
+
+🔴 **A BROWSER DOES NOT REQUEST ROUTES. IT REQUESTS WHATEVER THE DOCUMENT REFERENCES.** On the first
+browser test of the custom-domain page: the page returned **200**, the events endpoint returned **200
+with the right data**, and the page sat on *"Loading schedule"* for ever. **All 24 script and style
+chunks under `/_next/static/` were 404**, so no JavaScript ran and the component that calls the
+endpoint never mounted. Not one of those 24 is a route; they are content-hashed files emitted by the
+build, and no route enumeration can contain them.
+
+⚠️ **AND THE FAILURE PRESENTED AS SUCCESS AT EVERY LAYER SOMEONE WOULD CHECK.** `curl /` → 200.
+`curl` the endpoint → 200 and correct JSON. Both of the allowed paths behaved exactly as designed.
+**The only observation that could reveal it was loading the page in a browser and reading the network
+panel** — the same family as the V11.49 entry above, where *"prove the page still renders"* was true of
+a broken state.
+
+✅ **THE RULE.** For any surface a browser renders, the enumeration to work back from is **the rendered
+document's sub-resources** — scripts, styles, fonts, images, the manifest, icons, preloads, source
+maps — **not the route table.** Load it, list what it fetches, and check each against the policy.
+
+⚠️ **AND CHECK WHAT THE BROWSER FETCHES WITHOUT BEING TOLD TO.** `/favicon.ico` is requested at the
+root of every host whether or not the document links it. On a custom host it **returns 200 today and
+serves our mark on an operator's domain** — because the proxy's `config.matcher` excludes it, so it
+never reaches the deny list at all. 🔴 **A path excluded by the matcher is not denied and is not
+allowed; it is invisible to the policy.** Any enumeration that starts from the policy function will
+miss every one of them. §46, §27.
+
+### 🔴 THE CAUSE IS A TYPO, AND IT RUNS THE OTHER WAY (V11.50)
+
+**Two exclusions in the matcher were concatenated with the separator missing, making the first inert.**
+The consequence is not one stray icon: **eight path families never reach the deny list at all.** The
+static-asset denial above was the policy refusing things it should have allowed; **this is the policy
+never being consulted.** The two faults are opposite in direction and were found in the same hour.
+
+**Live on an operator's domain today:** our brand mark, our **progressive-web-app manifest — titled for
+the other brand, so a visitor to a food truck's website can be offered an install prompt for our kitchen
+display** — and **every other truck's logo, 121 files.** That is application data, belonging to other
+customers, served from a third party's domain.
+
+🔴 **THE TYPO WAS DELIBERATELY NOT FIXED, AND THE REASON IS WORTH KEEPING.** Repairing it makes the
+whole framework path invisible to the proxy on **every** host — **a widening dressed as a correction.**
+The obvious one-character fix is strictly worse than the bug. **Open.**
+
+✅ **AND THIS IS WHY THE ENUMERATION MUST NOT START AT THE POLICY.** A policy-first review reads the
+deny function and reasons about what it returns; it structurally **cannot see paths that never reach
+it.** That is exactly why this went unnoticed through a 47-surface audit that was otherwise correct.
+**Enumerate from the request side — what the browser asks for — then check each against the matcher
+*and* the policy, in that order.** §46, §27.
+
+### 🔴 AND THE THIRD INSTANCE: A NEW PUBLIC ROUTE INHERITS NOTHING (V11.51)
+
+**Both entries above are one fault seen twice: a policy keyed on a PATH PREFIX, and a request that
+does not match the prefix.** The third instance arrived from the opposite direction — **the path
+stayed the same shape and the ROUTE moved out from under it.**
+
+The printed QR code's target moved from `/trucks/<slug>/order` to a new short route `/o/<slug>`.
+**Two protections were attached to `/trucks/`, not to the thing being protected:**
+
+- **RATE LIMITING** — `proxy.ts`'s `isGeneralPublic` covers `p.startsWith('/trucks/')` at 60/min, and
+  `inLimitedScope` is an ALLOW-list, so an unmatched path is **not limited at all.** The one address
+  on a printed code would have become an unmetered database read whose redirect discloses a truck's
+  custom domain.
+- **`noindex`** — `vercel.json` sets `X-Robots-Tag` on `/trucks/(.*)`. A redirector that gets indexed
+  competes with the pages it points at and caches a decision meant to be re-made on every visit.
+
+🔴 **NEITHER POLICY WAS EDITED, AND BOTH STOPPED APPLYING.** No test failed, nothing logged, and the
+change that caused it touched only a component and a route file. **A move is a deletion from the old
+prefix, and prefix-scoped policy is invisible at the call site.**
+
+✅ **THE RULE: A NEW PUBLIC ROUTE STARTS WITH NO LIMITER, NO HEADERS AND NO CLASSIFICATION. Before
+moving anything off a path, enumerate what the OLD path was getting** — limiter bucket, response
+headers, robots directives, auth classification, cache rules — **and carry each one across
+deliberately.** Both were restored in the same change here; the point is that nothing would have
+caught it if they had not been.
+
+⚠️ **THIS IS AN ARGUMENT AGAINST PREFIX-KEYED POLICY, NOT JUST A CHECKLIST.** Every one of these three
+instances would have been impossible if the protection travelled with the route rather than with the
+shape of its URL. Recorded as the shape to prefer, not as a change anyone is being asked to make now.
+§46, §27.
+
+## 🔴 A VERIFICATION REQUIREMENT CAN CARRY THE GUARD-VERSUS-RISK FAILURE (V11.49)
+
+**The asked-for proof of the embed removal was *"prove the custom-domain page still renders".* That
+assertion was TRUE OF THE BROKEN STATE.** The page's schedule body is the embed component, whose data
+source refuses unless `embed_enabled` is true; deleting the flag's only writer would have left every
+custom domain serving its shell, logo, name and brand line **with a permanently empty schedule, at 200,
+logging nothing.** The page never reads that column, **so it passes every check it makes.**
+
+🔴 **THE WRONG ASSERTION IS NOT A WEAKLY-EXECUTED ONE, AND IT FAILS DIFFERENTLY.** A weak test is
+recognisable as weak. **A test that asserts the wrong thing looks rigorous and reports green**, and the
+report it produces is evidence for exactly nothing. §46.
+
+✅ **THE RULE: ASSERT THE THING THE FEATURE IS FOR, NOT THE CONTAINER IT ARRIVES IN.** Non-empty
+**events** from the endpoint, never that the page renders. This is the same family as the V11.45
+telemetry-stamp entry — *a stamp that fires on the fallback is not a health signal* — arriving through a
+verification requirement rather than through code.
+
+## 🔴 A LAYOUT CANNOT SEE THE QUERY STRING, AND THE LAYER THAT CAN HAS NO DATABASE (V11.49)
+
+**Proved from the framework's own generated route types: `LayoutProps` carries `params` and `children`.
+`PageProps` carries `searchParams`. A layout has no access to the query at all** — and it should not,
+because **layouts do not re-render on navigation within their own segment**, so a query read there would
+be stale rather than merely absent.
+
+🔴 **THIS IS A SHAPE, NOT A DETAIL, AND IT IS WHY THE QR REDIRECT ENDED UP WHERE IT DID.** The redirect's
+five conditions are all truck-row reads, so it needs the database. **Edge middleware can see the query
+and has no database access by design.** A layout has the database and cannot see the query. **Neither
+layer can hold both halves**, which is why *"redirect unless the request looks like an order"* has no
+one-line home. §46.
+
+⚠️ **AND THE RULE THAT SUGGESTS ITSELF BREAKS PAYMENTS.** Scoping on a single named parameter fails —
+**exactly one inbound link carries an event id and fourteen do not**, and **the post-payment
+confirmation URL carries a different parameter entirely**, so every customer who had just paid would be
+redirected away from their confirmation. **Any such rule must be "no query the destination acts on",
+never a named parameter.**
+
+## 🔴 ANYTHING PRINTED BEYOND ONE-TIME USE MUST ENCODE A REDIRECT, NOT A DESTINATION (V11.49)
+
+**Static versus dynamic is the settled distinction and the guidance is blunt.** A static code bakes the
+destination into the pattern and **cannot be changed after printing**; a dynamic one encodes a short
+permanent URL whose destination is resolved on a server.
+
+✅ **RESOLVE PER REQUEST, DO NOT STORE A RESOLVED TARGET.** A lapsed plan or a domain that has stopped
+answering then falls back **on the next scan**, with nothing needing to run first — no backfill, no
+job, no window in which paper points at a dead address.
+
+⚠️ **AND THE REDIRECT MUST BE TEMPORARY.** A permanently cached redirect on printed paper **pins
+customers to a dead address with no recovery**, because the cache is in their browser and we cannot
+reach it.
+
+## 🔴 AN ERROR MESSAGE MUST NEVER NAME OUR INTERNALS — AND BRANCH ON THE REASON, NOT THE STRING (V11.49)
+
+**Two provisioning failures rendered the literal text of a missing environment variable in red on an
+operator's settings screen**, and one of them was **the name of a secret** — telling anyone reading the
+screen which credential to go looking for.
+
+🔴 **THE DISTINCTION THAT MATTERS IS WHOSE FAILURE IT IS.** Nothing the operator typed caused it and
+nothing they can type fixes it, **but the message invited them to try.** Copy for our own failure must
+say that nothing has changed at their end.
+
+✅ **BRANCH ON THE STRUCTURED REASON THE BOUNDARY ALREADY RETURNS, AND MAP EVERY REASON TO OUR OWN
+COPY.** Patching the two known-bad strings would have been whack-a-mole — **and would have missed one of
+them**, because the two failures come back under **different reasons** (one a configuration reason, one
+caught as a generic error). **Mapping every reason makes it safe by construction: nothing a third-party
+API or a thrown exception puts in a message can reach a screen.** ✅ **The raw string stays in the
+server log, with the reason and status beside it — which is where a variable name belongs.** §46.
+
+## ⚠️ A CHECKER WHOSE CORPUS IS EXPLICIT ONLY CHECKS WHAT SOMEBODY REMEMBERED TO ADD (V11.49)
+
+**The plain-English checker is now COMMITTED and runnable rather than re-derived from prose each
+session** — the rule had been re-derived three times, differently each time, because nothing ran against
+it. It prints every exclusion, so an exception stays auditable rather than becoming a loophole.
+
+🔴 **BUT ITS CORPUS IS EXPLICIT, NOT SCRAPED, AND THAT BOUNDS WHAT A PASS MEANS.** Scanning whole files
+would drown in identifiers and comments, so what is checked is a hand-maintained list of what an
+operator reads. **Several pre-existing lines fail the moment they are added** — two padlock warnings did
+exactly that in V11.49, and had to be rewritten rather than minimally corrected. **"The checker passes"
+therefore says less than it appears to**, and the honest reading is *"every string somebody fed it
+passes"*.
+
+✅ **THE `KNOWN` CHANNEL IS NOT AN EXCLUSION AND MUST NOT BE USED AS ONE.** An exclusion says the rule
+does not apply; a `KNOWN` entry says the rule applies, we are breaking it, and here is why it is not
+fixed yet. **Copy the current brief is already touching does not qualify.**
+
+## ⚠️ ADJACENT EVIDENCE IS NOT EVIDENCE (V11.48)
+
+**A guard demonstrated on a case the OTHER guard already catches has not been demonstrated at all.**
+
+*Evidence (V11.48):* the list-independent apex guard (§46) was first shown working against an unknown
+top-level domain. The public-suffix guard **already refuses those**, so the case showed **the two guards
+agreeing**, not the second one working. The real permissive gap — a new **second-level** suffix under a
+**known** top-level domain — was the only case that exercised it.
+
+🔴 **THE TEST FOR A SECOND GUARD IS A CASE THE FIRST ONE PASSES.** Anything else measures the first
+guard twice. ⚠️ **Recorded rather than quietly replaced**, because the demonstration looked convincing
+and produced the right verdict for the wrong reason — which is the failure mode, not an anecdote about
+it. **Joins the §1 family:** *an inference scoped to one evidence source is a statement about that
+source, not about the risk.*
+
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
@@ -12601,7 +15400,7 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 
 ⚠️ **THE UA MARKER IS A PER-PLATFORM CONFIG KEY, NOT A PROPERTY OF BEING NATIVE.** `appendUserAgent` is set **per platform** in `capacitor.config.ts` — the iOS block and the Android block each carry their own. **Adding a platform means adding the marker, or the V8.7 login loop returns:** the server-side native detection reads the UA string, so a platform without the marker is treated as a browser, the cookie/session path is chosen instead of the Bearer path, and login loops. This is the single easiest thing to get wrong when a third platform is added, because nothing about the app *feels* different — it simply behaves as web.
 
-⚠️ **PUSH IS NOT ONE MECHANISM. `van_devices.platform` IS LOAD-BEARING.** Android push is **FCM**; iOS stays **pure APNs**. There is no shared transport, so the send path must branch on the stored platform — which turns a column that was descriptive into one that routes. The interim `.or('platform.eq.ios,platform.is.null')` predicate at `app/api/orders/submit/route.ts:1077` is that branch in its crudest form, and it currently **excludes Android from order push entirely**. Retiring it is §27.
+⚠️ **PUSH IS NOT ONE MECHANISM. `van_devices.platform` IS LOAD-BEARING.** Android push is **FCM**; iOS stays **pure APNs**. There is no shared transport, so the send path must branch on the stored platform — which turns a column that was descriptive into one that routes. ~~The interim `.or('platform.eq.ios,platform.is.null')` predicate at `app/api/orders/submit/route.ts:1077` is that branch in its crudest form, and it currently **excludes Android from order push entirely**. Retiring it is §27.~~ ⛔ **STRUCK V11.43 — RETIRED IN V11.21.** The send path now splits `iosTokens` / `androidTokens` by name and calls both senders in separate try/catch blocks. **The load-bearing statement above is unchanged and is the reason the split exists.**
 
 - The asymmetry runs deeper than transport: an **unconfigured APNs sender no-ops, an unconfigured FCM sender hard-fails** (§35, first invariant), which is why the same wrapper code behaved for a year on iOS and killed the process on Android.
 - ⚠️ **iOS HAS NEVER BEEN CAPABLE OF REGISTERING FOR PUSH.** There is **no `.entitlements` file** and **no `aps-environment` key** in the iOS project. The APNs path has been written, deployed and reasoned about, and has never been able to obtain a token. Discovered while wiring the Android side — a second platform is an audit of the first.
@@ -12698,7 +15497,9 @@ line; Vercel is unaffected.** The same file truncates `APNS_KEY` to 27 character
   and **all nine plugins have Android classes.** The shortest path to an installable test build is
   `cap sync` plus a Gradle debug build — **no keystore work.**
 - ⚠️ **`ic_stat_icon_config_sample` is configured under `LocalNotifications`, NOT `PushNotifications`.**
-  The "white square push icon" item was miscategorised, and the named asset does not exist either.
+  ~~The "white square push icon" item was miscategorised, and the named asset does not exist either.~~
+  ⛔ **STRUCK V11.43** — the miscategorisation finding was right and stands; **"white square" was never
+  the symptom.** See the struck block below and §27.
 - ⚠️ **Android icons and splash are Capacitor stock and NOT shared with iOS** — proven by md5, not by
   inspection. That white ground is Android Studio's template, **not** the deliberate choice made for
   the iOS icon (which carries its own recorded 2.50:1 contrast concern).
@@ -12770,7 +15571,13 @@ places** — the exported constant, the FCM payload's `channel_id`, `strings.xml
 `default_notification_channel_id` meta-data. ⚠️ **Changing that id orphans the channel rather than
 renaming it**, because Android keys the operator's own settings on it.
 
-🔴 **THE WHITE SQUARE IS A MISSING ASSET AND WAS DELIBERATELY NOT CREATED.** ⚠️ **Do NOT reuse the app
+~~🔴 **THE WHITE SQUARE IS A MISSING ASSET AND WAS DELIBERATELY NOT CREATED.**~~ ⛔ **STRUCK V11.43 —
+CREATED, AND THE NAME WAS WRONG.** `ic_stat_hatchgrab` ships at all five densities. 🔴 **THERE WAS NEVER
+A WHITE SQUARE:** `ic_launcher` is a `mipmap`, the plugin resolves `smallIcon` as a `drawable`
+(`LocalNotification.java:337`), so it returned 0 and fell through to **`android.R.drawable.ic_dialog_info`
+— the Android system ⓘ**. Confirmed against the built APK's resource table, which carries
+`drawable/ic_stat_hatchgrab` and `mipmap/ic_launcher` and **no `drawable/ic_launcher`**. ⚠️ **THE ASSET
+RULE BELOW IS UNCHANGED AND IS WHY THE NEW ICON PASSES A PIXEL CENSUS.** ⚠️ **Do NOT reuse the app
 icon:** an Android status-bar icon must be a **single-colour silhouette with transparency** — every
 non-transparent pixel is painted white — **which is the exact opposite of the App Store icon's
 no-alpha requirement.**
@@ -12921,6 +15728,14 @@ visible in the app.
 ⚠️ **AN iPHONE MUST ENTER THE HARDWARE TEST LOOP BEFORE SUBMISSION.** This manual is an iPad document
 end to end, and **three simulator-masked bugs were found the day the iPad became physical.**
 
+🔴 **V11.47 — iPHONE IS A FIRST-CLASS REVIEW SURFACE, AND THIS IS NO LONGER A FORECAST.** App Review
+tested build 1.0 (1) on an **iPad Air 11-inch (M3)**; it may equally test on iPhone, and `"1,2"` is
+exactly what lets it. The responsive layout is **width-keyed and tablet-first**, and the import wizard
+has a recorded history of **fixed-height modal failures where controls dropped below the fold.**
+⚠️ **EVERY NATIVE RELEASE GATE MUST BE WALKED ON AN iPHONE AS WELL AS AN iPAD, ON PHYSICAL HARDWARE.**
+🔴 **The class of bug this catches presents as a wizard that CANNOT BE COMPLETED, not as a crash — so it
+will not appear in any crash report.** §40.
+
 **Also READ:** `MARKETING_VERSION = 1.0` and `CURRENT_PROJECT_VERSION = 1` in both configurations. Fine
 for a first upload; ⚠️ **a second upload at the same build number is rejected by App Store Connect.**
 
@@ -12937,9 +15752,40 @@ for a first upload; ⚠️ **a second upload at the same build number is rejecte
   consequence, not verified against behaviour.**
 - ⚠️ **`UIRequiredDeviceCapabilities = armv7`** — stock Capacitor scaffold residue. **No supported iOS
   device is armv7.** INFERRED harmless; unverified against Apple's current handling.
-- ⚠️ **No camera / photo / location usage descriptions.** **INFERRED correct** — no installed plugin
-  requires them — 🔴 **but the WEB BUNDLE WAS NOT AUDITED** for `getUserMedia` or geolocation, which in
-  a WKWebView would prompt and, **without the key, crash**.
+- ⛔ **STRUCK V11.47 — THE INFERENCE WAS SOUND AND THE CONCLUSION WAS WRONG.** ~~No camera / photo /
+  location usage descriptions. **INFERRED correct** — no installed plugin requires them~~ — 🔴 **but the
+  WEB BUNDLE WAS NOT AUDITED** for `getUserMedia` or geolocation, which in a WKWebView would prompt and,
+  **without the key, crash**.
+  🔴 **THAT UNAUDITED BRANCH WAS THE WHOLE BUG.** No installed plugin *did* require the key. **The
+  requirement came from the WEB BUNDLE — exactly the source this entry named as unchecked** — and build
+  1.0 (1) was **terminated by TCC in front of an App Review tester** for an `<input type="file">` whose
+  `accept` includes `image/*`. §40.
+  ✅ **`NSCameraUsageDescription` IS NOW PRESENT (V11.47).** `NSPhotoLibrary*`, `NSMicrophone*` and
+  `NSLocation*` remain absent **deliberately**: the Photo Library and Choose File branches were
+  **device-tested on the crashing build** and need no key, **no input accepts `video/*`**, and nothing in
+  the codebase calls `navigator.geolocation`.
+  🔴 **RULE — AN INFERENCE SCOPED TO ONE EVIDENCE SOURCE IS A STATEMENT ABOUT THAT SOURCE, NOT ABOUT THE
+  RISK.** *"No plugin needs this key"* is not *"no key is needed"*. **Where an entry names its own
+  unaudited gap, that gap is LIVE DEBT and the entry is NOT closed — it is a to-do wearing a tick. Mark
+  such entries OPEN, never INFERRED correct.**
+
+## 🔴 BUILD NUMBER — THE HALF-BUMP FAILURE MODE (V11.47)
+
+`CURRENT_PROJECT_VERSION` is set **separately in each build configuration** in
+`ios/App/App.xcodeproj/project.pbxproj` — one line under Debug, another under Release. 🔴 **Editing the
+collapsed row in Xcode's Build Settings is NOT guaranteed to write both.** **Expand the disclosure
+triangle, set Debug and Release explicitly, and read both back.**
+
+**App Store Connect rejects a second upload at an unchanged build number.** A configuration left behind
+is **silent until the upload dialog** — by which point the archive is **already built from the wrong
+value and must be discarded.**
+
+🔴 **THIS IS A VALUE CHANGE, NOT AN ADDITION, SO IT FALLS OUTSIDE THE ADDITIVE-ONLY RULE FOR HAND-EDITING
+`project.pbxproj`.** Make it **in Xcode**, which serialises the file correctly, and **never by hand.**
+
+⚠️ **When distributing, untick "Manage Version and Build Number" if offered** — it can change the value
+*after* it has been verified. ✅ **Leave symbol upload enabled**; it is what makes the next crash report
+symbolicate at all. §40.
 
 ## ✅ THE iPAD BUILD LANDED — ENROLMENT, SIGNING AND PUSH (V11.17, 14 August 2026)
 
@@ -13274,6 +16120,253 @@ Background the app to observe a notification arriving.**
 
 🔴 **This defect is invisible until the token defect above is fixed, and will then look like a new bug.
 It is recorded here so it is not diagnosed twice.**
+
+# ANDROID — SUBMISSION BLOCKERS CLEARED (V11.43)
+
+## ✅ A SIGNED RELEASE BUNDLE EXISTS
+
+**5.9 MB `.aab`, signed, SHA1 `97:8D:DD:A2:32:CF:F3:31:31:2B:D9:D9:B6:1C:40:38:2B:A3:91:7A`** — verified
+by `keytool -printcert -jarfile` **against the artefact, not inferred from a successful build.**
+
+**Upload keystore:** alias `hatchgrab`, 2048-bit RSA, PKCS12, valid to January 2054, at
+`android/hatchgrab-upload.keystore`, **gitignored**. Credentials in `android/keystore.properties`,
+**gitignored**. ✅ **Both confirmed by `git check-ignore -v` naming the matching rule and line, and
+neither has ever been tracked** — an ignore rule does not untrack an already-tracked file, and **a
+committed key must be revoked, not un-committed.**
+
+⚠️ **Before this, `.gitignore` had NO android section at all**, and Capacitor ships
+`android/.gitignore`'s keystore rules **commented out.**
+
+⛔ **CORRECTION TO A CLAIM MADE ELSEWHERE — RELEASE WAS NOT SIGNED WITH THE DEBUG KEY.** There was **no
+`signingConfigs` block at all**, so **release was UNSIGNED.** ⚠️ **THE DISTINCTION MATTERS: an unsigned
+AAB is rejected at upload, whereas a debug-signed one can look plausible until Play refuses the
+certificate.** *(This manual never carried the debug-signed claim — §36 said only that a debug **test
+build** needed "no keystore work", which was true of a debug build. The claim being corrected lives in
+`docs/android-inventory-report.md` §C8's surrounding discussion, not here. Recorded so the correct
+statement is in the manual rather than only in a report.)*
+
+**The Gradle wiring needs TWO guards, not one.** Creating the config conditionally is not enough —
+**referencing `signingConfigs.release` when it was never created is a configuration-time failure, and
+configuration runs for every task**, which would break `assembleDebug` for anyone without credentials.
+
+⚠️ **`storeFile` must be a bare filename** — `rootProject.file()` resolves it from `android/`. A leading
+slash makes it absolute and the build fails at `validateSigningRelease`.
+⚠️ **`versionCode` is still 1.** Fine for a first upload; **every subsequent one must increment it.**
+⚠️ **PLAY APP SIGNING ENROLMENT IS NOT VERIFIED.** `android/SIGNING.md` documents the recovery path
+*assuming* it is enabled. **If it is not, losing the keystore is unrecoverable rather than slow — confirm
+in Play Console before the first upload.**
+
+## ✅ THE ICONS ARE THE BRAND'S, NOT CAPACITOR'S
+
+🔴 **ALL 31 RASTER ASSETS WERE UNTOUCHED CAPACITOR DEFAULTS — the blue logo was the launcher AND the
+splash.** Worse than the missing notification icon, because it was **the app's entire visual identity.**
+
+**31 PNGs generated from the single master path, never re-traced.** `minSdk 24` predates adaptive icons,
+so **both the legacy PNGs and the adaptive foregrounds are required.** Splash replaced in place — it
+resolves through `values/styles.xml`, **not the plugin, which is not installed, making its config block
+inert.**
+
+⚠️ **THE ADAPTIVE FOREGROUND IS SIZED 0.55, NOT 0.66, AND THE GEOMETRY IS WHY.** 66% is the safe-zone
+**diameter** and the zone is a **circle**. The bolt is tall and narrow, so height binds: at 0.66 its
+bounding diagonal is 0.707, **exceeding the 0.611 circle and clipping top and bottom on a round mask.**
+0.58 is the ceiling.
+
+✅ **Notification icons: 88–92% fully transparent, ZERO non-white non-transparent pixels**, measured
+pixel-by-pixel across all five files. **A single coloured pixel there renders as a grey blob.**
+
+⚠️ **THE BRAND BACKGROUND IS AMBIGUOUS AND THE SOURCES DISAGREE.** The master SVG declares `#0F172A`;
+the shipped iOS icon, `ic_launcher_background` and the existing splash are all **white**. **White was
+used, on the evidence of what actually ships.** The master SVG still disagrees. See §38.
+
+✅ **`NOTIFICATION_SMALL_ICON` NOW HAS ONE DEFINITION** in an import-free module, referenced by all three
+local-notification helpers **and** `capacitor.config.ts`. **Two of the three helpers had hardcoded
+`ic_launcher` and were missed when the config was corrected — which is exactly what a literal in four
+places produces.**
+
+✅ **`beep.wav` REFERENCES REMOVED**, because reading established it was **inert twice over**: `res/raw/`
+does not exist and the APK's resource table has **zero `raw/` resources**, **and on Android 8+ the
+channel's sound overrides anything set per-notification anyway.** ⚠️ **A channel's sound is fixed at
+creation**, so shipping the asset later would not retrofit an installed device.
+
+## ✅ PLAY WILL NO LONGER SEE A LOCATION DECLARATION
+
+The BLE plugin declared `BLUETOOTH_SCAN` with no `usesPermissionFlags`, plus **unconditional
+`ACCESS_FINE_LOCATION` — and `ACCESS_COARSE_LOCATION` as well.**
+
+🔴 **REMOVING FINE ALONE WOULD HAVE LEFT PLAY'S LOCATION DECLARATION EXACTLY AS IT WAS**, and the fix
+would have looked complete while achieving nothing. **Both were removed.** The class is in §35.
+
+✅ **THE GATE WAS CHECKED BEFORE DECLARING:** nothing in this codebase uses device location — no
+`navigator.geolocation`, no `watchPosition`, `@capacitor/geolocation` not installed. **The only
+latitude/longitude comes from a postcode the visitor types, geocoded server-side.** So
+`neverForLocation` is a **true** declaration. ⚠️ **A FALSE ONE WOULD HAVE BEEN WORSE THAN THE OVER-BROAD
+PERMISSION.**
+
+✅ **Proven from a FRESHLY GENERATED merged manifest and the built APK**, not a cached one — the
+inventory had found a **stale merged manifest dated 27 July against a 16 August plugin list.**
+⚠️ **`BLUETOOTH_SCAN` needed neither `tools:replace` nor `tools:node`** — the library declares no
+`usesPermissionFlags`, so **there was no conflict to arbitrate.**
+
+🔴 **UNTESTED CONSEQUENCE: `neverForLocation` is Android 12+ behaviour. With `minSdk 24`, a device on
+Android 11 or lower now has NO location permission and may be unable to scan at all.** Presents as
+**"printer won't connect" on one operator's older device, with nothing in the logs.**
+
+⚠️ **`androidNeverForLocation: true` in `bleTransport.ts` is a RUNTIME option and was never the manifest
+attribute** — **it masked the problem convincingly.**
+
+# 🔴 ANDROID IS NOT A PORT WITH GAPS. IT IS THE SAME APP, UNOBSERVED. (V11.43)
+
+**There are exactly TWO `getPlatform()` branches in the entire codebase** — `commerce-policy.ts` and the
+push notification channel — **and `MainActivity` is a bare `BridgeActivity`.** There is essentially no
+Android-specific code.
+
+**So the risk is not missing Android code — it is that large built surfaces have never been SEEN there:**
+BLE printing, biometric app-lock (`@aparajita/capacitor-biometric-auth` is installed), keep-awake, and
+**the entire billing and upgrade path, which iOS hides by policy and Android shows.**
+
+✅ **Push is the one capability Android is AHEAD on** — a real FCM token, recorded in logcat — **yet
+there is still no evidence a message has ever been DELIVERED to an Android device.** The FCM sender was
+proven by a `validate_only` probe with a deliberately fake token: **built and validated, never observed
+delivering.**
+
+⚠️ **`purchaseCtaAllowed()` correctly keys on `getPlatform() !== 'ios'`, so Android keeps its upgrade
+UI.** But **the Auto-replies card is gated on `isNativeApp()`** — if that gate exists for the
+provisioning gap it is right as written **and should say so**; **if it exists for Apple, it is silently
+stripping a feature from Android as collateral of an App Store remedy.** **UNRESOLVED.**
+
+## Still open on Android (V11.43)
+
+- 🔴 **`hg_device_id` LIVES ON `localStorage`, AND THE REPO ALREADY KNOWS THAT IS WRONG.**
+  `preferencesStorage.ts` documents that this WebView **can hand back an empty `localStorage`** on a hard
+  navigation or cold kill. **The Supabase session was moved to `@capacitor/preferences` for exactly that
+  reason; `deviceLetter()` was too, deriving its seed from `getDeviceId()` while not trusting
+  `localStorage` to hold it. This one was missed.**
+  ⚠️ **OBSERVED CONSEQUENCE: eight fresh UUID rows from ONE iPad across ten days**, same truck, same van.
+  **Every regenerated id is a permanent new row, and the push send path targets every row for the van —
+  so nine stale rows are nine push targets.** `last_seen` is written on every upsert and **read by
+  nothing.** ⚠️ **A migration must carry the existing `localStorage` value across or it orphans another
+  row.**
+- ⚠️ **The `dev_<epoch>_<base36>` id format is the `crypto.randomUUID` fallback firing.** `randomUUID` is
+  **secure-context only** — so that row records a launch served over a non-secure context. **Unexplained.**
+- ⚠️ **32 overlays on the manage page register NONE with the back handler.** Inert, not destructive —
+  **registering any listener moves Capacitor to the `notifyListeners` branch app-wide** — but back does
+  nothing where a user expects it to close something. **The overlay denominator across the app is at
+  least 54; the previously recorded 22 gave no way to see that.**
+- ⚠️ **No handler exists for the Home button or app backgrounding.** **Home is not a back press.**
+- ⚠️ **Deep links are entirely unclaimed** — MAIN/LAUNCHER only, no `autoVerify`, no `assetlinks.json`.
+  **A product decision, not a defect**, and `hatchgrab.com` already carries two verification records.
+- ⚠️ **`SplashScreen.backgroundColor: '#1C1C1E'`** against a white splash drawable — **inert only while
+  the plugin is uninstalled, a visible dark flash the day it is added.**
+
+## 🔴 AN EMULATOR CANNOT VERIFY GESTURE NAVIGATION (V11.43)
+
+Three-button nav and gesture nav are **different input paths into the same callback**, and **the original
+back defect was an edge-swipe scenario** — one stray swipe losing the KDS board. **The emulator proves
+the handler is wired; hardware must prove the gesture reaches it.**
+
+⚠️ **The Pixel Tablet AVD defaults to gesture navigation.** `adb shell input keyevent 4` fires
+KEYCODE_BACK **regardless of mode** and is the reliable way to exercise the handler.
+
+# ✅ ANDROID DRAWS EDGE TO EDGE (V11.44)
+
+🔴 **The bottom band was `#0F172A` — the app's `windowBackground` — showing through because Capacitor's
+`SystemBars` pads the WebView's parent on all four sides and zeroes the insets it hands the WebView.**
+iOS has no equivalent padding step, which is why iPad reached the bottom edge.
+
+> ⚠️ **ONE DECISION, TWO STRIPS, ONLY ONE CONSIDERED.** That navy was chosen so the STATUS strip would
+> be continuous with the navy `AppHeader`. **The same value silently landed on the bottom strip, where
+> nothing above it is navy.**
+
+✅ **Fixed, and PIXEL-SAMPLED before and after across five screens:** the bottom 28px went from a fixed
+`#0F172A` to `#F8FAFC` on light screens and `#7C7D7E` under a modal scrim — **it now takes the
+content's colour.** The KDS top strip reads 72px of unbroken `#FFFFFF` continuous into its white
+header.
+
+🔴 **THE FIX PUTS KDS ROUTE KNOWLEDGE IN A SECOND PLACE.** The surface is identified from the WebView's
+URL read natively in `MainActivity.java`, **so a renamed route silently reverts the strip to navy — no
+error, no test failure.** It was taken only because every web file is shared code the iOS build
+executes and Apple is mid-review. **It must be replaced with a shared signal once review clears.**
+
+⚠️ **The WebView is now 14dp taller**, so the last 14dp of the dashboard's scroll region sits behind the
+gesture pill at the end of its travel. Inherent to edge-to-edge.
+
+**Two measured facts corrected the earlier report:** the emulator's WebView is 133, confirming the
+non-passthrough branch that report could only infer; and its claim that `/admin` is permanently
+dark-on-navy was **too strong** — it measured legible, because the appearance flag survives in-WebView
+navigation from `/app`.
+
+⚠️ **`plugins.SystemBars` LOOKS Android-only and is NOT** — iOS reads `style` and `hidden` from the same
+block, though not `insetsHandling`.
+
+> ⚠️ **AND THIS RETIRES THE "BARE `BridgeActivity`" LINE ABOVE.** §36's *Android is not a port with
+> gaps* entry rests partly on `MainActivity` being four lines. **It is no longer** — it now owns the
+> window insets and the system-bar appearance. The wider point stands (two `getPlatform()` branches,
+> almost no Android-specific code); **the specific evidence does not.**
+
+# PLAY CONSOLE — STATE AND FACTS (V11.44)
+
+✅ **Organization account verified.** D-U-N-S already existed. **Organization avoids the 12-tester /
+14-consecutive-day closed-testing requirement that applies to personal accounts created after November
+2023.**
+
+**Package name `com.hatchgrab.app`** — permanent, matching the iOS bundle id. **Free app** — also
+permanent; a paid app can never be made free.
+
+**Declarations made:** processors Supabase, Vercel, Brevo and **Google (Gemini)** · controller
+**HatchGrab Ltd**, United Kingdom · no national-security requests · **none of the above** on
+public-authority policies · category **Business and pages**, NOT Messaging · **no financial features**
+(Stripe processes as a service provider; card details never reach our servers; Direct charges mean money
+goes to the operator's own Stripe account) · **advertising ID: no** — no ads SDK, and PostHog is a web
+library in the WebView with no access to it.
+
+⚠️ **Data safety answers to keep consistent with `/privacy`**, which still needs **Gemini and Stripe**
+adding to its provider table. See §43.
+
+🔴 **`neverForLocation` MADE THE LOCATION ANSWER HONEST.** Nothing in the codebase uses device location —
+no `navigator.geolocation`, no `watchPosition`, the plugin is not installed. **The only lat/long comes
+from a postcode the visitor types, geocoded server-side.**
+
+⚠️ **Google's data-safety definition names the WebView case explicitly:** transferring user data to a
+third party via a WebView opened from your app, where your app controls the code. **The whole product is
+that WebView, so the open-web exemption does not apply** — which is what forced the PostHog reading in
+§12.
+
+## Screenshots — the emulator geometry problem (V11.44)
+
+⚠️ **Play requires 16:9 or 9:16. Almost no real device is either** — Pixel 7 is 20:9, Pixel Tablet is
+16:10. **The requirement is about listing presentation, not about what the app must support.**
+
+**Resolution belongs to the HARDWARE PROFILE, not the AVD** — editing an AVD exposes memory, storage,
+graphics and boot, but not the screen. **Clone the device profile and edit the clone.**
+
+🔴 **AND DENSITY MUST BE SET WITH IT.** A resolution change at an inherited low density produced 2560 ÷
+1.5 = **1706 CSS px — a desktop viewport**, and the operator surfaces rendered their desktop breakpoint
+with white space either side. **That is not a bug; it is a device no real operator has.**
+
+**Working profiles:** phone 1080×1920 at 420dpi · 10-inch tablet 2560×1440 at 320dpi (landscape).
+
+⚠️ **BUT THE UNDERLYING BEHAVIOUR IS REAL AT A WIDE ENOUGH VIEWPORT.** A 13-inch iPad Pro in landscape
+is 1366 CSS px; large Android tablets and Chromebooks go wider. **BACKLOG: decide whether the operator
+surfaces should stretch past their widest breakpoint — a centred column is a website convention, not a
+kitchen one.**
+
+## ✅ REAL HARDWARE (V11.44)
+
+✅ **Installed and working on a physical Android 16 tablet**, 1200×1920 at 240dpi — **800 × 1280 CSS px,
+narrower than any emulator used today.**
+
+⚠️ **Android 16 means `neverForLocation` is fully supported**, so the BLE permission removal carries no
+scan risk on this device. **Still unobserved: the Bluetooth printer against real hardware, gesture
+navigation, and biometric app-lock.**
+
+⚠️ **Wireless debugging needs both devices on the SAME network.** A Mac on `192.168.50.x` cannot pair
+with a tablet on `192.168.102.x`, and the failure presents as a protocol fault rather than a routing
+error.
+
+> ✅ **THIS PARTLY ANSWERS *AN EMULATOR CANNOT VERIFY GESTURE NAVIGATION* ABOVE — but only partly.**
+> There is now a physical device to test on. **Gesture navigation on it is still unobserved**, and the
+> edge-to-edge work above was measured on an emulator in gesture mode, **not on this tablet.**
+
 
 # 37. Payments — commercial model and architecture decisions (V9.4)
 
@@ -14788,6 +17881,31 @@ All under `public/`. **Untracked as of end of session — see the deploy state b
 
 **Aspect ratio 4.548:1**, `viewBox="21 39 1287 283"`. This is a TIGHT crop — ink fills 95.8% of the box. The first cut had 13.2% top / 6.8% bottom padding baked in at 3.971:1; that is why the logo looked low in its box and over-padded in headers. **Any hardcoded width/height pair must use 4.548:1.**
 
+## 🔴 THE FAVICON WAS NEVER THE BRAND MARK (V11.50)
+
+**The declared icon was a truck emoji in a data URI. The mark that was actually being seen was the
+fallback file** — `favicon.ico` at the host root, which browsers request whether or not the document
+links it, and reach when the declared one fails to render.
+
+🔴 **FIXING EITHER ALONE WOULD HAVE CHANGED NOTHING.** Replacing the declared emoji leaves the fallback
+serving; replacing the fallback leaves the declared emoji winning where it renders. **Two independent
+sources for one visual, and each masked the other's state.** This is the same shape as the V11.50
+`/favicon.ico` finding in §46: **the browser fetches things nobody declared, and those fetches have
+their own resolution order.**
+
+✅ **ICONS NOW BRANCH BY HOST**, so the consumer directory keeps its emoji rather than inheriting our
+mark. §46's host-resolution rules govern which brand a request belongs to.
+
+⚠️ **THE MASKABLE VARIANT WAS LEFT ALONE, DELIBERATELY.** Producing one is **a re-composition at a
+documented safe-zone ratio, not a resize** — the bolt sits at 52% (see the asset table above), and
+deriving that from a full-bleed source means redrawing, not scaling. ⚠️ **The smallest size is
+unverified, with the mark at roughly four per cent of its pixels.**
+
+⚠️ **STILL OPEN, AND BOTH ARE OUTWARD-FACING:** **link previews on our own host still use the other
+brand's logo, from a 3.86 MB file** — the same oversized-asset class as the `apple-touch-icon.png` row
+above, which replaced a 7.95 MB file — and **the installed-app manifest is titled for the other brand on
+both hosts.** §27, §46.
+
 ## Colours
 
 | Token | Value | Where |
@@ -14820,6 +17938,29 @@ stroke 0.185 · lean 12.4° (identical to the wordmark bolt) · orange #EF8B2C o
 Scale by context: **0.70** full-bleed (favicon, apple-touch, iOS), **0.52** maskable, **0.46** Android adaptive foreground.
 
 Contrast governs the background: orange on slate-900 is 7.14:1, on navy `#16314F` 5.29:1, but on any true mid-blue it collapses — blue-600 gives **1.45:1**. Orange and blue are near complementary in hue but close in luminance. **The icon background must stay very dark.**
+
+⛔ **SUPERSEDED V11.42 — OVERRIDDEN, AND THE RULE NOW CONTRADICTS THE SHIPPED ASSET.** The iOS icon moved
+to a **light** background on 15 August 2026. 🔴 **THE ARITHMETIC ABOVE GOVERNS TEXT, NOT AN ICON.** A
+contrast ratio is a legibility floor for glyphs; a mark has no such floor, and applying one here produced
+a rule that forbids the icon currently in the App Store build. ⚠️ **The ratios remain correct for text and
+are kept for that. DO NOT "RESTORE" A DARK ICON BACKGROUND ON THE STRENGTH OF THEM** — that is the
+mistake this supersession exists to stop.
+
+## V11.42 — 🔴 THE META APP ICON: TWO PLATFORMS, TWO INCOMPATIBLE REQUIREMENTS
+
+🔴 **META REJECTS A WHITE BACKGROUND AND REQUIRES TRANSPARENCY. APPLE REJECTS ALPHA ENTIRELY.** **One file
+cannot serve both.** Error observed: *"We detected a white background in your image"* (GraphQL 1349096).
+
+✅ **A Meta-specific export was produced at `~/Downloads/hatchgrab-meta-icon.png`** — 1024×1024, RGBA,
+**source untouched and hash-verified.** ⚠️ **IT MUST NEVER REPLACE THE iOS ASSET**, or the build fails at
+Apple submission.
+
+**The transform is worth recording because keying out white would have been wrong.** The exporter
+**inverted the composite-over-white equation** to recover each pixel's true alpha and colour, preserving
+**2,503 antialiased edge pixels as real alpha**. 🔴 **A naive "make white transparent" leaves a fringe**
+that is invisible on white and **shows as a halo on dark.** It also proved by **flood fill** that **zero
+near-white pixels are enclosed by the mark**, so no hole could be punched — **an enumeration, not an
+eyeball.**
 
 ## Where the brand renders
 
@@ -15075,6 +18216,91 @@ had never looked at.**
 
 ⚠️ **The same technique produced the other 81 rows.** Any *"no dismissal arm"* or *"no close glyph"*
 finding from that audit inherits the same blind spot.
+
+## 🔴 THE APP'S ORANGE MOVED WITH A FRAMEWORK UPGRADE, AND THE BRAND FILE DID NOT (V11.51)
+
+**`#ea580c` was `orange-600` under Tailwind v3. The project is on Tailwind 4.3.1, whose `orange-600`
+paints `#f54a00`.** Measured by painting the computed colour to a canvas and reading the pixel back —
+not inferred from a palette table.
+
+🔴 **SO THE PRODUCT NOW HAS TWO ORANGES AND ONLY ONE OF THEM IS WRITTEN DOWN.** Emails hardcode
+`#ea580c` because they cannot use a token; every app surface renders `#f54a00` through
+`text-orange-600`. **Both are "the brand orange" to whoever is reading the file they happen to open.**
+
+⚠️ **`lib/brand.ts:49` STILL DESCRIBES "the app's orange-600 (#ea580c, 3.56:1)".** That line predates
+the upgrade, and it is **the file someone consults before making a colour decision** — which is exactly
+what makes a stale value in it expensive rather than cosmetic. **The contrast ratio is stale too**: it
+was measured against a colour the app no longer paints. §27's white-on-orange backlog item carries the
+same figure and is annotated to match. **Flagged, unchanged — correcting it is a colour decision, not
+a documentation edit, and wants the ratio re-measured first.**
+
+✅ **THE PRACTICAL RULE THIS PRODUCES: on an app surface use the TOKEN, not a hex copied from an
+email.** The custom-domain page's brand line (§46) is the worked example — copying the email's literal
+hex would have put a different orange on one word from every other orange on the same page.
+
+## THE LANDING TESTIMONIAL — TYPOGRAPHY AND ATTRIBUTION (V11.51)
+
+**The quote is Pizzeria Gusto's own words and is not editable copy** (V11.49). This entry is about how
+it is SET, not what it says — the words, the logo and the award were byte-identical throughout.
+
+**THE ATTRIBUTION NOW NAMES THE OWNERS**, and the business name appears **once**:
+
+```
+Nadia & Bogdan
+Owners, Pizzeria Gusto
+★ Mobile Pizzeria of the Year ★
+Regional winner
+```
+
+🔴 **THE EXISTING STANDALONE NAME LINE WAS REPURPOSED, NOT ADDED TO.** It held *"Pizzeria Gusto"* on
+its own; it now holds the owners' names, and the business name moved into the role line beneath.
+**Adding a line above would have printed the business name twice in three lines.**
+
+**The role line reads in the same ink as the names, one step down in weight** — `--head` navy at 400
+against the names' 800 — rather than being `--ink-faint` at 600, which made **the business name the
+faintest thing in a stack that has a logo above it and an award below.** ⚠️ **The separation is now
+weight and size, not colour**; raising the colour without lowering the weight would have made it
+compete with the names.
+
+### The typography, and what measuring it actually settled
+
+🔴 **SET BY SWEEPING TWENTY CANDIDATE COMBINATIONS ACROSS EIGHT WIDTHS AND READING THE RENDERED LINE
+BOXES BACK — not by estimating from character counts.** Several candidates that looked right on
+desktop only moved the stranded word to a different breakpoint. The paragraph now sets in **three even
+lines** at 1440/1280/1024 where *"villages."* used to strand alone on a fourth.
+
+⚠️ **THE PHONE SIZE WAS DELIBERATELY NOT REDUCED.** The stranding was a **desktop-only** defect; only
+the clamp's maximum came down (1.7rem → 1.45rem). **Shrinking the phone size to fix a fault it did not
+have would have made a featured quote smaller than the page's own body copy**, which is 18.4px there.
+
+**ITALICS WERE REMOVED AND THEN RESTORED, AND BOTH DECISIONS ARE KEPT.** The argument for removing them
+was sound — the 3.4rem orange quote mark already signals speech, and long italic passages read more
+slowly. 🔴 **In place, the mark alone did not carry it**: the paragraph read as body copy sitting under
+a decorative glyph. **The mark is a flourish ABOVE the block; the slant is a property OF the text, and
+only the second travels with the words.** The earlier reasoning was sound and the observation beat it.
+
+⚠️ **A STYLESHEET COMMENT CLAIMING THE ITALIC FACE IS NARROWER THAN THE ROMAN WAS WRONG.** Measured, it
+is about **1% wider** — 478.17px against 473.77px for the same string at 23.2px. **The line breaks
+survived the switch with slack rather than by luck**, which is only knowable because it was measured.
+Corrected in place.
+
+✅ **THE ITALIC IS A REAL DRAWN FACE, PROVEN BY DISABLING FONT SYNTHESIS AND FINDING THE MEASURED WIDTH
+UNCHANGED.** Had the browser been faking the slant, switching synthesis off would have collapsed it to
+the roman width. **`page.tsx` must keep `style: ['normal','italic']` on the Archivo call** — the quote
+mark depends on it too.
+
+### The logo's alt text
+
+**Empty, deliberately, with a comment recording BOTH halves.** The business name is announced by the
+role line directly beneath, so alt text would announce it **twice** — and a **missing** alt is worse
+than an empty one, because some screen readers fall back to reading the filename. 🔴 **One half without
+the other invites the opposite mistake**, which is why the comment states both.
+
+⚠️ **JSX comments are stripped at compile time**, so adding it left the rendered markup **byte-identical**
+— 1722 bytes before and after, captured from a live render on both sides.
+
+⚠️ **The quote's straight apostrophe (`U+0027`) still differs from the page's typographic ones.** It is
+the operator's own punctuation and **only their original message settles it** — unchanged deliberately.
 
 ## Copy and the landing page (V11.21)
 
@@ -15406,7 +18632,7 @@ Both phases **deployed and live-verified**. Migrations run by hand and confirmed
 ⚠️ **`capacitor.config.ts` bakes the server URL at `cap sync` time.** `localhost:3000` reaches the Mac's dev server from the *simulator* but resolves to the *iPad's own* loopback on hardware — a blank screen with no error (the same asymmetry §8 records for `wakeLock` over LAN). Use the Mac's LAN IP for a physical device, or unset `CAP_SERVER_URL` for production. `IS_LOCAL_HTTP` tests `startsWith('http://')`, so cleartext is correctly enabled for a LAN IP. **Revert to production with a plain `npx cap sync ios` before any real build.**
 
 
-# 40. iOS App Store — commerce posture (V11.3)
+# 40. iOS App Store — commerce posture and App Review (V11.3)
 
 > **Why this section is long.** The conclusion ("no purchase CTAs in the iOS app") is one line, but it rests on four guideline readings and two rejected escape routes. **Without the reasoning, the escape routes get re-derived and re-argued**, and two of them look correct until you read Apple's exact wording. Guidelines checked against Apple's live text, **last updated 8 June 2026**.
 
@@ -15503,6 +18729,84 @@ a layout preference is not a purchase CTA** — but the dashboard Settings tab i
 settings surface **with no commerce gate anywhere in the file**, i.e. a place where a future CTA could
 be added without ever meeting an existing guard.
 
+✅ **ANSWERED V11.40, AND THE WATCH CAN CLOSE ON THIS FILE.** An inward sweep re-checked it: the
+dashboard page's twenty upgrade-language hits are **all false positives** (`subscribe()`,
+`installAudioUnlock`, a PIN "Unlock" button), and its only plan-aware child renders `null` when locked
+rather than nudging. 🔴 **The gap the watch was looking for turned out to be in the MANAGE page instead,
+and no count of this predicate could ever have found it — see the subsection below.**
+
+## V11.40 — 🔴 AN OUTWARD SWEEP FROM A PREDICATE CANNOT FIND A SURFACE THAT WAS NEVER WIRED TO IT
+
+🔴 **THIS IS THE METHOD LESSON OF THE APP STORE SESSION AND IT GENERALISES BEYOND COMMERCE.**
+
+The gates above had been counted, repeatedly and correctly, by searching **outward** from
+`purchaseCtaAllowed()` — *"where is this predicate called"*. That count was eleven and it was right every
+time it was taken.
+
+**It could not, by construction, find a purchase surface that never called the predicate.**
+
+An **INWARD** sweep — *"enumerate every upgrade-shaped surface in the repo, then check each one's gate
+status"* — found **`showVanBillingModal`** in the Manage Settings tab. It renders *"Adding an additional
+truck costs £29/month and will be added to your next billing cycle"* with a primary button reading
+**"Add truck — £29/mo"**, and contains **zero** calls to the predicate. **It returned no hits from the
+outward sweep because it was never connected to it.**
+
+> 🔴 **THE RULE: A SWEEP THAT STARTS AT THE GUARD MEASURES COVERAGE OF THE GUARD, NOT COVERAGE OF THE
+> RISK.** To find what is unguarded, start at the surfaces and work back. **The two sweeps answer
+> different questions and the outward one reads like the complete answer.**
+
+**Blast radius, live-read:** reachable only on plan `pro` with two or more vans
+(`VAN_ADDON_PRICE.pro = 29`). Effectively unreachable on `max` (needs ≥999 vans), unreachable on `demo`,
+`tester` and `trial` — whose keys are absent from both maps and fall through `?? 1` / `?? 0`. **No truck
+in the database is on `pro`**, so no reviewer and no operator can currently reach it.
+
+⚠️ **DEFERRED DELIBERATELY, AND THE FIX IS NOT A GATE.** Wrapping it in the predicate leaves either a
+modal with only a Cancel button, or a path that adds a billable van without ever showing the charge. **The
+iOS branch needs to be a factual notice that additional trucks are added from the web dashboard.** That
+is a design decision, and it was not taken during an App Store review window. **BACKLOG.**
+
+⚠️ **Two further ungated surfaces were examined and left:** the van upgrade modal's explanatory body
+(unreachable except on `starter`; its CTA *is* gated) and the **FeatureGate explanation panel** (ungated
+by documented design — the CTA goes, the explanation stays).
+
+## V11.40 — 🔴 "COMING SOON" IN AN APP IS A GUIDELINE 2.1 TRIGGER IN ITS OWN RIGHT
+
+The existing decision rule — *"coming soon" against a fact about a plan is fine; against a control a user
+can see and cannot operate it is a defect* — is **necessary but not sufficient.**
+
+🔴 **THE PHRASE ITSELF IS TREATED AS EVIDENCE THE APP IS INCOMPLETE, WITH NO CONTROL BEHIND IT AT ALL.**
+Independent 2026 sources describe it as one of the best-documented 2.1 triggers, including a rejection for
+a single "Coming Soon" string on a settings screen found by a reviewer in under ten minutes. **Guideline
+2.1 accounts for over 40% of unresolved App Review issues by Apple's own figure.**
+
+✅ **The billing block was rewritten to present tense** — *"Billing is managed by HatchGrab / During early
+access we set up and adjust plans manually"* — with no promise about the future.
+
+⚠️ **AND THEN THE GATE ON IT WAS A MISTAKE, CORRECTED THE SAME DAY.** The rewritten block was gated behind
+the commerce predicate, which left the billing card as a heading and a plan line over nothing — **an empty
+shell, the same 2.1 shape, arrived at from the opposite direction.** 🔴 **The comment shipped with the gate
+had PREDICTED that failure and guarded the wrong elements against it. Predicting an outcome is not
+preventing it.**
+
+✅ **UNGATED. Facts about billing carry no CTA, no link, no price and no purchase instruction, and are
+permitted.** The test is recorded at the site: **if a future edit adds any of those, the block needs
+rewriting rather than hiding — an empty card is a worse outcome than a factual one.**
+
+## V11.40 — HIDING A FEATURE FOR COMPLETENESS IS NOT A COMMERCE QUESTION
+
+The auto-replies section was hidden in the native app **for all account types** — it can simulate a reply
+but cannot connect a number, and a control a user can see and cannot operate is a 2.1 defect.
+
+✅ **GATED ON `isNativeApp()`, NOT ON THE COMMERCE PREDICATE.** The commerce predicate answers a 3.1.1
+question and deliberately does not re-export the platform test. 🔴 **Using a commerce gate to hide a
+messaging feature makes the policy unreadable at the point where someone next changes it.**
+
+**The whole card including its heading is wrapped**, so no empty bordered box is left; the web is
+unchanged; **nothing was deleted**, so removing the wrapper restores it when provisioning ships.
+
+⚠️ A comment guarding the reply preview against being pulled inside a native hide was **reversed rather
+than deleted** — its premise (an orphaned title) was removed by the card-level wrapper.
+
 ## ✅ THE TRIAL UPGRADE POPUP IS ALREADY SUPPRESSED ON iOS
 
 Gated in **three** places by `purchaseCtaAllowed()`: `:438` the trial-reminder **trigger**
@@ -15514,7 +18818,9 @@ the Guideline 2.1 removals. **The gates are unchanged; the numbers moved.** `app
 is over 10,000 lines, so **a stale line number in this section points at unrelated markup**, which reads
 as a missing gate rather than as a stale reference.
 
-⚠️ **Verified in code; never observed in the shell.**
+✅ **SUPERSEDED V11.40 — THE CAVEAT IS STRUCK.** This line read *"Verified in code; never observed in
+the shell."* **The eleven gates were observed on hardware for the first time on 25 August 2026: no
+upgrade surface appeared anywhere in the native shell.** The suppression is no longer a code-read.
 
 ⚠️ 🔴 **iOS-ONLY BY DESIGN — §40 gates on iOS specifically because Google permits steering, so THE
 ANDROID BUILD WILL SHOW THE POPUP.** **Decide whether that asymmetry is intended before shipping both.**
@@ -15561,6 +18867,209 @@ script and it must do what it says.**
 
 ⚠️ **The Marketing URL is optional and was cleared.** `hatchgrab.com` served the Village Foodie map at the
 time, and **a marketing link to a different product is worse than no link.**
+
+## V11.40 — 🔴 THE DEMO ACCOUNT'S PLAN VALUE WAS THE ENTIRE PROBLEM
+
+The App Store demo truck was on plan `demo`. **The billing tab branches on `trial`, `starter`, `pro` and
+`max` with no fallback**, so a `demo` truck rendered a **visible tab containing an empty container** — a
+blank panel, no error. 🔴 **That is a Guideline 2.1 dead surface, on the account a reviewer works, under
+the guideline the app had just been rejected for.**
+
+⚠️ **THE MISSING FALLBACK IS STILL THERE AND WILL DO THE SAME TO ANY FUTURE PLAN VALUE. BACKLOG.**
+
+**Two plan values were tried and rejected before landing:**
+
+- **`tester`** hides the billing tab by name in the tab filter. It removes the empty container **without a
+  deploy** — but the tier was **empty. One truck, moved there that day.** 🔴 **A tier populated for the
+  first time to show a reviewer a different app is an undisclosed divergence, which is a worse exposure
+  (hidden features) than the one it solves.** Rejected on that basis.
+- **`max`** renders a populated, factual tab — **but its block states the plan price "renews
+  automatically", which is false**: subscription billing is not built and upgrade buttons email a mailbox.
+  🔴 **An auto-renewal claim in an app with no in-app purchase is a live Guideline 3.1.2 hook.** Rejected,
+  and ⚠️ **the false string is still in the product for any real `pro`/`max` operator. BACKLOG.**
+
+✅ **LANDED ON `trial`, WITH A DATED EXPIRY.** It is the plan **both live trading trucks are on**, so
+nothing the reviewer sees is unique to them and **there is nothing to disclose.** A dated expiry rather
+than NULL, deliberately: **NULL means *not started* and still grants everything, but the countdown copy
+renders regardless**, so a NULL expiry shows a clock that is not running.
+
+🔴 **THE EXPIRY CLIFF NOW APPLIES TO THIS TRUCK TOO.** When the date passes, **every feature returns
+false — less than Starter — and nothing writes the plan value back.**
+
+## V11.40 — THE APP STORE DEMO SEED, AND WHAT A HAND-RUN SQL SEED DOES NOT DO
+
+🔴 **THE SEED FOR THE DEMO TRUCK'S EVENTS AND ORDERS IS A HAND-PASTED SQL FILE IN `docs/`, NOT A CODE
+PATH.** No npm script, no runner, no route. **It seeds orders onto event uuids that already existed;
+nothing in the repo creates the events at all.**
+
+⚠️ **A planning brief asserted the opposite** — *"it exists, this seed was created through the repo"* — on
+a recollection with no read behind it. **The executor found the contradiction, stopped, and did not
+improvise hand-rolled inserts.** ✅ **That stop was the correct behaviour and is recorded as such.**
+
+**What the seed writes, and what it does not:**
+
+- ✅ `orders`, and the event's **order counter set directly to the number inserted** — so a real order
+  placed during review **cannot collide with the per-event unique index.** Live-verified: every seeded
+  event's counter equals its highest display id.
+- 🔴 **`production_slot_usage` is DELETED for the date and never re-inserted.** The code seeder used for
+  demo trucks does not write it either.
+
+🔴 **CONSEQUENCE, LIVE-READ: the capacity strip on a seeded event does not reflect its orders.** The strip
+reads usage by production-window key, finds nothing, and falls back to availability tones with empty
+labels; the breach detector receives zero units, **so the over-capacity banner cannot fire.** One event
+that had been worked through the real path carried usage rows; **every purely seeded event carried none.**
+
+✅ **A SUPPORTED REMEDY ALREADY EXISTS AND WAS NOT NEEDED HERE:** an admin backfill route calling the
+delete-then-rebuild helper, documented as idempotent. **Event creation through the manage API also
+self-heals usage for the date.**
+
+⚠️ **DECIDED: NOT RUN.** An empty strip is unremarkable to a reviewer; **a populated one might show amber
+and red slots, which is nearer to a stressed service than a healthy one.**
+
+## V11.40 — DEMO-TRUCK EXCLUSION FROM FEE AND REVENUE CALCULATIONS: the premise was wrong
+
+A concern that the App Store demo truck's synthetic trade was contaminating revenue figures was **checked
+and refuted**: the exclusion helper keys on a `demo-` string prefix and the truck sits **outside** it —
+🔴 **but no fee, threshold or revenue calculation exists to exclude anything from.** The current build
+charges no platform fee, and **the one call site inside the payments module guards a confirmation email,
+not money.**
+
+⚠️ **CARRIED AS A FUTURE HAZARD, NOT A PRESENT ONE.** When fees ship, **the `demo-` prefix will not cover
+the three non-prefixed trucks carrying synthetic trade.**
+
+## V11.40 — STANDING FACTS FOR ANY FUTURE APP REVIEW
+
+- 🔴 **The screen recording must be captured on a PHYSICAL DEVICE.** Apple's letter says so and their
+  prevention notes repeat it. **Simulator captures are for layout checking only.**
+- 🔴 **A remote-URL shell means the reviewer sees whatever PRODUCTION is serving.** **Deploys must be
+  frozen between recording and decision**, or the recording describes an app that no longer exists.
+- 🔴 **A Guideline 2.1 Information Needed rejection is answered by REPLYING in App Store Connect.** ⚠️ **The
+  reply button disappears once the version is resubmitted, so the reply is written FIRST. Uploading a
+  binary restarts review and discards the thread.**
+- **The support URL is clicked by a reviewer.** ✅ **A live mailbox behind it was confirmed receiving
+  before the reply was sent.**
+- **UK storefront steering is unchanged.** The CMA's steering consultation closed 28 July 2026 with a
+  decision expected later in the year, and Apple is contesting. **The one-line predicate stays as it is.**
+
+## WALK-UP PAYMENTS — REVIEWED AS A 3.1.3 RISK, CORRECTLY LEFT ALONE (V11.43)
+
+The "Through HatchGrab (coming soon)" row was examined as a possible App Store 3.1.3 risk. **It is not
+one.** Both rows are plain `<div>`s — **zero `onClick`, `<button>`, `href`, `role` or `tabIndex` across
+the whole block.** Nothing is clickable, nothing writes, nothing links out.
+
+✅ **AND THE CONVENTION IS DELIBERATE AND WORTH PRESERVING**, recorded at the source: *a disabled control
+says "this exists and you cannot use it yet"; a dimmed row says "this is not here"* — with an explicit
+instruction not to add an onClick, a waitlist or a notify-me. **The online section draws the same line.**
+
+⚠️ **THIS IS NOT THE SAME SHAPE AS THE LANDING'S MESSENGER AND INSTAGRAM PROBLEM.** That page **claims a
+working capability**; this one is labelled coming soon within an established convention.
+
+
+## 🔴 GUIDELINE 2.1(a) — THE CAMERA CRASH, AND WHAT THE CRASH LOG ACTUALLY SAID (V11.47)
+
+**Symptom.** App Review rejected under **Guideline 2.1(a)**. The app **crashed when tapping Take Photo in
+the "Import your menu" section**, on an **iPad Air 11-inch (M3) running iPadOS 26.6**.
+
+**Cause — READ from the symbolicated crash report, not inferred.** Termination namespace **`TCC`**. The
+process was killed for accessing privacy-sensitive data **without a usage description**, and the
+termination description **named `NSCameraUsageDescription` explicitly**. `EXC_CRASH (SIGABRT)`. The
+faulting thread was the **TCC XPC reply**; another thread was inside **`CameraUI`** on the camera
+capture-engine session queue.
+
+🔴 **ACROSS ALL SIXTEEN THREADS THERE WAS EXACTLY ONE FRAME BELONGING TO THE APP BINARY, AND IT WAS THE
+`UIApplicationMain` CALL SITE.** **No app code and no Capacitor plugin appeared anywhere in the crash
+path. The camera was launched by the system on the WEB LAYER'S behalf.** §35.
+
+✅ **CONFIRMED AGAINST THE SHIPPED BINARY, NOT THE REPO.** The crash log's binary UUID **matched the
+archive's `App.app.dSYM` UUID exactly**, and the `Info.plist` inside that archive's `.app` was read
+directly: **no `NSCameraUsageDescription`, no `NSPhotoLibrary*`, no `NSMicrophone*`, no `NSLocation*`.**
+
+**Fix — one key added to `ios/App/App/Info.plist`, addition-only, zero deletions:**
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>HatchGrab uses the camera so you can photograph your menu board, your dishes and other documents and upload them straight into your account. Images are used only for the uploads you choose to make.</string>
+```
+
+`CURRENT_PROJECT_VERSION` bumped **1 to 2 in both configurations**. Archived, **verified in the archived
+bundle**, device-tested, uploaded as **1.0 (2)** and resubmitted with a Resolution Center reply. §36.
+
+⚠️ **NO DEPLOY WAS INVOLVED AND NONE WAS REQUIRED. THE WEB BUNDLE WAS NOT CHANGED.**
+
+## 🔴 THE "TAKE PHOTO" CONTROL DOES NOT EXIST IN THE CODEBASE — AND THAT IS NORMAL (V11.47)
+
+A repository-wide search for **the control Apple named** returns nothing but a marketing sentence.
+**There is no Take Photo button anywhere in this app.**
+
+**iOS generates it.** WebKit raises **its own file-upload panel** for any `<input type="file">` whose
+`accept` includes `image/*`, and that panel offers **Photo Library / Take Photo / Choose File**. The
+sheet is a **system artefact**. Nothing in the application markup produces it, names it or controls it.
+
+🔴 **CONSEQUENCE FOR ANY FUTURE INVESTIGATION: SEARCHING FOR THE LABEL A USER OR A REVIEWER NAMES WILL
+FIND NOTHING, AND THAT ABSENCE IS NOT EVIDENCE THAT THE SURFACE DOES NOT EXIST.** **Enumerate by
+CAPABILITY** — every file input and its `accept` list, every `getUserMedia` call, every geolocation call
+— **and work back to which system UI those produce. Never enumerate by control name.**
+
+**Scope, as enumerated.** **Fourteen** `<input type="file">` elements exist across the admin page, the
+manage console and the demo modal. **Every one accepts `image/*` in some form**, so every one raised the
+same panel and **every one was equally fatal**. **None carries a `capture` attribute, and none accepts
+`video/*`** — which is the only reason no microphone key was needed.
+
+✅ **ONE KEY FIXED ALL FOURTEEN.** Fourteen control-level patches would have fixed fourteen. **Fix at the
+DECLARATION, not at the call site.** §3.
+
+✅ **DEVICE-TESTED, NOT ASSUMED:** the **Photo Library and Choose File branches worked correctly on the
+crashing build**, on both iPad and iPhone. Those branches use **out-of-process pickers** and require no
+usage description. **Only the camera branch runs in-process and passes through TCC.**
+
+## 🔴 VERIFY IN THE ARCHIVED BUNDLE, NEVER IN THE REPO (V11.47)
+
+**A key in the repo is not a key in the binary.** Before every upload, read the archive:
+
+```bash
+ARCHIVE="/path/to/App <date>.xcarchive"
+
+plutil -p "$ARCHIVE/Products/Applications/App.app/Info.plist" \
+  | grep -E 'NSCameraUsageDescription|CFBundleVersion|CFBundleShortVersionString'
+
+plutil -p "$ARCHIVE/Products/Applications/App.app/capacitor.config.json" \
+  | grep -A 6 '"server"'
+```
+
+**Required readings:** the expected usage-description keys, the intended `CFBundleShortVersionString` and
+`CFBundleVersion`, and **`server.url` pointing at production.**
+
+🔴 **THE `server.url` CHECK IS NOT OPTIONAL AND CANNOT BE REPLACED BY A DIFF.**
+`ios/App/App/capacitor.config.json` is **gitignored**, so a wrong value — a LAN address, a staging host —
+**will never appear in `git status` or in any diff. It has previously survived unnoticed for two days.
+The archived copy is the only authority on what shipped.**
+
+⚠️ **Note on the command:** `plutil -p` prints keys **alphabetically**, so `server` yields
+`allowNavigation`, `cleartext`, **then** `url`. A `grep -A 4` **truncates before `url`**, which is the one
+line that matters. **Use `-A 6`.**
+
+⚠️ **Note on paths:** dragging a path into Terminal inserts **backslash escapes**, which are literal
+inside double quotes. **Quote the path OR keep the escapes, never both**, and watch for a trailing space
+before the closing quote.
+
+## 🔴 IDENTIFYING WHICH ARCHIVE SHIPPED — THE UUID IS THE ONLY ANSWER (V11.47)
+
+**Two archives existed for the submitted version**, created **ninety minutes apart**, both carrying
+`1.0 (1)`, both **609,504 bytes**, with **byte-identical binary UUIDs.**
+`~/Library/Developer/Xcode/Archives` **records creation, never submission**, so **neither the creation
+date nor the filesystem mtime identifies the uploaded one.**
+
+✅ **The crash report's binary UUID matched BOTH dSYMs, which is what made the ambiguity harmless here.**
+
+🔴 **RULE: MATCH THE CRASH REPORT'S BINARY UUID AGAINST `dwarfdump --uuid` ON THE ARCHIVE'S dSYM BEFORE
+TRUSTING ANY SYMBOLICATION.** **A mismatched dSYM does not error — it produces confident, WRONG symbol
+names.** **Archive creation time is not evidence of what was submitted.**
+
+⚠️ **RELATED, AND STILL UNRESOLVED:** the reflog establishes **which commit HEAD pointed at** when an
+archive was built, but **nothing on the machine records whether the working tree was CLEAN at that
+moment.** If uncommitted work was present when an archive was built, **it went into the binary and left
+no trace.** Treat *"HEAD was at commit X"* as a **partial** answer to *"what was in this build"*. §27.
+
 
 # 41. Account deletion — anonymisation, not row deletion (V11.4)
 
@@ -15620,6 +19129,63 @@ A Vercel cron **emails Dominic and deletes nothing**, re-notifying **every 24h**
 **Three independent gates:** staff never reach Manage at all; **managers get NO rendered control — not a disabled one**, which would only advertise the action; and both handlers **403 anyone without an `operators` row**.
 
 Typed truck-name confirmation; **no `<form>`, so Enter cannot submit**; focus lands on **Cancel**; Escape dismisses. **Warns on upcoming orders but does not block.** States plainly that **no export exists** and that they must email for a copy **before** confirming.
+
+## V11.40 — 🔴 THE CONTROL WAS ABSENT IN THE NATIVE SHELL, AND NOTHING ANYWHERE SAID SO
+
+🔴 **OBSERVED ON AN iPAD. NOT FINDABLE FROM SOURCE.** Everything described above rendered correctly on
+the web and **was simply not there in the app.**
+
+`DeleteAccountSection` made two bare `fetch` calls to the account-deletion route. That route's operator
+resolver used the **cookie-only** Supabase server client, and the route file contained the string
+`authorization` **zero** times. The component caught the resulting failure into
+`.catch(() => setLoadFailed(true))` and returned `null`. **A grep for `console.` across the whole
+component returned nothing.**
+
+**So the section simply was not there, and no log, toast, empty state or error existed anywhere.**
+
+🔴 **THE ROUTE WAS THE ONLY AUTH-GATED ROUTE IN THE APP WITH NEITHER LEG.** There are two working
+patterns and it belonged to neither:
+
+- **Token-authenticated** — most of Manage resolves the truck from `dashboard_token` in the request body.
+  No session required, so the shell's lack of a cookie is irrelevant. **This is why the rest of Manage
+  works on an iPad.**
+- **Session-authenticated with a Bearer fallback** — the `/api/auth/*` routes read the header directly,
+  and every one of their manage-page callers sends `nativeAuthHeader()`.
+
+✅ **FIXED, BOTH LEGS, WEB-ONLY.** The component now sends `nativeAuthHeader()` on both fetches, and the
+route gained the same Bearer fallback the identity route already had. 🔴 **Neither alone changes
+anything** — a header nobody reads, or a reader nobody sends to.
+
+⚠️ **THE FALLBACK HAD TO GO IN TWICE, AND THAT EXPOSED A FALSE COMMENT.** The resolver's own comment
+claimed *"ONE resolver, used by both handlers, so the GET preview and the POST can never disagree"* —
+**and POST has never called it.** It resolves the caller inline, deliberately, because it distinguishes
+**401** (not signed in) from **403** (signed in, no operators row) and the shared resolver returns `null`
+for both. 🔴 **The comment asserted a safety property the code did not have.**
+
+✅ **THE FAILURE IS NOW AUDIBLE.** A `console.error` naming the **consequence** — *"the Danger Zone and
+the Delete account control will NOT render"* — in the shape the dashboard's query logs already use.
+🔴 **This defect survived from the account-deletion build until someone looked at an iPad three months
+later, because it produced no signal at all.**
+
+🔴 **ONE SIBLING OF THE WIDER FAMILY REMAINS, RECORDED NOT FIXED.** The dashboard's profile-name save is a
+bare session-dependent call whose route *does* have a Bearer fallback and whose caller sends nothing. **It
+fails loudly rather than invisibly**, which is why it was left. **It is the last known bare session-caller
+in the app. BACKLOG.**
+
+## V11.40 — 🔴 GUIDELINE 5.1.1(v) IS SCOPED TO APPS THAT SUPPORT ACCOUNT CREATION
+
+**This app does not support in-app account creation** — operators are provisioned on the website and staff
+are invited by the account owner. **The in-app deletion requirement is therefore not triggered.**
+
+⚠️ **AND THAT SCOPING IS LOAD-BEARING, BECAUSE THE FLOW ABOVE WOULD NOT CURRENTLY SATISFY THE REQUIREMENT
+IF IT DID APPLY.** At thirty days **nothing executes**: a cron emails a human and deletes nothing, and only
+that human can cancel, by email. **Apple permits confirmation steps but allows customer-service completion
+ONLY for apps in highly regulated fields.** Food-truck software is not one.
+
+> 🔴 **CONSEQUENCE FOR ANY FUTURE SUBMISSION: DO NOT DESCRIBE THIS AS "IN-APP ACCOUNT DELETION".**
+> Describe it as **a control that initiates account deletion with a thirty-day window.** ⚠️ **If in-app
+> account creation is ever added, this becomes a real compliance gap and the thirty-day human step is what
+> has to change.**
 
 ⚠️ **OPEN: no dashboard banner during the pending 30 days.** Manage → Settings is the only in-app indication.
 
@@ -15834,13 +19400,50 @@ The Settings card **no longer manufactures a connection**. ⚠️ The settings w
 
 **HatchGrab Ltd, company number 17381557.** `privacy@hatchgrab.com` and `hello@hatchgrab.com` are **LIVE AND TESTED as receiving**.
 
-**Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · **accounting 6 years** · support 24 months · logs 90 days. **No analytics or tracking cookies, so no consent banner is needed.**
+**Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · **accounting 6 years** · support 24 months · logs 90 days. ~~**No analytics or tracking cookies, so no consent banner is needed.**~~
+⛔ **STRUCK V11.45 — THAT SENTENCE IS FALSE AND IT IS PUBLISHED.** `posthog.init` runs at MODULE SCOPE
+in `app/providers.tsx` and passes exactly two options, neither of which is `persistence` — so it takes
+the library default, read out of the installed `posthog-js` 1.386.6 bundle rather than assumed:
+**`persistence: "localStorage+cookie"`**. `autocapture`, `save_campaign_params` and `save_referrer` all
+default true as well. The provider is mounted in the ROOT layout, so **PostHog sets cookies on every
+route of both domains, with no consent gate anywhere.**
+🔴 **THE SAME CLAIM IS IN THE PUBLISHED `/privacy`, WHICH IS THE VERSION THAT MATTERS.** This is a LIVE
+LEGAL EXPOSURE on both domains, it is INDEPENDENT of the website-embed workstream that found it, and it
+is **OPEN** — nothing has been changed in the policy or in the code. ⚠️ **An app reviewer visits
+`/privacy`**, and Google's data-safety answers (§36) were filled in against the same wrong premise.
+⚠️ Not determined: which pageview mode the `defaults: "unset"` expression resolves to. **Pageview
+capture is not disabled**; the mode is unread. See §27.
 
 **Infrastructure is now UK:** Supabase `eu-west-2`, Vercel `lhr1` (moved from `iad1` — latency as much as compliance). Brevo EU. Gemini, Apple and Google push are US.
 
-⚠️ **OPEN:** ICO registration is **not yet done** — not an App Store blocker, but a legal one. **Stripe must be added to the privacy policy's provider table** when the account confirms. **Article 28 processor clauses are IN the terms.**
+⚠️ **OPEN:** ICO registration is **not yet done** — not an App Store blocker, but a legal one. **Stripe AND Gemini must be added to the privacy policy's provider table** — ⚠️ **V11.44: Gemini is now
+DECLARED to Google Play as a processor (§36), so `/privacy` and the Play data-safety answers currently
+disagree, and the Play answer is the one on record with a regulator-facing form.** The original note
+follows: **Stripe must be added to the privacy policy's provider table** when the account confirms. **Article 28 processor clauses are IN the terms.**
 
 ⚠️ **The terms promise an export that does not exist** — see §27.
+
+⛔ **V11.49 — THE SCHEDULE BOX IS DELETED, SO THE V11.46 HALF OF THIS GAP HAS NO SUBJECT.** ⚠️ **The
+GAP ITSELF DOES NOT CLOSE**, because the custom domain carries the same obligation with the dependency
+moved — see the V11.48 paragraph below, which is now the whole of it. **Do not draft terms for the
+schedule box.** The V11.46 wording is kept because the four things it names are the four things the
+custom-domain version still needs. §46.
+
+⚠️ **V11.46 — AND THEY DO NOT YET MENTION THE WEBSITE EMBED, WHICH IS A DIFFERENT SHAPE OF GAP.** The
+schedule box ran on **the operator's own website, under their platform's plan**, so unlike everything
+else we sell **it could not be promised to work everywhere** — two of the four builders restrict it, and
+changes the operator or their platform makes can stop it working with no involvement from us. Four
+things want saying: that it depends on their website and their plan; that such changes can break it;
+that **their schedule stays available on our own site regardless**, so nothing is lost when it does;
+and that they should confirm they are entitled to place it on that site.
+🔴 **THIS APPLIES TO EVERY BUILDER, NOT ONE**, so it is a term rather than a platform footnote.
+⚠️ **V11.48 — AND THE CUSTOM DOMAIN WIDENS THE SAME GAP RATHER THAN ADDING A SECOND ONE.** The four
+things above restate with the dependency moved: the page depends on **their domain and their DNS
+provider**; **changes at their end can stop it working**; **their schedule stays available on our own
+site regardless**; and they confirm **they are entitled to use that address**. 🔴 **Same term, two
+dependencies — write it once covering both, not twice.** §46.
+⚠️ **`content/legal/*.md` ARE THE SOURCE OF TRUTH AND ALREADY CARRY ONE UNMET PROMISE** (the export
+above), so this wants a **proper pass over the terms**, not a paragraph inserted next to it. §27.
 
 # 44. Commercial model — fees and pricing suppression (V11.4)
 
@@ -16221,4 +19824,857 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.21
+# 46. Operator-owned surfaces — custom domains (V11.48, rewritten V11.49, extended V11.50)
+
+🔴 **WHY THIS SECTION EXISTS RATHER THAN LIVING UNDER DISCOVERY.** It puts a truck's schedule at an
+address the operator owns, carrying **no Village Foodie chrome at all**. That is the opposite of
+discovery, and filing it there sent the next reader looking for *"how an operator gets their schedule
+onto their own site"* to the one place they would not think to look. §2's Key surfaces keeps the route
+bullets; the feature lives here. ⚠️ **It said "both surfaces" until V11.49; there is now one.**
+
+**Nothing in this section has been deployed.** ⛔ **CORRECTED V11.50 — "nothing has been rendered in a
+browser at any stage" IS NO LONGER TRUE, AND THE FIRST RENDER IS WHY THIS SECTION GREW.** The page has
+now been loaded against a real hostname, and **that first load found a fault that had made every
+custom-domain page impossible.** See *The local test rig* and *Every script the page needs was denied*
+below. **Six stages were built before anything was loaded in a browser.**
+
+✅ **THE SIX MIGRATIONS ARE APPLIED (V11.49)** — the embed flag, the last-seen/referrer pair, the plan
+answer, and the three custom-domain migrations. **Every "written and unapplied" line in V11.45, V11.46
+and V11.48 is superseded by this one.**
+
+🔴 **HOSTING CREDENTIALS ARE STILL UNSET, SO PROVISIONING HAS NEVER COMPLETED END TO END.** The serving
+path is testable locally; **provisioning is not**, because it makes a real hosting API call — and the
+provisioned page itself only exists in production, because DNS points at the deployment.
+
+⛔ **THE SCHEDULE BOX — THE IFRAME EMBED — IS REMOVED (V11.49), SO THIS SECTION IS NOW ABOUT ONE
+SURFACE, NOT TWO.** The removal and what survived it are recorded below under *The iframe embed*,
+because what survived is the data path the custom domain runs on.
+
+## THE CUSTOM-DOMAIN FEATURE
+
+An operator points a subdomain of their own domain at us, and we serve their schedule page there.
+🔴 **THE SUBDOMAIN IS NOT CHOSEN. EVERY OPERATOR GETS `events.<their registrable domain>` (V11.49)** —
+see *The fixed prefix* below. 🔴 **Their website builder is not involved at all, and that is why this
+survived the embed rather than dying with it**: builder plan tiers, silent stripping of pasted content,
+sandboxed frames, iframe height and phone-scroll trapping never applied here.
+
+⚠️ **THE MAX MARKETING ROW IS NOT SATISFIED BY THIS AS SCOPED.** It promises an **ordering** page at the
+operator's own address; this serves a **schedule** page whose order buttons deep-link to ours. Rewording
+the row is the intended resolution and is **not yet done** (§27, §4).
+🔴 **Putting the ordering flow itself on an operator-controlled host is a larger question, and the risk
+is NOT the nested-frame risk the embed had** — the certificate is ours and we serve the content. **It is
+that the operator holds the DNS record and can repoint it at any time**, which turns a URL customers have
+bookmarked for card entry into a page we no longer control.
+
+✅ **The page served is the EXISTING chrome-free schedule route, not a copy.** Shared components were
+extracted so one page serves both; a duplicate would drift the way the two schedule pages were assumed
+to have drifted (§3). The Village-Foodie-chromed schedule page is untouched, and its chrome remains an
+open, separate issue.
+
+## HOST RESOLUTION — the default was the problem
+
+🔴 **EVERY HOST TEST IN THE CODEBASE ASKED WHETHER THE HOST CONTAINS "hatchgrab", WITH VILLAGE FOODIE AS
+THE `else`.** Village Foodie was not a match; it was **the fallback**. So any unrecognised host *became*
+Village Foodie — the tab title, the canonical URL, the link-preview logo. Serving an operator's domain
+would have told their customers they were looking at our consumer directory.
+
+🔴 **AND THE APEX HAZARD WAS WORSE THAN ASSUMED.** The proxy rewrites the root path to the landing page
+**only when the host contains "hatchgrab"**, so an apex pointed at us fell through to the consumer
+discovery map — **our directory of competing trucks, on their domain, at their address.** Closed: a host
+with no verified, active truck now returns not found.
+
+✅ **CUSTOM HOSTS DEFAULT DENY, AND THE PROOF RAN BACKWARDS.** Enumerated from the surface list and
+worked back rather than forward from the allowlist: **47 surfaces constructed on a custom host were each
+refused** — dashboard, manage, KDS, admin, the ordering flow, the discovery map, the landing page, every
+API family — with **exactly two paths serving**. ⚠️ **The certificate-challenge path passes through
+unlimited**, because denying it breaks renewal *months later* rather than immediately, which is the kind
+of failure nobody connects to the change that caused it.
+
+✅ **Metadata on a custom host is asserted by scanning the WHOLE SERIALISED OBJECT**, not named fields,
+so no Village Foodie string, logo or URL can reappear unnoticed.
+
+🔴 **THE ORDER LINK MUST BE ABSOLUTE ON A CUSTOM HOST.** It is a relative link, so on an operator's
+domain it resolves to **their** host — **the same class of bug as the iframe version, arriving through a
+different door** (§35). Behind a prop defaulting to existing behaviour, with existing call sites proven
+byte-identical.
+
+🔴 **ANALYTICS GUARDS READ THE PATH, NOT THE HOST.** On a custom domain serving at the root the path is
+`/`, so **neither guard fired and cookies would have landed on the operator's domain** — the exact
+failure the embed route was built to avoid. Now keyed on host **as well as** path, with preview
+deployments deliberately kept on our side of the test.
+
+🔴 **RATE LIMITING WAS ENTIRELY HOST-BLIND** — every predicate takes only the path — so a custom domain
+serving at the root matched no bucket and **would have been the one public surface with no limiter at
+all.** A custom-host bucket now exists (§28).
+
+⚠️ **Indexing is OFF for now, deliberately.** Un-indexing is slow, and **indexing a page nobody has ever
+seen rendered is the mistake that persists.** Flipping it is a one-line change once the page has been
+looked at.
+
+## THE APEX GUARD — two independent checks
+
+🔴 **COUNTING DOTS DOES NOT WORK.** A naive label count passes every `.co.uk` apex in the country: of
+twelve constructed apex cases across `.com`, `.co.uk`, `.org.uk`, `.me.uk`, `.ac.uk`, `.gov.uk` and
+`.com.au`, **seven would have passed it.**
+
+**The primary guard uses the public suffix list**, via a maintained package rather than a hand-written
+list, because a hand-written list is a snapshot **with no update path**.
+
+🔴 **ITS FAILURE DIRECTION IS PERMISSIVE.** The package bundles a snapshot. If a new multi-label suffix
+is added after that snapshot, an operator's apex under it **parses as a subdomain and PASSES the
+guard** — their whole website taken over, by the guard built to prevent exactly that.
+
+✅ **So a second, list-independent guard sits beside it.** A zone apex has an **SOA record at its own
+name**; a subdomain inside that zone does not. Query SOA at exactly what the operator typed and treat an
+SOA in the **answer** section as an apex. ⚠️ **Distinguishing answer from authority is essential** —
+without it every valid subdomain is refused, because a negative answer carries an SOA in AUTHORITY to
+supply the negative-caching TTL. **Both guards must pass; the DNS one fails open, since the list guard
+remains primary.**
+
+⚠️ **THE FIRST DEMONSTRATION OF THE SECOND GUARD PROVED NOTHING**, and is recorded rather than quietly
+replaced. It used an **unknown top-level domain, which the list guard already refuses** — so the case
+showed the two guards *agreeing*, not the second one working. The real permissive gap is a new
+**second-level** suffix under a **known** top-level domain. See §35: adjacent evidence is not evidence.
+
+## PROVISIONING
+
+🔴 **THE RECORD VALUE MUST COME FROM THE HOSTING API RESPONSE, PER DOMAIN.** The documented
+general-purpose values are **not necessarily what a given project is issued**, and a hardcoded target
+that is correct today is the same class of stale claim as a menu name recalled from memory. **There is
+deliberately no fallback constant**, and the only target-shaped string in the tree sits in a comment
+explaining why it must not be used.
+
+🔴 **The API token is server-side only and must never reach the client.**
+
+**Pre-flight checks run BEFORE the operator is asked to do anything**, using DNS-over-HTTPS — a plain
+HTTPS request returning JSON, **no DNS library**, with a second resolver as fallback on the same schema.
+Three checks:
+
+1. **Certificate-authority records that would block issuance**, which fails **SILENTLY** — the
+   certificate simply never appears — **so it must be caught before setup rather than diagnosed after.**
+2. **An existing conflicting record.**
+3. **Whether the domain is already attached to another project.**
+
+🔴 **PRE-FLIGHT QUERIES THE PARENT DOMAIN, NEVER THE NEW SUBDOMAIN.** A lookup of a name that does not
+exist yet has its *"does not exist"* answer cached for the zone's negative window, **which makes our own
+later checks lag reality and look slower than they are.**
+
+⚠️ **Every check fails open.** A lookup that errors or times out does not stop the operator.
+
+✅ **The operator's DNS provider is identified from the NAMESERVERS.** This is **authoritative DNS data
+rather than page content**, so none of the guessing problems that plague website-builder detection apply
+— **the provider is named, not inferred.**
+
+**Timing copy: usually within an hour, sometimes longer.** ⚠️ The widely quoted 24–48 hours is for
+**nameserver changes, not a single record**; certificates issue within minutes of verification
+succeeding. **Never say instant.**
+
+🔴 **THE ESCAPE HATCH SITS ON THE RECORD SCREEN, NOT AFTER FAILURE.** Many operators do not hold their
+own DNS login — it belongs to whoever built the site. The email to that person carries the provider
+name, all three values, and the reason.
+
+**Setup resumes where it was left**, which matters most for the operators who need two attempts.
+
+## THE OPERATOR NOTIFICATION — there is no notification system
+
+🔴 **READ BEFORE EXTENDING, AND WHAT THE READ FOUND WAS NOT A SYSTEM.** No table, no rows, no inserts:
+an operator notification is **DERIVED STATE** — per-truck, computed from data already loaded,
+dismissible for the session only, never persisted.
+
+The domain notification is a **fourth instance of that same mechanism**, not a second system. ✅ **A
+useful consequence: "no duplicate on repeated runs" is a PROPERTY RATHER THAN A PROMISE** — nothing is
+ever created, so nothing can be created twice. The scheduled job writes columns; the banner is an
+expression that reads them.
+
+**Two states.** **Waiting**, which is what catches a silent stall — nothing went live, so without it the
+operator simply waits indefinitely believing it is coming. And **ready**, pointing at settings to
+confirm.
+
+**Plus an email when it goes live**, because setup ends with the operator closing the tab and a
+dashboard-only notice reaches nobody.
+
+⚠️ **THE CONFIRM STEP IS ONE ACKNOWLEDGEMENT AND GATES NOTHING.** There is **no "something's wrong"
+branch**: nothing sits behind it to triage, and a button that files a signal nobody reads is worse than
+a sentence naming who to contact. 🔴 **The copy must tell them what to check first** — open the address,
+is the schedule right, are the dates yours — **or the confirmation records "I saw a notification" rather
+than "I looked at my page", and the confirmed column means nothing.**
+
+## MONITORING
+
+**A daily DNS lookup writes state. No email is sent on a failure**; the admin view is how this is read.
+⚠️ **Deliberate, and the trade is stated: a table only works when someone opens it**, so the first anyone
+knows of a breakage is still the operator getting in touch.
+
+🔴 **WHAT IS ACTUALLY RESOLVING IS RECORDED, AND IT IS THE DIAGNOSTIC.** A status column alone says
+"broken" and leaves you starting from zero; **the resolved value distinguishes a mistyped record from a
+conflicting one from a domain whose whole site has moved host.**
+
+**Outage duration is the gap between the last successful check and now**, so no history table is needed
+and **none should be added**.
+
+⚠️ **THE "STOPPED WORKING" THRESHOLD IS DERIVED FROM THE SCHEDULED CADENCE, IN MISSED CHECKS RATHER THAN
+HOURS**, so changing the schedule cannot silently make the label wrong. 🔴 **This moved the effective
+threshold from 36 hours to 60: the original literal was ONE missed check plus margin, not two.** ⚠️ **Two
+and a half days is a long time for a page an operator has told customers about**, and the tighter setting
+is one named constant — **a false "stopped" costs a lookup; a missed one costs them a weekend.** §27.
+
+🔴 **THOSE TWO PARAGRAPHS DISAGREE ON PURPOSE, AND THE DISAGREEMENT IS THE ENTRY.** The **mechanism** is
+settled: a threshold written in hours drifts silently the moment the schedule changes, so it is derived
+from the cadence in missed checks. **Whether the constant should be two missed checks or one is a
+separate judgement about the NUMBER, not about the derivation.** ⚠️ **Recorded together so that whoever
+tightens it does not undo the derivation in order to do so** — the tempting edit is to write `36` back in
+as a literal, which fixes the number and reintroduces the drift. **Change the named constant; leave the
+mechanism alone.**
+
+🔴 **THE ORPHAN SWEEP RELEASES FIRST AND CLEARS ONLY ON SUCCESS.** A domain registered against the
+project but never pointed at us **blocks that same domain being added later — including by the
+operator's own web person doing it properly.** Clearing our column on a failed release **converts a
+traceable orphan into an untraceable one**, so the row survives as its own retry queue with the reason
+recorded, and **a not-found response counts as released so a half-completed sweep converges rather than
+sticking.** 🔴 **It must never release a domain that is verified or serving, and that guard is tested
+FIRST rather than as an afterthought.**
+
+⚠️ **A SUCCESSFUL RELEASE IS NOT VISIBLE IN THE ADMIN VIEW** — that row is filtered out entirely. **An
+earlier report claimed otherwise; the claim was wrong and is corrected here.**
+
+## SECURITY — the demo short-circuit reached the new actions
+
+✅ **FOUND BY ENUMERATING WHAT A CALLER CONTROLS AND WORKING BACK**, not by inspecting the guard. §35.
+
+The manage route **denies by default** — no session is a 401, no role a 403, and a dashboard token alone
+is not sufficient (§12). 🔴 **But a demo identity short-circuits to owner with a null user, and demo
+tokens are minted by a PUBLIC endpoint to any anonymous visitor.** That made all the new domain actions
+reachable **with no operator account at all.**
+
+✅ **Closed at the ACTION, not at the identity layer** — the short-circuit is untouched because demos
+depend on it, and the access resolver is **byte-identical**.
+
+**The email action takes a caller-supplied recipient by design** — the operator is emailing their web
+person, an address we do not hold. ✅ **The body is composed entirely server-side, proven by submitting
+marker values for every body-shaped field and confirming none reached the mail.**
+
+🔴 **THE EXPOSURE WAS NOT SPAM. IT WAS SENDER REPUTATION.** The mail provider is on a **shared daily
+allowance whose first casualty, when exhausted, is order confirmations for live trucks.** An unmetered
+mailer on our own domain risks **a trading truck losing customer email because of a feature none of its
+customers use.**
+
+✅ **The recipient is recorded as a KEYED, NORMALISED PSEUDONYM rather than the raw address**, so
+repeated sends to one inbox still cluster — **which is what abuse looks like** — while a third party's
+address, belonging to someone who never signed up to anything, stays out of a log that states it holds
+no identifiers and **has no retention story**.
+
+⚠️ **THE HASHING SECRET IS NOT SET IN ANY ENVIRONMENT.** The code falls back to another key, so there is
+no unset-variable failure — **but rotating that key would silently stop old and new rows clustering. The
+abuse signal would keep writing rows and quietly stop working.** §27.
+
+## THE FIXED PREFIX (V11.49)
+
+🔴 **EVERY OPERATOR GETS `events.<their registrable domain>`. THERE IS NO CHOICE, AND THAT REMOVES A
+WHOLE CLASS OF FAILURE.** The editable field, its prefill, all four validation rules and every error
+message written to police them are gone. **Nothing left to type is nothing left to get wrong** — no
+character rules, no leading-hyphen case, no `www` typed into the box, no empty field.
+
+⚠️ **THE GUARDS STAY, AND THEIR JOB IS NOW DIFFERENT RATHER THAN GONE.** The public-suffix guard, the
+SOA guard and the server's `www` refusal now defend **a path the interface cannot reach**. That is
+correct and deliberate: they are the last line before a side effect that takes over a website, and a
+client is a courtesy — **anything able to POST reaches the action directly, with no screen in the way.**
+
+**Where a truck has no website on file the operator still types their own domain**, with `events.`
+shown as fixed text beside the box. **That path is where the apex guards still do real work**, which is
+the reason they were kept rather than replaced.
+
+⚠️ **ONE WORD FOR EVERY TRUCK IS ALSO WHAT MADE THE COPY POSSIBLE.** *"Your new address is
+events.yourtruck.com"* is a sentence; *"choose a word, here are the rules"* was a form.
+
+### THE ADDRESS FIELD NORMALISES AT SUBMISSION, NOT JUST FOR DISPLAY (V11.50)
+
+**The preview and the submitted value are now equal on every input**, and **an apex is no longer
+reachable through the field at all**, because the address is always exactly one label in front of the
+registrable domain.
+
+⚠️ **THE SUFFIX-LIST DEPENDENCY THEREFORE NOW SITS ON THE SUBMISSION PATH** rather than the display
+path. **The failure changes shape: a suffix added after the bundled snapshot now mis-builds an address
+rather than mis-rendering a suggestion.** 🔴 **The independent zone-apex check is what still catches the
+dangerous half** — which is precisely why it was kept as a second, independent guard rather than folded
+into the first.
+
+### WEB-ADDRESS FIELDS WERE BEING AUTOCORRECTED (V11.50)
+
+**Typing a domain produced a capitalised, space-separated phrase.** Four fields across the manage page
+were affected; ⚠️ **the two that misbehaved were the two typed as plain text.** All four now suppress
+capitalisation, correction and spell-check, and declare a URL input mode.
+
+⚠️ **THE FIELD TYPES WERE DELIBERATELY NOT CHANGED — a bare domain is invalid for a strict URL type**,
+so the obvious fix would have rejected exactly the input the field exists to take. §23.
+
+### THE WIZARD NO LONGER CLOSES ON A BACKDROP CLICK OR ESCAPE (V11.50)
+
+Which was **losing in-progress setups**. ⚠️ **THE PREMISE THAT THIS MADE IT INCONSISTENT WAS WRONG: 22
+of 31 overlays in that file already do not dismiss that way. It was the outlier, not the exception** —
+the change brought it into line rather than out of it. **The count was taken, not assumed**; a
+consistency argument that nobody counts is a preference wearing a principle's clothes.
+
+### 🔴 THE COLLISION CASE — THE ONLY REMAINING REASON THIS FAILS, AND NOTHING DETECTS IT
+
+**Pre-flight's two DNS lookups deliberately target the PARENT domain** (§46, Provisioning: a lookup of
+a name that does not exist yet caches its own "does not exist" answer), **so neither touches the new
+name.** The only check on the exact name is the hosting provider's own *"is this configured for us"*
+field, which is null for a name pointing at any other host.
+
+**So an operator already using `events` for something else gets no warning at all.** Provisioning
+succeeds, and the failure lands on their web person, at their DNS provider, **with no context from us**.
+🔴 **The bad outcome is not the failure — it is that they overwrite the existing record and silently
+break whatever it served.**
+
+⚠️ **THE NEAREST EXISTING SIGNAL IS ALREADY BEING READ AND THEN DISCARDED.** The provider returns a
+misconfigured flag, the config helper reads it, and pre-flight never returns it. **Surfacing it is a
+small change.** §27.
+
+## THE WIZARD — WHERE IT LIVES, AND HOW IT BEHAVES (V11.49)
+
+🔴 **BOTH WIZARDS WERE ON THE WRONG SIDE OF A RULE THE FILE STATES ABOUT ITSELF.** The dashboard file
+declares, **ninety lines above where they were mounted**, that Dashboard → Settings is **per-event**
+while Manage → Settings is **truck-wide**. Both wizards write truck-wide columns. **They now live in
+Manage → Settings**, following the self-contained-child pattern already used there.
+
+**AND THE WIZARD OPENS IN A MODAL**, using the pattern that file already uses a dozen times. Expanded in
+place it pushed the whole tab down and an operator mid-setup could scroll away into unrelated controls:
+**the steps are a sequence with an order; the tab is a list of independent settings.**
+
+⚠️ **A STEP THAT RENDERED NOTHING.** The resume path seeds an `idle` step, and the effect that moves it
+on **returns early when the status fetch cannot supply a record target — which it cannot without the
+hosting credentials.** No branch matched `idle`, so a part-finished setup reopened to **a completely
+blank white panel behind a black backdrop: no text, no button, nothing to press but the backdrop.** It
+now renders in both cases, and they are **different promises**: before the fetch settles we are still
+working, so it says so and offers nothing; after it fails, waiting will not help, so it says nothing
+has changed and gives them a way out.
+
+## THE COPY (V11.49)
+
+**751 words to 428 across the flow; the address screen from 116 to 42.** 🔴 **The
+website-is-unaffected reassurance appeared THREE TIMES ON ONE SCREEN, sixty words apart**, on a screen
+with one button. It now appears **once per screen**, proven by rendering every screen and counting.
+
+🔴 **BUTTON LABELS MUST NAME WHAT HAPPENS.** `Done` was the important one: it sat under an email form,
+was the only button on the screen, and **claimed completion when the record may never have been added
+and nothing was verified.** An operator who did the task and one who did not **pressed the same
+button.** It says `Close`. `Continue` became `Check this address`, because nothing on the screen told
+them a check ran next — **the label only became `Checking…` after they had pressed it**, which is a
+label that can only be understood in the past tense.
+
+🔴 **THE WIZARD STATES PLAINLY, BEFORE SETUP COMPLETES, THAT ORDERING HAPPENS ON OUR SIDE.** The
+schedule sits at their address; a customer tapping Order is taken to HatchGrab to pay; card details
+stay with us. **That is the assumption an operator will otherwise get wrong**, and it is placed before
+the commit rather than in a footnote — where it can still change their mind.
+
+**THE RECORD SCREEN DID NOT SHRINK, AND THAT IS THE RIGHT OUTCOME.** Most of its words are the three
+rows and the timing line: **the task itself, and the expectation that stops an operator waiting on the
+page.**
+
+⚠️ **TWO WARNINGS WERE REWRITTEN RATHER THAN MINIMALLY CORRECTED**, because adding them to the
+checker's corpus exposed that they broke the plain-English rule twice. **Fixing only the factual error
+would have left two rule breaks in copy being touched anyway.**
+
+## ERRORS MUST NOT NAME OUR INTERNALS (V11.49)
+
+**The provisioning path needs three hosting credentials and none is set in local development.** The
+operator saw **the literal text of a missing variable name, in red, on their settings screen** — and
+the token case leaked **the name of a secret**, telling anyone reading the screen which credential to
+go looking for.
+
+🔴 **THE DISTINCTION THAT MATTERS: THIS IS OUR FAILURE, NOT THEIRS.** Nothing they typed caused it and
+nothing they can type fixes it, **but the message invited them to try.**
+
+✅ **The API boundary already distinguishes this from a refusal or a clash, so the branch is on that
+reason and the raw message is never forwarded.** The operator is told nothing has changed at their end,
+that it is a problem on our side, and to try again. **The raw string stays in the server log, which is
+where a variable name belongs.** §35.
+
+## THE QR CODE IS DYNAMIC — AND ITS REDIRECT HAD A CYCLE (V11.49, CLOSED V11.51)
+
+**Static versus dynamic is the settled industry distinction, and the guidance is blunt: anything
+printed beyond one-time use should be dynamic.** A static code bakes the destination into the pattern
+and cannot be changed after printing; a dynamic one encodes a short redirect whose destination lives on
+a server.
+
+**So the encoded URL never changes** — it stays a permanent hatchgrab.com address. The destination
+resolves **per request** from the truck row: their address when the domain is present, verified,
+confirmed by the operator, in plan and last checked healthy; ours otherwise. **Resolving per request
+rather than storing a target means a lapsed plan or a domain that has stopped resolving falls back on
+the NEXT SCAN, with nothing needing to run first.** The redirect is **temporary, deliberately**: a
+permanently cached redirect on printed paper pins customers to a dead address with no recovery.
+
+### 🔴 BUT A CUSTOMER WHO SCANS AT THE HATCH COULD NOT REACH PAYMENT (CLOSED V11.51 — see below)
+
+**The redirect targets the root of their domain. Their domain serves only the schedule. The schedule's
+Order button points back at the ordering path on our domain — which is the exact path the redirect
+guards — so it returns them to the page they were already on.** 🔴 **The cycle is closed, and nothing
+distinguishes the two arrivals, because the redirect's conditions are properties of the TRUCK ROW, not
+of the request.**
+
+⚠️ **IT PRODUCES NO ERROR OF ANY KIND.** Each hop is one temporary redirect and a success; the return
+leg is a user tap, so **no browser loop warning fires and nothing lands in error monitoring.** The
+customer taps Order, the screen changes, and they are looking at the same schedule. **The operator's
+first signal is a customer telling them.**
+
+🔴 **AND IT ARMS ON SUCCESS.** All five conditions must hold — **including the operator's own
+confirmation that they looked at the page and it is right.** So **ordering breaks at the precise moment
+a domain finishes being set up correctly.**
+
+🔴 **THE OBVIOUS FIX DOES NOT WORK, AND THE REASON IS THE SHAPE OF THE PROBLEM.** A layout **cannot see
+the query string** — the framework's generated types give layouts params and children only — **and it
+should not**, because layouts do not re-render on navigation within their segment, so it would read a
+stale query. The layer that **can** see the query is edge middleware, which **has no database access by
+design**, and all five conditions are truck-row reads. **That is why the redirect ended up in a layout.**
+§35.
+
+⚠️ **AND THE RULE THAT SUGGESTS ITSELF WOULD BREAK PAYMENTS.** *"Redirect unless an event id is
+present"* fails: **exactly one link carries an event id and fourteen do not** — the QR itself, the
+discovery feed, five messaging links, and the five back-links inside the ordering page. 🔴 **Worse, the
+post-payment confirmation URL carries a DIFFERENT parameter entirely, so every customer who had just
+paid would be redirected away and never see their confirmation.** Any rule must be **"no query the
+ordering page acts on"**, never a single named parameter. §27.
+
+**One judgement worth keeping:** the schedule page is arguably the right landing place for a hatch scan
+— today's event with an Order button beside it. **The defect is that the button cannot complete, not
+that the destination is wrong.**
+
+### ✅ CLOSED V11.51 — BY SEPARATING THE TWO URLS, NOT BY FINDING A CONDITION
+
+⛔ **EVERYTHING ABOVE DESCRIBES A STATE THAT NO LONGER EXISTS.** It is kept because the diagnosis is
+the reason the fix took the shape it did — every candidate rule the entry rules out was ruled out for
+a reason that still binds.
+
+🔴 **THE DEFECT WAS NEVER THE REDIRECT. IT WAS THAT ONE ADDRESS BOTH DECIDED A DESTINATION AND SERVED
+THE ORDERING PAGE**, so it could not tell an inbound scan from a customer coming back to buy. Splitting
+those jobs removes the question the entry above could not find a way to answer:
+
+```
+/o/<slug>              DECIDES — the custom domain if the five conditions hold, else the order page
+/trucks/<slug>/order   SERVES  — always, for every arrival, with no redirect of any kind
+```
+
+✅ **THE FIVE CONDITIONS MOVED VERBATIM, NOT REIMPLEMENTED**, into
+`lib/custom-domain/redirect-target.ts` — same query, same column list, same guards in the same order,
+same `catch`, proven by diffing the two function bodies. **A printed code cannot afford a second
+opinion about when a domain is live.**
+
+✅ **BOTH LEGS STAY TEMPORARY.** The redirect to their domain, for the reason already recorded; and the
+fallback to the ordering page too, because a truck with no domain today may have one next month and a
+permanent redirect would pin every code already scanned.
+
+**What made the clean fix available: the operator confirmed NO CODES HAVE BEEN PRINTED.** With paper in
+circulation the encoded URL could not have changed and the fix would have had to live behind the old
+address.
+
+⚠️ **THE FOURTEEN LINKS ALL NOW REACH ORDERING**, because the ordering path no longer distinguishes
+arrivals at all — there is nothing left to distinguish them with. **The post-payment `?confirm=` return
+reaches its receipt.** Verified by loading the trace's exact sequence: scan → operator domain → tap
+Order → **200, the ordering page, no redirect.**
+
+⚠️ **BOTH URL CONSTRUCTIONS FEED A QR CODE, AND THE BRIEF SAID ONE.** `app/manage/[token]/page.tsx`
+builds the settings card's code; `app/dashboard/[token]/page.tsx` builds the **fullscreen code an
+operator projects at the hatch**. Updating only the first would have left the second encoding the old
+URL — **the cycle restored, on the surface most likely to be shown to a customer.** Both were changed.
+🔴 **The dashboard passes its own base into the shared builder rather than letting it default**, because
+that base is origin-based for DEMO trucks; calling the builder bare would have silently sent a
+localhost tester to production.
+
+🔴 **AND THE MOVE ITSELF DROPPED TWO PROTECTIONS — see §35's third instance.** Rate limiting and the
+`noindex` header were keyed on the `/trucks/` prefix, not the route. Both restored in the same change.
+
+## `www` — THE APEX HAZARD THROUGH A DOOR THE APEX GUARDS DO NOT COVER (V11.49)
+
+🔴 **`www.theirdomain.com` IS A GENUINE SUBDOMAIN.** The suffix-list guard parses it as one, and the SOA
+guard finds no zone apex there. **Both guards pass it and both are working correctly — `www` is simply
+not what either looks for.** But for most operators it is **where their existing website already
+answers**, so pointing it at us replaces their homepage.
+
+**Refused server-side, before the SOA lookup and well before the hosting call**, so a refusal costs
+nothing outbound. ✅ **Tested on the FIRST LABEL rather than the whole subdomain**, which catches a
+deeper `www` while not refusing a name that merely contains those letters.
+
+⚠️ **REFINED V11.50 — A DEEPER `www` LABEL IS REFUSED IN ITS OWN BRANCH**, rather than falling out of
+the first-label test as a side effect. **The takeover case — the name being their existing website's
+address — was never at risk and its test is unchanged**; this closes the narrower case explicitly so
+that a future edit to the first-label rule cannot quietly reopen it.
+
+⚠️ **PRE-FLIGHT STILL DOES NOT REFUSE IT.** That is read-only with no side effect, so a bypassing caller
+sees the checks run and is refused at provision. **If it ever moves, it should move into the shared
+subdomain check as a refusal reason and out of the route**, so one place knows what `www` means.
+
+## THE BRAND LINK (V11.49)
+
+*"Powered by HatchGrab"* was already a link. **Two changes.** It now resolves through the same variable
+the rest of the codebase uses rather than the apex, **which was costing a redirect hop on every
+custom-domain page load**; and the new-tab behaviour is gone. 🔴 **On an operator's own domain a new tab
+leaves our site sitting behind theirs, which reads as an advertisement rather than an attribution.**
+
+⚠️ **The accompanying link relationship went with the target, deliberately** — one half of it protects a
+new tab that no longer exists, and the other would strip the referrer, **hiding the one thing about that
+link worth knowing.**
+
+## SEO — WHAT IS AND IS NOT WORTH DOING (V11.49)
+
+🔴 **NEITHER THE EMBED NOR THE SUBDOMAIN DELIVERS WHAT AN OPERATOR MEANS BY "TRAFFIC ON MY WEBSITE".**
+Iframe content is credited to its source. **A subdomain is treated largely as a separate site, so it
+ranking does not lift their main domain.** ⚠️ **The subdomain is currently set not to be indexed at
+all, deliberately** — un-indexing is slow, and indexing a page nobody has seen rendered is the mistake
+that persists.
+
+**What would actually move a local search result is off-platform**: their business profile, consistent
+name and address across sources, reviews, and real text on their own pages. **A schedule surface
+contributes almost nothing to it.**
+
+🔴 **HIDDEN KEYWORD TEXT WAS CONSIDERED AND REJECTED.** Text placed to influence search rather than
+inform a reader is among the oldest penalised practices and detection is mature — **and the penalty
+would land on the OPERATOR'S domain, for something we put there.** Visible attribution does the same
+job legitimately and is already present.
+
+## ✅ THE FIRST THING VERIFIED AGAINST REALITY (V11.49)
+
+**Provider detection was run against a real operator's domain and correctly named their provider.**
+That is the first result in this workstream produced by anything other than a harness — **and it is the
+nameserver lookup working exactly as designed, on authoritative DNS data rather than page content.**
+
+## ✅ THE FEATURE HAS NOW BEEN SEEN WORKING — AND THE LOCAL TEST RIG (V11.50)
+
+A hosts-file entry pointing a made-up hostname at the loopback address, that hostname set as a truck's
+custom domain, and the dev server: **the page renders.** Truck name, real event, real venue, working
+button, brand line.
+
+🔴 **THE RIG HAS TWO NON-OBVIOUS REQUIREMENTS, AND BOTH PRODUCE A CONFIDENT WRONG ANSWER IF MISSED.**
+
+- **The hostname must not contain "hatchgrab".** The host test matches on that substring, so a
+  subdomain of our own site **takes the wrong branch and proves nothing** — it renders, it looks right,
+  and it has exercised the wrong path entirely.
+- **The suffix must be `.test`, not `.local`.** macOS resolves `.local` by **multicast DNS and never
+  consults the hosts file for it**, so the entry is silently ignored and the name does not resolve.
+
+⚠️ **WHAT THE RIG CAN AND CANNOT REACH.** **The serving path is testable locally. Provisioning is
+not** — it makes a real hosting API call — **and the provisioned page itself only exists in production**,
+because DNS points at the deployment. So the rig proves the render, never the setup.
+
+🔴 **AND THE FIRST LOAD IMMEDIATELY FOUND A FAULT THAT MADE EVERY CUSTOM-DOMAIN PAGE IMPOSSIBLE.** Six
+stages were built before anything was put in a browser. **The next entry is what it found.**
+
+## 🔴 EVERY SCRIPT THE PAGE NEEDS WAS DENIED (V11.50)
+
+The page rendered its shell and sat on **"Loading schedule" for ever.** The endpoint was fine — one
+event, correctly filtered, proven by a direct request. **The browser could not run the code that
+fetches it: every framework bundle the document references returned 404 on a custom host.**
+
+🔴 **THE ALLOW LIST PERMITTED THREE PATHS, AND WHAT A BROWSER REQUESTS TO RENDER A PAGE IS NOT A
+ROUTE.** No route enumeration can contain content-hashed build output. **The 47-surface refusal proof
+was sound, complete, and of the wrong set.** The generalised invariant lives at §35 — *enumerate what
+the browser requests, not what routes exist* — and it is the load-bearing lesson of this section.
+
+✅ **THE FIX IS DELIBERATELY NARROWER THAN IT LOOKS.** Exactly **one prefix** is allowed — the
+framework's static output — **and not the parent prefix**, which would have taken **the image optimiser
+(a server surface that fetches a caller-named URL)** out of the deny list as a side effect. 🔴 **The
+trailing slash is load-bearing:** without it, a path merely *beginning* with those characters would
+pass.
+
+### 🔴 AND A SECOND HOLE, RUNNING THE OTHER WAY (V11.50)
+
+**The root cause of the favicon leak is a typo in the proxy's path matcher** — two exclusions
+concatenated with the separator missing, making the first inert — **so eight path families never reach
+the deny list at all. Neither allowed nor denied: invisible to the policy.**
+
+**Live on an operator's domain today:** our brand mark, our **progressive-web-app manifest, titled for
+the other brand — so a visitor to a food truck's website can be offered an install prompt for our
+kitchen display** — and **every other truck's logo, 121 files.**
+
+🔴 **THE TYPO WAS DELIBERATELY NOT FIXED.** Repairing it makes the whole framework path invisible to the
+proxy on **every** host, **which is a widening dressed as a correction.** ⚠️ **And a policy-first
+enumeration cannot see paths that never reach the policy — which is why this went unnoticed.** **Open,
+and it is application data on a third party's domain.** §35, §27.
+
+## PER-PROVIDER DNS INSTRUCTIONS (V11.50)
+
+**Three fields labelled with our vocabulary do not match what an operator sees.** 🔴 **One provider has
+no type field at all** — the record kind is chosen by **which section you add to** — so a "Type: CNAME"
+row sent them hunting for a box that does not exist.
+
+Each provider is now **one record** holding its steps, its own field labels, a link to its own help page
+and any caveat; **the record screen and the escape-hatch email both render from it.** Four providers
+have verified steps; everything else keeps the generic three rows.
+
+🔴 **THE STEPS WERE FETCHED FROM EACH PROVIDER'S CURRENT HELP PAGE, NOT WRITTEN FROM MEMORY. That found
+four things memory would have shipped wrong:**
+
+- **Two providers' field labels we ship were stale.** Both had been written from published interfaces
+  and never re-checked.
+- **A modal sits between adding a record and the fields appearing** on one provider — **the step most
+  easily missed, because nothing appears until it is dismissed.** It was absent from the path supplied
+  to the build.
+- **One provider requires a trailing full stop on the target**, which makes it **the single case where
+  our own hint — *copy this exactly* — is wrong.**
+- 🔴 **One provider defaults new records to proxied, and proxied means the certificate never issues
+  with nothing saying why.** The operator adds the record correctly, waits, and nothing happens. **This
+  is the silent-failure shape this feature keeps meeting, and it is the highest-value line on the
+  screen.**
+
+✅ **EVERY PROVIDER'S STEPS END WITH A LINK TO THEIR OWN GUIDE. Our wording goes stale; their page does
+not.** ⚠️ One provider's documentation could not be fetched directly and was **read through search — a
+weaker source, recorded as such.**
+
+🔴 **THE FIVE PROVIDERS WITHOUT VERIFIED STEPS STILL CARRY UNCHECKED LABELS, AND THEY ARE THE ONES THAT
+ACTUALLY RENDER. Two of the four that were checked turned out to be wrong, so the base rate on the
+unchecked five is not reassuring.** Open.
+
+## ONE SOURCE FOR THE FIELD LABELS (V11.50)
+
+Correcting the stale labels left **two records holding the same fact.** They are now one: the providers
+with verified steps **no longer author the older field at all**, and a resolver derives it.
+
+✅ **THE TYPE IS A DISCRIMINATED UNION, SO AUTHORING BOTH — OR NEITHER — IS A COMPILE ERROR**, proven
+with a throwaway probe rather than asserted. **The guard is the type, not a convention.**
+
+⚠️ **THE STALE LABELS HAD NEVER RENDERED ANYWHERE**, because both surfaces already preferred the
+verified ones. **That is exactly why they went stale: nothing showed them, so nothing contradicted
+them.** A field with no reader cannot be wrong in a way anybody notices — until a new reader arrives.
+§3.
+
+## THE CARD AND THE CONFIRM BLOCK (V11.50)
+
+**The description names the address**, and **changes tense once the domain is live** — *we create a page
+at X* before, *X is showing your schedule* after — **branched on the same condition the Live badge
+uses, so the two cannot disagree.**
+
+⚠️ **NO LINE ON THE CARD NOW SAYS THEIR EXISTING WEBSITE IS UNAFFECTED.** The wizard still says it
+once, on its first screen, **so an operator meets that reassurance only after pressing Set up.**
+
+**The confirm block asks a real question: two buttons, yes and no.** "No" **reveals a pre-filled email
+rather than sending one** — it stores nothing, reaches no request, and leaves "Yes" enabled, **so it is
+reversible by construction.** The email carries the truck, the address and the **go-live date,
+deliberately not today's**: 🔴 **reading the current date during a render is a hydration mismatch**, and
+today's date is already on the email when it is sent.
+
+**The address is a link inside step one**, so the instruction and the thing it names are **one element
+rather than two copies**. **One helper builds every link to a stored custom domain; there is no other
+place that composes one.**
+
+**Pressing Yes now acknowledges.** 🔴 **A control that vanishes on click looks like a page that lost the
+click.** It shows only for the session in which they pressed it.
+
+**The card's own button is hidden while the block is unanswered** — two buttons for one question.
+⚠️ **THAT BUTTON IS THE ONLY ROUTE BACK TO THE RECORD'S FIELD VALUES AND THE EMAIL FORM**, so during
+that window they are unreachable. It returns after either answer and "No" is free, **so it is one
+reversible click away rather than stranded — but nothing on screen tells them so.**
+
+## TURNING IT OFF (V11.50)
+
+✅ **RELEASE FIRST, CLEAR ONLY ON SUCCESS** — the same ordering the orphan sweep already learned. **A
+failed release writes nothing, so the row survives and a retry is a retry.** The reverse order would
+leave the domain attached at the hosting side with no row naming it, and **their web person hitting
+"already assigned to another project" months later with nothing to explain it.**
+
+**Eight columns clear in one statement.** ⚠️ **The embed flag is deliberately left set** — its only
+reader is the page that now serves nothing anyway, and clearing it would have to be undone on the next
+setup.
+
+🔴 **THE PRINTED QR CODE FALLS BACK CORRECTLY, PROVEN RATHER THAN ASSUMED.** The five redirect
+conditions were **lifted verbatim from the layout and executed**: clearing the domain column alone
+returns no redirect, **so the next scan serves our own page.** No write, no job, nothing in between — it
+resolves per request. 🔴 **And the redirect is temporary, deliberately, which is what makes turning off
+recoverable at all. A permanent one would have pinned every printed code to a dead address.**
+
+✅ **NO PLAN GATE ON REMOVAL, DELIBERATELY.** An operator whose plan has lapsed **must still be able to
+switch off a page that is still serving.** Gating removal behind the plan that paid for it is how
+someone ends up unable to stop something they no longer want.
+
+⚠️ **"YOUR ADDRESS WILL STOP WORKING" IS PROBABLY NOT LITERALLY TRUE.** Their record is theirs and we
+never touch it, so **the name goes on resolving to a host that no longer recognises it** — most likely
+an error page under their own brand. **Unverified**, so the copy says **what to do** rather than what
+they will see: leave the record if they are coming back, have it removed if not.
+
+⚠️ **THE RELEASE FUNCTION HAS NEVER BEEN CALLED BY ANYTHING**, sweep included, because the credentials
+are unset. **The success path of turning off is untested.**
+
+## 🔴 THE LAPSED-PLAN FALLBACK POINTED AT A DEAD PAGE (V11.50)
+
+**On the operator's own domain, at the moment their page stops serving, the single link offered to
+their customers went to a page that renders "Truck not found".** The full diagnosis of that page is at
+§32; what matters here is that **this feature was the thing pointing at it.**
+
+🔴 **AND IT USED THE WRONG SLUG SPACE.** The link was built from a **name-derived** slug;
+`/trucks/<slug>/order` resolves against the **stored `trucks.slug` column**. **Seven of twelve trucks
+differ**, and the column carries collision suffixes and opaque identifiers **no name-munging could ever
+reach.** ⚠️ For the one truck observed the two happened to coincide, **so the slug space was not what
+broke it — the destination was.** Both are fixed.
+
+✅ **IT NOW POINTS AT THE ORDERING PAGE, VIA THE SHARED BUILDER AND THE STORED COLUMN.** That page reads
+the operator's own events, shows their real dates, and carries one logo rather than a competitor
+directory. **It is the only page on our own domain that shows an operator's schedule** — framed as an
+ordering funnel, but it lists the dates.
+
+⚠️ **SWITCHING TO THE SHARED BUILDER WOULD HAVE SILENTLY DROPPED A DEFAULT THE PAGE HAD ALWAYS
+CARRIED.** The page's own constant fell back to our canonical address when the environment variable was
+unset; the shared builder did not. **The default was added to the builder instead of special-casing the
+one call site**, so every caller — the QR card, the turn-off panel and this link — gets the same floor.
+🔴 **A DRY consolidation can be a silent downgrade: check what the thing being replaced was doing that
+the shared thing is not.** §3.
+
+**The label is the destination page's own heading, word for word.** It had briefly been *"See <name>'s
+dates and order"*, which produced a **double possessive** on any name already ending in *s*.
+
+## THE TRUCK IDENTITY BLOCK — A MASTHEAD, NOT AN AVATAR (V11.51)
+
+⛔ **SUPERSEDES THE V11.50 "centred" ENTRY BELOW**, which centred a 44px round logo beside the name.
+On the operator's own address **their identity is the point of the page**, and a 44px avatar next to a
+16px name read as a listing entry. It is now a **column** — logo above, name beneath, both centred —
+with the logo at **96px on phone and 112px on desktop**, 2.2–2.5× what it was.
+
+🔴 **THE CIRCULAR CROP HAD TO GO, AND THAT IS A CONSEQUENCE OF THE SIZE RATHER THAN A TASTE DECISION.**
+`rounded-full` on an `object-contain` box letterboxes anything non-square. At 44px that is invisible.
+At 96px **a wide wordmark — which is what most food-truck logos are — becomes a thin strip floating in
+a large empty ring, with a border drawn around mostly nothing.** A height-capped `w-auto` box respects
+whatever shape they uploaded instead of imposing ours.
+
+**Measured against four shapes in a browser, not assumed:**
+
+| upload | rendered (phone / desktop) | overflow | scale |
+|---|---|---|---|
+| WIDE wordmark 1000×200 | 293×96 / 538×112 | no — `max-w-[80%]` binds first | ×0.29 |
+| TALL crest 200×1000 | 19×96 / 22×112 | no | ×0.10 |
+| SQUARE 1000×1000 | 96×96 / 112×112 | no | ×0.10 |
+| LOW-RES 80×40 | 192×96 / 224×112 | no | **×2.40 / ×2.80** |
+
+⚠️ **A very tall crest renders as a sliver** — aspect preservation working correctly, nothing cropped,
+and **still 2.2× the size it was** under the old circle. 🔴 **A LOW-RESOLUTION UPLOAD NOW UPSCALES AND
+WILL LOOK SOFT. That is the real cost of this change and there is no markup fix for it** — mitigated
+only by choosing a moderate size. **The durable answer is a minimum-resolution check at upload, which
+does not exist.** Both current trucks upload large and downscale, so neither is affected today.
+
+✅ **BOTH BRANCHES ARE DELIBERATE, NOT ONE PLUS A FALLBACK.** With no upload the name IS the identity,
+so it renders **larger** (24px phone / 30px desktop) than it does beneath a logo (18/20px). **A name set
+at its under-a-logo size reads like an image that failed to load; set as the masthead itself it reads
+as a decision.**
+
+⚠️ **FIXED IMAGE DIMENSIONS WERE REMOVED**, because they cannot be stated for an arbitrary upload.
+**Vertical space is still reserved by the height cap** — only the width settles on load — and measured
+cumulative layout shift on the page is **0.0017**, well inside the 0.1 threshold.
+
+## THE BRAND LINE — AND A COLOUR THAT MOVED UNDER US (V11.51)
+
+*"Powered by HatchGrab"* was grey at 11px and close to invisible — **the only thing on an operator's
+domain doing anything for us.** It now matches the treatment the order-confirmation email already
+uses (`lib/email.ts:416`): grey *"Powered by"*, the word **HatchGrab** in brand orange, bold, no
+underline. ✅ **The treatment was found and quoted rather than invented**, and a second in-app twin at
+`app/dashboard/[token]/page.tsx:5322` agrees.
+
+🔴 **BUT THE EMAIL'S LITERAL HEX IS NO LONGER THE BRAND ORANGE, AND THIS IS THE ENTRY THAT MATTERS.**
+`#ea580c` **was** `orange-600` under Tailwind v3. This project is on **Tailwind 4.3.1**, whose
+`orange-600` paints **`#f54a00`** — read back as rendered sRGB bytes from a canvas, not assumed.
+**Copying the email's literal hex would have put a DIFFERENT orange on that one word from every other
+orange on the same page**, including the Pre-order button directly above it. **What was copied is the
+treatment; the colour comes from the token.**
+
+⚠️ **`lib/brand.ts:49` STILL RECORDS THE OLD HEX AND A CONTRAST RATIO MEASURED AGAINST IT** — *"the
+app's orange-600 (#ea580c, 3.56:1)"* — and so does §27's white-on-orange backlog item. **Both are now
+wrong, and `lib/brand.ts` is the file someone consults before making a colour decision.** Stale,
+flagged, unchanged. **The 3.56:1 figure should not be quoted again until it is re-measured against
+`#f54a00`.**
+
+⚠️ **THE BRAND WORD NOW CARRIES THE PAGE'S ACCENT COLOUR**, shared with the order button. It is the
+smallest text on the page and sits last, so it reads as attribution — **but it is the one change in
+this workstream that pulls toward us rather than the operator.** Dropping `font-bold` to
+`font-semibold` (the dashboard twin's weight) is the one-word retreat if that balance is ever
+questioned.
+
+⚠️ **THE LINK'S EXTENT IS UNCHANGED AND DEPARTS FROM THE EMAIL DELIBERATELY.** The email links only the
+word; here the whole line stays the anchor, because narrowing it would shrink the tap target to roughly
+70×12px on a phone. Same href, same env-var expression, still same-tab with no `rel`.
+
+## THE LAPSED-PLAN FALLBACK'S LABEL (V11.51)
+
+Reads **"Order from \<name\>"** — the destination page's own heading word for word
+(`app/trucks/[slug]/order/page.tsx:2461`), so the button and the page a customer lands on say the same
+thing. It replaced *"See \<name\>'s dates and order"*, which produced a **double possessive** on any
+business name already ending in *s*. ⚠️ **The cost, accepted: "dates" is no longer advertised**, though
+the destination does list them.
+
+## THE TRUCK IDENTITY BLOCK IS CENTRED (V11.50)
+
+One class, both branches — **the lapsed-plan fallback and the normal render**. Recorded only because the
+two branches are easy to style apart: they are separate returns in the same component, and a change to
+one is invisible when testing the other.
+
+## 🔴 STILL NEVER OBSERVED (V11.50)
+
+**The verification debt this feature carries into its first deploy.** It is shorter than it was — the
+page has now been rendered — but every item below is still unobserved, and each was previously masked
+by a green result somewhere else:
+
+- **Provisioning end to end.**
+- **A certificate issuing.**
+- **A real DNS record resolving.**
+- 🔴 **A button pressed in a browser.** **Every card state was rendered by driving state directly** —
+  which is a real result about the render and **no result at all about the handler behind the button.**
+- **A production build.**
+- **What an operator's address serves after being turned off** — the "your address will stop working"
+  copy above is explicitly flagged as probably not literally true, and this is the observation that
+  would settle it.
+
+⚠️ **THE PATTERN WORTH KEEPING: every fault this feature has produced was invisible to the layer that
+was checked and visible only one layer out.** The endpoint returned 200 while the page could not run;
+the deny list was provably correct about routes while the browser asked for something else; the parity
+checker passed on a row nothing inspected. **Check the layer the user is actually standing on.**
+🔴 **V11.51 ADDS TWO MORE TO THAT LIST, AND BOTH ARE THE SAME SHAPE.** Every hop of the QR cycle was a
+valid redirect and a 200, so the failure existed only in the *sequence*; and moving the scan route out
+from under `/trucks/` dropped a limiter and a `noindex` header that **no file mentioning either was
+edited to lose.** ⚠️ **Every rendered measurement in this section is headless Chromium against the dev
+server** — no production build, and no physical device.
+
+## ⛔ THE IFRAME EMBED — REMOVED (V11.49)
+
+🔴 **WHY IT WENT, AND IT IS NOT THE REASON IT LOOKS LIKE.** The operator asked for traffic on their own
+website for search visibility. **An iframe does not deliver that.** Content inside one is attributed to
+the source URL, not the parent page — **the embedding page gets no ranking value from it**, the way a
+video embed credits the video host rather than the site showing it. **So the embed would have built
+authority for us, not for them.** It was dropped on that finding, **not on its platform problems**,
+though those were real too and are recorded in the V11.45/V11.46 changelog entries.
+
+**WHAT WENT:** the wizard, the platform records and their instruction content, platform detection, the
+picker, the plan-requirement screen and its pre-question, the escape-hatch email specific to it, two of
+its API actions, **the public iframe route**, and the load stamp with its throttle.
+
+**WHAT STAYED, AND WHY EACH HAS NO OPERATOR-FACING SURFACE:** the schedule component and the shared page
+parts, the events endpoint, and the two actions that read and write the embed flag. **All of it is the
+data path the custom domain depends on.**
+
+### 🔴 THE DEPENDENCY THAT ALMOST BROKE IT
+
+**The custom-domain page's entire schedule body IS the embed component**, whose only data source
+refuses unless the embed flag is true — **a column that is NOT NULL DEFAULT false and whose only writer
+was the wizard being removed.** Removing both would have left every custom domain rendering its shell,
+logo, name and brand line **with a permanently empty schedule** — and **the page never reads that
+column, so it passes every check it makes.**
+
+✅ **DOMAIN PROVISIONING NOW SETS THE FLAG**, and 🔴 **the proof required is NON-EMPTY EVENTS FROM THE
+ENDPOINT, never that the page renders.**
+
+⚠️ **THE VERIFICATION WORDING ORIGINALLY ASKED FOR WOULD HAVE PASSED WHILE THE FEATURE WAS DEAD** —
+*"prove the page still renders"* was **true of the broken state.** That is the guard-versus-risk failure
+in miniature, **in a verification requirement rather than in code.** §35.
+
+⚠️ **NAMING DEBT, RECORDED NOT FIXED:** an endpoint and a component named for the embed now serve custom
+domains. **Renaming waits until it is settled whether the embed ever returns.** §27.
+
+### ⛔ WHAT THIS REPLACES
+
+**The V11.46/V11.48 record of the embed wizard — the platform picker, the plan-requirement screen, the
+Squarespace and hosted-WordPress plan facts, the four-platform order-button unknowns and the
+sandbox-attribute warning — described a surface that no longer exists.** It is **removed from this
+section rather than annotated**, because a live section that documents a deleted wizard sends the next
+reader looking for code that is not there. **The findings themselves survive in the V11.45 and V11.46
+changelog entries, which are dated records of what was true then.**
+
+⚠️ **ONE OF THOSE FINDINGS OUTLIVES THE FEATURE AND IS KEPT HERE:** *"no specific tier name appears in
+operator copy, anywhere"* — a tier name is a claim about someone else's pricing that goes stale on their
+next rename. That rule is not about embeds and still binds.
+
+---
+
+*End of manual. The version is stated once, in the header — deliberately not repeated here.*

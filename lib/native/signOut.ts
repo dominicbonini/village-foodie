@@ -1,6 +1,7 @@
 import { isNativeApp } from './device'
 import { nativeSignOut } from './session'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { beginUserSignOut } from '@/lib/auth/session-observer'
 
 /**
  * Single native-aware sign-out for every operator surface (dashboard UserMenu, manage, admin).
@@ -17,6 +18,14 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
  * without importing its type.
  */
 export async function operatorSignOut(router: { replace: (href: string) => void }): Promise<void> {
+  // ── 🔴 DECLARE THE INTENT BEFORE CAUSING THE EVENT. ──────────────────────────────────────────────
+  // auth-js fires an identical `SIGNED_OUT` for this and for a rejected refresh token; nothing on the
+  // event distinguishes them, so the difference has to be stated, not inferred. This is the ONLY caller
+  // of beginUserSignOut(), and this function is the ONLY sign-out control (UserMenu, manage, admin all
+  // route through it) — so "flag set" and "the operator asked" are the same fact.
+  // ⚠️ BEFORE the await, not after: the event fires during signOut(), so setting it afterwards would
+  // race the observer and show a banner on the way out the door.
+  beginUserSignOut()
   if (isNativeApp()) {
     await nativeSignOut()
     router.replace('/login')

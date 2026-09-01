@@ -15,6 +15,18 @@ import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
+// ── Moved here from the dashboard's Settings tab (V11.48). Both write TRUCK-WIDE columns, which is
+// this tab's scope and not the dashboard's. Their internals, API actions, gating and copy are unchanged.
+import CustomDomainSetup from '@/components/dashboard/CustomDomainSetup'
+import { addressUrl, scanUrl } from '@/lib/custom-domain/copy'   // one way to build each of the two addresses
+// 🔴 THE DEMO HALF OF THE MOVED CONDITION, KEPT RATHER THAN ARGUED AWAY — see the mount for why.
+import { isDemoIdentifier } from '@/lib/demo'
+// 🔴 THE SAME THRESHOLD THE ADMIN TABLE AND THE QR REDIRECT USE. Restating it as a number here
+// would let the QR card promise an address the redirect has already stopped using.
+import { STOPPED_AFTER_MS } from '@/lib/custom-domain/cadence'
+// The poster's logo geometry, so the preview's placeholder is exactly logo-sized. DRY: one
+// definition, in the file that draws the poster.
+import { QR_POSTER, posterLogoRect } from '@/lib/generateQRCode'
 import { PaymentsTab } from '@/components/manage/PaymentsTab'
 // (No lib/legal import here by design — this page carries no legal links. They live in the account
 //  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
@@ -59,11 +71,10 @@ import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, T
 import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
-import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 import { isNativeApp } from '@/lib/native/device'   // native-only hide: Auto-replies (see SettingsTab)
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -236,6 +247,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // readAccountRequirements for the full reasoning. Do not reintroduce onNotificationsChange here.
   const [stripeActionRequired, setStripeActionRequired] = useState(false)
   const [stripeBannerDismissed, setStripeBannerDismissed] = useState(false)
+  // ── 🔴 CUSTOM DOMAIN → banner. THE SAME MECHANISM AS THE THREE ABOVE, EXTENDED — NOT A SECOND ONE.
+  // There is no notifications table in this codebase and this stage did not add one. A notification
+  // here is DERIVED STATE: a condition computed on this page from data already loaded, rendered as a
+  // banner, dismissible for the session and not persisted. Two things follow from that and both are
+  // properties rather than promises:
+  //   • a repeated check CANNOT create a duplicate, because nothing is ever created — the daily job
+  //     writes truck COLUMNS and this expression reads them;
+  //   • dismissal is `useState`, so it returns on reload, exactly like `bannerDismissedAtCount`.
+  // ⚠️ The `waiting` state is the one that earns its keep: setup ends with the operator closing the
+  // tab, so a domain that never resolves produces NO signal at all without it.
+  const [domainBannerDismissed, setDomainBannerDismissed] = useState(false)
 
   // ── K3/K4: THE WALKTHROUGH ────────────────────────────────────────────────────────────────────────
   // 🔴 THERE IS NO AUTO-OPEN PATH, AND THAT IS THE GUARANTEE. `walkthroughOpen` starts false and is only
@@ -290,11 +312,22 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card'
   const allergensUnverified = !cardModeSetUp && items.some(i => (i as any).allergens_verified === false)
 
+  // Two states, and only one can be true. READY stops as soon as the operator confirms; WAITING needs
+  // a setup that started and has not gone live. A truck with no custom domain gets neither.
+  const domainNotice: 'waiting' | 'ready' | null = !truck?.custom_domain
+    ? null
+    : truck.custom_domain_verified_at
+      ? (truck.custom_domain_confirmed_at ? null : 'ready')
+      : 'waiting'
+
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/manage?token=${token}`)
+      // ⚠️ SENDS THE NATIVE BEARER. /api/manage now denies by default, and the native app has no
+      // cookie — its session is in @capacitor/preferences. Without this header the app would be
+      // refused by the very inversion that closed the hole. Returns {} on web; cookie path unchanged.
+      const res = await fetch(`/api/manage?token=${token}`, { headers: await nativeAuthHeader() })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTruck(data.truck)
@@ -503,7 +536,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const api = async (action: string, extra: Record<string, any> = {}) => {
     const res = await fetch('/api/manage', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // ⚠️ Same reason as the GET above — the native app authenticates by Bearer, not cookie.
+      headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
       body: JSON.stringify({ token, action, ...extra }),
     })
     const data = await res.json()
@@ -657,6 +691,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               <strong>Allergens not set</strong> — customers can&apos;t see allergen info until you verify it. Review each dish&apos;s allergens on the Menu tab.
             </p>
             <button onClick={() => setActiveTab('menu')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+          </div>
+        )}
+        {/* Custom-domain banner — the fourth instance of this page's one notification mechanism.
+            Identical treatment to the three around it: amber-50 / amber-200 when something needs doing,
+            an icon, a line of plain English, and a ✕ that dismisses for the session only. */}
+        {domainNotice && !domainBannerDismissed && truck?.custom_domain && (
+          <div className={`mb-4 rounded-xl px-4 py-3 flex items-center gap-3 border ${domainNotice === 'ready' ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
+            <span className={`text-lg shrink-0 ${domainNotice === 'ready' ? 'text-green-500' : 'text-amber-500'}`}>{domainNotice === 'ready' ? '✅' : '⏳'}</span>
+            <p className={`text-sm flex-1 ${domainNotice === 'ready' ? 'text-green-800' : 'text-amber-800'}`}>
+              {domainNotice === 'ready'
+                /* ── 🔴 THE ADDRESS IS A LINK, AND THE TAB IS NAMED CORRECTLY (28 August 2026). ────────
+                   It was bold text telling the operator to "have a look at it" with nothing to click,
+                   and it said "dashboard settings" when this card lives in manage → Settings — the tab
+                   they are already on. `addressUrl` is the SAME helper the confirm block's step 1 uses,
+                   so the two cannot disagree about how a stored host becomes a link. */
+                ? <><a href={addressUrl(truck.custom_domain)} target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-green-900">{truck.custom_domain}</a> is live. Have a look at it, then tell us it is right in Settings.</>
+                : <><strong>{truck.custom_domain}</strong> is not working yet.{truck.custom_domain_setup_started_at ? <> You started setting it up on {new Date(truck.custom_domain_setup_started_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}.</> : null} If someone else was adding the line for you, it is worth checking they did.</>}
+            </p>
+            <button onClick={() => setDomainBannerDismissed(true)} className={`text-sm font-bold leading-none shrink-0 ${domainNotice === 'ready' ? 'text-green-400 hover:text-green-600' : 'text-amber-400 hover:text-amber-600'}`}>✕</button>
           </div>
         )}
         {/* Stripe-requirements banner — cross-tab signal, suppressed on the Payments tab itself, where
@@ -5613,8 +5666,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     body: (
                       <div className="flex flex-col gap-3">
                           <div className="flex gap-2">
+                            {/* 🔴 SAME FOUR ATTRIBUTES (V11.50) — see the Website field in Truck
+                                details. The type is left alone. */}
                             <input
-                              type="url" value={schedUrl}
+                              type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                              value={schedUrl}
                               onChange={e => { setSchedUrl(e.target.value); setSchedVerifyError(null) }}
                               placeholder="https://yourtruck.co.uk/events"
                               disabled={schedVerifying || !!schedVerifiedEvents}
@@ -8545,6 +8601,40 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
   )
 }
 
+/**
+ * ── THE SMALL QR PREVIEW THAT SITS INSIDE AN OPTION CARD. ──────────────────────────────────────────
+ *
+ * 🔴 IT LIVES INSIDE A `<button>` THAT SELECTS THE STYLE, so it must NOT be a nested button — invalid
+ * HTML, and browsers resolve it unpredictably. It is a `<span role="button">` with `stopPropagation`,
+ * so enlarging never also changes the operator's saved style as a side effect.
+ *
+ * ⚠️ `src` is undefined until the lazy generation has run. It renders a quiet placeholder rather than a
+ * broken image or a spinner — this is a preview nobody is waiting for, and a spinner on a card the
+ * operator has not interacted with invents urgency that is not there.
+ *
+ * ⚠️ `locked` only changes the CURSOR AND THE TOOLTIP. It does NOT withhold the image: below the plan
+ * the operator is meant to see the branded code with their own logo. What the lock governs is the
+ * ENLARGED view and the download, and that decision is taken in `openQrView`, not here.
+ */
+function QrPreview({ src, alt, onOpen, locked }: {
+  src?: string; alt: string; onOpen: () => void; locked?: boolean
+}) {
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      title={locked ? 'Branded codes are part of a higher plan' : 'View QR code'}
+      onClick={e => { e.stopPropagation(); e.preventDefault(); onOpen() }}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); e.preventDefault(); onOpen() } }}
+      className="shrink-0 w-16 h-16 rounded-md border border-slate-200 bg-white overflow-hidden flex items-center justify-center cursor-zoom-in"
+    >
+      {src
+        ? <img src={src} alt={alt} className="w-full h-full object-contain" />
+        : <span className="w-full h-full bg-slate-50" aria-hidden="true" />}
+    </span>
+  )
+}
+
 function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
@@ -8591,8 +8681,19 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
   const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [generatingQR, setGeneratingQR] = useState(false)
+  // ── QR PREVIEWS — SMALL, LAZY, CACHED ──────────────────────────────────────────────────────────
+  // 🔴 THE CACHE IS THIS STATE OBJECT, keyed by style, and it is written once. Compositing a logo onto
+  // a canvas is not free, and doing it twice for every operator who opens Settings is a cost almost
+  // none of them asked for — most never touch this card.
+  const [qrPreviews, setQrPreviews] = useState<{ standard?: string; branded?: string }>({})
+  // 🔴 A REF, NOT STATE, SO IT CANNOT RE-TRIGGER A RENDER OR RACE ITSELF. Two intersections in the same
+  // frame would otherwise both see an empty cache and both generate.
+  const qrPreviewsRequested = useRef(false)
+  const qrSelectorRef = useRef<HTMLDivElement | null>(null)
+  // The enlarged view. `locked` is the below-plan branded case: the modal opens and explains, and the
+  // full-size image is never put in the DOM at all.
+  const [qrModal, setQrModal] = useState<{ style: 'standard' | 'branded'; dataUrl: string | null; displayUrl?: string | null; showsPlaceholder?: boolean; locked?: boolean } | null>(null)
   const [copiedOrderLink, setCopiedOrderLink] = useState(false)
   // ── T5: BRANDED BY DEFAULT WHEN THERE IS A LOGO — DURING SETUP ONLY ──────────────────────────────
   // 🔴 THIS IS A RENDER-TIME DEFAULT, NOT A STORED ONE, AND IT CANNOT BE ANYTHING ELSE.
@@ -8726,8 +8827,17 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
     }
   }
 
+  // 🔴 ONE BUILDER. The turn-off confirmation names this exact address, and two places composing it
+  // is how they would come to disagree. Same expression, moved behind `scanUrl`.
+  // 🔴 CHANGED 29 August 2026 FROM `orderPageUrl` TO `scanUrl`. This value feeds THREE things — the QR
+  // code the generator encodes, the address printed beside it, and the copy link — and the brief is
+  // that all three must agree with what the code encodes. The QR now points at `/o/<slug>`, the address
+  // that DECIDES; `/trucks/<slug>/order` no longer redirects anywhere and only ever serves.
+  // ⚠️ `orderPageUrl` IS STILL THE RIGHT BUILDER ELSEWHERE and is deliberately not deleted: the
+  // lapsed-plan fallback link on the operator's own domain wants the ordering page directly, not a
+  // redirector that would resolve straight back to the domain it is trying to send them away from.
   const orderUrl = truck.slug
-    ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`
+    ? scanUrl(truck.slug)
     : null
 
   const handleCopyOrderLink = async () => {
@@ -8739,26 +8849,178 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
     } catch { /* clipboard permission denied — fail silently */ }
   }
 
-  const handleGenerateQR = async () => {
-    if (!orderUrl) return
+  /**
+   * ── ONE GENERATOR CALL, SHARED BY THE PREVIEW, THE ENLARGED VIEW AND THE DOWNLOAD. ───────────────
+   * 🔴 THE URL IS `orderUrl` IN EVERY CASE — the same permanent hatchgrab.com address the card already
+   * showed and the download already encoded. Nothing here varies it, and nothing may.
+   * ⚠️ `logoUrl` is the ONLY thing that differs between the two styles, which is what makes "same code,
+   * two looks" true rather than a claim.
+   */
+  const buildQr = useCallback(async (style: 'standard' | 'branded') => {
+    if (!orderUrl) return null
+    const { generateQRCodePNG } = await import('@/lib/generateQRCode')
+    return generateQRCodePNG({
+      url: orderUrl,
+      logoUrl: style === 'branded' && truck.logo_storage_path
+        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
+        : null,
+      truckName: truck.name,
+    })
+  }, [orderUrl, truck.logo_storage_path, truck.name])
+
+  /**
+   * ── 🔴 THE PREVIEW IS A DOWNSCALED COPY, AND THE SIZE IS A SECURITY DECISION. ────────────────────
+   * The generator emits 500x502. Rendering that at 64 CSS pixels would put the FULL-RESOLUTION image in
+   * the DOM, where "save image as" retrieves it at printable quality — so a truck below the branded
+   * plan could see, save and print the branded code the plan is meant to gate.
+   * 🔴 SO THE PREVIEW IS RE-DRAWN ONTO A 128x128 CANVAS AND THAT COPY IS WHAT REACHES THE PAGE. Saving
+   * it yields 128px, which prints as a blurred square at any usable size.
+   * ⚠️ IT IS A DETERRENT, NOT THE CONTROL. The control is that the enlarged view and the download are
+   * refused for branded below the plan — see the modal. This only removes the easy route.
+   */
+  /**
+   * ── 🔴 THE NO-LOGO BRANDED PREVIEW SHOWS THE RESERVED CENTRE, LABELLED. ─────────────────────────
+   * A truck with no logo would otherwise see two IDENTICAL previews and no way to tell what "branded"
+   * buys them — the option promises a logo in the middle and the picture shows an empty middle.
+   * This paints the space a logo WOULD occupy, so the difference between the two options is visible
+   * rather than described.
+   *
+   * ⚠️ PREVIEW ONLY. The enlarged view and the download are the REAL code, with no placeholder on it —
+   * nobody may be handed a file with the words "Your logo here" printed on their hatch board. The
+   * preview illustrates; the artefact is the artefact.
+   *
+   * ⚠️ AND THE WORDS ARE NOT LEGIBLE AT 64 CSS PIXELS. Stated rather than pretended: at the size this
+   * renders, what reads is the reserved BOX, not the text inside it. The words are there for anyone who
+   * zooms, and the line beneath the option ("Add your logo to your profile…") is what actually carries
+   * the instruction. Making the words legible would mean a preview large enough to print.
+   */
+  /**
+   * ── 🔴 THE NO-LOGO BRANDED PREVIEW SHOWS THE RESERVED CENTRE, AT EXACTLY LOGO SIZE. ─────────────
+   * A truck with no logo would otherwise see two IDENTICAL previews and no way to tell what "branded"
+   * buys them — the option promises a logo in the middle and the picture shows an empty middle.
+   *
+   * 🔴 THE RECT IS IMPORTED FROM THE GENERATOR, NOT MEASURED BY EYE. `posterLogoRect()` returns the
+   * exact box the logo's white backing occupies — 128x128 at (186,166) on the 500x502 poster — so the
+   * hole shown here is the hole they will get. A placeholder of the wrong size is a lie about the
+   * product, and an eyeballed fraction would drift the first time the poster layout moved.
+   * ⚠️ Mapped through BOTH axes independently, because `downscale` squashes 500x502 into a square.
+   *
+   * ⚠️ PREVIEW ONLY. The enlarged view and the download are the REAL code with no placeholder on it —
+   * nobody may be handed a file with "Your logo here" printed on their hatch board.
+   *
+   * ⚠️ AND AT THIS SIZE THE WORDS ARE NOT READABLE, WHICH IS ARITHMETIC RATHER THAN AN OVERSIGHT. The
+   * box is 128/500 of the width — about 33px on a 128px preview, ~16px as displayed — so the text
+   * inside it lands near 4px. What reads is the RESERVED SPACE, correctly sized; the line beneath the
+   * option carries the words. Making them legible needs a bigger preview, which §5 exists to prevent.
+   */
+  const withLogoPlaceholder = (canvasW: number, canvasH: number, ctx: CanvasRenderingContext2D) => {
+    const r = posterLogoRect()
+    const sx = canvasW / QR_POSTER.canvasWidth
+    const sy = canvasH / QR_POSTER.canvasHeight
+    const x = r.x * sx, y = r.y * sy, w = r.size * sx, h = r.size * sy
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fillRect(x, y, w, h)
+    ctx.strokeStyle = '#94A3B8'
+    ctx.lineWidth = Math.max(1, w * 0.03)
+    ctx.setLineDash([Math.max(2, w * 0.12), Math.max(1, w * 0.08)])
+    ctx.strokeRect(x, y, w, h)
+    ctx.setLineDash([])
+    ctx.fillStyle = '#64748B'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = `600 ${Math.max(3, Math.round(w * 0.17))}px system-ui, -apple-system, sans-serif`
+    ctx.fillText('Your logo', x + w / 2, y + h * 0.36)
+    ctx.fillText('here', x + w / 2, y + h * 0.66)
+  }
+
+  const PREVIEW_PX = 128
+
+  /**
+   * ── ONE COMPOSITOR FOR BOTH SIZES. ───────────────────────────────────────────────────────────────
+   * The small preview and the enlarged view differ only in the canvas they draw onto, so they share
+   * this. 🔴 THAT IS WHAT MAKES THE TWO MATCH BY CONSTRUCTION rather than by two code paths agreeing —
+   * which is exactly how they came to disagree in the first place.
+   * ⚠️ `w`/`h` null means "natural size", used by the enlarged view so the poster is not resampled.
+   */
+  const compose = (dataUrl: string, w: number | null, h: number | null, placeholder: boolean): Promise<string> =>
+    new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        const cw = w ?? img.naturalWidth
+        const ch = h ?? img.naturalHeight
+        const c = document.createElement('canvas')
+        c.width = cw; c.height = ch
+        const ctx = c.getContext('2d')
+        if (!ctx) { resolve(dataUrl); return }
+        ctx.drawImage(img, 0, 0, cw, ch)
+        if (placeholder) withLogoPlaceholder(cw, ch, ctx)
+        resolve(c.toDataURL('image/png'))
+      }
+      img.onerror = () => resolve(dataUrl)
+      img.src = dataUrl
+    })
+
+  const downscale = (dataUrl: string, placeholder = false) => compose(dataUrl, PREVIEW_PX, PREVIEW_PX, placeholder)
+
+  /**
+   * ── 🔴 LAZY: GENERATED WHEN THE CARD IS SCROLLED TO, NOT ON PAGE LOAD. ───────────────────────────
+   * An IntersectionObserver on the style selector. The Settings tab is long and this card sits near the
+   * bottom, so on most visits this never runs at all. ⚠️ The observer disconnects on its first hit and
+   * `qrPreviewsRequested` guards a second pass, so the two composites happen ONCE per mount and are then
+   * served from `qrPreviews`.
+   * ⚠️ BOTH STYLES ARE BUILT, INCLUDING BRANDED BELOW THE PLAN — that is deliberate and is the point of
+   * item 5: a truck below the plan SEES what they would get, with their own logo, and cannot take it.
+   */
+  useEffect(() => {
+    const el = qrSelectorRef.current
+    if (!el || !orderUrl || qrPreviewsRequested.current) return
+    if (typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(async (entries) => {
+      if (!entries.some(e => e.isIntersecting) || qrPreviewsRequested.current) return
+      qrPreviewsRequested.current = true
+      io.disconnect()
+      try {
+        const [std, brand] = await Promise.all([buildQr('standard'), buildQr('branded')])
+        const [stdSmall, brandSmall] = await Promise.all([
+          std ? downscale(std) : Promise.resolve(undefined),
+          // 🔴 THE PLACEHOLDER IS DRAWN ONLY WHEN THERE IS NO LOGO, and only on the preview copy.
+          brand ? downscale(brand, !truck.logo_storage_path) : Promise.resolve(undefined),
+        ])
+        setQrPreviews({ standard: stdSmall, branded: brandSmall })
+      } catch (err) {
+        // A preview that will not draw must never break the card. The styles remain selectable.
+        console.error('QR preview generation failed:', err)
+      }
+    }, { rootMargin: '200px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [orderUrl, buildQr, truck.logo_storage_path])
+
+  /**
+   * ── THE ENLARGED VIEW. ───────────────────────────────────────────────────────────────────────────
+   * 🔴 THE PLAN GATE IS THE EXISTING ONE — `can('branded_qr_code')`, the same call the option cards
+   * already use. No second mechanism, no new predicate.
+   * ⚠️ WHEN IT REFUSES, NO FULL-SIZE IMAGE IS BUILT AT ALL. The modal opens carrying `locked: true` and
+   * a null dataUrl, so there is nothing in the DOM to save and nothing to download — the refusal is the
+   * absence of the artefact, not a hidden button.
+   */
+  const openQrView = async (style: 'standard' | 'branded') => {
+    if (style === 'branded' && !can('branded_qr_code')) {
+      setQrModal({ style, dataUrl: null, locked: true })
+      return
+    }
     setGeneratingQR(true)
     try {
-      const { generateQRCodePNG } = await import('@/lib/generateQRCode')
-      const showBrandedQr = can('branded_qr_code') && qrCodeStyle === 'branded'
-      const dataUrl = await generateQRCodePNG({
-        url: orderUrl,
-        logoUrl: showBrandedQr && truck.logo_storage_path
-          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
-          : null,
-        truckName: truck.name,
-        // Imported constant, not a hardcoded path: this line read '/logos/hatchgrab.png' — an asset that
-        // NEVER EXISTED — so loadImageViaBlobUrl returned null and the poster silently fell back to the
-        // text "Powered by HatchGrab". The real asset is '/logos/hatchgrab-logo.png'. ⚠️ The text fallback
-        // in lib/generateQRCode.ts is DELIBERATELY KEPT: it is what makes a missing/failed image a
-        // degraded poster rather than a blank corner.
-        hatchgrabLogoUrl: `${window.location.origin}${HATCHGRAB_LOGO_PNG}`,
-      })
-      setQrDataUrl(dataUrl)
+      const full = await buildQr(style)
+      // 🔴 THE ENLARGED VIEW MUST MATCH THE PREVIEW. Branded with no logo shows the reserved centre in
+      // BOTH, through the same `compose` call — clicking a preview and getting a different picture is
+      // the page contradicting itself, and the operator has no way to tell which one is true.
+      const showsPlaceholder = style === 'branded' && !truck.logo_storage_path
+      const display = full && showsPlaceholder ? await compose(full, null, null, true) : full
+      // ⚠️ AND THE DOWNLOAD STAYS THE CLEAN CODE. `full` never has the box drawn on it — nobody may be
+      // handed a file with the words "Your logo here" printed on their hatch board. The modal says so
+      // in that state rather than letting them find out after printing.
+      setQrModal({ style, dataUrl: full, displayUrl: display, showsPlaceholder })
     } catch (err) {
       console.error('QR generation failed:', err)
     }
@@ -9112,8 +9374,20 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             match "Truck name" above. The HANDLER IS UNCHANGED — same `saveFormField`, same `website`
             key, same normaliseUrl branch. <Input> hands onChange the STRING, not the event, which is the
             only reason that line differs. */}
+        {/* 🔴 THE KEYBOARD MUST NOT REWRITE A WEB ADDRESS (V11.50). `pizzeriagusto` was being
+            autocapitalised and autocorrected into `Pizzeria Gusto`. Four attributes, and each does a
+            different job: `autoCapitalize="none"` stops the first letter being upper-cased;
+            `autoCorrect="off"` stops iOS substituting a dictionary word; `spellCheck={false}` stops the
+            Android IME doing the same and removes the red underline; `inputMode="url"` gives the
+            on-screen keyboard its URL layout — a visible dot and slash — WITHOUT touching the element's
+            type.
+            🔴 THE TYPE STAYS "text" ON PURPOSE. `type="url"` would attach constraint validation to a
+            field the onBlur comment below deliberately keeps permissive — an unrecognisable string is
+            left as typed and still saved. Changing it would turn a free-text field into a validated
+            one, which is a behaviour change, not a keyboard fix. */}
         <Input
           label="Website"
+          inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
           value={form.website || ''}
           onChange={v => setForm(p => ({...p, website: v}))}
           onBlur={() => {
@@ -9132,7 +9406,7 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
               saveFormField()
             }
           }}
-          placeholder="https://yourtruck.co.uk"
+          placeholder="https://yourtruck.com"
         />
 
         {/* Menu icon */}
@@ -9173,7 +9447,11 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             <p className="text-xs text-slate-500 italic mb-2">Your previous contact method is no longer available. Please select a new one.</p>
           )}
           <div className="flex items-center gap-3">
-            <label className="text-sm text-slate-600 w-36 flex-shrink-0">Preferred method</label>
+            {/* 🔴 w-44, NOT w-36. Measured in a browser against the app's own stylesheet: "Preferred
+                contact method" needs 167px on one line and w-36 reserves 144, so it wrapped to two while
+                the select had the rest of the row spare. w-44 is 176px — the next Tailwind step that
+                fits, with 9px to spare. */}
+            <label className="text-sm text-slate-600 w-44 flex-shrink-0">Preferred contact method</label>
             <select
               value={['facebook', 'messenger', 'instagram'].includes(preferredContact) ? '' : preferredContact}
               onChange={async e => {
@@ -9259,7 +9537,15 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             ⚠️ THE INNER "Auto-replies" SUBSECTION HEADING WAS ABSORBED INTO THIS TITLE rather than
             nesting the same word twice. Its caption survives below, inside the native hide, where it
             still reads correctly against the Connect row it describes. */}
-        <p className="text-base font-bold text-slate-800">Auto-replies</p>
+        {/* ⚠️ "Coming soon" beside the TITLE, 28 August 2026. The three channel rows inside this card
+            already carry the same badge (below); this puts the same statement on the card itself, so an
+            operator who does not open it is not left to infer the state from the rows. Same component,
+            same label, same colour as those three — `Badge` from components/manage/primitives.tsx, which
+            is the pattern used everywhere else including the admin matrix and the Billing table. */}
+        <div className="flex items-center gap-2">
+          <p className="text-base font-bold text-slate-800">Auto-replies</p>
+          <Badge label="Coming soon" colour="slate" />
+        </div>
         {/* ── THE DESCRIPTION. OUTSIDE THE NATIVE HIDE, WITH THE TITLE AND THE PREVIEW. ───────────────
             ⚠️ `text-base` — deliberately LARGER than the preview's `text-sm` body copy, and un-bolded so
             it does not compete with the title above it.
@@ -9477,7 +9763,7 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                 value={form.schedule_url ?? ''}
                 onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
                 onBlur={e => {
@@ -9559,9 +9845,52 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
         </Card>
       )}
 
+      {/* ── 🔴 IMMEDIATELY ABOVE THE QR CODE, AND THE ADJACENCY IS THE POINT (V11.49). ───────────────
+          The QR code below encodes a hatchgrab.com address PERMANENTLY and resolves its destination at
+          scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
+          to the operator's own address. Reading them in this order is what makes that obvious; separated,
+          the two read as unrelated features and the operator assumes a new code is needed. */}
+      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
+
       {/* QR Code */}
       <Card className="p-4">
         <p className="text-base font-bold text-slate-800 mb-1">Order QR code</p>
+        {/* 🔴 WHERE THIS CODE SENDS PEOPLE *NOW*, NOT WHAT IT WILL DO ONE DAY. ────────────────────────
+            This line was future tense for every truck — "once your own web address is set up…" — which is
+            a promise to an operator who has not set one up, and simply WRONG for one whose address is
+            already live. An operator reading a promise about a thing they finished last week concludes
+            the page has not noticed, and the next thing they doubt is whether the code works at all.
+            ⚠️ Plain English: no "redirect", no "resolves", no "static", no "dynamic". What it DOES.
+
+            🔴 THE FIVE CONDITIONS BELOW MIRROR app/trucks/[slug]/order/layout.tsx EXACTLY, AND THAT
+            DUPLICATION IS DEBT — RECORDED, NOT HIDDEN. That file decides where a scan actually goes; this
+            one decides what the operator is TOLD. If the two drift, we tell a truck their code points at
+            their own address while the redirect quietly serves ours — the worst kind of disagreement,
+            because nothing errors. ⚠️ THE RIGHT FIX IS ONE SHARED PREDICATE both call, and it was OUT OF
+            SCOPE here (this brief forbids touching anything outside this card). Extract it next.
+            ⚠️ `STOPPED_AFTER_MS` is imported rather than restated for exactly this reason — the one term
+            most likely to drift is the one that is now impossible to. */}
+        {(() => {
+          const lastOk = truck.custom_domain_last_ok_at ? new Date(truck.custom_domain_last_ok_at).getTime() : null
+          const domainLive = !!truck.custom_domain
+            && !!truck.custom_domain_verified_at
+            && !!truck.custom_domain_confirmed_at
+            && can('embed_schedule')
+            && !!lastOk && Date.now() - lastOk <= STOPPED_AFTER_MS
+          return domainLive ? (
+            <p className="text-xs text-slate-500 mb-3">
+              This QR code now sends customers to{' '}
+              <span className="font-mono text-slate-700">{truck.custom_domain}</span>. You never need to
+              print a new one.
+            </p>
+          ) : (
+            <p className="text-xs text-slate-500 mb-3">
+              This QR code sends customers to your HatchGrab ordering page. If you set up your own web
+              address later, the same QR code will send them there instead — you will not need to print
+              a new one.
+            </p>
+          )
+        })()}
         <p className="text-xs text-slate-500 mb-4">
           Print or display this code so customers can scan and pre-order.
           Place it at your hatch, on your van, or share it online.
@@ -9582,41 +9911,67 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
         {/* QR code style selector */}
         <div className="mb-4 space-y-2">
           <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
+          {/* ── 🔴 SIDE BY SIDE, BECAUSE THEY ARE ALTERNATIVES AND NOT TWO SETTINGS. ─────────────────
+              Stacked full-width they read as independent switches an operator might turn on
+              individually; abreast, the choice is visible as a choice.
+              ⚠️ PATTERN FOLLOWED, NOT INVENTED: `grid grid-cols-1 sm:grid-cols-2 gap-3`, the same shape
+              as the add-event form in this file. It stacks below 640px for the reason the auto-reply
+              input row records at its own comment — at 375px two columns leave each option too narrow
+              for its description, and the branded one carries a second line and a logo preview. */}
+          <div ref={qrSelectorRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Standard — available to all tiers. Custom radio dot (w-4/h-4 orange) — matches the schedule
               selector + the rest of the page (was a native accent-orange radio, a different size). */}
           <button
             type="button"
-            onClick={() => { setQrCodeStyle('standard'); setQrDataUrl(null); saveSetting('qr_code_style', 'standard') }}
-            className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+            onClick={() => { setQrCodeStyle('standard'); saveSetting('qr_code_style', 'standard') }}
+            className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
           >
             <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'standard' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'standard' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-            <div>
+            <div className="flex-1">
               <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
             </div>
+            {/* ── 🔴 A PREVIEW, NOT A BUTTON. The card is still the control for CHOOSING a style; this
+                image answers the different question "what will mine look like". Clicking it enlarges —
+                a small image that gets bigger needs no label. `stopPropagation` so enlarging does not
+                also silently change the operator's saved style. */}
+            <QrPreview
+              src={qrPreviews.standard}
+              alt="Standard QR code preview"
+              onOpen={() => openQrView('standard')}
+            />
           </button>
 
           {/* Branded — Pro/Max only */}
           {can('branded_qr_code') ? (
             <button
               type="button"
-              onClick={() => { setQrCodeStyle('branded'); setQrDataUrl(null); saveSetting('qr_code_style', 'branded') }}
-              className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+              onClick={() => { setQrCodeStyle('branded'); saveSetting('qr_code_style', 'branded') }}
+              className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
             >
               <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'branded' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'branded' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
                 <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+                {/* ── 🔴 A BLOCKER, NOT A STATUS. ────────────────────────────────────────────────────
+                    This was a badge reading "No logo" sitting beside the option that promises a logo in
+                    the middle. It told an operator who had just chosen branded that the thing they chose
+                    is missing, and stopped there — no cause, no next step, nothing to do. A badge is for
+                    a state you can read past; this is one they have to act on.
+                    ⚠️ BEHAVIOUR IS UNCHANGED — selecting branded without a logo does exactly what it did
+                    before. Only what they are told has changed. */}
+                {!truck.logo_storage_path && (
+                  <p className="text-xs text-amber-700 mt-1">Add your logo to your profile and it will show here.</p>
+                )}
               </div>
-              {truck.logo_storage_path && (
-                <img
-                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`}
-                  alt="Logo preview"
-                  className="w-8 h-8 rounded-md object-contain border border-slate-100 shrink-0"
-                />
-              )}
-              {!truck.logo_storage_path && (
-                <span className="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-medium shrink-0">No logo</span>
-              )}
+              {/* ⚠️ THE BRANDED PREVIEW IS THEIR REAL CODE WITH THEIR REAL LOGO — and where there is no
+                  logo it shows exactly what they would get today, which is the unbranded code. That is
+                  the honest answer to "what will mine look like", and it is why the line above about
+                  adding a logo stays: the preview shows the state, the line says what to do about it. */}
+              <QrPreview
+                src={qrPreviews.branded}
+                alt="Branded QR code preview"
+                onOpen={() => openQrView('branded')}
+              />
             </button>
           ) : (
             <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
@@ -9625,6 +9980,15 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                 <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
                 <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
               </div>
+              {/* 🔴 BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO, AND THAT IS THE POINT — a
+                  locked feature you cannot picture is not a feature anybody upgrades for. What they
+                  cannot do is enlarge it or download it: clicking explains the lock instead. */}
+              <QrPreview
+                src={qrPreviews.branded}
+                alt="Branded QR code preview"
+                locked
+                onOpen={() => openQrView('branded')}
+              />
               <FeatureGate
                 feature="branded_qr_code"
                 plan={truck.plan}
@@ -9634,45 +9998,88 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
               />
             </div>
           )}
+          </div>
         </div>
 
-        {orderUrl && (qrDataUrl ? (
-          <div className="flex flex-col items-center gap-4">
-            <img
-              src={qrDataUrl}
-              alt="Order QR code"
-              className="w-48 h-auto rounded-xl border border-slate-100 shadow-sm"
-            />
-            <div className="flex gap-3 w-full">
-              <a
-                href={qrDataUrl}
-                download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
-                className="flex-1 flex items-center justify-center gap-2
-                           px-4 py-2.5 bg-orange-600 text-white text-sm
-                           font-medium rounded-xl"
-              >
-                Download PNG
-              </a>
+        {/* ── ONE BUTTON, AND ITS NAME NOW MATCHES WHAT IT DOES. ────────────────────────────────────
+            It read "Generate QR code", which was true when the code did not exist until you pressed it.
+            The operator can now SEE both codes in the cards above, so "generate" describes nothing they
+            are waiting for — it opens the bigger view of the style they have chosen, and the download
+            lives in there.
+            ⚠️ It follows the SELECTED style, and the selected style can be `branded` on a truck that has
+            since dropped below the plan — `openQrView` refuses that case exactly as a click on the
+            locked preview does, through the same call. One gate, two doors.
+            ⚠️ RIGHT-ALIGNED AND SIZED TO ITS TEXT, unchanged from the previous pass. */}
+        {orderUrl && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => openQrView(qrCodeStyle === 'branded' ? 'branded' : 'standard')}
+              disabled={generatingQR}
+              className="bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm disabled:opacity-40"
+            >
+              {generatingQR ? 'Opening…' : 'View QR code'}
+            </button>
+          </div>
+        )}
+
+        {/* ── THE ENLARGED VIEW, AND THE ONLY PLACE A DOWNLOAD EXISTS. ──────────────────────────────
+            🔴 WHEN LOCKED THERE IS NO IMAGE AND NO DOWNLOAD IN THE MARKUP AT ALL — not a hidden one, not
+            a disabled one. `openQrView` never built the full-size code, so there is nothing here to
+            save. The refusal is the absence of the artefact. */}
+        {qrModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => setQrModal(null)}
+          >
+            <div className="bg-white rounded-2xl p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+              {qrModal.locked ? (
+                <>
+                  <p className="text-base font-bold text-slate-800 mb-1">Branded QR code</p>
+                  <p className="text-sm text-slate-600">
+                    Branded codes are part of a higher plan. Your standard QR code works exactly the same
+                    for customers — the difference is your logo in the middle.
+                  </p>
+                  <div className="mt-3">
+                    <FeatureGate
+                      feature="branded_qr_code"
+                      plan={truck.plan}
+                      overrides={truck.feature_overrides}
+                      trialExpiresAt={truck.trial_expires_at}
+                      showUpgrade={true}
+                    />
+                  </div>
+                </>
+              ) : qrModal.dataUrl ? (
+                <div className="flex flex-col items-center gap-4">
+                  <img src={qrModal.displayUrl ?? qrModal.dataUrl} alt="Order QR code" className="w-64 h-auto rounded-xl border border-slate-100" />
+                  {/* ⛔ THE EXPLANATORY LINE THAT STOOD HERE WAS REMOVED ON REQUEST, 28 August 2026.
+                      ⚠️ WHAT IT DISCLOSED IS STILL TRUE: with no logo the picture above carries the dotted
+                      square and the downloaded file does NOT. That is deliberate — a printed board must
+                      never read "Your logo here" — but it is now UNSTATED, so an operator meets the
+                      difference when they open the file rather than before. `showsPlaceholder` is kept on
+                      the modal state precisely so restoring a line here, or blocking the download in this
+                      state, is a one-line change. */}
+                  <a
+                    href={qrModal.dataUrl}
+                    download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
+                    className="w-full flex items-center justify-center px-4 py-2.5 bg-orange-600 text-white text-sm font-medium rounded-xl"
+                  >
+                    Download PNG
+                  </a>
+                  <p className="text-xs text-slate-400 self-start break-all font-mono">{orderUrl}</p>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">That could not be built just now. Try again shortly.</p>
+              )}
               <button
-                onClick={() => setQrDataUrl(null)}
-                className="px-4 py-2.5 border border-slate-200 text-slate-600
-                           text-sm rounded-xl"
+                onClick={() => setQrModal(null)}
+                className="mt-3 w-full px-4 py-2.5 border border-slate-200 text-slate-600 text-sm rounded-xl"
               >
-                Regenerate
+                Close
               </button>
             </div>
-            <p className="text-xs text-slate-400 self-start">{orderUrl}</p>
           </div>
-        ) : (
-          <button
-            onClick={handleGenerateQR}
-            disabled={generatingQR}
-            className="w-full bg-orange-600 text-white font-semibold
-                       py-3 rounded-xl text-sm disabled:opacity-40"
-          >
-            {generatingQR ? 'Generating...' : 'Generate QR code'}
-          </button>
-        ))}
+        )}
       </Card>
 
       {/* Orders */}
@@ -10003,13 +10410,22 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                 <option value="1d">1 day before</option>
                 <option value="day_of">On day of event</option>
               </select>
+              {/* ── 🔴 THE DEADLINE RULES SIT IN THEIR OWN BOX (28 August 2026). ────────────────────────
+                  "When pre-orders open" above is a DIFFERENT question — when customers may START — and
+                  it stays outside. Everything to do with the DEADLINE is inside: the heading, its master
+                  toggle, the explanation, the deadline control and what happens past it.
+                  ⚠️ SHAPE COPIED, NOT INVENTED — `rounded-xl border border-slate-200 bg-slate-50 p-3` is
+                  the inner-box shape this file already uses (see :6064 and :8518).
+                  ⚠️ The `mt-1` moved from the heading row onto the box, so the gap below the Opens select
+                  is unchanged rather than doubled. */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 mt-1">
               {/* "Pre-order deadline" heading (prominent — matches the other section headings) + the master
                   toggle on the SAME line; explanatory + scope text below. */}
-              <div className="flex items-center justify-between gap-3 mt-1">
+              <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
                 <Toggle on={preordersOn} onToggle={() => saveMaster(!preordersOn)} />
               </div>
-              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rules to prevent ordering of items after a specified time.</p>
+              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rule to prevent ordering of items after a specified time.</p>
               {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
               <div className={preordersOn ? '' : 'opacity-50'}>
               <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
@@ -10040,34 +10456,35 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
                 ))}
               </div>
               </div>
-            </div>
 
-            {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
-            <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
-                <button type="button" onClick={() => setPoModalOpen(true)}
-                  className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
+              {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
+              <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
+                  <button type="button" onClick={() => setPoModalOpen(true)}
+                    className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
+                </div>
+                {includedCount === 0
+                  ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
+                  : (
+                    <>
+                      <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
+                      <div className="space-y-2">
+                        {groups.map(g => {
+                          const inc = g.items.filter(i => i.preorder_enabled === true)
+                          if (inc.length === 0) return null
+                          return (
+                            <div key={g.id}>
+                              <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
+                              <p className="text-sm text-slate-600 truncate">{inc.map(i => i.name).join(', ')}</p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
               </div>
-              {includedCount === 0
-                ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
-                : (
-                  <>
-                    <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
-                    <div className="space-y-2">
-                      {groups.map(g => {
-                        const inc = g.items.filter(i => i.preorder_enabled === true)
-                        if (inc.length === 0) return null
-                        return (
-                          <div key={g.id}>
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
-                            <p className="text-sm text-slate-600 truncate">{inc.map(i => i.name).join(', ')}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </>
-                )}
+              </div>
             </div>
 
             {/* POPUP — pure INCLUSION picker: category → sub-category → item, select-all per level.
@@ -10662,6 +11079,33 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           </div>
         </div>
       )}
+
+      {/* ── PUT YOUR SCHEDULE ON YOUR OWN WEBSITE — MOVED HERE FROM THE DASHBOARD (V11.48) ─────────
+          Both cards write TRUCK-WIDE columns, so they belong on this tab and not on Dashboard →
+          Settings, which is PER-EVENT. That rule is stated in app/dashboard/[token]/page.tsx and both
+          cards were on the wrong side of it.
+
+          🔴 THE GATING IS CARRIED ACROSS UNCHANGED, AND TWO OF ITS FOUR TERMS ARE NOW REDUNDANT — kept
+          visible here rather than silently dropped:
+            • `userRole` — REDUNDANT. This tab is already owner+manager (the tab list's `roles`), so the
+              old `(userRole==='owner'||userRole==='manager')` cannot be false here. Dropped, and this
+              line is the record of why.
+            • `truck &&` — REDUNDANT. SettingsTab renders below the parent's loading gate and receives a
+              non-null `truck`. Dropped.
+            • 🔴 `!isDemo` — KEPT, AND DELIBERATELY NOT ARGUED AWAY. It is true that a demo cannot reach
+              /manage (proxy.ts session-gates `/manage` with no demo exemption, while `/dashboard/demo-*`
+              is explicitly exempt), and true that the five `domain_*` actions refuse a demo identity
+              server-side. ⚠️ BUT THE FOUR EMBED ACTIONS ARE **NOT** ON THAT SERVER-SIDE LIST
+              (app/api/manage/route.ts `demoBlockedActions` names only the domain five), so for the embed
+              wizard the client guard was the only demo protection there was. Dropping it would have
+              removed a real guard on the strength of an argument about a different file. Same rule as
+              everywhere else — `isDemoIdentifier`, one definition, lib/demo.ts.
+            • The MAX/plan gate is untouched and still lives INSIDE each component
+              (`canAccess(plan,'embed_schedule',…)`), exactly as it did on the dashboard.
+
+          ⚠️ ORDER: each comment sits with its own component. On the dashboard both comments were stacked
+          ahead of both mounts in the opposite order to the components they described, so a reader met the
+          embed comment immediately above the domain card. */}
 
       {/* ── 🔴 DANGER ZONE — LAST, OWNER ONLY ──────────────────────────────────────────────────────
           The Settings tab is owner+manager; this narrows to OWNER, so a manager sees nothing at all —

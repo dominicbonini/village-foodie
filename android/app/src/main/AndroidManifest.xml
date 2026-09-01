@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- `tools:` is REQUIRED by the permission block at the bottom of this file: tools:node="remove"
+     and usesPermissionFlags both need it. It is a build-time namespace only — the merger strips
+     every tools: attribute out of the merged result, so nothing here ships in the APK. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -41,9 +45,61 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- ── 🔴 THE NOTIFICATION ICON. WITHOUT THIS ANDROID FLATTENS THE LAUNCHER ICON TO ITS ALPHA. ──
+             A full-colour launcher icon has alpha=255 everywhere inside its square, so the status bar
+             renders it as a SOLID WHITE SQUARE. `ic_stat_hatchgrab` is a flat white-on-transparent
+             silhouette; Android reads only its alpha channel and tints it with `iconColor`.
+             ⚠️ THIS COVERS FIREBASE/FCM PUSH. `capacitor.config.ts` separately sets
+             `LocalNotifications.smallIcon: 'ic_stat_icon_config_sample'`, which names an asset that does
+             NOT exist — that reference is untouched here and is still broken. See the report. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_hatchgrab" />
     </application>
 
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ══ BLUETOOTH: A RECEIPT PRINTER, AND NOTHING ELSE ═══════════════════════════════════════════
+         WHAT BLE IS FOR HERE. lib/printing/bleTransport.ts connects to one ESC/POS thermal printer at
+         the hatch and streams a receipt to it. That is the entire use. Its scan callback reads exactly
+         three fields off a result — deviceId, name/localName, and the advertised service uuids, which
+         only ORDER the list — and nothing in this codebase derives a position from RSSI, from a beacon,
+         or from anything else.
+
+         🔴 NOTHING IN THIS APP USES DEVICE LOCATION AT ALL. There is no navigator.geolocation call, no
+         getCurrentPosition, no watchPosition, and @capacitor/geolocation is not a dependency. The only
+         latitude/longitude anywhere comes from a POSTCODE THE VISITOR TYPES, geocoded over the network
+         by lib/utils.ts getCoordsFromPostcode() against api.postcodes.io — a text field, not a sensor.
+
+         WHY THESE TWO LINES EXIST. @capacitor-community/bluetooth-le 8.3.0 ships a manifest declaring
+         BLUETOOTH_SCAN with no usesPermissionFlags, plus an UNCONDITIONAL ACCESS_FINE_LOCATION and
+         ACCESS_COARSE_LOCATION. Manifest merge pulls all three into this app. Play reads the MERGED
+         manifest, so without the overrides below the data-safety section declares Location collection
+         that does not happen — for a printer connection.
+
+         ⚠️ THE RUNTIME OPTION IS NOT THIS. bleTransport.ts passes `androidNeverForLocation: true` to
+         BleClient.initialize(), which governs what the PLUGIN requests at runtime. It is not the
+         manifest attribute and Play never sees it. The two are separate mechanisms and both are needed.
+         If BLE scan results are ever used to infer position, BOTH must come off in the same change. -->
+
+    <!-- neverForLocation is the app's assertion that scan results are never used to derive location.
+         NO tools:replace / tools:node IS NEEDED: the library declares BLUETOOTH_SCAN WITHOUT
+         usesPermissionFlags, so there is no attribute conflict to resolve — the merger simply takes the
+         attribute from the side that has it. tools:targetApi="s" mirrors the library's own declaration
+         (the permission is Android 12+). Verified against the freshly generated merged manifest. -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+
+    <!-- tools:node="remove" — the ONLY mechanism that deletes a node contributed by a library. There is
+         nothing to override here: this app never declares these, so tools:replace has no attribute to
+         act on and simply omitting them leaves the library's copies in the merged result untouched.
+         ⚠️ BOTH, not just FINE. Play's Location bucket covers coarse as well, so removing FINE alone
+         would leave the data-safety declaration exactly as it is and achieve nothing. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
 </manifest>

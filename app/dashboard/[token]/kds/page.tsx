@@ -60,8 +60,32 @@ import { AppLockGate } from '@/components/native/AppLockGate'
 // /kds?view=cook → cook view (for a second tablet facing into the kitchen)
 type KdsView = 'window' | 'cook'
 
-export default function KdsPage() {
-  const { token } = useParams<{ token: string }>()
+/**
+ * ── 🔴 THE TOKEN MAY ARRIVE AS A PROP, AND THAT IS THE WHOLE POINT. ─────────────────────────────────
+ * This screen runs on the DASHBOARD token: 93 references below send it to /api/dashboard,
+ * /api/dashboard/action, /api/events/manage and /api/events/action, every one of which authenticates on
+ * `dashboard_token` alone. It genuinely cannot run on a van's `kds_token`.
+ *
+ * It used to be REACHED by /kds/<kds_token> redirecting to /dashboard/<dashboard_token>/kds — which put
+ * the OWNER credential in the address bar, and therefore in browser history, server request logs and
+ * PostHog's `$current_url`. Live dashboard tokens have already been confirmed in PostHog.
+ *
+ * So the token now arrives by PROP from a server component that resolved it server-side
+ * (app/kds/[kds_token]/page.tsx), and never appears in a URL. When this file is used as a PAGE at
+ * /dashboard/<token>/kds, Next passes `{ params, searchParams }` — no `token` prop — and the
+ * `useParams` fallback below carries it exactly as before. Both entry points, one component, unchanged
+ * behaviour.
+ * ⚠️ vanId/vanName take the same treatment for the same reason: they used to ride the redirect's query
+ * string, and the /kds route no longer has one. They are NOT credentials — they move to props only so
+ * that route can supply them without a redirect.
+ */
+type KdsPageProps = { token?: string; vanId?: string; vanName?: string }
+
+export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: vanNameProp }: KdsPageProps = {}) {
+  // ⚠️ `useParams` is OPTIONAL-TYPED NOW. On /kds/<kds_token> it returns `{ kds_token }` and has no
+  // `token` key at all, so the prop is what carries it there. On the dashboard route it is the source.
+  const routeParams = useParams<{ token?: string }>()
+  const token = tokenProp ?? routeParams?.token ?? ''
   // DEMO MODE — same signal, same source as the dashboard and proxy.ts: the `demo-` token prefix
   // (lib/demo.ts). This route runs on the DASHBOARD token, so the check is identical here.
   // The KDS is demo-ABLE rather than blocked: placing a customer order and watching the ticket land on the
@@ -84,8 +108,10 @@ export default function KdsPage() {
   // `?view=cook` IS NO LONGER READ. The view is derived from the handover switch, so the URL param
   // decides nothing; a stale bookmark carrying it simply opens the KDS. Left unparsed rather than
   // parsed-and-ignored, so nothing suggests it still has an effect.
-  const vanId = searchParams.get('van_id') ?? ''
-  const vanName = searchParams.get('van_name') ?? ''
+  // Prop first (the /kds route, which has no query string), then the query string (the dashboard
+  // route's existing handoff). Identical values either way — only the delivery differs.
+  const vanId = vanIdProp ?? searchParams.get('van_id') ?? ''
+  const vanName = vanNameProp ?? searchParams.get('van_name') ?? ''
   // 🔴 THE SEED FROM THE DASHBOARD. Same handoff mechanism as van_id above. Read ONCE, into the initial
   // state below; nothing re-reads it, so a later navigation cannot move an event out from under a cook.
   const seedEventId = searchParams.get('event_id') ?? ''

@@ -14,11 +14,135 @@ import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
 import { canAccess } from '@/lib/features'
 import { logAllergenChanges, diffItemAllergens, tagJson, arrEq, type Actor } from '@/lib/allergen-audit'
+import { isDemoIdentifier, DEMO_PREFIX } from '@/lib/demo'
+import { normaliseUrl } from '@/lib/url-normalise'
+import { checkSubdomain, suggestFromWebsite } from '@/lib/custom-domain/apex'
+import { checkCaa, detectDnsProvider, checkApexViaSoa } from '@/lib/custom-domain/dns'
+import { addDomain, getDomainConfig, releaseDomain } from '@/lib/custom-domain/vercel'
+import { recordRows, instructionsEmail as domainInstructionsEmail } from '@/lib/custom-domain/copy'
+import { domainPreflightRatelimit, domainInstructionsRatelimit } from '@/lib/ratelimit'
+import { logAction } from '@/lib/audit/actionAudit'
+import { pseudonymiseEmail } from '@/lib/audit/pseudonymise'
+import { resolveActorSource } from '@/lib/audit/actor'
+
+// ── DETECTION BUDGETS (Stage 2b) ────────────────────────────────────────────────────────────────
+// 🔴 SIX SECONDS, AND THE NUMBER IS CHOSEN FROM THE OPERATOR'S SIDE, NOT THE SERVER'S. This runs
+// while a person watches a spinner having just typed their own web address. Past about six seconds
+// they conclude it is broken — and because detection is ADVISORY, waiting longer buys a pre-selected
+// radio button and nothing more. A slow site simply lands on the picker with nothing selected, which
+// is the same screen, one click further from done. Vercel would allow far longer; the operator will not.
+const DETECT_TIMEOUT_MS = 6_000
+// Fingerprints are in the served shell, so 256KB is generous. The cap exists so a server that never
+// stops sending cannot make us hold what it sends.
+const DETECT_BODY_CAP_BYTES = 256 * 1024
+
+// ── 🔴 WHAT AN OPERATOR IS TOLD WHEN THE ADDRESS COULD NOT BE ADDED. ─────────────────────────────
+// One entry per `reason` from lib/custom-domain/vercel.ts, and NOTHING ELSE is ever sent. See the
+// comment at the `addDomain` call site for why this is a map and not a passed-through message.
+// ⚠️ "Nothing has changed at your end" is on the two that are OUR fault, and it is the whole point of
+// them: an operator who has just watched a setup fail will otherwise go looking at their own web
+// address for damage that is not there.
+const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error', string> = {
+  not_configured: 'Something is not set up on our side, so we could not add your address. Nothing has changed at your end. Try again shortly.',
+  taken: 'That address is already in use somewhere else.',
+  refused: 'We were not allowed to add that address.',
+  error: 'We could not add that address just now. Nothing has changed at your end. Try again shortly.',
+}
+import { sendConfirmationEmail } from '@/lib/email'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+// ══ 🔴 DENY BY DEFAULT. THE TOKEN SAYS WHICH TRUCK; THE SESSION SAYS WHO. ═════════════════════════
+// This route used to initialise the caller's role to 'owner' and only NARROW it when a session
+// resolved — so NO SESSION MEANT OWNER, and possession of a dashboard_token was full authority over
+// somebody's business. The three-role system below (24 staff-blocked actions) was fully built and
+// simply never ran for the unauthenticated case, because `'staff'` was unreachable without a session.
+//
+// The inversion is the whole fix: no resolved caller ⇒ no access. Nothing new is built — the operators
+// and truck_users lookups below are the ones that were already here, moved from "narrow the default" to
+// "grant the access".
+//
+// ⚠️ TWO CREDENTIALS, ONE ANSWER. Web sends a cookie session (@supabase/ssr). The NATIVE app has no
+// cookie — its session lives in @capacitor/preferences — and sends a Bearer JWT instead. Reading only
+// the cookie is what made the native app depend on the 'owner' default, so both are read here or the
+// inversion would sign every native operator out of Manage.
+
+/** Native app: `Authorization: Bearer <access_token>`. Same shape as /api/native/my-trucks. */
+async function userIdFromBearer(req: NextRequest): Promise<string | null> {
+  const auth = req.headers.get('authorization') || ''
+  const jwt = auth.startsWith('Bearer ') ? auth.slice(7) : null
+  if (!jwt) return null
+  try {
+    const { data } = await supabase.auth.getUser(jwt)
+    return data.user?.id ?? null
+  } catch { return null }
+}
+
+/** Cookie session (web) first, then the native Bearer. Null = no caller could be established. */
+async function resolveCallerId(req: NextRequest): Promise<string | null> {
+  try {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (user) return user.id
+  } catch { /* no cookie / transient auth fault — fall through to the Bearer */ }
+  return userIdFromBearer(req)
+}
+
+type TruckAccess =
+  | { ok: true; role: 'owner' | 'manager' | 'staff'; userId: string | null; operatorId: string | null; via: 'demo' | 'admin' | 'owner' | 'member' }
+  | { ok: false; status: 401 | 403; error: string }
+
+/**
+ * 🔴 THE ONE PLACE ACCESS IS DECIDED, for both GET and POST.
+ *
+ * 🔴 THE DEMO CARVE-OUT IS KEYED ON THE TRUCK ID PREFIX, NOT ON `operator_id IS NULL`.
+ * A demo truck has no owner BY CONSTRUCTION — lib/provision-truck.ts writes `operator_id: null`, and a
+ * prospect works one with no account at all, so there is no session to resolve and never will be.
+ * ⚠️ THE `operator_id IS NULL` SHAPE WAS REJECTED DELIBERATELY: it would silently re-open this hole for
+ * any REAL truck that ends up unowned — and an unowned real truck is the normal state immediately after
+ * provisioning, before /api/admin/create-operator runs. A rule that grants owner to "whoever asks" the
+ * moment a column is null is the same defect wearing a different condition.
+ * The prefix rule is the one lib/demo.ts defines and the demo-cleanup cron already enforces before it
+ * will delete anything (`isDemoIdentifier` → `startsWith('demo-')`), and assertReservedPrefix() in
+ * provision-truck guarantees no operator truck can ever carry it. Same rule, same source, three places.
+ */
+async function resolveTruckAccess(req: NextRequest, truck: { id: string; operator_id: string | null }): Promise<TruckAccess> {
+  // ── The carve-out. Narrow, explicit, and first so the reasoning is impossible to miss.
+  if (isDemoIdentifier(truck.id)) {
+    return { ok: true, role: 'owner', userId: null, operatorId: null, via: 'demo' }
+  }
+
+  const userId = await resolveCallerId(req)
+  // 🔴 THE INVERSION. No caller ⇒ no access. This is the line the whole workstream exists to add.
+  if (!userId) {
+    return { ok: false, status: 401, error: 'Sign in required' }
+  }
+
+  const { data: op } = await supabase
+    .from('operators').select('id, is_admin').eq('auth_user_id', userId).maybeSingle()
+
+  // Platform admin — the same bypass /api/native/my-trucks grants, kept consistent.
+  if (op?.is_admin) return { ok: true, role: 'owner', userId, operatorId: op.id, via: 'admin' }
+
+  // Owner of THIS truck. ⚠️ `truck.operator_id &&` matters: without it, two nulls compare equal and
+  // every unowned truck would hand ownership to any operator who asked.
+  if (op && truck.operator_id && op.id === truck.operator_id) {
+    return { ok: true, role: 'owner', userId, operatorId: op.id, via: 'owner' }
+  }
+
+  // Crew member on THIS truck. The role stored here is what the 24-action gate below reads.
+  const { data: truckUser } = await supabase
+    .from('truck_users').select('role').eq('auth_user_id', userId).eq('truck_id', truck.id).maybeSingle()
+  if (truckUser?.role) {
+    return { ok: true, role: truckUser.role as 'owner' | 'manager' | 'staff', userId, operatorId: op?.id ?? null, via: 'member' }
+  }
+
+  // 🔴 AUTHENTICATED, BUT NOT ON THIS TRUCK. A token is not a grant.
+  return { ok: false, status: 403, error: 'You do not have access to this truck' }
+}
 
 // ── Auth helper ───────────────────────────────────────────────
 async function getTruck(token: string) {
@@ -38,37 +162,15 @@ export async function GET(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
-  // Determine the calling user's role for this truck.
-  // Operator identity takes priority — if the calling user owns this truck,
-  // they are always 'owner' regardless of any truck_users crew entry.
-  let userRole: 'owner' | 'manager' | 'staff' = 'owner'
-  let currentUserId: string | null = null
+  // 🔴 DENY BY DEFAULT. Was: `let userRole = 'owner'` narrowed only on a resolved session, so no
+  // session meant owner. Now the role is GRANTED by resolveTruckAccess or the request is refused.
+  const access = await resolveTruckAccess(req, truck)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  const userRole = access.role
+  const currentUserId = access.userId
   // The AUTHED session operator (account scope) — used to scope account-level data (pending email
   // change) to the logged-in user, NOT the truck's operator_id (which can pool multiple trucks).
-  let currentOperatorId: string | null = null
-  try {
-    const supabaseAuth = await createSupabaseServerClient()
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (user) {
-      currentUserId = user.id
-      const { data: sessionOperator } = await supabase
-        .from('operators')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .maybeSingle()
-      currentOperatorId = sessionOperator?.id ?? null
-      const isOperator = !!(sessionOperator && truck.operator_id && sessionOperator.id === truck.operator_id)
-      if (!isOperator) {
-        const { data: truckUser } = await supabase
-          .from('truck_users')
-          .select('role')
-          .eq('auth_user_id', user.id)
-          .eq('truck_id', truck.id)
-          .single()
-        if (truckUser?.role) userRole = truckUser.role as 'owner' | 'manager' | 'staff'
-      }
-    }
-  } catch { /* if auth check fails, default to owner */ }
+  const currentOperatorId = access.operatorId
 
   const [
     { data: categories },
@@ -194,39 +296,21 @@ export async function POST(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
-  // ── Resolve requesting user's role and ID ────────────────
-  let requestingUserRole: 'owner' | 'manager' | 'staff' = 'owner'
-  let requestingUserId: string | null = null
-  try {
-    const supabaseAuth = await createSupabaseServerClient()
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (user) {
-      requestingUserId = user.id
-      const isOperator = truck.operator_id
-        ? (await supabase
-            .from('operators')
-            .select('id')
-            .eq('auth_user_id', user.id)
-            .eq('id', truck.operator_id)
-            .maybeSingle()
-          ).data !== null
-        : false
-      if (!isOperator) {
-        const { data: truckUser } = await supabase
-          .from('truck_users')
-          .select('role')
-          .eq('auth_user_id', user.id)
-          .eq('truck_id', truck.id)
-          .single()
-        if (truckUser?.role) requestingUserRole = truckUser.role as 'owner' | 'manager' | 'staff'
-      }
-    }
-  } catch {}
+  // ── 🔴 DENY BY DEFAULT. Was: `let requestingUserRole = 'owner'` narrowed only on a resolved
+  // session. Every write below — including the 24 staff-blocked actions — now runs behind a caller
+  // this route has actually established.
+  const access = await resolveTruckAccess(req, truck)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  const requestingUserRole = access.role
+  const requestingUserId = access.userId
 
   // ── Allergen-write gate (B) + audit identity (A) ─────────────────────────────────────
   // Allergen/dietary/card writes are owner/admin-only. Resolve operators.is_admin for the session user.
-  // KNOWN-WEAK: token-only access resolves to requestingUserRole='owner' (no session) → it passes this
-  // gate. That weakness is recorded HONESTLY via auth_method ('token' vs 'authenticated') on every log.
+  // ⛔ THE "KNOWN-WEAK" NOTE THAT STOOD HERE IS STRUCK — token-only access no longer resolves to
+  // 'owner'; resolveTruckAccess refuses it outright, so this gate is now reachable only by a caller
+  // this route established. ⚠️ `auth_method` IS KEPT AND IS STILL HONEST: it now reads 'token' only for
+  // the demo carve-out, which is the one path with no user id — so the audit trail continues to name
+  // exactly which rows were written without an authenticated person behind them.
   let requestingIsAdmin = false
   if (requestingUserId) {
     const { data: op } = await supabase.from('operators').select('is_admin').eq('auth_user_id', requestingUserId).maybeSingle()
@@ -246,9 +330,49 @@ export async function POST(req: NextRequest) {
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
     'set_item_modifier_group', 'set_item_modifier_groups_bulk', 'set_item_group_excluded_options', 'set_item_preorder_bulk',
     'upsert_upsell_rule', 'delete_upsell_rule',
+    // Website-embed Stage 2. Both put a truck's schedule on a public page or send mail on the
+    // truck's behalf; neither is a service-time action, so they sit with the other owner/manager
+    // writes. `get_embed_status` is a READ and is deliberately absent — see the wizard's own note.
+    'save_embed_setup',
+    // Custom domain (Stage 5). `domain_provision` attaches a domain to the hosting project — a side
+    // effect OUTSIDE this database — and `domain_send_instructions` sends mail on the truck's behalf.
+    // `domain_preflight` and `domain_status` are reads and are deliberately absent.
+    'domain_provision', 'domain_send_instructions', 'domain_confirm', 'domain_turn_off',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
     return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+  }
+
+  // ── 🔴 THE FOUR CUSTOM-DOMAIN ACTIONS REFUSE A DEMO IDENTITY. ───────────────────────────────────
+  // resolveTruckAccess short-circuits to `role: 'owner', userId: null` for any truck whose id starts
+  // `demo-`, and a demo truck's dashboard_token is minted by a PUBLIC endpoint and handed to an
+  // ANONYMOUS visitor (app/api/demo, 5/hour/IP). That carve-out is load-bearing — the whole demo
+  // depends on it — so it is NOT touched. Instead the four actions that must never run without a real
+  // person behind them opt OUT of it, HERE, keyed on the action name.
+  //
+  // 🔴 THE REFUSAL IS AT THE ACTION, NOT AT THE IDENTITY LAYER, AND THE DIFFERENCE IS THE WHOLE POINT.
+  // Narrowing resolveTruckAccess would change access for every one of the ~60 actions on this route and
+  // for GET as well — a live-surface decision. This list changes access for exactly four.
+  //
+  // ⚠️ WHY EACH ONE IS ON THE LIST, since "all four for symmetry" would be the wrong reason:
+  //   domain_preflight          — drives 3-5 outbound lookups on a caller-named host.
+  //   domain_provision          — attaches a domain to the hosting PROJECT: a side effect outside this
+  //                               database, and a demo plan passes the feature check.
+  //   domain_send_instructions  — sends mail to a caller-supplied address on a shared allowance.
+  //   domain_status / _confirm  — read and write only this truck's own row and are harmless on their
+  //                               own, but a demo identity has no business in this flow at all, and a
+  //                               partial list invites "why is that one different" later.
+  //
+  // ⚠️ DEFENCE IN DEPTH, NOT THE ONLY GUARD. app/dashboard/[token]/page.tsx:4485 already gates the
+  // setup card on `!isDemo`, so no demo dashboard renders it. This closes the API, which is what the
+  // audit found reachable.
+  // ⚠️ `via` is the ONLY correct test. `!requestingUserId` is true for the same callers today, but it
+  // describes a symptom; `via === 'demo'` names the branch that granted access.
+  const demoBlockedActions = [
+    'domain_preflight', 'domain_status', 'domain_provision', 'domain_confirm', 'domain_send_instructions', 'domain_turn_off',
+  ]
+  if (demoBlockedActions.includes(action) && access.via === 'demo') {
+    return NextResponse.json({ error: 'Not available on a demo truck' }, { status: 403 })
   }
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
@@ -784,7 +908,482 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
-  // ── SETTINGS ──────────────────────────────────────────────
+  // ── WEBSITE EMBED (Stage 2) ───────────────────────────────
+  //
+  // 🔴 THREE COLUMNS, NAMED LITERALLY, AND THE ONES DELIBERATELY ABSENT ARE THE POINT.
+  // This handler writes `website`, `embed_enabled` and NOTHING ELSE. It does NOT write
+  // `schedule_url`, `scraper_preference` or `scraper_rule`, does not read them as defaults, and
+  // does not accept them from the body — the update object is built from named locals, never
+  // spread from `body`, so a caller cannot smuggle a column in.
+  // ⚠️ WHY THAT MATTERS ENOUGH TO SAY TWICE: `trucks.schedule_url` DRIVES THE SCRAPER. Writing an
+  // operator's homepage there would silently re-point scraping on a live trading truck at a page
+  // that is not their schedule, and the first sign would be wrong events on a customer's map.
+  // The two fields even look interchangeable in the UI — both are "your website address" — which is
+  // exactly why the separation is enforced here rather than left to whoever edits the wizard next.
+  // ── 🔴 KEPT WITH NO UI (V11.49). THE WIZARD THAT CALLED THIS IS DELETED. ─────────────────────────
+  // It survives because `trucks.embed_enabled` is the gate on /api/embed/events, which is what feeds the
+  // CUSTOM-DOMAIN page — so this is the only supported way to turn that column OFF for a truck without
+  // hand-written SQL. Nothing in the product calls it today; it is an operational lever, not a feature.
+  // ⚠️ IF YOU DELETE IT, the only remaining writer is `domain_provision` (one-way, true), and switching a
+  // truck off means editing the database by hand on a table a live truck trades on.
+  if (action === 'save_embed_setup') {
+    // 🔴 THE PLAN GATE, SERVER-SIDE. The wizard also checks, but a UI check is a courtesy; this is
+    // the one a request cannot skip. Note that /embed itself checks AGAIN at render (Stage 1), so
+    // even a row that somehow held `embed_enabled = true` off-plan would still show the fallback.
+    if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return NextResponse.json({ error: 'Not available on this plan' }, { status: 403 })
+    }
+
+    const enabled = body.enabled === true
+    const patch: { embed_enabled: boolean; website?: string } = { embed_enabled: enabled }
+
+    // ⛔ THE `plan_answer` BRANCH IS GONE (V11.49). Its only source was the plan-requirement screen in
+    // the removed wizard, so nothing could send it. 🔴 `trucks.embed_plan_answer` IS NOT DROPPED — the
+    // column keeps whatever it already held. This stops writing it; it does not erase it.
+
+    // The operator's website address. Only written when they actually typed something that reads as
+    // an address — `normaliseUrl` returns null rather than guessing, and a null here means "leave
+    // whatever is already on the row alone", never "clear it".
+    if (typeof body.website === 'string' && body.website.trim()) {
+      const url = normaliseUrl(body.website)
+      if (!url) {
+        return NextResponse.json({ error: 'That does not look like a web address' }, { status: 400 })
+      }
+      patch.website = url
+    }
+
+    const { error } = await supabase.from('trucks').update(patch).eq('id', truck.id)
+    if (error) {
+      console.error('[save_embed_setup] update failed:', error.message)
+      return NextResponse.json({ error: 'Could not save' }, { status: 500 })
+    }
+    return NextResponse.json({
+      success: true,
+      embed_enabled: enabled,
+      website: patch.website ?? truck.website ?? null,
+    })
+  }
+
+  // Read-only. Polled by the wizard's verification step, so it is deliberately cheap and returns
+  // only what that step renders. NOT in staffBlockedActions: it writes nothing, and a staff member
+  // who somehow reached it learns whether a public page they can already visit has been loaded.
+  // ── 🔴 KEPT WITH NO UI (V11.49), and it is the diagnostic for the silent failure above. ──────────
+  // `embed_enabled` decides whether a custom domain shows any events at all, and NOTHING ON THE
+  // CUSTOM-DOMAIN PAGE READS OR REPORTS IT — app/domain/page.tsx neither selects nor checks the column.
+  // This is the one endpoint that will answer "is that truck's schedule actually going to appear".
+  if (action === 'get_embed_status') {
+    return NextResponse.json({
+      embed_enabled: truck.embed_enabled === true,
+      website: truck.website ?? null,
+      // ⛔ `last_seen_at`, `last_referer` and `plan_answer` REMOVED FROM THIS RESPONSE (V11.49).
+      // The load stamp was written by the public iframe route, which is deleted, so those two columns
+      // can only ever go staler — returning them would be a claim nothing keeps true. `plan_answer`'s
+      // writer is gone for the same reason. 🔴 ALL THREE COLUMNS REMAIN ON THE TABLE, UNDROPPED.
+      can_embed: canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at),
+    })
+  }
+
+  if (action === 'domain_preflight') {
+    // ── 🔴 THE ONLY ACTION HERE WHOSE OUTBOUND FAN-OUT IS DRIVEN BY CALLER INPUT. ──────────────────
+    // Below, one request becomes a CAA lookup and an NS lookup (each falling through Cloudflare to
+    // Google on failure) plus one authenticated GET to api.vercel.com — three to five outbound
+    // requests, on a host the caller names. Ten per ten minutes per truck; sizing in lib/ratelimit.ts.
+    // ⚠️ SCOPED TO THIS BRANCH. It is checked here rather than in proxy.ts precisely so that no other
+    // action on /api/manage — and no other route — shares this bucket. See the bucket's own note.
+    // ⚠️ LIMITER UNREACHABLE → FAIL OPEN, following the convention this repo already sets in FOUR
+    // places: app/api/demo/route.ts, app/api/demo/build-request/route.ts, app/api/signup/route.ts and
+    // app/api/manage/whatsapp-preview/route.ts. Every one of them justifies the direction by naming a
+    // control that STILL APPLIES when Redis is down, and that test is what decides it here too:
+    // this branch reaches NO third party and spends NO shared allowance — it makes outbound lookups on
+    // our own infrastructure — and a caller must still be an authenticated operator with a role on this
+    // truck, with demo identities refused outright above. The blast radius is bounded to real operators.
+    // 🔴 THE SEND BRANCH BELOW TAKES THE OPPOSITE DIRECTION, DELIBERATELY. The same test gives the
+    // opposite answer there, because that one does reach a third party's inbox on a shared cap.
+    try {
+      const pre = await domainPreflightRatelimit.limit(`preflight:${truck.id}`)
+      if (!pre.success) {
+        console.warn(`[ratelimit] REFUSED limiter=domain-preflight key=preflight:${truck.id} — returning 429`)
+        return NextResponse.json({ error: 'Too many checks just now. Try again in a few minutes.' }, { status: 429 })
+      }
+    } catch (err) {
+      console.error('[domain_preflight] rate-limit check failed, allowing through:', err)
+    }
+    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '')
+    if (!verdict.ok) {
+      // 🔴 THE APEX GUARD, SERVER-SIDE. The screen checks too, but a UI check is a courtesy.
+      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message })
+    }
+
+    // 🔴 BOTH LOOKUPS TARGET THE PARENT, NEVER THE NEW SUBDOMAIN — see lib/custom-domain/dns.ts for
+    // why asking about a name that does not exist yet poisons every later answer.
+    // ⚠️ CONCURRENT, so the screen waits for the slower of the two rather than their sum.
+    const [caa, dns] = await Promise.all([checkCaa(verdict.host), detectDnsProvider(verdict.host)])
+
+    // (c) Already on another hosting project. ⚠️ THIS IS A SIGNAL, NOT A PROOF, AND IT IS LABELLED AS
+    // ONE. A read-only config lookup can say the name already resolves to the host; only the add call
+    // returns the definitive 409, and that has a side effect so it is not run here.
+    let alreadyElsewhere: boolean | null = null
+    try {
+      const cfg = await getDomainConfig(verdict.host)
+      alreadyElsewhere = cfg.ok ? cfg.configuredBy !== null : null
+    } catch { alreadyElsewhere = null }
+
+    return NextResponse.json({
+      ok: true,
+      address: verdict.host,
+      caa: { state: caa.state, issuers: caa.issuers, queried: caa.queried },
+      provider: dns.provider,
+      nameservers: dns.nameservers,
+      queried: dns.queried,
+      already_elsewhere: alreadyElsewhere,
+    })
+  }
+
+  /** Resume. An operator who closed the tab returns to where they were, not to the start. */
+  if (action === 'domain_status') {
+    const address = truck.custom_domain ?? null
+    let target: string | null = null
+    if (address) {
+      const cfg = await getDomainConfig(address)
+      target = cfg.ok ? cfg.recommendedCNAME : null
+    }
+    return NextResponse.json({
+      address,
+      state: truck.custom_domain_setup_state ?? null,
+      started_at: truck.custom_domain_setup_started_at ?? null,
+      verified_at: truck.custom_domain_verified_at ?? null,
+      // 🔴 RE-READ FROM THE API ON RESUME, never stored. The value is a property of the project and
+      // the domain, not a fact about this truck, and a copy in our database would be a hardcoded
+      // target with extra steps.
+      cname_target: target,
+      // Stage 6 — what the daily check last saw. Derived state for the banner and the confirm step;
+      // nothing here is stored a second time.
+      last_checked_at: truck.custom_domain_last_checked_at ?? null,
+      last_ok_at: truck.custom_domain_last_ok_at ?? null,
+      last_seen_value: truck.custom_domain_last_seen_value ?? null,
+      confirmed_at: truck.custom_domain_confirmed_at ?? null,
+      suggestion: suggestFromWebsite(truck.website ?? null),
+    })
+  }
+
+  if (action === 'domain_provision') {
+    if (!canAccess(truck.plan, 'embed_schedule', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return NextResponse.json({ error: 'Not available on this plan' }, { status: 403 })
+    }
+    // 🔴 THE GUARD RUNS AGAIN HERE, BEFORE THE HOSTING CALL. Not because the screen is untrusted, but
+    // because this is the last line before a side effect that takes over a website if it is wrong.
+    const verdict = checkSubdomain(typeof body.address === 'string' ? body.address : '')
+    if (!verdict.ok) {
+      return NextResponse.json({ ok: false, reason: verdict.reason, message: verdict.message }, { status: 400 })
+    }
+
+    // ── 🔴 `www` IS REFUSED HERE, AND NEITHER APEX GUARD COVERS IT. ────────────────────────────────
+    // `www.theirdomain.com` is a PERFECTLY VALID SUBDOMAIN. The suffix-list guard above parses it as
+    // subdomain "www" of "theirdomain.com" and passes it; the SOA guard below finds no SOA at that name
+    // and passes it too. Both are working correctly — www simply is not the thing either one looks for.
+    //
+    // 🔴 BUT FOR MOST OPERATORS IT IS THE ADDRESS THEIR EXISTING WEBSITE ANSWERS ON, so pointing it at
+    // us replaces their homepage with this schedule page. That is the SAME HARM as an apex, arriving
+    // through a door neither guard watches — which is exactly why it needs its own line rather than a
+    // widening of one of theirs.
+    //
+    // ⚠️ THE CLIENT ALREADY REFUSES IT AND THAT IS NOT ENOUGH. A UI check is a courtesy; this is the
+    // last line before a side effect that takes over a website. The client can be bypassed by anything
+    // that can POST — which, on this route, is any authenticated operator with a role on this truck.
+    //
+    // ⚠️ THE FIRST LABEL, NOT THE WHOLE SUBDOMAIN. `checkSubdomain` has already lower-cased the host, so
+    // case is handled. Testing the leading label catches `www.theirdomain.com` and also
+    // `www.shop.theirdomain.com`; it deliberately does NOT refuse `shop.www-cafe.com`, where "www" is
+    // part of a name rather than the conventional web prefix.
+    // ── 🔴 A SECOND `www` CASE, ADDED 28 AUGUST 2026, AND IT IS NOT THE TAKEOVER ONE. ─────────────
+    // The test below catches the DANGEROUS case — the submitted host IS `www.theirdomain.com`, so
+    // pointing it at us replaces their homepage. That case is unchanged and still refused.
+    // ⚠️ WHAT THIS ADDS IS NOT DANGEROUS, IT IS NONSENSE. With the word in front fixed to `events`, a
+    // caller can submit `events.www.theirdomain.com`, whose FIRST label is `events` — so the test below
+    // never fires, and we would register a doubled-up name. It does not replace anything: their homepage
+    // is `www.theirdomain.com` and this is a different name entirely. It is refused because it is a name
+    // nobody meant to ask for, not because it is a hazard.
+    // ⚠️ THE INTERFACE CAN NO LONGER PRODUCE IT — the field normalises `www.theirdomain.com` down to the
+    // registrable domain before it builds the address. This is the same class as the apex guards: the
+    // last line before a side effect, defending a path a screen no longer reaches.
+    // 🔴 `shop.www-cafe.com` IS STILL ALLOWED. The test is on whole LABELS, so "www" as part of a name
+    // is untouched — the same distinction the first-label test was written to preserve.
+    if ((verdict.subdomain ?? '').split('.').includes('www') && (verdict.subdomain ?? '').split('.')[0] !== 'www') {
+      return NextResponse.json({
+        ok: false, reason: 'www_inner',
+        message: `That address has www in the middle of it. Take the www. off the front of your web address and try again.`,
+      }, { status: 400 })
+    }
+
+    if ((verdict.subdomain ?? '').split('.')[0] === 'www') {
+      return NextResponse.json({
+        ok: false, reason: 'www',
+        message: `${verdict.host} is usually where your existing website already lives. If you point that at us, your website is replaced by this page. Use a different word in front, like events.`,
+      }, { status: 400 })
+    }
+
+    // 🔴 THE SECOND GUARD, AND IT SHARES NO DATA WITH THE FIRST. The list guard above is permissive by
+    // construction — a suffix registered after the bundled snapshot means an apex under it parses as a
+    // subdomain and passes. This one asks the zone: an apex has an SOA at its own name. BOTH must pass.
+    // ⚠️ FAILS OPEN on a resolver error ('unknown'), because the list guard is primary and has cleared it.
+    const soa = await checkApexViaSoa(verdict.host)
+    if (soa.state === 'apex') {
+      return NextResponse.json({
+        ok: false, reason: 'apex',
+        message: `${verdict.host} is your whole website address. If you point that at us, your website is replaced by this page. Put a word in front of it instead.`,
+      }, { status: 400 })
+    }
+
+    const added = await addDomain(verdict.host)
+    if (!added.ok) {
+      // ⚠️ NOTHING IS WRITTEN ON FAILURE. A truck that could not register keeps whatever state it had,
+      // so a retry is a retry and not a resume into a state that never happened.
+      //
+      // ── 🔴 THE HOSTING LAYER'S OWN MESSAGE NEVER REACHES THE OPERATOR. ──────────────────────────
+      // It used to be forwarded verbatim, and two of its values are the names of environment variables:
+      // `VERCEL_PROJECT_ID is not set` (reason 'not_configured') and `VERCEL_API_TOKEN is not set`
+      // (thrown inside call(), caught, and returned as reason 'error'). Both rendered straight onto an
+      // operator's screen, in red, under "Setting up…".
+      // 🔴 SO THE BRANCH IS ON `reason`, AND THE MESSAGE IS OURS. Branching on the reason is what makes
+      // this safe by construction rather than by spotting each bad string: every value comes from the
+      // map below, so nothing internal can leak through this return no matter what the hosting API or a
+      // thrown error puts in `message`. Do not go back to forwarding `added.message`.
+      // ⚠️ THE RAW STRING IS KEPT — in the SERVER LOG, with the reason and the status beside it, which is
+      // where whoever has to fix it will look. Nothing diagnostic is lost; it just stops being copy.
+      console.error('[domain_provision] addDomain failed:', added.reason, added.status, added.message)
+      return NextResponse.json({ ok: false, reason: added.reason, message: PROVISION_FAILED[added.reason] }, { status: 200 })
+    }
+
+    // The record VALUE, from the response — never a constant. See lib/custom-domain/vercel.ts.
+    const cfg = await getDomainConfig(verdict.host)
+    const target = cfg.ok ? cfg.recommendedCNAME : null
+
+    const patch = {
+      custom_domain: verdict.host,
+      // ── 🔴 THIS LINE IS WHY THE CUSTOM DOMAIN HAS ANY CONTENT AT ALL. DO NOT REMOVE IT. ──────────
+      // The custom-domain page renders <EmbedSchedule>, which fetches /api/embed/events, which returns
+      // an EMPTY LIST unless `trucks.embed_enabled` is true (that route's own guard). `embed_enabled` is
+      // NOT NULL DEFAULT false, and after the iframe wizard was removed (V11.49) THIS IS THE ONLY PLACE
+      // IN THE CODEBASE THAT SETS IT TRUE.
+      // 🔴 WITHOUT IT THE FAILURE IS SILENT AND LOOKS FINE: the page returns 200 and renders the truck's
+      // name, logo and "Powered by" — with no events, for ever. Nothing errors, nothing logs, and a test
+      // asserting "the page renders" passes while the feature is dead. Assert the EVENTS, never the render.
+      // ⚠️ Set at PROVISION rather than at verification, deliberately: provisioning is the one step that
+      // always happens and happens once, so the column cannot be left false by an operator who completes
+      // setup and never returns. It grants no iframe surface — that route no longer exists.
+      embed_enabled: true,
+      // 🔴 'registered' RECORDS A SIDE EFFECT OUTSIDE THIS DATABASE. If the operator walks away now,
+      // this row is the only trace that a domain is attached to the hosting project with no DNS
+      // pointing at it. Without it that orphan is invisible until someone reads the dashboard by hand.
+      custom_domain_setup_state: target ? 'awaiting_dns' : 'registered',
+      custom_domain_setup_started_at: truck.custom_domain_setup_started_at ?? new Date().toISOString(),
+    }
+    const { error } = await supabase.from('trucks').update(patch).eq('id', truck.id)
+    if (error) {
+      console.error('[domain_provision] update failed:', error.message)
+      return NextResponse.json({ ok: false, reason: 'error', message: 'Could not save' }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      ok: true,
+      address: verdict.host,
+      subdomain_label: verdict.subdomain,
+      cname_target: target,
+      verification: added.verification,
+      state: patch.custom_domain_setup_state,
+    })
+  }
+
+  /**
+   * The operator's acknowledgement. ONE column, and it gates nothing — a truck that never confirms
+   * keeps a fully working page. It exists so the admin table can tell "live, and a person looked" from
+   * "live as far as a machine can tell", which are different claims.
+   */
+  if (action === 'domain_confirm') {
+    if (!truck.custom_domain || !truck.custom_domain_verified_at) {
+      return NextResponse.json({ error: 'There is nothing to confirm yet' }, { status: 400 })
+    }
+    const { error } = await supabase.from('trucks')
+      .update({ custom_domain_confirmed_at: new Date().toISOString() }).eq('id', truck.id)
+    if (error) {
+      console.error('[domain_confirm] update failed:', error.message)
+      return NextResponse.json({ error: 'Could not save' }, { status: 500 })
+    }
+    return NextResponse.json({ success: true })
+  }
+
+  /**
+   * ── 🔴 TURNING IT OFF. RELEASE FIRST, CLEAR ONLY ON SUCCESS. ────────────────────────────────────
+   *
+   * 🔴 THE ORDER IS THE WHOLE DESIGN, AND IT IS THE ORPHAN SWEEP'S LESSON APPLIED A SECOND TIME.
+   * `app/api/cron/custom-domain-check/route.ts` records why, and the same three outcomes hold here:
+   *   release → clear, release FAILS  → the row survives, the operator retries. RECOVERABLE.
+   *   release → clear, the CLEAR fails → detached at the hosting side but our row still names it; the
+   *                                      operator retries, gets `gone`, and it converges. RECOVERABLE.
+   *   clear → release, release FAILS  → attached at the hosting side with NO row anywhere. The
+   *                                      operator's web person hits "already assigned to another
+   *                                      project" weeks later and nothing explains why. UNRECOVERABLE.
+   * ⚠️ `releaseDomain` treats a 404 as released, which is what makes the retry converge, and treats
+   * missing credentials as a FAILURE — so a misconfigured environment cannot clear the row while the
+   * domain stays attached.
+   *
+   * ⚠️ NO PLAN GATE, DELIBERATELY. Every other domain action is gated on `embed_schedule`; this one is
+   * not, because an operator whose plan has lapsed must still be able to switch off a page that is
+   * still serving. Gating removal behind the plan that pays for it is how a truck ends up unable to
+   * stop something they no longer want.
+   *
+   * ⚠️ `embed_enabled` IS DELIBERATELY LEFT TRUE. It is what makes /api/embed/events return anything,
+   * and its only reader is the custom-domain page — which now 404s, because the host resolves to no
+   * truck. Clearing it would buy nothing and would have to be un-cleared on the next setup.
+   */
+  if (action === 'domain_turn_off') {
+    const host = truck.custom_domain
+    // Idempotent: nothing attached is the state this action exists to reach.
+    if (!host) return NextResponse.json({ ok: true, alreadyOff: true })
+
+    const release = await releaseDomain(host)
+    if (!release.ok) {
+      // 🔴 NOTHING IS WRITTEN. The row still names the domain, so a retry is a retry.
+      console.error(`[domain_turn_off] release failed for ${host}: ${release.reason} — row kept`)
+      return NextResponse.json({
+        ok: false, reason: release.reason,
+        message: 'We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly.',
+      }, { status: 200 })
+    }
+
+    const { error } = await supabase.from('trucks').update({
+      custom_domain: null,
+      custom_domain_verified_at: null,
+      custom_domain_confirmed_at: null,
+      custom_domain_setup_state: null,
+      custom_domain_setup_started_at: null,
+      custom_domain_last_checked_at: null,
+      custom_domain_last_ok_at: null,
+      custom_domain_last_seen_value: null,
+    }).eq('id', truck.id)
+    if (error) {
+      console.error('[domain_turn_off] update failed after a successful release:', error.message)
+      return NextResponse.json({
+        ok: false, reason: 'clear_failed',
+        message: 'We could not switch that off just now. Nothing has changed — your address is still working. Try again shortly.',
+      }, { status: 500 })
+    }
+    return NextResponse.json({ ok: true, released: release.reason })
+  }
+
+  if (action === 'domain_send_instructions') {
+    const to = typeof body.to === 'string' ? body.to.trim() : ''
+    if (!to || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
+      return NextResponse.json({ error: 'That does not look like an email address' }, { status: 400 })
+    }
+    const address = truck.custom_domain
+    if (!address) return NextResponse.json({ error: 'No address has been set up yet' }, { status: 400 })
+
+    // ── 🔴 THREE PER TRUCK PER ROLLING 24 HOURS. ───────────────────────────────────────────────────
+    // The recipient stays CALLER-SUPPLIED because that is the requirement — the operator is emailing
+    // their web person, an address we do not hold and could not look up. So the constraint is on the
+    // VOLUME, not on the value. Sizing and the comparison with signupEmailRatelimit: lib/ratelimit.ts.
+    // ⚠️ CHECKED BEFORE THE TWO OUTBOUND LOOKUPS BELOW, not just before the send, so a refused caller
+    // costs us nothing at all rather than costing us the DNS and Vercel calls.
+    // 🔴 LIMITER UNREACHABLE → FAIL CLOSED. A DELIBERATE EXCEPTION TO THIS REPO'S CONVENTION, and the
+    // exception is argued rather than assumed. The four existing fail-open sites each justify their
+    // direction by naming a control that survives the outage; apply that same test here and it gives the
+    // opposite answer. This branch reaches A THIRD PARTY'S INBOX, from our domain, on a SHARED Brevo
+    // allowance whose first casualty when exhausted is order confirmations for live trucks. An unmetered
+    // path to someone else's inbox is the exact thing this bucket was added for, so losing the meter
+    // must close the path, not open it.
+    // ⚠️ 503, not 429: nothing was counted, so "too many requests" would be a lie about why.
+    // 🔴 AND THE REFUSAL CARRIES A WAY THROUGH, which is what stops it being a dead end. The record
+    // details are on screen with per-row Copy buttons (CustomDomainSetup.tsx:278), so an operator in a
+    // hurry sends the same information themselves from their own address and loses nothing but our
+    // formatting.
+    let sendLimit: { success: boolean }
+    try {
+      sendLimit = await domainInstructionsRatelimit.limit(`instructions:${truck.id}`)
+    } catch (err) {
+      console.error(`[ratelimit] UNAVAILABLE limiter=domain-instructions key=instructions:${truck.id} — refusing (fail closed):`, err)
+      // 🔴 RECORDED WHERE ABUSE IS READ, NOT ONLY IN A LOG LINE. A limiter outage and a limiter refusal
+      // are the two reasons a send does not happen, and inferring the first from an ABSENCE of rows is
+      // exactly the reading nobody does. Distinct action name so flapping Redis is countable next to the
+      // sends themselves rather than mistaken for quiet.
+      await logAction(supabase, {
+        action: 'domain_send_instructions_limiter_unavailable',
+        truckId: truck.id,
+        afterState: { address, recipient_hash: pseudonymiseEmail(to), outcome: 'refused_fail_closed' },
+        actor: { actorKind: requestingUserRole === 'owner' ? 'owner' : 'staff', actorId: requestingUserId, actorLabel: null },
+        source: resolveActorSource(req, body),
+      })
+      return NextResponse.json({
+        error: 'We could not send that just now. Try again shortly — or copy the details on this screen and email them across yourself, which works just as well.',
+      }, { status: 503 })
+    }
+    if (!sendLimit.success) {
+      console.warn(`[ratelimit] REFUSED limiter=domain-instructions key=instructions:${truck.id} — returning 429`)
+      return NextResponse.json({
+        error: 'You have sent these instructions a few times today already. Try again tomorrow, or forward the email you already have.',
+      }, { status: 429 })
+    }
+
+    const cfg = await getDomainConfig(address)
+    const target = cfg.ok ? cfg.recommendedCNAME : null
+    if (!target) return NextResponse.json({ error: 'Could not read the record just now' }, { status: 502 })
+
+    const dns = await detectDnsProvider(address)
+    const verdict = checkSubdomain(address)
+    const mail = domainInstructionsEmail({
+      truckName: truck.name,
+      address,
+      providerLabel: dns.provider?.label ?? null,
+      rows: recordRows({
+        provider: dns.provider,
+        subdomainLabel: verdict.ok ? verdict.subdomain : address,
+        cnameTarget: target,
+      }),
+      // 🔴 THE SAME RECORD THE SCREEN RENDERS, AND THE ONLY PLACE THIS EMAIL LEARNS ANY STEPS.
+      // `undefined` for a provider with no verified steps, which sends the email exactly as before.
+      steps: dns.provider?.steps ?? null,
+      operatorEmail: truck.contact_email ?? null,
+    })
+    try {
+      // The existing Brevo path, and the sender is the TRUCK — see the embed wizard's note.
+      await sendConfirmationEmail({ to, subject: mail.subject, html: mail.html, text: mail.text, senderName: truck.name })
+    } catch (e) {
+      console.error('[domain_send_instructions] send failed:', e instanceof Error ? e.message : String(e))
+      return NextResponse.json({ error: 'Could not send' }, { status: 502 })
+    }
+
+    // ── 🔴 THE ADDRESS IS RECORDED, SO ABUSE IS VISIBLE AFTER THE FACT. ───────────────────────────
+    // A rate limit caps the volume; it does not say WHERE the mail went. Without this, "why did this
+    // inbox get our mail" has no answer and a limiter tuned wrong leaves no trace of what it allowed.
+    // The existing append-only action_audit_log is the right home: free-text `action` by design, no
+    // foreign keys, and it already carries the actor. NO MIGRATION IS NEEDED — the table is applied.
+    //
+    // 🔴 THE RECIPIENT IS PSEUDONYMISED, NOT STORED. An earlier pass wrote the raw address here and that
+    // was wrong: it extended this module's stated no-identifiers rule and broke its verified-clean claim,
+    // for a person who is not a user of this platform — the operator's web person — in a table that
+    // NOTHING SWEEPS and that the anonymisation pass cannot reach inside.
+    // ⚠️ CLUSTERING IS THE REQUIREMENT, READABILITY IS NOT. A keyed, normalised pseudonym still shows
+    // forty sends to ONE inbox as forty rows sharing one value, which is the whole signal. Brevo holds
+    // the address itself, and at three sends per truck per day that trail is short.
+    // See lib/audit/pseudonymise.ts for why it is HMAC rather than a bare digest.
+    //
+    // ⚠️ BEST-EFFORT, AFTER the send. The mail has already left; failing the response now would tell
+    // the operator it did not send when it did. `logAction` swallows and logs, which is the right
+    // direction here (contrast logActionOrThrow, for actions that DESTROY evidence).
+    await logAction(supabase, {
+      action: 'domain_send_instructions',
+      truckId: truck.id,
+      afterState: { address, recipient_hash: pseudonymiseEmail(to), provider: dns.provider?.id ?? null },
+      actor: {
+        actorKind: requestingUserRole === 'owner' ? 'owner' : 'staff',
+        actorId: requestingUserId,
+        actorLabel: null,
+      },
+      source: resolveActorSource(req, body),
+    })
+    return NextResponse.json({ success: true })
+  }
+
   if (action === 'update_settings') {
     // ALLOWLIST the writable columns (mirrors update_truck below) so ONE unknown / schema-drifted
     // field can never poison the whole multi-field UPDATE. (The trucks.website incident: `website`

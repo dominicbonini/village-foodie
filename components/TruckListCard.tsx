@@ -26,6 +26,51 @@ interface TruckListCardProps {
   /** Optional node pinned to the card's top-right corner (e.g. a "Change event" link). Default
    *  undefined → nothing rendered. Only used with `compact` on the order page. */
   cornerAction?: ReactNode;
+  /** ── HATCHGRAB SEMANTICS WITHOUT ASKING THE BROWSER WHAT HOST IT IS ON (V1, /embed) ──────────
+   *  Set ONLY by /embed/<slug>, which is a HatchGrab surface served INSIDE AN IFRAME ON THE
+   *  OPERATOR'S OWN DOMAIN. It cannot use the host test the other call sites use: `isHatchGrab()`
+   *  reads `window.location.hostname` and returns FALSE during server render (lib/domain.ts:2), so
+   *  the first painted frame would take the Village Foodie branch and consult `orderLinkVf` — which
+   *  defaults to false — and the Order button would flicker in rather than render.
+   *  🔴 DEFAULT FALSE, AND THE `||` SHORT-CIRCUIT IS WHY THIS IS SAFE. When it is false the guard
+   *  below evaluates `isHatchGrab()` exactly as it always did; when it is true, `isHatchGrab()` is
+   *  never called at all. The three existing call sites pass nothing → byte-identical behaviour.
+   *  ⚠️ This chooses WHICH FLAG IS CONSULTED. It does not bypass one: `orderLinkHg` (i.e.
+   *  `trucks.order_link_hg`) must still be true, exactly as on hatchgrab.com. */
+  assumeHatchGrab?: boolean;
+  /** ── ORDERING MUST NOT HAPPEN INSIDE SOMEBODY ELSE'S IFRAME (V1b, /embed) ────────────────────
+   *  Set ONLY by /embed/<slug>. The CTA's href is RELATIVE, so in a frame it resolves against our
+   *  origin and loads the whole ordering flow INSIDE the operator's widget-sized box — card entry
+   *  included, since the order page mounts Stripe's own iframe inside it. `_blank` puts checkout in
+   *  the TOP-LEVEL context on hatchgrab.com, where the address bar shows our domain and our padlock.
+   *  🔴 `rel="noopener noreferrer"` TRAVELS WITH IT, ALWAYS. A `_blank` link without `noopener` hands
+   *  the opened page a live `window.opener` handle on the frame that opened it; `noreferrer` also
+   *  stops the operator's page URL leaking to us as a Referer. They are one decision, not two.
+   *  ⚠️ DEFAULT FALSE, and when false BOTH attributes are `undefined`, which React omits entirely —
+   *  so the existing call sites emit the exact same `<a>` they always have. */
+  openOrderInNewTab?: boolean;
+  /** ── THE VENUE NAME IS A LINK OUT OF THE EMBED, AND IT LANDS ON VILLAGE FOODIE (V1b) ─────────
+   *  Set ONLY by /embed/<slug>. The name normally links to `/venues/<slug>` — a full Village Foodie
+   *  surface, logo and footer and newsletter and all. Relative again, so inside a frame it replaces
+   *  the embed with VF chrome on the operator's own homepage. That is the chrome problem one hop
+   *  past the one the inventory checked, which only ever looked at what RENDERS.
+   *  🔴 PLAIN TEXT, NOT A DISABLED LINK. There is no destination worth offering here: the operator
+   *  put this widget on their site to show their schedule, not to route their customers to our
+   *  directory. Removing the anchor also removes the pointer cursor and the hover colour, so it stops
+   *  LOOKING clickable — a link that looks live and goes nowhere is worse than plain text.
+   *  ⚠️ DEFAULT FALSE → the `<Link>`, its href, its title and its classes are untouched elsewhere. */
+  plainVenueName?: boolean;
+  /** ── THE CTA'S ORIGIN, WHERE THE PAGE IS NOT ON OUR DOMAIN (V4, custom domain) ────────────────
+   *  Set ONLY by the custom-domain schedule page. The href below is RELATIVE, which is correct on
+   *  every one of our own surfaces and **wrong the moment the page is served from an operator's own
+   *  address**: it would resolve to `schedule.theirtruck.co.uk/trucks/<slug>/order`, putting our
+   *  ordering flow — and the payment provider's own frame inside it — on a domain we do not control
+   *  and whose certificate we do not own.
+   *  🔴 DEFAULT `undefined`, AND THE TEMPLATE IS UNCHANGED WHEN IT IS. `${orderOrigin ?? ''}` prefixes
+   *  nothing, so the four call sites that pass no origin emit the byte-identical relative href they
+   *  always have. Proven by running the committed component against this one over the same matrix.
+   *  ⚠️ It carries an ORIGIN, never a path — `https://www.hatchgrab.com`, no trailing slash. */
+  orderOrigin?: string;
 }
 
 const renderTextWithLinks = (text: string) => {
@@ -64,13 +109,32 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton, forceOrderButton, compact, cornerAction, assumeHatchGrab = false, openOrderInNewTab = false, plainVenueName = false, orderOrigin }: TruckListCardProps) {
   const liveNow = isEventLive(event.status);
   // Secondary "area" line under the venue name: village (only if not already in the name) + the
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
   // shows the area alone with NO trailing separator, and both-null → '' → line 2 not rendered.
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   const areaLine = [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
+
+  // Lifted out of the markup so the linked and the plain rendering below cannot drift apart — the two
+  // differ ONLY in their wrapper element. `group-hover:text-orange-600` stays on the h3 in both: with
+  // no `group` ancestor it simply never matches, and keeping it makes the two branches diffable.
+  const venueLines = (
+    <>
+      {/* Line 1: venue NAME (primary). Compact uses line-clamp-1 (single tight row);
+          default uses line-clamp-2. */}
+      <h3 className={`text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight group-hover:text-orange-600 transition-colors ${compact ? 'line-clamp-1' : 'line-clamp-2'}`}>
+        {event.venueName}
+      </h3>
+      {/* Line 2: area · postcode (SMALLER + MUTED, de-emphasised). Hidden when empty. */}
+      {areaLine && (
+        <p className="text-slate-400 text-[11px] sm:text-xs font-medium leading-tight mt-0.5 truncate">
+          {areaLine}
+        </p>
+      )}
+    </>
+  );
 
   return (
     <div className={`bg-white rounded-xl shadow-sm border border-slate-200 hover:border-orange-200 transition-colors ${compact ? 'relative px-3 py-2 mb-2' : 'p-3.5 sm:p-4 mb-3'}`}>
@@ -105,23 +169,18 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
 
                 {/* VENUE NAME AND VILLAGE */}
                 <div className="flex-1 min-w-0">
-                    <Link
-                        href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-                        className="group block min-w-0 cursor-pointer"
-                        title={`View venue details for ${event.venueName}`}
-                    >
-                        {/* Line 1: venue NAME (primary). Compact uses line-clamp-1 (single tight row);
-                            default uses line-clamp-2. */}
-                        <h3 className={`text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight group-hover:text-orange-600 transition-colors ${compact ? 'line-clamp-1' : 'line-clamp-2'}`}>
-                            {event.venueName}
-                        </h3>
-                        {/* Line 2: area · postcode (SMALLER + MUTED, de-emphasised). Hidden when empty. */}
-                        {areaLine && (
-                            <p className="text-slate-400 text-[11px] sm:text-xs font-medium leading-tight mt-0.5 truncate">
-                                {areaLine}
-                            </p>
-                        )}
-                    </Link>
+                    {plainVenueName ? (
+                        // No anchor, no href, no title, no cursor-pointer — see plainVenueName above.
+                        <div className="block min-w-0">{venueLines}</div>
+                    ) : (
+                        <Link
+                            href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                            className="group block min-w-0 cursor-pointer"
+                            title={`View venue details for ${event.venueName}`}
+                        >
+                            {venueLines}
+                        </Link>
+                    )}
                 </div>
 
                 {/* ORDER BUTTON — compact, right-aligned, intrinsic width (does NOT stretch full-width).
@@ -130,9 +189,13 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                     Foodie → event.orderLinkVf (default false, so no VF order link until a truck is graduated
                     post-trial). forceOrderButton bypasses the host gate (order-page chooser). Deep-links the
                     order FORM scoped to this exact event; unconfirmed events never reach here. */}
-                {!hideOrderButton && (forceOrderButton || (isHatchGrab() ? event.orderLinkHg : event.orderLinkVf)) && event.source === 'operator' && (
+                {!hideOrderButton && (forceOrderButton || ((assumeHatchGrab || isHatchGrab()) ? event.orderLinkHg : event.orderLinkVf)) && event.source === 'operator' && (
                     <a
-                        href={`/trucks/${slug}/order?event_id=${event.id}`}
+                        href={`${orderOrigin ?? ''}/trucks/${slug}/order?event_id=${event.id}`}
+                        // `undefined` when the prop is off, and React omits an undefined attribute
+                        // entirely — so the three existing call sites emit an unchanged <a>.
+                        target={openOrderInNewTab ? '_blank' : undefined}
+                        rel={openOrderInNewTab ? 'noopener noreferrer' : undefined}
                         // Equal-width (min-w + justify-center) so the card layout doesn't shift between
                         // the Pre-order and Order now states. Text flips on live (status==='open').
                         //

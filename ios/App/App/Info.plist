@@ -42,6 +42,8 @@
 	<string>Unlock HatchGrab with Face ID.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>HatchGrab uses Bluetooth to connect to your kitchen receipt printer so order tickets can be printed automatically. It is not used for anything else.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HatchGrab uses the camera so you can photograph your menu board, your dishes and other documents and upload them straight into your account. Images are used only for the uploads you choose to make.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

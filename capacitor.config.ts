@@ -1,4 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli'
+// ⚠️ RELATIVE PATH, NOT THE `@/…` ALIAS. This file is loaded by @capacitor/cli, not by Next, so the
+// tsconfig path alias is not available here — and lib/native/notificationIcon.ts is deliberately
+// import-free so pulling it in cannot drag @capacitor/core into the CLI's config load.
+import { NOTIFICATION_SMALL_ICON } from './lib/native/notificationIcon'
 
 // ── Server base — PRODUCTION IS THE DEFAULT (never ships a localhost URL) ─────────────────────────────
 // The shell opens at the native LANDING (/app), which checks the persistent session and routes to this
@@ -81,9 +85,23 @@ const config: CapacitorConfig = {
       launchAutoHide: true,
     },
     LocalNotifications: {
-      smallIcon: 'ic_stat_icon_config_sample',
-      iconColor: '#F5A623',
-      sound: 'beep.wav',
+      // 🔴 THE CONSTANT, NOT A LITERAL. This value is also passed per-notification by all three helpers
+      // in lib/native/notifications.ts. It was a literal in four places, this file was corrected once
+      // and the other three were missed — so there is now ONE definition and four references to it.
+      // See lib/native/notificationIcon.ts for what the value is and why it is not `ic_launcher`.
+      smallIcon: NOTIFICATION_SMALL_ICON,
+      iconColor: '#EF8B2C',
+      // 🔴 `sound: 'beep.wav'` REMOVED — THE FILE HAS NEVER EXISTED IN THIS REPOSITORY. No beep.wav, no
+      // android/app/src/main/res/raw/, and no audio asset of any kind; the built APK's resource table
+      // carries ZERO `raw/` resources. This key set the plugin's DEFAULT sound, resolved by
+      // LocalNotificationManager.getDefaultSound() as getIdentifier('beep','raw',pkg) → 0, so it was a
+      // silent no-op: getSound() returned null and the notification fell back to setDefaults(DEFAULT_ALL),
+      // i.e. the system default, with no throw and nothing logged.
+      // ⚠️ IT IS ALSO WHERE THE 'default' CHANNEL'S SOUND COMES FROM (createNotificationChannel →
+      // getDefaultSoundUrl), and a channel's sound is FIXED AT CREATION. Restoring this key on its own
+      // would therefore change nothing on any device that has already run the app.
+      // 🔴 A REAL TONE NEEDS AN ASSET FIRST — res/raw/<name> on Android, the same filename WITH its
+      // extension in the iOS bundle. Do not re-add the key before the file exists in both.
     },
     // CapacitorHttp MUST stay OFF for this remote-URL Next.js shell: enabling it patches the webview's
     // fetch/XHR to route through native networking, which breaks RSC payloads, API fetches, and Realtime

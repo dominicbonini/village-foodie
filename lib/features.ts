@@ -27,6 +27,7 @@ export type Feature =
   | 'multi_device_kds'
   | 'cook_screen'
   | 'whatsapp_replies'
+  | 'embed_schedule'
 
 const PRO_FEATURES: Feature[] = [
   'discovery_map',
@@ -55,6 +56,17 @@ const MAX_FEATURES: Feature[] = [
   'ticket_printing',
   'multi_device_kds',
   'cook_screen',
+  // ── /embed/<slug> — the schedule surface an operator frames on their own website. ──────────────
+  // 🔴 THIS IS THE PLAN HALF OF A TWO-PART GATE AND IT IS THE WEAKER HALF. TRIAL_FEATURES below is
+  // `[...MAX_FEATURES]`, so adding it here also grants it to plan 'trial', 'demo' and 'tester' — and
+  // canAccess returns the trial set when trial_expires_at is NULL, which is what self-serve signup
+  // writes (lib/provision-truck.ts:415). So a brand-new self-serve truck passes this check on day one.
+  // The gate that actually bites is `trucks.embed_enabled`, NOT NULL DEFAULT false. Both must be true.
+  // ⚠️ DELIBERATELY NOT ADDED TO lib/plan-features.ts. That file is presentation and gates nothing;
+  // the marketing row ("Order page on your own website", currently 'coming_soon') is renamed in a
+  // later stage. findPlanParityViolations() iterates MATRIX ROWS and `continue`s when a row has no
+  // ROW_FEATURE_MAP entry, so a Feature with no row cannot produce a violation (plan-features.ts:384-386).
+  'embed_schedule',
 ]
 
 const TRIAL_FEATURES: Feature[] = [...MAX_FEATURES]

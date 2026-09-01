@@ -4,7 +4,6 @@ interface QRCodeOptions {
   url: string
   logoUrl?: string | null
   truckName: string
-  hatchgrabLogoUrl?: string | null
 }
 
 function roundRect(
@@ -132,11 +131,43 @@ export async function generateQRWithLogo(
   return canvas.toDataURL('image/png')
 }
 
+/**
+ * ── 🔴 THE POSTER'S GEOMETRY, IN ONE PLACE. ────────────────────────────────────────────────────────
+ * These were literals inside `generateQRCodePNG`. They are exported because the Manage settings card
+ * draws a "Your logo here" placeholder into the SAME space on its preview, and a placeholder that is
+ * not exactly logo-sized is a lie about what the operator will get — it would show them a hole of the
+ * wrong size in the middle of their code.
+ * ⚠️ THE VALUES ARE UNCHANGED. This names them; it does not alter a single pixel of the output.
+ */
+export const QR_POSTER = {
+  qrX: 50,
+  qrY: 30,
+  qrSize: 400,
+  stripHeight: 72,
+  canvasWidth: 500,
+  /** 502 — kept as the same sum the drawing code uses. */
+  canvasHeight: 30 + 400 + 72,
+  logoSize: 116,
+  logoPadding: 6,
+  logoRadius: 8,
+} as const
+
+/**
+ * The exact rect the truck logo's WHITE BACKING occupies on the poster — which is the visible hole in
+ * the QR pattern, and therefore the thing a placeholder must match. 128x128 at (186,166) on a 500x502
+ * canvas.
+ */
+export function posterLogoRect() {
+  const centreX = QR_POSTER.qrX + QR_POSTER.qrSize / 2
+  const centreY = QR_POSTER.qrY + QR_POSTER.qrSize / 2
+  const size = QR_POSTER.logoSize + QR_POSTER.logoPadding * 2
+  return { x: centreX - size / 2, y: centreY - size / 2, size, radius: QR_POSTER.logoRadius }
+}
+
 export async function generateQRCodePNG({
   url,
   logoUrl,
   truckName,
-  hatchgrabLogoUrl,
 }: QRCodeOptions): Promise<string> {
   const qrDataUrl = await QRCode.toDataURL(url, {
     width: 400,
@@ -151,11 +182,9 @@ export async function generateQRCodePNG({
 
   // QR drawn at x=50, y=30, 400×400 → bottom edge at y=430
   // Bottom strip: 50px for branding row
-  const qrX = 50
-  const qrY = 30
-  const qrSize = 400
-  const stripHeight = 72
-  canvas.width = 500
+  // ⚠️ READ FROM `QR_POSTER`, NOT RESTATED — same values, one definition. See its note above.
+  const { qrX, qrY, qrSize, stripHeight } = QR_POSTER
+  canvas.width = QR_POSTER.canvasWidth
   canvas.height = qrY + qrSize + stripHeight  // 502
 
   // White background
@@ -175,7 +204,7 @@ export async function generateQRCodePNG({
   if (logoUrl) {
     const logo = await loadImageViaBlobUrl(logoUrl)
     if (logo) {
-      const logoSize = 116
+      const logoSize = QR_POSTER.logoSize
       // Centre of QR pattern
       const centreX = qrX + qrSize / 2  // 250
       const centreY = qrY + qrSize / 2  // 230
@@ -183,10 +212,10 @@ export async function generateQRCodePNG({
       const logoY = centreY - logoSize / 2  // 172
 
       // White rounded square behind logo
-      const padding = 6
+      const padding = QR_POSTER.logoPadding
       ctx.fillStyle = '#FFFFFF'
       roundRect(ctx, logoX - padding, logoY - padding,
-                logoSize + padding * 2, logoSize + padding * 2, 8)
+                logoSize + padding * 2, logoSize + padding * 2, QR_POSTER.logoRadius)
       ctx.fill()
 
       ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
@@ -205,26 +234,20 @@ export async function generateQRCodePNG({
   // HatchGrab branding — bottom right, aligned with QR right edge
   const rightX = qrX + qrSize  // 450
 
-  if (hatchgrabLogoUrl) {
-    const hgLogo = await loadImageViaBlobUrl(hatchgrabLogoUrl)
-    if (hgLogo) {
-      // Scale logo to 28px high to match larger text
-      const logoH = 28
-      const logoW = Math.round((hgLogo.naturalWidth / hgLogo.naturalHeight) * logoH)
-      ctx.drawImage(hgLogo, rightX - logoW, brandingY - logoH, logoW, logoH)
-    } else {
-      // File not yet uploaded — fall back to text
-      ctx.fillStyle = '#6B7280'
-      ctx.font = '18px Arial, sans-serif'
-      ctx.textAlign = 'right'
-      ctx.fillText('Powered by HatchGrab', rightX, brandingY)
-    }
-  } else {
-    ctx.fillStyle = '#6B7280'
-    ctx.font = '18px Arial, sans-serif'
-    ctx.textAlign = 'right'
-    ctx.fillText('Powered by HatchGrab', rightX, brandingY)
-  }
+  // ── 🔴 THE WORDS, NOT THE MARK. ─────────────────────────────────────────────────────────────────
+  // This drew the HatchGrab LOGO IMAGE, with this text as a fallback when the file failed to load.
+  // The text is now the only path, by decision, 28 August 2026: on a printed poster beside the
+  // operator's own name, a second logo reads as co-branding — two businesses on one sign — where the
+  // words read as an attribution, which is what it is. Their name is the brand on their board.
+  //
+  // ✅ AND IT REMOVES A FAILURE MODE RATHER THAN ADDING ONE. The image path depended on fetching a PNG
+  // through a blob URL at draw time; when that silently failed the poster fell back HERE anyway. One
+  // path that always works replaces two paths where the better-looking one could vanish without notice.
+  // ⚠️ `loadImageViaBlobUrl` is STILL USED for the truck's own logo above — this removes one caller.
+  ctx.fillStyle = '#6B7280'
+  ctx.font = '18px Arial, sans-serif'
+  ctx.textAlign = 'right'
+  ctx.fillText('Powered by HatchGrab', rightX, brandingY)
 
   return canvas.toDataURL('image/png')
 }

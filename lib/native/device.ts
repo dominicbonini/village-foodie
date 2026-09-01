@@ -57,21 +57,75 @@ export async function fetchDeviceConfig(token: string): Promise<DeviceConfigResu
   } catch { return { ok: false } }
 }
 
+/**
+ * Result of WRITING this device's config. DISCRIMINATED, mirroring `DeviceConfigResult` above — the
+ * read path has had this shape since a transient 429 could masquerade as "no active van"; the write
+ * path had nothing equivalent and collapsed every outcome to `null`.
+ *
+ * 🔴 WHAT `null` COST. The route has FIVE distinct rejections (401 unauthorised, 400 device_id
+ * required, 404 cross-truck van, 400 invalid default_screen, 400 upsert failed) and a network throw
+ * is a sixth outcome. All six arrived at the caller as the same `null`, with no console line and no
+ * text — so a failed save left the picker sitting on "Continue", a failed toggle silently kept its old
+ * value, and diagnosing ONE instance meant streaming production logs.
+ *
+ * ⚠️ `reason` IS INTERNAL AND MUST NOT BE SHOWN TO AN OPERATOR. It is the server's machine-readable
+ * cause (`BindDeviceReason` in app/api/native/bind-device/route.ts) and exists for the console line
+ * this module already emits. Operators get a plain sentence and a retry, decided by the call site.
+ * `null` where the server sent no `reason` — an older deploy, or a body that would not parse.
+ * ⚠️ `networkError` SEPARATES "we never reached the server" FROM "the server said no". They need
+ * different words in front of an operator: one is worth retrying immediately, the other is not.
+ * `status` is null in exactly that case, and a number in every other.
+ */
+export type SaveDeviceConfigResult =
+  | { ok: true; device: DeviceConfig | null }
+  | { ok: false; status: number | null; reason: string | null; networkError: boolean }
+
 /** Upsert this device's row (van / default screen / notify / push token). Truck-scoped server-side. */
 export async function saveDeviceConfig(
   token: string,
   patch: { van_id?: string | null; default_screen?: 'dashboard' | 'kds'; notify_enabled?: boolean; push_token?: string | null },
-): Promise<DeviceConfig | null> {
+): Promise<SaveDeviceConfigResult> {
+  // 🔴 LOGGED HERE, ONCE, NOT AT FOUR CALL SITES. Every writer goes through this function, so this is
+  // the only place that cannot be forgotten by a future caller. Prefix matches the convention the
+  // webhook route uses (`[webhook/meta-whatsapp] …`) so the tag is greppable in the same way.
+  const fail = (r: { status: number | null; reason: string | null; networkError: boolean }): SaveDeviceConfigResult => {
+    console.error(
+      `[native/bind-device] write failed — ${r.networkError ? 'network throw (server not reached)' : `status ${r.status}`}` +
+      `, reason=${r.reason ?? 'none'}, patch keys=[${Object.keys(patch).join(', ')}]`
+    )
+    return { ok: false, ...r }
+  }
   try {
     const res = await fetch('/api/native/bind-device', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, device_id: getDeviceId(), platform: Capacitor?.getPlatform?.() ?? 'web', ...patch }),
     })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.device ?? null
-  } catch { return null }
+    if (!res.ok) {
+      // The body is the ONLY thing separating two different 400s. Parsed defensively: a rejection whose
+      // body is not JSON must still surface as that status, not as a network error.
+      const body = await res.json().catch(() => null as { reason?: unknown } | null)
+      const reason = body && typeof body.reason === 'string' ? body.reason : null
+      return fail({ status: res.status, reason, networkError: false })
+    }
+    // ⚠️ A 200 WHOSE BODY WILL NOT PARSE IS A SERVER FAILURE, NOT A NETWORK ONE. It used to land in the
+    // bare catch below and be indistinguishable from an unreachable server. Named so it can be told apart.
+    const data = await res.json().catch(() => null as { device?: DeviceConfig } | null)
+    if (!data) return fail({ status: res.status, reason: 'bad_json', networkError: false })
+    return { ok: true, device: data.device ?? null }
+  } catch {
+    // Genuinely could not reach the server: DNS, offline, aborted, TLS. No status exists.
+    return fail({ status: null, reason: null, networkError: true })
+  }
+}
+
+/** The ONE operator-facing sentence for a failed write. 🔴 IT NEVER NAMES `reason`: the internal cause
+ *  is for the console line above, not for a hatch. Only the network/server split changes the wording,
+ *  because only that changes what the operator should do about it. */
+export function saveFailureMessage(r: Extract<SaveDeviceConfigResult, { ok: false }>): string {
+  return r.networkError
+    ? 'Couldn’t reach the server — check the connection and try again.'
+    : 'Couldn’t save that just now. Please try again.'
 }
 
 // ── Last-viewed screen (restart-to-last-screen) ──────────────────────────────────────────────────────

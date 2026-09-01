@@ -63,6 +63,72 @@ export const eventsRatelimit = new Ratelimit({
   prefix: 'vf_rl_events',
 })
 
+// ── EMBED tier — /embed/* and /api/embed/*, AND NOTHING ELSE ────────────────────────────────────────
+//
+// ── WHY IT IS NOT ON STRICT, WHICH IS WHERE THE OBVIOUS ANSWER WOULD HAVE PUT IT ────────────────────
+// The embed's data used to have to come from /api/discovery/events, which is STRICT at 3/min keyed on
+// IP alone, with the operator bypass DELIBERATELY excluded. That is correct for a bulk-harvest feed and
+// catastrophic for a widget on a business's homepage: the FOURTH visitor behind one shared address in
+// any minute gets a 429, and what they see is a broken box on their local pizza place's website.
+// UK carriers use CGNAT and offices NAT behind one address, so "four visitors from one IP" is a Tuesday.
+//
+// ── WHY IT IS NOT ON GENERAL EITHER ─────────────────────────────────────────────────────────────────
+// GENERAL is 60/min keyed on IP alone, shared across /trucks and /trucks/*. An embed is loaded by
+// people who never chose to visit us — they went to the operator's website — so its traffic shape is
+// the operator's traffic shape, not ours, and it must not be able to exhaust a bucket that the
+// discovery pages also draw from. Its own prefix means an embed surge cannot 429 the profile pages.
+//
+// ── 600 PER MINUTE, KEYED (IP, SLUG), AND THE ARITHMETIC ────────────────────────────────────────────
+// Sized against the VISITOR, exactly as the events tier was, and set to the same number for the same
+// reason — it is a runaway-loop backstop, not an anti-scraping control.
+// ⚠️ ONE EMBED VIEW COSTS **TWO** TOKENS, NOT ONE: the page (/embed/<slug>) and its data fetch
+// (/api/embed/events) are both in this bucket. So:
+//   - 600 tokens ÷ 2 = 300 embed views per minute, from ONE address, for ONE truck
+//   - a busy office or a CGNAT range behind one IP, all opening the same operator's homepage → nowhere near
+//   - a client bug that re-mounts the iframe in a loop → caught, which is the actual job
+// ⚠️ SIZED PESSIMISTICALLY ON THE CACHE. The route sets s-maxage=60, so most repeat views should be
+// answered by the CDN — but whether Vercel's Edge Middleware runs BEFORE the cache lookup (and
+// therefore spends a token even on a cache hit) was NOT verified. The number above assumes it does.
+// If it turns out the CDN short-circuits the middleware, the effective headroom is far larger, and
+// nothing needs changing either way.
+//
+// ── KEYED (IP, SLUG) ────────────────────────────────────────────────────────────────────────────────
+// The same reasoning as the events tier: one operator's embed traffic must never exhaust another
+// operator's budget. The slug is in the PATH for /embed/<slug> and in the QUERY for the API, so
+// proxy.ts derives it from whichever is present (see embedSlug there).
+// ── CUSTOM-HOST tier — an operator's OWN domain, and nothing else ───────────────────────────────────
+//
+// 🔴 IT EXISTS BECAUSE EVERY OTHER PREDICATE IN proxy.ts TAKES ONLY `pathname`. A custom domain serving
+// at '/' matched none of them, so the one public surface an operator would put in front of their entire
+// customer base was **the only one with no limiter at all**. That is the wrong way round: it is the
+// surface whose traffic we least control, because it is the operator's traffic and not ours.
+//
+// ── KEYED (ADDRESS, HOST), NOT (ADDRESS, SLUG) ─────────────────────────────────────────────────────
+// The host IS the tenant here — it is what the request resolves a truck by — so keying on it means one
+// operator's domain can never exhaust another's budget, and it needs no database read to build the key.
+//
+// ── 600 PER MINUTE, IN THE SAME UNITS AS THE EMBED TIER ────────────────────────────────────────────
+// ⚠️ ONE PAGE VIEW COSTS **TWO** TOKENS: the page ('/') and its data fetch ('/api/embed/events') are
+// both on this host and both in this bucket. So 600 is 300 views per minute from ONE address for ONE
+// operator — far above anything human browsing reaches from a single address, and low enough to catch a
+// client that re-mounts in a loop. Deliberately the same number as the embed tier: the two surfaces have
+// the same shape and a different number would be a distinction without a reason.
+// ⚠️ Sized pessimistically on caching, exactly as the embed tier is: whether Vercel's Edge Middleware
+// runs BEFORE the CDN lookup — and therefore spends a token on a cache hit — was NOT verified.
+export const customHostRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(600, '1 m'),
+  analytics: true,
+  prefix: 'vf_rl_customhost',
+})
+
+export const embedRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(600, '1 m'),
+  analytics: true,
+  prefix: 'vf_rl_embed',
+})
+
 // DEMO tier — /api/demo, the public "upload your menu" entry point. Neither existing tier fits: this is not
 // a scraping target (STRICT) and not a cheap page read (GENERAL). Each request spends a Gemini call, runs
 // 10–30s, and leaves a truck + van + event + menu + ~10 orders behind, so the cost of abuse is real money
@@ -117,4 +183,63 @@ export const signupEmailRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(3, '1 d'),
   analytics: true,
   prefix: 'vf_rl_signup_email',
+})
+
+// ── CUSTOM-DOMAIN ACTION TIERS — /api/manage `domain_preflight` and `domain_send_instructions` ────────
+//
+// 🔴 THESE ARE ENFORCED IN THE ROUTE HANDLER, NOT IN proxy.ts, AND THAT IS DELIBERATE.
+// proxy.ts's rate-limit scope is a POSITIVE ALLOWLIST of public paths and `/api/manage` is STRUCTURALLY
+// outside it — the comment at the top of that file says so, and says why: "no future edit to an exempt
+// list can accidentally re-expose them". Adding `/api/manage` to that allowlist would put ONE bucket in
+// front of ~60 actions, including every menu write an operator makes during service. These two buckets
+// are checked inside their own `if (action === …)` branches instead, so no other action on that route —
+// and no other route anywhere — can reach them.
+//
+// 🔴 KEYED ON THE TRUCK, NOT THE IP. Both actions are reachable only by a caller this route has
+// authenticated and confirmed has a role on this truck, so the truck IS the abuse unit. An IP key would
+// be both wrong (one operator legitimately moves between networks) and useless (an authenticated caller
+// can rotate address without losing their session).
+
+// PREFLIGHT — 10 per 10 minutes per truck.
+//
+// WHY A LIMIT AT ALL: one call becomes THREE TO FIVE outbound requests on a host the CALLER NAMES — a
+// CAA lookup and an NS lookup, each of which falls through Cloudflare to Google on failure, plus one
+// authenticated GET to api.vercel.com that spends our API quota. It is the only one of the four actions
+// whose fan-out is driven by caller-supplied input.
+//
+// WHY 10/10min: sized to the worst LEGITIMATE journey, which is a person typing. An operator lands on
+// the screen, mistypes, corrects, tries `schedule.` then `orders.`, backs out and returns — call it five
+// or six attempts with headroom for a double-submit. Ten is roughly double that. The ceiling it sets is
+// ~60 preflights an hour per truck, so ~300 outbound requests an hour rather than an unbounded loop.
+// ⚠️ It is a CEILING, not a target: no legitimate operator will come close, which is what makes a 429
+// here a signal rather than an inconvenience.
+export const domainPreflightRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '10 m'),
+  analytics: true,
+  prefix: 'vf_rl_domain_preflight',
+})
+
+// SEND INSTRUCTIONS — 3 per 24 hours per truck.
+//
+// 🔴 THIS ONE SENDS MAIL TO AN ADDRESS THE CALLER SUPPLIES, WHICH IS THE SHARPEST SHAPE ON THIS ROUTE.
+// The reasoning is already written down beside `signupEmailRatelimit` above and applies verbatim: an
+// endpoint that emails an address it was handed is the standard mail-bomb vector, and it spends a SHARED
+// Brevo allowance whose first casualty is order confirmations for live trucks.
+//
+// WHY 3/DAY: the legitimate journey is "send the record to whoever runs our website" — once, plus a
+// resend when the first is missed, plus one more for a second person. Three covers that with nothing
+// left over. It DELIBERATELY MATCHES `signupEmailRatelimit`'s 3/day rather than inventing a new number,
+// because it is the same risk with the same ceiling behind it.
+//
+// ⚠️ THE KEY IS THE TRUCK, NOT THE RECIPIENT — the opposite of signupEmailRatelimit, and for a reason.
+// There, the caller is anonymous and the THIRD PARTY needs protecting from many senders. Here the caller
+// is an authenticated operator, so the question is "how much mail may this truck cause", and a
+// per-recipient key would let one truck mail a hundred different addresses three times each.
+// ⚠️ A rolling window, not a calendar day: a fixed day would allow six sends across a midnight boundary.
+export const domainInstructionsRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, '24 h'),
+  analytics: true,
+  prefix: 'vf_rl_domain_instructions',
 })

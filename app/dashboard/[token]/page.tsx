@@ -5,6 +5,7 @@ import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, use
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature, canAccess } from '@/lib/features'
+import { scanUrl } from '@/lib/custom-domain/copy'   // the one builder for the address a QR encodes
 import { OFFLINE_PROTECTION_MODES, OFFLINE_PROTECTION_SWITCH_LABEL, type OfflineProtectionMode, OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_AUTO_REJECT_LABEL, OFFLINE_AUTO_REJECT_DEFAULT_MINS, OFFLINE_AUTO_REJECT_OPTIONS, offlineAutoRejectLabel, OFFLINE_PROTECTION_PURPOSE } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
@@ -1241,7 +1242,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const truckId=truck?.id
     if(!truckId)return
     console.log('[VansFetch] truckId:',truckId)
-    fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'get_vans'})})
+    // ⚠️ `.then` CHAIN INSIDE A SYNCHRONOUS useEffect — the header is a promise, so it is resolved by
+    // chaining rather than by `await` (an effect callback cannot be async without changing its cleanup
+    // contract). Same header, same request; only the sequencing differs from the other three sites.
+    nativeAuthHeader()
+      .then(h=>fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...h},body:JSON.stringify({token,action:'get_vans'})}))
       .then(r=>r.json()).then(d=>{
         console.log('[VansFetch] result:',d.vans)
         setVans(d.vans||[])
@@ -1434,7 +1439,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // The ONE customer order URL — copy link, QR and the demo welcome popup all read this, so they can't
   // disagree about which host they point at. See customerUrlBase above for the demo/production split.
-  const customerOrderUrl = truck?.slug ? `${customerUrlBase}/trucks/${truck.slug}/order` : null
+  // 🔴 REPOINTED AT `/o/<slug>` ON 29 August 2026. This dashboard ALSO generates a QR (handleShowQR →
+  // generateQRWithLogo, the fullscreen code customers scan at the hatch), so it is a second scan
+  // surface and must encode the same address the printed one does.
+  // ⚠️ THE BASE IS PASSED IN RATHER THAN LET `scanUrl` DEFAULT IT, AND THAT IS LOAD-BEARING. A DEMO
+  // truck must keep the CURRENT ORIGIN (customerUrlBase, :185-192) or a localhost tester is sent to
+  // production where their truck does not exist. Calling `scanUrl(slug)` bare would have silently
+  // dropped that split — the path shape is shared, the host decision is not.
+  const customerOrderUrl = truck?.slug ? scanUrl(truck.slug, customerUrlBase) : null
 
   const handleCopyOrderLink=async()=>{
     const orderUrl=customerOrderUrl
@@ -1926,14 +1938,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     markPending('kitchenCapacity',value); setKitchenCapacity(value) // optimistic + guard
     // Service-role write via /api/manage (same action the Manage page uses). The previous
     // anon supabaseBrowser.update on truck_vans was RLS-blocked and failed silently.
-    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
+    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
     reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
   const saveCapacityWindow=async(value:number)=>{
     if(!activeEvent?.van_id)return
     markPending('capacityWindowMins',value); setCapacityWindowMins(value) // optimistic + guard
-    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
+    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
     reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
@@ -1957,7 +1969,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Ensure vans are loaded before evaluating auto-pause
       let currentVans=vans
       if(currentVans.length===0&&truck?.id){
-        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'get_vans'})})
+        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,action:'get_vans'})})
         const d=await res.json()
         currentVans=d.vans||[]
         setVans(currentVans)
@@ -4468,6 +4480,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
                 printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local.
                 DEMO: both hidden — hardware/device configuration a prospect has nothing to point at. */}
+            {/* ── 🔴 THE WEBSITE EMBED AND CUSTOM DOMAIN CARDS MOVED TO MANAGE → SETTINGS. ──────────
+                They were mounted here and they write TRUCK-WIDE columns (`trucks.embed_enabled`,
+                `trucks.custom_domain`), which puts them on the wrong side of the rule this same file
+                states ninety lines above: **Dashboard → Settings is PER-EVENT; Manage → Settings is
+                TRUCK-WIDE.** Nothing about either card was per-event, so neither belonged on this tab.
+                ⚠️ **NOT DELETED — RELOCATED**, with their gating carried across unchanged. See
+                app/manage/[token]/page.tsx (SettingsTab, above the danger zone) and §46 of the manual.
+                🔴 DO NOT RE-ADD THEM HERE. A truck-wide setting on the per-event screen is the exact
+                confusion the scope rule exists to prevent. */}
             {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode} connected={printing.status.connected} statusDetail={printing.status.detail} waitingCount={printing.waitingCount}/>}
             {!isDemo&&<NotificationSettings token={token}/>}
           </div>

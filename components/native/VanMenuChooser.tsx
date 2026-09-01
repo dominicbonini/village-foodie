@@ -10,7 +10,7 @@
 // single-van truck (nothing to switch to). A staff-read-only restriction would need server-side enforcement
 // (a role / truck_user_vans check added to bind-device) and is intentionally NOT faked in the UI.
 import { useCallback, useEffect, useState } from 'react'
-import { isNativeApp, fetchDeviceConfig, saveDeviceConfig, type VanRef } from '@/lib/native/device'
+import { isNativeApp, fetchDeviceConfig, saveDeviceConfig, saveFailureMessage, type VanRef } from '@/lib/native/device'
 
 export function VanMenuChooser({ token }: { token: string }) {
   const [vans, setVans] = useState<VanRef[]>([])
@@ -18,6 +18,10 @@ export function VanMenuChooser({ token }: { token: string }) {
   const [ready, setReady] = useState(false)
   const [loadError, setLoadError] = useState(false)   // fetch failed — degrade to a Retry, don't vanish silently
   const [switching, setSwitching] = useState(false)
+  // 🔴 A FAILED SWITCH USED TO BE INDISTINGUISHABLE FROM A MIS-TAP. `saveDeviceConfig` returned null,
+  // `switching` went false, and the <select> snapped back to `vanId` with nothing said. Same
+  // failure/empty distinction the load path above already draws — now applied to the WRITE.
+  const [switchError, setSwitchError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!isNativeApp()) return
@@ -52,10 +56,15 @@ export function VanMenuChooser({ token }: { token: string }) {
   const onSwitch = async (nextVanId: string) => {
     if (!nextVanId || nextVanId === vanId || switching) return
     setSwitching(true)
+    setSwitchError(null)
     const saved = await saveDeviceConfig(token, { van_id: nextVanId })
     // Reload so the dashboard/KDS re-scope to the newly-bound van (server reads van_devices for this device).
-    if (saved && typeof window !== 'undefined') { window.location.reload(); return }
+    if (saved.ok && typeof window !== 'undefined') { window.location.reload(); return }
+    // ⚠️ `vanId` IS DELIBERATELY NOT TOUCHED. The <select> is controlled by it, so leaving it alone is
+    // what keeps the previous van selected — the device is still bound to that van, and showing the
+    // one the operator picked would claim a switch that did not happen.
     setSwitching(false)
+    if (!saved.ok) setSwitchError(saveFailureMessage(saved))
   }
 
   return (
@@ -74,6 +83,9 @@ export function VanMenuChooser({ token }: { token: string }) {
           <span className="text-sm font-semibold text-slate-900">{currentName}</span>
         )}
       </div>
+      {/* Under the row, matching the `text-[11px] text-red-500` used for the same purpose in
+          OperatorDeviceConfig. The select above still shows the van this device is actually on. */}
+      {switchError && <p className="mt-1 text-[11px] text-red-500">{switchError}</p>}
     </div>
   )
 }

@@ -164,9 +164,9 @@ export default function LandingPage() {
           <p className="lede">Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.</p>
           <div className="does">
             <div className="does-item"><h3>Kill the queue</h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
-            <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity — how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
+            <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
-            <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website — or send the photo you already post to Facebook. You just review and confirm.</p></div>
+            <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website. Or send us the photo you already post to Facebook. You just review and confirm.</p></div>
             {/* ⚠️ "driving to the pitch or at the grill" — NOT just "at the grill". On its own that is a
                 generic busy-kitchen claim any hospitality product could make. DRIVING is specific to a food
                 truck and is the moment an operator genuinely CANNOT reply, which is the whole point of the
@@ -191,7 +191,7 @@ export default function LandingPage() {
           <h2>Get set up and start taking orders in about 15 minutes.</h2>
           <p className="lede">Three things to sort — and two of them just need a photo.</p>
           <div className="steps">
-            <div className="step"><h3>Build your menu</h3><p>Photograph your board or paste it in. Items, prices and extras all come across on their own — you just check they’re right.</p></div>
+            <div className="step"><h3>Build your menu</h3><p>Photograph your board or paste it in. Items, prices and extras all come across on their own. You just check they’re right.</p></div>
             <div className="step"><h3>Add your schedule</h3><p>Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.</p></div>
             <div className="step"><h3>Share your link</h3><p>Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them.</p></div>
           </div>
@@ -199,20 +199,39 @@ export default function LandingPage() {
       </section>
 
       {/* ============ TESTIMONIAL ============
-          ⚠️⚠️ PLACEHOLDER — DO NOT PUBLISH. The quote below is INVENTED and Pizzeria Gusto have NOT given
-          permission. This whole section must stay off any public/promoted build until Dominic has their
-          actual words AND their consent. The logo is real (public/gusto-logo.png) but the attribution +
-          award credit are unverified. */}
+          ✅ THE QUOTE IS REAL. These are Pizzeria Gusto's own words, supplied by Dominic on 28 August 2026,
+          and the award credit below is confirmed correct by him on the same day. The INVENTED placeholder
+          quote that stood here until then is gone. 🔴 DO NOT EDIT, TIGHTEN OR RE-PUNCTUATE THE QUOTE — it is a
+          live trading business's speech, not our copy. It is held as a string expression rather than bare
+          JSX text so no formatter can straighten its apostrophe to match the rest of this page.
+          🔴 THE GATE IN layout.tsx AND THE noindex ABOVE STAY ON, AND THIS DOES NOT CHANGE THAT. Having their
+          words is not the same as having their written permission to publish them, and no record of consent
+          exists in this repository. layout.tsx's condition 1 is still unmet and still correctly worded.
+          The logo is public/gusto-logo.png, which is real and always has been. */}
       <section className="quote-sec">
         <div className="wrap quote-in">
           <span className="quote-mark">“</span>
-          <blockquote>Took orders all night and didn’t miss one. First Saturday in years I’ve not had a queue out the door.</blockquote>
+          <blockquote>{"HatchGrab has made ordering so much easier. Everything's organised, we can track stock and know exactly how many pizzas we have left to sell — and the time slots are fantastic for busy villages."}</blockquote>
           <div className="quote-by">
-            <Image className="quote-logo" src="/gusto-logo.png" alt="Pizzeria Gusto" width={320} height={233} />
+            {/* 🔴 alt="" IS DELIBERATE, NOT AN OVERSIGHT: "Pizzeria Gusto" is in the role line directly below, so an alt would announce the business name TWICE — and a MISSING alt would make some screen readers read the filename instead. */}
+            <Image className="quote-logo" src="/gusto-logo.png" alt="" width={320} height={233} />
             <span className="quote-who">
-              <span className="quote-name">Pizzeria Gusto</span>
-              {/* ⚠️ Award wording UNVERIFIED (pending Gusto confirmation) — shown here only because /landing is
-                  admin-gated. Layout is set with INLINE styles (not just .cred-* classes) so it renders
+              {/* ── THE ATTRIBUTION READS: names -> role -> award (29 August 2026). ───────────────
+                  🔴 THE TRUCK NAME IS NOT REPEATED. This line held "Pizzeria Gusto" on its own; it now
+                  holds the owners' names, and the business name appears once, inside the role line
+                  beneath it. Adding the names ABOVE the existing line would have read
+                  "Pizzeria Gusto / Nadia & Bogdan / Owners, Pizzeria Gusto" — the name twice in three
+                  lines. The line was repurposed, not added to.
+                  ⚠️ THE LOGO'S alt IS STILL "Pizzeria Gusto", so a screen reader hears the business
+                  name from the image and again from the role line. Sighted readers see it once,
+                  because the logo is a picture. Fixing that means editing the logo element, which this
+                  workstream was told not to touch — flagged, not changed.
+                  ⚠️ "&" IS THE LITERAL AMPERSAND THEY USE BETWEEN TWO FIRST NAMES, written as {'&'}
+                  rather than bare so no formatter turns it into an entity or a word. */}
+              <span className="quote-name">Nadia {'&'} Bogdan</span>
+              <span className="quote-role">Owners, Pizzeria Gusto</span>
+              {/* ✅ Award wording CONFIRMED by Dominic, 28 August 2026 ("Mobile pizzeria of the year — regional
+                  winner is correct"). Layout is set with INLINE styles (not just .cred-* classes) so it renders
                   correctly even if a stale landing.css is cached: title row (★ — text — ★) then scope beneath. */}
               <span className="quote-cred" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem', marginTop: '0.35rem', width: '100%' }}>
                 <span className="cred-title" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', whiteSpace: 'nowrap', color: 'var(--orange)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.01em' }}>
@@ -233,7 +252,7 @@ export default function LandingPage() {
           <div>
             <p className="eyebrow">Orders</p>
             <h2>Everything you need, nothing you don’t.</h2>
-            <p className="lede">Name, time, what they want, and anything they’ve asked for — on your kitchen screen before they arrive. No note gets missed. Print it as well if you’d rather have paper in your hand.</p>
+            <p className="lede">Name, time, what they want, and anything they’ve asked for. All on your kitchen screen before they arrive. No note gets missed. Print it as well if you’d rather have paper in your hand.</p>
           </div>
           <div className="ticket-stage">
             <div className="ticket" role="img" aria-label="Example order ticket: order 17 for Sarah, two Margheritas with no basil, one Pepperoni and two Cokes, collect at 6.20pm, total £37.00.">
@@ -266,12 +285,12 @@ export default function LandingPage() {
                 NEW charge, when in fact most trucks already pay their own terminal provider and nothing
                 about that changes. It says whose fee it is and that nothing changes. Do not shorten it to
                 "fees still apply", and do not add a figure — there is deliberately no number here. */}
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan — your card terminal&apos;s own fees still apply.</p>
+            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan. Your card terminal&apos;s own fees still apply.</p>
           </div>
 
           <div className="trial-banner">
             <strong>Your first month is completely free — every feature unlocked.</strong>
-            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time — <b><u>adding online payments doesn’t start your subscription</u></b>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.</span>
+            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time. <b><u>Adding online payments doesn’t start your subscription</u></b>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.</span>
           </div>
 
           <div className="plans">
@@ -326,10 +345,18 @@ export default function LandingPage() {
                 <li className="lead">Everything in Pro, plus</li>
                 <li>Multi-device kitchen sync</li>
                 <li>Multi-staff logins</li>
+                {/* ⚠️ RENAMED, MOVED AND UN-BADGED 29 August 2026, to match the matrix row it twins
+                    (lib/plan-features.ts, 'Your schedule at your own website'), which moved above
+                    'Kitchen ticket printing' in the same change.
+                    ✅ THE CARD AND THE TABLE AGREE. Removing the badge here first left this card claiming
+                    the feature while the comparison table lower down the SAME page still said "Coming
+                    soon"; the matrix row was then flipped to `true` (with its ROW_FEATURE_MAP entry, in
+                    the same change) and both now read as included. Un-badge here and flip there together,
+                    or the page argues with itself — this bullet is hand-written and nothing checks it. */}
+                <li>Your schedule at your own website</li>
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
-                <li>Order page on your own website <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
@@ -435,7 +462,7 @@ export default function LandingPage() {
             </g>
           </svg>
           <h2>Want to see how easy setup is?</h2>
-          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds — your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
+          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds. Your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
           {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
               the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
               nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the

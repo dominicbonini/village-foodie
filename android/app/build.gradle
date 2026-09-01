@@ -1,5 +1,27 @@
 apply plugin: 'com.android.application'
 
+// ── RELEASE SIGNING — CREDENTIALS LOADED FROM A GITIGNORED FILE, IF IT IS THERE ─────────────────────
+// `android/keystore.properties` holds the upload-key credentials and is NEVER committed. See
+// android/SIGNING.md; the committed template is android/keystore.properties.example.
+//
+// 🔴 THE `.exists()` GUARD IS THE WHOLE POINT AND MUST NOT BE REMOVED. A fresh clone, a CI runner, or
+// anyone who has not been given the credentials has NO keystore.properties — and a build that dies on
+// its absence would break `assembleDebug` for every one of them. Absent file => the release
+// signingConfig is never created, `signingConfigs.release` is never referenced, and debug builds are
+// completely unaffected.
+// ⚠️ A RELEASE BUILT WITHOUT IT IS UNSIGNED, which is the pre-existing behaviour and the correct
+// failure direction: Play rejects it at upload, loudly, instead of anything looking shippable.
+//
+// ⚠️ `rootProject` HERE IS THE `android/` DIRECTORY, not the repository root — this is the app module.
+// So `rootProject.file("keystore.properties")` is android/keystore.properties, and a bare filename in
+// `storeFile` resolves next to it. That is why the template documents storeFile as relative to android/.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+def hasKeystore = keystorePropertiesFile.exists()
+if (hasKeystore) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "com.hatchgrab.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +38,27 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        // Created ONLY when the credentials file is present — see the guard above.
+        if (hasKeystore) {
+            release {
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            // ⚠️ Guarded for the same reason: referencing signingConfigs.release when it was never
+            // created is a configuration-time failure, which would break debug builds too.
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            }
+            // 🔴 minifyEnabled AND shrinkResources ARE DELIBERATELY UNTOUCHED. An untested obfuscation
+            // pass on a Capacitor app breaks reflection-based plugin calls in ways that only show at
+            // runtime, on release, after upload. That is its own workstream — do not enable it here.
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

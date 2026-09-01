@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
 import UserMenu from '@/components/dashboard/UserMenu'
@@ -35,6 +36,14 @@ interface AdminTruck {
   show_on_hg: boolean
   order_link_vf: boolean
   order_link_hg: boolean
+  custom_domain?: string | null
+  custom_domain_verified_at?: string | null
+  custom_domain_confirmed_at?: string | null
+  custom_domain_setup_state?: string | null
+  custom_domain_setup_started_at?: string | null
+  custom_domain_last_checked_at?: string | null
+  custom_domain_last_ok_at?: string | null
+  custom_domain_last_seen_value?: string | null
   is_customer: boolean
   excluded: boolean
   scraper_preference?: 'auto' | 'manual' | 'both' | null
@@ -214,7 +223,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
-  const [adminTab, setAdminTab] = useState<'trucks' | 'features'>('trucks')
+  const [adminTab, setAdminTab] = useState<'trucks' | 'features' | 'domains'>('trucks')
   const [truckSearch, setTruckSearch] = useState('')
   const [planFilter, setPlanFilter] = useState<Plan | 'discovery' | ''>('')
   const [customersOnly, setCustomersOnly] = useState(false)   // Customers = non-Discovery (operator trucks)
@@ -726,7 +735,7 @@ export default function AdminPage() {
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
         <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
-          {(['trucks', 'features'] as const).map(tab => (
+          {(['trucks', 'features', 'domains'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setAdminTab(tab)}
@@ -736,7 +745,7 @@ export default function AdminPage() {
                   : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
-              <span>{tab === 'trucks' ? '🚚' : '📋'}</span>{tab === 'trucks' ? 'Trucks' : 'Features'}
+              <span>{tab === 'trucks' ? '🚚' : tab === 'features' ? '📋' : '🌐'}</span>{tab === 'trucks' ? 'Trucks' : tab === 'features' ? 'Features' : 'Domains'}
             </button>
           ))}
         </div>
@@ -745,6 +754,93 @@ export default function AdminPage() {
       <div className={"w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
 
         {/* Features tab */}
+        {/* ── CUSTOM DOMAINS ────────────────────────────────────────────────────────────────────
+            🔴 PROBLEMS SORT TO THE TOP, and the diagnostic sits UNDER the row rather than in a column.
+            "Not resolving" is one status covering three different conversations — a mistyped record, a
+            record that conflicts with an existing one, and a domain that has moved host — and the only
+            thing that separates them is WHAT IS ACTUALLY THERE. A status column alone would send
+            whoever reads this to run a lookup by hand, which is the work this table exists to save.
+            ⚠️ Outage duration is `now - last_ok_at`, computed here. There is no history table and none
+            may be added: the subtraction is the whole answer. */}
+        {adminTab === 'domains' && (() => {
+          const now = Date.now()
+          const rows = trucks.filter(t => !!t.custom_domain)
+          // 0 = a problem, 1 = waiting, 2 = fine. Problems first, then the longest-broken first.
+          // 🔴 THE THRESHOLD IS DERIVED FROM THE CRON SCHEDULE, NOT WRITTEN AS HOURS. It was the literal
+          // `36 * 3600e3`, here and again below — an answer whose question lives in vercel.json. Change the
+          // schedule and a literal keeps asserting the old number while meaning something else entirely.
+          // STOPPED_AFTER_MS is (missed checks + margin) x the cadence READ FROM vercel.json, so the two
+          // cannot drift apart. See lib/custom-domain/cadence.ts.
+          const rank = (t: AdminTruck) => {
+            if (t.custom_domain_verified_at && t.custom_domain_last_ok_at) {
+              const downMs = now - new Date(t.custom_domain_last_ok_at).getTime()
+              return downMs > STOPPED_AFTER_MS ? 0 : 2   // was live and has stopped → a problem
+            }
+            return t.custom_domain_verified_at ? 2 : 1   // never went live → waiting
+          }
+          const sorted = [...rows].sort((a, b) => rank(a) - rank(b) ||
+            (new Date(a.custom_domain_last_ok_at || 0).getTime() - new Date(b.custom_domain_last_ok_at || 0).getTime()))
+          const ago = (iso?: string | null) => {
+            if (!iso) return 'never'
+            const d = Math.floor((now - new Date(iso).getTime()) / 3600e3)
+            return d < 1 ? 'under an hour' : d < 48 ? `${d}h` : `${Math.floor(d / 24)}d`
+          }
+          return (
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              {sorted.length === 0 ? (
+                <p className="p-6 text-sm text-slate-500">No truck has a custom domain yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wide text-slate-500">
+                    <tr><th className="p-3">Truck</th><th className="p-3">Address</th><th className="p-3">Status</th><th className="p-3">Set up</th><th className="p-3">Last checked</th></tr>
+                  </thead>
+                  <tbody>
+                    {sorted.map(t => {
+                      const r = rank(t)
+                      const live = !!t.custom_domain_verified_at
+                      const down = live && t.custom_domain_last_ok_at && (now - new Date(t.custom_domain_last_ok_at).getTime()) > STOPPED_AFTER_MS
+                      return (
+                        <tr key={t.id} className={`border-t border-slate-100 align-top ${r === 0 ? 'bg-red-50' : r === 1 ? 'bg-amber-50' : ''}`}>
+                          <td className="p-3 font-semibold text-slate-800">{t.name}</td>
+                          <td className="p-3 font-mono text-xs text-slate-700">{t.custom_domain}</td>
+                          <td className="p-3">
+                            <span className={`text-xs font-bold ${r === 0 ? 'text-red-700' : r === 1 ? 'text-amber-700' : 'text-green-700'}`}>
+                              {down ? 'Stopped working' : live ? 'Live' : 'Waiting'}
+                            </span>
+                            {/* Under a PROBLEM row: what is actually resolving, and how long it has been down. */}
+                            {r !== 2 && (
+                              <p className="mt-1 text-[11px] text-slate-600 leading-tight">
+                                Resolving to: <span className="font-mono">{t.custom_domain_last_seen_value ?? 'nothing'}</span>
+                                {down && t.custom_domain_last_ok_at ? <> · down for {ago(t.custom_domain_last_ok_at)}</> : null}
+                                {!live && t.custom_domain_setup_started_at ? <> · waiting {ago(t.custom_domain_setup_started_at)}</> : null}
+                              </p>
+                            )}
+                            {/* Under a LIVE row: whether a person has actually looked. */}
+                            {r === 2 && (
+                              <p className="mt-1 text-[11px] text-slate-500 leading-tight">
+                                {t.custom_domain_confirmed_at ? 'Operator confirmed' : 'Not confirmed by the operator'}
+                              </p>
+                            )}
+                          </td>
+                          <td className="p-3 text-xs text-slate-500">{t.custom_domain_setup_started_at ? new Date(t.custom_domain_setup_started_at).toLocaleDateString('en-GB') : '—'}</td>
+                          <td className="p-3 text-xs text-slate-500">{ago(t.custom_domain_last_checked_at)}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+              {/* 🔴 THE THRESHOLD IS STATED ON SCREEN. A derived number the reader cannot see is worse
+                  than a literal — they would have no way to know what "stopped working" currently means. */}
+              <p className="px-3 py-2 text-[11px] text-slate-400 border-t border-slate-100">
+                {CADENCE_DERIVED
+                  ? <>&ldquo;Stopped working&rdquo; = no successful check for {STOPPED_AFTER_LABEL} — derived from the <code>{CHECK_CRON_EXPRESSION}</code> schedule in vercel.json.</>
+                  : <span className="text-red-600 font-semibold">⚠️ The check schedule could not be read from vercel.json. Falling back to a daily cadence, so &ldquo;stopped working&rdquo; = {STOPPED_AFTER_LABEL} and may not match the real schedule.</span>}
+              </p>
+            </div>
+          )
+        })()}
+
         {adminTab === 'features' && (
           <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
             <table className="text-xs w-full">

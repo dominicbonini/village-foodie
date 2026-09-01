@@ -3,7 +3,7 @@
 // (isNativeApp() false) → zero behaviour change for browser users. Reads/writes the current device_id's
 // van_devices row via /api/native/bind-device (truck-scoped server-side).
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, type DeviceConfig, type VanRef } from '@/lib/native/device'
+import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, saveFailureMessage, type DeviceConfig, type VanRef } from '@/lib/native/device'
 import { registerForPush, releasePushHandlers } from '@/lib/native/push'
 import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity, setAppLockPin, clearAppLockPin } from '@/lib/native/appLock'
 import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
@@ -33,6 +33,10 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
   const [screen, setScreen] = useState<'dashboard' | 'kds'>('dashboard')
   const [vanId, setVanId] = useState<string>('')
   const [saving, setSaving] = useState(false)
+  // 🔴 A FAILED WRITE NOW HAS SOMEWHERE TO GO. Every save on this card used to resolve to `null` and be
+  // dropped: the button returned from "Saving…" to "Continue" and the modal sat there looking untouched,
+  // which reads as "nothing happened" — not as "that failed". One plain sentence, no internal cause.
+  const [saveError, setSaveError] = useState<string | null>(null)
   const mounted = useRef(true)
   useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
 
@@ -70,7 +74,17 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
     if (vanList.length === 1) {
       const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
       if (!mounted.current) return
-      if (saved) void registerForPush(token, onOpenOrderRef.current)
+      if (saved.ok) { void registerForPush(token, onOpenOrderRef.current); setLoading(false); return }
+      // 🔴 A SILENT AUTO-BIND THAT FAILS MUST NOT STAY SILENT. This branch used to fall straight through
+      // to setLoading(false) whatever happened, so the device ended up bound to nothing and the operator
+      // was shown a perfectly normal dashboard. It is the only save on this card with no button behind it,
+      // which is exactly why its failure was invisible. Fall through to the card — pre-filled with the one
+      // van it tried — so there is something to press. Success is untouched: it still shows no modal.
+      setVans(vanList)
+      setVanId(vanList[0].id)
+      setScreen(device?.default_screen ?? 'dashboard')
+      setSaveError(saveFailureMessage(saved))
+      setNeedsSetup(true)
       setLoading(false); return
     }
     // Genuinely 0 (fetch OK, no active vans) OR >1 → show the card. Pre-fill van from the single-van staff hint.
@@ -96,9 +110,14 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
 
   const onSave = async () => {
     setSaving(true)
+    setSaveError(null)   // clear the previous attempt's line before this one reports
     const saved = await saveDeviceConfig(token, { van_id: vanId, default_screen: screen })
     setSaving(false)
-    if (saved) { void registerForPush(token, onOpenOrderRef.current); setNeedsSetup(false) }
+    // 🔴 THE MODAL STAYS OPEN ON FAILURE, AND THAT IS THE POINT. setNeedsSetup(false) is the ONLY thing
+    // that closes it, and it is reachable only from the success branch — a card that closed on a failed
+    // save would be indistinguishable from one that saved. Unchanged behaviour on success.
+    if (saved.ok) { void registerForPush(token, onOpenOrderRef.current); setNeedsSetup(false); return }
+    setSaveError(saveFailureMessage(saved))
   }
 
   // NEVER TRAP: every state has an escape — Retry (error), "Go to Settings → Vans" (no van), Continue (picker),
@@ -156,10 +175,14 @@ export function DeviceSetupGate({ token, onOpenOrder }: { token: string; onOpenO
                 {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
             </div>
+            {/* Same shape and vocabulary as this file's own set-PIN error (`pinSetupErr`, below) and as
+                Manage's verify line — `text-[11px] text-red-500`, sitting directly above the action it
+                refers to. Not a new pattern. */}
+            {saveError && <p className="text-[11px] text-red-500 -mb-1">{saveError}</p>}
             <div className="flex gap-2">
               <button type="button" disabled={!vanId || saving} onClick={onSave}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40">
-                {saving ? 'Saving…' : 'Continue'}
+                {saving ? 'Saving…' : saveError ? 'Try again' : 'Continue'}
               </button>
               <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
             </div>
@@ -189,6 +212,8 @@ export function ThisDeviceSettings({ token }: { token: string }) {
   const [pinSetupErr, setPinSetupErr] = useState('')
   const [myTrucks, setMyTrucks] = useState<TruckRef[]>([])
   const [switching, setSwitching] = useState(false)
+  // Inline write-failure line for the three per-device settings below. See `patch()`.
+  const [patchError, setPatchError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isNativeApp()) return
@@ -204,9 +229,15 @@ export function ThisDeviceSettings({ token }: { token: string }) {
 
   if (!isNativeApp()) return null
 
-  const patch = async (p: Parameters<typeof saveDeviceConfig>[1]) => {
+  // 🔴 THE REVERT IS STRUCTURAL, THE MESSAGE IS THE NEW PART. Every control below is CONTROLLED by
+  // `cfg`, so not calling setCfg is already what puts the select and the checkbox back — but a control
+  // that silently springs back reads as a mis-tap, not as a failure. `label` names the setting so one
+  // shared line can serve three controls without being vague about which one did not save.
+  const patch = async (p: Parameters<typeof saveDeviceConfig>[1], label: string) => {
+    setPatchError(null)
     const saved = await saveDeviceConfig(token, p)
-    if (saved) setCfg(saved)
+    if (saved.ok) { setCfg(saved.device); return }
+    setPatchError(`${label} didn’t save. ${saveFailureMessage(saved)}`)
   }
   const vanName = vans.find(v => v.id === cfg?.van_id)?.name ?? null
 
@@ -248,7 +279,7 @@ export function ThisDeviceSettings({ token }: { token: string }) {
       {vans.length > 1 && (
         <label className="flex items-center justify-between gap-3 text-sm">
           <span className="font-semibold text-slate-700">Van</span>
-          <select value={cfg?.van_id ?? ''} onChange={e => patch({ van_id: e.target.value })}
+          <select value={cfg?.van_id ?? ''} onChange={e => patch({ van_id: e.target.value }, 'Van')}
             className="border border-slate-300 rounded-lg px-2 py-1 text-sm">
             <option value="">—</option>
             {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
@@ -258,7 +289,7 @@ export function ThisDeviceSettings({ token }: { token: string }) {
 
       <label className="flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-slate-700">Default screen</span>
-        <select value={cfg?.default_screen ?? 'dashboard'} onChange={e => patch({ default_screen: e.target.value as 'dashboard' | 'kds' })}
+        <select value={cfg?.default_screen ?? 'dashboard'} onChange={e => patch({ default_screen: e.target.value as 'dashboard' | 'kds' }, 'Default screen')}
           className="border border-slate-300 rounded-lg px-2 py-1 text-sm">
           <option value="dashboard">Dashboard</option>
           <option value="kds">KDS</option>
@@ -267,8 +298,12 @@ export function ThisDeviceSettings({ token }: { token: string }) {
 
       <label className="flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-slate-700">Order notifications</span>
-        <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked })} />
+        <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked }, 'Order notifications')} />
       </label>
+      {/* One line for all three settings above — same `text-[11px] text-red-500` as the set-PIN error
+          further down this card. It sits under the group because the control that failed has already
+          snapped back to its stored value, and the sentence is what says why. */}
+      {patchError && <p className="text-[11px] text-red-500 -mt-1">{patchError}</p>}
 
       {/* APP-LOCK — device-level biometric gate (per-device, default off). SEPARATE from login.
           NOTE: THE COPY NAMES THE CONCEPT, NOT A VENDOR. lib/native/appLock.ts uses

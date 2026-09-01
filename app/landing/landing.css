@@ -207,14 +207,73 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 /* Stays WHITE (the Gusto logo has a white background, so it must sit on white, not a tint). It reads as its
    own band because both neighbours are tinted: "how it works" (band) above, "orders" (band) below. */
 .hg-landing .quote-sec { padding: clamp(3rem,6vw,4.5rem) 0; }
-.hg-landing .quote-in { max-width: 44rem; margin: 0 auto; text-align: center; }
+/* 56rem, not 44rem: the real Gusto quote is 194 characters against the invented placeholder's 101,
+   and at 44rem it set to FOUR lines on a laptop. The page column is 1140px, so this still sits
+   well inside --max with the gutters intact.
+   ⚠️ THIS IS NO LONGER WHAT SETS THE QUOTE'S MEASURE (29 August 2026) — the blockquote carries its
+   own narrower max-width below. This value now governs only the attribution beneath it, and widening
+   it back would not change how the quote wraps. */
+.hg-landing .quote-in { max-width: 56rem; margin: 0 auto; text-align: center; }
 .hg-landing .quote-mark { font-family: var(--display); font-weight: 800; font-style: italic; font-size: 3.4rem; color: var(--orange); line-height: .6; display: block; margin-bottom: .6rem; }
-.hg-landing blockquote { font-family: var(--display); font-weight: 700; font-size: clamp(1.25rem,2.6vw,1.7rem); line-height: 1.35; letter-spacing: -.02em; color: var(--head); margin-bottom: 1.5rem; }
+/* ── UPRIGHT, WEIGHT 400, SMALLER, ROOMIER, AND ON ITS OWN MEASURE (29 August 2026). ──────────────
+   The defect this replaces was visible only in a browser: at 1.7rem/600/italic in the 56rem column
+   the 194-character quote set to FOUR lines at 1280px and 1440px, with the last line reading
+   "villages." and nothing else. A single stranded word under three full lines reads as a mistake.
+
+   🔴 ITALIC RESTORED 29 August 2026, REVERSING THIS RULE'S OWN PREVIOUS NOTE. That note argued the
+   3.4rem orange quote mark already said "speech", so the italic was saying it twice. Observed in
+   place, the mark alone did NOT carry it: at weight 400 upright, 46rem wide and centred, the
+   paragraph read as body copy that happened to sit under a decorative glyph. The mark is a
+   flourish above the block; the italic is a property OF the text, and only the second one travels
+   with the words. **The earlier reasoning was sound and the observation beat it.**
+   ⚠️ EVERYTHING ELSE FROM THAT CHANGE STANDS — weight 400, the same clamp, the 46rem measure and
+   the 1.6 line height are all unchanged. Only `font-style` moved.
+   ⚠️ THE ITALIC IS THE DRAWN FACE, NOT A SYNTHESISED SLANT. app/landing/page.tsx loads Archivo with
+   style: ['normal','italic'] — do not drop 'italic' from that call, which .quote-mark also depends on.
+   🔴 AND THE LINE COUNTS WERE RE-MEASURED, NOT ASSUMED. Archivo's italic is measurably WIDER than
+   its roman — 478.17px against 473.77px for the same 42-character string at 23.2px, about 0.9% — so
+   the three even lines this rule was tuned for were not guaranteed to survive the switch. They did:
+   re-measured at eight widths, no width strands a word. docs/landing-testimonial-italic-report.md.
+
+   🔴 400, AND THIS REVERSES THE EARLIER "600 NOT 500" NOTE RATHER THAN IGNORING IT. That note argued
+   a lone 500 would be an orphan step, since landing.css writes only 600 (x12), 700 (x17) and 800
+   (x11). 400 is not an orphan: it is the page's own body weight, inherited by every paragraph here
+   that never declares one, so this adds NO new value to the scale where 500 would have. Archivo is
+   loaded as a variable font (no weight array in page.tsx), so 400 is a drawn weight, not a
+   synthesised one.
+
+   ⚠️ THE CLAMP'S MINIMUM IS UNCHANGED AT 1.25rem — ONLY THE MAXIMUM CAME DOWN, 1.7rem to 1.45rem.
+   The stranded line was a DESKTOP defect (1280px and 1440px); phones never had it, and shrinking the
+   phone size to "fix" a fault it did not have would have made the quote smaller than this page's own
+   body copy, which is 18.4px there. The vw term moved 2.6 to 2.3 so the ramp still lands on the new
+   maximum rather than reaching it early. Every value here was chosen by sweeping candidates in a real
+   browser across eight widths and reading the line boxes back, not by estimating from character counts.
+   ⚠️ SIZE DOWN AND MEASURE CONSTRAINED TOGETHER — one without the other does not give three lines.
+   Shrinking the type alone fits MORE characters per line in a 56rem column and would have gone to
+   two long uneven lines; narrowing alone at 1.7rem would have gone to five. The pair is tuned so the
+   three lines come out near-equal. The max-width sits HERE and not on .quote-in, because .quote-in
+   also wraps the logo and the award, and those are centred against the wider column by design.
+
+   ⚠️ 1.6 LINE-HEIGHT, up from 1.35. At 1.35 three lines of 24px type closed up into a block; the
+   extra leading is what makes a three-line paragraph read as three lines rather than as a slab. */
+.hg-landing blockquote { font-family: var(--display); font-weight: 400; font-style: italic; font-size: clamp(1.25rem,2.3vw,1.45rem); line-height: 1.6; letter-spacing: -.01em; color: var(--head); max-width: 46rem; margin-left: auto; margin-right: auto; margin-bottom: 1.75rem; }
 /* Attribution STACKS vertically, centred (both desktop + mobile): logo → name → award credit. */
 .hg-landing .quote-by { display: flex; flex-direction: column; align-items: center; gap: .55rem; }
 .hg-landing .quote-logo { height: 56px; width: auto; flex: none; display: block; }
 .hg-landing .quote-who { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .1rem; }
 .hg-landing .quote-name { font-family: var(--display); font-weight: 800; color: var(--head); font-size: 1rem; letter-spacing: -.01em; }
+/* The role line: who they are to the business, and the business's name.
+   🔴 SAME INK AS THE NAMES, LIGHTER WEIGHT (29 August 2026). It was `--ink-faint` at 600, which made
+   the BUSINESS NAME the faintest thing in the stack — quieter than the logo above it and quieter than
+   the award below it, both of which carry weight. A testimonial whose least legible element is who it
+   is from has the hierarchy inverted.
+   ⚠️ THE SEPARATION IS NOW WEIGHT AND SIZE, NOT COLOUR. Against the names' 800/1rem this sits at
+   400/.8rem in the same `--head` navy, so it reads as the same voice one step down rather than as a
+   caption in a different ink. Dropping the weight is what stops the added contrast from shouting —
+   raising the colour without lowering the weight would have made it compete with the names.
+   🔴 400 AND NOT 500, for the reason this stylesheet already records elsewhere: the page writes
+   600, 700 and 800, plus 400 as its implicit body weight. 500 would be an orphan step; 400 is not. */
+.hg-landing .quote-role { font-family: var(--display); font-weight: 400; color: var(--head); font-size: .8rem; letter-spacing: -.005em; line-height: 1.3; }
 /* Credential stacks: prominent TITLE line (stars flank it) with a smaller, muted SCOPE line beneath — both
    centred and smaller/quieter than the name above. */
 /* Stacks IDENTICALLY at every width (no breakpoints): title row (★ — text — ★) on line 1, scope on line 2. */
