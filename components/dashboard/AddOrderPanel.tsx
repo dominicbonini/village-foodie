@@ -22,7 +22,8 @@ import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
-import { fmtVenue } from '@/lib/event-display'
+import { fmtVenue, eventDateLabel } from '@/lib/event-display'
+import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { useAndroidBack } from '@/lib/native/backHandler'
 import { gatedAction, seedProvisionalSeq } from '@/lib/native/orderGate'
 import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
@@ -656,8 +657,11 @@ export function AddOrderPanel({
       if (!res.ok) return // S5: never setState from a failed fetch (e.g. 429)
       const data = await res.json()
       if (!Array.isArray(data.events)) return // malformed body — don't blank the list
+      // 🔴 THE STATUS FILTER IS GONE (1 September 2026, by decision). It kept only
+      // ['confirmed','open','closed'], so an `unconfirmed` or `cancelled` upcoming event appeared in
+      // the KDS picker and NOT here — two pickers, one endpoint, different answers, and nothing said
+      // why. Both now show everything the dashboard shows. See docs/last-report.md.
       const mapped: EventRecord[] = data.events
-        .filter((ev: any) => ['confirmed', 'open', 'closed'].includes(ev.status))
         .map((ev: any) => ({
           id: ev.id,
           event_date: ev.event_date,
@@ -2150,6 +2154,29 @@ setItemModal({ item, modGroups, editCartKey })
           </button>
         </div>
       )}
+      {/* ── 🔴 THESE TWO PANELS CAME OUT OF THE PICKER MODAL, AND THAT IS AN IMPROVEMENT. ──────────────
+          They describe the CHOSEN event — "orders will appear when the event opens", "today's event is
+          not open yet" — but they lived inside the modal, so they were only ever visible while the
+          picker was open and vanished the instant a choice was made. Out here they sit with
+          `isEventEnded` below, which is the same kind of statement about the same selection, and they
+          persist while the operator is actually building the order.
+          ⚠️ THE COPY AND THE CONDITIONS ARE VERBATIM. Only their position changed. */}
+      {manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0] && (
+        <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+          <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
+          <p className="text-xs text-amber-700">
+            {eventDateLabel(manualEvent.event_date, 'compact')} event selected. Orders will appear on the order screen when the event opens.
+          </p>
+        </div>
+      )}
+      {manualEvent && manualEvent.event_date === new Date().toISOString().split('T')[0] && liveEvent?.status === 'confirmed' && (
+        <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+          <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
+          <p className="text-xs text-blue-700">
+            Today&apos;s event — not yet open for orders. Orders will be queued and visible when you open the event.
+          </p>
+        </div>
+      )}
       {isEventEnded && (
         <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
           ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event.
@@ -2537,80 +2564,29 @@ setItemModal({ item, modGroups, editCartKey })
 
 
       {/* ── Event picker sheet ── */}
-      {showEventPicker && (() => {
-        const todayIso = new Date().toISOString().split('T')[0]
-        const fmtEvDate = (d: string) => {
-          const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
-          if (d === todayIso) return 'Today'
-          if (d === tmrw) return 'Tomorrow'
-          return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-        }
-        return (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowEventPicker(false)}>
-            <div className="bg-white rounded-2xl w-full max-w-sm mx-auto max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-              <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
-                <p className="font-black text-slate-900 text-base">Select event</p>
-                <button onClick={() => setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
-              </div>
-              <div className="p-3 space-y-2">
-                {upcomingEvents.length > 0
-                  ? upcomingEvents.map(ev => {
-                    const isSelected = manualEvent?.id === ev.id
-                    const isFuture = ev.event_date > todayIso
-                    // EVENT-SWITCH GATE: offline, an event not loaded this session has no cached data → block
-                    // switching to it (grey + disabled + "Reconnect to load"). Online / current event → allowed.
-                    const blocked = isOffline && !isSelected && !!isEventLoaded && !isEventLoaded(ev.id)
-                    return (
-                      <button key={ev.id} disabled={blocked}
-                        onClick={() => { if (blocked) return; if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
-                        className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${blocked ? 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed' : isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
-                          {blocked && <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">📴 Reconnect to load</span>}
-                          {ev.status === 'closed' && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">● Finished</span>}
-                          {ev.status === 'open' && <span className="text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 rounded px-1.5 py-0.5 flex-shrink-0">● Live</span>}
-                          {isFuture && ev.status !== 'closed' && ev.status !== 'open' && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
-                        </div>
-                        {(ev.venue_name || ev.town) && <p className="text-xs text-slate-500 mt-0.5">{fmtVenue(ev.venue_name, ev.town)}</p>}
-                        {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
-                      </button>
-                    )
-                  })
-                  : (eventsLoading || !eventsLoaded)
-                    // S5: skeleton while loading OR before any successful load (incl.
-                    // a failed fetch) — never flash "No events" in those states.
-                    ? [0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)
-                    // Only after a confirmed-empty successful load:
-                    : <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>}
-              </div>
-
-              {/* Warning when a future event is selected */}
-              {manualEvent && manualEvent.event_date > todayIso && (
-                <div className="mx-3 mb-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                  <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
-                  <p className="text-xs text-amber-700">
-                    {fmtEvDate(manualEvent.event_date)} event selected. Orders will appear on the order screen when the event opens.
-                  </p>
-                </div>
-              )}
-
-              {/* Info when today's confirmed (not yet open) event is selected */}
-              {manualEvent && manualEvent.event_date === todayIso && liveEvent?.status === 'confirmed' && (
-                <div className="mx-3 mb-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
-                  <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
-                  <p className="text-xs text-blue-700">
-                    Today's event — not yet open for orders. Orders will be queued and visible when you open the event.
-                  </p>
-                </div>
-              )}
-
-              <div className="p-3 border-t border-slate-100">
-                <button onClick={() => setShowEventPicker(false)} className="w-full border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600 font-medium hover:bg-slate-50">Done</button>
-              </div>
-            </div>
-          </div>
-        )
-      })()}
+      {/* ── 🔴 THE SHARED PANEL. Rows, card and scrolling now come from one place. ──────────────────
+          ⚠️ THE SIX-STATEMENT SELECT IS UNCHANGED and stays here: resetting the basket, refetching
+          slots and notifying the parent are this panel's job, not the picker's.
+          ⚠️ THE WARNING PANELS MOVED OUT, NOT AWAY. The future-event and today's-not-yet-open notes
+          used to sit inside the modal; they now render beneath the trigger, because they describe the
+          CHOSEN event and were only ever visible in the modal for as long as it was open — which was
+          never when the operator needed them.
+          🔴 THE CARD IS NOW max-h-[85dvh], NOT 80vh. `dvh` tracks a webview's dynamic toolbars and
+          `vh` does not; this surface runs inside the iOS and Android shells. */}
+      <EventPickerPanel
+        open={showEventPicker}
+        isDemo={isDemo}
+        events={upcomingEvents}
+        isSelected={ev => manualEvent?.id === ev.id}
+        isEventBlocked={ev => isOffline && manualEvent?.id !== ev.id && !!isEventLoaded && !isEventLoaded(ev.id)}
+        onSelect={ev => { if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
+        onClose={() => setShowEventPicker(false)}
+        title="Select event"
+        closeLabel="Done"
+        emptyState={(eventsLoading || !eventsLoaded)
+          ? <>{[0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)}</>
+          : <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>}
+      />
     </>
   )
 }

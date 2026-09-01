@@ -10,6 +10,7 @@ import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 // The ONE event-cancel gate, shared with manage and the dashboard. Replaces a window.confirm whose
 // safe button was labelled "Cancel" on the operation that cancels every live order.
+import { EventPickerPanel } from '@/components/shared/EventPickerPanel'
 import { EventCancelModal } from '@/components/shared/EventCancelModal'
 import { EventFinishTimeModal } from '@/components/shared/EventFinishTimeModal'
 import { EventActionsModal } from '@/components/shared/EventActionsModal'
@@ -2793,50 +2794,27 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {/* ── Event picker (opened from the three-dot menu) ────────────────────────────────────────
           The chip strip's list, moved. Same `switchEvent`, so the confirm that names the event being
           left and the orders on screen still fires on every switch. Closing changes nothing. */}
-      {showEventPicker && !isDemo && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventPicker(false)}>
-          {/* ── 🔴 max-h + flex-col + a SCROLLING LIST, not a scrolling card (1 September 2026). ────────
-              With 17 upcoming events this card grew past the viewport inside a `fixed inset-0` overlay,
-              which does not scroll — so the LATEST events were in the DOM and unreachable. Nothing was
-              truncated at fetch: /api/events/manage has no limit and `events.map` has no slice.
-              See docs/kds-event-picker-report.md.
-              🔴 `dvh`, NOT `vh`. This renders inside the iOS and Android shells, where `vh` resolves
-              against the LARGEST viewport and ignores the dynamic toolbars — so a `vh` cap leaves the
-              bottom of the card under the browser chrome on exactly the devices this screen runs on.
-              ⚠️ THE PADDING MOVED RATHER THAN GOING. `p-5` on the card would have padded the OUTSIDE of
-              the scroll region, so rows would clip against a 20px gap instead of the card edge. It is
-              now `px-5` on each child, with the header's `pb-4` replacing its old `mb-4` — the same
-              20px sides, 20px top, 16px gap, 12px gap, 20px bottom as before.
-              ⚠️ `min-h-0` IS LOAD-BEARING. A flex child's default `min-height:auto` refuses to shrink
-              below its content, so `overflow-y-auto` would never engage without it and the card would
-              grow exactly as it does today.
-              ⚠️ `stopPropagation` matches the dashboard's picker: a tap on a row's PADDING must not
-              reach the overlay's dismiss handler. The overlay's own dismiss is unchanged. */}
-          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl max-h-[85dvh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0">
-              <h3 className="font-semibold text-slate-900">Change event</h3>
-              <button onClick={() => setShowEventPicker(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
-            </div>
-            <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto px-5">
-              {events.map(event => {
-                const isToday = event.event_date === localTodayIso()
-                const dayLabel = isToday ? 'Today' : new Date(`${event.event_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })
-                const isCurrent = activeEvent?.id === event.id
-                return (
-                  <button key={event.id} onClick={() => { setShowEventPicker(false); switchEvent(event) }}
-                    className={`w-full text-left py-2.5 px-3 rounded-xl border text-sm transition-colors ${isCurrent ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-800 border-slate-200 hover:border-slate-400'}`}>
-                    <span className="font-medium">{event.venue_name.split(',')[0]}</span>
-                    <span className={isCurrent ? 'text-white/70' : 'text-slate-500'}> · {dayLabel} {formatTime(event.start_time)}{event.status === 'open' ? ' ●' : ''}</span>
-                  </button>
-                )
-              })}
-            </div>
-            <div className="px-5 pb-5 shrink-0">
-              <button onClick={() => setShowEventPicker(false)} className="mt-3 w-full text-sm text-slate-400 hover:text-slate-600 py-2">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── 🔴 THE SHARED PANEL. The card, the scroll region and the rows now live in ONE place. ──────
+          Was ~40 lines of bespoke modal here; the layout it carried (max-h-[85dvh], flex-col, the
+          list's flex-1 min-h-0 overflow-y-auto, shrink-0 header/footer, the click-stop) moved INTO
+          components/shared/EventPickerPanel.tsx unchanged — see docs/kds-picker-fix-report.md for why
+          each of those is load-bearing.
+          ⚠️ `switchEvent` AND ITS CONFIRM ARE UNTOUCHED and still belong to this screen: switching
+          discards the orders on the board, so the confirm is this surface's own decision.
+          ⚠️ THE OFFLINE GATE IS NEW HERE, by decision. `isEventBlocked` mirrors AddOrderPanel's rule —
+          offline, not the current event, and not loaded this session — so a kitchen tablet that has
+          dropped its connection cannot switch to an event whose orders it does not hold. */}
+      <EventPickerPanel
+        open={showEventPicker}
+        isDemo={isDemo}
+        events={events}
+        isSelected={event => activeEvent?.id === event.id}
+        isEventBlocked={event => isOffline && activeEvent?.id !== event.id}
+        onSelect={event => { setShowEventPicker(false); switchEvent(event) }}
+        onClose={() => setShowEventPicker(false)}
+        title="Change event"
+        closeLabel="Cancel"
+      />
 
       {/* ── EVENT ACTIONS — THE SHARED MODAL, the same one the dashboard mounts ─────────────────────
           🔴 EXTRACTED so the two menus cannot drift again. The KDS's copy was MISSING Start / Restart

@@ -29,7 +29,22 @@ export function fmtVenue(venueName?: string | null, town?: string | null): strin
  *  and with the event's own `event_date`. Do not swap it for `new Date()`.
  *  ⚠️ The event date itself is parsed as UTC (`Date.UTC`) and formatted with `timeZone:'UTC'`, so a
  *  date string is never shifted a day by the renderer's offset. */
-export function eventDateLabel(dateStr: string): string {
+/**
+ * ── 🔴 TWO MODES, ONE HELPER, ONE TODAY/TOMORROW RULE (1 September 2026). ──────────────────────
+ * `'long'` is the original and is the DEFAULT, so all three existing call sites — the KDS header, the
+ * dashboard header and EventActionsModal's subtitle — are byte-identical without being touched. Each
+ * renders ONE event's date in a header, where "Today 6th September" reads correctly.
+ *
+ * 🔴 `'compact'` EXISTS BECAUSE A LIST IS NOT A HEADER. The shared event picker renders up to 17
+ * rows on a kitchen screen; the long form is roughly twice the width and pushes the time off a phone
+ * row. It was added as a MODE rather than a second exported function so there is still exactly one
+ * place that decides what "today" means — the boundary computation below is shared by both, and a
+ * change to the timezone or the tomorrow rule cannot land in one and miss the other.
+ * ⚠️ The picker previously hand-rolled its own date in TWO different ways (KDS: `Today` / `Sat 6`;
+ * AddOrderPanel: `Today` / `Tomorrow` / `Sat 6 Sep`). Compact is AddOrderPanel's shape, because it is
+ * the one that distinguishes tomorrow — the distinction an operator actually acts on.
+ */
+export function eventDateLabel(dateStr: string, style: 'long' | 'compact' = 'long'): string {
   const ordinal = (n: number) => { const v = n % 100; const s = ['th', 'st', 'nd', 'rd']; return `${n}${s[(v - 20) % 10] || s[v] || s[0]}` }
   const todayStr = getLocalDateInTz('Europe/London')
   const [ty, tm, td] = todayStr.split('-').map(Number)
@@ -37,6 +52,11 @@ export function eventDateLabel(dateStr: string): string {
   const tomorrowStr = `${tmw.getUTCFullYear()}-${String(tmw.getUTCMonth() + 1).padStart(2, '0')}-${String(tmw.getUTCDate()).padStart(2, '0')}`
   const [ey, em, ed] = dateStr.split('-').map(Number)
   const d = new Date(Date.UTC(ey, em - 1, ed))
+  if (style === 'compact') {
+    if (dateStr === todayStr) return 'Today'
+    if (dateStr === tomorrowStr) return 'Tomorrow'
+    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+  }
   const dayLabel = `${ordinal(ed)} ${d.toLocaleDateString('en-GB', { month: 'long', timeZone: 'UTC' })}`
   if (dateStr === todayStr) return `Today ${dayLabel}`
   if (dateStr === tomorrowStr) return `Tomorrow ${dayLabel}`

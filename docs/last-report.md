@@ -1,270 +1,194 @@
-# Last report — Demo "Start a new service": reload after a confirmed restart
+# Shared event picker — extraction report
 
-**Date:** 2026-07-28 · **Files touched:** `app/dashboard/[token]/page.tsx` (only)
-**Verification:** `npx tsc --noEmit` → **clean, zero errors.** `npx eslint` → clean on every changed line. No `next dev`, no `next build`, no SQL.
-**Diff: 1 file — the `restartingRef` declaration, the `startNewService` body.**
-
-This report **overwrites** the previous one (landing copy follow-ups), per the rolling convention.
-
-**Prompt integrity:** one garble. *"this is a **oe**-per-session action"* → read as *"a **once**-per-session action"*. Nothing else was ambiguous; no other span needed interpretation.
+**Date:** 1 September 2026
+**Built.** `next dev` and `next build` were not run. Nothing committed, nothing deployed.
+⚠️ **This overwrites the audit that previously occupied this path** (kept at
+`docs/kds-event-picker-report.md` and `docs/kds-picker-fix-report.md` for the diagnosis and the layout
+fix respectively).
 
 ---
 
-## 1 · The current success handler, and the actual finding
+## STEP 1 — the helper survey, before any change
 
-### Quoted verbatim — `app/dashboard/[token]/page.tsx:895-919`, as it stood before this change
+### `eventDateLabel` — 3 render call sites, **all single-event headers, none a list**
 
-```ts
-  // DEMO ONLY — wipe the finished service and provision a fresh one for now. The server does all the
-  // work (app/api/demo/restart → lib/demo-restart); this only clears the CLIENT-side demo state the
-  // server can't see, then re-fetches.
-  const startNewService=async()=>{
-    if(restarting)return
-    setRestarting(true); setRestartError(null)
-    try{
-      const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
-      const data=await res.json().catch(()=>({}))
-      if(!res.ok){setRestartError(data?.error||'Could not start a new service — try again.');return}
-      // RESET THE LOOP-COMPLETE STATE. Its baseline is a persisted list of order keys
-      // (components/dashboard/DemoLoopComplete.tsx) — every key in it has just been deleted, so without
-      // this the NEW seeded board reads as 37 orders the visitor caused and the prompt fires instantly
-      // on load. Clearing both keys means the fresh board is re-baselined on next load and the visitor
-      // gets the moment properly when they order on the new service. Same key names as the component.
-      try{
-        localStorage.removeItem(`hg_demo_seen_orders_${token}`)
-        localStorage.removeItem(`hg_demo_loop_${token}`)
-      }catch{/* private mode — the baseline just re-records itself */}
-      setHighlightOrderKey(null)
-      // Full re-fetch: the event id, the window, the slot grid and every order have changed.
-      await fetchAllRef.current()
-    }catch{
-      setRestartError('Could not start a new service — try again.')
-    }finally{
-      setRestarting(false)
-    }
-  }
-```
+| file:line | Renders |
+|---|---|
+| `app/dashboard/[token]/kds/page.tsx:2563` | `<span className="hidden sm:block …">📅 {eventDateLabel(activeEvent.event_date)}</span>` — the KDS header bar, **the active event only** |
+| `app/dashboard/[token]/page.tsx:3138` | `<span className="hidden sm:block …">📅 {eventDateLabel(activeEvent.event_date)}</span>` — the dashboard header bar, same shape |
+| `components/shared/EventActionsModal.tsx:102` | `{event.event_date ? eventDateLabel(event.event_date) : ''}` — the modal's subtitle, **one event** |
 
-### What it refetches
+🔴 **THE LONG `Today 6th September` FORM IS REQUIRED IN ALL THREE.** Each is a header or title with one
+date and room for it; two are `hidden sm:block`, so they only appear where there is width.
 
-`fetchAllRef.current()` is `() => fetchAll()` (`:695`) — `forceSeed` false, so the config branch is skipped. It refetches thoroughly:
+**Recommendation, implemented: `eventDateLabel` gains a `style` parameter rather than a second
+function.** `'long'` is the **default**, so all three call sites are byte-identical and were not
+touched. `'compact'` returns `Today` / `Tomorrow` / `Sat 6 Sep`.
 
-- `GET /api/dashboard` → `setSlots`, `setProductionSlotUnits`, `setCapacityBreaches`, `setOrders(prev => mergeOrders(prev, data.orders || []))`, pause / extra-wait fields.
-- `GET /api/events/manage?upcoming=true` → `setTodayEvents`, `setUpcomingEvents`.
-- `fetchMenu`, `fetchStock`.
+**Reasoning.** The picker is a dense list of up to 17 rows on a kitchen screen; the long form is roughly
+twice the width and pushes the time off a phone row — that is a real regression on the surface whose
+overflow was fixed hours ago. **A mode rather than a sibling function keeps ONE place deciding what
+"today" means**: the today/tomorrow boundary computation is shared by both branches, so a timezone or
+rule change cannot land in one and miss the other. **Compact adopts AddOrderPanel's shape because it
+distinguishes Tomorrow** — the distinction an operator acts on — which the KDS's version did not.
 
-The comment's claim — *"the event id, the window, the slot grid and every order have changed"* — is correct about the **data**. **The new orders genuinely arrive in state.** `mergeOrders` takes membership from the read (`lib/orders/mergeOrders.ts:12-13`, `:84`), so the deleted orders drop out and the freshly seeded ones land in `orders`.
+### `eventStatusDisplay` — 2 render call sites, usable as-is ✅
 
-### What it leaves stale — one variable
+`app/dashboard/[token]/page.tsx:3145` and `app/dashboard/[token]/kds/page.tsx:2547`, both for the
+**active** event in a header, both pairing the returned `tone` with their own palette table
+(`EVENT_STATUS_TEXT_ON_DARK` / `_ON_LIGHT`).
 
-**`selectedEventId`.** It is never cleared, and it names an event that no longer exists.
+**No variant needed.** It returns `'● Live'`, `'● Finished'`, `'Cancelled'`, `'Not started'`, `'⏸
+Paused'` — which is a **superset** of the badges AddOrderPanel hand-rolled. The picker passes
+`paused: false` (pausing is truck-wide; a per-row "Paused" would be wrong on every row but one) and maps
+the tone through `EVENT_STATUS_TEXT_ON_LIGHT`, because the card is white. **No fourth palette table was
+invented.**
 
-Everything follows from that:
+### `fmtVenue` — 6 render call sites, usable as-is ✅
 
-**(a) The auto-select effect refuses to re-select** — `:660-661`:
-```ts
-  useEffect(()=>{
-    if(selectedEventId||!upcomingEvents.length) return
-```
-`selectedEventId` is truthy (stale), so the effect bails on its first line. It is designed to pick an event when there is *no* selection; it has no notion of a selection that has become **invalid**.
-
-**(b) The event resolves to null** — `:435-437`:
-```ts
-  const selectedOrDefaultEvent:TruckEvent|null=selectedEventId
-    ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
-    :pickDefaultEventByTime(upcomingEvents)
-```
-The refetched `upcomingEvents` contains only the NEW event, so `.find()` misses → `null`. Note the `:` branch — `pickDefaultEventByTime` would have picked the new event correctly. It is unreachable **precisely because** a stale selection exists.
-
-**(c) The "never blank the event bar" guard then resurrects the deleted event** — `:1555-1557`:
-```ts
-  const activeEvent:TruckEvent|null=resolvedEvent
-    ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
-  if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
-```
-`resolvedEvent` is null, `selectedEventId` still equals `lastActiveEventRef.current.id`, so `activeEvent` becomes **the cached OLD event object**. That guard exists for a transiently-failed events refetch; it cannot distinguish that from an event deliberately destroyed, so it holds the corpse.
-
-### That one variable explains all three stale symptoms
-
-| Symptom | Reads | Why it was stale |
-|---|---|---|
-| Header shows 12:00–15:00 | `activeEvent.start_time` / `.end_time` | `activeEvent` is the cached deleted event (c) |
-| New / Confirmed / Done all 0 | `eventOrders=activeEvent?overlayed.filter(o=>o.event_id===activeEvent.id):overlayed` (`:1745`) | Filters on the OLD event id. The new orders **were in state** — they carry the NEW `event_id`, so nothing matched. Not missing data: a wrong filter key. |
-| "This service has ended" card persists | `demoServiceEnded` (`:1709-1712`) → `activeEvent.event_date` + `end_time` | Reads the old, already-elapsed window, so it stays true — the card survives its own button |
-
-### Why the capacity strip DID update — the asymmetry
-
-`slots` and `productionSlotUnits` are not derived from `activeEvent` at all. They are assigned **wholesale from the server response** (`:591`, `:599`):
-
-```ts
-      setSlots(data.slots)
-      ...
-      if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})
-```
-
-And the server **re-resolves the event** when the id it is handed no longer exists — `app/api/dashboard/route.ts:141-148`:
-
-```ts
-  let selectedEventId: string | null = null
-  if (eventIdParam && todayEvents?.some(e => e.id === eventIdParam)) {
-    selectedEventId = eventIdParam
-  } else if (todayEvents && todayEvents.length === 1) {
-    selectedEventId = todayEvents[0].id
-```
-
-`fetchAll` passes the stale id (`:539-540`, from `selectedEventRef.current`). The `some()` check fails, the truck now has exactly one event for the date, and the route falls through to it. So slots, capacity **and the returned orders** all describe the NEW event.
-
-**The asymmetry is server-resolved data vs client-resolved identity.** Anything the server resolved for itself came back correct; anything the client keys off `selectedEventId` / `activeEvent` stayed pinned to a deleted row — with `lastActiveEventRef` actively preserving it. It was never "not enough was refetched".
-
-**One worse variant, unobserved but implied by the same code.** `fetchAll` also sends `date` from `selectedEventRef.current` (`:540`). If an operator returns the *next day* and restarts, the client asks for **yesterday's** date, `todayEvents` comes back empty, `selectedEventId` resolves to `null` server-side, and `activeOrders` / `doneToday` stay `[]` (`route.ts:164-166`). In that variant even the capacity strip would be wrong. The reload fixes it too, because a fresh mount has no `selectedEventRef` to send.
+`dashboard:3133` · `kds:2560` · `EventActionsModal:99` · `AddOrderPanel:2114` and `:2574`. **No variant
+needed.** It already handles `null`, and `EventActionsModal:90` documents that its town-folding is why
+the town is not a third line — the exact behaviour the picker wants.
 
 ---
 
-## 2 · The change: full reload, fired only after success
+## STEP 2 — what was built
 
-`fetchAllRef.current()` and `setHighlightOrderKey(null)` are gone, replaced by `window.location.reload()`. (`setHighlightOrderKey` was redundant — `highlightOrderKey` is plain `useState` (`:395`), which the reload clears.)
+### `components/shared/EventPickerPanel.tsx` — 162 lines, new
 
-The `localStorage` clearing is **kept and now load-bearing**: it must happen before the reload, because localStorage outlives it while React state does not. Without it the fresh board re-reads the old baseline of order keys and fires the loop-complete prompt on load.
+**Hardcoded (identical in both callers):** the overlay, the card, row layout and padding, hover, the
+selected treatment, the status badge, the offline gate's appearance, the demo hide, and every
+formatter — `eventDateLabel(date, 'compact')`, `fmtVenue`, `formatTime`, `eventStatusDisplay`.
 
-**`app/dashboard/[token]/page.tsx:918-953`, after the change:**
+**Props signature:**
 
 ```ts
-  const startNewService=async()=>{
-    // Synchronous re-entry guard — see restartingRef. A second restart mid-flight would delete the
-    // orders the first one just seeded.
-    if(restartingRef.current)return
-    restartingRef.current=true
-    setRestarting(true); setRestartError(null)
-    try{
-      const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
-      const data=await res.json().catch(()=>({}))
-      // 🔴 FAILURE PATH — NO RELOAD. ...
-      if(!res.ok){
-        setRestartError(data?.error||'Could not start a new service — try again.')
-        restartingRef.current=false; setRestarting(false)
-        return
-      }
-      // RESET THE LOOP-COMPLETE STATE. ...
-      // MUST happen before the reload — localStorage outlives it, React state does not.
-      try{
-        localStorage.removeItem(`hg_demo_seen_orders_${token}`)
-        localStorage.removeItem(`hg_demo_loop_${token}`)
-      }catch{/* private mode — the baseline just re-records itself */}
-      // SUCCESS, and only now. `restarting` is deliberately NOT cleared: the button stays disabled and
-      // reading "Setting up…" until the document is replaced, so it is never pressable again in the gap.
-      window.location.reload()
-    }catch{
-      // Network/parse failure — same as above: the restart may not have happened, so stay put.
-      setRestartError('Could not start a new service — try again.')
-      restartingRef.current=false; setRestarting(false)
-    }
-  }
+export interface PickableEvent {
+  id: string; event_date: string; start_time: string; end_time: string
+  venue_name?: string | null; town?: string | null; status?: string | null
+}
+
+export interface EventPickerPanelProps<T extends PickableEvent> {
+  open: boolean
+  isDemo?: boolean                                 // 🔴 hides the picker — KDS behaviour, both callers
+  events: T[]
+  isSelected: (event: T) => boolean                // KDS: activeEvent?.id · AOP: manualEvent?.id
+  onSelect: (event: T) => void                     // stays entirely with the caller
+  onClose: () => void
+  title: string                                    // "Change event" / "Select event"
+  closeLabel: string                               // "Cancel" / "Done"
+  isEventBlocked?: (event: T) => boolean           // the offline gate, now in both
+  emptyState?: React.ReactNode                     // AOP's skeletons stay AOP's
+}
 ```
 
-A reload is the right shape for exactly the reason the observation exposed: the restart replaces the event, every order and the slot map, so the client's *identity* for all of it is invalid. Repairing that piecemeal means re-deriving a page load by hand — clear the selection, let auto-select re-run, invalidate `lastActiveEventRef`, drop `selectedEventRef`, re-baseline the per-event stock keys, and get the ordering between them right. The reload rebuilds every derived value from one consistent server read.
+🔴 **IT IS GENERIC OVER `T`, AND THAT WAS NOT OPTIONAL.** The KDS's `switchEvent` needs a full
+`TruckEvent` (`truck_id`, `postcode`, `opened_at` and nine more). Typing the callbacks as
+`PickableEvent` narrowed it and forced a cast **at the handler that changes what a kitchen screen is
+showing** — the worst place in the app for one. `T` returns each caller exactly what it passed, checked
+by the compiler. **`tsc` caught this; it was not foreseen.**
+
+⚠️ **`PickableEvent`'s three display fields accept `undefined`** because the callers type them
+differently (`TruckEvent` uses `string | null`, `EventRecord` has them optional). **Both helpers already
+accept `null | undefined`.**
+
+### The layout fix was carried across, not re-derived
+
+```
+max-h-[85dvh]                    ✅ present   ·  vh (not dvh) anywhere: 0
+flex flex-col on the card        ✅
+flex-1 min-h-0 overflow-y-auto   ✅ on the LIST
+shrink-0 header + footer         ✅ siblings OUTSIDE the scroll region
+click-stop on the card           ✅
+```
+
+### Both callers use it
+
+```
+app/dashboard/[token]/kds/page.tsx:2807   <EventPickerPanel …/>
+components/dashboard/AddOrderPanel.tsx:2576   <EventPickerPanel …/>
+```
+
+### Untouched, as required
+
+`switchEvent` (7 refs, KDS) · `resetManual` (11) · `fetchManualSlots` (9) · `onEventChange` (3) ·
+`/api/events/manage` fetches (3 KDS, 1 AOP) — **all unchanged.**
 
 ---
 
-## 3 · The failure path, quoted after the change
+## 🔴 Behaviour that changed beyond the listed decisions — flagged explicitly
 
-Two exits, neither of which reloads — quoted from the block above:
+The decisions already made (demo hide, offline gate in both, no status filter, shared formatters)
+account for most of the delta. **These are the ones that go further, and you should read them:**
 
-```ts
-      if(!res.ok){
-        setRestartError(data?.error||'Could not start a new service — try again.')
-        restartingRef.current=false; setRestarting(false)
-        return
-      }
-```
-
-```ts
-    }catch{
-      // Network/parse failure — same as above: the restart may not have happened, so stay put.
-      setRestartError('Could not start a new service — try again.')
-      restartingRef.current=false; setRestarting(false)
-    }
-```
-
-`window.location.reload()` sits **after** the `!res.ok` early return, inside `try`, reachable only on a 2xx.
-
-Both failure exits reset the guard and the busy state, so: the "This service has ended" card stays mounted (`demoServiceEnded` is unchanged — nothing was refetched, nothing was reloaded), the error renders beneath the button (`:2144` — `{restartError&&<p className="text-sm text-red-600 mt-2">{restartError}</p>}`), and the button becomes pressable again for a retry. The server's own error text is preferred (`data?.error`), with the generic string as fallback — unchanged from before.
-
----
-
-## 4 · Busy state and double-press
-
-**Busy state — confirmed, pre-existing, unchanged** (`:2138-2141`):
-
-```tsx
-                  <button type="button" onClick={startNewService} disabled={restarting}
-                    className="mt-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-40 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm">
-                    {restarting?'Setting up…':'Start a new service'}
-                  </button>
-```
-
-Disabled, 40 % opacity, label "Setting up…" while in flight.
-
-**Double-press — strengthened.** The old guard was `if(restarting)return`, reading React state. `setRestarting(true)` does not apply until the next render, so two clicks dispatched inside a single frame can both observe `restarting === false` and both fire — and per your note, the second restart would delete the orders the first just seeded. `disabled={restarting}` closes the window a frame later, not immediately.
-
-Added a synchronous ref guard (`:401-405`):
-
-```ts
-  // The SAME in-flight flag as `restarting`, held in a ref so the re-entry guard is SYNCHRONOUS.
-  // `disabled={restarting}` only takes effect on the next render, so two clicks inside one frame can
-  // both read restarting===false and fire two restarts — and the second would delete the orders the
-  // first just seeded. The ref closes that window; the state drives the button's busy label.
-  const restartingRef=useRef(false)
-```
-
-`restartingRef.current=true` is set on the same synchronous tick as the guard check, so a second call returns before it can `fetch`. The ref is cleared on both failure exits and deliberately **not** cleared on success — the button stays disabled through the reload, so there is no gap in which it is pressable again.
+1. 🔴 **The KDS row is now two lines, not one, and shows more.** It gains a **town** (via `fmtVenue`),
+   an **end time**, and a **labelled status badge**. Its bare `●` is gone — replaced by `● Live`.
+   ⚠️ **This makes each row taller on the surface whose overflow was fixed this morning.** The scroll
+   region handles it, but **more scrolling is now needed for the same 17 events.**
+2. 🔴 **The KDS's inverted `bg-slate-900 text-white` selected row is gone**, replaced by AddOrderPanel's
+   orange border and tint. **My audit flagged this as a distance-legibility decision on a kitchen
+   screen, not a palette choice.** Unifying the row meant one had to win; **I did not add a prop for it,
+   because the brief listed row layout and hover as hardcoded.** ⚠️ **If the kitchen screen needs the
+   high-contrast marker, that is a prop I have not added — say so and it is a small change.**
+3. ⚠️ **AddOrderPanel's status badges changed colour.** They were `bg-green-50/border-green-200` for
+   Live and `bg-slate-100` for Finished; they are now a neutral `bg-slate-50 border-slate-200` chip with
+   the **text** coloured from `EVENT_STATUS_TEXT_ON_LIGHT`. **I did this rather than invent a fourth
+   palette table** — the existing three map tone → *text* colour only.
+4. ⚠️ **AddOrderPanel gains `Cancelled` and `Not started` badges it never showed**, because its filter is
+   gone and `eventStatusDisplay` labels every status. **Intended consequence of the no-filter decision,
+   but worth seeing stated.**
+5. 🔴 **The KDS gains the offline gate, which it has never had.** `isEventBlocked` there is
+   `isOffline && activeEvent?.id !== event.id`. ⚠️ **It is deliberately COARSER than AddOrderPanel's**,
+   which also consults `isEventLoaded(ev.id)` — the KDS has no per-event cache map to consult. **So
+   offline, a KDS operator cannot switch to ANY other event.** That is stricter than AddOrderPanel and
+   stricter than the KDS's previous behaviour (which allowed it and would have shown an empty board).
+   **UNKNOWN whether that is the posture you want** — it is the safe direction, but it is a real change.
+6. ⚠️ **AddOrderPanel's two warning panels moved OUT of the modal**, per the brief, and now render
+   beneath the trigger beside `isEventEnded`. **Copy and conditions are verbatim.** This is arguably an
+   improvement — inside the modal they vanished the instant a choice was made, which is when they became
+   relevant — **but their position changed and you did not ask for that.**
+7. ⚠️ **AddOrderPanel's card grew from `max-h-[80vh]` to `max-h-[85dvh]`.** Required by the "carry the
+   KDS layout" instruction; the `vh → dvh` half is a fix, the `80 → 85` half is unification.
 
 ---
 
-## 5 · Does the same partial-refresh shape exist elsewhere? — surveyed, not changed
+## Verification
 
-**No. The one other handler that destroys the selected event's identity already handles it correctly** — and it is operator-facing, not demo-gated.
+```
+npx tsc --noEmit                                     ✅ clean
 
-`cancelEventFromMenu` (`:1510-1519`) removes the event the operator is looking at, and clears the selection explicitly:
-
-```ts
-      setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
-      setSelectedEventId(null); setShowEventMenu(false); showToast('Event cancelled')
-      fetchAllRef.current() // re-sync so the cancelled event drops out immediately
+ESLINT                                          BEFORE                    AFTER
+app/dashboard/[token]/kds/page.tsx              21 (18 err, 3 warn)       21 (18 err, 3 warn)   ✅ did not rise
+components/dashboard/AddOrderPanel.tsx          23 (12 err, 11 warn)      21 (10 err, 11 warn)  ✅ two errors fewer
+lib/event-display.ts                            0                         0                     ✅
+components/shared/EventPickerPanel.tsx          (new)                     0                     ✅
 ```
 
-`setSelectedEventId(null)` is the exact line `startNewService` was missing. With it, `selectedOrDefaultEvent` takes the `pickDefaultEventByTime` branch (`:437`) and the auto-select effect is free to run — so a partial refresh is sufficient there. Same pattern, comparable situation, correct.
+**No inline formatter survives in either picker:** `toLocaleDateString` in the KDS picker region **0** ·
+`fmtEvDate` **0** · `venue_name.split(',')` in either file **0** · AddOrderPanel's status filter **0**.
 
-The remaining event-mutating handlers all change an event **in place**, so the id survives, `selectedEventId` stays valid, and a partial refresh is the right tool:
-
-| Handler | Line | Mutation | Refresh |
-|---|---|---|---|
-| `openEvent` | `:1423-1433` | status → `open` | optimistic patch + `fetchAllRef.current()` |
-| `extendEvent` | `:1439` | `end_time` | optimistic patch + refetch |
-| `doFinishEvent` | `:1460-1469` | status → `closed` | optimistic patch + `fetchAllRef.current()` |
-| `saveEventNote` | `:1521` | `customer_note` | refetch |
-
-None invalidate the event id, so none carry the bug. **Nothing changed here**, as instructed.
-
-One adjacent observation, reported only: `cancelEventFromMenu` filters `todayEvents` but not `upcomingEvents`, relying on the following `fetchAllRef.current()` to reconcile. Since `selectedOrDefaultEvent` reads `upcomingEvents` (`:436`), there is a brief window where the cancelled event is still in that list. `setSelectedEventId(null)` means it cannot be *selected*, so I could not construct a visible symptom by reading. Flagging as something to look at, not a finding.
+**Sizes:** kds `3173 → 3151` (2 hunks) · AddOrderPanel `2616 → 2592` (6 hunks) · event-display
+`109 → 129` (2 hunks) · panel `162` new. **Net −45 lines across the callers.**
 
 ---
 
-## 6 · Not touched, as instructed
+## What I could not establish
 
-`restartDemoService`'s server logic, the delete ordering and the seeding (`lib/demo-restart.ts`), `app/api/demo/restart/route.ts`, `provisionDemo`, `commitMenu`, the scraper — none were opened for editing. The whole change is two edits in `app/dashboard/[token]/page.tsx`: the `restartingRef` declaration (`:401-405`) and the `startNewService` body (`:895-953`). The button markup is unchanged.
+1. **NOT OBSERVED — nothing was rendered.** No `next dev`, no `next build`, no page loaded, no viewport
+   measured. **This is a source change; it is not verified behaviour.** The row is taller than the KDS's
+   was, so the scroll region matters more than it did — **and that is exactly what has not been seen.**
+2. **UNKNOWN — whether the coarser KDS offline gate (§5) is the intended posture.**
+3. **UNKNOWN — whether losing the KDS's inverted selected row (§2) is acceptable on a kitchen screen at
+   distance.** I flagged it in the audit as deliberate; the brief's "row layout hardcoded" decision
+   overrode it, and I have implemented the decision rather than re-litigating — but the concern stands.
+4. **The titles and footers stayed props.** I could not find one wording that reads correctly for both
+   *"change which event this screen shows"* and *"pick the event for this order"* without being vaguer
+   than either. **I did not force it.**
 
 ---
 
-## 7 · Verified by reading vs. by running
-
-### Ran
-- `npx tsc --noEmit` → **clean**.
-- `npx eslint app/dashboard/[token]/page.tsx` → **no diagnostic on any changed line.** (The file carries pre-existing violations elsewhere — `no-explicit-any`, `Cannot access refs during render`, `set-state-in-effect` — all outside this diff; I checked each reported line number against the change.)
-
-### Read only — NOT verified by running
-1. **The reload has never been executed.** No `next dev`, per instruction. The causal chain in §1 is read straight off the source; the *fix* is verified only in the sense that a fresh mount cannot carry a stale `selectedEventId` / `lastActiveEventRef` / `selectedEventRef`, because all three are `useState`/`useRef` initialised at mount.
-2. **The failure path has not been exercised.** I did not force a non-2xx from `/api/demo/restart` to watch the card survive with the error rendered.
-3. **The double-press race was reasoned, not reproduced.** Two clicks inside one frame is hard to produce by hand; the ref guard is correct by construction (synchronous read and write on one tick), but I did not demonstrate the original race.
-4. **The server-side fallback (`app/api/dashboard/route.ts:141-148`) was read, not observed.** My claim that it is what fed the correct capacity strip is inference from the code plus your observation that the strip *was* right — consistent, but I issued no request. Note that if the truck had two events on the date, the `length === 1` branch would not apply and the `> 1` branch would project the first event instead; I did not check how many events a restart leaves behind.
-5. **The next-day variant in §1 is predicted, not observed.** It follows from `date` being sent from `selectedEventRef.current` (`:540`), but I did not reproduce it.
-6. **No DB queries run.** I did not inspect the demo truck's live event rows.
+**No part of this prompt reached me garbled, and I found no self-contradiction in it.** One tension
+worth naming rather than repairing silently: the brief hardcodes row layout *and* preserves the KDS
+layout fix, and the KDS's high-contrast selected row is arguably part of what made that surface
+readable. **I followed the decision as written and flagged the cost in §2 rather than quietly adding a
+prop for it.**
