@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.51
+HatchGrab Engineering Reference Manual · V11.52
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.51**
+**Version 11.52**
 
 August 2026
 
@@ -15,6 +15,38 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.52 — 1 September 2026
+
+Delta over V11.51 — **two status changes that alter what a deploy MEANS, one production deploy, and the
+provenance of `truck_events.auto_open`.**
+
+- 🔴 **THE iOS APP IS APPROVED AND SHOWS "READY FOR DISTRIBUTION" (1 September 2026)**, after the
+  camera-crash rejection was resolved. ⛔ **Every "no build has shipped / undeployed, hardware-gated"
+  line in this manual is stale and is corrected in place.** 🔴 **THE CONSEQUENCE OUTRANKS THE APPROVAL:
+  the shell is remote-URL and loads production, so a VERCEL DEPLOY IS NOW AN INSTANT CHANGE TO A SHIPPED
+  APP STORE APP** — no review gate, and no rollback but another deploy. **Every deploy decision is now a
+  release decision.** §36, §40, §27.
+- ✅ **THE ANDROID BUNDLE IS NOT STALE** — every native source predates it, the merged manifest and baked
+  config match the artefact, and it bundles no web build. **A rebuild would differ only by a lockfile
+  entry and a timestamp.** 🔴 **What blocks submission is the LISTING, not the binary:** no screenshots,
+  no 1024×500 feature graphic, and the 512 icon is 24-bit where Play requires 32-bit. §36.
+- 🔴 **DEPLOYED TO PRODUCTION, 1 September 2026** — nine workstreams, 191 paths, dominated by custom
+  domains. It **registered a daily cron that writes to `trucks`**, so **a Vercel rollback is no longer a
+  complete undo.** The tester truck's live test data was cleared first; the three Vercel API variables
+  were set, so **all six trial trucks can now see AND complete the custom-domain wizard.** §46, §27.
+- 🔴 **`truck_events.auto_open` — THE SCRAPER NEVER READS THE OPERATOR'S SETTING.** It omits the field,
+  so the column default `false` applies; the truck default is applied later, **at confirm**. The
+  resulting behaviour is **probably correct and correct by accident.** §15.
+- 🔴 **`trucks.timezone` GOVERNS NOTHING.** It is null on every truck and nothing reads it; the scheduler
+  hardcodes Europe/London and never queries `trucks`. **`country` plays no part.** ⚠️ **This is a ceiling
+  on onboarding — it must be resolved BEFORE the first non-GB truck, not after.** §15, §35.
+- ⚠️ **OPERATOR SETTINGS CHANGES ARE NOT AUDITED.** `action_audit_log` records order and money actions
+  only, so *"when did this setting change and who changed it"* cannot be answered from the database. §27.
+- **Landing page:** seven em-dash constructions became sentence breaks (18 → 11 rendered em dashes),
+  and **three strings are recorded as uneditable on style grounds** — a join key, a price-mask exact
+  match, and a customer's own words. §38, §4.
+- **Two method notes**, one of which strengthens an existing invariant rather than adding a second. §35.
 
 ## V11.51 — 29 August 2026 (later)
 
@@ -8010,6 +8042,69 @@ trucks.default_auto_open and default_auto_close live in Settings → Order setti
 
 > **RESOLVED MECHANISM (V6.6)** — auto-open and "Start Event" are the SAME state transition (`truck_events.status` → `'open'`); `auto_open` just automates it. Auto-CLOSE (`status` → `'closed'`) is the real ordering gate. The reason auto-open/close had appeared "not firing" was the dead pg_cron scheduler (the deleted Vault secret — Section 11), now fixed: the `auto-event-scheduler` edge function (1-min) does both auto-open (confirmed + auto_open + start_time ≤ now → open) and auto-close (open past end_time → closed) in London time. The truck-level `default_auto_*` flags only SEED the per-event `truck_events.auto_open` / `auto_close` at confirm. Behaviourally re-verify on a live event.
 
+### 🔴 WHERE `truck_events.auto_open` ACTUALLY GETS ITS VALUE (V11.52)
+
+⛔ **THE LINE ABOVE IS NEARLY RIGHT AND MISSES THE CASE THAT MATTERS.** The truck-level defaults seed
+the per-event flags at confirm **and** at manual insert — **but the SCRAPER, the highest-volume creation
+path in the product, never reads them at all.**
+
+**The five insert paths, READ:**
+
+| Path | `auto_open` set to | Reads `default_auto_open`? |
+|---|---|---|
+| Manual creation (`upsert_event`, `app/api/manage/route.ts`) | `truck.default_auto_open ?? true` | ✅ yes |
+| 🔴 **The scraper** (`app/api/inbound-schedule/route.ts`) | **omitted → column default `false`** | 🔴 **no** |
+| Demo event provisioning | literal `false` | no — deliberate, a demo event is already open |
+| Local diagnostic script | literal `false` | no — not a product path |
+| Truck provisioning | *writes the `trucks` row* | seeds the default itself |
+
+**The column defaults are `auto_open false` / `auto_close true`**, declared in the event-system
+migration. **There is no trigger on either column.**
+
+✅ **THE OPERATOR'S SETTING IS APPLIED LATER, AT CONFIRM** — the Manage confirm payload sends
+`truck.default_auto_open ?? true`, and the events action route writes it. **That is why confirmed
+scraped events read `true` while unconfirmed ones sit at `false`**, which is exactly what production
+shows: the only scraped rows still `false` that were never cancelled are the unconfirmed ones.
+
+🔴 **THE CONSEQUENCE, AND WHY IT IS NOT SIMPLY A BUG.** An unconfirmed scraped event will not auto-open
+at its start time, because the scheduler selects only rows where the flag is true. **That behaviour is
+probably CORRECT** — a scraped event is an unverified guess and should not open to customers unattended.
+⚠️ **But it is correct BY ACCIDENT**, arising from a column default rather than from a decision.
+**It should be made explicit at the insert; the behaviour itself should not change.**
+
+⚠️ **A PER-EVENT WRITE PATH EXISTS AND NOTHING SENDS TO IT.** The events action `update` allowlist
+includes `auto_open` and `auto_close`, but **no interface anywhere posts them.** The only operator
+control is the truck-wide toggle in Settings, which writes the **trucks** row. **Event rows receive their
+value at insert or at confirm, and never from an operator editing that event.**
+
+⚠️ **UNPROVEN.** One batch of tester events created in a single operation carried `auto_open = false`
+despite coming through the manual path on a truck whose default reads `true` today. **The most likely
+explanation is that the default was `false` at creation and was turned on afterwards — and it could not
+be confirmed, because settings changes are not audited (§27).** Two future rows were corrected directly.
+
+### 🔴 THE TIMEZONE COLUMN GOVERNS NOTHING (V11.52)
+
+**READ: `trucks.timezone` is NULL on every truck, and nothing reads it.** The `auto-event-scheduler`
+Edge Function **hardcodes `Europe/London`** in its own `londonNow()` helper and **never queries the
+`trucks` table at all** — its only reads are from `truck_events`, so it could not use a per-truck zone
+even if one were populated.
+
+**READ: `country` plays no part in opening or closing.** It is read only by Stripe Connect, for merchant
+identity. 🔴 **The correlation between every truck being `GB` and every opening time being correct is a
+coincidence of the customer base, not a mechanism.**
+
+⚠️ **THE HARDCODE IS REPEATED ~42 TIMES**, and several sites *look* per-truck without being so —
+`(truck as any).timezone ?? 'Europe/London'` resolves to the constant on every row today.
+
+🔴 **THE CEILING THIS PLACES ON ONBOARDING.** A non-GB truck would open and close at **UK local time,
+silently**. Nothing logs a mismatch and nothing compares the truck's country to the assumed zone; **the
+only symptom would be an operator reporting that customers could not order.** **This must be resolved
+BEFORE the first non-GB truck is onboarded, not after.**
+
+⚠️ **STANDING CAUTION: do not reason about opening behaviour from the timezone column.** It looks
+authoritative and is inert. **And the scheduler is an Edge Function, so the deployed bundle may differ
+from the repository copy** — the V8.3 BST stale-deploy incident is the precedent.
+
 ### Event lifecycle controls — Start, Restart, Close (V5)
 
 - **Start Event** — opens a confirmed event for orders. Status ● Live (green).
@@ -11298,6 +11393,34 @@ the rest show what the workstream thought it owed before detection and the wizar
   same five conditions in prose**, so a rule and a sentence about the rule remain two records of one
   fact. **Reduced from two implementations to one implementation plus one description** — better, not
   closed. §3, §46.
+
+## 🔴 DEPLOYED 1 SEPTEMBER 2026 — WHAT SHIPPED AND WHAT IT LEFT OPEN (V11.52)
+
+**The accumulated uncommitted batch was deployed to production.** Nine workstreams, 191 paths, dominated
+by the custom-domain feature. **⛔ Every "undeployed" line describing that batch is superseded.**
+
+- 🔴 **A daily cron now writes to `trucks`, and a rollback does not undo it.** §46.
+- ✅ **The tester truck's live test data was cleared before the deploy.** §46.
+- 🔴 **Operator domain provisioning is LIVE and all six trial trucks can complete the wizard.** §46.
+
+### ⚠️ VERIFICATION DEBT CARRIED FORWARD FROM THIS DEPLOY
+
+- 🔴 **The KDS moved from a redirect to an in-place render inside a Suspense boundary and HAS NOT BEEN
+  EXERCISED ON A DEVICE.** It is a live kitchen surface; the change removed the dashboard token from a
+  kitchen device's address bar, which is the point of it.
+- 🔴 **The ordering page no longer redirects.** That is a fix on the payment-return path — the
+  post-payment `?confirm=` arrival now reaches its receipt — **but it has not been observed end to end
+  in production.**
+
+## ⚠️ OPERATOR SETTINGS CHANGES ARE NOT AUDITED (V11.52)
+
+**READ: `action_audit_log` records ORDER AND MONEY actions only** — collection, mark paid, undo mark
+paid, manual payment at order. **There is no trail for a change to a truck's defaults.**
+
+🔴 **SO A QUESTION OF THE FORM *"when did this setting change, and who changed it"* CANNOT CURRENTLY BE
+ANSWERED FROM THE DATABASE.** ⚠️ **This is not hypothetical — it is why the `auto_open` anomaly in §15
+had to be recorded as UNPROVEN** rather than resolved: the most likely explanation is a setting that was
+`false` at creation and turned on afterwards, and **nothing anywhere records that it changed.**
 
 ## ⚠️ ADDED V11.51
 
@@ -15352,6 +15475,38 @@ and produced the right verdict for the wrong reason — which is the failure mod
 it. **Joins the §1 family:** *an inference scoped to one evidence source is a statement about that
 source, not about the risk.*
 
+### ⚠️ GENERALISED V11.52 — AN EXPLANATION ADJACENT TO THE EVIDENCE IS NOT AN EXPLANATION OF IT
+
+**The V11.48 case above is about a GUARD demonstrated on the wrong input. The same shape recurs with a
+FINDING that explains something near the thing being investigated.**
+
+*Evidence (V11.52):* the scraper's `auto_open` omission (§15) is a real and correctly-diagnosed defect —
+**and it does not account for the rows that prompted the investigation**, which were created through the
+manual path entirely. **A true finding, adjacent to the question, arriving while the question was open.**
+
+🔴 **THE TEST: does this explanation produce the rows in front of me, or only rows LIKE them?** A finding
+that survives that question is an answer; one that does not is a second finding, and saying so is what
+keeps the original question open. **The failure mode is that the adjacent explanation is CORRECT**, which
+is exactly why it stops the search.
+
+## ⚠️ AN EMPTY QUERY RESULT IS NOT EVIDENCE OF ABSENCE (V11.52)
+
+**A filtered query returning nothing is equally consistent with the rows not existing and with the query
+not having run as intended** — a wrong filter, a wrong table, a wrong project, a silent permission
+refusal, a typo in a column name.
+
+🔴 **THREE CLAIMS IN ONE SESSION WERE ASSERTED ON AN EMPTY RESULT AND ALL THREE WERE WRONG:** the
+custom-domain columns, the van device tables, and a timezone-offset hypothesis. **Three for three is not
+bad luck; it is the method failing.**
+
+✅ **THE RULE: CONFIRM AGAINST A FULL LISTING BEFORE CONCLUDING SOMETHING DOES NOT EXIST.** List the
+columns, list the tables, count the rows unfiltered — then apply the filter. **The cost is one extra
+query; the cost of the alternative is a confident wrong answer that reads exactly like a right one.**
+
+⚠️ **This is the read-side twin of the §65 "APPLIED/live" family** — *"file exists" ≠ "recorded applied"
+≠ "column exists"*, where only an unfiltered count proves it. **Same lesson, arriving from the query
+side rather than the migration side.**
+
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -15392,7 +15547,50 @@ An entitlements file is **read by `codesign`**, not compiled or copied. A Resour
 ⚠️ **Push failure remains silent on the device** — one `console.warn` in a WebView. Nothing reaches the operator or the server; a device that never registered is indistinguishable from one with no orders.
 
 
-> The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
+> The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. ⛔ **STATUS SUPERSEDED V11.52 — see the block immediately below. iOS IS LIVE ON THE APP STORE; the Android BINARY is ready and its LISTING is not.**
+
+## 🔴 PLATFORM STATUS — CORRECTED 1 SEPTEMBER 2026 (V11.52)
+
+⛔ **THIS REPLACES EVERY "no build has shipped / no store listing exists / undeployed, hardware-gated"
+LINE IN THIS MANUAL.** Those lines were true when written and are kept where they are dated changelog
+entries; **as a statement of current state they are wrong.**
+
+### ✅ iOS — APPROVED, "Ready for Distribution" (1 September 2026)
+
+**Approved by Apple after the earlier camera-crash rejection was resolved.**
+
+🔴 **THE CONSEQUENCE MATTERS MORE THAN THE APPROVAL, AND IT CHANGES WHAT A DEPLOY IS.** *Ready for
+Distribution* means the app is **live on the store now**, not held for a manual release. **Both shells
+are remote-URL and load production.** Therefore:
+
+> 🔴 **A VERCEL DEPLOY IS AN INSTANT CHANGE TO A SHIPPED APP STORE APP.** There is no review gate in
+> front of it and **no rollback path other than another deploy.** ⚠️ **EVERY FUTURE DEPLOY DECISION MUST
+> BE TREATED AS AN APP RELEASE DECISION**, on both platforms, by every person who can trigger one.
+
+⚠️ **And the rollback caveat compounds it:** the 1 September deploy registered a cron that writes to
+`trucks` (§46), so a rollback is not a complete undo *of the web either*.
+
+### ✅ Android — the BINARY is ready; the LISTING is what blocks submission
+
+**READ — the signed release bundle is NOT stale.** Every Android native source predates it, the merged
+manifest and the baked Capacitor config match the shipped artefact, and **the app bundles no web build**.
+**A rebuild today would differ only by a lockfile entry and a timestamp.** ⛔ **Any text asserting the
+bundle must be rebuilt before submission is superseded.**
+
+🔴 **BECAUSE THE SHELL CARRIES NO WEB BUILD, UNCOMMITTED WEB CHANGES REACH THE ANDROID APP THROUGH A
+VERCEL DEPLOY, NOT THROUGH A REBUILD.** **The web and native halves of any change ship by entirely
+different mechanisms, on entirely different timescales** — the web half instantly, the native half not
+at all until someone builds and submits. **Hold that asymmetry in mind for any change with both.**
+
+✅ **`CAMERA` IS NOT DECLARED ANYWHERE IN THE MERGED MANIFEST, AND NOTHING REQUESTS IT AT RUNTIME.** For
+`<input type="file" accept="image/*">` **that is the correct state** — the system picker hands capture to
+the camera app's own process. **The manifest half of the photo-upload verification debt is discharged;
+⚠️ the physical-hardware half remains unobserved.**
+
+🔴 **WHAT BLOCKS SUBMISSION IS THE LISTING, NOT THE BINARY.** Outstanding, all three required before
+upload: **no screenshots exist**, **no 1024×500 feature graphic exists**, and **the 512 icon in the
+repository is 24-bit where Play requires 32-bit.** ⚠️ **Produce all three BEFORE submitting — store
+listing changes made after submission can restart the review.**
 
 **Same shell, second platform.** Android is a **Capacitor 8 remote-URL shell**, identical in architecture to iOS: the native WebView loads the LIVE site and Vercel stays the backend. There is no second web app and no wrapped bundle — which is why almost every finding below is a *web-bundle* or *asymmetry* finding rather than an Android one.
 
@@ -16330,6 +16528,29 @@ from a postcode the visitor types, geocoded server-side.**
 third party via a WebView opened from your app, where your app controls the code. **The whole product is
 that WebView, so the open-web exemption does not apply** — which is what forced the PostHog reading in
 §12.
+
+## 🔴 BEFORE THE FIRST UPLOAD — WHAT MUST BE ESTABLISHED, NOT ASSUMED (V11.52)
+
+🔴 **TO BE CHECKED IN PLAY CONSOLE, NOT INFERRED FROM THIS REPOSITORY. UNPROVEN either way:**
+
+- **Whether Play App Signing is enrolled.**
+- **Whether anything has ever been uploaded to `com.hatchgrab.app` on ANY track** — internal, closed or
+  open. 🔴 **`versionCode 1` is only usable if nothing has**, and the build files carry `versionCode 1`
+  today. **The App bundle explorer is the definitive place to check both.**
+
+🔴 **PLAY REQUIRES DEMO CREDENTIALS IN THE App access SECTION.** The operator app opens onto a login, so
+**a reviewer can see nothing without them.** ⚠️ **This must NEVER be a live trading operator's account** —
+a reviewer signing in would be working inside a real truck's orders, menu and customer data.
+
+⚠️ **TARGET API LEVEL.** From **31 August 2026** new apps and updates must target **API 36** to be
+submitted, with an extension route available to **1 November**. This manual records `targetSdk` as 36 —
+🔴 **confirm that against `android/variables.gradle` and `android/app/build.gradle` before upload rather
+than against this sentence.**
+
+⚠️ **REVIEW TIMING — PLAN FOR A WEEK, NOT FOR APPLE'S TWO DAYS.** Google's own guidance is *up to seven
+days with no guarantee*; first submissions from new accounts commonly run **7–14 days**, later updates
+**1–3 days**. ✅ **The verified organisation account clears the twelve-tester closed-testing requirement**
+that otherwise dominates a first Android launch — recorded above and still the single biggest saving.
 
 ## Screenshots — the emulator geometry problem (V11.44)
 
@@ -18302,6 +18523,47 @@ the other invites the opposite mistake**, which is why the comment states both.
 ⚠️ **The quote's straight apostrophe (`U+0027`) still differs from the page's typographic ones.** It is
 the operator's own punctuation and **only their original message settles it** — unchanged deliberately.
 
+## 🔴 EM DASHES ON THE LANDING PAGE — THE EDIT, THE RULE, AND THREE STRINGS THAT MUST NOT BE TOUCHED (V11.52)
+
+**Seven em-dash constructions in `app/landing/page.tsx` were replaced with sentence breaks, taking
+rendered em dashes in that file from 18 to 11** (counted with the TypeScript tokenizer over string,
+template and JSX-text nodes — **the file is largely comment, so a grep over it is not the count**).
+
+⚠️ **THE REASON MATTERS AND IS NOT TASTE.** A reviewer identified the density as reading like
+AI-generated copy. **On a marketing surface that impression is the damage**, whatever the sentences say.
+
+### ✅ THE EDITING RULE — apply this in future rather than re-auditing
+
+- **A colon** only where the string genuinely is **a label and a value**.
+- **A full stop** where **two complete thoughts** have been joined.
+- **A comma** where the second half **qualifies** the first.
+- **The em dash survives only as a beat before a punchline — no more than one per screenful.**
+
+### 🔴 THREE STRINGS IN THAT FILE MUST NEVER BE EDITED ON STYLE GROUNDS
+
+1. 🔴 **The `Online ordering — Pay at Hatch` row label. ITS EM DASH IS A JOIN KEY** — into the row
+   feature map and into **three render-time equality tests**. **The parity checker uses it as a lookup
+   and FAILS OPEN**, so renaming it **reports clean while silently dropping the row** and flipping the
+   trial column on three surfaces. **The single highest-risk string on the marketing surface.** §4.
+2. 🔴 **The bare `—` glyph used as the "not included" cell value.** It is exempted from the pre-launch
+   price mask **by exact string match**; change it and the cell renders **`TBC`**.
+3. 🔴 **The customer testimonial.** It is **unedited operator speech**. ⚠️ **Tidying a quote to house
+   style converts evidence into marketing**, and is not a change that may be made on the operator's
+   behalf.
+
+### ⚠️ NOTHING CHECKS ANY OF THIS AUTOMATICALLY
+
+**READ: the plain-English checker holds a hand-maintained corpus, has NO dash rule, contains NO landing
+strings, and runs in NO CI job and NO git hook.** ⚠️ **So the rule above is enforced by whoever
+remembers it** — which is precisely the §35 "explicit corpus only checks what somebody added" shape.
+
+✅ **The store listing copy that ships to Google and Apple contains no em dash, no en dash and no double
+hyphen.** Its dashes are all headings, horizontal rules and an internal changelog.
+
+⚠️ **AND THE LANDING IS NOT THE PUBLIC MARKETING SURFACE TODAY.** In production a non-admin at the
+HatchGrab apex renders **the contact page**; the landing stays admin-gated until testimonial permission
+and real screenshots are in place. **The contact page contains no prose dash at all.**
+
 ## Copy and the landing page (V11.21)
 
 ### Kitchen-app claims now name iPhone
@@ -18700,6 +18962,41 @@ Across `app/manage/[token]/page.tsx` and `components/FeatureGate.tsx`. **Suppres
 **KEPT on iOS:** current plan · trial end date · **the full feature matrix** · footnotes · the `billingCard` notice. 🔴 **Panels that lose a CTA keep their explanatory text — no empty shells.** Showing what the plans include is a fact; asking for the sale is not.
 
 **Three `/pricing` links repointed to `?tab=billing` on ALL platforms.** `/pricing` never existed as a route — those were **live 404s** for every operator, not just iOS.
+
+## ✅ WHERE EVERY COMMERCE CONTROL ACTUALLY ENDS (V11.52)
+
+**READ, traced end to end.** `purchaseCtaAllowed()` returns **true on Android**, so all eleven gated
+controls render there while iOS hides them. **Every one of those controls terminates in one of three
+things: a tab switch, a copy string, or a `mailto:` to support.** All four upgrade buttons route through
+a modal whose **only** action is an email.
+
+🔴 **NOTHING IN THE PRODUCT CAN CHARGE A CARD FOR A PLAN OR SUBSCRIPTION, ON ANY PLATFORM.** There is no
+`subscriptions.create`, no `checkout.sessions.create`, no billing portal and no subscription object
+anywhere. **The entire Stripe surface is payment intents, Connect and refunds — all on the CUSTOMER
+FOOD-ORDER path.**
+
+🔴 **AND NO OPERATOR CAN CHANGE THEIR OWN PLAN TIER AT ALL.** `plan` is absent from **both** write
+allowlists, the only write is at admin provisioning, and **the admin console has no plan editor**. **A
+plan is set once at provisioning and changed thereafter only by a direct database edit.**
+
+⚠️ **This is why the iOS gates cost nothing today: they hide a call to action that leads to an email.**
+It is also why the whole arrangement is currently outside Google's Payments policy — **and why that
+changes the moment billing is wired.**
+
+## 🔴 THE DAY PLAN BILLING IS WIRED, ANDROID BECOMES A PLAY POLICY DECISION (V11.52)
+
+**Google's Payments policy names cloud software and business productivity software as requiring Play's
+billing system.** The current `mailto:` arrangement sits outside that policy **only because nothing is
+purchased in-app.**
+
+🔴 **SO THE ANDROID COMMERCE SURFACE IS NOT SETTLED — IT IS UNTESTED.** The day a plan can be bought,
+every one of those eleven controls becomes a policy question on Android, exactly as it already is on iOS.
+
+⚠️ **AND THE UK/US/EEA ROUTE IS NOT AN EXEMPTION.** Since **30 June 2026** those markets permit developer
+billing or a web checkout link — **but only via an enrolment that carries reporting obligations and a
+service fee.** 🔴 **It must not be treated as an exemption**, and a plan that assumes "we can just link
+out in the UK" is assuming the wrong thing. **Read the enrolment terms before designing the flow, not
+after.**
 
 ## 🔴 HYDRATION — LOAD-BEARING, AND NOT OBVIOUS FROM THE GATES
 
@@ -20000,6 +20297,27 @@ is the schedule right, are the dates yours — **or the confirmation records "I 
 than "I looked at my page", and the confirmed column means nothing.**
 
 ## MONITORING
+
+## 🔴 THE CRON IS LIVE, AND IT IS THE STANDING EXCEPTION TO ROLLBACK (V11.52)
+
+**Deployed 1 September 2026.** The daily custom-domain check is registered in `vercel.json` at **07:00
+UTC**. It selects **every truck with a non-null `custom_domain`**, writes timestamps to that row, and
+**can send an operator email** on the first successful resolve.
+
+> 🔴 **A VERCEL ROLLBACK DOES NOT UNDO THOSE WRITES.** Reverting the deployment stops the job from
+> running again; it does not restore the columns it has already written. **This is the standing
+> exception to treating a rollback as a complete undo**, and it now applies to every deploy that carries
+> a scheduled writer.
+
+✅ **THE TESTER TRUCK WAS CLEARED FIRST, AND IT MATTERED.** It carried live test data in production — a
+custom domain pointing at a host resolvable only from a local hosts file, and the embed surface enabled.
+**It was the single row the new cron would have selected on its first run.** All eight custom-domain
+columns on that row were cleared before the deploy.
+
+🔴 **THE THREE VERCEL API VARIABLES WERE SET IN PRODUCTION, SO OPERATOR DOMAIN PROVISIONING IS LIVE.**
+⚠️ **ALL SIX TRIAL TRUCKS CAN NOW SEE AND COMPLETE THE CUSTOM-DOMAIN WIZARD**, because trial carries the
+full Max feature set. **The gate on that wizard is FEATURE ACCESS, not customer status** — "it is
+Max-only" was never a defence, and on trial it is not even a restriction.
 
 **A daily DNS lookup writes state. No email is sent on a failure**; the admin view is how this is read.
 ⚠️ **Deliberate, and the trade is stated: a table only works when someone opens it**, so the first anyone

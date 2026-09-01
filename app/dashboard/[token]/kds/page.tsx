@@ -2795,12 +2795,29 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           left and the orders on screen still fires on every switch. Closing changes nothing. */}
       {showEventPicker && !isDemo && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventPicker(false)}>
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
+          {/* ── 🔴 max-h + flex-col + a SCROLLING LIST, not a scrolling card (1 September 2026). ────────
+              With 17 upcoming events this card grew past the viewport inside a `fixed inset-0` overlay,
+              which does not scroll — so the LATEST events were in the DOM and unreachable. Nothing was
+              truncated at fetch: /api/events/manage has no limit and `events.map` has no slice.
+              See docs/kds-event-picker-report.md.
+              🔴 `dvh`, NOT `vh`. This renders inside the iOS and Android shells, where `vh` resolves
+              against the LARGEST viewport and ignores the dynamic toolbars — so a `vh` cap leaves the
+              bottom of the card under the browser chrome on exactly the devices this screen runs on.
+              ⚠️ THE PADDING MOVED RATHER THAN GOING. `p-5` on the card would have padded the OUTSIDE of
+              the scroll region, so rows would clip against a 20px gap instead of the card edge. It is
+              now `px-5` on each child, with the header's `pb-4` replacing its old `mb-4` — the same
+              20px sides, 20px top, 16px gap, 12px gap, 20px bottom as before.
+              ⚠️ `min-h-0` IS LOAD-BEARING. A flex child's default `min-height:auto` refuses to shrink
+              below its content, so `overflow-y-auto` would never engage without it and the card would
+              grow exactly as it does today.
+              ⚠️ `stopPropagation` matches the dashboard's picker: a tap on a row's PADDING must not
+              reach the overlay's dismiss handler. The overlay's own dismiss is unchanged. */}
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl max-h-[85dvh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0">
               <h3 className="font-semibold text-slate-900">Change event</h3>
               <button onClick={() => setShowEventPicker(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto px-5">
               {events.map(event => {
                 const isToday = event.event_date === localTodayIso()
                 const dayLabel = isToday ? 'Today' : new Date(`${event.event_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })
@@ -2814,7 +2831,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
                 )
               })}
             </div>
-            <button onClick={() => setShowEventPicker(false)} className="mt-3 w-full text-sm text-slate-400 hover:text-slate-600 py-2">Cancel</button>
+            <div className="px-5 pb-5 shrink-0">
+              <button onClick={() => setShowEventPicker(false)} className="mt-3 w-full text-sm text-slate-400 hover:text-slate-600 py-2">Cancel</button>
+            </div>
           </div>
         </div>
       )}
