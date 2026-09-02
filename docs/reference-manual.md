@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.57
+HatchGrab Engineering Reference Manual · V11.58
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.55**
+**Version 11.58**
 
 September 2026
 
@@ -14,7 +14,44 @@ September 2026
 
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
+**⚠️ STANDING RULE — THE VERSION NUMBER IS UPDATED IN EVERY PLACE IT APPEARS, EVERY TIME.** A delta that
+adds a changelog block **must** also bump the running header at the top of this file **and** the
+`**Version N.NN**` line in the front matter. They are two separate strings and nothing checks them against
+each other, so one gets bumped and the other is forgotten. **Precedent (the reason this rule exists):** the
+front matter read **Version 11.55** while the header read V11.57 — three releases apart — because every
+delta from V11.56 onward updated the header alone. **Anyone reading the cover page was told the wrong
+version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
+
 # Changelog
+
+## V11.58 — 2 September 2026 (evening) and the deploy
+
+**Delta — everything built across two days shipped in one deploy; the payment client bounded; the brand
+split resolved by host; a features PDF generated from the live source; and four more silent-failure
+findings, one of which had been wrong since the line was written.**
+
+- ✅ **DEPLOYED, AND THE FIRST LOOK IS CLEAN.** **OBSERVED:** no 500s, no 504s, customer ordering pages
+  working. ⚠️ **Almost none of it has been exercised on hardware** — the operator surfaces are behind
+  sessions the tooling could not obtain, and several reports say so explicitly.
+- 🔴 **THE STRIPE CLIENT IS BOUNDED, AND THE REASON IS NOT THE ONE I EXPECTED.** **OBSERVED by harness:**
+  the SDK already reused one auto-generated key across **its own** retries, so SDK retries were never the
+  double-charge risk. **The risk is a SEPARATE call — a re-tap or an outbox replay — and a 20-second
+  bound is exactly what pushes traffic across that boundary.** So the derived idempotency keys are not a
+  nicety alongside the bound; without them the bound would have made things worse. Worst case measured at
+  40,515 ms against 241,027 ms unbounded.
+- 🔴 **A COMMENT ASSERTED A STRING MATCH THAT NEVER EXISTED.** **OBSERVED.** `'Pay at hatch'` (lower-case)
+  was matched against a set containing `'Pay at Hatch'`, and the comment above it claimed the match held.
+  **It was false from the day it was written**, so every masked surface printed "TBC" for the allowance of
+  the one plan whose point is that it costs nothing. **Eleven occurrences used the capital; this was the
+  sole outlier.**
+- 🔴 **A MEASUREMENT THAT COULD NOT FAIL NEARLY HID A REAL DEFECT.** The PDF's plan headings were measured
+  by bounding box and returned a clean zero offset — because the element is a block that always spans its
+  cell. **Measuring the text node's ink showed offsets of 36 to 45 pixels.**
+- ✅ **THE BRAND SPLIT IS RESOLVED BY HOST, NOT BY DELETION.** Branding derives from the request host, so
+  the customer order form and truck schedule now carry the HatchGrab mark on one domain and keep the
+  Village Foodie mark on the other. **No brand was removed and no domain was touched.**
+- ✅ **A PLANS-AND-FEATURES PDF IS GENERATED FROM THE LIVE SOURCE**, on demand, with one generator, and
+  downloadable from Admin.
 
 ## V11.57 — 2 September 2026
 
@@ -13906,6 +13943,21 @@ route status change, the client keep-state change, the kitchen-screen keep-state
 the service-worker cache check into one deploy**, and **verify on the DEPLOYED build — a typecheck is not
 verification, and a fix in the repository is not a fix in production.** §36, §40.
 
+### Added V11.58 — 2 September 2026 (evening)
+
+- 🔴 **OPEN — a failed capture is not surfaced to the operator.** The most consequential silent failure
+  remaining.
+- 🔴 **OPEN — lower the payment route ceilings**, after the bounded client has been watched against real
+  transactions.
+- 🔴 **OPEN — the stock countdown gate has not moved with its row.** A sixth unenforced gate until it does.
+- ⚠️ **OPEN — the brand record's logo value points at the wrong brand's file**, with a stale comment.
+- ⚠️ **OPEN — nothing links to the comparison page.**
+- ⚠️ **OPEN — the icon appearance variants, the background-mode key and the app-link entitlement**, all of
+  which need one native release between them.
+- ⚠️ **OPEN — the previous day's list stands**, including the database housekeeping, the ten tables with
+  no migration behind them, and the untested customer path during a degraded backend.
+
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -14162,6 +14214,24 @@ live fault in ordinary service, since force-quitting a sticky app is an everyday
 ⚠️ **The staleness label must not become more confident because the fold ran.** The fold corrects for this
 device's queued orders; it says nothing about the baseline being old. A folded number built on a stale
 baseline is still stale.
+
+### The features matrix — a row added, a tier moved (V11.58)
+
+- ✅ **A row was added for pre-order deadlines**, and **the feature was confirmed built on both halves
+  before the row went in** — a pure engine shared by the customer-facing read and the submission check,
+  so display and enforcement cannot diverge, plus operator configuration in Manage.
+- 🔴 **NO NEW FEATURE KEY WAS INVENTED FOR IT, DELIBERATELY.** The behaviour is already gated by an
+  existing key. **A new key would have had zero call sites — gating nothing while passing the parity
+  checker vacuously**, and the manual already records five unenforced gates. It got a row-to-feature map
+  entry pointing at the real gate instead.
+- 🔴 **THE PARITY CHECKER IS BLIND TO A `false` CELL.** It inspects only cells that are literally true, so
+  a row wrongly marked unavailable for a tier passes silently. **Verify a false cell by checking the gate
+  directly in both directions** — a clean run says nothing about it.
+- ⚠️ **Automated stock countdown moved out of the free tier.** No truck is on that tier, so nothing was
+  taken from anyone. **The gate has not moved yet, so the row and the code disagree until it does** —
+  a known, deliberate gap. OPEN.
+- ⚠️ **Two feature descriptions named the product where it was redundant.** Removed. **Where one habit
+  appears twice, look for the rest in the same pass.**
 
 ---
 
@@ -16365,6 +16435,37 @@ A route comment stated that a failing card branch *"falls through to the pay-at-
 does not — the block contains four returns and the terminal one is unconditional. **A change to
 customer-facing payment copy depended on not believing it.** **When a comment is found false, correct it
 in place; leaving it is leaving the next reader a wrong premise.**
+
+### 🔴 A MEASUREMENT OF THE CONTAINER IS NOT A MEASUREMENT OF THE CONTENT (V11.58)
+
+A misaligned heading was measured by its element's bounding box and returned a **clean zero** — because
+the element is a block that always spans its cell, so its centre matches the column's **by definition**.
+Measuring the **text node's ink** showed offsets of 36 to 45 pixels.
+
+🔴 **THE BOX MEASUREMENT COULD NOT HAVE FAILED, WHICH IS WHAT MAKES IT WORTHLESS.** It belongs with the
+other tests whose pass condition is met without the thing under test ever running. **When measuring
+whether something is where it looks, measure the mark, not the frame around it.**
+
+⚠️ **The uneven offset was itself the diagnosis:** left-aligned text puts the centre of a word where its
+length dictates, so the gap to a centred mark below differs per column. **A uniform error suggests a
+transform; an error that varies with content suggests alignment.**
+
+### 🔴 A COMMENT ASSERTING A MATCH IS NOT A MATCH (V11.58)
+
+A comment claimed a string was present in an exact-match set. It never was — one character of case
+separated them — and **nothing errored, because a missed exact match simply does nothing.** The
+consequence was a plausible wrong output on every masked surface, for as long as the line existed.
+
+**Two audits closed the class rather than the instance:** every value reaching the mask checked for
+near-misses, and every exact-string row key checked against the real row names. **Twenty-nine of
+twenty-nine matched.** ⚠️ **This is the failure mode worth auditing rather than fixing one at a time**,
+because it produces an artefact rather than an error.
+
+### ⚠️ REMOVING A GATE BY MOVING A FILE (V11.58)
+
+A page's protection came from being a child of a gated layout. **Moving it deleted the gate with no
+error, no warning and no visible change** until someone loaded it. **When a route's protection is
+inherited rather than declared, moving the file is a security change.**
 
 ---
 
@@ -19097,6 +19198,29 @@ switched to after submitting.
 ⚠️ **Guard on the body not parsing, not on a non-ok status.** Several non-ok responses carry real JSON
 the page depends on; a blanket status guard breaks three working paths to fix one.
 
+### 🔴 THE SDK's OWN RETRIES WERE NEVER THE DOUBLE-CHARGE RISK — A SEPARATE CALL IS (V11.58)
+
+**OBSERVED by harness.** The payment SDK reuses a single auto-generated idempotency key across its own
+internal retries, so those were already safe. **The exposure is a second, independent call: an operator
+re-tapping, or the offline outbox replaying an op whose first attempt was never confirmed.**
+
+🔴 **AND BOUNDING THE CLIENT INCREASES THAT EXPOSURE, NOT DECREASES IT.** A short timeout is precisely
+what causes a caller to give up and try again while the first operation is still in flight at the
+provider. **So the derived keys are the load-bearing half of this change and the timeout is the half that
+made them necessary.** Bounding without them would have been worse than not bounding at all.
+
+**All payment clients are now constructed through one shared factory** at a 20-second timeout with one
+retry — worst case measured at roughly 40 seconds against roughly 241 seconds unbounded. Create, capture
+and cancel now derive their keys from the order key and the intent id; refund kept its existing key.
+
+⚠️ **THE ROUTE CEILINGS ARE NOT LOWERED YET, DELIBERATELY.** Ship the bound, watch real transactions,
+then bring them down. The whole risk in this area is a timeout landing while the provider completes the
+operation, and that wants evidence rather than arithmetic.
+
+🔴 **A FAILED CAPTURE IS STILL NOT SURFACED TO THE OPERATOR AT ALL.** Pre-existing, untouched, and now
+**the most consequential silent failure left in the system**: an operator believes money was taken when
+it was not. Same class as the success-reporting writes already recorded. **OPEN.**
+
 ---
 
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
@@ -19204,6 +19328,25 @@ contrast ratio is a legibility floor for glyphs; a mark has no such floor, and a
 a rule that forbids the icon currently in the App Store build. ⚠️ **The ratios remain correct for text and
 are kept for that. DO NOT "RESTORE" A DARK ICON BACKGROUND ON THE STRENGTH OF THEM** — that is the
 mistake this supersession exists to stop.
+
+## The icon — the ring, resolved (V11.58)
+
+⚠️ **THE RING IS REAL AND IT IS NOT ANTI-ALIASING.** That reading was true of **the native app icon**,
+which was measured and is clean. **The ring is in the three web-clip and PWA icons**, regenerated on one
+date by a tool that sharpens on downscale.
+
+🔴 **THE SIGNATURE IS DIAGNOSTIC AND WORTH KNOWING: undershoot, then overshoot, then a faint ripple.**
+That is resampling ringing — a *darker* band inside the edge and a *lighter* one outside it. **A drawn
+stroke is a consistent colour at a consistent width; ringing is a continuous ramp that crosses to both
+sides of the fill.** The vector master has a single filled path and no stroke at all, so **the export
+invented the outline rather than dropping one.**
+
+**The fix is to render the vector at each target size rather than downscaling a large raster.** A vector
+rasterised at the target size cannot ring, because there is no resampling step.
+
+⚠️ **A CACHE-BUSTING QUERY STRING DOES NOT REACH AN EXISTING HOME-SCREEN SHORTCUT.** The icon is copied
+in at creation and never re-read. **Remove and re-add is the only route.**
+
 
 ## V11.42 — 🔴 THE META APP ICON: TWO PLATFORMS, TWO INCOMPATIBLE REQUIREMENTS
 
@@ -19840,6 +19983,31 @@ endpoint, and adding one would mean a server action with delete rights on the me
 
 ⚠️ **A truck on the branded QR style silently gets a plain QR once its logo is removed** — the gate tests
 the plan and the style, not whether a logo exists. **Correct, and unannounced.**
+
+### ✅ THE CUSTOMER BRAND IS RESOLVED FROM THE HOST, SERVER-SIDE, AND THAT IS WHY IT IS CHEAP (V11.58)
+
+The consumer and operator brands are selected by request host. So putting the operator mark on the
+customer order form and truck schedule required **no deletion, no domain change and no new mechanism** —
+one attribute on the document element, from the host the layout already reads, and two CSS rules.
+
+🔴 **BOTH MARKS ARE RENDERED AND ONE IS HIDDEN IN CSS, DELIBERATELY.** The client-side host helper returns
+false on the server, so branching on it would put the wrong mark in the server-rendered HTML and swap it
+after hydration — **a visible logo flash on every load.** Resolving server-side means the correct mark is
+in the first painted frame.
+
+⚠️ **THE OPERATOR BRAND HAS A WORDMARK OF ITS OWN, AND THE BRAND RECORD DOES NOT SAY SO.** The record
+still points its logo at the consumer brand's file with a comment saying it is temporary until one
+exists — **that comment is now stale and the value is wrong.** OPEN.
+
+### 🔴 THE COLOUR CONSTANTS ARE TAILWIND CLASS STRINGS EXCEPT WHERE THEY ARE NOT (V11.58)
+
+The header background constant is a Tailwind class, **not a colour**, and has no meaning in a document
+with no stylesheet to resolve it against. **The `_HEX` suffixed constants exist precisely for consumers
+that need a literal colour** — email templates, and now the PDF. **A brief that names the class constant
+as "the single source for brand navy" is wrong**, and the file itself says so.
+
+⚠️ **The wordmark's 4.548:1 crop ratio must be DERIVED, not typed.** Compute the width from the height so
+the pair cannot go stale; a hardcoded pair letterboxes or squashes the moment the artwork is recropped.
 
 ---
 
@@ -22127,21 +22295,60 @@ it is a conversation with the operator, not a silent change.**
 - ⚠️ **The hero's stated time-to-value and the demo's own reassurance and escape-hatch timings disagree.**
   Unresolved.
 
+### The cost comparison page — moved, ungated, host-scoped (V11.58)
+
+**It is now at a top-level path, no longer under the landing route.** Three things followed, and the
+first is the one that would have caused harm:
+
+- 🔴 **MOVING A PAGE OUT OF A GATED LAYOUT DELETES ITS GATE.** The gate was inherited by being a child
+  route. The file's own header warned that if it were ever moved, the gate moves with it or it is gone —
+  **and it renders real, unmasked prices.** The gate was carried by hand.
+- 🔴 **A TOP-LEVEL ROUTE SERVES ON BOTH DOMAINS UNLESS SOMETHING SCOPES IT.** Nothing in the proxy scopes
+  it by host, so operator plan pricing was reachable on the consumer discovery brand. **Now a 404 on that
+  host** — not a redirect, because a redirect hints the page exists elsewhere.
+- ⚠️ **`noindex` is a request to crawlers, not a gate.** It keeps the page out of search results; it stops
+  nobody. The gate is what stops people.
+
+🔴 **THE PRICING PUBLICATION FLAG NOW DOES TWO JOBS.** It publishes this page **and** un-masks prices
+across the operator billing surfaces at the same instant. **It did only the second yesterday.** Establish
+its current value before flipping it.
+
+⚠️ **Nothing links to the page.** Opening the gate makes the URL resolve; it does not make the page
+reachable. **A page nobody can navigate to is not live regardless of its gate.**
+
+### The App Store badge (V11.58)
+
+In the footer, right-aligned under the links. ⚠️ **This reverses an earlier standing instruction against
+app badges in the footer** — recorded as a deliberate reversal with the original reasoning intact.
+
+**The middle position was built, measured and rejected:** the badge had more than twice its own width of
+empty footer on each side at desktop width. **It read as something that had come loose, not as a column.**
+
+🟢 **The black variant removed a future rework.** The platform requires the black badge as soon as a
+second store's badge appears; on a dark footer the black one already reads correctly, so adding the
+second store is purely additive — no colour change, no panel, no CSS.
+
+⚠️ **A link cannot open the installed app.** No site-association file, no associated-domains entitlement,
+no URL scheme. That needs a native rebuild and resubmission — **bundle it with the background-mode key
+and the icon appearance variants rather than spending a release on any one of them.**
+
 ---
 
-# 49. Deploy posture as of V11.57
+# 49. Deploy posture as of V11.58
 
-🔴 **EVERYTHING IN THIS DELTA EXCEPT THE STATUS SPLIT AND THE FIRST TIMEOUT BATCH IS BUILT, UNCOMMITTED
-AND NEVER EXERCISED ON HARDWARE.** Harness measurement is not device verification, and several reports
-state plainly that the operator surfaces are behind sessions the tooling could not obtain.
+✅ **EVERYTHING FROM BOTH DAYS IS DEPLOYED.** **OBSERVED after deploy: no 500s, no 504s, customer ordering
+pages working.**
 
-⚠️ **The three new route ceilings were reasoned from round-trip counts, never measured against
-production timings.** **Read the platform duration logs before deploying them** — the heartbeat cap is
-the tightest and fires every fifteen seconds from every device.
+🔴 **THAT IS NOT VERIFICATION OF THE CHANGES.** Clean logs establish that nothing throws on the paths that
+were exercised — which was a handful of page loads by one person. **The operator surfaces, the offline
+paths, the photo picker, the queued-order seeding and the manage refresh split have not been touched by a
+device.** Several reports state plainly that the tooling had no session for those screens.
 
-⚠️ **A store review is in progress.** Web changes reach a shipped app and an in-review build the moment
-they deploy; **the binary must not be touched.** Deploy in attributable batches, verified on the deployed
-build. **A typecheck is not verification.**
+⚠️ **Three route ceilings were reasoned from round-trip counts and never measured against production
+timings.** The tightest fires every fifteen seconds from every device. **Read the platform duration logs
+against real traffic before assuming they hold under service load.**
+
+⚠️ **A store review remains in progress and the binary must not be touched.**
 
 ---
 
