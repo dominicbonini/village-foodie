@@ -1,18 +1,21 @@
 'use client'
 
-// app/landing/cost/page.tsx
+// app/compare/CostComparison.tsx
 // The cost comparison calculator. An operator enters what they pay a current provider and sees what a
 // year on HatchGrab would cost instead.
 //
-// ── 🔴 WHY IT LIVES UNDER /landing, AND IT IS NOT A FILING PREFERENCE ───────────────────────────────
-// `app/landing/layout.tsx` gates every descendant: in production it redirects anyone who is not an
-// admin to /contact. This page is marketing copy carrying real pricing, so it must not be publicly
-// reachable while the landing is embargoed. Being a CHILD of that route inherits the gate BY
-// CONSTRUCTION — there is no second gate to write and none to forget. A top-level /cost would have
-// needed a copy of that layout, and the copy is the drift.
-// ⚠️ IF THIS IS EVER MOVED, the gate moves with it or it is gone. And a copied gate must redirect to
-// /contact, NOT to '/': proxy.ts rewrites '/' to the landing on hatchgrab.com, so redirecting there
-// loops forever on the domain given to Apple as the Marketing URL.
+// ── 🔴 IT MOVED TO /compare ON 2 SEPTEMBER 2026, AND THE GATE HAD TO BE WRITTEN OUT BY HAND ─────
+// It lived at /landing/cost, where app/landing/layout.tsx gated every descendant: in production that
+// layout redirects anyone who is not an admin to /contact, and being a CHILD route inherited it BY
+// CONSTRUCTION — no second gate to write and none to forget.
+// 🔴 AT /compare NOTHING WRAPS IT, SO THAT GATE WENT WITH THE MOVE. The original note here said in
+// as many words: "IF THIS IS EVER MOVED, the gate moves with it or it is gone." It moved, and the gate
+// is now an explicit check at the top of ../page.tsx. THE TWO ARE THE SAME `verifyAdmin` CALL, but they
+// are no longer the same code — if the landing's gate ever changes, THIS ONE DOES NOT FOLLOW.
+// ⚠️ THE REASON IT NEEDS ONE AT ALL: this page renders REAL, UNMASKED PRICES (no maskPrice import
+// anywhere in this file), so it must not be publicly reachable while the landing is embargoed.
+// ⚠️ The redirect target is /contact, NEVER '/': proxy.ts rewrites '/' to the landing on hatchgrab.com,
+// so redirecting there loops forever on the domain given to Apple as the Marketing URL.
 //
 // ── 🔴 EVERY PRICE COMES FROM THE STRUCTURED CONSTANTS. NOTHING IS PARSED, NOTHING IS TYPED TWICE. ──
 // The prototype hardcoded £29 / £49 / £1,500 / £2,000 / 0.99% / 1.5% / 20p. All seven now come from

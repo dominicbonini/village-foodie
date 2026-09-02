@@ -1,4 +1,4 @@
-// app/landing/cost/page.tsx
+// app/compare/page.tsx
 // 🔴 A SERVER COMPONENT, AND IT MUST STAY ONE. It gates the calculator and renders the shared landing
 // chrome around it; the calculator itself lives in ./CostComparison.tsx as a client component because it
 // is nine hooks of interactive state.
@@ -23,15 +23,38 @@
 // no warning. ⚠️ THE LAYOUT RUNS FIRST AND IS STRICTER, so while the landing stays gated a non-admin is
 // stopped there even with the flag set.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
-import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+import { notFound, redirect } from 'next/navigation'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { PRICING_PUBLISHED } from '@/lib/pricing'
+import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import CostComparison from './CostComparison'
-import '../landing.css'
+import '../landing/landing.css'
 
 export const dynamic = 'force-dynamic'
+
+// ── 🔴 noindex, nofollow — DELIBERATE, AND NOT THE SAME DECISION AS THE GATE ────────────────────
+// The gate below decides WHO may load this page. This decides whether a crawler may keep it. They are
+// different questions and this page needs both answered "no by default":
+//   • it carries the REAL, UNMASKED price list (no maskPrice import anywhere in ./CostComparison),
+//   • the link is handed out directly, so there is no search traffic to win,
+//   • and the landing page it belongs beside is still embargoed and carries robots:{index:false} too —
+//     an indexed /compare beside a noindexed landing would be the one page Google keeps.
+// 🟢 `follow: false` as well as `index: false`: this page links to /signup and /contact, and there is
+// no reason for it to pass any crawl signal on while it is not meant to be found.
+// ⚠️ THIS DOES NOT MAKE IT PRIVATE. noindex is a request to well-behaved crawlers, nothing more. The
+// gate is what stops people; this only stops the page turning up in a search result.
+export const metadata = {
+  robots: { index: false, follow: false },
+}
+
+/** The one place this route asks which brand it is serving. Same shape as app/contact/page.tsx:36. */
+async function onHatchGrab(): Promise<boolean> {
+  const headersList = await headers()
+  return isHatchGrabHost(headersList.get('host') || '')
+}
 
 // ── 🔴 DECLARED HERE, NOT IMPORTED FROM THE LANDING PAGE. ───────────────────────────────────────────
 // landing.css reads --font-archivo / --font-public-sans / --font-courier-prime, and those variables are
@@ -56,6 +79,30 @@ export default async function CostPage() {
   // van add-on read. 🔴 `verifyAdmin` is the canonical check, shared with app/landing/layout.tsx.
   // 🔴 REDIRECT TO /contact, NEVER TO '/': proxy.ts rewrites '/' to the landing on hatchgrab.com, so
   // refusing someone to '/' loops forever on the domain given to Apple as the Marketing URL.
+  // ── 🔴 GATE 1 OF 2: THE BRAND. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. ────────────────────
+  // Village Foodie is the CONSUMER discovery brand. Someone there is looking for a food truck, not for
+  // operator plan pricing, and showing them £29/£49 tiers is the branding leak app/contact/page.tsx's
+  // host split exists to prevent. Being a top-level route, this page is served on BOTH domains unless
+  // something says otherwise — nothing in proxy.ts scopes it — so this is that something.
+  // 🟢 notFound(), NOT a redirect: on that host the page genuinely does not exist, and a 404 says so
+  // without leaking that it exists elsewhere. Next renders the 404 in Village Foodie's own chrome.
+  // ⚠️ FIRST, BEFORE ANY AUTH WORK. It needs only a header, so an anonymous visitor on the wrong brand
+  // never costs a Supabase round-trip.
+  if (!(await onHatchGrab())) {
+    notFound()
+  }
+
+  // ── GATE 2 OF 2: PRICING PUBLICATION ────────────────────────────────────────────────────────────
+  // 🔴 THE HAND-CARRIED ADMIN GATE WAS REMOVED HERE ON 2 SEPTEMBER 2026, ON REQUEST, AND THAT IS A
+  // DELIBERATE OPENING. From this point the page is public to anyone on hatchgrab.com the moment
+  // NEXT_PUBLIC_PRICING_PUBLISHED is 'true' in Vercel — it no longer waits for the landing's embargo to
+  // lift, and it no longer requires an admin session. Dominic: "The second gate stays, so the page opens
+  // when NEXT_PUBLIC_PRICING_PUBLISHED is 'true' in Vercel and not before."
+  // ⚠️ SO THE FLAG IS NOW THE WHOLE ANSWER on this route. Flipping it publishes the real price list here
+  // at the same moment it un-masks prices in Billing. That is one switch doing two jobs; know it before
+  // flipping. See docs/compare-page-publish-report.md.
+  // ⚠️ /contact, NEVER '/': proxy.ts rewrites '/' to the landing on hatchgrab.com, so redirecting there
+  // loops forever on the domain given to Apple as the Marketing URL. Unchanged from the original.
   if (!PRICING_PUBLISHED && !(await verifyAdmin())) {
     redirect('/contact')
   }

@@ -58,7 +58,7 @@ export interface NavCta {
  *
  * 🔴 A PROP RATHER THAN A HARDCODED PATH, AND THE REASON IS THAT NO SINGLE PATH IS CORRECT EVERYWHERE:
  *
- *   href              landing on hatchgrab.com (URL '/')   landing at /landing (dev)   from /landing/cost
+ *   href              landing on hatchgrab.com (URL '/')   landing at /landing (dev)   from /compare
  *   ---------------   ----------------------------------   -------------------------   ------------------
  *   '#pricing'        scrolls OK                           scrolls OK                  NOTHING
  *   '/landing#...'    NAVIGATES (URL '/' -> '/landing')    scrolls OK                  works OK

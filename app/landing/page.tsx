@@ -20,7 +20,8 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
-// Chrome EXTRACTED 23 August 2026 so /landing/cost renders the same nav and footer from one definition.
+// Chrome EXTRACTED 23 August 2026 so the cost comparison (now /compare) renders the same nav and footer
+// from one definition.
 // 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'

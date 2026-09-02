@@ -14,8 +14,9 @@
 //
 // ── 🔴 IT DOES NOT INHERIT app/landing/layout.tsx, AND THAT IS THE POINT OF THE CHECK BELOW ─────────
 // A Next.js layout wraps PAGES. A Route Handler renders no React and is never wrapped by one, so being
-// filed under app/landing/ buys this file NOTHING — unlike app/landing/cost/page.tsx, which really does
-// inherit the admin gate by being a child route. The gate here is therefore EXPLICIT and deliberately
+// filed under app/landing/ buys this file NOTHING. (The cost comparison used to be the counter-example
+// here: it really did inherit the gate as a child route — until it moved to /compare on 2 September 2026
+// and had to have that gate written out by hand. Same lesson, from the other direction.) The gate here is therefore EXPLICIT and deliberately
 // uses `verifyAdmin`, the same canonical check app/landing/layout.tsx uses, so the two cannot diverge.
 // 🔴 IF THIS CHECK IS DELETED THE WHOLE PRICED FEATURE MATRIX BECOMES A PUBLIC DOWNLOAD. Nothing else
 // stands between this URL and the internet.
