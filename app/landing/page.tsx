@@ -324,7 +324,15 @@ export default function LandingPage() {
                 <li>Walk-up orders &amp; kitchen screen</li>
                 <li>Online ordering, pay at the hatch</li>
                 <li>Menu, meal deals &amp; upsells</li>
-                <li>Sold-out toggle &amp; stock countdown</li>
+                {/* 🔴 THE "Sold-out toggle & stock countdown" BULLET WAS REMOVED HERE — 2 September 2026,
+                    on request, in two steps: "& stock countdown" went with the matrix change that moved
+                    'Automated stock countdown' off Starter, then the whole bullet went.
+                    🟢 THE FEATURE TABLE IS UNCHANGED AND THAT IS DELIBERATE. 'Instant sold out toggle'
+                    is still a row at starter:true, so a Starter truck still HAS the toggle and the
+                    comparison table still says so — this card simply no longer spends a line on it.
+                    🔴 DO NOT "RESTORE FOR CONSISTENCY" BY READING THE MATRIX. These bullets are
+                    HAND-WRITTEN (see the note below) and are a shorter, chosen selection — not a
+                    rendering of every starter:true row. A bullet missing here is not drift. */}
                 <li>QR code &amp; discovery map listing</li>
                 {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
                     matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
