@@ -128,7 +128,7 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
         <div className="text-center">
           <div className="text-base font-black tracking-wide">⚠ PAYMENT NOT RECORDED</div>
           <div className="text-sm font-semibold mt-0.5">
-            {nameOrders(paymentConflicts)} — marked as paid on this device, but the server rejected it.
+            {nameOrders(paymentConflicts)} — marked paid on this device only. It hasn&apos;t gone through.
           </div>
           <div className="text-xs font-medium mt-0.5 opacity-90">Check the order and take payment again if it is still owed.</div>
         </div>
@@ -165,7 +165,7 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   // dismissal is proportionate. It still names the orders.
   const statusBanner: ReactNode = statusConflicts.length > 0 ? (
     <div className="w-full bg-red-600 text-white text-sm font-semibold px-4 py-2 flex items-center justify-center gap-3">
-      <span>⚠ {nameOrders(statusConflicts)} — update didn&apos;t sync, needs review</span>
+      <span>⚠ {nameOrders(statusConflicts)} — this change didn&apos;t go through. Check the order.</span>
       <button type="button" onClick={() => { void onAcknowledge(statusConflicts.map(c => c.op_id)) }}
         className="underline font-bold flex-shrink-0">Dismiss</button>
     </div>
@@ -178,27 +178,27 @@ export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced
   if (phase === 'offline') {
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        📴 Offline — {queued} {queued === 1 ? 'change' : 'changes'} saved on this device, will sync when you&apos;re back online. Settings are locked.
+        📴 No connection — {queued} {queued === 1 ? 'change' : 'changes'} saved on this device. They&apos;ll be sent when you&apos;re back online. Settings are locked.
       </div>
     )
   } else if (phase === 'syncing') {
     syncBanner = (
       <div className="w-full bg-slate-700 text-white text-sm font-semibold px-4 py-2 text-center animate-pulse">
-        Back online — syncing {queued} {queued === 1 ? 'change' : 'changes'}…
+        Back online — sending {queued} {queued === 1 ? 'change' : 'changes'}…
       </div>
     )
   } else if (phase === 'synced' && lastSynced > 0) {
     // Only when something actually synced — a drain that produced only conflicts is carried by the conflict banner.
     syncBanner = (
       <div className="w-full bg-green-600 text-white text-sm font-semibold px-4 py-2 text-center">
-        All changes synced.
+        All changes sent.
       </div>
     )
   } else if (queued > 0) {
     // Online but still-queued (mid-recovery / retrying) → keep the operator informed rather than silent.
     syncBanner = (
       <div className="w-full bg-amber-500 text-white text-sm font-semibold px-4 py-2 text-center">
-        {queued} {queued === 1 ? 'change' : 'changes'} saved on this device, syncing…
+        {queued} {queued === 1 ? 'change' : 'changes'} saved on this device. Still trying to send them.
       </div>
     )
   }

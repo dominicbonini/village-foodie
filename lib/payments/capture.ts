@@ -48,22 +48,12 @@
 // The parameter is accepted at capture and is deliberately not sent. This build charges no platform
 // fee, and a fee must be a positive integer, so "no fee" is absence. Search this file — there is none.
 import type { SupabaseClient } from '@supabase/supabase-js'
-import Stripe from 'stripe'
 import { recordOnlineCardPayment, onlinePaymentIdempotencyKey } from '@/lib/payments/online'
 // 🔴 THE CHOKEPOINT FOR "WHAT DOES THIS ORDER OWE". Read-only. See step 2b.
 import { readOrderBalance, type OrderBalance } from '@/lib/payments/ledger'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
-
-/** ⚠️ THIS REFUSED ANY KEY THAT WAS NOT `sk_test_`, AND THE REFUSAL IS GONE — removed deliberately, with
- *  the matching ones in authorize.ts, refund.ts and lib/stripe/connect.ts, so a live key can capture real
- *  money. Presence is all that remains.
- *  🔴 THE MODE CHECK THAT REPLACED IT IS IN `stripeAccountForTruck`, which this function already calls. */
-function stripeSecretKey(): string {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  return key
-}
+import { stripeClient } from '@/lib/stripe/client'
 
 export type CaptureResult =
   /** Money moved. `amountMinor` is Stripe's own `amount_received`. */
@@ -267,7 +257,7 @@ export async function captureOnConfirmation(
 
     let amountMinor: number
     try {
-      const stripe = new Stripe(stripeSecretKey())
+      const stripe = stripeClient()
       // ⚠️ NO application_fee_amount. See the header — absence, never zero.
       // 🔴 `amount_to_capture` IS SENT ONLY WHEN IT LOWERS THE AMOUNT, so a full capture is the same
       // empty-params call it has always been and cannot change behaviour for an unedited order.
@@ -282,7 +272,20 @@ export async function captureOnConfirmation(
       const captured = await stripe.paymentIntents.capture(
         piId,
         isPartialCapture ? { amount_to_capture: captureMinor } : {},
-        { stripeAccount: account },
+        {
+          stripeAccount: account,
+          // 🔴 IDEMPOTENCY. Capture is the call that MOVES THE MONEY, and it is one-shot: Stripe will
+          // not capture the same hold twice. A bounded client can now time out while the capture is
+          // completing, so the key is what stops the retry taking the money a second time — Stripe
+          // replays the first response instead of acting.
+          // 🟢 STABLE: `piId` is fixed by this point (read from the ledger/draft, not minted here) and
+          // `captureMinor` is derived from the order total at :246, not from a clock or a random value.
+          // ⚠️ `captureMinor` IS IN THE KEY DELIBERATELY. If the operator edited the order between two
+          // attempts the amount differs, and that MUST NOT be replayed as the old amount — a differing
+          // key sends a real second capture, which Stripe then refuses as already-captured and the
+          // ALREADY_CAPTURED branch below retrieves the true figure. Both paths end at the right number.
+          idempotencyKey: `op_capture:${piId}:${captureMinor}`,
+        },
       )
       amountMinor = typeof captured.amount_received === 'number' ? captured.amount_received : 0
       if (amountMinor <= 0) {
@@ -297,7 +300,7 @@ export async function captureOnConfirmation(
       // and then failed to record still gets its row on the retry.
       if (ALREADY_CAPTURED.test(message)) {
         try {
-          const stripe = new Stripe(stripeSecretKey())
+          const stripe = stripeClient()
           const pi = await stripe.paymentIntents.retrieve(piId, {}, { stripeAccount: account })
           amountMinor = typeof pi.amount_received === 'number' ? pi.amount_received : 0
           if (amountMinor <= 0) return { status: 'already', paymentIntentId: piId }

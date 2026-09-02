@@ -47,6 +47,30 @@ import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 
+// ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
+// OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
+// (lib/payments/capture.ts) and refundOrder (lib/payments/refund.ts), BOTH of which construct a Stripe
+// client — so a capture or a refund on this route carries the same floor as checkout. This one is NOT, and the reason is measured rather than assumed.
+//
+// THE FLOOR WAS SET BY THE STRIPE SDK DEFAULTS, READ FROM node_modules/stripe/cjs/stripe.core.js:
+//     DEFAULT_TIMEOUT      = 80000            (:99)
+//     maxNetworkRetries    = 2  (default)     (:171)
+// Every client was `new Stripe(stripeSecretKey())` with NO options, so each took both: one Stripe call
+// could legitimately run 80s, and with retries ~240s, before the SDK gave up. THAT is what 300 was for.
+//
+// 🟢 THAT FLOOR IS GONE. Every client is now built by lib/stripe/client.ts with
+//     timeout: 20_000, maxNetworkRetries: 1   ->  worst case ~40s per call
+// and every money-moving call (create / capture / refund / cancel) sends an idempotency key derived from
+// the order key or the payment-intent id, so a bounded retry cannot double-charge.
+//
+// 🔴 THIS CEILING IS DELIBERATELY STILL 300. Bounding the client and lowering the ceiling are two
+// changes, and only the first has been made and measured. Lowering it is now SAFE to do as its own
+// change — but it is not this change, and it must not be bundled in.
+// ⚠️ BEFORE LOWERING IT, count the whole route, not one Stripe call: this handler can make several
+// (create, plus the ledger and Supabase writes around it). The ceiling must clear the sum, not the 40s.
+export const maxDuration = 300
+
+
 
 /** Resolve the paid-step settings for ONE event, server-side, through the SAME helper the client uses.
  *  🔴 The ?? chain lives in lib/payments/paid-step.ts and nowhere else — this only supplies the event
@@ -178,6 +202,25 @@ async function deliverReadyEmail(order: any, truck: any) {
     truckSlug: truck.slug ?? undefined,
   })
   await sendEmailUnlessDemo(truck, { to: order.customer_email, subject, html, text, senderName: truck.name })
+}
+
+
+// ── 🔴 EVENT_OPTION_STOCK WRITE FAILURES ARE REPORTED, NOT SWALLOWED ────────────────────────────
+// Both option-stock writes used to be `await supabase.from(...).upsert(...)` with the result DISCARDED,
+// followed by an unconditional `{ success: true }`. Every one of them has failed since the table was
+// created — truck_id is uuid and every caller passes a slug, so PostgREST returns 22P02 — and the route
+// reported success for a row that was never inserted. The table holds zero rows.
+// The classification mirrors lib/native/orderGate.ts's isRetryableFailure, so the operator's offline
+// queue does the right thing with each:
+//   • 22xxx (data exception, incl. 22P02 invalid uuid) → 400. TERMINAL: the same bytes will fail again,
+//     so it must NOT be queued and retried — it needs a schema fix, not another attempt.
+//   • anything else → 503 + Retry-After, marked `retryable`, so a genuine blip is queued and replayed.
+function optionStockWriteFailure(where: string, err: { code?: string; message?: string; details?: string }) {
+  const terminal = typeof err.code === 'string' && err.code.startsWith('22')
+  console.error(`[dashboard/action] ${where}: event_option_stock write FAILED —`, err.code, err.message, err.details)
+  return terminal
+    ? NextResponse.json({ error: 'Could not save that extra. The stock table needs attention.', code: err.code }, { status: 400 })
+    : NextResponse.json({ error: 'Service unavailable', retryable: true }, { status: 503, headers: { 'Retry-After': '10' } })
 }
 
 export async function POST(req: NextRequest) {
@@ -1177,12 +1220,16 @@ export async function POST(req: NextRequest) {
           // per-event sold-out/stock-0 extra like the customer path (findSoldOutOption / the menu read).
           let optList = optsRaw || []
           if (passedEventId && optList.length) {
-            const { data: ovRows } = await supabase
+            const { data: ovRows, error: ovErr } = await supabase
               .from('event_option_stock')
               .select('option_id, stock_count, available')
               .eq('truck_id', truck.id)
               .eq('event_id', passedEventId)
               .in('option_id', optList.map(o => o.id))
+            // 🔴 THE ERROR WAS DISCARDED HERE. On failure the override map stays empty and every option
+            // silently falls back to the modifier_options TEMPLATE — which is the right behaviour for an
+            // order guard (never block a valid order on a read blip) but must be SAID, not pretended.
+            if (ovErr) console.error('[dashboard/action] required-group guard: event_option_stock read FAILED — falling back to the TEMPLATE, per-event sold-out NOT enforced:', ovErr.code, ovErr.message)
             const ovById: Record<string, { stock_count: number | null; available: boolean | null }> = {}
             ;(ovRows as any[] | null || []).forEach(r => { ovById[r.option_id] = { stock_count: r.stock_count ?? null, available: r.available ?? null } })
             optList = optList.map(o => {
@@ -1859,14 +1906,16 @@ export async function POST(req: NextRequest) {
       if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
       if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
       // Verify the option belongs to this truck via its group
-      const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
-      if (opt) {
-        const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
-        if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-        await supabase.from('event_option_stock').upsert({
-          truck_id: truck.id, event_id, option_id: optionId, available: available !== false,
-        }, { onConflict: 'event_id,option_id' })
-      }
+      const { data: opt, error: optErr } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
+      // 🔴 `if (opt) { ... }` USED TO WRAP THE WHOLE WRITE, and the success return sat OUTSIDE it — so a
+      // missing option, or a failed lookup, skipped the write and still answered `{ success: true }`.
+      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_available (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' })
+      const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
+      if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      const { error: eosErr } = await supabase.from('event_option_stock').upsert({
+        truck_id: truck.id, event_id, option_id: optionId, available: available !== false,
+      }, { onConflict: 'event_id,option_id' })
+      if (eosErr) return optionStockWriteFailure('set_modifier_option_available', eosErr)
       return NextResponse.json({ success: true })
     }
 
@@ -1880,15 +1929,16 @@ export async function POST(req: NextRequest) {
       const { optionId, stockCount, event_id } = body
       if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
       if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
-      const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
-      if (opt) {
-        const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
-        if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-        const next = (stockCount === null || stockCount === undefined || stockCount === '') ? null : Math.max(0, parseInt(String(stockCount), 10) || 0)
-        await supabase.from('event_option_stock').upsert({
-          truck_id: truck.id, event_id, option_id: optionId, stock_count: next,
-        }, { onConflict: 'event_id,option_id' })
-      }
+      const { data: opt, error: optErr } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
+      // Same fall-through as above: a missing option must not answer success.
+      if (optErr || !opt) return optionStockWriteFailure('set_modifier_option_stock (option lookup)', optErr ?? { code: 'PGRST116', message: 'option not found' })
+      const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
+      if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      const next = (stockCount === null || stockCount === undefined || stockCount === '') ? null : Math.max(0, parseInt(String(stockCount), 10) || 0)
+      const { error: eosErr } = await supabase.from('event_option_stock').upsert({
+        truck_id: truck.id, event_id, option_id: optionId, stock_count: next,
+      }, { onConflict: 'event_id,option_id' })
+      if (eosErr) return optionStockWriteFailure('set_modifier_option_stock', eosErr)
       return NextResponse.json({ success: true })
     }
 

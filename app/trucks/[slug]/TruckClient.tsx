@@ -119,13 +119,28 @@ export default function TruckClient({ slug }: { slug: string }) {
         <div className="max-w-6xl mx-auto flex justify-between items-center w-full relative">
           
           <Link href="/" className="flex items-center transition-opacity hover:opacity-90 shrink-0 z-20">
+            {/* 🔴 TWO MARKS, ONE SHOWN. `data-brand` on <html> (app/layout.tsx, from the request host)
+                hides the other in app/globals.css, so the right one is in the FIRST painted frame.
+                hatchgrab.com gets the HatchGrab wordmark; villagefoodie.co.uk keeps the Village Foodie one.
+                ⚠ PLAIN <img> FOR THE WORDMARK, NOT next/image: the source is an SVG and next/image would
+                need `dangerouslyAllowSVG`, deliberately not enabled (components/brand/HatchGrabWordmark.tsx).
+                ⚠ 141x31 IS THE 4.548:1 CROP RATIO lib/brand.ts requires; any other pair distorts it. WHITE
+                variant because this header is bg-slate-900. */}
             <Image
               src="/logos/village-foodie-logo-v2.png"
               alt="Village Foodie"
               width={140}
               height={42}
-              className="object-contain w-[110px] sm:w-[140px]"
+              className="brand-mark-vf object-contain w-[110px] sm:w-[140px]"
               priority
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logos/hatchgrab-wordmark-white.svg"
+              alt="HatchGrab"
+              width={141}
+              height={31}
+              className="brand-mark-hg object-contain w-[110px] sm:w-[140px]"
             />
           </Link>
           

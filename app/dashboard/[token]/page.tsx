@@ -57,6 +57,7 @@ import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeS
 import { addNetworkListener } from '@/lib/native/network'
 import { useHeartbeat } from '@/lib/native/useHeartbeat'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
+import { listOps } from '@/lib/native/outbox'
 import { configureStatusBar } from '@/lib/native/statusBar'
 // 🔴 `collected_cash` / `collected_card` ARE COLLECTIONS. Every branch below that asked "was this a
 // collection?" by string equality now asks the shared predicate, so the two new names get the struck-prep
@@ -84,6 +85,9 @@ import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { useOfflinePaymentOverlay } from '@/lib/native/useOfflinePaymentOverlay'
 import { useGatedActionResult } from '@/lib/native/useGatedActionResult'
 import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
+import { saveMenuSnapshot, loadMenuSnapshot } from '@/lib/native/menuSnapshot'
+import { saveTruckSnapshot, loadTruckSnapshot } from '@/lib/native/truckSnapshot'
+import { onAppResume } from '@/lib/native/app'
 import { getOrderBalance, hasUnrecordedPayment } from '@/lib/payments/ledger'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
@@ -236,6 +240,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[heldAuthorisations,setHeldAuthorisations]=useState<Set<string>>(new Set())
   const[slots,setSlots]=useState<Slot[]>([])
   const[truckMenu,setTruckMenu]=useState<TruckMenu|null>(null)
+  // Mirrors truckMenu for hydrateMenuFromSnapshot, whose useCallback must not close over a stale value —
+  // it is the guard that stops a cached menu replacing a live one that is already on screen.
+  const truckRef=useRef<TruckData|null>(null)
+  const truckMenuRef=useRef<TruckMenu|null>(null)
+  useEffect(()=>{truckRef.current=truck},[truck])
+  useEffect(()=>{truckMenuRef.current=truckMenu},[truckMenu])
   // Per-EVENT stock slices (keyed by event_id; '__none__' for the no-event case). Keeps each event's
   // stock isolated so switching events never renders the previous event's rows during the re-fetch
   // round-trip (stale-while-revalidate: a cached slice shows instantly, an unseen one shows a skeleton
@@ -246,6 +256,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Event keys whose stock has resolved at least once → drives the skeleton (unseen key = skeleton,
   // not empty rows).
   const[fetchedStockKeys,setFetchedStockKeys]=useState<Set<string>>(new Set())
+  // 🔴 THE LAST get_stock FAILED. fetchStock ends `.catch(()=>null)`, so a failure was previously
+  // indistinguishable from a success that returned the same numbers — the badge kept showing the last
+  // figure with nothing saying it was frozen. Cleared on the next good fetch.
+  const[stockFetchFailed,setStockFetchFailed]=useState(false)
   // Local DRAFTS for the Menu & Stock number inputs (keyed by item name / category). While a field
   // is focused/being edited it has a draft entry, so the input reads the draft — NOT the resolved
   // prop — which stops fetchAll/fetchStock (orders realtime + 60s poll) clobbering it mid-edit during
@@ -287,6 +301,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // ⚠️ Deliberately NOT wired to lib/native/reachability.ts — that module is batch 2 and separately
   // gated. This is a local fact about a local fetch.
   const[degradedSince,setDegradedSince]=useState<Date|null>(null)
+  // 🔴 NON-NULL ⇒ THE MENU ON SCREEN CAME FROM THE DEVICE, NOT THE SERVER, and the operator is
+  // composing against prices that were correct at `menuSnapshotAt`. Drives the banner below. Cleared the
+  // moment a live menu lands, so it can never outlive the condition it describes.
+  const[menuSnapshotAt,setMenuSnapshotAt]=useState<Date|null>(null)
+  // 🔴 TRUE ⇒ THE BOARD COULD NOT BE LOADED — which is NOT the same as "there are no orders".
+  // Set only when a FIRST load fails (never on a poll failure, which keeps the board it already has and
+  // uses degradedSince instead). Drives both the banner and the empty-board copy, so the operator is
+  // never shown "No orders yet today" for a board that simply did not arrive.
+  const[boardUnavailable,setBoardUnavailable]=useState(false)
+  // The cached truck's age, when the shell is running on one. Null ⇒ the truck came from the server.
+  const[truckSnapshotAt,setTruckSnapshotAt]=useState<Date|null>(null)
   // ── ?tab= RESTORES THE ACTIVE TAB (V9.6) ─────────────────────────────────────────────────────────
   // A reload used to land on Orders whatever the operator was doing. Straight into the useState
   // INITIALISER — no ref and no effect needed, unlike ?event=, because this validates against a
@@ -880,6 +905,54 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{}finally{setSavingProfile(false)}
   }
 
+  // Seeding extracted verbatim from fetchMenu's success branch so a snapshot restores EXACTLY what a
+  // live fetch does — one code path, so the offline menu cannot drift from the online one.
+  const applyMenu=useCallback((menu:any)=>{
+    setTruckMenu(menu)
+    const fromDb:Record<string,{secs:number;batch:number}>={}
+    const notesFromDb:Record<string,boolean>={}
+    ;(menu.categories||[]).forEach((c:any)=>{
+      fromDb[c.name.toLowerCase()]={secs:c.prep_secs??0,batch:c.batch_size??1}
+      notesFromDb[c.name.toLowerCase()]=c.allowNotes??false
+    })
+    setCategoryConfigs(fromDb)
+    setCategoryAllowNotes(notesFromDb)
+    const cats = menu.categories || []
+    const allAtDefault = cats.length > 0 && cats.every((c:any) => c.prep_secs === 300 && c.batch_size === 1)
+    setShowPrepTimeBanner(allAtDefault)
+  },[])
+
+  // 🔴 A FIRST LOAD FAILED — RENDER ANYWAY, WITH WHATEVER THIS DEVICE HAS.
+  // Two outcomes, and the difference is the whole point:
+  //   • a truck snapshot exists → the shell renders, the tabs render, and `{truck && <AddOrderPanel/>}`
+  //     mounts, so the operator can compose against the cached menu. The BOARD stays empty and says so.
+  //   • no snapshot → `truck` stays null, and the render falls to the "can't take orders on this
+  //     device" screen rather than an empty menu the operator would try to use.
+  // ⚠️ It never overwrites a truck already on screen: this runs on a FIRST load only (the callers are
+  // both gated on !authenticatedRef.current), and a poll failure keeps the live truck and uses
+  // degradedSince instead.
+  const enterBoardUnavailable=useCallback(async(why:string)=>{
+    setBoardUnavailable(true)
+    if(truckRef.current) return
+    const snap=await loadTruckSnapshot(token)
+    if(!snap){console.warn('[fetchAll] first load failed (',why,') and no truck saved on this device — orders cannot be taken here');return}
+    console.warn('[fetchAll] first load failed (',why,') — running on the truck saved on this device')
+    setTruck(snap.truck as TruckData)
+    setTruckSnapshotAt(new Date(snap.savedAt))
+  },[token])
+
+  // 🔴 THE READ HALF. Only ever called when a live fetch produced no menu, and it REFUSES to
+  // overwrite a menu already on screen: a poll failing mid-service must not swap a live menu for a
+  // cached one. Silent no-op when there is no snapshot or it is past 24h — the panel is then exactly as
+  // it is today, with nothing to compose from, which is the honest state.
+  const hydrateMenuFromSnapshot=useCallback(async(truckId:string,eventId:string|null)=>{
+    if(truckMenuRef.current) return
+    const snap=await loadMenuSnapshot(truckId,eventId)
+    if(!snap) return
+    applyMenu(snap.menu)
+    setMenuSnapshotAt(new Date(snap.savedAt))
+  },[applyMenu])
+
   const fetchMenu=useCallback((truckId:string,currentPin:string)=>{
     // Scope deals/pause/ordering to the SELECTED event (cross-event fix) so the panel shows
     // THIS event's deals + pause, never the server's "live event" auto-detect. dashboard=1
@@ -891,22 +964,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .then(d=>{
         if(d?.truck?.logo) setTruck(prev=>prev?{...prev,logo:d.truck.logo}:prev)
         if(d?.menu){
-          setTruckMenu(d.menu)
-          // Seed categoryConfigs from the DB values (user edits take precedence via spread order)
-          const fromDb:Record<string,{secs:number;batch:number}>={}
-          const notesFromDb:Record<string,boolean>={}
-          ;(d.menu.categories||[]).forEach((c:any)=>{
-            fromDb[c.name.toLowerCase()]={secs:c.prep_secs??0,batch:c.batch_size??1}
-            notesFromDb[c.name.toLowerCase()]=c.allowNotes??false
-          })
-          setCategoryConfigs(fromDb)
-          setCategoryAllowNotes(notesFromDb)
-          const cats = d.menu.categories || []
-          const allAtDefault = cats.length > 0 && cats.every((c:any) => c.prep_secs === 300 && c.batch_size === 1)
-          setShowPrepTimeBanner(allAtDefault)
+          applyMenu(d.menu)
+          // A LIVE menu is on screen → the snapshot banner must go, and the snapshot is refreshed.
+          setMenuSnapshotAt(null)
+          void saveMenuSnapshot(truckId,evId??null,d.menu)
+        } else {
+          // 🔴 THE BACKEND ANSWERED BADLY OR NOT AT ALL. `r.ok?…:null` lands a 5xx here too, so this
+          // covers the 1 September shape (a gateway answering) as well as a dead uplink.
+          void hydrateMenuFromSnapshot(truckId,evId??null)
         }
-      }).catch(()=>null)
-  },[])
+      }).catch(()=>{ void hydrateMenuFromSnapshot(truckId,evId??null) })
+  },[applyMenu,hydrateMenuFromSnapshot])
 
   const fetchStock=useCallback((currentPin:string,eventId?:string|null)=>{
     // Write into THIS event's slice (keyed by the id the call was made with), never a flat replace —
@@ -933,7 +1001,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         for(const pk of Object.keys(pend)){ if(pk.startsWith(`catavail:${key}:`)&&!seen.has(pk)){ const g=pend[pk]; merged.push({category:g.meta as string,stock_count:null,default_stock:null,orders_count:0,available:g.v as boolean}) } }
         setCategoryStocksByEvent(prev=>({...prev,[key]:merged}))
         setFetchedStockKeys(prev=>prev.has(key)?prev:new Set(prev).add(key))
-      }).catch(()=>null)
+        setStockFetchFailed(false)
+      }).catch(()=>{setStockFetchFailed(true)})
   },[token])
 
   const fetchAll=useCallback(async(currentPin=pin,forceSeed=false)=>{
@@ -986,7 +1055,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         setLoading(true); setTimeout(()=>fetchAllRef.current(),backoff); return
       }
       // Transient failure after successful auth — keep existing state, never blank the dashboard
-      if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state');setDegradedSince(prev=>prev??new Date())}else{setError(data.error||'Failed to load')};setLoading(false);return}
+      if(!res.ok){
+        if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state');setDegradedSince(prev=>prev??new Date())}
+        // 🔴 A FIRST LOAD THAT FAILS IS NO LONGER FATAL. This used to `setError(...)`, which took the
+        // full-page "Access denied" return — so a cold launch against a degraded backend never reached
+        // the board, let alone the Add-order panel, no matter what was cached on the device.
+        // A 401 is handled ABOVE and still sets `error`: that one is a real verdict on the credential.
+        // Everything else is "we could not load", which is a different fact and gets a different screen.
+        else await enterBoardUnavailable(`HTTP ${res.status}`)
+        setLoading(false);return}
       // ── CONFIG vs LIVE SPLIT (the flip-back CLASS fix) ──────────────────────────────────────────────
       // seedConfig runs on NAV/AUTH (first load, event-switch, trucks-change, reconnect) — NEVER on the 60s
       // poll or a realtime ORDER event. Config = operator-edited settings; re-seeding them from the order
@@ -1000,6 +1077,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // ── CONFIG — operator-edited; seeded on nav only. ⚠️ Everything here is CONFIG by default; adding a
         //    LIVE field to this block would STOP it polling. Live state goes in the block below. ──
         setTruck(data.truck)
+        // The config half of a cold, degraded launch. Written on every successful load so its age is
+        // normally minutes; read only when a first load fails (see the failure branches below).
+        void saveTruckSnapshot(token,data.truck)
+        setBoardUnavailable(false); setTruckSnapshotAt(null)
         // DEMO session block (/api/dashboard). Read HERE, in the config branch, not the live one below:
         // extraction_source never changes, and email/expires_at change at most once or twice in a session,
         // so re-reading them on every 60s poll would be waste. Config seeding runs on nav/auth/event-switch
@@ -1097,7 +1178,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(ctrl.signal.aborted&&authenticatedRef.current){
         console.warn('[fetchAll] dashboard read aborted after',READ_TIMEOUT_MS,'ms or superseded — keeping existing state; the 60s poll retries')
         setDegradedSince(prev=>prev??new Date())
-      } else if(!authenticatedRef.current) setError('Connection error')
+      } else if(!authenticatedRef.current) await enterBoardUnavailable('no response')
       else setDegradedSince(prev=>prev??new Date())
     } finally{
       clearTimeout(timeoutId)
@@ -1236,6 +1317,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const itemStocks=itemStocksByEvent[stockKey]??[]
   const categoryStocks=categoryStocksByEvent[stockKey]??[]
   const stockLoading=!fetchedStockKeys.has(stockKey) // unseen key → skeleton (not empty rows)
+  // 🔴 WHAT THE ADD-ORDER PANEL IS ALLOWED TO CLAIM ABOUT ITS STOCK NUMBERS.
+  //   'unknown' — this event's stock has NEVER loaded on this device (a cold launch with the backend
+  //               unreachable). The badges render nothing and the + is never disabled, so without a
+  //               label the operator cannot tell "no limit set" from "we have no idea".
+  //   'stale'   — we have numbers, but the last fetch failed or the board is degraded, so they are
+  //               frozen at whatever they were. They do NOT tick down as offline orders are taken.
+  //   'live'    — fetched successfully and nothing is degraded.
+  // ⚠️ DERIVED, NOT STORED, so it cannot go stale itself.
+  const stockStatus:'live'|'stale'|'unknown'=
+    stockLoading?'unknown':(stockFetchFailed||degradedSince)?'stale':'live'
   // Keep the scoping ref current (cheap — no fetch, runs on every event-list poll).
   useEffect(()=>{
     selectedEventRef.current=stockEvent?{id:stockEvent.id,date:stockEvent.event_date}:null
@@ -1297,12 +1388,80 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // `last_heartbeat_at` OFF truck_vans (its own table, or a column on something not watched) — NOT
     // publishing this one. Do that first, or not at all.
     const fallbackInterval=setInterval(()=>fetchAllRef.current(),60000)
+    // ── 🔴 FOREGROUND REFRESH. The 60s interval above is SUSPENDED while the app is backgrounded, so
+    // without this an operator picking the tablet up waits up to a full minute for the board to move —
+    // every time, outage or not. Same shape as lib/native/useHeartbeat.ts:73-76, which exists for exactly
+    // this reason ("a suspended interval leaves the van stale, so re-ping on resume"). No-op on web.
+    // ⚠️ IT CANNOT AMPLIFY. fetchAll's in-flight guard drops a call that arrives while a read is
+    // outstanding (forceSeed defaults to false), so a resume landing mid-poll is discarded, not queued.
+    // ⚠️ AND IT CANNOT BLANK. A resume that fails takes fetchAll's own failure paths: authenticated →
+    // keep the board + the degraded bar; never-authenticated → the cached-board path. Never an error
+    // screen, and one attempt only — the 60s interval remains the sole repeat.
+    const offResume=onAppResume(()=>{void fetchAllRef.current()})
     return()=>{
       supabaseBrowser.removeChannel(ordersChannel)
       supabaseBrowser.removeChannel(truckChannel)
       clearInterval(fallbackInterval)
+      offResume()
     }
   },[truck?.id])
+  // ── 🔴 SEED THE QUEUED LIST FROM THE DURABLE OUTBOX, ON MOUNT ──────────────────────────────
+  // `deviceQueuedOrders` was populated ONLY by onOrderPlaced (the AddOrderPanel callback below), so it
+  // lived and died with the JS context. The OUTBOX is durable (Capacitor Preferences), so after a
+  // force-quit the ops still existed and still replayed — but this list came back EMPTY, and
+  // buildOfflineOccupancy then folded nothing.
+  // 🔴 THE CONSEQUENCE WAS THE WRONG DIRECTION: capacity OVERSTATED what the oven could produce, so
+  // the operator was invited to take orders it could not make. A force-quit is an everyday event, and
+  // this happens whether or not the device is offline.
+  //
+  // DEDUPLICATION, ON `order_key`, AT FOUR LAYERS — an op folded twice UNDERSTATES capacity, which is
+  // the opposite failure and just as bad:
+  //   1. here — anything already in `prev` (onOrderPlaced may have added it in this same session);
+  //   2. buildOfflineOccupancy itself (lib/slot-capacity.ts:40-41) drops any queued order whose
+  //      order_key is already in serverOrders — the one that matters, and it predates this change;
+  //   3. the prune effect immediately below removes synced twins from this list entirely;
+  //   4. `pendingQueued` (the board's display list) filters on the same syncedKeys.
+  //
+  // ⚠️ `kind === 'create'` ONLY. A status/stock/buzzer op is not an order and folding one would invent
+  // oven load that never existed.
+  // ⚠️ AND NOT `state === 'conflict'`. A dead-lettered op will never become a server order, so folding
+  // it would hold capacity against an order that is never made. (If it conflicted BECAUSE the order
+  // already exists, layer 2 drops it anyway.)
+  // 🔴 NATIVE ONLY — web has no outbox, so listOps() is meaningless there.
+  useEffect(()=>{
+    if(!isNativeApp())return
+    let cancelled=false
+    void(async()=>{
+      try{
+        const ops=await listOps()
+        if(cancelled||ops.length===0)return
+        const seeded=ops
+          .filter(op=>op.kind==='create'&&op.state!=='conflict')
+          .map(op=>{
+            // The queued body is the authoritative copy of what was sent — the same object
+            // AddOrderPanel built its optimistic card from, so the two cannot diverge.
+            const m=((op.body as Record<string,unknown>)?.manualOrder??{}) as Record<string,any>
+            return{
+              id:op.provisional_id||'',order_key:op.order_key,
+              customer_name:m.customerName||'Walk-up',customer_phone:m.customerPhone??null,customer_email:m.customerEmail??null,
+              slot:m.slot??null,event_date:m.event_date??null,event_id:m.event_id??null,
+              van_id:null,status:'confirmed',items:m.items??[],deals:m.deals??null,
+              subtotal:m.subtotal??0,total:m.total??0,notes:m.notes??null,
+              order_type:'collection',payment_status:m.paymentTaken?'paid':'unpaid',
+              created_at:new Date(op.client_ts||Date.now()).toISOString(),
+            } as unknown as Order
+          })
+        if(cancelled||seeded.length===0)return
+        setDeviceQueuedOrders(prev=>{
+          const have=new Set(prev.map(o=>o.order_key))
+          const add=seeded.filter(o=>!have.has(o.order_key))
+          return add.length?[...add,...prev]:prev
+        })
+      }catch(e){console.warn('[queued] could not seed from the outbox — capacity folds server orders only',e)}
+    })()
+    return()=>{cancelled=true}
+  },[])
+
   // Reconcile the optimistic device-queued list: once an offline-created order's synced twin lands in
   // `orders` (matched on order_key), prune it from deviceQueuedOrders. Keeps state tidy (the render-time
   // dedup handles the same-tick display). Returns the same ref when nothing changed → no re-render loop.
@@ -2385,13 +2544,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     patchOption(optionId,{available}) // optimistic
     // Offline gate (kind:'stock'). Key includes the ACTION so an option's availability + stock don't collide.
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_available',optionId,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_available:${optionId}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved')
+    if(r.queued){showToast('Stock saved');return}
+    // 🔴 THE FAILURE BRANCH DID NOT EXIST. Only `r.queued` was handled, so a route that answered a
+    // genuine error left the OPTIMISTIC patch on screen and said nothing — the operator saw the extra
+    // flipped and believed it. Every one of these writes has failed since the table was created.
+    // Re-pulling the menu rather than un-patching by hand: /api/menu resolves the event override, so the
+    // screen returns to what the server actually holds instead of a second guess at it.
+    if(!r.ok){showToast('Couldn’t save that extra. Check it before service.','error');if(truck?.id)fetchMenu(truck.id,pin)}
   }
   const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{stock_count:stockCount}) // optimistic
     const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_stock:${optionId}`,online:isOnline()})
-    if(r.queued)showToast('Stock saved')
+    if(r.queued){showToast('Stock saved');return}
+    // Same missing failure branch as updateModifierOptionAvailable above.
+    if(!r.ok){showToast('Couldn’t save that extra. Check it before service.','error');if(truck?.id)fetchMenu(truck.id,pin)}
   }
 
   const openEvent=async(eventId:string)=>{
@@ -2872,6 +3039,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // `error` is now only set for a never-authenticated session (R2) or an authoritative 401, so gating
   // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.
   if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
+  // 🔴 NOTHING LOADED AND NOTHING SAVED — SAY SO, AND SAY WHAT TO DO ABOUT IT.
+  // Reached only when a first load failed AND this device has no truck snapshot. Deliberately NOT the
+  // "Access denied" screen above: that one is a verdict on the credential and this is not — the link is
+  // fine, we simply could not reach anything and have nothing stored to fall back on.
+  // ⚠️ It is a DEAD END BY DESIGN. Showing the shell with an empty menu would invite the operator to
+  // start composing an order they cannot finish.
+  if(boardUnavailable&&!truck)return(
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
+      <div className="text-center max-w-sm">
+        <p className="text-slate-900 font-bold text-lg mb-2">Can&apos;t take orders on this device right now</p>
+        <p className="text-slate-600 text-sm">We couldn&apos;t reach your orders, and there&apos;s nothing saved on this device yet.</p>
+        <p className="text-slate-500 text-sm mt-2">Open the app once while you&apos;re connected and it will work offline after that.</p>
+      </div>
+    </div>
+  )
   if(requiresPin&&!authenticated)return(
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
@@ -3031,6 +3213,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {degradedSince&&!error&&(
         <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
           Can&apos;t reach the server. Showing orders from {lastRefresh.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}. New orders may be missing.
+        </div>
+      )}
+      {/* 🔴 THE MENU IS FROM THIS DEVICE, NOT THE SERVER — its own bar, separate from the degraded
+          strip above, because they are different facts: that one is about ORDERS being stale, this one is
+          about PRICES being stale, and only the second can take money at the wrong amount.
+          ⚠️ It names the time rather than an age, so the operator judges it against their own day —
+          "11:40" is actionable, "3 hours old" is arithmetic they should not have to do at a hatch. */}
+      {/* 🔴 THE BOARD DID NOT LOAD — a different fact from "the connection is poor" (the amber bar
+          above) and from "the menu is cached" (the bar below). This one says the ORDERS are missing, and
+          says what still works, so an operator is not left guessing whether they can trade. */}
+      {boardUnavailable&&(
+        <div className="shrink-0 bg-red-600 text-white px-4 py-2 text-sm font-bold text-center">
+          Couldn&apos;t load today&apos;s orders. You can still take new orders on this device.
+        </div>
+      )}
+      {menuSnapshotAt&&!error&&(
+        <div className="shrink-0 bg-amber-600 text-white px-4 py-2 text-sm font-bold text-center">
+          Menu saved on this tablet at {menuSnapshotAt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}. Check prices before taking payment.
         </div>
       )}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
@@ -3911,7 +4111,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length===0&&confirmedOrders.length===0&&(
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">{truck?.truck_emoji || '🍕'}</p>
-                <p className="text-slate-500 font-medium">{orders.length===0?'No orders yet today':'All orders complete!'}</p>
+                <p className="text-slate-500 font-medium">{boardUnavailable?'Couldn\u2019t load today\u2019s orders.':orders.length===0?'No orders yet today':'All orders complete!'}</p>
                 <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
             )}
@@ -3936,6 +4136,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             AddOrderPanel and must survive tab switches. Hidden via CSS, never unmounted. */}
         {truck&&(
           <div className={activeTab==='add'?'h-full min-h-0 flex flex-col':'hidden'}>
+          {/* 🔴 A MOUNTED PANEL WITH NO MENU IS A TRAP. The board can be unreachable while the truck
+              config is still cached (config lasts 7 days, the menu 24h), and in that window the panel
+              would render with an empty item grid — inviting an operator to start an order they cannot
+              finish. Say it plainly instead, in the tab they opened to do it.
+              ⚠️ Scoped to THIS TAB rather than the whole screen on purpose: the board, the event bar and
+              every other tab still work, and a full-screen takeover would flicker while the menu
+              hydrates (fetchAll and fetchMenu fail independently and in no fixed order). */}
+          {boardUnavailable&&!truckMenu?(
+            <div className="h-full flex items-center justify-center px-6">
+              <div className="text-center max-w-sm">
+                <p className="text-slate-900 font-bold text-base mb-2">Can&apos;t take orders on this device right now</p>
+                <p className="text-slate-600 text-sm">Your menu isn&apos;t saved on this device, so there&apos;s nothing to build an order from.</p>
+                <p className="text-slate-500 text-sm mt-2">Open the app once while you&apos;re connected and it will work offline after that.</p>
+              </div>
+            </div>
+          ):(
           <AddOrderPanel
             isActive={activeTab==='add'}
             isDemo={isDemo}
@@ -3944,6 +4160,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             truckMenu={truckMenu}
             menuGroups={menuGroups}
             itemStocks={itemStocks}
+            stockStatus={stockStatus}
+            stockCheckedAt={lastRefresh}
+            offlineConsumedByItem={offlineConsumedByItem}
+            offlineConsumedByCat={offlineConsumedByCat}
             categoryStocks={categoryStocks}
             categoryConfigs={categoryConfigs}
             categoryAllowNotes={categoryAllowNotes}
@@ -3972,7 +4192,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               if(isOffline&&!loadedEventIds.has(id)){showToast('Reconnect to load this event','error');return}
               setSelectedEventId(id)
             }}
-          />
+          />)}
           </div>
         )}
 

@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
+// THE HEARTBEAT. The smallest route here (132 lines): stamp last_heartbeat_at on the van, and clear
+// truck_events.online_paused_until when a device returns. Two indexed writes, no external service.
+// SLOWEST LEGITIMATE CASE: two round trips on a cold connection. Healthy is tens of milliseconds.
+// \u{1F534} 10s IS THE TIGHTEST CAP HERE ON PURPOSE. It fires every 15s from every device, so it is the
+// route most able to build a backlog, and it is the one with the least excuse for taking any time.
+// IF EXCEEDED: 504. The caller ignores the result (it is fire-and-forget) and the next tick is 15s
+// away; a missed beat costs at most one interval of staleness in the auto-pause monitor.
+export const maxDuration = 10
+
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!

@@ -25,16 +25,7 @@ import { recordOnlineCardRefund } from '@/lib/payments/online'
 import { stripeAccountForTruck } from '@/lib/payments/authorize'
 import { logAction } from '@/lib/audit/actionAudit'
 import type { ResolvedActor } from '@/lib/audit/actor'
-
-/** ⚠️ THIS REFUSED ANY KEY THAT WAS NOT `sk_test_`, AND THE REFUSAL IS GONE — removed deliberately, with
- *  the matching ones in authorize.ts, capture.ts and lib/stripe/connect.ts, so a live key can send real
- *  money back. Presence is all that remains.
- *  🔴 THE MODE CHECK THAT REPLACED IT IS IN `stripeAccountForTruck`, which this function already calls. */
-function stripeSecretKey(): string {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  return key
-}
+import { stripeClient } from '@/lib/stripe/client'
 
 /**
  * 🔴 THE OPERATOR'S REASONS, WHICH ARE NOT STRIPE'S.
@@ -125,7 +116,7 @@ export async function refundOrder(
   if (!account) {
     return { status: 'failed', detail: 'This truck has no Stripe account, so nothing can be refunded from here.' }
   }
-  const stripe = new Stripe(stripeSecretKey())
+  const stripe = stripeClient()
 
   let refundable: Awaited<ReturnType<typeof refundableFor>>
   try {

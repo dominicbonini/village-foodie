@@ -50,6 +50,7 @@ import { logAction } from '@/lib/audit/actionAudit'
 // ⚠️ THE ONLY OUTBOUND STRIPE CALL ON THIS ROUTE, and it exists for one measured reason: a
 // `charge.refunded` payload carries NO refunds list, so the safety-net branch has to ask. See it there.
 import Stripe from 'stripe'
+import { stripeClient } from '@/lib/stripe/client'
 
 // Node runtime, pinned EXPLICITLY. Signature verification uses node:crypto's createHmac/timingSafeEqual,
 // which do not exist on the edge runtime. Without this the route would build fine and fail at runtime on
@@ -617,7 +618,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ received: true })
       }
       try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+        const stripe = stripeClient()
         const list = await stripe.refunds.list({ payment_intent: piId, limit: 100 }, { stripeAccount: connectedAccount })
         refunds = list.data as unknown as Record<string, unknown>[]
       } catch (listErr) {

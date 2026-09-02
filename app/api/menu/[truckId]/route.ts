@@ -13,6 +13,18 @@ import { canAccess } from '@/lib/features'
 // ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 
+// ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
+// THE CUSTOMER MENU. Read-only: menu items, categories, modifier groups/options, per-event stock
+// overrides and one `operators.stripe_charges_enabled` column read. \u{1F534} NO STRIPE API CALL — the only
+// Stripe here is that column (:679), so nothing on this path can be cut mid-payment.
+// SLOWEST LEGITIMATE CASE IT MUST SURVIVE: a large menu on a cold Postgres connection — a dozen or so
+// sequential Supabase round trips plus the per-event override reads. Healthy is well under a second.
+// 20s is ~20x that headroom.
+// IF EXCEEDED: the platform kills the invocation and returns 504. The customer page treats a non-ok
+// menu response as "no menu" and shows its existing empty/closed state — a handled failure.
+export const maxDuration = 20
+
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
 export const revalidate = 0  // No cache
@@ -331,11 +343,17 @@ export async function GET(
   // event_option_stock ?? modifier_options per column. Empty until a dashboard edit (sparse override).
   const eventOptionOverride: Record<string, { stock_count: number | null; available: boolean | null }> = {}
   if (effectiveEventId) {
-    const { data: eos } = await supabase
+    const { data: eos, error: eosErr } = await supabase
       .from('event_option_stock')
       .select('option_id, stock_count, available')
       .eq('truck_id', truck.id)
       .eq('event_id', effectiveEventId)
+    // 🔴 THE ERROR WAS DISCARDED. An empty override map is INDISTINGUISHABLE from "this event has no
+    // overrides", so a failed read served the TEMPLATE as though it were the event's truth — an extra the
+    // operator marked sold out FOR THIS EVENT stayed on sale to customers, silently. Falling back to the
+    // template is still the right customer behaviour (never hide a menu on a read blip), but it is now
+    // stated in the log instead of being indistinguishable from success.
+    if (eosErr) console.error('[api/menu] event_option_stock read FAILED — serving the TEMPLATE, per-event extra overrides NOT applied:', eosErr.code, eosErr.message)
     ;(eos || []).forEach((o: any) => {
       eventOptionOverride[o.option_id] = { stock_count: o.stock_count ?? null, available: o.available ?? null }
     })

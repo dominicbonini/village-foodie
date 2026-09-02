@@ -32,6 +32,44 @@ function provSeqKey(eventId: string | null | undefined): string {
 }
 const MAX_ATTEMPTS = 5
 
+// ── 🔴 RETRYABLE vs TERMINAL — THE CLASSIFICATION THE OUTBOX TURNS ON ────────────────────────────
+// Until 2 September a write that got ANY server response was treated as delivered-and-rejected: never
+// queued, never retried, gone. On 1 September the gateway answered `upstream request timeout` while
+// Postgres was healthy, so operator actions were lost in exactly the conditions the outbox exists for.
+//
+// RETRYABLE = "the request was fine; the server could not serve it." The same bytes will succeed later,
+// so the op belongs in the outbox.
+//   • 5xx           — 500/502/503/504. app/api/dashboard/action/route.ts:194-198 already returns a 503
+//                     with `Retry-After: 10` for "we could not check", and its own comment (:191) says
+//                     "The client's gate already queues a write it could not deliver". IT DID NOT. This
+//                     makes that sentence true.
+//   • 408 / 429     — a timeout or a rate-limit is a "not now", never a "not ever".
+//   • `retryable: true` in the body — the server's EXPLICIT contract, honoured above any status guess.
+//
+// TERMINAL = a verdict on THE REQUEST ITSELF. Replaying it can only fail again:
+//   • 400/422 malformed · 403 forbidden · 404 no such order · 409 conflict (its own branch, flagged for
+//     operator review, never overwritten).
+//   • 🔴 401 IS TERMINAL, AND THAT IS SAFE ONLY BECAUSE OF THE STATUS SPLIT. The write route now
+//     answers 503 for "could not check" (:194) and reserves 401 for bad_pin (:201) / unauthorised (:203)
+//     — a decision it actually made. Before that split a 401 could mean a dead database, and queueing
+//     it would have been correct. If that split is ever collapsed, THIS LINE BECOMES WRONG.
+export function isRetryableFailure(status: number, body?: unknown): boolean {
+  if (body && typeof body === 'object' && (body as { retryable?: unknown }).retryable === true) return true
+  if (status >= 500) return true
+  if (status === 408 || status === 429) return true
+  return false
+}
+
+// 🔴 THE DEAD-LETTER BOUND IS TIME, NOT A COUNT — see the report. MAX_ATTEMPTS discarded a queued
+// write after ~3 minutes of outage (5 drains at 5/10/20/40/60s backoff); 1 September ran over two hours.
+// A retryable failure now burns NO attempt at all, so `attempts` counts only terminal answers and an
+// outage can no longer exhaust it. This age bound is the sole backstop that stops an undeliverable op
+// retrying for ever, and it does not DISCARD: it moves the op to `conflict`, which is the loud red
+// operator banner in components/native/OfflineBanner.tsx, and the record stays on the device.
+// ⚠️ `client_ts` is documented in outbox.ts as "display only — NEVER used for reconciliation". This is a
+// LOCAL RETRY DEADLINE, not reconciliation: nothing about server ordering or conflict resolution reads it.
+const MAX_QUEUE_AGE_MS = 12 * 60 * 60 * 1000   // 12h — longer than any plausible outage, shorter than a service
+
 // Statuses a replayed status-op may apply FROM (incl. its own target → idempotent re-apply). It EXCLUDES the
 // terminal-conflict states 'cancelled'/'rejected': if a customer cancelled/rejected the order online while
 // the operator advanced it offline, the server returns 409 and the outbox flags it — never overwrites.
@@ -300,7 +338,13 @@ export async function gatedAction(opts: {
   try {
     const res = await post(url, body, LIVE_TIMEOUT_MS)
     const data = await res.json().catch(() => ({}))
-    // A server RESPONSE (even an error) is NOT an offline case — return it as-is (web behaviour unchanged).
+    // 🔴 A RETRYABLE SERVER FAILURE IS A DELIVERY FAILURE, NOT A REJECTION. This branch used to read
+    // "A server RESPONSE (even an error) is NOT an offline case" and returned every non-ok status to the
+    // caller — so a 503 from a degraded backend lost the operator's action outright. A response now only
+    // ends the attempt when it is a VERDICT (isRetryableFailure === false).
+    // ⚠️ NATIVE ONLY. Web has no durable outbox, so queueing there would promise storage that does not
+    // exist — the one thing this file must never do. Web behaviour is unchanged, byte for byte.
+    if (!res.ok && isNativeApp() && isRetryableFailure(res.status, data)) return queue()
     return { ok: res.ok, queued: false, status: res.status, data, provisional_id, order_key }
   } catch {
     // Thrown fetch = could not reach the server. Queue on native; on web, surface as a failed (non-queued)
@@ -348,19 +392,25 @@ async function drainOnce(): Promise<DrainResult> {
     // on-device: mutating it throws "Attempted to assign to readonly property", crashing the whole drain on
     // the first op). NEVER mutate op in place; write a NEW object each time and persist that.
     // `attempts ?? 0` — a malformed op with a missing `attempts` would otherwise make NaN → never hits MAX.
-    const syncing = { ...op, state: 'syncing' as const, attempts: (op.attempts ?? 0) + 1 }
+    const priorAttempts = op.attempts ?? 0
+    const syncing = { ...op, state: 'syncing' as const, attempts: priorAttempts + 1 }
     await saveOp(syncing)
+    // 🔴 THE AGE BOUND, EVALUATED ONCE PER OP. A retryable failure no longer burns an attempt, so this
+    // is the ONLY thing that can end an undeliverable op — and it ends it in `conflict` (the red operator
+    // banner), never by deleting it.
+    const tooOld = Date.now() - (op.client_ts ?? Date.now()) > MAX_QUEUE_AGE_MS
     let res: Response
     try {
       res = await post(syncing.url, syncing.body)
     } catch (e: unknown) {
-      // Thrown fetch = NO server response (genuine offline OR a per-op failure). If this op has now failed
-      // MAX_ATTEMPTS times, treat it as poison: flag 'conflict' and CONTINUE so it can't block the ops behind
-      // it nor loop amber forever (the earlier hole — the catch used to only ever set 'pending' + break).
-      // Below MAX it's likely a transient/offline blip → keep 'pending' and STOP; retry on the next drain.
+      // Thrown fetch = NO server response: genuine offline, DNS/TLS, or our own 30s drain timeout. That is
+      // RETRYABLE BY DEFINITION — the request never reached a server that could judge it.
+      // 🔴 IT NO LONGER BURNS AN ATTEMPT. It used to, and five drains at 5/10/20/40/60s backoff dead-
+      // lettered a perfectly good queue after ~3 minutes. `attempts` is restored to its pre-try value so it
+      // counts TERMINAL answers only; `tooOld` is the backstop that keeps a poison op from looping for ever.
       const last_error = `network: ${e instanceof Error ? e.message : 'thrown fetch (no response)'}`
-      if (syncing.attempts >= MAX_ATTEMPTS) { await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++; continue }
-      await saveOp({ ...syncing, state: 'pending', last_error })
+      if (tooOld) { await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++; continue }
+      await saveOp({ ...syncing, attempts: priorAttempts, state: 'pending', last_error })
       break
     }
     if (res.ok) {
@@ -372,6 +422,17 @@ async function drainOnce(): Promise<DrainResult> {
       if (res.status === 409) {
         // Genuine conflict (e.g. the order was cancelled online while advanced offline) → flag, don't overwrite.
         await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++
+      } else if (isRetryableFailure(res.status, data)) {
+        // 🔴 THE DEGRADED-BACKEND BRANCH, AND THE REASON ONE DRAIN NO LONGER POSTS THE WHOLE QUEUE.
+        // A 5xx says the SERVER is failing, not this op — so every op behind it would fail the same way.
+        // `break` stops the drain exactly as a thrown fetch does, leaving the rest untouched and pending;
+        // OfflineBanner's 5/10/20/40/60s backoff owns the next attempt. No attempt is burned.
+        // ⚠️ Before this, the branch below set 'pending' and CONTINUED — so a degraded route received every
+        // queued op in sequence, each with its own 30s timeout, and each op reached MAX_ATTEMPTS in five
+        // drains. That is the write-loss this change exists to end.
+        if (tooOld) { await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++; continue }
+        await saveOp({ ...syncing, attempts: priorAttempts, state: 'pending', last_error })
+        break
       } else if (syncing.attempts >= MAX_ATTEMPTS) {
         await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++   // give up auto-retry → surface for review
       } else {

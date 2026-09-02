@@ -62,6 +62,7 @@
 // a connected account's recorded mode and returns a sentence for the log. It cannot refuse, because the
 // account's mode is a cached column and a cache may not veto real money. See the function.
 import Stripe from 'stripe'
+import { stripeClient as boundedStripeClient } from '@/lib/stripe/client'
 
 // ── 🔴 THE PINNED v2 API VERSION. ONE CONSTANT, AND IT WILL MOVE. ──────────────────────────────────
 // `/v2/core/*` REFUSES a request with no version header — probed: HTTP 400, "You did not provide an API
@@ -150,9 +151,18 @@ export function describeAccountModeMismatch(accountLivemode: boolean | null | un
       + 'live account, and the error it returns will not say so'
 }
 
-/** The platform client. Created per call rather than module-scoped so the check runs every time. */
+/** The platform client. Created per call rather than module-scoped so the check runs every time.
+ *  🟢 NOW BOUNDED like every other client in the codebase — see lib/stripe/client.ts for the values and
+ *  the reasoning. `requireStripeKey` still runs here first, so the mode/shape validation this module
+ *  owns is unchanged; only the transport bounds are new.
+ *  ⚠️ NO IDEMPOTENCY KEY IS ADDED TO THIS FILE'S TWO CREATES, DELIBERATELY:
+ *    - `accountSessions.create` (:367) mints a SHORT-LIVED client_secret. An idempotent replay would
+ *      hand back the FIRST session's secret, which by then may have expired — a key would make this
+ *      call less correct, not more. It moves no money.
+ *    - `paymentMethodDomains.create` (:549) already treats "already exists" as success.
+ *  Neither is a create/capture/refund of money, which is what the idempotency requirement covers. */
 function stripeClient(): Stripe {
-  return new Stripe(requireStripeKey(process.env.STRIPE_SECRET_KEY))
+  return boundedStripeClient(requireStripeKey(process.env.STRIPE_SECRET_KEY))
 }
 
 /**

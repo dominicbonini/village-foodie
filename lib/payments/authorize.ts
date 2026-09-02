@@ -29,22 +29,11 @@
 // Same rule the hosted-Checkout route always applied: the client's `card_payments_ready` is a rendering
 // hint. A customer holding a stale `true` from a tab left open while the truck's account was restricted
 // must not be able to start a payment.
-import Stripe from 'stripe'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 import { describeAccountModeMismatch } from '@/lib/stripe/connect'
 import { attachPaymentIntent } from '@/lib/payments/order-drafts'
-
-/** ⚠️ THIS CARRIED THE HOSTED-CHECKOUT ROUTE'S REFUSAL — any key that was not `sk_test_` threw here —
- *  AND THAT REFUSAL IS GONE, removed deliberately so a live key can take real payments. Presence is all
- *  that is left, because an intent cannot be created without a key.
- *  🔴 THE MODE IS NOW THE KEY'S MODE, EVERYWHERE, WITH NO SECOND OPINION. What is checked instead is
- *  that the key and the connected account AGREE — see `describeAccountModeMismatch`, logged below. */
-function stripeSecretKey(): string {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
-  return key
-}
+import { stripeClient } from '@/lib/stripe/client'
 
 export type AuthorizeResult =
   | {
@@ -122,7 +111,7 @@ export async function authorizeDraft(
       )
     }
 
-    const stripe = new Stripe(stripeSecretKey())
+    const stripe = stripeClient()
 
     const intent = await stripe.paymentIntents.create(
       {
@@ -156,7 +145,23 @@ export async function authorizeDraft(
       // 🔴 The connected account. BYTE-IDENTICAL to what the Session call passed. Without this the
       // charge would be created on the PLATFORM account, making HatchGrab merchant of record — the one
       // thing the model forbids.
-      { stripeAccount: operator.stripe_account_id },
+      {
+        stripeAccount: operator.stripe_account_id,
+        // 🔴 IDEMPOTENCY — THE THING THAT MAKES A BOUNDED CLIENT SAFE.
+        // With a 20s bound we stop listening while Stripe may still be creating the intent. Without a
+        // key, a retry would create a SECOND intent for the same basket.
+        // 🟢 TO BE EXACT ABOUT THE STAKES HERE: this call passes NO `confirm`, so the intent it makes
+        // is unconfirmed and places NOTHING on the customer's card — a duplicate would be an orphan
+        // record, not a duplicate hold. The money-moving duplicate risk lives in capture.ts, not here.
+        // The key is still correct: it keeps one attempt to one intent, which is what the draft, the
+        // ledger and the cancellation sweep all assume.
+        // 🟢 DERIVED FROM THE DRAFT KEY, WHICH IS STABLE AND UNIQUE PER ATTEMPT:
+        // app/api/orders/submit/route.ts:782 mints `const draftKey = newOrderKey()` BEFORE calling this,
+        // so a retry WITHIN one attempt reuses the key and Stripe returns the SAME intent, while a
+        // genuinely new attempt — which supersedes and cancels the old hold — gets a new key and so a
+        // new intent. Never a timestamp, never a random value.
+        idempotencyKey: `pi_create:${args.orderKey}`,
+      },
     )
 
     if (!intent.client_secret) {
@@ -218,11 +223,17 @@ export async function cancelAuthorization(args: {
   reason?: 'abandoned' | 'requested_by_customer'
 }): Promise<{ ok: boolean; detail?: string }> {
   try {
-    const stripe = new Stripe(stripeSecretKey())
+    const stripe = stripeClient()
     await stripe.paymentIntents.cancel(
       args.paymentIntentId,
       { cancellation_reason: args.reason ?? 'abandoned' },
-      { stripeAccount: args.stripeAccountId },
+      {
+        stripeAccount: args.stripeAccountId,
+        // Cancel was already effectively idempotent — the catch below treats "already cancelled" as
+        // success — but with a key a timed-out retry is a silent no-op rather than an error we have to
+        // recognise by matching on its message. Keyed on the intent, which is fixed by this point.
+        idempotencyKey: `pi_cancel:${args.paymentIntentId}`,
+      },
     )
     return { ok: true }
   } catch (err) {

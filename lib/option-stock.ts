@@ -90,12 +90,15 @@ async function buildOptionCeiling(
   const opts = await fetchTruckOptionsByName(supabase, truckId, names)
   const overrideById: Record<string, number | null> = {}
   if (eventId && opts.length) {
-    const { data: ov } = await supabase
+    const { data: ov, error: ovErr } = await supabase
       .from('event_option_stock')
       .select('option_id, stock_count')
       .eq('truck_id', truckId)
       .eq('event_id', eventId)
       .in('option_id', opts.map(o => o.id))
+    // 🔴 BOUND AND REPORTED. Discarded, a failure produced an empty override map, so the ceiling
+    // resolved to the TEMPLATE and the per-event ceiling was not enforced — with nothing said anywhere.
+    if (ovErr) console.error('[option-stock] buildOptionCeiling: event_option_stock read FAILED — ceiling falls back to the TEMPLATE:', ovErr.code, ovErr.message)
     ;(ov as any[] | null || []).forEach(r => { overrideById[r.option_id] = r.stock_count ?? null })
   }
   const byName: Record<string, number | null> = {}
@@ -109,7 +112,9 @@ async function buildOptionCeiling(
 /** Option CEILING shortfall — mirrors checkStockShortfall, through the SHARED checkCeilingShortfall
  *  engine (no secondary axis: options have no category). Returns [{name, remaining}] for options over
  *  their event ceiling, or null. MUST run under the per-event lock, BEFORE the order inserts (like the
- *  item check). FAIL-OPEN on error (never block a valid order on a blip). */
+ *  item check).
+ *  FAIL-OPEN, and precisely: a DB read failure is bound at the call site and falls back to the TEMPLATE
+ *  ceiling; a genuine JS throw is caught below and returns null. Neither blocks a valid order. */
 export async function checkOptionCeilingShortfall(
   supabase: SupabaseClient, truckId: string, eventId: string, items: any[], deals: any[],
 ): Promise<{ name: string; remaining: number }[] | null> {
@@ -124,7 +129,15 @@ export async function checkOptionCeilingShortfall(
     ])
     return checkCeilingShortfall(optionLines, liveTally, ceiling) // no secondary — option-only ceiling
   } catch (err) {
-    console.error('[option-stock] ceiling check error — proceeding (fail-open):', err)
+    // 🔴 THIS CATCH NEVER SAW A DATABASE ERROR, AND ITS OLD WORDING CLAIMED IT DID.
+    // The Supabase client RETURNS `{ data, error }`; it does not throw. So every failed
+    // event_option_stock read — 22P02 on every call since the table was created — flowed straight past
+    // here while the log line advertised a fail-open that had not happened. A guard that reads as
+    // protection and cannot fire for the class it names is worse than no guard (manual, §35).
+    // 🟢 THE DB-ERROR CLASS IS NOW HANDLED AT THE CALL SITE (see buildOptionCeiling), where the error
+    // is bound and logged. What remains here is the ONLY thing this catch ever actually caught: a
+    // genuine JS throw from the tally/resolve helpers. That is still worth failing open on.
+    console.error('[option-stock] ceiling check THREW (not a DB error — those are handled inline) — proceeding fail-open:', err)
     return null
   }
 }
@@ -132,7 +145,9 @@ export async function checkOptionCeilingShortfall(
 /**
  * Backstop: returns the name of the first selected option that is SOLD OUT — manual (available=false)
  * OR out of stock (stock_count===0) — else null. Catches MANUAL sold-out, which the stock decrement
- * (which only checks the count) does not. FAIL-OPEN: on error returns null (don't block valid orders).
+ * (which only checks the count) does not.
+ * FAIL-OPEN, and precisely: a DB read failure is bound inline and gates on the TEMPLATE only; a genuine
+ * JS throw is caught below and returns null. Neither blocks a valid order.
  */
 export async function findSoldOutOption(
   supabase: SupabaseClient, truckId: string, items: any[], deals: any[], eventId?: string | null,
@@ -148,12 +163,15 @@ export async function findSoldOutOption(
     // this backstop only gates availability. Both override columns are NULL = inherit template.
     const overrideById: Record<string, { stock_count: number | null; available: boolean | null }> = {}
     if (eventId && opts.length) {
-      const { data: ov } = await supabase
+      const { data: ov, error: ovErr } = await supabase
         .from('event_option_stock')
         .select('option_id, stock_count, available')
         .eq('truck_id', truckId)
         .eq('event_id', eventId)
         .in('option_id', opts.map(o => o.id))
+      // 🔴 BOUND AND REPORTED — same class as buildOptionCeiling above. On failure this backstop
+      // gates on the TEMPLATE only, so a per-event sold-out extra would NOT block the order.
+      if (ovErr) console.error('[option-stock] findSoldOutOption: event_option_stock read FAILED — gating on the TEMPLATE only:', ovErr.code, ovErr.message)
       ;(ov as any[] | null || []).forEach(r => { overrideById[r.option_id] = { stock_count: r.stock_count ?? null, available: r.available ?? null } })
     }
     const bad = opts.find(o => {
@@ -164,7 +182,11 @@ export async function findSoldOutOption(
     })
     return bad ? bad.name : null
   } catch (err) {
-    console.error('[option-stock] sold-out check error — proceeding (fail-open):', err)
+    // Same correction as checkOptionCeilingShortfall above: this never caught a database error, because
+    // the client returns them rather than throwing. DB errors are now bound and logged inline; this
+    // catches a genuine JS throw only, and failing open on one is still right — a backstop must never
+    // be the reason a valid order is refused.
+    console.error('[option-stock] sold-out check THREW (not a DB error — those are handled inline) — proceeding fail-open:', err)
     return null
   }
 }

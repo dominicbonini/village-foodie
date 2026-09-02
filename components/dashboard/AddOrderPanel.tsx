@@ -79,6 +79,22 @@ interface AddOrderPanelProps {
   truckMenu: TruckMenu | null
   menuGroups: Record<string, MenuItem[]>
   itemStocks: ItemStock[]
+  /** 🔴 OFFLINE CONSUMPTION, ALREADY COMPUTED BY THE DASHBOARD — NOT A SECOND MECHANISM.
+   *  The SAME two Maps the Menu & Stock list reads, built once in app/dashboard/[token]/page.tsx from
+   *  `deviceQueuedOrders`. Without them this panel showed the raw server `orders_count` while Menu &
+   *  Stock showed the folded one, so the two surfaces on the same screen disagreed offline — and the
+   *  disagreeing one was where orders are composed.
+   *  ⚠️ ABSENT ⇒ empty, so every existing caller and the demo dashboard render byte-identically. */
+  offlineConsumedByItem?: ReadonlyMap<string, number>
+  offlineConsumedByCat?: ReadonlyMap<string, number>
+  /** 🔴 WHAT THE STOCK NUMBERS ON THIS PANEL ARE WORTH. 'live' = fetched and current. 'stale' = frozen
+   *  (last fetch failed / board degraded) — they do NOT tick down as offline orders are taken. 'unknown'
+   *  = never loaded on this device, so no badge renders at all and the + is never disabled.
+   *  ⚠️ ABSENT ⇒ 'live', so every existing caller and the demo dashboard render byte-identically. */
+  stockStatus?: 'live' | 'stale' | 'unknown'
+  /** When the board last loaded successfully — named in the stale line so the operator judges the age
+   *  against their own day rather than being handed arithmetic. */
+  stockCheckedAt?: Date
   categoryStocks: CategoryStock[]
   categoryConfigs: Record<string, { secs: number; batch: number }>
   categoryAllowNotes: Record<string, boolean>
@@ -270,9 +286,13 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
 
 // ─── component ───────────────────────────────────────────────────────────────
 
+/** Shared frozen default so an absent prop does not mint a new Map on every render. */
+const EMPTY_CONSUMED: ReadonlyMap<string, number> = new Map()
+
 export function AddOrderPanel({
   truck, truckMenu, menuGroups,
-  itemStocks, categoryStocks, categoryConfigs, categoryAllowNotes,
+  itemStocks, categoryStocks, categoryConfigs, categoryAllowNotes, stockStatus = 'live', stockCheckedAt,
+  offlineConsumedByItem = EMPTY_CONSUMED, offlineConsumedByCat = EMPTY_CONSUMED,
   orders, waitMinutes, token, pin, todayEvent,
   categoryOrder, itemCategoryMap,
   showToast, onOrderPlaced, onOpenEvent,
@@ -1863,6 +1883,24 @@ setItemModal({ item, modGroups, editCartKey })
     }
     return [...items].sort((a, b) => priorityOf(b) - priorityOf(a) || a.name.localeCompare(b.name))
   }
+  // ── 🔴 SAY WHAT THE STOCK NUMBERS ARE WORTH, WHEN THEY ARE NOT WORTH THEIR FACE VALUE ──────────
+  // A frozen count and a live count look identical on the tiles, and an ABSENT count looks exactly like
+  // "no limit set" — so an operator could read "no badge" as "plenty" when the truth is "we have no
+  // idea". This says which it is, once, above the menu.
+  // ⚠️ IT DOES NOT DISABLE ANYTHING. An operator with no stock data must still be able to take an
+  // order — they can see the counter and the software cannot. The + control is untouched.
+  // ⚠️ There is no existing operator-visible "advisory" convention to copy: capacity calls itself
+  // advisory only in code comments. This follows the DEGRADED-BAR convention instead (name the time,
+  // state what may be wrong, claim nothing) — the same shape as the dashboard's own
+  // "Showing orders from HH:MM" strip and the OfflineBanner family.
+  const stockNotice = stockStatus === 'live' ? null : (
+    <div className={`rounded-xl px-3 py-2 mb-2 text-xs font-semibold ${stockStatus === 'unknown' ? 'bg-slate-100 text-slate-600' : 'bg-amber-50 text-amber-800'}`}>
+      {stockStatus === 'unknown'
+        ? 'Stock counts aren\u2019t loaded on this device. You can still take orders \u2014 check what you have.'
+        : `Stock last checked${stockCheckedAt ? ` at ${stockCheckedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}. It may have moved since.`}
+    </div>
+  )
+
   // Sticky, finger-sized (≥44px) category tab bar. Horizontal-scrolls on a narrow width — never off-screen.
   const categoryTabs = menuCats.length > 1 ? (
     <div className="sticky top-0 z-10 bg-white pt-3 pb-2 mb-2 border-b border-slate-100">
@@ -1920,8 +1958,14 @@ setItemModal({ item, modGroups, editCartKey })
             // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
             const isSoldOut = !(item.available ?? true) || stock?.available === false
             const catSt = categoryStocks.find(s => s.category === cat)
-            const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
-            const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+            // 🔴 SERVER COUNT + OFFLINE-QUEUED CONSUMPTION, exactly as the Menu & Stock list does
+            // (page.tsx:4848 / :4904). The two surfaces now read the same number.
+            // ⚠️ NOT A DOUBLE-FOLD WITH THE BASKET. This counts SUBMITTED orders; `itemBasketQty` /
+            // `catBasketQty` below count the basket still being composed. They are disjoint: the panel
+            // calls onOrderPlaced (which queues) and resetManual (which clears the basket) in ONE
+            // synchronous block with no await between them, so no render exists where an order is in both.
+            const itemRem = calcStockRemaining(stock?.stock_count ?? null, (stock?.orders_count ?? 0) + (offlineConsumedByItem.get(item.name) ?? 0))
+            const catRem = calcStockRemaining(catSt?.stock_count ?? null, (catSt?.orders_count ?? 0) + (offlineConsumedByCat.get(cat) ?? 0))
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
             // ONE rule with the submit gate (calcAddableRemaining ⟷ checkCeilingShortfall): fold THIS order's
             // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
@@ -1979,8 +2023,14 @@ setItemModal({ item, modGroups, editCartKey })
             // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
             const isSoldOut = !(item.available ?? true) || stock?.available === false
             const catSt = categoryStocks.find(s => s.category === cat)
-            const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
-            const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+            // 🔴 SERVER COUNT + OFFLINE-QUEUED CONSUMPTION, exactly as the Menu & Stock list does
+            // (page.tsx:4848 / :4904). The two surfaces now read the same number.
+            // ⚠️ NOT A DOUBLE-FOLD WITH THE BASKET. This counts SUBMITTED orders; `itemBasketQty` /
+            // `catBasketQty` below count the basket still being composed. They are disjoint: the panel
+            // calls onOrderPlaced (which queues) and resetManual (which clears the basket) in ONE
+            // synchronous block with no await between them, so no render exists where an order is in both.
+            const itemRem = calcStockRemaining(stock?.stock_count ?? null, (stock?.orders_count ?? 0) + (offlineConsumedByItem.get(item.name) ?? 0))
+            const catRem = calcStockRemaining(catSt?.stock_count ?? null, (catSt?.orders_count ?? 0) + (offlineConsumedByCat.get(cat) ?? 0))
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
             // ONE rule with the submit gate (calcAddableRemaining ⟷ checkCeilingShortfall): fold THIS order's
             // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
@@ -2076,6 +2126,7 @@ setItemModal({ item, modGroups, editCartKey })
     <ScrollMenuSections cats={menuCats} categoryStocks={categoryStocks} renderCategory={renderGridItems} />
   ) : (
     <div>
+      {stockNotice}
       {categoryTabs}
       {closedBanner}
       {selectedMenuCat && renderGridItems(selectedMenuCat)}
@@ -2086,6 +2137,7 @@ setItemModal({ item, modGroups, editCartKey })
     <ScrollMenuSections cats={menuCats} categoryStocks={categoryStocks} renderCategory={renderListItems} />
   ) : (
     <div>
+      {stockNotice}
       {categoryTabs}
       {closedBanner}
       {selectedMenuCat && renderListItems(selectedMenuCat)}

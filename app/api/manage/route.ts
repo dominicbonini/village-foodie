@@ -50,6 +50,17 @@ const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error',
 }
 import { sendConfirmationEmail } from '@/lib/email'
 
+// ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
+// THE MANAGE PAYLOAD. One GET assembling the whole console: truck, categories, items, subcategories,
+// modifier groups/options, category+item group links, bundles with stock, codes, events, upsell rules,
+// operator identity and any pending email change. No Stripe API call.
+// SLOWEST LEGITIMATE CASE: a truck with a large menu and many events — the widest fan-out of sequential
+// reads in the app, wider than /api/dashboard. Given the same ~50ms round trip, a healthy run is low
+// hundreds of milliseconds; 30s is the same ceiling /api/dashboard carries and ample for the fan-out.
+// IF EXCEEDED: 504. The page's load() catch shows the standing staleness bar and keeps what it has.
+export const maxDuration = 30
+
+
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!

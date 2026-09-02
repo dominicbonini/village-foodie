@@ -129,3 +129,14 @@ details[open] > summary .details-arrow {
     animation: demoOrderFlashStatic 2000ms steps(1, end) forwards;
   }
 }
+
+/* ── 🔴 CUSTOMER BRAND MARK — ONE OF TWO, CHOSEN BY HOST, NO JAVASCRIPT ──────────────────────────────
+   Scope, deliberately narrow: the CUSTOMER ordering page and the CUSTOMER truck schedule page render
+   BOTH marks and let this hide one. `data-brand` is set on <html> server-side in app/layout.tsx from
+   the host it already reads, so the correct mark is in the FIRST painted frame — branching on
+   lib/domain.ts's isHatchGrab() instead would render Village Foodie into the SSR HTML and swap it
+   after hydration, a visible logo flash on every load.
+   ⚠ NOTHING ELSE USES THESE CLASSES. Operator surfaces carry their own wordmark and are untouched.
+   ⚠ villagefoodie.co.uk keeps the Village Foodie mark — that is the whole point of the switch. */
+html[data-brand="hatchgrab"] .brand-mark-vf { display: none; }
+html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }

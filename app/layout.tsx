@@ -67,21 +67,21 @@ export async function generateMetadata(): Promise<Metadata> {
     // at the root whatever this says, and browsers fall back to it whenever an SVG data URI does not
     // render — Safari among them. So the reported "orange bolt on a blue background" was favicon.ico,
     // not this line. Fixing one without the other would have changed nothing.
-    // ⚠️ `?v=2` IS DELIBERATE AND IS NOT DECORATION. A favicon is one of the most aggressively cached
+    // ⚠️ `?v=3` IS DELIBERATE AND IS NOT DECORATION. A favicon is one of the most aggressively cached
     // things a browser holds; without a changed URL the old icon survives a deploy indefinitely. The
     // FILE at /favicon.ico is also replaced, for the implicit root request that carries no query.
     icons: isHG
       ? {
           icon: [
-            { url: "/favicon.ico?v=2", sizes: "16x16 32x32 48x48", type: "image/x-icon" },
-            { url: "/icons/icon-192.png?v=2", sizes: "192x192", type: "image/png" },
-            { url: "/icons/icon-512.png?v=2", sizes: "512x512", type: "image/png" },
+            { url: "/favicon.ico?v=3", sizes: "16x16 32x32 48x48", type: "image/x-icon" },
+            { url: "/icons/icon-192.png?v=3", sizes: "192x192", type: "image/png" },
+            { url: "/icons/icon-512.png?v=3", sizes: "512x512", type: "image/png" },
           ],
-          apple: "/apple-touch-icon.png?v=2",
+          apple: "/apple-touch-icon.png?v=3",
         }
       : {
           icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
-          apple: "/apple-touch-icon.png?v=2",
+          apple: "/apple-touch-icon.png?v=3",
         },
   }
 }
@@ -106,8 +106,17 @@ export default async function RootLayout({
   // 🔴 READ ONCE, HERE. `generateMetadata` above reads the same header for its own branding; this is
   // the same value handed to the analytics provider so its server and client renders agree.
   const host = (await headers()).get('host') ?? undefined
+  // 🔴 THE BRAND, RESOLVED SERVER-SIDE AND PUT ON <html> SO CSS CAN SWITCH ON IT WITH NO FLICKER.
+  // The customer ordering page and the truck schedule page are both client components, and
+  // lib/domain.ts's isHatchGrab() returns FALSE on the server — so branching on it there would render
+  // the Village Foodie mark into the SSR HTML and swap it after hydration, which is a visible logo
+  // flash on every load. This value comes from the SAME `host` read directly above, so the server and
+  // the client cannot disagree.
+  // ⚠ ADDITIVE ONLY. Nothing reads this attribute except the two customer surfaces named in
+  // docs/brand-consolidation-report.md; no operator surface changes appearance because of it.
+  const brand = host?.includes('hatchgrab') ? 'hatchgrab' : 'villagefoodie'
   return (
-    <html lang="en">
+    <html lang="en" data-brand={brand}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

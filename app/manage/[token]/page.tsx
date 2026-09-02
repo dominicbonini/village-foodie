@@ -47,6 +47,7 @@ import { nativeAuthHeader } from '@/lib/native/session'   // native app sends it
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useDragDrop } from '@/lib/useDragDrop'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
+import { ImageDropSlot } from '@/components/manage/ImageDropSlot'
 import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
@@ -215,6 +216,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [bundles, setBundles] = useState<Bundle[]>([])
   const [upsellRules, setUpsellRules] = useState<UpsellRule[]>([])
   const [loading, setLoading] = useState(true)
+  // When the last SILENT refresh failed, and when the last good payload arrived. Together they drive the
+  // standing staleness bar — see the load() catch.
+  const [refreshFailedAt, setRefreshFailedAt] = useState<Date | null>(null)
+  const [lastLoadedAt, setLastLoadedAt] = useState<Date | null>(null)
   // Shared stacked, action-capable toast system (lib/useToasts) — replaces the old single Toast. The
   // showToast signature (msg,type,opts?) is back-compatible with every existing (msg)/(msg,type) caller
   // and is threaded as a prop to the tabs (ScheduleTab's reject-undo uses opts.action).
@@ -321,8 +326,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       : 'waiting'
 
 
-  const load = useCallback(async () => {
-    setLoading(true)
+  // ── 🔴 INITIAL LOAD vs REFRESH ────────────────────────────────────────────────────────────────
+  // `setLoading(true)` used to be unconditional, and the early return at the render gate below then
+  // replaced the WHOLE TREE with a spinner. MenuTab is 72 useState declarations deep; every one of them
+  // — the open category, the edit modal mid-edit, the import wizard, a half-typed sub-category rename —
+  // died with it, and the document scroll went too because nothing saves or restores it.
+  // THE SPINNER PROTECTS EXACTLY ONE MOMENT: the first load, when `truck` is null and MenuTab would
+  // dereference `truck.plan`. On a REFRESH nothing is cleared before the fetch, so the previous payload
+  // is still in state and complete — the tree can render it perfectly well while the new one arrives.
+  // ⚠️ THE MIGRATED TABS DO NOT NEED THIS, and this does not replace what they do. Schedule, Settings
+  // and Team stopped calling reload() at all and patch the parent optimistically instead (the §23
+  // "iPhone" rule — see the comments at :8651, :8765, :9241, :9259). This is the general fix underneath
+  // that migration, for the callers MenuTab and DealsTab have not converted.
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     try {
       // ⚠️ SENDS THE NATIVE BEARER. /api/manage now denies by default, and the native app has no
       // cookie — its session is in @capacitor/preferences. Without this header the app would be
@@ -345,11 +362,26 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setBundles(data.bundles)
       setUpsellRules(data.upsellRules || [])
       setPendingEmailChange(data.pendingEmailChange || null)
-    } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
-    finally { setLoading(false) }
+      // A good load clears any standing staleness.
+      setRefreshFailedAt(null)
+      setLastLoadedAt(new Date())
+    } catch (e: any) {
+      // 🔴 A FAILED REFRESH LEAVES THE PREVIOUS PAYLOAD ON SCREEN. That was ALREADY true before this
+      // change — the setters simply never ran — but the spinner at least flashed, so something happened.
+      // Silent refreshes remove even that, so the staleness has to become a STANDING statement rather
+      // than a toast that fades. This is the condition on which the split ships.
+      if (silent) setRefreshFailedAt(new Date())
+      showToast(e.message || 'Failed to load', 'error')
+    }
+    finally { if (!silent) setLoading(false) }
   }, [token])
 
-  useEffect(() => { load() }, [load])
+  // 🔴 ZERO-ARGUMENT ON PURPOSE. `reload={refresh}` would let a call site become `onClick={reload}`,
+  // and the MouseEvent would land in `silent` and coerce to true by accident. A dedicated wrapper makes
+  // that unexpressible. (Every current call site is `reload()` with no arguments — this is prevention.)
+  const refresh = useCallback(() => { void load(true) }, [load])
+
+  useEffect(() => { void load() }, [load])
   // Native: overlay the WebView under the status bar here too (not only the cold-launch /app call), so the
   // AppHeader fills the status-bar strip with no empty band. Self-guards native → no-op on web.
   useEffect(() => { void configureStatusBar() }, [])
@@ -551,6 +583,15 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     </div>
   )
 
+  // \u{1F534} THE STANDING STALENESS BAR. Rendered whenever the last background refresh failed, and it
+  // does NOT fade — a toast that disappears is exactly the mechanism that lets out-of-date data pass as
+  // current. Cleared by the next successful load, not by time and not by a tap.
+  const staleBar = refreshFailedAt ? (
+    <div className="bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
+      Couldn&apos;t refresh. Showing what was saved{lastLoadedAt ? ` at ${lastLoadedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}. Changes you make are still saved.
+    </div>
+  ) : null
+
   if (!truck) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <p className="text-red-500 font-bold">Invalid or expired token</p>
@@ -751,12 +792,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
-        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
+        {staleBar}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
+        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
+        {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
-        {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
+        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
+        {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
           currentUserLastName={currentUserLastName}
@@ -774,7 +816,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -3546,6 +3588,32 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     } catch (err: any) { showToast(err.message || 'Upload failed', 'error') }
     finally { setUploadingItemPhoto(false) }
   }
+  // 🔴 THE INLINE SLOT'S UPLOAD, LIFTED OUT OF ITS onChange HANDLER.
+  // It was an inline arrow reading `e.target.files?.[0]`, so there was no function for a drop event to
+  // call — the tap path was the only path that could exist. Now both entry points call this.
+  // It also drops the `reload()` that ended it. Part One means a reload no longer unmounts the tree,
+  // but a full 12-slice refetch for one changed field is still what the §23 rule forbids, and the
+  // optimistic + rollback shape is the one this component already uses for toggleItem (:3770),
+  // confirmDeleteItem (:3781) and saveItemPatch (:3640).
+  // ⚠️ FULL-OBJECT UPSERT, not the sparse { id, image_path } this used to send. saveItemPatch's comment
+  // records why: upsert_item coerces ABSENT fields to null/default, so a sparse write silently blanked
+  // everything else on the row. That is a behaviour fix riding along here, and it is stated rather than
+  // buried.
+  const uploadItemImage = async (item: Item, file: File) => {
+    const prevLocal = localItems
+    try {
+      const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
+      await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+      const next = { ...item, image_path: path } as Item
+      setLocalItems(list => list.map(i => (i.id === item.id ? next : i)))
+      await api('upsert_item', next)
+      showToast('Photo updated')
+    } catch (err: any) {
+      setLocalItems(prevLocal)
+      showToast(err.message || 'Upload failed', 'error')
+    }
+  }
+
   const [expandedCat, setExpandedCat] = useState<string | null>(null)
   const [allergenText, setAllergenText] = useState('')
   const [allergenUrl, setAllergenUrl] = useState(truck.allergen_info_url || '')
@@ -4069,22 +4137,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   {group.items.map(item => (
                   <div key={item.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
                     {/* Item image */}
-                    <label className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity block" title="Click to upload photo">
+                    <ImageDropSlot
+                      title="Tap or drop a photo"
+                      className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 hover:opacity-80 transition-opacity block"
+                      onFile={f => { void uploadItemImage(item, f) }}
+                    >
                       {item.image_path
                         ? <img src={imgUrl(item.image_path)!} alt="" className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center text-slate-300 text-lg">📷</div>
                       }
-                      <input type="file" accept="image/*" className="sr-only" onChange={async e => {
-                        const file = e.target.files?.[0]; if(!file) return
-                        try {
-                          const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
-                          await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-                          await api('upsert_item', { id: item.id, image_path: path })
-                          reload()
-                          showToast('Photo updated')
-                        } catch(err: any) { showToast(err.message, 'error') }
-                      }} />
-                    </label>
+                    </ImageDropSlot>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2">
                         <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
@@ -4809,10 +4871,14 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                     }
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                    <ImageDropSlot
+                      title="Tap or drop a photo"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                      disabled={uploadingItemPhoto}
+                      onFile={f => { void uploadItemPhoto(f) }}
+                    >
                       {uploadingItemPhoto ? 'Uploading…' : editingItem.image_path ? 'Change photo' : 'Add photo'}
-                      <input type="file" accept="image/*" className="sr-only" onChange={e => e.target.files?.[0] && uploadItemPhoto(e.target.files[0])} />
-                    </label>
+                    </ImageDropSlot>
                     {editingItem.image_path && (
                       <button onClick={() => saveItemPatch({ image_path: null })} className="text-xs text-red-500 hover:text-red-700 text-left">
                         Remove photo
@@ -6669,9 +6735,9 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
+function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
   isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
-  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
+  api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
   /** T1: fired after a SUCCESSFUL extracted-events save, and only when a caller supplied one.
@@ -8635,12 +8701,12 @@ function QrPreview({ src, alt, onOpen, locked }: {
   )
 }
 
-function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
+function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
   truck: Truck; token: string
-  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
+  api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   onVerifySuccess: (events: any[]) => void
   onSwitchTab: (tab: Tab) => void
   categories: Category[]
@@ -8665,6 +8731,7 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
   // and a value outside the canonical list comes back as an "Other" row holding that exact text.
   const [cuisineSlots, setCuisineSlots] = useState<CuisineSlot[]>(() => storedToCuisineSlots(truck.cuisine_type))
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [removingLogo, setRemovingLogo] = useState(false)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
@@ -9167,6 +9234,36 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
     catch (err: any) { showToast(err.message, 'error') }
   }
 
+  // 🔴 REMOVE THE LOGO. Optimistic, no reload() — the same §23 shape as uploadLogo directly below
+  // (setForm BEFORE the write) and as saveItemPatch: patch, write, revert on failure.
+  //
+  // 🔴 IT CLEARS THE REFERENCE AND LEAVES THE FILE IN STORAGE. Reasons, in order:
+  //   1. There is no delete endpoint. `get_upload_url` (api/manage/route.ts:1440) mints an upload URL and
+  //      has no counterpart, so deleting would mean a NEW server action with delete rights on
+  //      truck-media — a wider permission than removing a logo needs.
+  //   2. Clearing the column is what actually removes it everywhere: every surface resolves through
+  //      resolveTruckLogo (lib/truck-logo.ts:26), which returns null on a null path.
+  //   3. A delete that fails after the column is cleared leaves the same orphan anyway, plus an error
+  //      the operator can do nothing about.
+  // ⚠ THE COST, STATED: an orphaned object in truck-media, a few KB, reachable only by someone who
+  // already knows its exact path. A storage sweep is a separate job.
+  const removeLogo = async () => {
+    if (!form.logo_storage_path) return
+    if (!window.confirm('Remove your logo? Customers will see your truck name without it. You can upload a new one at any time.')) return
+    const prev = form.logo_storage_path
+    setRemovingLogo(true)
+    setForm(p => ({ ...p, logo_storage_path: null }))          // optimistic
+    try {
+      await api('update_settings', { logo_storage_path: null })
+      // Keep the parent truck in step so a tab switch does not re-seed the old logo (the onTruckUpdate
+      // partial-merge the §23 rule names, already threaded into this tab).
+      onTruckUpdate({ logo_storage_path: null, logo: null })
+    } catch (e: any) {
+      setForm(p => ({ ...p, logo_storage_path: prev }))        // revert
+      showToast(e.message || 'Couldn\u2019t remove the logo \u2014 please try again.', 'error')
+    } finally { setRemovingLogo(false) }
+  }
+
   const uploadLogo = async (file: File) => {
     setUploadingLogo(true)
     try {
@@ -9318,11 +9415,27 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
             }
           </div>
           <div>
-            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            <ImageDropSlot
+              title="Tap or drop a logo"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              disabled={uploadingLogo}
+              onFile={f => { void uploadLogo(f) }}
+            >
               {uploadingLogo ? 'Uploading…' : 'Upload logo'}
-              <input type="file" accept="image/*" className="sr-only" onChange={e => e.target.files?.[0] && uploadLogo(e.target.files[0])} />
-            </label>
+            </ImageDropSlot>
             <p className="text-xs text-slate-400 mt-1">PNG or JPG, square recommended</p>
+            {/* Only when there is something to remove — a disabled button on a truck that never had a
+                logo is an affordance with nothing behind it. */}
+            {form.logo_storage_path && (
+              <button
+                type="button"
+                onClick={() => { void removeLogo() }}
+                disabled={removingLogo || uploadingLogo}
+                className="mt-2 text-xs font-medium text-red-500 hover:text-red-700 disabled:opacity-50"
+              >
+                {removingLogo ? 'Removing\u2026' : 'Remove logo'}
+              </button>
+            )}
           </div>
         </div>
       </Card>
@@ -12422,9 +12535,9 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 // ── TeamTab ────────────────────────────────────────────────────
 type PendingEmailChange = { id: string; new_email: string; requested_at: string; expired_at: string }
 
-function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, currentUserId, ownerEmail, ownerAuthUserId, userRole, initialPendingEmailChange, onProfileSaved }: {
+function TeamTab({ truck, token, api, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, currentUserId, ownerEmail, ownerAuthUserId, userRole, initialPendingEmailChange, onProfileSaved }: {
   truck: Truck; token: string
-  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
+  api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   currentUserEmail: string | null; currentUserFirstName: string | null; currentUserLastName: string | null; currentUserPhone: string | null
   currentUserId: string | null; ownerEmail: string | null; ownerAuthUserId: string | null; userRole: 'owner' | 'manager' | 'staff'
   initialPendingEmailChange: PendingEmailChange | null

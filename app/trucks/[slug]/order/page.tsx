@@ -212,6 +212,30 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
+// 🔴 TWO MESSAGES FOR "OUR ROUTE DID NOT ANSWER", BECAUSE THE CUSTOMER'S SITUATION IS NOT THE SAME.
+// Established by walking app/api/orders/submit/route.ts, not assumed:
+//
+//   PAY AT THE TRUCK — this route INSERTS the order row itself. A timeout after that point leaves a
+//   real, ordinary-looking order on the operator's board while the customer was told nothing. Telling
+//   them it failed would send them to re-order food the kitchen is already making.
+//
+//   CARD — `if (payByCard === true)` (:743-857) is a CLOSED BRANCH: all four exits are `return`s, and
+//   the terminal one at :850 is unconditional. ":846 THE ONLY SUCCESSFUL EXIT ON THIS BRANCH, AND IT
+//   CREATES NO ORDER." So no order row can exist, and because the response never arrived the browser
+//   never mounted the Payment Element — the intent is created but never confirmed, so no money moves.
+//   ⚠ THE ROUTE'S OWN COMMENT AT :739-742 SAYS IT "falls through to the pay-at-hatch path" when a card
+//   cannot be taken. IT DOES NOT — both failure paths return a 503 (:819, :840). The comment is stale.
+//   The claim below depends on that, which is why it was walked rather than read.
+//
+// 🔴 AND THE STRONG CLAIM IS WITHHELD ON A RETRY. `payment` is set only after a PREVIOUS submit
+// returned a clientSecret (:2107), so when it is non-null the customer has already been shown a Payment
+// Element and may have paid on it — the supersede logic explicitly handles a `prior.promoted_at`
+// (:758), i.e. an already-paid draft. In that case we cannot say no money moved, so we do not.
+const SUBMIT_UNCONFIRMED_CARD =
+  'We couldn’t place your order. You haven’t been charged and no order was created — please try again.'
+const SUBMIT_UNCONFIRMED_CHECK =
+  'We couldn’t confirm your order went through. It may already be on the truck’s screen — please check with them before ordering again.'
+
 export default function OrderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   // A demo truck's SLUG carries the `demo-` prefix (lib/demo.ts), so the page needs no extra data.
@@ -730,6 +754,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // event_id scopes the slot capacity to THIS event (re-key fix) — date is the fallback.
       if (eventId) p.set('event_id', eventId)
       const res = await fetch(`/api/slots/${truckId}?${p}`, { cache: 'no-store' })
+      // Same parse-before-check as the submit path had. Nothing customer-visible came of it — the catch
+      // below swallows it into "no slots" — but an explicit guard is what stops that being luck.
+      if (!res.ok) throw new Error('slots unavailable')
       const data = await res.json()
       const slots = data.slots || []
       setAvailableSlots(slots)
@@ -1945,6 +1972,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setSoldOutNotice(null)
     setPaymentFailedNotice(null)
     try {
+      // 🔴 CAPTURED AT SEND TIME, NOT READ AT RESPONSE TIME. `payByCard` is state (:425) and the radio
+      // at :3630 can move it while the request is in flight, so reading it in the failure branch could
+      // describe a branch the customer switched to AFTER submitting. This is the value actually sent.
+      const sentByCard = !!(payByCard && truck?.card_payments_ready)
+      // A prior card attempt means a Payment Element has already been shown and may have been paid on
+      // — see the SUBMIT_UNCONFIRMED_CARD note. Captured here for the same reason.
+      const hadPriorPayment = !!payment?.orderKey
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1976,7 +2010,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           // the server falls through and places the order unpaid, exactly as before.
           // ⚠️ ANDed with `card_payments_ready` here only to avoid a pointless server round-trip on a
           // truck that plainly cannot take one; the server never trusts this value.
-          payByCard: !!(payByCard && truck?.card_payments_ready),
+          payByCard: sentByCard,
           // 🔴 ONE LIVE AUTHORISATION PER BASKET. If we are holding one and the basket has since moved,
           // its key rides along so the SERVER cancels it before creating the replacement — cancel-then-
           // create, in one request, so there is never a moment when two intents are live for one basket.
@@ -1984,7 +2018,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           supersedeOrderKey: payment?.orderKey ?? null,
         }),
       })
-      const data = await res.json()
+      // 🔴 CHECK THE BODY BEFORE TRUSTING IT. This was a bare `await res.json()`, so a response that
+      // is not JSON — a platform 504/502, whose body is an HTML error page — threw a SyntaxError that
+      // landed in the catch at the end of this function and was shown to the customer verbatim:
+      //     Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+      // on a page-replacing error screen, mid-checkout.
+      // ⚠️ `null` ONLY WHEN THE BODY IS NOT JSON — NOT on every non-ok. The 423 (paused) and 403
+      // (event ended) branches below are non-ok responses that DO carry JSON and must keep working
+      // exactly as they do; this changes only the case where our route never answered at all.
+      const data = await res.json().catch(() => null)
+      if (data === null) throw new Error(sentByCard && !hadPriorPayment ? SUBMIT_UNCONFIRMED_CARD : SUBMIT_UNCONFIRMED_CHECK)
       // Paused (423): non-destructive — keep the basket + order UI, show a dismissible notice,
       // and let the customer wait and re-submit. Do NOT setError (page-replacing) or clear basket.
       if (res.status === 423 || data?.paused) {
@@ -2446,7 +2489,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
         {/* Truck hero — logo, name, event details */}
         <div className="text-center mb-5">
-          {truck?.logo ? (
+          {/* ⚠ NO PLACEHOLDER WHEN THERE IS NO LOGO. This used to fall back to a 🚚 emoji in an orange
+              circle, which reads as a stand-in for a truck that has not finished setting up rather than
+              as branding. A truck without a logo now shows its NAME and nothing else. */}
+          {truck?.logo && (
             <Image
               src={truck.logo}
               alt={truckName}
@@ -2454,8 +2500,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               height={96}
               className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mx-auto mb-4"
             />
-          ) : (
-            <div className="w-24 h-24 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-4xl shadow-md mx-auto mb-4">🚚</div>
           )}
           <h1 className="text-2xl font-black text-slate-900">
             Order from {truckName}
@@ -4177,9 +4221,18 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
     <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
       <div className="max-w-6xl mx-auto flex justify-between items-center w-full relative">
 
-        {/* Left — Village Foodie logo, always visible */}
+        {/* Left — the brand mark, always visible */}
         <Link href="/" className="flex items-center transition-opacity hover:opacity-90 shrink-0 z-20">
-          <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={140} height={42} className="object-contain w-[110px] sm:w-[140px]" priority />
+          {/* 🔴 TWO MARKS, ONE SHOWN. `data-brand` on <html> (app/layout.tsx, from the request host)
+              hides the other in app/globals.css, so the right one is in the FIRST painted frame.
+              hatchgrab.com gets the HatchGrab wordmark; villagefoodie.co.uk keeps the Village Foodie one.
+              ⚠ PLAIN <img> FOR THE WORDMARK, NOT next/image: the source is an SVG and next/image would
+              need `dangerouslyAllowSVG`, deliberately not enabled (components/brand/HatchGrabWordmark.tsx).
+              ⚠ 141x31 IS THE 4.548:1 CROP RATIO lib/brand.ts requires; any other pair distorts it. WHITE
+              variant because this header is bg-slate-900. */}
+          <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={140} height={42} className="brand-mark-vf object-contain w-[110px] sm:w-[140px]" priority />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/hatchgrab-wordmark-white.svg" alt="HatchGrab" width={141} height={31} className="brand-mark-hg object-contain w-[110px] sm:w-[140px]" />
         </Link>
 
         {/* Centre — truck logo + name, absolutely positioned so it never pushes logo or Back */}
@@ -4189,10 +4242,11 @@ function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: stri
                 centred block can never overlap the left logo. Logo capped to FIXED px (w-[40px]/[48px],
                 its current size) so it no longer scales with OS text and grows into the VF zone. */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[115px] sm:px-[145px] w-full">
-              {truck.logo
-                ? <Image src={truck.logo} alt={truckName} width={48} height={48} className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] object-contain rounded-full bg-white shadow-sm shrink-0" />
-                : <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
-              }
+              {/* ⚠ NO EMOJI PLACEHOLDER — see the note on the large logo above. With no logo the centred
+                  block is just the name; the flex `gap` collapses on its own with a single child. */}
+              {truck.logo && (
+                <Image src={truck.logo} alt={truckName} width={48} height={48} className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] object-contain rounded-full bg-white shadow-sm shrink-0" />
+              )}
               <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
                 {truckName}
               </h1>

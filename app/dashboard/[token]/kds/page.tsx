@@ -39,6 +39,7 @@ import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playNewOrder } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
+import { onAppResume } from '@/lib/native/app'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
@@ -1132,10 +1133,18 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
     const fallback = setInterval(() => fetchAllRef.current(), 60000)
 
+    // 🔴 FOREGROUND REFRESH — the KDS had the SAME gap as the dashboard: a 60s interval that suspends
+    // in the background and no resume hook. A cook waking the screen mid-service waited for the next
+    // tick. Same shape as lib/native/useHeartbeat.ts:73-76. No-op on web.
+    // ⚠️ CANNOT AMPLIFY: the scope guard above drops a repeat read for the SAME event, which is what a
+    // resume is. ⚠️ CANNOT BLANK: a failed read keeps the board and sets the degraded strip (:616).
+    const offResume = onAppResume(() => { void fetchAllRef.current() })
+
     return () => {
       supabaseBrowser.removeChannel(ordersChannel)
       supabaseBrowser.removeChannel(truckChannel)
       clearInterval(fallback)
+      offResume()
     }
   }, [truck?.id])
 

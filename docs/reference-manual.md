@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.56
+HatchGrab Engineering Reference Manual · V11.57
 
 **HatchGrab**
 
@@ -15,6 +15,41 @@ September 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.57 — 2 September 2026
+
+**Delta — the day after the outage: the trigger confirmed as upstream, the client hardened against a
+repeat, and five separate places found reporting success for something that never happened.**
+
+- ✅ **THE 1 SEPTEMBER TRIGGER IS CONFIRMED AND UPGRADED FROM REASONED TO OBSERVED.** The provider's own
+  incident record: PostgREST 14.17 was rolled out on 27 August, hit unintended performance side effects,
+  and was rolled back to 14.5 on 31 August at 19:52 UTC. Our logs carried that layer's own gateway
+  message while Postgres was healthy and the SQL editor instant. **The recovery with no fix applied is no
+  longer a loose end.** ⚠️ The record entries are dated 27–31 August and the outage was the 1st, so this
+  is a very strong fit rather than a matched incident id.
+- 🔴 **A RETRYABLE WRITE FAILURE WAS LOST OUTRIGHT, IN PRODUCTION.** **OBSERVED by harness.** The offline
+  gate treated any server response as "not offline", so a fast 5xx discarded the operator's action —
+  not queued, not retried. And the drain broke on a thrown fetch but not on a 5xx, so one drain posted
+  the whole queue into a degraded route and the attempt counter dead-lettered every queued write after
+  roughly three minutes of outage. **Ten drains against a 503 went from every queued write destroyed to
+  every one preserved.**
+- 🔴 **THE COLD-LAUNCH PATH HAD FOUR ABORT POINTS, AND THE ONE THAT MATTERED WAS NOT THE OBVIOUS ONE.**
+  **OBSERVED by source read.** Past the error screen, the Add-order panel is mounted only when the truck
+  object is non-null, and that is set only on a successful load. **Fixing the first abort alone would
+  have produced a report saying done and a device that still could not take an order.**
+- 🔴 **FIVE CONFLICT STATES SHARED TWO STRINGS, AND THE SPLIT WAS ON THE WRONG AXIS.** **OBSERVED.** The
+  banner branched on money-versus-status rather than on why the write failed, so *"the server rejected
+  it"* was false in three of the five — two were never sent at all.
+- 🔴 **THE TIMEOUT CAP LANDED ON ONE ROUTE OF SIX.** Every operator write and both customer routes were
+  still on the platform default. ⚠️ **And two of them must stay there** — see the Stripe floor below.
+- 🔴 **A CUSTOMER MID-CHECKOUT COULD BE SHOWN A JSON PARSER MESSAGE.** **OBSERVED.** The submit handler
+  parsed the response before checking it, so a platform error page produced *"Unexpected token '<'…"* on
+  a page-replacing screen.
+- 🔴 **A PER-EVENT EXTRA MARKED SOLD OUT HAS NEVER ONCE BEEN SAVED, FOR ANY TRUCK.** The column type is
+  now corrected, and **three independent layers were each reporting success for a row that was never
+  written.**
+
+---
 
 ## V11.56 — 1 September 2026 (evening session)
 
@@ -7854,6 +7889,53 @@ compose half is not, together with its method lesson. **Not restated here.**
 
 ---
 
+### 🔴 A RESPONSE IS NOT SUCCESS. THE GATE MUST CLASSIFY THE FAILURE, NOT ITS PRESENCE.
+
+The offline gate keyed on whether the server *answered*, not on what it answered. **Any response counted
+as online**, so a fast 5xx fell through every offline path and the write was lost with no record.
+
+**The classification now in force:** a 5xx, a 408, a 429 or the route's own retryable flag **queues**; a
+terminal 4xx does not, because retrying the same bytes will never succeed.
+
+🔴 **AND A RETRYABLE FAILURE MUST NOT BURN AN ATTEMPT.** The attempt counter previously conflated "this
+operation is poisonous" with "the outage lasted a while" — five attempts is about three minutes, against
+an outage that ran over two hours. **The counter now guards only genuinely poisonous operations, and a
+12-hour age bound is the sole backstop.** An item that exceeds it moves to the conflict banner and is
+**never deleted**.
+
+### The banner wording, and why one string could not cover five states
+
+**Five distinct paths land an item in conflict** — malformed and never sent, never reached and now past
+the age bound, refused as a genuine conflict, sent but never accepted, and terminally rejected. The
+wording now says *"didn't go through"*, which is **true whether the change was never sent, refused, or
+never accepted**. The previous *"the server rejected it"* claimed all three at once.
+
+⚠️ **Per-state wording needs a proper reason field on the conflict entry, not parsing an error string.**
+The information is already carried and unused. Recorded OPEN.
+
+⚠️ **A cook and an operator see identical wording today.** *"Take payment again if it is still owed"* is
+an instruction a cook on the kitchen screen cannot act on. Recorded OPEN.
+
+### 🔴 THE COLD-LAUNCH REQUIREMENT, AND WHAT IT COST TO MEET
+
+An operator opening the app during a degraded backend can now reach the Add-order panel and compose
+against a cached menu. **Two snapshots, with deliberately different lifetimes:**
+
+| Snapshot | Bound | Why |
+|---|---|---|
+| Menu — items, prices, categories, modifiers | **24 hours** | It carries **prices**. A stale one takes money at the wrong amount |
+| Truck config — plan, overrides, payment settings | **7 days** | A stale plan is a wrong affordance, not a wrong charge, and 7 days spans a trading week |
+
+🔴 **NEITHER STORES ORDERS, DELIBERATELY.** A board seeded with yesterday's rows would have an operator
+working orders that may already be collected. **The board stays empty and says it could not be loaded** —
+and the empty state now reads *"couldn't load"* rather than *"no orders yet"*, because **missing data
+presented as empty data is its own false statement.**
+
+⚠️ **A valid truck snapshot with an expired menu mounted the panel with an empty item grid** — an
+operator invited to compose an order that could not be priced. **Found by the harness, not predicted.**
+
+---
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
@@ -8112,6 +8194,20 @@ together or the class survives.**
 returning empty, so the caller's `error` branch is entered for both "no such token" and "the database
 did not answer". **Switching to the maybe-single helper is what makes the distinction expressible at
 all.** Without it the split cannot be written.
+
+---
+
+### ✅ THE AVAILABILITY/AUTHENTICATION CONFLATION IS FIXED AT ALL FOUR SITES
+
+Deployed as one change. The load-bearing detail is worth keeping: **the single-row helper raises a
+no-rows error rather than returning empty**, so the caller's error branch was entered both for "no such
+token" and for "the database did not answer". **Switching to the maybe-single helper is what made the
+distinction expressible at all** — without it the split cannot be written, only described.
+
+⚠️ **The revocation trade is deliberate and stands: maximum exposure is one poll interval.** If the
+backend is degraded and a token is revoked simultaneously, the screen holds until recovery. **We cannot
+distinguish "revoked" from "unknown" while the database is unreachable, and blanking on "unknown" is what
+caused the incident.**
 
 ---
 
@@ -11683,6 +11779,29 @@ diagnosis.
 
 # 27. Open backlog (June 2026)
 
+## Open as of V11.57 — 2 September 2026
+
+- 🔴 **OPEN — bounding the Stripe client**, and only then the payment ceilings.
+- 🔴 **OPEN — ten tables are referenced in code and appear in no migration.** One of them carried a
+  column type wrong in a way nothing would have caught. **The query that finds the class — every
+  same-named column grouped by type — is worth keeping and running.**
+- 🔴 **OPEN — the extras stock code half is built and undeployed.** The column is corrected; the writes
+  still discard their result until it ships.
+- ⚠️ **OPEN — per-state conflict wording**, which needs a reason field rather than error-string parsing.
+- ⚠️ **OPEN — cook-versus-operator copy on shared banners.**
+- ⚠️ **OPEN — nothing logs when a customer hits a checkout timeout.** On pay-at-truck the order looks
+  entirely ordinary on the board; on card nothing appears at all. **The operator has no signal and
+  neither do we.**
+- ⚠️ **OPEN — a duplicate order is prevented by nothing but copy.** The order key is minted per attempt.
+- ⚠️ **OPEN — the database housekeeping**: the response spool needs a full vacuum in a quiet window (it
+  takes an exclusive lock on a table the heartbeat writes to every 30 seconds), the cron prune is weekly
+  against jobs that run every 30 seconds, and nobody has established whether anything subscribes to the
+  realtime publication.
+- ⚠️ **OPEN — the customer-facing ordering path was never tested during the outage**, and that gap still
+  decides whether an outage costs orders or only visibility.
+
+---
+
 ## Open as of V11.56 — 1 September 2026
 
 - 🔴 **OPEN — the order merge version guard.** Data corrected; guard unchanged. Any future-dated row
@@ -14016,6 +14135,36 @@ A deal hides on the customer page when its slot's only item is sold out — and 
 
 ⚠️ **`"Only 1 pizzas left!"` is a live pluralisation bug on the CUSTOMER page** — the noun is the raw category name lowercased, with no singularisation. Backlog, §27.
 
+### 🔴 STOCK IS DERIVED, NOT COUNTED — SO THERE IS NOTHING TO DECREMENT
+
+Remaining is `stock_count` minus a **live tally of rows in `orders`**. **Nothing is decremented anywhere,
+and the route says so.** Two consequences that are easy to get backwards:
+
+- **Reconciliation on reconnect needs no decrement step.** The insert alone corrects the count, because
+  the count is a query. A replayed order that now exceeds stock is refused with a conflict **after the
+  customer has been promised the food** — detection, not prevention, and that is inherent to taking
+  orders offline.
+- **A local countdown means keeping a local tally**, which has blind spots that cannot be closed: a
+  second operator device, customers ordering online, and cancellations elsewhere that *release* stock.
+  🔴 **A local tally is a better guess, not a correct number, and must never be presented as a count.**
+
+### 🔴 THE FOLD EXISTED AND REACHED ONLY ONE OF ITS TWO CONSUMERS
+
+The dashboard folds this device's queued orders into the displayed counts — **applied in the stock list,
+not in the Add-order panel.** **So two surfaces on the same screen disagreed offline, and the one that
+disagreed is where orders are composed.** Now passed to both, as **the same objects**, not a
+recomputation.
+
+⚠️ **The queued-orders list was never seeded from the outbox.** A force-quit left the durable ops
+replaying while the in-memory list was empty, so **capacity overstated what the oven could produce** — a
+live fault in ordinary service, since force-quitting a sticky app is an everyday event.
+
+⚠️ **The staleness label must not become more confident because the fold ran.** The fold corrects for this
+device's queued orders; it says nothing about the baseline being old. A folded number built on a stale
+baseline is still stale.
+
+---
+
 # 31. Slot & Capacity Engine — CANONICAL MODEL (AUTHORITATIVE — read before touching)
 
 <!-- ============================================================ -->
@@ -16184,6 +16333,38 @@ An image-processing command reporting success is not a file with the expected di
 the file proves the file; **only a request to the server proves what a client receives.** Three distinct
 claims, routinely conflated. This belongs with the existing family — *a fix in the repository is not a
 fix in production*.
+
+---
+
+### 🔴 A MUTANT MUST FAIL, OR "0 FAILING" PROVES NOTHING
+
+Several changes this day were verified by a harness running the **real modules** and then **deliberately
+breaking the guard to confirm the suite noticed**: remove the age bound and a case fails; remove the
+retry guard and two fail; remove the seed and capacity understates.
+
+**THE RULE: a passing suite is evidence only if you have seen it fail for the right reason.** A test
+whose pass condition can be met by deleting the behaviour under test measures nothing. **State the
+mutation alongside the pass count, or the pass count is decoration.**
+
+### ⚠️ A HARNESS THAT MIRRORS THE CODE TESTS THE MIRROR
+
+Where a computation lives inside a React hook it cannot be imported, so a harness **reimplements** it.
+That is legitimate and it must be **declared**: the modules that were imported are under test; the
+mirrored part is a model of them. **Every report this day that mirrored something said so.** Keep that.
+
+### 🔴 A NAME THAT LOOKS UNIQUE OFTEN IS NOT
+
+A prop-type line was **byte-identical in six components**, so removing a genuinely dead prop from three
+of them also stripped it from three that use it. **The typecheck caught it.** This is the same class as
+two truck ids differing by two characters, and as a recency filter that matches future-dated rows.
+**Before a global replace, count the matches.**
+
+### ⚠️ A STALE COMMENT IS A TRAP, NOT A NUISANCE
+
+A route comment stated that a failing card branch *"falls through to the pay-at-hatch path below"*. It
+does not — the block contains four returns and the terminal one is unconditional. **A change to
+customer-facing payment copy depended on not believing it.** **When a comment is found false, correct it
+in place; leaving it is leaving the next reader a wrong premise.**
 
 ---
 
@@ -18883,6 +19064,41 @@ capture happened.** So a capture's cause cannot be audited after the fact on any
 
 **Not urgent while Stripe is not live; it is the kind of gap noticed during a dispute.**
 
+### 🔴 THE STRIPE SDK's OWN DEFAULTS ARE THE FLOOR, AND THEY ARE 80 SECONDS
+
+The client is constructed with **no options**, so it takes an 80-second timeout and two network retries —
+**one call can legitimately run to roughly 240 seconds.** **OBSERVED by reading the installed SDK.**
+
+🔴 **THAT IS WHY BOTH PAYMENT-TOUCHING ROUTES STAY AT THE 300-SECOND CEILING.** A lower cap would kill
+the invocation while the operation completed at Stripe: **money moved, no local record.** That is
+strictly worse than the slowness a cap prevents.
+
+⚠️ **The operator action route is on that list and it is not obvious** — most of its handlers are fast
+writes, but it imports capture and refund, both of which construct a Stripe client. **A route-level cap
+cannot distinguish them.**
+
+**THE ORDER OF WORK, recorded so it is not attempted backwards:** bound the client first — around 15
+seconds with one retry, an idempotency key on the call, and the webhook as the authority — **then** bring
+the ceilings down. **Bounding the client is a payment behaviour change and needs its own decision: a
+timed-out create may still have created the intent.**
+
+### 🔴 THE CUSTOMER MESSAGE ON A TIMEOUT MUST BE BRANCH-SPECIFIC, BECAUSE THE TRUTH IS
+
+| Branch | What a timeout leaves behind |
+|---|---|
+| **Pay at the truck** | 🔴 The route inserts the order row itself, so **a real, ordinary-looking order may be on the operator's board.** Telling this customer it failed sends them to re-order food already being made |
+| **Card, first attempt** | The branch creates no order and the payment element never mounts, so **nothing exists and no money moved** |
+| **Card, retry** | 🔴 **The strong claim is withheld.** A retry means a payment element was already shown and may have been completed — the server itself guards on the draft already being promoted |
+
+⚠️ **The branch must be captured at SEND time, not read in the failure handler.** The payment toggle is
+state and can move while the request is in flight, so reading it late describes a branch the customer
+switched to after submitting.
+
+⚠️ **Guard on the body not parsing, not on a non-ok status.** Several non-ok responses carry real JSON
+the page depends on; a blanket status guard breaks three working paths to fix one.
+
+---
+
 # 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
@@ -19601,6 +19817,31 @@ route passes the landing's real path, which resolves on every host.
 is why the landing needed no edit at all. **When adding anything to shared chrome, make the default the
 existing caller's behaviour and the existing caller needs no change — which is also the only way to
 prove it did not change.**
+
+⚠️ **AN APP ICON REPORTED AS TWO-TONE WAS MEASURED AND IS NOT.** The bolt is the brand orange at 97.76%
+of saturated pixels; the edge is one to two pixels of white-to-orange blend. **The file has no alpha
+channel, so a stray alpha is impossible, and PNG is lossless, so a compression halo has no mechanism.**
+**Anti-aliasing at 1024px reads as a lighter rim when the system downscales to about 60px.**
+
+🔴 **THE REAL GAP IS THAT NO DARK OR TINTED VARIANTS ARE SUPPLIED.** The icon set declares one image and
+no appearance keys, so recent iOS **derives** them by luminance mapping, which does not preserve the
+brand colour. **If the icon looks wrong on a tinted home screen, that is the cause and supplying variants
+is the fix — not recolouring the source.**
+
+⚠️ **There is no vector master in the repository.** The largest raster is the iOS icon itself, so any
+regeneration would lose fidelity rather than gain it.
+
+### Removing a truck logo
+
+The null path was **designed for** — a fallback to the discovery record was deliberately removed because
+it made removal impossible to see. Every one of the eight surfaces that renders a logo is a presence
+check, so none breaks. **The reference is cleared and the file is left in storage**: there is no delete
+endpoint, and adding one would mean a server action with delete rights on the media bucket for no gain.
+
+⚠️ **A truck on the branded QR style silently gets a plain QR once its logo is removed** — the gate tests
+the plan and the style, not whether a logo exists. **Correct, and unannounced.**
+
+---
 
 # 39. Buzzers — physical pagers against orders (V10)
 
@@ -21888,16 +22129,55 @@ it is a conversation with the operator, not a silent change.**
 
 ---
 
-# 49. Deploy posture as of V11.56
+# 49. Deploy posture as of V11.57
 
-🔴 **NOTHING IN THE V11.56 DELTA HAS BEEN DEPLOYED, AND MOST OF IT HAS NEVER RUN IN A BROWSER.** Batch one
-and the four-site status split are both in the working tree, uncommitted and unverified. The status
-split's cook-facing half **cannot be signed off without the physical tablet**, and its runbook's
-revocation steps are hard stops: if a rotated token does not clear the board within one poll interval,
-it does not ship.
+🔴 **EVERYTHING IN THIS DELTA EXCEPT THE STATUS SPLIT AND THE FIRST TIMEOUT BATCH IS BUILT, UNCOMMITTED
+AND NEVER EXERCISED ON HARDWARE.** Harness measurement is not device verification, and several reports
+state plainly that the operator surfaces are behind sessions the tooling could not obtain.
 
-⚠️ **A store review is in progress and both shells load production.** Deploy in two attributable batches,
-verified on the deployed build. **A typecheck is not verification.**
+⚠️ **The three new route ceilings were reasoned from round-trip counts, never measured against
+production timings.** **Read the platform duration logs before deploying them** — the heartbeat cap is
+the tightest and fires every fifteen seconds from every device.
+
+⚠️ **A store review is in progress.** Web changes reach a shipped app and an in-review build the moment
+they deploy; **the binary must not be touched.** Deploy in attributable batches, verified on the deployed
+build. **A typecheck is not verification.**
+
+---
+
+# 50. The operator manage screen (V11.57)
+
+### 🔴 THE REFRESH THAT UNMOUNTED THE SCREEN — AND WHAT THE MIGRATED TABS ACTUALLY DID
+
+The reload path set the loading flag, which hit the early return, which unmounted the tree — so the
+expanded category, the scroll position and any open modal were lost on **every** action that refreshed,
+not just a photo upload.
+
+⚠️ **CORRECT ANY READING THAT THE MIGRATED TABS SHOW THE PATTERN TO COPY. THEY DO NOT.** Schedule,
+Settings and Team did not make the refresh safe — **they stopped calling it**, patching the parent
+optimistically instead. **There was no existing split to follow**, so the split is new work with a
+screen-wide blast radius, not the completion of a migration.
+
+🔴 **A STANDING REFRESH INDICATOR IS A CONDITION OF THIS CHANGE, NOT A FOLLOW-UP.** A failed refresh now
+leaves stale data on screen quietly. The bar names **a clock time**, not an age — *"showing the menu as
+it was at 14:32"* — because a time is something an operator can judge against their own day and an age is
+arithmetic. **It does not fade.** A notice that disappears is exactly the mechanism that lets
+out-of-date data pass as current.
+
+### 🔴 A SPARSE UPSERT WAS SILENTLY BLANKING FIELDS
+
+The inline photo write sent only the id and the image path, against an upsert that **coerces absent
+fields to null or default**. **So uploading a photo to an item may have cleared its allergens, stock,
+dietary info and everything else on the row.** **OBSERVED by source read; the blanking itself is not yet
+confirmed against a real row.** Now a full-object write.
+
+⚠️ **Photo upload exists in FOUR places, not two** — the inline slot, the edit modal, the truck logo and
+the allergen card. **Two were already optimistic and correct; only the inline one reloaded, and it was
+also the only one with no named function**, which is why drag-and-drop was impossible there until it was
+extracted. **Enumerate by the upload call site, not by where you expect the control to be.**
+
+⚠️ **Hooks cannot be called inside the map that renders a list**, so a per-slot drag state forces the
+slot to become a component. **That is the bulk of such work, not the drop handler.**
 
 ---
 

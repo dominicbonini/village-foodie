@@ -34,6 +34,28 @@ import { newOrderKey, createOrderDraft, getOrderDraft, markAuthorizationCancelle
 import { authorizeDraft, cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
 import { captureOnConfirmation } from '@/lib/payments/capture'
 
+// ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
+// CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
+//
+// THE FLOOR WAS SET BY THE STRIPE SDK DEFAULTS, READ FROM node_modules/stripe/cjs/stripe.core.js:
+//     DEFAULT_TIMEOUT      = 80000            (:99)
+//     maxNetworkRetries    = 2  (default)     (:171)
+// Every client was `new Stripe(stripeSecretKey())` with NO options, so each took both: one Stripe call
+// could legitimately run 80s, and with retries ~240s, before the SDK gave up. THAT is what 300 was for.
+//
+// 🟢 THAT FLOOR IS GONE. Every client is now built by lib/stripe/client.ts with
+//     timeout: 20_000, maxNetworkRetries: 1   ->  worst case ~40s per call
+// and every money-moving call (create / capture / refund / cancel) sends an idempotency key derived from
+// the order key or the payment-intent id, so a bounded retry cannot double-charge.
+//
+// 🔴 THIS CEILING IS DELIBERATELY STILL 300. Bounding the client and lowering the ceiling are two
+// changes, and only the first has been made and measured. Lowering it is now SAFE to do as its own
+// change — but it is not this change, and it must not be bundled in.
+// ⚠️ BEFORE LOWERING IT, count the whole route, not one Stripe call: this handler can make several
+// (create, plus the ledger and Supabase writes around it). The ceiling must clear the sum, not the 40s.
+export const maxDuration = 300
+
+
 /** 🔴 THE ONE SENTENCE A CUSTOMER READS WHEN A CARD ORDER CANNOT BE SET UP.
  *  It has three jobs and does them in this order: say nothing was charged (they are about to check
  *  their banking app), say the order was NOT placed (so they do not turn up expecting food), and offer
