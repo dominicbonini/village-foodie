@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.52
+HatchGrab Engineering Reference Manual · V11.56
 
 **HatchGrab**
 
@@ -6,15 +6,181 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.52**
+**Version 11.55**
 
-August 2026
+September 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.56 — 1 September 2026 (evening session)
+
+Delta over V11.55 — **an evening of second-order faults: a merge guard that prefers stale data, seed
+rows dated in the future, a fourth site collapsing availability into authentication, an analytics store
+holding a live truck's credentials, and six rounds of arithmetic against a page nobody had fetched.**
+
+- 🔴 **A VERSION GUARD THAT SILENTLY PREFERS STALE DATA.** **OBSERVED by source read.** The order merge
+  compares `updated_at` and nothing else, returning the local row when the incoming row is not strictly
+  newer. **All four re-render triggers funnel through it** — the action's own refetch, realtime, the
+  60-second poll and PIN submit — so a losing comparison cannot self-heal by any route. The rank logic
+  that would resolve it correctly exists in the equal-timestamps branch and is therefore almost never
+  reached. **A guard that only runs on an exact tie is not a guard.**
+- 🔴 **SEED ROWS CARRIED TIMESTAMPS DATED IN THE FUTURE.** **OBSERVED.** 124 rows on the tester truck
+  held `updated_at` values up to a fortnight ahead, because the generator sets the timestamp to the
+  evening before the event and the events were future-dated. **A genuine write stamped `now()` was
+  therefore the OLDEST row in its own board and lost every comparison.** The live trading truck was
+  unaffected only because its rows have real past timestamps. Corrected by data, no deploy.
+- 🔴 **AND THE SEED FILE'S OWN DELETE INSTRUCTIONS DO NOT REACH THOSE ROWS.** **OBSERVED.** They
+  identify seeded data by a marker column, and all 124 rows carry NULL there — they predate that
+  marker. **Anyone following that header believing it clears the seeded data leaves them behind.**
+- 🔴 **A FOURTH SITE COLLAPSING "THE DATABASE DID NOT ANSWER" INTO "YOUR CREDENTIAL IS WRONG."**
+  **OBSERVED by source read.** Beyond the route and the dashboard branch, both PIN handlers report any
+  non-ok status as an incorrect PIN, and the action-route token check collapses THREE causes — read
+  failed, token absent, PIN wrong — into one. **This is a class, not four bugs.**
+- 🔴 **A LIVE TRADING TRUCK'S FULL CREDENTIAL IS IN A THIRD-PARTY ANALYTICS STORE.** **OBSERVED** in an
+  event export: the trading truck's dashboard token and its KDS token both appear in captured page URLs,
+  repeatedly, on the day of export. Retention is 30 days and rolling. **Earlier records noted this for
+  tester trucks only; it is now confirmed for the live one.**
+- ⚠️ **SIX ROUNDS OF CONFIDENT ARITHMETIC AGAINST A PAGE THAT WAS NEVER FETCHED.** A hero image looked
+  wrong; ratios, CSS and files were each verified in the repository and each report predicted the render
+  without measuring it. **The cause was the bytes the browser actually held.** See Section 35.
+- ✅ **The landing testimonial permission has been GRANTED**, clearing one of the two gate conditions.
+
+---
+
+## V11.55 — 1 September 2026 (evening)
+
+Delta over V11.54 — **a live operator outage with no deploy behind it: an upstream latency event, a
+status code that destroyed the distinction between "your token is wrong" and "the database did not
+answer", and a client retry loop that doubled the damage. Production recovered without a fix being
+applied.**
+
+- 🔴 **A VALID TOKEN WAS TOLD ITS ACCESS LINK WAS INVALID, IN PRODUCTION, FOR ROUGHLY TWENTY-ONE
+  MINUTES OF CAPTURED LOG.** **OBSERVED.** 45 exported log lines read
+  `[dashboard] truck lookup failed: upstream request timeout undefined`, all returning **401**, all
+  carrying a real operator token. The dashboard route returns 401 for `error || !truck` — so a Supabase
+  read that FAILED and a truck that does not EXIST leave by the same door with the same status. **The
+  client cannot recover a distinction the server has already destroyed.** §12.
+- 🔴 **THE ORDERS WERE NEVER LOST. THE PAGE REFUSED TO RENDER THEM.** **OBSERVED by source read.**
+  Nothing clears the orders array on any dashboard error path. The board sat in React state behind a
+  render gate that returned the access-denied screen above it. **The failure was a display decision, not
+  data loss**, and the operator's expectation that existing orders should have stayed on screen was
+  correct. §11.
+- 🔴 **THE FIX IS TEN CHARACTERS, AND ITS ABSENCE IS AN ASYMMETRY RATHER THAN AN OVERSIGHT.** The 401
+  branch is the ONLY one of four sibling failure branches that does not consult the already-authenticated
+  flag. The 429 branch, the non-ok branch and the thrown-fetch branch all check it, and the comment beside
+  one of them states the intent — *keep existing state, never blank a working board on a transient
+  failure*. **The intent was written down and one branch did not implement it.** §12.
+- ✅ **MIDDLEWARE IS EXONERATED, AND THE MEASUREMENT IS THE POINT.** **OBSERVED.** 50 middleware
+  invocations: **min 2ms, median 3ms, max 10ms.** The unconditional auth call in the proxy costs three
+  milliseconds. Against **97 function invocations at min 23.5s, median 148s, max 230.6s.**
+  ⚠️ **A middleware status of 200 in a log row is a STATUS, NOT A DURATION** — it excludes nothing on its
+  own. **The duration split is what excludes it.**
+- 🔴 **THE UPSTREAM MESSAGE NAMES THE LAYER: `upstream request timeout` IS THE SUPABASE GATEWAY'S OWN
+  WORDING.** **OBSERVED.** With Postgres simultaneously healthy — 36/60 connections, 2 active, 0
+  idle-in-transaction, SQL Editor instant — **the fault sits in the gateway/PostgREST/pooler layer, not in
+  the database and not in this repository.** §35.
+- ⚠️ **A SUPABASE INCIDENT DURING THE WINDOW IS REPORTED BUT NOT VERIFIED HERE.** **REASONED.** It fits
+  every observation. **It has not been confirmed against the incident record or a support ticket.**
+- 🔴 **PRODUCTION RECOVERED WITH NO FIX APPLIED** — no deploy, no rollback forward, no configuration
+  change. **A recovery nobody caused is not a resolution**, and the trigger conditions are unchanged. §27.
+
+## V11.54 — 1 September 2026 (later still)
+
+Delta over V11.53 — **the Android app is submitted to Google Play; two obstacles that were not what they
+appeared; three advisories deferred on purpose; and both stores now downstream of one deploy.**
+
+- ✅ **ANDROID SUBMITTED FOR REVIEW, 1 September 2026** (STATED, from the Console). Production track
+  Active, release **HatchGrab V1, version code 1**, temporary app name `com.hatchgrab.app (unreviewed)`
+  — which is what Play shows until a reviewer approves the listing. **Availability is the United
+  Kingdom only, deliberately.** §36.
+- 🔴 **THE BINARY WAS NEVER REBUILT, AND THAT IS THE POINT.** The bundle submitted is the 26 August
+  artefact verified unchanged — **6,148,125 bytes, SHA-256 beginning `b04f8619`**, upload certificate
+  SHA-1 `97:8D:…:91:7A`. It was uploaded to internal testing, installed on physical hardware, confirmed
+  running against production, and then **PROMOTED rather than re-uploaded.** **Promoting keeps the
+  binary identical to the one tested; re-uploading creates a duplicate artefact and breaks the chain of
+  evidence between what was verified and what ships.** §36.
+- 🔴 **NEITHER OBSTACLE WAS WHAT IT LOOKED LIKE.** Production was greyed out because **a stale draft
+  release was blocking it**, NOT because of the closed-testing requirement — **organisation accounts are
+  exempt from the 12-testers-for-14-days rule**, which applies to personal accounts created after
+  November 2023. Deleting the draft unblocked promote immediately. ⚠️ **If production is ever greyed out
+  again, check for a draft release before concluding the testing requirement applies.** §36.
+- **Play Console was reorganised:** App integrity is now **Protected with Play**, Play App Signing sits
+  under Play Store protection, and **certificate fingerprints are on the signing sub-page, never the
+  overview.** §36.
+- ✅ **PLAY APP SIGNING ACTIVATED ON FIRST UPLOAD**, closing the V11.52 unknown. ⚠️ **And a mismatch
+  before that first upload was never evidence of a problem:** the certificate the Console shows is
+  Google's own app signing key, which never matches the upload key, and the upload key block only
+  appears once a bundle has been received. §36.
+- **THREE PLAY ADVISORIES DEFERRED DELIBERATELY, recorded as decisions so they are not re-litigated
+  each time the Console surfaces them.** None blocks review; **all three would require a rebuild, which
+  would destroy the verified artefact.** Obfuscation at 2% (fix-by February 2027) is *expected* for a
+  webview shell rather than a defect, and **enabling R8 on a Capacitor app is genuinely risky — plugins
+  resolve classes by reflection, so without correct keep rules the app builds cleanly, passes review,
+  and fails at runtime on one plugin call.** No deobfuscation file is correct because nothing is
+  obfuscated. Native debug symbols and the two edge-to-edge items are recommended, not required. §36.
+- 🔴 **WHAT BLOCKED SUBMISSION WAS THE LISTING, NEVER THE BINARY** — screenshots, the 1024×500 feature
+  graphic, and the icon re-exported at 32-bit. **App access credentials are mandatory for any app behind
+  a login**, because a reviewer who cannot sign in rejects on minimum functionality; **they point at a
+  non-customer tester truck, never a live trading operator.** The tester truck was renamed, given a
+  readable slug and **fourteen consecutive daily events** so a reviewer landing on any day in the next
+  fortnight finds a live event rather than an empty board. ⚠️ **Do not edit the store listing while a
+  review is in progress** — listing changes can restart the clock. Country availability is not subject
+  to that. §36.
+- 🔴 **BOTH STORES ARE NOW DOWNSTREAM OF A SINGLE VERCEL DEPLOY.** iOS is live and Android is in review,
+  and both shells load production — so **a deploy simultaneously changes a shipped App Store app in real
+  users' hands and changes what a Play reviewer sees mid-review.** ⚠️ **THE STANDING CONSEQUENCE:
+  production should be held still while a store review is in progress, unless something is broken.**
+  This is not a statement about risk appetite — **the reviewer's view of the app is not a fixed artefact
+  but whatever is deployed at the moment they look.** §36, §40.
+- ⚠️ **THE KEYSTORE IS THE ONLY THING THAT CAN SIGN AN UPDATE TO THIS APP**, so it and its passwords must
+  stay backed up. **Separately, the `.aab` lives in a gitignored build directory on ONE machine and is
+  not in version control — a Gradle clean or an IDE rebuild would destroy it silently.** §36.
+- 🔴 **OPEN — THE PUBLISHED PRIVACY PAGE IS WRONG IN THREE WAYS, AND THE PLAY DATA SAFETY DECLARATION
+  WAS FILED AGAINST THE SAME PREMISES.** ⚠️ **They must be corrected TOGETHER, from one set of
+  established facts, not separately.** §43, §36.
+- 🔴 **OPEN — THREE ANALYTICS SETTINGS COULD NOT BE ESTABLISHED FROM THE REPOSITORY** because they are
+  project-side rather than in code. **Session recording is the one that matters:** with autocapture on
+  and text unmasked, if it is enabled **the product is recording operator screens showing customer names
+  and contact details**, which changes both the declaration and the obligations behind it. §12.
+- ⚠️ **OPEN — whether the iOS LISTING is universal or iPad-only.** If iPad-only, making it universal is
+  **a rebuild and a new submission.** §36.
+
+## V11.53 — 1 September 2026 (later)
+
+Delta over V11.52 — **the KDS event picker: a latent defect, a shared panel, and four accepted risks on
+a live operator surface.**
+
+- 🔴 **THE KITCHEN SCREEN'S EVENT PICKER COULD NOT BE SCROLLED.** The card grew past the viewport inside
+  a fixed full-screen overlay, so with a long list **the furthest-out events were unreachable** — the
+  list sorts ascending, so the ones lost were always the latest. **The defect was LATENT, not
+  introduced:** the card never carried a height cap, and it surfaced only when the event count outgrew a
+  screen. **Nothing was truncated at fetch** — no API limit, every row in the DOM. §9.
+- ✅ **FIXED, DEPLOYED AND CONFIRMED WORKING IN PRODUCTION.** The list scrolls, not the card; heading and
+  cancel sit outside the scroll region. ⚠️ **The typecheck and lint counts are NOT part of that evidence
+  and must not be cited as verification.** §9, §27.
+- 🔴 **TWO TRAPS RECORDED SO THEY ARE NOT REDISCOVERED.** **`min-h-0` is load-bearing** on a scrolling
+  flex child — without it the overflow rule silently does nothing and **the fix passes a source read
+  while changing no behaviour.** And **`dvh`, never `vh`**, for any height cap in a surface the native
+  shells render. §35.
+- 🔴 **THE DUPLICATION THAT MATTERED WAS FORMATTING, NOT STRUCTURE** — three date implementations and two
+  venue implementations, while `eventDateLabel` and `eventStatusDisplay` already existed and were used
+  by neither picker. **The kitchen screen imported both and then formatted its own rows inline.**
+  ⚠️ **A shared helper that exists but is not reached is worse than no helper**, because the codebase
+  looks deduplicated while the drift continues. §3.
+- **A SHARED PICKER PANEL now backs both surfaces**, generic over the event type rather than typed to a
+  common interface. ✅ **The shared date formatter was extended BY PARAMETER with the existing behaviour
+  as the default** — every prior call site byte-identical and untouched. **That is the pattern.** §3, §9.
+- 🔴 **FOUR ACCEPTED RISKS, NONE YET OBSERVED IN SERVICE** — no status filter (so **a cancelled event can
+  be switched to mid-service**), a coarser offline gate on the kitchen screen, the loss of the
+  high-contrast selected row, and the warning panels moving out of the modal. **Recorded so a later
+  report of odd behaviour is matched to a choice rather than investigated as a fault.** §9, §27.
+- **Six selectable event lists exist; two now share a panel.** Four remain, and **the two Reports event
+  selectors are a drifted pair carrying an identical inline date formatter** — the clearest next
+  candidate. §27.
 
 ## V11.52 — 1 September 2026
 
@@ -4878,6 +5044,37 @@ The in-repo paths share lib/schedule-extract.ts:
 - **`lib/email-signup.ts`** — the two operator-facing signup emails. **Deliberately isolated from `lib/email.ts`**, which carries LIVE order and cancellation mail: these two need a reply-to and a from-address that must not fall back to the consumer domain, and adding either to the shared helper would put a live send path in the blast radius of a signup change.
 - **`lib/brand.ts` `HATCHGRAB_ORANGE_HEX`** — `#EF8B2C`, read off the wordmark SVG's own `fill`, not a screenshot. ⚠️ A HEX, where the rest of that file's colour section is Tailwind class strings; the `_HEX` suffix marks the difference so it is not dropped into a `className`. **Currently EMAIL-ONLY.** White on it is **2.50:1** — below the AA floor, accepted as a brand decision for email. 🔴 **The app-wide button colour is a separate decision and must not inherit from here.**
 
+## 🔴 A SHARED HELPER THAT IS NOT REACHED IS WORSE THAN NO HELPER (V11.53)
+
+**The event-picker sweep found six selectable event lists. The two that mattered shared a data source
+and diverged after fetch — and the duplication that mattered was FORMATTING, NOT STRUCTURE:**
+
+- **three separate date implementations**, and
+- **two separate venue implementations**,
+
+while `eventDateLabel` and `eventStatusDisplay` **already existed in `lib/event-display` and were used
+by neither picker.** 🔴 **The kitchen screen IMPORTED both — and then formatted its own rows inline, a
+few hundred lines from the call that used them properly.**
+
+🔴 **THE LESSON, AND IT IS THE OPPOSITE OF WHAT AN AUDIT WOULD REPORT.** A grep for the helper finds it
+imported and called; a reviewer concludes the surface is deduplicated. **The codebase LOOKS deduplicated
+while the drift continues** — and the drift is invisible precisely because the shared thing exists.
+**An unreached helper is worse than an absent one, because its presence is the alibi.**
+
+✅ **THE RULE: BEFORE WRITING AN INLINE FORMATTER, CHECK FOR AN EXISTING ONE — including in the file you
+are already editing.** The import list is not evidence that the rows use it.
+
+### ✅ AND HOW TO EXTEND ONE: BY PARAMETER, WITH THE EXISTING BEHAVIOUR AS THE DEFAULT
+
+`eventDateLabel` needed a compact form for list rows while three existing call sites — all single-event
+headers — needed the long one. **It gained a `style` parameter defaulting to the existing form, so every
+prior call site is byte-identical and was not touched.**
+
+🔴 **THIS IS THE PATTERN. Extend by parameter with the current behaviour as the default; never by
+changing what existing callers get**, and never by adding a second exported function that duplicates the
+first's rules — here, the today/tomorrow boundary is computed once and shared by both modes, so a
+timezone change cannot land in one and miss the other.
+
 ## DRY audit before every feature
 
 - Search the codebase for related logic that already exists.
@@ -6233,6 +6430,98 @@ dirty list, so **that change is committed** — leaving only whether the commit 
 event, press Kitchen screen, and read the URL. A `date` parameter alongside `event_id` means the fix is
 live; a bare `event_id` means it is not.
 
+## 🔴 THE EVENT PICKER — A LATENT DEFECT, AND A SHARED PANEL (V11.53)
+
+### The defect
+
+**The event-picker modal could not be scrolled.** The card grew past the viewport inside a `fixed`
+full-screen overlay, which does not scroll, so **with a long event list the latest events were
+unreachable.** ⚠️ **The list sorts ascending, so the events lost were always the furthest out** — the
+ones an operator is most likely to be looking for when they open a picker.
+
+🔴 **IT WAS LATENT, NOT INTRODUCED. The card never carried a height cap.** It surfaced only when the
+event count outgrew a screen, which is why it survived every previous review of this file. **Nothing was
+truncated at fetch:** the events API applies no limit and the component rendered every row into the DOM.
+**The full set was present and unreachable — an overflow bug, never a query bug, and the two have
+opposite fixes.**
+
+### The fix — scroll the LIST, not the card
+
+The card is capped and made a column; **the list takes the remaining height and scrolls internally; the
+heading and the cancel control sit OUTSIDE the scrolling region** so both stay visible at every scroll
+position. **Padding moved from the card onto its three children** — otherwise it pads the *outside* of
+the scroll region and rows clip against a gap instead of the card edge.
+
+✅ **DEPLOYED AND CONFIRMED WORKING IN PRODUCTION.** ⚠️ **The typecheck passing and the lint counts are
+NOT part of that evidence and must not be cited as verification** — see §35's two traps, one of which is
+a fix that passes a source read while doing nothing.
+
+### The shared panel
+
+**One panel now backs both the kitchen screen and the manual-order panel**, so a change to it lands in
+both — which is the point.
+
+🔴 **IT IS GENERIC OVER THE EVENT TYPE, NOT TYPED TO A COMMON INTERFACE.** The two callers hold richer
+events than the shared shape, and **typing the callbacks to the narrower one forces a cast at the call
+site — which defeats the point of the extraction**, and does so at the handler that changes what a
+kitchen screen is displaying.
+
+⚠️ **THE TWO PICKERS DO DIFFERENT JOBS AND REMAIN DISTINCT.** One switches which event the kitchen screen
+is displaying; the other selects an event for an order being built. **The shared piece is the panel
+shell and the row rendering — never the selection behaviour.**
+
+### 🔴 FOUR DELIBERATE BEHAVIOUR CHANGES ON A LIVE OPERATOR SURFACE
+
+**These are decisions, not defects. Each changes what an operator experiences and NONE has yet been
+observed in service. They are recorded here so that a later report of odd behaviour is matched to a
+choice rather than investigated as a fault.**
+
+1. 🔴 **NO STATUS FILTER.** Cancelled and unconfirmed events now appear in both pickers, matching the
+   manual-order panel's prior behaviour. ⚠️ **The consequence on the kitchen screen is that an operator
+   can switch the display to a CANCELLED event mid-service.** **Whether that is acceptable is unproven.**
+2. 🔴 **THE KITCHEN SCREEN'S OFFLINE GATE IS COARSER than the order panel's.** There is no per-event
+   cache map on that screen, so **while offline the operator cannot switch to any other event at all.**
+   Chosen because **landing on an empty board is worse than being unable to switch.** ⚠️ **The failure
+   mode is an operator with poor signal being unable to change events for the duration.**
+3. 🔴 **THE SELECTED ROW LOST ITS HIGH-CONTRAST INVERTED TREATMENT** in favour of the shared styling.
+   ⚠️ **The kitchen screen is read at arm's length across a van, so this is a LEGIBILITY question, not
+   an aesthetic one** — and it should be checked with an operator at working distance, not on a desk.
+4. **The future-event and same-day warning panels moved OUT of the modal** and beneath the trigger,
+   because inside the modal they vanished the moment a choice was made — which is when they became
+   relevant.
+
+## ⚠️ THE KITCHEN SCREEN BLANKED IN THE 1 SEPTEMBER OUTAGE, FOR A DIFFERENT REASON (V11.55)
+
+⚠️ **THE KITCHEN SCREEN BLANKED TOO, AND FOR A DIFFERENT REASON.** It collapses the auth status and every
+non-ok status into a single throw with no keep-state path at all. **OBSERVED by source read.** Its
+wording — *"Could not load orders"* — was the honest one; the behaviour was not. **Fix the behaviour and
+keep the words.** §12, §27.
+
+## 🔴 THE ORDER MERGE PREFERS STALE LOCAL STATE WHENEVER THE INCOMING ROW IS NOT STRICTLY NEWER (V11.56)
+
+The rule is a bare timestamp comparison: take the incoming row only if its `updated_at` is greater than
+the local one, otherwise keep local. **Nothing else is consulted** — not the status, not the sequence,
+not which side came from the server.
+
+**Consequences, all OBSERVED:**
+
+- A successful server write can be **discarded on arrival** and the screen reverted, with no error and
+  no log line. The operator sees a success toast and an unchanged row.
+- ⚠️ **The optimistic UI hides it.** The toast fires before confirmation, so a toast is evidence that a
+  request was attempted, never that it landed.
+- 🔴 **All four re-render paths pass through this one function**, so there is no route by which a
+  correct row can reach the screen while it loses. **It cannot self-heal, and waiting does not help.**
+- An empty local set is returned wholesale, which is why a cold start or an app reinstall shows the
+  correct data and masks the fault.
+
+**THE RULE THIS YIELDS: a merge that resolves conflicts by timestamp alone is only as trustworthy as
+the least trustworthy clock that ever writes to the table** — and seeded, imported or backfilled rows
+are written by no clock at all. Resolve by authority (the server's answer wins) or by sequence, and
+treat timestamp order as a hint. **Correcting the data removed the symptom; the guard is unchanged and
+any future-dated row from any source reopens it.** Recorded OPEN in Section 27.
+
+---
+
 # 10. Add Order panel
 
 ## Purpose
@@ -6497,8 +6786,27 @@ The SW-IndexedDB hypothesis above was **not** the final root cause of the persis
 ### Stage A — Read-only offline cache (post-trial as of V6.6)
 - Active orders cached to the iPad while online; shown while offline. Cook can mark ready/done — queued locally, synced on reconnect. New orders cannot be created while offline.
 
-### Stage B — Walk-up orders while offline (post-trial)
+### Stage B — Walk-up orders while offline — 🔴 THE WRITE HALF IS BUILT; THE COMPOSE HALF IS NOT (corrected V11.55)
 - Operator adds walk-ups offline with device-generated IDs; server assigns display IDs on reconnect. (V6.3 note: with order_key a client-generatable uuid, the device can mint order_key offline and the display number is assigned at sync. See Section 18a.)
+- ✅ **BUILT — the write path.** `AddOrderPanel` emits `gatedAction({ kind: 'create' })`, `lib/native/outbox.ts`
+  accepts `'create'` as an `OutboxKind`, and the device-prefixed provisional numbering it needs exists
+  (`provisional_id`, `deviceLetter()`, `nextSeq()`), stored durably one atomic key per op. Replay is
+  idempotent on the client-minted `order_key`. **This is the same wiring the outbox block below already
+  records — "Wired: … the walk-up CREATE".**
+- 🔴 **NOT BUILT — a cached MENU and STOCK snapshot to compose the order against.** `AddOrderPanel` builds
+  from a live `/api/menu` fetch, so with the backend unreachable there is nothing to select from: **the
+  order can be saved but not composed.** The local capacity/stock countdown named in the V6.3 design
+  depends on that same snapshot and is also absent.
+- ⚠️ **SO "STAGE B IS NOT BUILT" WAS WRONG IN ONE DIRECTION.** The half that looks hardest — durable,
+  conflict-aware, idempotent offline writes — is done. The half that is missing is a cached read.
+
+> ⚠️ **METHOD — A MANUAL ENTRY DESCRIBING THE WORKING TREE IS NOT A STATEMENT ABOUT THE WORKING TREE
+> LATER.** This line was accurate when written and went stale as the outbox was built around it.
+> 🔴 **AND IT WENT STALE IN THE RARER DIRECTION: IT UNDERSTATED WHAT EXISTED.** An overstatement gets
+> caught the moment someone relies on it and it is not there. **An understatement causes work to be
+> COMMISSIONED TWICE** — it was nearly scoped as a fresh build in the offline-resilience design before a
+> source read found `kind: 'create'` already wired. **Before scoping anything this manual calls "not
+> built", grep for it.**
 
 ### Stage C — Full offline with reconciliation (future)
 - Device UUIDs throughout, display IDs at sync time; slot capacity reconciliation; multi-device conflict resolution.
@@ -6518,6 +6826,30 @@ optimistic add via an isolated `deviceQueuedOrders` list). Stock stays online-au
 > "never lose an order" guarantee (per-commit fsync; no sub-second flush window on the newest order). The
 > `outbox.ts` interface is storage-agnostic → a contained one-file swap (gate/drain/wiring unchanged). Add +
 > validate the native plugin on the REAL iPad together (the native app is hardware-gated regardless).
+
+## 🔴 THE WRITE PATH HAS A TIMEOUT AND THE READ PATH HAD NONE — THE SHAPE OF THE 1 SEPTEMBER INCIDENT (V11.55)
+
+**OBSERVED by source read.** The two halves of the operator app were built to different standards, and
+the gap is not stylistic — **it decides what survives a degraded backend:**
+
+| | Write path (`lib/native/orderGate.ts`) | Read path (`/api/dashboard` fetch) |
+|---|---|---|
+| Deadline | ✅ **`AbortSignal.timeout(5_000)`** — `LIVE_TIMEOUT_MS`, applied in `post()` | 🔴 **NONE.** A bare `fetch` with only a headers object |
+| On failure | Durable queue (Preferences), one atomic key per op | Nothing — the request simply waited |
+| Conflict | 409 → flagged, never overwritten | n/a |
+
+🔴 **THE CONSEQUENCE, AND IT IS THE SHAPE OF THE WHOLE INCIDENT: THE APP COULD STILL DURABLY SAVE WORK IT
+COULD NO LONGER DISPLAY.** A tapped *Ready* hit the 5-second ceiling, threw, and queued. The board it was
+tapped on had no ceiling at all — it waited on a read whose median was 148 seconds, and was then killed
+by the platform. **The operator's actions were safe; the operator's view was not.**
+
+⚠️ **THE ASYMMETRY IS THE FINDING, NOT THE TIMEOUT VALUE.** Every offline mechanism keys on reachability
+and the write path could tell it was in trouble because it had a deadline. **The read path could not form
+an opinion at all, because nothing ever came back to have an opinion about.**
+
+⚠️ **STATUS AT TIME OF WRITING: a 10-second abort on the dashboard and KDS reads exists in the WORKING
+TREE ONLY — uncommitted and undeployed.** **Until it ships, the read path in production is the untimed
+one described above.** §28, §27.
 
 ## Trial scope (V6.6)
 
@@ -7474,6 +7806,54 @@ useless to a client.** The operator sees a plain sentence and a retry; the inter
 call sites — four callers is four chances to forget.**
 
 
+## 🔴 THE APP DID NOT FAIL OFFLINE. IT WAS ONLINE AND WAS LIED TO. (V11.55)
+
+**OBSERVED.** Throughout the 1 September outage the device had connectivity, the health-check route
+returned 200 in ~106ms, and the server answered every request. **No offline mechanism could engage, and
+none was wrong not to** — each keys on reachability, and the app was reachable.
+
+🔴 **THE HEALTH-CHECK ROUTE SHARES EXACTLY ONE DEPENDENCY WITH THE ROUTE IT STANDS IN FOR: THAT THE
+FUNCTION PLATFORM IS UP.** It performs no authentication and touches no database. So it stayed green at
+~106ms while the route it vouches for took 148 seconds. **A liveness probe that does not exercise its
+dependency measures itself.** This is the same class as a guard that reads as protection and is wired to
+nothing (§35), and it belongs with those entries.
+
+⚠️ **CORRECTION TO ANY READING THAT THE PRODUCT "WORKS OFFLINE" AS A WHOLE.** What is built is the
+**mutation outbox** — status changes and walk-ups queue while unreachable and replay on reconnect. The
+read side — *the page behaves identically offline* — is recorded in this manual as agreed design, **NOT
+BUILT**, and as the largest pending native build. 🔴 **Any marketing copy claiming the app keeps working
+offline describes the outbox, not the board.** Reconcile the claim with the build before the landing gate
+lifts; **this is the same class as advertising a platform ahead of its release.**
+
+### ⚠️ THE SERVICE-WORKER CACHE MAY HAVE BEEN POISONED BY THIS INCIDENT — UNVERIFIED (V11.55)
+
+**REASONED, NOT OBSERVED.** The service worker's cache write has no response-ok check, so the 401s
+generated during the incident may have been written into the data cache, overwriting the last known-good
+snapshot. **If so, the next genuine offline serves a cached 401, the client takes the access-denied
+branch, and the fallback has been destroyed by the very incident it exists for.**
+
+🔴 **THIS MUST BE INSPECTED ON A REAL DEVICE, NOT REASONED ABOUT FURTHER** — Web Inspector against the
+tablet webview, Storage → Cache Storage. The remedy is a response-ok check before the cache write, plus an
+invalidation of any already-poisoned entry. **Until inspected, treat the offline fallback on shipped
+devices as of unknown integrity.**
+
+## 🔴 THE WRITE PATH HAS A TIMEOUT AND THE READ PATH HAD NONE (V11.56)
+
+**OBSERVED by source read.** Order writes carry a five-second abort signal; the dashboard read carried
+no timeout, no abort and no deadline.
+
+> **That asymmetry is the shape of the outage: the app could still durably save work it could no longer
+> display.**
+
+**This is the canonical example of why timeout discipline must be applied PER-PATH, not per-project.**
+A project that "has timeouts" can still have an unbounded read on its most-used surface.
+
+⚠️ **The Stage B correction the same session called for was already applied at V11.55** — see
+*Three-stage offline progression* above, which already records that the write half is built and the
+compose half is not, together with its method lesson. **Not restated here.**
+
+---
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
@@ -7551,6 +7931,23 @@ anywhere** (zero hits repo-wide).
 ⚠️ **Google's own data-safety definition names the WebView case explicitly:** transferring user data to
 a third party via a WebView opened from your app, where your app controls the code. **The whole product
 is that WebView.** The open-web exemption does not apply. See §36.
+
+### 🔴 OPEN — THREE ANALYTICS SETTINGS CANNOT BE ESTABLISHED FROM THIS REPOSITORY (V11.54)
+
+🔴 **THEY ARE PROJECT-SIDE, NOT IN CODE**, so **no amount of reading the repository will settle them**
+and an audit that only greps will report them as absent when they may be on:
+
+- **session recording**
+- **console capture**
+- **network capture**
+
+> 🔴 **SESSION RECORDING IS THE ONE THAT MATTERS.** With **autocapture on and text unmasked**, if it is
+> enabled then **the product is recording operator screens showing customer names and contact
+> details.** ⚠️ **That changes both the data safety declaration (§36) and the obligations behind it**
+> — it is not a settings detail, it is a different category of processing.
+
+⚠️ **ESTABLISH THIS BEFORE DRAFTING THE PRIVACY CORRECTIONS IN §43**, or the corrections get drafted
+twice. **This subsection is the reason that entry is blocked, not a footnote to it.**
 
 ## ✅ `/api/manage` DENIES BY DEFAULT (V11.44)
 
@@ -7667,6 +8064,56 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 - Rate limiting on auth attempts (anti-scraping rate limiting on public data routes is done — Section 28).
 - ~~Admin secret~~ — RESOLVED in V6.1.
 - **No per-truck "published / accepting online orders" gate (V6.6)** — a stranger with the URL can place a real order on any `active=true` truck with a confirmed event; `active` doesn't even gate the menu load. The per-truck customer-mode state machine (Section 27, parked) is the durable fix; the temporary `isHG ? []` display rule (Section 7) only suppresses scraped events on HatchGrab, it does NOT gate ordering.
+
+## 🔴 ONE STATUS CODE FOR TWO CAUSES DESTROYS THE DISTINCTION AT SOURCE (V11.55)
+
+The dashboard route validates the token BY the truck read. `if (error || !truck)` returns 401
+"Invalid token". **Two entirely different events therefore produce one indistinguishable response:**
+
+| Cause | What it means | What the operator is told |
+|---|---|---|
+| The truck row does not exist | The token is genuinely wrong | "Invalid access link" — correct |
+| The read errored or timed out | The database did not answer | "Invalid access link" — **a lie** |
+
+**OBSERVED in production, 1 September 2026.** Both fired in the same log export: 45 lines of
+`upstream request timeout` and 3 lines of `Cannot coerce the result to a single JSON object / 0 rows` —
+**a real transport failure and a real absent row, arriving at the client as the same 401.**
+
+🔴 **THE RULE: A FAILURE TO REACH THE DATA IS NOT A FAILURE TO AUTHENTICATE.** An availability fault
+must not be reported with an authentication status. **Return a service-unavailable status when the read
+errored and reserve the auth status for an authoritative negative answer.** ⚠️ **Changing that status code
+changes what every consumer of this route sees, including the kitchen screen — establish each consumer's
+non-401 handling before shipping it.** §9.
+
+⚠️ **AND THE COMPENSATING CLIENT FIX CARRIES A SECURITY TRADE THAT MUST BE DECIDED, NOT INHERITED.**
+Making the client keep state on a 401 once authenticated means **a revoked token leaves a working board on
+screen until reload.** The dashboard token is a full credential and rotation is the response to a leak, so
+**this is a deliberate decision about what revocation means mid-service — not a side effect of an
+error-handling tidy-up.**
+
+## 🔴 A FAILURE TO REACH THE DATA REPORTED AS A FAILURE TO AUTHENTICATE — FOUR SITES, ONE CLASS (V11.56)
+
+| Site | What it collapses | What the operator is told |
+|---|---|---|
+| The dashboard route's token read | read errored **or** truck absent | "Invalid token" |
+| The dashboard client's auth branch | any auth status, without checking existing session | "Invalid access link" |
+| Both PIN handlers | any non-ok status **or** a wrong PIN | "Incorrect PIN" |
+| The action route's token check | read failed **or** token absent **or** PIN wrong | one auth status |
+
+🔴 **The information is destroyed at the server, so no client fix can recover it.** During the outage
+this produced an operator being told a correct credential was invalid; the PIN sites would tell an
+operator a correct PIN was wrong.
+
+⚠️ **AND CHANGING THE STATUS CODE ALONE MOVES THE PROBLEM RATHER THAN FIXING IT** — the PIN handlers
+would report a service-unavailable status as a wrong PIN just as readily. **All four sites move
+together or the class survives.**
+
+**A load-bearing detail, OBSERVED:** the single-row helper raises a "no rows" error rather than
+returning empty, so the caller's `error` branch is entered for both "no such token" and "the database
+did not answer". **Switching to the maybe-single helper is what makes the distinction expressible at
+all.** Without it the split cannot be written.
+
+---
 
 # 13. Operator and multi-truck model
 
@@ -11208,7 +11655,55 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 - "tsc-clean / simulated-pass" ≠ "works": verify the END STATE on a live run, and confirm DEPLOYED before judging a prod-endpoint result (the local scraper POSTs to the PROD bridge) (Section 22).
 
 
+## Test data and seeding — two corrections (V11.56)
+
+### 🔴 SEED TIMESTAMPS MUST NEVER BE DERIVED FROM THE EVENT DATE
+
+Generating `created_at`/`updated_at` as "the evening before the event" produces **future timestamps for
+future events**. That is not a cosmetic wrongness: it makes every seeded row permanently newer than any
+real write, which is what defeated the merge guard in Section 9. **Generate seed timestamps relative to
+`now()`, backwards.** **OBSERVED cause of a full evening's fault.**
+
+### 🔴 THE MARKER COLUMN IDENTIFIES ONE GENERATION OF SEED DATA, NOT ALL OF IT
+
+The tester truck carries **at least two generations** of seeded orders: one marked, one with the marker
+NULL, written before the marker existed. **OBSERVED.** Both look identical on the board and both use
+the same fake-domain email convention.
+
+⚠️ **So the delete instructions in the seed file are incomplete as written**, and the identify query
+understates what is present. **When cleaning seeded data, identify by the email domain convention AND
+the truck AND the date range, then confirm the count against the board — never by the marker alone.**
+
+⚠️ **AND NOTE WHAT THIS DOES TO RECENCY QUERIES.** A query filtering `updated_at >= now() - interval`
+returns future-dated rows trivially, because every future timestamp satisfies it. **A "recent changes"
+query against a seeded truck is unsound until the timestamps are corrected.** This cost a wrong
+diagnosis.
+
+---
+
 # 27. Open backlog (June 2026)
+
+## Open as of V11.56 — 1 September 2026
+
+- 🔴 **OPEN — the order merge version guard.** Data corrected; guard unchanged. Any future-dated row
+  reopens it. (Section 9)
+- 🔴 **OPEN — the availability/authentication conflation, all four sites.** Built, unverified,
+  undeployed. (Section 12)
+- 🔴 **OPEN — analytics sanitisation, event purge and token rotation, in that order.** (Section 47)
+- 🔴 **OPEN — analytics cookies are set with no consent gate.** Correcting the privacy copy makes it
+  accurate, not compliant.
+- 🔴 **OPEN — the seed file's delete instructions miss one generation of seeded rows.** (Section 26)
+- 🔴 **OPEN — the tester truck is the one a store reviewer signs into**, and its data has already
+  produced a reproducible fault an operator would read as a product defect.
+- ⚠️ **OPEN — the screenshot directory is untracked.** (Section 48)
+- ⚠️ **OPEN — the customer-facing ordering path was never tested during the outage.** Every measurement
+  taken was operator-side. **That gap decides whether an outage costs orders or only visibility, and it
+  is still not established.**
+- ⚠️ **NOT ESTABLISHED — whether the analytics event store holds anything beyond page URLs.**
+- ⚠️ **NOT ESTABLISHED — the payment-identifier-in-referrer path**, still open from the exposure review.
+
+---
+
 
 ## 🔴 STILL OPEN AFTER V11.48 — CUSTOM DOMAINS, AND THREE THINGS THAT ARE LIVE TODAY
 
@@ -11434,6 +11929,23 @@ had to be recorded as UNPROVEN** rather than resolved: the most likely explanati
   upload large. §46.
 - ⚠️ **THE QR CARD'S COPY STILL DESCRIBES THE FIVE CONDITIONS IN PROSE** — see the partly-closed item
   above. §3, §46.
+
+## ⚠️ ADDED V11.53 — THE EVENT PICKER
+
+- ✅ **THE SCROLL FIX IS CONFIRMED WORKING IN PRODUCTION** (§9). 🔴 **The typecheck and the lint counts
+  are NOT part of that evidence and must not be cited as verification** — §35 records why: `min-h-0` is
+  a fix that passes a source read while doing nothing.
+- 🔴 **NOT YET OBSERVED IN SERVICE, BY AN OPERATOR — the four accepted risks** (§9): cancelled and
+  unconfirmed events now selectable on the kitchen screen; the coarser offline gate; the loss of the
+  high-contrast selected row; and the warning panels' new position. **Each is a decision. If odd
+  behaviour is reported on the kitchen screen, match it against these before investigating it as a
+  fault.**
+- ⚠️ **THE SELECTED-ROW CONTRAST WANTS CHECKING AT WORKING DISTANCE** — arm's length, across a van, with
+  an operator. **Not on a desk.**
+- **FOUR SELECTABLE EVENT LISTS REMAIN UN-UNIFIED**, beyond the two now sharing a panel.
+- 🔴 **THE TWO REPORTS EVENT SELECTORS ON THE MANAGE PAGE ARE A DRIFTED PAIR** — an identical inline date
+  formatter duplicated a few dozen lines apart. **They are the clearest next candidate for the shared
+  formatter, and they are the same class of defect this workstream fixed.** §3.
 
 ## 🔴 NEW AND OPEN AFTER V11.50
 
@@ -13247,6 +13759,34 @@ writes that changed nothing · the dead root-level `placed_offline` stamp.
 - **Carried from before:** the dashboard heartbeat remains source-read on the live trading truck's ordering
   path; the iPad display defects against the changed Orders `<main>`; whether the Safari ejection stops.
 
+## 🔴 OPEN — FROM THE 1 SEPTEMBER 2026 DASHBOARD OUTAGE (V11.55)
+
+- 🔴 **OPEN — the availability/authentication conflation on the dashboard route.** Confirmed in
+  production. **Fix at source; the client keep-state change is the safety net, not the fix.** §12.
+- 🔴 **OPEN — the kitchen screen has no keep-state path.** §9.
+- 🔴 **OPEN — service-worker cache poisoning. UNVERIFIED, and it degrades the offline fallback on
+  devices already shipped.** Inspect on hardware before deciding. §11.
+- 🔴 **OPEN — the health-check route does not exercise what it vouches for.** §11.
+- 🔴 **OPEN — no in-flight guard, abort, or backoff on the polled operator routes.** §28.
+- 🔴 **OPEN — the same untimed shared client and long ceiling exist on other routes, including the
+  order-submission path and the customer's first paint.** ⚠️ **Whether those were equally slow during this
+  incident WAS NOT ESTABLISHED, and it is the difference between an operator inconvenience and lost
+  revenue.** **The worst-exposed routes share one client file, so one change covers them.**
+- ⚠️ **OPEN — reconcile any offline claim in marketing copy with what is built.** §11.
+- ⚠️ **NOT ESTABLISHED — the live trading truck's own failure was inferred from an identical
+  presentation, not read.** The captured export covers a twenty-one-minute window that does not contain
+  it.
+- ⚠️ **NOT ESTABLISHED — the cause of the upstream latency.** Not confirmed against the provider's
+  incident record.
+
+### 🔴 DEPLOY POSTURE FOR THE FIXES ABOVE (V11.55)
+
+🔴 **NONE OF THIS SHIPS ALONE.** A store review is in progress and both shells load production, so a
+deploy changes a shipped app in users' hands and changes what a reviewer sees mid-review. **Batch the
+route status change, the client keep-state change, the kitchen-screen keep-state path, the copy change and
+the service-worker cache check into one deploy**, and **verify on the DEPLOYED build — a typecheck is not
+verification, and a fix in the repository is not a fix in production.** §36, §40.
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -13342,6 +13882,31 @@ beneath it. A redirect would put `/landing` in the address bar of the page given
 
 ⚠️ **Village Foodie's root now passes through an edge invocation it did not before.** Latency, not
 behaviour — but it is the honest answer to "must not change at all".
+
+## 🔴 A SLOW ROUTE PLUS AN UNGUARDED CLIENT IS AN OUTAGE, NOT A SLOWDOWN (V11.55)
+
+**OBSERVED.** Peak recorded concurrency on the dashboard route: **110.** Two operator tablets generated
+**188 of 197 captured requests in twenty-one minutes.** **Twelve requests landed inside a single second.**
+With a 60-second poll on two surfaces, no in-flight guard, no abort on timeout or unmount, and a
+five-minute ceiling, **each open tab sustains several concurrent invocations indefinitely.**
+
+🔴 **THE CLIENTS AMPLIFIED THE FAULT INTO AN OUTAGE, AND THE MEASUREMENT PROVES IT:** closing every
+operator client halved the observed latency, **from 44.8s to 23.5s.** **Roughly half the wait was our own
+traffic queueing behind itself.** The residual was upstream.
+
+⚠️ **AND THIS IS WHY THE ROLLBACK CHANGED NOTHING** — a retry storm re-saturates whatever deployment is
+promoted. **A rollback cannot fix a fault the clients are sustaining.**
+
+**THE STANDING REQUIREMENTS THAT FOLLOW** — cross-cutting, and they apply to every polled operator route,
+not only this one (§35):
+
+- **an in-flight guard on any polled route;**
+- **an abort on timeout and on unmount;**
+- **backoff on repeated failure, not only on rate-limit responses;**
+- **a per-route duration ceiling chosen for blast radius.**
+
+⚠️ **A five-minute ceiling does not make a slow route usable — it decides how much damage one slow request
+does before it is killed.** **Usability is won by removing round trips, not by choosing a timeout.**
 
 # 30. Per-event stock — the sparse-override model (V6.5, extended V6.6)
 
@@ -15489,6 +16054,33 @@ that survives that question is an answer; one that does not is a second finding,
 keeps the original question open. **The failure mode is that the adjacent explanation is CORRECT**, which
 is exactly why it stops the search.
 
+## 🔴 A FIX THAT PASSES A SOURCE READ WHILE DOING NOTHING — `min-h-0` (V11.53)
+
+**On a scrolling flex child, `min-h-0` is load-bearing.** A flex item defaults to `min-height: auto` and
+**refuses to shrink below its content**, so `overflow-y-auto` never engages: the container grows exactly
+as it did before.
+
+🔴 **THE FAILURE MODE IS THE ENTRY, NOT THE CSS.** The markup looks correct. The overflow rule is
+present and spelled properly. **The fix appears applied to anyone reading the diff — and the behaviour
+is unchanged.** ⚠️ **A reviewer checking classes will pass it. A typecheck will pass it. A lint run will
+pass it.**
+
+✅ **THE RULE: A SCROLLING REGION IS VERIFIED BY SCROLLING IT, ON A REAL DEVICE, AT A REAL VIEWPORT.**
+Never by inspecting the classes that were supposed to make it scroll. **This joins the §1 family — a
+green check on the wrong assertion is evidence for nothing** — and it is the sharpest instance yet,
+because here the assertion and the defect are in the same three words.
+
+## 🔴 `dvh`, NEVER `vh`, IN ANY SURFACE THE NATIVE SHELLS RENDER (V11.53)
+
+**`vh` resolves against the LARGEST viewport and ignores a webview's dynamic toolbars.** So a height cap
+that behaves correctly in a desktop browser puts the bottom of the element **under the browser chrome
+inside the app** — on the one platform where it cannot be scrolled to.
+
+🔴 **EVERY MODAL REACHABLE FROM THE iOS OR ANDROID SHELL IS SUBJECT TO THIS**, which since V11.52 means
+every operator surface: both shells are remote-URL and load production, so there is no "web-only" modal.
+⚠️ **And it fails in the direction that hides things** — the cap looks generous in development and is
+short in service.
+
 ## ⚠️ AN EMPTY QUERY RESULT IS NOT EVIDENCE OF ABSENCE (V11.52)
 
 **A filtered query returning nothing is equally consistent with the rows not existing and with the query
@@ -15507,6 +16099,93 @@ query; the cost of the alternative is a confident wrong answer that reads exactl
 ≠ "column exists"*, where only an unfiltered count proves it. **Same lesson, arriving from the query
 side rather than the migration side.**
 
+
+## 🔴 A TEST WHOSE PASS CONDITION CAN BE MET WITHOUT THE THING UNDER TEST EVER RUNNING PROVES NOTHING (V11.55)
+
+**Three tests were run during the 1 September incident that could not have failed**, and each cost time
+while a live truck's clock ran:
+
+- A route was called with no session cookie and answered fast — **but the fast answer was the
+  unauthenticated rejection**, and the authenticated path was never entered.
+- The upstream API was called twice with no key and answered in 60ms — **but that is the gateway refusing
+  the request**, and neither the data layer nor the database was reached.
+- A parameterised request was sent with the literal placeholder still in it, so it **measured a rejection
+  rather than the work.**
+
+🔴 **THE RULE IS ALREADY IN THIS MANUAL AND IT WAS BROKEN THREE TIMES IN ONE AFTERNOON: CONSTRUCT A CASE
+WHERE THE GUARD MUST BITE.** Before accepting a fast, clean or green result, **state which component the
+request actually reached.** **An error returned at the door is not a measurement of the building.**
+
+⚠️ **THE THIRD ONE WAS AN ACCIDENT AND IT PRODUCED THE BEST EVIDENCE OF THE DAY** — a rejected request
+taking 45 seconds proved the latency was independent of the data, which excluded order volume in one step.
+**Record it as luck, not as method.**
+
+## 🔴 A COMPONENT REPORTING HEALTHY DOES NOT CLEAR THE PATH THROUGH IT (V11.55)
+
+Postgres was healthy, the SQL Editor was instant, static assets served in milliseconds, and the health
+route answered in 106ms — **while every request through the gateway to the same database took minutes.**
+**The SQL Editor bypasses the API layer entirely, so its speed says nothing about that layer.**
+
+⚠️ **"2 active, 0 idle-in-transaction" was read as evidence that nothing was queueing. It is equally the
+signature of a queue in FRONT of the database.** **The same observation supports both readings, so it
+settles neither.**
+
+## ⚠️ A SECOND-HAND STATUS REPORT IS NOT AN INCIDENT RECORD (V11.55)
+
+Third-party outage aggregators were consulted mid-incident and reported a provider outage. **They fuse
+crowd reports and can surface ahead of — or without — the official record.** **They are a signal for where
+to look, never a finding.** The provider's own incident entry, with its window, components and region, is
+the artefact. **Capture it while it exists.**
+
+## 🔴 THE RETRY-STORM INVARIANTS LIVE IN §28 (V11.55)
+
+The 1 September outage produced four standing requirements that are cross-cutting rather than
+rate-limiting-specific — **an in-flight guard on any polled route, an abort on timeout and on unmount,
+backoff on repeated failure, and a per-route duration ceiling chosen for blast radius.** They are recorded
+once, in **§28**, with the measurements that produced them. **Do not restate them here — two locations
+drift.**
+
+## 🔴 WHEN THE SYMPTOM IS VISUAL, THE FIRST MEASUREMENT COMES FROM THE RENDERING CLIENT (V11.56)
+
+**Six consecutive rounds** of ratio changes, CSS edits and file replacements were reasoned from the
+repository and each predicted the render without measuring it. **The images on disk were correct
+throughout.** The browser held different bytes.
+
+🔴 **Between a correct source file and a correct render sit at least four layers, each able to hold a
+different answer: an image optimiser, a disk cache keyed on URL rather than content, the browser's HTTP
+cache, and a server-rendered HTML document that can itself be stale.** None was inspected.
+
+**THE RULE: measure at the client or at the server that feeds it, never at the source artefact — and
+every claim about appearance must name the layer it was measured at.** The signal to stop reasoning is
+the sentence *"the source is correct but it looks wrong"*; that sentence is itself evidence that
+artefact and render disagree.
+
+⚠️ **A COROLLARY THAT COST TWO MORE ROUNDS: the rendered HTML can be stale independently of its
+assets.** The intrinsic sizes measured in the DOM matched attributes the source had stopped containing
+hours earlier. **The page in the tab predated the edit.**
+
+## 🔴 A CACHE KEYED ON URL DOES NOT NOTICE A CHANGED FILE (V11.56)
+
+**OBSERVED, and proved unambiguously: after the file was DELETED from disk, its URL still answered with
+a cache hit and returned an image.** The optimiser served content for a file that no longer existed.
+
+🔴 **The key includes the width, so busting one width proves nothing about the others** — a page emitting
+nine widths in its source set was verified at one of them and pronounced fixed. **The browser loads a
+different width.**
+
+**THE RULE: replacing an asset means a NEW URL, not new bytes at an old one.** Verify at every width the
+page can request, or verify by fetching what the page actually requests. ⚠️ **And a rename only busts a
+cache if it lands in the served directory** — twice in one session a rename was applied to the source
+copy outside the repository, changing nothing.
+
+## 🔴 A TOOL'S EXIT CODE IS NOT EVIDENCE THAT A FILE HAS THE CONTENT YOU INTENDED (V11.56)
+
+An image-processing command reporting success is not a file with the expected dimensions; a read-back of
+the file proves the file; **only a request to the server proves what a client receives.** Three distinct
+claims, routinely conflated. This belongs with the existing family — *a fix in the repository is not a
+fix in production*.
+
+---
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -15570,7 +16249,39 @@ are remote-URL and load production.** Therefore:
 ⚠️ **And the rollback caveat compounds it:** the 1 September deploy registered a cron that writes to
 `trucks` (§46), so a rollback is not a complete undo *of the web either*.
 
-### ✅ Android — the BINARY is ready; the LISTING is what blocks submission
+✅ **DEMONSTRATED THE SAME DAY, AND IT CUT THE OTHER WAY (V11.53).** The KDS event-picker fix (§9) was
+deployed and **confirmed working on both shells with NO iOS or Android release** — no rebuild, no
+submission, no review. **The coupling that makes a regression instant is the same one that makes a fix
+instant**, and this is the first time it has been used deliberately rather than worried about.
+⚠️ **The lever is unchanged in both directions: a rollback, and nothing else.**
+
+### 🔴 THE COUPLING THAT NOW GOVERNS EVERY DEPLOY (V11.54)
+
+🔴 **BOTH STORES ARE DOWNSTREAM OF A SINGLE VERCEL DEPLOY.** **iOS is live** and **Android is in
+review**, and **both shells load production.** So a deploy now does two things at once:
+
+- it **changes a shipped App Store app in real users' hands**, with no review gate in front of it; and
+- it **changes what a Play reviewer sees mid-review.**
+
+> ⚠️ **THE STANDING CONSEQUENCE: PRODUCTION SHOULD BE HELD STILL WHILE A STORE REVIEW IS IN PROGRESS,
+> UNLESS SOMETHING IS BROKEN.**
+
+🔴 **THIS IS NOT A RULE ABOUT RISK APPETITE, AND ARGUING IT ON THOSE TERMS MISSES IT.** It is that
+**the reviewer's view of the app is not a fixed artefact** — it is **whatever is deployed at the moment
+they look.** A change that is safe for users can still be a change to the thing under review.
+⚠️ **The Android side makes this concrete: the bundle is byte-identical to the one tested (§36), so
+the ONLY thing that can differ between what was verified and what a reviewer sees is the deploy.**
+
+### ✅ Android — SUBMITTED TO GOOGLE PLAY, 1 September 2026 (V11.54)
+
+✅ **STATED, from the Console.** The Android app was **submitted for review on 1 September 2026.**
+The **production track shows Active**, release **HatchGrab V1**, **version code 1**, under the temporary
+app name `com.hatchgrab.app (unreviewed)` — **which is what Play displays until a reviewer approves the
+listing, not a sign anything is wrong.** **Availability is the United Kingdom only, deliberately.**
+
+⛔ **THIS SUPERSEDES THE V11.52 HEADING THIS SUBSECTION CARRIED** — *"the BINARY is ready; the LISTING
+is what blocks submission"*. **The listing no longer blocks anything; it was produced and filed.** The
+binary paragraphs below are unchanged and still hold.
 
 **READ — the signed release bundle is NOT stale.** Every Android native source predates it, the merged
 manifest and the baked Capacitor config match the shipped artefact, and **the app bundles no web build**.
@@ -15587,10 +16298,17 @@ at all until someone builds and submits. **Hold that asymmetry in mind for any c
 the camera app's own process. **The manifest half of the photo-upload verification debt is discharged;
 ⚠️ the physical-hardware half remains unobserved.**
 
-🔴 **WHAT BLOCKS SUBMISSION IS THE LISTING, NOT THE BINARY.** Outstanding, all three required before
-upload: **no screenshots exist**, **no 1024×500 feature graphic exists**, and **the 512 icon in the
-repository is 24-bit where Play requires 32-bit.** ⚠️ **Produce all three BEFORE submitting — store
-listing changes made after submission can restart the review.**
+~~🔴 **WHAT BLOCKS SUBMISSION IS THE LISTING, NOT THE BINARY.** Outstanding, all three required
+before upload: no screenshots exist, no 1024×500 feature graphic exists, and the 512 icon in the
+repository is 24-bit where Play requires 32-bit.~~
+⛔ **STRUCK V11.54 — ALL THREE WERE PRODUCED AND THE APP IS SUBMITTED.** The record of *what* blocked
+it is kept because it is the lesson: **the listing was the blocker from first to last, and the binary
+was never the problem.** The icon was re-exported at **32-bit** rather than the 24-bit file in the
+repository. See *THE SUBMISSION CHECKLIST, AS IT ACTUALLY RAN* below.
+
+⚠️ **THE ONE LINE THAT DOES NOT EXPIRE: DO NOT EDIT THE STORE LISTING WHILE A REVIEW IS IN
+PROGRESS** — listing changes can restart the review clock. **Country availability is not subject to
+that.**
 
 **Same shell, second platform.** Android is a **Capacitor 8 remote-URL shell**, identical in architecture to iOS: the native WebView loads the LIVE site and Vercel stays the backend. There is no second web app and no wrapped bundle — which is why almost every finding below is a *web-bundle* or *asymmetry* finding rather than an Android one.
 
@@ -15936,6 +16654,13 @@ will not appear in any crash report.** §40.
 
 **Also READ:** `MARKETING_VERSION = 1.0` and `CURRENT_PROJECT_VERSION = 1` in both configurations. Fine
 for a first upload; ⚠️ **a second upload at the same build number is rejected by App Store Connect.**
+
+🔴 **OPEN (V11.54) — THE PROJECT IS UNIVERSAL. WHETHER THE *LISTING* IS, IS UNESTABLISHED.** Everything
+above is READ from `project.pbxproj`, and it settles what the **binary** supports. It does **not**
+settle what the **App Store listing** offers: **whether the iOS listing is universal or iPad-only is
+unknown.** ⚠️ **AND THE COST OF THE ANSWER IS ASYMMETRIC — if it is iPad-only, making it universal is
+a REBUILD AND A NEW SUBMISSION**, not a Console toggle. **Establish it before promising iPhone
+availability to anyone.** §40.
 
 ## `Info.plist` GAPS (V11.16)
 
@@ -16323,8 +17048,25 @@ It is recorded here so it is not diagnosed twice.**
 
 ## ✅ A SIGNED RELEASE BUNDLE EXISTS
 
-**5.9 MB `.aab`, signed, SHA1 `97:8D:DD:A2:32:CF:F3:31:31:2B:D9:D9:B6:1C:40:38:2B:A3:91:7A`** — verified
+**`.aab`, signed, SHA1 `97:8D:DD:A2:32:CF:F3:31:31:2B:D9:D9:B6:1C:40:38:2B:A3:91:7A`** — verified
 by `keytool -printcert -jarfile` **against the artefact, not inferred from a successful build.**
+
+✅ **V11.54 — THIS IS THE ARTEFACT THAT SHIPPED, AND IT WAS NEVER REBUILT.** Built **26 August 2026**
+and verified unchanged at submission: **6,148,125 bytes**, **SHA-256 beginning `b04f8619`**, signed
+with the upload certificate above. **The same artefact** was uploaded to internal testing, installed
+on physical hardware, confirmed running against production, and then **promoted.**
+
+> 🔴 **THE PROMOTE-DON'T-RE-UPLOAD RULE.** Promoting a release from one track to another **keeps the
+> binary identical to the one already tested.** Uploading the file again to a second track creates a
+> **duplicate artefact and breaks the chain of evidence** between what was verified and what ships.
+> ⚠️ **This is why the byte count and hash above are worth recording at all** — they are only
+> meaningful if the thing tested and the thing shipped are provably the same file.
+
+🔴 **THE KEYSTORE IS THE ONLY THING THAT CAN SIGN AN UPDATE TO THIS APP.** It and its passwords must
+stay backed up — **losing them ends the app's update path, not just this release.**
+⚠️ **AND SEPARATELY, THE `.aab` ITSELF IS FRAGILE.** It lives in a **gitignored build directory on one
+machine** and is **not in version control** — **a Gradle clean or a rebuild from the IDE would destroy
+it silently.** The chain of evidence above depends on a file nothing is protecting.
 
 **Upload keystore:** alias `hatchgrab`, 2048-bit RSA, PKCS12, valid to January 2054, at
 `android/hatchgrab-upload.keystore`, **gitignored**. Credentials in `android/keystore.properties`,
@@ -16349,10 +17091,16 @@ configuration runs for every task**, which would break `assembleDebug` for anyon
 
 ⚠️ **`storeFile` must be a bare filename** — `rootProject.file()` resolves it from `android/`. A leading
 slash makes it absolute and the build fails at `validateSigningRelease`.
-⚠️ **`versionCode` is still 1.** Fine for a first upload; **every subsequent one must increment it.**
-⚠️ **PLAY APP SIGNING ENROLMENT IS NOT VERIFIED.** `android/SIGNING.md` documents the recovery path
-*assuming* it is enabled. **If it is not, losing the keystore is unrecoverable rather than slow — confirm
-in Play Console before the first upload.**
+⚠️ **`versionCode` is still 1.** ✅ **V11.54 — that first upload has now happened: version code 1 is
+the shipped release.** **Every subsequent one must increment it.**
+~~⚠️ **PLAY APP SIGNING ENROLMENT IS NOT VERIFIED.**~~
+✅ **STRUCK V11.54 — PLAY APP SIGNING ACTIVATED ON FIRST UPLOAD, as expected.** `android/SIGNING.md`'s
+recovery path is therefore the live one.
+🔴 **AND THE REASON IT COULD NOT BE CONFIRMED EARLIER IS WORTH KEEPING, BECAUSE IT LOOKS LIKE A
+FAULT AND IS NOT.** Before the first upload **there was nothing to compare**: the certificate the
+Console shows is **Google's own app signing key, which never matches the upload key**, and **the upload
+key block only appears once a bundle has been received.** ⚠️ **A mismatch at that stage is not
+evidence of a problem** — do not go looking for a signing bug that does not exist.
 
 ## ✅ THE ICONS ARE THE BRAND'S, NOT CAPACITOR'S
 
@@ -16507,6 +17255,14 @@ block, though not `insetsHandling`.
 14-consecutive-day closed-testing requirement that applies to personal accounts created after November
 2023.**
 
+> 🔴 **V11.54 — AND THIS WAS TESTED THE HARD WAY. THE PRODUCTION TRACK WAS GREYED OUT, AND THE
+> CLOSED-TESTING RULE WAS NOT THE REASON.** **An existing draft release was blocking it.** The
+> exemption above held exactly as recorded — **organisation accounts can publish directly to
+> production** — and **deleting the stale draft unblocked the promote action immediately.**
+> ⚠️ **IF PRODUCTION IS EVER GREYED OUT AGAIN, CHECK FOR A DRAFT RELEASE BEFORE CONCLUDING THE
+> TESTING REQUIREMENT APPLIES.** The two failure modes present identically and the wrong diagnosis
+> costs fourteen days.
+
 **Package name `com.hatchgrab.app`** — permanent, matching the iOS bundle id. **Free app** — also
 permanent; a paid app can never be made free.
 
@@ -16520,6 +17276,11 @@ library in the WebView with no access to it.
 ⚠️ **Data safety answers to keep consistent with `/privacy`**, which still needs **Gemini and Stripe**
 adding to its provider table. See §43.
 
+🔴 **V11.54 — OPEN, AND WORSE THAN AN INCONSISTENCY: THE DECLARATION WAS FILED AGAINST PREMISES THE
+PUBLISHED PRIVACY PAGE GETS WRONG IN THREE WAYS.** ⚠️ **The page and the declaration must be corrected
+TOGETHER, from ONE set of established facts — not separately**, or they will simply disagree in a new
+way. The three defects are enumerated in §43.
+
 🔴 **`neverForLocation` MADE THE LOCATION ANSWER HONEST.** Nothing in the codebase uses device location —
 no `navigator.geolocation`, no `watchPosition`, the plugin is not installed. **The only lat/long comes
 from a postcode the visitor types, geocoded server-side.**
@@ -16529,18 +17290,79 @@ third party via a WebView opened from your app, where your app controls the code
 that WebView, so the open-web exemption does not apply** — which is what forced the PostHog reading in
 §12.
 
-## 🔴 BEFORE THE FIRST UPLOAD — WHAT MUST BE ESTABLISHED, NOT ASSUMED (V11.52)
+## 🔴 THE CONSOLE MOVED THE SIGNING PAGE — AND THE FINGERPRINTS ARE NOT ON THE OVERVIEW (V11.54)
 
-🔴 **TO BE CHECKED IN PLAY CONSOLE, NOT INFERRED FROM THIS REPOSITORY. UNPROVEN either way:**
+**STATED.** Play Console reorganised its navigation. **The App integrity page is now Protected with
+Play**, with **Play App Signing under Play Store protection.**
 
-- **Whether Play App Signing is enrolled.**
-- **Whether anything has ever been uploaded to `com.hatchgrab.app` on ANY track** — internal, closed or
-  open. 🔴 **`versionCode 1` is only usable if nothing has**, and the build files carry `versionCode 1`
-  today. **The App bundle explorer is the definitive place to check both.**
+⚠️ **CERTIFICATE FINGERPRINTS ARE ON THE SIGNING SUB-PAGE, NEVER ON THE OVERVIEW.** Recorded because
+looking at the overview and finding no fingerprints reads as *"signing is not set up"* when it means
+*"you are on the wrong page"* — the same false alarm as the upload-key block described under **A SIGNED
+RELEASE BUNDLE EXISTS** above.
+
+## 🔴 THREE PLAY ADVISORIES, ALL DEFERRED DELIBERATELY (V11.54)
+
+⛔ **NONE OF THE THREE BLOCKS REVIEW. ALL THREE WOULD REQUIRE A REBUILD, WHICH WOULD DESTROY THE
+VERIFIED ARTEFACT** — the byte-identical bundle that was tested on hardware and then promoted.
+🔴 **THEY ARE RECORDED AS DECISIONS, NOT AS BACKLOG, SO THEY ARE NOT RE-LITIGATED EVERY TIME THE
+CONSOLE SURFACES THEM.**
+
+**1. App optimisation below threshold — obfuscation at 2%, fix-by February 2027.**
+⚠️ **A LOW FIGURE IS EXPECTED HERE RATHER THAN A DEFECT.** The app is a **webview shell**; there is
+almost nothing of the developer's own code to obfuscate, so the percentage is measuring an absence.
+🔴 **AND ENABLING R8 MINIFICATION ON A CAPACITOR APP IS GENUINELY RISKY, NOT A CHECKBOX.** **Plugins
+resolve classes by reflection**, so without correct keep rules the app **builds cleanly, passes review,
+and fails at runtime on a specific plugin call.** ⚠️ **The failure is invisible in every pre-release
+signal.** **If it is ever done, it is deliberate work with device testing behind it.**
+
+**2. No deobfuscation file.** ✅ **Correct, and not a gap** — **nothing is obfuscated, so there is no
+mapping to upload.** It is the same fact as item 1 seen from the other side.
+
+**3. No native debug symbols, plus two edge-to-edge advisories.** **The native code is Capacitor's and
+its dependencies', not the product's.** The edge-to-edge items concern **the activity changes already
+compiled into this bundle** and would need **a rebuild and a resubmission** to address.
+**Both are marked recommended, not required.**
+
+## THE SUBMISSION CHECKLIST, AS IT ACTUALLY RAN (V11.54)
+
+🔴 **WHAT BLOCKED SUBMISSION WAS THE LISTING, NEVER THE BINARY.** Three artefacts, all of them
+listing assets: **screenshots**, a **1024×500 feature graphic**, and **the app icon re-exported at
+32-bit** rather than the 24-bit file in the repository.
+
+🔴 **APP ACCESS CREDENTIALS ARE MANDATORY FOR ANY APP BEHIND A LOGIN.** **A reviewer who cannot sign
+in rejects on minimum functionality** — so this is a submission blocker, not a courtesy.
+⚠️ **The credentials supplied point at a non-customer tester truck, never at a live trading operator.**
+
+**The tester truck was prepared for the review window**, which is a distinct step from creating the
+account: it was **renamed**, its **slug changed to a readable one**, and **fourteen consecutive daily
+events created**, so **a reviewer landing on any day in the next fortnight finds a live event rather
+than an empty board.**
+⚠️ **THE FAILURE THIS PREVENTS DOES NOT LOOK LIKE A DATA GAP — IT LOOKS LIKE A BROKEN APP.** An
+operator surface with no events renders as an empty screen, and a reviewer has no way to tell that
+apart from a product that does not work.
+
+> ⚠️ **DO NOT EDIT THE STORE LISTING WHILE A REVIEW IS IN PROGRESS** — **listing changes can restart
+> the review clock.** **Country availability is not subject to that.**
+
+## ✅ BEFORE THE FIRST UPLOAD — BOTH UNKNOWNS NOW CLOSED (V11.52, RESOLVED V11.54)
+
+~~🔴 **TO BE CHECKED IN PLAY CONSOLE, NOT INFERRED FROM THIS REPOSITORY. UNPROVEN either way:**
+whether Play App Signing is enrolled; whether anything has ever been uploaded to `com.hatchgrab.app`
+on ANY track.~~
+
+✅ **RESOLVED V11.54 BY THE UPLOAD ITSELF.** **Play App Signing activated on first upload**, and
+**`versionCode 1` was accepted**, which settles the second question in the same action. The method is
+the part worth keeping: **both were Console facts, not repository facts, and neither could be
+established by reading code** — the App bundle explorer was the definitive place, exactly as recorded.
 
 🔴 **PLAY REQUIRES DEMO CREDENTIALS IN THE App access SECTION.** The operator app opens onto a login, so
 **a reviewer can see nothing without them.** ⚠️ **This must NEVER be a live trading operator's account** —
 a reviewer signing in would be working inside a real truck's orders, menu and customer data.
+
+✅ **V11.54 — SUPPLIED, AND THE RULE WAS HONOURED.** **App access credentials are mandatory for any app
+behind a login: a reviewer who cannot sign in rejects on minimum functionality**, so this is a
+submission blocker rather than a courtesy. **The credentials supplied point at a non-customer tester
+truck, never at a live trading operator.**
 
 ⚠️ **TARGET API LEVEL.** From **31 August 2026** new apps and updates must target **API 36** to be
 submitted, with an extension route available to **1 November**. This manual records `targetSdk` as 36 —
@@ -19711,6 +20533,25 @@ is **OPEN** — nothing has been changed in the policy or in the code. ⚠️ **
 ⚠️ Not determined: which pageview mode the `defaults: "unset"` expression resolves to. **Pageview
 capture is not disabled**; the mode is unread. See §27.
 
+### 🔴 OPEN — THE PUBLISHED PRIVACY PAGE IS WRONG IN THREE WAYS, AND PLAY WAS TOLD THE SAME (V11.54)
+
+🔴 **THIS IS NOT ONE ERROR WITH TWO CONSEQUENCES. IT IS THREE SEPARATE DEFECTS ON A PUBLISHED LEGAL
+PAGE**, and **the Play data safety declaration (§36) was filed against the same premises:**
+
+1. **It states there are no analytics or tracking cookies** — while **the analytics client runs on
+   every route with autocapture on and sets a cookie.** (This is the V11.45 strike above; it is
+   restated here as one of three, not as the whole of it.)
+2. **Its provider table omits BOTH the analytics provider AND the payment processor.**
+3. **It describes card processing as a future addition** — **while a live secret key is configured.**
+
+> 🔴 **THEY MUST BE CORRECTED TOGETHER — THE PAGE AND THE DECLARATION — FROM ONE SET OF ESTABLISHED
+> FACTS, NOT SEPARATELY.** Fixing either alone produces a **new** disagreement between a published
+> policy and a regulator-facing form, which is the situation this entry exists to end.
+
+⚠️ **AND THE FACTS ARE NOT ALL ESTABLISHED YET** — three analytics settings are project-side and
+unread (§12). **Session recording is the one that changes the answer**, so establish it *before*
+drafting either correction rather than drafting twice.
+
 **Infrastructure is now UK:** Supabase `eu-west-2`, Vercel `lhr1` (moved from `iad1` — latency as much as compliance). Brevo EU. Gemini, Apple and Google push are US.
 
 ⚠️ **OPEN:** ICO registration is **not yet done** — not an App Store blocker, but a legal one. **Stripe AND Gemini must be added to the privacy policy's provider table** — ⚠️ **V11.44: Gemini is now
@@ -20992,6 +21833,71 @@ changelog entries, which are dated records of what was true then.**
 ⚠️ **ONE OF THOSE FINDINGS OUTLIVES THE FEATURE AND IS KEPT HERE:** *"no specific tier name appears in
 operator copy, anywhere"* — a tier name is a claim about someone else's pricing that goes stale on their
 next rename. That rule is not about embeds and still binds.
+
+---
+
+# 47. Analytics and instrumentation (V11.56)
+
+## 🔴 A LIVE TRUCK'S CREDENTIALS ARE IN THE ANALYTICS STORE, AND NOTHING SANITISES THEM
+
+**OBSERVED in an event export.** The trading truck's dashboard token and KDS token both appear in
+captured page URLs. **The analytics client is initialised with two options and every other default
+applies**: no property denylist, no sanitiser, no send hook, no personal-data masking. **Zero
+sanitisation exists anywhere in the codebase.** **OBSERVED by bundle read.**
+
+**Established this session, and worth recording precisely because it was nearly misread:**
+
+- **Session replay is OFF**, and the recorder bundle is therefore never fetched. **REASONED from a bundle
+  read: network capture and console capture live in that recorder and are consequently INERT** — enabled
+  in project settings, transmitting nothing. ⚠️ **Enabling replay would arm both immediately.**
+- **Cookies are set on every route of both domains with no consent gate.** Persistence defaults to
+  cookie plus local storage.
+- Customer-facing ordering URLs carry no personal data. **OBSERVED.**
+
+🔴 **THE REMEDIATION HAS AN ORDER AND GETTING IT WRONG WASTES A STEP: sanitise first, then purge the
+stored events, then rotate the tokens.** Rotating before the sanitiser ships merely puts a fresh
+credential into the same store. ⚠️ **Rotation changes an operator's working URLs and any printed code —
+it is a conversation with the operator, not a silent change.**
+
+⚠️ **Retention is 30 days and rolling**, so the exposure window moves rather than closing on its own.
+
+---
+
+# 48. The landing page and marketing surfaces (V11.56)
+
+- **WhatsApp auto-replies and the Android app both now read "coming soon"** across the shared feature
+  source, which spreads to the operator billing view and admin. **That spread is intended: the operator's
+  own connect control already said coming soon while the matrix advertised the feature as included.**
+- 🔴 **THE PARITY CHECKER PASSES VACUOUSLY ON A COMING-SOON ROW.** **OBSERVED by execution.** It inspects
+  only cells that are literally true, so moving a row to coming-soon makes it stop looking — while the
+  gate may still grant the feature. **The row and the gate must move together; a clean checker run after
+  such a change proves nothing.** ⚠️ **It is also blind to a broken row-to-feature mapping, which it
+  skips rather than flags.**
+- ⚠️ **A merged compare row was un-merged**, because the merge's stated premise — that the two platforms
+  would launch together — has expired now that one has shipped and one is in review. **Reversing a
+  documented deliberate decision is correct when its premise no longer holds; record the expiry rather
+  than deleting the reasoning.**
+- 🔴 **THE SCREENSHOT DIRECTORY IS UNTRACKED AND HAS NEVER BEEN COMMITTED.** **OBSERVED.** The hero
+  images exist only on one machine. **A deploy would ship a hero whose images 404.** Check this before
+  the gate lifts.
+- ⚠️ **Hero screenshots must be shot on a disposable truck with the address bar out of frame.** An
+  operator screen carries customer names and phone numbers, and its URL carries a full credential. **A
+  credential in a published image is permanent, public and ungreppable.**
+- ⚠️ **The hero's stated time-to-value and the demo's own reassurance and escape-hatch timings disagree.**
+  Unresolved.
+
+---
+
+# 49. Deploy posture as of V11.56
+
+🔴 **NOTHING IN THE V11.56 DELTA HAS BEEN DEPLOYED, AND MOST OF IT HAS NEVER RUN IN A BROWSER.** Batch one
+and the four-site status split are both in the working tree, uncommitted and unverified. The status
+split's cook-facing half **cannot be signed off without the physical tablet**, and its runbook's
+revocation steps are hard stops: if a rotated token does not clear the board within one poll interval,
+it does not ship.
+
+⚠️ **A store review is in progress and both shells load production.** Deploy in two attributable batches,
+verified on the deployed build. **A typecheck is not verification.**
 
 ---
 

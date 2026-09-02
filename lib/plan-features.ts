@@ -183,17 +183,24 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      // MERGED ROW. This was 'iPad kitchen app' (true/true/true) with a separate 'Android kitchen app'
-      // (coming_soon/coming_soon/coming_soon) beneath it. Android now launches alongside iPad, so the second
-      // row became a duplicate of this one and was removed. Both rows were UNIFORM across all three plans,
-      // so the merge needed no per-plan decision — see the report.
-      // 🔴 iPhone ADDED (was 'iPad and Android kitchen app'). The kitchen app is the SAME app with the same
-      // features on a phone, and Pizzeria Gusto run their service on phones rather than tablets — so naming
-      // only tablets under-claimed what a live operator does every day. This is the claim, not the form
-      // factor: footnote 3 carries the browser fallback and the "not supplied" caveat.
-      // ⚠️ AT 36 CHARACTERS THIS IS NOW THE LONGEST CELL IN THE MATRIX, two ahead of
-      // 'Messenger & Instagram auto-replies' (34), which already renders on all three surfaces.
-      { name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+      // 🔴 UN-MERGED, 1 September 2026 — BACK TO THE TWO ROWS THIS BRIEFLY WAS. These were one merged
+      // row ('iPhone, iPad and Android kitchen app', true/true/true) on the premise that "Android now
+      // launches alongside iPad". THAT PREMISE NO LONGER HOLDS: iOS is approved and live, Android is
+      // still in review, so one row cannot state both truthfully — marking the merged row coming_soon
+      // would have wrongly withdrawn a SHIPPED iPhone/iPad app.
+      // ⚠️ SO THE SPLIT IS FORCED BY THE FACTS, NOT A PREFERENCE. Re-merge them the day Android ships,
+      // and not before — and if you do, delete the Android row rather than renaming this one, so the
+      // ROW_FEATURE_MAP entry below stays attached to the row that carries the real feature.
+      // 🔴 iPhone IS NAMED DELIBERATELY (it was once 'iPad and Android'). The kitchen app is the SAME app
+      // with the same features on a phone, and Pizzeria Gusto run their service on phones rather than
+      // tablets — naming only tablets under-claimed what a live operator does every day. Footnote 3
+      // carries the browser fallback and the "not supplied" caveat for both rows.
+      { name: 'iPhone and iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
+      // Android: submitted to Google Play and awaiting review, so coming_soon across all three plans —
+      // uniform, exactly as the pre-merge row was. No ROW_FEATURE_MAP entry on purpose: there is no
+      // Android-specific Feature to join to, and findPlanParityViolations() `continue`s on a row with no
+      // entry (it also skips coming_soon cells outright), so an entry would buy nothing.
+      { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen app for Android phones and tablets.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
@@ -206,10 +213,21 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Smart Slot Management',                        detail: "HatchGrab paces orders across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
       { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
-      // Auto-replies are SPLIT on purpose: WhatsApp is LIVE, Messenger/Instagram are coming soon. Do not
-      // re-merge them into one row — a combined row reads as "all three work today", which isn't true.
+      // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
+      // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
+      // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
+      // combined row loses that ordering, and re-merging is a decision to take deliberately, not a tidy-up.
+      // 🔴 WHY THIS ROW MOVED TO coming_soon. app/manage/[token]/page.tsx:8378 sets `WHATSAPP_LIVE = false`,
+      // so the operator's own Connect control has been showing "coming soon" while this row advertised the
+      // feature as included on the landing page, the Billing tab AND admin. The surfaces disagreed; this
+      // makes them agree. The three-surface spread is intended — this module is the shared source.
+      // ⚠️ THE GATE HAS NOT MOVED WITH IT. lib/features.ts still grants `whatsapp_replies` to Pro (and so
+      // to Max and trial), so the product still ALLOWS what this row now says is coming. That is a known,
+      // recorded gap awaiting a separate decision — see docs/landing-whatsapp-applied-report.md §3.
+      // ⚠️ findPlanParityViolations() CANNOT SEE THAT GAP: it only inspects cells that are literally
+      // `true`, so a coming_soon cell is skipped entirely. The check passes vacuously here.
       // Both carry footnote 4 (business account required + AI replies can be wrong).
-      { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true,           max: true           },
+      { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
@@ -346,7 +364,7 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
     // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
     // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
-    text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
+    text: 'Device not supplied. There are native kitchen apps for iPhone and iPad, with Android coming soon, and the kitchen screen also runs on any phone or tablet with a modern browser.',
   },
   {
     number: '4',
@@ -385,7 +403,7 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
   // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
   // renamed: it gates one KDS capability on both platforms, and changing it would need a data migration.
-  'iPhone, iPad and Android kitchen app': 'ipad_kds',
+  'iPhone and iPad kitchen app': 'ipad_kds',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',

@@ -158,17 +158,54 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .proof li { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
 .hg-landing .tick { width: 21px; height: 21px; border-radius: 50%; background: var(--orange); flex: none; display: flex; align-items: center; justify-content: center; }
 .hg-landing .tick svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
-/* ---------- screenshot fan (dashed placeholders — keep until real shots land) ---------- */
+/* ---------- screenshot fan (real screenshots; three absolutely-positioned, rotated frames) ---------- */
 .hg-landing .fan { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(300px,42vw,430px); animation: hg-rise .7s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes hg-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @media(prefers-reduced-motion:reduce){ .hg-landing .fan { animation: none; } html:has(.hg-landing){ scroll-behavior: auto; } }
-.hg-landing .shot { background: var(--paper); border: 2px dashed var(--line); border-radius: 12px; box-shadow: 0 22px 50px -20px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center; padding: 1rem; position: absolute; }
-.hg-landing .shot .lbl { font-family: var(--display); font-weight: 700; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
-.hg-landing .shot .hint { font-size: .78rem; color: var(--ink-faint); max-width: 22ch; line-height: 1.35; }
+/* 🔴 overflow:hidden IS LOAD-BEARING, NOT TIDINESS. These frames carry border-radius (12px, and 18px on
+   the phone) but a child <img> is a rectangle: without clipping, its square corners render OUTSIDE the
+   rounded border and the frame reads as broken. The placeholder never showed this because it held text.
+   🔴 padding AND display:flex REMOVED for the same reason. The old rule centred placeholder text with
+   `display:flex` + `padding:1rem`; against an image those do the opposite of what is wanted — flex will
+   not stretch a child to fill, and the padding insets the screenshot by 16px on every side, leaving a
+   paper-coloured margin inside the frame. `display:block` + a child sized 100%/100% fills it exactly.
+   ⚠️ background KEPT but changed from --paper to --line: it is visible only in the instant before the
+   image paints and in the gap if a file is missing, so a neutral grey reads as "loading", not as a
+   deliberate cream panel. See the missing-file failure mode in the report. */
+.hg-landing .shot { background: var(--line); border-radius: 12px; box-shadow: 0 22px 50px -20px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06); overflow: hidden; display: block; position: absolute; }
+/* 🔴 CONTAIN, NOT COVER. `cover` scales the image until it FILLS the box and lets the excess overflow,
+   which zoomed these screenshots and pushed their edges outside the frame — the dashboard tile's nav
+   read "d order" instead of "Add order". `contain` scales until the WHOLE image fits, so nothing is
+   ever cut off, whatever the box ends up being.
+   ⚠️ THIS IS THE ONLY PLACE object-fit IS SET FOR THESE SLOTS. The <Image> tags pass no style, no
+   className and no fill, and next/image only emits an inline object-fit if you pass `style={{objectFit}}`
+   or the legacy `objectFit` prop — neither is used here — so this rule is unopposed.
+   ⚠️ Frame and image are both 4:3, so contain should letterbox NOTHING. If bars ever do appear, the box
+   is not the ratio it is declared to be — and `.shot`'s background (--line) is what would show in them. */
+.hg-landing .shot img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* 🔴 THE FILLED SLOTS CARRY NO BACKGROUND AND NO PADDING. `.shot` above sets `background: var(--line)`
+   for ALL three slots — it was kept as a "loading" ground and as the visible fallback for a missing
+   file. On a slot that holds a real screenshot it does nothing useful and everything harmful: it is
+   the grey any letterbox band is PAINTED IN, so a gap that would have been invisible reads as a
+   deliberate frame. `padding: 0` is belt-and-braces — the scoped reset at :77 already zeroes it, but
+   an explicit 0 here means a future padding on `.shot` cannot inset a screenshot by accident.
+   ⚠️ SCOPED TO THE TWO FILLED SLOTS ON PURPOSE. `.shot-empty` below re-declares its own paper
+   background, dashed border and 1rem padding, and comes LATER in the cascade, so the phone
+   placeholder is unaffected by this rule. Delete this rule only when all three slots hold images. */
+.hg-landing .shot-kds, .hg-landing .shot-dash { background: none; padding: 0; }
+/* ── PLACEHOLDER MODIFIER — for a slot with no screenshot yet. ─────────────────────────────────────
+   🔴 THIS EXISTS BECAUSE THE BASE `.shot` RULE IS NOW AN IMAGE FRAME. It was rewritten to
+   display:block, no padding, overflow:hidden — correct for an <img>, and wrong for text, which would
+   otherwise sit hard against the top-left corner with no padding and no dashed edge to read as
+   "deliberately empty". This restores exactly what the base rule dropped, for that one slot.
+   ⚠️ DELETE THIS BLOCK (and the .lbl/.hint rules with it) once all three slots hold real images —
+   nothing else uses them. */
+.hg-landing .shot-empty { background: var(--paper); border: 2px dashed var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center; padding: 1rem; }
+.hg-landing .shot-empty .lbl { font-family: var(--display); font-weight: 700; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+.hg-landing .shot-empty .hint { font-size: .7rem; color: var(--ink-faint); max-width: 22ch; line-height: 1.35; }
 .hg-landing .shot-kds { width: min(58%,320px); aspect-ratio: 4/3; left: 0; top: 8%; transform: rotate(-6deg); z-index: 1; }
-.hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 16/11; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; border-color: var(--ink-faint); }
+.hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 800/551; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; }
 .hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 9/17; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
-.hg-landing .shot-phone .hint { font-size: .7rem; }
 
 /* ---------- trust strip (full-width band under the hero) ---------- */
 .hg-landing .trust-strip { background: var(--wash); border-block: 1px solid var(--line); }

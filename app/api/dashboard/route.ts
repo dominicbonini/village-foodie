@@ -60,6 +60,17 @@ function publicTruckFields(row: Record<string, any>): Record<string, any> {
   return out
 }
 
+// ── R7 — PER-ROUTE CEILING, CHOSEN FOR BLAST RADIUS RATHER THAN FOR USABILITY ──────────────────────
+// This route carried NO maxDuration and so inherited the platform default of 300s. On 1 September that
+// turned a slow route into a total outage: every attempt held a function slot for five minutes while
+// the client's unguarded 60s poll started another, so one open tab sustained ~5 concurrent invocations.
+// 🔴 30s IS NOT A FIX FOR A SLOW BACKEND AND MUST NOT BE READ AS ONE. A healthy full run is ~750ms
+// (~15 sequential Supabase round trips at ~50ms), so this is ~40x headroom; what it changes is how much
+// damage ONE slow request does before it is killed — a 10x cut in slot-time per failed attempt.
+// ⚠️ Deliberately NOT applied to the routes that legitimately run long (demo provisioning, the Stripe
+// webhook, payments/return — all 300 by their own export). This is a per-route decision, not a global.
+export const maxDuration = 30
+
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
   const pin   = req.nextUrl.searchParams.get('pin')
@@ -72,14 +83,42 @@ export async function GET(req: NextRequest) {
   }
 
   // Find truck by token — select('*') avoids 401 errors from missing columns
+  // 🔴 `maybeSingle()`, NOT `single()`, AND THE CHANGE IS LOAD-BEARING FOR THE SPLIT BELOW.
+  // `single()` raises PGRST116 for ZERO ROWS, so `error` conflates "no such token" with "the database
+  // did not answer" — the exact distinction this route exists to make. `maybeSingle()` returns
+  // { data: null, error: null } for no rows, which makes the two cases structurally separable instead
+  // of requiring a string/code match on an error message.
   const { data: truck, error } = await supabase
     .from('trucks')
     .select('*')
     .eq('dashboard_token', token)
-    .single()
+    .maybeSingle()
 
-  if (error || !truck) {
-    console.error('[dashboard] truck lookup failed:', error?.message, error?.details)
+  // ── 🔴 A FAILURE TO REACH THE DATA IS NOT A FAILURE TO AUTHENTICATE ─────────────────────────────
+  // This branch used to be `if (error || !truck) → 401 Invalid token`, and on 1 September that single
+  // line put "Access denied — invalid access link" on a live trading board for ~21 minutes: 45 log
+  // lines of `upstream request timeout`, every one returning 401, every one carrying a REAL operator
+  // token. A read that FAILED and a truck that does not EXIST left by the same door with the same
+  // status, and no client can recover a distinction the server has already destroyed.
+  //
+  // 503 = "we could not check" — RETRYABLE, and every consumer keeps whatever it already has.
+  // 401 = "we checked, and this token does not exist" — AUTHORITATIVE, and consumers treat it as
+  //       terminal. That is what makes token rotation still work (see the revocation note in
+  //       docs/status-split-plan-report.md §4).
+  // ⚠️ DO NOT COLLAPSE THESE BACK INTO ONE BRANCH. The 401 is a claim about the credential; the 503
+  // is a claim about the database. They are not two flavours of the same failure.
+  if (error) {
+    console.error(
+      `[dashboard] truck lookup FAILED (not an auth failure) for token ending …${token.slice(-6)} — ` +
+      `returning 503:`, error.message, error.details, error.code,
+    )
+    return NextResponse.json(
+      { error: 'Service unavailable', retryable: true },
+      { status: 503, headers: { 'Retry-After': '10' } },
+    )
+  }
+  if (!truck) {
+    console.error(`[dashboard] no truck for token ending …${token.slice(-6)} — returning 401 (authoritative)`)
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
   }
 

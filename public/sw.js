@@ -114,8 +114,18 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(event.request)
         .then(res => {
-          const clone = res.clone()
-          caches.open(DATA_CACHE).then(cache => cache.put(event.request, clone))
+          // R6 — 🔴 ONLY CACHE A GOOD RESPONSE. This had no res.ok check, so during the 1 September
+          // outage every 401 "Invalid token" the degraded backend produced was written into DATA_CACHE
+          // ON TOP of the last known-good snapshot. The cache exists to keep orders on screen when the
+          // device is genuinely offline; without this line the incident it protects against is exactly
+          // what destroys it, and the next real offline serves a cached 401.
+          // ⚠️ THIS DOES NOT CLEAN AN ALREADY-POISONED ENTRY — a bad entry stays until it is overwritten
+          // by a good response or the cache is invalidated. Inspecting shipped devices is a separate
+          // item and is NOT done here.
+          if (res.ok) {
+            const clone = res.clone()
+            caches.open(DATA_CACHE).then(cache => cache.put(event.request, clone))
+          }
           return res
         })
         .catch(() => caches.match(event.request))

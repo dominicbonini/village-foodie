@@ -2812,18 +2812,35 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {/* py-3 item-content wrapper (Option B): a TOP LINE, then a FULL-WIDTH description
                         + chips block below it, so the description escapes the narrow flex-1 column. */}
                     <div className="py-3">
-                    {/* TOP LINE — thumbnail + name/badges only (price + Add moved to the bottom baseline). */}
-                    <div className="flex items-center gap-3">
-                      {item.photo_url && (
-                        <img
-                          src={item.photo_url}
-                          alt={item.name}
-                          className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-slate-100"
-                        />
-                      )}
+                    {/* ── TWO-COLUMN ROW (replaces "Option B", 1 September 2026) ────────────────────
+                        WAS: a TOP LINE (thumbnail + name) with the description, chips, price and Add
+                        as FULL-WIDTH siblings BELOW it, so they cleared the thumbnail's right edge.
+                        That was a deliberate decision — its stated reason was "so the description
+                        escapes the narrow flex-1 column" — and it is being reversed knowingly: the
+                        thumbnail was 64px, and beside it sat a single line of name, leaving the
+                        space to its right unused while everything else wrapped underneath.
+                        NOW: ONE flexible text column on the LEFT holding name, description, chips,
+                        the required-group preview, price and Add — and an 80px image column on the
+                        RIGHT, present only when the item has a photo. The text column is the thing that
+                        must survive — see min-w-0 below.
+                        ⚠️ items-start, NOT items-center: the thumbnail must sit level with the item
+                        NAME, not float mid-row. items-center would centre an 80px image against a
+                        five-line text column and no two rows would agree. */}
+                    <div className="flex items-start gap-3 w-full min-w-0">
+                      {/* TEXT COLUMN — FIRST, so its left edge is the card's own on EVERY row.
+                          min-w-0 is load-bearing: without it a long unbroken word (a dish name with no
+                          spaces) sets the flex base size and pushes the image off the row.
+                          🔴 flex-col + self-stretch SO THE PRICE CAN BE PINNED TO THE BOTTOM. Without
+                          this the column is only as tall as its text, so on a row whose RIGHT column
+                          (80px image + 8px + 28px button = 116px) is taller, the price sat ~22px above
+                          the row's bottom while the Add button sat on it — the price stopped sharing a
+                          baseline with the button. MEASURED at 430px before the fix: row bottom 3123,
+                          button bottom 3123, price bottom ~3101.
+                          ⚠️ Children stack exactly as they did as blocks (a flex column stretches them
+                          to full width, which is what block layout already did). */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
+                        <div className="flex flex-wrap items-center gap-2 min-w-0">
+                          <p className={`font-bold text-sm leading-snug break-words min-w-0 ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
                           {/* Pre-order pill (server-computed label, §51) — PROMINENT beside the name.
                               flex-wrap drops it to its own line on narrow screens; whitespace-nowrap keeps
                               "Pre-order by 16:30, Sat 27 Jun" intact (wraps as a unit, never mid-text).
@@ -2855,11 +2872,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             )
                           })()}
                         </div>
-                      </div>
-                    </div>
-                    {/* FULL-WIDTH description + chips (Option B) — span the whole row so the description
-                        wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
-                        is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
+                    {/* Description + chips — NOW INSIDE the text column (they were siblings of the
+                        top line under "Option B"). The two closing </div>s that ended the text
+                        column and the row here have moved to just after the price/Add baseline.
+                        Chip font stays rem (text-[0.625rem]) so it scales with the OS "Larger Text"
+                        setting — unchanged by this restructure. */}
                     {/* 🔴 slate-500 AND text-sm, NOT slate-400 AND text-xs. A dish description is the one
                         line that decides an order — "hot 38hr makhani sauce on top" is the difference
                         between two chip dishes — and at 12px in slate-400 it measures about 2.8:1 against
@@ -2956,11 +2973,60 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         </div>
                       )
                     })()}
-                    {/* BOTTOM BASELINE (canonical food-app layout) — PRICE left, Add/stepper right.
-                        A left-aligned price on its own line gives a clean, consistent edge down the
-                        list (vs a ragged right-aligned price beside variable-length names). Add/stepper
-                        logic is UNCHANGED — only relocated off the top line. */}
-                    <div className="flex items-center justify-between mt-2">
+                      </div>{/* end text column */}
+                      {/* IMAGE COLUMN — ON THE RIGHT (1 September 2026). RENDERED ONLY WHEN THERE IS
+                          A PHOTO: no placeholder, no spacer.
+                          🔴 THIS REVERSES THE LEFT-HAND PLACEMENT BUILT EARLIER THE SAME DAY, AND THE
+                          REASONING IS KEPT RATHER THAN REPLACED. Left-hand was correct only if every row
+                          had a photo. MEASURED: 27 of 29 items on a real menu have none, so a left image
+                          gave the list TWO left edges — 25px on photo-less rows, 117px on photo rows —
+                          and the vertical spine of the list was lost. With the image on the RIGHT the
+                          name, description, chips and price start at the SAME left edge on every row,
+                          photo or not. 🔴 THAT ALIGNMENT IS THE POINT: anything that reintroduces a
+                          second left edge defeats this change.
+                          ⚠️ The Add button STAYS at the text column's right edge (price left / Add right,
+                          the canonical layout recorded below). It is NOT beside the image and NOT under
+                          it — on a photo row the button sits just left of the thumbnail, on a photo-less
+                          row at the row's right edge. Sizes were measured at 320px before choosing.
+                          ⚠️ width/height ATTRIBUTES as well as the classes: they bound the element even
+                          if the stylesheet has not applied — the failure an unstyled <img> shows as a
+                          full-viewport-width image that scrolls the row sideways. */}
+                      {/* 🔴 ONE RENDER PATH. This column is ALWAYS rendered — on a photo-less row it
+                          simply holds no image. The Add/stepper is therefore written ONCE and mounted in
+                          ONE place, so its right edge is the ROW's right edge on every row. A conditional
+                          that put the button in the text column when there is no photo would be two
+                          render paths for one control, and they would drift.
+                          • items-end  — the button (48px) right-aligns with the 80px image.
+                          • self-stretch + mt-auto on the button — the column spans the row height and the
+                            button is pushed to its BOTTOM, so it lands on the price's baseline instead of
+                            floating directly under the thumbnail mid-row.
+                          • shrink-0   — the column never compresses; the text column absorbs narrowing. */}
+                        {item.photo_url && (
+                        <img
+                          src={item.photo_url}
+                          alt={item.name}
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 max-w-[80px] rounded-xl object-cover shrink-0 border border-slate-100"
+                        />
+                        )}
+                    </div>{/* end two-column row */}
+                    {/* 🔴 BOTTOM LINE — FULL ROW WIDTH, ALWAYS RENDERED, ONE INSTANCE.
+                        PRICE left, Add/stepper right. This is the structure that satisfies BOTH edges at
+                        once, and it took three attempts to find:
+                          • Add inside the TEXT column  -> its right edge was the text column's, so on a
+                            photo row it sat ~92px left of a photo-less row. Two right edges.
+                          • Add in a persistent RIGHT column beside the image -> one right edge, but that
+                            column reserved ~60px of width for its FULL height, so on a photo-less row the
+                            description stopped short of the screen edge. MEASURED and rejected.
+                          • ✅ Add on its OWN full-width line BELOW the image -> price left and button right
+                            are both the ROW's edges on every row, and the text above spans the full width
+                            whenever there is no photo.
+                        ⚠️ The button is rendered ONCE, here. There is no photo/no-photo branch for it, so
+                        there is nothing to drift. Add/stepper LOGIC is untouched — relocated only.
+                        ⚠️ A left-aligned price gives a clean edge down the list (vs a ragged
+                        right-aligned price beside variable-length names). */}
+                    <div className="flex items-center justify-between gap-2 mt-2 min-w-0">
                       <span className={`font-bold text-sm ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (

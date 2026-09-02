@@ -280,6 +280,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
+  // ── R3 — DEGRADED = "the server answered badly, or not at all, and we are showing what we had". ───
+  // 🔴 DERIVED FROM THIS ROUTE'S OWN OUTCOMES, NOT FROM `isOnline()`. The reachability probe pings
+  // /api/ping, which does no auth and touches no database, so on 1 September it stayed green at ~106ms
+  // while this route took a median of 148 SECONDS. A probe measures only what it exercises.
+  // ⚠️ Deliberately NOT wired to lib/native/reachability.ts — that module is batch 2 and separately
+  // gated. This is a local fact about a local fetch.
+  const[degradedSince,setDegradedSince]=useState<Date|null>(null)
   // ── ?tab= RESTORES THE ACTIVE TAB (V9.6) ─────────────────────────────────────────────────────────
   // A reload used to land on Orders whatever the operator was doing. Straight into the useState
   // INITIALISER — no ref and no effect needed, unlike ?event=, because this validates against a
@@ -811,6 +818,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Transient 429 on the very FIRST load (before auth): a momentary rate-limit burst must not render the
   // hard "Access denied" lockout. Count retries so we back off + recover instead of erroring out.
   const rl429RetriesRef=useRef(0)
+  // ── R4/R5 — ONE /api/dashboard READ IN FLIGHT AT A TIME, AND IT CANNOT WAIT FOR EVER ────────────
+  // 🔴 THE AMPLIFIER THIS CLOSES: the 60s poll had no guard and the read had no timeout, so during the
+  // 1 September outage each attempt held a function slot for the full 300s ceiling while the next
+  // attempt started anyway — ~5 concurrent invocations per open tab, and the dashboard and KDS are two
+  // tabs both calling this route. Closing every operator client halved the observed latency (44.8s →
+  // 23.5s), which is the measurement that proves the clients were sustaining roughly half of it. §28.
+  const inFlightRef=useRef<AbortController|null>(null)
+  /** Hard ceiling on ONE dashboard read. Healthy is ~750ms; 10s is >10x headroom, and the 60s poll is
+   *  the retry. NOT a fix for a slow backend — it decides how much damage one slow read does. */
+  const READ_TIMEOUT_MS=10_000
+  // R5 — abort any outstanding dashboard read on unmount, so a closed/backgrounded screen stops
+  // holding a request open. Empty deps: registered once, fires on teardown only.
+  useEffect(()=>()=>{inFlightRef.current?.abort()},[])
   // Last successfully resolved event — survives transient empty upcomingEvents (e.g. failed refetch)
   const lastActiveEventRef=useRef<TruckEvent|null>(null)
   // SINGLE status-INDEPENDENT event resolution (cross-event fix): the explicitly-selected
@@ -917,14 +937,47 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[token])
 
   const fetchAll=useCallback(async(currentPin=pin,forceSeed=false)=>{
+    // ── R4 — IN-FLIGHT GUARD. DROPPED, NEVER QUEUED. ──────────────────────────────────────────────
+    // A poll that fires while a read is outstanding is DISCARDED: queueing it would rebuild the very
+    // backlog this exists to prevent, and the next tick is only 60s away.
+    // 🔴 A `forceSeed` CALL SUPERSEDES INSTEAD OF BEING DROPPED, AND THE DISTINCTION IS LOAD-BEARING.
+    // forceSeed is the EVENT SWITCH (and trucks-realtime / reconnect) — an operator changing what they
+    // are looking at. Dropping it would leave the board on the previous event until the next poll, up
+    // to 60s, on a live service. So it aborts the outstanding read and takes its place: still exactly
+    // one in flight, and the operator's own action is never the thing that gets discarded.
+    if(inFlightRef.current){
+      if(!forceSeed) return
+      inFlightRef.current.abort()
+    }
+    const ctrl=new AbortController(); inFlightRef.current=ctrl
+    // R5 — AbortController + setTimeout rather than AbortSignal.timeout(), because this ONE signal must
+    // carry both the deadline and the supersede above. Same pattern as lib/native/reachability.ts.
+    const timeoutId=setTimeout(()=>ctrl.abort(),READ_TIMEOUT_MS)
     try {
       const p=new URLSearchParams({token}); if(currentPin) p.set('pin',currentPin)
       // Scope the read to the selected event (V6.4). Pass its date too so the
       // route resolves the right event even when it isn't today's first event.
       const sel=selectedEventRef.current
       if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
-      const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
-      if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
+      const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader(),signal:ctrl.signal}); const data=await res.json()
+      // ── R2 — 🔴 THE ONE BRANCH OF FOUR THAT DID NOT CONSULT `authenticatedRef`. ─────────────────
+      // The 429 branch below, the non-ok branch and the thrown-fetch catch ALL check it, and the
+      // comment beside one of them states the intent: keep existing state, never blank a working board
+      // on a transient failure. This branch did not implement it, and that is what blanked a live board
+      // on 1 September.
+      // 🔴 A 401 IS NOW AUTHORITATIVE (the route only sends one after a SUCCESSFUL read that found no
+      // truck), so it stays TERMINAL for a session that has not authenticated — and, once authenticated,
+      // it is still terminal because it means the token was rotated. Revocation therefore still works,
+      // with an exposure of at most one poll interval. See docs/status-split-plan-report.md §4.
+      // ⚠️ A 503 NEVER REACHES HERE — it falls to the non-ok branch below, which already keeps state.
+      if(res.status===401){
+        if(data.requiresPin){setRequiresPin(true);setLoading(false);return}
+        setError('Invalid access link');setAuthenticated(false);authenticatedRef.current=false
+        setLoading(false);return
+      }
+      // Any response at all means the server answered → we are not degraded. Cleared here rather than
+      // on success only, so a 4xx that we handle gracefully also clears the banner.
+      if(res.ok) setDegradedSince(null)
       // Initial-load 429 = transient rate-limit burst → back off + retry, NEVER the hard "Access denied"
       // lockout (operators are now exempt in proxy.ts; this is belt-and-braces for any first-paint edge on
       // a shared IP). Up to 5 tries (1s,2s,4s,8s,8s). Keeps the loading spinner; self-heals on recovery.
@@ -933,7 +986,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         setLoading(true); setTimeout(()=>fetchAllRef.current(),backoff); return
       }
       // Transient failure after successful auth — keep existing state, never blank the dashboard
-      if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
+      if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state');setDegradedSince(prev=>prev??new Date())}else{setError(data.error||'Failed to load')};setLoading(false);return}
       // ── CONFIG vs LIVE SPLIT (the flip-back CLASS fix) ──────────────────────────────────────────────
       // seedConfig runs on NAV/AUTH (first load, event-switch, trucks-change, reconnect) — NEVER on the 60s
       // poll or a realtime ORDER event. Config = operator-edited settings; re-seeding them from the order
@@ -1032,7 +1085,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           if(stale.length>0) setTodayEvents(prev=>prev.map(e=>stale.some((s:TruckEvent)=>s.id===e.id)?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
         }
       }catch{}
-    } catch{if(!authenticatedRef.current)setError('Connection error')} finally{setLoading(false)}
+    } catch{
+      // ── R5 — AN ABORT IS NOT A FAILURE **WHEN A RETRY FOLLOWS**, AND ONLY THEN. ─────────────────
+      // The 60s poll is gated on `truck?.id`, so it runs ONLY after a first successful load. Therefore
+      // a retry follows exactly when we are already authenticated — and before that, swallowing the
+      // abort would leave the operator on a spinner for ever with nothing coming. So:
+      //   authenticated → keep the board, say nothing, the poll retries in 60s;
+      //   not yet authenticated → surface it, exactly as this line did before.
+      // ⚠️ `ctrl.signal.aborted` is the test, NOT the thrown value: abort() rejects with a DOMException
+      // whose shape we would otherwise have to trust.
+      if(ctrl.signal.aborted&&authenticatedRef.current){
+        console.warn('[fetchAll] dashboard read aborted after',READ_TIMEOUT_MS,'ms or superseded — keeping existing state; the 60s poll retries')
+        setDegradedSince(prev=>prev??new Date())
+      } else if(!authenticatedRef.current) setError('Connection error')
+      else setDegradedSince(prev=>prev??new Date())
+    } finally{
+      clearTimeout(timeoutId)
+      // Only clear if this call still owns the slot — a superseding call has already claimed it.
+      if(inFlightRef.current===ctrl) inFlightRef.current=null
+      setLoading(false)
+    }
   },[token,pin,fetchMenu,fetchStock,applyPending,peekPendingBuzzer])
 
   // Ready-email-undo machinery (shared hook). onUndoRestore = the dashboard-specific revert: un-strike the
@@ -1544,7 +1616,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const p=new URLSearchParams({token,pin:pinInput})
     const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
     const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
-    if(!res.ok){setPinError('Incorrect PIN');return}
+    // ── 🔴 A FAILURE TO REACH THE DATA IS NOT AN INCORRECT PIN. ────────────────────────────────────
+    // This was `if(!res.ok){setPinError('Incorrect PIN')}` — ANY non-ok status, including a timeout and
+    // a 500. On 1 September an operator typing the CORRECT PIN was told it was wrong, and R1 alone would
+    // only have changed the status behind that message from 401 to 503.
+    // ⚠️ THE PIN CANNOT EVEN BE CHECKED WHEN THE READ FAILS — the route validates the PIN against the
+    // truck row it could not fetch. So the 503 copy must say we could not reach the server FIRST, and
+    // must not imply the PIN was checked and passed.
+    // ⚠️ NO AUTO-RETRY HERE. A silent retry behind an unchanged message is how the old defect read to an
+    // operator; the button stays live and they choose.
+    if(!res.ok){
+      if(res.status===503) setPinError('Can\'t reach the server right now. Your PIN is fine — try again in a moment.')
+      else if(res.status===401&&data.requiresPin) setPinError('Incorrect PIN')
+      else if(res.status===401) setPinError('This link is no longer valid.')
+      else setPinError('Something went wrong. Try again.')
+      return
+    }
     setPin(pinInput); setTruck(data.truck); setOrders(prev=>applyPendingBuzzers(mergeOrders(prev,data.orders||[]),peekPendingBuzzer)); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
     {const loadedId=selectedEventRef.current?.id; if(loadedId)setLoadedEventIds(p=>p.has(loadedId)?p:new Set(p).add(loadedId))} // EVENT-SWITCH GATE: mark loaded
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
@@ -2779,7 +2866,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   //    control that does nothing, which the 2.1 rule calls a defect. It is still strictly better than the
   //    trap it replaces (tapping now does nothing instead of stranding you in another product), but the
   //    alternative — render nothing at all in the app — is a one-line change and is Dominic's call.
-  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
+  // ── R3 — 🔴 THE ERROR GATE IS NO LONGER FATAL TO A BOARD THAT ALREADY LOADED. ──────────────────
+  // The orders were never lost on 1 September. They sat in React state behind THIS gate, which returned
+  // the access-denied screen above the board. The failure was a display decision, not data loss.
+  // `error` is now only set for a never-authenticated session (R2) or an authoritative 401, so gating
+  // on `!authenticated` renders the full-page error exactly when it is the truth and never otherwise.
+  if(error&&!authenticated){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p>{isNativeApp()?<span className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</span>:<Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link>}</div></div>}
   if(requiresPin&&!authenticated)return(
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
@@ -2930,6 +3022,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   return(
     <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern) for EVERY tab: fixed-viewport h-dvh column where the top bars are shrink-0 and only <main> scrolls. Bars stay locked on all tabs + all browsers — replaces the stacked position:sticky-against-body-scroll that was unreliable in the iPad WKWebView (tabs scrolled away). */}
+      {/* ── R3 — DEGRADED STRIP. Persistent, not a toast: a toast for this is a lie by omission, because
+          the condition outlives it. Says three things and all three are load-bearing: that we cannot
+          reach the server, WHEN the data on screen is from, and that the list may be INCOMPLETE.
+          🔴 "New orders may be missing" is the one that matters — stale-and-complete and
+          stale-and-incomplete are different risks and only the second costs a customer their food.
+          ⚠️ It never says anything is "saved". Nothing here is saved by rendering it. */}
+      {degradedSince&&!error&&(
+        <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
+          Can&apos;t reach the server. Showing orders from {lastRefresh.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}. New orders may be missing.
+        </div>
+      )}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
           / when off. Rendered first so it's on top. */}
       <AppLockGate />

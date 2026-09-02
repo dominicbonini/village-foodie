@@ -85,7 +85,7 @@ const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
 // FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
 const DETAIL_OVERRIDES: Record<string, string> = {
-  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone, iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
+  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone and iPad app keeps you taking orders offline (Android coming soon); the web dashboard needs a connection.",
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -135,12 +135,31 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Screenshot fan — dashed PLACEHOLDER frames. DOMINIC: swap each .shot for a real <img> (tidy data,
-              plausible names/items) when screenshots are ready. */}
+          {/* ── Screenshot fan. Three real screenshots, absolutely positioned and rotated by landing.css. ──
+              🔴 width/height ARE THE CSS BOX SIZES, NOT THE EXPORT SIZES. The files are exported at 2x
+              (640x480, 800x550, 280x529) for retina; these numbers are the 320x240 / 400x275 / 140x264
+              boxes the CSS actually lays out. next/image uses them for the aspect ratio and to reserve
+              space — giving it the 2x numbers would reserve a box twice the size and shift the layout.
+              ⚠️ The CSS `aspect-ratio` on each .shot-* is what really sizes the frame; these attributes
+              must AGREE with it or next/image and the CSS will disagree about the shape.
+              🔴 `priority` ON ALL THREE: this fan is the hero, above the fold on every viewport. Without
+              it next/image lazy-loads and the frames paint empty on first view — the exact failure the
+              placeholder never had. `sizes` matches the CSS caps so the generated srcset is not oversized.
+              ⚠️ alt TEXT IS DESCRIPTIVE, NOT DECORATIVE. These carry the product claim the hero makes, so
+              they are not alt="" — unlike the Gusto logo below, which sits beside its own attribution. */}
           <div className="fan">
-            <div className="shot shot-kds"><span className="lbl">Screenshot</span><span className="hint">Kitchen screen — tickets in cook order</span></div>
-            <div className="shot shot-dash"><span className="lbl">Screenshot</span><span className="hint">Orders dashboard — realistic orders, capacity strip visible</span></div>
-            <div className="shot shot-phone"><span className="lbl">Screenshot</span><span className="hint">Customer ordering</span></div>
+            <div className="shot shot-kds">
+              <Image src="/screenshots/kitchen.png" alt="The HatchGrab kitchen screen, showing order tickets in cook order" width={320} height={240} sizes="(max-width: 939px) 58vw, 320px" priority />
+            </div>
+            <div className="shot shot-dash">
+              <Image src="/screenshots/dashboard-v4.png" alt="Taking an order on HatchGrab: the menu on the left, the running basket and total on the right" width={800} height={551} sizes="(max-width: 939px) 72vw, 400px" priority />
+            </div>
+            {/* 🔴 STILL A PLACEHOLDER — the phone screenshot does not exist yet. It carries `shot-empty`,
+                which restores the dashed frame and the centred text the base `.shot` rule no longer
+                provides: that rule was rewritten for images (display:block, no padding, overflow:hidden),
+                and a text placeholder inside it renders top-left and un-padded. Delete `shot-empty` and
+                the two spans, and put an <Image> here, when the shot lands. */}
+            <div className="shot shot-phone shot-empty"><span className="lbl">Screenshot</span><span className="hint">Customer ordering</span></div>
           </div>
         </div>
       </header>
@@ -167,17 +186,25 @@ export default function LandingPage() {
             <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website. Or send us the photo you already post to Facebook. You just review and confirm.</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone and iPad app. Android coming soon.</p></div>
             {/* ⚠️ "driving to the pitch or at the grill" — NOT just "at the grill". On its own that is a
                 generic busy-kitchen claim any hospitality product could make. DRIVING is specific to a food
                 truck and is the moment an operator genuinely CANNOT reply, which is the whole point of the
                 feature. Keeping both covers the two states a truck operator is actually in.
-                🔴 THE MIXED TENSES ARE DELIBERATE. WhatsApp is PRESENT tense because it ships at launch;
-                Messenger and Instagram carry "coming soon" because they may not. Same standing editorial
-                rule as FOOTNOTES[3] in lib/plan-features.ts — the landing page describes the product AT
-                LAUNCH — applied to two features with different readiness. It is NOT an inconsistency; do
-                not "harmonise" the tenses. */}
-            <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill. Messenger and Instagram coming soon.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
+                🔴 THE TENSES ARE NOW UNIFORM, AND THAT IS THE CHANGE. This block used to read WhatsApp in
+                the PRESENT tense — "your WhatsApp gets answered" — because it was expected to ship at
+                launch, with Messenger and Instagram carrying "coming soon". A standing note here told the
+                next reader NOT to harmonise them, and that instruction was correct for that state.
+                ⚠️ THAT STATE NO LONGER HOLDS, so the instruction is retired rather than deleted — the
+                reasoning is worth keeping because it explains why the old wording looked inconsistent and
+                was not. app/manage/[token]/page.tsx:8378 sets `WHATSAPP_LIVE = false`, so the operator's
+                own Connect control has been showing "coming soon" the whole time. The copy now says the
+                same thing the product does.
+                🔴 THE NEW RULE, AND IT IS THE SAME RULE UNDERNEATH: the landing page describes the product
+                AS IT IS. All three channels are future tense because none of the three is available. If
+                WhatsApp ships, this block, the matrix row in lib/plan-features.ts and the Pro-card bullet
+                below all move back together — they are three surfaces of one fact and must not drift. */}
+            <div className="does-item"><h3>Social media auto-replies — coming soon</h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
           </div>
         </div>
       </section>
@@ -310,7 +337,8 @@ export default function LandingPage() {
                 {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
                     matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
                     must be changed in the SAME commit or the same page shows two different claims. */}
-                <li>iPhone, iPad and Android kitchen app</li>
+                <li>iPhone and iPad kitchen app</li>
+                <li>Android kitchen app <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
@@ -324,12 +352,12 @@ export default function LandingPage() {
               <div className="plan-fee">{PLAN_ALLOWANCES.pro}<sup className="fee-star">*</sup></div>
               <ul>
                 <li className="lead">Everything in Free, plus</li>
+                <li>Offline order protection</li>
                 <li>Take payment online</li>
                 <li>Pre-orders &amp; collection times</li>
                 <li>Smart slot management</li>
                 <li>Auto-accept orders</li>
-                <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
-                <li>Offline order protection</li>
+                <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
                 <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-primary">Try Free</DemoCta>

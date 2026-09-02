@@ -467,6 +467,29 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
   const [kdsToast, setKdsToast] = useState<string | null>(null)
 
   const fetchAllRef = useRef<() => void>(() => {})
+  // ── R4/R5 — ONE /api/dashboard READ IN FLIGHT AT A TIME (see the dashboard's note; same route,
+  // same 60s poll, and the two screens are two tabs both calling it). ──────────────────────────────
+  const inFlightRef = useRef<{ ctrl: AbortController; scope: string } | null>(null)
+  /** True once a fetch has committed a truck. Tells the catch whether a retry actually follows: the
+   *  60s poll is gated on `truck?.id`, so before the first success nothing retries. */
+  const loadedOnceRef = useRef(false)
+  // ── R9 — DEGRADED + STALENESS. The KDS had NEITHER: no `authenticatedRef` equivalent beyond
+  // `loadedOnceRef`, and no record of when the board on screen was fetched. Both are required to keep
+  // tickets up honestly — a stale board with no timestamp is worse than no board, because a cook cannot
+  // tell how old it is.
+  // 🔴 DERIVED FROM THIS SCREEN'S OWN FETCH OUTCOMES, not from isOnline(). Batch 2 owns reachability.
+  const [degradedSince, setDegradedSince] = useState<Date | null>(null)
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
+  // 🔴 A REF CANNOT DRIVE A RENDER GATE. `loadedOnceRef` is read inside fetchAll's closure (where a ref
+  // is exactly right — it must not be stale), but the terminal gate below is RENDER, and a ref read
+  // there neither triggers a re-render nor is guaranteed current. So the same fact is mirrored into
+  // state: the ref for the closure, the state for the render. They are set together, always.
+  const [hasLoaded, setHasLoaded] = useState(false)
+  const READ_TIMEOUT_MS = 10_000
+  // R5 — abort any outstanding read when this screen goes away. A SEPARATE effect on purpose: the
+  // service-worker effect below already returns addSWMessageListener as its cleanup, and adding a
+  // second return there would silently drop that listener.
+  useEffect(() => () => { inFlightRef.current?.ctrl.abort() }, [])
   /** Assigned just below handleAction — see the note there for why the retry goes through a ref. */
   const handleActionRef = useRef<(action: string, orderKey: string) => Promise<void>>(async () => {})
   const prevOrderCountRef = useRef(0)
@@ -529,6 +552,20 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   const fetchAll = useCallback(async (currentPin = pin) => {
     if (!token) return
+    // ── R4 — IN-FLIGHT GUARD. DROPPED, NEVER QUEUED. ──────────────────────────────────────────────
+    // 🔴 SUPERSEDE ON A SCOPE CHANGE, DROP OTHERWISE. `fetchAll` takes no forceSeed here, so the
+    // event being asked for IS the distinction: a read for a DIFFERENT event is the cook changing
+    // which board they are on and must not be discarded, while a repeat read for the SAME event is
+    // the poll and must be. Same net effect as the dashboard's forceSeed rule — exactly one read in
+    // flight, and an operator action is never the thing dropped.
+    const scope = selectedEventId ?? ''
+    if (inFlightRef.current) {
+      if (inFlightRef.current.scope === scope) return
+      inFlightRef.current.ctrl.abort()
+    }
+    const ctrl = new AbortController()
+    inFlightRef.current = { ctrl, scope }
+    const timeoutId = setTimeout(() => ctrl.abort(), READ_TIMEOUT_MS)
     try {
       const params = new URLSearchParams({ token })
       if (currentPin) params.set('pin', currentPin)
@@ -549,19 +586,40 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // that set is not rejected — it falls through to `todayEvents[0]` and the orders query runs
       // against THAT event. See docs/kds-event-isolation-report.md.
       const requestedEventId = applyEventScope(params, selectedEventId)
-      const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
+      const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader(), signal: ctrl.signal })
       const data = await res.json()
 
+      // ── R9 — 🔴 A 401 IS TERMINAL; EVERYTHING ELSE KEEPS THE BOARD. ─────────────────────────────
+      // This screen used to throw on 401 AND on every non-ok status, landing on `setError` and a
+      // full-screen replacement — fatal even with a full board of live tickets in state. The tickets
+      // were never cleared; a render gate hid them.
+      // A 401 now only arrives after a SUCCESSFUL read that found no truck (R1), so it means the token
+      // was rotated and the board must go. A 503 or a 5xx means we could not check, and the cook keeps
+      // cooking what is already on screen.
       if (res.status === 401) {
         if (data.requiresPin) {
           setRequiresPin(true)
           setLoading(false)
           return
         }
-        throw new Error(data.error ?? 'Unauthorized')
+        // Authoritative: the token no longer exists. Clear and go terminal, even mid-service.
+        loadedOnceRef.current = false
+        setHasLoaded(false)
+        setError(data.error ?? 'This link is no longer valid.')
+        setLoading(false)
+        return
       }
 
-      if (!res.ok) throw new Error('Failed to fetch')
+      if (!res.ok) {
+        if (loadedOnceRef.current) {
+          console.warn('[kds] dashboard fetch failed:', res.status, '— keeping the existing board')
+          setDegradedSince(prev => prev ?? new Date())
+          setLoading(false)
+          return
+        }
+        throw new Error('Failed to fetch')   // never loaded → nothing to keep
+      }
+      setDegradedSince(null)
 
       // ── 🔴 FIX 2: VERIFY WHAT WE WERE SERVED, BEFORE ANY OF IT REACHES STATE ──────────────────
       // 🔴 THE FORBIDDEN STATE IS ORDERS FROM ONE EVENT UNDER ANOTHER EVENT'S NAME, so this returns
@@ -602,6 +660,9 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       // guard, because the forbidden state this guard exists to prevent is one event's data under
       // another event's name. That guarantee is unchanged; only the truck escapes it.
       setTruck(data.truck)
+      loadedOnceRef.current = true   // R5 — from here on, the 60s poll exists, so an abort has a retry behind it
+      setLastRefresh(new Date())     // R9 — the board's age, shown in the degraded strip
+      setHasLoaded(true)             // R9 — render-safe mirror of loadedOnceRef (see its note)
       setShowCookingStep(data.vanShowCookingStep ?? false)
       setActiveVanCount(data.activeVanCount ?? null)
       // Buzzers: the VAN's rack size, resolved server-side (lib/buzzer.ts). Null ⇒ this van has no
@@ -715,9 +776,26 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
         }
       } catch {}
     } catch (e) {
-      console.error('[kds] fetchAll error:', e)
-      setError('Could not load orders')
+      // ── R5 — AN ABORT IS NOT A FAILURE **WHEN A RETRY FOLLOWS**. ────────────────────────────────
+      // Scope is deliberately narrow: this changes the ABORT case only. Every other failure — 401,
+      // non-ok, a thrown fetch — still lands on `setError` exactly as before. Giving the KDS a general
+      // keep-state path is a separate, larger change (batch 2) and is NOT done here.
+      if (loadedOnceRef.current) {
+        // R9 — a board that has loaded is never blanked by a transient failure. Aborts and thrown
+        // fetches alike leave the tickets up and raise the degraded strip.
+        if (ctrl.signal.aborted) {
+          console.warn('[kds] dashboard read aborted after', READ_TIMEOUT_MS, 'ms or superseded — keeping the existing board; the 60s poll retries')
+        } else {
+          console.error('[kds] fetchAll error — keeping the existing board:', e)
+        }
+        setDegradedSince(prev => prev ?? new Date())
+      } else {
+        console.error('[kds] fetchAll error:', e)
+        setError('Could not load orders')   // never loaded → the honest wording, kept verbatim
+      }
     } finally {
+      clearTimeout(timeoutId)
+      if (inFlightRef.current?.ctrl === ctrl) inFlightRef.current = null
       setLoading(false)
     }
     // `applyPending` listed for the same reason as in togglePause: it is a `useCallback` with an empty
@@ -1386,8 +1464,13 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     const requestedEventId = applyEventScope(params, selectedEventId)
     const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
     const data = await res.json()
+    // 🔴 SAME RULE AS THE DASHBOARD'S submitPin — a failure to reach the data is not an incorrect PIN.
+    // See the note there for why the 503 copy leads with reachability rather than with the PIN.
     if (!res.ok) {
-      setPinError('Incorrect PIN')
+      if (res.status === 503) setPinError("Can't reach the server right now. Your PIN is fine — try again in a moment.")
+      else if (res.status === 401 && data.requiresPin) setPinError('Incorrect PIN')
+      else if (res.status === 401) setPinError('This link is no longer valid.')
+      else setPinError('Something went wrong. Try again.')
       return
     }
     // The same served-versus-requested check as fetchAll, before anything reaches state. Same reasons,
@@ -1785,7 +1868,10 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     </div>
   )
 
-  if (error || !truck) return (
+  // R9 — terminal ONLY when there is nothing to keep (never loaded) or the token is authoritatively
+  // gone (the 401 branch clears loadedOnceRef before setting `error`). A degraded board falls through
+  // to the real screen below, with the strip on top.
+  if ((error && !hasLoaded) || !truck) return (
     <div className="flex items-center justify-center h-dvh text-red-500 text-sm">
       {error ?? 'Truck not found'}
     </div>
@@ -1793,6 +1879,18 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
 
   return (
     <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden">
+      {/* ── R9 — DEGRADED STRIP, COOK-FACING. Topmost, amber, and deliberately NOT the same colour or
+          wording as OfflineBanner below it: a cook who learns to ignore one must not thereby ignore the
+          other. 🔴 "NEW ORDERS MAY BE MISSING" is the load-bearing half — a stale-but-complete board and
+          a stale-and-incomplete board are different risks, and only the second leaves a customer waiting
+          for food nobody is cooking. ⚠️ It claims nothing is saved, because nothing is. */}
+      {degradedSince && (
+        <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-black text-center">
+          ⚠️ Can&apos;t reach the server. Showing tickets from{' '}
+          {lastRefresh ? lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'earlier'}
+          . NEW ORDERS MAY BE MISSING.
+        </div>
+      )}
 
       {/* Offline warning + sync state (native only); also drives reachability + the outbox drain on reconnect. */}
       <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={() => { fetchAllRef.current(); refreshPendingStatus() }} />

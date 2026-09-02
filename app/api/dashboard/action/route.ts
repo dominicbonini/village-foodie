@@ -87,12 +87,29 @@ async function paidStepFor(truck: any, eventId: string | null | undefined) {
   return resolvePaidStep(truck, ev as any)
 }
 
+// ── 🔴 THREE CAUSES USED TO COLLAPSE INTO ONE `null`, AND ONE OF THEM IS A CREDENTIAL CHECK ───────
+// This returned `null` for: the read FAILED · the token does not EXIST · the PIN is WRONG. The route
+// turned all three into `401 Unauthorised`. So during the 1 September degradation every operator
+// action — accept, ready, collect, reject, cancel, stock — was answered "Unauthorised", which is a
+// statement about the operator's credential and was false in the only case that actually occurred.
+// ⚠️ `maybeSingle()` for the same reason as the GET route: `single()` raises PGRST116 on zero rows and
+// would put "no such token" back into the same bucket as a transport failure.
+// The return type is INFERRED as a discriminated union rather than annotated, so `truck` keeps the row
+// type `select('*')` actually produces. An explicit alias here would have needed `truck: any` and the
+// call site would have lost every field it reads.
+//   'unavailable' → 503. We could not check.
+//   'no_truck'    → 401. We checked; the token does not exist.
+//   'bad_pin'     → 401 + requiresPin. We checked; the PIN is wrong.
 async function verifyToken(token: string, pin?: string) {
-  const { data: truck } = await supabase
-    .from('trucks').select('*').eq('dashboard_token', token).single()
-  if (!truck) return null
-  if (truck.dashboard_pin && truck.dashboard_pin !== pin) return null
-  return truck
+  const { data: truck, error } = await supabase
+    .from('trucks').select('*').eq('dashboard_token', token).maybeSingle()
+  if (error) {
+    console.error('[dashboard/action] truck lookup FAILED (not an auth failure) — returning 503:', error.message, error.code)
+    return { ok: false as const, reason: 'unavailable' as const }
+  }
+  if (!truck) return { ok: false as const, reason: 'no_truck' as const }
+  if (truck.dashboard_pin && truck.dashboard_pin !== pin) return { ok: false as const, reason: 'bad_pin' as const }
+  return { ok: true as const, truck }
 }
 
 // ── 🔴 DEMO TRUCKS NEVER SEND EMAIL ────────────────────────────────────────────────────────────────────
@@ -170,8 +187,21 @@ export async function POST(req: NextRequest) {
     // lookup key — orders are addressed only by order_key now.
     const { token, pin, action, order_key: orderKey, manualOrder, itemName, available, editedOrder } = body
 
-    const truck = await verifyToken(token, pin)
-    if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const verified = await verifyToken(token, pin)
+    // 🔴 503 IS RETRYABLE AND MUST NOT READ AS AN AUTH FAILURE. The client's gate already queues a
+    // write it could not deliver; telling it "Unauthorised" instead invites a sign-out prompt for a
+    // database that was merely slow.
+    if (!verified.ok && verified.reason === 'unavailable') {
+      return NextResponse.json(
+        { error: 'Service unavailable', retryable: true },
+        { status: 503, headers: { 'Retry-After': '10' } },
+      )
+    }
+    if (!verified.ok && verified.reason === 'bad_pin') {
+      return NextResponse.json({ error: 'Invalid PIN', requiresPin: true }, { status: 401 })
+    }
+    if (!verified.ok) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    const truck = verified.truck
 
     // ── ACTOR ATTRIBUTION (V9.4) — LOGGING ONLY, NEVER AUTHORISATION ───────────────────────────────
     // This route previously discarded identity entirely: verifyToken above resolves a TRUCK from a
