@@ -288,6 +288,61 @@ export default function AdminPage() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
+  // ── 🔴 THE PLANS-AND-FEATURES PDF DOWNLOAD ────────────────────────────────────────────────
+  // It calls /landing/features-pdf. THAT ROUTE IS THE ONLY GENERATOR and this is deliberately not a
+  // second one: the route builds the document from lib/plan-features.ts at request time, so whatever
+  // this button produces is whatever the matrix currently says. A copy of the layout here would be the
+  // exact drift the shared-source rule exists to prevent — see docs/features-pdf-report.md.
+  //
+  // 🔴 fetch(), NOT <a href download>. An anchor looks simpler and is wrong here for three reasons:
+  //   1. The route answers 404 when verifyAdmin() fails. An anchor would hand the browser that 404 body
+  //      and it would either navigate away from Admin or SAVE THE JSON AS A FILE — a download that
+  //      appears to succeed and is not a PDF. fetch lets us check res.ok before writing anything.
+  //   2. Generation takes seconds (headless Chromium). An anchor gives no way to show progress, so the
+  //      button would look dead and get pressed again.
+  //   3. `pdfBusy` + `disabled` make the second press impossible rather than merely wasteful.
+  // ⚠️ credentials: 'same-origin' IS NOT DECORATION. The route's gate is verifyAdmin(), which reads the
+  // Supabase session cookie; without this the request is anonymous and correctly 404s.
+  const [pdfBusy, setPdfBusy] = useState(false)
+  const downloadFeaturesPdf = async () => {
+    if (pdfBusy) return                       // belt: the button is also disabled below
+    setPdfBusy(true)
+    try {
+      const res = await fetch('/landing/features-pdf', { credentials: 'same-origin' })
+      if (!res.ok) {
+        // 🔴 AN EXPIRED SESSION MUST FAIL LOUDLY, NOT SILENTLY SAVE A BROKEN FILE. The route cannot
+        // tell "not an admin" from "session expired" — both are verifyAdmin() returning false, and it
+        // answers 404 for both so it does not confirm the URL to someone guessing. From here, on the
+        // Admin page, the overwhelmingly likely cause is an expired session, so that is what we say.
+        showToast(res.status === 404
+          ? 'Could not generate the PDF — your admin session may have expired. Reload and sign in again.'
+          : `Could not generate the PDF (${res.status}). Try again in a moment.`)
+        return
+      }
+      // ⚠️ THE FILENAME COMES FROM THE ROUTE, not from here — one definition, and it carries the date.
+      // The fallback exists only for the case where the header is unreadable; it must never be the
+      // usual path, so it is deliberately the same shape.
+      const disp = res.headers.get('Content-Disposition') || ''
+      const named = /filename="([^"]+)"/.exec(disp)?.[1]
+      const blob = await res.blob()
+      // A zero-byte body is not a PDF. Caught here rather than handed to the user as a broken file.
+      if (blob.size === 0) { showToast('The PDF came back empty. Try again in a moment.'); return }
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = named || `hatchgrab-plans-and-features-${new Date().toISOString().slice(0, 10)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      // Revoked on the next tick: revoking synchronously can cancel the download in some browsers.
+      setTimeout(() => URL.revokeObjectURL(url), 0)
+    } catch {
+      showToast('Could not reach the server. Check your connection and try again.')
+    } finally {
+      setPdfBusy(false)
+    }
+  }
+
   const load = async () => {
     setLoading(true)
     try {
@@ -842,6 +897,33 @@ export default function AdminPage() {
         })()}
 
         {adminTab === 'features' && (
+          <>
+          {/* 🔴 ABOVE THE TABLE, OUTSIDE THE CARD, AND BOTH PARTS MATTER.
+              ABOVE: this is the document form of the table directly beneath it, so it belongs where the
+              reader is already looking at that table rather than in a global toolbar.
+              OUTSIDE THE CARD: the card is `overflow-x-auto` because the matrix is wider than a phone.
+              A control inside it would scroll sideways out of view with the table — reachable only by
+              swiping a table back to its start. This sits in its own row and stays put.
+              ⚠️ It is in the `features` tab only, deliberately. The other tabs are truck operations; a
+              plans-and-features download has nothing to do with them. */}
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <p className="text-xs text-slate-500">
+              The table below, as a PDF — generated fresh from the same source each time.
+            </p>
+            <button
+              type="button"
+              onClick={downloadFeaturesPdf}
+              disabled={pdfBusy}
+              aria-busy={pdfBusy}
+              className="whitespace-nowrap text-sm px-3.5 py-2 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {/* 🔴 THE LABEL CHANGES, IT IS NOT A SPINNER ALONE. Generation launches headless
+                  Chromium and takes seconds; a control that looks unchanged for that long reads as
+                  broken and gets pressed again. `disabled` makes the second press impossible, and the
+                  changed words say why. */}
+              {pdfBusy ? 'Generating PDF…' : 'Download PDF'}
+            </button>
+          </div>
           <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
             <table className="text-xs w-full">
               <thead>
@@ -932,6 +1014,7 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
+          </>
         )}
 
         {/* Trucks tab — ONE unified table over operator (trucks) + discovery (discovery_trucks) sources. */}

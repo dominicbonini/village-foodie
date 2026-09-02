@@ -30,6 +30,13 @@ import {
   type FeatureValue,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
+// 🔴 THE TABLE'S RENDER RULES NOW LIVE IN ONE PLACE — lib/landing-table.ts. They were private
+// constants in this file until the printable/PDF view was added; a second copy there would have drifted
+// the first time a row changed. Nothing about what this page renders changed in the move.
+import {
+  TABLE_PLANS, type TablePlan, PLAN_SUB, PLAN_PRICE_LABEL, trialFeatureValue,
+  DETAIL_OVERRIDES, visibleRows, rowName, rowDetail, cellLabel,
+} from '@/lib/landing-table'
 import './landing.css'
 
 // Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
@@ -51,21 +58,6 @@ export const metadata: Metadata = {
 // Compare-table columns: Trial | Starter | Pro | Max — mirrors Manage → Billing (the point is that Trial
 // visibly includes everything). Names come straight from the source (PLAN_META); the first tier is "Starter"
 // (it's £0, but it's called Starter). The pricing CARDS below stay the three purchasable tiers.
-const TABLE_PLANS = ['trial', 'starter', 'pro', 'max'] as const
-type TablePlan = (typeof TABLE_PLANS)[number]
-const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free forever', pro: 'per truck / month', max: 'per truck / month' }
-// Trial column shows just "Free" (not "Free trial" + a sub) — keeps the sticky header compact.
-const PLAN_PRICE_LABEL: Record<TablePlan, string> = { trial: 'Free', starter: PLAN_PRICES.starter, pro: PLAN_PRICES.pro, max: PLAN_PRICES.max }
-
-// Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available. EXCEPT
-// SMS order alerts — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the
-// Coming-soon marker Max/Pro carry).
-function trialFeatureValue(row: { name: string; max: FeatureValue }): FeatureValue {
-  if (row.name === 'Online ordering — Pay at Hatch') return true
-  if (row.name === 'SMS order alerts') return false
-  return row.max
-}
-
 // ── 🔴 THE FEE ROWS ARE NO LONGER DEFINED HERE. ────────────────────────────────────────────────────
 // This was `LANDING_FEE_ROWS`, a landing-only literal, and its own comment admitted the duplication:
 // "RENDER-ONLY. The shared TRANSACTION_ROWS is NOT modified; Manage → Billing / Admin keep their own
@@ -82,18 +74,13 @@ const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
   '2': `Standard card processing fees apply to all online orders (currently ${CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.`,
 }
 
-// RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
-// FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
-const DETAIL_OVERRIDES: Record<string, string> = {
-  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPhone and iPad app keeps you taking orders offline (Android coming soon); the web dashboard needs a connection.",
-}
-
-// One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
-// boolean|'coming_soon' values.
+// One shared cell renderer. 🔴 THE GLYPHS THEMSELVES ARE IN lib/landing-table.ts so the PDF prints
+// exactly what the page prints — including the protected em-dash '—' for a not-included cell.
 function Cell({ value }: { value: FeatureValue }) {
-  if (value === true) return <span className="yes">✓</span>
-  if (value === 'coming_soon') return <span className="soon">Coming soon</span>
-  return <span className="no">—</span>
+  const label = cellLabel(value)
+  if (label === '✓') return <span className="yes">{label}</span>
+  if (label === 'Coming soon') return <span className="soon">{label}</span>
+  return <span className="no">{label}</span>
 }
 
 const Check = () => (
@@ -154,12 +141,17 @@ export default function LandingPage() {
             <div className="shot shot-dash">
               <Image src="/screenshots/dashboard-v4.png" alt="Taking an order on HatchGrab: the menu on the left, the running basket and total on the right" width={800} height={551} sizes="(max-width: 939px) 72vw, 400px" priority />
             </div>
-            {/* 🔴 STILL A PLACEHOLDER — the phone screenshot does not exist yet. It carries `shot-empty`,
-                which restores the dashed frame and the centred text the base `.shot` rule no longer
-                provides: that rule was rewritten for images (display:block, no padding, overflow:hidden),
-                and a text placeholder inside it renders top-left and un-padded. Delete `shot-empty` and
-                the two spans, and put an <Image> here, when the shot lands. */}
-            <div className="shot shot-phone shot-empty"><span className="lbl">Screenshot</span><span className="hint">Customer ordering</span></div>
+            {/* 🟢 FILLED. Was the last `shot-empty` placeholder; the shot landed 2 September 2026 —
+                a real iPhone 12 Pro Max capture, 1284x2778, copied in LOSSLESSLY (verified pixel-identical
+                to the source, no resample) as /screenshots/customer-order.png.
+                🔴 `.shot-phone`'s `aspect-ratio` IN landing.css WAS CHANGED FROM 9/17 TO 1284/2778 TO MATCH,
+                and the width/height below must keep agreeing with it — see the note above. 9/17 was a
+                guess made before any file existed, and a modern phone is taller than that: left at 9/17
+                the `object-fit: contain` on `.shot img` would have letterboxed the shot inside its own
+                frame, with a band of frame showing above and below. */}
+            <div className="shot shot-phone">
+              <Image src="/screenshots/customer-order.png" alt="Ordering from a food truck on HatchGrab: the menu with photos and prices, and a running basket total" width={1284} height={2778} sizes="(max-width: 939px) 26vw, 140px" priority />
+            </div>
           </div>
         </div>
       </header>
@@ -438,11 +430,14 @@ export default function LandingPage() {
             {FEATURE_SECTIONS.map(section => (
               <div key={section.title}>
                 <div className="cmp2-grp">{section.title}</div>
-                {section.rows.map(row => (
+                {visibleRows(section).map(row => (
                   <div key={row.name} className="cmp2-row">
                     <div className="cmp2-label">
-                      <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
-                      {(DETAIL_OVERRIDES[row.name] ?? row.detail) && <span className="f-desc">{DETAIL_OVERRIDES[row.name] ?? row.detail}</span>}
+                      {/* NAME_OVERRIDES and DETAIL_OVERRIDES are landing-only, exactly as the detail
+                          override already was. `row.footnote` is deliberately NOT overridden: both
+                          merged rows carried footnote 4, so it is already the right one. */}
+                      <span className="f-name">{rowName(row)}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
+                      {rowDetail(row) && <span className="f-desc">{rowDetail(row)}</span>}
                     </div>
                     {TABLE_PLANS.map(p => (
                       <div key={p} className="cmp2-cell">

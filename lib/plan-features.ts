@@ -92,10 +92,20 @@ export function allowancePenceFor(tier: 'pro' | 'max'): number {
 // Included online-order allowance per plan (the £1,500 / £2,000 headline). Additive — Admin/Billing ignore
 // it until they choose to render it; the landing table shows it under the price.
 // ⚠️ DERIVED from PLAN_ONLINE_ALLOWANCE + PLATFORM_FEE_OVER_ALLOWANCE. `starter` stays a literal because
-// 'Pay at hatch' is a description of a MODEL, not a formatted amount, and lib/pricing.ts matches on that
-// exact wording in NON_SECRET_PRICE.
+// 'Pay at Hatch' is a description of a MODEL, not a formatted amount, and lib/pricing.ts exempts it from
+// the pre-launch mask via NON_SECRET_PRICE.
+// 🔴 THE CAPITAL H IS LOAD-BEARING AND THIS LINE READ 'Pay at hatch' UNTIL 2 SEPTEMBER 2026.
+// NON_SECRET_PRICE is a Set matched by EXACT STRING, and 'Pay at hatch' !== 'Pay at Hatch'. So the value
+// this comment claimed was exempt was NOT exempt: every masked surface printed "TBC" for Starter's
+// allowance — a plan whose whole point is that it costs nothing. The comment above asserted the match
+// rather than checking it, and was wrong for as long as the line existed.
+// ⚠️ CAPITAL H IS THE CANONICAL SPELLING. Every other occurrence in the codebase already used it —
+// TRANSACTION_ROWS (:170), the protected row label (:185, :401), lib/features.ts:194, both Admin sites,
+// both Manage sites and the landing's own prose. This line was the single outlier.
+// ⚠️ NOTHING COMPARES THIS VALUE. Its only readers render it (app/landing/page.tsx:321 and the PDF
+// route), so the change is display-only — and the display now matches the term used everywhere else.
 export const PLAN_ALLOWANCES: Record<'starter' | 'pro' | 'max', string> = {
-  starter: 'Pay at hatch',
+  starter: 'Pay at Hatch',
   pro: `First ${allowanceAmountLabel(allowancePenceFor('pro'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
   max: `First ${allowanceAmountLabel(allowancePenceFor('max'))} of online orders included, then ${PLATFORM_FEE_LABEL}`,
 }
@@ -181,7 +191,6 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
       { name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
-      { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
       // 🔴 UN-MERGED, 1 September 2026 — BACK TO THE TWO ROWS THIS BRIEFLY WAS. These were one merged
       // row ('iPhone, iPad and Android kitchen app', true/true/true) on the premise that "Android now
@@ -209,8 +218,51 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Offline Order Protection',                      detail: "If your internet drops mid-service, orders are held safely and sync when you're back — you never lose one.", starter: false, pro: true,           max: true           },
       { name: 'Online payments',                  footnote: '2', detail: 'Take card payment upfront when customers order online, via Stripe.', starter: false, pro: true,           max: true           },
       { name: 'Advance pre-ordering',                         detail: 'Let customers order for a future date or time before the event.', starter: false, pro: true,           max: true           },
+      // 🔴 PRE-ORDER DEADLINES — ADDED 2 SEPTEMBER 2026. WORDING SUPPLIED AND APPROVED BY THE OPERATOR;
+      // it is not editorial and must not be "tidied". Placed immediately after Advance pre-ordering, on
+      // request and because it is the same capability's second half: that row sells ordering ahead, this
+      // one sells the cut-off that makes it safe to promise.
+      // 🟢 THE FEATURE IS BUILT, BOTH HALVES — this row is not a claim ahead of the product:
+      //   • enforced on the customer path by lib/preorder.ts, a PURE function called by BOTH the menu
+      //     read (app/api/menu/[truckId]/route.ts:566-576) and submit (orders/submit/route.ts:535-540),
+      //     so display and enforcement cannot diverge; also honoured by lib/orders/auto-accept.ts:91 and
+      //     the card path in lib/payments/promote-draft.ts:288-291.
+      //   • configurable in Manage today: master toggle, deadline type/value/action (page.tsx:8809-8826)
+      //     and per-item inclusion (:8829-8843).
+      // ⚠️ THE DETAIL DELIBERATELY STOPS AT THE CUT-OFF. It read "...Choose what happens after: the item
+      // shows as sold out, or the order comes to you to approve." until 2 September 2026, when the
+      // operator cut that second sentence. 🔴 DO NOT REINSTATE IT AS A TIDY-UP — the removal was the
+      // instruction, not an omission.
+      // 🟢 NOTHING WAS LOST IN ACCURACY. The cut sentence described `preorder_past_action`, which is
+      // 'sold_out' | 'force_pending' and nothing else; the table now simply does not mention the choice.
+      // Saying less than the product does is safe. If it is ever put back, those two ARE the only two
+      // values (Manage labels them "Mark sold out" and "Allow, require approval") — so the sentence was
+      // correct, just longer than wanted.
+      // ⚠️ "cut-off time" COVERS BOTH KINDS. preorder_deadline_type is 'hours_before' (whole hours before
+      // event start) or 'daily_cutoff' (a clock time on the event's date); an hours_before offset still
+      // resolves to a time, so the wording does not exclude it.
+      // 🔴 NO NEW Feature KEY, AND THAT IS DELIBERATE — see ROW_FEATURE_MAP below.
+      { name: 'Pre-order deadline',                           detail: 'Set a cut-off time for items that need notice.', starter: false, pro: true,           max: true           },
       { name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
-      { name: 'Smart Slot Management',                        detail: "HatchGrab paces orders across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
+      { name: 'Smart Slot Management',                        detail: "Orders are paced across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
+      // 🔴 MOVED OUT OF 'CORE OPERATIONS' AND OFF STARTER — 2 September 2026, ON REQUEST.
+      // Before: 'Core operations', starter TRUE. After: here, starter FALSE. Trial/Pro/Max unchanged.
+      // 🟢 THE SECTION MOVE IS PART OF THE CHANGE, NOT TIDYING. 'Core operations' is the section whose
+      // character is "what every plan gets" — every row in it is starter:true apart from the pay-at-hatch
+      // row and the two coming-soon app rows. Leaving a starter:false row there makes the section stop
+      // meaning anything. Every row in THIS section is starter:false, so it is where a paid-tier
+      // capability belongs.
+      // 🟢 NEXT TO SMART SLOT MANAGEMENT ON PURPOSE: the two are the same idea applied to different
+      // resources — Smart Slot Management paces ORDERS against kitchen capacity, this paces ITEMS against
+      // stock. Auto-accept follows because it is about handling orders, not pacing them.
+      // ⚠️ STARTER IS NOT LEFT WITH NOTHING. 'Instant sold out toggle' stays in Core operations at
+      // starter:true — the manual control — so the table still says what a Starter truck can do about
+      // stock. If that row is ever moved or gated, this change becomes a silent removal.
+      // 🔴 THE GATE IS DELIBERATELY NOT CHANGED HERE. lib/features.ts still grants 'stock_countdown'
+      // to starter, so the table now says no while the code says yes. That is a KNOWN, ACCEPTED gap
+      // being closed separately — see docs/stock-countdown-tier-report.md 4. It is safe only because
+      // nothing is on Starter yet: the platform has not launched.
+      { name: 'Automated stock countdown',                    detail: 'Set a stock count and it counts down as orders come in, then sells out automatically.', starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
       { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
       // Auto-replies stay SPLIT across two rows. They USED to be split because WhatsApp was live and the
@@ -407,6 +459,16 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',
+  // 🔴 MAPPED TO THE EXISTING GATE, NOT A NEW ONE. `advance_preordering` is what actually enforces
+  // this on the customer path — orders/submit/route.ts:535 reads exactly that key before any deadline
+  // logic runs, so a separate 'preorder_deadlines' Feature would gate nothing.
+  // ⚠️ INVENTING ONE WOULD MAKE A SIXTH UNENFORCED GATE. The manual already records five keys with zero
+  // canAccess sites as a problem; adding a key that no code checks would advertise a control that does
+  // not exist and would pass the parity checker vacuously.
+  // 🟢 TWO ROWS SHARING ONE KEY IS FINE HERE: findPlanParityViolations looks the key up PER ROW, so
+  // both rows are checked against the same grant — and both carry the same starter/pro/max values, so
+  // they cannot drift apart without the checker seeing it.
+  'Pre-order deadline': 'advance_preordering',
   'Customer time slot selection': 'time_slot_selection',
   'Smart Slot Management': 'smart_batch_pacing',
   'Auto-accept online orders': 'auto_accept',

@@ -189,10 +189,11 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    the grey any letterbox band is PAINTED IN, so a gap that would have been invisible reads as a
    deliberate frame. `padding: 0` is belt-and-braces — the scoped reset at :77 already zeroes it, but
    an explicit 0 here means a future padding on `.shot` cannot inset a screenshot by accident.
-   ⚠️ SCOPED TO THE TWO FILLED SLOTS ON PURPOSE. `.shot-empty` below re-declares its own paper
+   ⚠️ SCOPED TO THE FILLED SLOTS ON PURPOSE (all THREE of them since 2 September 2026 — the phone slot
+   was the last placeholder). `.shot-empty` below re-declares its own paper
    background, dashed border and 1rem padding, and comes LATER in the cascade, so the phone
    placeholder is unaffected by this rule. Delete this rule only when all three slots hold images. */
-.hg-landing .shot-kds, .hg-landing .shot-dash { background: none; padding: 0; }
+.hg-landing .shot-kds, .hg-landing .shot-dash, .hg-landing .shot-phone { background: none; padding: 0; }
 /* ── PLACEHOLDER MODIFIER — for a slot with no screenshot yet. ─────────────────────────────────────
    🔴 THIS EXISTS BECAUSE THE BASE `.shot` RULE IS NOW AN IMAGE FRAME. It was rewritten to
    display:block, no padding, overflow:hidden — correct for an <img>, and wrong for text, which would
@@ -205,7 +206,16 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .shot-empty .hint { font-size: .7rem; color: var(--ink-faint); max-width: 22ch; line-height: 1.35; }
 .hg-landing .shot-kds { width: min(58%,320px); aspect-ratio: 4/3; left: 0; top: 8%; transform: rotate(-6deg); z-index: 1; }
 .hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 800/551; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; }
-.hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 9/17; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
+/* 🔴 aspect-ratio IS 1284/2778, THE REAL FILE, NOT 9/17. 9/17 was a guess made while this slot was
+   an empty placeholder and nothing had to match it. The shot is an iPhone 12 Pro Max capture at
+   1284x2778 (= 0.4622), against 9/17 (= 0.5294) — 12.7% narrower for its height. `.shot img` is
+   `object-fit: contain`, so at 9/17 the image would have letterboxed INSIDE its own frame with a band
+   of frame visible top and bottom. Matching the ratio makes the frame taller instead: 302.9px rather
+   than 264.4px at the 140px cap. It is anchored `bottom: 0`, so it grows UPWARD into the fan, which
+   has room — `.fan` min-height is clamp(300px,42vw,430px) and the frame is meant to overlap the
+   dashboard tile (that is what z-index 3 is for). ⚠️ IF THE FILE IS EVER REPLACED, CHANGE THIS AND THE
+   width/height ON THE <Image> IN page.tsx TOGETHER, or next/image and the CSS disagree about the shape. */
+.hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 1284/2778; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
 
 /* ---------- trust strip (full-width band under the hero) ---------- */
 .hg-landing .trust-strip { background: var(--wash); border-block: 1px solid var(--line); }
@@ -447,6 +457,54 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    ⚠️ SPACING ONLY. Colour, size and max-width are unchanged, and no other footer content is touched. */
 .hg-landing .foot-tag { color: #8A93A6; font-size: .88rem; line-height: 1.25; margin-top: .5rem; max-width: 28ch; }
 .hg-landing .foot-links { display: flex; flex-wrap: wrap; gap: 1.4rem; }
+/* ---------- 🔴 STORE BADGES. APPLE'S RULES ARE LOAD-BEARING HERE, NOT STYLING PREFERENCES. ----------
+   Every number below is from https://developer.apple.com/app-store/marketing/guidelines/, read 2 Sep 2026.
+
+   🔴 CLEAR SPACE = 1.25rem (20px), AND THE RULE IS ONE-QUARTER, NOT ONE-TENTH.
+   Apple: "Minimum clear space is equal to one-quarter the height of the badge." At 40px that is 10px on
+   all four sides. Apple's one-tenth relaxation is explicitly for "very limited layout space" such as
+   mobile banners — a footer is not that, so the quarter rule applies. 20px is used rather than the bare
+   10px so the requirement still holds if the badge is ever nudged, and so the `gap` between two badges
+   satisfies it from BOTH badges at once.
+   ⚠️ margin-top MUST STAY >= 10px. `.hg-landing * { margin: 0 }` in this file's reset means this rule is
+   the ONLY thing separating the badge from .foot-tag above it — delete it and the clear space is zero.
+
+   🔴 HEIGHT IS SET, WIDTH IS NOT. 40px is Apple's onscreen MINIMUM ("40 px for use onscreen"), and
+   `width: auto` lets the 119.66407x40 artwork keep its exact ratio. Never set both, and never set a
+   width that is not 2.9916 x the height — that would scale the badge off-ratio, which is a modification.
+
+   🔴 NOTHING MAY TOUCH THE ARTWORK. Apple: "Don't modify, angle, or animate the App Store badge."
+   So: no filter, no transform, no box-shadow, no border-radius, no opacity change, no hover effect.
+   The only permitted affordance is on the LINK, and even that is left alone here.
+
+   🟢 SIZED FOR TWO BADGES FROM THE START. flex-wrap + gap means adding the Play badge when Android
+   publishes needs no CSS change at all: on a wide footer the pair sits side by side, and on a narrow one
+   they wrap and stack with the same gap still meeting the clear-space rule. See the note in
+   LandingFooter.tsx and docs/landing-footer-badge-report.md 2. */
+/* 🔴 THE MIDDLE COLUMN. `flex: 1 1 auto` makes .foot-apps OWN the space between the brand block and
+   the links, and `justify-content: center` centres the badges inside that space. It is the only line
+   that changed when the badge moved out of the brand column on 2 September 2026 — .foot-grid was already
+   a `space-between` flex row and simply gained a third child, so the brand block and .foot-links keep
+   their existing sizing and their existing positions at both ends.
+   ⚠️ `margin-top: 1.25rem` WAS REMOVED, NOT LOST. It existed to separate the badge from .foot-tag when
+   it sat UNDER it. As a sibling its separation now comes from .foot-grid's own `gap: 1.5rem` (24px),
+   which is what satisfies Apple's clear-space rule on every side — see .foot-badge below.
+   🟢 STILL SIZED FOR TWO. flex-wrap + the 1.25rem gap are unchanged, so the Play badge drops in
+   beside this one and the pair centres as a unit; if the middle ever gets too narrow for both they wrap
+   and stack, still centred, with the same gap meeting the clear-space rule. */
+/* 🔴 THE RIGHT COLUMN: LINKS, THEN THE BADGE UNDER THEM.
+   `align-items: flex-end` is what pins the badge to the links' RIGHT edge instead of letting it sit at
+   the left of the column — the footer reads right-aligned on that side, and a badge starting under
+   "Pricing" while the links end at "Contact" would look misaligned rather than stacked.
+   🟢 THE 1.25rem GAP IS ALSO THE CLEAR SPACE. 20px between the links row and the badge, against
+   Apple's requirement of one quarter of the badge height = 10px. See .foot-badge below.
+   ⚠️ .foot-grid IS UNCHANGED — still a two-child `space-between` row. The brand block keeps its
+   position and its width; only the right-hand child gained an internal column. */
+.hg-landing .foot-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1.25rem; }
+.hg-landing .foot-apps { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.hg-landing .foot-badge { display: inline-block; line-height: 0; }
+.hg-landing .foot-badge img { height: 40px; width: auto; display: block; }
+
 .hg-landing .foot-links a { color: #C3CAD8; text-decoration: none; font-size: .9rem; }
 .hg-landing .foot-links a:hover { color: #fff; }
 .hg-landing .foot-base { margin-top: 2.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.12); display: flex; flex-wrap: wrap; gap: .6rem; justify-content: space-between; color: #7C8698; font-size: .82rem; }
@@ -467,6 +525,10 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
      and stays left-aligned in its space-between column, exactly as it ships today. */
   .hg-landing .foot-logo { margin-inline: auto; }
   .hg-landing .foot-links { justify-content: center; }
+  /* The right column centres its own children here, so the stack reads brand -> links -> badge down
+     the middle of the phone. Same one-line mechanism as .foot-links directly above. */
+  .hg-landing .foot-right { align-items: center; }
+  .hg-landing .foot-apps { justify-content: center; }
   .hg-landing .foot-base { flex-direction: column; align-items: center; text-align: center; }
 }
 

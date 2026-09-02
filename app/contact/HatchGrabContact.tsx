@@ -58,9 +58,66 @@ export function HatchGrabContact() {
           {/* 🔴 THE COPY, TWO SENTENCES, IN THE LANDING'S VOICE — plain, second person, no marketing. */}
           <h1>How can we help?</h1>
           <p className="lede">
-            Something not working, or a question about your account? Send us a message below and we
-            will come back to you by email.
+            Something not working, or a question about your account? Two ways to reach us — either
+            way we will come back to you by email.
           </p>
+
+          {/* ── 🔴 THE TWO WAYS TO GET IN TOUCH, ABOVE THE FORM (2 September 2026) ─────────────────
+              WHAT MOVED: the email address was the LAST thing on the page, under the form, reading
+              "Or just email us at hello@hatchgrab.com" — an afterthought. It is now one of two options
+              offered before the form, and the form sits beneath them.
+              🟢 NO NEW CSS, AND THAT IS DELIBERATE. `.does` / `.does-item` are the landing sheet's
+              existing two-up pattern (landing.css:247-251) — one column, and two at >=760px. Reusing
+              them keeps this page matching the landing by SHARING its rules rather than by describing
+              them again, which is the whole reason this file imports that sheet.
+              ⚠️ THE INLINE marginBottom IS NOT LAZINESS. `.hg-landing * { margin: 0 }` (landing.css:77)
+              beats a Tailwind `mb-*` utility on source order — the same trap the footer wordmark hit,
+              where an `mx-auto` was silently doing nothing. An inline style is the one thing that wins
+              without adding a rule to a stylesheet this task must not touch. 1.5rem rather than `.lede`'s 2.6rem: measured at
+              320x568, every pixel here is one the form loses. See the report's 6.
+              🔴 THE COPY MUST NOT CLAIM BOTH ROUTES REACH THE SAME INBOX. The form is a THIRD-PARTY
+              Tally embed (ContactForm.tsx:44, form id 7R2Ra2); where Tally forwards a submission is set
+              in Tally's dashboard and is NOT knowable from this repository. Saying "both reach the same
+              place" would be asserting something unverified about where a customer's message goes.
+              See docs/support-page-contact-report.md 4. */}
+          {/* 🔴 ONE COLUMN AT EVERY WIDTH — `gridTemplateColumns: '1fr'` OVERRIDES `.does`.
+              `.does` goes two-up at >=760px (landing.css:248), and on a laptop that put "Or fill in the
+              form below" in the RIGHT column while the form itself starts full-width on the LEFT. The
+              heading pointed at empty space and the form began under "Email us" instead. Reported by
+              Dominic 2 September 2026: "when viewed on laptop the fill in the form below isnt aligned
+              with the form below."
+              🟢 STACKING FIXES IT BY CONSTRUCTION: the second option is the last thing before the form
+              and shares its left edge, so the heading and the thing it names line up at every width.
+              ⚠️ INLINE rather than a new rule, because landing.css is shared with the landing page and
+              is outside this page's remit. An inline style beats a media-query rule on specificity,
+              which a Tailwind utility here would not — see the `* { margin: 0 }` note below. */}
+          <div className="does" style={{ gridTemplateColumns: '1fr', marginBottom: '1.5rem' }}>
+            <div className="does-item">
+              <h3>Email us</h3>
+              <p>
+                {/* ⚠️ ALREADY A mailto BEFORE THIS CHANGE — carried across unchanged, not newly added.
+                    No `?subject=` is prefilled; see the report for the recommendation and why it is
+                    not being decided here. */}
+                {/* 🔴 UNDERLINED, AND IT IS A FIX FOR A MEASURED DEFECT — NOT DECORATION.
+                    `.hg-landing a { color: inherit }` (landing.css:78) and no default underline mean
+                    this link rendered in EXACTLY the same colour as the sentence around it, with no
+                    decoration: computed rgb(95,122,153) for both, textDecorationLine "none". It did
+                    not look clickable. That mattered less when it was a throwaway line under the
+                    form; it matters a lot now it is one of the two things this page offers.
+                    ⚠️ INLINE, because the fix must not add a rule to landing.css — that sheet is
+                    shared with the landing page and is outside this task. */}
+                <a href="mailto:hello@hatchgrab.com" style={{ textDecoration: 'underline' }}>hello@hatchgrab.com</a>
+              </p>
+            </div>
+            <div className="does-item">
+              {/* 🔴 NO DESCRIPTION UNDER THIS ONE, AND IT IS A MEASURED DECISION, NOT AN OMISSION.
+                  At 320x568 (iPhone SE) every line here pushes the form further down, and the form is
+                  the thing directly beneath the heading — it explains itself. A sentence saying "the
+                  form is below" costs ~38px of a 568px viewport to say what the reader can already
+                  see. See docs/support-page-contact-report.md 6 for the before/after numbers. */}
+              <h3>Or fill in the form below</h3>
+            </div>
+          </div>
 
           {/* ── THE EMBED ─────────────────────────────────────────────────────────────────────────
               🔴 THE SAME FORM THE VILLAGE FOODIE RENDER USES — one component, one id, one set of
@@ -90,29 +147,27 @@ export function HatchGrabContact() {
             />
           </Suspense>
 
-          {/* ── 🔴 THE EMAIL ADDRESS IS BACK, BY OPERATOR DECISION (25 August 2026). READ THIS BEFORE
-              CHANGING IT. ─────────────────────────────────────────────────────────────────────────
-              This block previously said the address STAYS REMOVED, and gave the reason: on 10 August
-              `lib/email-signup.ts` recorded "⚠️ NOT LIVE YET. This mailbox must exist, and
+          {/* 🔴 THE TRAILING "Or just email us at ..." PARAGRAPH WAS HERE AND IS GONE — MOVED, NOT
+              DELETED. It now sits above the form as the "Email us" option; the address itself is
+              unchanged and was already a mailto. Its original note is preserved verbatim below,
+              because the reasoning is still the reasoning.
+              ⚠️ THE `mt-6` IT CARRIED WAS PROBABLY INERT ANYWAY — `.hg-landing * { margin: 0 }`
+              (landing.css:77) beats a Tailwind margin utility on source order.
+              ── THE ORIGINAL NOTE, LEFT INTACT AS THE RECORD ──────────────────────────────────────
+              THE EMAIL ADDRESS IS BACK, BY OPERATOR DECISION (25 August 2026). READ THIS BEFORE
+              CHANGING IT. This block previously said the address STAYS REMOVED, and gave the reason:
+              on 10 August `lib/email-signup.ts` recorded "NOT LIVE YET. This mailbox must exist, and
               hatchgrab.com must be SPF/DKIM-verified in Brevo, before the first real send," and
-              `lib/email-config.ts` still carries the matching TODO with `HATCHGRAB_SENDER.email` and
-              `.replyTo` both pointing at hello@villagefoodie.co.uk.
-              🔴 THOSE TWO COMMENTS WERE NOT VERIFIED BEFORE THIS WAS ADDED AND MAY BE STALE — the
-              operator asked for the address and owns the mailbox; this file cannot check it. What IS
-              already true in code is that `HATCHGRAB_REPLY_TO = 'hello@hatchgrab.com'` is exported by
-              lib/email-signup.ts and set as the reply-to on the signup emails, so replies to those are
-              ALREADY being sent to this address. See docs/contact-email-and-cta-report.md.
-              ⚠️ THE STAKE IS THE SAME AS IT WAS: this is the Support URL given to App Store review. If
-              the mailbox does not receive, a reviewer's message goes nowhere.
-              ⚠️ HATCHGRAB RENDER ONLY. It is deliberately NOT on the Village Foodie branch of
-              app/contact/page.tsx — that render is byte-identical by design and a hatchgrab.com address
-              on it would be the branding leak this split exists to remove.
-              ⚠️ `lede` AND `mt-6`, THE PAGE'S OWN VOCABULARY. No new type style, no new colour, no box —
-              the same class the paragraph above the form uses. */}
-          <p className="lede mt-6">
-            Or just email us at{' '}
-            <a href="mailto:hello@hatchgrab.com">hello@hatchgrab.com</a>
-          </p>
+              `lib/email-config.ts` still carries the matching TODO.
+              🟢 THAT CONCERN IS NOW ANSWERED, AND NOT BY THIS FILE: docs/reference-manual.md:20761
+              records `privacy@hatchgrab.com` and `hello@hatchgrab.com` as "LIVE AND TESTED as
+              receiving". lib/email-signup.ts:23 still carries the stale "NOT LIVE YET" comment; it is
+              OUT OF SCOPE for this change and is reported rather than edited.
+              ⚠️ THE STAKE IS UNCHANGED: this is the Support URL given to App Store review. If the
+              mailbox does not receive, a reviewer's message goes nowhere.
+              ⚠️ HATCHGRAB RENDER ONLY. Deliberately NOT on the Village Foodie branch of
+              app/contact/page.tsx — a hatchgrab.com address there is the branding leak this split
+              exists to remove. */}
         </div>
       </section>
 
