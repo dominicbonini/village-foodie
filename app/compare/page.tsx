@@ -127,7 +127,17 @@ export default async function CostPage() {
   // dead. CostComparison.tsx deliberately renders neither.
   return (
     <DemoModalProvider>
-      <div className={CHROME}>
+      {/* 🔴 `chrome-nav-only` IS WHAT MAKES THE NAV STICK, AND IT IS NOT COSMETIC.
+          `.hg-landing nav` is `position: sticky; top: 0`, and a sticky element only travels inside its
+          PARENT'S box. On the landing that parent is the whole page. Here it was this div — which
+          contains nothing but the nav, so it was exactly 72px tall (measured) and the nav scrolled away
+          on the first pixel. The class sets `display: contents` (landing.css), so this wrapper generates
+          no box and the nav's containing block becomes the page, as on the landing.
+          ⚠️ THE OBVIOUS FIX — one `.hg-landing` round the whole page — IS THE ONE THING THIS FILE MUST
+          NOT DO. See the CHROME comment above: the scoped reset would strip every margin and padding in
+          the calculator. That is why the wrapper is split in the first place, and why the fix had to be
+          to the wrapper rather than to the structure. */}
+      <div className={`${CHROME} chrome-nav-only`}>
         {/* ⚠️ CHROME, NOT A FOURTH CTA. The page already carries three calls to action — the hero pair
             and the one under the small print — so this one deliberately keeps the nav's own appearance
             (`btn btn-primary nav-cta`, supplied by LandingNav) rather than competing with them. It

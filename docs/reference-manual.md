@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.58
+HatchGrab Engineering Reference Manual · V12.0
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.58**
+**Version 12.0**
 
 September 2026
 
@@ -23,6 +23,36 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V12.0 — 3 September 2026 — LAUNCH
+
+**Delta — the site is public. The landing gate is lifted, the pricing comparison is open, and the front
+door has been repaired after a month closed.**
+
+- ✅ **THE LANDING PAGE IS LIVE.** Both recorded gate conditions were met — written testimonial
+  permission and real screenshots — and the production admin check was removed. ⚠️ **Lifting it publishes
+  the ROOT of the operator domain, not just the landing route**, because the proxy rewrites the root to
+  it. That is not visible from the layout file.
+- ✅ **THE COST COMPARISON IS PUBLIC**, moved to a top-level path, host-scoped to the operator brand, and
+  `noindex`. 🔴 **Moving it out of the gated layout DELETED its gate** — protection that came from being
+  a child route, with no error and no warning. **The file's own header had warned that if it were ever
+  moved the gate moves with it or it is gone.** It was carried by hand.
+- 🔴 **THE SIGNUP FLOW HAD BEEN IMPOSSIBLE SINCE 4 AUGUST 2026.** **OBSERVED.** A commit added a required
+  contact-phone check to the setup route six hours after the setup form was last edited, and never
+  touched the form. **Every attempt failed at the same point, for everyone arriving that way**, with an
+  error naming a field the page had never shown.
+- 🔴 **AND IT FAILED AFTER THE ACCOUNT WAS CREATED, WHICH MADE IT A TRAP.** The email was permanently
+  consumed, logging in returned the operator to the same dead form, **and no admin route could rescue
+  them** — the admin create-operator path fails on an existing email and the admin create-truck path has
+  no operator binding at all. **Deletion or SQL were the only exits.**
+- ✅ **THE ONBOARDING WIZARD IS SUBSTANTIALLY BUILT AND NEVER VALIDATES ITS OWN OUTPUT.** Nine screens,
+  a real menu importer, an allergen flow, a capacity model, a schedule scraper and a terminal state —
+  **and every step after naming the truck is skippable with nothing checking the result.**
+- 🔴 **A TRUCK WITH NO EVENT ACCEPTS ORDERS THE OPERATOR CANNOT SEE.** **REASONED from a source read, not
+  run.** The availability flag defaults true and is only falsified by an unconfirmed event or one missing
+  times — so with no event at all, neither branch fires. **This is the highest-priority unverified claim
+  in the manual.** §15.
+- ✅ **A PLANS-AND-FEATURES PDF** is generated from the live source on demand and downloadable from Admin.
 
 ## V11.58 — 2 September 2026 (evening) and the deploy
 
@@ -5507,6 +5537,45 @@ this guard is the only thing that would ever notice.**
 - ⚠️ **THERE IS NO CI STEP AND NO TEST.** The function is exported so one could exist; nothing consumes
   it. Drift introduced today surfaces when somebody renders a pricing page, not when somebody commits.
 
+### The features matrix — a row added, a tier moved (V11.58)
+
+- ✅ **A row was added for pre-order deadlines**, and **the feature was confirmed built on both halves
+  before the row went in** — a pure engine shared by the customer-facing read and the submission check,
+  so display and enforcement cannot diverge, plus operator configuration in Manage.
+- 🔴 **NO NEW FEATURE KEY WAS INVENTED FOR IT, DELIBERATELY.** The behaviour is already gated by an
+  existing key. **A new key would have had zero call sites — gating nothing while passing the parity
+  checker vacuously**, and the manual already records five unenforced gates. It got a row-to-feature map
+  entry pointing at the real gate instead.
+- 🔴 **THE PARITY CHECKER IS BLIND TO A `false` CELL.** It inspects only cells that are literally true, so
+  a row wrongly marked unavailable for a tier passes silently. **Verify a false cell by checking the gate
+  directly in both directions** — a clean run says nothing about it.
+- ⚠️ **Automated stock countdown moved out of the free tier.** No truck is on that tier, so nothing was
+  taken from anyone. **The gate has not moved yet, so the row and the code disagree until it does** —
+  a known, deliberate gap. OPEN.
+- ⚠️ **Two feature descriptions named the product where it was redundant.** Removed. **Where one habit
+  appears twice, look for the rest in the same pass.**
+
+### The features matrix — V12.0 additions
+
+- ✅ **Pre-order deadlines** added — Trial, Pro, Max. **Confirmed built on both halves before the row went
+  in**, with one shared engine so display and enforcement cannot diverge.
+- ✅ **Buzzer tracking** added — **Max only**, sitting with kitchen ticket printing, since the same truck
+  prints tickets carrying the buzzer number. ⚠️ **Confirmed built end to end**, and **the customer never
+  sees the number** — the audience is the operator alone.
+- ⚠️ **The lost-buzzer column is a DATA-CONFLICT marker, not a record of hardware loss.** It is set when
+  automatic conflict resolution leaves an order without the buzzer it claimed. **Copy describing lost
+  buzzers would describe nothing.** (The buzzer feature itself is §39.)
+
+### 🔴 TWO ROWS NOW ADVERTISE AN EXCLUSION NOTHING ENFORCES (V12.0)
+
+Buzzer tracking and automated stock countdown both show tiers excluded while the code grants the
+behaviour to everyone. **Deliberate — the gating work is sequenced separately — but recorded so it is a
+known gap rather than a discovery.**
+
+🔴 **The parity checker cannot help here, and the reasons are already recorded above** under *"THE
+PLAN-PARITY GUARD IS ONE-DIRECTIONAL"*: it inspects only literally-true cells, and it skips a row with no
+map entry. One of these two rows is in that state. **A clean run says nothing about either.**
+
 ### V11.38 — 🔴 THE PRICING VALUES WERE ALL DISPLAY STRINGS: the finding that blocked two consumers
 
 **The state before this session:** the monthly plan price existed as `'£29/mo'`. The online-order
@@ -8526,6 +8595,17 @@ Bridge mechanics in /api/inbound-schedule: after writing discovery_events, it no
 > **RULE (V6.2) — bridge is gated by scraper_preference.** Only trucks set to 'auto' have scraped events bridged into truck_events and the operator emailed. A truck set to 'manual' (default) skips the truck_events insert. The discovery_events write is unaffected either way. A legacy value of 'both' is treated as 'auto'.
 
 Linking is a one-time admin step: the admin console's "Link HG truck" dropdown sets discovery_trucks.hatchgrab_truck_id.
+
+## 🔴 A TRUCK WITH NO EVENT ACCEPTS ORDERS THE OPERATOR CANNOT SEE — UNVERIFIED, AND THE FIRST THING TO TEST
+
+**REASONED from a source read. Not run.** The chain: the availability flag starts true and is falsified
+only by an *unconfirmed* event or one *missing times* — **with no event at all neither branch fires**.
+The customer sees an orderable menu; submission falls back to today's date, finds no event, and does not
+refuse; the lock table needs no event row; the order is written with a null event id; **and the operator
+dashboard's own comment records that every branch below its event resolution requires it non-null.**
+
+⚠️ **This is not an onboarding defect.** It applies to any truck with no event for a date, however it got
+there. **Test it with a real order before anything else in this area.**
 
 ## Discovery / operator-events visibility (rebuilt V6.5, temporary HG suppression V6.6)
 
@@ -13951,11 +14031,26 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   transactions.
 - 🔴 **OPEN — the stock countdown gate has not moved with its row.** A sixth unenforced gate until it does.
 - ⚠️ **OPEN — the brand record's logo value points at the wrong brand's file**, with a stale comment.
-- ⚠️ **OPEN — nothing links to the comparison page.**
+- ✅ **CLOSED V12.0 — the comparison page is now linked** from the landing's switching block.
 - ⚠️ **OPEN — the icon appearance variants, the background-mode key and the app-link entitlement**, all of
   which need one native release between them.
 - ⚠️ **OPEN — the previous day's list stands**, including the database housekeeping, the ten tables with
   no migration behind them, and the untested customer path during a degraded backend.
+
+### Added V12.0 — 3 September 2026 (launch)
+
+- 🔴 **OPEN — the eventless-order path.** Unverified, and the first thing to test.
+- 🔴 **OPEN — a succeeded step marked as failed** in the demo modal, which invites a duplicate truck.
+- 🔴 **OPEN — the wizard congratulates a truck that cannot trade.** The review screen is the natural place
+  for the check and already exists.
+- 🔴 **OPEN — the ordering link and payment setup are absent from onboarding**, not merely skippable.
+- ⚠️ **OPEN — two feature rows advertise an unenforced exclusion.**
+- ⚠️ **OPEN — a success rendered in the error channel** ("Saved", in red).
+- ⚠️ **OPEN — first and last name are never collected on the direct signup path**, so the welcome emails
+  address the operator by the local part of their email address.
+- ⚠️ **OPEN — no resend path for signup verification.**
+- ⚠️ **OPEN — everything carried forward from the previous version**, including the failed-capture silence,
+  the payment route ceilings, the database housekeeping, and the tables with no migration behind them.
 
 
 # 28. Anti-scraping and rate limiting (V6.3)
@@ -14214,24 +14309,6 @@ live fault in ordinary service, since force-quitting a sticky app is an everyday
 ⚠️ **The staleness label must not become more confident because the fold ran.** The fold corrects for this
 device's queued orders; it says nothing about the baseline being old. A folded number built on a stale
 baseline is still stale.
-
-### The features matrix — a row added, a tier moved (V11.58)
-
-- ✅ **A row was added for pre-order deadlines**, and **the feature was confirmed built on both halves
-  before the row went in** — a pure engine shared by the customer-facing read and the submission check,
-  so display and enforcement cannot diverge, plus operator configuration in Manage.
-- 🔴 **NO NEW FEATURE KEY WAS INVENTED FOR IT, DELIBERATELY.** The behaviour is already gated by an
-  existing key. **A new key would have had zero call sites — gating nothing while passing the parity
-  checker vacuously**, and the manual already records five unenforced gates. It got a row-to-feature map
-  entry pointing at the real gate instead.
-- 🔴 **THE PARITY CHECKER IS BLIND TO A `false` CELL.** It inspects only cells that are literally true, so
-  a row wrongly marked unavailable for a tier passes silently. **Verify a false cell by checking the gate
-  directly in both directions** — a clean run says nothing about it.
-- ⚠️ **Automated stock countdown moved out of the free tier.** No truck is on that tier, so nothing was
-  taken from anyone. **The gate has not moved yet, so the row and the code disagree until it does** —
-  a known, deliberate gap. OPEN.
-- ⚠️ **Two feature descriptions named the product where it was redundant.** Removed. **Where one habit
-  appears twice, look for the rest in the same pass.**
 
 ---
 
@@ -16466,6 +16543,70 @@ because it produces an artefact rather than an error.
 A page's protection came from being a child of a gated layout. **Moving it deleted the gate with no
 error, no warning and no visible change** until someone loaded it. **When a route's protection is
 inherited rather than declared, moving the file is a security change.**
+
+### 🔴 A VALIDATION ADDED TO A ROUTE IS A CHANGE TO THE FORM THAT POSTS TO IT (V12.0)
+
+**OBSERVED.** A required field was added to a server route six hours after the form that posts to it was
+last edited. The commit touched twelve files and not the form. **Every submission failed for a month**,
+with an error that was specific, accurate and unactionable — it named a field the page had never shown.
+
+🔴 **AND THE FAILURE CAME AFTER DURABLE STATE WAS CREATED**, which is what turned a dead end into a trap:
+the account existed, the email address was permanently consumed, and every later sign-in returned the
+operator to the same failing form.
+
+**THE RULE, IN TWO PARTS:** when a validation is added to a route, **the form that posts to it is part of
+the change** — grep the callers before merging. And **a flow that can fail after creating durable state
+must have a route back in**, not a redirect to the step that failed.
+
+⚠️ **The onboarding-shaped account of this incident — what the operator experienced and what it cost —
+lives in `docs/onboarding-flow.md` §15C.** This entry is the invariant only.
+
+### 🔴 A RECOGNITION DRESSED AS AN ERROR IS A LIE THE COPY CANNOT UNDO (V12.0)
+
+An already-registered email produced correct copy — *"there's already an account with that email, sign in
+instead"* — rendered under a red cross labelled **"failed"**, in red text, with the one useful control
+camouflaged in the same red. **OBSERVED.**
+
+🔴 **COLOUR AND ICON OVERRIDE WORDS.** A person glancing at a red cross concludes they did something
+wrong, whatever the sentence says. **And the screen-reader label said it most literally of all.**
+
+**Two more instances were found in the same component and are recorded as OPEN:**
+
+- 🔴 **A step that SUCCEEDED, marked failed.** The truck was created; only the hand-off failed. The row
+  draws a red cross while its own message says the truck is set up. **This one invites a retry, and an
+  idempotence guard is the only thing between that and a duplicate truck.**
+- ⚠️ **The word "Saved" rendered in red**, because a success-with-a-caveat was pushed through the error
+  channel.
+
+**THE RULE: the failure treatment belongs to failures.** When a state is a recognition, a caveat or a
+partial success, it must not borrow the icon, the colour or the accessible label of an error. **And
+genuine errors must still look like errors — check both directions after such a change.**
+
+### 🔴 A CHARACTER CAN IGNORE YOUR STYLESHEET (V12.0)
+
+An information glyph was set to a muted grey class. **It rendered as a blue emoji tile** — a coloured
+app-icon beside two monochrome marks — because that codepoint has emoji presentation by default and a
+colour emoji ignores the CSS colour property.
+
+🔴 **THE COMPUTED STYLE REPORTED THE CORRECT COLOUR THE ENTIRE TIME.** The class was right and the pixels
+were wrong. **It was only caught by looking at the rendered image.**
+
+**Same family as measuring a container instead of its ink: the property you queried was not the property
+you cared about.** Use an inline vector with `currentColor` for monochrome marks, and **look at the
+render**.
+
+### ⚠️ A ROW LABEL IS OFTEN A JOIN KEY (V12.0)
+
+Renaming a feature row required moving its map entry in the same edit. **A stale entry is skipped
+silently by the parity checker rather than flagged**, so nothing would have reported the break.
+
+**Before renaming any string that other code matches on, count the places it appears.** This is the third
+instance of the same class recorded here — a case-mismatched string, a prop line identical in six
+components, and now a row label.
+
+⚠️ **The parity checker's own limits are recorded ONCE, in §4** — *"THE PLAN-PARITY GUARD IS
+ONE-DIRECTIONAL"*, which already names the row-name key as one of four ways the guard goes quiet. This
+entry is the general renaming rule; §4 owns what the checker can and cannot see.
 
 ---
 
@@ -20009,6 +20150,16 @@ as "the single source for brand navy" is wrong**, and the file itself says so.
 ⚠️ **The wordmark's 4.548:1 crop ratio must be DERIVED, not typed.** Compute the width from the height so
 the pair cannot go stale; a hardcoded pair letterboxes or squashes the moment the artwork is recropped.
 
+### V12.0 additions
+
+- ✅ **The customer order form and truck schedule carry the operator mark on the operator domain**, and
+  keep the consumer mark on the consumer domain. **Resolved from the request host, server-side** — the
+  client-side helper returns false on the server, so branching on it would have put the wrong mark in the
+  first painted frame and swapped it after hydration.
+- ✅ **The web-clip icon ring is fixed** by rendering the vector at each target size rather than
+  downscaling a raster. ⚠️ **A cache-busting query string does not reach an existing home-screen
+  shortcut** — the icon is copied in at creation and never re-read.
+
 ---
 
 # 39. Buzzers — physical pagers against orders (V10)
@@ -22309,12 +22460,15 @@ first is the one that would have caused harm:
 - ⚠️ **`noindex` is a request to crawlers, not a gate.** It keeps the page out of search results; it stops
   nobody. The gate is what stops people.
 
-🔴 **THE PRICING PUBLICATION FLAG NOW DOES TWO JOBS.** It publishes this page **and** un-masks prices
-across the operator billing surfaces at the same instant. **It did only the second yesterday.** Establish
-its current value before flipping it.
+🔴 **THE PRICING PUBLICATION FLAG DOES ONE JOB, NOT TWO (corrected V12.0).** It briefly did two — it
+published this page **and** un-masked prices across the operator billing surfaces at the same instant.
+**The page was then decoupled from the flag**, so the flag now governs **operator-facing price masking
+only**: billing, the feature gate and the van add-on. **Do not read the decoupling as "the flag no longer
+does anything."** Establish its current value before flipping it.
 
-⚠️ **Nothing links to the page.** Opening the gate makes the URL resolve; it does not make the page
-reachable. **A page nobody can navigate to is not live regardless of its gate.**
+⚠️ **A page nobody can navigate to is not live regardless of its gate.** Opening a gate makes the URL
+resolve; it does not make the page reachable. **This page was in that state until V12.0** — the landing
+now reaches it from the switching block below. Keep the rule; the instance is closed.
 
 ### The App Store badge (V11.58)
 
@@ -22331,6 +22485,60 @@ second store is purely additive — no colour change, no panel, no CSS.
 ⚠️ **A link cannot open the installed app.** No site-association file, no associated-domains entitlement,
 no URL scheme. That needs a native rebuild and resubmission — **bundle it with the background-mode key
 and the icon appearance variants rather than spending a release on any one of them.**
+
+### ✅ THE GATE IS LIFTED — and what that actually published (V12.0)
+
+The production admin check is gone from the landing layout. **Three lines and two orphaned imports.**
+
+🔴 **LIFTING IT PUBLISHES THE ROOT OF THE OPERATOR DOMAIN, NOT JUST THE LANDING ROUTE.** The proxy
+rewrites the site root to this page, so the gate was the only thing standing in front of `/` on that
+host. **That is not visible from the layout file**, which names only its own route.
+
+⚠️ **The page never used the price mask**, so it has always rendered real prices — it got away with that
+because it was gated. From launch it simply publishes them, which is intended.
+
+### 🔴 A ROUTE'S PROTECTION MUST BE DECLARED, NOT INHERITED (V12.0)
+
+Moving the comparison page out from under the gated layout **removed its gate silently**. No error, no
+warning, no visible change until someone loaded it — and the page renders real, unmasked prices.
+
+🔴 **THE RULE IS RECORDED ONCE, IN §35** — *"REMOVING A GATE BY MOVING A FILE"*. This is the instance
+that produced it, kept here because it is where someone editing this page will be looking.
+
+⚠️ **A top-level route serves on every host unless something scopes it.** The comparison page was
+reachable on the consumer discovery brand until a host check was added. **It now returns not-found
+there — not a redirect, because a redirect hints the page exists elsewhere.**
+
+⚠️ **`noindex` is a request to crawlers, not a gate.** It keeps a page out of search results; it stops
+nobody.
+
+### The switching block, and why it self-selects (V12.0)
+
+A block inviting operators already paying for another platform to compare costs. 🔴 **The filter is the
+point:** the calculator answers *"what would I pay instead"*, and for an operator paying nothing today
+the honest answer is *more*. **The heading exists so that reader recognises it is not about them and
+walks past without ever seeing a number that reads as a price rise.**
+
+⚠️ **It replaced a bare link that had no filter on it** — that link invited exactly the people the block
+is designed to turn away.
+
+### The plans-and-features PDF (V12.0)
+
+A PDF of the comparison table, **generated at request time from the same source the table renders**, and
+downloadable from Admin behind an explicit admin check.
+
+- 🔴 **ONE GENERATOR.** Admin calls the existing route rather than building its own. **A second
+  implementation would drift the moment a row changed.**
+- ⚠️ **The route's protection is explicit, not inherited** — layouts do not wrap route handlers.
+- ⚠️ **It carries the real price list regardless of the masking flag.** The gate controls who can
+  *generate* one; **it controls nothing about where the file goes afterwards.** Treat the document as
+  published the moment it leaves an outbox.
+- ⚠️ **No mode picker.** Two visually identical documents with the same filename, differing only in
+  whether the prices are real, is a silent way to send the wrong one.
+- ⚠️ **The filename carries the generation date** in sortable order, and the same date is printed inside.
+
+⚠️ **The alignment defect this document produced is recorded ONCE, in §35** — *"A MEASUREMENT OF THE
+CONTAINER IS NOT A MEASUREMENT OF THE CONTENT"*. It is an invariant, not a fact about this document.
 
 ---
 
@@ -22349,6 +22557,20 @@ timings.** The tightest fires every fifteen seconds from every device. **Read th
 against real traffic before assuming they hold under service load.**
 
 ⚠️ **A store review remains in progress and the binary must not be touched.**
+
+### Deploy posture at launch (V12.0)
+
+✅ **Deployed and public.** **OBSERVED after deploy: no server errors, no timeouts, ordering pages
+working.**
+
+🔴 **A CLEAN LOG IS NOT VERIFICATION.** It establishes that nothing threw on the paths that were
+exercised — a handful of page loads by one person. **The operator surfaces, the offline paths, the photo
+picker, the queued-order seeding and the manage refresh split have still not been touched by a device.**
+
+⚠️ **Three route ceilings remain reasoned rather than measured**, and the tightest fires every fifteen
+seconds from every device. **Read the platform duration logs against real traffic.**
+
+⚠️ **A store review remains in progress. The binary must not be touched.**
 
 ---
 

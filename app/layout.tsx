@@ -29,6 +29,31 @@ export async function generateMetadata(): Promise<Metadata> {
     : 'Find local food trucks and pop-ups visiting villages near you.'
   const baseUrl = isHG ? 'https://hatchgrab.com' : 'https://villagefoodie.co.uk'
 
+  // ── 🔴 THE SHARE IMAGE IS NOW ON THE SAME BRANCH AS EVERYTHING ELSE (3 September 2026) ──────────
+  // It was the ONE value on this object that was not. `siteName`, `description`, `baseUrl` and the
+  // image's own `alt` all branched on `isHG` correctly, while `openGraph.images[0].url` and
+  // `twitter.images[0]` were string literals pointing at `/logos/village-foodie logo-sharing.png`.
+  // 🔴 SO A HATCHGRAB LINK PREVIEW SHOWED THE CONSUMER BRAND'S LOGO, LABELLED "HatchGrab Logo" —
+  // because the alt text was derived from the branched `siteName` while the image was not.
+  // ⚠️ THAT IS WHY IT SURVIVED REVIEW: every value a reader checks to confirm the branding is
+  // host-aware WAS host-aware. A wrong value derived from a correct variable reads as correct.
+  // Measured on production before the fix, not inferred — see docs/share-preview-report.md.
+  //
+  // ⚠️ ABSOLUTE, AND BUILT FROM THE REQUEST HOST — NOT A RELATIVE PATH.
+  // A relative URL resolves against `metadataBase`, which is the APEX (`https://hatchgrab.com`), and
+  // the apex 307s to `www` for static assets — so the declared og:image was a REDIRECT rather than an
+  // image. Crawlers are not obliged to follow one. `host` is whatever actually served this response,
+  // so this URL cannot redirect by construction, on production or on a preview deployment.
+  // 🔴 `baseUrl` IS DELIBERATELY UNTOUCHED. og:url and metadataBase still read the apex; changing
+  // them is a separate decision and was explicitly out of scope for this change.
+  //
+  // 🔴 THE DIMENSIONS BELOW ARE MEASURED FROM THE FILE, NOT INTENDED. The previous pair said
+  // 1200x630 over a file that was actually 2397x1270 — the tags did not describe the resource they
+  // pointed at. If the card is ever re-rendered, re-read its PNG header and update these two numbers.
+  const shareImage = isHG
+    ? { url: `https://${host}/logos/hatchgrab-share-card.png`, width: 1200, height: 630 }
+    : { url: '/logos/village-foodie logo-sharing.png', width: 1200, height: 630 }
+
   return {
     metadataBase: new URL(baseUrl),
     manifest: "/manifest.json",
@@ -44,9 +69,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName,
       images: [
         {
-          url: "/logos/village-foodie logo-sharing.png",
-          width: 1200,
-          height: 630,
+          url: shareImage.url,
+          width: shareImage.width,
+          height: shareImage.height,
           alt: `${siteName} Logo`,
         },
       ],
@@ -57,7 +82,9 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: siteName,
       description,
-      images: ["/logos/village-foodie logo-sharing.png"],
+      // Same one value as openGraph above — NOT a second literal. The two used to be independent
+      // strings saying the same thing, which is how one could be corrected without the other.
+      images: [shareImage.url],
     },
     // ── 🔴 THE TAB ICON IS HOST-BRANDED, LIKE THE NAME AND THE DESCRIPTION ABOVE. ────────────────
     // It was ONE data-URI of a 🚚 EMOJI on BOTH hosts. That is right for Village Foodie — a consumer

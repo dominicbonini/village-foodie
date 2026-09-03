@@ -1,8 +1,8 @@
 # HatchGrab — Onboarding Flow Spec
 
-**Status:** Phases 1–4 BUILT and LIVE-WALKED on preview (4 August). Phase 5 (nomination / go-live) DESIGN ONLY and **blocking launch** (§15). Written July 2026. **v7.2** — revised 13 August after the promote-from-discovery session.
+**Status:** Phases 1–4 BUILT and LIVE-WALKED on preview (4 August). Phase 5 (nomination / go-live) DESIGN ONLY and **blocking launch** (§15). Written July 2026. **v8.0** — revised 3 September 2026 at launch. 🔴 **This document went untouched from 13 August to 3 September while onboarding content accumulated in the reference manual instead** — see §15C.
 **Scope:** Anonymous demo → signup → guided setup → go-live. Cold-start (inbound) path only; the warm/branded outreach path is a later variant (§13).
-**Companion doc:** `docs/reference-manual.md`, now **V11.1** (architecture invariants — this spec must not contradict it). 🔴 **Where the two overlap, the manual is authoritative.** This spec describes the FLOW an operator experiences and the DECISIONS behind it; the manual owns the schema facts, the invariants and the backlog. Cross-reference rather than restate — a fact recorded twice is a fact that can disagree with itself.
+**Companion doc:** `docs/reference-manual.md`, now **V12.0** (architecture invariants — this spec must not contradict it). 🔴 **Where the two overlap, the manual is authoritative.** This spec describes the FLOW an operator experiences and the DECISIONS behind it; the manual owns the schema facts, the invariants and the backlog. Cross-reference rather than restate — a fact recorded twice is a fact that can disagree with itself.
 
 > **v2 changes:** corrected the capacity model (§5), the deletion cascade (§7) and the seeded-order email problem (§6.1). Added three blockers v1 missed: the `/dashboard` proxy gate (B8), the non-visibility-gated public surfaces (B9), and the pre-trial plan problem (B10). Added a security must-fix (§9.1). Dropped one build step that turned out unnecessary (importer changes — B2 dissolved).
 >
@@ -959,3 +959,68 @@ Each of these was a choice between defensible options. The reasoning matters mor
   CUSTOMER url; the dashboard cannot show you this failure.**
 
 ---
+
+---
+
+## 15C. The front door was shut for a month (v8.0, 3 September 2026)
+
+> Moved here from `docs/reference-manual.md` §51 on 3 September 2026. It was written into the manual
+> because the delta that carried it named its target by heading text and no heading of that name
+> existed — **and the author did not know this document existed.** The invariant it yields stays in the
+> manual (§35, *"A VALIDATION ADDED TO A ROUTE IS A CHANGE TO THE FORM THAT POSTS TO IT"*); the journey
+> is here. **Cross-reference rather than restate**, per this file's own header.
+
+### 🔴 THE FRONT DOOR WAS SHUT FOR A MONTH, AND THE FAILURE MODE WAS A TRAP
+
+**OBSERVED.** A required field was added to the server six hours after the form was last edited. The
+commit touched twelve files and not the form. **The result: an error that was specific, accurate and
+unactionable** — it named a field the page had never displayed and offered no way to supply it.
+
+🔴 **THE SHAPE THAT MADE IT SERIOUS: THE FAILURE CAME AFTER ACCOUNT CREATION.** So each attempt left an
+operator with an account, no truck, and an email address permanently spent. Logging in returned them to
+the same form. **The loop was closed in every direction** — including the working demo path, which
+begins by creating an account and therefore refuses an email that already exists.
+
+🔴 **AND NO ADMIN ROUTE COULD REPAIR IT.** Creating an operator fails on an existing email; creating a
+truck binds no operator. **An admin could delete the account or run SQL. Nothing else.**
+
+**THE RULE THIS YIELDS: when a validation is added to a route, the form that posts to it is part of the
+change.** And **a flow that can fail after creating durable state must have a route back in** — not a
+redirect to the step that failed.
+
+### ⚠️ THE WIZARD IS BUILT. IT NEVER CHECKS ITS OWN RESULT.
+
+Nine screens end to end. The menu importer, the allergen flow, the capacity model, the schedule scraper
+and the terminal screen are all real and carefully reasoned.
+
+🔴 **But every step after naming the truck is skippable, and the review screen is a confirmation rather
+than a check.** An operator who skipped the schedule step is congratulated in the same words as one who
+did everything. **"You're all set" is unconditional.**
+
+**And two things the platform needs are ABSENT rather than skippable:**
+
+- 🔴 **The ordering link and QR code are never surfaced by the wizard.** A truck can complete setup with a
+  menu and an event and still have no customer able to reach it.
+- 🔴 **Payment setup is never mentioned.** Not blocking — pay-at-hatch needs none — but an operator who
+  signed up for online payments finishes onboarding without learning the step exists.
+
+⚠️ **The schedule step has one working route.** Scraping a URL writes real events; the manual-entry route
+is copy and a Continue button that skips. **There is no "add one event" in the wizard.**
+
+### The two entry paths are not equivalent
+
+The demo path collects phone, messaging preference, first and last name and cuisine, and arrives with an
+extracted menu. **The direct path collects a truck name and a phone.** The difference is not one field:
+the contact method, the messaging number and the truck emoji are all derived from what the demo path
+asks for, so the direct path lands a named shell.
+
+⚠️ **The public entry points now use the demo path.** The direct route remains as the destination for an
+operator who already has an account and no truck — **which is what it was always for**, and its own
+comment says so.
+
+---
+
+⚠️ **The eventless-order finding that sat beside these in the manual did NOT move here.** It is not an
+onboarding defect — it applies to any truck with no event for a date, however it got there — and it now
+lives in **manual §15 (Events and venues)**. It remains the highest-priority unverified claim on the
+platform.

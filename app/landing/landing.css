@@ -102,6 +102,21 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    orange-600 (3.56:1) clears. Both the size AND the weight are required. Used by the hero + final CTAs. */
 .hg-landing .btn-lg { font-size: 1.2rem; font-weight: 700; padding: .95rem 1.7rem; }
 
+/* 🔴 A STICKY NAV ONLY TRAVELS INSIDE ITS PARENT'S BOX — AND ON /compare THAT BOX IS THE NAV.
+   The landing wraps its WHOLE page in one `.hg-landing`, so the nav below has ~8000px to stick within.
+   /compare cannot do that: `.hg-landing * { margin: 0; padding: 0 }` (:77) would strip every Tailwind
+   margin and padding in the calculator, so app/compare/page.tsx deliberately wraps the CHROME ONLY —
+   which left the nav in a wrapper exactly its own height (72px, MEASURED). Zero travel, so it scrolled
+   away on the first pixel while looking correctly declared.
+   ✅ `display: contents` makes that wrapper generate no box, so the nav's containing block becomes the
+   page and stickiness behaves exactly as it does on the landing. The wrapper's inherited properties
+   (font-family, color, line-height, font-smoothing) still cascade — inheritance follows the DOM, not the
+   box tree — and its `background: var(--paper)` is the one thing lost, which is invisible because the
+   nav's own HEADER_BG fills all 72px of it.
+   ⚠️ DO NOT PUT THIS ON THE FOOTER WRAPPER. The footer is not sticky and has nothing to gain; and a
+   wrapper with no box cannot paint the page background behind short content. */
+.hg-landing.chrome-nav-only { display: contents; }
+
 /* ---------- nav (background = HEADER_BG className). Fixed height = --nav-h. ---------- */
 .hg-landing nav { position: sticky; top: 0; z-index: 50; height: var(--nav-h); border-bottom: 1px solid rgba(255,255,255,.1); }
 .hg-landing .nav-in { max-width: var(--max); height: 100%; margin: 0 auto; padding: 0 var(--gut); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
