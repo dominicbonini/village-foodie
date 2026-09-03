@@ -900,19 +900,69 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       { key: 'menu', label: 'Loading your menu' },
                     ] as const).map(row => {
                       const st = stages[row.key]
+                      // ── 🔴 "YOU ALREADY HAVE AN ACCOUNT" IS A RECOGNITION, NOT A FAILED STEP. ──────
+                      // /api/signup answers 409 + { existing: true } for an address that already has an
+                      // account, and runSetup sets stages.account = 'error' to stop the chain. That is
+                      // correct as CONTROL FLOW — nothing may proceed — and wrong as PRESENTATION: it
+                      // rendered a red ✕ labelled "failed" over copy that says "sign in instead".
+                      // Colour and icon beat words at a glance, so a person who has simply forgotten
+                      // they have an account was told they had done something wrong.
+                      // 🔴 THE COPY WAS NEVER THE PROBLEM AND IS UNCHANGED. Only the icon, the colours
+                      // and the screen-reader label change, and only for this one case.
+                      // ⚠️ SCOPED TO THE ACCOUNT ROW DELIBERATELY, not to `existing` alone. `existing`
+                      // is component-level state; keying on it by itself would restyle whichever row
+                      // happened to be in error. Today only the account row can be, because the 409
+                      // returns before the truck step — but that is a property of runSetup's ordering,
+                      // not of this JSX, and it must not be relied on from here.
+                      // ⚠️ `st === 'error'` STAYS in the test. A recognised account is still a stopped
+                      // chain; this decides how it LOOKS, never whether it happened.
+                      const recognised = row.key === 'account' && st === 'error' && existing
                       return (
                         <div key={row.key} className="flex items-start gap-3">
                           <span className="mt-0.5 w-5 h-5 shrink-0 flex items-center justify-center">
                             {st === 'done' ? <span className="text-green-600 text-base font-bold" aria-label="done">✓</span>
+                              // ⚠️ BEFORE the generic error branch, so the recognition wins. An INFORMATION
+                              // mark, not a cross in red: nothing failed, and nothing here should look as
+                              // though it did. aria-label says the same thing the eye does — "failed" was
+                              // the wrong word for a screen reader as much as red was the wrong colour.
+                              // 🔴 AN SVG, NOT THE CHARACTER "ℹ" (U+2139), AND THAT WAS NOT THE FIRST TRY.
+                              // U+2139 has EMOJI presentation by default, so Chrome drew it as a blue
+                              // rounded tile — a coloured app-icon sitting beside two monochrome glyphs —
+                              // and `text-slate-500` did nothing to it, because a colour emoji ignores
+                              // `color`. getComputedStyle still reported slate-500, so the CLASS looked
+                              // right while the PIXELS were blue: the same trap as measuring a box instead
+                              // of the ink. Drawn as a path with `fill="currentColor"`, it is genuinely
+                              // slate and genuinely monochrome, and it inherits any future colour change.
+                              // ⚠️ Sized to match the ✓/✕ optically (14px against their 16px text glyph).
+                              : recognised ? (
+                                <svg viewBox="0 0 16 16" width="14" height="14" className="text-slate-500" fill="currentColor"
+                                  role="img" aria-label="you already have an account">
+                                  <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 1.5A5.5 5.5 0 1 1 8 13.5 5.5 5.5 0 0 1 8 2.5Z" />
+                                  <circle cx="8" cy="4.9" r="1" />
+                                  <path d="M7.15 6.9h1.7v5h-1.7z" />
+                                </svg>
+                              )
                               : st === 'error' ? <span className="text-red-600 text-base font-bold" aria-label="failed">✕</span>
                               : st === 'active' ? <span className="w-4 h-4 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label="in progress" />
                               : <span className="w-3.5 h-3.5 rounded-full border-2 border-slate-200" aria-label="pending" />}
                           </span>
                           <div className="min-w-0">
-                            <p className={`text-sm ${st === 'done' ? 'text-slate-500' : st === 'error' ? 'text-red-600 font-semibold' : st === 'active' ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>{row.label}</p>
+                            {/* ⚠️ `recognised` is tested BEFORE 'error' here too. Leaving the label red
+                                while the icon turned neutral would be worse than either alone — two
+                                signals disagreeing. Slate-900 semibold: this is the row that stopped,
+                                so it stays prominent; it simply stops being alarming. */}
+                            <p className={`text-sm ${recognised ? 'text-slate-900 font-semibold' : st === 'done' ? 'text-slate-500' : st === 'error' ? 'text-red-600 font-semibold' : st === 'active' ? 'text-slate-900 font-semibold' : 'text-slate-400'}`}>{row.label}</p>
                             {st === 'error' && error && (
-                              <p className="text-xs text-red-600 mt-0.5">
-                                {error}{existing && <> <a href="/login" className="underline font-semibold">Sign in</a></>}
+                              // ⚠️ THE MESSAGE COLOUR MOVES TOO. Red text under a neutral icon would put
+                              // the failure signal straight back. slate-600 is the modal's ordinary body
+                              // colour — the sentence reads as information, which is what it is.
+                              // 🔴 THE SENTENCE ITSELF IS UNTOUCHED, and so is the link's href.
+                              // ⚠️ THE LINK GOES ORANGE — the modal's action colour (bg-orange-600,
+                              // accent-orange-600, focus:ring-orange-400 throughout this file). Inheriting
+                              // red made the one useful control on screen look like part of the warning;
+                              // orange makes it read as the next step, which is exactly what it is.
+                              <p className={`text-xs mt-0.5 ${recognised ? 'text-slate-600' : 'text-red-600'}`}>
+                                {error}{existing && <> <a href="/login" className={`underline font-semibold ${recognised ? 'text-orange-600' : ''}`}>Sign in</a></>}
                               </p>
                             )}
                           </div>
@@ -1051,10 +1101,17 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   </div>
 
                   {/* Account-level error (409 existing / 403 gate / truck-create failure). */}
+                  {/* ── 🔴 SAME FIX AS THE PROGRESS LIST, AND THIS SITE CARRIED THE SAME DEFECT IN A
+                      MILDER FORM. There is no ✕ and no aria-label here — it is a bare paragraph — but
+                      the whole block was `text-red-600`, INCLUDING the "Sign in" link, so a recognised
+                      account still read as a red warning and its one useful control was camouflaged
+                      inside it. `existing` is the discriminator at both sites, so the two cannot drift.
+                      ⚠️ THE OTHER TWO CASES THIS RENDERS — the 403 signup gate and a truck-create
+                      failure — ARE REAL FAILURES AND STAY RED. Only `existing` changes. */}
                   {error && (
-                    <p className="text-sm text-red-600">
+                    <p className={`text-sm ${existing ? 'text-slate-600' : 'text-red-600'}`}>
                       {error}{' '}
-                      {existing && <a href="/login" className="underline font-semibold">Sign in</a>}
+                      {existing && <a href="/login" className="underline font-semibold text-orange-600">Sign in</a>}
                     </p>
                   )}
 
