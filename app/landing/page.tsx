@@ -375,14 +375,19 @@ export default function LandingPage() {
                 <li>Multi-device kitchen sync</li>
                 <li>Multi-staff logins</li>
                 {/* ⚠️ RENAMED, MOVED AND UN-BADGED 29 August 2026, to match the matrix row it twins
-                    (lib/plan-features.ts, 'Your schedule at your own website'), which moved above
+                    (lib/plan-features.ts, now 'Schedule page on your own website'), which moved above
                     'Kitchen ticket printing' in the same change.
                     ✅ THE CARD AND THE TABLE AGREE. Removing the badge here first left this card claiming
                     the feature while the comparison table lower down the SAME page still said "Coming
                     soon"; the matrix row was then flipped to `true` (with its ROW_FEATURE_MAP entry, in
                     the same change) and both now read as included. Un-badge here and flip there together,
-                    or the page argues with itself — this bullet is hand-written and nothing checks it. */}
-                <li>Your schedule at your own website</li>
+                    or the page argues with itself — this bullet is hand-written and nothing checks it.
+                    🔴 RE-WORDED AGAIN 3 September 2026, IN THE SAME EDIT AS THE ROW, for that reason.
+                    Was 'Your schedule at your own website'. This card and the comparison table sit on
+                    ONE page, so two names for one feature is the page arguing with itself in the exact
+                    way this comment already warned about. THE BULLET IS NOT A KEY — nothing joins on it;
+                    it is display copy that must simply agree with the row. Change both or neither. */}
+                <li>Schedule page on your own website</li>
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
@@ -391,21 +396,35 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* ── 🔴 THE SWITCHING BLOCK — A SIDE DOOR, AND IT SELF-SELECTS ON ITS FIRST WORD ──────────
+              Added 3 September 2026. Copy supplied and approved; it is not editorial and must not be
+              "tightened".
+              🔴 IT REPLACED THE BARE "Work out what you would pay →" LINK THAT STOOD IN .price-foot.
+              Two links to /compare in one section was one too many, and this one does the same job with
+              the framing that makes it safe. The old link is gone, not hidden.
+              🟢 THE HEADING IS THE FILTER, AND THAT IS THE WHOLE DESIGN. "Switching from another
+              platform?" tells an operator paying nobody that this is not about them, so they read the
+              plan cards above and move on. That matters because the calculator answers "what would I pay
+              instead" — and for someone paying nothing today the honest answer is "more than nothing".
+              Putting that in front of them would argue against us with our own tool.
+              🟢 AFTER the plan cards on purpose: the cards are the main argument and everyone gets
+              them; this is the extra step only the paying subset needs.
+              ⚠️ SECONDARY BY CONSTRUCTION, NOT BY RESTRAINT. It is not an <h2> — the section already has
+              one and a second would read as a new section. The heading is 1rem against the section h2's
+              clamp(1.6rem, 3.2vw, 2.15rem), and smaller than a plan name at 1.15rem. No button: every
+              primary control here is an orange DemoCta and a filled button would compete with it.
+              ⚠️ NO COMPETITOR IS NAMED and no comparative claim is made about any named business —
+              "another platform" is deliberately unnamed. Keep it that way.
+              🔴 /compare HAS ITS OWN GATE AND IT IS NOT THIS ONE. It refuses unless
+              NEXT_PUBLIC_PRICING_PUBLISHED is 'true'; while that is unset this link lands on a redirect
+              to /contact. See docs/landing-switching-block-report.md 7. */}
+          <div className="switch-block">
+            <p className="switch-head">Switching from another platform?</p>
+            <p className="switch-body">See what you’d be paying on HatchGrab for the same orders. Takes about a minute.</p>
+            <p className="switch-cta"><a href="/compare">Compare what you’re paying</a></p>
+          </div>
+
           <div className="price-foot">
-            {/* 🔴 THE ONLY LINK TO /compare THAT EXISTS. Added 3 September 2026 with the gate lift.
-                Until now nothing anywhere pointed at that page, so it was reachable only by someone being
-                handed the URL — and a page nobody can navigate to is not live regardless of its gate.
-                🟢 HERE, DIRECTLY UNDER THE PLAN CARDS, because this is the moment the reader is weighing
-                cost and the calculator answers exactly the question the cards raise.
-                ⚠️ IT IS A PLAIN LINK, NOT A BUTTON. Every other control in this section is a DemoCta that
-                opens the upload modal; a fourth button competing with them would pull attention off the
-                primary action. This is a secondary route for someone who wants to do the arithmetic.
-                🔴 /compare HAS ITS OWN GATE AND IT IS NOT THIS ONE. It refuses unless
-                NEXT_PUBLIC_PRICING_PUBLISHED is 'true'. If that flag is unset when this deploys, THIS LINK
-                LANDS ON A REDIRECT TO /contact — see docs/landing-release-report.md 3. */}
-            <p className="compare-link">
-              <a href="/compare">Work out what you would pay →</a>
-            </p>
             {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
                 and renders on this same screen, so this restated it a third time. */}
             <p>*Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.</p>

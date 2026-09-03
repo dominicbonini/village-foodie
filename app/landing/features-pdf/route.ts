@@ -102,12 +102,31 @@ const WORDMARK_W = +(WORDMARK_H * 4.548).toFixed(2)   // 136.44
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-/** 🔴 CELL TEXT COMES FROM cellLabel(), THE SAME FUNCTION THE PAGE USES. The '—' it returns is an EM
- *  DASH and a protected string; it is escaped for HTML and NEVER normalised or written back. */
+// ── 🔴 THE TICK IS DRAWN, NOT TYPED, AND THIS IS NOT A STYLE CHOICE ─────────────────────────────
+// U+2713 (✓) IS A DINGBATS CHARACTER AND THE PRODUCTION FONT HAS NO GLYPH FOR IT.
+// On Vercel this route renders under @sparticuz/chromium, whose README states: "The AWS Lambda runtime
+// is not provisioned with any font faces. Because of this, this package ships with Open Sans." Open Sans
+// covers Latin, Greek and Cyrillic — NOT Dingbats. Verified by reading the cmap of all three bundled
+// TTFs (Regular, Bold, Italic): U+2713 is MISSING from every one, while U+2014 (—) and U+00A3 (£) are
+// present. So every tick rendered as NOTHING in production while the rest of the table was perfect.
+// 🔴 IT NEVER WORKED IN PRODUCTION. It looked fine in every PDF generated on a Mac, because desktop
+// Chrome falls back to a system font that has the glyph. The environment differed, not the code.
+// 🟢 A SWEEP, NOT A PATCH: every visible character in the generated document was checked against the
+// production font. 72 distinct characters, and U+2713 was the ONLY one missing — 69 occurrences. There
+// is no second victim of this class hiding in the footnotes or the plan names.
+// ⚠️ THE PATH IS THE LANDING PAGE'S OWN CHECK MARK (app/landing/page.tsx's Check component), so the
+// document and the page draw the same tick.
+const TICK = '<svg class="tick" viewBox="0 0 12 12" role="img" aria-label="Included">'
+  + '<path d="M2 6.5 L4.6 9 L10 3"/></svg>'
+
+/** 🔴 CELL CONTENT COMES FROM cellLabel(), THE SAME FUNCTION THE PAGE USES — it decides WHICH state
+ *  the cell is in, and that stays the single source of truth. Only the tick's RENDERING differs here.
+ *  ⚠️ The '—' it returns is an EM DASH and a protected string: escaped for HTML, never normalised, never
+ *  written back. It is left as text deliberately — it IS in the production font. */
 function cellHtml(value: FeatureValue): string {
   const label = cellLabel(value)
   const cls = label === '✓' ? 'yes' : label === 'Coming soon' ? 'soon' : 'no'
-  return `<td class="c ${cls}">${esc(label)}</td>`
+  return `<td class="c ${cls}">${label === '✓' ? TICK : esc(label)}</td>`
 }
 
 function buildHtml(): string {
@@ -213,6 +232,10 @@ function buildHtml(): string {
   .f-name { display: block; font-weight: 600; }
   .f-desc { display: block; color: #5F7A99; font-size: 8.5px; margin-top: 1px; }
   .yes { color: #1F7A3D; font-weight: 700; }
+  /* The drawn tick. "stroke: currentColor" means it inherits .yes's green, so the colour still lives in
+     one place. Sized to the 9.5px body text and nudged onto its baseline. */
+  .tick { width: 10px; height: 10px; display: inline-block; vertical-align: -1px;
+          fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .no  { color: #93A1B4; }
   .soon { color: #B26B0F; font-size: 8px; }
   .val { font-weight: 600; }

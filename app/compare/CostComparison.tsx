@@ -29,6 +29,7 @@
 // HERE CHARGES ANYONE. If any of this is ever reused to compute a real charge, it must be redone in
 // pence — see §16 on `orders.total_minor`.
 import { useState, useMemo } from 'react'
+import { DemoCta } from '@/components/landing/DemoUpload'
 import { PLAN_MONTHLY_PENCE } from '@/lib/features'
 import {
   PLAN_ONLINE_ALLOWANCE,
@@ -49,8 +50,15 @@ const ORANGE = '#EF8B2C'
 // `bg-[${ORANGE}]` would compile to NOTHING — a template literal is not statically analysable and the
 // class would silently not exist. That failure looks exactly like this bug. Keep the two in step by
 // hand; there is no safe way to derive one from the other in a class name.
+// ⚠️ `cursor-pointer` IS NOT COSMETIC HERE — IT REPLACES AN AFFORDANCE THE CONVERSION REMOVED.
+// Two of these CTAs became <button>s on 3 September 2026 (see the notes at each). An <a href> gets
+// `cursor: pointer` from the UA stylesheet; a <button> does not, and Tailwind's preflight leaves it at
+// `default`. Measured after the conversion: both converted CTAs computed `cursor: default` while the
+// nav's own CTA computed `pointer` (landing.css `.btn` sets it). That is a hover affordance silently
+// lost on the page's two primary actions. Declared on the BASE so the outline CTA — still an <a> — keeps
+// the same value rather than relying on the UA default, and the two cannot drift apart again.
 const CTA_BASE =
-  'inline-block rounded-xl text-center font-bold transition focus:outline-none focus-visible:ring-4'
+  'inline-block cursor-pointer rounded-xl text-center font-bold transition focus:outline-none focus-visible:ring-4'
 const CTA_PRIMARY = `${CTA_BASE} bg-[#EF8B2C] text-white hover:brightness-95 focus-visible:ring-orange-300`
 // ⚠️ SECONDARY IS AN OUTLINE, NOT A SECOND FILL. Two orange buttons side by side would compete and the
 // eye would have to choose; the muted one reads as the alternative it is.
@@ -165,9 +173,12 @@ function anchor(v: number): string | null {
   return 'a second van on the road'
 }
 
-// ⚠️ THE PROVIDER AND THE MODAL MOVED UP TO page.tsx (23 August 2026). This component no longer renders
-// a DemoCta of its own — its CTAs are plain links now — but the shared LandingNav above it still does,
-// so the provider is still required in the tree, one level higher. **There must be exactly one.**
+// ⚠️ THE PROVIDER AND THE MODAL LIVE IN ../page.tsx, NOT HERE, AND THAT IS STILL TRUE. This component
+// renders TWO <DemoCta>s of its own again (3 September 2026) and the shared LandingNav above it renders
+// a third, so all three depend on the <DemoModalProvider> one level higher. **There must be exactly one.**
+// 🔴 DO NOT ADD A PROVIDER HERE TO "MAKE THIS COMPONENT SELF-CONTAINED". A second provider would give
+// these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
+// the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
 export default function CostComparison() {
   const [trucks, setTrucks] = useState(1)
   const [staff, setStaff] = useState<1 | 2 | null>(null)
@@ -813,25 +824,40 @@ export default function CostComparison() {
                 )}
               </div>
 
-              {/* ── 🔴 THE ACTION CHANGED FROM "UPLOAD YOUR MENU" TO "START FREE" (23 August 2026) ──────
-                  Someone on the LANDING is asking "what is this?", and uploading a menu answers that.
-                  Someone who has just typed in their own trading figures has already decided it is
-                  interesting and is asking "is it cheaper for me?" — a file upload is a heavier ask than
-                  the moment warrants, and it fails outright for anyone on a phone with no menu file.
-                  🔴 SO THIS IS A PLAIN LINK, NOT A DemoCta. Do not convert it back without re-reading
-                  this: the demo is the wrong verb at this point in the journey, not merely a different
-                  one.
+              {/* ── 🔴 IT WENT BACK TO THE DEMO MODAL (3 September 2026), AND THE OLD NOTE WAS READ FIRST.
+                  What stood here from 23 August argued the opposite, and it is kept below because the
+                  argument is still sound and someone will make it again:
+
+                    "Someone on the LANDING is asking 'what is this?', and uploading a menu answers that.
+                     Someone who has just typed in their own trading figures has already decided it is
+                     interesting and is asking 'is it cheaper for me?' — a file upload is a heavier ask
+                     than the moment warrants, and it fails outright for anyone on a phone with no menu
+                     file. SO THIS IS A PLAIN LINK, NOT A DemoCta."
+
+                  🔴 WHAT OVERRULED IT IS NOT A BETTER ARGUMENT ABOUT VERBS — IT IS THAT THE LINK'S
+                  DESTINATION DOES NOT WORK. /signup → /setup has been unable to complete since 4 August
+                  2026 (app/api/setup/route.ts:70-72 requires a `contact_phone` that app/setup/page.tsx
+                  never asks for), and it fails AFTER creating the account, so the visitor's email address
+                  is spent and every later login returns them to the same dead screen. A heavier ask that
+                  works beats a lighter one that cannot. See ../page.tsx and the two reports named there.
+                  ⚠️ THE "no menu file on a phone" OBJECTION IS REAL AND IS ANSWERED, NOT IGNORED. The
+                  modal's idle screen offers three routes, not one: a file, PASTED TEXT, or "See sample
+                  menu" (DemoUpload.tsx:431-442), which provisions from a template with no upload at all.
                   🔴 THE FALLBACK BRANCH IS NOT DECORATIVE. When the operator's current provider is
-                  cheaper, `good` is false and the label must stop claiming a saving — and it must no
-                  longer promise a demo either, so it is now "Start free →" rather than "Try it with your
-                  menu →". Exercised — see the report.
+                  cheaper, `good` is false and the label must stop claiming a saving. Both branches now
+                  lead with the same verb as the landing's own CTAs, so the label describes the next
+                  screen — a menu upload — rather than promising a "free start" that begins elsewhere.
                   ⚠️ STACKED BELOW 640px, SIDE BY SIDE ABOVE IT. Two buttons on one row at 375px would
                   leave each about 150px; `flex-col sm:flex-row` gives them the full width each on a
-                  phone. */}
+                  phone.
+                  ⚠️ CTA_PRIMARY CARRIES ITS COLOUR IN A CLASS (`bg-[#EF8B2C]`), WHICH IS WHY THIS
+                  CONVERSION IS SAFE — see the note on CTA_BASE above. DemoCta forwards className ONLY
+                  and takes no `style`; the last attempt at this coloured the button with `style` and
+                  rendered it white-on-white. Nothing here uses `style`. */}
               <div className="flex flex-col gap-2 p-4 sm:flex-row sm:gap-3">
-                <a href="/signup" className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>
-                  {good ? `Start free and save ${gbp(m.saveY1)} →` : 'Start free →'}
-                </a>
+                <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>
+                  {good ? `Upload my menu and save ${gbp(m.saveY1)} →` : 'Upload my menu →'}
+                </DemoCta>
                 {/* ── ⚠️ "Ask us a question", NOT "Talk to us" — AND NOT "Chat to us" EITHER. ─────────
                     🔴 EVERY REJECTED LABEL IMPLIED A CHANNEL WE DO NOT HAVE. "Talk to us" implies a
                     phone number, and we publish none. "Chat to us" implies live chat, and there is
@@ -912,14 +938,22 @@ export default function CostComparison() {
           {' '}Check your current provider&apos;s rates before deciding.
         </p>
 
-        {/* The second CTA, for anyone who scrolled past the first. Same action, plainer label. */}
-        {/* ⚠️ THE SECOND CTA, for anyone who scrolled past the first. Same destination as the primary.
+        {/* ⚠️ THE SECOND CTA, for anyone who scrolled past the first. Same ACTION as the primary — it
+            opens the same one <DemoModal /> mounted in ../page.tsx — and deliberately the plainer label:
+            the primary above carries the saving figure, and repeating it here would read as a second,
+            different offer.
+            🔴 IT IS A <DemoCta> AS OF 3 SEPTEMBER 2026, NOT AN <a href="/signup">. The reasoning is in
+            the long note on the primary CTA above; read that before changing either, because the two
+            must always do the same thing.
             ⚠️ ITS `mt-6` WAS CHOSEN WHILE IT WAS INVISIBLE and has still never been judged in position —
             it is 24px below the small print, which is the only gap on the page not set against something
-            visible. Reported rather than adjusted; see the report. */}
-        <a href="/signup" className={`${CTA_PRIMARY} mt-6 block w-full px-6 py-4 text-base`}>
-          Start free →
-        </a>
+            visible. Reported rather than adjusted; see the report.
+            ⚠️ `block w-full` ON A <button>: fine, and it must stay explicit. A button is inline-block by
+            default and CTA_BASE's own `inline-block` would otherwise win, leaving this control sized to
+            its text instead of spanning the column. */}
+        <DemoCta className={`${CTA_PRIMARY} mt-6 block w-full px-6 py-4 text-base`}>
+          Upload my menu →
+        </DemoCta>
       </div>
 
       {/* ⚠️ A RANGE INPUT'S DEFAULT FOCUS RING IS INVISIBLE IN MOST BROWSERS once the track is styled —

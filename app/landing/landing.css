@@ -384,9 +384,26 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 /* The cost-comparison link under the plan cards. Sized ABOVE the small print around it and given the
    brand orange, so it reads as a route rather than another line of caveat — but it stays a link, not a
    button, so it never competes with the section's DemoCta. */
-.hg-landing .price-foot .compare-link { margin-bottom: .35rem; }
-.hg-landing .price-foot .compare-link a { color: var(--orange); font-weight: 600; font-size: .95rem; text-decoration: none; }
-.hg-landing .price-foot .compare-link a:hover { text-decoration: underline; }
+/* ---------- the switching block: a side door under the plan cards ---------- */
+/* 🔴 DELIBERATELY BELOW THE SECTION'S OWN TYPE SCALE. The section h2 is clamp(1.6rem,3.2vw,2.15rem)
+   and a plan name is 1.15rem; this heading is 1rem — smaller than a plan name, so it reads as a note
+   under the cards rather than a second section. It is a <p>, not a heading element, for the same reason.
+   ⚠️ NO BUTTON AND NO ORANGE FILL. Every primary control in this section is an orange DemoCta; a filled
+   button here would compete with the page's one action. The link is orange TEXT, the same weight as the
+   bare link this block replaced. */
+/* 🔴 FULL WIDTH OF THE PLAN CARD ROW. It was max-width: 34rem and centred, which read as inset
+   against the three cards above it on a laptop. `.plans` is a grid with no max-width of its own — it
+   fills the section's .wrap — so dropping the cap here makes the two edges line up by construction
+   rather than by a number that would drift if .wrap ever changed. Nothing changes on a phone, where
+   both were already the full column width. */
+.hg-landing .switch-block { margin-top: 2rem; text-align: center;
+                            background: var(--wash); border: 1px solid var(--line); border-radius: 14px;
+                            padding: 1.1rem 1.25rem; }
+.hg-landing .switch-head { font-family: var(--display); font-weight: 700; font-size: 1rem; color: var(--head); letter-spacing: -.01em; }
+.hg-landing .switch-body { font-size: .88rem; color: var(--ink-soft); margin-top: .3rem; }
+.hg-landing .switch-cta { margin-top: .6rem; }
+.hg-landing .switch-cta a { color: var(--orange); font-weight: 600; font-size: .95rem; text-decoration: none; }
+.hg-landing .switch-cta a:hover { text-decoration: underline; }
 
 /* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
 /* Column width defined ONCE (--cmp-col) and referenced by BOTH the header cols AND the body cells, so a plan

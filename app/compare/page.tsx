@@ -24,12 +24,11 @@
 // stopped there even with the flag set.
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
-import { verifyAdmin } from '@/lib/auth/admin'
-import { PRICING_PUBLISHED } from '@/lib/pricing'
+import { notFound } from 'next/navigation'
 import { isHatchGrabHost } from '@/lib/brand'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { DemoModalProvider, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import CostComparison from './CostComparison'
 import '../landing/landing.css'
 
@@ -42,8 +41,10 @@ export const dynamic = 'force-dynamic'
 //   • the link is handed out directly, so there is no search traffic to win,
 //   • and the landing page it belongs beside is still embargoed and carries robots:{index:false} too —
 //     an indexed /compare beside a noindexed landing would be the one page Google keeps.
-// 🟢 `follow: false` as well as `index: false`: this page links to /signup and /contact, and there is
-// no reason for it to pass any crawl signal on while it is not meant to be found.
+// 🟢 `follow: false` as well as `index: false`: this page links out to /contact, /login and the landing,
+// and there is no reason for it to pass any crawl signal on while it is not meant to be found.
+// ⚠️ It no longer links to /signup — all three CTAs are demo-modal BUTTONS now, which a crawler cannot
+// follow at all. `follow: false` is therefore doing less work than it was, and still correct.
 // ⚠️ THIS DOES NOT MAKE IT PRIVATE. noindex is a request to well-behaved crawlers, nothing more. The
 // gate is what stops people; this only stops the page turning up in a search result.
 export const metadata = {
@@ -75,10 +76,6 @@ const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'],
 const CHROME = `hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`
 
 export default async function CostPage() {
-  // 🔴 `PRICING_PUBLISHED` is lib/pricing.ts's own accessor — the same one Billing, FeatureGate and the
-  // van add-on read. 🔴 `verifyAdmin` is the canonical check, shared with app/landing/layout.tsx.
-  // 🔴 REDIRECT TO /contact, NEVER TO '/': proxy.ts rewrites '/' to the landing on hatchgrab.com, so
-  // refusing someone to '/' loops forever on the domain given to Apple as the Marketing URL.
   // ── 🔴 GATE 1 OF 2: THE BRAND. THIS PAGE DOES NOT EXIST ON VILLAGE FOODIE. ────────────────────
   // Village Foodie is the CONSUMER discovery brand. Someone there is looking for a food truck, not for
   // operator plan pricing, and showing them £29/£49 tiers is the branding leak app/contact/page.tsx's
@@ -92,46 +89,60 @@ export default async function CostPage() {
     notFound()
   }
 
-  // ── GATE 2 OF 2: PRICING PUBLICATION ────────────────────────────────────────────────────────────
-  // 🔴 THE HAND-CARRIED ADMIN GATE WAS REMOVED HERE ON 2 SEPTEMBER 2026, ON REQUEST, AND THAT IS A
-  // DELIBERATE OPENING. From this point the page is public to anyone on hatchgrab.com the moment
-  // NEXT_PUBLIC_PRICING_PUBLISHED is 'true' in Vercel — it no longer waits for the landing's embargo to
-  // lift, and it no longer requires an admin session. Dominic: "The second gate stays, so the page opens
-  // when NEXT_PUBLIC_PRICING_PUBLISHED is 'true' in Vercel and not before."
-  // ⚠️ SO THE FLAG IS NOW THE WHOLE ANSWER on this route. Flipping it publishes the real price list here
-  // at the same moment it un-masks prices in Billing. That is one switch doing two jobs; know it before
-  // flipping. See docs/compare-page-publish-report.md.
-  // ⚠️ /contact, NEVER '/': proxy.ts rewrites '/' to the landing on hatchgrab.com, so redirecting there
-  // loops forever on the domain given to Apple as the Marketing URL. Unchanged from the original.
-  if (!PRICING_PUBLISHED && !(await verifyAdmin())) {
-    redirect('/contact')
-  }
+  // ── 🔴 THE PRICING-FLAG GATE WAS REMOVED HERE — 3 SEPTEMBER 2026. THE PAGE IS PUBLIC. ───────
+  // It read:
+  //     if (!PRICING_PUBLISHED && !(await verifyAdmin())) redirect('/contact')
+  // 🟢 WHY IT WENT: the landing page's own admin gate was removed this morning, and the landing now
+  // LINKS here from its pricing section. A gated page behind a public link is a broken promise — the
+  // switching block tells a visitor it takes about a minute and then bounces them to a contact form.
+  // The two had to move together and the landing moved first.
+  // 🔴 THE FLAG ITSELF IS UNTOUCHED AND STILL MATTERS ELSEWHERE. NEXT_PUBLIC_PRICING_PUBLISHED still
+  // governs price masking in Manage -> Billing, FeatureGate and the van add-on through lib/pricing.ts,
+  // which this change does not modify. Removing the check HERE decouples this page from that decision;
+  // it does not make the decision. Do not read this as "the flag no longer does anything".
+  // ⚠️ SO THIS PAGE NOW SHOWS THE REAL PRICE LIST TO ANYONE ON A HATCHGRAB HOST, unconditionally. That is
+  // the intent. The only thing still standing between it and the public is the host gate above.
 
-  // ── 🔴 NO DemoModalProvider AND NO DemoModal ON THIS PAGE, AND THAT IS NOW CORRECT. ───────────────
-  // They were here only because the shared nav rendered the landing's <DemoCta>, whose useDemoModal()
-  // throws without a provider. Passing `cta` takes the nav's other branch — a plain <a> — so nothing in
-  // this tree calls useDemoModal and the provider had nothing left to provide.
-  // ⚠️ IF YOU EVER DROP THE `cta` PROP BELOW, THE PROVIDER MUST COME BACK. The nav would fall to its
-  // default branch and throw at render. That is a loud failure rather than a silent one, which is the
-  // right way round, but it is a coupling worth knowing about before editing this line.
+  // ── 🔴 THE PROVIDER AND THE MODAL CAME BACK — 3 SEPTEMBER 2026. THIS PAGE'S CTAs OPEN THE DEMO. ───
+  // They were removed on 23 August, when all three of this page's CTAs pointed at /signup and nothing in
+  // the tree called useDemoModal(). All three now open the demo modal instead — the nav below by DROPPING
+  // its `cta` prop, and the calculator's two by rendering <DemoCta> — so the provider is required again,
+  // and the previous note here ("IF YOU EVER DROP THE `cta` PROP, THE PROVIDER MUST COME BACK") is the
+  // instruction that was followed. It is restored exactly as app/landing/page.tsx has it: ONE provider
+  // wrapping the whole tree, ONE <DemoModal /> at the end.
+  //
+  // 🔴 WHY THE CTAs MOVED OFF /signup — AN OPERATOR DECISION, 3 SEPTEMBER 2026, NOT A REFACTOR.
+  // /signup → /setup CANNOT COMPLETE and has not since 4 August 2026: app/api/setup/route.ts:70-72
+  // requires `contact_phone` and app/setup/page.tsx has no field for it, so every attempt 400s AFTER the
+  // account is created — permanently consuming the email address. See docs/signup-journey-review-report.md.
+  // The demo path is the one that works, collects more (phone, WhatsApp preference, first/last name,
+  // cuisine) and lands a materially more complete truck — docs/onboarding-completeness-report.md §6.
+  // ⚠️ SO THIS IS A ROUTE AROUND A BREAK, NOT A FIX OF IT. /signup and /setup are untouched and still
+  // exist; app/manage/page.tsx:56 still sends a truckless operator to /setup, and that is deliberate.
+  // 🔴 IF /setup IS EVER REPAIRED, THIS PAGE DOES NOT AUTOMATICALLY GO BACK. Reverting is a product
+  // decision about which door a cost-comparison visitor should walk through, not a cleanup.
+  //
+  // ⚠️ EXACTLY ONE PROVIDER AND EXACTLY ONE MODAL. A second provider lower down would give the CTAs
+  // under it their own `open` state, and the modal mounted here would never see it — the CTA would look
+  // dead. CostComparison.tsx deliberately renders neither.
   return (
-    <>
+    <DemoModalProvider>
       <div className={CHROME}>
         {/* ⚠️ CHROME, NOT A FOURTH CTA. The page already carries three calls to action — the hero pair
             and the one under the small print — so this one deliberately keeps the nav's own appearance
             (`btn btn-primary nav-cta`, supplied by LandingNav) rather than competing with them. It
-            points at the same place as the page's primary action.
-            ⚠️ THE SHORT LABEL IS NOT OPTIONAL IN PRACTICE. Below 640px the nav swaps `.cta-full` for
-            `.cta-short`, and the nav must never wrap — so the mobile label drops the arrow, exactly as
-            the landing's own "Upload my menu →" / "Upload menu" pair does. */}
+            performs the same action as the page's primary CTA.
+            🔴 NO `cta` PROP, AND THAT IS THE CHANGE. LandingNav's default branch renders
+            <DemoCta className="btn btn-primary nav-cta"> with "Upload my menu →" / "Upload menu" — the
+            SAME COMPONENT the landing's own nav renders, byte-identical markup and classes, not a copy.
+            ⚠️ That default is also what supplies the short label: below 640px the nav swaps `.cta-full`
+            for `.cta-short` and `.nav-r .btn` is `white-space: nowrap`, so the mobile label must drop the
+            arrow. Passing a `cta` again would put the burden of remembering that back on this file. */}
         {/* ⚠️ `landingHref` IS NOT OPTIONAL IN PRACTICE ON A CHILD ROUTE. Without it the nav's logo and
             its Pricing link are bare fragments that resolve against THIS page and silently do nothing —
             see the table in LandingNav.tsx. '/landing' is used rather than '/' because '/' is only the
             landing on a hatchgrab host. */}
-        <LandingNav
-          cta={{ href: '/signup', label: 'Start free →', shortLabel: 'Start free' }}
-          landingHref="/landing"
-        />
+        <LandingNav landingHref="/landing" />
       </div>
 
       <CostComparison />
@@ -139,6 +150,11 @@ export default async function CostPage() {
       <div className={CHROME}>
         <LandingFooter landingHref="/landing" />
       </div>
-    </>
+
+      {/* Mounted ONCE — all three CTAs above drive this one instance. Same placement as
+          app/landing/page.tsx. It portals to document.body, so it is deliberately OUTSIDE `.hg-landing`
+          and brings its own tokens via `hg-demo-modal`. */}
+      <DemoModal />
+    </DemoModalProvider>
   )
 }

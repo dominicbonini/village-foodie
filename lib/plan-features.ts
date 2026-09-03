@@ -323,8 +323,12 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // whose order button deep-links back to ours — it is not an ordering page at their address, and the
       // old name promised one. 🔴 THE LABEL IS THE JOIN KEY (FeatureRow has no `id`): it is the
       // ROW_FEATURE_MAP key, the isRowComingSoon() key in Manage, and the trialFeatureValue() key on the
-      // landing table. This row appears in NONE of the three, so the rename moved no key — verified by
-      // grep across the tree, not assumed. Add the map entry under the NEW name on the day it flips.
+      // landing table.
+      // ⚠️ THE SENTENCE THAT STOOD HERE — "This row appears in NONE of the three, so the rename moved no
+      // key" — WAS TRUE ONLY FOR THE 29 AUGUST RENAME, AND WENT STALE THE SAME DAY: the flip to `true`
+      // added the ROW_FEATURE_MAP entry below in that same change. It is corrected rather than deleted
+      // because it is exactly the assumption a later rename would inherit and be wrong about. THE ROW
+      // NOW CARRIES A MAP KEY, and the 3 September rename moved it — see the block on the row itself.
       // 🔴 FLIPPED 'coming_soon' → true, 29 August 2026, ON AN EXPLICIT OPERATOR DECISION that reversed
       // this workstream's own brief ("IT STAYS coming_soon"). Recorded because the reversal is the whole
       // history of this cell: the card bullet had its Coming-soon badge removed first, which left the
@@ -338,7 +342,70 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // a SECOND gate the matrix cannot see: `trucks.embed_enabled`, NOT NULL DEFAULT false
       // (lib/features.ts:64, app/api/embed/events/route.ts:70). A Max truck reading this tick still gets
       // the fallback page until that column is set for them by domain_provision.
-      { name: 'Your schedule at your own website', detail: 'Your upcoming dates on a page at your own address, under your own name.', starter: false, pro: false, max: true },
+      // 🔴 REWORDED 3 SEPTEMBER 2026. WORDING SUPPLIED AND APPROVED BY THE OPERATOR — not editorial,
+      // do not "tidy" it. Was: 'Your schedule at your own website' / 'Your upcoming dates on a page at
+      // your own address, under your own name.' Cells, footnote (none) and position are UNCHANGED; this
+      // is copy only.
+      // 🔴 THE LABEL IS A JOIN KEY AND THE RENAME MOVED IT. FeatureRow has no `id`, so the NAME is the
+      // key in ROW_FEATURE_MAP (→ 'embed_schedule', renamed in the SAME edit below), and would also be
+      // the key in isRowComingSoon(), trialFeatureValue(), DETAIL_OVERRIDES, NAME_OVERRIDES and
+      // HIDDEN_ROWS. Grepped: this row appears in ROW_FEATURE_MAP ONLY — the other five do not name it.
+      // ⚠️ A RENAME THAT LEAVES A STALE MAP ENTRY IS SILENT. findPlanParityViolations() does
+      // `if (!feature) continue`, so the row would simply stop being checked, with no error anywhere.
+      // 🟢 THE COPY WAS CHECKED AGAINST THE CODE BEFORE IT WENT IN, and both halves hold:
+      //   • "on your own website" — HatchGrab SERVES this page at the operator's own domain (typically a
+      //     subdomain they point at us, e.g. schedule.theirtruck.co.uk). proxy.ts rewrites '/' to
+      //     app/domain/page.tsx for a custom host, so the address bar stays theirs throughout. 🔴 IT IS
+      //     NOT AN EMBED — the public iframe route was DELETED at V11.49; /api/embed/events survives only
+      //     as this page's data source and its name is historical.
+      //   • "links straight through to its order page" — EXACT, and per-event, not generic.
+      //     components/TruckListCard.tsx:194 builds each date's CTA as
+      //     `/trucks/<slug>/order?event_id=<that event's id>` on hatchgrab.com, target="_blank" so
+      //     payment happens top-level on our origin. The page LINKS to ordering; it does not order.
+      // ⚠️ THE ONE PHRASE TO WATCH: the previous detail deliberately avoided "built into your site",
+      // "embedded" and "inside your website", because promising an embed is a promise the product would
+      // have to keep. "on your own website" is close to that line — flagged to the operator, who owns
+      // the wording. It is NOT a description of an embed today; if the product ever gains one, this line
+      // needs re-reading rather than extending.
+      { name: 'Schedule page on your own website', detail: 'Show your upcoming dates on your own website. Each one links straight through to its order page.', starter: false, pro: false, max: true },
+      // ── 🔴 MOVED INTO THE MAX TIER SECTION, 3 SEPTEMBER 2026, ON THE OPERATOR'S INSTRUCTION. ──────
+      // It was added on 3 September in 'Online sales & automation' (between 'Auto-accept online orders'
+      // and 'Branded QR code') as a Pro feature. When the cells went Pro -> Max-only it became the ONLY
+      // Max-only row outside this section — every other one (Multi-device kitchen sync, Multi-user
+      // access, the schedule page, Kitchen ticket printing) already lived here — so it was moved.
+      // 🟢 PLACED DIRECTLY ABOVE 'Kitchen ticket printing' (operator's placement, 3 September 2026 — it
+      // was briefly below), AND THAT ADJACENCY IS THE REASON GIVEN: the same busy van prints tickets
+      // carrying BUZZER <n> in large type (lib/printing/ticket.ts:250-254). Buzzers are a busy-van
+      // problem and Max is the busy-van plan. ⚠️ Keep the two rows TOGETHER if either ever moves.
+      // ✅ THE SECTION'S "coming-soon rows last, in the data itself" CONVENTION IS PRESERVED. It goes at
+      // the END of the hard-`true` block, not after the coming_soon rows: Max tier now reads
+      // ✓ ✓ ✓ ✓ ✓ then Coming soon x 3 — still a block, not an interleave.
+      //
+      // 🟢 THE FEATURE IS BUILT, AND FULLY: assignment from BOTH operator surfaces (the board's bell
+      // chip, components/dashboard/OrderCard.tsx:724-732, and the KDS grid, components/dashboard/
+      // BuzzerGrid.tsx), through one atomic server action (assign_buzzer_atomic, migration 20260804),
+      // displayed on the board and printed on the thermal ticket. The rack size is an operator setting
+      // (truck_vans.buzzer_count) and the setup wizard asks for it as Q5 of its review step.
+      // 🟢 THE COPY DESCRIBES THE WHOLE FEATURE. The customer NEVER sees a buzzer number — grepped the
+      // order page, the submit route, the emails, Twilio and WhatsApp: zero references. So "so you know"
+      // is exactly right and no customer-facing half is being left out.
+      // 🔴 WORDING SUPPLIED AND APPROVED BY THE OPERATOR; not editorial, do not "tidy" it.
+      //
+      // 🔴 THIS ROW HAS NO GATE. THE TABLE EXCLUDES **STARTER AND PRO**. THE CODE ENFORCES NEITHER.
+      // There is NO Feature key for buzzers in lib/features.ts and NO canAccess/hasFeature call anywhere
+      // guards buzzer behaviour — app/api/dashboard/action/route.ts, which owns the set_buzzer handler,
+      // contains ZERO canAccess( calls in the whole file. So a Starter OR Pro truck can use buzzers in
+      // full today while this table says both are excluded. That is DELIBERATE, NOT AN OVERSIGHT:
+      // feature gating is being done separately. It is safe only because nobody is on Pro or Max — the
+      // platform has not launched. A key was NOT invented for it: an unenforced key gates nothing while
+      // passing the parity checker vacuously, which the manual already records five times over.
+      // ⚠️ CONSEQUENCE: there is no ROW_FEATURE_MAP entry, so findPlanParityViolations() hits
+      // `if (!feature) continue` and SKIPS this row entirely. A clean parity run says NOTHING about this
+      // row. Do not read one as evidence that the tiers are enforced.
+      // ⚠️ TRIAL IS NOT STORED ON THE ROW. trialFeatureValue() (lib/landing-table.ts:41-45) returns
+      // row.max for every row bar two named exceptions, and this is neither — so Trial follows max and
+      // keeps the feature. Cells read: Trial ✓ · Starter — · Pro — · Max ✓.
+      { name: 'Buzzer tracking',           detail: 'Give an order a buzzer number when you hand one out, so you know which buzzer belongs to which order.', starter: false, pro: false, max: true },
       // 🔴 'coming_soon', NOT true — 14 August 2026. A TICK IS A CLAIM THAT IT WORKS, AND IT DOES NOT.
       // components/printing/PrintingSettings.tsx has NO connect(): the Phase-A stub that wrote
       // 'Demo printer (Phase A stub)' and manufactured a connected state was REMOVED, and no real
@@ -482,8 +549,12 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // to hard-`true` without its entry is advertised as included and checked by nothing. The manual records
   // this exact trap (§4) — it is why the row was left 'coming_soon' for as long as it was.
   // ⚠️ The Feature key is 'embed_schedule', NOT a new one: lib/features.ts:69 already carries it in
-  // MAX_FEATURES, and its comment there predicted this rename. Keyed on the NEW row name.
-  'Your schedule at your own website': 'embed_schedule',
+  // MAX_FEATURES, and its comment there predicted this rename. Keyed on the CURRENT row name.
+  // 🔴 RE-KEYED 3 SEPTEMBER 2026 with the row's rename, in the SAME edit — was
+  // 'Your schedule at your own website'. THIS KEY AND THE ROW'S `name` MUST MATCH CHARACTER FOR
+  // CHARACTER. They are joined by exact string and nothing checks the join: a stale key here does not
+  // error, it makes findPlanParityViolations() `continue` past the row and quietly stop checking it.
+  'Schedule page on your own website': 'embed_schedule',
   'Kitchen ticket printing': 'ticket_printing',
   'Customer-facing display': 'cook_screen',
 }
