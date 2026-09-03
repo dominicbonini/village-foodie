@@ -392,6 +392,20 @@ export default function LandingPage() {
           </div>
 
           <div className="price-foot">
+            {/* 🔴 THE ONLY LINK TO /compare THAT EXISTS. Added 3 September 2026 with the gate lift.
+                Until now nothing anywhere pointed at that page, so it was reachable only by someone being
+                handed the URL — and a page nobody can navigate to is not live regardless of its gate.
+                🟢 HERE, DIRECTLY UNDER THE PLAN CARDS, because this is the moment the reader is weighing
+                cost and the calculator answers exactly the question the cards raise.
+                ⚠️ IT IS A PLAIN LINK, NOT A BUTTON. Every other control in this section is a DemoCta that
+                opens the upload modal; a fourth button competing with them would pull attention off the
+                primary action. This is a secondary route for someone who wants to do the arithmetic.
+                🔴 /compare HAS ITS OWN GATE AND IT IS NOT THIS ONE. It refuses unless
+                NEXT_PUBLIC_PRICING_PUBLISHED is 'true'. If that flag is unset when this deploys, THIS LINK
+                LANDS ON A REDIRECT TO /contact — see docs/landing-release-report.md 3. */}
+            <p className="compare-link">
+              <a href="/compare">Work out what you would pay →</a>
+            </p>
             {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
                 and renders on this same screen, so this restated it a third time. */}
             <p>*Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.</p>

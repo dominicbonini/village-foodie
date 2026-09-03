@@ -381,6 +381,12 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .price-foot { margin-top: 1.8rem; display: grid; gap: .5rem; max-width: 46rem; margin-inline: auto; text-align: center; }
 .hg-landing .price-foot p { font-size: .88rem; color: var(--ink-soft); }
 .hg-landing .price-foot p b { color: var(--head); font-weight: 600; }
+/* The cost-comparison link under the plan cards. Sized ABOVE the small print around it and given the
+   brand orange, so it reads as a route rather than another line of caveat — but it stays a link, not a
+   button, so it never competes with the section's DemoCta. */
+.hg-landing .price-foot .compare-link { margin-bottom: .35rem; }
+.hg-landing .price-foot .compare-link a { color: var(--orange); font-weight: 600; font-size: .95rem; text-decoration: none; }
+.hg-landing .price-foot .compare-link a:hover { text-decoration: underline; }
 
 /* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
 /* Column width defined ONCE (--cmp-col) and referenced by BOTH the header cols AND the body cells, so a plan

@@ -35,14 +35,21 @@
 // Uses the app's canonical admin check (operators.is_admin) via lib/auth/admin — the same gate the
 // admin panel/API use — not a new one. force-dynamic + reading cookies means this evaluates
 // per-request. Dev is intentionally left open so local iteration isn't blocked.
-import { redirect } from 'next/navigation'
-import { verifyAdmin } from '@/lib/auth/admin'
 
 export const dynamic = 'force-dynamic'
 
+// 🔴 THE GATE WAS REMOVED ON 3 SEPTEMBER 2026 — THE PAGE IS PUBLIC.
+// It read:
+//     if (process.env.NODE_ENV === 'production' && !(await verifyAdmin())) redirect('/contact')
+// 🟢 BOTH CONDITIONS THE GATE NAMED ARE MET, which is why it went and not before: the Pizzeria Gusto
+// testimonial has WRITTEN PERMISSION, and the hero screenshots are REAL captures, not placeholders.
+// ⚠️ WHAT THIS ALSO PUBLISHED, because it is not obvious from this file: proxy.ts rewrites '/' to this
+// route on a hatchgrab host, so removing this makes hatchgrab.com's ROOT public in the same change —
+// not just /landing. And the page renders REAL PRICES: it does not use the price mask, so £29/£49 are
+// visible to anyone regardless of NEXT_PUBLIC_PRICING_PUBLISHED.
+// 🔴 IF THIS EVER NEEDS TO GO BACK, RESTORE THE TWO LINES ABOVE — do not add a client-side check.
+// verifyAdmin reads cookies() and cannot run in a client module, and a client gate would ship the whole
+// page to the browser before hiding it.
 export default async function LandingLayout({ children }: { children: React.ReactNode }) {
-  if (process.env.NODE_ENV === 'production' && !(await verifyAdmin())) {
-    redirect('/contact')
-  }
   return <>{children}</>
 }
