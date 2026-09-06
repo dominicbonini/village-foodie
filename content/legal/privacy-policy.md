@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 6 August 2026
+**Last updated:** 5 September 2026
 
 This policy explains how HatchGrab Ltd ("we", "us", "our") collects and uses personal data across two connected services:
 
@@ -102,16 +102,18 @@ We use a small number of service providers, each of which processes data only on
 | Supabase | Database and authentication | United Kingdom (London) |
 | Vercel | Website and application hosting | United Kingdom (London) |
 | Brevo | Sending transactional email | European Union |
-| Google (Gemini) | Reading menus you upload, to extract their contents | United States |
+| Google (Gemini) | Reading menus you upload, to extract their contents, and reading messages your customers send you on WhatsApp, to write the automatic replies | United States |
 | Apple and Google | Delivering push notifications to your device | United States |
+| Meta (WhatsApp) | Carrying WhatsApp messages between your customers and your business number | United States |
+| Stripe | Taking payments from your customers and passing them on to you | United States |
 
 We may also disclose data where we are required to by law, or to establish or defend legal claims.
 
 **We do not sell personal data, and we do not share it for advertising.**
 
-**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Two things are handled outside it: menu extraction, which uses a Google service in the United States, and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, which provide appropriate safeguards. You can ask us for details of the safeguards that apply.
+**International transfers.** Your account data and order data are stored and processed in the United Kingdom. Some things are handled outside it: menu extraction and WhatsApp automatic replies, which use a Google service in the United States; WhatsApp message delivery, which is handled by Meta in the United States; payments, which are handled by Stripe in the United States; and push notifications, which are delivered by Apple and Google in the United States. Where data leaves the UK, the transfer is covered by UK adequacy regulations or by the International Data Transfer Agreement or Addendum, which provide appropriate safeguards. You can ask us for details of the safeguards that apply.
 
-As our service grows we may add providers, including a payment processor and an SMS provider. We will update this list before they begin processing your data.
+As our service grows we may add providers, including an SMS provider. We will update this list before they begin processing your data.
 
 ---
 
