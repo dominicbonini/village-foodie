@@ -129,6 +129,26 @@ interface ProvisionProfile {
    *  the column default for the same reason every other field on this type is: a default is invisible,
    *  and nothing in the product would record that anyone chose it. */
   completionPresses: 'one' | 'two'
+  /** `trucks.add_order_layout`: how the dashboard's Add Order screen presents the menu.
+   *  `'tabs'` = one category at a time ("Separate categories"); `'scroll'` = every item in one
+   *  scrolling list ("One page"). Read by components/dashboard/AddOrderPanel.tsx:2121 as
+   *  `truck?.add_order_layout === 'scroll' ? 'scroll' : 'tabs'`.
+   *
+   *  🔴 OPTIONAL, WHICH BREAKS THIS FILE'S OWN REQUIRED-FIELD CONVENTION, DELIBERATELY AND UNDER
+   *  INSTRUCTION. Every other field here is required so "a fixed POLICY cannot be forgotten by a new
+   *  profile". This one is optional so the OPERATOR PROFILE STAYS BYTE-IDENTICAL: making it required
+   *  would force the operator profile to declare a value, which is exactly what was ruled out.
+   *  ⚠️ THE CONSEQUENCE IS THE ONE THAT CONVENTION EXISTS TO PREVENT: a future profile that omits this
+   *  silently inherits the column default. That is the accepted trade, not an oversight.
+   *
+   *  ⚠️ WHEN OMITTED THE KEY IS NOT WRITTEN AT ALL — see the insert. The column is
+   *  `not null default 'tabs'` (20260814_trucks_add_order_layout.sql), so an operator truck keeps
+   *  taking that default exactly as it does today. THE DEFAULT IS NOT BEING CHANGED.
+   *
+   *  🔴 ONLY 'tabs' OR 'scroll'. The column is `text` and the Settings write path whitelists rather
+   *  than coerces, so a typo would be stored verbatim and then read back as 'tabs' through the
+   *  client's fallback — wrong, and silent. The union type is the only thing preventing that here. */
+  addOrderLayout?: 'tabs' | 'scroll'
 }
 
 const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
@@ -187,6 +207,10 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
   demo: {
     identity: 'random',
     plan: 'demo',
+    // A demo menu is short and the whole story is one uninterrupted walk-up order, so "One page" shows
+    // the prospect the entire menu without a category tap. 🔴 DEMO ONLY — the operator profile below
+    // declares nothing, so a real truck still takes the column default 'tabs'.
+    addOrderLayout: 'scroll',
     nameRequired: false,
     truckOrderEmailEnabled: false, // defaults true → every demo order would email the truck's contact
     // NEVER 'per_dish' for a demo: import commits every item allergens_verified=false, and the per-dish
@@ -463,6 +487,13 @@ export async function provisionTruck(
         // created before the migration is applied would carry no value at all, and the resolver's
         // show_paid_step fallback covers that; once applied, this is what makes the decision explicit.
         completion_presses: profile.completionPresses,
+        // 🔴 WRITTEN ONLY WHEN THE PROFILE DECLARES IT, so the operator path is byte-identical to what it
+        // was and its trucks continue to take the column default ('tabs'). The demo profile declares
+        // 'scroll'. Same conditional-spread shape as truck_emoji above, and for the same reason: an
+        // absent opinion must leave the column's own default standing rather than write over it.
+        // ⚠️ THERE IS ONE INSERT IN THIS FILE, SHARED BY BOTH PROFILES — the per-profile difference has
+        // to be expressed here, not in a second statement, because no second statement exists.
+        ...(profile.addOrderLayout ? { add_order_layout: profile.addOrderLayout } : {}),
         // Read by upsert_event when creating events (`truck.default_auto_open ?? true`).
         default_auto_open: true,
         default_auto_close: true,
