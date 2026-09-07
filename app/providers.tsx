@@ -54,6 +54,14 @@ if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     person_profiles: 'identified_only',
+    // 🔴 EXPLICIT, BECAUSE THE DEFAULT IS `false` AND THE REAL SWITCH IS IN A DASHBOARD WE CANNOT READ.
+    // posthog-js 1.386.6 ships `disable_session_recording: !1` — recording is then gated by a
+    // server-side project setting, so whether this app records sessions was decided outside the
+    // repository and no reader of this file could tell. That is not a state a privacy policy can be
+    // written against. Setting it here makes the answer live in the code: NO SESSION RECORDING.
+    // ⚠️ It does not disable AUTOCAPTURE, which remains on (the library default) and is disclosed in
+    // the privacy policy as clicks and pages viewed.
+    disable_session_recording: true,
   })
 }
 

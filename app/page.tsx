@@ -148,7 +148,11 @@ function VillageFoodieContent() {
       const cleanCode = code.toUpperCase();
       localStorage.setItem('user_postcode', cleanCode);
       setUserPostcode(cleanCode); 
-      if (posthog) posthog.capture('searched_postcode', { postcode: cleanCode, distance_filter: filters.distance });
+      // 🔴 THE POSTCODE IS NOT SENT TO POSTHOG (7 September 2026). It is a visitor's partial home
+      // address, it travelled with their IP attached and nothing strips `$ip`, and analytics never
+      // needed it — THAT a search happened is the useful signal. `cleanCode` is untouched above and
+      // still drives the search, localStorage and the filter chips; only this property is gone.
+      if (posthog) posthog.capture('searched_postcode', { distance_filter: filters.distance });
     } else if (showAlert) {
       alert("Could not find that postcode. Please try again.");
     }
@@ -161,7 +165,11 @@ function VillageFoodieContent() {
     if (filters.distance) params.set('distance', `${filters.distance} Miles`);
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
 
-    if (posthog) posthog.capture('clicked_newsletter_subscribe', { postcode: currentCode });
+    // 🔴 SECOND INSTANCE OF THE SAME DEFECT, FOUND BY SWEEPING RATHER THAN BY THE BRIEF. This sent
+    // the postcode to PostHog too. ⚠️ `currentCode` IS STILL USED BELOW and must be: Tally receives it
+    // as a hidden field and the fallback URL carries it, because the newsletter genuinely needs a
+    // location. Only the ANALYTICS copy is removed.
+    if (posthog) posthog.capture('clicked_newsletter_subscribe');
 
     if (typeof window !== 'undefined' && (window as any).Tally) {
       (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400, hiddenFields: { postcode: currentCode, distance: `${filters.distance || '10'} Miles` } });
