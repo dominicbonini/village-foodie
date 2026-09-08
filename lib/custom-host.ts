@@ -21,8 +21,12 @@
 /** Hosts that are ours. Substring/suffix tests, deliberately matching the existing `includes` shape. */
 export function isOwnHost(rawHost: string | null | undefined): boolean {
   if (!rawHost) return false
-  // Strip any port — `localhost:3000` and `example.com:443` must classify as their bare hostnames.
-  const host = rawHost.toLowerCase().split(':')[0]
+  // 🔴 NORMALISED THROUGH `hostKey`, NOT BY A SECOND COPY OF THE SAME THREE CALLS (5 September 2026).
+  // This read `rawHost.toLowerCase().split(':')[0]` — the same normalisation as `hostKey` minus the
+  // trim and minus the trailing-dot strip. Two near-identical normalisers is how they drift, and they
+  // had: `localhost.` classified as a CUSTOM host here while `hostKey` produced a key that could never
+  // match a stored value. One reader now, so they cannot disagree again.
+  const host = hostKey(rawHost)
   return (
     host.includes('hatchgrab') ||
     host.includes('villagefoodie') ||
@@ -44,9 +48,38 @@ export function isCustomHost(rawHost: string | null | undefined): boolean {
   return !!rawHost && !isOwnHost(rawHost)
 }
 
-/** The lookup key stored in `trucks.custom_domain`: lower-cased hostname, no port, no scheme. */
+/**
+ * The lookup key stored in `trucks.custom_domain`: lower-cased hostname, no port, no scheme,
+ * **no trailing dot**.
+ *
+ * ── 🔴 THE TRAILING DOT, AND WHY IT COST A TRADING TRUCK A NIGHT (5 September 2026) ───────────────
+ * This function did NOT strip a trailing dot while `checkSubdomain` — the function that produces the
+ * value actually STORED in `trucks.custom_domain` — always did (`lib/custom-domain/apex.ts`,
+ * `.replace(/\.$/, '')`). So the write path and the read path normalised differently:
+ *
+ *     stored by checkSubdomain :  events.theirtruck.co.uk
+ *     Host: events.theirtruck.co.uk.   →  old hostKey  →  "events.theirtruck.co.uk."   ← NO MATCH
+ *
+ * `app/domain/page.tsx` does `.eq('custom_domain', hostKey(host))`, so the mismatch returned no row,
+ * which `truckForHost` turns into `null`, which the page turns into `notFound()`. 🔴 THE OPERATOR SEES
+ * A BARE 404 — the same page a stranger typing a random address gets, with nothing anywhere saying a
+ * single character was the difference. That is exactly the anonymous 404 that cost Pizzeria Gusto a
+ * night of trading for an unrelated reason, and this was a second, silent way to reach it.
+ *
+ * 🔴 STRIPPING IS AUTHORITATIVE, NOT PRESERVING, AND THE REASON IS THAT THE DATABASE ALREADY DECIDED.
+ * The stored value can never carry a dot, so a read path that preserves one can only ever fail to
+ * match. Making the write path preserve it instead would mean changing what is stored for every truck
+ * — a migration and a backfill — to gain nothing. `events.x.co.uk.` and `events.x.co.uk` are the same
+ * name in DNS; the dot is a notation for "fully qualified", not part of the name.
+ * ⚠️ ONE dot is stripped, not many. `example.com..` is malformed rather than fully qualified, and
+ * quietly repairing malformed input is how a lookup starts matching things it should not.
+ */
 export function hostKey(rawHost: string | null | undefined): string {
-  return (rawHost || '').toLowerCase().split(':')[0].trim()
+  return (rawHost || '')
+    .toLowerCase()
+    .split(':')[0]
+    .trim()
+    .replace(/\.$/, '')
 }
 
 /**

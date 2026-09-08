@@ -38,7 +38,11 @@ import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
  * See docs/landing-footer-badge-report.md 4 for what Android and desktop visitors see, and why this
  * link cannot open an already-installed app today (no associated-domains entitlement, no AASA file).
  */
-export const APP_STORE_URL = 'https://apps.apple.com/gb/app/hatchgrab/id6803543106'
+// 🔴 THE STORE CONSTANTS MOVED TO lib/app-badges.ts (5 September 2026) so Manage → Settings can read
+// the same two URLs. Re-exported here because this file was their home and an importer may still name
+// it — moving a constant should not break a path nobody was asked to change.
+export { APP_STORE_URL, APP_STORE_BADGE_SRC, GOOGLE_PLAY_URL, GOOGLE_PLAY_BADGE_SRC } from '@/lib/app-badges'
+import { StoreBadges } from '@/components/StoreBadges'
 
 export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {}) {
   return (
@@ -97,37 +101,19 @@ export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {
                 ⚠️ A PLAIN <img>, NOT next/image, DELIBERATELY. next/image will not optimise an SVG without
                 `dangerouslyAllowSVG`, and Apple forbids modifying the artwork — so the file is served
                 exactly as supplied and nothing in the pipeline touches it. */}
-            <div className="foot-apps">
-              <a href={APP_STORE_URL} className="foot-badge" aria-label="Download HatchGrab on the App Store">
-                {/* 🔴 UNMODIFIED VENDOR ARTWORK. No filter, transform, shadow, radius or hover effect —
-                    Apple: "Don't modify, angle, or animate the App Store badge." The CSS sets HEIGHT only
-                    and lets width follow, so it can never be scaled off-ratio.
-                    🟢 BLACK VARIANT, SWITCHED FROM WHITE ON 2 SEPTEMBER 2026 ON REQUEST. The white badge
-                    read as a bright slab on bg-slate-900. Apple's black badge is a near-black field with a
-                    #a6a6a6 border and white lettering, so on a dark footer it reads as a bordered control
-                    rather than a cut-out. Both are official artwork, unmodified, and both are permitted —
-                    this is a choice between two supplied files, not an edit to either.
-                    🟢 AND IT PRE-SOLVES THE ANDROID SWITCH. Apple: "Whenever one or more badges for other
-                    app platforms appear in the layout, use the preferred black badge." Being on black
-                    already means adding the Play badge needs NO colour change and NO light panel behind the
-                    pair — the rework the earlier report flagged as the unavoidable cost of the white badge.
-                    ⚠️ The white file stays in public/badges/ — it is the right one if this footer ever goes
-                    light. See public/badges/README.md. */}
-                <img
-                  src="/badges/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg"
-                  alt="Download on the App Store"
-                  width={120}
-                  height={40}
-                />
-              </a>
-              {/* 🟢 THE SECOND SLOT IS HERE, AND THE LAYOUT IS ALREADY SIZED FOR IT. Android is in review
-                  as of 2 September 2026. When it publishes: add the Google Play badge as a SIBLING <a>
-                  immediately below this comment — Apple requires ITS badge FIRST in the lineup, so the Play
-                  badge goes after, never before — and swap the white Apple badge above for the black one,
-                  which Apple also requires the moment another platform's badge appears. `.foot-apps` is
-                  already a wrapping flex row whose gap satisfies the clear-space rule for two, so nothing
-                  else in the footer has to move. See docs/landing-footer-badge-report.md §2. */}
-            </div>
+            {/* ── 🔴 BOTH BADGES, FROM THE ONE COMPONENT — components/StoreBadges.tsx. ─────────────
+                This block used to be two hand-written <a><img> pairs. It is shared now because
+                Manage → Settings offers the same download, and the ORDER and the COLOUR are VENDOR
+                RULES rather than styling: Apple requires its badge first in the lineup and requires
+                the black variant the moment another platform's badge appears. A second copy of that
+                markup is a second place those rules can silently be got wrong.
+                🟢 THE LANDING'S OWN CSS STILL OWNS THE LAYOUT. `.foot-apps` (landing.css:542) sets the
+                flex row and the 1.25rem gap that satisfies Apple's clear-space rule for a pair, and
+                `:569` centres it below 760px — so on a phone the two sit side by side if they fit and
+                stack centred if they do not. `.foot-badge img` sets height:40px, width:auto.
+                ⚠️ The classes REPLACE the component's Tailwind defaults rather than adding to them, so
+                exactly one rule owns the gap. */}
+            <StoreBadges className="foot-apps" linkClassName="foot-badge" />
         </div>
       </div>
       {/* 🔴 REVERSED ON 2 SEPTEMBER 2026, ON REQUEST — THE ORIGINAL REASONING IS KEPT BELOW ON PURPOSE.
@@ -137,9 +123,13 @@ export function LandingFooter({ landingHref = '' }: { landingHref?: string } = {
           🟢 WHAT CHANGED IS THE PRECONDITION, NOT THE JUDGEMENT. The 18 August rule's stated reason was
           "a badge [must] link to a LIVE listing and there is none yet". The iOS app is now live, so that
           reason is spent and the badge above is legitimate.
-          ⚠️ THE REST OF THE OLD RULE STILL BINDS, and is exactly why there is no Play badge yet: Android
-          is in review, Google's brand terms do not permit a Play badge for an unpublished app, and the
-          page's copy must keep saying "coming soon", never "available".
+          🟢 UPDATED 5 September 2026 — THIS PARAGRAPH SAID "there is no Play badge yet: Android is in
+          review… and the page's copy must keep saying 'coming soon'". **Android is now published**, so
+          both halves are spent: the copy is present tense everywhere, and the Play slot above exists.
+          🟢 AND THE URL LANDED THE SAME DAY — `lib/app-badges.ts` carries the real listing, supplied by
+          Dominic, so BOTH badges now render. ⚠️ THE RULE ITSELF STILL BINDS AND IS WHY EACH BADGE IS
+          STILL GUARDED INDIVIDUALLY: a badge must link to a LIVE listing, so if either URL is ever
+          cleared that badge disappears rather than pointing at nothing.
           ── THE ORIGINAL NOTE, LEFT INTACT AS THE RECORD ───────────────────────────────────────
           THE APP LINE WAS REMOVED HERE — 18 August 2026, ON REQUEST. The footer no longer mentions
           the iPhone/iPad apps at all. The rule it used to satisfy still binds anything that brings it

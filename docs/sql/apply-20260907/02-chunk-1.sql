@@ -1,0 +1,74 @@
+-- 02 — CHUNK 1 of 5 — 65 statements, each affecting exactly 1 row (0 if re-run).
+-- Guarded AND venue_id IS NULL, so re-running is a no-op, never an overwrite.
+-- CHUNK 1 of 5 — 65 statements
+BEGIN;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = '7b110d58-34eb-4c0e-81a8-ef5ee7a1ec7c' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '3d955264-9d4d-4154-a617-f8b9004f083f' WHERE id = '2a1638ce-1350-4e9d-a484-0e61dcb95af5' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'f4c7f7d3-c621-4609-a300-2d3dca46aa66' WHERE id = '07178a36-3a89-423a-b673-5982f5e9b333' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '825ea1cf-ac7d-4450-a740-c2b37276a5ac' WHERE id = 'c8b41ed4-62a1-4731-9b55-a5b32ba3af7a' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'a485dd51-f7e1-4e94-bd40-08dec7bee894' WHERE id = '2b4423ef-d9cb-404a-bd12-f212a86629fe' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '5e9fe0c9-63fc-4ac9-8df1-cd1874da3cd3' WHERE id = '3ec0c857-fa6f-4a0f-b44a-daa8c792db77' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '6eae1c19-d86d-4081-b473-920927c56e81' WHERE id = 'e6321aea-6de1-49ad-a429-ba8dbaac54b5' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '5ca087d2-4631-424c-a34b-26d8f8e30fda' WHERE id = '62388194-8f0f-4fa3-9aa4-2131700f71a3' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'ea19437c-e035-47e4-9931-c87d0acb14af' WHERE id = 'ab06f9be-4bfc-4dde-ac63-bc637d8076cf' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = '2e52cfb8-899e-4ee4-bd0d-c5a5c9c19e56' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'f49f4399-836c-40cf-83f6-86d040242815' WHERE id = '4588dc37-eb54-4c3c-bedd-89c4db6ed36a' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'c1f44681-c488-4006-bce8-d8ebb8d6b7be' WHERE id = '38bea95c-63cc-47e3-806e-7dfbc415f429' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '87cee07c-e922-49be-aa19-d9d64dc062f6' WHERE id = '20f6e087-c7a2-4eb4-adc4-bca6060aa0eb' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'a1bad847-9e24-42a5-a594-f1c3c52806a6' WHERE id = '334455ac-1fdf-45c8-8a27-d3a3deffbe28' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '6b60aba3-0d7c-497c-a85d-fc0dd081a974' WHERE id = 'bf2c0d2b-676d-45e4-87d0-345dd0af1beb' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '02ec04fa-9ca6-4552-91f9-4b213b36a0e3' WHERE id = '6bd2bdef-5ab4-4cbd-afec-6b090300ddbb' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = '5fc6bc68-a1e7-4955-b151-3e8c4d523a64' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'fb9fac59-1e17-48c7-ba50-c183e6892885' WHERE id = '863eaeed-db08-46b8-aa9c-c9c8d25b0fb8' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '2b4b3f54-f698-4f07-a668-a4078220389c' WHERE id = 'cd94b9d9-ee41-4ed1-990c-24bc6baf3b60' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '6a1f70bc-968a-4486-8274-a5daa1371072' WHERE id = '603a6b5a-959b-44d3-b113-7399dd6cae94' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '4ebad5a8-e3b1-4a2d-af5b-a0b4248ba25b' WHERE id = '9279b30d-b54a-41e4-9a43-2e6995ca3a9a' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'a485dd51-f7e1-4e94-bd40-08dec7bee894' WHERE id = 'f3cfcd7a-221e-4809-bd78-301479ce15c4' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '9471d745-deb3-428f-82f0-ba5cddf296b5' WHERE id = 'ee8bab63-9970-4a30-919c-d99ab7fee00b' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '38e00bd7-51d6-4f7f-822f-f7b8e29e1d9c' WHERE id = '612756da-0a10-4860-8429-ee20cea4f5a0' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'adeca7cc-0241-46e2-96f2-568c68932342' WHERE id = '907de226-b319-4459-bf8c-c572ddc3a7ad' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '9e8dd61d-27ec-4446-8348-91f4da704118' WHERE id = 'be6dcc57-aac4-4143-a8fd-02a50a74b4e9' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = '2d174036-0ece-4f00-9328-229d021f309a' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'ef318e80-36ff-4675-b799-6cf2f9430f7f' WHERE id = '49a7fd0c-8b14-462c-b2e0-bf1c0535a072' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '42ec4917-cac5-4660-9ef1-47fdb76a4de3' WHERE id = '8d88f9e9-e865-4c16-8e53-dd439cec35e2' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '23f66e26-a428-4c80-9a57-0fbf8cd763df' WHERE id = 'afcf4354-4f6e-41e3-8982-60ea96c4d946' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'eb0837a9-b7a6-4094-89e5-4048a54a7495' WHERE id = '0055f911-9d6c-4068-b946-e08a3016687a' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'faaee0f4-4907-48da-bed2-0d3541b9d540' WHERE id = 'b884adfc-d8bc-4aca-a11f-164a0a16ed64' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1c44311e-8451-4f61-8e99-6c4b730e7b9b' WHERE id = 'e11e7bb2-956b-462a-8c33-6a8798170559' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1c44311e-8451-4f61-8e99-6c4b730e7b9b' WHERE id = '40a15e97-b049-4b8f-b98c-c6ddd8590435' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1c44311e-8451-4f61-8e99-6c4b730e7b9b' WHERE id = 'd23bc285-3202-4868-82c6-ad7a4b5f611e' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1c44311e-8451-4f61-8e99-6c4b730e7b9b' WHERE id = 'bf8f58ee-3680-41d0-a2a7-0aa167e48ec9' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1c44311e-8451-4f61-8e99-6c4b730e7b9b' WHERE id = 'd110d385-fb25-4fc4-b37e-136eb51a6a6b' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = '5f8f9d76-9ab3-41f2-bc23-a4df6cde8558' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = '39996f73-8969-497c-9493-f1ebcc7f79f8' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = '6c891367-7d84-4323-95dc-13a4235b6ee2' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = '7a0781f0-8f17-4c34-bc41-1f77e9114537' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = '4f5dd5d4-1359-4b71-b75c-228ae23367e1' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'e9995689-e367-4088-9201-39caa3a4e150' WHERE id = 'cf4c4314-6005-4817-b9ad-b0aa36d8e361' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'adeca7cc-0241-46e2-96f2-568c68932342' WHERE id = 'bc0ce64e-04fb-4a85-947e-7b31d394cf57' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '272f1dd1-bc9b-4c0c-b062-7530f65e0d9d' WHERE id = '53f3ee38-4fa5-4488-a355-b9423fc149a1' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'f4c1c940-8d2c-40ca-8b17-6d6992390e59' WHERE id = '441be646-c6c7-4732-9043-eaa97b0ffe8f' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '1a87cc8c-271f-46b8-bac6-2b89202391bb' WHERE id = '049c50da-a34b-47b6-8961-2878953b3b2f' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '2671320f-2613-428c-b730-7a90778db2fd' WHERE id = '8b6f32c9-8967-4033-9584-6185aa5581b4' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = 'db4601fb-e909-4aa3-af52-e3085a74166c' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'a2a2a63f-9a13-4441-84ce-041e28743071' WHERE id = 'd0a413c0-068b-4156-9140-48dca838dba4' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'b34519e2-e82f-420c-8912-813ae234bd5b' WHERE id = '3fbce27c-22cb-4858-b029-742b8dd837a3' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'a485dd51-f7e1-4e94-bd40-08dec7bee894' WHERE id = 'be8fcc50-5543-4187-b21b-6fc0f0d136e4' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '7a4f8e4e-aced-40b7-bd5a-4b95dc24a416' WHERE id = 'dcb7ced1-d7e4-4e93-9cc8-58f261bd6485' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'faaee0f4-4907-48da-bed2-0d3541b9d540' WHERE id = 'e28c6dc0-6ff4-4628-8d90-d064388ebcf9' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'b409ec3b-1a68-4c8d-b504-12ca8e85580b' WHERE id = 'cbecc15b-855f-424a-baff-822719eb86e2' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '6e23389e-4d1c-405b-be22-7cc39bbd558f' WHERE id = '45dac1a1-a164-4c12-8e75-aafe355e693e' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'ea19437c-e035-47e4-9931-c87d0acb14af' WHERE id = '46ca91f0-1257-4ae9-a86d-dead36e7ddde' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'eb48034c-6797-4819-ba42-d9a752d92c42' WHERE id = '2e078069-7d76-43e0-bf70-de5e6b520b01' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'f4c1c940-8d2c-40ca-8b17-6d6992390e59' WHERE id = '66f42f2a-498d-4c28-a9f7-8c02806b4a9c' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'adeca7cc-0241-46e2-96f2-568c68932342' WHERE id = 'b756fec3-4ca3-495f-86e2-935d0173b123' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '272f1dd1-bc9b-4c0c-b062-7530f65e0d9d' WHERE id = '56fa687f-e15e-4e8f-a0a2-c11aded72f40' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = 'b34519e2-e82f-420c-8912-813ae234bd5b' WHERE id = '091e13dd-63a7-4f2b-8371-ba776a5465bf' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '645b7f3c-ec0d-442e-835a-d5973fcf168c' WHERE id = 'af00444a-16d8-4e14-a71e-6e62a43da3b4' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '51540f6e-d173-4b5b-a446-5c17f2ba0aff' WHERE id = '099138ac-7a19-4914-8327-eef5576b5636' AND venue_id IS NULL;
+UPDATE discovery_events SET venue_id = '2cf14ec5-52fa-48a8-baa2-0070e4db134f' WHERE id = '49c7a59d-3965-4c2d-b6c3-5bca61480460' AND venue_id IS NULL;
+COMMIT;
+
+-- Expect with_venue_id = 134 after this chunk.
+SELECT count(e.venue_id) AS with_venue_id
+FROM discovery_events e WHERE e.event_date >= CURRENT_DATE;

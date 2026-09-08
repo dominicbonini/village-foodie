@@ -1,5 +1,6 @@
 'use client'
 
+import { CopyButton } from '@/components/dashboard/CopyButton'
 // components/dashboard/DemoWelcome.tsx
 // One-time orientation the first time a visitor lands on the demo dashboard.
 //
@@ -46,7 +47,6 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
     if (typeof window === 'undefined') return false
     try { return localStorage.getItem(storeKey) !== 'seen' } catch { return true }
   })
-  const [copied, setCopied] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [qrFailed, setQrFailed] = useState(false)
 
@@ -73,12 +73,15 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
     setOpen(false)
   }
 
-  const copy = () => {
-    if (!orderUrl) return
-    navigator.clipboard.writeText(orderUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  // ── 🔴 `copy` IS GONE (5 September 2026), AND IT REPORTED SUCCESS IT HAD NOT CHECKED. ───────────
+  // It read:
+  //     navigator.clipboard.writeText(orderUrl)   // ← promise DISCARDED
+  //     setCopied(true)                           // ← unconditional
+  // "Copied" appeared whether or not anything reached the clipboard. 🔴 THE COST IS SPECIFIC HERE:
+  // this button exists for the visitor who wants the link **on a different device** — the one case
+  // neither tapping nor scanning covers — so a false "Copied" is discovered on the other device, with
+  // nothing on this one left to copy from. The behaviour now lives in the shared CopyButton, which
+  // derives its label from the resolved promise.
 
   if (!open) return null
 
@@ -172,10 +175,17 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
                 </a>
                 {/* COPY stays, for the visitor who wants it on a DIFFERENT device — the one case neither
                     tapping nor scanning covers. */}
-                <button onClick={copy}
-                  className="mt-2 w-full bg-orange-600 text-white text-xs font-bold py-2 rounded-lg hover:bg-orange-700">
-                  {copied ? 'Copied' : 'Copy link'}
-                </button>
+                {/* ⚠️ RENDERED ONLY WHEN THERE IS SOMETHING TO COPY — this preserves the old handler's
+                    `if (!orderUrl) return` guard as a render condition rather than a silent no-op. */}
+                {orderUrl && (
+                  <CopyButton
+                    value={orderUrl}
+                    label="Copy link"
+                    describedAs="order link"
+                    tone="primary"
+                    className="mt-2 w-full py-2 text-xs font-bold"
+                  />
+                )}
               </div>
             </div>
           )}

@@ -117,7 +117,12 @@ export function verifyMetaSignature(input: {
  *
  * 🔴 IT NAMES THE CAUSE rather than saying "unauthorised", because this is the artefact somebody reads
  * when the endpoint starts refusing everything:
- *   no_secret_configured       → META_APP_SECRET is missing in this environment. THE LOUD ONE.
+ *   no_secret_configured       → META_WHATSAPP_APP_SECRET is missing in this environment. THE LOUD ONE.
+ *                                (⚠️ NAME CORRECTED 4 Sep 2026 — this line still said `META_APP_SECRET`,
+ *                                a name production has never defined. The caller reads
+ *                                `process.env.META_WHATSAPP_APP_SECRET` and deliberately uses no fallback
+ *                                chain; see app/api/webhooks/meta/whatsapp/route.ts:98-109. Doc text only —
+ *                                this module reads no environment variable and its behaviour is unchanged.)
  *   missing_signature_header   → something that is not Meta is POSTing here (a scanner, a probe).
  *   malformed_signature_header → a header that is not `sha256=<hex>`.
  *   signature_mismatch         → wrong app secret for this Meta app, or a genuine forgery.

@@ -122,6 +122,26 @@ export const customHostRatelimit = new Ratelimit({
   prefix: 'vf_rl_customhost',
 })
 
+/**
+ * ── THE ON-DEMAND DOMAIN CHECK ──────────────────────────────────────────────────────────────────
+ * 🔴 KEYED ON THE TRUCK, NOT THE IP. This runs behind a dashboard token, so there IS an identity to
+ * key on — and keying on the truck means one operator refreshing cannot exhaust another's budget, and
+ * two operators behind one venue's WiFi do not collapse into a single bucket. Same reasoning the
+ * WhatsApp preview limiter records.
+ *
+ * 🔴 SIX AN HOUR, AND THE SIZE IS SET BY WHAT IT COSTS. Every check is a DNS resolution PLUS a call to
+ * the hosting API — a third party's rate limits, not just ours. The legitimate pattern is: add the
+ * record, open the box, wait, open it again a few times over the next hour. Six covers that with room.
+ * ⚠️ IT IS NOT A SECURITY CONTROL. It is there so a held-down refresh cannot hammer DNS or Vercel; the
+ * dashboard token is what stops a stranger.
+ */
+export const domainCheckRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(6, '1 h'),
+  analytics: true,
+  prefix: 'vf_rl_domaincheck',
+})
+
 export const embedRatelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(600, '1 m'),

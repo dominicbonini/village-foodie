@@ -133,6 +133,24 @@ export type ProviderSteps = {
   helpUrl: string
   /** One thing that will otherwise catch them out, or null. */
   caveat: string | null
+  /**
+   * ── 🔴 DOES THIS PROVIDER REQUIRE A TRAILING FULL STOP ON THE TARGET? ──────────────────────────
+   * Added 5 September 2026, after an operator copied the target, pasted it into Wix, and **Wix
+   * REJECTED it for a trailing full stop.** They deleted the character by hand and it saved.
+   *
+   * 🔴 THE DOT CANNOT BE STRIPPED GLOBALLY, WHICH IS THE ENTIRE REASON THIS FIELD EXISTS. 123 Reg
+   * REQUIRES it — their own page, quoted in that record: *"Be sure to add a full stop to the end …
+   * or your CNAME record will not work correctly."* A blanket strip would break that provider
+   * **silently**: the record saves, resolves to the wrong name, and the only symptom is a domain that
+   * never starts working, with our own hint — *copy this exactly* — telling them they did it right.
+   *
+   * 🔴 REQUIRED, NOT OPTIONAL, SO A NEW PROVIDER CANNOT INHERIT A DEFAULT NOBODY CHOSE. Every
+   * verified provider states its answer. The generic (no-steps) path has no record to read and is
+   * dotless, which is correct for every provider we have ever seen except this one.
+   * ⚠️ IT DESCRIBES THE PROVIDER'S FORM, NOT DNS. The stored value and the resolver comparison are
+   * dotless everywhere; this is purely what the operator must type into that provider's box.
+   */
+  targetTrailingDot: boolean
 }
 
 /** The three field names a provider puts on its own form. `type` is never null here — see below. */
@@ -184,6 +202,8 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
       ],
       helpUrl: 'https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/',
       caveat: 'If the cloud stays orange the padlock will never appear, and nothing will say why.',
+      // Their help page says nothing about a trailing full stop, and the value is accepted without one.
+      targetTrailingDot: false,
     } },
   { id: 'godaddy', label: 'GoDaddy', dashboardUrl: 'https://dcc.godaddy.com/manage/dns', nsMatch: ['domaincontrol.com'],
     // Read 28 Aug 2026 from godaddy.com/help/add-a-cname-record-19236
@@ -202,6 +222,8 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
       ],
       helpUrl: 'https://www.godaddy.com/help/add-a-cname-record-19236',
       caveat: 'If you added more than one at once, the button says "Save All Records".',
+      // Their help page says nothing about a trailing full stop, and the value is accepted without one.
+      targetTrailingDot: false,
     } },
   { id: 'squarespace', label: 'Squarespace Domains', dashboardUrl: 'https://account.squarespace.com/domains', nsMatch: ['squarespacedns.com'],
     recordLabels: { type: 'Type', name: 'Host', value: 'Data' } },
@@ -226,6 +248,8 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
       ],
       helpUrl: 'https://www.123-reg.co.uk/support/domains/how-do-i-set-up-a-cname-record-on-my-domain-name/',
       caveat: '123 Reg needs a full stop at the end of the second value or it will not work.',
+      // 🔴 THE ONLY `true` IN THIS FILE. Their own page requires it; see the field's own note.
+      targetTrailingDot: true,
     } },
   { id: 'namecheap', label: 'Namecheap', dashboardUrl: 'https://ap.www.namecheap.com/domains/list/', nsMatch: ['registrar-servers.com'],
     recordLabels: { type: 'Type', name: 'Host', value: 'Value' } },
@@ -245,6 +269,9 @@ export const DNS_PROVIDERS: Array<DnsProvider & { nsMatch: string[] }> = [
       ],
       helpUrl: 'https://support.wix.com/en/article/adding-or-updating-cname-records-in-your-wix-account',
       caveat: 'If your web address only points at Wix rather than being held there, Wix cannot make this change — whoever holds it has to.',
+      // 🔴 OBSERVED, NOT ASSUMED (5 September 2026): an operator pasted a dotted target into Wix and
+      // WIX REJECTED IT. They deleted the full stop by hand and it saved. This field is why.
+      targetTrailingDot: false,
     } },
   { id: 'google', label: 'Google Domains or Squarespace', dashboardUrl: 'https://domains.squarespace.com/', nsMatch: ['googledomains.com'],
     recordLabels: { type: 'Type', name: 'Host name', value: 'Data' } },

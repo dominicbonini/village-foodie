@@ -36,7 +36,15 @@ const isStrictPublic = (p: string) =>
 // closed by the move. Same bucket, same tier, same reasoning as the path it replaces.
 const isGeneralPublic = (p: string) =>
   p === '/trucks' || p.startsWith('/trucks/') ||
-  p === '/o' || p.startsWith('/o/')
+  p === '/o' || p.startsWith('/o/') ||
+  // `/order/<slug>` is the renamed scan/decider route (`/o/` is now a permanent shim to it). Same tier,
+  // same reasoning as `/o/` above: without this the one address on a printed code would be an unmetered
+  // DB read whose redirect discloses a truck's custom domain. Registered per-prefix (V11.51).
+  // 🔴 THE DECIDER LEAF ONLY — `/order` and `/order/<slug>`, NOT `/order/<id>/manage`. Unlike `/o/`, the
+  // `/order/` prefix has a deeper child (the customer order-manage page), which `/o/` never metered; a
+  // `startsWith('/order/')` here would silently pull that page into the limiter. Matching a single
+  // segment keeps the scope identical to what `/o/` covered.
+  p === '/order' || /^\/order\/[^/]+$/.test(p)
 // EMBED (600/min, keyed IP+slug) — the operator-website widget and the endpoint that feeds it.
 // 🔴 BOTH HALVES, DELIBERATELY. The page and its data fetch are one visitor action, so limiting only
 // one of them would leave the other unbounded. It also means one embed view spends TWO tokens; the

@@ -7,7 +7,8 @@
 | File | Variant | In use? |
 |---|---|---|
 | `Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg` | **Black** | ✅ **YES** — the landing footer, under the links (since 2 September 2026) |
-| `Download_on_the_App_Store_Badge_US-UK_RGB_wht_092917.svg` | **White** | ❌ Held — correct only if the footer ever goes light |
+| `Download_on_the_App_Store_Badge_US-UK_RGB_wht_092917.svg` | **White** | ❌ Held — correct only if a surface ever goes light |
+| `GetItOnGooglePlay_Badge_Web_color_English.svg` | **Colour (full-bleed black field)** | ✅ **YES** — beside the Apple badge, since 5 September 2026 |
 
 Both supplied by Dominic on **2 September 2026** and written to disk **byte-for-byte as received**.
 Apple's own filenames are preserved deliberately — they encode the locale (`US-UK`), the colour
@@ -48,3 +49,36 @@ See `docs/footer-badge-position-report.md`.
 
 That file is **our own** HatchGrab web-clip icon, rendered from `public/icons/hatchgrab-icon.svg`. It has
 nothing to do with Apple's marketing artwork and is governed by none of the above.
+
+
+## The Google Play badge (added 5 September 2026)
+
+Supplied by Dominic on **5 September 2026** and written to disk **byte-for-byte as received**. Google's
+own filename is preserved for the same reason Apple's are — it encodes the variant (`color`) and the
+language (`English`). **Do not rename it.**
+
+Native size is **238.96 × 70.87**. Rendered at `height: 40px; width: auto` → **134.87px wide**, against
+Apple's 119.66px at the same height. 🔴 **THE WIDTHS DIFFER AND THAT IS CORRECT** — same height,
+different word count. Forcing them equal would scale one off-ratio, which both vendors forbid.
+
+🟢 **It is FULL-BLEED, which is why the pair matches.** Some Google badge downloads ship with built-in
+clear space, which reads visually smaller than Apple's at the same height. This one does not: its first
+element is `<rect x="-.11" width="239.17" height="70.87" rx="8.86">`, a rounded rectangle filling the
+whole viewBox — the same shape as Apple's black badge. Both are 40px-tall pills.
+
+🟢 **And the black Apple badge was already in place**, which is what Apple requires the moment another
+platform's badge appears. Adding this one needed no colour change and no panel — exactly as the section
+above predicted on 2 September.
+
+## Where they are used
+
+Both badges render from **one component**, `components/StoreBadges.tsx`, reading **one data module**,
+`lib/app-badges.ts`. Two surfaces call it:
+
+| Surface | Notes |
+|---|---|
+| The landing footer (`components/landing/LandingFooter.tsx`) | styled by `landing.css`'s `.foot-apps` / `.foot-badge` |
+| Manage → Settings, the "Get the app" card | 🔴 **web-only** — hidden inside the native shells |
+
+🔴 **APPLE'S BADGE IS FIRST IN THE DOM AND THE WRAPPER HAS NO `order` PROPERTY**, so Apple's *"place the
+App Store badge first in the lineup"* holds by construction and cannot be undone in CSS.

@@ -3,8 +3,15 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+// Authoritative geocoding + coordinate validation + the loud-failure assertions. A SEPARATE module so
+// every throw below can be exercised by a test that imports the REAL code — this file calls main() at
+// import time and therefore can never be imported by one. See scripts/geo-validate.js.
+import {
+  resolveCoordinates, buildSentinelSet,
+  assertSheetTabsLoaded, assertSitesToScrape, assertSomeSiteSucceeded, assertInboundOk, assertNoWriteFailures,
+} from './geo-validate.js';
 
 dotenv.config({ path: '.env.local' });
 
@@ -375,11 +382,18 @@ function standardizeDate(dateStr) {
   return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
 }
 
+// 🔴 A FAILED READ IS A FAILURE, NOT AN EMPTY TAB. This used to `catch { return [] }`, so a revoked
+// service account, an unshared sheet, a renamed tab or a wrong SPREADSHEET_ID all became "0 sites
+// scraped, exit 0, green tick" — the single worst silent failure in the pipeline (audit §E rank 1).
+// The Sheet is the site list, the matching data, the exclusion set AND the dedup set: reading it is not
+// optional, so a read error now propagates to main().catch and turns the Actions run red.
 async function getTabData(sheets, rangeName) {
   try {
     const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:T` });
     return resExtended.data.values || [];
-  } catch (error) { return []; }
+  } catch (error) {
+    throw new Error(`Could not read the "${rangeName}" tab from the Google Sheet (spreadsheet ${SPREADSHEET_ID ? 'id set' : 'ID MISSING'}): ${error.message}`);
+  }
 }
 
 async function main() {
@@ -425,6 +439,15 @@ const [truckData, venueData, eventData, exclusionData] = await Promise.all([
   getTabData(sheets, TABS.EVENTS),
   getTabData(sheets, TABS.EXCLUSIONS)
 ]);
+
+// 🔴 ALL FOUR TABS EMPTY IS A CREDENTIAL FAILURE, NOT A QUIET DAY. getTabData now throws on an API
+// error, but a wrong-but-readable spreadsheet returns four empty tabs with no error at all. The Trucks
+// tab is the site list and the Events tab is the dedup set; both empty means there is no input.
+// Returns the names of any INDIVIDUALLY empty tabs (legitimate — Exclusions is often empty).
+const emptyTabs = assertSheetTabsLoaded({
+  [TABS.TRUCKS]: truckData, [TABS.VENUES]: venueData, [TABS.EVENTS]: eventData, [TABS.EXCLUSIONS]: exclusionData,
+});
+if (emptyTabs.length > 0) console.log(`   ⚠️  Empty tab(s): ${emptyTabs.join(', ')}`);
 
 // Build Exclusions Set with Normalization
 const excludedTerms = new Set(exclusionData.map(r => r[0] ? normalizeName(r[0]) : '').filter(Boolean));
@@ -490,6 +513,10 @@ venueData.forEach(row => {
   }
 });
 
+// 🔴 ZERO SITES IS A CONFIGURATION FAILURE, NOT A NO-OP RUN. Guarded only in discovery mode: a
+// hatchgrab-mode run legitimately builds no Pass-A site list.
+if (RUN_DISCOVERY && !TARGET_NAME) assertSitesToScrape(sitesToScrape.length);
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const modelLite = genAI.getGenerativeModel({ 
@@ -507,6 +534,56 @@ const modelHeavy = genAI.getGenerativeModel({
 const newRowsToAdd = [];
 const newVenuesDetected = new Map();
 const newTrucksDetected = new Map();
+// 🔴 DECLARED HERE, OUTSIDE THE GATE, FOR THE SAME REASON THE THREE MAPS ABOVE ARE: Pass A is split
+// across TWO separate `if (RUN_DISCOVERY)` blocks — the scrape loop and, much further down, the
+// append-to-Sheets/DB block. Every Pass-A database write appends its failure here and the whole list is
+// asserted after the appends. Declaring it inside the first block (as the first draft of this change
+// did) puts it out of scope in the second: `node --check` passes, and the run dies at the assertion with
+// "dbWriteFailures is not defined" — caught by running the file, not by reading it.
+const dbWriteFailures = [];
+
+// ── 🔴 THE DISCOVERY RUN LOG (migration 20260907_discovery_run_log.sql). ────────────────────────────
+// Pass B logs every truck it touches; Pass A logged NOTHING, so an idle truck and a broken one looked
+// identical from the database and 51 URL-scraped trucks sat at zero future events with no signal. The
+// one distinction this exists to make: ZERO-FOUND has a row with events_extracted = 0; NEVER-ATTEMPTED
+// has NO ROW under this run_id. That is why the writer runs in the per-site `finally` — every exit
+// path, including every `continue`, leaves a row behind.
+const DISCOVERY_RUN_ID = randomUUID();
+console.log(`   🧾 discovery run id: ${DISCOVERY_RUN_ID}`);
+
+// 🔴 AWAITED, NEVER FIRE-AND-FORGET. Three writes in this file were `.then()` with no await and that is
+// precisely why venue creation failed silently for three months.
+// ⚠️ ONE tolerated failure, and only one: 42P01 (relation does not exist), because migrations here are
+// applied BY HAND and the code may deploy first. That is warned once and never again — any OTHER error
+// is collected and turns the run red. Without that carve-out, shipping this before the migration would
+// make every run fail; without the narrowness, a real write failure would hide behind it.
+let runLogMissingWarned = false;
+async function logDiscoverySite(row) {
+  const { error } = await supabase.from('discovery_run_log').insert({
+    run_id: DISCOVERY_RUN_ID,
+    site_name: row.siteName,
+    source_type: row.sourceType ?? null,
+    url: row.url ?? null,
+    strategy: row.strategy ?? null,
+    outcome: row.outcome,
+    page_chars: row.pageChars ?? null,
+    events_extracted: row.extracted ?? null,
+    events_filtered: row.filtered ?? null,
+    events_new: row.newCount ?? null,
+    duplicates: row.duplicates ?? null,
+    error: row.error ? String(row.error).slice(0, 500) : null,
+    notes: row.notes ?? null,
+  });
+  if (!error) return;
+  if (error.code === '42P01') {
+    if (!runLogMissingWarned) {
+      runLogMissingWarned = true;
+      console.warn('⚠️  discovery_run_log does not exist yet — run supabase/migrations/20260907_discovery_run_log.sql. Continuing WITHOUT a run log.');
+    }
+    return;
+  }
+  dbWriteFailures.push(`discovery_run_log "${row.siteName}": [${error.code}] ${error.message}`);
+}
 
 // --- DATE LIMITER ---
 const todayZeroed = new Date();
@@ -522,8 +599,22 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
 
+// Systemic-failure census. One site failing is ordinary; EVERY site failing is a revoked key, a dead
+// network or a broken Chrome, and used to exit 0 with a page of ❌ lines nobody reads.
+let sitesAttempted = 0;
+let sitesSucceeded = 0;
+const siteFailures = [];
+
 for (const [index, site] of sitesToScrape.entries()) {
   let page;
+  sitesAttempted++;
+  // Filled in as the iteration proceeds; written to discovery_run_log in the `finally` below so that
+  // EVERY exit path leaves a row — including the `continue` on an empty page and any throw.
+  const siteLog = {
+    siteName: site.name, sourceType: site.sourceType, url: site.url, strategy: site.strategy,
+    outcome: 'site_error', pageChars: null, extracted: null, filtered: null,
+    newCount: null, duplicates: null, error: null, notes: null,
+  };
   
   try {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
@@ -570,8 +661,14 @@ for (const [index, site] of sitesToScrape.entries()) {
       }
     }
 
+    siteLog.pageChars = cleanText.length;
+    if (site.strategy === 'manual' || site.strategy === 'manual_single') siteLog.outcome = 'manual';
+
     if (site.strategy !== 'manual' && site.strategy !== 'manual_single' && cleanText.length < 50) {
       console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
+      siteFailures.push(`${site.name} (${site.strategy}): empty page (${cleanText.length} chars)`);
+      siteLog.outcome = 'empty_page';
+      siteLog.notes = `page text ${cleanText.length} chars, below the 50-char floor`;
       continue; 
     }
 
@@ -656,6 +753,7 @@ for (const [index, site] of sitesToScrape.entries()) {
       }
       
       const result = await generateContentWithRetry(activeModel, prompt);
+      if (siteLog.outcome !== 'manual') siteLog.outcome = 'ok';
       
       let finalEvents = [];
       let exclusionsToAdd = [];
@@ -669,9 +767,16 @@ for (const [index, site] of sitesToScrape.entries()) {
         }
       }
       
+      siteLog.extracted = finalEvents.length;
+
       // --- APPEND AUTO-EXCLUSIONS ---
+      // 🔴 WAS `forEach(async …)` WITH A FIRE-AND-FORGET `.then()` INSIDE IT — two separate reasons
+      // nothing here was guaranteed to happen: forEach ignores the returned promises, and the DB write
+      // was not awaited even within them, so Node could exit with both in flight. `excluded_terms` holds
+      // 0 rows in production, which is consistent with this never having landed. Now a for…of with an
+      // awaited upsert; failures are collected and asserted after the appends.
       if (exclusionsToAdd.length > 0) {
-        exclusionsToAdd.forEach(async (ex) => {
+        for (const ex of exclusionsToAdd) {
             if (ex && typeof ex === 'string') {
                 const cleanEx = normalizeName(ex);
                 if (!Array.from(excludedTerms).some(existing => isFuzzyMatch(existing, cleanEx))) {
@@ -684,16 +789,17 @@ for (const [index, site] of sitesToScrape.entries()) {
                         });
                         excludedTerms.add(cleanEx);
                         console.log(`   🤖 Auto-Excluded via Scraper: ${ex}`);
-                        // DB mirror — parallel run
-                        supabase.from('excluded_terms').upsert({
+                        const { error: exErr } = await supabase.from('excluded_terms').upsert({
                           term: ex,
-                        }, { onConflict: 'term', ignoreDuplicates: true }).then(({ error }) => {
-                          if (error) console.warn('[DB] Exclusion write failed:', error.message);
-                        });
-                    } catch (err) { console.error("Failed to append exclusion:", err.message); }
+                        }, { onConflict: 'term', ignoreDuplicates: true });
+                        if (exErr) dbWriteFailures.push(`excluded_terms "${ex}": [${exErr.code}] ${exErr.message}`);
+                    } catch (err) {
+                        dbWriteFailures.push(`excluded_terms "${ex}" (Sheet append): ${err.message}`);
+                        console.error("Failed to append exclusion:", err.message);
+                    }
                 }
             }
-        });
+        }
       }
 
       // --- FORMAT RULE EXTRACTS ---
@@ -741,12 +847,26 @@ for (const [index, site] of sitesToScrape.entries()) {
           // ------------------------------------------------
 
           // --- 🛡️ FUZZY EXCLUSION CHECK ---
+          // 🔴 SCOPED TO NON-TRUCK PAGES (8 Sep 2026). The set exists to drop NON-EVENT listings — "live
+          // music", "quiz night", "TBC", "Transit Mot due" — found on a VENUE or aggregator page, where the
+          // thing listed may not be a food truck at all. On a TRUCK's own page that question is already
+          // settled by the site list: `finalTruck = site.name` twenty lines below. Applying the set there
+          // asked "is this truck a non-truck?" and answered yes whenever the truck's own name had reached
+          // the Exclusions tab — silencing five real trucks, Steak & Honour losing six correctly-extracted
+          // events on a page the strategy read perfectly.
+          // ⚠️ `!== 'truck'`, NOT `=== 'venue'`: a source type added later keeps the filter ON by default.
+          // Over-filtering is visible (a truck goes quiet and someone asks); under-filtering is not.
           const normRawTruck = normalizeName(truckName);
-          const isExcluded = Array.from(excludedTerms).some(ex => isFuzzyMatch(ex, normRawTruck));
+          const termHit = Array.from(excludedTerms).some(ex => isFuzzyMatch(ex, normRawTruck));
+          const isExcluded = termHit && site.sourceType !== 'truck';
           if (isExcluded) {
               console.log(`   🚫 Skipping excluded truck term: ${truckName}`);
               continue;
           }
+          // 🔴 LOUD ON THE NEAR MISS. Without this the fix is invisible: a poisoned term would simply stop
+          // biting and nobody would learn the tab still contains a truck name. This is the only signal that
+          // the Exclusions tab needs cleaning.
+          if (termHit) console.log(`   ⚠️ "${truckName}" matches an Exclusions-tab term but this is its own page — set NOT applied (${site.url})`);
           // ------------------------------------------------
 
           // --- 🛡️ PRIVATE EVENT HARD FILTER ---
@@ -906,18 +1026,40 @@ for (const [index, site] of sitesToScrape.entries()) {
           } else { dupCount++; }
         }
         console.log(`   📊 Summary: ${newCount} new, ${dupCount} duplicates skipped.`);
+        siteLog.newCount = newCount;
+        siteLog.duplicates = dupCount;
+        // Everything the model returned that neither became a row nor was a duplicate was dropped by
+        // the historical-date, exclusion or private-event filters.
+        siteLog.filtered = Math.max(0, (siteLog.extracted ?? 0) - newCount - dupCount);
       }
-    } catch (e) { console.error("   ❌ AI Failed:", e.message); }
+      sitesSucceeded++;
+    } catch (e) {
+      console.error("   ❌ AI Failed:", e.message);
+      siteFailures.push(`${site.name} (${site.strategy}): AI failed — ${e.message}`);
+      siteLog.outcome = 'ai_error';
+      siteLog.error = e.message;
+    }
   } catch (error) { 
     console.error(`❌ Error on ${site.name}:`, error.message); 
+    siteFailures.push(`${site.name} (${site.strategy}): ${error.message}`);
+    siteLog.outcome = 'site_error';
+    siteLog.error = error.message;
   } finally {
     if (page) {
       await page.close().catch(e => console.error("Failed to close page:", e.message));
     }
+    // 🔴 AWAITED, and in `finally` so no exit path can skip it — an absent row must mean "never
+    // attempted", which is only true if every attempted site writes one.
+    await logDiscoverySite(siteLog);
   }
 }
 
 await browser.close();
+
+// 🔴 OUTSIDE the per-site try/catch above (which deliberately swallows one site's failure so the rest
+// still run). A run where NOT ONE site produced an extraction is systemic and must go red.
+console.log(`\n📊 Pass A sites: ${sitesSucceeded} extracted, ${siteFailures.length} failed, ${sitesAttempted} attempted.`);
+assertSomeSiteSucceeded(sitesAttempted, sitesSucceeded, siteFailures);
 } // end if (RUN_DISCOVERY) — Pass A global discovery scrape
 
 // ── HatchGrab-linked truck scraping ──────────────────────────────────────────
@@ -1467,7 +1609,15 @@ ${pageText.slice(0, 100000)}`;
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        const result = await res.json();
+        // 🔴 THE STATUS WAS NEVER CHECKED. A 401 from a secret rotated on one side only still returns
+        // JSON, so `result.bridged ?? 0` printed "0 bridged, 0 discovery" and recordRunAndLearn then
+        // wrote a SUCCESS row with events_found = N. A dead endpoint was indistinguishable from a
+        // healthy run in scraper_run_log (audit §E rank 2). Now it throws into the per-truck catch
+        // below, which records a `crash` row AND names the truck — visible in SQL, not just stdout.
+        const rawBody = await res.text();
+        assertInboundOk(res.status, rawBody);
+        let result = {};
+        try { result = JSON.parse(rawBody); } catch { result = {}; }
         console.log(`   ✅ Sent to inbound-schedule: ${result.bridged ?? 0} bridged, ${result.inserted ?? 0} discovery`);
 
         // Store the page-text hash AFTER a successful extract + POST (slice iv) so the next run can skip
@@ -1531,17 +1681,19 @@ if (newTrucksDetected.size > 0) {
           resource: { values: newTruckRows },
       });
       console.log(`✅ Successfully added ${newTruckRows.length} new trucks!`);
-      // DB mirror — parallel run
+      // 🔴 AWAITED (was `.then()` with no await, as the last thing Pass A does — Node could exit with
+      // the requests in flight, which is exactly the shape that hid the venue outage for three months).
       for (const row of newTruckRows) {
-        supabase.from('discovery_trucks').upsert({
+        const { error: trErr } = await supabase.from('discovery_trucks').upsert({
           name: row[0],
           exclude_reason: 'Yes - New Truck',
-        }, { onConflict: 'name', ignoreDuplicates: true }).then(({ error }) => {
-          if (error) console.warn('[DB] Truck write failed:', error.message);
-        });
+        }, { onConflict: 'name', ignoreDuplicates: true });
+        if (trErr) dbWriteFailures.push(`discovery_trucks "${row[0]}": [${trErr.code}] ${trErr.message}`);
       }
   } catch (error) {
+      // 🔴 RE-THROWN. This used to console.error and carry on, so a failed Trucks append exited 0.
       console.error("❌ Failed to add new trucks:", error.message);
+      throw error;
   }
 }
 
@@ -1565,68 +1717,183 @@ if (newRowsToAdd.length > 0) {
       source: r[7] || null,
       ai_notes: r[8] || null,
     }));
-    supabase.from('discovery_events').upsert(batch, { onConflict: 'event_date,truck_name,venue_name' }).then(({ error }) => {
-      if (error) console.warn('[DB] Event write failed:', error.message);
-    });
+    // 🔴 AWAITED (was fire-and-forget). This is the mirror that carries the map's entire event feed;
+    // a silent failure here is indistinguishable from "no events found" from outside.
+    const { error: evErr } = await supabase.from('discovery_events').upsert(batch, { onConflict: 'event_date,truck_name,venue_name' });
+    if (evErr) dbWriteFailures.push(`discovery_events batch ${i}-${i + batch.length}: [${evErr.code}] ${evErr.message}`);
   }
 } else { console.log("\n💤 No new events found."); }
 
 // --- ADD NEW VENUES & GEOCODE ---
+//
+// ── 🔴 GEMINI IS NO LONGER THE GEOCODER (7 September 2026). ──────────────────────────────────────
+// It was, and docs/scraper-audit-report.md measured what that cost: 27 of 573 venues carry decimals
+// copied from this prompt's own FORMAT EXAMPLE (52.1234, 0.1234), 13 sit at the centroid of Great
+// Britain, and the error against the model's own postcode reaches 76.8km with a whole class of
+// LONGITUDE SIGN FLIPS around 15km. `ignoreDuplicates` then froze every one of them for ever.
+//
+// The model is now a postcode SUGGESTER, because a postcode is CHECKABLE and a coordinate is not.
+// Every coordinate that reaches the database comes from postcodes.io — free, keyless, authoritative,
+// deterministic — or the venue is stored with NO coordinates and the run says so out loud.
+// See scripts/geo-validate.js for the thresholds and where each was measured.
 if (newVenuesDetected.size > 0) {
-  console.log(`\n🌍 Asking AI to locate and add ${newVenuesDetected.size} new venues...`);
-  
+  console.log(`\n🌍 Locating ${newVenuesDetected.size} new venues (postcodes.io first, model as fallback)...`);
+
   const venuesToProcess = Array.from(newVenuesDetected.values());
   const venueListForPrompt = venuesToProcess.map(v => `Name: "${v.name}", Village: "${v.village}", Hints: "${v.notes}"`).join(" | ");
-  
+
+  // ⚠️ THE PROMPT NOW ASKS FOR A POSTCODE AND PERMITS "I DON'T KNOW". The old wording ("Find the
+  // Postcode, Latitude, and Longitude") gave the model no way to decline, so it produced the format
+  // example's digits instead. Coordinates are still requested but are used ONLY as a last resort and
+  // only if they survive every check.
   const geoPrompt = `
-    You are a UK Geography data assistant. Find the Postcode, Latitude, and Longitude for these locations.
+    You are a UK Geography data assistant. For each location below, give its UK POSTCODE.
+    The postcode is what matters — it is verified against an official postcode database afterwards.
+    🔴 If you are not confident of the postcode, return null for it. Do NOT invent one, and do NOT
+    return a nearby town's postcode. An honest null is better than a wrong answer.
+    "lat" and "lng" are OPTIONAL and are only used if the postcode lookup fails — return null for them
+    unless you are certain. Never return the example values below as if they were real.
     Only return a valid JSON array.
     Locations: ${venueListForPrompt}
-    Format: [{ "name": "Exact Name Provided", "village": "Exact Village Provided", "postcode": "XX1 1XX", "lat": 52.123, "lng": 0.123 }]
+    Format: [{ "name": "Exact Name Provided", "village": "Exact Village Provided", "postcode": "XX1 1XX", "lat": null, "lng": null }]
   `;
-  
+
   try {
     const geoResult = await generateContentWithRetry(modelLite, geoPrompt);
-    
-    const newVenueRows = geoResult.map(v => [
-      v.name || "",            
-      v.village || "",         
-      v.postcode || "",        
-      v.lat || "",             
-      v.lng || "",             
-      "",                      
-      "",                      
-      "",                      
-      "",                      
-      "",                      
-      "",                      
-      "[⚠️ NEW FROM SCRAPER]"  
+    if (!Array.isArray(geoResult)) {
+      throw new Error(`Geocode reply was not a JSON array (got ${typeof geoResult}) — refusing to guess at its shape.`);
+    }
+
+    // 🔴 THE SENTINEL SET IS DERIVED FROM THE LIVE TABLE, NOT HARD-CODED TO ONE PAIR. Any coordinate
+    // already shared by 5+ venues is an "I don't know" marker, whatever it happens to be — so a NEW
+    // sentinel is caught without anyone editing code. READ ONLY.
+    const { data: existingVenuePoints, error: sentinelErr } = await supabase
+      .from('venues').select('latitude, longitude').not('latitude', 'is', null).limit(20000);
+    if (sentinelErr) throw new Error(`Could not read venues for the sentinel census: ${sentinelErr.message}`);
+    const sentinels = buildSentinelSet(existingVenuePoints || []);
+    if (sentinels.size > 0) console.log(`   🚫 Sentinel coordinates in use: ${[...sentinels].join(' ; ')}`);
+
+    // The model's reply is keyed back to the QUEUE by name — the queue is the source of truth for the
+    // village (the model is merely asked to echo it and can drop it).
+    const aiByName = new Map(geoResult.map(v => [String(v?.name || '').trim().toLowerCase(), v]));
+
+    const resolved = [];
+    for (const q of venuesToProcess) {
+      const ai = aiByName.get(String(q.name || '').trim().toLowerCase()) || {};
+      const r = await resolveCoordinates({
+        name: q.name,
+        village: q.village,
+        hints: q.notes,
+        aiPostcode: ai.postcode ?? null,
+        aiLat: ai.lat ?? null,
+        aiLng: ai.lng ?? null,
+        sentinels,
+      });
+      resolved.push({ q, r });
+      console.log(`   ${r.ok ? '📍' : '⚠️ '} ${q.name} (${q.village}) → ${r.ok ? `${r.latitude},${r.longitude} [${r.source}]` : `NO COORDINATES — ${r.reason}`}`);
+      for (const step of r.trail) console.log(`        · ${step}`);
+    }
+
+    // Sheet rows carry the RESOLVED values, so the Sheet and the database agree.
+    // ⚠️ Column L is written with the new-venue marker exactly as before. Note (unchanged, NOT fixed
+    // here — out of scope): column L is also read as the venue's scraper STRATEGY at the top of this
+    // file, so a marker there is read as a strategy name if a URL is ever added to the row.
+    const newVenueRows = resolved.map(({ q, r }) => [
+      q.name || "",
+      q.village || "",
+      r.postcode || "",
+      r.latitude ?? "",
+      r.longitude ?? "",
+      "", "", "", "", "", "",
+      r.ok ? "[⚠️ NEW FROM SCRAPER]" : "[⚠️ NEW FROM SCRAPER — NO COORDINATES]"
     ]);
 
     if (newVenueRows.length > 0) {
-      await sheets.spreadsheets.values.append({ 
-          spreadsheetId: SPREADSHEET_ID, 
-          range: `${TABS.VENUES}!A:L`, 
-          valueInputOption: 'USER_ENTERED', 
-          resource: { values: newVenueRows }, 
+      await sheets.spreadsheets.values.append({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${TABS.VENUES}!A:L`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: newVenueRows },
       });
-      console.log(`📍 Successfully added ${newVenueRows.length} new locations to the Venues tab!`);
-      // DB mirror — parallel run
-      for (const v of geoResult) {
-        supabase.from('venues').upsert({
-          name: v.name,
-          village: v.village || null,
-          latitude: v.lat || null,
-          longitude: v.lng || null,
-        }, { onConflict: 'name', ignoreDuplicates: true }).then(({ error }) => {
-          if (error) console.warn('[DB] Venue write failed:', error.message);
-        });
+      console.log(`📍 Added ${newVenueRows.length} new locations to the Venues tab.`);
+
+      // ── 🔴 THE DB MIRROR. THIS WROTE NOTHING FOR THREE MONTHS AND SAID SO TO NOBODY. ────────────
+      // 1. onConflict WAS 'name'. The only unique index is `venues_name_village_key` on
+      //    (name, village), so Postgres answered every write with 42P10 — reproduced against the real
+      //    schema. Every write failed, every run, on a green tick.
+      // 2. 🔴 A NULL VILLAGE CAN NEVER CONFLICT, SO IT DUPLICATES FOR EVER (nulls are DISTINCT in a
+      //    unique index). PROVEN: two identical upserts with a null village produced TWO rows. The
+      //    village therefore comes from the QUEUE, and a row with no village is REFUSED.
+      // 3. IT WAS FIRE-AND-FORGET, while the Sheet append above was awaited — exactly the observed
+      //    shape of the Sheet filling and the database not.
+      const venueWriteFailures = [];
+      let venuesWritten = 0;
+      let venuesWithoutCoords = 0;
+
+      for (const { q, r } of resolved) {
+        const village = q.village || null;
+        if (!q.name || !village) {
+          venueWriteFailures.push(`${q.name || '(no name)'}: no village — refused to write an unmatchable row`);
+          continue;
+        }
+
+        // 🔴 A REJECTED COORDINATE IS NOT STORED. The row still is: name + village is a real, useful
+        // matching target (findVenue and the scraper's own venue matcher both key on it), and the
+        // whole app already handles a coordinate-less venue SAFELY — the discovery feed maps
+        // `venue.latitude ? … : undefined`, MapView pins only `venueLat && venueLong`, so the event
+        // lists without a marker rather than getting a WRONG one. Refusing the row entirely would
+        // instead break matching and re-queue the same venue on every future run.
+        // ⚠️ What must never happen is that being SILENT — it is counted, named, and printed below.
+        const { error } = await supabase.from('venues').upsert({
+          name: q.name,
+          village,
+          latitude: r.ok ? r.latitude : null,
+          longitude: r.ok ? r.longitude : null,
+          postcode: r.postcode || null,
+        }, { onConflict: 'name,village', ignoreDuplicates: true });
+
+        if (error) venueWriteFailures.push(`${q.name} (${village}): [${error.code}] ${error.message}`);
+        else {
+          venuesWritten++;
+          if (!r.ok) venuesWithoutCoords++;
+        }
+      }
+
+      console.log(`💾 Venues written: ${venuesWritten} of ${resolved.length}` +
+                  ` — ${venuesWritten - venuesWithoutCoords} with coordinates, ${venuesWithoutCoords} WITHOUT.`);
+      if (venuesWithoutCoords > 0) {
+        console.warn(`⚠️  ${venuesWithoutCoords} venue(s) stored with NO coordinates. Their events will LIST but`);
+        console.warn(`    will NOT appear on the map until a location is supplied. This is not a success:`);
+        resolved.filter(x => !x.r.ok).forEach(x => console.warn(`   • ${x.q.name} (${x.q.village}) — ${x.r.reason}`));
+      }
+
+      if (venueWriteFailures.length > 0) {
+        console.error(`\n💥 ${venueWriteFailures.length} VENUE WRITE(S) FAILED:`);
+        venueWriteFailures.forEach(f => console.error(`   • ${f}`));
+        // 🔴 THROWN, NOT LOGGED. main().catch() exits non-zero, so the Actions run goes RED.
+        throw new Error(`${venueWriteFailures.length} venue write(s) failed — see the list above`);
       }
     }
   } catch (error) {
-      console.error("❌ Geocoder Failed:", error.message);
+      // ── 🔴 THIS CATCH USED TO SWALLOW EVERYTHING AND EXIT 0. ────────────────────────────────────
+      // It wraps the geocode AND the Sheet append AND the DB mirror, so any failure in the whole venue
+      // pipeline became one grey line in a log nobody reads, on a run that reported success. That is
+      // how three months passed with zero venues created and nothing to see.
+      // 🔴 IT NOW RE-THROWS, so main().catch() exits non-zero and the Actions run goes RED.
+      // ⚠️ NOTE THE ORDER THIS PRESERVES: the Sheet append happens BEFORE the DB mirror and is
+      // awaited, so a DB failure does not cost the Sheet row — the run fails loudly with the Sheet
+      // already correct, which is the recoverable direction.
+      console.error("❌ Venue creation failed:", error.message);
+      if (error?.stack) console.error(error.stack);
+      throw error;
   }
 }
+
+// 🔴 EVERY COLLECTED PASS-A DATABASE FAILURE BECOMES A RED RUN. Previously each of these was a
+// console.warn on a promise nobody awaited: the Sheet filled, the database did not, and the job was
+// green. Asserted here, after the appends, so one failed batch does not abort the others first.
+assertNoWriteFailures('Pass A database', dbWriteFailures);
+
 } // end if (RUN_DISCOVERY) — Pass A discovery appends
 }
 // 🔴 A bare `main()` left every rejection unhandled: the run could die at any point — a missing credential

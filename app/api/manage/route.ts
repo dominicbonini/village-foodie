@@ -7,6 +7,9 @@ import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { resolveTruckLogo } from '@/lib/truck-logo'
+// 🔴 THE SERVER-SIDE REDUCTION. This is the ONLY thing that reads whatsapp_connections for the client,
+// and it returns no token, no ciphertext and no ids — see lib/whatsapp/connection-read.ts.
+import { readWhatsAppConnection, type WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
@@ -19,8 +22,11 @@ import { normaliseUrl } from '@/lib/url-normalise'
 import { checkSubdomain, suggestFromWebsite } from '@/lib/custom-domain/apex'
 import { checkCaa, detectDnsProvider, checkApexViaSoa } from '@/lib/custom-domain/dns'
 import { addDomain, getDomainConfig, releaseDomain } from '@/lib/custom-domain/vercel'
-import { recordRows, instructionsEmail as domainInstructionsEmail } from '@/lib/custom-domain/copy'
-import { domainPreflightRatelimit, domainInstructionsRatelimit } from '@/lib/ratelimit'
+import { recordRows, instructionsEmail as domainInstructionsEmail, liveEmail } from '@/lib/custom-domain/copy'
+import { domainPreflightRatelimit, domainInstructionsRatelimit, domainCheckRatelimit } from '@/lib/ratelimit'
+// 🔴 THE SHARED CHECK — the SAME function the cron runs. See lib/custom-domain/check.ts.
+import { runDomainCheck } from '@/lib/custom-domain/check'
+import { sendAdminDomainAlert } from '@/lib/custom-domain/alert'
 import { logAction } from '@/lib/audit/actionAudit'
 import { pseudonymiseEmail } from '@/lib/audit/pseudonymise'
 import { resolveActorSource } from '@/lib/audit/actor'
@@ -276,8 +282,18 @@ export async function GET(req: NextRequest) {
   // `logo` is the resolved DISPLAY url the header uses, so it matches the dashboard + customer surfaces.
   const logo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
 
+  // ── 🔴 THE WHATSAPP CONNECTION VIEW (S2). REDUCED SERVER-SIDE; NO TOKEN TRAVELS. ──────────────────
+  // `readWhatsAppConnection` collapses the stored ciphertext to `tokenPresent: boolean` before anything
+  // leaves the server, and returns only { state, offerSignup, offerReauthorise, expiringSoon }.
+  // ⚠️ IT IS DELIBERATELY NOT SPREAD INTO `truck`. `truck` is the row read with `select('*')`, and mixing
+  // a derived security-relevant view into it is how a future column ends up somewhere nobody looked.
+  // 🔴 FAILS TO 'not_connected' IF THE TABLE IS ABSENT — supabase/migrations/20260904_whatsapp_connections.sql
+  // is applied BY HAND and may not have been run. That must not take out the Settings tab.
+  const whatsappConnection = await readWhatsAppConnection(supabase, truck.id)
+
   return NextResponse.json({
     truck: { ...truck, logo },
+    whatsappConnection,
     categories: categories || [],
     items: items || [],
     subcategories: subcategories || [],
@@ -380,7 +396,7 @@ export async function POST(req: NextRequest) {
   // ⚠️ `via` is the ONLY correct test. `!requestingUserId` is true for the same callers today, but it
   // describes a symptom; `via === 'demo'` names the branch that granted access.
   const demoBlockedActions = [
-    'domain_preflight', 'domain_status', 'domain_provision', 'domain_confirm', 'domain_send_instructions', 'domain_turn_off',
+    'domain_preflight', 'domain_status', 'domain_check', 'domain_provision', 'domain_confirm', 'domain_send_instructions', 'domain_turn_off',
   ]
   if (demoBlockedActions.includes(action) && access.via === 'demo') {
     return NextResponse.json({ error: 'Not available on a demo truck' }, { status: 403 })
@@ -1074,6 +1090,114 @@ export async function POST(req: NextRequest) {
       last_seen_value: truck.custom_domain_last_seen_value ?? null,
       confirmed_at: truck.custom_domain_confirmed_at ?? null,
       suggestion: suggestFromWebsite(truck.website ?? null),
+    })
+  }
+
+  /**
+   * ── 🔴 THE ON-DEMAND CHECK. THE FIX FOR THE ELEVEN-HOUR DEAD PAGE. ────────────────────────────
+   *
+   * `custom_domain_verified_at` was writable ONLY by the 07:00 UTC cron. The first operator through
+   * this feature had DNS resolving and a certificate issued and a dead page until the next morning,
+   * because the row was one timestamp short and nothing but a daily job could write it.
+   *
+   * ⚠️ FIRED WHEN THE SETUP BOX OPENS, NOT WHEN THE WIZARD FINISHES. An operator who has just added a
+   * record will come back and look; a single check at completion nearly always fails on propagation
+   * and reads as broken. Opening the box IS the gesture that means "has it worked yet".
+   *
+   * 🔴 IT RUNS THE SAME CHECK AS THE CRON — literally the same function, `runDomainCheck`. Two
+   * implementations of "is this domain working" would disagree, and the disagreement would present as
+   * a dashboard that says live and a cron that says not.
+   *
+   * 🔴 IT CANNOT HARM A LIVE ROW. `runDomainCheck`'s patch is additive: `custom_domain_verified_at` is
+   * written only on the going-live transition and is NEVER cleared, and `custom_domain`,
+   * `custom_domain_setup_state` and `custom_domain_confirmed_at` are never touched. A failing check on
+   * a trading truck records what it saw and leaves the page serving. See that module.
+   */
+  if (action === 'domain_check') {
+    if (!truck.custom_domain) {
+      return NextResponse.json({ ok: false, reason: 'no_domain' }, { status: 200 })
+    }
+
+    // ── THE LIMIT, KEYED ON THE TRUCK ────────────────────────────────────────────────────────────
+    // 🔴 ENFORCED HERE, NOT IN proxy.ts. That file limits a POSITIVE ALLOWLIST of public,
+    // bulk-scrapeable paths and operator surfaces are structurally excluded from it — its own comment
+    // makes that point. An authenticated operator route's limit belongs with the operator route.
+    // ⚠️ A REFUSAL IS NOT AN ERROR HERE. The operator gets the state we already hold rather than a
+    // failure: they opened a box, they did not ask for a network call.
+    let checkedNow = false
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        const { success } = await domainCheckRatelimit.limit(`domain_check:${truck.id}`)
+        checkedNow = success
+        if (!success) console.warn(`[domain_check] rate limited truck=${truck.id}`)
+      } catch (e) {
+        // ⚠️ FAILS OPEN, and the cache is the only thing that can fail here. Refusing the check
+        // because Redis is unwell would recreate the dead-page bug for the sake of a rate limit.
+        console.warn('[domain_check] limiter unavailable, proceeding:', e instanceof Error ? e.message : String(e))
+        checkedNow = true
+      }
+    } else {
+      checkedNow = true   // dev bypass, mirroring the whatsapp-preview route
+    }
+
+    if (!checkedNow) {
+      return NextResponse.json({
+        ok: true, rate_limited: true,
+        live: !!truck.custom_domain_verified_at,
+        state: truck.custom_domain_verified_at ? 'ok' : 'waiting',
+      })
+    }
+
+    const result = await runDomainCheck({
+      host: truck.custom_domain,
+      verifiedAt: truck.custom_domain_verified_at ?? null,
+      lastOkAt: truck.custom_domain_last_ok_at ?? null,
+      lastCheckedAt: truck.custom_domain_last_checked_at ?? null,
+      setupStartedAt: truck.custom_domain_setup_started_at ?? null,
+    })
+
+    // 🔴 THE WRITE HAPPENS BEFORE THE EMAILS. A failed send must not cost us a correct row.
+    const { error: writeErr } = await supabase.from('trucks').update(result.patch).eq('id', truck.id)
+    if (writeErr) console.error('[domain_check] write failed:', writeErr.message)
+
+    // ⚠️ THE OPERATOR'S "IT'S LIVE" EMAIL FIRES HERE TOO, and it still fires ONCE — the transition is
+    // `verified_at` going from null to set, which can only happen on one check whichever caller sees
+    // it first. Without this an operator who is told by the screen would never get the email.
+    if (result.goingLive && truck.contact_email) {
+      try {
+        const mail = liveEmail({ truckName: truck.name, address: truck.custom_domain })
+        await sendConfirmationEmail({ to: truck.contact_email, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
+      } catch (e) {
+        console.warn('[domain_check] live email failed:', e instanceof Error ? e.message : String(e))
+      }
+    }
+
+    // 🔴 THE ADMIN ALERT IS EVALUATED HERE TOO, AND THAT IS NOT OPTIONAL. This route writes
+    // `custom_domain_last_checked_at`, and the once-per-transition rule compares the threshold against
+    // that column — so if only the cron sent, an operator opening the box could step the timestamp
+    // past the line and the cron would never see the transition. The alert would be swallowed by the
+    // very feature meant to help. See lib/custom-domain/check.ts.
+    if (result.alert) {
+      await sendAdminDomainAlert({
+        alert: result.alert,
+        truckName: truck.name,
+        truckId: truck.id,
+        address: truck.custom_domain,
+        startedAt: truck.custom_domain_setup_started_at ?? null,
+        lastOkAt: truck.custom_domain_last_ok_at ?? null,
+        lastSeenValue: result.seen,
+        expected: result.expected,
+      })
+    }
+
+    return NextResponse.json({
+      ok: true,
+      // 🔴 `live` IS WHAT THE PAGE ACTUALLY SERVES ON: verified_at, either already set or set by this
+      // check. Never `result.state === 'ok'` alone — a passing check on a row that was already live is
+      // still live, and a failing check on a live row does NOT make it not live.
+      live: !!(truck.custom_domain_verified_at || result.patch.custom_domain_verified_at),
+      went_live: result.goingLive,
+      state: result.state,
     })
   }
 

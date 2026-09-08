@@ -13,6 +13,7 @@ import {
   } from '@/lib/utils';
 import { formatTime, formatTimeRange } from '@/lib/time-utils';
 import { isHatchGrab } from '@/lib/domain';
+import { phoneWhatsApp } from '@/lib/whatsapp-hint';   // the SHARED derivation — same source the outreach page reads
 
 interface EventListCardProps {
   events: VillageEvent[]; 
@@ -102,11 +103,12 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   }
 
   const methodsStr = primaryEvent.acceptedMethods ? primaryEvent.acceptedMethods.toLowerCase() : '';
-  const cleanPhone = primaryEvent.phoneNumber ? primaryEvent.phoneNumber.replace(/[^\d+]/g, '') : '';
-  let waPhone = cleanPhone.replace('+', '');
-  if (waPhone.startsWith('0')) waPhone = '44' + waPhone.slice(1);
-  const hasPhone = cleanPhone !== '';
-  const isMobileNumber = waPhone.startsWith('447');
+  // 🔴 EXTRACTED (V12.1) — cleanPhone / waPhone / hasPhone / isMobileNumber / acceptsWhatsApp now come from
+  // the ONE shared derivation (lib/whatsapp-hint.ts), so the outreach admin page's WhatsApp hint cannot
+  // disagree with these buttons. Behaviour-neutral: characterised over 150 cases + mutation-tested before
+  // shipping (docs/whatsapp-extraction-report.md).
+  const { cleanPhone, waPhone, hasPhone, isMobileNumber, acceptsWhatsApp } =
+    phoneWhatsApp(primaryEvent.phoneNumber, primaryEvent.acceptedMethods);
 
   const cleanVenuePhone = primaryEvent.venuePhone ? primaryEvent.venuePhone.replace(/[^\d+]/g, '') : '';
   const hasVenuePhone = cleanVenuePhone !== '';
@@ -124,7 +126,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   };
 
   const wantsWebsite = methodsStr.includes('website');
-  const acceptsWhatsApp = methodsStr.includes('whatsapp');
+  // acceptsWhatsApp now comes from phoneWhatsApp() above (same value: methodsStr.includes('whatsapp')).
   // The "🌐 Order" CTA below links to primaryEvent.orderUrl. For an OPERATOR event that URL is OUR in-app
   // HatchGrab order link, so it must respect the per-site order-link control (admin "Orders VF/HG"): show
   // only if order_link_vf on Village Foodie / order_link_hg on HatchGrab (default VF=false, HG=true). For a

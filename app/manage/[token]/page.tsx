@@ -34,6 +34,18 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 //  routes from lib/legal.ts — never type them inline.)
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
+import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+// 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
+// copy. lib/whatsapp/reply-cap.ts is a PURE module — "NO DATABASE, NO IMPORTS" by its own header — so a
+// client page can import it with no server dependency and no bundle risk. The webhook passes this same
+// constant at its decideReplyCap call site, so the number an operator reads is the number enforced.
+import { DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H } from '@/lib/whatsapp/reply-cap'
+// S2/S3: the connection VIEW type only — a state and three booleans. No token shape exists on the
+// client by construction; see lib/whatsapp/connection-read.ts for the server-side reduction.
+import type { WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
+// S4: the Embedded Signup launcher. Client-only by construction — it loads Meta's JS SDK and captures
+// the one-time code; it makes NO Graph call and stores nothing. See lib/whatsapp/embedded-signup.ts.
+import { launchEmbeddedSignup } from '@/lib/whatsapp/embedded-signup'
 import { FeatureGate } from '@/components/FeatureGate'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -72,7 +84,9 @@ import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, T
 import { Walkthrough } from '@/components/manage/Walkthrough'
 import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
-import { isNativeApp } from '@/lib/native/device'   // native-only hide: Auto-replies (see SettingsTab)
+import { isNativeApp } from '@/lib/native/device'
+// Both store badges, from one component — the order and the colour are vendor rules. See the card below.
+import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
@@ -205,6 +219,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
+  const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [subcategories, setSubcategories] = useState<Subcategory[]>([])
@@ -317,13 +332,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card'
   const allergensUnverified = !cardModeSetUp && items.some(i => (i as any).allergens_verified === false)
 
-  // Two states, and only one can be true. READY stops as soon as the operator confirms; WAITING needs
-  // a setup that started and has not gone live. A truck with no custom domain gets neither.
-  const domainNotice: 'waiting' | 'ready' | null = !truck?.custom_domain
-    ? null
-    : truck.custom_domain_verified_at
-      ? (truck.custom_domain_confirmed_at ? null : 'ready')
-      : 'waiting'
+  // ── 🔴 THE BANNER IS A CONFIRMATION. IT NO LONGER CARRIES IN-PROGRESS CHATTER (5 September 2026). ──
+  // This was `'waiting' | 'ready' | null`, and the WAITING arm put "<address> is not working yet. You
+  // started setting it up on 4 September…" across the top of every tab, every session, for as long as
+  // the domain took. That is a progress report, and a banner is not where a progress report belongs:
+  // it is the same width and weight as "Allergens not set", which is a thing the operator must ACT on.
+  // 🔴 THE MESSAGE WAS NOT DELETED — IT MOVED, in full, to the setup box in Settings, which is the one
+  // place an operator goes to do something about it. See components/dashboard/CustomDomainSetup.tsx.
+  // ⚠️ A TRUCK MID-SETUP NOW SEES NOTHING HERE, DELIBERATELY. Their domain is not working, they already
+  // know, and the box that can help says so.
+  //
+  // 🔴 THE THIRD STATE — WORKED, THEN STOPPED — IS UNTOUCHED AND STILL SILENT. A truck that went live
+  // AND confirmed returns null here, and it returned null before this change: `confirmed` ends the
+  // banner for good, so a domain that breaks weeks later says NOTHING on this surface and the cron
+  // sends no failure email by design. That is a real gap; it is Dominic's decision and is deliberately
+  // NOT addressed in this change. Do not "fix" it in passing.
+  const domainNotice: 'ready' | null =
+    truck?.custom_domain && truck.custom_domain_verified_at && !truck.custom_domain_confirmed_at
+      ? 'ready'
+      : null
 
 
   // ── 🔴 INITIAL LOAD vs REFRESH ────────────────────────────────────────────────────────────────
@@ -348,6 +375,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTruck(data.truck)
+      // 🔴 FAIL TOWARD 'not_connected'. An older deployment (or a payload without the field) must offer
+      // setup rather than imply a connection. Never default to anything that reads as connected.
+      setWhatsappConnection(data.whatsappConnection ?? null)
       setUserRole(data.userRole || 'owner')
       setCurrentUserId(data.currentUserId || null)
       setOwnerEmail(data.ownerEmail || null)
@@ -738,19 +768,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             Identical treatment to the three around it: amber-50 / amber-200 when something needs doing,
             an icon, a line of plain English, and a ✕ that dismisses for the session only. */}
         {domainNotice && !domainBannerDismissed && truck?.custom_domain && (
-          <div className={`mb-4 rounded-xl px-4 py-3 flex items-center gap-3 border ${domainNotice === 'ready' ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
-            <span className={`text-lg shrink-0 ${domainNotice === 'ready' ? 'text-green-500' : 'text-amber-500'}`}>{domainNotice === 'ready' ? '✅' : '⏳'}</span>
-            <p className={`text-sm flex-1 ${domainNotice === 'ready' ? 'text-green-800' : 'text-amber-800'}`}>
-              {domainNotice === 'ready'
+          <div className="mb-4 rounded-xl px-4 py-3 flex items-center gap-3 border bg-green-50 border-green-200">
+            <span className="text-lg shrink-0 text-green-500">✅</span>
+            <p className="text-sm flex-1 text-green-800">
+              {
                 /* ── 🔴 THE ADDRESS IS A LINK, AND THE TAB IS NAMED CORRECTLY (28 August 2026). ────────
                    It was bold text telling the operator to "have a look at it" with nothing to click,
                    and it said "dashboard settings" when this card lives in manage → Settings — the tab
                    they are already on. `addressUrl` is the SAME helper the confirm block's step 1 uses,
                    so the two cannot disagree about how a stored host becomes a link. */
-                ? <><a href={addressUrl(truck.custom_domain)} target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-green-900">{truck.custom_domain}</a> is live. Have a look at it, then tell us it is right in Settings.</>
-                : <><strong>{truck.custom_domain}</strong> is not working yet.{truck.custom_domain_setup_started_at ? <> You started setting it up on {new Date(truck.custom_domain_setup_started_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}.</> : null} If someone else was adding the line for you, it is worth checking they did.</>}
+                <><a href={addressUrl(truck.custom_domain)} target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-green-900">{truck.custom_domain}</a> is live. Have a look at it, then tell us it is right in Settings.</>}
             </p>
-            <button onClick={() => setDomainBannerDismissed(true)} className={`text-sm font-bold leading-none shrink-0 ${domainNotice === 'ready' ? 'text-green-400 hover:text-green-600' : 'text-amber-400 hover:text-amber-600'}`}>✕</button>
+            <button onClick={() => setDomainBannerDismissed(true)} className="text-sm font-bold leading-none shrink-0 text-green-400 hover:text-green-600">✕</button>
           </div>
         )}
         {/* Stripe-requirements banner — cross-tab signal, suppressed on the Payments tab itself, where
@@ -816,7 +845,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -7297,6 +7326,40 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
             )}
           </div>
 
+          {/* 🔴 GUESSED-LOCATION WARNING — the map pin this approval will publish.
+              A scraped event's coordinates come from lib/venue-matcher `findVenue`, which NEVER bails to
+              null when it has candidates: with several same-named venues it picks one deterministically
+              and stamps venue_match_confidence 'low'. That guess becomes a public pin the moment this
+              event is approved, and until now this screen showed the operator the venue NAME (which is
+              right) and never the LOCATION (which may not be). "The Bull" exists in Bottisham and in
+              Langley; "The Plough" in Great Shelford and Birdbrook.
+              ⚠️ WARN, NEVER BLOCK — approving stays one click, exactly as before. This only makes sure
+              the approver has seen what they are deciding. Shown for unconfirmed scraper events whose
+              location was guessed; a confidently-matched or operator-entered event shows nothing. */}
+          {event.status === 'unconfirmed' && event.source === 'scraper' && event.venue_match_confidence === 'low' && (
+            <div className="mt-3 px-3 py-2.5 bg-orange-50 border border-orange-300 rounded-lg text-sm">
+              <p className="font-bold text-orange-800 mb-1">📍 We guessed this location</p>
+              <p className="text-orange-900 text-xs leading-relaxed">
+                More than one venue matched <strong>{event.venue_name || 'this venue'}</strong>, so we picked
+                the closest fit{event.town ? <> in <strong>{event.town}</strong></> : null}
+                {event.postcode ? <> ({event.postcode})</> : null}. Check it is the right one before approving —
+                if it is wrong, use <strong>Edit</strong> to correct the area or postcode, otherwise customers
+                will be sent to the wrong place.
+              </p>
+            </div>
+          )}
+          {/* A scraped event that reached no venue at all has NO coordinates: it will appear in listings
+              but never on the map. Silent until now — the operator saw a normal-looking card. */}
+          {event.status === 'unconfirmed' && event.source === 'scraper' && !event.latitude && (
+            <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm">
+              <p className="font-bold text-slate-700 mb-1">📍 No location yet</p>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                We could not place this venue on the map, so it will be listed but will not show a map pin.
+                Add a postcode with <strong>Edit</strong> to put it on the map.
+              </p>
+            </div>
+          )}
+
           {/* Conflict warning — shown when this unconfirmed event (scraper card OR operator-added
               card) clashes with an existing confirmed/open event. `conflicts` is non-empty only for
               status 'unconfirmed', so this is NOT gated on `pending` — it renders below the main row
@@ -8441,7 +8504,12 @@ const MESSENGER_INSTAGRAM_ROW = 'Messenger & Instagram auto-replies'
 // ⚠️ TYPED `boolean`, NOT INFERRED AS `false`, ON PURPOSE: it keeps both JSX branches type-checked and
 // stops a linter reporting the live branch as unreachable while the switch is off. The live branch is
 // not dead code — it is the code this flag exists to bring back.
-const WHATSAPP_LIVE: boolean = false
+// 🔴 THE FLAG MOVED TO lib/whatsapp-live.ts (8 Sep 2026) so ONE value governs the landing copy, the
+// pricing matrix, the landing table and this card. It could not stay here: this file imports
+// FEATURE_SECTIONS from lib/plan-features.ts, so a flag declared here and read there would be a
+// cycle. Same flag, same name, one definition — do NOT reintroduce a local copy.
+// ⚠️ The `boolean` annotation stays where it is declared, for the reason the note above gives:
+// it keeps both JSX branches type-checked while the switch is off.
 
 function isRowComingSoon(rowName: string): boolean {
   for (const section of FEATURE_SECTIONS) {
@@ -8701,11 +8769,17 @@ function QrPreview({ src, alt, onOpen, locked }: {
   )
 }
 
-function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
+function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
   truck: Truck; token: string
+  /** S2: the reduced, client-safe connection view. null = not loaded yet or the
+   *  payload predates this field — both treated as 'not connected'. */
+  whatsappConnection: WhatsAppConnectionView | null
+  /** S4: push the post-signup connection view up to the parent. Sibling of `onTruckUpdate` and for the
+   *  same reason — the alternative is a parent reload(), which unmounts this tab behind a spinner. */
+  onConnectionUpdate: (v: WhatsAppConnectionView) => void
   api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   onVerifySuccess: (events: any[]) => void
   onSwitchTab: (tab: Tab) => void
@@ -9168,6 +9242,76 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
     }
   }
 
+  // ── 🔴 S4: THE SETUP HANDLER. SHARES NO CODE PATH WITH `saveWhatsappSender` ABOVE. ─────────────────
+  // That handler early-returns when the number is unchanged; this one CANNOT — it takes no arguments,
+  // reads no previous value, and has no branch. Pressing Set up always launches, whether the operator
+  // edited the number field first or never touched it. (S3's proof of that still holds; the body below
+  // changed from opening a notice to opening Meta's flow, the guarantee did not.)
+  //
+  // ── 🔴 THE 30-SECOND CODE. NOTHING GOES BETWEEN CAPTURE AND EXCHANGE. ────────────────────────────
+  // Meta's one-time code lives 30 seconds. So there is no confirmation dialog, no "review and continue",
+  // no toast the operator has to dismiss first: the moment `launchEmbeddedSignup` resolves with a code,
+  // this posts it. If you add a step in here, you break the flow for everyone.
+  //
+  // ⚠️ ABANDONMENT AND ERRORS ARE POSTED TOO, AND THAT IS DELIBERATE. They write nothing and change no
+  // state — they exist so a truck saying "it didn't work" has a screen name and a Meta error code
+  // behind it. See the route: they go to the server log, not to a table.
+  //
+  // 🔴 META REQUIRES HTTPS FOR EMBEDDED SIGNUP DOMAINS, so this cannot be exercised on localhost —
+  // the flow will refuse to open. That is an environment limit, not a bug in this handler.
+  const [setupBusy, setSetupBusy] = useState(false)
+  const [setupNotice, setSetupNotice] = useState<{ tone: 'ok' | 'warn' | 'error'; text: string } | null>(null)
+
+  const onWhatsAppSetup = async () => {
+    if (setupBusy) return   // ⚠️ re-entrancy only: a second press mid-flow, NOT a value comparison.
+    setSetupBusy(true)
+    setSetupNotice(null)
+    try {
+      const appId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_APP_ID
+      const configId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_CONFIG_ID
+      if (!appId || !configId) {
+        setSetupNotice({ tone: 'error', text: 'WhatsApp setup is not available in this environment.' })
+        return
+      }
+
+      const outcome = await launchEmbeddedSignup({ appId, configId })
+
+      // 🔴 NO `console.log(outcome)` AND NO `console.log(code)`. Meta's own sample carries four such
+      // lines marked "remove after testing"; two of them print the payload and the code. A credential
+      // in a browser console is a credential in a screen-share and in a support screenshot.
+      const res = await fetch('/api/manage/whatsapp-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, ...outcome, kind: outcome.kind }),
+      })
+      const json = await res.json().catch(() => ({}))
+
+      if (outcome.kind === 'abandoned') {
+        setSetupNotice({ tone: 'warn', text: 'Setup was closed before it finished. Nothing was changed — press Set up to try again.' })
+        return
+      }
+      if (outcome.kind === 'error') {
+        setSetupNotice({ tone: 'error', text: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
+        return
+      }
+      if (!res.ok || json?.ok === false) {
+        setSetupNotice({ tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' })
+        return
+      }
+      setSetupNotice({ tone: json?.state === 'ready' ? 'ok' : 'warn', text: json?.message || 'Setup finished.' })
+      // 🔴 THE NEW STATE COMES FROM THE DATABASE, NOT FROM THIS HANDLER. The route returns the same S2
+      // view the Manage payload carries, read back through `readWhatsAppConnection` after the writes —
+      // so the button label flips to "Reconnect" (or stays "Set up") because the ROW says so.
+      // ⚠️ DELIBERATELY NOT `reload()`. A parent reload unmounts this tab behind a spinner, which the
+      // sibling `onCategoriesPatch` comment records as the §23 "iPhone" violation. Patch, don't remount.
+      if (json?.connection) onConnectionUpdate(json.connection as WhatsAppConnectionView)
+    } catch (e: any) {
+      setSetupNotice({ tone: 'error', text: e?.message || 'Meta’s setup window could not be opened.' })
+    } finally {
+      setSetupBusy(false)
+    }
+  }
+
   const saveFormField = async (overrides?: Record<string, unknown>) => {
     try {
       // update_settings returns the updated row ({ truck }); push it up so the parent `truck` is
@@ -9403,6 +9547,44 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
           </button>
         </div>
       </Card>
+
+      {/* ── 🔴 GET THE APP. SECOND CARD, AND WEB-ONLY. ────────────────────────────────────────────────
+          ── WHY HERE, AND NOT AT THE BOTTOM ──────────────────────────────────────────────────────
+          It sits directly under "New to HatchGrab?" because it is the SAME KIND OF THING: a one-time
+          orientation action a new operator takes once and never again, not a setting they come back to
+          adjust. Everything below this point — logo, contact details, opening hours, auto-replies, the
+          danger zone — is configuration. Putting a download prompt among them would bury the thing an
+          operator most needs on their FIRST visit behind fourteen things they need on their fiftieth.
+          ⚠️ AND NOT FIRST. The walkthrough card earns that slot: an operator who does not yet know what
+          the tabs do is not helped by being sent to an app store. Orientation, then the app.
+          🔴 IT IS NOT A SETTING AND MUST NOT GROW INTO ONE. No toggle, no state, no write — two links.
+
+          ── 🔴 WEB-ONLY, AND THIS IS NOT COSMETIC ─────────────────────────────────────────────────
+          `!isNativeApp()` — the same mechanism the auto-replies card below already uses.
+            • An operator reading this INSIDE the app does not need a link to download the app.
+            • 🔴 AND POINTING AT THE OTHER PLATFORM'S STORE FROM INSIDE A NATIVE SHELL IS THE PROBLEM
+              THIS CODEBASE ALREADY HAS A RULE ABOUT. lib/commerce-policy.ts exists because Apple
+              restricts steering users out of an iOS app; a Google Play badge rendered inside the iOS
+              build is exactly the kind of thing App Review looks for, and the reverse is merely absurd.
+              Hiding on native removes the question rather than answering it.
+          ⚠️ `isNativeApp()` IS CALLED DIRECTLY WITH NO `mounted` FLAG, and that is safe here for the
+          reason recorded at the auto-replies wrapper below: SettingsTab renders beneath the `loading`
+          early-return, so this markup appears in no server render and cannot hydrate-mismatch. */}
+      {!isNativeApp() && (
+        <Card className="p-4">
+          <p className="text-base font-bold text-slate-800">Get the app</p>
+          {/* ⚠️ OPERATOR VOCABULARY AND A REASON, NOT A FEATURE LIST. The one thing the app does that
+              the browser cannot is keep taking orders with no signal — that is why a truck installs it,
+              and it is the sentence that makes the badges worth tapping. */}
+          <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+            The kitchen app runs your service on a phone or tablet — and it is the only way to keep taking
+            orders when you lose signal. Free with your account, on iPhone, iPad and Android.
+          </p>
+          {/* 🔴 THE SHARED BADGES — components/StoreBadges.tsx. Apple's badge first and in black is a
+              VENDOR RULE, not styling, which is why this is a component and not two <a> tags here. */}
+          <StoreBadges className="mt-3 flex flex-wrap items-center gap-3" />
+        </Card>
+      )}
 
       {/* Logo */}
       <Card className="p-4">
@@ -9655,9 +9837,15 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
             operator who does not open it is not left to infer the state from the rows. Same component,
             same label, same colour as those three — `Badge` from components/manage/primitives.tsx, which
             is the pattern used everywhere else including the admin matrix and the Billing table. */}
+        {/* ⚠️ THE CARD-TITLE "Coming soon" BADGE WAS REMOVED WHEN WHATSAPP_LIVE WENT TRUE (4 September
+            2026). It was a HARD-CODED literal — gated by neither `WHATSAPP_LIVE` nor `isRowComingSoon`
+            — so leaving it would have printed "Auto-replies — Coming soon" directly above a working,
+            editable Connect row. 🔴 THE PER-CHANNEL BADGES BELOW ARE NOT AFFECTED AND MUST NOT BE
+            REMOVED WITH IT: the Messenger and Instagram rows derive theirs from
+            `isRowComingSoon(MESSENGER_INSTAGRAM_ROW)`, which reads lib/plan-features.ts, so they stay
+            correct on their own while that row remains `coming_soon`. */}
         <div className="flex items-center gap-2">
           <p className="text-base font-bold text-slate-800">Auto-replies</p>
-          <Badge label="Coming soon" colour="slate" />
         </div>
         {/* ── THE DESCRIPTION. OUTSIDE THE NATIVE HIDE, WITH THE TITLE AND THE PREVIEW. ───────────────
             ⚠️ `text-base` — deliberately LARGER than the preview's `text-sm` body copy, and un-bolded so
@@ -9676,20 +9864,27 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
             🔴 NAMES NO CHANNEL and 🔴 PROMISES NO VIEWER for past replies: no such surface exists (§20). */}
         <p className="text-base text-slate-500">Answer customer questions automatically on your social media, using your menu and schedule.</p>
 
-        {/* ── ⚠️ ORDER: THE DEMO IS FIRST, CONNECT IS SECOND. THIS IS A DATED DECISION, NOT A LAYOUT ──
-            The Connect control does not yet connect anything — it saves a number (§20) — and the demo
-            is the part that works, so the working thing leads.
-            🔴 THIS ORDER IS FOR TODAY ONLY. Once Embedded Signup exists, Connect becomes the PRIMARY
+        {/* ── ⚠️ ORDER: THE DEMO IS FIRST, SETUP IS SECOND. A DATED DECISION WHOSE DATE HAS ARRIVED. ──
+            🔴 CORRECTED 4 September 2026 (S4). This note said "The Connect control does not yet connect
+            anything — it saves a number (§20)". THAT IS NO LONGER TRUE: the control is now "Set up" /
+            "Reconnect" and launches Meta's Embedded Signup flow, which is the thing that connects.
+            The note's own condition was "Once Embedded Signup exists, Connect becomes the PRIMARY
             action and the demo becomes supporting — at which point swapping these two is correct and
-            expected. Do not reverse it before then, and do not treat the current order as an aesthetic
-            preference: it is a statement about which control currently does something. */}
+            expected." ⚠️ THE SWAP IS NOT MADE HERE, DELIBERATELY: it is a layout change to a live
+            operator surface that nobody asked for in this stage, and the flow has never been exercised
+            against an HTTPS host. Left as it is, with the condition recorded as MET so the next person
+            makes that call on purpose rather than inheriting a stale reason. */}
 
 
         {/* ── 🔴 HIDDEN IN THE NATIVE APP ONLY — NOT REMOVED (14 August 2026) ──────────────────────
             Self-serve WhatsApp onboarding for trucks is not built, so this subsection must not appear
             in the build going to App Review. 🔴 IT IS NOT A DEAD CONTROL AND MUST NOT BE DELETED: the
-            "Connect" button runs `saveWhatsappSender` → `api('update_truck', { whatsapp_sender })`,
+            number field saves through `saveWhatsappSender` → `api('update_truck', { whatsapp_sender })`,
             Pizzeria Gusto has a sender set, and their `preferred_contact_method` is 'whatsapp'.
+            ⚠️ THE BUTTON BESIDE IT NO LONGER CALLS THAT (S4, 4 September 2026) — it is "Set up" /
+            "Reconnect" and launches Embedded Signup. Two controls, two jobs, one row.
+            🔴 THE NATIVE HIDE MATTERS MORE NOW, NOT LESS: self-serve onboarding is web-only, and Meta
+            requires HTTPS domains it has never seen a Capacitor shell from. The wrapper stays.
             See docs/whatsapp-connect-report.md.
             🔴 THE WHOLE SUBSECTION GOES, NOT THE ROW. The Messenger and Instagram rows were removed on
             14 August, so the WhatsApp row is the LAST child of `space-y-3` — hiding the row alone would
@@ -9735,21 +9930,44 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
           {/* Moved under "Channels" — it now has three rows as its subject rather than one. */}
           <p className="text-xs text-slate-400 mb-3">Requires Business accounts on each platform.</p>
 
+          {/* ── 🔴 THE REPLY CAP, STATED WHERE IT IS SET UP (4 September 2026). ──────────────────────
+              MOVED HERE OUT OF PRICING FOOTNOTE 6. A per-customer limit is an OPERATIONAL fact an
+              operator needs while configuring the feature, not a line on a marketing comparison table
+              they read once before signing up.
+              🔴 THE NUMBER IS READ FROM SOURCE, NOT TYPED. `DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H` is 3
+              (lib/whatsapp/reply-cap.ts:25) and the webhook passes exactly that constant at its
+              decideReplyCap call site — so this renders the live value and cannot drift from it. When
+              the intended per-truck override lands (ceiling 5), this reads the truck's value instead.
+              🔴 "AND ONE MORE" IS NOT A ROUNDING. reply-cap.ts:68-70 is explicit: the handoff is ITSELF
+              a billable message, so a limit of 3 yields THREE replies PLUS ONE handoff — **four billable
+              messages, not three.** Saying "3 a day" alone would understate the invoice by 25%.
+              ⚠️ NO PRICE AND NO DATE — same reason as footnote 6: Meta's rates are unread, and this card
+              must not carry a figure the product cannot stand behind. */}
+          <p className="text-xs text-slate-500 mb-3">
+            Each customer gets up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} replies in 24 hours. After that
+            they get one more message handing them over to you — Meta charges for that one too.
+          </p>
+
           <div className="space-y-3">
             {/* ── WhatsApp ────────────────────────────────────────────────────────────────────────────
-                🔴 SHOWN AS COMING SOON AND GREYED, BY OPERATOR DECISION, 21 August 2026, PENDING META
-                APPROVAL. Flip `WHATSAPP_LIVE` to true to restore the editable input and the Connect
-                button; nothing else needs changing and both branches are kept below for that reason.
-                🔴 THIS STATE DELIBERATELY DOES **NOT** COME FROM lib/plan-features.ts, AND MUST NOT.
-                That module's WhatsApp row reads `pro: true, max: true` because the feature IS shipped at
-                Pro — it describes the PLAN TIER, not Meta's approval status. Setting it to
-                'coming_soon' there would rewrite the public landing pricing matrix and the Billing tab
-                for customers, and would make findPlanParityViolations() SKIP the row (it only inspects
-                hard `true` cells), so the gate/marketing cross-check would go quiet on a live feature.
-                Two different facts; two different homes.
-                ⚠️ CONSEQUENCE, RECORDED: the `can('whatsapp_replies')` FeatureGate lived in the live
-                branch, so while this is false the card carries NO upgrade affordance at all. That is
-                what the card description is worded around. */}
+                🟢 LIVE SINCE 4 September 2026. `WHATSAPP_LIVE` is true (:8444), so the editable input and
+                the Connect button render for any truck whose plan grants `whatsapp_replies` — which is
+                Pro, Max AND trial/tester/demo, because TRIAL_FEATURES spreads MAX_FEATURES
+                (lib/features.ts:51/55/72). Both live trucks are plan='trial', so both see this row.
+                ⚠️ THE ELSE BRANCH BELOW IS KEPT, not dead code: it is the presentation this row returns
+                to if the flag is ever flipped back.
+                🔴 THE PREVIOUS COMMENT HERE WAS STALE AND SAID THE OPPOSITE — CORRECTED 4 September 2026.
+                It read: "THIS STATE DELIBERATELY DOES **NOT** COME FROM lib/plan-features.ts, AND MUST
+                NOT. That module's WhatsApp row reads `pro: true, max: true` … Setting it to 'coming_soon'
+                there would rewrite the public landing pricing matrix … Two different facts; two different
+                homes." Every factual clause in that had stopped being true: the row was deliberately MOVED
+                to `coming_soon` (lib/plan-features.ts:272 records why, and names this flag as the reason),
+                and it cited `:8378` for a const that had drifted to `:8444`. The two files are now
+                deliberately KEPT IN STEP — this flag and that row are two halves of one statement, and the
+                4 September change flipped both together. If you flip one back, flip the other.
+                ⚠️ CONSEQUENCE, RECORDED: the `can('whatsapp_replies')` FeatureGate lives in the live
+                branch, so the card now carries its upgrade affordance again for a plan that lacks the
+                feature (starter) — which is what the card description was worded around while it did not. */}
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <label className={`text-sm w-20 flex-shrink-0 ${WHATSAPP_LIVE ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
@@ -9763,22 +9981,33 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
                       placeholder="+447700900000"
                       className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                     />
-                    {/* ── THE LABEL "Connect" STAYS. DECISION TAKEN 20 August 2026. ─────────────────
-                        🔴 The 10 August comment arguing for a label that does not promise a connection
-                        has been REPLACED: its premise was that no connection was coming. It now is —
-                        **this control becomes the Embedded Signup launcher**, so renaming it to "Save"
-                        in the interim would mean renaming it back.
-                        ⚠️ STILL BINDING: the button today only writes `whatsapp_sender`. 🔴 DO NOT ADD A
-                        connected/disconnected INDICATOR until the flow exists — that would be a label
-                        asserting a state nobody checked (§35). A forward-looking VERB is a product
-                        decision; a fabricated STATE is a lie.
-                        🔴 BEHAVIOUR IS BYTE-IDENTICAL to 10 August. Same `onClick={saveWhatsappSender}`,
-                        same save-on-blur beside it, same handler, same request, same column. */}
+                    {/* ── 🔴 SETUP (S3, 4 September 2026). DECOUPLED FROM `saveWhatsappSender`. ─────────
+                        THE BUG THIS FIXES, QUOTED FROM THE HANDLER IT NO LONGER CALLS:
+                            if (whatsappSender === lastSavedSender.current) {
+                              showToast('WhatsApp number saved')
+                              return
+                            }
+                        The old button was `onClick={saveWhatsappSender}`. Once this control launches a
+                        flow, that early return means an operator who presses it WITHOUT editing the
+                        number field gets a "WhatsApp number saved" toast and NO WIZARD — a success
+                        message for something that did not happen. That is worse than the bare `return`
+                        it replaced, because it is indistinguishable from working.
+                        🔴 LAUNCHING A WIZARD IS NOT A SAVE. `onSetup` shares no code path with the
+                        save: it runs unconditionally, reads no `lastSavedSender`, and cannot early-return.
+                        The save-on-blur stays on the input beside it, unchanged, because saving the
+                        number IS still a save.
+                        ⚠️ LABEL: "Set up" / "Reconnect", chosen by the STATE (shouldOfferSignup /
+                        shouldOfferReauthorise, derived server-side). Still a forward-looking verb, still
+                        NOT a connected/disconnected indicator — no state is fabricated anywhere. */}
                     <button
-                      onClick={saveWhatsappSender}
-                      className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+                      onClick={onWhatsAppSetup}
+                      disabled={setupBusy}
+                      className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      Connect
+                      {/* ⚠️ `disabled` HERE IS RE-ENTRANCY, NOT A VALUE CHECK. It blocks a second press
+                          while Meta's window is open; it can never make the FIRST press do nothing,
+                          which is the failure the S3 decoupling exists to prevent. */}
+                      {setupBusy ? 'Opening…' : whatsappConnection?.offerReauthorise ? 'Reconnect' : 'Set up'}
                     </button>
                   </>
                 ) : (
@@ -9800,10 +10029,54 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
                       placeholder="+447700900000"
                       className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
                     />
-                    <span className="flex-shrink-0"><Badge label="Coming soon" colour="slate" /></span>
+                    {/* ⚠️ THE "Coming soon" BADGE THAT SAT HERE WAS REMOVED 4 September 2026 with the
+                        WHATSAPP_LIVE flip. 🔴 CONSEQUENCE, RECORDED RATHER THAN DISCOVERED: this is the
+                        ELSE branch, so it renders ONLY while WHATSAPP_LIVE is false — removing the badge
+                        changed nothing on the live path. If the flag is ever flipped BACK to false, this
+                        frozen row will show a disabled input with NO "coming soon" label on it. Put the
+                        badge back in the same change if that ever happens. */}
                   </>
                 )}
               </div>
+
+              {/* ── 🔴 S4: WHAT THE FLOW SAID. THE ONLY THING THIS PANEL EVER SHOWS IS AN OUTCOME. ──
+                  Three tones, one per real result: `ok` when the row genuinely derives 'ready', `warn`
+                  when the flow was closed or Meta half-finished (the row is saved but NOT sendable), and
+                  `error` when nothing was written at all.
+                  🔴 IT NEVER SAYS "CONNECTED" OF ITS OWN ACCORD. The text comes from the route, which
+                  read the state back out of the database after writing — so a `warn` really is a row in
+                  'onboarding_incomplete', not a guess made in the browser. Nothing is fabricated here.
+                  ⚠️ THE `warn` WORDING ALWAYS TELLS THEM NOT TO RUN IT AGAIN when a token is already
+                  stored. Re-running burns another wizard for a fault support can fix in one query. */}
+              {setupNotice && (
+                <div className={`mt-2 rounded-xl border p-3 text-xs space-y-1 ${
+                  setupNotice.tone === 'ok'    ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :
+                  setupNotice.tone === 'warn'  ? 'border-amber-200 bg-amber-50 text-amber-800' :
+                                                 'border-red-200 bg-red-50 text-red-700'}`}>
+                  <p>{setupNotice.text}</p>
+                  <button
+                    onClick={() => setSetupNotice(null)}
+                    className="mt-1 text-xs font-semibold underline"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+
+              {/* ── 🔴 EXPIRY IS THE NORMAL CASE, SO IT IS PROMPTED BEFORE IT BITES. ─────────────────
+                  ⚠️ This read "(60-day tokens)". The lifetime is now taken from Meta's `expires_in` on
+                  the exchange and has not been observed — see lib/whatsapp/connection-state.ts.
+                  `expiringSoon` is true only while the state is still 'ready' — the truck IS answering
+                  customers, and this asks them to reconnect before that stops. It is NOT a state and must
+                  not become one: `canSendWhatsApp` stays a single equality on 'ready'.
+                  The window is REAUTHORISE_WINDOW_FRACTION (0.25 of the token's own life — 15 days
+                  against today's 60-day configuration), one named constant in
+                  lib/whatsapp/connection-state.ts — never a literal here. */}
+              {whatsappConnection?.expiringSoon && (
+                <p className="mt-2 text-xs text-amber-700">
+                  Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.
+                </p>
+              )}
             </div>
 
             {/* ── Instagram and Messenger ─────────────────────────────────────────────────────────────
@@ -9963,7 +10236,7 @@ function SettingsTab({ userRole, truck, token, api, showToast, onVerifySuccess, 
           scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
           to the operator's own address. Reading them in this order is what makes that obvious; separated,
           the two read as unrelated features and the operator assumes a new code is needed. */}
-      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
+      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
 
       {/* QR Code */}
       <Card className="p-4">

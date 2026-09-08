@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { canAccess, type Plan } from '@/lib/features'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { checkSubdomain, domainFromWebsite } from '@/lib/custom-domain/apex'
-import { recordRows, providerFieldRows, TIMING_LINE, CONFIRM_COPY, CONFIRMED_COPY, TURN_OFF_COPY, confirmProblemMailto, addressUrl, orderPageUrl, type RecordRow, scanUrl } from '@/lib/custom-domain/copy'
+import { CopyButton } from '@/components/dashboard/CopyButton'
+import { notificationCopy, recordRows, providerFieldRows, TIMING_LINE, CONFIRM_COPY, CONFIRMED_COPY, TURN_OFF_COPY, confirmProblemMailto, addressUrl, orderPageUrl, type RecordRow, scanUrl } from '@/lib/custom-domain/copy'
 import type { DnsProvider } from '@/lib/custom-domain/dns'
 
 /**
@@ -30,6 +31,9 @@ type Props = {
   website: string | null
   customDomain: string | null
   setupState: 'choosing' | 'registered' | 'awaiting_dns' | null
+  /** 🔴 WHEN SETUP BEGAN. Added 5 September 2026 so the waiting message the BANNER used to carry can
+   *  say it here instead — "you started this on 4 September" is the half that makes it actionable. */
+  setupStartedAt: string | null
   verifiedAt: string | null
   confirmedAt: string | null
 }
@@ -122,7 +126,6 @@ export default function CustomDomainSetup(props: Props) {
   const setAddress = (full: string) => { if (!fixedDomain) setTypedDomain(domainOf(full)) }
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState<string | null>(null)
 
   const [pre, setPre] = useState<Preflight | null>(null)
   const [rows, setRows] = useState<RecordRow[] | null>(null)
@@ -199,6 +202,33 @@ export default function CustomDomainSetup(props: Props) {
    * most for exactly the operators who need two attempts — the ones who had to go and find who holds
    * their domain, which is the longest gap in this whole flow.
    */
+  /**
+   * ── 🔴 THE ON-DEMAND CHECK. FIRED BY OPENING THE BOX (5 September 2026). ────────────────────────
+   * `custom_domain_verified_at` was writable only by the 07:00 UTC cron, so the first operator through
+   * this feature had a working address and a dead page for eleven hours. Opening this box IS the
+   * gesture that means "has it worked yet", so that is what runs the check.
+   * ⚠️ NOT AT WIZARD COMPLETION. A single check fired the moment they add the record nearly always
+   * fails on propagation and reads as broken.
+   * ⚠️ ONE CHECK PER OPEN, and the server limits it to six an hour per truck on top of that.
+   * ⚠️ IT NEVER SURFACES AN ERROR. A check that cannot run leaves the operator exactly where they were
+   * — with the waiting copy — rather than showing them a failure they did not cause.
+   */
+  const [justWentLive, setJustWentLive] = useState(false)
+  useEffect(() => {
+    if (!open || !props.customDomain || props.verifiedAt) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const d = await call('domain_check')
+        if (cancelled) return
+        // 🔴 ONLY EVER SETS A FLAG UPWARDS. Nothing here can un-live a domain: the server's patch is
+        // additive and this reads `went_live`, never the raw check state.
+        if (d?.went_live) setJustWentLive(true)
+      } catch { /* a check that could not run changes nothing the operator sees */ }
+    })()
+    return () => { cancelled = true }
+  }, [open, props.customDomain, props.verifiedAt, call])
+
   useEffect(() => {
     if (!open || !props.customDomain || step !== 'idle') return
     let cancelled = false
@@ -323,10 +353,13 @@ export default function CustomDomainSetup(props: Props) {
     } finally { setOffBusy(false) }
   }
 
-  const copy = async (text: string, which: string) => {
-    try { await navigator.clipboard.writeText(text); setCopied(which); setTimeout(() => setCopied(null), 2500) }
-    catch { setError('Could not copy — select the writing and copy it yourself.') }
-  }
+  // ── 🔴 THE LOCAL `copy` HANDLER AND ITS `copied` STATE ARE GONE (5 September 2026). ─────────────
+  // They lived here and were rendered twice, keyed on the row LABEL — so two record tables shared one
+  // key space and a provider using the same word for two fields would light both buttons. The
+  // behaviour now lives in one place, per button, with its own state: components/dashboard/CopyButton.
+  // ⚠️ The old handler was NOT the Safari bug — it did `await navigator.clipboard.writeText(...)`,
+  // where the call is evaluated BEFORE the suspension, so the gesture was still live. Replaced for
+  // consistency and signalling, not to fix a break. See the report.
 
   const sendEmail = async () => {
     setBusy(true); setError(null)
@@ -408,7 +441,47 @@ export default function CustomDomainSetup(props: Props) {
             )}
           </p>
         </div>
-        {/* ── THE ACTION SITS BESIDE THE TITLE, NOT UNDER IT. ────────────────────────────────────
+        {/* ── 🔴 THE WAITING MESSAGE. IT LIVES HERE AND NOWHERE ELSE (5 September 2026). ────────────
+          It was a BANNER across the top of every tab of manage, every session, for as long as the
+          domain took to resolve — the same width and weight as "Allergens not set", which is a thing
+          the operator must act on. A progress report is not that. It moved here, in full, because this
+          is the one surface that can actually help: the record values, the provider's steps, and the
+          escape hatch to email a web person are all in this box.
+          🔴 THE WORDS COME FROM `notificationCopy`, WHICH UNTIL TODAY HAD NO CALLER AT ALL. The banner
+          inlined its own near-copy of them, so there were two records of one sentence and the one
+          nobody read was free to drift — exactly the drift this codebase keeps recording. One reader
+          now, and it is this.
+          ⚠️ SHOWN ONLY WHEN A DOMAIN EXISTS AND HAS NOT GONE LIVE. A truck that never started setup
+          gets nothing, and a live truck gets the "Live" pill beside the title instead.
+          ⚠️ NOT DISMISSIBLE, unlike the banner it replaces. It is inside a box the operator opened on
+          purpose; there is nothing to get out of the way of. */}
+      {/* ⚠️ `justWentLive` IS WHY THIS DISAPPEARS WITHOUT A RELOAD. The check that just ran wrote
+          `custom_domain_verified_at`, but `props.verifiedAt` is the value this page loaded with. */}
+      {props.customDomain && !props.verifiedAt && !justWentLive && (() => {
+        const waiting = notificationCopy({ address: props.customDomain, startedAt: props.setupStartedAt }).waiting
+        return (
+          <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2.5">
+            <span className="text-amber-500 text-base leading-none shrink-0 mt-0.5" aria-hidden>⏳</span>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-amber-900">{waiting.title}</p>
+              <p className="text-xs text-amber-800 leading-relaxed mt-0.5">{waiting.body}</p>
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* 🔴 THE MOMENT IT WORKS, SAID HERE. The operator opened this box to find out; telling them
+          on the next page load would waste the one check that answered their question. */}
+      {justWentLive && (
+        <div className="mb-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2.5 flex items-start gap-2.5">
+          <span className="text-green-600 text-base leading-none shrink-0 mt-0.5" aria-hidden>✅</span>
+          <p className="text-sm text-green-900">
+            <strong>{props.customDomain}</strong> is working. Have a look at it, then tell us it is right below.
+          </p>
+        </div>
+      )}
+
+      {/* ── THE ACTION SITS BESIDE THE TITLE, NOT UNDER IT. ────────────────────────────────────
             It was a full row of its own below the description, which left the right-hand half of the
             card empty on every screen wider than a phone.
             🔴 `shrink-0` HERE AND `min-w-0` ON THE TEXT BLOCK ARE THE PAIR THAT MAKES IT FIT. Without
@@ -816,10 +889,10 @@ export default function CustomDomainSetup(props: Props) {
                         <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{r.hint}</p>
                       </div>
                       <p className="flex-1 min-w-0 truncate font-mono text-sm text-slate-800">{r.value}</p>
-                      <button onClick={() => copy(r.value, r.label)}
-                        className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                        {copied === r.label ? 'Copied ✓' : 'Copy'}
-                      </button>
+                      {/* 🔴 THE SHARED BUTTON. Both record tables use it, so their behaviour cannot
+                          drift, and the label-keyed `copied` state that made two tables share one key
+                          space is gone. See components/dashboard/CopyButton.tsx for the Safari rule. */}
+                      <CopyButton value={r.value} describedAs={r.label} className="shrink-0" />
                     </div>
                   ))}
                 </div>
@@ -861,10 +934,10 @@ export default function CustomDomainSetup(props: Props) {
                         <p className="text-[10px] text-slate-400 leading-tight mt-0.5">{r.hint}</p>
                       </div>
                       <p className="flex-1 min-w-0 truncate font-mono text-sm text-slate-800">{r.value}</p>
-                      <button onClick={() => copy(r.value, r.label)}
-                        className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                        {copied === r.label ? 'Copied ✓' : 'Copy'}
-                      </button>
+                      {/* 🔴 THE SHARED BUTTON. Both record tables use it, so their behaviour cannot
+                          drift, and the label-keyed `copied` state that made two tables share one key
+                          space is gone. See components/dashboard/CopyButton.tsx for the Safari rule. */}
+                      <CopyButton value={r.value} describedAs={r.label} className="shrink-0" />
                     </div>
                   ))}
                 </div>

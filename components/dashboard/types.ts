@@ -323,6 +323,19 @@ export interface TruckEvent {
   notes: string | null
   source: string | null
   van_id: string | null
+  /** How the scraped venue was resolved to a `venues` row, and how sure the matcher was.
+   *  Written ONLY by /api/inbound-schedule (lib/venue-matcher `findVenue`) when it bridges a scraped
+   *  event; null on operator-created events.
+   *  🔴 'low' means the matcher had SEVERAL candidate venues and broke the tie deterministically — the
+   *  coordinates stamped on this event are a best guess, and a wrong guess is a public map pin in the
+   *  wrong village. Both columns existed and were written since June 2026 but were read by NOTHING, so
+   *  an operator approved a guessed location with no way to know it was one (audit §C3). */
+  venue_match_confidence?: 'high' | 'low' | null
+  venue_id_source?: string | null
+  /** Resolved event coordinates. Stamped by /api/inbound-schedule from the matched venue, or entered by
+   *  the operator. NULL = this event can be listed but can never be pinned on the map. */
+  latitude?: number | null
+  longitude?: number | null
   // Order-ready (master-switch model): per-event on/off for the order-ready step/notifications. Concrete
   // true/false (seeded at creation + bulk-set by the Settings master switch); a legacy NULL falls back to
   // the van's order_ready_enabled default server-side → effectiveOrderReady.

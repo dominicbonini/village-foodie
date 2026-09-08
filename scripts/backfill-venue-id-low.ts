@@ -26,6 +26,8 @@ import { findVenue, toks, normName, type VenueRow } from '../lib/venue-matcher'
 // 🔴 The same two refusal guards the high-confidence script uses — ONE implementation, imported twice,
 // so the two scripts cannot drift. lib/venue-matcher.ts is unchanged.
 import { applyGuards, buildCategoryIndex, buildSentinelSet } from './linking-guards'
+// 🔴 GUARD THREE — FLAG ONLY. It refuses nothing and substitutes nothing; see linking-guards.ts.
+import { buildPostcodeIndex, checkPostcode, POSTCODE_CONFIRM_KM, POSTCODE_FLAG_KM } from './linking-guards'
 
 const env = Object.fromEntries(
   readFileSync('.env.local', 'utf8').split('\n').filter(l => l.includes('='))
@@ -41,6 +43,7 @@ type EventRow = {
   truck_name: string | null
   venue_name: string | null
   village: string | null
+  ai_notes: string | null
 }
 
 const sq = (s: string) => s.replace(/'/g, "''")
@@ -63,7 +66,7 @@ async function main() {
 
   const { data: events } = await sb
     .from('discovery_events')
-    .select('id, event_date, truck_name, venue_name, village')
+    .select('id, event_date, truck_name, venue_name, village, ai_notes')
     .is('venue_id', null)
     .gte('event_date', today)
     .order('event_date') as { data: EventRow[] | null }
@@ -194,6 +197,34 @@ async function main() {
   writeFileSync(`${OUT_DIR}/held-uncheckable-coord-low.csv`,
     ['event_id,event_date,truck_name,venue_name,village,venue_id,venue,venue_village',
       ...heldUncheckable.map(({ e, v }) => [e.id, e.event_date, e.truck_name ?? '', e.venue_name ?? '', e.village ?? '', v.id, v.name, v.village ?? ''].map(x => csvCell(String(x))).join(','))].join('\n') + '\n')
+
+  // ── GUARD THREE — POSTCODE DISAGREEMENT. 🔴 REPORT ONLY: this block changes no bucket above, refuses
+  //    no link and writes no coordinate anywhere. It resolves each DISTINCT postcode once and reports.
+  const pcCandidates = [...approved.map(x => ({ e: x.e, v: x.v })), ...suspicious.map(x => ({ e: x.e, v: x.v }))]
+  const pcIndex = await buildPostcodeIndex(pcCandidates.map(c => c.e.ai_notes))
+  const pcBuckets = { CONFIRMED: 0, NOTED: 0, FLAGGED: 0, UNCHECKED: 0 }
+  const pcUncheckedWhy: Record<string, number> = {}
+  const pcFlagged: string[][] = []
+  for (const { e, v } of pcCandidates) {
+    const r = checkPostcode(e.ai_notes, v, pcIndex)
+    pcBuckets[r.state]++
+    if (r.state === 'UNCHECKED') pcUncheckedWhy[r.reason] = (pcUncheckedWhy[r.reason] ?? 0) + 1
+    else if (r.state === 'FLAGGED') pcFlagged.push([
+      e.id, e.event_date, e.truck_name ?? '', e.venue_name ?? '', e.village ?? '', r.postcode,
+      r.km.toFixed(2), String(r.pcLat), String(r.pcLng), v.id, v.name, String(v.latitude), String(v.longitude),
+    ])
+  }
+  writeFileSync(`${OUT_DIR}/guard-postcode-flags-low.csv`, [
+    'event_id,event_date,truck_name,event_venue_name,village,postcode,km_apart,postcode_lat,postcode_lng,matched_venue_id,matched_venue,venue_lat,venue_lng',
+    ...pcFlagged.map(r => r.map(x => csvCell(String(x))).join(',')),
+  ].join('\n') + '\n')
+  console.log(`\n── GUARD THREE (postcode, FLAG ONLY — no link changed) over ${pcCandidates.length} candidate links ──`)
+  console.log(`   ✅ CONFIRMED (< ${POSTCODE_CONFIRM_KM} km) : ${pcBuckets.CONFIRMED}`)
+  console.log(`   ·  NOTED     (${POSTCODE_CONFIRM_KM}–${POSTCODE_FLAG_KM} km) : ${pcBuckets.NOTED}`)
+  console.log(`   🔴 FLAGGED   (> ${POSTCODE_FLAG_KM} km)   : ${pcBuckets.FLAGGED}  (guard-postcode-flags-low.csv)`)
+  console.log(`   ⚠️  UNCHECKED — NOT a pass       : ${pcBuckets.UNCHECKED}  ${JSON.stringify(pcUncheckedWhy)}`)
+  console.log(`   postcodes.io: ${pcIndex.stats.distinct} distinct postcodes, ${pcIndex.stats.resolved} resolved, ${pcIndex.stats.apiCalls} API call(s)${pcIndex.stats.outage ? ' 🔴 OUTAGE — batches unresolved, counted UNCHECKED' : ''}`)
+  if (pcIndex.stats.unresolved.length) console.log(`   unresolved: ${JSON.stringify(pcIndex.stats.unresolved)}`)
 
   console.log(`🔴 REFUSED — category target: ${refusedCategory.length}  (guard-refusals-low.csv)`)
   for (const r of refusedCategory) console.log(`     ${r.e.event_date} ${r.e.truck_name} @ "${r.e.venue_name}" [${r.e.village ?? '—'}] -> "${r.v.name}" :: ${r.reason}`)

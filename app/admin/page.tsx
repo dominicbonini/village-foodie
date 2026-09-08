@@ -3,12 +3,16 @@
 // Protected by Supabase session: operators.is_admin = true required
 
 'use client'
+
+// The one clipboard control. See components/dashboard/CopyButton.tsx — nothing on this page
+// hand-rolls a copy button any more.
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
+import { CopyButton } from '@/components/dashboard/CopyButton'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
@@ -247,7 +251,6 @@ export default function AdminPage() {
   const [newTruckLoading, setNewTruckLoading] = useState(false)
   const [newTruckError, setNewTruckError] = useState<NewTruckError | null>(null)
   const [newTruckResult, setNewTruckResult] = useState<CreateTruckResponse | null>(null)
-  const [tokenCopied, setTokenCopied] = useState(false)
   // ── PROMOTE-FROM-DISCOVERY ──────────────────────────────────────────────────────────────────────
   // The discovery row this create is promoting, or null for a blank create. Held OUTSIDE NewTruckForm
   // deliberately: it is not a form field, nothing renders it as an input, and keeping it separate is
@@ -484,7 +487,6 @@ export default function AdminPage() {
     setNewTruck({ ...NEW_TRUCK_DEFAULTS })
     setNewTruckError(null)
     setNewTruckResult(null)
-    setTokenCopied(false)
     // ⚠️ CLEARED HERE, AND THIS LINE IS THE WHOLE POINT OF HOLDING IT SEPARATELY. Without it a blank
     // create opened after a promote would still carry the last discovery id and link to the wrong row.
     setPromoteFrom(null)
@@ -518,7 +520,6 @@ export default function AdminPage() {
     })
     setNewTruckError(null)
     setNewTruckResult(null)
-    setTokenCopied(false)
     setPromoteFrom({ id: dt.id, name: dt.name })
     setPromoteLoading(null)
     setShowNewTruck(true)
@@ -572,11 +573,17 @@ export default function AdminPage() {
     }
   }
 
-  const copyToken = (token: string) => {
-    navigator.clipboard.writeText(token)
-    setTokenCopied(true)
-    setTimeout(() => setTokenCopied(false), 2000)
-  }
+  // ── 🔴 `copyToken` IS GONE (5 September 2026), AND IT WAS REPORTING SUCCESS IT HAD NOT CHECKED. ──
+  // It read:
+  //     navigator.clipboard.writeText(token)   // ← promise DISCARDED
+  //     setTokenCopied(true)                   // ← unconditional
+  // The write's promise was never inspected, so "Copied" appeared whether or not anything reached the
+  // clipboard. 🔴 THAT IS WORSE THAN A BUTTON THAT SAYS NOTHING: it sends whoever hits it away
+  // debugging the wrong thing — a token they believe they hold and do not. The clipboard API refuses in
+  // an insecure context, under a permissions policy and in some private modes, and `navigator.clipboard`
+  // can be `undefined` outright; every one of those showed a green-lit success.
+  // The behaviour now lives in components/dashboard/CopyButton.tsx, which derives its label from the
+  // resolved promise and shows a red "Copy failed" when the write rejects.
 
   // Opens the delete confirmation by first running the DRY RUN, so the confirm screen can state the real
   // blast radius. Closes the edit modal (nested modals fight over z-index and read badly).
@@ -1626,12 +1633,21 @@ export default function AdminPage() {
                     <code className="flex-1 bg-slate-100 rounded-xl px-3 py-2.5 text-sm font-mono">
                       {createdPassword}
                     </code>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(createdPassword!)}
-                      className="px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50"
-                    >
-                      Copy
-                    </button>
+                    {/* ── 🔴 THIS BUTTON SIGNALLED NOTHING AT ALL UNTIL 5 SEPTEMBER 2026. ──────────
+                        `onClick={() => navigator.clipboard.writeText(createdPassword!)}` — no state, no
+                        label change, no toast, and the promise discarded. **A button that signals
+                        nothing is indistinguishable from a button that does nothing**, which is how a
+                        copy control comes to be reported as broken when it works, and believed to work
+                        when it is broken.
+                        🔴 IT MATTERS MORE HERE THAN ANYWHERE ELSE ON THIS SCREEN. The label above it
+                        says "copy this now" — the password is shown once and is not recoverable from
+                        this page afterwards. Someone who believes they copied it and did not has to
+                        create the operator again. */}
+                    <CopyButton
+                      value={createdPassword ?? ''}
+                      describedAs="temporary password"
+                      className="shrink-0 px-3 py-2.5 text-sm"
+                    />
                   </div>
                 </div>
                 <p className="text-xs text-slate-400 text-center">
@@ -2269,12 +2285,12 @@ export default function AdminPage() {
                     <code className="flex-1 bg-slate-100 rounded-xl px-3 py-2.5 text-xs font-mono break-all">
                       {newTruckResult.truck.dashboard_token}
                     </code>
-                    <button
-                      onClick={() => copyToken(newTruckResult.truck.dashboard_token)}
-                      className="px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 whitespace-nowrap"
-                    >
-                      {tokenCopied ? 'Copied' : 'Copy'}
-                    </button>
+                    {/* 🔴 THE SHARED BUTTON. Its label follows the WRITE, not the click. */}
+                    <CopyButton
+                      value={newTruckResult.truck.dashboard_token}
+                      describedAs="dashboard token"
+                      className="shrink-0 px-3 py-2.5 text-sm"
+                    />
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1.5">
                     This token is the truck&apos;s credential — anyone holding it can reach its dashboard. It is not

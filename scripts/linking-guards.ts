@@ -140,3 +140,102 @@ export function applyGuards(target: VenueRow, categories: CategoryIndex, sentine
   if (cs.state === 'BAD') return { ok: false, guard: 'BAD_COORD', reason: cs.reason!, coordState: 'BAD' }
   return { ok: true, coordState: cs.state }
 }
+
+/* ══ GUARD THREE — POSTCODE DISAGREEMENT (FLAG ONLY) ══════════════════════════════════════════════════
+ *
+ * 🔴 THIS GUARD DOES NOT DECIDE. It refuses nothing, substitutes nothing, and writes nothing. It marks a
+ * link for a human to look at. The other two guards return a refusal; this one returns an opinion.
+ *
+ * 🔴 WHY IT MUST NOT DECIDE, WITH THE CASE THAT PROVES IT: `Thirsty` [Cambridge] carries the postcode
+ * CB11 4RY, which resolves to Clavering in Uttlesford — 24 km from the Cambridge venue whose stored
+ * coordinate is CORRECT. There the postcode is the wrong half, lifted from elsewhere on the page. A rule
+ * that let the postcode win would have moved a correct pin. Disagreement means ONE of the two is wrong;
+ * it does not say which, and nothing here pretends to know.
+ *
+ * 🔴 FOUR STATES, AND UNCHECKED IS NOT A PASS. Coverage is structural, not random: 1,100 of the 1,104
+ * postcodes in `ai_notes` come from `URL:` scrapes, and `Drive Screenshot`, `hg_scraper`,
+ * `hatchesup_scraper` and `Manual Entry` produce ZERO. A row with no postcode has not been checked and
+ * must never be counted as confirmed — that is the degenerate-anchor mistake (V1.2 §5.1: a village
+ * holding one venue anchors to itself and passes 7 broken venues).
+ *
+ * ⚠️ Partial postcodes are counted apart and never guessed at. `CB1` is a district of Cambridge; `CB21`
+ * spans villages. An outward code cannot place a pitch, and expanding one would be inventing a location —
+ * the exact demotion V1.1 applied to the model when it was acting as a geocoder.
+ */
+
+/** Under this, the postcode CONFIRMS the match. */
+export const POSTCODE_CONFIRM_KM = 0.5
+/** Over this, FLAG for review. Between the two: noted, not flagged. */
+export const POSTCODE_FLAG_KM = 2
+
+export type PostcodeVerdict =
+  | { state: 'CONFIRMED' | 'NOTED' | 'FLAGGED'; postcode: string; km: number; pcLat: number; pcLng: number }
+  | { state: 'UNCHECKED'; reason: string; postcode?: string }
+
+/** Outward+inward, and outward-only-with-nothing-following. Both anchored on word boundaries. */
+const PC_FULL = /\b([A-Z]{1,2}\d{1,2}[A-Z]?)\s*(\d[A-Z]{2})\b/i
+const PC_OUTWARD_ONLY = /\b([A-Z]{1,2}\d{1,2}[A-Z]?)\b(?!\s*\d[A-Z]{2})/i
+
+export const pcKey = (s: string) => String(s).toUpperCase().replace(/\s+/g, '')
+
+/** What kind of postcode, if any, this text carries. Never expands a partial. */
+export function extractPostcode(text: string | null): { full: string | null; partial: string | null } {
+  const t = String(text ?? '')
+  const f = t.match(PC_FULL)
+  if (f) return { full: pcKey(f[0]), partial: null }
+  const p = t.match(PC_OUTWARD_ONLY)
+  return { full: null, partial: p ? pcKey(p[0]) : null }
+}
+
+export type PostcodeIndex = {
+  resolved: Map<string, { lat: number; lng: number }>
+  stats: { distinct: number; resolved: number; unresolved: string[]; apiCalls: number; outage: boolean }
+}
+
+/**
+ * Resolve every DISTINCT full postcode once, in bulk. 🧪 There are 146 distinct postcodes across 1,104
+ * rows today, so a full run is 2 calls to postcodes.io rather than 1,104.
+ *
+ * 🔴 AN OUTAGE IS "UNCHECKED", NEVER "NO". If postcodes.io cannot be reached the index comes back empty
+ * and every row becomes UNCHECKED — the same rule geo-validate.js already states. It must never fall
+ * through to treating an unresolvable postcode as agreement.
+ */
+export async function buildPostcodeIndex(
+  aiNotesTexts: (string | null)[],
+  fetchImpl: typeof fetch = fetch,
+): Promise<PostcodeIndex> {
+  const distinct = [...new Set(aiNotesTexts.map(t => extractPostcode(t).full).filter((x): x is string => !!x))]
+  const resolved = new Map<string, { lat: number; lng: number }>()
+  const unresolved: string[] = []
+  let apiCalls = 0, outage = false
+  for (let i = 0; i < distinct.length; i += 100) {
+    const batch = distinct.slice(i, i + 100)
+    try {
+      const r = await fetchImpl('https://api.postcodes.io/postcodes', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ postcodes: batch }),
+      })
+      apiCalls++
+      const j = await r.json() as { result?: { query: string; result: { latitude: number; longitude: number } | null }[] }
+      for (const it of (j.result ?? [])) {
+        if (it.result) resolved.set(pcKey(it.query), { lat: it.result.latitude, lng: it.result.longitude })
+        else unresolved.push(it.query)
+      }
+    } catch {
+      outage = true                       // 🔴 leaves this batch UNRESOLVED, i.e. UNCHECKED, not confirmed
+    }
+  }
+  return { resolved, stats: { distinct: distinct.length, resolved: resolved.size, unresolved, apiCalls, outage } }
+}
+
+/** The verdict for one candidate link. Pure; the index is passed in. */
+export function checkPostcode(aiNotes: string | null, target: VenueRow, idx: PostcodeIndex): PostcodeVerdict {
+  const { full, partial } = extractPostcode(aiNotes)
+  if (!full) return { state: 'UNCHECKED', reason: partial ? `outward-only postcode "${partial}" — cannot place a point` : 'no postcode in ai_notes', postcode: partial ?? undefined }
+  if (target.latitude == null || target.longitude == null) return { state: 'UNCHECKED', reason: 'target venue has no coordinate', postcode: full }
+  const hit = idx.resolved.get(full)
+  if (!hit) return { state: 'UNCHECKED', reason: 'postcode did not resolve at postcodes.io', postcode: full }
+  const km = haversineKm(hit.lat, hit.lng, Number(target.latitude), Number(target.longitude))
+  const state = km < POSTCODE_CONFIRM_KM ? 'CONFIRMED' : km <= POSTCODE_FLAG_KM ? 'NOTED' : 'FLAGGED'
+  return { state, postcode: full, km, pcLat: hit.lat, pcLng: hit.lng }
+}

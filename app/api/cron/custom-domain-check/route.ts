@@ -7,9 +7,12 @@
 // the five existing jobs do (demo-cleanup, account-deletion-due, cancel-stale-authorizations,
 // capture-stranded-authorizations, auto-reject-offline-orders) and this is the sixth.
 //
-// 🔴 NO EMAIL TO THE TEAM. The existing jobs email on failure because their failure is invisible; this
-// one writes state that the admin table reads, and that table IS the read path. An email per run would
-// be a second channel for a fact already on screen.
+// 🔴 THIS SAID "NO EMAIL TO THE TEAM" AND THAT IS NO LONGER TRUE (5 September 2026). The reasoning was
+// that the admin table IS the read path — which holds only if somebody opens it. Nobody does daily, and
+// a trading truck's page can be dark for a week before anyone looks. It now emails the admin, but on a
+// THRESHOLD and ONCE PER TRANSITION rather than per run: an email per failed check is the ignored
+// folder the original note was rightly guarding against. See `decideAdminAlert` for the mechanism.
+// ⚠️ THE OPERATOR IS STILL NEVER SENT A FAILURE MESSAGE. They see the waiting copy in the setup box.
 // ⚠️ IT DOES EMAIL THE OPERATOR, ONCE, WHEN THEIR DOMAIN FIRST GOES LIVE — setup ends with them closing
 // the tab, so a dashboard-only notice reaches nobody. That transition is detectable exactly once
 // (`custom_domain_verified_at` was null and is about to be set), which is what makes it not a nag.
@@ -20,10 +23,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
-import { resolveCname } from '@/lib/custom-domain/dns'
-import { getDomainConfig, releaseDomain } from '@/lib/custom-domain/vercel'
+import { releaseDomain } from '@/lib/custom-domain/vercel'
 import { sendConfirmationEmail } from '@/lib/email'
 import { liveEmail } from '@/lib/custom-domain/copy'
+// 🔴 THE CHECK IS SHARED WITH THE OPERATOR'S ON-DEMAND CHECK (5 September 2026). It used to be inline
+// here. `app/api/manage/route.ts` action `domain_check` is the other caller. ONE LOOKUP, TWO CALLERS —
+// two implementations of "is this domain working" would disagree, and the disagreement would present
+// as a dashboard that says live and a cron that says not.
+import { runDomainCheck } from '@/lib/custom-domain/check'
+import { sendAdminDomainAlert } from '@/lib/custom-domain/alert'
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
@@ -66,7 +74,10 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks, error } = await supabase
     .from('trucks')
-    .select('id, name, slug, contact_email, custom_domain, custom_domain_verified_at, custom_domain_setup_state, custom_domain_setup_started_at, custom_domain_last_ok_at')
+    // ⚠️ `custom_domain_last_checked_at` IS SELECTED FOR THE ONCE-PER-TRANSITION RULE, not for display.
+    // `decideAdminAlert` compares the threshold against BOTH now and the previous check's timestamp;
+    // without this column every failing run would send an email. See lib/custom-domain/check.ts.
+    .select('id, name, slug, contact_email, custom_domain, custom_domain_verified_at, custom_domain_setup_state, custom_domain_setup_started_at, custom_domain_last_ok_at, custom_domain_last_checked_at')
     .not('custom_domain', 'is', null)
 
   if (error) {
@@ -138,34 +149,25 @@ export async function GET(req: NextRequest) {
     }
 
     // ── THE CHECK ───────────────────────────────────────────────────────────────────────────────
-    // One lookup per truck, recording WHAT IS ACTUALLY THERE.
-    const [seen, cfg] = await Promise.all([resolveCname(host), getDomainConfig(host)])
-    const expected = cfg.ok ? cfg.recommendedCNAME : null
+    // 🔴 ONE LOOKUP, TWO CALLERS. The body of this used to live here; it is now
+    // `runDomainCheck` in lib/custom-domain/check.ts, shared with the operator's on-demand check.
+    const result = await runDomainCheck({
+      host,
+      verifiedAt: (t.custom_domain_verified_at as string | null) ?? null,
+      lastOkAt: (t.custom_domain_last_ok_at as string | null) ?? null,
+      lastCheckedAt: (t.custom_domain_last_checked_at as string | null) ?? null,
+      setupStartedAt: (t.custom_domain_setup_started_at as string | null) ?? null,
+    }, now)
 
-    // ⚠️ A RESOLVER FAILURE IS NOT AN OUTAGE. `reachable: false` means we could not ask, so the row is
-    // left exactly as it was apart from the checked-at stamp. Writing "not resolving" here would
-    // manufacture an outage out of our own network trouble.
-    if (!seen.reachable) {
-      if (!dry) await supabase.from('trucks').update({ custom_domain_last_checked_at: now.toISOString() }).eq('id', t.id)
+    if (result.state === 'unknown') {
+      if (!dry) await supabase.from('trucks').update(result.patch).eq('id', t.id)
       checked.push({ host, state: 'unknown', seen: null })
       continue
     }
 
-    const ok = !!seen.value && !!expected && seen.value === expected.toLowerCase().replace(/\.$/, '')
-    const patch: Record<string, unknown> = {
-      custom_domain_last_checked_at: now.toISOString(),
-      custom_domain_last_seen_value: seen.value,
-    }
-    if (ok) patch.custom_domain_last_ok_at = now.toISOString()
-
-    // 🔴 THE ONE-TIME TRANSITION. `verified_at` is set the FIRST time it resolves correctly, and only
-    // then — which is what makes the email below fire once rather than every day.
-    const goingLive = ok && !t.custom_domain_verified_at
-    if (goingLive) patch.custom_domain_verified_at = now.toISOString()
-
     if (!dry) {
-      await supabase.from('trucks').update(patch).eq('id', t.id)
-      if (goingLive && t.contact_email) {
+      await supabase.from('trucks').update(result.patch).eq('id', t.id)
+      if (result.goingLive && t.contact_email) {
         try {
           const mail = liveEmail({ truckName: t.name as string, address: host })
           await sendConfirmationEmail({ to: t.contact_email as string, subject: mail.subject, html: mail.html, text: mail.text, senderName: 'HatchGrab' })
@@ -174,8 +176,24 @@ export async function GET(req: NextRequest) {
           console.warn('[custom-domain-check] live email failed:', e instanceof Error ? e.message : String(e))
         }
       }
+      // 🔴 THE ADMIN ALERT, AND IT CANNOT BREAK THE RUN. `sendAdminDomainAlert` swallows every failure
+      // internally and returns a boolean — see that module. A send failure must never abort a sweep
+      // that still has trucks to check, and must never leave the WRITE above unapplied: the write
+      // happens first, deliberately, so the row is correct even if the mail never goes.
+      if (result.alert) {
+        await sendAdminDomainAlert({
+          alert: result.alert,
+          truckName: t.name as string,
+          truckId: t.id as string,
+          address: host,
+          startedAt: (t.custom_domain_setup_started_at as string | null) ?? null,
+          lastOkAt: (t.custom_domain_last_ok_at as string | null) ?? null,
+          lastSeenValue: result.seen,
+          expected: result.expected,
+        })
+      }
     }
-    checked.push({ host, state: ok ? (goingLive ? 'went_live' : 'ok') : 'not_resolving', seen: seen.value, expected })
+    checked.push({ host, state: result.state === 'ok' ? (result.goingLive ? 'went_live' : 'ok') : 'not_resolving', seen: result.seen, expected: result.expected, alerted: result.alert?.kind ?? null })
   }
 
   return NextResponse.json({

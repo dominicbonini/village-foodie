@@ -38,6 +38,8 @@ import {
   TABLE_PLANS, type TablePlan, PLAN_SUB, PLAN_PRICE_LABEL, trialFeatureValue,
   DETAIL_OVERRIDES, visibleRows, rowName, rowDetail, cellLabel,
 } from '@/lib/landing-table'
+// 🔴 THE SINGLE WHATSAPP SWITCH — one value governs every surface. See lib/whatsapp-live.ts.
+import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import './landing.css'
 
 // Self-hosted, non-render-blocking (no Google Fonts <link>). Exposed as CSS vars the stylesheet maps
@@ -47,13 +49,76 @@ const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sa
 const courierPrime = Courier_Prime({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-courier-prime', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'HatchGrab — The ordering system built for food trucks',
-  // 🔴 noindex RESTORED. This page is at hatchgrab.com's root but is NOT public: the admin gate in
-  // layout.tsx is back on while the Pizzeria Gusto testimonial is unpermissioned and the screenshots
-  // are placeholders. An indexable page behind a gate would let a search engine surface a URL that
-  // every non-admin is redirected away from, and could cache a snippet of the testimonial itself.
-  // ⚠️ FLIP THIS BACK THE SAME DAY THE GATE COMES OFF, in the same commit. The two belong together.
-  robots: { index: false, follow: false },
+  // ── TITLE. Terms first, brand last, because the job of this string is to be FOUND, not to be
+  // recognised — nobody is searching the brand yet. "food truck" and "mobile catering" are the two
+  // category terms UK operators actually use for themselves; "UK" is here because every competitor
+  // ranking for this is American unless the page says otherwise. 59 chars, inside Google's ~60 cut.
+  // 🔴 NO "POS" AND NO "EPOS" IN THE TITLE, DELIBERATELY. That category is owned by Toast, Epos Now,
+  // POSApt and the directory sites, and — the part that actually decides it — THIS PRODUCT IS NOT A
+  // TILL. It does not take card at the counter today. Titling it as one would win a click and lose
+  // the operator in the first thirty seconds.
+  // 🔴 NO "STREET FOOD". That is what a DINER types, and diners belong to Village Foodie.
+  // 🔴 `absolute`, NOT a bare string. app/layout.tsx declares `title: { template: '%s | HatchGrab' }`,
+  // so a plain string here renders "… — HatchGrab UK | HatchGrab" — the brand twice, at 75 chars, well
+  // past Google's ~60. CAUGHT IN THE SERVED <head>, NOT IN THE SOURCE: the source read correctly.
+  // ⚠️ THE PREVIOUS TITLE HAD THE SAME DEFECT ('HatchGrab — … | HatchGrab'). It is not new — it was
+  // simply never looked at in rendered output, which is the whole reason this step demanded one.
+  title: { absolute: 'Food truck & mobile catering ordering system — HatchGrab UK' },
+
+  // ── DESCRIPTION. There was none before; the page inherited the root layout's brand-generic one.
+  // Problem-shaped, in an operator's own words, and it names the one thing this is NOT so the wrong
+  // buyer self-selects out of the click rather than out of the trial. "POS" appears exactly once and
+  // only to draw that boundary.
+  // ⚠️ "MESSAGES GOING UNANSWERED" WAS DELIBERATELY LEFT OUT — see the report. WhatsApp auto-replies
+  // are the only feature that answers messages and they are COMING SOON behind WHATSAPP_LIVE
+  // (lib/whatsapp-live.ts). Naming that problem here would advertise an unshipped capability in the
+  // one place nobody re-reads when a flag flips.
+  description:
+    'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
+    + 'software for UK food trucks and mobile catering — not a POS.',
+
+  // ── 🟢 INDEXABLE, 8 September 2026. WHAT THIS REPLACED AND WHY IT WAS WRONG:
+  // the previous comment read "noindex RESTORED … the admin gate in layout.tsx is back on while the
+  // Pizzeria Gusto testimonial is unpermissioned and the screenshots are placeholders."
+  // 🔴 EVERY CLAUSE OF THAT WAS FALSE BY 3 SEPTEMBER. app/landing/layout.tsx records the gate being
+  // REMOVED that day, and records WHY: the testimonial has WRITTEN PERMISSION and the hero shots are
+  // REAL captures. Verified here rather than taken on trust — the layout's component body is
+  // `return <>{children}</>`, with no redirect, no verifyAdmin and no NODE_ENV check anywhere in it.
+  // ⚠️ SO THE PAGE WAS PUBLIC AND UNINDEXED FOR FIVE DAYS, on a reason that had already expired. The
+  // old comment's own instruction — "FLIP THIS BACK THE SAME DAY THE GATE COMES OFF" — was correct
+  // and was simply not carried out. This is that flip.
+  // 🔴 IF THE GATE EVER GOES BACK, THIS GOES BACK IN THE SAME COMMIT. The two belong together, and
+  // the last time they were separated it cost five days of invisibility and a comment that lied.
+  robots: { index: true, follow: true },
+
+  alternates: { canonical: 'https://www.hatchgrab.com/' },
+
+  // ── OPEN GRAPH + TWITTER. There were none, so a link pasted into a WhatsApp group or a Facebook
+  // traders' group rendered bare — which, given that outreach here happens in exactly those places,
+  // is a more immediate cost than anything Google does.
+  // ⚠️ THE IMAGE IS AN EXISTING ASSET, NOT A NEW ONE: public/logos/hatchgrab-share-card.png, and the
+  // dimensions below are READ FROM THE PNG HEADER (1200×630), not copied from another file. The root
+  // layout carries a note about exactly this trap — a previous pair declared 1200×630 over a
+  // 2397×1270 file. Re-measure if the card is ever re-rendered.
+  openGraph: {
+    type: 'website',
+    siteName: 'HatchGrab',
+    url: 'https://www.hatchgrab.com/',
+    title: 'Food truck & mobile catering ordering system — HatchGrab UK',
+    description:
+      'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
+      + 'software for UK food trucks and mobile catering — not a POS.',
+    images: [{ url: 'https://www.hatchgrab.com/logos/hatchgrab-share-card.png', width: 1200, height: 630, alt: 'HatchGrab' }],
+    locale: 'en_GB',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Food truck & mobile catering ordering system — HatchGrab UK',
+    description:
+      'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
+      + 'software for UK food trucks and mobile catering — not a POS.',
+    images: ['https://www.hatchgrab.com/logos/hatchgrab-share-card.png'],
+  },
 }
 
 // Compare-table columns: Trial | Starter | Pro | Max — mirrors Manage → Billing (the point is that Trial
@@ -111,6 +176,34 @@ export default function LandingPage() {
       <header className="hero">
         <div className="wrap hero-grid">
           <div>
+            {/* ── 🔴 JSON-LD. RENDERS NOTHING A VISITOR SEES — a <script type="application/ld+json">
+                has no visual output. It is here rather than in `metadata` because Next's Metadata API
+                has no structured-data field.
+                🔴 WHAT IS DELIBERATELY ABSENT, AND WHY:
+                  • aggregateRating / review — there are NO reviews. A rating in schema that no page
+                    supports is the kind of claim §44 exists to stop, and Google penalises it.
+                  • offers / price — the page DOES show £29 and £49, so a price would be "true", but
+                    §4 of the reference manual records £29/£49 already having THIRTEEN literal copies
+                    and drifting. A fourteenth, in a file nobody reads, that search engines cache and
+                    show in results, is the worst possible place for that copy to go stale.
+                  • operatingSystem / device claims beyond what the page states.
+                What IS here is only what the page already says in its own words. */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'SoftwareApplication',
+                name: 'HatchGrab',
+                applicationCategory: 'BusinessApplication',
+                applicationSubCategory: 'Food truck and mobile catering ordering system',
+                url: 'https://www.hatchgrab.com/',
+                description: 'Ordering, pre-orders and a kitchen screen for UK food trucks and mobile catering.',
+                inLanguage: 'en-GB',
+                areaServed: { '@type': 'Country', name: 'United Kingdom' },
+                audience: { '@type': 'BusinessAudience', audienceType: 'Food truck and mobile catering operators' },
+                publisher: { '@type': 'Organization', name: 'HatchGrab', url: 'https://www.hatchgrab.com/' },
+              }) }}
+            />
             <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
             <p className="hero-tag">Less time booking.<br />More time <span className="lean">cooking.</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
@@ -179,25 +272,68 @@ export default function LandingPage() {
             <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity. That’s how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website. Or send us the photo you already post to Facebook. You just review and confirm.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone and iPad app. Android coming soon.</p></div>
-            {/* ⚠️ "driving to the pitch or at the grill" — NOT just "at the grill". On its own that is a
-                generic busy-kitchen claim any hospitality product could make. DRIVING is specific to a food
-                truck and is the moment an operator genuinely CANNOT reply, which is the whole point of the
-                feature. Keeping both covers the two states a truck operator is actually in.
-                🔴 THE TENSES ARE NOW UNIFORM, AND THAT IS THE CHANGE. This block used to read WhatsApp in
-                the PRESENT tense — "your WhatsApp gets answered" — because it was expected to ship at
-                launch, with Messenger and Instagram carrying "coming soon". A standing note here told the
-                next reader NOT to harmonise them, and that instruction was correct for that state.
-                ⚠️ THAT STATE NO LONGER HOLDS, so the instruction is retired rather than deleted — the
-                reasoning is worth keeping because it explains why the old wording looked inconsistent and
-                was not. app/manage/[token]/page.tsx:8378 sets `WHATSAPP_LIVE = false`, so the operator's
-                own Connect control has been showing "coming soon" the whole time. The copy now says the
-                same thing the product does.
-                🔴 THE NEW RULE, AND IT IS THE SAME RULE UNDERNEATH: the landing page describes the product
-                AS IT IS. All three channels are future tense because none of the three is available. If
-                WhatsApp ships, this block, the matrix row in lib/plan-features.ts and the Pro-card bullet
-                below all move back together — they are three surfaces of one fact and must not drift. */}
-            <div className="does-item"><h3>Social media auto-replies — coming soon</h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
+            {/* ── MOVED TO 5th IN THE GRID, 4 September 2026, ON THE OPERATOR'S INSTRUCTION — it sat 3rd
+                for part of the same day, also on their instruction. Position here is an editorial call,
+                not a structural one: nothing reads the tile order, so it is theirs to set. Below "Never
+                type your schedule twice", above "No signal? Keep serving." ─────────────────────────
+                ⚠️ "driving to the pitch or at the grill" — NOT just "at the grill". At-the-grill alone is
+                a generic busy-kitchen claim any hospitality product could make; DRIVING is specific to a
+                food truck and is the moment an operator genuinely CANNOT reply, which is the whole point
+                of the feature. Keeping both covers the two states a truck operator is actually in.
+                🔴 IT STAYS ONE TILE. DO NOT SPLIT MESSENGER AND INSTAGRAM OUT INTO A SECOND does-item.
+                This grid holds SIX tiles and those two are a trailing clause of this one, exactly as the
+                previous setup had it when WhatsApp was last the only live channel — present tense for
+                WhatsApp with the other two tagged on the end. A seventh tile would give an unbuilt stub
+                the same visual weight as five shipped capabilities.
+                🔴 WHETHER WHATSAPP IS LIVE IS DECIDED BY `WHATSAPP_LIVE` (lib/whatsapp-live.ts), and both
+                branches of that switch are rendered below;
+                Messenger and Instagram are verify-handshake stubs with no classifier call and no send
+                path, so they alone carry "coming soon". The page still describes the product AS IT IS —
+                the channels simply no longer share one readiness.
+                🔴 THE THREE SURFACES OF THIS ONE FACT, which must not drift: this tile, the Pro-card
+                bullet below, and the matrix row in lib/plan-features.ts. All three moved together.
+                ⚠️ AND A FOURTH THAT IS NOT A STRING: lib/landing-table.ts merged the two matrix rows into
+                one line for the landing and the PDF. That merge was undone in the same change — see the
+                guard in that file, which required exactly this once the rows' cell values diverged.
+                ── 🔴 THE HEADING NAMES THE CHANNEL, NOT THE CATEGORY (4 September 2026). It read "Social
+                media auto-replies" while the product ships exactly one channel, and WhatsApp is messaging
+                rather than social media. Same rule the Settings card is already built on: it is named
+                "Auto-replies", NOT "Socials", because a card named for a category the product does not
+                have is a promise.
+                🔴 FORWARD DECISION, WITH ITS CONDITION: rename this to "WhatsApp, Messenger and Instagram
+                auto-replies" WHEN Messenger and Instagram are actually built — not when they are
+                scheduled, submitted or approved. They are verify-handshake stubs today. Renaming earlier
+                re-makes the category promise this change removed.
+                ⚠️ PRESENTATIONAL ONLY — this heading is a JSX literal and a key in nothing. It is not in
+                ROW_FEATURE_MAP, NAME_OVERRIDES, DETAIL_OVERRIDES or HIDDEN_ROWS, so changing it disarms
+                no check. But it now MATCHES the matrix row label 'WhatsApp auto-replies', which IS a
+                ROW_FEATURE_MAP key — so a future find-and-replace across both would silently drop that
+                row from findPlanParityViolations(). Rename by hand, not by sweep. */}
+            {/* 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). POSITION MOVES WITH THE FLAG:
+                live, the tile sits HERE, fifth, among the shipped capabilities. Not live, it sits LAST,
+                after "No signal? Keep serving." — which is where it sat in production at 08ac368, and
+                where a not-yet-shipped capability belongs. See the OFF branch below this row. */}
+            {WHATSAPP_LIVE && (
+              <div className="does-item"><h3>WhatsApp auto-replies</h3><p>“Where are you tonight?” “What desserts do you have?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill, using your own menu and schedule. Messenger and Instagram coming soon.</p></div>
+            )}
+            {/* 🟢 "Android coming soon." REMOVED 5 September 2026 — the Android app is live on Google Play, so
+                the sentence is present tense like every other claim on this page. The three platforms are
+                COMBINED into the existing sentence rather than given a line of their own: they are one app
+                on three devices, and a separate line would read as a separate product. */}
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPhone, iPad and Android app.</p></div>
+            {/* 🔴 THE NOT-LIVE TILE, AND IT IS LAST ON PURPOSE. Production at 08ac368 carried it here,
+                after "No signal? Keep serving." — a capability that has not shipped does not sit among
+                five that have. Flipping WHATSAPP_LIVE moves it up to fifth (above) in the same edit.
+                ⚠️ HEADING CHANGED 8 September 2026, BY OPERATOR INSTRUCTION: production read
+                "Social media auto-replies — coming soon". It now names the one channel this is about,
+                matching the matrix row label, and carries the readiness as a `soon-inline` BADGE rather
+                than as words in the sentence — the same badge every other unshipped item on this page
+                uses (the Pro-card bullets, "Take payment on your phone", "Digital loyalty stamp cards").
+                🔴 §44's rule is met twice over: the badge says it, and the body still reads "Soon your
+                WhatsApp WILL get answered". The badge is what disappears when WHATSAPP_LIVE flips. */}
+            {!WHATSAPP_LIVE && (
+              <div className="does-item"><h3>WhatsApp auto-replies <span className="soon-inline">Coming soon</span></h3><p>“Where are you tonight?” “What desserts do you have?” Soon your WhatsApp will get answered while you’re driving to the pitch or at the grill. Messenger and Instagram to follow.</p></div>
+            )}
           </div>
         </div>
       </section>
@@ -338,8 +474,11 @@ export default function LandingPage() {
                 {/* ⚠️ HAND-WRITTEN, NOT RENDERED FROM FEATURE_SECTIONS. This bullet is a literal twin of the
                     matrix row in lib/plan-features.ts and nothing checks the two against each other, so it
                     must be changed in the SAME commit or the same page shows two different claims. */}
-                <li>iPhone and iPad kitchen app</li>
-                <li>Android kitchen app <span className="soon-inline">Coming soon</span></li>
+                {/* 🟢 ONE BULLET, NOT TWO (5 September 2026). The Android app is live on Google Play, so
+                    its own coming-soon line was DELETED rather than un-marked — the two were split only
+                    while the platforms shipped at different times. This bullet is a literal twin of the
+                    matrix row and nothing checks the two against each other, so both moved in one edit. */}
+                <li>iPhone, iPad and Android kitchen app</li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
@@ -358,7 +497,25 @@ export default function LandingPage() {
                 <li>Pre-orders &amp; collection times</li>
                 <li>Smart slot management</li>
                 <li>Auto-accept orders</li>
+                {/* ⚠️ SPLIT 4 September 2026 — was one welded bullet: "WhatsApp, Messenger & Instagram
+                    auto-replies — Coming soon". WhatsApp now ships and carries NO badge; the other two
+                    keep theirs. Third surface of the same fact as the does-item block above and the
+                    matrix row in lib/plan-features.ts. */}
+                {/* ⚠️ THE ⁶ IS A HAND-WRITTEN TWIN OF THE MATRIX ROW'S `footnote: '6'`
+                    (lib/plan-features.ts) — these pricing-card bullets are literals, not rendered from
+                    FEATURE_SECTIONS, and nothing checks the two against each other. 🔴 IF FOOTNOTE 6 IS
+                    EVER RENUMBERED OR RETIRED, THIS MARKER MUST MOVE WITH IT; it will not error, it will
+                    just point at the wrong note. Same `.f-note` class the comparison table uses for row
+                    footnotes, so it resolves to the numbered list under that table on this same page. */}
+                {/* 🔴 BEHIND THE SINGLE SWITCH. OFF is the production bullet at 08ac368, verbatim: ONE
+                    welded line for all three channels carrying the badge. ON splits it in two, WhatsApp
+                    without a badge and with the ⁶ marker that only exists while the flag is on. */}
+                {WHATSAPP_LIVE ? (<>
+                <li>WhatsApp auto-replies<sup className="f-note">6</sup></li>
+                <li>Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
+                </>) : (
                 <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
+                )}
                 <li>Take payment on your phone <span className="soon-inline">Coming soon</span></li>
               </ul>
               <DemoCta className="btn btn-primary">Try Free</DemoCta>

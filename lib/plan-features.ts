@@ -1,6 +1,8 @@
 import { PLAN_META, canAccess, type Plan, type Feature } from '@/lib/features'
 export type { Plan }
 
+import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+
 export type FeatureValue = boolean | 'coming_soon'
 
 export interface FeatureRow {
@@ -192,24 +194,27 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      // 🔴 UN-MERGED, 1 September 2026 — BACK TO THE TWO ROWS THIS BRIEFLY WAS. These were one merged
-      // row ('iPhone, iPad and Android kitchen app', true/true/true) on the premise that "Android now
-      // launches alongside iPad". THAT PREMISE NO LONGER HOLDS: iOS is approved and live, Android is
-      // still in review, so one row cannot state both truthfully — marking the merged row coming_soon
-      // would have wrongly withdrawn a SHIPPED iPhone/iPad app.
-      // ⚠️ SO THE SPLIT IS FORCED BY THE FACTS, NOT A PREFERENCE. Re-merge them the day Android ships,
-      // and not before — and if you do, delete the Android row rather than renaming this one, so the
-      // ROW_FEATURE_MAP entry below stays attached to the row that carries the real feature.
-      // 🔴 iPhone IS NAMED DELIBERATELY (it was once 'iPad and Android'). The kitchen app is the SAME app
-      // with the same features on a phone, and Pizzeria Gusto run their service on phones rather than
-      // tablets — naming only tablets under-claimed what a live operator does every day. Footnote 3
-      // carries the browser fallback and the "not supplied" caveat for both rows.
-      { name: 'iPhone and iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
-      // Android: submitted to Google Play and awaiting review, so coming_soon across all three plans —
-      // uniform, exactly as the pre-merge row was. No ROW_FEATURE_MAP entry on purpose: there is no
-      // Android-specific Feature to join to, and findPlanParityViolations() `continue`s on a row with no
-      // entry (it also skips coming_soon cells outright), so an entry would buy nothing.
-      { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen app for Android phones and tablets.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
+      // ── 🔴 RE-MERGED, 5 September 2026. ANDROID IS LIVE ON GOOGLE PLAY. ──────────────────────────
+      // These were two rows — 'iPhone and iPad kitchen app' (true/true/true) and 'Android kitchen app'
+      // (coming_soon ×3) — split on 1 September because iOS was approved and Android was still in
+      // review, so one row could not state both truthfully. **That precondition is spent: both apps
+      // are shipped.** The split row's own note set the condition for undoing it, and this is it:
+      //     "Re-merge them the day Android ships, and not before — and if you do, DELETE the Android
+      //      row rather than renaming this one, so the ROW_FEATURE_MAP entry below stays attached to
+      //      the row that carries the real feature."
+      // 🔴 THAT INSTRUCTION WAS FOLLOWED EXACTLY, AND IT MATTERS MORE THAN IT LOOKS. `FeatureRow` has
+      // no id, so THE LABEL IS THE ROW_FEATURE_MAP KEY. Renaming this row without moving its map entry
+      // in the same edit drops it from findPlanParityViolations() — the checker `continue`s on a row
+      // with no entry, so it stops looking and **reports clean**. The entry at ROW_FEATURE_MAP was
+      // re-keyed to the new label in this same change; both probes are in
+      // docs/android-golive-landing-report.md.
+      // ⚠️ THE ANDROID ROW WAS DELETED, NOT RENAMED. It never had a map entry (there is no
+      // Android-specific Feature), so deleting it removes nothing the checker was watching.
+      // 🔴 iPhone IS STILL NAMED FIRST AND DELIBERATELY. The kitchen app is the SAME app with the same
+      // features on a phone, and Pizzeria Gusto run their service on phones rather than tablets —
+      // naming only tablets under-claimed what a live operator does every day. Footnote 3 carries the
+      // browser fallback and the "device not supplied" caveat for all three.
+      { name: 'iPhone, iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
     ],
   },
   {
@@ -269,17 +274,31 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
       // combined row loses that ordering, and re-merging is a decision to take deliberately, not a tidy-up.
-      // 🔴 WHY THIS ROW MOVED TO coming_soon. app/manage/[token]/page.tsx:8378 sets `WHATSAPP_LIVE = false`,
-      // so the operator's own Connect control has been showing "coming soon" while this row advertised the
-      // feature as included on the landing page, the Billing tab AND admin. The surfaces disagreed; this
-      // makes them agree. The three-surface spread is intended — this module is the shared source.
-      // ⚠️ THE GATE HAS NOT MOVED WITH IT. lib/features.ts still grants `whatsapp_replies` to Pro (and so
-      // to Max and trial), so the product still ALLOWS what this row now says is coming. That is a known,
-      // recorded gap awaiting a separate decision — see docs/landing-whatsapp-applied-report.md §3.
-      // ⚠️ findPlanParityViolations() CANNOT SEE THAT GAP: it only inspects cells that are literally
-      // `true`, so a coming_soon cell is skipped entirely. The check passes vacuously here.
-      // Both carry footnote 4 (business account required + AI replies can be wrong).
-      { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      // 🟢 WHATSAPP WENT LIVE 4 September 2026 — this row moved BACK to `pro: true, max: true` in the same
+      // change that set `WHATSAPP_LIVE = true` (now lib/whatsapp-live.ts — moved 8 Sep 2026). It had been
+      // `coming_soon` only because that flag was false and the surfaces had to agree; they agree again.
+      // 🔴 FLIP BOTH OR NEITHER. This row and that flag are two halves of one statement — the operator's
+      // Connect control and the public matrix must never disagree about whether the feature exists.
+      // 🟢 THE GATE ALREADY MATCHED AND DID NOT MOVE. lib/features.ts:51 grants `whatsapp_replies` to Pro,
+      // :55 spreads it into Max and :72 into trial/tester/demo — so `pro: true, max: true` is exactly what
+      // the gate enforces, and the recorded marketing-vs-gate gap is closed rather than papered over.
+      // 🔴 THIS ROW IS NOW ARMED IN findPlanParityViolations(). It only inspects cells that are literally
+      // `true`, so while this was `coming_soon` the check passed VACUOUSLY. It is now genuinely compared
+      // against `whatsapp_replies` via ROW_FEATURE_MAP below.
+      // 🔴 DO NOT RENAME THIS ROW. The label string IS the ROW_FEATURE_MAP key; renaming it without
+      // renaming the key drops the row from the parity check silently, and the check then reports clean.
+      // ⚠️ FOOTNOTE MOVED '4' → '6' IN THIS CHANGE, and the reason is that a row carries exactly ONE
+      // footnote (`FeatureRow.footnote?: string`). Footnote 4 is SHARED with the Messenger & Instagram row
+      // below, which is unbuilt and bills nothing — so the WhatsApp charges text could not go there without
+      // being false for that row. Footnote 6 is WhatsApp-specific and carries both the auto-reply caveat
+      // and the Meta charges. Nothing was renumbered: 6 was free.
+      // 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). OFF is byte-identical to what production
+      //    rendered at 08ac368: footnote '4', coming_soon on both tiers. ON is the go-live row.
+      //    ⚠️ THE FOOTNOTE NUMBER MOVES WITH THE FLAG. Footnote 6 only EXISTS when the flag is on
+      //    (see FOOTNOTES below), so pointing at '6' while off would be an orphan marker.
+      WHATSAPP_LIVE
+        ? { name: 'WhatsApp auto-replies',            footnote: '6', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
+        : { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
@@ -483,11 +502,25 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // With iPhone named, a footnote framed entirely around tablets would list a phone app and then say
     // the fallback runs "on any tablet" — which invites the reader to ask why a phone app is in a tablet
     // footnote. The caveat is about not supplying HARDWARE; it was never about tablets specifically.
-    text: 'Device not supplied. There are native kitchen apps for iPhone and iPad, with Android coming soon, and the kitchen screen also runs on any phone or tablet with a modern browser.',
+    // 🟢 "with Android coming soon" REMOVED 5 September 2026 — the Android app is live on Google Play.
+    // Both apps are shipped, so both are present tense, which is what the standing rule above requires.
+    text: 'Device not supplied. There are native kitchen apps for iPhone, iPad and Android, and the kitchen screen also runs on any phone or tablet with a modern browser.',
   },
   {
+    // 🔴 THE FINAL CLAUSE WAS REMOVED 4 September 2026 AND MUST NOT COME BACK. It read
+    // "— you can view every message and reply yourself at any time", and BOTH halves were false:
+    // `whatsapp_logs` stores `message_in`/`response_sent` and NO surface renders either (verified by
+    // search: the only reads are a Reports count on classification flags and the greeting timestamp
+    // check), and "reply yourself" needs coexistence, which is unbuilt. It was the sharpest false claim
+    // in the product's pricing copy, and it rendered to prospects, operators and admin alike.
+    // ⚠️ IT DELIBERATELY DOES NOT POINT AT THE SETTINGS PREVIEW. The preview sits INSIDE the
+    // `!isNativeApp()` wrapper that hides the whole Auto-replies card (app/manage/[token]/page.tsx:9642
+    // opens it, :9834 closes it, the preview is at :9719), so it does not exist for an iPad or Android
+    // operator — and this footnote renders to them on the Billing tab.
+    // ⚠️ THIS FOOTNOTE NOW SERVES THE MESSENGER & INSTAGRAM ROW, which is `coming_soon` and unbuilt, so
+    // it must claim nothing about delivery, charges or an inbox. WhatsApp moved to footnote 6.
     number: '4',
-    text: 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong — you can view every message and reply yourself at any time.',
+    text: 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
   },
   {
     number: '5',
@@ -499,6 +532,37 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // HatchGrab kitchen app" stays true whichever backend lands first.
     text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
   },
+  // 🔴 FOOTNOTE 6 EXISTS ONLY WHILE THE FLAG IS ON. The WhatsApp row points at '6' when live and
+  // at '4' when not, so the marker and the footnote appear and disappear together — never an
+  // orphan superscript, never a footnote nothing references.
+  // ⚠️ APPENDED, NEVER INSERTED. Numbers 1–5 do not move in either state, so `hide_pricing`'s
+  // `f.number !== '2'` mask (docs/reference-manual.md §44) is undisturbed by the flip.
+  ...(WHATSAPP_LIVE ? [
+  {
+    // ── ADDED 4 September 2026, WHATSAPP-SPECIFIC. APPENDED, NEVER INSERTED. ─────────────────────────
+    // 🔴 NUMBERING IS LOAD-BEARING — DO NOT RENUMBER OR REORDER THIS ARRAY. `hide_pricing` masks the
+    // pricing footnote by the magic string `f.number !== '2'`; renumbering would silently unmask it with
+    // no error, no type failure and no test. 6 was free (the branded-QR footnote was removed at V6.5), so
+    // appending it moves nothing.
+    // 🔴 WHY A SEPARATE FOOTNOTE INSTEAD OF EXTENDING 4: a row carries exactly ONE footnote
+    // (`FeatureRow.footnote?: string`), and footnote 4 is shared with the Messenger & Instagram row, which
+    // is unbuilt and bills nothing. Putting charges there would be false for that row. This one is
+    // attached only to 'WhatsApp auto-replies'.
+    // 🔴 NO FIGURE AND NO DATE, DELIBERATELY. Meta's per-country rates have not been read, and a date in
+    // a pricing footnote goes stale on a surface nobody re-reads. "check Meta's current pricing" sends
+    // the reader to the only source that is correct on the day they read it.
+    // ⚠️ THE CAP DETAIL WAS DELIBERATELY MOVED OUT OF THIS FOOTNOTE (4 September 2026) into the Manage →
+    // Settings auto-replies card, where the operator configuring the feature actually reads it. A pricing
+    // footnote on a marketing table is not where an operational limit gets absorbed. The numbers there
+    // are read from lib/whatsapp/reply-cap.ts, not restated from memory.
+    // 🔴 OPERATOR-SUPPLIED WORDING, 4 September 2026. Do not "tidy" it — see the flag in
+    // docs/whatsapp-golive-copy-report.md about the "bills you directly" clause, which is true of the
+    // arrangement this footnote describes (the operator's own WhatsApp Business account) and NOT of
+    // today's platform-credential sending. That tension is recorded, not silently edited away.
+    number: '6',
+    text: 'Auto-replies require a WhatsApp Business account. Meta bills you directly for these messages — check Meta\'s current pricing. Responses are AI-generated and can occasionally be wrong.',
+  },
+  ] : []),
 ]
 
 // ── DRIFT GUARD (the structural fix) ────────────────────────────────────────────────────────────────────
@@ -522,7 +586,10 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
   // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
   // renamed: it gates one KDS capability on both platforms, and changing it would need a data migration.
-  'iPhone and iPad kitchen app': 'ipad_kds',
+  // 🔴 RE-KEYED 5 September 2026, IN THE SAME EDIT AS THE ROW RENAME. The label IS the key — a rename
+  // here that lags the row silently removes it from findPlanParityViolations(), which then reports
+  // clean because it is no longer looking. The Feature ('ipad_kds') is unchanged: it is the same app.
+  'iPhone, iPad and Android kitchen app': 'ipad_kds',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',

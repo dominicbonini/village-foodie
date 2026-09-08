@@ -31,6 +31,34 @@ export type RecordRow = { label: string; value: string; hint: string }
  * ⚠️ THE VALUES ARE THE SAME VALUES. `subdomainLabel` and `cnameTarget` are what `recordRows` puts in
  * rows 2 and 3; nothing about what the operator copies changes, only what it is called.
  */
+/**
+ * ── 🔴 THE VALUE THE OPERATOR ACTUALLY PASTES. ONE FUNCTION, EVERY SURFACE. ──────────────────────
+ *
+ * The hosting config lookup returns `recommendedCNAME` as Vercel reports it, and **that value can
+ * carry a trailing full stop** — the cron already knows this and strips one before comparing
+ * (`app/api/cron/custom-domain-check/route.ts`: `expected.toLowerCase().replace(/\.$/, '')`). Nothing
+ * on the operator's side stripped it, so whatever Vercel returned was displayed, copied and emailed
+ * verbatim. **An operator pasted that into Wix on 4 September 2026 and Wix refused it.** They deleted
+ * the character by hand.
+ *
+ * 🔴 SO IT IS CANONICALISED TO DOTLESS AND THE DOT IS PUT BACK ONLY WHERE A PROVIDER DEMANDS IT.
+ * The straight fix — strip it everywhere — breaks 123 Reg **silently**, because their own page
+ * requires the dot and a record without it resolves to the wrong name with nothing reporting the
+ * error. See `ProviderSteps.targetTrailingDot`.
+ *
+ * ⚠️ NO SECOND MECHANISM. The answer comes from the provider record the screen and the escape-hatch
+ * email already render from; this function only reads it.
+ * ⚠️ THE DISPLAYED VALUE AND THE COPIED VALUE ARE THE SAME STRING BY CONSTRUCTION — both come from the
+ * `RecordRow` this builds. They could not differ before and must not start now: an operator who
+ * distrusts the button and retypes what they can see has to get a working record.
+ */
+export function dnsTargetValue(cnameTarget: string, steps?: ProviderSteps | null): string {
+  // One dot, not many. `x.com..` is malformed rather than fully qualified.
+  const canonical = (cnameTarget || '').trim().replace(/\.$/, '')
+  if (!canonical) return canonical
+  return steps?.targetTrailingDot ? `${canonical}.` : canonical
+}
+
 export function providerFieldRows(args: {
   steps: ProviderSteps
   subdomainLabel: string
@@ -38,7 +66,9 @@ export function providerFieldRows(args: {
 }): RecordRow[] {
   return [
     { label: args.steps.fieldLabels.name,  value: args.subdomainLabel, hint: 'Just this word, not the whole address.' },
-    { label: args.steps.fieldLabels.value, value: args.cnameTarget,    hint: 'Copy this exactly.' },
+    // 🔴 `dnsTargetValue`, NEVER `args.cnameTarget` RAW. See that function — this row is the one the
+    // operator pastes, and it is the row Wix rejected.
+    { label: args.steps.fieldLabels.value, value: dnsTargetValue(args.cnameTarget, args.steps), hint: 'Copy this exactly.' },
   ]
 }
 
@@ -53,7 +83,9 @@ export function recordRows(args: {
   return [
     { label: labels.type,  value: 'CNAME',              hint: 'Choose this from the list.' },
     { label: labels.name,  value: args.subdomainLabel,  hint: 'Just this word, not the whole address.' },
-    { label: labels.value, value: args.cnameTarget,     hint: 'Copy this exactly.' },
+    // 🔴 THE GENERIC PATH HAS NO PROVIDER RECORD TO READ, SO IT IS DOTLESS — correct for every
+    // provider we have seen except 123 Reg, which has verified steps and therefore never lands here.
+    { label: labels.value, value: dnsTargetValue(args.cnameTarget, args.provider?.steps), hint: 'Copy this exactly.' },
   ]
 }
 
@@ -149,17 +181,105 @@ export function notificationCopy(args: { address: string; startedAt: string | nu
     ? new Date(args.startedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
     : null
   return {
+    /**
+     * ── 🔴 THIS IS NOT A FAILURE MESSAGE, AND THAT IS THE WHOLE POINT (5 September 2026). ──────────
+     * It read "<address> is not working yet" followed by "it has not started working" — a sentence
+     * that tells an operator who has done everything correctly that something is wrong. They then get
+     * in touch about a non-problem, and learn to distrust a screen that will later say something true.
+     * 🔴 THE TITLE NOW STATES THE STAGE, NOT A VERDICT. "We are waiting for your web address" is what
+     * is actually happening.
+     *
+     * 🔴 "UP TO 24 HOURS" IS A FACT ABOUT DNS, NOT ABOUT OUR SCHEDULE, AND THE WORDING MUST NOT
+     * CODIFY OUR LIMITATION AS ONE. Until today it was BOTH — the only thing that could mark a domain
+     * live was a daily cron, so 24 hours was our cadence wearing DNS's clothes. That is fixed: the
+     * setup box now checks on demand. So the sentence leads with "usually a few minutes", which is
+     * what propagation actually does, and names 24 hours as the rare outer edge that it genuinely is.
+     * ⚠️ IF THIS EVER READS "up to 24 hours" WITHOUT "usually a few minutes" IN FRONT OF IT, someone
+     * has quietly re-described our own delay as the internet's.
+     *
+     * ⚠️ OPERATOR VOCABULARY THROUGHOUT: "web address". Never domain, subdomain, DNS, CNAME or record.
+     * The one thing they did is "the line we gave you", which is what the screen above calls it.
+     * ⚠️ THE LAST SENTENCE EARNS ITS PLACE. Many operators do not hold their own domain login — it
+     * sits with whoever built the site — so "check they did it" is the single most useful action, and
+     * it is phrased as a possibility rather than an accusation.
+     */
     waiting: {
-      title: `${args.address} is not working yet`,
+      title: `We are waiting for ${args.address}`,
       body: since
-        ? `You started setting this up on ${since} and it has not started working. If you added the line we gave you, it may still be on its way. If someone else was adding it for you, it is worth checking they did.`
-        : `It has not started working yet. If you added the line we gave you, it may still be on its way. If someone else was adding it for you, it is worth checking they did.`,
+        ? `You set this up on ${since}. New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.`
+        : `New web addresses usually start working within a few minutes, and occasionally take up to 24 hours to reach everyone — there is nothing you need to do while that happens. If someone else was adding the line for you, it is worth checking they did.`,
     },
     ready: {
       title: `${args.address} is live`,
       body: 'Have a look at it, then tell us it is right in your settings.',
     },
   }
+}
+
+/**
+ * ── 🔴 THE ADMIN ALERT. IT GOES TO US, NEVER TO THE OPERATOR. ───────────────────────────────────
+ *
+ * The operator sees the waiting copy and nothing else while a setup is in flight, because at that
+ * point they have most likely done everything right and DNS is simply propagating. **A failure message
+ * to someone who did nothing wrong produces a support call about a non-problem** — and, worse, teaches
+ * them to distrust a screen that will later tell them something true.
+ *
+ * 🔴 SO THIS CARRIES WHAT DIAGNOSES IT, NOT WHAT REASSURES ANYONE. Every field is here because it
+ * distinguishes one cause from another:
+ *   • `lastSeenValue` is the one that actually decides it — **a mistyped record, a record pointing at
+ *     someone else's host, and a site that has moved provider look identical from the outside and are
+ *     told apart entirely by what the name currently resolves to.** `nothing` means the record was
+ *     never added or was added on the wrong name.
+ *   • `startedAt` vs `lastOkAt` separates "never worked" from "worked and stopped", which are different
+ *     conversations with the operator.
+ *   • The truck name and address are what makes it actionable without opening the admin table.
+ */
+export function adminDomainAlertEmail(args: {
+  kind: 'setup_stalled' | 'stopped_working'
+  truckName: string
+  truckId: string
+  address: string
+  startedAt: string | null
+  lastOkAt: string | null
+  lastSeenValue: string | null
+  expected: string | null
+  graceLabel: string
+}): { subject: string; html: string; text: string } {
+  const stopped = args.kind === 'stopped_working'
+  const subject = stopped
+    ? `Custom domain STOPPED WORKING — ${args.address} (${args.truckName})`
+    : `Custom domain not working after ${args.graceLabel} — ${args.address} (${args.truckName})`
+
+  const headline = stopped
+    ? `${args.address} was working and has stopped.`
+    : `${args.address} has never started working since setup began.`
+
+  // ⚠️ `nothing` RATHER THAN AN EMPTY CELL. "Resolving to:" followed by blank reads as a rendering bug;
+  // "nothing" is the actual finding and is the most common one.
+  const seen = args.lastSeenValue ?? 'nothing'
+  const rows: Array<[string, string]> = [
+    ['Truck', `${args.truckName} (${args.truckId})`],
+    ['Address', args.address],
+    ['Resolving to', seen],
+    ['Should resolve to', args.expected ?? 'unknown — the hosting config lookup did not answer'],
+    ['Setup started', args.startedAt ?? '—'],
+    ['Last successful check', args.lastOkAt ?? 'never'],
+  ]
+
+  const html =
+    `<p><strong>${headline}</strong></p>` +
+    `<table cellpadding="6" style="border-collapse:collapse;font-family:system-ui,sans-serif;font-size:14px">` +
+    rows.map(([k, v]) =>
+      `<tr><td style="color:#64748b">${k}</td><td style="font-family:ui-monospace,monospace">${v}</td></tr>`).join('') +
+    `</table>` +
+    `<p style="color:#64748b;font-size:13px">The operator has not been shown a failure message. ` +
+    `This is the only email for this outage — it is sent once, when the check crosses the line, and again ` +
+    `only if the domain recovers and fails afresh.</p>`
+
+  const text = `${headline}\n\n` + rows.map(([k, v]) => `${k}: ${v}`).join('\n') +
+    `\n\nThe operator has not been shown a failure message. Sent once per outage.`
+
+  return { subject, html, text }
 }
 
 /**
@@ -260,13 +380,16 @@ export const CONFIRM_COPY = {
  * was a valid 307 followed by a 200; the return leg was a user click, so no browser ever flagged a
  * loop and nothing appeared in monitoring. See docs/qr-redirect-trace-report.md.
  *
- * 🔴 THE TWO URLS NOW HAVE ONE JOB EACH. `/o/<slug>` DECIDES (custom domain, else the ordering
+ * 🔴 THE TWO URLS NOW HAVE ONE JOB EACH. `/order/<slug>` DECIDES (custom domain, else the ordering
  * page); `/trucks/<slug>/order` SERVES, always, for every arrival. A page that both decides and serves
  * cannot tell an inbound scan from a customer coming back to buy — which is exactly what the cycle was.
+ * (The decider was renamed `/o/<slug>` → `/order/<slug>`; `/o/<slug>` is kept as a permanent shim to it,
+ * so codes already printed with `/o/` still resolve.)
  *
  * ⚠️ SHORT ON PURPOSE. A QR's module count grows with the payload, so fewer characters means larger
  * modules at the same printed size and a code that scans from further away, in worse light, on a
- * cheaper camera. `/o/<pizzeria-gusto>` is 42 characters against the ordering page's 53.
+ * cheaper camera. `/order/<pizzeria-gusto>` is 46 characters against the ordering page's 53 — still
+ * shorter than the serving URL, and the tradeoff for a spellable, memorable address.
  *
  * ⚠️ `origin` EXISTS FOR THE DEMO DASHBOARD AND MUST NOT BE DROPPED. Real trucks always take the
  * canonical production host, because their code gets printed. A DEMO truck takes the current origin, so
@@ -274,7 +397,7 @@ export const CONFIRM_COPY = {
  * app/dashboard/[token]/page.tsx:185-192 and predates this function.
  */
 export function scanUrl(slug: string, origin?: string): string {
-  return `${origin || process.env.NEXT_PUBLIC_HATCHGRAB_URL || 'https://www.hatchgrab.com'}/o/${slug}`
+  return `${origin || process.env.NEXT_PUBLIC_HATCHGRAB_URL || 'https://www.hatchgrab.com'}/order/${slug}`
 }
 
 export function orderPageUrl(slug: string): string {

@@ -26,3 +26,8 @@ User-agent: *
 Disallow: /api/
 Disallow: /trucks/
 Crawl-delay: 10
+
+# Added 8 September 2026. PURELY ADDITIVE — no rule above this line was changed. The AI-crawler
+# blocklist and the /api/ + /trucks/ disallows are untouched policy decisions from 5 June 2026.
+# app/sitemap.ts serves this and is host-aware; on villagefoodie.co.uk it returns that site's root.
+Sitemap: https://www.hatchgrab.com/sitemap.xml
