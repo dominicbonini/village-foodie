@@ -23,6 +23,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { findVenue, toks, normName, type VenueRow } from '../lib/venue-matcher'
+// 🔴 The same two refusal guards the high-confidence script uses — ONE implementation, imported twice,
+// so the two scripts cannot drift. lib/venue-matcher.ts is unchanged.
+import { applyGuards, buildCategoryIndex, buildSentinelSet } from './linking-guards'
 
 const env = Object.fromEntries(
   readFileSync('.env.local', 'utf8').split('\n').filter(l => l.includes('='))
@@ -68,13 +71,32 @@ async function main() {
   const venues = allVenues ?? []
   const rows = events ?? []
 
+  // Derived from the live table on every run — see scripts/linking-guards.ts.
+  const categories = buildCategoryIndex(venues)
+  const sentinels = buildSentinelSet(venues)
+
   const approved: { e: EventRow; v: VenueRow }[] = []
   const suspicious: { e: EventRow; v: VenueRow; reason: string }[] = []
+  // 🔴 Three buckets, never merged into `suspicious`: a REFUSAL is a different statement from "eyeball
+  // this", and an UNCHECKABLE coordinate is a different statement from a bad one.
+  const refusedCategory: { e: EventRow; v: VenueRow; reason: string }[] = []
+  const refusedBadCoord: { e: EventRow; v: VenueRow; reason: string }[] = []
+  const heldUncheckable: { e: EventRow; v: VenueRow }[] = []
 
   for (const e of rows) {
     const m = findVenue(e.venue_name, e.village, venues)
-    if (!m.venue || m.confidence !== 'low') continue           // only the 95 low-confidence rows
+    if (!m.venue || m.confidence !== 'low') continue           // only the low-confidence rows
     if (m.venue.latitude == null || m.venue.longitude == null) continue // no coords → skip (not our tier)
+
+    // ── THE GUARDS, BEFORE ANY TRIAGE. A category target cannot be rescued by village agreement — that
+    //    is precisely the case the Pizza Mondo foodPark error came from.
+    const g = applyGuards(m.venue, categories, sentinels)
+    if (!g.ok) {
+      const rec = { e, v: m.venue, reason: g.reason }
+      if (g.guard === 'CATEGORY') refusedCategory.push(rec); else refusedBadCoord.push(rec)
+      continue
+    }
+    if (g.coordState === 'UNCHECKABLE') { heldUncheckable.push({ e, v: m.venue }); continue }
 
     const v = m.venue
     const exactName = normName(e.venue_name) === normName(v.name)
@@ -150,6 +172,35 @@ async function main() {
   ].map(c => csvCell(String(c))).join(','))
   writeFileSync(`${OUT_DIR}/review-suspicious.csv`, [csvHeader, ...csvRows].join('\n') + '\n')
 
+  // ── guard outputs — LOUD, and separate from the suspicious CSV ──
+  const refHeader = 'guard,event_id,event_date,truck_name,venue_name,village,refused_venue_id,refused_venue,refused_village,reason'
+  const refRows = [
+    ...refusedCategory.map(r => ['CATEGORY', r.e.id, r.e.event_date, r.e.truck_name ?? '', r.e.venue_name ?? '', r.e.village ?? '', r.v.id, r.v.name, r.v.village ?? '', r.reason]),
+    ...refusedBadCoord.map(r => ['BAD_COORD', r.e.id, r.e.event_date, r.e.truck_name ?? '', r.e.venue_name ?? '', r.e.village ?? '', r.v.id, r.v.name, r.v.village ?? '', r.reason]),
+  ].map(c => c.map(x => csvCell(String(x))).join(','))
+  writeFileSync(`${OUT_DIR}/guard-refusals-low.csv`, [refHeader, ...refRows].join('\n') + '\n')
+
+  const candMap = new Map<string, { venue_name: string; village: string; events: number; trucks: Set<string> }>()
+  for (const r of [...refusedCategory, ...refusedBadCoord]) {
+    const k = `${r.e.venue_name ?? ''}|${r.e.village ?? ''}`
+    const c = candMap.get(k) ?? { venue_name: r.e.venue_name ?? '', village: r.e.village ?? '', events: 0, trucks: new Set<string>() }
+    c.events++; if (r.e.truck_name) c.trucks.add(r.e.truck_name); candMap.set(k, c)
+  }
+  writeFileSync(`${OUT_DIR}/create-candidates-low.csv`,
+    ['venue_name,village,events,trucks',
+      ...[...candMap.values()].sort((a, b) => b.events - a.events)
+        .map(c => [c.venue_name, c.village, c.events, [...c.trucks].join('; ')].map(x => csvCell(String(x))).join(','))].join('\n') + '\n')
+
+  writeFileSync(`${OUT_DIR}/held-uncheckable-coord-low.csv`,
+    ['event_id,event_date,truck_name,venue_name,village,venue_id,venue,venue_village',
+      ...heldUncheckable.map(({ e, v }) => [e.id, e.event_date, e.truck_name ?? '', e.venue_name ?? '', e.village ?? '', v.id, v.name, v.village ?? ''].map(x => csvCell(String(x))).join(','))].join('\n') + '\n')
+
+  console.log(`🔴 REFUSED — category target: ${refusedCategory.length}  (guard-refusals-low.csv)`)
+  for (const r of refusedCategory) console.log(`     ${r.e.event_date} ${r.e.truck_name} @ "${r.e.venue_name}" [${r.e.village ?? '—'}] -> "${r.v.name}" :: ${r.reason}`)
+  console.log(`🔴 REFUSED — bad coordinate on target: ${refusedBadCoord.length}`)
+  for (const r of refusedBadCoord) console.log(`     ${r.e.event_date} ${r.e.truck_name} @ "${r.e.venue_name}" -> "${r.v.name}" :: ${r.reason}`)
+  console.log(`⚠️  HELD — coordinate UNCHECKABLE (no postcode): ${heldUncheckable.length}  (held-uncheckable-coord-low.csv)`)
+  console.log(`create-candidates emitted: ${candMap.size}  (create-candidates-low.csv)`)
   console.log(`LOW-confidence rows triaged: ${approved.length + suspicious.length}`)
   console.log(`  APPROVE (backfill-low-approved.sql): ${approved.length}`)
   console.log(`  SUSPICIOUS (review-suspicious.csv):  ${suspicious.length}`)
