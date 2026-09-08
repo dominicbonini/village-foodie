@@ -421,19 +421,33 @@ if (MODE) console.log(`   🔀 SCRAPE_MODE=${MODE} → discovery:${RUN_DISCOVERY
 const SCRAPE_TRUCK_ID = (process.env.SCRAPE_TRUCK_ID || '').trim();
 if (SCRAPE_TRUCK_ID) console.log(`   🎯 SCRAPE_TRUCK_ID=${SCRAPE_TRUCK_ID} → scoped manual run (single truck, pacing gates bypassed)`);
 
-if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
+// 🔴 THE SHEET IS A PASS-A INPUT ONLY. Pass B (SCRAPE_MODE=hatchgrab, hourly) reads `trucks` from the
+// database and never touches truckData / venueData / eventData / exclusionData or anything derived from
+// them — traced consumer by consumer, docs/passb-sheet-decoupling-report.md. Until 8 September 2026 the
+// four-tab read below ran UNCONDITIONALLY, so a Sheet outage (revoked share, rotated ID, API error) took
+// the three operator trucks' schedule updates down within the hour for a file they do not use — and
+// getTabData throwing (correctly) made that fatal rather than silent.
+// So: the credential requirement and the read are gated on RUN_DISCOVERY. Everything downstream keeps
+// its declaration at this scope (the two `if (RUN_DISCOVERY)` blocks below share it — that scoping has
+// already caused one runtime error caught by running, not reading) and simply sees empty arrays in a
+// hatchgrab run, where nothing consumes them. GEMINI_API_KEY is still required by both passes.
+if ((RUN_DISCOVERY && !process.env.GOOGLE_SHEETS_CREDENTIALS) || !process.env.GEMINI_API_KEY) {
   throw new Error("Missing Credentials in .env.local");
 }
 
+let sheets = null;
+let truckData = [], venueData = [], eventData = [], exclusionData = [];
+
+if (RUN_DISCOVERY) {
 const auth = new google.auth.GoogleAuth({
   credentials: JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS),
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
-const sheets = google.sheets({ version: 'v4', auth });
+sheets = google.sheets({ version: 'v4', auth });
 
 console.log("📥 Reading Master Data...");
 
-const [truckData, venueData, eventData, exclusionData] = await Promise.all([
+[truckData, venueData, eventData, exclusionData] = await Promise.all([
   getTabData(sheets, TABS.TRUCKS),
   getTabData(sheets, TABS.VENUES),
   getTabData(sheets, TABS.EVENTS),
@@ -448,9 +462,134 @@ const emptyTabs = assertSheetTabsLoaded({
   [TABS.TRUCKS]: truckData, [TABS.VENUES]: venueData, [TABS.EVENTS]: eventData, [TABS.EXCLUSIONS]: exclusionData,
 });
 if (emptyTabs.length > 0) console.log(`   ⚠️  Empty tab(s): ${emptyTabs.join(', ')}`);
+} else {
+  console.log('   ⏭️  SCRAPE_MODE=hatchgrab — Google Sheet not read (Pass B uses none of it).');
+}
 
-// Build Exclusions Set with Normalization
-const excludedTerms = new Set(exclusionData.map(r => r[0] ? normalizeName(r[0]) : '').filter(Boolean));
+// ── 🔀 EXCLUSION SET: SOURCE SWITCH + IN-RUN CONTROL ────────────────────────────────────────────────
+// The first of the four reads to get a source switch (SITES_FROM / MATCH_FROM / EXCLUSIONS_FROM /
+// DEDUP_FROM, docs/sheet-retirement-plan-report.md §6 step 5). It is the smallest, so it sets the shape:
+//
+//   1. The flag selects which set is USED. It defaults to `sheet` and DOES NOT default to `db` on an
+//      unrecognised value — an env typo must never silently change what the scraper filters.
+//   2. BOTH sets are built on EVERY discovery run, whatever the flag says, and diffed. The set the flag
+//      did not select is built for COMPARISON ONLY and cannot reach the filter: the filter reads
+//      `excludedTerms`, and only the selected set is ever copied into it.
+//   3. The diff reports membership AND decision equivalence. Two sets can differ in membership and
+//      still filter identically (a term nothing matches), and can agree in COUNT while differing in
+//      content. Only "did every extracted truck name get the same verdict?" answers the question that
+//      matters before flipping the default.
+//
+// 🔴 NOTHING HERE CHANGES BEHAVIOUR UNTIL `EXCLUSIONS_FROM=db` IS SET IN A WORKFLOW. Unset = sheet =
+// exactly what ran yesterday.
+const EXCLUSIONS_FROM_RAW = (process.env.EXCLUSIONS_FROM || '').trim();
+const EXCLUSIONS_FROM = EXCLUSIONS_FROM_RAW.toLowerCase() === 'db' ? 'db' : 'sheet';
+// Case-insensitive, matching SCRAPE_MODE's own `.toLowerCase()` at the top of main(). `DB` and `Db` are
+// the same word, not typos. Anything else — `true`, `1`, `data base` — is unrecognised and falls back to
+// sheet WITH A MESSAGE, because a silent fallback is how a flag that is not working looks like a flag
+// that is. An empty/unset value is not a typo and is not announced.
+if (EXCLUSIONS_FROM_RAW && !['db', 'sheet'].includes(EXCLUSIONS_FROM_RAW.toLowerCase())) {
+  console.log(`   ⚠️  EXCLUSIONS_FROM="${EXCLUSIONS_FROM_RAW}" is not recognised — falling back to 'sheet'. Recognised values: sheet | db.`);
+}
+
+// The Sheet set — unchanged from what has always run. In a hatchgrab run exclusionData is [] (Pass B
+// does not read the Sheet), and nothing consumes the set there.
+const sheetExclusionSet = new Set(exclusionData.map(r => r[0] ? normalizeName(r[0]) : '').filter(Boolean));
+
+// The DB set. `null` means "could not be read" and is NOT the same as an empty set — see the failure
+// rules below, where the difference decides whether the run dies or merely warns.
+let dbExclusionSet = null;
+let dbExclusionError = null;
+let dbKeyDrift = [];
+
+if (RUN_DISCOVERY) {
+  try {
+    // 🔎 READ `term_key`, NOT `term`. The column is defined as "the value the scraper actually compares"
+    // (supabase/migrations/20260909_discovery_exclusion_terms.sql) and the UNIQUE index is on it, so it
+    // is the value whose distinctness the database guarantees. Re-normalising `term` here would apply
+    // TODAY's normalizeName to a value normalised by whatever version wrote it: if the normaliser ever
+    // changes, two stored keys could collapse into one and the set would silently shrink, with no error.
+    // 🧪 Proven equal on all 143 rows today (normalizeName(term) === term_key, 143/143, 0 different) —
+    // so this choice changes nothing now and protects the set later.
+    const { data: exRows, error: exReadErr } = await supabase
+      .from('discovery_exclusion_terms')
+      .select('term, term_key')
+      .limit(10000);
+    if (exReadErr) throw new Error(`[${exReadErr.code}] ${exReadErr.message}`);
+    if (!Array.isArray(exRows)) throw new Error('discovery_exclusion_terms returned a non-array');
+
+    // ⚠️ ...but VERIFY the stored key still matches what this scraper's normaliser produces. If it does
+    // not, the terms are normalised one way and the truck names they are compared against another, so
+    // terms silently stop matching — under-filtering, which is invisible. Caught here rather than found
+    // later as "why is a quiz night in the map?".
+    dbKeyDrift = exRows.filter(r => normalizeName(r.term || '') !== (r.term_key || ''));
+    dbExclusionSet = new Set(exRows.map(r => r.term_key).filter(Boolean));
+  } catch (err) {
+    dbExclusionError = err.message || String(err);
+    dbExclusionSet = null;
+  }
+}
+
+// ── FAILURE RULES. Asymmetric on purpose: the consequence differs by which set is in use. ───────────
+// 🔴 GATED ON RUN_DISCOVERY, AND THAT GATE IS LOAD-BEARING. Pass B does not use the exclusion set at
+// all, and both workflows pass the same env block — so a hatchgrab run with EXCLUSIONS_FROM=db set
+// would otherwise die here on a set it never reads, taking the hourly operator-truck job down for a
+// flag that does not apply to it. That is precisely the fault the Pass B Sheet decoupling removed
+// (docs/passb-sheet-decoupling-report.md); it must not be reintroduced through the back door.
+// 🧪 Caught by running hatchgrab mode with the flag set, not by reading.
+if (RUN_DISCOVERY && EXCLUSIONS_FROM === 'db') {
+  // 🔴 THE SET IN USE COULD NOT BE READ. An empty exclusion set does not fail — it QUIETLY LETS
+  // EVERYTHING THROUGH: "live music", "quiz night", "TBC", "Transit Mot due" all become trucks, and the
+  // run goes green while writing rubbish to the map. Fail the run instead.
+  if (dbExclusionSet === null) {
+    throw new Error(`EXCLUSIONS_FROM=db but discovery_exclusion_terms could not be read: ${dbExclusionError}. Refusing to scrape with no exclusion set — set EXCLUSIONS_FROM=sheet to fall back deliberately.`);
+  }
+  if (dbExclusionSet.size === 0) {
+    throw new Error('EXCLUSIONS_FROM=db but discovery_exclusion_terms returned 0 rows. An empty exclusion set silently admits quiz nights and TBC as trucks — refusing to run. Import the terms, or set EXCLUSIONS_FROM=sheet.');
+  }
+  if (dbKeyDrift.length > 0) {
+    throw new Error(`EXCLUSIONS_FROM=db and ${dbKeyDrift.length} of the stored term_key values no longer match normalizeName(term) — e.g. ${dbKeyDrift.slice(0, 3).map(r => `${JSON.stringify(r.term)}: stored ${JSON.stringify(r.term_key)} vs ${JSON.stringify(normalizeName(r.term || ''))}`).join('; ')}. The terms and the truck names are being normalised differently, so terms would silently stop matching.`);
+  }
+} else if (RUN_DISCOVERY) {
+  // The Sheet set is in use, so a DB failure cannot affect filtering. It costs the CONTROL, not the run —
+  // failing here would take scraping down for a comparison. Loud, not fatal.
+  if (dbExclusionSet === null) console.log(`   ⚠️  Exclusion control unavailable — could not read discovery_exclusion_terms: ${dbExclusionError}`);
+  else if (dbKeyDrift.length > 0) console.log(`   ⚠️  ${dbKeyDrift.length} discovery_exclusion_terms row(s) have a term_key that no longer matches normalizeName(term). Harmless while EXCLUSIONS_FROM=sheet; FATAL if the flag is flipped.`);
+}
+
+// 🔴 THE SET ACTUALLY USED. Only the selected source is copied in; the other never touches this.
+const excludedTerms = new Set(EXCLUSIONS_FROM === 'db' ? dbExclusionSet : sheetExclusionSet);
+
+if (RUN_DISCOVERY) {
+  console.log(`   🔀 EXCLUSIONS_FROM=${EXCLUSIONS_FROM}${EXCLUSIONS_FROM_RAW ? '' : ' (default)'} → using ${excludedTerms.size} term(s) from the ${EXCLUSIONS_FROM === 'db' ? 'DATABASE' : 'SHEET'}.`);
+}
+
+// ── THE CONTROL. Membership diff now; decision equivalence accumulated during the run and printed at
+// the end of Pass A (a term nothing matches is a membership difference with no consequence, and that
+// distinction is the whole reason this exists).
+const exclusionControl = { checked: 0, disagreements: [], available: RUN_DISCOVERY && dbExclusionSet !== null };
+if (exclusionControl.available) {
+  const onlySheet = [...sheetExclusionSet].filter(t => !dbExclusionSet.has(t));
+  const onlyDb = [...dbExclusionSet].filter(t => !sheetExclusionSet.has(t));
+  console.log(`   🔬 EXCLUSION CONTROL — sheet ${sheetExclusionSet.size} term(s), db ${dbExclusionSet.size} term(s).`);
+  if (onlySheet.length === 0 && onlyDb.length === 0) {
+    console.log(`      ✅ membership identical.`);
+  } else {
+    console.log(`      ⚠️ membership differs: ${onlySheet.length} only in the SHEET, ${onlyDb.length} only in the DB.`);
+    if (onlySheet.length) console.log(`         sheet-only: ${onlySheet.slice(0, 10).join(', ')}${onlySheet.length > 10 ? ` …+${onlySheet.length - 10}` : ''}`);
+    if (onlyDb.length) console.log(`         db-only:    ${onlyDb.slice(0, 10).join(', ')}${onlyDb.length > 10 ? ` …+${onlyDb.length - 10}` : ''}`);
+  }
+}
+
+// Called for every extracted truck name. 🔴 COMPARISON ONLY — it returns nothing the filter reads, so it
+// cannot change what is excluded. The filter's own `termHit` is computed from `excludedTerms` beside it.
+function recordExclusionControl(truckName, normRawTruck, siteUrl) {
+  if (!exclusionControl.available) return;
+  const sheetHit = Array.from(sheetExclusionSet).some(ex => isFuzzyMatch(ex, normRawTruck));
+  const dbHit = Array.from(dbExclusionSet).some(ex => isFuzzyMatch(ex, normRawTruck));
+  exclusionControl.checked++;
+  if (sheetHit !== dbHit) exclusionControl.disagreements.push({ truckName, normRawTruck, sheetHit, dbHit, siteUrl });
+}
 
 const validTrucks = truckData.filter(r => r[0]).map(r => {
     return {
@@ -788,6 +927,16 @@ for (const [index, site] of sitesToScrape.entries()) {
                             resource: { values: [[ex]] },
                         });
                         excludedTerms.add(cleanEx);
+                        // Keep BOTH control sets in step with the in-memory addition, so the decision
+                        // diff below stays a comparison of the two SOURCES rather than an artefact of
+                        // which one happened to be selected this run.
+                        // ⚠️ NOTE THE ASYMMETRY THIS PAPERS OVER, AND DO NOT LOSE IT: the append above
+                        // writes the term to the SHEET only. Nothing writes it to
+                        // discovery_exclusion_terms, so after EXCLUSIONS_FROM=db the auto-exclusion
+                        // would not survive the run. That is the still-open `:784-790` guard problem
+                        // (manual §11.2) and must be settled BEFORE the default flips.
+                        sheetExclusionSet.add(cleanEx);
+                        if (dbExclusionSet) dbExclusionSet.add(cleanEx);
                         console.log(`   🤖 Auto-Excluded via Scraper: ${ex}`);
                         const { error: exErr } = await supabase.from('excluded_terms').upsert({
                           term: ex,
@@ -857,7 +1006,11 @@ for (const [index, site] of sitesToScrape.entries()) {
           // ⚠️ `!== 'truck'`, NOT `=== 'venue'`: a source type added later keeps the filter ON by default.
           // Over-filtering is visible (a truck goes quiet and someone asks); under-filtering is not.
           const normRawTruck = normalizeName(truckName);
+          // `termHit` is computed from `excludedTerms` — the set the FLAG selected — and nothing else.
           const termHit = Array.from(excludedTerms).some(ex => isFuzzyMatch(ex, normRawTruck));
+          // 🔬 Control: asks the SAME question of BOTH sources and records any disagreement. Its return
+          // value is discarded, so it cannot influence the line below. Comparison only.
+          recordExclusionControl(truckName, normRawTruck, site.url);
           const isExcluded = termHit && site.sourceType !== 'truck';
           if (isExcluded) {
               console.log(`   🚫 Skipping excluded truck term: ${truckName}`);
@@ -1059,6 +1212,26 @@ await browser.close();
 // 🔴 OUTSIDE the per-site try/catch above (which deliberately swallows one site's failure so the rest
 // still run). A run where NOT ONE site produced an extraction is systemic and must go red.
 console.log(`\n📊 Pass A sites: ${sitesSucceeded} extracted, ${siteFailures.length} failed, ${sitesAttempted} attempted.`);
+
+// ── 🔬 EXCLUSION CONTROL RESULT — the number that decides whether the default can be flipped. ────────
+// 🔴 DECISION EQUIVALENCE, NOT SET EQUALITY. The question is not "do the two sets contain the same
+// strings?" but "would every truck name this run have been treated the same way?" — because a term
+// present in one set and absent from the other changes nothing if no extracted name matches it, and two
+// sets of equal SIZE can still disagree on a name.
+if (!exclusionControl.available) {
+  console.log(`   🔬 EXCLUSION CONTROL: NOT RUN (the database set could not be read). No comparison was made this run.`);
+} else if (exclusionControl.checked === 0) {
+  console.log(`   🔬 EXCLUSION CONTROL: 0 truck names reached the filter, so decision equivalence is UNTESTED this run. Membership was compared at startup.`);
+} else if (exclusionControl.disagreements.length === 0) {
+  console.log(`   ✅ EXCLUSION CONTROL: sheet and db agreed on ALL ${exclusionControl.checked} truck name(s) this run.`);
+} else {
+  console.log(`   🔴 EXCLUSION CONTROL: ${exclusionControl.disagreements.length} DISAGREEMENT(S) across ${exclusionControl.checked} truck name(s) — the default MUST NOT be flipped until these are explained:`);
+  for (const d of exclusionControl.disagreements.slice(0, 20)) {
+    console.log(`      "${d.truckName}" (${d.normRawTruck}) — sheet says ${d.sheetHit ? 'EXCLUDE' : 'keep'}, db says ${d.dbHit ? 'EXCLUDE' : 'keep'}  [${d.siteUrl}]`);
+  }
+  if (exclusionControl.disagreements.length > 20) console.log(`      …and ${exclusionControl.disagreements.length - 20} more.`);
+}
+
 assertSomeSiteSucceeded(sitesAttempted, sitesSucceeded, siteFailures);
 } // end if (RUN_DISCOVERY) — Pass A global discovery scrape
 
