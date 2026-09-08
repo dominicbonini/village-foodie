@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V12.0
+HatchGrab Engineering Reference Manual · V12.4
 
 **HatchGrab**
 
@@ -6,11 +6,13 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 12.0**
+**Version 12.4**
 
 September 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
+
+**The scraper and discovery pipeline are documented separately** in `docs/scraper-reference-manual.md` — `scripts/run-scraper.js`, the GitHub Actions crons, the Google Sheet, and Village Foodie visibility are not covered here.
 
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
@@ -23,6 +25,327 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V12.4 — 8 September 2026 — TWO "VERIFIED LIVE" PRICING FACTS AGED INTO FALSEHOOD INSIDE A MONTH, A SUPPRESSION DEFECT WENT DORMANT RATHER THAN FIXED, AND 52% OF DISCOVERY EVENTS HAVE NO VENUE
+
+**Delta — a documentation pass over four read-only investigations. No code changed, no row written. `docs/scraper-reference-manual.md` was taken to V1.2 in the same pass and carries the pipeline-side detail.**
+
+### 🔴 THE PRICING SECTIONS STATED TWO FACTS AS VERIFIED LIVE, AND BOTH WERE FALSE WHEN READ
+
+- 🔴 **"Gusto has `hide_pricing = true`, verified live" — FALSE.** 🧪 Gusto is `false`, and **zero of the ten trucks now hold `true`**. The only truck that ever did was **`tikka-tonic`**, and it no longer does. Corrected at §4, §44 and both schema records.
+- 🔴 **"`NEXT_PUBLIC_PRICING_PUBLISHED` is TRUE in production" — FALSE at the time.** 🧪 It was not the string `'true'` in the production build, which is why Gusto rendered TBC with `hide_pricing = false` — a state the manual's own account could not explain. **It has since been corrected and Gusto now renders real prices.**
+- 🔴 **NEITHER WAS WRONG WHEN WRITTEN. BOTH WERE WRONG WHEN READ.** ⚠️ **A verified-live claim is a claim about a moment, not a standing fact.** New standing rule at §4: **date every live verification, and say how it was established.**
+- ⚠️ **And this one cannot simply be re-checked.** The variable is stored on Vercel as type **`sensitive`** — write-only, unreadable by API, CLI or dashboard, **by anyone**. Rendered behaviour is the only available evidence.
+
+### 🔴 THE FOOTNOTE DEFECT IS DORMANT, NOT FIXED
+
+- 🔎 `f.number !== '2'` is still live at `app/manage/[token]/page.tsx:11721`, and the "DO NOT RENUMBER" warning that guards it sits in **a different file** (`lib/plan-features.ts:529-531`). 🧪 Executed: footnote **1** carries `1.4%` and `10p` and is **not** masked; footnote **2** is the only one that is.
+- ⚠️ **It bites nobody today only because nothing is suppressed.** **Dormant is not fixed** — the next truck set to `true` re-arms it. Recorded as **OPEN**.
+- ✅ **The mechanism itself re-verified and is correct**: the AND at `lib/pricing.ts:34`, the asymmetric defaults, the single provider at `app/manage/[token]/page.tsx:659`, and **every price consumer inside its subtree**. ⚠️ Admin, the landing page and **`/compare` — publicly reachable with the real £29/£49 in its JS chunk** — render unmasked and call no mask at all.
+
+### 🔴 DISCOVERY DATA MOVED, AND ONE MOVE IS A TRAP FOR THE NEXT SESSION
+
+- 🧪 **`venues` 574 → 558** — 15 CERTAIN-tier merges, 16 losers deleted, **125 events repointed to keepers**. The repointing proves a hand-run merge, not a deleter: the FK is `ON DELETE SET NULL`.
+- 🔴 **6 deleted events stay deleted ONLY because the Sheet remembers them.** **Sheet-migration step 4 un-suppresses them.** A tombstone is a precondition of that step. **Full detail in §33's preamble and scraper manual V1.2 §9.2.**
+- 🧪 **The PMF pack: 4 inserted, 5 refused by `ON CONFLICT DO NOTHING` — nothing deleted.** 🔴 **UNRESOLVED:** a reported deletion of 4 PMF duplicates **is not in the data**.
+- 🧪 **52.0% of `discovery_events` (2,237 of 4,301) have no `venue_id`**, and nothing links on a schedule. 🔴 **`updated_at` is never maintained on that table — zero rows differ from `created_at`** — so it can date nothing.
+- 🧪 **Graduated-truck visibility deliberately reversed** for Real Thai Food; Tikka Tonic left public. ⚠️ Both also carry `excluded = true`; **whether either reaches the public map was not verified. OPEN.**
+
+### THE STANDING LESSONS
+
+- 🔴 **Date every live verification.** Two aged into falsehood in under a month and were acted on as current.
+- 🔴 **"Dormant" and "fixed" are different words.** A defect no one can currently trigger is still a defect, and the condition that disarms it is data, not code.
+- ⚠️ **A write-only secret cannot be documented, only observed.** Say which, and say how you observed it.
+
+## V12.3 — 4–5 September 2026 — A "COMING SOON" SWEEP BUILT ON A STALE MANUAL, AN EMBEDDED SIGNUP BUILT AGAINST THE WRONG VERSION TWICE, AND A TRADING TRUCK'S WEB ADDRESS HELD DEAD FOR ELEVEN HOURS BY A COLUMN ONLY A CRON COULD WRITE
+
+**Delta — WhatsApp copy moved to live across five surfaces after a headline claim was inverted and
+corrected; WhatsApp Embedded Signup built end to end from an empty schema to a launcher and a
+three-call exchange route, landing on v4 only after Meta's own tooling contradicted Meta's own
+documentation; a live custom domain returning 404 for eleven hours because the page is gated on a
+column no on-demand path could write; the clipboard consolidated onto one component after two buttons
+were found reporting success on failure; and Android shipped, taking six landing claims from
+coming-soon to live.**
+
+### THE HEADLINE CORRECTION, RECORDED BECAUSE IT WAS MINE
+
+- 🔴 **A REPORT WRITTEN FROM THIS MANUAL ALONE INVERTED ITS OWN CENTRAL CLAIM.** A diagnostic commissioned
+  with no repository access concluded, confidently and in two places, that WhatsApp was described as
+  coming-soon in **zero** locations, and that the operator's premise was therefore wrong. **The code said
+  the opposite**: the matrix row read `pro: 'coming_soon', max: 'coming_soon'`, the landing carried a
+  coming-soon string, and the manage page carried a dated operator decision to show it greyed out.
+  ⚠️ **This manual recorded the row as a live tick from an earlier change and was never updated when the
+  code moved it back.** One grep would have settled it.
+- 🔴 **THE FAILURE IS THE ONE THIS MANUAL LECTURES ABOUT ON EVERY PAGE: asserting a state from an earlier
+  read rather than a current one.** A document read is not a source read, **and this manual is a
+  document. Where a report's premise comes from this file, it is a claim, not a fact.**
+- ✅ **THE FLAGGED-BUT-UNRESOLVABLE ITEM RESOLVED YES.** The same report flagged a conflict it could not
+  settle — whether a local boolean controlled the coming-soon display — and said to grep before touching
+  anything. **`WHATSAPP_LIVE` exists, it is the actual product switch, and this manual had never recorded
+  it.** The instinct was right; the conclusion drawn without it was wrong. See §4.
+
+### WHATSAPP — WHAT "APPROVED" ACTUALLY UNLOCKED
+
+- 🔴 **APPROVAL CLEARED ONE STEP OF FIVE, AND WAS NEVER THE BLOCKER FOR ANYTHING ALREADY WORKING.** Inbound
+  webhook, HMAC verification, truck routing, the four-bucket classifier, the grounded menu answerer, the
+  deterministic allergen floor, the once-daily greeting and real delivery to a handset were all working
+  **before** approval, in development mode, on the platform credential. The blocker had been an
+  environment-variable name.
+- 🔴 **THE APP MUST STAY IN DEVELOPMENT MODE, AND THIS INVERTS THE ORIGINAL INTENT.** In development mode
+  the requested permissions appear in the Embedded Signup authorization screen to admins, developers and
+  testers. **In live mode only permissions approved for advanced access appear** — and
+  `whatsapp_business_management` was never submitted. **Switching to live would remove it from the flow
+  and break Embedded Signup rather than enable it.**
+- ⚠️ **THE FLIP WOULD HAVE BROKEN NOTHING FOR A TRADING TRUCK, BECAUSE NO TRADING TRUCK IS ON WHATSAPP.**
+  Live-read: only one truck holds a `phone_number_id`, and it is Meta's own test number. The recipient
+  allow-list belongs to the **test WABA**, not to the app mode.
+- 🔴 **THE FOURTH COPY SURFACE WAS NOT A STRING. IT WAS A MERGE.** After the matrix row flipped, a
+  landing-table module was still merging two rows into one printed label — advertising two unbuilt stubs
+  as shipped, on the public site, under an Integrity review. **The printed label exists in no source
+  file.** The module's own guard had predicted it: the merge was safe only while both rows carried
+  identical cell values, and the flip is what diverged them.
+- 🔴 **A PLAN FOOTNOTE CLAIMED AN OPERATOR COULD VIEW EVERY MESSAGE AND REPLY AT ANY TIME. BOTH HALVES WERE
+  FALSE.** Nothing renders past auto-replies, and replying depends on coexistence, which is unbuilt.
+  Rewritten in place, same number — **footnote numbering is load-bearing** (price masking keys on a magic
+  string comparing one number), so every change this session was in place or appended, never inserted.
+- 🔴 **SERVICE MESSAGES BECOME BILLABLE PER MESSAGE ON 1 OCTOBER 2026, AND EVERY AUTO-REPLY THIS PLATFORM
+  SENDS IS ONE.** **We take the first bills** — sending runs on one platform credential and Meta only
+  bills the operator once their own account is connected. ⚠️ **The reply cap is a promise made at
+  onboarding, not a budget control**, and **the handoff message is itself billable, so a limit of three
+  replies is four messages.** ✅ The charges note carries no figure and no date: it names Meta as the
+  biller and points at Meta's own pricing.
+
+### WHATSAPP EMBEDDED SIGNUP — BUILT FROM AN EMPTY SCHEMA TO A LAUNCHER
+
+- ✅ **CREDENTIALS LIVE IN THEIR OWN TABLE, NOT AS COLUMNS ON `trucks`.** Live routes read `trucks` and
+  `operators` with `select('*')`, and **a redaction list fails by omission, silently** — the same class as
+  the V12.1 dashboard-token exposure. RLS, a service-role-only policy, no grants to `anon`,
+  `authenticated` or `public`. **Verified by reading the applied schema back.**
+- 🔴 **THE FOREIGN KEY WAS DECLARED `uuid` AGAINST A `text` PRIMARY KEY AND WOULD HAVE FAILED ON PASTE.**
+  Caught before the migration ran. RULE (V6.2) already recorded it: an FK to `trucks(id)` declared uuid
+  **fails the migration or silently never matches.**
+- ✅ **APP-LEVEL AES-256-GCM ON THE TOKEN, DESCRIBED HONESTLY** — not protection against a compromised
+  process; it raises the bar on dumps, backups and exports. ⚠️ **There is no key-rotation path. Recovery
+  from a compromised key is re-onboarding every truck.** Acceptable at one truck, not at twenty.
+- 🔴 **THE TOKEN NEVER REACHES THE CLIENT, PROVEN BY EXECUTION RATHER THAN READ.** The state input takes a
+  boolean, not a token; every field of the client payload was enumerated and confirmed clean.
+- 🔴 **ONBOARDING IS THREE SERVER CALLS, NOT ONE** — exchange the code, register the number, subscribe the
+  app to the customer's WABA. **App-level webhook subscription covers neither of the last two.** A partial
+  failure leaves the row explicitly incomplete rather than a fabricated ready state.
+- ⚠️ **THE EXCHANGEABLE CODE HAS A THIRTY-SECOND TTL.** No queue, no confirmation step, no user interaction
+  between capture and exchange.
+- ✅ **PHONE-NUMBER REGISTRATION IS KEYED ON THE FINISH TYPE, NOT A BUILD-TIME CONSTANT.** A coexistence
+  number is already registered; a provisioned one is not. **Unknown finish types register by default — a
+  provisioned number that is never registered is mute.**
+
+### THE VERSION TRAP, TWICE
+
+- 🔴 **META'S OWN DOCUMENTATION PUT THE BUILD ON A VERSION THAT DIES IN OCTOBER.** The implementation page
+  shows one extras shape; the coexistence page adds two keys on top; **following both lands on v2, which
+  Meta deprecates on 15 October 2026.** Only a third page states the rule, and it states it wrongly.
+- 🔴 **THE VERSIONS PAGE SAYS v4's EXTRAS OBJECT IS "PURPOSELY EMPTY". META'S OWN INTEGRATION HELPER EMITS
+  THREE KEYS.** Pointed at a v4 login configuration with coexistence selected, the tool generated a URI
+  carrying `featureType`, `sessionInfoVersion` and an explicit `version`. **The generated URI is
+  authoritative; the documentation is stale.** ✅ The provenance is recorded at the site, because a later
+  reader finding that page will otherwise "fix" the shape back to empty and **silently drop the build two
+  versions — the version key is load-bearing.**
+- ⚠️ **A REFUSAL TO GUESS WAS THE RIGHT CALL.** When the pages could not be reconciled the build stopped
+  rather than resolving the contradiction from third-party blogs. **The hypothesis formed at that point
+  was wrong** — the parameter had not moved into the login configuration — **but stopping was right, and
+  the answer came from tooling rather than prose.**
+- ⚠️ **COEXISTENCE ENGAGEMENT REMAINS UNPROVEN, WITH EVIDENCE AGAINST IT.** The flow offered only "create a
+  new number" and "use a virtual number". **Weakened only because the test account owned no business-app
+  number to connect.** Settleable only against a number genuinely live in the business app.
+
+### THE TOKEN LIFETIME, AND A FABRICATED VALUE REMOVED
+
+- 🔴 **THE 60-DAY LIFETIME WAS AN ASSUMPTION INHERITED FROM A DELETED CONFIGURATION.** It came from the
+  first configuration's template name; the replacement was built from products, and the code was still
+  computing an expiry from the constant **while discarding the `expires_in` the exchange actually returns.**
+- ✅ **THE CONSTANT IS GONE WITH NO FALLBACK.** The expiry comes from the response or the token is not
+  stored. **A missing value takes an error path rather than silently defaulting.**
+- ✅ **THE REAUTHORISE WINDOW IS A FRACTION OF THE TOKEN'S OWN LIFE, NOT A DAY COUNT.** A fixed count
+  against a variable lifetime meant a short-lived token would show a renewal prompt for its entire life.
+- 🔴 **A SEVENTH CONNECTION STATE WAS PROPOSED AND CORRECTLY REJECTED.** The send gate is a single equality
+  against one state, so a new member would have **failed closed and stopped a truck answering customers
+  while its token was still valid.** Check what a union's consumers do before adding to it.
+- ✅ **AN ISSUE-TIME COLUMN WAS TAKEN WHILE THE TABLE WAS EMPTY.** The lifetime had been derived from a
+  row-touch timestamp, exact only while one writer exists and **rotting silently in the direction that
+  shrinks the warning window. A comment does not stop that; a column does.** One statement on an empty
+  table; after the first onboarding it would have been a backfill of an unrecoverable value.
+
+### STILL OPEN ON WHATSAPP
+
+- 🔴 **THE DOUBLE-REPLY DEFECT.** Under coexistence the operator answers from the van and the bot answers
+  too — **the customer is replied to twice, the second time by a robot repeating a human.** The
+  `smb_message_echoes` webhook that would reveal a human reply is dropped by the payload check. Scoped,
+  unbuilt, **latent only because no truck is onboarded.**
+- 🔴 **THE 24-HOUR HISTORY SYNC.** Unbuilt. The clock starts at first successful onboarding and is **per
+  customer**, so testing on a spare account does not consume a real truck's window.
+- ⚠️ **FOURTEEN ITEMS ARE BUILT AND HAVE NEVER MADE A REAL CALL TO META.** Coexistence engagement is first
+  and blocks the rest.
+- ⚠️ **TWO STUB WEBHOOK ROUTES STILL READ A DELETED ENVIRONMENT VARIABLE** (`META_APP_SECRET`) and will
+  refuse every genuine delivery. Carried across four reports, deliberately unfixed — choosing that secret
+  is a different app family's decision.
+
+### CUSTOM DOMAIN — THE FIRST OPERATOR THROUGH THE FEATURE LOST ELEVEN HOURS
+
+- 🔴 **A LIVE TRADING TRUCK'S WEB ADDRESS RETURNED 404 WHILE EVERY EXTERNAL LAYER WAS CORRECT.** DNS
+  resolved, the certificate had issued for that exact hostname, the domain was connected to the project,
+  the proxy matched and the rewrite fired. **The refusal came from the page itself, because
+  `custom_domain_verified_at` was null.**
+- 🔴 **THAT COLUMN WAS WRITABLE ONLY BY A ONCE-DAILY CRON, WITH NO MANUAL RE-CHECK ANYWHERE.** The operator
+  had done everything correctly and the page would have come alive on its own the next morning with
+  nobody knowing why it took eleven hours. **Every future operator would have hit the same wall.**
+- ✅ **OPENING THE SETUP BOX NOW RUNS THE SAME CHECK THE CRON RUNS** — one lookup extracted to a shared
+  module with two callers, rate-limited per truck. **Not fired once at wizard completion**: an operator who
+  has just added a record will refresh, and a single check at completion nearly always fails on
+  propagation and looks broken.
+- 🔴 **"UP TO 24 HOURS" DESCRIBED OUR SCHEDULE, NOT DNS.** Propagation is often minutes. **Telling operators
+  to expect a day would have codified our own limitation as a fact about the internet.**
+- ✅ **FAILURE ALERTS GO TO ADMIN, ONCE PER TRANSITION, NEVER TO THE OPERATOR.** Three states: waiting
+  within grace (operator sees a reassuring message, no alert), waiting past grace (one alert), and
+  was-working-now-failing (one alert per outage). **"Once" is load-bearing — an alert per failed check
+  becomes an ignored folder.** The grace window is derived from the scheduled cadence in missed checks,
+  never written as an hours literal. ⚠️ **The on-demand caller must evaluate the alert too**, or it steps
+  the last-checked timestamp past the threshold and **silently swallows the cron's transition.**
+- 🔴 **A TRAILING FULL STOP IN THE COPIED DNS TARGET WAS REJECTED BY THE OPERATOR'S PROVIDER.** **The stored
+  value was clean, so this was not the cause of the outage** — but the copy value was wrong for the next
+  operator. ⚠️ **The fix is per-provider, never global: 123 Reg requires the trailing stop, and a blanket
+  strip would break it silently.**
+- 🔴 **A HOST-NORMALISATION ASYMMETRY WOULD HAVE PRODUCED THE IDENTICAL ANONYMOUS 404.** One function
+  stripped a trailing dot from the host; another did not. Fixed, and proven by constructing the case where
+  the guard must bite — a dotted host went from a bare 404 to serving, an undotted one byte-identical.
+- ⚠️ **THE BANNER'S WORKED-THEN-STOPPED STATE IS STILL SILENT.** With admin alerting in place the operator
+  copy is a proposal awaiting approval.
+
+### THE CLIPBOARD
+
+- 🔴 **TWO BUTTONS SET "COPIED" UNCONDITIONALLY, SO A FAILED COPY LOOKED IDENTICAL TO A SUCCESSFUL ONE.** A
+  third signalled nothing at all. **A button that lies about succeeding is worse than one that does
+  nothing — it sends someone debugging the wrong thing.**
+- ✅ **ONE SHARED COMPONENT, AND THE FAILURE PATH IS EXECUTABLE RATHER THAN READ.** The write moved into its
+  own module so a rejected clipboard, a missing API and a throwing accessor could all be proven to resolve
+  to a failure state. **The harness exits non-zero if too few failure cases ran or if the fake clipboard
+  was never wired — the two ways that proof could have gone green while proving nothing.**
+- ⚠️ **THE SAFARI GESTURE TRAP WAS ABSENT, AND THE PREMISE THAT IT EXPLAINED THE DEAD BUTTON WAS WRONG.** No
+  await precedes any clipboard write at any call site. **The real cause was the unconditional signalling.**
+
+### ANDROID SHIPPED
+
+- ✅ **THE ANDROID APP IS LIVE ON GOOGLE PLAY; iOS WAS ALREADY LIVE.** Six customer-facing claims moved from
+  coming-soon to live, **combined into existing lines rather than added as new ones**, and the two matrix
+  rows became one with the `ROW_FEATURE_MAP` key moved in the same edit.
+- 🔴 **THE SIXTH CLAIM WAS THE DERIVED ONE** — a `DETAIL_OVERRIDES` entry printing an Android statement the
+  feature-source module knew nothing about. 🔴 **THIS HAS NOW HAPPENED TWICE IN ONE FILE.** Treat "a label
+  that is derived or merged rather than matched" as a **standing property of `lib/landing-table.ts`**, not
+  as two coincidences.
+- ⚠️ **DEVICE NAMES BELONG WHERE SPECIFICITY IS THE SUBSTANCE.** The breadth claim stays generic, because
+  naming three platforms narrows "anything you own works" into a list. The offline claim names them,
+  because **which app survives losing signal is exactly what the reader needs to know.**
+- 🔴 **THE OFFLINE ORDER-TAKING CLAIM NOW APPEARS IN SIX PLACES AND HAS NEVER BEEN TESTED ON ANDROID.** The
+  app is a day old. **Open.**
+- ✅ **STORE URLS AND BADGE PATHS LIVE IN ONE MODULE (`lib/app-badges.ts`), AND BOTH BADGES RENDER FROM ONE
+  COMPONENT (`components/StoreBadges.tsx`).** Vendor placement rules are not styling, and a second copy of
+  that markup is a second place to get it wrong. 🔴 **A previous constant named a badge file that never
+  existed, and no type check catches that** — an executed on-disk check now confirms both are present.
+- ✅ **STORE BADGES ARE HIDDEN ON NATIVE, AND THAT IS NOT COSMETIC.** A Google Play badge inside the iOS
+  build is precisely what App Review looks for. **Hiding it removes the question rather than answering it.**
+
+### THE STANDING LESSONS FROM THIS SESSION
+
+- 🔴 **A DOCUMENT READ IS NOT A SOURCE READ, AND THIS MANUAL IS A DOCUMENT.** The session's largest error
+  was a confident conclusion drawn from this file after the code had moved on.
+- 🔴 **A VENDOR'S DOCUMENTATION LOSES TO A VENDOR'S DASHBOARD, AND LOSES TO THEIR OWN TOOLING.** Four times
+  in two days: a panel renamed, a sandbox not where documented, a permission-task set the screen answered
+  better than the docs, and an extras shape the versions page states backwards. **When the account and the
+  documentation disagree, the account wins.**
+- 🔴 **FOUR PROOFS REPORTED GREEN WHILE PROVING NOTHING**, each caught by inspecting the test rather than
+  reading its result: a harness running a pre-edit copy, a loop breaking before the case it existed for,
+  and two freshness markers that were themselves wrong. **State what a proof's failure mode would look
+  like if it were proving nothing, before quoting it.**
+- 🔴 **A SWEEP THAT STARTS AT THE STRING MEASURES COVERAGE OF THE STRING.** Two surfaces this session
+  printed labels that exist in no source file. **Enumerate what the browser requests and work back.**
+- ✅ **A BRIEF'S PREMISE BEING WRONG WAS SAID AT THE TOP AND WHAT WAS TRUE SAID INSTEAD, REPEATEDLY** — on
+  the coming-soon count, the Safari trap, the manual's record of a typo location, and the version shape.
+  **That behaviour is why six defects were caught before shipping.**
+- ⚠️ **NOTHING HAS DEPLOYED SINCE BEFORE THIS SESSION BEGAN.** Five workstreams sit uncommitted in one
+  tree, **six files carry two workstreams each and one carries three. The staging discipline is the whole
+  blast radius** — a broad commit ships a customer-facing order-path rename into a live iOS app and a
+  mid-review Android listing, because both shells load production remotely.
+
+## V12.2 — 4 September 2026 — THE MAP HAS BEEN DEGRADING SINCE JUNE, AND AN INVISIBLE CHARACTER TOOK AN ORDER LINK DOWN
+
+**Delta — venue creation stopped on 11 June and nobody noticed until the map ran thin; a live order-link
+outage turned out to be a word joiner pasted onto the end of a URL; the scan route renamed with its
+decider intact; the outreach programme built out to a working surface; and four claims corrected,
+three of them mine.**
+
+- 🔴 **VENUE-ROW CREATION STOPPED ON 11 JUNE 2026 AND NOTHING RECORDED THAT IT HAD.** All 574 `venues`
+  rows were created between 18 May and 11 June; zero since, while discovery events continue to be
+  created daily at August volumes. **New locations ARE still appearing** — 31 distinct forward-window
+  venue names have no venue row — so this is creation stopping, not demand ending. **OBSERVED from the
+  `venues` rows themselves.**
+- 🔴 **THE VILLAGE FOODIE MAP DID NOT BREAK; IT DRAINED.** Only events with venue coordinates can be
+  pinned. Late-August dates were 30-45% linked because they named venues created before 11 June; the
+  forward window is near-zero because it accumulates locations from the three months in which nothing
+  new was created. **The map looked wrong on 3 September because the well-linked dates had finally
+  fallen into the past.** The server read path was healthy throughout and returns 708 events.
+- 🔴 **A LIVE ORDER-LINK OUTAGE WAS AN INVISIBLE CHARACTER.** The trading operator reported their
+  customer order link returning 404 while the same URL returned 200 to every probe. The link they were
+  distributing carried a **U+2060 WORD JOINER appended after the path**. **Neither URL nor route was
+  ever broken.** Two hypotheses were pursued and refuted first — see the corrections below.
+- ✅ **THE SCAN ROUTE IS RENAMED `/o/<slug>` → `/order/<slug>`, AND THE DECIDER SURVIVES.** Built, not
+  deployed. **The indirection is the requirement, not an accident**: a printed code must be able to
+  follow a truck to its custom domain once one is configured, which a code pointing straight at the
+  serving URL can never do.
+- ✅ **THE OUTREACH PROGRAMME IS A WORKING SURFACE.** 231 prospects, Hatches Up map and ordering
+  tracked separately, contact logging, and no automatic dates.
+- 🔴 **FOUR CORRECTIONS, three of them errors in briefs I was given rather than in this manual.** Read
+  them: the pattern in all three is asserting a state from an earlier read rather than from a current
+  one.
+
+## V12.1 — 3 September 2026 — A PUBLIC-ROLE RLS POLICY WAS SERVING EVERY DASHBOARD CREDENTIAL
+
+**Delta — a policy whose name described the service role was granted to `public`; the anon key printed in
+the page source returned every truck's dashboard token in one request. Closed the same day, swept, and
+the manual's own claim about which tables carry public-read policies found to be false. Plus the share
+card composed and wired, and two corrections to entries that would have misdirected the fix.**
+
+- 🔴 **THE PUBLIC ANON KEY RETURNED TEN LIVE `dashboard_token` VALUES IN ONE GET. OBSERVED, with the key
+  taken from the production client bundle.** Nine tables carried a policy named *"service role full
+  access"* whose `roles` was `{public}`, `cmd` was `ALL` and `qual` was `true`. **The service role
+  bypasses RLS by construction and never needed a policy at all** — the name describes something it
+  could not have been doing. RLS was enabled on all nine and anon held SELECT, INSERT, UPDATE and DELETE
+  grants, so RLS was the only thing standing between the anon key and those tables, and on these nine it
+  permitted everything.
+- 🔴 **THIS WAS ACCOUNT TAKEOVER, NOT A DISCLOSURE.** `dashboard_token` is a full, unexpiring,
+  unrotatable bearer credential and `dashboard_pin` is null everywhere and gates nothing, so the token
+  alone is the whole of the protection on the operator dashboard. **The four-column redaction list in
+  the dashboard API was working faithfully and was irrelevant, because this path does not go through the
+  API.** This is the second confirmed exit for the same credential — the analytics-store leak recorded
+  earlier is the first, and this one is shorter.
+- 🔴 **`with_check` WAS NULL ON ALL NINE, SO IT WAS A WRITE EXPOSURE TOO.** For an `ALL` policy declared
+  with only a `USING` clause, Postgres applies that expression as the check for INSERT and UPDATE.
+  **Anon could have written to `orders`, `payment_status` included, on a table carrying live money.** A
+  read exposure and a write exposure looked identical in `pg_policies` until `with_check` was read.
+- ✅ **CLOSED, AND VERIFIED BEHAVIOURALLY.** The exact request that returned ten tokens now returns
+  `401` / `42501 permission denied for table trucks`, and `id`-only and `name`-only return the same — so
+  **the whole table is denied to anon rather than the token column masked.** A column mask would have let
+  `select=id` through; it did not.
+- ⚠️ **`orders` REMAINS ANON-READABLE, DELIBERATELY, AND IT CARRIES PERSONAL DATA.** Its companion
+  public-read SELECT policy was kept because `postgres_changes` delivers a row only to a subscriber that
+  can SELECT it, and the dashboard and KDS order channels depend on that. **`customer_name`,
+  `customer_phone`, `customer_email` and free-text `notes` are therefore publicly readable on an ongoing
+  basis.** This is an open exposure, not a closed one. **OPEN.**
+- 🔴 **NO TOKEN ROTATION WAS PERFORMED. DECISION RECORDED, WITH ITS REASONING**, so that it is a decision
+  in the record rather than an omission someone later mistakes for an oversight. See the decision entry
+  in §12.
+- ✅ **THE SHARE CARD IS COMPOSED AND WIRED, AND THE DEFECT WAS NOT THE ONE THE MANUAL RECORDED.** The
+  host branch was correct about title, description, base URL and even the image's own alt text; only the
+  two image `url` string literals sat outside it. **OBSERVED from the production response.**
+- 🔴 **TWO ENTRIES IN THIS MANUAL WERE WRONG IN WAYS THAT WOULD HAVE MISDIRECTED THE FIX**, and are
+  corrected in place.
 
 ## V12.0 — 3 September 2026 — LAUNCH
 
@@ -4590,6 +4913,14 @@ Schedule-ingestion session. Rebuilds the operator schedule-import review into a 
 Follow-on polish-and-hardening session after V6. Enables Row Level Security across the database, completes the admin auth migration by removing ADMIN_SECRET entirely, fixes the discovery map data pipeline so events plot correctly, rebuilds the operator schedule-import review UX, fixes the soft-delete fetch gap that left deleted categories visible, and clears a long run of dashboard, manage, and settings UI inconsistencies. Adds a new Section 25 documenting the Village Foodie discovery map and scraper data pipeline. Key changes relative to V6:
 
 - **Row Level Security enabled** — RLS is now ON for every table in the public schema. Public-read SELECT policies on discovery_events, discovery_trucks, venues, trucks, truck_events, the menu/modifier/deal/slot tables, and orders (anon read needed for the customer order page and dashboard realtime). Sensitive tables (operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, kds_sessions, etc.) have RLS on with NO anon policy — the service role key used by all API routes bypasses RLS, so the app is unaffected while direct anon access is blocked. See Section 16.
+  - 🔴 **CORRECTED V12.1 — THERE IS NO SEPARATE PUBLIC-READ POLICY ON `trucks`. OBSERVED — an unfiltered
+    `pg_policies` read returned exactly one row for that table, the `public`/`ALL` "service role full
+    access" policy.** The claim above mattered because it was the reason to believe dropping the `ALL`
+    policy would leave realtime intact. It would not have: **the `ALL` policy was the only thing
+    delivering `trucks` realtime to anon AND the only thing leaking the token — one object doing both
+    jobs.** The customer-order-page half of the parenthetical is separately false — that page reaches its
+    data through server routes on the service role and opens no realtime channel. See the V12.1 changelog
+    and §35.
 
 - **ADMIN_SECRET fully removed** — the emergency password fallback flagged for removal in V6 is gone. Admin auth is now solely the session-based operators.is_admin check via verifyAdmin() on every admin route. No password form, no env var, no fallback. See Section 12.
 
@@ -5454,6 +5785,10 @@ Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders u
 
 ## Per-truck pricing suppression — `trucks.hide_pricing` (V11.3)
 
+> 🔴 **[V12.4 — READ THIS BEFORE THE SECTION.] THE MECHANISM BELOW IS CORRECT AND WAS RE-VERIFIED. THE TWO FACTS THIS MANUAL ATTACHED TO IT WERE BOTH FALSE BY 8 SEPTEMBER 2026.**
+> 🧪 **ZERO trucks now hold `hide_pricing = true`** (all 10 read live, 8 Sep 2026). Gusto is `false` — see the correction at §44. 🧪 `NEXT_PUBLIC_PRICING_PUBLISHED` was **not** the string `'true'` in production when `docs/pricing-suppression-report.md` was written, despite this manual asserting it was; it has **since been corrected, and Gusto now renders real prices**.
+> 🔴 **THE FEATURE IS THEREFORE DORMANT, NOT REMOVED.** The column, the context, the mask and the footnote key are all still in the code and all still work. **The next truck set to `true` re-arms every behaviour described below, including the open footnote defect.**
+
 **The rule: prices are visible when `PRICING_PUBLISHED` is true AND the truck is not individually suppressed.** 🔴 **ANDed, never overridden** — flipping the global env flag to `'true'` **cannot** reveal prices to a suppressed truck. That is the entire point; `hide_pricing` must never sit on the permissive side of an OR.
 
 Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) are exempt from both, as before.
@@ -5470,6 +5805,12 @@ Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) ar
 | **Context** (no provider) | **`true` (hide)** | "no provider" is a **programming error**, not a data state |
 
 🔴 **Fail toward the mistake that announces itself.** Over-masking shows "TBC" to someone who could have seen a price — visible, harmless, reported within a day. Under-masking shows a real price to an operator we promised not to — invisible to us, and the exact thing the feature prevents.
+
+✅ **[RE-VERIFIED V12.4 — the mechanism, as distinct from the facts about it.]** 🔎 The AND is `lib/pricing.ts:34`, `return PRICING_PUBLISHED && !hidePricing` — `hidePricing` is on the restrictive side, as documented. 🔎 The context default is `true` (hide) at `components/PricingPolicy.tsx:27`; the column default is `false`. 🔎 The provider is mounted once at `app/manage/[token]/page.tsx:659` with `truck.hide_pricing ?? false`, and **every price consumer is inside its subtree** — `BillingTab` (rendered `:849`) and `SettingsTab` (rendered `:847`), which between them hold all 13 masked call sites plus `FeatureGate`. 🧪 Executed against the real module: with the flag unset every monetary value returns `"TBC"` and the non-sensitive set passes through unchanged; with the flag exactly `'true'` and `hidePricing false`, real prices return. **No surface renders a price through the mask without the provider.**
+
+⚠️ **`maskPrice` (the global-only primitive) still cannot honour `hide_pricing`**, and `app/landing/features-pdf/route.ts:73` is its only consumer. 🔎 Admin (`app/admin/page.tsx:943`), the landing page (`app/landing/page.tsx:94`) and `/compare` render prices **unmasked and call no mask at all** — the first two as this manual already recorded, and **`/compare` is publicly reachable (HTTP 200 unauthenticated) with the real £29/£49 figures in its public JS chunk.** ⚠️ Recorded as a fact, not as a decision anyone made.
+
+🔴 **AND A STANDING RULE THIS SECTION EARNED.** Two claims here were written as **"verified live"** and both aged into falsehood inside a month, because a verified-live claim is **a claim about a moment, not a standing fact**. ⚠️ **Date every live verification, and re-read it before relying on it.** ⚠️ A further trap found the same day: `NEXT_PUBLIC_PRICING_PUBLISHED` is stored on Vercel as **type `sensitive`**, which is write-only — **its value cannot be read back by the API, by `vercel env pull`, or in the dashboard, by anyone.** The only ways to know it are to observe rendered behaviour or to overwrite it. **Do not write "the flag is set to X" in this manual again without saying how that was established and when.**
 
 ### 🔴 DEPLOY ORDER IS ONE-DIRECTIONAL — run the migration BEFORE deploying
 
@@ -8137,6 +8478,26 @@ and an audit that only greps will report them as absent when they may be on:
 ⚠️ **ESTABLISH THIS BEFORE DRAFTING THE PRIVACY CORRECTIONS IN §43**, or the corrections get drafted
 twice. **This subsection is the reason that entry is blocked, not a footnote to it.**
 
+## 🔴 NO `dashboard_token` ROTATION AFTER THE RLS EXPOSURE (V12.1)
+
+**Decided deliberately, against the recommendation, and recorded with its reasoning so that it reads as
+a decision rather than an oversight.** (Placed here, in Authentication and access, beside the credential
+it concerns; this manual carries no dedicated decisions section.)
+
+The case for not rotating: schema introspection was gated — the REST root returned `401` to anon — so
+table names could not be enumerated. Exploiting the leak required taking the key from the bundle,
+choosing to query the REST endpoint directly, and guessing table names blind. Ten trucks, one trading, a
+site with no profile. The order data is largely test rows from demo and dummy trucks.
+
+⚠️ **What this decision accepts:** tokens that were publicly readable for the life of the policy are
+treated as uncompromised on a probability judgement, not on evidence of no access. There is no access
+log that would settle it either way.
+
+🔴 **AND IT GETS MORE EXPENSIVE, NOT LESS.** Rotation changes every operator's dashboard URL — saved
+bookmarks, whatever is open on a KDS screen, and the URL the shipped native shells load. **Every truck
+onboarded from the outreach list adds another copy in circulation. The cheapest moment to rotate was the
+day this was found.**
+
 ## ✅ `/api/manage` DENIES BY DEFAULT (V11.44)
 
 🔴 **It initialised `requestingUserRole = 'owner'` and only NARROWED on a resolved session.** The role
@@ -9307,7 +9668,7 @@ truck_id   text  not null references trucks(id)        on delete cascade,
 ⚠️ **THE FIX IS NOT TO WEAKEN THE CONSTRAINTS.** Cascading is right for the case it was written for (tearing down a demo truck). The guard is a **refusal at the delete route**, not a schema change — see §41.
 
 ### Columns applied and live-verified, 6 August 2026
-- **`trucks.hide_pricing`** (boolean, default false) — §43.
+- **`trucks.hide_pricing`** (boolean, default false) — ⚠️ **[CORRECTED V12.4]** this pointed at **§43**, which is *Legal, email and domain*. Pricing suppression is **§4** (the mechanism) and **§44** (the commercial model).
 - **`trucks.print_trigger_mode`** (text, default `lead_time`, CHECK `on_confirmed|lead_time`) — §42. **Truck-level; the other four printing settings are device-local in Preferences.**
 - **`trucks.deletion_requested_at`** (timestamptz, nullable, no default) — §41. A **derived enforcement cache**; the account record is on `operators`.
 - **`operators.deletion_requested_at`, `deletion_due_at`, `deletion_requested_by`, `deletion_last_notified_at`** — §41.
@@ -9325,7 +9686,7 @@ truck_id   text  not null references trucks(id)        on delete cascade,
 
 > **Provenance: migration APPLIED and VERIFIED against the live schema by Dominic, 5 August 2026.**
 
-- **`trucks.hide_pricing`** — `boolean`, **NOT NULL**, **DEFAULT `false`**. Per-truck pricing suppression, ANDed with `NEXT_PUBLIC_PRICING_PUBLISHED` (§4). **Pizzeria Gusto set to `true`.**
+- **`trucks.hide_pricing`** — `boolean`, **NOT NULL**, **DEFAULT `false`**. Per-truck pricing suppression, ANDed with `NEXT_PUBLIC_PRICING_PUBLISHED` (§4). ⚠️ **[CORRECTED V12.4]** This read *"Pizzeria Gusto set to `true`"*. 🧪 **Gusto is `false`, and as of 8 September 2026 ZERO of the ten trucks hold `true`** — the only one that ever did was `tikka-tonic`. **The column is live and working; nothing is currently suppressed.**
 - ⚠️ **NOT NULL DEFAULT false means a stored `false` is indistinguishable from "never set".** Nothing needs to tell those apart today — but do not build a "has an admin reviewed this truck" feature on this column; it cannot answer that question. Same shape as `qr_code_style` above.
 - 🔴 **`/api/admin`'s trucks query is a hand-maintained explicit select and had to be extended.** `/api/manage` uses `select('*')`. **The deploy order is therefore one-directional — see §4.**
 
@@ -10119,6 +10480,15 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 > **LIVE-VERIFIED (V7.8; whatsapp_logs migration applied V7.7, Section 16)** — the four-bucket / allergen-routing path + the V7.7 once-per-day greeting flow were tested on-device this session. The Gusto auto-reply number (`07380736226`) is now whitelisted in Meta, so delivery succeeds. (Was PENDING V6.3 → partly resolved V7.7 → completed V7.8.)
 
 ## Platform compliance and tone
+
+> 🔴 **`WHATSAPP_LIVE` IS THE PRODUCT SWITCH, AND THIS MANUAL HAD NEVER RECORDED IT (added V12.3).** A
+> module-level boolean in `app/manage/[token]/page.tsx` decides whether the operator's WhatsApp control
+> renders live or greyed out behind a "Coming soon" badge. **It is not derived from the plan matrix and
+> nothing checks the two against each other**, so the flag and `lib/plan-features.ts`'s WhatsApp row are
+> **two halves of one statement that must be flipped together** — a comment at each now says so.
+> ⚠️ **A diagnostic written from this manual concluded WhatsApp was described as coming-soon in ZERO
+> places, partly because this flag was absent here.** It was the actual switch, and it was set to hide the
+> feature. **Both are `true`/live as of 4 September 2026.**
 
 Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). 🔴 **WhatsApp auto-replies are PRO+MAX; Messenger and Instagram are `coming_soon` and unbuilt.** ⚠️ **CORRECTED 20 August 2026 — this sentence read *"Instagram/Messenger are Pro; WhatsApp is Max only."*, which was wrong on both halves from the V8.9 fix onwards.** See §4 for the executed verification.
 
@@ -11450,7 +11820,7 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 
 `tikka-tonic` (id = slug), promoted from `discovery_trucks` row `0259e042-…` and linked via
 `hatchgrab_truck_id`. Cuisine `Indian`, contact `info@tikkatonic.com` (**lowercase — see below**),
-`plan: trial`, `trial_expires_at` 31 December 2026, `hide_pricing: true`, `active: true`,
+`plan: trial`, `trial_expires_at` 31 December 2026, `hide_pricing: true` ⚠️ **[NO LONGER TRUE — V12.4: 🧪 read `false` on 8 Sep 2026; this records the state at provisioning, not today]**, `active: true`,
 **`excluded: true`** (order-closed), `operator_id` NULL, no menu, no events. Van 1 with
 `kitchen_capacity: null`.
 
@@ -11728,6 +12098,52 @@ discovery_events default to visibility = 'public'; there is no status column. Th
 
 process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshots, analyzeEmailWithGemini, AND the scraper's inline hgPrompt still implement extraction independently. Long-term: migrate the Apps Script processing off Google Sheets, route the scraper through buildScheduleExtractionPrompt, then move all paths in-repo behind the shared utility (Section 27).
 
+
+# Venue creation, and how it stopped without a sound (V12.2)
+
+**The whole discovery pipeline still runs through Google Sheets.** The scraper reads the Sheet every
+run, appends new events and new venues to it, and mirrors both into the database. **The migration moved
+historical data; it did not retire the Sheet.**
+
+**Venue rows have two writers only:** the automated geocode-and-upsert inside the daily discovery scrape,
+and the one-time historical migration. **No API route and no admin page creates a venue.**
+
+🔴 **THE GEOCODER IS GEMINI, NOT A MAPS API.** No Google Maps, Nominatim or Mapbox call produces
+coordinates anywhere in this codebase. Two Gemini geocoders exist and they are not the same one:
+
+| | Runs on | Credential store | Verified |
+|---|---|---|---|
+| **Discovery venue creation** | GitHub Actions | Actions secret | ⚠️ **unverifiable from the repo** |
+| Operator event geocoder | Vercel | Vercel env | ✅ live call returns coordinates |
+
+⚠️ **THE DEPLOYMENT-VS-DASHBOARD CAVEAT HAS A THIRD CASE.** "Gemini geocoding works in production" is
+proven for Vercel and unproven for the scraper, **because the scraper's production is GitHub Actions and
+its secrets live somewhere else entirely.** A key confirmed present in one does not exist in the other.
+
+### What is established, and what needs logs nobody has read
+
+- ✅ **Creation stopped 11 June 2026.** Zero venue rows since. Observed.
+- ✅ **Scraping volume is unchanged.** 42 events created for 3 September, in line with August.
+- ✅ **The matcher has not changed since 12 June** and is not the cause. It keys on normalised name and
+  token containment, ranked by village agreement — **no postcode, no coordinates, no alias array.**
+- ✅ **102 of 133 unlinked forward venue names have an exact normalised match in `venues`, all
+  coordinate-bearing.** So the matcher is **not running**, rather than running and failing.
+- 🔴 **The cause is unresolved and needs two log sources outside the repository:** the daily scrape's
+  GitHub Actions run output, and the Apps Script execution log.
+
+🔴 **THE SCHEDULE-IMAGE PIPELINE IS NOT IN THIS REPOSITORY.** Photographs of schedules posted by trucks
+are analysed by AI and inserted onto the map — via **Google Apps Script bound to the Sheet**, referenced
+by the scraper's own comment and advertised on the landing page, but with no code here. **Its entry
+point, its model call and its run history are unreadable from the repo, and no database trace
+distinguishes its output from the scraper's.**
+
+⚠️ **NOTHING LOGS THE LINKING PASS.** The backfill writes to the console and to gitignored local files;
+it inserts no row into any table. The scrape run log records schedule scraping, not venue linking. **Its
+stopping was undetectable until someone queried the linked percentage by event date.** That query is the
+only monitor that exists, and it is not automated.
+
+⚠️ **The recovery and the root cause are separate jobs.** The manual backfill is a repair tool, not the
+normal path; running it links the events already in the database without touching the pipeline.
 
 # 26. Testing and dev environment
 
@@ -12857,10 +13273,17 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 - **QR poster truck name has no `maxWidth`.** `generateQRCode.ts:203` calls `fillText` without clamping, so a long name renders *underneath* the logo. Budget is 273px (down 16px after the re-crop); threshold ~20-25 characters. Live names already at it: "Noodle and Dumpling Bar", "Kezmet Turkish Kitchen". Passing `maxWidth` squashes rather than truncates — the correct fix is a measure-and-ellipsis loop.
 - ⛔ **DISCHARGED V11.43 — ALL 31 RASTER ASSETS SHIPPED (§36).** `minSdk 24` predates adaptive icons, so **both** the legacy PNGs and the adaptive foregrounds were required, and both were generated. ⚠️ **The background question below was settled on the evidence of what ships (white), and the master SVG still disagrees.** *Original entry retained:* ~~**Native icons blocked on `minSdkVersion`.**~~ Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
 - **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo. **Still open at V9.9** — re-reported in that session and merged here rather than duplicated.
-- **`BRANDS.HATCHGRAB.logo` (`lib/brand.ts:11`) still points at the Village Foodie file** with a now-false "replace when HatchGrab logo exists" comment. Zero consumers, so documentation-only harm.
+- **`BRANDS.HATCHGRAB.logo` (`lib/brand.ts:11`) still points at the Village Foodie file** with a now-false "replace when HatchGrab logo exists" comment. Zero consumers, so documentation-only harm. ✅ **ZERO CONSUMERS RE-CONFIRMED V12.1 — checked against all thirteen importers of that module, not assumed.** ⚠️ **ADDED V12.1: IT IS THEREFORE NOT THE CAUSE OF THE SHARE-PREVIEW SYMPTOM, AND FIXING IT WOULD HAVE CHANGED NOTHING** — the served image came from a string literal in the root layout. Two wrong values pointing at the same wrong file, one load-bearing and one inert, is exactly the shape that sends a fix to the wrong place. The comment is also false on its own terms: seven HatchGrab logo assets exist and four are exported twelve lines below it.
 - **`VF_LOGO_URL` (`email-config.ts:39`) is dead code** — declared, never imported.
 - **`public/logos/village-foodie-logo-v2.png` is 184,671 B** and renders on 6 customer surfaces; **`village-foodie logo-sharing.png` is 3,856,486 B**. Same class as the 7.95 MB apple-touch-icon already fixed. (Note: `public/logos/` also holds ~120 truck logos.)
-- **No branded og:image.** `generateMetadata` sets no image, so a hatchgrab.com share card shows the Village Foodie logo with alt text reading "HatchGrab Logo". Needs a 1200 × 630.
+- **No branded og:image.** ~~`generateMetadata` sets no image~~ 🔴 **CORRECTED V12.1 — IT SETS ONE, complete with width, height and alt. OBSERVED from the production HTML.** The symptom was never an absent tag falling back to a default; it was **a present tag naming the wrong file** — the root layout branched title/description/base-URL/alt on host but left the two image `url` literals unbranched. Anyone acting on the entry as written would have hunted for a missing tag and found a confident, complete, wrong one. ⚠️ **The alt-text detail in the original entry was correct and is the tell** — see §35 *"A WRONG VALUE DERIVED FROM A CORRECT VARIABLE READS AS CORRECT"*. **Fixed V12.1: `public/logos/hatchgrab-share-card.png`, 1200 × 630 — see §48.**
+
+- 🔴 **ADDED V12.2 — THE LOGO FAILURE HAD A SECOND, UNRELATED CAUSE, found later the same day on a
+  different surface.** The page guarded on `/^https?:\/\//`, but **109 of 153 stored logo values are
+  leading-slash relative paths** served from `public/logos/` — so the guard skipped **71% of logos**,
+  including the trading truck's. **The storage bucket was public and working the whole time.** ⚠️ **Two
+  different logo faults on one day, one a wrong value and one a too-narrow guard, and neither would have
+  been found by looking at the other's evidence.**
 - **`app/layout.tsx:20` duplicates the host check inline** instead of importing `isHatchGrabHost`.
 - **`globals.css:9 --accent: #E76F51`** — a third orange, zero consumers. Delete.
 - **`SplashScreen` is configured in `capacitor.config.ts` but `@capacitor/splash-screen` is not installed**; the iOS splash is 3 identical 2732 × 2732 scaffold PNGs.
@@ -14053,6 +14476,55 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   the payment route ceilings, the database housekeeping, and the tables with no migration behind them.
 
 
+### Added V12.1 — 3 September 2026
+
+- 🔴 **OPEN — `orders` is anon-readable and carries `customer_name`, `customer_phone`, `customer_email`
+  and free-text `notes`.** Retained deliberately because the dashboard and KDS realtime channels need the
+  SELECT gate. **The fix shape is a broadcast channel rather than `postgres_changes`** — the dashboard
+  uses the event as a doorbell and re-fetches through the service role; only the KDS sound reads the row
+  payload. **A design change, not a policy edit.**
+- ⚠️ **OPEN — seven tables retain an unused anon SELECT grant**, withheld by RLS default-deny. Revoke for
+  symmetry.
+- ⚠️ **OPEN — `discovery_trucks` contact columns are anon-readable** for all 176 rows via its
+  unconditional public-read policy.
+- 🔴 **OPEN — the operator dashboard has not been opened since the anon grants were revoked.** The
+  database change is live; no dashboard render has been observed. **The `trucks` realtime channel is gone
+  by design and cross-device config now falls back to the 60-second poll — the one change an operator
+  could notice.**
+- ⚠️ **OPEN — the share card is in the repository and not deployed.** Every check on it ran against a
+  local server.
+- ⚠️ **OPEN — no canonical link on any host**, and the page URL names the apex while the page is served
+  from `www`.
+- ⚠️ **OPEN — the consumer brand's declared share-image dimensions are still wrong** over a 3.68 MB file.
+- 🔴 **OPEN — the eventless-order path.** Unverified, now on the outreach critical path.
+- ⚠️ **OPEN — everything carried forward**, including the failed-capture silence, the payment route
+  ceilings, the database housekeeping, and the tables with no migration behind them.
+
+### Added V12.2 — 4 September 2026
+
+- 🔴 **OPEN — venue creation has produced nothing since 11 June.** Root cause needs the daily scrape's
+  GitHub Actions logs and the Apps Script execution logs. **The map degrades further every week this
+  stands.**
+- 🔴 **OPEN — nothing monitors venue linking.** The only signal is a hand-written query. **A pass that
+  stops silently will stop silently again.**
+- ⚠️ **OPEN — the recovery backfill has not been run.** 102 forward venue names would link immediately.
+  Dry-run first: the matcher's token-containment rule can pair a short scraped name with a longer venue,
+  and a wrong pin is worse than no pin.
+- ⚠️ **OPEN — `/order/` noindex is registered but unobserved.** Header rules apply only at the edge, so
+  it cannot be seen in dev. **Fetch it after deploying** — an indexable redirector is exactly what
+  happened last time a scan route moved.
+- ⚠️ **OPEN — the 55 new discovery rows are unverified.** One near-match was flagged as a likely name
+  variant of an existing row and created anyway, at the founder's direction.
+- ⚠️ **OPEN — `entity_type` and `do_not_contact` are unpopulated**, and the PECR constraint above is
+  unresolved.
+- ⚠️ **OPEN — `whatsapp_number` is retained but unrendered**, and `platform` likewise. Neither is dead
+  data; both are unreachable from the UI.
+- 🔴 **OPEN — everything carried forward from V12.1**, including: the operator dashboard unopened since
+  the anon grants were revoked; `orders` anon-readable with customer contact details; the
+  `discovery_trucks` contact columns anon-readable; seven tables holding unused anon SELECT grants; the
+  share card never seen in a WhatsApp bubble; and **the eventless-order path, still unverified and still
+  on the outreach critical path.**
+
 # 28. Anti-scraping and rate limiting (V6.3)
 
 Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
@@ -14556,6 +15028,19 @@ join, so the count does not affect any conclusion drawn from it.
 
 **Open.** §25, §33, §27, §46.
 
+## 🔴 DISCOVERY DATA — WHAT MOVED ON 8 SEPTEMBER 2026 (V12.4)
+
+**Recorded here because these rows sit under this manual's §32/§33 model even though the pipeline that writes them is documented in `docs/scraper-reference-manual.md` (V1.2 §8–§9). Read that for the mechanism; this is the delta.**
+
+- 🧪 **`venues` 574 → 558.** 15 venue merges applied (the CERTAIN tier, ≤500 m), **16 loser rows deleted** — set 1 dropped two — and **125 `discovery_events` repointed to the keepers**. Verified after the fact: 0 of 16 losers remain, 15 of 15 keepers remain, 0 events point at a loser. 🔴 **The repointing is what proves it was a deliberate merge and not a delete** — `discovery_events.venue_id` is `ON DELETE SET NULL`, so a bare delete would have orphaned all 125. **No code path in this repository can do this; it was run by hand.**
+- 🔴 **NOT applied and still open:** the PROBABLE tier (19 merges, 0.5–5 km) and all four REFUSED sets (`foodPark`, `The Common`, `Off The Beaten Truck`, `The Street`, the 122 distance-rejected pairs, the 43 `Village Hall` rows).
+- 🧪 **6 `discovery_events` rows removed** as a double-assignment on the `offthebeatentruck.co.uk` / Saffron Walden source (the same trucks written against two venue strings for 2026-09-10). ⚠️ **Attribution is OPEN** — the surviving rows for those trucks predate the event and a venue-string difference alone would produce the same Sheet-vs-DB gap. **The gap is proven; its cause is not.**
+- 🔴 **THE TOMBSTONE LINK — READ THIS BEFORE ANY SHEET-MIGRATION WORK.** Those six rows stay deleted **only because the Google Sheet still lists them and the Sheet is the scraper's dedup set.** **After step 4 of the Sheet-migration plan — dedup sourced from `discovery_events` — they stop being suppressed and return on the next scrape. Deleting them again achieves nothing.** A suppression table or a `deleted_at` is a **precondition** of that step, not a follow-up.
+- 🧪 **The Pimp My Fish pack: 4 rows inserted, 5 REFUSED** by `ON CONFLICT (event_date, truck_name, venue_name) DO NOTHING`, because a `URL:` scrape had written the same natural key nine seconds earlier. **All nine events exist; nothing was deleted.** The pack's own `00-verify-before.sql` contained the check that would have caught it. 🔴 **UNRESOLVED:** a reported deletion of **4 PMF duplicates is not present in the data** — all four rows are live with `created_at = updated_at = 2026-09-07T10:52`. **Do not assume they are gone.**
+- 🧪 **Graduated-truck visibility deliberately reversed for `Real Thai Food`** — its `discovery_trucks` row is `visibility = public`, `show_on_vf = true`, `show_on_hg = true` while `hatchgrab_truck_id = real-thai-food`. **`Tikka Tonic` left public by the same decision.** ⚠️ **Both rows also carry `excluded = true`, which is a gate in its own right — whether either truck actually reaches the public map was NOT verified. OPEN.**
+- 🔴 **The unlinked backlog is the majority and nothing works it down. 🧪 2,237 of 4,301 `discovery_events` (52.0%) have `venue_id IS NULL`.** Pass A writes rows with no `venue_id`; linking is a separate emit-only tool (`scripts/backfill-venue-id.ts`) that **runs only when a human runs it**. The backlog grows with every scrape.
+- 🔴 **`discovery_events.updated_at` IS NEVER MAINTAINED.** 🧪 **Zero of the 4,301 rows have `updated_at ≠ created_at`** — including the 125 rows repointed by today's merge. **The column is written at insert and never again. It cannot date anything, and no feature may assume it does.**
+
 # 33. Discovery / Visibility / Customer-Trucks-on-VF model + July 2026 data-integrity + DEPLOY-COUPLING LANDMINES
 
 Builds on **§32** (the shadow ↔ operator linking architecture — read it first; not duplicated here). §32 is the *why the shadow exists*; this section is the *end-to-end model, the July 2026 data-integrity work, and the strict deploy coupling for `ipad-native-app`*.
@@ -14649,6 +15134,155 @@ from the per-row tickboxes.
 placement rather than hiding a truck — and it locks a non-admin operator out of `/dashboard`, the KDS
 and the native app while `/manage` does not gate on it at all. **The admin branch of `/dashboard` runs
 first, so an admin cannot reproduce the lockout.** Hiding is `excluded` + the `show_on_*` pair.
+
+# Operator outreach from the discovery list (V12.1)
+
+> Placed here, after the discovery and visibility material (§32–§33), as the delta directed. Kept as an
+> unnumbered heading to avoid renumbering every following section — the fragile-reference risk the delta
+> itself flags.
+
+**Prospecting is run against `discovery_trucks`, and the numbers below are OBSERVED from a live count,
+not estimated.** They decide what the tracking surface is for.
+
+| | |
+|---|---|
+| Rows in `discovery_trucks` | **176** |
+| With a `contact_email` | **52** |
+| With a `phone` | **69** |
+| With a `mobile` | **15** |
+| With an `order_url` | **62** |
+| Already linked to a HatchGrab truck | **4** |
+| Excluded | **56** |
+| **Not excluded AND has an email — the actual reachable list** | **47** |
+
+🔴 **47 OF 176 IS THE FINDING.** The assumption going in was that the contact data was largely present.
+**It is not** — so the tracking surface is a **contact-capture tool with a list attached**, not a
+mail-merge view over data already held. Building it as a display of existing emails would produce a page
+that is empty for three quarters of the list.
+
+✅ **THE COMPETITOR TAG DERIVES FROM `order_url` AND MUST NOT BE TYPED.** **58 of the 62 ordering URLs are
+`*.hatchesup.app` subdomains**; the remaining four are the trucks' own domains. **The host is the
+signal — read it, do not enter it by hand ninety times.** ⚠️ **CORRECTED V12.1 (was "59 … the remaining
+three") — the backfill OBSERVED 58 Hatches Up, 4 own-domain, 114 null, 176 total.**
+
+🔴 **CORRECTED V12.2 — `order_url` DOES NOT RECORD THE CURRENT PLATFORM; IT RECORDS THAT A HATCHES UP
+ORDERING PAGE EXISTS FOR THIS TRUCK, captured in an earlier, differently-shaped scrape.** (The delta that
+carried this correction quoted the section as describing `outreach_prospects.platform` as the truck's
+"current platform" and the split as "59 … three"; **neither string was present to correct** — the count
+was already fixed above, and the "current platform" wording does not appear — so this is recorded as new
+per the delta's own instruction.) Established by reconciling `order_url` against a fresh capture of the
+Hatches Up map: **the 58 with a hatchesup `order_url` and the 19 trucks currently showing online orders
+open are two partially-overlapping populations, and neither contains the other** — 29 of the 58 are
+absent from the new capture, only 10 of the 19 hold a hatchesup `order_url`, and 4 of the 19 had no
+discovery row at all. 🔴 **A tag derived from an artefact's existence is not a tag for the behaviour that
+artefact implies** — the ordering page persists after the truck stops using it.
+
+🔴 **STORE THE PLATFORM AS TEXT, NOT AS A BOOLEAN.** A `true/false` competitor flag cannot distinguish
+*not on that platform* from *not yet known*, and the first truck found on a third platform needs a new
+column. **This manual already carries the cautionary instance: one column written by two different
+questions, with nothing on the row saying which, defeating the column's whole purpose.**
+
+🔴 **CONTACT HISTORY IS A LOG, NOT A TIMESTAMP.** A single last-contacted column records that a truck was
+contacted but not how many times, so it cannot stop a fourth email. **The log is the thing that prevents
+the failure the page exists to prevent.** The next-action date is a separate, single value.
+
+🔴 **OUTREACH DATA MUST NOT HANG OFF `discovery_trucks`.** That table carries an unconditional public-read
+SELECT policy to `public`, so its `contact_email`, `phone`, `mobile` and `notes` are already anon-readable
+for all 176 rows. **Outreach notes and contact history belong in their own table with RLS on and no anon
+policy.** ⚠️ **The existing exposure of the contact columns on that table is a separate open item.**
+
+⚠️ **NO WHATSAPP FLAG EXISTS ANYWHERE ON THE DISCOVERY SIDE.** `phone` and `mobile` exist; nothing records
+whether a number is on WhatsApp. The onboarded-truck column that does this covers onboarded trucks only.
+**That field is new data entered by hand, not data already held** — the one column on the planned page
+that is not derivable.
+
+### First outreach sent (V12.1)
+
+**Tikka Tonic** — a Hatches Up truck, introduced by a third party, never met or spoken to beyond a brief
+WhatsApp exchange. Email sent 3 September with the finalised pricing, the features list attached, four
+months free, and a year-one saving figure quoted **inclusive of the free months** so that the calculator
+reproduces it.
+
+⚠️ **THE EMAIL DELIBERATELY CONTAINS NO SIGN-UP LINK.** A hand-held handover — create the truck, build
+via the dashboard token, **confirm the first event**, create the operator last — puts a confirmed event
+in place before anyone can order, which is the existing mitigation for the eventless-order path. **A
+sign-up link routes a prospect down the self-serve wizard instead, where every step after naming the
+truck is skippable and the review screen congratulates a truck that cannot trade.**
+
+🔴 **OUTREACH MANUFACTURES INSTANCES OF THE EVENTLESS-ORDER PATH.** A newly recruited truck is by
+definition a truck with no event for most dates. **That path remains the highest-priority unverified
+claim in this manual and it is now on the critical path of the outreach programme, not adjacent to it.**
+
+# The outreach surface as built (V12.2)
+
+> Replaces the V12.1 build status above; the counts in the table at the top of this section still stand.
+
+**231 prospects, one row per discovery truck.** 55 were created from a Hatches Up map capture on
+4 September, taking the discovery list from 176 to 231. ⚠️ **Those 55 rows carry a name and nothing
+else, are unverified as distinct businesses, and appear on the public Village Foodie site as well as
+the outreach page.**
+
+### What is tracked, and why each is shaped as it is
+
+- **`hu_map` and `hu_ordering`** — two nullable booleans, because **map presence and ordering use are
+  different facts** and one column cannot hold both. Backfilled to 121 and 19 rows respectively.
+  🔴 **Nothing is set to false anywhere.** The source is one map viewport over a seven-day window, so
+  **absence from it is never evidence against**, and a truck trading fortnightly reads identically to
+  one that has never used ordering. **NULL means nobody checked; false would mean checked and absent;
+  ticking writes true and unticking writes NULL, never false.**
+- **`platform`** — kept as text, unchanged, no longer surfaced. It records what the earlier scrape
+  found and is not superseded.
+- **`stage`** — five stored values, relabelled for display only. `contacted` and `replied` are kept
+  distinct deliberately; collapsing both to one label would have made them unpickable in the select.
+- **`contact_name`, `do_not_contact`, `entity_type`** — added 4 September. `entity_type` is stored but
+  not currently rendered.
+- **The contact log** — one row per touch, with channel, direction, kind and the message body.
+  **Recording the message is not sentiment: it is the record of what price and what offer a given truck
+  was quoted**, which nothing else holds.
+
+### 🔴 NO DATE IS EVER SUGGESTED OR WRITTEN AUTOMATICALLY
+
+The original design computed the next action from the count of outbound contacts. **It was removed the
+first time it met a real prospect.** Two failures, and the second is the instructive one:
+
+1. An accidental double-click logged two contacts, so a first approach counted as a third and the
+   suggestion jumped a month out.
+2. ⚠️ **More fundamentally, an outbound count cannot distinguish chasing silence from following up an
+   engaged prospect, and it counts an email and a WhatsApp about the same thing as two attempts rather
+   than one.** The interval was answering a question the data could not support.
+
+**`next_action_at`, the picker and the overdue flag remain. Only the automation is gone.**
+
+### WhatsApp: one number, one tick, and a hint that is not a negative
+
+The live customer-facing call button derives WhatsApp availability from **`accepted_methods` containing
+the word plus a `447` mobile-format check** — there is no boolean anywhere for discovery trucks, and the
+onboarded-truck column covers onboarded trucks only. That derivation was **extracted into a shared pure
+function so the public button and the outreach page cannot disagree**, characterised over 150 cases
+before the extraction, with both required mutations demonstrated to fail the test.
+
+⚠️ **The scraped hint is sparse and its silence means nothing** — 27 rows carry it, while working
+mobiles with no tag are common. It was subsequently **taken as confirmation for the 30 rows that had
+it**, so those are no longer distinguishable from ones personally verified. **`whatsapp_number` is
+retained but no longer rendered; the tick sits beside the phone.**
+
+### Reaching operators — the constraint that shapes the programme
+
+🔴 **UNDER PECR, SOLE TRADERS AND UNINCORPORATED PARTNERSHIPS ARE INDIVIDUAL SUBSCRIBERS, NOT CORPORATE
+ONES** — and food trucks are overwhelmingly one of those. Marketing email to them requires consent or
+the soft opt-in. **Personal-domain addresses are individual subscribers regardless of who uses them for
+work**, and a large share of the stored emails are personal domains. **The ICO treats messaging apps as
+in scope**, so cold WhatsApp marketing requires prior opt-in.
+
+⚠️ **This inverts the intuitive priority order.** Email-plus-WhatsApp is the highest-risk combination,
+not the warmest. **A live telephone call is the more available channel for a sole trader**, subject to
+TPS and CTPS screening.
+
+🔴 **OPEN — this is recorded as a constraint, not as resolved advice, and it is not legal advice.** The
+`do_not_contact` flag exists because honouring an objection is required; `entity_type` exists because
+which rule applies depends on it. **Neither is populated.**
+
+---
 
 # 34. Closing note
 
@@ -16608,7 +17242,89 @@ components, and now a row label.
 ONE-DIRECTIONAL"*, which already names the row-name key as one of four ways the guard goes quiet. This
 entry is the general renaming rule; §4 owns what the checker can and cannot see.
 
+## 🔴 A POLICY'S NAME IS NOT ITS SCOPE, AND AN OMITTED `TO` CLAUSE DEFAULTS TO PUBLIC (V12.1)
+
+`CREATE POLICY … FOR ALL USING (true)` with no `TO` clause grants to `PUBLIC`, which includes `anon` and
+`authenticated`. **Nine policies named *"service role full access"* were doing the opposite of what their
+name said, in the only direction that matters.** Nothing errored, nothing warned, and the name is what
+every subsequent reader would have trusted.
+
+⚠️ **THE SWEEP STATUS IS THE ENTRY.** Per this manual's own maintenance rule, a class entry is not
+complete until the codebase — here, the database — has been swept for other members and the result
+recorded.
+
+**SWEEP: CLOSED for the credential leak — 9 members found, all 9 remediated. OPEN for anon grants — 7 of
+9 retain an unused anon SELECT grant, withheld by RLS default-deny, a tidy-up rather than a live risk.**
+
+The nine, and what each got:
+
+| Table | Remediation | Anon after |
+|---|---|---|
+| `trucks` | policy dropped, all grants revoked | `401` — table denied |
+| `orders` | `ALL` policy dropped, write grants revoked, companion SELECT policy kept | readable **by design** — realtime gate |
+| `messages`, `order_counters`, `item_overrides`, `category_stock`, `collection_times`, `slot_capacity`, `referrals` | policy dropped, write grants revoked | `200` with **zero rows** — RLS default-deny |
+
+🔴 **TWO REMEDIATION SHAPES ARE VISIBLE IN THE RESULT AND THE DIFFERENCE IS DIAGNOSTIC.** A revoked grant
+returns `401` and refuses the request before any row is considered. A dropped policy with the grant intact
+returns `200` with an empty array — **accepted, and withholding.** `slot_capacity` going from 1,438 rows
+to zero at HTTP 200 is the clearest single proof the drop took effect. ⚠️ **An empty array at 200 is
+indistinguishable from an empty table**, which is the recorded family this belongs to: an empty result is
+not evidence of absence.
+
+⚠️ **`with_check` MUST BE READ, NOT INFERRED FROM `qual`.** A null `with_check` on an `ALL` policy
+inherits the `USING` expression, so a policy that looks like a read grant is also a write grant. The
+`pg_policies` query that finds these must select `with_check` or it under-reports the severity by half.
+
+⚠️ **RLS CANNOT MASK A COLUMN, AND REALTIME SHIPS THE WHOLE ROW.** No table policy can both deliver
+`trucks` change events to anon and withhold `dashboard_token`. **Keeping realtime immediacy while closing
+the leak is a design change — move the credential off the table, or stop subscribing anon to it — not a
+policy that can be written.** The chosen resolution was to close it and accept the existing 60-second
+poll.
+
+⚠️ **AND THE MIGRATION DIRECTORY DOES NOT CONTAIN THESE POLICIES.** Neither the offending nine nor the
+companion `orders` policy appears in any `.sql` file in the tree; all were applied by hand in the SQL
+editor. **A grep of the migrations directory is not an inventory of the database** — already recorded for
+columns and triggers, now recorded for policies.
+
+## ⚠️ A STATEMENT THAT REPORTED SUCCESS IS NOT A REQUEST THAT FAILS (V12.1)
+
+`DROP POLICY` and `REVOKE` both returned success. **Neither is evidence that the leaking request stopped
+leaking.** `REVOKE … FROM anon` does not remove a privilege held by another route — a grant to the
+`PUBLIC` pseudo-role, a role anon inherits, or a default-privileges rule that re-grants — and in every
+such case the revoke reports success having changed nothing. **The verification is re-issuing the exact
+request that leaked.** Belongs with the existing family: a fix in the repo is not deployed; a clean log is
+not verification.
+
+## ⚠️ A WRONG VALUE DERIVED FROM A CORRECT VARIABLE READS AS CORRECT (V12.1)
+
+The share card's `og:image:alt` was built from the branched site-name variable, so the page labelled a
+Village Foodie image *"HatchGrab Logo"* — **with the brand name correct, from the correct source, over
+the wrong file.** Everything a reader would check to confirm the object was host-aware was right. Only
+the two values nobody re-reads were wrong, precisely because the surrounding code was so clearly
+branded. **Related to, but sharper than, the recorded comment-asserting-a-match class: there the comment
+was wrong, here the derivation is right and the thing it describes is wrong.**
+
+## ⚠️ WHEN THE SYMPTOM IS A THIRD-PARTY RENDER, THE MEASUREMENT STOPS AT THE SERVER (V12.1)
+
+The share-preview symptom was observed in WhatsApp. **WhatsApp cannot be driven, so the render itself is
+unobservable and the furthest a measurement reaches is the HTML the crawler is served.** Every check on
+this workstream was made against the production response with a crawler user-agent — correct, and still
+short of the rendering client. ⚠️ **Preview caches keep an old card alive against a URL already shared,
+so a corrected card verified at the server may still not be what a recipient sees.** A fresh query string
+is the cheap test.
+
+
 ---
+
+**🔴 A URL CAN CARRY A CHARACTER NOBODY CAN SEE (V12.2).** A customer-facing order link returned 404 for the operator and 200 for every probe. The difference was a **U+2060 WORD JOINER** appended after the path — invisible in every surface that displayed it, fatal to an exact-match route. ⚠️ **THE MEASUREMENT THAT WOULD HAVE FOUND IT IS NOT THE ONE ANYONE RUNS.** Fetching "the URL" means fetching a *retyped* URL, which silently removes the fault. **The URL as the reporter actually holds it is the artefact to test** — pasted verbatim, never trimmed, never normalised. Same family as measuring at the rendering client: the copy under test must be the copy in the field. ⚠️ **Adjacent members of the same class, all producing one person's 200 and another's 404:** a trailing slash, `www` versus the apex, a trailing space, a smart quote from a word processor, a zero-width space from a CMS. 🔴 **AND THE CORRELATION THAT LOOKED CAUSAL WAS NOT.** The outage was reported hours after RLS grants were revoked in production, on a day when nothing else changed. Two hypotheses were built on that timing and **both were refuted at the read.** **A change and a symptom on the same day are not a cause and an effect, and the cost of assuming otherwise is measured in a trading truck's downtime.**
+
+**⚠️ THE CUSTOMER ORDER PATH IS SERVICE-ROLE THROUGHOUT, AND THIS IS LOAD-BEARING (V12.2).** Traced end to end during the outage: the scan decider, the events route, the menu route, the slots route, and order submission via the `place_order_atomic` RPC **all run on the service-role client.** The order page itself constructs no Supabase client and opens no realtime channel. 🔴 **SO NO RLS POLICY AND NO TABLE GRANT CAN AFFECT CUSTOMER ORDERING.** The service role bypasses both. Record this so the next outage does not spend an hour on the same hypothesis. **OBSERVED — by code trace and by anonymous live probes returning menu, slots and `ordering_available: true`.** ⚠️ **The corollary is a real constraint on future work:** anything that moves a customer-path read onto the anon key inherits every policy and grant on that table, and the seven tables whose policies were dropped return an empty array with HTTP 200 rather than an error.
+
+**🔴 A PREMISE IN A BRIEF IS A CLAIM, AND CLAIMS NEED READS (V12.2).** A prompt asserted that no custom-domain column existed on `trucks` and no domains table existed. **Both halves were wrong**: `custom_domain`, `custom_domain_verified_at`, `custom_domain_confirmed_at` and `custom_domain_last_ok_at` are columns on `trucks`, read directly by the redirect target module. The assertion came from a schema listing read earlier the same day and remembered rather than re-read. ⚠️ **A SCHEMA DUMP IS A PHOTOGRAPH, NOT A SCHEMA.** Columns are added by hand in this project, outside the migration directory, so a listing is accurate for the moment it was taken and for nothing after. 🟢 **The correct behaviour is recorded here because it happened: the brief's premise was contradicted in the report rather than worked around.** A task that finds its instructions factually wrong should say so at the top and say what is true instead.
+
+**⚠️ A REPORT DESCRIBING A MIGRATION IS NOT THE DATABASE (V12.2).** Twice in one day a report stated a migration's applied state incorrectly — once claiming an unapplied file was unapplied when it had been applied by hand, once inferring a column was nullable **because every row read NULL.** The second is the empty-result trap in a new dress: **uniform data is not a schema fact.** 🟢 **THE RESOLUTION THAT WORKED IS A CAPABILITY PROBE.** Where `information_schema` is unreachable — PostgREST refuses that schema, and there is no direct Postgres connection in the agent environment — the reliable test is to **attempt the operation and read the outcome**: select the column and see whether it errors; write a NULL and see whether it is rejected. **A probe measures the database; a file and a row count do not.** The outreach route now ships this pattern, degrading its UI to disabled controls when a column probes absent.
+
+**⚠️ A NEW PATH PREFIX INHERITS NOTHING — AND A PREFIX SWEEP CAN OVER-REACH (V12.2).** Recorded at V11.51 when the scan target moved outside `/trucks/` and silently lost both its noindex header and its rate limiting. Re-encountered on the rename to `/order/`, and this time both were registered in the same change. 🔴 **THE NEW HALF OF THE LESSON IS THE OPPOSITE FAILURE.** `/order/` has a deeper child — `/order/<id>/manage`, a customer-facing per-order page — so registering the rate limiter with `startsWith('/order/')` would have **silently pulled a page into a 60/min limiter it had never been subject to.** The registration is deliberately **leaf-only**, keeping the metered scope identical to what `/o/` had. **A prefix rule is a claim about every path beneath it; count the children before writing one.**
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -16932,6 +17648,22 @@ no-alpha requirement.**
   and `purchaseCtaAllowed()` says so by construction rather than by enumeration.
 - ✅ **Android is ahead of iOS on exactly one row: it has a push token and iOS still has none.**
 
+
+## ⚠️ NO ADMIN SURFACE CAN BE VERIFIED BEFORE THE OPERATOR SEES IT (V12.2)
+
+Across nine consecutive tasks on the outreach page, **an agent session as an admin was never obtainable**.
+The sole admin is the founder's own account; there is no test credential; minting a session via the
+service role is blocked by policy.
+
+**The consequence is structural, not incidental:** every admin-surface build ships to the founder's
+localhost having been exercised only against stubbed network data. **No write from the outreach page was
+confirmed to reach the database by anything other than the founder clicking it.**
+
+🟢 **The honest posture that emerged is worth keeping:** drive the real component in a browser with the
+network intercepted, capture the payloads, and **state plainly that the data behind them is not the live
+tables.** ⚠️ **It is tolerable on a surface only the founder uses. It would not be on an operator
+surface** — and it is the same gap already recorded for the operator screens that shipped without a
+device touching them.
 
 ## VERIFICATION STATUS (V9.3, 28 July 2026)
 
@@ -19891,7 +20623,14 @@ and real screenshots are in place. **The contact page contains no prose dash at 
 ### Kitchen-app claims now name iPhone
 
 All four read **"iPhone, iPad and Android kitchen app"** — the matrix row, its `ROW_FEATURE_MAP` twin,
-the hand-written Starter bullet, and footnote 3. ⚠️ **Footnote 3 needed REWRITING, not insertion:**
+the hand-written Starter bullet, and footnote 3.
+
+> ⚠️ **THIS SENTENCE WAS FALSE BETWEEN 1 AND 5 SEPTEMBER 2026 AND IS TRUE AGAIN — READ THE ROUND TRIP, NOT
+> THE ENDPOINT (V12.3).** On 1 September the row was **split in two** (`iPhone and iPad kitchen app`, ✓✓✓,
+> plus `Android kitchen app`, coming-soon ×3) because iOS was approved and Android was still in review, so
+> one row could not state both truthfully. On 5 September **Android shipped** and the two were re-merged.
+> 🔴 **This entry sat here unchanged through both, which is exactly the staleness V12.3's headline
+> correction is about: a report written from this section alone would have been wrong for four days.** ⚠️ **Footnote 3 needed REWRITING, not insertion:**
 *"Tablet not supplied… runs on any tablet"* would have listed a phone app inside a tablet footnote. It
 became *"Device not supplied… any phone or tablet"*.
 
@@ -21149,13 +21888,25 @@ above), so this wants a **proper pass over the terms**, not a paragraph inserted
 
 **`CARD_FEES` in `lib/plan-features.ts` is the single structured source** — `{pct, pence}`, **not display strings, so payments code can read the numbers**: online **1.5% + 20p** standard UK cards; in-person **1.4% + 10p** UK/EEA cards; **phone/tablet contactless carries an ADDITIONAL 10p per authorisation**; non-UK/EEA costs more. ⚠️ **Figures are from secondary sources, NOT `stripe.com`** — the copy is hedged accordingly.
 
-**`trucks.hide_pricing` is ANDed with `PRICING_PUBLISHED`**, wired via a React context **so a NEW price added later is masked without its author knowing the truck exists**. 🔴 **The defaults are asymmetric on purpose:** the column defaults **false** (visible), the context defaults **TRUE** (hide) — **because over-masking announces itself and under-masking does not**. `NEXT_PUBLIC_PRICING_PUBLISHED` is **TRUE in production**; **Gusto has `hide_pricing = true` and reads TBC, verified live**.
+**`trucks.hide_pricing` is ANDed with `PRICING_PUBLISHED`**, wired via a React context **so a NEW price added later is masked without its author knowing the truck exists**. 🔴 **The defaults are asymmetric on purpose:** the column defaults **false** (visible), the context defaults **TRUE** (hide) — **because over-masking announces itself and under-masking does not**.
+
+> 🔴 **[CORRECTED V12.4 — THE SENTENCE THAT USED TO END THIS PARAGRAPH WAS WRONG IN BOTH HALVES.]** It read: *"`NEXT_PUBLIC_PRICING_PUBLISHED` is **TRUE in production**; **Gusto has `hide_pricing = true` and reads TBC, verified live**."*
+> - 🧪 **Gusto's `hide_pricing` is `false`**, and **zero of the ten trucks now hold `true`** (read live 8 Sep 2026). The one truck that ever carried it was **`tikka-tonic`**, and it no longer does. **Gusto was never the suppressed truck by the time anyone acted on this sentence.**
+> - 🧪 **`NEXT_PUBLIC_PRICING_PUBLISHED` was NOT the string `'true'` in the production build** when `docs/pricing-suppression-report.md` was written — which is why Gusto rendered TBC with `hide_pricing = false`, a state this manual's account could not explain. **It has since been corrected and Gusto now renders real prices.**
+> - 🔴 **Both were recorded as verified live, and both aged into falsehood.** Neither was wrong when written; both were wrong when read. **See the standing rule at §4.**
+> - ⚠️ **The value cannot simply be re-checked**: the variable is stored on Vercel as type **`sensitive`**, i.e. write-only — unreadable by API, CLI or dashboard. **Behaviour is the only evidence available.**
 
 ⚠️ **OPEN — literal price copies outside `PLAN_META`:** **13** copies of £29/£49 including `VAN_ADDON_PRICE` **as raw NUMBERS invisible to a grep**; **£1,500/£2,000 six times with no owner**; **0.99% nine times**. `findPlanParityViolations` guards **feature rows only**.
 
 ## 🔴 hide_pricing masks footnote 2 ONLY — and it is keyed on a magic string (V11.5, OPEN)
 
-**The suppression is `f.number !== '2'`.** So `hide_pricing` hides the **online-payments** footnote and **nothing else**. 🔴 **Gusto has `hide_pricing = true` and therefore reads TBC for plan prices — while footnote 1's real card figures render unmasked on their Billing tab.**
+**The suppression is `f.number !== '2'`.** So `hide_pricing` hides the **online-payments** footnote and **nothing else**.
+
+🔴 **[V12.4 — STILL OPEN, BUT NOW DORMANT. NOT FIXED.]** 🔎 The key is still there, at **`app/manage/[token]/page.tsx:11721`** — the single occurrence, and note that **the guard and the array it keys into live in different files** (the "DO NOT RENUMBER" warning is at `lib/plan-features.ts:529-531`), which is the coupling itself. 🧪 Executed against the real `FOOTNOTES` module: **6 footnotes, numbers 1–6**; footnote **1** carries `0%`, **`1.4%`** and **`10p`**; footnote **2** carries `0.99%`, `1.5%`, `20p` **and is the only one masked**. **So the defect is exactly as described and unrepaired.**
+
+⚠️ **It bites nobody today only because 🧪 no truck has `hide_pricing = true`.** **Dormant is not fixed.** The moment one truck is suppressed, that operator reads TBC for plan prices while footnote 1's real card figures render in full on the same tab.
+
+⚠️ **AND THE NAMED VICTIM WAS WRONG.** This entry said *"Gusto has `hide_pricing = true`"*. 🧪 Gusto is `false`; the only truck that ever held the flag was **`tikka-tonic`**, which no longer does.
 
 ⚠️ **And the key is the footnote's NUMBER, as a string.** **Renumbering or reordering the footnotes would silently unmask everything** — no error, no type failure, no test. Same family as every other magic-string coupling in this manual: the guard names a position, not a meaning. **OPEN**, recorded in §27.
 
@@ -21720,9 +22471,36 @@ columns on that row were cleared before the deploy.
 full Max feature set. **The gate on that wizard is FEATURE ACCESS, not customer status** — "it is
 Max-only" was never a defence, and on trial it is not even a restriction.
 
-**A daily DNS lookup writes state. No email is sent on a failure**; the admin view is how this is read.
+~~**A daily DNS lookup writes state. No email is sent on a failure**; the admin view is how this is read.
 ⚠️ **Deliberate, and the trade is stated: a table only works when someone opens it**, so the first anyone
-knows of a breakage is still the operator getting in touch.
+knows of a breakage is still the operator getting in touch.~~
+
+⛔ **BOTH HALVES SUPERSEDED V12.3, AND THE SECOND ONE COST A TRADING TRUCK ELEVEN HOURS.**
+
+🔴 **THE CRON IS NO LONGER THE ONLY WRITER OF `custom_domain_verified_at`.** It was, and **there was no
+manual re-check anywhere in the codebase** — so the first operator through the feature had DNS resolving,
+a certificate issued and the domain connected to the project, and **a 404 until the next morning**, because
+the page is gated on that column. **Opening the setup box now runs the same check the cron runs** — one
+lookup extracted to a shared module with two callers, rate-limited per truck. ⚠️ **It fires on OPENING THE
+BOX, not at wizard completion:** an operator who has just added a record will refresh, and a single check at
+completion nearly always fails on propagation and looks broken.
+
+🔴 **AND FAILURES NOW EMAIL ADMIN — ONCE PER TRANSITION, NEVER THE OPERATOR.** The stated trade above was
+that "a table only works when someone opens it"; nobody opened it daily, and a trading truck's page can be
+dark for a week. Three states: **waiting within grace** (operator sees a reassuring message, no alert),
+**waiting past grace** (one alert), **was-working-now-failing** (one alert per outage). **"Once" is
+load-bearing — an alert per failed check becomes an ignored folder.** The grace window is derived from the
+scheduled cadence in **missed checks**, never written as an hours literal, following the same rule
+`lib/custom-domain/cadence.ts` already establishes for the stopped-working threshold.
+
+⚠️ **THE ON-DEMAND CALLER MUST EVALUATE THE ALERT TOO.** It writes `custom_domain_last_checked_at`, and the
+once-per-transition rule compares the threshold against that column — so if only the cron sent, an operator
+opening the box would step the timestamp past the line and **the cron would never see the transition. The
+alert would be swallowed by the very feature meant to help** — a defect that works in testing and vanishes
+in production.
+
+⚠️ **STILL TRUE, AND STILL THE ROLLBACK EXCEPTION:** the cron writes on a schedule, so a Vercel rollback
+does not undo what it has already written.
 
 🔴 **WHAT IS ACTUALLY RESOLVING IS RECORDED, AND IT IS THE DIAGNOSTIC.** A status column alone says
 "broken" and leaves you starting from zero; **the resolved value distinguishes a mistyped record from a
@@ -22129,6 +22907,18 @@ four things memory would have shipped wrong:**
   to the build.
 - **One provider requires a trailing full stop on the target**, which makes it **the single case where
   our own hint — *copy this exactly* — is wrong.**
+  - ✅ **RESOLVED V12.3 — AND IT WAS THE OTHER PROVIDERS THAT WERE BROKEN.** An operator pasted the copied
+    target into **Wix** and Wix **rejected it for a trailing full stop**; they deleted the character by
+    hand. The hosting config lookup returns a value that can carry the dot, and nothing on the operator's
+    side stripped it, so **three of the four verified providers were being handed a value their form
+    refuses.** 🔴 **THE FIX IS PER-PROVIDER AND MUST NEVER BE A GLOBAL STRIP.** The target is canonicalised
+    dotless and the dot re-added only where the provider record says so — **123 Reg is the one that
+    requires it** — and a blanket strip would break it **silently**: the record saves, resolves to the
+    wrong name, and the only symptom is a domain that never starts working while our own hint says they
+    did it right. The answer is a **required** field on the existing provider record, so a new provider
+    cannot inherit a default nobody chose. ⚠️ **Wix is among the FOUR with verified steps, not the five
+    unchecked — and two of those four had already turned out wrong**, so this is a 50% historical error
+    rate on the group this claim belongs to.
 - 🔴 **One provider defaults new records to proxied, and proxied means the certificate never issues
   with nothing saying why.** The operator adds the record correctly, waits, and nothing happens. **This
   is the silent-failure shape this feature keeps meeting, and it is the highest-value line on the
@@ -22396,6 +23186,47 @@ next rename. That rule is not about embeds and still binds.
 
 ---
 
+## Three routes serve the ordering path, and only one is meant to be given out (V12.2)
+
+**Built 4 September, NOT DEPLOYED.**
+
+| Route | Job |
+|---|---|
+| **`/order/<slug>`** | **DECIDES** at scan time. The QR target and the dashboard link. |
+| `/trucks/<slug>/order` | **SERVES.** Never redirects. |
+| `/o/<slug>` | **Permanent shim** → `/order/<slug>`. **Never delete it.** |
+
+🔴 **THE INDIRECTION IS THE REQUIREMENT.** A printed QR code must follow a truck to its custom domain
+once one is configured. **A code encoding the serving URL is committed to a host forever and cannot.**
+Any future proposal to collapse to a single URL breaks this, and the reason will not be visible from the
+code.
+
+🔴 **THE DECIDER IS CURRENTLY A PASS-THROUGH FOR EVERY TRUCK.** `custom_domain` is set on **0 of 9**
+trucks, so the first of the five conditions fails for all of them and every scan resolves to
+`/trucks/<slug>/order`. ⚠️ **This makes the route look pointless to anyone reading it today.** It is not;
+it is unexercised.
+
+**The five conditions**, in order, each failing toward our own page: the truck exists and is active · a
+domain is set · a machine has seen it resolve · **a person has confirmed the page is right** · the plan
+grants the feature · the last health check is within cadence. **The human confirmation is the
+load-bearing one.**
+
+⚠️ **`/o/` REMAINS A 307, NOT A 308.** "Permanent" describes the route's lifetime, not the status code.
+**A browser-cached 308 on a printed code would destroy the per-scan decision the whole design exists
+to preserve.**
+
+⚠️ **The decider's route segment is `[id]`, not `[slug]`,** because the sibling `/order/<id>/manage`
+already owns that segment name at the same level and the framework forbids two. **The URL is unchanged;
+only the internal parameter name differs from what it carries.** ⚠️ **Two different populations now
+share the `/order/` prefix** — a truck slug at the leaf, an order key one level deeper.
+
+✅ **Both QR surfaces read one builder**, so the V11.51 trap of updating one and leaving the other
+encoding the old URL is avoided by construction rather than by discipline.
+
+⚠️ **Ten sites construct the serving URL inline rather than through the builder.** They were untouched
+by the rename because the serving route did not change — but **a future change to that path must visit
+all ten**, and a stale exact-match key is skipped silently.
+
 # 47. Analytics and instrumentation (V11.56)
 
 ## 🔴 A LIVE TRUCK'S CREDENTIALS ARE IN THE ANALYTICS STORE, AND NOTHING SANITISES THEM
@@ -22437,6 +23268,16 @@ it is a conversation with the operator, not a silent change.**
   would launch together — has expired now that one has shipped and one is in review. **Reversing a
   documented deliberate decision is correct when its premise no longer holds; record the expiry rather
   than deleting the reasoning.**
+  - ⛔ **RE-MERGED V12.3, 5 September 2026 — THE PREMISE EXPIRED A SECOND TIME, IN THE OTHER DIRECTION.**
+    **Android is live on Google Play**, so one row can now state both truthfully and the split has no
+    reason to exist. 🟢 **The un-merged row's own note set the condition and was followed exactly:**
+    *"Re-merge them the day Android ships, and not before — and if you do, DELETE the Android row rather
+    than renaming this one, so the `ROW_FEATURE_MAP` entry stays attached to the row that carries the real
+    feature."* The Android row was **deleted** (it never had a map entry); the iPhone/iPad row was
+    **renamed with its map key moved in the same edit**. ⚠️ **The round trip is the lesson, not the
+    endpoint: this row has been merged, split and merged again in eleven days, each time correctly,
+    because the fact underneath it moved twice.** A decision recorded with its condition survives that; a
+    decision recorded as a preference would have been argued about twice.
 - 🔴 **THE SCREENSHOT DIRECTORY IS UNTRACKED AND HAS NEVER BEEN COMMITTED.** **OBSERVED.** The hero
   images exist only on one machine. **A deploy would ship a hero whose images 404.** Check this before
   the gate lifts.
@@ -22540,6 +23381,45 @@ downloadable from Admin behind an explicit admin check.
 ⚠️ **The alignment defect this document produced is recorded ONCE, in §35** — *"A MEASUREMENT OF THE
 CONTAINER IS NOT A MEASUREMENT OF THE CONTENT"*. It is an invariant, not a fact about this document.
 
+### The share card, and the three defects in one object literal (V12.1)
+
+**`public/logos/hatchgrab-share-card.png`** — 1200 × 630, 27,924 B, white ground, navy hairline flush to
+the edge, the light-background wordmark at 880px wide with the two-line tagline beneath it. Composed by
+rendering the wordmark **SVG** at target size so its aspect ratio is derived from its own viewBox rather
+than typed.
+
+Three independent defects were fixed together in the root layout's metadata:
+
+1. 🔴 **The image was the wrong brand** — both the Open Graph and Twitter `url` values were string
+   literals outside the host branch that correctly handled everything else on the same object. **Now one
+   branched value with two consumers, so one can no longer be corrected without the other.**
+2. 🔴 **The declared dimensions did not describe the file** — 1200 × 630 declared over a 2397 × 1270
+   image. Now measured from the written file rather than intended.
+3. 🔴 **No correct asset existed.** The widest HatchGrab raster was a 640 × 141 wordmark at 4.54:1, so
+   the card was **authoring, not resizing** — the same distinction already recorded about the maskable
+   icon variant. **The asset was the blocking input, and no code change had anywhere to point until it
+   existed.**
+
+⚠️ **THE DECLARED IMAGE URL WAS A REDIRECT.** It pointed at the apex, which 307s to `www`. WhatsApp
+follows it; a crawler that does not follow redirects on that tag gets nothing. **Now built from the
+request host, so it cannot redirect by construction.** An absolute URL bypasses the metadata base
+entirely, which is why this was fixable without touching the base URL or the page URL.
+
+⚠️ **"Rendered very large" was not a rendering fault.** The card type is the large-image variant and the
+declared ratio is valid for it, so the big format is correct behaviour — **the artwork was a logo filling
+its whole canvas.** The correction is margin inside the asset, not a smaller card. **A composition with a
+heavy element above lighter text is set slightly high on purpose; optical centring here is not geometric
+centring, and the group sits about 32px above centre deliberately.**
+
+⚠️ **The font is baked into the raster and the composing HTML is not in the repository.** Re-rendering on
+another machine may pick a different face. **The artefact is the deliverable.**
+
+**Still open on this surface, and independent of each other:** no `<link rel="canonical">` is emitted on
+any of the three hosts; the page URL still names the apex while the page is served from `www`; the
+consumer brand's declared dimensions remain wrong over its 3.68 MB file; and **the card has never been
+seen in a WhatsApp bubble.**
+
+
 ---
 
 # 49. Deploy posture as of V11.58
@@ -22571,6 +23451,37 @@ picker, the queued-order seeding and the manage refresh split have still not bee
 seconds from every device. **Read the platform duration logs against real traffic.**
 
 ⚠️ **A store review remains in progress. The binary must not be touched.**
+
+### Deploy posture at V12.2
+
+🔴 **NOTHING HAS BEEN DEPLOYED SINCE BEFORE V12.1.** The repository now holds, undeployed and
+accumulating:
+
+- the share card and the corrected share metadata
+- the WhatsApp derivation extraction, which changes a **public customer-facing surface**
+- the outreach tab and page
+- the order scan route rename
+
+✅ **The RLS remediation and every schema change are LIVE regardless**, because both were applied by
+hand in the SQL editor and took effect the moment each statement returned. **They cannot be rolled back
+by reverting a commit.**
+
+⚠️ **A STORE REVIEW REMAINS IN PROGRESS AND BOTH SHELLS LOAD PRODUCTION.** The next deploy changes a
+shipped app in users' hands and changes what a reviewer sees mid-review.
+
+🔴 **AND IT TOUCHES THE PATH A TRADING TRUCK'S CUSTOMERS USE.** The route rename and the extraction are
+both on customer-facing paths. **Deploy when the trading truck is not trading**, and check the ordering
+path anonymously afterwards rather than from a logged-in browser.
+
+⚠️ **Reports written this session:** `docs/share-preview-report.md`, `docs/share-card-report.md`,
+`docs/share-card-revision-report.md`, `docs/rls-policy-report.md`, `docs/rls-verification-report.md`,
+`docs/outreach-page-report.md`, `docs/whatsapp-extraction-report.md`, `docs/hu-reconciliation-report.md`,
+`docs/hu-columns-build-report.md`, `docs/outreach-modal-report.md`,
+`docs/outreach-manual-dates-report.md`, `docs/venue-linking-report.md`,
+`docs/venue-pipeline-report.md`, `docs/vf-map-events-report.md`,
+`docs/order-link-outage-report.md`, `docs/order-url-routes-report.md`,
+`docs/order-route-rename-report.md`.
+
 
 ---
 
