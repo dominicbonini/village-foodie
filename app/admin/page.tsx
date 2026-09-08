@@ -19,6 +19,7 @@ import { nativeAuthHeader } from '@/lib/native/session'   // native app sends it
 import { createSlug } from '@/lib/utils'   // slug preview in the create-truck modal — SAME fn provision-truck derives with
 import { formatTimeRange } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+import OutreachPanel from '@/components/admin/OutreachPanel'   // the outreach console, rendered as a tab
 
 interface AdminTruck {
   id: string
@@ -227,7 +228,23 @@ export default function AdminPage() {
   const [saving, setSaving] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
-  const [adminTab, setAdminTab] = useState<'trucks' | 'features' | 'domains'>('trucks')
+  // 🔴 'outreach' IS A REAL TAB, NOT A LINK. Its console lives in components/admin/OutreachPanel.tsx and
+  // is mounted below when this is selected, so it fetches on first selection rather than on every /admin
+  // visit. ⚠️ It is rendered OUTSIDE the max-w-6xl body wrapper — see the render site for why.
+  const [adminTab, setAdminTab] = useState<'trucks' | 'features' | 'domains' | 'outreach'>('trucks')
+
+  // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
+  // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
+  // this client page under a Suspense boundary at build time, and adding one around a 2,300-line page to
+  // read a single optional string is the wrong trade. The effect runs once, after the first paint, so
+  // Trucks may flash for a frame on the redirect — accepted.
+  // ⚠️ The value is VALIDATED against the known tabs, not cast: ?tab=anything must not put the page in a
+  // state where no tab block renders and the screen is simply blank.
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tab')
+    if (t === 'trucks' || t === 'features' || t === 'domains' || t === 'outreach') setAdminTab(t)
+  }, [])
+
   const [truckSearch, setTruckSearch] = useState('')
   const [planFilter, setPlanFilter] = useState<Plan | 'discovery' | ''>('')
   const [customersOnly, setCustomersOnly] = useState(false)   // Customers = non-Discovery (operator trucks)
@@ -786,6 +803,11 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader truckName="Admin" truckLogoUrl={null} subtitle="Platform admin">
+        {/* ⚠️ THE OUTREACH HEADER BUTTON THAT SAT HERE IS GONE — outreach is a TAB in the row below now,
+            not a route to link out to. The note it carried argued that a route could not be a tab without
+            "faking a tab that navigates away"; that was resolved by moving the console itself into
+            components/admin/OutreachPanel.tsx, so the tab renders it rather than navigating.
+            /admin/outreach still exists and redirects here with ?tab=outreach. */}
         <UserMenu
           truckName={null}
           operatorName={operatorName}
@@ -797,7 +819,9 @@ export default function AdminPage() {
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
         <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
-          {(['trucks', 'features', 'domains'] as const).map(tab => (
+          {/* ⚠️ The icon/label ternaries grew a fourth arm rather than becoming a lookup, to keep this a
+              one-line diff against the shape that was here. If a fifth tab arrives, make it a map. */}
+          {(['trucks', 'features', 'domains', 'outreach'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setAdminTab(tab)}
@@ -807,13 +831,18 @@ export default function AdminPage() {
                   : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
-              <span>{tab === 'trucks' ? '🚚' : tab === 'features' ? '📋' : '🌐'}</span>{tab === 'trucks' ? 'Trucks' : tab === 'features' ? 'Features' : 'Domains'}
+              <span>{tab === 'trucks' ? '🚚' : tab === 'features' ? '📋' : tab === 'domains' ? '🌐' : '📣'}</span>{tab === 'trucks' ? 'Trucks' : tab === 'features' ? 'Features' : tab === 'domains' ? 'Domains' : 'Outreach'}
             </button>
           ))}
         </div>
       </div>
 
-      <div className={"w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
+      {/* 🔴 OUTREACH IS RENDERED OUTSIDE THIS WRAPPER, NOT INSIDE IT — see below. This wrapper is
+          max-w-6xl (1152px) and the outreach table's colgroup carries minWidth:1510px, so putting the
+          panel in here would push its last columns off-screen on EVERY monitor. That is arithmetic, not
+          a small-screen problem, and it is the exact fault that was fixed on that table earlier. The
+          wrapper is HIDDEN rather than unmounted so the three tab blocks inside keep their state. */}
+      <div className={adminTab === 'outreach' ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
 
         {/* Features tab */}
         {/* ── CUSTOM DOMAINS ────────────────────────────────────────────────────────────────────
@@ -1281,6 +1310,17 @@ export default function AdminPage() {
         )}
 
       </div>
+
+      {/* ── OUTREACH TAB ──────────────────────────────────────────────────────────────────────────────
+          Its own container, WIDER than the one above (1800px vs 1152px), because the console's table has
+          a hard 1510px floor. ⚠️ Mounted only while selected: that is deliberate, so /admin does not pay
+          for a 231-row fetch on every visit — the cost is that switching away and back refetches.
+          The panel was app/admin/outreach/page.tsx until this change; that route now redirects here. */}
+      {adminTab === 'outreach' && (
+        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+          <OutreachPanel />
+        </div>
+      )}
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg z-50">

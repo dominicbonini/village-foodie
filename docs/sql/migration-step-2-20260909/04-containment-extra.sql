@@ -1,0 +1,10 @@
+-- ⚠️ NOT AN IMPORT. Reference only.
+-- Four further terms hit a truck under the APPS SCRIPT's containment matcher but NOT under the
+-- scraper's Levenshtein. They are the terms whose retro-delete (v6.57:245) would erase a real
+-- truck's future events from the Sheet even though the scraper itself would not silence it.
+--   "WINTRINGHAM COMMUNITY DAY" → ["Wintringham"]
+--   "Azahar Spanish Food" → ["Azahar"]
+--   "We Are Wintringham" → ["Wintringham"]
+--   "OFF THE BEATEN TRUCK SUMMER PARTY" → ["Off The Beaten Truck"]
+-- To see them after import:
+-- select term, term_key from discovery_exclusion_terms where term_key in ('wintringhamcommunityday', 'azaharspanish', 'wearewintringham', 'offbeatentrucksummerparty');

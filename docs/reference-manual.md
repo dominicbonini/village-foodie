@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V12.4
+HatchGrab Engineering Reference Manual · V12.5
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 12.4**
+**Version 12.5**
 
 September 2026
 
@@ -25,6 +25,64 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V12.5 — 8 September 2026 (afternoon) — THE LANDING PAGE WAS NOINDEX FOR FIVE DAYS ON A REASON THAT HAD EXPIRED, A TITLE CARRIED THE BRAND TWICE AND NOBODY HAD EVER LOOKED AT IT RENDERED, A CHECK THAT COULD NOT FAIL LOUDLY REPORTED A FILE MISSING THAT HAD EXISTED SINCE JUNE, AND A LINKING RULE I PROPOSED THIS MORNING WAS MEASURED AND WITHDRAWN
+
+**Delta — a documentation pass over the afternoon's investigations and two shipped changes. `docs/scraper-reference-manual.md` was taken to V1.3 in the same pass and carries the pipeline-side detail. Reports: `landing-seo-review-report.md`, `landing-seo-metadata-report.md`, `whatsapp-landing-revert-report.md`, `whatsapp-landing-flag-report.md`, `truck-radius-report.md`, `ai-notes-postcode-report.md`, `postcode-flag-guard-report.md`, `saffron-walden-extraction-report.md`, `exclusion-check-position-report.md`, `exclusions-provenance-report.md`, `scroll-lazy-silence-report.md`.**
+
+⚠️ **Everything in this entry post-dates the body below AND post-dates the V12.4 entry beneath it, which was written the same day. Where they disagree, this entry is current.**
+
+### 🔴 THE LOAD-BEARING CORRECTIONS — ALL THREE WERE INVISIBLE IN THE SOURCE
+
+- 🔴 **THE LANDING PAGE WAS `noindex` FOR FIVE DAYS ON AN EXPIRED REASON.** The directive's own comment said the admin gate was on; 🔎 **`layout.tsx:41` records that gate REMOVED ON 3 SEPTEMBER.** **The page was public and unindexed because a justification outlived the fact it named.** 🔴 **A comment is not a gate. When you remove a gate, grep for what cited it.** §48.
+- 🔴 **A 75-CHARACTER TITLE CARRYING "HatchGrab" TWICE.** The root layout's `title: { template: '%s | HatchGrab' }` double-appended the brand. ⚠️ **The PREVIOUS title had the identical flaw and had never once been read rendered.** Fixed with `title: { absolute: … }` → 59 chars. 🔴 **A page-level `title` string is an INPUT to a template, not the output. Read the served `<head>`.** §48.
+- ⚠️ **AN EARLIER REPORT THIS SESSION SAID NO `robots.txt` EXISTED. IT HAS EXISTED SINCE JUNE.** 🔴 **The cause was a zsh unmatched-glob aborting the compound command that checked — a failed check and a genuine negative printed the same line.** ⚠️ **A check that cannot fail loudly is not a check.** Only a `Sitemap:` line was appended (+5, **0 changed**); replacing the file would have **silently dropped a blocklist of eight AI crawlers.** §48.
+
+### LANDING AND SEO — WHAT IS NOW TRUE, AND WHAT IS DECIDED (§48)
+
+- ✅ **The landing page is `index, follow`** with title, description, canonical, OG, Twitter and `SoftwareApplication` JSON-LD, 🧪 **verified in the SERVED head.**
+- 🔴 **`Disallow: /trucks/` MEANS THE PER-TRUCK PAGES CANNOT RANK. THAT IS A STANDING DECISION, NOT AN OVERSIGHT** — recorded so the next person meets it as a decision rather than reversing it silently during SEO work.
+- ⚠️ **The sitemap carries one URL:** 🔎 `/pricing` is **not a route** (a section id) and 🔎 `/landing` **308-redirects to `/`**; `/compare` **stays `noindex` by decision.** An `app/robots.ts` was removed rather than merged — 🧪 it returned **HTTP 500**, because Next.js refuses a conflicting public file and route file.
+- **SEO scoping, DECIDED so it is not re-argued:** 🔴 **"food truck POS" will not be contested** — dominated by Toast, Epos Now, POSApt, Grafterr and directories, **and the product is not a till.** ⚠️ **"street food" is a DINER term belonging to Village Foodie.** ✅ **"mobile catering" is real UK trade language and is used.**
+
+### ✅ WHATSAPP IS BEHIND ONE FLAG, AND THE FLAG MOVES MORE THAN THE WORDS (§48)
+
+- ✅ **`lib/whatsapp-live.ts` exports a single boolean, committed `false`**, so the whole tree deploys in one go while WhatsApp still reads **coming soon** — **one switch, not a revert.**
+- 🔴 **THE POSITION FOLLOWS THE FLAG.** Production carried the tile **last**; the go-live edit had moved it to **fifth**. **Not-live ⇒ last; flipping the flag moves it to fifth.** ⚠️ **A flag that changes only the words leaves an unshipped feature sitting in a shipped feature's slot.** The label reads **"WhatsApp auto-replies"**, and it carries a `soon-inline` badge — 🔴 **the first HEADING on the page to carry one; a precedent.**
+- ⚠️ **The flag sits in its own file to avoid an import cycle** (🔎 `app/manage/[token]/page.tsx:36` already imports `lib/plan-features.ts`), and **the reason is recorded in the file's own header**, where the next person moving it will read it.
+
+### 🔴 DISCOVERY — A RULE PROPOSED THIS MORNING WAS MEASURED AND WITHDRAWN (§33)
+
+- 🔴 **POSTCODE ARBITRATION IS WITHDRAWN, NOT GATED.** It minimises **candidate-coordinate to candidate-postcode** — **a quantity with no term for where the EVENT is** — so it elects the tidiest row. 🧪 **`findVenue` alone 11/15; with arbitration 3/15.** 🧪 **It overrode 753 of 1,011 rows** and 🧪 **won one tie from 97 km away.** ⚠️ **It was validated on ONE case where the right answer and the tidiest row coincided.**
+- 🔴 **TRUCK-RADIUS IS A REVIEW TRIGGER, NOT AN AUTO-REJECT** — 25 / 50 / 100 km. 🧪 **Catches 15 of 21 known-bad links, ACCEPTS the 44.1 km Swan mislink**, and 🧪 **61% of trucks (105/173) have 0 or 1 anchor and must HOLD.**
+- ✅ **SHIPPED: guard three, a postcode DISAGREEMENT FLAG that does not adjudicate.** 🧪 46.7% confirmed / 34.1% flagged. 🔴 **`Thirsty` [Cambridge] flags at 24.14 km where the POSTCODE is the wrong half — it would have decided wrongly on its own showcase case.** ⚠️ **205 of 221 rows UNCHECKED (93%)**, and it **sees only unlinked candidates**, so the rows that motivated it are invisible to it.
+- 🔴 **`ai_notes` CARRIES POSTCODES ON 774 OF 2,229 UNLINKED ROWS AND NOTHING READS THEM** — the **second** column in §33 written at insert and never consulted, after `updated_at`. 🔴 **Coverage is STRUCTURAL: 1,100 of 1,104 from `URL:` alone; `Drive Screenshot`, `hg_scraper`, `hatchesup_scraper` and `Manual Entry` produce ZERO.** ⚠️ **Not a sample; unavailable for 1,455 rows by construction.** ✅ **But it catches a venue stored 370 km away in Cumbria that the coordinate gauntlet structurally cannot see.**
+- ⚠️ **The gauntlet removed only 7.5% of pairs and HALVED the pooled p95, 383 km → 194 km — bad coordinates were manufacturing the upper half of the distribution.**
+
+### ⚠️ CORRECTIONS TO THE V12.4 ENTRY BELOW, WRITTEN THE SAME DAY
+
+- **OLD VALUE: the Saffron Walden six-row gap — *"The gap is proven; its cause is not."*** ✅ **The cause is established:** 🧪 the URL is **listed twice in the Venues tab** and 🔎 **`run-scraper.js:920` stamps `finalVenue = site.name` unconditionally.** 🔴 **STILL OPEN and affects all seven venue-page sites.** ⚠️ `:906` was the pre-fix line; **`:920` re-read against the committed file 8 September (evening).**
+- ⚠️ **OLD VALUE: "nine trucks at nine DISTINCT pitches on 4 June". 🧪 The page has only ever had two pitches.**
+
+### 🔴 THE ADMIN CONSOLE TELLS YOU ONE THIRD OF THE TRUTH (§33)
+
+- **A truck can be silenced in three independent places:** `discovery_trucks.excluded` (✅ admin toggle), **the Sheet's Exclusions tab (🔴 no interface)**, and **prose inside a site's `ai_instructions` (🔴 free text)**. **No shared state, no audit trail.**
+- 🔴 **An operator can read `excluded = false`, look fine, and still be invisible** — 🧪 **Steak & Honour lost six correctly-extracted events that way.** ⚠️ **Do not answer "why is this truck missing?" from the console alone.**
+
+### DEPLOY POSTURE (§49)
+
+- ✅ **The six-workstream tree was committed and deployed on 8 September 2026.** 🧪 Three commits, **`HEAD` = `origin/main` = `6fe8634`, pushed 17:38.** ⚠️ Two admin files remain uncommitted behind it.
+- 🔴 **THE SCRAPER'S RED-ON-FAILURE CHANGES MEAN RUNS THAT PREVIOUSLY WENT GREEN MAY NOW GO RED, STARTING WITH THE 06:00 CRON.** ⚠️ **A red run tomorrow is not automatically a regression — read which failure it names.**
+- 🔴 **`supabase/migrations/20260907_discovery_run_log.sql` IS WRITTEN AND NOT APPLIED.** The code **warns once on `42P01` and continues**, so **the run log does not exist and nothing is being recorded.**
+- ⚠️ **"Deployed" is asserted, not verified in this pass** — the commits and the push were read; **no Vercel build record was queried.** 🔴 **Per the standing rule: an absent log is not verification.**
+
+### THE STANDING LESSONS FROM THIS PASS
+
+- 🔴 **READ THE SERVED OUTPUT, NOT THE SOURCE, FOR ANYTHING A FRAMEWORK COMPOSES.** The double-brand title was correct in every file that touched it.
+- 🔴 **A COMMENT IS NOT A GATE, AND IT DOES NOT EXPIRE WHEN THE GATE DOES.** Five days of `noindex` came from a sentence nobody re-read.
+- 🔴 **A CHECK THAT CANNOT FAIL LOUDLY IS NOT A CHECK.** A shell glob failure and a true negative printed the same line, and a false report was published from it.
+- 🔴 **MEASURE YOUR OWN PROPOSAL BEFORE DOCUMENTING IT AS A PLAN.** Postcode arbitration read beautifully and scored **3/15**.
+- 🔴 **A GUARD THAT WOULD DECIDE WRONGLY ON ITS SHOWCASE CASE MUST NOT BE ALLOWED TO DECIDE.** FLAG, not FIX.
 
 ## V12.4 — 8 September 2026 — TWO "VERIFIED LIVE" PRICING FACTS AGED INTO FALSEHOOD INSIDE A MONTH, A SUPPRESSION DEFECT WENT DORMANT RATHER THAN FIXED, AND 52% OF DISCOVERY EVENTS HAVE NO VENUE
 
@@ -15030,7 +15088,7 @@ join, so the count does not affect any conclusion drawn from it.
 
 ## 🔴 DISCOVERY DATA — WHAT MOVED ON 8 SEPTEMBER 2026 (V12.4)
 
-**Recorded here because these rows sit under this manual's §32/§33 model even though the pipeline that writes them is documented in `docs/scraper-reference-manual.md` (V1.2 §8–§9). Read that for the mechanism; this is the delta.**
+**Recorded here because these rows sit under this manual's §32/§33 model even though the pipeline that writes them is documented in `docs/scraper-reference-manual.md` (§8–§9 — ⚠️ **written against V1.2; that manual is now V1.3 and §8–§9 still carry this material**). Read that for the mechanism; this is the delta.**
 
 - 🧪 **`venues` 574 → 558.** 15 venue merges applied (the CERTAIN tier, ≤500 m), **16 loser rows deleted** — set 1 dropped two — and **125 `discovery_events` repointed to the keepers**. Verified after the fact: 0 of 16 losers remain, 15 of 15 keepers remain, 0 events point at a loser. 🔴 **The repointing is what proves it was a deliberate merge and not a delete** — `discovery_events.venue_id` is `ON DELETE SET NULL`, so a bare delete would have orphaned all 125. **No code path in this repository can do this; it was run by hand.**
 - 🔴 **NOT applied and still open:** the PROBABLE tier (19 merges, 0.5–5 km) and all four REFUSED sets (`foodPark`, `The Common`, `Off The Beaten Truck`, `The Street`, the 122 distance-rejected pairs, the 43 `Village Hall` rows).
@@ -15040,6 +15098,48 @@ join, so the count does not affect any conclusion drawn from it.
 - 🧪 **Graduated-truck visibility deliberately reversed for `Real Thai Food`** — its `discovery_trucks` row is `visibility = public`, `show_on_vf = true`, `show_on_hg = true` while `hatchgrab_truck_id = real-thai-food`. **`Tikka Tonic` left public by the same decision.** ⚠️ **Both rows also carry `excluded = true`, which is a gate in its own right — whether either truck actually reaches the public map was NOT verified. OPEN.**
 - 🔴 **The unlinked backlog is the majority and nothing works it down. 🧪 2,237 of 4,301 `discovery_events` (52.0%) have `venue_id IS NULL`.** Pass A writes rows with no `venue_id`; linking is a separate emit-only tool (`scripts/backfill-venue-id.ts`) that **runs only when a human runs it**. The backlog grows with every scrape.
 - 🔴 **`discovery_events.updated_at` IS NEVER MAINTAINED.** 🧪 **Zero of the 4,301 rows have `updated_at ≠ created_at`** — including the 125 rows repointed by today's merge. **The column is written at insert and never again. It cannot date anything, and no feature may assume it does.**
+
+## 🔴 DISCOVERY DATA — WHAT THE AFTERNOON OF 8 SEPTEMBER 2026 ESTABLISHED (V12.5)
+
+**Mechanism is in `docs/scraper-reference-manual.md` V1.3 §10–§15. This is what a reader of THIS manual has to know.**
+
+### 🔴 `ai_notes` CARRIES POSTCODES AND NOTHING READS THEM
+
+(`docs/ai-notes-postcode-report.md`)
+
+- 🧪 **774 of 2,229 unlinked `discovery_events` rows carry a full UK postcode**, already extracted from the source page and already stored. 🔴 **No code path reads it.** It is written at insert and never consulted — **the second column in this section with that property**, after `updated_at`.
+- 🔴 **COVERAGE IS STRUCTURAL, NOT RANDOM, AND THAT IS THE PART THAT CONSTRAINS EVERY FUTURE DESIGN.** 🧪 **1,100 of 1,104 postcode-bearing rows come from `URL:` alone.** 🧪 **`Drive Screenshot` (511 rows, containing only `[📱 Drive]`), `hg_scraper`, `hatchesup_scraper` and `Manual Entry` produce ZERO.**
+- ⚠️ **So it cannot be treated as a sample.** Anything measured on postcode-bearing rows is measured on **web-scraped rows only**, and any rule that needs one is **unavailable for 1,455 rows by construction, not by chance.** ⚠️ **Recall that `Manual Entry` is emitted BY THE SCRAPER, not by a person** — so "manual rows lack postcodes" is a statement about a code path, not about human effort.
+- ⚠️ **The resolution is coarse: only 146 DISTINCT postcodes across 731 placeable rows — 145 places.** 🧪 **731 of 2,229 = 32.8% placeable.**
+- ✅ **What it is genuinely good for:** 🧪 it gets **both known `findVenue` failures right**, and 🧪 catches a venue stored **370 km away in Cumbria** (`Worlington` matched to `Workington`) — 🔴 **a class of error the coordinate gauntlet structurally CANNOT see, because a coordinate 370 km away is still a perfectly valid coordinate.**
+- 🔴 **Good at CATCHING. Measured bad at CHOOSING. Those are different jobs, and conflating them is what killed the rule below.**
+
+### 🔴 TWO LINKING RULES DIED, AND ONE SHIPPED — READ THIS BEFORE PROPOSING AN AUTOMATIC LINKER
+
+(`docs/truck-radius-report.md`, `docs/postcode-flag-guard-report.md`)
+
+- 🔴 **POSTCODE ARBITRATION IS WITHDRAWN, NOT GATED, NOT DEFERRED.** It minimised the distance **from a candidate's coordinate to that candidate's own postcode** — 🔴 **a quantity with no term for where the EVENT is** — so it elected the tidiest row. 🧪 **`findVenue` alone 11/15; `findVenue` + arbitration 3/15.** 🧪 **It overrode 753 of 1,011 rows** — a replacement, not a tie-breaker — and 🧪 **won one tie from 97 km away.** ⚠️ **It had been validated on ONE case where the right answer and the tidiest row coincided. One passing case is not a control.**
+- 🔴 **TRUCK-RADIUS IS A REVIEW TRIGGER, NEVER AN AUTO-REJECT** — COMPACT 25 km / REGIONAL 50 km / WIDE 100 km. 🧪 **It catches 15 of 21 known-bad links and ACCEPTS the 44.1 km Swan mislink.** 🧪 **61% of trucks (105 of 173) have 0 or 1 anchor point** — a radius derived from one point is not a radius — **so those must HOLD, never accept and never reject.**
+- ⚠️ **A finding that outlives the thresholds: the coordinate gauntlet removed only 7.5% of pairs but HALVED the pooled p95, 383 km → 194 km.** **Bad coordinates were manufacturing the entire upper half of the distribution** — the "trucks travel hundreds of kilometres" impression was an artefact of the data, not a fact about trucks.
+- ⚠️ **The gauntlet now fails 20 venues, not the 103 recorded earlier.** Those corrections have landed; **the old figure is stale, not wrong-at-the-time.**
+- ✅ **SHIPPED — guard three in `scripts/linking-guards.ts`: a postcode DISAGREEMENT FLAG that returns `CONFIRMED` / `NOTED` / `FLAGGED` / `UNCHECKED`. 🔴 It never picks a venue and never rejects one.** 🧪 **46.7% confirmed / 34.1% flagged.**
+- 🔴 **THE CASE THAT DEFINES IT: `Thirsty` [Cambridge] flags at 24.14 km — and the POSTCODE is the wrong half of that pair, not the venue. Had the guard been allowed to decide, it would have decided WRONGLY ON ITS OWN SHOWCASE CASE.** **That is the whole argument for FLAG over FIX, and it belongs in this manual, not only in the pipeline's.**
+- ⚠️ **Two limits carried forward unresolved:** 🧪 **in the scripts' future-only scope 205 of 221 rows are UNCHECKED (93%)** — the guard is real but currently near-silent — and 🔴 **it sees only UNLINKED candidates, so the already-linked `Worlington` and `Wilbraham` rows that motivated it are invisible to it as wired.**
+- ⚠️ **A correction produced by testing it: there are TWO `Worlington` rows, and one is genuinely in Workington, Cumbria.** An earlier account treated them as a single row.
+
+### ⚠️ CORRECTION TO THE V12.4 ENTRY ABOVE — THE SAFFRON WALDEN CAUSE IS NO LONGER OPEN
+
+- **OLD VALUE (V12.4, this section): *"Attribution is OPEN … The gap is proven; its cause is not."*** ✅ **The cause is now established** (`docs/saffron-walden-extraction-report.md`): 🧪 **the URL is listed TWICE in the Venues tab, so the page is parsed twice per run**, and 🔎 **`run-scraper.js:920` stamps `finalVenue = site.name` unconditionally for venue-sourced sites, discarding the model's own venue field.** 🧪 Reproduced live.
+- 🔴 **`run-scraper.js:920` (~~`:906`~~ — re-read 8 September, evening) IS STILL OPEN AND AFFECTS ALL SEVEN VENUE-PAGE SITES**, not only this one. ⚠️ **Two of those seven were never fetched, so "only Saffron Walden is multi-pitch" is NOT established.**
+- ⚠️ **A separate correction: an earlier account said 4 June produced "nine trucks at nine DISTINCT pitches". 🧪 The page has only ever had two pitches.** The substance — 12 of 16 dates clean — holds.
+
+### 🔴 A TRUCK CAN BE SILENCED IN THREE PLACES AND ONLY ONE HAS AN ADMIN CONTROL
+
+**Relevant here because the admin console is in this manual's scope and it tells you only one third of the truth.**
+
+- `discovery_trucks.excluded` (✅ **the admin toggle**) · **the Google Sheet's Exclusions tab (🔴 no interface anywhere)** · **hard-coded prose inside a site's `ai_instructions` (🔴 free text, no interface)**. **They share no state and no audit trail.**
+- 🔴 **An operator can read `excluded = false` in the console, look completely fine, and still be invisible.** 🧪 That is exactly what happened to **Steak & Honour**, which lost **six correctly-extracted events**. ⚠️ **Do not answer "why is this truck missing?" from the admin console alone.**
+
 
 # 33. Discovery / Visibility / Customer-Trucks-on-VF model + July 2026 data-integrity + DEPLOY-COUPLING LANDMINES
 
@@ -23422,6 +23522,48 @@ seen in a WhatsApp bubble.**
 
 ---
 
+### 🔴 THE LANDING PAGE WAS `noindex` FOR FIVE DAYS ON AN EXPIRED REASON (V12.5, 8 September 2026)
+
+(`docs/landing-seo-metadata-report.md`, `docs/landing-seo-review-report.md`)
+
+✅ **The landing page is now `index, follow`**, with title, description, canonical, Open Graph, Twitter card and a `SoftwareApplication` JSON-LD block — 🧪 **verified in the SERVED head, not in the source.**
+
+🔴 **WHY IT WAS `noindex`: a comment beside the directive said the admin gate was still on.** 🔎 **`layout.tsx:41` records that gate as REMOVED ON 3 SEPTEMBER.** ⚠️ **So the page was PUBLIC and UNINDEXED for five days — not because anyone decided that, but because the justification for a directive outlived the fact it named.** 🔴 **A comment is not a gate. When you remove a gate, grep for what cited it.**
+
+🔴 **A DEFECT THE SOURCE COULD NOT SHOW: the root layout's `title: { template: '%s | HatchGrab' }` DOUBLE-APPENDED THE BRAND** — a **75-character** title carrying "HatchGrab" **twice**. ⚠️ **The PREVIOUS title had the identical flaw and had never once been looked at rendered.** Fixed with `title: { absolute: … }` → **59 characters**. **A page-level `title` string is an input to a template, not the output. Read the served `<head>`.**
+
+⚠️ **CORRECTION — `public/robots.txt` HAS EXISTED SINCE JUNE.** An earlier report in the same session claimed **no robots.txt existed**. 🔴 **The cause was a zsh unmatched-glob aborting the compound command that checked — a failed check and a genuine negative printed the same line.** ⚠️ **A check that cannot fail loudly is not a check.** Only a `Sitemap:` line was appended (+5 lines, **0 changed**) — replacing the file would have **silently dropped the AI-crawler blocklist**.
+
+**What that file actually does, recorded because it was nearly deleted by accident:** blocks **GPTBot, ClaudeBot, CCBot, Bytespider, FacebookBot, Applebot-Extended, Google-Extended, anthropic-ai**, plus `Disallow: /api/` and `Disallow: /trucks/`, `Crawl-delay: 10`.
+
+🔴 **`Disallow: /trucks/` MEANS THE PER-TRUCK PAGES CANNOT RANK. That is a STANDING DECISION, not an oversight — do not quietly reverse it while doing SEO work.** It is recorded here so the next person meets it as a decision rather than as a bug.
+
+⚠️ **Sitemap scope, and why it is one URL:** 🔎 `/pricing` **is not a route** (it is a section id on the landing page) and 🔎 `/landing` **308-redirects to `/`**. `/compare` **stays `noindex` by decision.** `app/sitemap.ts` is host-aware and emits one URL per host.
+
+⚠️ **A route that used to exist as a `robots.ts` was removed, not merged:** it returned **HTTP 500** — Next.js refuses a conflicting public file and route file. **`public/robots.txt` won because it carries the blocklist.**
+
+**SEO SCOPING — DECIDED, so it is not re-litigated each time:**
+- 🔴 **"food truck POS" WILL NOT BE CONTESTED.** It is dominated by **Toast, Epos Now, POSApt, Grafterr** and directory sites, **and the product is not a till.** Ranking for it would bring the wrong visitor.
+- ⚠️ **"street food" is a DINER term and belongs to Village Foodie**, not to the operator-facing brand.
+- ✅ **"mobile catering" is real UK trade language and is the term used.**
+
+### ✅ WHATSAPP LANDING COPY IS BEHIND A SINGLE FLAG (V12.5)
+
+(`docs/whatsapp-landing-flag-report.md`, `docs/whatsapp-landing-revert-report.md`)
+
+✅ **`lib/whatsapp-live.ts` exports one boolean, committed `false`.** The whole tree can be committed and deployed in one go while WhatsApp still reads **coming soon** — **one switch, not a revert.**
+
+**Two things the flag controls together, because the user corrected the first attempt:**
+- **The label** — the item reads **"WhatsApp auto-replies"**, not "social media auto-replies".
+- 🔴 **THE POSITION FOLLOWS THE FLAG.** Production carried the tile **last**; the go-live edit had moved it to **fifth**. **Not-live ⇒ last; flipping the flag moves it to fifth.** ⚠️ **A feature flag that changes only the words leaves a not-yet-shipped feature sitting in a shipped feature's slot.**
+- **It carries a `soon-inline` badge** — the idiom every other unshipped item on the page already uses.
+
+🔴 **IT IS THE FIRST HEADING ON THE PAGE TO CARRY THAT BADGE — a precedent.** The badge was previously a body-level idiom only. **Recorded because the next person will copy it without knowing it was new here.**
+
+⚠️ **The flag lives in its own file rather than in `lib/plan-features.ts` for a specific reason: an import cycle.** 🔎 `app/manage/[token]/page.tsx:36` already imports from `lib/plan-features.ts`; the header of `lib/whatsapp-live.ts` records that reason **in the file**, where the next person moving it will read it.
+
+---
+
 # 49. Deploy posture as of V11.58
 
 ✅ **EVERYTHING FROM BOTH DAYS IS DEPLOYED.** **OBSERVED after deploy: no 500s, no 504s, customer ordering
@@ -23481,6 +23623,18 @@ path anonymously afterwards rather than from a logged-in browser.
 `docs/venue-pipeline-report.md`, `docs/vf-map-events-report.md`,
 `docs/order-link-outage-report.md`, `docs/order-url-routes-report.md`,
 `docs/order-route-rename-report.md`.
+
+### 🔴 DEPLOY POSTURE AT V12.5 — THE SIX-WORKSTREAM TREE WENT OUT ON 8 SEPTEMBER 2026
+
+✅ **The tree that had been accumulating undeployed since before V12.1 was committed and deployed on 8 September 2026.** 🧪 **Three commits today and `HEAD` = `origin/main` = `6fe8634`, pushed 17:38:** `e024b26` (linking refusal guards), `6820d7b` (both manuals), `6fe8634` (landing and SEO).
+
+⚠️ **The tree is not empty behind it.** 🧪 `app/admin/page.tsx` and `app/admin/outreach/page.tsx` (the Outreach button and the Y/N + upcoming-count table) are **still modified and uncommitted**.
+
+🔴 **WHAT THIS CHANGES OPERATIONALLY, AND IT WILL SHOW FIRST AT 06:00: THE SCRAPER'S RED-ON-FAILURE CHANGES MEAN RUNS THAT PREVIOUSLY WENT GREEN MAY NOW GO RED.** ⚠️ **A red run tomorrow morning is not automatically a regression — it may be the first honest report of a fault that has been exiting 0 for months.** **Read which failure it names before treating it as new.** This is the intended consequence of the awaited-writes work, not a side effect of it.
+
+🔴 **`supabase/migrations/20260907_discovery_run_log.sql` IS WRITTEN AND HAS NOT BEEN APPLIED.** 🧪 The file exists (5,469 bytes, 7 September 11:59). **The code warns once on `42P01` and continues, so the run log DOES NOT EXIST and nothing is being recorded into it.** ⚠️ **The warning is deliberately survivable, which is exactly what makes it easy to stop noticing** — see the standing lesson that loud failure is only safety *plus a reader*.
+
+⚠️ **"Deployed" is asserted, not verified in this pass.** What was read here is the commit list and the push state; **no Vercel build record was queried, and no post-deploy page load was checked from a clean session.** 🔴 **Per the standing rule above: a clean log — or in this case an absent one — is not verification.**
 
 
 ---

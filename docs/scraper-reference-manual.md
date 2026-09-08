@@ -1,6 +1,6 @@
-HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V1.2
+HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V1.4
 
-**Version 1.2 · 8 September 2026**
+**Version 1.4 · 9 September 2026**
 
 *This documents the discovery pipeline: a separate codebase path, a separate runtime and a separate deploy path from the Next.js app. It exists because this pipeline had never been documented, and that cost three months of silent venue-creation failure — nobody could tell "few trucks scraped" from "few venues created" from "nothing ran", because none of it was written down and every failure exits 0.*
 
@@ -11,6 +11,113 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ---
 
 # CHANGELOG
+
+## V1.4 — 9 September 2026 — THE APPS SCRIPT IS READ: IT NEVER HELD A DATABASE KEY, IT DELETES FROM THE SHEET IN FOUR PLACES AND NEVER FROM THE DATABASE, IT CREATES TRUCKS AND VENUES THE DATABASE NEVER SEES, IT GEOCODES WITHOUT A GAUNTLET, AND ITS FOUR TRIGGERS BELONG TO SOMEONE ELSE
+
+**Delta — one document read for the first time: the Google Apps Script bound to the Sheet, "ULTIMATE MASTER PRODUCTION BUILD (v6.57)", 1,425 lines, copied verbatim to `docs/apps-script/village-foodie-v6.57.js` and documented function by function in new §16. Three claims in this manual and two reports corrected in place. No code changed.** (`docs/apps-script-documentation-report.md`)
+
+### 🔴 THE LOAD-BEARING CORRECTION — IT DOES NOT WRITE THE DATABASE. IT POSTS TO THE APP.
+
+- **OLD VALUE (audit §5, plan §5, this manual §8.4 and UNREAD):** *"An external writer holds a Supabase write key"* / *"writes `discovery_events` directly"*. 🔎 **`mirrorEventsToSupabase:32-52` is a `UrlFetchApp.fetch` of `https://www.villagefoodie.co.uk/api/inbound-schedule` with `INBOUND_SCHEDULE_SECRET`.** The only Supabase key in the file is `SUPABASE_ANON_KEY`, used for one **GET** (`:850`). **The `Drive Screenshot` rows were real; the inference was wrong.** §16.4.
+- 🧪 **The data confirms the route:** `Drive Screenshot` rows carry `venue_id` on 426/511 and `discovery_truck_id` on 476/511 — the route's `findVenue` enrichment — while the scraper's own `URL:` rows carry `venue_id` on 1,133/2,952. **Every Apps-Script event went through `findVenue`; no scraper event did.**
+- 🔴 **And the route's answer is never checked** — `muteHttpExceptions: true`, no `getResponseCode()`, then `logToSheet("Mirrored …")` unconditionally (`:54`). **A "Mirrored" line in the Logs tab proves a POST, not a write.**
+
+### 🔴 THE RETRO-DELETE — exclusion-poisoning was DESTRUCTIVE, not merely silencing (new §16.2)
+
+- 🔎 `processVendorEmails:230-245`: a model-proposed `exclusionsToAdd` term is appended to the Exclusions tab with the same three checks as `run-scraper.js:780-782` and **no check against the Trucks tab** — **and then every Events-tab row whose truck name contains or is contained by it is deleted.** §11 described the silencing half; **this is the erasing half, and it runs on a time trigger.**
+- 🧪 One term (`azaharspanish`) would delete 1 future row today. Who added this afternoon's three removed truck names stays UNRESOLVED — but 🔎 this is the only automated writer of that tab that also deletes.
+
+### 🔴 TWO `isFuzzyMatch`, ONE NORMALISER (new §16.3)
+
+- 🔎 Apps Script `:1243` is **substring containment**; `run-scraper.js:66-92` is **1-edit Levenshtein**. 🧪 `kerief`/`keriefkitchen`: containment TRUE, Levenshtein false; `pizzamondo`/`pizzamundo`: the reverse. 🧪 **The 143 exclusion terms poison 5 Sheet truck names under the scraper's rule and 7 under the script's** (`+ Azahar, Wintringham`) — **and the destructive function uses the looser rule.**
+- 🔎 `normalizeTruckKey` and `normalizeName` are **identical regex for regex** and 🧪 **identical on all 3,536 real strings**; the only difference is `String()` coercion (the scraper throws on a number, the script does not).
+
+### 🔴 DELETES NEVER MIRROR; CREATES NEVER MIRROR (new §16.5, §16.6)
+
+- 🔎 **Four `deleteRow` sites** — `removePastEvents:1323`, `removeDuplicateEvents:1314`, the retro-delete `:245`, the AMEND/CANCEL replace `:424` — **none followed by any call outside the Sheet.** **This is the whole explanation for 3,577 past rows in the database against 0 in the Sheet** (§8.3–8.4): the pruner is `removePastEvents`, on a trigger, against the Sheet only.
+- 🔴 **A vendor's emailed CANCEL deletes the Sheet row and appends nothing, so the event stays live on the public map.** An AMEND with a venue change adds a second DB row and leaves the old one.
+- 🔴 **Hard constraint on the migration, now source-read:** the Sheet is a pruned view and the DB the unpruned ledger **by construction**. `DEDUP_FROM=db` inherits every containment-duplicate and every cancelled row; the suppression table must be fed by these four sites too.
+- 🔎 `trucksSheet.appendRow` (`:349`, `:668`) and `venuesSheet.appendRow` (`:380`, `:711`) reach the Sheet only. 🧪 **Of the 348 Sheet-only venues, 203 carry the SCRAPER's marker and 145 are unmarked — so at most 145 (ceiling, not count) are the script's; 122 of those have coordinates and no postcode, the script's exact shape.** The prompt's premise that Sheet-only creation "accounts for" the 348 is **wrong by a majority**: the scraper's 42P10 era does.
+- 🔎 `'Yes - New Truck'` has **three writers**: the script → Sheet col T (`:344`, `:666`); the scraper → **DB** `exclude_reason` (`run-scraper.js:1689`, while writing plain `'Yes'` to the Sheet); `migrate-from-sheets.cjs:72`. 🧪 Sheet 22 / DB 12. **The Sheet's are the script's; the DB's cannot be attributed.**
+
+### 🔴 A SECOND GEOCODER, UNVALIDATED (new §16.7)
+
+- **OLD VALUE (V1.1, `:143`):** *"Every coordinate now comes from postcodes.io or the venue is stored with none."* ⚠️ **Corrected: true of the scraper only.** 🔎 Four functions call the Google Maps Geocoding API and write the first result into the Sheet — `:368-374`, `:694-700`, `:1406-1410`, `:780-793` — with **no postcode check, no gauntlet, no sentinel test.** 🧪 **158 `venues` rows carry coordinates and no postcode today.** Step 3 of the plan must run the gauntlet over rows that "already have coordinates".
+
+### THE TRIGGERS, AND AN OPEN RISK (new §16.1)
+
+- 🧪 **Four time triggers, read by the owner from the editor on 9 September:** `removePastEvents`, `removeDuplicateEvents`, `processVendorEmails`, `processFoodTruckScreenshots` — **frequencies UNKNOWN (column cut off); recorded as AUTOMATED, not inferred from the code.** The retro-delete therefore runs **unattended**.
+- 🔴 **All four are "Owned by: Other user".** If that account loses access, all four stop **with no error anywhere** — not in Logs, Actions or the app. **OPEN.**
+- Also read: `Vendor Ingest`, `Manual Checks`, `Facebook Posts` and the Trucks `Sheet ID` column are **named nowhere in the script** — the plan's open question on `Vendor Ingest` closes (drop). The Logs tab is a **500-row rolling window** (`:83-85`); `file.setTrashed(true)` fires on success **and** on zero events (`:752`); an event with **no truck logo is never emailed** (`:871`); `[⚠️ TIME CLASH]` is written into Events col 9 and read by nothing (`:1303`).
+
+### THE STANDING LESSONS FROM THIS PASS
+
+- 🔴 **"It writes the database" was inferred from timestamps and a log line for three reports. One read of the source overturned it.** A row's `created_at` proves a writer exists, not what key it held.
+- 🔴 **A log line written after a fetch with `muteHttpExceptions` is a claim about the fetch, not the result.** Name what the line proves.
+- 🔴 **Two functions with one name and different semantics will be read as one function.** The divergence was invisible until both were executed on the same 143 strings.
+
+## V1.3 — 8 September 2026 (afternoon) — THE HEADLINE OF V1.1 AND V1.2 WAS WRONG AGAIN AND IS ONE DAY OLD, A TRUCK CAN BE SILENCED IN THREE PLACES OF WHICH ONE HAS A UI, THE FILTER THAT ATE SIX GOOD EVENTS IS FIXED WHILE THE LOOP THAT POISONS IT IS NOT, AND A RULE I PROPOSED THIS MORNING IS WITHDRAWN BECAUSE I MEASURED IT
+
+**Delta — a documentation pass over seven investigations and two shipped changes (`scroll-lazy-silence-report.md`, `exclusion-check-position-report.md`, `exclusions-provenance-report.md`, `saffron-walden-extraction-report.md`, `truck-radius-report.md`, `ai-notes-postcode-report.md`, `postcode-flag-guard-report.md`). The 51-silent-trucks section rewritten; new §10 (three silencers), §11 (the exclusion filter), §12 (Saffron Walden), §13 (the third guard and two dead rules), §14 (`ai_notes` postcodes), §15 (today's deploy).**
+
+⚠️ **Everything in this entry post-dates the body below and post-dates the V1.2 entry above it, which was written THIS MORNING. Where they disagree, this entry is current.**
+
+### 🔴 THE LOAD-BEARING CORRECTION — THE SILENT-TRUCK DIAGNOSIS WAS WRONG TWICE, AND THE SECOND VERSION WAS ONE DAY OLD
+
+- 🔴 **OLD VALUE (V1.1 heading and V1.2 body): "100% of failures are `scroll_lazy`; every `manual` / `click_next` / `scrape_rules` truck works."** 🧪 **CONTRADICTED.** Of **57 silent site-list trucks: 43 `scroll_lazy` (blank default), 4 `scroll_lazy` (explicit), 10 `manual`.**
+- 🧪 **Failure rates: `scroll_lazy` 47/82 = 57%, `manual` 10/22 = 45%.** ⚠️ **Much closer than 100% vs 0%, and PARTLY BASE RATE — 82 of 109 sites are `scroll_lazy`, so it would dominate any failure list even if strategy were irrelevant.** **The original claim was a base rate mistaken for a mechanism.**
+- ✅ **The single label is replaced by FOUR DISTINCT CAUSES**: exclusion-filter kills (**proven**, 5), trucks **genuinely with no events** (**not a fault**), **Facebook pages behind logged-out walls** (33), and **10 `manual` trucks that never fetch a page at all and remain UNEXPLAINED**.
+- ✅ **[RESOLVED] A Facebook page has now actually been fetched** — 🧪 a 2,272-character logged-out wall, not a listings page. **Nobody had ever fetched one before making claims about them.**
+- 🔴 **The 10 `manual` trucks stay OPEN. Do not let the four-cause table read as closed.**
+
+### 🔴 A TRUCK CAN BE SILENCED IN THREE PLACES AND ONLY ONE HAS A UI (new §10)
+
+- `discovery_trucks.excluded` (✅ admin toggle) · **the Sheet's Exclusions tab (🔴 no interface anywhere)** · **hard-coded prose inside a site's `ai_instructions` (🔴 free text, no interface)**. **They share no state and no audit trail.**
+- 🔴 **An operator can read `excluded = false` in the console, look fine, and still be silent.** 🧪 Steak & Honour was exactly that.
+- 🧪 **The Common's instruction says "Do NOT extract Kerief or Just Baked By Sophie" — and both are on The Common today.** **That pass under-extracts two trucks a week and nothing reports it.** ⚠️ **A rule written as prose ages silently; nothing type-checks a sentence.**
+
+### THE EXCLUSION FILTER — FIXED IN ONE PLACE, STILL OPEN IN ANOTHER (new §11)
+
+- ✅ **FIXED.** 🔎 The check tested the **model's extracted** name **twenty lines before the `finalTruck = site.name` stamp** (now `:859-869` and `:885` — the prompt's `:851` / `:871` are stale) — so on a truck's own page the set was applied to that truck. 🧪 **Steak & Honour lost six correctly-extracted events from a page that fetched, captured and extracted perfectly.** Now gated on `site.sourceType !== 'truck'`; 🧪 **143/143 terms still excluded on a venue page, 0/143 on a truck page.** ⚠️ Accepted cost recorded: **a truck page listing a quiz night will now keep it** (🧪 0 of 143 terms fire there today).
+- 🔴 **STILL OPEN: `:784-790` appends the model's raw `exclusionsToAdd` — only the three checks at `:780-782` — and never consults `validTrucks`, which is in scope at `:455`.** **A self-poisoning loop whose only symptom is silence.** ⚠️ **Deferred deliberately** — its guard sits two lines from the awaited-writes hunk and cannot be staged separately.
+- ⚠️ **UNRESOLVED: who added or removed the three truck names (146 → 143 rows in two hours).** 🧪 No timestamps, no author column, and **the Drive revision history is unreadable — the Drive API is disabled on project `227274860029`.** 🔴 **I could not tell machine rows from human rows and did not guess.**
+
+### SAFFRON WALDEN — ROOT CAUSE FOUND, FIX STILL OPEN (new §12)
+
+- 🧪 **The URL is listed TWICE in the Venues tab (rows 359/360), so the page is parsed twice per run**, both passes receiving the identical **1,542-char flat `innerText`** with both pitch lists. **Server-rendered — client-side rendering ruled out.**
+- 🔴 🔎 **`:920` stamps `finalVenue = site.name` unconditionally for venue-sourced sites, discarding the model's own venue field.** **STILL OPEN, and it affects all 7 venue-page sites, not just this one.**
+- **Intermittency is instruction asymmetry:** *stop-at-marker* (The Common, 🧪 obeyed on every date) vs *skip-the-prefix over the longer list* (Railway Arms, 🔴 fails ~25%). 🧪 Reproduced live: 9 trucks returned where the true split is 7 / 2.
+- ⚠️ **CORRECTION — OLD VALUE: "on 4 June the same URL produced nine trucks at nine DISTINCT pitches".** 🧪 **The page has only ever had two pitches.** 4 June was 7 rows across 2 pitches. **The substance — 12 of 16 dates are clean — holds.**
+
+### 🔴 TWO RULES DIED THIS AFTERNOON, ONE OF THEM MINE FROM THIS MORNING (new §13)
+
+- 🔴 **POSTCODE ARBITRATION IS WITHDRAWN, NOT GATED.** It minimises **candidate-coordinate to candidate-postcode** — **a quantity with no term for where the EVENT is** — so it elects the tidiest row. 🧪 **`findVenue` alone 11/15; with arbitration 3/15.** 🧪 **It overrode 753 of 1,011 rows** and 🧪 **won one tie from 97 km away.** ⚠️ **It had been validated on ONE case where the right answer and the tidiest row coincided. One passing case is not a control.**
+- 🔴 **TRUCK-RADIUS IS A REVIEW TRIGGER, NOT AN AUTO-REJECT** — COMPACT 25 km / REGIONAL 50 km / WIDE 100 km. 🧪 **Catches 15 of 21 known-bad links but ACCEPTS the 44.1 km Swan mislink.** 🧪 **61% of trucks (105/173) have 0 or 1 anchor and must HOLD, never accept.**
+- ⚠️ **The gauntlet removed only 7.5% of pairs and HALVED the pooled p95, 383 km → 194 km. Bad coordinates were manufacturing the upper half of the distribution** — the "trucks travel hundreds of km" impression was an artefact.
+- ⚠️ **The gauntlet fails 20 venues today, not V1.1's 103.** Those corrections have landed; **V1.1's figure is stale, not wrong-at-the-time.**
+- ✅ **SHIPPED: guard three — a postcode DISAGREEMENT FLAG that does not adjudicate.** 🧪 **46.7% confirmed / 34.1% flagged.** 🔴 **`Thirsty` [Cambridge] flags at 24.14 km where the POSTCODE is the wrong half — had the guard been allowed to decide, it would have decided wrongly on its own showcase case.** ⚠️ **205 of 221 rows are UNCHECKED (93%)**, and 🔴 **it sees only UNLINKED candidates, so the already-linked `Worlington` and `Wilbraham` rows that motivated it are invisible to it as wired.**
+
+### `ai_notes` CARRIES POSTCODES AND NOTHING READS THEM (new §14)
+
+- 🧪 **774 of 2,229 unlinked rows carry a full UK postcode. No code path reads it.**
+- 🔴 **Coverage is STRUCTURAL, not random: 1,100 of 1,104 come from `URL:` alone; `Drive Screenshot` (511 rows, only `[📱 Drive]`), `hg_scraper`, `hatchesup_scraper` and `Manual Entry` produce ZERO.** ⚠️ **It is not a sample, and any rule needing it is unavailable for 1,455 rows by construction.**
+- ⚠️ **Only 146 distinct postcodes — 731 placeable rows are 145 places. 731 of 2,229 = 32.8%.**
+- ✅ 🧪 **It gets both known `findVenue` failures right and catches a venue stored 370 km away in Cumbria (`Worlington` / `Workington`) — a class the coordinate gauntlet structurally cannot see, because a coordinate 370 km away is still a valid coordinate.**
+- 🔴 **Good at catching, proven bad at choosing. Different jobs.**
+
+### TODAY'S DEPLOY (new §15)
+
+- 🧪 **Three commits, `HEAD` = `origin/main` = `6fe8634`, pushed 17:38.** ⚠️ Two admin files remain uncommitted behind it.
+- 🔴 **The scraper's red-on-failure changes mean runs that previously went GREEN MAY NOW GO RED, starting with the 06:00 cron. A red run tomorrow is not automatically a regression** — check which failure it names.
+- 🔴 **`supabase/migrations/20260907_discovery_run_log.sql` is WRITTEN AND NOT APPLIED.** The code **warns once on `42P01` and continues**, so the run log **does not exist yet**. ⚠️ A survivable warning is one that is easy to stop noticing.
+- ⚠️ **"Deployed" is asserted, not verified here** — I read the commits and the push, not a Vercel build record.
+
+### THE STANDING LESSONS FROM THIS PASS
+
+- 🔴 **A headline can be wrong twice.** "One strategy" survived from V1.1 into V1.2 because nobody re-measured it; the four-cause table exists because someone finally did. ⚠️ **Check the base rate before naming a mechanism.**
+- 🔴 **Measure your own proposal before documenting it as a plan.** Postcode arbitration read beautifully and scored **3/15**. **It was killed by the same method that would have prevented it.**
+- 🔴 **A guard that would decide wrongly on its showcase case must not be allowed to decide.** That is the entire argument for FLAG over FIX.
+- ⚠️ **Fixing one end of a loop is not fixing the loop.** The exclusion filter no longer eats trucks; the writer that puts trucks into it is untouched.
 
 ## V1.2 — 8 September 2026 — THE MANUAL'S OWN DIAGNOSIS OF ITS HEADLINE FAILURE WAS WRONG, THIRTEEN POINTERS WERE STALE, TWO "DELETION EVENTS" WERE NEITHER, AND A WRITE HAS BEEN FAILING LOUDLY FOR THREE MONTHS INTO A CHANNEL NOBODY READS
 
@@ -35,7 +142,7 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 
 - 🔎 **Nothing in this repository deletes from `discovery_events`, `discovery_trucks` or `venues`** — six sweeps, every extension. 🧪 **No cascade can either**: every FK pointing in is `ON DELETE SET NULL`, nothing references `discovery_events` at all, and `outreach_prospects` *blocks* a discovery-truck delete.
 - 🧪 **No duplicate rule and no old-event rule has ever run against Supabase. 3,577 past-dated rows survive, oldest 2026-05-22, flat across every month.** The absence of duplicates is the unique index refusing them, not a cleaner removing them.
-- 🔴 **The pruning that does exist acts on the Sheet's Events tab and belongs to the Apps Script outside this repo** — which 🧪 also **writes `discovery_events` directly** and **creates `venues`**. It is now load-bearing in three reports and its code is **UNREAD**.
+- 🔴 **The pruning that does exist acts on the Sheet's Events tab and belongs to the Apps Script outside this repo** — which 🧪 also ~~**writes `discovery_events` directly**~~ ⚠️ **[CORRECTED V1.4: it does NOT write the database directly — it POSTs to `/api/inbound-schedule` with the shared secret; §16.4]** and **creates `venues`** ~~in the database~~ **[V1.4: in the SHEET only; §16.6]**. ~~It is now load-bearing in three reports and its code is **UNREAD**.~~ ✅ **[READ V1.4 — `docs/apps-script/village-foodie-v6.57.js`, §16.]**
 - ⚠️ **V1.1's `ignoreDuplicates` note was half wrong**: after a delete the venue row *does* return; the hand-applied coordinate does not.
 
 ### 🔴 TWO "DELETION EVENTS", NEITHER OF WHICH WAS A DELETION (new §9)
@@ -59,6 +166,8 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 
 ## V1.1 — 7 September 2026 — VENUE CREATION BROKEN SINCE JUNE BY A KEY THAT COULD NEVER MATCH, A GEOCODER THAT WAS INVENTING RATHER THAN ESTIMATING, A MATCHER THAT IGNORED THE VILLAGE, AND 51 SILENT TRUCKS THAT TURNED OUT TO BE ONE STRATEGY
 
+⚠️ **SUPERSEDED IN PART BY V1.3: the last clause of this heading — "51 SILENT TRUCKS THAT TURNED OUT TO BE ONE STRATEGY" — IS WRONG. There are four causes, not one strategy. See the V1.3 entry and §on the silent trucks.**
+
 **Delta — venue creation found broken since 11 June by a conflict key that could never resolve; the geocoder demoted from oracle to postcode suggester; the venue matcher found to skip the village entirely in one branch; 312 links applied taking the map from 69 pinnable events to 396; 54 venue coordinates corrected out of a re-derived bad list of 103, not 40; and the 51 silent trucks traced to one strategy rather than fifty-one faults.**
 
 ⚠️ **Everything in this entry post-dates the body of this manual, which was written the same morning.** Where the two disagree, this entry is current and the section below has been corrected in place.
@@ -75,7 +184,7 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ### THE GEOCODER WAS NOT ESTIMATING. IT WAS INVENTING.
 
 - 🔴 **26 PRODUCTION VENUES CARRIED PLACEHOLDER DECIMALS** such as `52.1234, 0.1234`, and **13 SAT AT THE CENTROID OF GREAT BRITAIN.** p90 error was **10 km against the model's own postcode**. Two of those pins were live on the public map.
-- ✅ **THE MODEL IS DEMOTED FROM GEOCODER TO POSTCODE SUGGESTER.** Every coordinate now comes from **postcodes.io** or the venue is stored with none. The model still suggests a postcode; it no longer decides where a place is.
+- ✅ **THE MODEL IS DEMOTED FROM GEOCODER TO POSTCODE SUGGESTER.** ~~Every coordinate now comes from **postcodes.io** or the venue is stored with none.~~ ⚠️ **[CORRECTED V1.4: TRUE OF THE SCRAPER ONLY. The Apps Script still calls the Google Maps Geocoding API from four functions and writes lat/lng straight into the Sheet with no postcode check, no gauntlet and no sentinel test — §16.7. 🧪 158 `venues` rows carry coordinates and no postcode today.]** The model still suggests a postcode; it no longer decides where a place is.
 - ✅ **A FIVE-CHECK GAUNTLET, THRESHOLDS DERIVED FROM THE LIVE TABLE.** 5 km from its own postcode catches every named failure while passing the p75 rural offset. **The sentinel set is built at runtime, so it found the GB centroid without being told about it.**
 - 🔴 **AMBIGUOUS VILLAGE NAMES NOW GET NO PIN, AT A MEASURED COST OF 21%.** "Newton" is 20 places across 576 km; a first draft resolved "Barrow" to Lancashire. **This trades wrong pins for fewer pins.** Whether ambiguous matches should instead store at low confidence and surface for approval is an open decision.
 - ⚠️ **THE MODEL IS DETERMINISTIC HERE — 4/4 IDENTICAL.** So the stability argument for freezing coordinates is weaker than assumed; the reason to keep `ignoreDuplicates` is caution, not measured drift.
@@ -102,11 +211,22 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 - ✅ **EVERY LINK WAS RE-DERIVED FROM THE DATABASE RATHER THAN READ FROM THE EMITTED FILE.** A generated artefact and the current data can disagree, and that is how a stale file gets applied.
 - ⚠️ **21 LOW-CONFIDENCE LINKS COVERING 185 EVENTS HAVE NO MEASURABLE DISTANCE**, because their village is a landmark phrase — "Near the Co op Store". **Their risk is unknown rather than zero.** 🔴 **Do not read an unusual venue name as bad data: pitches are often located by reference to a nearby business, because that is how the trucks describe where they park.**
 
-### 🔴 THE 51 SILENT TRUCKS — ONE STRATEGY, NOT FIFTY-ONE FAULTS
+### 🔴 THE 51 SILENT TRUCKS — ⚠️ **NOT ONE STRATEGY. FOUR DIFFERENT CAUSES, ONE OF WHICH IS NOT A FAULT** (corrected V1.3)
+
+> 🔴 **THE HEADING ABOVE USED TO END "ONE STRATEGY, NOT FIFTY-ONE FAULTS", AND THAT WAS THE ERROR.** Collapsing them under one label is what stopped anyone fetching a page for a day. 🧪 The four causes, measured 8 September:
+>
+> | cause | count | status |
+> |---|---|---|
+> | **Exclusion-filter kills** — the truck's own name is in the Sheet's Exclusions tab | **5** | 🟢 **PROVEN and FIXED** — §4.8, §11 |
+> | **Genuinely no events** — the page says so | 2 of 2 Hatches Up pages tested | 🟢 **NOT A FAULT AT ALL** — counting these as failures was a measurement error |
+> | **Facebook logged-out walls** | **33** of the 52 non-excluded | 🔴 real capture failure, different fix, **may not be fixable** |
+> | **`manual` trucks that never fetch a page** | **10** | 🔴 **UNEXPLAINED — outside every hypothesis this section ever contained** |
+>
+> ⚠️ 🔎 A `manual` truck sets `cleanText = ""` and builds a rules prompt instead (`:637-641`), **so whatever silences those ten cannot be a fetch or capture problem and cannot be `scroll_lazy`.** OPEN.
 
 - 🔴 **52 URL-SCRAPED TRUCKS HAVE ZERO FUTURE EVENTS. ONLY 44 OF 175 HAVE ANY.**
-- 🔴 **THERE IS NO DATE CLUSTERING — 33 SEPARATE STOP DAYS — BUT THERE IS SEVERE CLUSTERING BY STRATEGY. 100% OF FAILURES ARE `scroll_lazy`. EVERY `manual`, `click_next` AND `scrape_rules` TRUCK WORKS.** 30 of 51 are Facebook, which is 73% of all Facebook trucks failing.
-- ⚠️ **NOBODY HAS FETCHED A FACEBOOK PAGE TO SEE WHAT `scroll_lazy` ACTUALLY GETS.** The correlation is strong; the cause could be blocking, a layout change, or a bug in the strategy. **Those need different fixes and one of them may not be fixable.** Open.
+- 🔴 **[CORRECTED V1.3 — THIS LINE WAS WRONG, AND IT WAS ONE DAY OLD.]** It read: *"THERE IS SEVERE CLUSTERING BY STRATEGY. **100% OF FAILURES ARE `scroll_lazy`. EVERY `manual`, `click_next` AND `scrape_rules` TRUCK WORKS.**"* 🧪 **Measured 8 September: of 57 silent site-list trucks, 43 are `scroll_lazy` (blank default), 4 are `scroll_lazy` (explicit) and 10 are `manual`.** Failure rates: **`scroll_lazy` 47/82 = 57%, `manual` 10/22 = 45%** — close, not 100% vs 0%. ⚠️ **And the clustering is partly base rate: 82 of the 109 site-list entries ARE `scroll_lazy`**, so the strategy dominating the failures is largely the strategy dominating the population. **The date-clustering half of the original claim — 33 separate stop days — still stands.**
+- ✅ **[RESOLVED V1.3] A FACEBOOK PAGE HAS NOW BEEN FETCHED.** 🧪 `scroll_lazy` against `A Taste of Jamrock` captured **2,272 characters** — of a **logged-out wall**: "Log in", a cookie-consent dialog, page metadata, and one post truncated at "See more". **No date, no venue, no schedule.** The scroll ran; there was nothing behind it. ⚠️ **One page fetched, not thirty-three.** (`docs/scroll-lazy-silence-report.md`)
 - 🔴 **THE DISCOVERY PASS WRITES NO RUN LOG. `scraper_run_log` HOLDS ONLY THE THREE OPERATOR TRUCKS.** So "scraped and found nothing" is indistinguishable from "never scraped", and the only reason any of this was noticed is that the operator happened to look at the map.
 - ✅ **`discovery_run_log` IS BUILT — MIGRATION WRITTEN, NOT APPLIED** (`supabase/migrations/20260907_discovery_run_log.sql`) — with an awaited write in the per-site `finally`, so **no row means never attempted**. Alert threshold N=14, derived from healthy write gaps (p95 = 13 days, 3 false positives). ⚠️ **The per-site write path is unexercised, because a zero-site run never enters the loop.**
 
@@ -388,7 +508,7 @@ function normalizeName(name) {
 
 ## 4.3 Truck identification
 
-🔎 **`:871` region** (~~`:762-792`~~ — that range is now the *exclusion* write). If the site is a **truck** page, the truck **is** the site (`finalTruck = site.name`) — no matching. Otherwise: fuzzy-or-substring against Sheet truck names **and aliases**. No match ⇒ new truck, title-cased, queued with 🔴 **`newTruckRow[19] = 'Yes'`** — *"Flag as excluded/pending verification"*. **New trucks arrive excluded and need a human to admit them.**
+🔎 **`:885` region** (~~`:871`~~, ~~`:762-792`~~ — ⚠️ **re-read 8 September (evening): the exclusion-position fix added five lines above this, so `:871` is now stale**; that older range is the *exclusion* write). If the site is a **truck** page, the truck **is** the site (`finalTruck = site.name`) — no matching. Otherwise: fuzzy-or-substring against Sheet truck names **and aliases**. No match ⇒ new truck, title-cased, queued with 🔴 **`newTruckRow[19] = 'Yes'`** — *"Flag as excluded/pending verification"*. **New trucks arrive excluded and need a human to admit them.**
 
 ## 4.4 Venue identification — postcode first, then scored fuzzy
 
@@ -430,7 +550,7 @@ function normalizeName(name) {
 
 ## 4.8 Exclusions
 
-🔎 Built from the Exclusions tab, normalised (**`:453`**, ~~`:430`~~). Applied fuzzily (**`:851`**, ~~`:744`~~). 🔎 The AI is also asked to return `exclusionsToAdd`, which are appended back to the Sheet (`:784`) and upserted into `excluded_terms` (**`:792`**, ~~`:688`~~) — ⚠️ that write is also `console.warn`-on-error.
+🔎 Built from the Exclusions tab, normalised (**`:453`**, ~~`:430`~~). Applied fuzzily (**`:860`**, ~~`:851`~~, ~~`:744`~~ — ⚠️ **re-read 8 September (evening); the V1.3 fix moved it**). 🔎 The AI is also asked to return `exclusionsToAdd`, which are appended back to the Sheet (`:784`) and upserted into `excluded_terms` (**`:792`**, ~~`:688`~~) — ⚠️ that write is also `console.warn`-on-error.
 🔎 **Hard filter:** any event whose `venueName + notes` contains **`private`** is dropped (`:755`).
 
 ## 4.9 Pass B pacing
@@ -513,7 +633,7 @@ const { error: exErr } = await supabase.from('excluded_terms').upsert({
 
 🔎 `app/api/manage/route.ts:2160-2180` reads, upserts and deletes this table **per truck** — `{ truck_id: truck.id, term }` with `onConflict: 'truck_id,term'`. **That feature is correct and matches the live constraint.**
 
-🔴 **But the two features mean different things.** The operator feature means *"**this truck** does not want this term"*. The scraper's exclusion set means *"this string is **not a food truck at all**"* — 🔎 applied globally at `:851` against every extracted name, and its members are things like `TBC`, `live music`, `quiz nights`. **A global term has no `truck_id` to put in a NOT NULL column.** Sharing the table needs a sentinel truck row or a nullable `truck_id` with a partial unique index — and a nullable `truck_id` reintroduces the §5.3 nulls fault for real. **OPEN: no fix is proposed here, and the two features cannot both use this table as it stands.**
+🔴 **But the two features mean different things.** The operator feature means *"**this truck** does not want this term"*. The scraper's exclusion set means *"this string is **not a food truck at all**"* — 🔎 applied globally at **`:860`** (~~`:851`~~ — re-read 8 September, evening) against every extracted name, and its members are things like `TBC`, `live music`, `quiz nights`. **A global term has no `truck_id` to put in a NOT NULL column.** Sharing the table needs a sentinel truck row or a nullable `truck_id` with a partial unique index — and a nullable `truck_id` reintroduces the §5.3 nulls fault for real. **OPEN: no fix is proposed here, and the two features cannot both use this table as it stands.**
 
 ## 5.5 `ignoreDuplicates: true`
 
@@ -536,6 +656,12 @@ const { error: exErr } = await supabase.from('excluded_terms').upsert({
 | 9 | ⚠️ **`shouldRunToday` is disabled** (`return true` then unreachable code) | 🔎 Source-read |
 | 10 | ⚠️ **Two venue matchers** — the scraper's scorer and `findVenue` — can disagree | 🔎 Source-read |
 | 11 | 🔴 **STILL TRUE — the fixed venue write has never executed** | The upsert *semantics* were proven with a synthetic row; **the scraper has still not been run.** The same now applies to the `discovery_run_log` per-site write (V1.1). |
+| 12 | ✅ **FIXED V1.3 — the exclusion filter was applied to trucks on their own pages** | 🔎 The check tested the extracted name **20 lines before the `finalTruck = site.name` stamp** (pre-fix `:851` / `:871`; **now `:859-869` and `:885`**). 🧪 **Steak & Honour lost six correctly-extracted events.** Now gated on `site.sourceType !== 'truck'`; 🧪 **143/143 excluded on venue pages, 0/143 on truck pages.** §11.1 |
+| 13 | 🔴 **STILL OPEN — `:784-790` appends the model's raw `exclusionsToAdd` unguarded** | 🔎 Source-read. Three checks only, at `:780-782` (non-empty, is-a-string, not-present); 🔎 `validTrucks` is in scope at `:455` and **never consulted**. **A self-poisoning loop whose only symptom is silence.** ⚠️ Deferred: its guard collides with the awaited-writes hunk. §11.2 |
+| 14 | 🔴 **STILL OPEN — `:920` stamps `finalVenue = site.name` unconditionally** | 🔎 Source-read. Discards the model's own venue field on **all 7 venue-page sites**. 🧪 Reproduced live on Saffron Walden: 9 trucks returned where the true split is 7 / 2. §12 |
+| 15 | 🔴 **STILL OPEN — prose rules inside `ai_instructions` age silently** | 🧪 The Common's instruction says *"Do NOT extract Kerief or Just Baked By Sophie"* and **both are on The Common today** — **that pass under-extracts two trucks a week and nothing reports it.** §10 |
+| 16 | 🔴 **STILL OPEN — 10 silent `manual` trucks, UNEXPLAINED** | 🧪 They never fetch a page, so none of the three explained silence causes applies. §on the four causes |
+| 17 | ⚠️ **NEW V1.3 — the `discovery_run_log` table does not exist** | 🧪 `supabase/migrations/20260907_discovery_run_log.sql` is **written and NOT APPLIED**; the code warns once on `42P01` and continues. **Nothing is being recorded.** §15 |
 
 ---
 
@@ -607,7 +733,7 @@ const showCol = isHG ? 'show_on_hg' : 'show_on_vf'
 
 ## 8.4 What DOES prune — the Sheet, from outside this repository
 
-🧪 The Sheet's **Events** tab holds **713 rows, all future, none past** — against 3,577 past rows in the database. 🔎 The scraper only appends to it. 🔴 **An Apps Script project outside this repo prunes that tab, and because `existingEvents` is built from it (§4.5), that pruner defines the dedup window.** The same project writes `discovery_events` and creates `venues` (see WHAT I COULD NOT READ). **Its predicate and schedule are UNREAD.**
+🧪 The Sheet's **Events** tab holds **713 rows, all future, none past** — against 3,577 past rows in the database. 🔎 The scraper only appends to it. 🔴 **An Apps Script project outside this repo prunes that tab, and because `existingEvents` is built from it (§4.5), that pruner defines the dedup window.** The same project ~~writes `discovery_events`~~ **[V1.4: POSTs to `/api/inbound-schedule`]** and creates `venues` **[V1.4: in the Sheet only]**. ~~**Its predicate and schedule are UNREAD.**~~ ✅ **[READ V1.4 — the predicate is `removePastEvents` (§16.5): every row dated before today in the Sheet's timezone, on a time trigger; frequency UNKNOWN.]**
 
 ## 8.5 The one scheduled delete in the pipeline — and it is not on these tables
 
@@ -624,7 +750,7 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 
 ## 8.7 Still UNREAD
 
-- 🔴 The Apps Script's code, triggers and Events-tab predicate.
+- ~~🔴 The Apps Script's code, triggers and Events-tab predicate.~~ ✅ **[RESOLVED V1.4 — code read (§16); four time triggers listed by the owner on 9 September 2026, frequencies UNKNOWN; predicate is `removePastEvents`.]**
 - 🔴 Whether a `pg_cron` job or a non-internal trigger exists that no migration records. **`cron.job` and `pg_trigger` are unreachable through PostgREST.** One query in the SQL editor settles it: `select * from cron.job;` and `select tgname, tgrelid::regclass from pg_trigger where not tgisinternal;`
 - ⚠️ Whether RLS is enabled on the three tables in production. **No policy in this repository grants DELETE on any of them.**
 
@@ -668,6 +794,329 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 
 ---
 
+# 10. 🔴 THE THREE INVISIBLE SILENCERS — AND ONLY ONE HAS A UI
+
+**A truck can be silenced in three independent places. They share no state, no interface and no audit trail. That they are separate is the finding.** (`docs/exclusions-provenance-report.md`, `docs/scroll-lazy-silence-report.md`, `docs/saffron-walden-extraction-report.md`)
+
+| # | mechanism | where it lives | interface | audit |
+|---|---|---|---|---|
+| 1 | `discovery_trucks.excluded` | database column | ✅ **admin toggle** (🔎 `app/admin/page.tsx:1362-1370`) and it gates the public API (🔎 `app/api/discovery/events/route.ts:146, 254, 339`) | none |
+| 2 | **The Sheet's Exclusions tab** | Google Sheet, one column | 🔴 **NONE. No UI anywhere.** | 🔴 none — no timestamp, no author, single column |
+| 3 | **Hard-coded prose inside a site's `ai_instructions`** | Sheet, Venues col K / Trucks col O | 🔴 **NONE, and it is free text** | 🔴 none |
+
+🔴 **An operator can be `excluded = false` in the admin console, visibly fine, and still be silent — because of (2) or (3), neither of which the console shows.** 🧪 That is exactly what happened to Steak & Honour: `excluded = false`, page rendering perfectly, six events extracted correctly, all discarded.
+
+**On (3), the mechanism most likely to be forgotten:** 🧪 the Venues-tab instruction for *Off The Beaten Truck - The Common* contains, verbatim, **"Do NOT extract Kerief or Just Baked By Sophie."** 🧪 On today's page **both of those trucks are listed under The Common.** The instruction hard-codes a truck→pitch assignment that has since changed, so **that pass under-extracts two trucks every week and nothing reports it.**
+
+⚠️ **This is the shape to watch for, not just these three instances: a rule written as prose ages silently.** Nothing type-checks a sentence.
+
+---
+
+# 11. THE EXCLUSION FILTER — FIXED IN ONE PLACE, STILL OPEN IN ANOTHER
+
+## 11.1 ✅ FIXED 8 September 2026 — the check was in the wrong place
+
+🔎 The check tested `normalizeName(truckName)` — the **model's extracted** name — and `continue`d, **twenty lines before the line that sets `finalTruck = site.name` for truck pages.** ⚠️ **POINTERS, RE-READ AGAINST THE COMMITTED FILE 8 September (evening): the check is now `:859-869`, `isExcluded` at `:861`; `finalTruck = site.name` is at `:885`. The prompt-era numbers `:851` / `:871` are STALE — the fix itself added five lines, so the gap reads as 25 now and was 20 before it.** So on a truck's own page the set was asking *"is this truck a non-truck?"* about a truck whose identity was already settled by the site list.
+
+🧪 **Cost: Steak & Honour lost six correctly-extracted events**, from a page 🧪 `scroll_lazy` read perfectly (617 chars, all six with postcodes) and 🧪 the real Gemini prompt extracted perfectly (6 events, valid JSON). **Fetch, capture and extraction all succeeded; the filter threw the result away.**
+
+✅ **The fix (`docs/exclusion-check-position-report.md`):** the match is split into `termHit`, and `isExcluded = termHit && site.sourceType !== 'truck'`. 🧪 **Proven by feeding all 143 tab terms back in against both source types: 143/143 still excluded on a VENUE page, 0/143 on a TRUCK page.** ⚠️ `!== 'truck'` rather than `=== 'venue'` so a source type added later keeps the filter **on** by default.
+
+⚠️ **A near-miss log was added with it**, because without one the fix is invisible — a poisoned term simply stops biting and nobody learns the tab still holds a truck name. 🧪 All three currently-blocked trucks trip it on the next run.
+
+⚠️ **Accepted cost, recorded rather than discovered later: a truck page that lists a quiz night will now keep it.** 🧪 Zero of the 143 terms fire on truck pages today, so nothing is being let through — but the exposure is real.
+
+## 11.2 🔴 STILL OPEN — `exclusionsToAdd` IS UNGUARDED
+
+🔎 **`:784-790`** appends the model's raw string to the Exclusions tab and to the live in-memory set. **Its only checks are the three at `:780-782`: non-empty, is-a-string, and not-already-present.** 🔎 `validTrucks` is built at **`:455`** and is **in scope** (it is used 100 lines later at `:888`); **nothing here consults it.** ⚠️ **Re-read against the committed file 8 September (evening): the loop opens at `:779`, the append runs `:784-789`, `excludedTerms.add` is `:790`, the `excluded_terms` upsert is `:792`. `:784-790` is CORRECT — an earlier note in this pass wrongly called it stale.**
+
+🔴 **This is a self-poisoning loop whose only symptom is silence, and it will recur.** 🔎 **`:790`** also does `excludedTerms.add(cleanEx)`, so a term takes effect on the remaining sites of **the same run**, before anyone sees the Sheet.
+
+⚠️ **Deferred deliberately, not overlooked:** the guard belongs at **`~:782`**, **three lines** after the `for (const ex of exclusionsToAdd)` line (**`:779`**) that the awaited-writes workstream modified — inside the same `git add -p` hunk, so it could not be staged separately. **It waits for that workstream to be committed.**
+
+## 11.3 ⚠️ PROVENANCE OF THE REMOVED ROWS — UNRESOLVED
+
+🧪 The Exclusions tab went **146 → 143 rows** between two readings two hours apart, and the three removed were exactly `Steak & Honour`, `The Noodle & Dumpling Bar` and `Kerief`. **Who removed them, and who added them, is UNKNOWN.**
+
+🔴 **It cannot be established from here.** The tab has no timestamps, no author column and 🧪 zero rows carrying anything beyond column A. 🧪 The Drive revision history — which records `lastModifyingUser` and would settle it outright — **is unavailable: the Drive API is disabled on Google Cloud project `227274860029`.**
+
+⚠️ **What IS established: the automated writer exists, is unguarded, and needs no approval (§11.2), and much of the tab is unmistakably machine-generated** — Facebook page-metadata labels (`Page · Food Truck`), a sentence truncated mid-word, dish names (`TACO TUESDAY`, `WINGS WEDNESDAY`), operator absence text (`Transit Mot due`, `Haircut`). 🔴 **That attributes no specific row, and the three truck names are exactly the rows a human might also have added. I could not tell them apart and did not guess.**
+
+---
+
+# 12. SAFFRON WALDEN — THE ROOT CAUSE, AND WHY IT IS INTERMITTENT
+
+(`docs/saffron-walden-extraction-report.md`)
+
+🧪 **`https://www.offthebeatentruck.co.uk/saffron-walden` is listed TWICE in the Venues tab — rows 359 and 360** — as two separate sites. 🔎 `:501-514` pushes both, so **the page is fetched and parsed twice per run.**
+
+🧪 Both passes receive the identical **1,542-character flat `innerText`** containing BOTH pitch lists. The page is **server-rendered**, not a shell — so client-side rendering is *not* the cause, and that had to be ruled out separately. Truck→pitch association survives only as **document order**; nothing in the text marks the boundary except the address line itself.
+
+🔴 🔎 **`:920` then stamps `finalVenue = site.name` unconditionally for venue-sourced sites, discarding the model's own `Venue Name` field entirely** (`finalVenue` is initialised at `:914`). ⚠️ **`:906` in the task prompt is STALE; `:920` re-read against the committed file 8 September (evening).** So every truck a pass returns is written to that pass's pitch, whatever the model said.
+
+**Why it is intermittent — the asymmetry, which is the whole explanation:**
+
+| row | instruction shape | result |
+|---|---|---|
+| 359 The Common | *"**stop reading** the moment you see the heading The Railway Arms"* — a **stop-at-marker** rule | 🟢 obeyed on every date |
+| 360 The Railway Arms | *"**ignore** the intro text and **the entire list of trucks for The Common**"* — a **skip-the-prefix** rule over the longer list | 🔴 fails ~25% of runs |
+
+🧪 **On all four broken dates the Railway Arms list is a strict superset of The Common's.** The Common pass never leaks the other way — not once in 16 dates. 🧪 **Reproduced live: the Railway Arms pass returned all 9 trucks when the true split is 7 / 2.**
+
+🔴 **`:920` IS STILL OPEN, AND IT AFFECTS EVERY VENUE-PAGE SITE — all 7, not just this one.** ⚠️ Two venue sites (`Nethergate Brewery`, `The White Horse`) were **never fetched**, so "only Saffron Walden is multi-pitch" is **not established**.
+
+⚠️ **CORRECTION.** An earlier account of this said *"on 4 June the same URL produced nine trucks at nine DISTINCT pitches"*. 🧪 **The page has only ever had two pitches.** 4 June was 7 rows across 2 pitches (5 + 2); the nine-row date is 11 June (7 + 2), still one pitch each. **The substance — that clean days are the norm, 12 of 16 — holds.**
+
+---
+# 13. THE THIRD LINKING GUARD, AND THE TWO RULES THAT DIED
+
+(`docs/truck-radius-report.md`, `docs/ai-notes-postcode-report.md`, `docs/postcode-flag-guard-report.md`)
+
+## 13.1 🔴 POSTCODE ARBITRATION IS WITHDRAWN — NOT GATED, NOT DEFERRED
+
+**The idea:** when `findVenue` returns several candidates, pick the one whose coordinate is nearest the postcode in `ai_notes`.
+
+🔴 **It is structurally wrong and no threshold rescues it.** It minimises the distance **from a candidate's coordinate to a candidate's own postcode** — a quantity **with no term for where the EVENT is.** It therefore elects **the internally tidiest row**, which is not the same question.
+
+🧪 **Measured on 15 hand-checked rows: `findVenue` alone 11/15 correct; `findVenue` + arbitration 3/15.** 🧪 **It overrode 753 of 1,011 rows** — it is not a tie-breaker, it is a replacement — and 🧪 **one tie was won from 97 km away**.
+
+⚠️ **How it survived to the proposal stage: it was validated on a single case where the right answer and the tidiest row happened to coincide.** One passing case is not a control. **That is the lesson worth keeping, more than the rule itself.**
+
+## 13.2 🔴 TRUCK-RADIUS IS A REVIEW TRIGGER, NOT AN AUTO-REJECT
+
+**Measured ceilings — COMPACT 25 km / REGIONAL 50 km / WIDE 100 km** (`docs/truck-radius-report.md`).
+
+🧪 **They catch 15 of 21 known-bad links — and accept the 44.1 km Swan mislink**, which sits inside a REGIONAL truck's honest range. **A rule that admits a known-bad case must not be allowed to reject on its own.**
+
+🔴 **The reason it can never auto-reject: 🧪 61% of trucks (105 of 173) have 0 or 1 anchor point.** A radius derived from one point is not a radius. **Those trucks must HOLD for review — never ACCEPT, never REJECT.**
+
+⚠️ **A finding worth more than the thresholds: the coordinate gauntlet removed only 7.5% of pairs but HALVED the pooled p95, 383 km → 194 km.** **Bad coordinates were manufacturing the entire upper half of the distribution** — the "trucks travel hundreds of km" impression was an artefact of the data, not of trucks.
+
+⚠️ **The gauntlet fails 20 venues today, not V1.1's 103.** The corrections between have landed. **V1.1's figure is stale, not wrong-at-the-time.**
+
+## 13.3 ✅ SHIPPED — GUARD THREE: A POSTCODE DISAGREEMENT FLAG THAT DOES NOT ADJUDICATE
+
+`scripts/linking-guards.ts`, appended (+99 lines, 0 removals). `POSTCODE_CONFIRM_KM = 0.5`, `POSTCODE_FLAG_KM = 2`; `checkPostcode` returns `CONFIRMED` / `NOTED` / `FLAGGED` / `UNCHECKED{reason}`. 🔴 **It returns a state. It never picks a venue and never rejects one.**
+
+🧪 **46.7% CONFIRMED / 34.1% FLAGGED** on the rows it can see.
+
+🔴 **The case that defines it: `Thirsty` [Cambridge] flags at 24.14 km — and the POSTCODE is the wrong half of that pair, not the venue.** ⚠️ **Had this guard been allowed to decide, it would have decided wrongly on its own showcase case.** That is why it flags.
+
+⚠️ **Two limits, carried forward rather than resolved:**
+- 🧪 **In the scripts' future-only scope, 205 of 221 rows are UNCHECKED — 93%.** The guard is real but currently near-silent.
+- 🔴 **It sees only UNLINKED candidates.** The already-linked `Worlington` and `Wilbraham` rows — the ones that motivated it — **are invisible to it as wired.**
+
+⚠️ **A correction produced by testing it: there are TWO `Worlington` rows, and one of them is genuinely in Workington, Cumbria.** An earlier account treated them as one row.
+
+---
+
+# 14. `ai_notes` CARRIES POSTCODES AND NOTHING READS THEM
+
+(`docs/ai-notes-postcode-report.md`)
+
+🧪 **774 of 2,229 unlinked `discovery_events` rows carry a full UK postcode**, already extracted from the source page and already stored. 🔴 **No code path reads it.** It is written and never consulted.
+
+🔴 **The coverage is STRUCTURAL, not random — this is the part that decides how it can be used:**
+
+| source | postcode-bearing rows |
+|---|---|
+| `URL:` | 🧪 **1,100 of 1,104** |
+| `Drive Screenshot` (511 rows) | 🧪 **ZERO** — they contain only `[📱 Drive]` |
+| `hg_scraper` | 🧪 **ZERO** |
+| `hatchesup_scraper` | 🧪 **ZERO** |
+| `Manual Entry` | 🧪 **ZERO** |
+
+⚠️ **So it cannot be treated as a sample.** Anything measured on postcode-bearing rows is measured on **web-scraped rows only**, and a rule that needs one will be **unavailable for 1,455 rows by construction, not by chance.**
+
+⚠️ **And the resolution is coarse: only 146 DISTINCT postcodes across 731 placeable rows — 145 places.** 🧪 **731 of 2,229 = 32.8% placeable.**
+
+✅ **What it is genuinely good for — the reason guard three exists at all:** 🧪 it gets **both known `findVenue` failures right**, and 🧪 it catches a venue stored **370 km away in Cumbria** (`Worlington` matched to `Workington`) — **a class of error the coordinate gauntlet structurally cannot see, because a coordinate 370 km away is still a perfectly valid coordinate.**
+
+🔴 **Good at catching. Proven bad at choosing (§13.1). Those are different jobs and the difference is the whole finding.**
+
+---
+
+# 15. WHAT WAS COMMITTED AND DEPLOYED ON 8 SEPTEMBER 2026
+
+🧪 **Three commits today, and 🧪 `HEAD` = `origin/main` = `6fe8634` — pushed:**
+
+| commit | time | subject |
+|---|---|---|
+| `e024b26` | — | Add category-name and bad-coordinate refusal guards to venue linking scripts |
+| `6820d7b` | — | Track scraper reference manual (V1.1 to V1.2) and update app manual to V12.4 |
+| `6fe8634` | 🧪 17:38 | landing and SEO |
+
+⚠️ **The tree is NOT empty behind it:** 🧪 at the time of writing `app/admin/page.tsx` and `app/admin/outreach/page.tsx` are still MODIFIED and uncommitted (the Outreach button and the Y/N + upcoming-count table).
+
+🔴 **WHAT THIS CHANGES OPERATIONALLY, STARTING WITH THE 06:00 CRON: the scraper's red-on-failure changes mean runs that previously went GREEN MAY NOW GO RED.** **A red run tomorrow is not automatically a new fault — it may be the first honest report of an old one.** ⚠️ Do not read the first red run as a regression without checking which failure it names.
+
+🔴 **`supabase/migrations/20260907_discovery_run_log.sql` IS WRITTEN AND NOT APPLIED.** 🧪 The file exists (5,469 bytes, 7 Sep 11:59). The code **warns once on `42P01` and continues**, so **the run log does not exist yet and nothing is being recorded into it.** ⚠️ The warning is designed to be survivable, which also means it is easy to stop noticing.
+
+⚠️ **Deployment itself is asserted, not verified from this repository.** What I can prove from here is that the commits exist and are pushed to `origin/main`; **I did not query Vercel, so "deployed" rests on the push plus the user's statement, not on a build record I read.**
+
+---
+# 16. THE APPS SCRIPT — READ AT LAST (v6.57)
+
+**Source:** `docs/apps-script/village-foodie-v6.57.js` — a verbatim copy (SHA-256 of the body `7fd1ad21…6827a1`) taken 9 September 2026 from the live editor's export, behind a 26-line reference header. 🔴 **Line numbers below are the ORIGINAL file's; add 26 for the repo copy. The live project is the only one that executes, and this copy will drift silently — diff before trusting a line.**
+
+**What it is:** one bound Apps Script project on the `VillageFoodie_Master` spreadsheet, 1,425 lines, 30 functions. It reads seven tabs (🔎 `getSheetByName`: Events ×5, Venues ×5, Trucks ×4, Exclusions ×2, Subscribers ×2, Logs ×1, Unsubscribes ×1) and 🔎 **never names `Vendor Ingest`, `Manual Checks`, `Facebook Posts` or the Trucks `Sheet ID` column** (grep exit 1 on all four) — so the retirement plan's open question on `Vendor Ingest` closes: **nothing automated reads it; it can be dropped.**
+
+## 16.1 Every function — what it reads, what it writes, and where the write goes
+
+**Triggers, 🧪 as read from the Apps Script editor by the owner on 9 September 2026 — four time-based triggers, all "Owned by: Other user", all 0% error rate.** ⚠️ **The frequency column was cut off; every one is recorded as AUTOMATED, FREQUENCY UNKNOWN. Nothing below infers a schedule from the code.**
+
+| trigger | last run |
+|---|---|
+| `removePastEvents` | 8 Sep 02:32:13 |
+| `removeDuplicateEvents` | 8 Sep 12:48:51 |
+| `processVendorEmails` | 8 Sep 18:43:25 |
+| `processFoodTruckScreenshots` | 8 Sep 18:30:05 |
+
+🔴 **OPEN RISK: the four triggers belong to an account that is not the one viewing the editor.** If that account loses access to the Sheet, the project, or Google Workspace, **all four stop and no error appears anywhere** — not in the Logs tab (which the script itself writes), not in Actions, not in the app. The last-run column above is the only place the stop would show, and only to someone who opens the trigger list.
+
+| function | reads | writes | goes to | how it runs |
+|---|---|---|---|---|
+| `onOpen` `:89-105` | — | the 🍔 menu | UI | on opening the Sheet |
+| `triggerTestEmail` `:107` / `triggerLiveEmail` `:109-121` | — | → `runEmailJob(true/false)`; the live one asks `ui.alert` YES/NO **only if a UI exists** — 🔎 `:113-119`: **with no UI it sends to everyone without asking** | — | **MENU** |
+| `runEmailJob` `:814-1018` | 🔎 `discovery_events` from **Supabase via `SUPABASE_ANON_KEY`, READ ONLY** (`:839-855`, `event_date` today…+7d); Trucks (logo/photo/type/`Is Meal?`/`Exclude?`/aliases); Venues (coords, aliases cols N/O/P); Subscribers; Unsubscribes | calls `geocodeNewSubscribers` first (`:817`); Brevo sends (`:1009-1012`); Logs | **Brevo + Sheet (Subscribers coords)**; **no Supabase write** | MENU (via the two triggers above). ⚠️ Not in the trigger list — **UNKNOWN whether it also runs on a timer** |
+| `geocodeNewSubscribers` `:767-812` | Subscribers col D postcode, I/J lat-lng | 🔎 Google Maps Geocoding `:780`, then `setValue` lat, lng, village (`:789-793`) | **Sheet** | called by `runEmailJob`; own trigger UNKNOWN |
+| `buildHtmlEmail` `:1020-1105`, `sendBrevoBlast` `:1107`, `sendBrevoReply` `:1123` | — | Brevo `POST /v3/smtp/email`, sender `schedule@villagefoodie.co.uk` | Brevo | helpers |
+| `processVendorEmails` `:140-481` | Gmail label **Process Schedule** + **Awaiting Retry**; Trucks, Venues, Events, Exclusions | 🔎 Gmail labels (`:145-148`, `:171`, `:177`, `:270`, `:272`, `:458`, `:465`, `:472`); escalation forwards to `ADMIN_EMAIL` (`:175`, `:463`, `:470`); **Exclusions `appendRow` `:232`**; 🔴 **Events `deleteRow` twice — the retro-delete `:245` and the AMEND/CANCEL replace `:424`**; Events `setValues` `:426`; **Trucks `appendRow` `:349`**; **Venues `appendRow` `:380`**; sender email into Trucks col K / Venues col F (`:401-405`); Brevo reply (`:456`); Logs; **`mirrorEventsToSupabase(rowsToAppend)` `:427`** | **Sheet + Gmail + Brevo + (appends only) Supabase via the API** | **AUTOMATED, freq UNKNOWN** + MENU |
+| `analyzeEmailWithGemini` `:483-543` | thread text (5,000 chars) + ≤1 image | Gemini 2.5 Flash, JSON, temp 0; asks for `updates[]` with `Action ADD\|AMEND\|CANCEL` **and `exclusionsToAdd[]`** (`:495`, `:501`) | Gemini | helper |
+| `processFoodTruckScreenshots` `:545-765` | Drive folder `1D_v3fO…` (`:18`, `:553`); Trucks, Venues, Exclusions | Gemini per image (`:596`); **Trucks `appendRow` `:668`**; **Venues `appendRow` `:711`** (with Google-geocoded lat/lng `:694-700`); Events `setValues` `:722`; **`mirrorEventsToSupabase(finalRows)` `:723`**; 🔴 **`file.setTrashed(true)` `:752` — on success AND on "no valid events"** (both branches reach `:752`; only a thrown error keeps the file); Logs; `Utilities.sleep(15000)` between files | **Sheet + Drive + Supabase via the API** | **AUTOMATED, freq UNKNOWN** + MENU |
+| `mirrorEventsToSupabase` `:29-59` | rows | 🔎 **`UrlFetchApp.fetch("https://www.villagefoodie.co.uk/api/inbound-schedule", { payload: { secret: INBOUND_SCHEDULE_SECRET, events } })`** `:32-52` | **Supabase — through the app's route, never directly** | helper. 🔴 **`muteHttpExceptions: true` and NO status check: `logToSheet("Mirrored N event(s)…")` at `:54` runs whatever the route answered.** A 401 (rotated secret) or 500 is logged as success. **The Logs tab's "Mirrored" lines prove a POST was attempted, not that anything was written.** |
+| `getExclusions` `:123-130` | Exclusions col A | — | — | helper (normalised set) |
+| `removeDuplicateEvents` `:1264-1315` | Events | 🔎 `sheet.deleteRow` `:1314` for duplicates (`:1284-1290`: same date **and** containment-equal truck **and** containment-equal venue **and** village equal-or-blank); **`[⚠️ TIME CLASH]` into col 9** `:1300-1305` | **Sheet only** | **AUTOMATED, freq UNKNOWN** + MENU |
+| `removePastEvents` `:1317-1324` | Events | 🔎 `sheet.deleteRow` for every row whose date `< today` in the Sheet's timezone `:1321-1323` | **Sheet only** | **AUTOMATED, freq UNKNOWN** + MENU |
+| `sendDailyNewTrucksReport` `:1142-1197` | Events, Trucks (+aliases) | Brevo to `ADMIN_EMAIL`: future events whose truck fuzzy-matches **no** Trucks-tab name | Brevo | MENU; trigger UNKNOWN |
+| `fetchVenueGoogleData` `:1352-1367` | Venues lacking website (I) or photo (M) | Google **Places** find+details → `setValue` website col 9, photo col 13 | **Sheet** | MENU |
+| `backfillMissingVenueCoords` `:1397-1425` | Venues lacking lat/lng | 🔎 Google Maps Geocoding `:1406`, `setValue` cols 4/5 `:1409-1410` | **Sheet** | **editor only** — not in the menu, not in the trigger list |
+| `logToSheet` `:63-86` | — | Logs `appendRow`; 🔎 **`if (getLastRow() > 500) deleteRow(2)`** `:83-85` — a 500-row rolling window | Sheet | helper |
+| `normalizeTruckKey` `:1235`, `isFuzzyMatch` `:1240`, `parseEventDate` `:1247`, `normalizeTime` `:1221`, `toTitleCase` `:1214`, `formatFriendlyDate` `:1199`, `calculateDistance` `:1326`, `getMinutesSinceMidnight` `:1333`, `formatEmailImageUrl` `:1342`, `cleanGeminiResponse` `:132` | — | — | — | pure helpers |
+| `testFolderAccess` `:1369`, `testLogSheet` `:1383`, `testAllKeys` `:1388` | — | `Logger.log` only | — | editor only |
+
+**Keys** (🔎 `:14-16`, `:33`, `:840-841`, `:1391`): `GOOGLE_API_KEY`, `BREVO_API_KEY`, `GEMINI_API_KEY`, `INBOUND_SCHEDULE_SECRET`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` — all from Script Properties. 🔴 **There is no service-role key anywhere in the file** (grep for `SERVICE_ROLE` → nothing). See §16.4.
+
+*What the table would look like if it proved nothing:* a function-name inventory. Every "writes" cell above cites the `appendRow` / `setValue` / `setValues` / `deleteRow` / `UrlFetchApp.fetch` line that executes it, and the tab-name census is a grep over `getSheetByName(...)`, not a reading of comments.
+
+## 16.2 🔴 THE RETRO-DELETE — why exclusion-poisoning was DESTRUCTIVE, not merely silencing
+
+🔎 `processVendorEmails:228-250`, executing lines:
+
+```js
+exclusionsToAdd.forEach(ex => {                                   // :230  — the MODEL's list (:213)
+  const cleanEx = normalizeTruckKey(ex);                          // :232
+  if (!Array.from(exclusions).some(existing => isFuzzyMatch(existing, cleanEx))) {
+    exclSheet.appendRow([ex]);                                    // :234  — Exclusions tab, no guard
+    exclusions.add(cleanEx);
+    const tempEvs = eventsSheet.getDataRange().getValues();       // :237
+    for (let i = tempEvs.length - 1; i >= 1; i--) {
+      if (isFuzzyMatch(normalizeTruckKey(tempEvs[i][3]), cleanEx)) retroRowsToDel.push(i + 1);   // :240-241
+    }
+    Array.from(new Set(retroRowsToDel)).sort((a,b)=>b-a).forEach(r => eventsSheet.deleteRow(r));  // :245
+```
+
+**Three facts, each from an executing line:** (1) the term comes from Gemini's reply with the **same three checks** as the scraper's `:780-782` (string, non-empty, not already present) and **no check against the Trucks tab**; (2) it is appended to the Exclusions tab that **both** this script (`getExclusions`) and 🔎 `run-scraper.js:453` read as their exclusion set; (3) 🔴 **every Events-tab row whose truck name CONTAINS or IS CONTAINED BY the term is deleted, immediately, from the Sheet** — and §16.5 explains why that delete never reaches the database.
+
+**So V1.3 §11 described half the mechanism.** §11 established that a poisoned term *silences* a truck on future scrapes (the filter at `run-scraper.js:860`). **This is the other half: the moment the term lands, the truck's existing FUTURE events are erased from the Sheet** — which is the dedup set, so the scraper then re-adds them on its next run *only to have the filter at `:860` refuse them*. The truck goes from "present" to "gone and unable to return" in one automated step, unattended (§16.1: `processVendorEmails` runs on a time trigger). ⚠️ **And the containment matcher makes the blast radius wider than the scraper's** — §16.3.
+
+🧪 **Measured today against the live Exclusions tab and Events tab:** one term (`azaharspanish`) would retro-delete **1** future Events row right now. The three terms removed this afternoon (`Steak & Honour`, `The Noodle & Dumpling Bar`, `Kerief`, `exclusions-provenance-report.md`) are the shape this produces; **whether they were added by this function or by a person is still UNRESOLVED** (no timestamp, no author, Drive API disabled) — but 🔎 **this is the only automated writer of that tab besides `run-scraper.js:784`, and it is the only one that also deletes.**
+
+## 16.3 🔴 TWO `isFuzzyMatch`, ONE `normalizeName` — verified, not assumed
+
+**The matchers are different functions with the same name:**
+
+| | Apps Script `:1240-1245` | `run-scraper.js:66-92` |
+|---|---|---|
+| executing rule | `if (str1.includes(str2) \|\| str2.includes(str1)) return true;` | length difference ≤ 1, then at most **one** substitution / insertion (Levenshtein ≤ 1) |
+| `kerief` vs `keriefkitchen` | 🧪 **TRUE** (containment) | 🧪 **false** |
+| `pizzamondo` vs `pizzamundo` | 🧪 **false** | 🧪 **TRUE** (one edit) |
+| `bell` vs `bellinn` | 🧪 **TRUE** | 🧪 false |
+
+🧪 **On the real data: the 143 Exclusions terms fuzzy-match 5 Sheet truck names under the scraper's rule (`Axle & Hop`, `Dessert MK`, `Just Baked by Sophie`, `The Linton Kitchen`, `Off The Beaten Truck`) and 7 under the Apps Script's** — the same five plus **`Azahar`** (term `azaharspanish`) and **`Wintringham`** (terms `wintringhamcommunityday`, `wearewintringham`). **A term that is safe under one matcher poisons under the other, and the destructive one (§16.2) uses the looser rule.** ⚠️ The app's `lib/venue-signature.ts` `venuesFuzzyMatch` is documented as a byte-mirror of the *scraper's* rule; the Apps Script's rule has no mirror anywhere in the repo.
+
+**The normalisers are the same function under two names.** 🔎 Apps Script `:1235-1238` vs `run-scraper.js:55-64`, regex chain by regex chain: `.toLowerCase()` → `.replace(/&/g,'and')` → `.replace(/[^a-z0-9\s]/g,'')` → `.replace(/\b(the|street|st|food|ltd|co|company|and)\b/g,'')` → `.split(/\s+/)` → `.map(w => w.replace(/s$/,''))` → `.join('')`. **Identical, character for character, in every regex and every step.** 🧪 **Run over 3,536 real strings** (every Sheet truck name, venue name, village, exclusion term and Events-tab truck/venue): **3,536 identical outputs, 0 different.** The one difference is the guard: the Apps Script wraps the input in `String(name)`; the scraper calls `.toLowerCase()` on it directly — 🧪 `normalizeName(46276)` **throws** (`name.toLowerCase is not a function`), `normalizeTruckKey(46276)` returns `"46276"`. Relevant because Sheet cells can be numbers or Dates (the Events date column *is* serial numbers, `sheet-retirement-plan-report.md` §2.2); the scraper only ever receives strings because it reads with `FORMATTED_VALUE`.
+
+## 16.4 🔴 HOW IT REACHES SUPABASE — and the correction to two reports
+
+🔎 `mirrorEventsToSupabase:32-52`: it builds nine-column rows and **`UrlFetchApp.fetch("https://www.villagefoodie.co.uk/api/inbound-schedule", { method:'post', payload: JSON.stringify({ secret: INBOUND_SCHEDULE_SECRET, events }) })`**. 🔎 `SUPABASE_ANON_KEY` appears in exactly two places: `runEmailJob:841` (declared) and `:850-851` (headers of a **GET** on `/rest/v1/discovery_events`). **No PostgREST write, no service key, no `insert`/`upsert` anywhere in the file.**
+
+⚠️ **CORRECTION.** `docs/sheet-migration-audit-report.md` §5 wrote: *"**An external writer holds a Supabase write key.** ▶ `Drive Screenshot` rows were created in `discovery_events`…"* and §10: *"The `created_at` timestamps of `Drive Screenshot` rows prove a direct DB writer exists; its identity and key are inferred (⚠), not read."* `docs/sheet-retirement-plan-report.md` §5 repeated it: *"it holds a Supabase write key"*. This manual's §8.4 and its UNREAD list said *"writes `discovery_events` directly"*. **All of those are corrected in place (V1.4).** The `Drive Screenshot` rows and their :30-past-the-hour timestamps were real; the inference from them was wrong. **The writer is the app's own route, keyed by the shared `INBOUND_SCHEDULE_SECRET` — the same route Pass B uses.** The audit's own §10 hedge ("inferred, not read") was the right instinct.
+
+**What `/api/inbound-schedule` does with what it receives** (🔎 `app/api/inbound-schedule/route.ts`):
+1. `:41` refuses without the secret (**401**) — which the Apps Script would log as *"Mirrored"* (§16.1).
+2. `:50-62` maps each event, **`toISODate(e.event_date)`** (`DD/MM/YYYY` → ISO), drops rows with no date or no truck.
+3. `:67-68` loads every `discovery_trucks` name and every `venues` row once; `:76` resolves each row's venue with **`findVenue`** (`lib/venue-matcher.ts`); `:82-89` resolves `discovery_truck_id` by containment on `normName`.
+4. `:107-111` **upserts `discovery_events` on `(event_date, truck_name, venue_name)` with `ignoreDuplicates: false`** — i.e. **`ON CONFLICT DO UPDATE`**: a re-POST of an existing key **overwrites** times, notes, `venue_id`, `discovery_truck_id` and the visibility flags (`visibility:'public'`, `show_on_vf/hg: true`, `:98-100`). ⚠️ **That is the opposite of the scraper's own DB mirror** (`run-scraper.js:1721`, no `ignoreDuplicates` flag → also DO UPDATE, but with no `venue_id` in the payload) and of the venue upsert (`DO NOTHING`).
+5. `:119-248` **bridges** rows whose truck matches a `discovery_trucks.hatchgrab_truck_id` into `truck_events` — after the operator's `scraper_preference` gate, **reject-memory** (`rejected_event_signatures`, `:163-171`) and dedup — then emails the operator.
+
+🧪 **The data agrees with the trace:** `Drive Screenshot` rows carry `venue_id` on **426 of 511** and `discovery_truck_id` on **476 of 511** — the route's enrichment — while `URL:` rows written by the scraper's own mirror carry `venue_id` on only 1,133 of 2,952 (the hand backfills). **Every Apps-Script event in the database went through `findVenue`; every scraper event did not.** That is why the map shows screenshot events pinned and scraper events not (V1.3 §2.5), and it is a second reason the scraper should write through the same route.
+
+## 16.5 🔴 DELETES NEVER MIRROR — the Sheet and the DB disagree BY DESIGN
+
+Four `deleteRow` sites, none with a counterpart call to anything outside the Sheet:
+
+| site | what it deletes | mirrored? |
+|---|---|---|
+| `removePastEvents:1321-1323` | every row dated before today (Sheet tz) | 🔎 **no** — the function body is one loop and one `deleteRow` |
+| `removeDuplicateEvents:1314` | containment-duplicates on (date, truck, venue, village) | 🔎 **no** |
+| `processVendorEmails:245` — the retro-delete | every row whose truck contains / is contained by a new exclusion term | 🔎 **no** |
+| `processVendorEmails:424` — the AMEND / CANCEL replace | the old row for an amended or cancelled event | 🔎 **no** — and 🔴 **for a CANCEL nothing is appended either (`:409-415` builds only a strike-through table row), so `mirrorEventsToSupabase` is never called: a vendor's emailed cancellation removes the event from the Sheet and leaves it live on the public map.** For an AMEND the new row is appended and mirrored (`:426-427`), which **updates** the DB row if date/truck/venue are unchanged (§16.4 step 4) or **adds a second row** if the venue changed — the old one stays. |
+
+**This is the whole explanation for 🧪 3,577 past-dated rows in `discovery_events` against 0 in the Sheet** (V1.3 §8.3–8.4): `removePastEvents` runs on a trigger against the Sheet and only the Sheet. There was never a database rule to find.
+
+🔴 **HARD CONSTRAINT ON THE MIGRATION** (`sheet-retirement-plan-report.md` §2.1 assumed this; it is now source-read): **the Sheet's Events tab is a pruned view and the database is the unpruned ledger, by construction.** Moving the dedup set to the database inherits every row the Sheet has removed — past rows (harmless, filtered by `event_date >= today`), **duplicates the containment rule folded (not harmless: the DB's unique index is exact, so containment-duplicates like `The Bell` / `The Bell Inn` exist there as two rows and will both be dedup targets)**, and **every cancelled and retro-deleted row**, which are the tombstones. The suppression table in the plan must be written **by this script's four delete sites too**, or the plan's `DEDUP_FROM=db` flip brings back everything vendors have cancelled by email.
+
+## 16.6 🔴 SHEET-ONLY CREATION — new trucks and venues never reach the database
+
+🔎 `trucksSheet.appendRow(newTruckRow)` at `:349` (emails) and `:668` (screenshots); `venuesSheet.appendRow(newVenueRow)` at `:380` and `:711`. **No call follows either that leaves the Sheet.** `mirrorEventsToSupabase` carries only the nine event columns (`:35-45`) — a new truck's *events* reach the database (through the route, which then fails to resolve a `discovery_truck_id` for a truck that exists only in the Sheet), the truck row does not.
+
+**Does this account for the 348 Sheet-only venues? Partly, and measurably not mostly.** 🧪 Of the 348 distinct `(name, village)` pairs in the Sheet and not the database: **203 carry the scraper's own marker `[⚠️ NEW FROM SCRAPER]` in column L** (🔎 written by `run-scraper.js:1806-1808`; 🔎 the Apps Script writes **no** marker — `newVenueRow` at `:377-379` fills only cols A, B, D, E). Those 203 are the 42P10-era scraper venues of V1.1 §3.2. **The remaining 145 have a blank column L**, which is what *both* the Apps Script and a human produce; 🧪 **122 of those 145 carry coordinates and no postcode — exactly the shape `:377-379` writes (lat/lng from Google, no postcode column)**, and 0 carry an owner email. ⚠️ **So: at most 145 of the 348 are Apps-Script-created, and probably around 122; the majority are the scraper's. Human-added rows are indistinguishable from the script's, so 145 is a ceiling, not a count.**
+
+**Is `newTruckRow[19] = 'Yes - New Truck'` the origin of that `exclude_reason` value? Of the SHEET's, yes; of the DATABASE's, no — the string has three writers.** 🔎 The Apps Script writes `'Yes - New Truck'` into Trucks col T at `:344` and `:666`. 🔎 The scraper writes plain `'Yes'` to the Sheet (`run-scraper.js:906`) **but `exclude_reason: 'Yes - New Truck'` to the database** (`:1689`). 🔎 `migrate-from-sheets.cjs:72` copied col T into `exclude_reason` once, in May. 🧪 Sheet col T today: `Yes - New Truck` ×22 (Apps Script), `Yes` ×15 (scraper or human). 🧪 `discovery_trucks.exclude_reason`: `Yes - New Truck` ×12, `Yes` ×5, `yes` ×1. **The 22 Sheet rows are the script's; the 12 DB rows could be the scraper's mirror or the May migration, and nothing on the row says which.** ⚠️ `runEmailJob:869` treats both spellings as excluded (`exclude === 'yes' || exclude === 'yes - new truck'`), so the distinction has no effect on the blast.
+
+## 16.7 🔴 A SECOND GEOCODER, UNVALIDATED — the V1.1 claim was true of the scraper only
+
+**Old claim (V1.1 changelog, `:143`):** *"Every coordinate now comes from **postcodes.io** or the venue is stored with none."* ⚠️ **Corrected in place. It is true of `run-scraper.js` (the gauntlet in `geo-validate.js`) and false of this script.**
+
+🔎 Four functions call `https://maps.googleapis.com/maps/api/geocode/json?address=…&key=GOOGLE_API_KEY` and write the first result straight into the Sheet: `processVendorEmails:368-374` (new venue → cols D/E), `processFoodTruckScreenshots:694-700` (same), `backfillMissingVenueCoords:1406-1410` (any venue lacking coords → cols 4/5), `geocodeNewSubscribers:780-793` (subscriber postcode → cols 9/10/11). **In none of them:** no postcode lookup, no distance-to-village check, no sentinel test, no `partial_match` check, no result-type check — `if (geoRes.status === "OK" && geoRes.results.length > 0)` and the first hit wins. The address sent is `name + ", " + village + ", UK"` — a venue name Google cannot find resolves to the **village centroid**, or to a same-named place elsewhere in the UK, silently. (`fetchVenueGoogleData:1352-1367` uses the Places API for website/photo only — not coordinates.)
+
+🧪 **Where those coordinates are now:** `venues` has **158 rows with coordinates and no postcode** — the shape this path produces and the scraper's current path cannot (it stores the postcode it validated against). And 🧪 122 of the 145 unmarked Sheet-only venues (§16.6) are this shape. **The gauntlet must run over every row this script has ever created, in the Sheet and in the DB, before they are trusted — the plan's step 3 already routes the import through `geo-validate.js`; this section is why it must not be skipped "because they already have coordinates".**
+
+## 16.8 What else it touches
+
+- **Gmail** — four labels created if absent (`:145-148`: *Process Schedule*, *Awaiting Retry*, *Processed Schedules*, *No Events Found*); the pending and retry labels are **removed before processing** (`:171`); a thread that fails twice in >1 h is **forwarded to `dominic@villagefoodie.co.uk`** and marked done (`:173-177`); quota and API-busy errors re-label to retry (`:465`); other errors forward and mark done (`:468-471`). ⚠️ The Gmail account is whichever account owns the trigger — "Other user".
+- **Brevo** — every vendor gets an HTML reply from `schedule@villagefoodie.co.uk` (`:456`, `sendBrevoReply`); the blast goes to every subscriber within their radius (`:1009-1012`); the daily new-trucks report goes to the admin (`:1196`). None of these checks Brevo's response.
+- **Drive** — folder `1D_v3fOuNqfvfl182PpmBKCvXAwlq-ZwG` (`:18`); 🔴 **`file.setTrashed(true)` at `:752` runs for a file that produced events AND for one that produced none** — only a thrown error (safety filter, quota, parse failure) leaves a file in place. A screenshot Gemini simply misread is gone after one pass.
+- **Logs** — 🔎 `:83-85`: over 500 rows, **row 2 is deleted on every append** — a rolling window of ~500 lines, which at the observed rate (227 email-job lines in 19 h) is under two days. **The Logs tab cannot prove anything did not happen** (V1.3 §8.7 already said so; this is the line that makes it true).
+- **The email-blast filter** — 🔎 `runEmailJob:865-871`: an event is dropped if its truck is not in the Trucks tab (by name or alias), if `Exclude?` is `yes` or `yes - new truck`, if `Is Meal?` is `no`, **or if the truck has no logo URL** (`:871`); and if its venue does not match a Venues row with coordinates (`:874-890`). ⚠️ **"No logo → no email"** is a rule nobody has written down; it silently excludes every new truck.
+- **The time-clash flag** — 🔎 `removeDuplicateEvents:1292-1306`: two same-day rows for one truck at different venues with overlapping times get `[⚠️ TIME CLASH]` appended to **Events col 9 (AI Notes)** via `setValue` (`:1303`). **Nothing reads it** — not the scraper (which reads col I only to build nothing), not the app. And because it is written into the AI-notes cell, the scraper's mirror would copy it into `discovery_events.ai_notes` on the next append of *that row* — except the row is never re-appended. It is a note to a human who sorts the tab.
+- **Contact capture** — 🔎 `:401-405`: the sender's address is appended to Trucks col K (*Contact Email*) or Venues col F (*Owner Email*) — the only automated writer of those two columns. 🧪 Six venue rows carry one today.
+
+## 16.9 🔴 WHAT THE MIGRATION MUST DO ABOUT IT — per function
+
+| function | verdict | why, and what it needs |
+|---|---|---|
+| `mirrorEventsToSupabase` | **KEEP, add one line** | already DB-via-API. Check `getResponseCode()` and log a failure as a failure; today a 401 is "Mirrored". |
+| `processVendorEmails` | 🔴 **REWRITE** | reads four tabs and writes four; the truck/venue/exclusion lookups move to the DB (`discovery_trucks` incl. `contact_email`, `venues`, `discovery_exclusion_terms`); **ADD** stays on the route; **AMEND/CANCEL need a route that deletes-with-tombstone** (`discovery_event_suppressions`, plan §2.1) — there is no such endpoint today; **the retro-delete STOPS** — an exclusion term is recorded (with the poison flag, plan §3.4), never used to delete. The Gmail and Brevo halves are unchanged. |
+| `analyzeEmailWithGemini` | **UNCHANGED** | pure; but the prompt's `exclusionsToAdd` ask (`:495`) is the poison source and should be dropped or quarantined to a review list. |
+| `processFoodTruckScreenshots` | 🔴 **REWRITE the lookups and the creates** | Trucks/Venues/Exclusions from the DB; new trucks and venues **through an API that runs the gauntlet** (today they are Sheet-only and Google-geocoded); the event append already goes through the route. Drive handling unchanged — but `setTrashed` should require ≥1 event. |
+| `runEmailJob` | **POINT AT THE DB** | it already reads events from Supabase; Trucks (logo/photo/type/is_meal/excluded), Venues (coords), Subscribers and Unsubscribes need DB reads — **blocked on the Subscribers decision** (plan §5). The anon read of `discovery_events` depends on that table's public SELECT policy staying. |
+| `geocodeNewSubscribers` | **REWRITE through postcodes.io** | a postcode → coordinate lookup is exactly what postcodes.io does, validated; and it is a subscriber PII path writing into a Sheet. |
+| `buildHtmlEmail`, `sendBrevoBlast`, `sendBrevoReply` | **UNCHANGED** | Brevo, not the Sheet. |
+| `sendDailyNewTrucksReport` | **STOP** (or point at the DB) | the admin view's "trucks with no `discovery_trucks` row" is the same report without the email. |
+| `removeDuplicateEvents` | 🔴 **STOP** | the DB's unique index does the exact half; the containment half must **not** be ported (it folds `The Bell`/`The Bell Inn`). The time-clash flag needs a DB home if anyone wants it. |
+| `removePastEvents` | 🔴 **STOP** | the DB keeps history by design; "future only" is a `WHERE`, not a delete. |
+| `fetchVenueGoogleData` | point at `venues.website` / `photo_url`, or stop | menu-only, harmless. |
+| `backfillMissingVenueCoords` | 🔴 **STOP, and never run it again** | it is the unvalidated geocoder over the whole Venues tab; `geo-validate.js` replaces it. |
+| `logToSheet` | **REWRITE** to a DB log | the same shape as `discovery_run_log`; the 500-row window goes. |
+| `getExclusions` | point at `discovery_exclusion_terms` | and match with the scraper's rule, not containment. |
+| `onOpen`, `trigger*`, tests | drop with the Sheet | — |
+
+🔴 **What breaks if the Sheet goes and this script is untouched:** the project is **bound** to the spreadsheet — if the file is deleted the project goes with it; if it is merely unshared or emptied, every function's first `getSheetByName(...).getDataRange()` throws (🔎 `:156` before any label is touched, so emails stay queued; `:558` after the Drive folder is opened, so screenshots stay untrashed). **All four triggers fail on every fire, and the failure is visible only in the owning account's trigger list** (§16.1). Concretely, within a day: **no vendor email is processed** (the 227-per-19h job stops; the *Process Schedule* label accumulates), **no screenshot is processed** (12 events/day stop reaching the database — the only input the scraper does not have), **no weekly blast can be sent**, and the Sheet-only prunes stop — which, since they never reached the database anyway, changes nothing there. **The database keeps working; the two human-fed inputs stop.**
+
+---
+
 # WHAT I COULD NOT READ OR VERIFY
 
 - ✅ **[RESOLVED V1.2] The Google Sheet.** 🧪 Read live 8 September 2026: **ten tabs**, of which the scraper reads four — Trucks **152**, Venues **933**, Events **713**, Exclusions **146**. **109 of the 152 truck rows enter `sitesToScrape`**; of those, 67 have a blank strategy and 21 carry aliases. §3.1. ⚠️ Still unread: the six Apps-Script/human tabs' *writers*.
@@ -676,7 +1125,12 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 - ✅ **[RESOLVED V1.2 — and one of them WAS a second 42P10.]** `discovery_events` and `discovery_trucks` resolve (§5.4). 🔴 **`excluded_terms` does not: its live key is `(truck_id, term)` and the scraper names `term`. §5.6.** ⚠️ Still UNREAD: the *definitions* — `pg_indexes` is unreachable through PostgREST, so `NULLS NOT DISTINCT` on `venues_name_village_key` remains unread (below).
 - 🔴 **Whether `venues_name_village_key` is `NULLS NOT DISTINCT`.** The duplication behaviour was proven empirically; **the index definition was not read** — PostgREST cannot query `pg_indexes`.
 - 🔴 **The `discovery_trucks` upsert's conflict key** — not visible in the block I read.
-- 🔴 **The Apps Script schedule-image pipeline — STILL NOT IN THIS REPOSITORY, AND NOW KNOWN TO BE LOAD-BEARING.** Referenced at `:1366` (*"Apps Script paths also use gemini-2.5-flash"*). 🧪 Its own Logs tab, read live 8 September 2026, proves three things this manual previously listed as unknown: it **writes `discovery_events` directly** (`"Mirrored N event(s) to Supabase"`), it **creates `venues`** (`"Auto-Created & Geocoded New Venue from Screenshot"` — so `run-scraper.js:1833` is *not* the only venue creator), and it runs roughly every five minutes. 🔴 **Its code, its Events-tab pruning predicate and its schedule are UNREAD and unreadable from here.** It now appears as load-bearing in three separate reports. **Read it at Sheet → Extensions → Apps Script.** ⚠️ The Logs tab covers only ~19 hours and rotates, so it cannot prove the absence of anything.
+- ✅ **[RESOLVED V1.4 — READ. A verbatim copy is at `docs/apps-script/village-foodie-v6.57.js` and §16 documents every function. Two claims in the rest of this bullet are now corrected: it does NOT write `discovery_events` directly (it POSTs to `/api/inbound-schedule`, §16.4), and the venues it creates go to the SHEET, not the database (§16.6). The trigger list is in §16.1; frequencies remain UNKNOWN.]** ~~🔴 **The Apps Script schedule-image pipeline — STILL NOT IN THIS REPOSITORY, AND NOW KNOWN TO BE LOAD-BEARING.**~~ Referenced at `:1366` (*"Apps Script paths also use gemini-2.5-flash"*). 🧪 Its own Logs tab, read live 8 September 2026, proves three things this manual previously listed as unknown: it **writes `discovery_events` directly** (`"Mirrored N event(s) to Supabase"`), it **creates `venues`** (`"Auto-Created & Geocoded New Venue from Screenshot"` — so `run-scraper.js:1833` is *not* the only venue creator), and it runs roughly every five minutes. 🔴 **Its code, its Events-tab pruning predicate and its schedule are UNREAD and unreadable from here.** It now appears as load-bearing in three separate reports. **Read it at Sheet → Extensions → Apps Script.** ⚠️ The Logs tab covers only ~19 hours and rotates, so it cannot prove the absence of anything.
 - ⚠️ **The fixed venue write has never run.** Semantics proven against the real schema with a synthetic row; the scraper itself was not executed.
 - ⚠️ **`process-next-truck.yml`** ("Hatchesup Menu Scraper") was read only for its trigger. Its body is unread.
 - ⚠️ **Whether the 46 NULL-village venues are duplicates** of properly-villaged rows. Counted, not investigated.
+- 🔴 **[NEW V1.3] WHO EDITED THE EXCLUSIONS TAB.** 🧪 The tab went 146 → 143 rows in two hours; the three removed were `Steak & Honour`, `The Noodle & Dumpling Bar`, `Kerief`. **Unreadable from here: the tab has no timestamps and no author column, and the Drive revision history — which carries `lastModifyingUser` and would settle it outright — is unavailable because the Drive API is DISABLED on Google Cloud project `227274860029`.** ⚠️ **An automated writer that needs no approval exists (`:784-790`, guarded only by `:780-782`), and much of the tab is unmistakably machine-generated — but that attributes no specific row. I did not guess.** §11.3.
+- 🔴 **[NEW V1.3] THE 10 SILENT `manual` TRUCKS.** They **never fetch a page at all**, so none of the three explained causes applies. **UNEXPLAINED.** ⚠️ Do not let §on the four causes read as closed.
+- ⚠️ **[NEW V1.3] TWO VENUE-PAGE SITES WERE NEVER FETCHED** — `Nethergate Brewery` and `The White Horse`. **So "Saffron Walden is the only multi-pitch venue page" is NOT established**, and `:920` (~~`:906`~~) affects all 7 venue sites regardless. §12.
+- 🔴 **[NEW V1.3] WHETHER THE 8 SEPTEMBER DEPLOY REACHED PRODUCTION.** 🧪 The commits exist and `HEAD` = `origin/main` = `6fe8634`. **I did not query Vercel and read no build record.** §15.
+- 🔴 **[NEW V1.3] WHETHER THE 06:00 CRON GOES RED TOMORROW.** The red-on-failure changes are deployed and **have never run on a schedule**. §15.

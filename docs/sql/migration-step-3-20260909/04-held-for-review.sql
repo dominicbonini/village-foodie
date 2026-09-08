@@ -1,0 +1,47 @@
+-- ⚠️ NOT AN IMPORT. 36 Sheet-only venues were REFUSED and are recorded here so the refusal is
+-- visible rather than silent. Each needs a human decision.
+--
+-- Group 1 — near-duplicates of a venue that already exists (name matches, coordinates agree).
+-- 🔴 FOUR OF THESE ARE ROWS DELETED BY THE 8 SEPTEMBER CERTAIN-TIER MERGE. Importing them would
+--    undo that merge silently.
+--   row 43: "Hoveton Village Hall" [Wroxham] — name~ and 1.15km from "Hoveton Village Hall [Hoveton]"
+--   row 235: "Community Car Park" [Holbrook] — name~ and 2.51km from "Community Car Park [Stutton]"
+--   row 254: "Toftwood Social Club" [Dereham] — name~ and 0.04km from "Toftwood Social Club [Toftwood]"
+--   row 297: "Hoveton Village Hall & Park" [Wroxham] — name~ and 1.15km from "Hoveton Village Hall [Hoveton]"
+--   row 312: "The Rose and Crown" [Impington] — name~ and 0.27km from "The Rose & Crown [Histon]"
+--   row 376: "Trumpington Meadows, Kestrel Rise" [Trumpington Meadows] — name~ and 0.50km from "Trumpington Meadows [Cambridge]"
+--   row 437: "Trumpington Meadows Food Vans" [Trumpington] — name~ and 0.50km from "Trumpington Meadows [Cambridge]"
+--   row 693: "Milton Community Centre" [Cambridge] — name~ and 1.75km from "Milton Community Centre [Milton]"
+--   row 699: "Foodpark CamLife" [Fulbourn] — name~ and 3.63km from "foodPark [Cambridge]"
+--
+-- Group 2 — name matches an existing venue and NEITHER side has a coordinate, so they cannot be
+-- separated. ⚠️ Most are probably DIFFERENT pubs sharing a name (the manual's standing warning:
+-- "The Bull" exists in Bottisham and Langley). They are held because proving it needs a postcode,
+-- not because they are known duplicates.
+--   row 743: "Star Wing Events ( Tap Room )" [Diss] — name~ "The Star [Lidgate]" but NO coordinate on either side — cannot separate them
+--   row 893: "Brettenham Village Hall" [Brettenham] — name~ "Village Hall [Troston]" but NO coordinate on either side — cannot separate them
+--   row 503: "Cavendish Five Bells" [Sudbury] — name~ "The Five Bells [Colne Engaine]" but NO coordinate on either side — cannot separate them
+--   row 582: "Market Square" [Huntington] — name~ "Huntingdon Market Square [Huntingdon]" but NO coordinate on either side — cannot separate them
+--   row 585: "The Rose & Crown" [Stansted Mountfitchet] — name~ "The Rose & Crown [Histon]" but NO coordinate on either side — cannot separate them
+--   row 589: "@Essexfoodiesmarket" [Wittle Green] — name~ "@Essexfoodiesmarket [Leigh On Sea]" but NO coordinate on either side — cannot separate them
+--   row 598: "Fordham Rbl Royal British Legion" [Fordham] — name~ "Royal British Legion [Upwell]" but NO coordinate on either side — cannot separate them
+--   row 603: "The Horseshoes" [Blunham] — name~ "The Three Horseshoes [Comberton]" but NO coordinate on either side — cannot separate them
+--   row 605: "The Red Lion" [Blewbury] — name~ "The Red Lion [Stretham]" but NO coordinate on either side — cannot separate them
+--   row 611: "The Boot" [Dullinghan] — name~ "The Boot [Dullingham]" but NO coordinate on either side — cannot separate them
+--   row 661: "The Royal Oak" [Warboys] — name~ "The Royal Oak [Dovercourt]" but NO coordinate on either side — cannot separate them
+--   row 675: "Needham Market Co-op, Barking Road" [Needham Market] — name~ "Co-op [Alconbury Weald]" but NO coordinate on either side — cannot separate them
+--   row 703: "Off The Beaten Truck" [Winthringam] — name~ "Off The Beaten Truck [Northstowe]" but NO coordinate on either side — cannot separate them
+--   row 706: "The Green Man" [Colne] — name~ "The Green [Northstowe]" but NO coordinate on either side — cannot separate them
+--   row 713: "Summer Fayre" [Hellesdon] — name~ "Lindsell Summer Fayre [Lindsell]" but NO coordinate on either side — cannot separate them
+--   row 714: "The Bell Pub" [Hemsby] — name~ "The Bell [Kesgrave]" but NO coordinate on either side — cannot separate them
+--   row 776: "Rendlesham Community Centre" [Woodbridge] — name~ "Rendlesham Community Centre [Rendlesham]" but NO coordinate on either side — cannot separate them
+--   row 777: "Station Square- Outside Gail's" [Cb1] — name~ "Station Square [Cambridge]" but NO coordinate on either side — cannot separate them
+--   row 778: "Foodpark, Biological Campus - The Green & The Gardens" [Foodpark] — name~ "foodPark [Cambridge]" but NO coordinate on either side — cannot separate them
+--   row 788: "Haverhill Show, Haverhill Recreation Ground" [Haverhill] — name~ "Recreation Ground [Bures]" but NO coordinate on either side — cannot separate them
+--   row 801: "Fox Inn" [Garboldisham] — name~ "The Fox Inn [Honington]" but NO coordinate on either side — cannot separate them
+--   row 802: "Western Park Pavilion" [Northstowe] — name~ "The Lion [Stoke by Clare]" but NO coordinate on either side — cannot separate them
+--   row 852: "Wine-boutique, Felixstowe" [Felixstowe] — name~ "Wine-Boutique [Sudbury]" but NO coordinate on either side — cannot separate them
+--   row 853: "The Greyhound, Botesdale" [Botesdale] — name~ "The Greyhound [Wickhambrook]" but NO coordinate on either side — cannot separate them
+--   row 932: "The Cross Keys" [Henley] — name~ "The Cross Keys [Hatfield Peverel]" but NO coordinate on either side — cannot separate them
+--   row 933: "Northstowe" [Cambridge] — name~ "Northstowe Food Truck Park [Northstowe]" but NO coordinate on either side — cannot separate them
+--   row 934: "Fest Lion" [Sawston] — name~ "The Lion [Stoke by Clare]" but NO coordinate on either side — cannot separate them
