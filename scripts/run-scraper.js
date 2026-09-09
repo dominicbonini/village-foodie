@@ -591,12 +591,226 @@ function recordExclusionControl(truckName, normRawTruck, siteUrl) {
   if (sheetHit !== dbHit) exclusionControl.disagreements.push({ truckName, normRawTruck, sheetHit, dbHit, siteUrl });
 }
 
-const validTrucks = truckData.filter(r => r[0]).map(r => {
+// ── 🔀 MATCHING SETS: SOURCE SWITCH + IN-RUN CONTROL ────────────────────────────────────────────────
+// The third of the four reads to get a source switch, following EXCLUSIONS_FROM and SITES_FROM, both of
+// which now run in production: the flag selects which set is USED, BOTH are built every discovery run and
+// diffed, and the unselected one is comparison-only.
+//
+// 🔴 THIS IS THE MOST DANGEROUS OF THE FOUR, AND THE CONTROL OUTPUT SAYS SO ON EVERY RUN. An empty or
+// partial site list fails loudly (assertSitesToScrape). An empty or partial MATCHING set does not fail at
+// all: every truck looks new, every venue looks unmatched, and the run writes garbage and exits green.
+// 🧪 Measured today, the two sources are NOT equivalent — the DB holds 97 trucks the Sheet does not and
+// the Sheet holds 95 venues the DB does not. See the control's own output and the report.
+//
+// 🔴 NOTHING HERE CHANGES BEHAVIOUR UNTIL `MATCH_FROM=db` IS SET IN A WORKFLOW. Unset = sheet.
+const MATCH_FROM_RAW = (process.env.MATCH_FROM || '').trim();
+const MATCH_FROM = MATCH_FROM_RAW.toLowerCase() === 'db' ? 'db' : 'sheet';
+if (MATCH_FROM_RAW && !['db', 'sheet'].includes(MATCH_FROM_RAW.toLowerCase())) {
+  console.log(`   ⚠️  MATCH_FROM="${MATCH_FROM_RAW}" is not recognised — falling back to 'sheet'. Recognised values: sheet | db.`);
+}
+
+// ── THE TWO MATCHERS, LIFTED OUT SO THEY CAN BE RUN AGAINST EITHER SET. ─────────────────────────────
+// Their bodies are the existing algorithms moved verbatim — same comparisons, same scores, same order,
+// same tie-breaks. They were inline and could therefore only ever be run against one set; the control
+// below needs to run them against both to answer "would the two sources have produced the same MATCH?",
+// which is the only question that matters. Set membership does not answer it: a name absent from one set
+// changes nothing if nothing this run resembles it, and two sets of equal size can still match a name to
+// different venues.
+function matchTruckIn(trucks, normTruck) {
+  return trucks.find(t => {
+      const normDbName = normalizeName(t.name);
+      if (isFuzzyMatch(normDbName, normTruck) || normDbName.includes(normTruck) || normTruck.includes(normDbName)) return true;
+
+      for (const alias of t.aliases) {
+          const normAlias = normalizeName(alias);
+          if (isFuzzyMatch(normAlias, normTruck) || normAlias.includes(normTruck) || normTruck.includes(normAlias)) return true;
+      }
+      return false;
+  }) || null;
+}
+
+// 🔎 Venue matching reads THREE columns — name, village and postcode (v[0], v[1], v[2]) — not one.
+// ⚠️ `validVenues` below is DEAD CODE and always has been: 🧪 a repo-wide sweep finds its declaration and
+// no reader. The retirement plan said so and it is confirmed. It is left in place rather than removed,
+// because deleting unrelated code as a side effect of a switch is how a diff stops being reviewable.
+function resolveVenueFrom(rows, normVenue, eventTextToSearch, eventPostcode) {
+  let confirmedVenue = null;
+  if (eventPostcode) {
+      const venuesAtPostcode = rows.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
+      if (venuesAtPostcode.length > 0) {
+          let bestMatch = null; let highestScore = -1;
+          for (const v of venuesAtPostcode) {
+              const dbNameNorm = normalizeName(v[0]); let score = 0;
+              if (isFuzzyMatch(dbNameNorm, normVenue)) score += 100;
+              else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
+              if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
+          }
+          if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
+      }
+  }
+
+  if (!confirmedVenue) {
+      let fuzzyMatches = rows.filter(v => {
+          if (!v[0]) return false;
+          const normDbName = normalizeName(v[0]);
+          return isFuzzyMatch(normVenue, normDbName) || normVenue.includes(normDbName) || normDbName.includes(normVenue);
+      });
+
+      if (fuzzyMatches.length > 0) {
+          let verifiedMatches = [];
+          for (const match of fuzzyMatches) {
+              const normDbName = normalizeName(match[0]);
+              const dbVillage = (match[1] || "").toLowerCase().trim();
+              let score = 0;
+
+              if (isFuzzyMatch(normVenue, normDbName)) {
+                  score += 100;
+              } else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) {
+                  score += 10;
+                  if (dbVillage && dbVillage.length > 2) {
+                      if (eventTextToSearch.includes(dbVillage)) score += 50;
+                      else score -= 20;
+                  } else if (Math.abs(normDbName.length - normVenue.length) > 5) {
+                      score -= 5;
+                  }
+              }
+
+              if (score > 0) verifiedMatches.push({ venue: match, score: score });
+          }
+          verifiedMatches.sort((a, b) => b.score - a.score);
+          if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
+      }
+  }
+  return confirmedVenue;
+}
+
+// ── THE SHEET SETS — byte-for-byte what has always been built. ──────────────────────────────────────
+const sheetValidTrucks = truckData.filter(r => r[0]).map(r => {
     return {
         name: r[0].toString().trim(),
         aliases: r[17] ? r[17].toString().split(',').map(a => a.trim()).filter(Boolean) : []
     };
 });
+// The venue matcher consumes RAW ROWS by position, so the Sheet set is venueData itself.
+const sheetVenueRows = venueData;
+
+// ── THE DATABASE SETS. `null` = could not be read, which is NOT an empty set. ───────────────────────
+let dbValidTrucks = null;
+let dbVenueRows = null;
+let matchReadError = null;
+
+if (RUN_DISCOVERY) {
+  try {
+    const [{ data: mtRows, error: mtErr }, { data: mvRows, error: mvErr }] = await Promise.all([
+      supabase.from('discovery_trucks').select('name, aliases').limit(10000),
+      supabase.from('venues').select('name, village, postcode').limit(10000),
+    ]);
+    if (mtErr) throw new Error(`discovery_trucks: [${mtErr.code}] ${mtErr.message}`);
+    if (mvErr) throw new Error(`venues: [${mvErr.code}] ${mvErr.message}`);
+    if (!Array.isArray(mtRows) || !Array.isArray(mvRows)) throw new Error('matching query returned a non-array');
+
+    dbValidTrucks = mtRows.filter(r => r.name).map(r => ({
+      name: String(r.name).trim(),
+      // ⚠️ `aliases` is a text[] in the database and a comma-separated STRING in Sheet column 17. Both
+      // arrive here as an array of trimmed non-empty strings, so matchTruckIn cannot tell them apart.
+      // 🧪 21 of 21 aliased trucks agree between the two sources today, 0 null where the Sheet has one.
+      aliases: Array.isArray(r.aliases) ? r.aliases.map(a => String(a).trim()).filter(Boolean) : [],
+    }));
+
+    // 🔴 POSITIONAL ROWS, DELIBERATELY. The matcher reads v[0]/v[1]/v[2], so the DB rows are shaped to
+    // the same positions rather than the matcher being rewritten to read objects. That keeps the
+    // algorithm byte-identical between the two sources — the whole point of a control — and confines
+    // this change to the set builders. ⚠️ It also preserves a positional convention that should die with
+    // the Sheet: when the Sheet read goes, rewrite the matcher for objects and delete this shim.
+    // ⚠️ Where a DB column is NULL and the Sheet has a value, the DB row carries '' — matching the
+    // matcher's own falsy tests (`v[2] &&`, `match[1] || ""`), so a null village or postcode simply
+    // stops contributing to the score instead of throwing. It does NOT fall back to the Sheet: that
+    // would make the flag a blend of both sources and the control meaningless.
+    dbVenueRows = mvRows.map(r => [String(r.name ?? '').trim(), String(r.village ?? '').trim(), String(r.postcode ?? '').trim()]);
+  } catch (err) {
+    matchReadError = err.message || String(err);
+    dbValidTrucks = null; dbVenueRows = null;
+  }
+}
+
+// ── FAILURE RULES. 🔴 GATED ON RUN_DISCOVERY: Pass B does no Pass-A matching, and both workflows share
+// one env block — a flag that does not apply to a hatchgrab run must not kill the hourly operator job.
+// Both previous passes found exactly that bug by running it.
+//
+// 🔴 AND A FLOOR, BECAUSE THIS SET FAILS SILENTLY. A truncated read leaves the run green while every
+// truck looks new and every venue unmatched. The yardstick is the SHEET SET BUILT IN THE SAME RUN — a
+// self-calibrating comparison, not a hard-coded count that would rot as the data grows. 50% is a floor
+// against catastrophe (a truncated page, a broken filter), NOT a quality gate: 🧪 today the DB holds 152%
+// of the Sheet's trucks and 87% of its venues, so it is nowhere near binding. The quality question is
+// answered by the control diff below, and today that diff is large.
+const MATCH_MIN_RATIO = 0.5;
+if (RUN_DISCOVERY && MATCH_FROM === 'db') {
+  if (dbValidTrucks === null || dbVenueRows === null) {
+    throw new Error(`MATCH_FROM=db but the matching sets could not be read: ${matchReadError}. Refusing to scrape — an unreadable matching set does not fail, it makes every truck look new and every venue unmatched. Set MATCH_FROM=sheet to fall back deliberately.`);
+  }
+  if (dbValidTrucks.length === 0 || dbVenueRows.length === 0) {
+    throw new Error(`MATCH_FROM=db but a matching set is EMPTY (trucks ${dbValidTrucks.length}, venues ${dbVenueRows.length}). Every truck would be created new and every venue queued as new, on a green run. Refusing.`);
+  }
+  if (sheetValidTrucks.length > 0 && dbValidTrucks.length < sheetValidTrucks.length * MATCH_MIN_RATIO) {
+    throw new Error(`MATCH_FROM=db but the database yielded ${dbValidTrucks.length} trucks against the Sheet's ${sheetValidTrucks.length} — below the ${MATCH_MIN_RATIO * 100}% floor. That is the shape of a truncated read, and it would silently create new trucks. Refusing.`);
+  }
+  if (sheetVenueRows.length > 0 && dbVenueRows.length < sheetVenueRows.length * MATCH_MIN_RATIO) {
+    throw new Error(`MATCH_FROM=db but the database yielded ${dbVenueRows.length} venues against the Sheet's ${sheetVenueRows.length} — below the ${MATCH_MIN_RATIO * 100}% floor. Refusing.`);
+  }
+} else if (RUN_DISCOVERY && (dbValidTrucks === null || dbVenueRows === null)) {
+  console.log(`   ⚠️  Matching control unavailable — could not read the database sets: ${matchReadError}`);
+}
+
+// 🔴 THE SETS ACTUALLY USED. Only the selected source is bound; the other never reaches a matcher.
+// ⚠️ `validTrucks` KEEPS ITS NAME ON PURPOSE. The auto-exclusion poison guard reads `validTrucks`, so
+// binding the selected set to that name makes the guard FOLLOW THE FLAG automatically — it governs the
+// same truck list the scraper matches against, whichever source that is. Renaming it here would have
+// left the guard silently pointing at the Sheet while matching moved to the database.
+const validTrucks = (MATCH_FROM === 'db' && dbValidTrucks) ? dbValidTrucks : sheetValidTrucks;
+const venueMatchRows = (MATCH_FROM === 'db' && dbVenueRows) ? dbVenueRows : sheetVenueRows;
+
+if (RUN_DISCOVERY) {
+  console.log(`   🔀 MATCH_FROM=${MATCH_FROM}${MATCH_FROM_RAW ? '' : ' (default)'} → matching against ${validTrucks.length} truck(s) and ${venueMatchRows.length} venue row(s) from the ${MATCH_FROM === 'db' ? 'DATABASE' : 'SHEET'}.`);
+}
+
+// ── 🔬 THE CONTROL. Membership now; DECISION equivalence accumulated during the run and printed at the
+// end of Pass A, because only a real extracted name can be matched.
+const matchControl = {
+  truckChecked: 0, truckDiffs: [], venueChecked: 0, venueDiffs: [],
+  available: RUN_DISCOVERY && dbValidTrucks !== null && dbVenueRows !== null,
+};
+if (matchControl.available) {
+  console.log(`   🔬 MATCH CONTROL — trucks: sheet ${sheetValidTrucks.length} vs db ${dbValidTrucks.length} · venues: sheet ${sheetVenueRows.length} vs db ${dbVenueRows.length}`);
+  const sN = new Set(sheetValidTrucks.map(t => normalizeName(t.name)));
+  const dN = new Set(dbValidTrucks.map(t => normalizeName(t.name)));
+  const tOnlySheet = [...sN].filter(k => !dN.has(k)).length;
+  const tOnlyDb = [...dN].filter(k => !sN.has(k)).length;
+  const vKey = r => normalizeName(r[0]) + '|' + String(r[1] || '').toLowerCase().trim();
+  const sV = new Set(sheetVenueRows.filter(r => r[0]).map(vKey));
+  const dV = new Set(dbVenueRows.filter(r => r[0]).map(vKey));
+  const vOnlySheet = [...sV].filter(k => !dV.has(k)).length;
+  const vOnlyDb = [...dV].filter(k => !sV.has(k)).length;
+  console.log(`      membership — trucks: ${tOnlySheet} sheet-only, ${tOnlyDb} db-only · venues: ${vOnlySheet} sheet-only, ${vOnlyDb} db-only`);
+  if (vOnlySheet > 0) console.log(`      🔴 ${vOnlySheet} venue(s) the DATABASE cannot match. Under MATCH_FROM=db each becomes a NEW venue rather than a match — silently, on a green run.`);
+}
+
+// Comparison only — the return value is discarded, so neither can influence what the run actually does.
+function recordTruckMatchControl(truckName, normTruck) {
+  if (!matchControl.available) return;
+  const s = matchTruckIn(sheetValidTrucks, normTruck);
+  const d = matchTruckIn(dbValidTrucks, normTruck);
+  matchControl.truckChecked++;
+  if ((s ? s.name : null) !== (d ? d.name : null)) {
+    matchControl.truckDiffs.push({ truckName, sheet: s ? s.name : '(new truck)', db: d ? d.name : '(new truck)' });
+  }
+}
+function recordVenueMatchControl(venueName, normVenue, eventTextToSearch, eventPostcode) {
+  if (!matchControl.available) return;
+  const s = resolveVenueFrom(sheetVenueRows, normVenue, eventTextToSearch, eventPostcode);
+  const d = resolveVenueFrom(dbVenueRows, normVenue, eventTextToSearch, eventPostcode);
+  matchControl.venueChecked++;
+  if (s !== d) matchControl.venueDiffs.push({ venueName, sheet: s || '(new venue)', db: d || '(new venue)' });
+}
 
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
@@ -614,7 +828,38 @@ eventData.forEach(row => {
 
 console.log(`   ℹ️  Loaded ${existingEvents.length} existing unique events.`);
 
-const sitesToScrape = [];
+// ── 🔀 SITE LIST: SOURCE SWITCH + IN-RUN CONTROL ────────────────────────────────────────────────────
+// The second of the four reads to get a source switch, following the shape EXCLUSIONS_FROM established
+// and which now runs in production: the flag selects which list is USED, BOTH are built on every
+// discovery run and diffed, and the unselected one is comparison-only.
+//
+// 🔴 THIS SWITCH IS DELIBERATELY WIDER THAN THE EXCLUSIONS ONE, because the site list is not just URLs.
+// The membership rule below is `hasUrl || hasInstructions`, so `ai_instructions` decides whether a truck
+// is scraped AT ALL — 🧪 `Louigi's Pizza` and `MumTas` are sites ONLY because of that clause, and a list
+// built without it yields 114 where the Sheet yields 116. And `scraper_strategy` decides how many
+// entries a row produces (comma-split) and which scrape function runs. So the URL, the instructions and
+// the strategy move together or not at all: they are one decision, not three.
+// ⚠️ `aliases` stays on the Sheet. It feeds `validTrucks` for truck MATCHING, not the site list, and
+// belongs with MATCH_FROM.
+//
+// 🔴 NOTHING HERE CHANGES BEHAVIOUR UNTIL `SITES_FROM=db` IS SET IN A WORKFLOW. Unset = sheet.
+const SITES_FROM_RAW = (process.env.SITES_FROM || '').trim();
+const SITES_FROM = SITES_FROM_RAW.toLowerCase() === 'db' ? 'db' : 'sheet';
+if (SITES_FROM_RAW && !['db', 'sheet'].includes(SITES_FROM_RAW.toLowerCase())) {
+  console.log(`   ⚠️  SITES_FROM="${SITES_FROM_RAW}" is not recognised — falling back to 'sheet'. Recognised values: sheet | db.`);
+}
+
+// One helper, used by BOTH builders, so the strategy rule cannot drift between them: lower-case, trim,
+// split on commas, one entry per strategy, defaulting to scroll_lazy when the cell/column is empty.
+// 🧪 Zero rows carry a comma today, so this is 1:1 in practice — but the rule is in the Sheet path and
+// is reproduced rather than assumed away. If a comma ever appears, BOTH paths emit N entries for that
+// row and the control below compares them entry by entry.
+function splitStrategies(raw) {
+  return (raw || 'scroll_lazy').toLowerCase().trim().split(',').map(s => s.trim());
+}
+
+// ── THE SHEET LIST — byte-for-byte the rule that has always run. ────────────────────────────────────
+const sheetSites = [];
 
 truckData.forEach(row => {
   if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return; 
@@ -629,7 +874,7 @@ truckData.forEach(row => {
   if (hasUrl || hasInstructions) {
     const strategies = runStrategy.split(',').map(s => s.trim());
     strategies.forEach(strat => {
-        sitesToScrape.push({ 
+        sheetSites.push({ 
             name: row[0], url: targetUrl, instructions: aiInstructions,
             strategy: strat, sourceType: 'truck' 
         });
@@ -644,13 +889,148 @@ venueData.forEach(row => {
     const runStrategy = (row[11] || 'scroll_lazy').toLowerCase().trim();
     const strategies = runStrategy.split(',').map(s => s.trim());
     strategies.forEach(strat => {
-        sitesToScrape.push({ 
+        sheetSites.push({ 
             name: row[0], url: row[9], instructions: row[10] || "",
             strategy: strat, sourceType: 'venue'
         });
     });
   }
 });
+
+// ── THE DATABASE LIST. `null` = could not be read, which is NOT the same as an empty list. ──────────
+let dbSites = null;
+let dbSitesError = null;
+let dbSitesDropped = [];
+
+if (RUN_DISCOVERY) {
+  try {
+    // 🔴 ORDERED, AND THE ORDER IS LOAD-BEARING. The de-duplication below is "first wins", which is only
+    // deterministic if the query is ordered. created_at then id means the same input always yields the
+    // same site list, run after run.
+    const [{ data: tRows, error: tErr }, { data: vRows, error: vErr }] = await Promise.all([
+      supabase.from('discovery_trucks')
+        .select('id, name, schedule_url, website, ai_instructions, scraper_strategy, created_at')
+        .order('created_at', { ascending: true }).order('id', { ascending: true }).limit(10000),
+      supabase.from('venues')
+        .select('id, name, village, schedule_url, ai_instructions, scraper_strategy, created_at')
+        .order('created_at', { ascending: true }).order('id', { ascending: true }).limit(10000),
+    ]);
+    if (tErr) throw new Error(`discovery_trucks: [${tErr.code}] ${tErr.message}`);
+    if (vErr) throw new Error(`venues: [${vErr.code}] ${vErr.message}`);
+    if (!Array.isArray(tRows) || !Array.isArray(vRows)) throw new Error('site-list query returned a non-array');
+
+    const built = [];
+
+    // 🔴 UNIQUENESS MUST MOVE FROM THE SOURCE INTO THE QUERY. The Sheet never needed this: it has one row
+    // per truck, so uniqueness was a property of the data. 🧪 The database has 231 rows for 230
+    // normalised names — `La Piazza` and `La Piazza Street Food` collapse under normalizeName, which
+    // strips `street` and `food` — so without this, one truck would be scraped twice the moment the
+    // second row gained a URL. De-dup runs AFTER the membership test, so if only one of a colliding pair
+    // is a site, that one is kept regardless of age.
+    // ⚠️ A name that normalises to the EMPTY STRING must never be grouped — every such row would collapse
+    // into one. Those fall back to the raw name as their key. (manual §4.1: "The Street" → "")
+    const seenTruckKey = new Map();
+    for (const r of tRows) {
+      const name = r.name || '';
+      if (TARGET_NAME && name.toLowerCase().trim() !== TARGET_NAME) continue;
+      // ⚠️ nullif(btrim(...), '') semantics, matching the DB expression proven against the Sheet:
+      // schedule PAGE before homepage, exactly as `row[8] || row[6]`.
+      const url = (String(r.schedule_url ?? '').trim() || String(r.website ?? '').trim()) || 'about:blank';
+      const aiInstructions = r.ai_instructions || '';
+      const hasUrl = url !== 'about:blank';
+      const hasInstructions = aiInstructions.length > 10;
+      if (!(hasUrl || hasInstructions)) continue;
+      const norm = normalizeName(name);
+      const key = norm || `\u0000raw:${name.toLowerCase().trim()}`;
+      if (seenTruckKey.has(key)) { dbSitesDropped.push({ name, key, keptInstead: seenTruckKey.get(key) }); continue; }
+      seenTruckKey.set(key, name);
+      for (const strat of splitStrategies(r.scraper_strategy)) {
+        built.push({ name, url, instructions: aiInstructions, strategy: strat, sourceType: 'truck' });
+      }
+    }
+
+    for (const r of vRows) {
+      const name = r.name || '';
+      if (TARGET_NAME && name.toLowerCase().trim() !== TARGET_NAME) continue;
+      // Mirrors the Sheet's `row[9] && row[9].startsWith('http')` exactly — a venue is a site only if it
+      // carries an http(s) schedule URL. ⚠️ No de-dup here: the Sheet deliberately lists the same URL
+      // under two venue names (Saffron Walden, manual §12), and both must survive.
+      const url = String(r.schedule_url ?? '').trim();
+      if (!url.startsWith('http')) continue;
+      for (const strat of splitStrategies(r.scraper_strategy)) {
+        built.push({ name, url, instructions: r.ai_instructions || '', strategy: strat, sourceType: 'venue' });
+      }
+    }
+
+    dbSites = built;
+  } catch (err) {
+    dbSitesError = err.message || String(err);
+    dbSites = null;
+  }
+}
+
+// ── FAILURE RULES. 🔴 GATED ON RUN_DISCOVERY — Pass B builds no Pass-A site list by design, and both
+// workflows share one env block, so a hatchgrab run with SITES_FROM=db must not die on a list it never
+// reads. That exact bug was found and fixed in the EXCLUSIONS_FROM pass by RUNNING it, not reading it.
+if (RUN_DISCOVERY && SITES_FROM === 'db') {
+  // 🔴 An empty site list does not fail — it scrapes NOTHING and exits green. assertSitesToScrape below
+  // is the existing backstop; these two throw earlier and say WHY.
+  if (dbSites === null) {
+    throw new Error(`SITES_FROM=db but the site list could not be read from the database: ${dbSitesError}. Refusing to scrape — set SITES_FROM=sheet to fall back deliberately.`);
+  }
+  // 🔴 `!TARGET_NAME` MIRRORS assertSitesToScrape's OWN GATE, AND IT IS NOT OPTIONAL. A targeted run
+  // (`node run-scraper.js "some truck"`, or the workflow_dispatch input) legitimately yields 0 sites when
+  // the name matches nothing — the Sheet path exits 0 there. Without this gate the DB path THREW where
+  // the Sheet path exited cleanly: a behaviour difference between the two sources, which is precisely
+  // what a source switch must not introduce. 🧪 Found by running both paths with a target matching
+  // nothing (sheet exit=0, db exit=1), not by reading.
+  if (dbSites.length === 0 && !TARGET_NAME) {
+    throw new Error('SITES_FROM=db but the database yielded 0 sites. A run with no sites scrapes nothing and exits green — refusing. Check discovery_trucks.schedule_url/website and ai_instructions, or set SITES_FROM=sheet.');
+  }
+} else if (RUN_DISCOVERY && dbSites === null) {
+  // Sheet list in use, so a DB failure cannot affect what is scraped. It costs the CONTROL, not the run.
+  console.log(`   ⚠️  Site-list control unavailable — could not build the database list: ${dbSitesError}`);
+}
+
+// 🔴 THE LIST ACTUALLY USED. Only the selected source is copied in; the other never reaches the loop.
+const sitesToScrape = (SITES_FROM === 'db' && dbSites) ? dbSites.slice() : sheetSites.slice();
+
+if (RUN_DISCOVERY) {
+  console.log(`   🔀 SITES_FROM=${SITES_FROM}${SITES_FROM_RAW ? '' : ' (default)'} → using ${sitesToScrape.length} site(s) from the ${SITES_FROM === 'db' ? 'DATABASE' : 'SHEET'}.`);
+  if (dbSitesDropped.length) console.log(`      ↳ db de-dup dropped ${dbSitesDropped.length} colliding row(s): ${dbSitesDropped.map(d => `"${d.name}" (kept "${d.keptInstead}")`).join(', ')}`);
+}
+
+// ── 🔬 THE CONTROL. FIELD-LEVEL, NOT COUNTS. Two 116-entry lists can differ entry by entry, so the diff
+// keys on normalised name + sourceType + strategy and compares url, instructions and strategy.
+if (RUN_DISCOVERY && dbSites !== null) {
+  const entryKey = e => `${e.sourceType}::${normalizeName(e.name) || e.name.toLowerCase().trim()}::${e.strategy}`;
+  const index = list => { const m = new Map(); for (const e of list) if (!m.has(entryKey(e))) m.set(entryKey(e), e); return m; };
+  const sIdx = index(sheetSites), dIdx = index(dbSites);
+  const onlySheet = [...sIdx.keys()].filter(k => !dIdx.has(k));
+  const onlyDb = [...dIdx.keys()].filter(k => !sIdx.has(k));
+  const fieldDiffs = [];
+  for (const [k, sEntry] of sIdx) {
+    const dEntry = dIdx.get(k);
+    if (!dEntry) continue;
+    const bad = [];
+    if (sEntry.url !== dEntry.url) bad.push(`url: sheet=${JSON.stringify(sEntry.url)} db=${JSON.stringify(dEntry.url)}`);
+    if ((sEntry.instructions || '') !== (dEntry.instructions || '')) bad.push(`instructions: sheet=${(sEntry.instructions || '').length} chars db=${(dEntry.instructions || '').length} chars`);
+    if (sEntry.strategy !== dEntry.strategy) bad.push(`strategy: sheet=${JSON.stringify(sEntry.strategy)} db=${JSON.stringify(dEntry.strategy)}`);
+    if (bad.length) fieldDiffs.push({ name: sEntry.name, sourceType: sEntry.sourceType, bad });
+  }
+  console.log(`   🔬 SITE-LIST CONTROL — sheet ${sheetSites.length} entr(ies), db ${dbSites.length}.`);
+  if (!onlySheet.length && !onlyDb.length && !fieldDiffs.length) {
+    console.log(`      ✅ IDENTICAL on every entry and every field (name, url, instructions, strategy, sourceType).`);
+  } else {
+    if (onlySheet.length) console.log(`      ⚠️ ${onlySheet.length} only in the SHEET: ${onlySheet.slice(0, 10).map(k => JSON.stringify(sIdx.get(k).name)).join(', ')}${onlySheet.length > 10 ? ` …+${onlySheet.length - 10}` : ''}`);
+    if (onlyDb.length) console.log(`      ⚠️ ${onlyDb.length} only in the DB: ${onlyDb.slice(0, 10).map(k => JSON.stringify(dIdx.get(k).name)).join(', ')}${onlyDb.length > 10 ? ` …+${onlyDb.length - 10}` : ''}`);
+    if (fieldDiffs.length) {
+      console.log(`      🔴 ${fieldDiffs.length} entr(ies) present in BOTH but differing per-field — the default MUST NOT be flipped until these are explained:`);
+      for (const f of fieldDiffs.slice(0, 20)) console.log(`         [${f.sourceType}] "${f.name}" — ${f.bad.join(' | ')}`);
+      if (fieldDiffs.length > 20) console.log(`         …and ${fieldDiffs.length - 20} more.`);
+    }
+  }
+}
 
 // 🔴 ZERO SITES IS A CONFIGURATION FAILURE, NOT A NO-OP RUN. Guarded only in discovery mode: a
 // hatchgrab-mode run legitimately builds no Pass-A site list.
@@ -915,35 +1295,95 @@ for (const [index, site] of sitesToScrape.entries()) {
       // 0 rows in production, which is consistent with this never having landed. Now a for…of with an
       // awaited upsert; failures are collected and asserted after the appends.
       if (exclusionsToAdd.length > 0) {
+        // 🔴 THE POISON GUARD. V1.4 §11.2 / defect 13 records this append as UNGUARDED: the model's raw
+        // string was added with three checks — non-empty, is-a-string, not-already-present — and NEVER
+        // compared against the truck list, though `validTrucks` has been in scope since it was built.
+        // That is the self-poisoning loop: a term that names a real truck silences that truck on every
+        // future run, and the only symptom is silence. It cost Steak & Honour six correctly-extracted
+        // events from a page that fetched, captured and extracted perfectly.
+        // 🔎 The matcher is the SCRAPER's 1-edit Levenshtein (isFuzzyMatch), NOT the Apps Script's
+        // containment — this guard governs what THIS file does, and the two disagree: 🧪 the step-2
+        // import measured 5 terms hitting a truck under Levenshtein against 9 under containment.
+        // ⚠️ Aliases are included: a term matching an alias silences that truck just as surely as one
+        // matching its name, because the truck matcher checks both.
+        // ⚠️ `validTrucks` is built from the SHEET's Trucks tab. When MATCH_FROM eventually moves truck
+        // matching to the database, this guard's source must move with it or it will go stale.
+        const knownTruckKeys = [];
+        for (const t of validTrucks) {
+          const nk = normalizeName(t.name);
+          if (nk) knownTruckKeys.push({ key: nk, label: `"${t.name}"` });
+          for (const a of (t.aliases || [])) {
+            const ak = normalizeName(a);
+            if (ak) knownTruckKeys.push({ key: ak, label: `"${t.name}" (via alias "${a}")` });
+          }
+        }
+
         for (const ex of exclusionsToAdd) {
             if (ex && typeof ex === 'string') {
                 const cleanEx = normalizeName(ex);
+
+                // A term that normalises to nothing can never match anything and would sit in the tab
+                // for ever. Refused loudly rather than stored as a no-op.
+                if (!cleanEx) {
+                  console.log(`   🚫 REFUSED auto-exclusion ${JSON.stringify(ex)} — it normalises to the empty string, so it could never match anything (${site.url})`);
+                  continue;
+                }
+
+                // 🔴 REFUSE ANYTHING THAT NAMES A KNOWN TRUCK, AND SAY SO. A silent skip is
+                // indistinguishable from nothing having been proposed, which is exactly how the
+                // original fault stayed invisible. Named term, named truck, named source URL.
+                const poison = knownTruckKeys.find(t => isFuzzyMatch(t.key, cleanEx));
+                if (poison) {
+                  console.log(`   🚫 REFUSED auto-exclusion ${JSON.stringify(ex)} (key "${cleanEx}") — it matches the known truck ${poison.label}. Writing it would silence that truck on every future run. Proposed by: ${site.url}`);
+                  continue;   // 🔴 NOT written to the database AND NOT written to the Sheet.
+                }
+
                 if (!Array.from(excludedTerms).some(existing => isFuzzyMatch(existing, cleanEx))) {
                     try {
+                        // ── 🔴 DATABASE FIRST, SHEET SECOND. THE ORDER IS THE POINT. ────────────────
+                        // The old order was Sheet-then-DB, and the DB write was refused every time
+                        // (`excluded_terms`, wrong conflict key, NOT NULL truck_id) — so the term
+                        // reached the Sheet and nothing else, and the two sources diverged the moment
+                        // this fired. That divergence is what blocks EXCLUSIONS_FROM=db.
+                        // Writing the DB first means a DB failure stops the Sheet write too: the term
+                        // reaches NEITHER source, the run still goes red through dbWriteFailures, and
+                        // the two stay in step. Divergence is the failure mode worth designing out;
+                        // "the term was not applied this run" is not.
+                        // 🔎 TARGET: discovery_exclusion_terms, the GLOBAL list this scraper reads.
+                        // 🔴 NOT `excluded_terms` — that is the operator feature's table, keyed
+                        // per-truck with a different normaliser and a different match rule
+                        // (app/api/manage/route.ts). It is left entirely alone.
+                        const { error: exErr } = await supabase.from('discovery_exclusion_terms').upsert({
+                          term: ex,
+                          term_key: cleanEx,       // 🔎 the value the fuzzy check actually compares
+                          source: 'scraper',
+                          created_by: `scraper:${site.name}`,   // provenance the Exclusions tab never had
+                        }, { onConflict: 'term_key', ignoreDuplicates: true });
+                        if (exErr) {
+                          dbWriteFailures.push(`discovery_exclusion_terms "${ex}": [${exErr.code}] ${exErr.message}`);
+                          console.error(`   ❌ Auto-exclusion "${ex}" NOT written to the database — skipping the Sheet append too, so the two sources stay in step.`);
+                          continue;
+                        }
+
                         await sheets.spreadsheets.values.append({
                             spreadsheetId: SPREADSHEET_ID,
                             range: `${TABS.EXCLUSIONS}!A:A`,
                             valueInputOption: 'USER_ENTERED',
                             resource: { values: [[ex]] },
                         });
+
+                        // In-memory only AFTER both stores have it, so the set applied for the rest of
+                        // this run matches what actually persisted.
                         excludedTerms.add(cleanEx);
                         // Keep BOTH control sets in step with the in-memory addition, so the decision
-                        // diff below stays a comparison of the two SOURCES rather than an artefact of
-                        // which one happened to be selected this run.
-                        // ⚠️ NOTE THE ASYMMETRY THIS PAPERS OVER, AND DO NOT LOSE IT: the append above
-                        // writes the term to the SHEET only. Nothing writes it to
-                        // discovery_exclusion_terms, so after EXCLUSIONS_FROM=db the auto-exclusion
-                        // would not survive the run. That is the still-open `:784-790` guard problem
-                        // (manual §11.2) and must be settled BEFORE the default flips.
+                        // diff stays a comparison of the two SOURCES rather than an artefact of which
+                        // one happened to be selected this run. ✅ The asymmetry the old comment here
+                        // warned about is now CLOSED: the term reaches the database and the Sheet.
                         sheetExclusionSet.add(cleanEx);
                         if (dbExclusionSet) dbExclusionSet.add(cleanEx);
-                        console.log(`   🤖 Auto-Excluded via Scraper: ${ex}`);
-                        const { error: exErr } = await supabase.from('excluded_terms').upsert({
-                          term: ex,
-                        }, { onConflict: 'term', ignoreDuplicates: true });
-                        if (exErr) dbWriteFailures.push(`excluded_terms "${ex}": [${exErr.code}] ${exErr.message}`);
+                        console.log(`   🤖 Auto-Excluded via Scraper: ${ex} → discovery_exclusion_terms + Exclusions tab`);
                     } catch (err) {
-                        dbWriteFailures.push(`excluded_terms "${ex}" (Sheet append): ${err.message}`);
+                        dbWriteFailures.push(`auto-exclusion "${ex}" (Sheet append, AFTER a successful database write — the two sources may now differ): ${err.message}`);
                         console.error("Failed to append exclusion:", err.message);
                     }
                 }
@@ -1038,16 +1478,11 @@ for (const [index, site] of sitesToScrape.entries()) {
               finalTruck = site.name; 
           } else {
               // --- 🧠 TRUCK FUZZY IDENTIFICATION ---
-              let matchedTruckObj = validTrucks.find(t => {
-                  const normDbName = normalizeName(t.name);
-                  if (isFuzzyMatch(normDbName, normTruck) || normDbName.includes(normTruck) || normTruck.includes(normDbName)) return true;
-                  
-                  for (const alias of t.aliases) {
-                      const normAlias = normalizeName(alias);
-                      if (isFuzzyMatch(normAlias, normTruck) || normAlias.includes(normTruck) || normTruck.includes(normAlias)) return true;
-                  }
-                  return false;
-              });
+              // Same algorithm, now called rather than inlined, so the control can run it against the
+              // other source too. `validTrucks` is whichever set MATCH_FROM selected.
+              let matchedTruckObj = matchTruckIn(validTrucks, normTruck);
+              // 🔬 Comparison only; its result is discarded and cannot affect the line above.
+              recordTruckMatchControl(truckName, normTruck);
 
               if (matchedTruckObj) {
                   finalTruck = matchedTruckObj.name;
@@ -1077,53 +1512,12 @@ for (const [index, site] of sitesToScrape.entries()) {
               const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
               const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
-              if (eventPostcode) {
-                  const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
-                  if (venuesAtPostcode.length > 0) {
-                      let bestMatch = null; let highestScore = -1;
-                      for (const v of venuesAtPostcode) {
-                          const dbNameNorm = normalizeName(v[0]); let score = 0;
-                          if (isFuzzyMatch(dbNameNorm, normVenue)) score += 100;
-                          else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
-                          if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
-                      }
-                      if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
-                  }
-              }
-
-              if (!confirmedVenue) {
-                  // --- 🧠 VENUE FUZZY IDENTIFICATION ---
-                  let fuzzyMatches = venueData.filter(v => {
-                      if (!v[0]) return false; 
-                      const normDbName = normalizeName(v[0]);
-                      return isFuzzyMatch(normVenue, normDbName) || normVenue.includes(normDbName) || normDbName.includes(normVenue);
-                  });
-
-                  if (fuzzyMatches.length > 0) {
-                      let verifiedMatches = [];
-                      for (const match of fuzzyMatches) {
-                          const normDbName = normalizeName(match[0]);
-                          const dbVillage = (match[1] || "").toLowerCase().trim(); 
-                          let score = 0;
-                          
-                          if (isFuzzyMatch(normVenue, normDbName)) {
-                              score += 100; 
-                          } else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) {
-                              score += 10; 
-                              if (dbVillage && dbVillage.length > 2) {
-                                  if (eventTextToSearch.includes(dbVillage)) score += 50; 
-                                  else score -= 20; 
-                              } else if (Math.abs(normDbName.length - normVenue.length) > 5) {
-                                  score -= 5; 
-                              }
-                          }
-                          
-                          if (score > 0) verifiedMatches.push({ venue: match, score: score });
-                      }
-                      verifiedMatches.sort((a, b) => b.score - a.score);
-                      if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
-                  }
-              }
+              // --- 🧠 VENUE IDENTIFICATION: postcode branch first, then scored fuzzy ---
+              // The identical algorithm, moved into resolveVenueFrom so the control can run it against
+              // the other source. `venueMatchRows` is whichever set MATCH_FROM selected.
+              confirmedVenue = resolveVenueFrom(venueMatchRows, normVenue, eventTextToSearch, eventPostcode);
+              // 🔬 Comparison only; discarded, and cannot affect the line above.
+              recordVenueMatchControl(venueName, normVenue, eventTextToSearch, eventPostcode);
               
               if (confirmedVenue) {
                   finalVenue = confirmedVenue;
@@ -1230,6 +1624,29 @@ if (!exclusionControl.available) {
     console.log(`      "${d.truckName}" (${d.normRawTruck}) — sheet says ${d.sheetHit ? 'EXCLUDE' : 'keep'}, db says ${d.dbHit ? 'EXCLUDE' : 'keep'}  [${d.siteUrl}]`);
   }
   if (exclusionControl.disagreements.length > 20) console.log(`      …and ${exclusionControl.disagreements.length - 20} more.`);
+}
+
+// ── 🔬 MATCH CONTROL RESULT — decision equivalence, not set equality. ───────────────────────────────
+// 🔴 The question is not "do the two sources hold the same rows?" but "would every truck and venue name
+// this run have been matched to the SAME thing?". A row present in one set and absent from the other
+// changes nothing if nothing this run resembles it; two sets of equal size can still match one name to
+// different venues. Only this answers it.
+if (!matchControl.available) {
+  console.log(`   🔬 MATCH CONTROL: NOT RUN (the database sets could not be read). No comparison was made this run.`);
+} else if (matchControl.truckChecked === 0 && matchControl.venueChecked === 0) {
+  console.log(`   🔬 MATCH CONTROL: 0 names reached a matcher, so decision equivalence is UNTESTED this run. Membership was compared at startup.`);
+} else {
+  const td = matchControl.truckDiffs.length, vd = matchControl.venueDiffs.length;
+  if (td === 0 && vd === 0) {
+    console.log(`   ✅ MATCH CONTROL: sheet and db agreed on ALL ${matchControl.truckChecked} truck name(s) and ${matchControl.venueChecked} venue name(s) this run.`);
+  } else {
+    console.log(`   🔴 MATCH CONTROL: ${td} truck and ${vd} venue DISAGREEMENT(S) across ${matchControl.truckChecked} truck / ${matchControl.venueChecked} venue name(s) — the default MUST NOT be flipped until these are explained:`);
+    for (const d of matchControl.truckDiffs.slice(0, 15)) console.log(`      TRUCK "${d.truckName}" — sheet → ${d.sheet} · db → ${d.db}`);
+    if (td > 15) console.log(`      …and ${td - 15} more truck disagreement(s).`);
+    for (const d of matchControl.venueDiffs.slice(0, 15)) console.log(`      VENUE "${d.venueName}" — sheet → ${d.sheet} · db → ${d.db}`);
+    if (vd > 15) console.log(`      …and ${vd - 15} more venue disagreement(s).`);
+    console.log(`      ⚠️ A "(new venue)" or "(new truck)" on the db side means that source would CREATE a row where the other MATCHED one.`);
+  }
 }
 
 assertSomeSiteSucceeded(sitesAttempted, sitesSucceeded, siteFailures);

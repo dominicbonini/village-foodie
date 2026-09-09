@@ -20,6 +20,7 @@ import { createSlug } from '@/lib/utils'   // slug preview in the create-truck m
 import { formatTimeRange } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import OutreachPanel from '@/components/admin/OutreachPanel'   // the outreach console, rendered as a tab
+import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
 
 interface AdminTruck {
   id: string
@@ -212,6 +213,21 @@ const PLAN_BADGE: Record<Plan, string> = {
 // Presentation-only pseudo-plan for scraped discovery rows (NOT in the Plan enum; derived from row type).
 const DISCOVERY_BADGE = 'bg-slate-100 text-slate-500'
 
+// ── THE TABS, DECLARED ONCE ─────────────────────────────────────────────────────────────────────
+// 🔴 THIS REPLACES THE ICON/LABEL TERNARIES. The note left on those said "if a fifth tab arrives, make
+// it a map" — 'screenshots' is the fifth, so this is that map. Two ternaries with five arms each is two
+// places to forget, and the ORDER of the arms silently decides which tab is the fall-through `:` case.
+// ⚠️ The `?tab=` validator below reads THIS OBJECT rather than repeating the names, so a tab cannot be
+// reachable by URL but missing from the bar, or the reverse.
+const ADMIN_TABS = {
+  trucks:      { icon: '🚚', label: 'Trucks' },
+  features:    { icon: '📋', label: 'Features' },
+  domains:     { icon: '🌐', label: 'Domains' },
+  outreach:    { icon: '📣', label: 'Outreach' },
+  screenshots: { icon: '🖼️', label: 'Screenshots' },
+} as const
+type AdminTab = keyof typeof ADMIN_TABS
+
 export default function AdminPage() {
   const router = useRouter()
   const [checkingSession, setCheckingSession] = useState(true)
@@ -231,7 +247,7 @@ export default function AdminPage() {
   // 🔴 'outreach' IS A REAL TAB, NOT A LINK. Its console lives in components/admin/OutreachPanel.tsx and
   // is mounted below when this is selected, so it fetches on first selection rather than on every /admin
   // visit. ⚠️ It is rendered OUTSIDE the max-w-6xl body wrapper — see the render site for why.
-  const [adminTab, setAdminTab] = useState<'trucks' | 'features' | 'domains' | 'outreach'>('trucks')
+  const [adminTab, setAdminTab] = useState<AdminTab>('trucks')
 
   // ── ?tab= SEEDS THE OPENING TAB, so /admin/outreach's redirect lands on the outreach tab rather than
   // on Trucks. 🔴 READ FROM window.location IN AN EFFECT, NOT useSearchParams(): useSearchParams forces
@@ -242,7 +258,7 @@ export default function AdminPage() {
   // state where no tab block renders and the screen is simply blank.
   useEffect(() => {
     const t = new URLSearchParams(window.location.search).get('tab')
-    if (t === 'trucks' || t === 'features' || t === 'domains' || t === 'outreach') setAdminTab(t)
+    if (t && Object.prototype.hasOwnProperty.call(ADMIN_TABS, t)) setAdminTab(t as AdminTab)
   }, [])
 
   const [truckSearch, setTruckSearch] = useState('')
@@ -819,9 +835,7 @@ export default function AdminPage() {
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
         <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
-          {/* ⚠️ The icon/label ternaries grew a fourth arm rather than becoming a lookup, to keep this a
-              one-line diff against the shape that was here. If a fifth tab arrives, make it a map. */}
-          {(['trucks', 'features', 'domains', 'outreach'] as const).map(tab => (
+          {(Object.keys(ADMIN_TABS) as AdminTab[]).map(tab => (
             <button
               key={tab}
               onClick={() => setAdminTab(tab)}
@@ -831,7 +845,7 @@ export default function AdminPage() {
                   : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
-              <span>{tab === 'trucks' ? '🚚' : tab === 'features' ? '📋' : tab === 'domains' ? '🌐' : '📣'}</span>{tab === 'trucks' ? 'Trucks' : tab === 'features' ? 'Features' : tab === 'domains' ? 'Domains' : 'Outreach'}
+              <span aria-hidden="true">{ADMIN_TABS[tab].icon}</span>{ADMIN_TABS[tab].label}
             </button>
           ))}
         </div>
@@ -843,6 +857,16 @@ export default function AdminPage() {
           a small-screen problem, and it is the exact fault that was fixed on that table earlier. The
           wrapper is HIDDEN rather than unmounted so the three tab blocks inside keep their state. */}
       <div className={adminTab === 'outreach' ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
+
+        {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
+            🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
+            1510px and this wrapper caps at 1152px; the uploader is a max-w-3xl column, so it has the
+            opposite problem and belongs in the narrow, centred body with the other three tabs.
+            ⚠️ && rather than a hidden class: this one is UNMOUNTED when the tab is not selected, so
+            leaving the tab discards a picked file and a finished run rather than holding a stale
+            result over the next visit. The three tabs it sits with are hidden-not-unmounted because
+            they hold fetched lists worth keeping; this holds a form. */}
+        {adminTab === 'screenshots' && <ScreenshotsPanel />}
 
         {/* Features tab */}
         {/* ── CUSTOM DOMAINS ────────────────────────────────────────────────────────────────────

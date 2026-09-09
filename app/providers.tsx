@@ -50,10 +50,74 @@ const IS_EMBED_ENTRY =
 const IS_CUSTOM_HOST_ENTRY =
   typeof window !== 'undefined' && isCustomHost(window.location.host)
 
-if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY) {
+/**
+ * ── 🔴 ROUTES WHOSE PATH IS ITSELF A CREDENTIAL ─────────────────────────────────────────────────
+ *
+ * CONFIRMED IN PRODUCTION (manual V12.5 :8477): PostHog `$current_url` values included
+ * `/dashboard/realthaifood-23f80551121b` and `/manage/realthaifood-23f80551121b`, repeatedly, across
+ * `$autocapture` AND `$pageview`, with van ids and event ids alongside. A dashboard token is not an
+ * identifier, it is a BEARER CREDENTIAL: it grants refunds, customer PII and menu deletion to anyone
+ * holding it. Sending it to a third-party analytics store is handing out the key.
+ *
+ * 🔴 AND THERE IS NOTHING TO LOSE BY SUPPRESSING THEM. Manual V12.5 :8509: "there is not one explicit
+ * `posthog.capture()` on any operator route — it collects nothing we use while carrying the whole
+ * risk." So this removes risk and no measurement.
+ *
+ * ⚠️ `/kds` and `/dashboard/<token>/kds` are BOTH covered: the first by the `kds` alternative, the
+ * second because it starts with `/dashboard`. The KDS query string carries `van_id`, `van_name`,
+ * `event_id` and `date` (app/dashboard/[token]/page.tsx), which is the "van ids and event ids
+ * alongside" the manual recorded — dropping the event drops the query string with it.
+ */
+const CREDENTIAL_ROUTE_RE = /^\/(dashboard|manage|kds)(\/|$)/
+
+function isCredentialPath(pathname?: string | null): boolean {
+  return !!pathname && CREDENTIAL_ROUTE_RE.test(pathname)
+}
+
+/**
+ * 🔴 LAYER 1 — DO NOT INITIALISE AT ALL WHEN THE ENTRY URL IS ONE OF THOSE ROUTES.
+ * Same shape, and for the same reason, as IS_EMBED_ENTRY above: `posthog.init()` runs at MODULE SCOPE,
+ * so a check inside the component would run after the library had already installed its listeners and
+ * fired its first pageview. Guarding the init means no cookie, no autocapture listener, and NO NETWORK
+ * CALL WHATSOEVER — nothing is sent and then suppressed, because nothing starts.
+ */
+const IS_CREDENTIAL_ENTRY =
+  typeof window !== 'undefined' && isCredentialPath(window.location.pathname)
+
+if (typeof window !== 'undefined' && !IS_EMBED_ENTRY && !IS_CUSTOM_HOST_ENTRY && !IS_CREDENTIAL_ENTRY) {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     person_profiles: 'identified_only',
+    /**
+     * 🔴 LAYER 2 — AND IT IS NOT REDUNDANT, IT COVERS THE CASE LAYER 1 CANNOT.
+     * IS_CREDENTIAL_ENTRY is read ONCE, at module evaluation, so it is decided by the ENTRY url. That
+     * is sufficient for /embed (nothing links to it) but NOT here: the app really does navigate into
+     * these routes client-side, with PostHog already initialised —
+     *   app/setup/page.tsx:153      router.push(`/manage/${dashboard_token}?import=demo`)
+     *   app/admin/page.tsx:1275     link to `/dashboard/${dashboard_token}`
+     *   app/dashboard/[token]/page.tsx:1635  router.push(`/dashboard/${token}/kds?...`)
+     * On those navigations the library's own pageview and autocapture listeners are already installed,
+     * and unmounting the React provider would NOT stop them — they are global listeners, not React.
+     *
+     * `before_send` runs inside the capture pipeline BEFORE the request is queued or transmitted, so
+     * returning null DROPS the event rather than recording-then-hiding it. 🔎 Supported in the
+     * installed posthog-js 1.386.6: `before_send: void 0` is a real config default, normalised to
+     * `[this.config.before_send]`, and the library's own deprecation notice points at it
+     * ("sanitize_properties is deprecated. Use before_send instead").
+     *
+     * ⚠️ It is keyed on the EVENT's own url, not on `window.location`, so an event queued for a
+     * credential route cannot escape by being flushed after the user has navigated away.
+     */
+    before_send: (event) => {
+      if (!event) return event
+      const props = (event.properties ?? {}) as Record<string, unknown>
+      let path = typeof props.$pathname === 'string' ? props.$pathname : ''
+      if (!path && typeof props.$current_url === 'string') {
+        try { path = new URL(props.$current_url).pathname } catch { path = '' }
+      }
+      // 🔴 Dropped here = never queued, never sent. Not "captured but filtered later".
+      return isCredentialPath(path) ? null : event
+    },
     // 🔴 EXPLICIT, BECAUSE THE DEFAULT IS `false` AND THE REAL SWITCH IS IN A DASHBOARD WE CANNOT READ.
     // posthog-js 1.386.6 ships `disable_session_recording: !1` — recording is then gated by a
     // server-side project setting, so whether this app records sessions was decided outside the
@@ -81,5 +145,12 @@ export function CSPostHogProvider({ children, host }: { children: React.ReactNod
   const pathname = usePathname()
   if (pathname?.startsWith('/embed')) return <>{children}</>
   if (isCustomHost(host)) return <>{children}</>
+  // 🔴 LAYER 3 — defence in depth, and deliberately NOT the load-bearing one. `usePathname()` IS
+  // reactive, so this correctly drops the provider when the app navigates into a credential route
+  // client-side. But it only removes the React context: `usePostHog()` returns undefined in this tree,
+  // so any explicit capture becomes a no-op. It does NOT stop `$pageview` or `$autocapture`, which are
+  // global listeners installed by init() and answer to nothing in the React tree. That is precisely why
+  // layer 2 exists, and why suppressing pageviews alone would not have been enough.
+  if (isCredentialPath(pathname)) return <>{children}</>
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>
 }

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V12.5
+HatchGrab Engineering Reference Manual · V12.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 12.5**
+**Version 12.7**
 
 September 2026
 
@@ -25,6 +25,80 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V12.7 — 9 September 2026 (night) — AN UNVALIDATED COORDINATE WRITER HAS BEEN LIVE IN THE APP THE WHOLE TIME, TWO PROMPTS IN ONE FILE DIFFER BY 37 POINTS ON THE SAME PAGES, AND THREE CLAIMS THIS MANUAL REPEATED TURN OUT TO DESCRIBE CODE THAT DOES NOT EXIST
+
+**Delta — new §51 (extraction landscape, the app's own geocoder, the filters, the screenshot upload); §15 and the V6.x geocoding entry corrected in place; §3's DRY divergence note corrected; three new invariants in §35. No code changed, no database row touched.** (`extraction-paths-comparison-report.md`, `screenshot-upload-build-report.md`)
+
+### 🔴 THE HIGHEST-PRIORITY ITEM — IT IS LIVE AND OPERATOR-FACING
+
+- 🔎 **`app/api/manage/geocode/route.ts:16-22` asks Gemini for raw lat/lng** — *"You are a geocoding service. Return ONLY a JSON object with the latitude and longitude"* — with **no postcodes.io lookup, no sentinel test, no distance check**, and the `confidence` it asks for is **discarded** by the caller (🔎 `app/manage/[token]/page.tsx:6572-6574`).
+- 🔎 **Three dashboard call sites write it** — `:3384` (onboarding), `:6982` (hand-edited event), `:7045` (**the schedule-import review save**) — into `upsert_event` → 🔎 `app/api/manage/route.ts:838` → **`truck_events.latitude/longitude`**, the table the trading truck sells from.
+- 🧪 **25 of 57 rows with `source='manual'` carry these coordinates (44%), at a 🔴 0% `venue_id` rate**, against the bridge's 61 of 80 (76%) taken from an already-validated venue.
+- 🔴 **The pipeline's postcodes.io gauntlet governs `scripts/run-scraper.js` ALONE.** It was declared on 7 September and narrowed once (*"true of the scraper only"*) when the Apps Script proved to geocode unvalidated as well. **Both statements were about individual writers; nobody enumerated the writers.** **OPEN. Nothing proposed.** §51.1
+
+### 🔴 THREE CLAIMS CORRECTED — ONE OF THEM DESCRIBES AN ACTION THAT DOES NOT EXIST
+
+- **OLD VALUE (V6.x changelog):** *"**Geocoding fallback** — manual events geocode via Gemini with an api.postcodes.io postcode fallback; the operator is warned on failure and a Fix button re-geocodes events with null coordinates."* 🔴 **All three halves are false.** (1) 🧪 `getCoordsFromPostcode` (`lib/utils.ts:24`) is the app's only postcodes.io caller and its **sole** call site is `app/page.tsx:143`, the **customer's** postcode search on the public map. (2) 🔎 `:6988` / `:7049` are `console.warn` — **the operator sees nothing**. (3) 🧪 **`update_event_coords` appears nowhere in the code — only in this manual**; the event actions are `upsert_event`, `delete_event`, `update_event_deal`, `get_recent_events`, and the "Fix" control at `:8044` is about missing **times and vans**. Corrected in place at both sites (§15 and the V6.x entry).
+- 🔴 **The screenshot extractor does NOT reuse `app/api/manage/process-schedule/route.ts`.** **OLD CLAIM**, repeated in the build report's framing and the briefs before it: *"the SCREENSHOT extractor built today, which reuses `process-schedule/route.ts`"*. 🔎 `app/api/admin/screenshot-events/route.ts:19-25` imports four things and none of them is that route or `lib/schedule-extract`; 🔎 `lib/admin/screenshot-events.ts:17` imports **only** `@/lib/venue-signature`. **It is a FOURTH independent implementation** — deliberate, reasoned at 🔎 `lib/admin/screenshot-events.ts:8`, but **a divergence added, not removed.** §51.7
+- 🔴 **The "1,100 postcodes" figure came from the SCRAPER's `Notes` catch-all rule, NOT the app's extractor.** It has been cited repeatedly as evidence that the app's prompt is better; **it is not evidence of that.** 🔎 `run-scraper.js:1230` rule 7 dumps postcodes into a free-text `Notes` field (→ `discovery_events.ai_notes`); 🧪 `discovery_events` **has no `postcode` column at all**. **The app's extractor contributed to neither the 1,100 nor the 0-of-517** — it never writes to `discovery_events`; its output goes to `truck_events`, where 🧪 21 of 57 `manual` rows carry a real postcode. §51.3
+
+### 🔴 THE CENTRAL FINDING — PROMPT WORDING IS THE DOMINANT VARIABLE
+
+- 🧪 **A (`run-scraper.js:1230`): 1,100 of 2,952 rows with a postcode (37%). C (`run-scraper.js:2075`): 0 of 108 (0%).** Same model, **same file**, same capture, same database. **Every structural variable is held constant.**
+- ⚠️ **Consequence: prompts must be treated as DATA WITH ONE OWNER AND A VERSION.** A consolidation that unifies routes and leaves eight prompt strings in place has consolidated the part that was not costing anything. §51.3
+- ⚠️ **Not fully ruled out:** if C's pages carry no postcodes, 0% is a property of the input. **Checkable from the logged page text; NOT CHECKED. OPEN.**
+
+### THE LANDSCAPE, AND WHAT A MERGE WOULD BREAK
+
+- 🧪 **SIX extraction paths and EIGHT prompt sites, not three** — enumerated with file locations, what each fetches and where it writes, in §51.2. ⚠️ **`verify-schedule-url` (E) was routinely omitted** from the "three paths" framing.
+- 🔴 **`scrape_rules` (B) must NOT be merged** — 🔎 `:1198` emits `freq`/`day`/`startDate`/`endDate`, a recurring **rule**; `ExtractedEvent` has no field for any of them. **A rule compiler, not an extractor.** §51.4
+- ⚠️ **The scraper's per-site `ai_instructions` (🧪 30 sites carry hand-written prose rules) and its six-strategy dispatch have no equivalent anywhere else** — 🔎 `manual`/`manual_single` **fetch no page at all**. **A merge that drops them breaks those sites while the run stays green.** §51.4
+- 🔴 **Three exclusion matchers, no two alike** — the app's **keeps spaces**, matches by **substring**, is applied to the **VENUE** name and is scoped **per `truck_id`**, against two global truck-name matchers. **And two invalid-venue lists: 5 entries by exact equality against 9 by equality-or-`startsWith`**, so *"Closed for refurbishment"* is dropped by one and kept by the other. **Live divergence today. OPEN.** §51.5
+
+### THE SCREENSHOT UPLOAD — BUILT, UNVERIFIED
+
+- ✅ A **tab on `/admin`** behind `verifyAdmin`; drop/paste/pick with **no button**; one request in flight; 🔴 **nothing stored server-side** — the browser holds the file, so a failed or empty row can be re-dropped. 🔎 The Drive defect it replaces: v6.57 `:748` `setTrashed` sits **after both branches**, binning the only copy of a zero-event image while keeping one that threw. §51.6
+- 🔴 **`/api/inbound-schedule` bridges to `truck_events` (`:212`) and EMAILS the operator a dashboard-token link (`:250`)**, gated on a linked truck whose `scraper_preference` is not `manual`. **A property of the ROUTE, not of the new page** — the Apps Script and the scraper's HatchGrab loop inherit it identically. §51.6
+- ✅ 🧪 **The new matcher is a strict subset** — 0 refused only by it, 8 only by the Apps Script, and those 8 were false positives from `"dis"` normalising to `"di"`. §51.6
+- ⚠️ 🧪 **Four live trucks cannot get events from this path** — Just Baked by Sophie, The Linton Kitchen, Dessert MK, Axle & Hop. Faithful to the old path; **a real gap in both; a data problem.** OPEN.
+- 🔴 ⚠️ **UNVERIFIED — 🧪 zero rows produced, and no admin session is obtainable, so the UI and `verifyAdmin` have never been exercised.** OPEN until the tab is opened.
+
+### NEW CROSS-CUTTING INVARIANTS (§35)
+
+- 🔴 **A measured difference between two prompts beats any reasoning about the code around them.**
+- 🔴 **Fixing one writer of a bad-data class is not fixing the class** — grep for writers of the TABLE, not callers of the fix.
+- ⚠️ **A paged read that stops early looks exactly like a small dataset** — assert the fetched length against a `count=exact` header, in the same script.
+
+## V12.6 — 9 September 2026 — A REQUEST BUILT ON A FALSE PREMISE WAS REFUSED RATHER THAN FULFILLED, POSTHOG TURNS OUT NEVER TO HAVE BEEN REMOVED, AND A LIVE OPERATOR CREDENTIAL IS STILL SITTING IN A THIRD-PARTY ANALYTICS STORE
+
+**Delta — one code change (`app/providers.tsx`, uncommitted) and one refusal. `docs/scraper-reference-manual.md` went to V1.5 in the same pass and carries the pipeline-side detail.** (`vercel-analytics-report.md`, `posthog-route-scoping-report.md`)
+
+### 🔴 THE LOAD-BEARING CORRECTION — POSTHOG WAS NEVER REMOVED
+
+- **OLD BELIEF, held outside this manual:** *"PostHog was removed on 7 September over a consent issue; there is currently no analytics of any kind."*
+- 🧪 **FALSE in both halves.** Commit `08ac368` is *"stop sending visitor postcodes to PostHog, disable session recording"* — **two event properties and session recording**, nothing more. PostHog is installed, initialised at module scope, mounted in the **root layout**, and 🧪 **present in the served landing page** (8 occurrences).
+- ⚠️ **This manual already said so at `:8506` and `:12716`.** 🔴 **A request to add a second analytics tool was therefore refused rather than fulfilled** — layering Vercel Analytics on top would have given two tools and a second processor, and the cookieless argument for it only holds if the cookie-setting one is gone.
+- ✅ **DECISION: PostHog stays; Vercel Analytics not added.**
+
+### ✅ THE CREDENTIAL ROUTES ARE SCOPED OFF (§48)
+
+- 🔎 `app/providers.tsx` only; `app/layout.tsx` untouched. **`init()` gated on the entry path** — no cookie, no listener, **no network call** — plus 🔴 **a `before_send` hook**, which is necessary because 🧪 the app navigates into `/manage` and `/dashboard` client-side and **`$pageview`/`$autocapture` are global listeners that answer to the library, not the React tree.** Unmounting the provider would not have stopped them.
+- ⚠️ **Suppressing pageviews alone would have been insufficient:** `$autocapture` carries `$current_url` too, which is why §43 `:8477` found tokens on both event types. The KDS query string (`van_id`, `van_name`, `event_id`, `date`) is dropped with the event.
+- ⚠️ **METHOD, worth keeping:** 🔴 **served HTML cannot prove PostHog's absence** — a static import makes the bundle reference present regardless (🧪 5 refs on every page alike), and `/manage` and `/dashboard` 307 to `/login` unauthenticated, so "0 occurrences" would have proved only that nothing rendered. **The guard was proven from the shipped client chunk instead, then executed against real paths, 12/12.**
+
+### 🔴 STILL OPEN, AND ONE OF THEM IS LIVE
+
+- 🔴 **`realthaifood-23f80551121b` is UNROTATED and still in PostHog's store** — 🧪 still the current `dashboard_token` on an **active** account. **A working credential in a third-party store.** This fix stops new leakage only. **Rotate before deleting** — deletion alone leaves a live credential that merely became harder to find.
+- 🔴 **The published privacy policy still says "we do not use advertising, tracking or third-party analytics cookies" and names PostHog nowhere among its seven processors.** Contradicted by the running code; unchanged.
+- ⚠️ **`/admin`, `/login`, `/setup`, `/order/[id]/manage` found and deliberately NOT scoped off** — reported for decision, not decided.
+
+### THE STANDING LESSONS FROM THIS PASS
+
+- 🔴 **A number repeated three times is not better established than when it was written once.** In the pipeline manual this pass, three figures carried forward unchallenged — a "write key", "81 missing URLs", "348 venues" — were each wrong when finally re-derived. **Re-derive before building on it.**
+- 🔴 **Matching and visibility read different columns.** Hiding a row does not stop it being matched to; the fix that looked obvious would have stopped the trading truck being recognised.
+- 🔴 **A forced disagreement against a noisy baseline proves nothing.** Equalise the two sides first, then mutate one.
+- 🔴 **When a static import makes presence uninformative, prove the guard, not the absence.**
 
 ## V12.5 — 8 September 2026 (afternoon) — THE LANDING PAGE WAS NOINDEX FOR FIVE DAYS ON A REASON THAT HAD EXPIRED, A TITLE CARRIED THE BRAND TWICE AND NOBODY HAD EVER LOOKED AT IT RENDERED, A CHECK THAT COULD NOT FAIL LOUDLY REPORTED A FILE MISSING THAT HAD EXISTED SINCE JUNE, AND A LINKING RULE I PROPOSED THIS MORNING WAS MEASURED AND WITHDRAWN
 
@@ -5094,7 +5168,7 @@ Pre-trial polish-and-plumbing session. Establishes the shared operator header an
 
 - **Discovery map security** — dashboard_token removed from all public API responses; the customer order URL is /trucks/[slug]/order; operator events are HatchGrab-only and never shown on the public Village Foodie map. *(Note: the HatchGrab-only restriction was temporary and was lifted in V6, then reintroduced as a per-truck visibility gate in V6.5 — see Section 15.)*
 
-- **Geocoding fallback** — manual events geocode via Gemini with an api.postcodes.io postcode fallback; the operator is warned on failure and a Fix button re-geocodes events with null coordinates.
+- ~~**Geocoding fallback** — manual events geocode via Gemini with an api.postcodes.io postcode fallback; the operator is warned on failure and a Fix button re-geocodes events with null coordinates.~~ 🔴 **[CORRECTED V12.7 — ALL THREE HALVES OF THIS ARE FALSE IN THE CODE.] (1) There is NO postcodes.io fallback on this path:** 🔎 `app/api/manage/geocode/route.ts` calls Gemini and nothing else; 🧪 `getCoordsFromPostcode` (`lib/utils.ts:24`) is the only postcodes.io caller in the app and its sole call site is `app/page.tsx:143`, **the customer's postcode search on the public map**. **(2) The operator is NOT warned:** 🔎 `app/manage/[token]/page.tsx:6988` and `:7049` are `console.warn` — invisible to the operator, no toast. **(3) There is no Fix button and no `update_event_coords` action:** 🧪 a repo-wide sweep finds that string **only in this manual**; the event actions are `upsert_event`, `delete_event`, `update_event_deal`, `get_recent_events`, and the "Fix" control at `:8044` is about missing **times and vans**. **So Gemini's raw coordinates are written unchecked.** §51.1
 
 - **Slug + emoji columns** — trucks gained slug (unique, populated from name) and truck_emoji.
 
@@ -5522,6 +5596,8 @@ The in-repo paths share lib/schedule-extract.ts:
 > **DIVERGENCE NOTED (V6.5)** — the GitHub Actions scraper's per-event extractor is actually its own inline `hgPrompt` (run-scraper.js), NOT buildScheduleExtractionPrompt — a separate prompt that had the embedded-town bug fixed in this session's town-extraction work while the shared library prompt was already correct. Two further paths remain independent: **processFoodTruckScreenshots** and **analyzeEmailWithGemini** (Google Apps Script). Convergence — having the scraper import buildScheduleExtractionPrompt, and migrating the Apps Script paths off Google Sheets so they can move in-repo — is on the backlog (Section 27). Until then, prompt improvements must be applied to each by hand.
 
 > **RULE** — Any new IN-REPO code that extracts events from text, an image, or a scraped page MUST import from lib/schedule-extract.ts. Never re-implement the prompt or the parser in a route.
+
+> 🔴 **[V12.7 — THE RULE WAS BROKEN ON 9 SEPTEMBER, DELIBERATELY AND WITH A REASON, AND THE DIVERGENCE COUNT ABOVE IS UNDERSTATED.]** 🧪 There are **SIX extraction paths and EIGHT prompt sites**, not the three this section describes. `lib/admin/screenshot-events.ts` (the admin screenshot upload) is a **FOURTH independent in-repo implementation** — 🔎 it imports only `@/lib/venue-signature` and does **not** touch `lib/schedule-extract.ts`, because that module's `ExtractedEvent` has **no `truck_name`** (a screenshot names many trucks) and its `callGeminiWithRetry` is not exported. ⚠️ **The reason is recorded at `lib/admin/screenshot-events.ts:8`; the rule is still the right rule, and the exception is still an exception.** 🔴 **And the consolidation this note anticipates must treat PROMPTS as the unit, not routes** — 🧪 two prompts in `run-scraper.js` differ by **37 points** on postcode capture with model, file, fetch and database identical. **§51.**
 
 ### Development process — Claude within Cursor (V6)
 
@@ -9113,7 +9189,7 @@ saveExtractedEvents geocodes via geocodeLocation and writes via upsert_event (st
 
 ### Geocoding and the Fix button (V5)
 
-Manual events geocode via Gemini from venue name + town + postcode, with an api.postcodes.io fallback when the postcode is present. Events with null coordinates show a Fix button (update_event_coords). Always build dates with local-time parse.
+🔴 **[CORRECTED V12.7.]** ~~Manual events geocode via Gemini from venue name + town + postcode, with an api.postcodes.io fallback when the postcode is present. Events with null coordinates show a Fix button (update_event_coords).~~ **Manual events geocode via Gemini and nothing else** — 🔎 `app/api/manage/geocode/route.ts:16-22`, no postcodes.io lookup, no sentinel test, no distance check, and the `confidence` the prompt asks for is **discarded by the caller** (🔎 `app/manage/[token]/page.tsx:6572-6574`). 🧪 **There is no `update_event_coords` action anywhere in the code** and no coordinate Fix button. 🧪 **25 of 57 `truck_events` rows with `source='manual'` carry these unvalidated coordinates, at a 0% `venue_id` rate.** **OPEN — §51.1.** Always build dates with local-time parse.
 
 ## Auto open/close (truck-level)
 
@@ -12371,6 +12447,16 @@ diagnosis.
 # 27. Open backlog (June 2026)
 
 ## Open as of V11.57 — 2 September 2026
+
+### Open as of V12.7 — 9 September 2026 (extraction, geocoding, screenshots)
+
+- 🔴 **OPEN — THE UNVALIDATED COORDINATE WRITER IN THE APP.** 🔎 `app/api/manage/geocode/route.ts` → three dashboard call sites → `truck_events.latitude/longitude`, with no postcodes.io check. 🧪 25 of 57 `manual` rows, at a 0% `venue_id` rate. **Live and operator-facing; the highest-priority item in this batch.** Nothing proposed. §51.1
+- 🔴 **OPEN — WHETHER THE HATCHGRAB LOOP'S 0% POSTCODE RATE IS THE PROMPT OR THE INPUT.** If those pages carry no postcodes, the 37%/0% comparison proves less than §51.3 claims. **Checkable from the already-logged page text. NOT CHECKED.**
+- 🔴 **OPEN — THREE EXCLUSION MATCHERS AND TWO INVALID-VENUE LISTS.** Different normalisers, match rules, subjects (truck vs venue) and scopes (global vs per-truck); 5 entries by equality against 9 by equality-or-prefix. **Divergent behaviour today.** §51.5
+- 🔴 **OPEN — PROMPTS ARE NOT OWNED.** Eight prompt sites across six paths, each edited by hand. **Any consolidation must make prompts data with one owner and a version** — the code-level DRY work is the cheaper half and not the half that is costing anything. §51.3
+- ⚠️ **OPEN — THE ADMIN SCREENSHOT TAB HAS NEVER BEEN EXERCISED.** 🧪 Zero rows produced; no admin session is obtainable, so the UI and `verifyAdmin` are unverified. §51.6
+- ⚠️ **OPEN — FOUR LIVE TRUCKS WHOSE NAMES ARE EXCLUSION TERMS** (Just Baked by Sophie, The Linton Kitchen, Dessert MK, Axle & Hop). Refused by the new screenshot path **and** the Apps Script one. **A data problem — no code change fixes it.** §51.6
+- ⚠️ **OPEN — `truck_events` `source='manual'` CANNOT BE SPLIT** between importer-created and hand-created rows. No column distinguishes them; coordinate provenance is identical either way. §51.1
 
 - 🔴 **OPEN — bounding the Stripe client**, and only then the payment ceilings.
 - 🔴 **OPEN — ten tables are referenced in code and appear in no migration.** One of them carried a
@@ -17425,6 +17511,12 @@ is the cheap test.
 **⚠️ A REPORT DESCRIBING A MIGRATION IS NOT THE DATABASE (V12.2).** Twice in one day a report stated a migration's applied state incorrectly — once claiming an unapplied file was unapplied when it had been applied by hand, once inferring a column was nullable **because every row read NULL.** The second is the empty-result trap in a new dress: **uniform data is not a schema fact.** 🟢 **THE RESOLUTION THAT WORKED IS A CAPABILITY PROBE.** Where `information_schema` is unreachable — PostgREST refuses that schema, and there is no direct Postgres connection in the agent environment — the reliable test is to **attempt the operation and read the outcome**: select the column and see whether it errors; write a NULL and see whether it is rejected. **A probe measures the database; a file and a row count do not.** The outreach route now ships this pattern, degrading its UI to disabled controls when a column probes absent.
 
 **⚠️ A NEW PATH PREFIX INHERITS NOTHING — AND A PREFIX SWEEP CAN OVER-REACH (V12.2).** Recorded at V11.51 when the scan target moved outside `/trucks/` and silently lost both its noindex header and its rate limiting. Re-encountered on the rename to `/order/`, and this time both were registered in the same change. 🔴 **THE NEW HALF OF THE LESSON IS THE OPPOSITE FAILURE.** `/order/` has a deeper child — `/order/<id>/manage`, a customer-facing per-order page — so registering the rate limiter with `startsWith('/order/')` would have **silently pulled a page into a 60/min limiter it had never been subject to.** The registration is deliberately **leaf-only**, keeping the metered scope identical to what `/o/` had. **A prefix rule is a claim about every path beneath it; count the children before writing one.**
+
+**🔴 A MEASURED DIFFERENCE BETWEEN TWO PROMPTS BEATS ANY REASONING ABOUT THE CODE AROUND THEM.** *Evidence (V12.7):* two Gemini prompts in the **same file**, on the same model, behind the same Puppeteer capture, writing to the same table, capture a postcode on 🧪 **1,100 of 2,952 rows (37%)** and 🧪 **0 of 108 (0%)** respectively. Every structural variable is held constant, so none of them explains the gap — 🔎 one prompt says *"Postcodes… go into the `Notes` field"* and the other says nothing. **Weeks of reading routes, retry policies and parsers could not have established this; one query did.** ⚠️ **The operational consequence: prompts are DATA, with an owner and a version — not string literals scattered across the routes that happen to need them.** A consolidation that unifies the code and leaves the prompts alone has consolidated the part that was not costing anything.
+
+**🔴 FIXING ONE WRITER OF A BAD-DATA CLASS IS NOT FIXING THE CLASS.** *Evidence (V12.7):* the coordinate gauntlet (postcodes.io first, model last, never an unchecked coordinate) was built on 7 September and the pipeline manual recorded the problem as solved, then narrowed once — *"true of the scraper only"* — when the Apps Script turned out to geocode unvalidated too. **Both statements were about individual writers. Nobody enumerated the writers.** 🔎 A third has been live in the app the whole time: `app/api/manage/geocode/route.ts` asks Gemini for raw lat/lng and three dashboard call sites put them straight into `truck_events`, 🧪 25 of 57 `manual` rows at a 0% `venue_id` rate. **The correct move on declaring any such class fixed is to grep for writers of the TABLE, not for callers of the fix** — the fix names itself, the defect does not.
+
+**⚠️ A PAGED READ THAT STOPS EARLY LOOKS EXACTLY LIKE A SMALL DATASET.** *Evidence (V12.7):* three pagination failures in a single pass each printed a confident, plausible, **wrong and small** total — PostgREST's 1,000-row default silently truncated a 4,300-row table (and reported a source as absent that had six rows); a `Range` header the server ignored produced an infinite loop; and an error object concatenated into a result array produced eleven "rows" from a query that had actually failed with `42703`. **None of the three threw.** The habit that catches all of them: take the count from a `count=exact` header and **assert the fetched length against it, in the same script, printing the assertion.**
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -23564,6 +23656,49 @@ seen in a WhatsApp bubble.**
 
 ---
 
+### 🔴 POSTHOG WAS NEVER REMOVED — AND THE ROUTES THAT LEAK ARE NOW SCOPED OFF (V12.6, 9 September 2026)
+
+(`docs/vercel-analytics-report.md`, `docs/posthog-route-scoping-report.md`)
+
+#### 🔴 THE BELIEF THAT IT HAD BEEN REMOVED WAS FALSE, AND IT WAS HELD OUTSIDE THIS MANUAL
+
+A request to add Vercel Web Analytics came with the premise *"PostHog was REMOVED on 7 September over a consent issue… there is currently no analytics of any kind."* 🔴 **Neither half was true.**
+
+🧪 The 7 September commit `08ac368` reads *"Analytics: **stop sending visitor postcodes to PostHog**, disable session recording"* — its own message records **two event properties removed and session recording disabled.** PostHog itself was left running. 🧪 Today it is a dependency in `package.json`, installed in `node_modules`, both env vars are set, 🔎 `posthog.init()` runs at **module scope** in `app/providers.tsx`, it is mounted in the **ROOT layout**, and **the served landing page carries the bundle** — 8 occurrences under `Host: hatchgrab.com`.
+
+⚠️ **This manual already said so** — §43 at `:8506` (*"PostHog initialises UNCONDITIONALLY in the root layout"*) and `:12716` (*"the PostHog cookie contradiction with `/privacy` is UNRESOLVED"*). 🔴 **The belief was held outside the manual and contradicted by it.** Recorded here so the next reader meets the correction next to the claim.
+
+✅ **DECISION: PostHog STAYS. Vercel Web Analytics was NOT added** — it would duplicate what PostHog already measures and add a second processor to a policy that does not yet name the first.
+
+#### ✅ WHAT WAS DONE INSTEAD — `/dashboard`, `/manage` and `/kds` scoped off
+
+🔎 **One file, `app/providers.tsx`. `app/layout.tsx` was not touched** and no provider was moved, so no public layout needed remounting.
+
+🔴 **Two layers, and the second is the load-bearing one:**
+
+1. **`init()` gated on the entry path.** `posthog.init()` runs at module scope, so a check inside a component would run *after* the library had installed its listeners and fired its first pageview. Guarding the init means **no cookie, no listener and no network call at all** — nothing is sent and then suppressed, because nothing starts. Same shape as the existing `/embed` and custom-host guards.
+2. 🔴 **A `before_send` hook dropping any event whose own URL is a credential path.** **Necessary, not belt-and-braces:** the entry guard is decided by the *entry* URL, and 🧪 the app really does navigate into these routes client-side — `app/setup/page.tsx:153` pushes `/manage/<token>`, `app/admin/page.tsx:1275` links to `/dashboard/<token>`. On those navigations PostHog is already initialised. 🔴 **And unmounting the React provider would NOT have stopped it: `$pageview` and `$autocapture` are global listeners installed by `init()`, which answer to the library, not the React tree.** `before_send` returning `null` drops the event **before it is queued or transmitted**.
+
+⚠️ **Why suppressing pageviews alone would have failed:** `$autocapture` records the clicked element's text and attributes **and carries `$current_url` on every event** — which is exactly what §43 `:8477` recorded, tokens appearing across `$autocapture` *and* `$pageview`. 🧪 The KDS query string (`van_id`, `van_name`, `event_id`, `date`) is dropped with the event.
+
+🧪 **Verified 12/12 on both layers** using the functions extracted from the **served client chunk**, with every public path still sending.
+
+#### ⚠️ HOW IT WAS PROVEN, BECAUSE THE OBVIOUS PROOF DOES NOT WORK
+
+🔴 **Served HTML cannot demonstrate PostHog's absence.** posthog-js is a **static import**, so its script reference is present on every page whether or not `init()` runs — 🧪 measured identically (5 refs) on the consumer map, the KDS page and `/login`. And 🧪 `/manage/<token>` and `/dashboard/<token>` return **307 to `/login`** unauthenticated (41 and 44 bytes), so a "0 occurrences" there would have proved only that the page never rendered.
+
+✅ **So the mechanism was proven from the shipped client chunk instead** — the executable `if (… && !IS_CREDENTIAL_ENTRY)` guard and the `before_send` hook were read out of `/_next/static/chunks/…`, then executed against real paths. **Record the method: when a static import makes presence uninformative, prove the guard, not the absence.**
+
+#### 🔴 STILL OPEN AND LIVE
+
+- 🔴 **`realthaifood-23f80551121b` IS UNROTATED AND STILL IN POSTHOG'S STORE.** 🧪 It is still the current `dashboard_token` for `real-thai-food`, an **active** account. **A working bearer credential — refunds, customer PII, menu deletion — sits in a third-party analytics store today.** ⚠️ `test-abc123def456` likewise, on the test truck. **This fix stops NEW leakage and does nothing about what is already there.** The options are rotate, delete the events, shorten retention, or accept — 🔴 **rotate first: deletion without rotation leaves a working credential that merely became harder to look up.** ⚠️ Rotation invalidates saved links, and `app/api/inbound-schedule/route.ts:275` emails `/manage/<token>` links in plaintext.
+- 🔴 **THE PRIVACY POLICY IS STILL CONTRADICTED BY THE RUNNING CODE.** 🔎 `content/legal/privacy-policy.md` publishes *"We do not use advertising, tracking or third-party analytics cookies"* and lists **seven** processors — **naming PostHog nowhere** — while `posthog.init` takes the library default `persistence: "localStorage+cookie"`. **Unchanged and unresolved**, as `:12716` already recorded.
+- ⚠️ **`/admin`, `/login`, `/setup` and `/order/[id]/manage` were found and NOT scoped off** — deliberately, and reported rather than decided. `/admin` is the strongest follow-up candidate: no token in the path, but autocapture there records operator names, emails and phone numbers as clicked-element text.
+
+⚠️ **Nothing takes effect until deployed**, and 🔴 **Pizzeria Gusto uses the manage and KDS pages while trading** — after deploy those pages stop sending analytics entirely, which is the intent and 🔎 loses nothing (§43 `:8509`: *"there is not one explicit `posthog.capture()` on any operator route"*).
+
+---
+
 # 49. Deploy posture as of V11.58
 
 ✅ **EVERYTHING FROM BOTH DAYS IS DEPLOYED.** **OBSERVED after deploy: no 500s, no 504s, customer ordering
@@ -23672,6 +23807,197 @@ extracted. **Enumerate by the upload call site, not by where you expect the cont
 
 ⚠️ **Hooks cannot be called inside the map that renders a list**, so a per-slot drag state forces the
 slot to become a component. **That is the bulk of such work, not the drop handler.**
+
+---
+
+# 51. Schedule extraction — the landscape, the geocoder, and the screenshot upload (V12.7)
+
+**Sources:** `docs/extraction-paths-comparison-report.md` and `docs/screenshot-upload-build-report.md`
+(both 9 September 2026). Read-only comparison plus one build. ⚠️ **Nothing has been merged. No
+recommendation here is implemented.**
+
+## 51.1 🔴 AN UNVALIDATED COORDINATE WRITER IS LIVE IN THE APP — highest-priority open item
+
+**The pipeline manual's gauntlet (postcodes.io first, model last, never an unchecked coordinate) governs
+`scripts/run-scraper.js` ALONE. The app has its own geocoder and it has no gauntlet at all.**
+
+🔎 `app/api/manage/geocode/route.ts:16-22` — the entire prompt:
+
+> *"You are a geocoding service. Return ONLY a JSON object with the latitude and longitude for this
+> location… `{ "lat": 52.1234, "lng": 0.5678, "confidence": "high|medium|low" }`"*
+
+**No postcodes.io lookup. No sentinel test. No distance-to-village check. No `partial_match` check.** The
+model's numbers are returned as-is (🔎 `:52-56`), and the **`confidence` it is asked for is discarded** —
+🔎 `app/manage/[token]/page.tsx:6572-6574` destructures only `lat, lng`.
+
+**Three dashboard call sites write it**, all via `geocodeLocation` (🔎 `:6563`):
+
+| call site | when |
+|---|---|
+| 🔎 `:3384` | onboarding — saving the first schedule |
+| 🔎 `:6982` | editing or adding a single event by hand |
+| 🔎 `:7045` | **the schedule-import review save** — the operator importer's write |
+
+Each passes the result into `api('upsert_event', { …, latitude: lat, longitude: lng })` → 🔎
+`app/api/manage/route.ts:838` → **`truck_events.latitude/longitude`**.
+
+🧪 **Measured:** 25 of 57 `truck_events` rows with `source='manual'` carry these coordinates (**44%**), and
+that population has a 🔴 **0% `venue_id` rate** — coordinates with no validated venue behind them. The
+bridge-written rows (`source='scraper'`) carry `venue_id` on 61 of 80 (**76%**) with coordinates taken
+**from the matched venue**, i.e. already through the gauntlet.
+
+🔴 **`truck_events` is the table the trading truck sells from.** ⚠️ **I cannot separate importer-created rows
+from hand-created ones** inside `source='manual'` — no column distinguishes them, and the coordinate
+provenance is identical either way, so this holds regardless.
+
+⚠️ **See §15 and the V6.x changelog entry, both corrected in place**: this manual previously claimed an
+`api.postcodes.io` fallback, an operator warning and a `update_event_coords` Fix button on this path.
+🧪 **None of the three exists.**
+
+**OPEN. Nothing is proposed here. This is the highest-priority item in the V12.7 batch because it is live
+and operator-facing.**
+
+## 51.2 The extraction landscape — six paths, eight prompts
+
+🧪 Established by sweeping for **both** Gemini mechanisms — the REST URL **and** the `@google/generative-ai`
+SDK — plus every importer of `lib/schedule-extract`. **Nothing scoped by extension.**
+
+| # | Path | Prompt site | Fetches | Writes to |
+|---|---|---|---|---|
+| **A** | Scraper discovery — event branch | 🔎 `run-scraper.js:1230` | Puppeteer, 6 strategies | `discovery_events` **direct** (`:2312`) + Sheet |
+| **B** | Scraper discovery — **RULE** branch | 🔎 `run-scraper.js:1198` | same | recurring **rules** → Sheet |
+| **C** | Scraper HatchGrab loop | 🔎 `run-scraper.js:2075` | Puppeteer, 2 rules | **POST** `/api/inbound-schedule` (`:2197`) |
+| **D** | Operator importer — file/text | 🔎 `lib/schedule-extract.ts:25` | nothing (upload/paste) | returns to browser → `truck_events` via `upsert_event` |
+| **E** | Operator importer — **URL** | 🔎 `lib/schedule-extract.ts:25` | Puppeteer, 2 rules raced | as D; also pins `trucks.scraper_rule` |
+| **F** | **Admin screenshot** (new) | 🔎 `lib/admin/screenshot-events.ts:103` | nothing (upload) | **POST** `/api/inbound-schedule` |
+| **G** | Apps Script vendor email | 🔎 v6.57 `:491` | Gmail | POST `/api/inbound-schedule` |
+| **H** | Apps Script Drive screenshots | 🔎 v6.57 `:594` | Drive folder | POST `/api/inbound-schedule` |
+
+⚠️ **E was routinely omitted from the "three paths" framing** and is a distinct caller with its own gate and
+its own DB write. ⚠️ **D and E write NOTHING themselves** — they return events to the browser; the write
+happens later from the review UI.
+
+🔎 **A methodological note worth keeping:** a sweep for `generativelanguage.googleapis.com` returns 13 hits
+and **does not include `scripts/run-scraper.js`** — which would read as *"the scraper does not call Gemini"*.
+It does; it uses the **SDK** (🔎 `:2`, `:1039`), which never spells the URL. **A true negative and a
+wrong-shaped query print the same nothing.**
+
+## 51.3 🔴 THE CENTRAL FINDING — prompt wording is the dominant variable
+
+🧪 Over the full 4,300-row `discovery_events` table (fetched length asserted against a `count=exact` header):
+
+| path | rows | postcode captured |
+|---|---|---|
+| **A** discovery `:1230` | 2,952 | 🔴 **1,100 (37%)** |
+| **C** HatchGrab loop `:2075` | 108 | 🔴 **0 (0%)** |
+
+**Same model, same file, same Puppeteer capture, same database.** 🔎 The material difference is A's rule 7 —
+*"Postcodes, addresses, or extra event details go into the `Notes` field"* — which C has no equivalent of.
+
+🔴 **Every structural explanation (model, retry policy, fetch strategy, parser) is held constant and cannot
+account for a 37-point gap.** ⚠️ **Consequence for any consolidation: PROMPTS MUST BE TREATED AS DATA, WITH
+ONE OWNER AND A VERSION.** A refactor that unifies the routes and leaves eight prompt strings scattered has
+consolidated the part that was not costing anything.
+
+⚠️ **Not fully ruled out:** if C's pages contain no postcodes at all, 0% is a property of the input rather
+than the prompt. **Checkable from the already-logged page text; NOT CHECKED. OPEN.**
+
+## 51.4 🔴 Two things that must survive any merge
+
+1. 🔴 **`scrape_rules` (B) must NOT be merged.** 🔎 `:1198` emits `{ freq, day, startDate, endDate, … }` — a
+   **recurring rule**, not a dated event. 🔎 `ExtractedEvent` (`lib/schedule-extract.ts:1-9`) has no field
+   for any of them. **The shapes are not convertible without inventing dates, which is what a rule exists to
+   avoid. It is a rule compiler, not an extractor.**
+2. ⚠️ **The scraper's per-site `ai_instructions` and its strategy dispatch have no equivalent in any other
+   path.** 🧪 **30 sites carry hand-written prose rules**, injected at 🔎 `:1201` and `:1236`. The dispatch
+   is six strategies plus a default (🔎 `:41-49`), of which 🔎 **`manual` and `manual_single` fetch no page
+   at all** (`:1165-1172`) — the only way a truck with no usable website gets a schedule. **An operator
+   entering one URL has nothing like either.**
+
+🔴 **A merge that drops these breaks those sites silently — the run stays green and the events simply
+stop.** Both must become parameters of any shared core before A or B moves.
+
+## 51.5 The filters are a deviation surface, today
+
+**Three exclusion matchers, no two alike:**
+
+| | normaliser | match rule | applied to | scope | line |
+|---|---|---|---|---|---|
+| scraper (A/C) | strips stop-words **and spaces** | **Levenshtein ≤ 1** | 🔴 **TRUCK** name | global | 🔎 `run-scraper.js:55`, `:67`, used `:1450` |
+| Apps Script (G/H) | byte-identical to the above | 🔴 **containment** | 🔴 **TRUCK** name | global | 🔎 v6.57 `:1235`, `:1243` |
+| **app (D/E)** | **KEEPS spaces** | 🔴 **substring** | 🔴 **VENUE** name | 🔴 **per `truck_id`** | 🔎 `lib/schedule-extract.ts:13`, `:17`; call sites `app/manage/[token]/page.tsx:7525, 7526, 7579` |
+
+⚠️ **The app's asks a different question, of a different field, at a different scope.** Reusing it on a
+truck path would silently change which trucks are dropped.
+
+**And two invalid-venue lists of different lengths and different match rules:**
+
+| | entries | rule | line |
+|---|---|---|---|
+| app | **5** — Closed, N/A, TBC, Unavailable, Cancelled | **exact equality** | 🔎 `lib/schedule-extract.ts:11`, applied `:186` |
+| admin screenshot | **9** — adds TBA, No event, No service, None | equality **or `startsWith`** | 🔎 `lib/admin/screenshot-events.ts` |
+| scraper (A) | 🔴 **none** | — | — |
+
+🔴 **A venue reading "Closed for refurbishment" is dropped by the 9-entry list and KEPT by the 5-entry
+one.** Same input, two live answers. ⚠️ **A consolidation target alongside the prompts, and a live source of
+divergent behaviour — not a tidiness concern.** OPEN.
+
+## 51.6 The admin screenshot upload — built, and unverified
+
+✅ **A tab on `/admin`** (the standalone route was deleted), behind `verifyAdmin`. Files process **on drop,
+paste or pick with no button**; **one request in flight at a time**; 🔴 **nothing is stored server-side** —
+no bucket, no object. Written with `source = 'Admin Screenshot'`.
+
+🔎 `app/api/admin/screenshot-events/route.ts`, `lib/admin/screenshot-events.ts`,
+`components/admin/ScreenshotsPanel.tsx`.
+
+**The Drive defect it replaces:** 🔎 v6.57 `:748` `file.setTrashed(true)` sits **after BOTH branches** of its
+if/else, so a call that **succeeded but yielded zero events binned the only copy**, while a *thrown* error
+kept the file — the inverse of what you want. **Not storing is still safe here because the browser holds the
+file**: a failed or empty row stays in the client list and can be re-dropped, so the copy is on the admin's
+own device throughout.
+
+### 🔴 The route bridges and emails — a property of `/api/inbound-schedule`, not of this page
+
+🔎 `app/api/inbound-schedule/route.ts:212` inserts into **`truck_events`** with `status:'unconfirmed'`;
+🔎 `:250-270` **emails the operator** a link carrying
+`${NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`.
+**Gate** (🔎 `:137-153`): the truck name must match a `discovery_trucks` row with a `hatchgrab_truck_id`,
+**and** that truck's `scraper_preference` must not be `'manual'`; then reject-memory and dedup.
+
+🔴 **So a screenshot naming a linked truck reaches that operator's dashboard AND their inbox.** ⚠️ **Not
+introduced by this change** — the Apps Script did the same through the same route, and so does the scraper's
+HatchGrab loop. **Record it against the ROUTE: any path POSTing there inherits it.**
+
+### Measured, and unmeasured
+
+- ✅ 🧪 **The new exclusion matcher is a STRICT SUBSET** of the Apps Script's, over all 231 real truck names ×
+  143 real terms: **0** refused only by the new path, **8** refused only by the Apps Script. Those 8 were
+  **false positives** — the term `"dis"` normalises to `"di"`, blocking any name containing "di" (5 of the
+  8, including India Express and Taco Banditos); `"bad"` took Bad Boi Burritos. **A fix, not a loosening.**
+- ⚠️ 🧪 **Four live trucks (`excluded = false`) whose names ARE exclusion terms will get no events from this
+  path:** Just Baked by Sophie, The Linton Kitchen, Dessert MK, Axle & Hop. **The Apps Script refuses them
+  too**, so this is faithful to the path being replaced — **a real gap in both, and a data problem, not a
+  code one.** OPEN.
+- 🔴 ⚠️ **UNVERIFIED: the UI and the auth path have never been exercised.** No agent session as an admin is
+  obtainable (V12.6 — Dominic is the sole admin), so `verifyAdmin` could not be satisfied and the route was
+  never called over HTTP. The extraction, filters and payload shaping were proven directly against real
+  Gemini and the real 143 terms; **the page, the drop zone, the queue and the auth path were not.**
+  🧪 **`discovery_events` holds 0 rows with `source = 'Admin Screenshot'`.** **No quality claim about this
+  path is possible. OPEN until the tab is opened.**
+
+## 51.7 One correction to a claim this manual and its reports repeated
+
+🔴 **OLD CLAIM** (in `screenshot-upload-build-report.md`'s framing and in the briefs preceding it): *"the
+SCREENSHOT extractor built today, which reuses `app/api/manage/process-schedule/route.ts`"*.
+
+🔴 **FALSE. It reuses neither that route nor anything it imports.** 🔎
+`app/api/admin/screenshot-events/route.ts:19-25` imports `next/server`, `@supabase/supabase-js`,
+`@/lib/auth/admin` and `@/lib/admin/screenshot-events` — **nothing else**. 🔎
+`lib/admin/screenshot-events.ts:17` imports **only** `@/lib/venue-signature`. **It is a FOURTH independent
+implementation**, and the reason is recorded at 🔎 `lib/admin/screenshot-events.ts:8`. ⚠️ **Today's work
+added a divergence rather than removing one** — deliberately, and with a reason, but it must not be
+described as a reuse.
 
 ---
 
