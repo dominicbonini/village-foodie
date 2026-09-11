@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import {
   resolveCoordinates, buildSentinelSet,
   assertSheetTabsLoaded, assertSitesToScrape, assertSomeSiteSucceeded, assertInboundOk, assertNoWriteFailures,
+  assertNoInventedVillages,
 } from './geo-validate.js';
 
 dotenv.config({ path: '.env.local' });
@@ -1213,7 +1214,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           3. "freq" and "day" MUST BE LOWERCASE ONLY.
           4. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
           5. IGNORE PRIVATE EVENTS: Do not extract any event labeled as "private", "private party", or "private lunch".
-          6. VILLAGE (MANDATORY): Always extract the town, village, or city into a separate "village" field.
+          6. VILLAGE: Extract the town, village, or city into a separate "village" field. If the town or village truly cannot be determined from the text, use "" (an empty string) — do NOT repeat the venue name and do NOT guess.
 
           JSON FORMAT ONLY:
           {
@@ -1243,7 +1244,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number is provided.
           4. **DateStart Format:** "DD/MM/YYYY". 
           5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
-          6. **VILLAGE (MANDATORY):** You must extract the town, village, or city name.
+          6. **VILLAGE:** Extract the town, village, or city name. If it truly cannot be determined from the text, use "" (an empty string) — do NOT repeat the venue name and do NOT guess.
           7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
           8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
@@ -2507,6 +2508,13 @@ if (newVenuesDetected.size > 0) {
 // console.warn on a promise nobody awaited: the Sheet filled, the database did not, and the job was
 // green. Asserted here, after the appends, so one failed batch does not abort the others first.
 assertNoWriteFailures('Pass A database', dbWriteFailures);
+
+// 🔴 AND A VILLAGE THAT IS JUST THE VENUE NAME AGAIN FAILS THE RUN. `newRowsToAdd` is exactly what this
+// run wrote — r[4] is the venue, r[5] the village — so the assertion sees this run's rows and not the 76
+// historical ones. An empty village is NOT a match; that is the outcome the prompt change wants.
+// ⚠️ AFTER assertNoWriteFailures on purpose: a failed write is the more urgent report of the two, and
+// throwing here first would hide it.
+assertNoInventedVillages(newRowsToAdd.map(r => ({ venue_name: r[4], village: r[5] })), 'Pass A');
 
 } // end if (RUN_DISCOVERY) — Pass A discovery appends
 }

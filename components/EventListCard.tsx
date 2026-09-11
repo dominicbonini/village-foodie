@@ -1,5 +1,7 @@
 import { usePostHog } from 'posthog-js/react';
 import { VillageEvent } from '@/types';
+import { safeHref } from '@/lib/safe-href';
+import { hrefFromStoredUrl } from '@/lib/url-normalise';
 import Link from 'next/link';
 import { 
     getCuisineEmoji, 
@@ -8,8 +10,8 @@ import {
     downloadICS,
     formatFriendlyDate,
     createSlug,
-    getVenueSlug,
-    getDistanceKm
+    getDistanceKm,
+    venueGroupKey,
   } from '@/lib/utils';
 import { formatTime, formatTimeRange } from '@/lib/time-utils';
 import { isHatchGrab } from '@/lib/domain';
@@ -139,8 +141,12 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   const PrimaryBtnClass = "flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap";
   const UtilityLinkClass = "flex items-center justify-center gap-1 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-0.5 px-1.5 transition-colors whitespace-nowrap bg-transparent cursor-pointer";
 
-  const MenuBtn = primaryEvent.menuUrl ? (
-    <a href={primaryEvent.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu', primaryEvent, primaryEvent.venueName)} className={`${isMapPopup ? 'w-full' : 'flex-1'} flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap`}>
+  // 🔴 `menu_url` IS SCRAPER-WRITTEN AND ANON-READABLE — untrusted. `safeHref` returns null for anything
+  // that is not an http(s) URL, and a null here removes the BUTTON, not just its href: a dead button on a
+  // public page is worse than no button, because a customer taps it and nothing happens.
+  const menuHref = safeHref(primaryEvent.menuUrl);
+  const MenuBtn = menuHref ? (
+    <a href={menuHref} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu', primaryEvent, primaryEvent.venueName)} className={`${isMapPopup ? 'w-full' : 'flex-1'} flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap`}>
         <span>📸</span> View Menu
     </a>
   ) : null;
@@ -166,14 +172,21 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
   const smsDivider = isApple ? '&' : '?';
 
-  const ContactBtns = (ev: VillageEvent, venueDisplay: string) => (
+  const ContactBtns = (ev: VillageEvent, venueDisplay: string) => {
+  // 🔴 GUARD THE BASE URL BEFORE THE event_id IS APPENDED. `order_url` is scraper-written and
+  // anon-readable; appending a query string to an unvalidated value would just carry the problem along.
+  // A refused value removes the button entirely — see the note on `menuHref` above.
+  // ⚠️ This replaces the old `ev.orderUrl.includes('http')` pre-filter, which a value like
+  // "httpx:evil" satisfied; `safeHref` parses it and checks the protocol instead of the prefix.
+  const orderHref = safeHref(ev.orderUrl);
+  return (
     <>
-        {showWebsite && ev.orderUrl && ev.orderUrl.includes('http') && (
+        {showWebsite && orderHref && (
             // Carry this event's id so the order page deep-links straight to it (skips the "choose an
             // event" chooser) — the user already picked this event on the map/list. ?event_id is the
             // SAME param the order page reads for effectiveEventId (order/page.tsx :122). Falls back to
             // the bare order URL (chooser) when ev.id is missing, never a broken link.
-            <a href={ev.id ? `${ev.orderUrl}${ev.orderUrl.includes('?') ? '&' : '?'}event_id=${ev.id}` : ev.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website', ev, venueDisplay)} className={PrimaryBtnClass}>
+            <a href={ev.id ? `${orderHref}${orderHref.includes('?') ? '&' : '?'}event_id=${ev.id}` : orderHref} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website', ev, venueDisplay)} className={PrimaryBtnClass}>
                 🌐 Order
             </a>
         )}
@@ -194,6 +207,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
         )}
     </>
   );
+  };
 
   const cardContent = (
     <div className="flex flex-col w-full min-w-0 font-sans">
@@ -219,8 +233,14 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
             
             <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 pt-1">
                 <h3 className="font-bold text-slate-900 text-[15px] leading-none !m-0 !p-0 truncate pr-1">
-                    {primaryEvent.websiteUrl ? (
-                    <a href={primaryEvent.websiteUrl.startsWith('http') ? primaryEvent.websiteUrl : `https://${primaryEvent.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors" title={`Visit ${primaryEvent.truckName}'s website or page`}>
+                    {/* 🔴 THE INLINE COPY OF THIS EXPRESSION IS GONE. It was the third hand-written
+                        `startsWith('http') ? … : 'https://'+…` in the repo; it now calls the one helper,
+                        so the scheme filter added to `hrefFromStoredUrl` reaches this sink too.
+                        🔴 A REFUSED VALUE FALLS TO THE <span> BELOW, WHICH ALREADY EXISTED. The truck's
+                        NAME is what is wrapped here, so dropping the element would delete the name from
+                        the card — the name renders unlinked instead. Nothing visible is lost. */}
+                    {hrefFromStoredUrl(primaryEvent.websiteUrl) ? (
+                    <a href={hrefFromStoredUrl(primaryEvent.websiteUrl)} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors" title={`Visit ${primaryEvent.truckName}'s website or page`}>
                         {primaryEvent.truckName}
                     </a>
                     ) : (
@@ -246,7 +266,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
                                 {!isVenuePage && (
                                     <div className="flex items-center min-w-0 pr-1">
                                         {!isMapPopup ? (
-                                            <Link href={`/venues/${getVenueSlug(ev.venueName, ev.village || '')}`} className="group flex items-center gap-1.5 min-w-0 cursor-pointer" title={`View venue details for ${ev.venueName}`}>
+                                            <Link href={`/venues/${venueGroupKey(ev)}`} className="group flex items-center gap-1.5 min-w-0 cursor-pointer" title={`View venue details for ${ev.venueName}`}>
                                                 <span className="text-slate-600 text-[13px] font-medium leading-tight group-hover:text-orange-600 transition-colors line-clamp-2">
                                                     {venueDisplay}
                                                 </span>

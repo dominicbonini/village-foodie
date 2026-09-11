@@ -1,6 +1,6 @@
-HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V1.8
+HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V1.9
 
-**Version 1.8 · 9 September 2026 (night)**
+**Version 1.9 · 11 September 2026**
 
 *This documents the discovery pipeline: a separate codebase path, a separate runtime and a separate deploy path from the Next.js app. It exists because this pipeline had never been documented, and that cost three months of silent venue-creation failure — nobody could tell "few trucks scraped" from "few venues created" from "nothing ran", because none of it was written down and every failure exits 0.*
 
@@ -11,6 +11,14 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ---
 
 # CHANGELOG
+
+## V1.9 — 11 September 2026 — THE MIRROR NO LONGER WRITES THE TABLE: IT POSTS THROUGH A SHARED GATE THAT MATCHES, ACCEPTS OR REFUSES A VENUE, AND MARKS DUPLICATES — AND THE VENUE-LINKING GAP TURNS OUT TO BE A VILLAGE FIELD FULL OF PLACE DESCRIPTIONS
+
+⚠️ **This entry post-dates V1.8 below, written on 9 September. Where they disagree, this entry is current.** V1.8's deletion record (§8.1), the run log's `PGRST205` correction and the phantom-defect section (§21a) stand unchanged and are **not** repeated here.
+
+**Covers:** **new §23 — the shared dedup gate.** 🔎 Pass A no longer upserts `discovery_events` itself; it POSTs in chunks of 100 to a new `/api/discovery/ingest`, which calls `lib/discovery-gate.ts` — the same function `/api/inbound-schedule` and the one-off backfill call. The gate resolves the truck, runs the venue matcher, applies **R5** as an acceptance check, tests four duplicate rules, then writes. 🔴 **This answers V1.8 §22's finding directly:** `venue_id` was never written by the mirror because the mirror never resolved one; **routing Pass A through the gate is that fix**, and it also gives the scraper a duplicate check that sees the **database** rather than the Sheet. ⚠️ **Not deployed** — the gate, the route and the scraper change are all uncommitted, so today's 06:00 run still used the old direct mirror. Auth is the existing `INBOUND_SCHEDULE_SECRET`; the Sheet append is still awaited **before** the POST; a chunk that fails, or a **207** partial, ends the run **red** through `assertNoWriteFailures`.
+**Corrected in place:** **§5's live counts** — **574 venues → 819**, and the shape figures with them (**43** null village, **31** where village equals name, **91** with no coordinates); **§22's headline** — `venue_id` null on **404 of 902 → 322 of 935** (226 of the 705 future rows), and 🔴 **the reason is now measured and is not the mirror alone**: the backfill enriches **0** further rows because **R5 refuses 225 of them, correctly**.
+**The venue-linking gap, re-diagnosed (§22.4, new):** 🧪 **42 rows** are `The Bull Pub [Great Paxton]` resolving to `The Bull Pub [Saffron Walden]`, **36.3 km** away; **~70 more** carry a **place description in the village field** — `Recreation Ground [Recreation Ground]`, `Near The King's Head Pub [Near The King's Head Pub]`, `Church View Campsite [Church View]`, `Barracks [Barracks]` — and a village that is a place description can never match a village anchor. 🧪 **33 of 819 venue rows have a village equal to their own name.** 🔴 **This is a venue-data problem and no event-level rule reaches it**, because it fails before any two events are compared.
 
 ## V1.8 — 9 September 2026 (night) — THE FIRST DELETION FROM `discovery_events` IN THIS CODEBASE'S HISTORY, THE RUN LOG'S MISSING-TABLE GUARD TESTED A CODE POSTGREST NEVER RETURNS, AND THE VENUE-LINKING GAP TURNS OUT TO BE THE MIRROR NOT WRITING THE COLUMN AT ALL
 
@@ -706,7 +714,13 @@ function normalizeName(name) {
 
 🧪 **CONFIRMED LIVE:** the only unique constraint is **`venues_name_village_key` on `(name, village)`**, applied by hand. That index shows **`idx_scan = 0`, `last_idx_scan = null`** while `venues_pkey` shows **4,522 scans** — reads work; **venue writes had never reached it.**
 
-🧪 **Live counts:** **574 venues**, **46 with a NULL village**, **24 where village equals name**, **1 with no coordinates**.
+🧪 **Live counts — RE-DERIVED 11 September 2026, count-asserted:** **819 venues**, **43 with a NULL
+village**, **31 where village equals name** (33 if punctuation and case are normalised), **91 with no
+coordinates**, **230 with no postcode**.
+⚠️ **[CORRECTED IN PLACE V1.9 — the previous figures were 574 / 46 / 24 / 1, measured 8 September, and
+were being carried forward as current.]** 🔴 **The "village equals name" count is not a curiosity — it is
+the largest single cause of unlinked events**, because a village field holding a place description can
+never match a village anchor. See §22.4.
 
 ## 5.2 🔴 THE 42P10 DEFECT — A WORKED EXAMPLE
 
@@ -2019,9 +2033,13 @@ was **moved** to `lib/schedule-match.ts` and imported by both callers, not re-im
 🧪 Re-derived 9 September against the live table, count-asserted, **after** the deletion in §8.1 —
 every figure here is post-deletion and the pre-deletion ones are marked as such.
 
-**`venue_id` is null on 404 of 902 rows (44.8%).** ⚠️ **The 2,219 in earlier text and the 2,267 supplied
-to this update are both PRE-deletion figures and cannot be reconciled with a 902-row table.** Do not
-carry them forward.
+**`venue_id` is null on 322 of 935 rows (34.4%) — 226 of the 705 FUTURE rows.**
+⚠️ **[CORRECTED IN PLACE V1.9 — this section's headline read "404 of 902" until 11 September.]** The
+2,219 and 2,267 figures remain **PRE-deletion and unusable**; do not carry them forward either.
+🔴 **AND THE DIAGNOSIS BELOW IS NOW ONLY HALF THE CAUSE.** §22.2 is right that the mirror never writes
+`venue_id` — but routing it through the gate (§23) does **not** close the gap, because 🧪 a full
+enrichment pass over the future rows now links **0** of them: the matcher proposes a venue for 225 and
+**R5 refuses all 225, correctly**. **The remaining gap is venue data, not plumbing.** See §22.4.
 
 ## 22.1 Linked rate by writer
 
@@ -2070,6 +2088,114 @@ Park`, `FoodPark Biomedical`, `FoodPark CB1`, `FoodPark at Eddington`, `foodPark
 A backfill matching on name would bind each event to whichever duplicate its string happens to equal,
 making the duplication permanent and invisible. **Venue de-duplication comes first, or the backfill
 carries the mess forward.**
+
+## 22.4 🔴 THE REAL REMAINING CAUSE, MEASURED (V1.9 — 11 September 2026)
+
+🧪 An enrichment pass over all **705 future rows**, using the shipped matcher and the gate's R5, links
+**0** further rows. The matcher proposes a venue for **225** of the 226 unlinked future rows (one has no
+candidate at all) and **R5 refuses every one — correctly.** Grouped by cause:
+
+| rows | cause | example |
+|---|---|---|
+| 42 | right name, **wrong county** | `The Bull Pub [Great Paxton]` → `The Bull Pub [Saffron Walden]`, **36.3 km** from the Great Paxton anchor |
+| 29 | village spelled unlike any anchor | `Blackpit Brewery [Stow-Bridgwater]` → `[Stowbridge]` |
+| 27 | 🔴 **village field holds a place description** | `Church View Campsite [Church View]` |
+| 26 | village is a brand casing | `Roughacre Brewery [RoughAcre]` → `[Clare]` |
+| 9 each | 🔴 **village field holds a place description** | `Near The King's Head Pub [Near The King's Head Pub]`, `The Railway Inn Pub [The Railway Inn Pub]`, `Barracks [Barracks]`, `Recreation Ground [Recreation Ground]` |
+| 8 each | 🔴 same | `Royal Square [Royal Square]`, `Near the Spar Shop [Near the Spar Shop]`, `Near the Co op Store [Near the Co op Store]` |
+| 9 + 9 + 8 + 1 | a real village, but the nearest same-name venue is 24–27 km off | `The Railway Tavern [Norwich]` → `[Dereham]`, 24.0 km; `The Bull [Bottisham]` → `[Lower Green]`, 26.9 km |
+| 7 + 1 + 1 | `foodPark` under a village that is a postcode district or a campus | `foodPark [CB1]`, `foodPark [Biomedical Campus]` |
+
+🔴 **A village that is a place description can never match a village anchor**, because the anchor is the
+median position of the venues in that village and no other venue shares the description. 🧪 **33 of the
+819 venue rows have a village equal to their own name.** That is the mechanism.
+
+⚠️ **This section supersedes the implied fix in §22.2.** Routing the mirror through the gate is still
+right and still necessary — it is what makes `venue_id` get written at all — but **it does not close this
+gap**, and neither would any number of event-level duplicate rules: the failure happens before two events
+are ever compared. The fix is in the **venue rows**: a village field that holds a village.
+
+---
+
+# 23. 🔴 THE SHARED DEDUP GATE — PASS A NO LONGER WRITES THE TABLE (V1.9 — 10–11 September 2026)
+
+⚠️ **NOT DEPLOYED.** 🧪 `lib/discovery-gate.ts` has **0 commits** and is untracked, as are
+`app/api/discovery/ingest/route.ts` and the modified `scripts/run-scraper.js`. Vercel and the Actions
+runner both deploy from git, so **today's 06:00 run still used the old direct mirror.** Everything below
+describes the code in the working tree.
+
+⚠️ **Naming collision:** this **R5** is the gate's venue-acceptance check. It is unrelated to §1's audit
+recommendation "R5" or to the rules-table row `R5` in §19 — flagged so they are never merged.
+
+## 23.1 What changed in `run-scraper.js`
+
+🔎 Pass A's `supabase.from('discovery_events').upsert(batch, ...)` is replaced by a chunked POST —
+**100 rows per request** — to `${HATCHGRAB_API_URL}/api/discovery/ingest`, carrying
+`INBOUND_SCHEDULE_SECRET` in the body. **The Sheet append is still awaited first**, so an endpoint outage
+cannot lose the Sheet row.
+
+| condition | result |
+|---|---|
+| wrong or missing secret | **401**, nothing written |
+| endpoint down, or any non-2xx | `assertInboundOk` throws → pushed to `dbWriteFailures` → the run **exits 1** |
+| **partial** failure inside a chunk | the route answers **207**, which `assertInboundOk` treats as failure → the run is **red** |
+| `HATCHGRAB_API_URL` unset | recorded as a write failure rather than silently skipped |
+
+🔴 **This is a new dependency for the scraper: recovery now needs the app deployed, not only Supabase.**
+
+## 23.2 What the gate does, in order
+
+1. **Truck** — alias-exact via `scheduleKeys`/`eventMatchesKeys`, else containment on `normName`. No sixth
+   normaliser was written; see §21a for why the five stay separate.
+2. **Venue** — `findVenue` **unmodified**, then **R5** as an acceptance check on its output: reject on a
+   postcode-**sector** disagreement; accept if the matcher said `high`; else require the venue to be
+   within **15 km** of the event village's anchor. 🔴 **Where R5 fails, `venue_id` stays NULL by design** —
+   a wrong link puts a pin in the wrong county, a missing one is a visible gap. If the matcher finds no
+   candidate at all and the row has a village, a venue is **created** on `(name, village)` with no
+   coordinates — the same shape the scraper has always written.
+3. **Duplicate** — same date, same truck (resolved ids when both rows have one, else exact equality on
+   `normalizeVenue` of the truck name), then four rules in order: **same postcode** · **≤ 500 m** ·
+   **identical coordinates** · **name + time** (containment on `normalizeVenue`, a **4-character floor**,
+   both start times known and equal, **≤ 1,500 m**).
+4. **Write**, then mark the loser. **Newest wins, decided by `created_at`**, so a daily re-scrape — which
+   is an UPDATE of an existing key — cannot flip a settled pair.
+
+🧪 **Live result of the backfill, applied by hand on 11 September: 16 rows marked — 8 `postcode`,
+6 `distance`, **2 `name-time`**, **0 `identical-coords`**.
+
+🔴 **THE IDENTICAL-COORDINATE RULE IS UNREACHABLE AS ORDERED.** Identical coordinates means both venues
+have coordinates, so the ≤ 500 m test measures 0 m and fires first. It is a known ordering defect, not a
+rule that happens to find nothing.
+
+🔴 **THE 4-CHARACTER FLOOR IS LOAD-BEARING.** `normalizeVenue` strips `the` and `street`, so
+**`The Street` normalises to the empty string** and every string contains it. Without the floor,
+containment accepts 59 pairs instead of 22 and merges two real pitches 2,581 m apart.
+
+## 23.3 Duplicates are stored and hidden — the Sheet is not consulted
+
+🔎 A loser keeps its row and gains `superseded_by`, `superseded_reason`, `superseded_meta` (distance,
+postcode, **time gap**, both sources) and `superseded_at`, plus `show_on_vf`/`show_on_hg` false. The
+public feed filters `superseded_by is null`; the admin table shows the marks.
+
+🔴 **THIS IS THE FIRST DUPLICATE CHECK IN THE PIPELINE THAT READS THE DATABASE.** §4's `existingEvents`
+rule — one edit's tolerance against the **Sheet's Events tab** — is unchanged and still runs first inside
+the scraper. The two now coexist: the Sheet rule drops an event before it is ever posted, the gate marks
+one after it is stored. ⚠️ **§8.1's `DEDUP_FROM` warning is unaffected** — the Sheet is still what
+suppresses re-creation of the 3,444 deleted rows, and switching that set to the database would still
+reverse every one of them.
+
+## 23.4 ⚠️ The backfill's grouping key was wrong, and the gate's was not
+
+🔎 `scripts/backfill-discovery-dedup.mjs` grouped by
+`event_date + '|' + (discovery_truck_id || normalizeVenue(truck_name))` — **one key per row, mixing a
+UUID and a name**. A truck with one linked and one unlinked row produced two keys and the pair was never
+compared. 🧪 It split **14 of 197** same-truck pairs and cost **one** missed mark. **The shipped gate
+never had this** — it tests each pair individually. Fixed to bucket by date with the truck test per pair;
+🧪 proved not to over-group: a date bucket with no truck test marks **24** rows against **16** with it,
+and it correctly keeps **Pizza Mondo** and **Steak & Honour** apart at one `FoodPark CB1` pitch on one
+day.
+
+---
 
 # WHAT I COULD NOT READ OR VERIFY
 

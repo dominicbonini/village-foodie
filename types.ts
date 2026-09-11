@@ -11,6 +11,10 @@ export interface VillageEvent {
   
   // --- LOCATION FIELDS ---
   village?: string;
+  /** Canonical venue-page key. Set by /api/discovery/events from the LINKED venue row, so every event
+   *  sharing a `venue_id` groups together whatever its own `village` text says. Absent for events the
+   *  feed does not resolve a venue for — `venueGroupKey` falls back to name+village there. */
+  venueSlug?: string;
   town?: string;
   postcode?: string;
   venueLat?: number;

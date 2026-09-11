@@ -139,13 +139,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 
 /* ---------- hero ---------- */
 /* `--hero-grey` IS DECLARED HERE AND USED BY THE TWO MOBILE-ONLY ELEMENTS BELOW — it is NOT a shared
-   token and must not join the `:root` block. #4A627F measures 6.28:1 on white (WCAG AA at any size,
-   AAA for large); `--ink-soft` (#5F7A99) measures 4.44:1, which MISSES the 4.5:1 normal-text floor —
-   the deleted tick-list comment claimed 4.61:1 for it and was wrong. `--ink` (#2C4766, 9.54:1) was the other
-   candidate and was rejected for reading as navy body copy rather than as secondary grey.
+   token and must not join the `:root` block. #3E5472 measures **7.73:1** on white — AAA for normal text
+   at any size. It was #4A627F (6.28:1) until 12 September; one step darker was asked for and the target
+   band was 7.5–8:1. ⚠️ IT MUST STAY CLEARLY LIGHTER THAN `--ink` (#2C4766, 9.54:1), which is the body
+   copy: at 9.54 it stops reading as secondary and starts reading as navy body text, which is the reason
+   `--ink` itself was rejected for this role. `--ink-soft` (#5F7A99) measures 4.44:1 and MISSES the 4.5:1
+   normal-text floor — the deleted tick-list comment claimed 4.61:1 for it and was wrong.
    ⚠️ A CUSTOM-PROPERTY DECLARATION PAINTS NOTHING BY ITSELF. Nothing above 639px references it, so
    tablet and desktop are byte-identical with it present. `--ink-soft` is untouched. */
-.hg-landing .hero { --hero-grey: #4A627F; padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
+.hg-landing .hero { --hero-grey: #3E5472; padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
 .hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
 @media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
@@ -206,31 +208,22 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
    320px it wraps to two — the brief's accepted outcome; the font is NOT shrunk to prevent it. */
 .hg-landing .hero-sub-sm { display: none; font-family: var(--body); font-weight: 400; font-size: 1rem; line-height: 1.45; color: var(--hero-grey); text-align: center; margin-inline: auto; margin-bottom: 1.1rem; }
 
-/* The one line under the mobile button. IT REPLACED A TWO-ITEM TICK LIST (`.hero-ticks-sm`, with an
-   11px stroked check on each item) — the list, its items, its icons and the `<CheckSm />` component in
-   page.tsx are all deleted, not hidden, so nothing is left to drift.
-   ⚠️ IT IS STILL A FLEX ITEM OF `.hero-cta-row`, EXACTLY WHERE THE LIST WAS. That is what keeps the gap
-   below the button at the row's own .85rem/13.6px without a margin of its own — 🧪 MEASURED identical
-   before and after. 13px, regular, centred, no icon and no orange: it is a footnote to the button, not
-   a second call to action.
-   🧪 ONE LINE AT EVERY WIDTH THIS RULE APPLIES TO: 179.0px against a 280px column at 320px. */
-.hg-landing .hero-note-sm { display: none; font-family: var(--body); font-weight: 400; font-size: .8125rem; line-height: 1.35; color: var(--hero-grey); text-align: center; }
-
 @media(max-width:639px){
   /* ── what the phone drops. All three are display:none, so they cost no height and no space. ── */
   .hg-landing .hero-tag { display: none; }        /* "Less time booking. More time cooking." */
   .hg-landing .hero-cta-text { display: none; }   /* the 60-seconds heading + grey paragraph */
   /* ⚠️ `.trust-strip` IS NO LONGER HIDDEN HERE. It was, because the hero ticks repeated its three
-     points; the line under the button now says something different ("No signup or account needed.") so
-     the band earns its place again. Its content, styling and position below the screenshots are exactly
+     points; the line under the button that replaced them is itself now deleted, and the supporting line
+     above the button carries "no signup needed" instead, so the band earns its place again. Its content, styling and position below the screenshots are exactly
      what they were before that rule existed — the rule is deleted, not overridden, nothing to drift. */
 
-  /* ── what the phone gains: h1 → supporting line → button → note → screenshot ── */
+  /* ── what the phone gains: h1 → supporting line → button → screenshot ── */
   .hg-landing .hero-sub-sm { display: block; }
-  .hg-landing .hero-note-sm { display: block; }
 
   /* ── tightening, so the screenshot's top clears the ~660px fold on a 390x844 iPhone ── */
-  .hg-landing .hero { padding-block: 1.6rem 2rem; }   /* was clamp(2.5rem,5vw,4rem) / clamp(3rem,6vw,4.5rem) → 40px/48px at this width */
+  /* 🧪 TOP PADDING 1.6rem → 2.5rem (25.6px → 40px, +14.4px): the H1 was sitting too close under the
+     nav. The BOTTOM stays 2rem — only the space above the heading was asked for. */
+  .hg-landing .hero { padding-block: 2.5rem 2rem; }   /* was 1.6rem 2rem; base rule is clamp(2.5rem,5vw,4rem) / clamp(3rem,6vw,4.5rem) */
   .hg-landing .hero-grid { gap: 1.6rem; }             /* was clamp(2.5rem,5vw,3.5rem) → 40px at this width */
   /* 🔴 `.hero h1`, NOT `h1`. landing.css is imported by THREE surfaces — /landing, /compare and
      app/contact/HatchGrabContact.tsx — and the contact page renders `<h1>How can we help?</h1>` inside
@@ -239,17 +232,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
      app/landing/page.tsx renders; `h1` was the one that did not. */
   /* 🔴 TWO DECLARATIONS, BOTH MOBILE-HERO-ONLY, NEITHER TOUCHING THE BASE `.hg-landing h1` RULE that
      /compare and the contact page also render.
-     • `margin-bottom: 1rem` (16px) — 🧪 MEASURED 9.6px before. The heading and the supporting line were
-       reading as one block; 16px separates them. It costs 6.4px of fold, which the screenshot still
-       clears on a 390x844 iPhone (🧪 the fan's bottom moves from 640.8px to 651.4px, still inside the
-       ~660px fold).
+     • `margin-bottom: 1.25rem` (20px) — 🧪 9.6px originally, 16px from 11 September, 20px from the 12th.
+       The heading and the supporting line were reading as one block.
      • `letter-spacing: -.015em` — HALF the base rule's -.03em (-.48px vs -.96px at 32px), which is the
        whole point: at 800 weight the tight tracking was closing the word gaps.
      🔴 -.015em IS THE LOOSEST VALUE THE LINE BREAK SURVIVES, AND THE MARGIN IS 2.6px. Line 1 ("The
      ordering system") measures 317.4px against the 320px text column at a 360px viewport — 308.3px
      before. Loosen it any further and line 1 wraps early at 360px. 🧪 The break is unchanged at 360,
      375, 390 and 414px. Font size, weight and family are untouched. */
-  .hg-landing .hero h1 { margin-bottom: 1rem; letter-spacing: -.015em; }   /* was .6rem, -.03em (inherited from the base rule) */
+  .hg-landing .hero h1 { margin-bottom: 1.25rem; letter-spacing: -.015em; }   /* was 1rem then .6rem; -.03em is the base rule's */
   .hg-landing .hero-cta-row { gap: .85rem; }          /* was 1.2rem — now the button↔ticks gap */
 
   /* ── the hero button: shorter, flatter-cornered, still full width and still a 48px+ tap target ──

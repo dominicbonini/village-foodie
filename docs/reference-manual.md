@@ -24367,7 +24367,7 @@ geocoded to a town centroid — six sit on `NR1 1AA`.
 | 7 | **The Escape defect in the schedule popup's delete dialog** — two `{capture:true}` listeners on `window`; `stopPropagation()` does not stop same-node listeners | 🔴 **OPEN — pre-existing** |
 | 8 | **The opt-out footer and signature left the code** into an Outlook signature (§52) | 🔴 **OPEN as a compliance risk — a human responsibility, no longer enforced** |
 | 9 | **`Chai Stall`'s `photo_url`** | ✅ **CLOSED.** 🧪 A sweep of **all 242** `photo_url`/`logo_url` values across 231 trucks finds **0 broken** — every remote URL returns 200 and every local path exists |
-| 10 | **Two days of work are UNCOMMITTED** — ~14 modified files, ~60 untracked, four migrations, of which **two are unapplied** (`20260911_discovery_events_superseded.sql` is applied; `20260912_superseded_reason_values.sql` is applied; the prune workflow is not deployed) | 🔴 **OPEN** |
+| 10 | **Two days of work are UNCOMMITTED** — 14 modified files and ~60 untracked ones, including the whole gate. 🧪 **All four new migrations ARE applied** (`20260909_outreach_templates`, `20260910_outreach_contact_kinds`, `20260911_discovery_events_superseded`, `20260912_superseded_reason_values` — the last proved by 2 live `name-time` marks, which its widened constraint is what permits). 🔴 **So the database is ahead of `main`: the schema and the marked rows exist in production while the code that reads and writes them exists only in this working tree.** | 🔴 **OPEN — and this is the sharp edge** |
 
 ---
 

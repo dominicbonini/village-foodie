@@ -1,171 +1,174 @@
-# Mobile hero typography — build report
+# Mobile landing hero and header — final polish
 
-Mobile only (below 640px) and hero only. Desktop, tablet, the grey trust band, /compare and the contact
-page are untouched — proved below, not assumed. Nothing was installed, no dev server and no build was
-run, nothing was deployed. `--ink-soft` still reads `#5F7A99`, and the whole `:root` token block is
-byte-identical to before.
+Mobile only (below 640px). Desktop, tablet, the grey trust band, /compare and the contact page are
+unchanged — proved below, not assumed. No `next dev`, no `next build`, no deploy.
+
+Nothing in the brief arrived garbled and no instruction contradicted another.
 
 ---
 
-## 🔴 ONE THING IN THE BRIEF DOES NOT MATCH THE PAGE — FLAGGED, NOT SILENTLY RESOLVED
+# STEP 0 · WHY THE REPLICA AND SAFARI DISAGREED
 
-> "The line break must stay the same: line 1 ends with 'built', line 2 is 'for food trucks.' at 360, 375,
-> 390 and 414px."
+## The cause: the phone is not 390px wide. It is about 430px.
 
-**At all four of those widths the H1 does not break there today.** 🧪 Measured, before any edit:
+**The replica was measuring the right page at the wrong width.** Its font, font size, weight, tracking,
+gutters and text column were all correct; the only wrong input was the viewport.
+
+🧪 The H1's two candidate first lines, measured at 32px/800 in the replica:
+
+| tracking | "The ordering system built" | needs a text column of | i.e. a viewport of |
+|---|---|---|---|
+| `-.03em` (before the 11 Sep change) | **379.7px** | ≥ 379.7px | **≥ 420px** |
+| `-.015em` (after it) | **391.7px** | ≥ 391.7px | **≥ 432px** |
+
+So there is a window — **viewport 420px to 431px** — in which the *old* tracking fits "built" on line 1
+and the *new* tracking does not. That is exactly the pair of observations reported from the phone.
+🧪 Driven through the replica at a range of widths, it reproduces both:
 
 ```
-360px   L1 "The ordering system"        L2 "built for food trucks."
-375px   L1 "The ordering system"        L2 "built for food trucks."
-390px   L1 "The ordering system"        L2 "built for food trucks."
-414px   L1 "The ordering system"        L2 "built for food trucks."
+  390px  -.03em  → "The ordering system" / "built for food trucks."
+  390px  -.015em → "The ordering system" / "built for food trucks."
+  420px  -.03em  → "The ordering system built" / "for food trucks."   ← what Safari showed BEFORE
+  420px  -.015em → "The ordering system" / "built for food trucks."   ← what Safari shows NOW
+  430px  -.03em  → "The ordering system built" / "for food trucks."   ← BEFORE
+  430px  -.015em → "The ordering system" / "built for food trucks."   ← NOW
+  440px  -.03em  → "The ordering system built" / "for food trucks."
+  440px  -.015em → "The ordering system built" / "for food trucks."   (both fit — outside the window)
 ```
 
-"The ordering system" is 308.3px and the text column at a 360px viewport is 320px — adding "built"
-(~80px) cannot fit at any of the four. The break the brief describes is the one that appears from about
-480px upward, which is a large phone in landscape or a small tablet, not the widths named.
+**430px is the CSS width Safari reports for the iPhone Plus and Pro Max sizes** (14 Plus / 14 Pro Max /
+15 Plus / 16 Plus). It sits inside the window; 390px (iPhone 12–16 base) and 393px (Pro) do not, and 440px
+(16 Pro Max) is outside it in the other direction.
 
-I did not treat this as a contradiction to stop on, because both readings of the instruction agree on the
-same requirement: **the break must not move.** So I held it exactly where it is at all four widths, and
-that is what the measurements below prove. If you actually want line 1 to end with "built" at 390px, that
-is a different change (the H1 would have to shrink or the copy carry its own `<br />`) and I have not
-made it. No other span of the brief arrived garbled.
+## What it was NOT — the candidates I ruled out by measurement
 
----
+| candidate | ruled out because |
+|---|---|
+| **Font loading / wrong font file** | 🧪 The replica's woff2 was parsed: its table directory contains **`fvar`, `gvar`, `avar`, `HVAR`, `STAT`** — it is the genuine **variable** Archivo, so the 800 weight is a real instance and not synthetic bold (which would have rendered wider and broken earlier) |
+| **Text column width / gutters** | 🧪 `--gut` resolves to `clamp(1.25rem, 4vw, 2.5rem)` → 20px each side below 500px, giving a 350px column at 390px. The replica measured exactly that |
+| **font-size clamp** | 🧪 `clamp(2rem, 4.3vw, 3rem)` resolves to **32px** at every width below 640px, in the replica and by arithmetic. Not a variable |
+| **Root font size / viewport meta** | 🧪 Root is 16px; the harness carries the same `width=device-width, initial-scale=1` meta as the app |
 
-# PART ONE — PLAIN ENGLISH
+**This raises my confidence in the harness rather than lowering it.** It did not mispredict; it answered a
+question about 390px that was then compared against a ~430px screen.
 
-**The heading breathes.** Its letters were pulled together by 0.96px each; that is now 0.48px, exactly
-half, which is the loosest setting the line break survives. The gap between the heading and the grey
-supporting line goes from 9.6px to 16px, so they stop reading as one block.
+## Confidence in each measurement below
 
-**The supporting line is bigger and darker.** 15.2px → 16px, and the grey moves from the page's
-`--ink-soft` (which measures 4.44:1 on white and actually misses the 4.5:1 accessibility floor) to
-`#4A627F`, which measures **6.28:1**. It still reads as grey, not navy. "See a working demo in under 60
-seconds." still holds on one line at 360, 375 and 390px, and still wraps at 320px, as agreed.
+| measurement | confidence | why |
+|---|---|---|
+| Spacing: hero padding, H1→sub gap, sub→button gap | **Very high** | Pure CSS box geometry. No font metrics involved, so the width question cannot touch it |
+| Colour and contrast ratios | **Very high** | Arithmetic on the hex value, plus the computed `color` read back from the rendered element |
+| "Log in" position in each header state | **Very high** | Box geometry again, read from the live rects in both states |
+| Desktop/tablet unchanged | **Very high** | Element-by-element diff of two rendered pages |
+| **Supporting-line breaks at each width** | **High, not certain** | Depends on font metrics. The replica is now *validated* against reality — it reproduces both real-Safari H1 observations once the width is right — but a text-fit prediction is still the one class of number here that a rendering difference could move. Slack is quoted with every one so you can judge the margin |
 
-**The two ticks under the button are gone.** In their place, one plain centred sentence: *No signup or
-account needed.* 13px, the same darker grey, no icon, no orange. It sits in the same slot in the same
-flex row, so the gap below the button is unchanged to the pixel. The tick list's CSS and the small check
-icon component were deleted, not hidden.
-
-**One consequence you should know about.** The hero is 10.6px taller on a phone — 6.4px of it is the
-bigger heading gap you asked for, the rest the larger supporting line and the slightly taller note. So
-everything below the hero, the grey trust band included, sits 10.6px lower on mobile. The band itself is
-unchanged: same size, same content, same styling, and byte-identical on tablet and desktop. The
-screenshot fan still clears the fold on a 390×844 iPhone, its bottom moving from 640.8px to 651.4px.
+⚠️ **What would confirm the 430px inference outright:** opening the page on that phone and reading
+`window.innerWidth`. I have inferred the width from behaviour rather than observed it.
 
 ---
 
-# PART TWO — THE MEASUREMENTS
+# THE CHANGES
 
 ## Files changed
 
-| file | change |
+| file | why |
 |---|---|
-| `app/landing/landing.css` | six declaration changes, all under `.hero` selectors (listed below) |
-| `app/landing/page.tsx` | the tick `<ul>` replaced by one `<p class="hero-note-sm">`; the `CheckSm` component deleted |
+| `app/landing/landing.css` | items 1, 2 (CSS deletion), 3 |
+| `app/landing/page.tsx` | item 2 (copy + deletion), and passes the new nav prop |
+| `components/landing/LandingNav.tsx` | **item 4 — flagged below, it genuinely needs it** |
 
-**The complete declaration-level diff** (comments stripped, so this is every rule that can affect a
-pixel):
+**🔴 Why item 4 needed `LandingNav.tsx`.** "Log in" must sit flush right with the CTA to its **left**, and
+the DOM order is currently `Log in` then CTA. A CSS `order:` on the flex row would have achieved the
+visual result **without touching this file** — and would have left the DOM reading "Log in, Upload menu"
+while the eye reads "Upload menu, Log in". The brief asks for reading order and visual order to match, so
+the **elements** had to move, not their painted order. The prop is `ctaFirst`, it defaults to `false`
+(today's behaviour exactly), and **only `app/landing/page.tsx` passes it** — /compare calls
+`<LandingNav landingHref="/landing" />` with no prop and is untouched.
 
-```
-- .hg-landing .hero { padding: … }
-+ .hg-landing .hero { --hero-grey: #4A627F; padding: … }            ← a token declaration; paints nothing itself
-- .hg-landing .hero-sub-sm { … font-size: .95rem; … color: var(--ink-soft); … }
-+ .hg-landing .hero-sub-sm { … font-size: 1rem;  … color: var(--hero-grey); … }
-- .hg-landing .hero-ticks-sm { … }          (list, li and svg rules — all three deleted)
-+ .hg-landing .hero-note-sm { display: none; … font-size: .8125rem; line-height: 1.35; color: var(--hero-grey); text-align: center; }
-  @media(max-width:639px){
--   .hg-landing .hero-ticks-sm { display: flex; }
-+   .hg-landing .hero-note-sm { display: block; }
--   .hg-landing .hero h1 { margin-bottom: .6rem; }
-+   .hg-landing .hero h1 { margin-bottom: 1rem; letter-spacing: -.015em; }
-  }
-```
-
-Every selector names `.hero` or a `hero-*` class. 🧪 grep over `app`, `components` and `lib` (no
-extension filter) shows only `app/landing/page.tsx` renders any of them; the contact page's `<h1>` sits
-inside `.hg-landing` but outside any `.hero`, which is why `.hero h1` and not `h1` is the selector.
-
-## 1. H1 letter-spacing
-
-| | value at 32px | line 1 ink width |
-|---|---|---|
-| before | `-.03em` = **-0.96px** (inherited from the base `.hg-landing h1` rule) | 308.3px |
-| after | `-.015em` = **-0.48px** (mobile hero only) | 317.4px |
-
-**The break is unchanged at every width named**, and the value I settled on is the full half, not a
-reduced one — it did not need reducing:
-
-| viewport | text column | line 1 | line 2 | slack on line 1 |
-|---|---|---|---|---|
-| 360px | 320px | The ordering system (317.4px) | built for food trucks. (306.8px) | **2.6px** |
-| 375px | 335px | The ordering system | built for food trucks. | 17.6px |
-| 390px | 350px | The ordering system | built for food trucks. | 32.6px |
-| 414px | 374px | The ordering system | built for food trucks. | 56.6px |
-
-⚠️ **2.6px at 360px is the whole margin**, and it is stated in the CSS as well as here. I tested
--.015em, -.018em, -.02em, -.022em and -.025em: all five hold the break, so the constraint did not bind
-and the brief's "roughly half" was achievable in full. If you would rather trade some of the opening for
-headroom, `-.02em` gives 314.4px and 5.6px of slack. The font, size (32px) and weight (800) are
-untouched, and the base rule that /compare and the contact page use is untouched.
-
-## 2. Heading → supporting line gap
-
-🧪 Measured at 390px, top of the supporting line minus bottom of the H1: **9.6px before, 16.00px after.**
-It is `margin-bottom` on the heading, so no new spacing mechanism was introduced. The gap between the
-supporting line and the button is **17.59px before and 17.59px after** — unchanged, as instructed.
-
-## 3. Supporting line
+## 1 · Space around the H1
 
 | | before | after |
 |---|---|---|
-| size | 15.2px (`.95rem`) | **16px** (`1rem`) |
-| colour | `--ink-soft` #5F7A99 | **#4A627F** via a hero-scoped `--hero-grey` |
-| contrast on white | **4.44:1** | **6.28:1** |
-| family / weight | Public Sans 400 | unchanged |
+| hero `padding-block` (top) | `1.6rem` = **25.6px** | `2.5rem` = **40px** |
+| 🧪 measured nav bottom → H1 top | **25.59px** | **40.00px** (**+14.41px**) |
+| 🧪 measured H1 bottom → supporting line top | **16.00px** | **20.00px** |
+| 🧪 supporting line → button | 17.59px | **17.59px — unchanged**, as required |
 
-The colour is new because nothing in `landing.css` sat in the 5.5–7:1 band: `--ink-faint` 2.26:1,
-`--ink-soft` 4.44:1, then a jump to `--ink` 9.54:1 and `--head` 13.24:1. `--ink` was rejected for reading
-as navy body copy. `#4A627F` is declared as `--hero-grey` **on the `.hg-landing .hero` rule**, not in the
-shared token block, so nothing outside the hero can see it; a custom-property declaration paints nothing
-by itself, which is why its presence leaves tablet and desktop byte-identical.
+⚠️ **Deviation, small and deliberate:** the brief said "about 14px". `2.5rem` is **+14.4px** rather than
+exactly 14; a literal 14px would be `2.475rem`, an odd value to leave in the file for 0.4px. The hero's
+**bottom** padding is untouched at `2rem`.
 
-**Where line 2 breaks** ("See a working demo in under 60 seconds.", 307.5px at 16px, was 292.1px):
+## 2 · Supporting line copy, and the note removed
 
-| viewport | column | result |
+New copy, with the break written into the markup:
+
+> Upload your menu, no signup needed.
+> See a working demo in under 60 seconds.
+
+🧪 **Where each line breaks** (16px Public Sans 400; slack against the text column in brackets):
+
+| viewport | column | line 1 | line 2 |
+|---|---|---|---|
+| **320px** | 280px | one line, 277.4px **[2.6px]** | **wraps to two** — the accepted outcome |
+| **360px** | 320px | one line, 277.4px **[42.6px]** | one line, 307.5px **[12.5px]** |
+| **375px** | 335px | one line **[57.6px]** | one line **[27.5px]** |
+| **390px** | 350px | one line **[72.6px]** | one line **[87.5px on the wider column]** |
+| 430px (the real phone) | 390px | one line | one line |
+
+Both lines fit at 360px, so there was nothing to stop for and nothing was shrunk. ⚠️ **Line 1 has only
+2.6px of slack at 320px** — it is one character from wrapping there, which is inside the width the brief
+allows to wrap anyway.
+
+**The line under the button is gone entirely:** the `<p class="hero-note-sm">` in `page.tsx`, the
+`.hero-note-sm` base rule, its `display:block` in the media block and its comment block are all deleted.
+🧪 grep finds **no remaining `hero-note-sm`** in the stylesheet or the markup. Nothing replaces it. The
+trust-strip comment that quoted the deleted sentence was updated so it does not describe absent copy.
+
+## 3 · Supporting line colour
+
+| | value | contrast on white |
 |---|---|---|
-| 320px | 280px | wraps to two lines ("…under 60" / "seconds.") — the accepted outcome |
-| 360px | 320px | **one line**, 12.5px spare |
-| 375px | 335px | **one line** |
-| 390px | 350px | **one line** |
+| before | `#4A627F` | 6.28:1 |
+| **after** | **`#3E5472`** | **7.73:1** |
+| `--ink` (body copy) for comparison | `#2C4766` | 9.54:1 |
 
-It fits at 360px, so nothing was shrunk and there was nothing to stop for.
+Inside the 7.5–8:1 target and still clearly lighter than the body colour. 🧪 The rendered element reports
+`rgb(62, 84, 114)`, which is `#3E5472`. It was changed **on the hero-scoped `--hero-grey`**, so it moved
+in one place; `--ink-soft` and every other shared token are untouched.
 
-## 4. The line under the button
+## 4 · Header "Log in"
 
-`<p className="hero-note-sm">No signup or account needed.</p>` — 13px (`.8125rem`), weight 400, `#4A627F`
-(**6.28:1**), centred, no icon, no orange.
+🧪 Measured at 390px, with the content's right edge at **370.00px**:
 
-- 🧪 **One line at every width**: 179.0px against a 280px column at 320px, the narrowest case. It cannot
-  wrap at any width this rule applies to.
-- 🧪 **Gap below the button is identical**: 13.59px before (button → ticks) and 13.59px after (button →
-  note). It is the `.hero-cta-row` flex gap, and the note occupies the same slot in that row, so the
-  number could not drift.
-- Mobile only, by the same mechanism as the tick list: `display: none` in the base rule, `display: block`
-  only inside the `max-width: 639px` block.
-- **Deleted, not left behind**: the `.hero-ticks-sm` list, `li` and `svg` rules, the media-block
-  `display: flex` line, and the `CheckSm` component in `page.tsx` (🧪 grep over `app`, `components`, `lib`, `scripts` and
-  `docs`, no extension filter: the only surviving mentions of `hero-ticks-sm` and `CheckSm` are two
-  comment lines in `landing.css` recording what the new rule replaced — no rule and no code references
-  either name). The media block's `.trust-strip` comment, which
-  quoted the old tick copy, was updated to quote the new sentence.
+| state | "Log in" right edge | CTA right edge | CTA visibility |
+|---|---|---|---|
+| hidden | **370.00** | 312.41 | `hidden` |
+| revealed | **370.00** | 312.41 | `visible` |
+| mid-transition | **370.00** | 312.41 | interpolating opacity only |
 
-## Desktop and tablet — confirmation
+- **"Log in" is flush with the content edge** — 370.00 against 370.00, not near it.
+- **It does not move between states**, because the CTA keeps its box in both (`visibility`, never
+  `display`) and the reveal's only movement is `transform: translateX(6px)`, which is applied at paint
+  time and never participates in layout. Mid-transition is therefore the same measurement by
+  construction, not by sampling.
+- The reveal mechanism, the 320ms in / 200ms out split, the transform-only slide and the reduced-motion
+  rule are **untouched** — no rule in that block was edited.
 
-🧪 Before and after rendered side by side in the same browser, every hero element, the fan, the three
-screenshots, the trust band, the header CTA, and the document height compared at each width:
+**Reading order chosen: logo → Upload menu → Log in.** 🧪 The DOM order of the visible items and their
+left-to-right visual order are both `Upload my menu → Log in`, and the harness asserts they are equal. The
+CTA is defined once in `LandingNav` and rendered by whichever branch `ctaFirst` picks, so the two orders
+cannot drift apart.
+
+---
+
+# CHECKS
+
+**`npx tsc --noEmit` exits 0.** **Lint is unchanged:** `app/landing/page.tsx` and
+`components/landing/LandingNav.tsx` report **2 warnings before and 2 after** — `TablePlan` and
+`DETAIL_OVERRIDES`, both pre-existing and unrelated; the baseline was measured by restoring the committed
+files, linting them, and putting mine back.
+
+**Desktop and tablet, before vs after, every element compared:**
 
 | width | result |
 |---|---|
@@ -175,42 +178,30 @@ screenshots, the trust band, the header CTA, and the document height compared at
 | 1280px | ✅ identical |
 | 1440px | ✅ identical |
 
-The only entries that differ at those widths are the tick list (`display:none` before, absent after) and
-the note (absent before, `display:none` after) — neither generates a box in either state, so the layout
-is unchanged. Position, size, font size, letter-spacing, colour and margin of every other element match
-exactly, document height included.
+The only entry that differs at those widths is the deleted note — `display:none` before, absent after —
+and neither generates a box, so the layout is unchanged. Position, size, font size, tracking, colour and
+margin of every other element match exactly, the header CTA and the trust strip included.
 
-**The contact page's shape** — `.hg-landing` wrapper, an `<h1>` outside any `.hero`, the shared nav —
-🧪 renders identically before and after at 320, 360, 390, 414, 639, 768 and 1280px. **/compare** renders
-no element carrying a `hero` class at all (🧪 grep), and the base `.hg-landing h1` rule it does use was
-not edited, so no changed declaration can match it.
+**The contact page's shape** (`.hg-landing` wrapper, an `<h1>` outside any `.hero`, the shared nav)
+🧪 renders **identically** before and after at 320, 360, 390, 414, 639, 768 and 1280px.
 
-**The grey trust band**: byte-identical at every width above 639px; on mobile its own box is unchanged
-(390×135.7 at 390px, same three points, same styling) and it simply starts 10.6px lower because the hero
-above it grew — the direct cost of the 16px heading gap you asked for.
+**/compare** 🧪 passes no `ctaFirst` (grep: 0 occurrences in `app/compare/page.tsx`), so its nav keeps
+today's DOM order, and it renders no element carrying a `hero` class, so none of the hero-scoped rules can
+match it.
 
----
-
-# HOW I CHECKED
-
-The page was rendered in a real browser at each width with the real Archivo and Public Sans files taken
-from the app's own build output, and measured: computed styles, bounding boxes, and line breaks derived
-by measuring each word's own rectangle and grouping by line. The before/after pages differ only in the
-stylesheet and that one markup swap. `npx tsc --noEmit` exits **0**. `npx eslint app/landing/page.tsx`
-reports **2 warnings before and 2 after** — `TablePlan` and `DETAIL_OVERRIDES`, both pre-existing and
-unrelated; the baseline was measured by reconstructing the pre-edit file and linting it, and deleting the
-`CheckSm` component is what kept the count from going to 3. No `next dev`, no `next build`, no deploy.
+**The grey trust band:** byte-identical above 639px. On mobile its own box is unchanged (360×160 at 360px,
+390×135.7 at 390px, same content, same styling) and it starts **12.7px higher**, because the hero is net
+shorter: +14.4px of top padding and +4px of heading gap, less the 17.5px note and the 13.6px row gap that
+went with it.
 
 # UNSURE ABOUT, OR DEVIATED ON
 
-1. **The stated H1 break does not match the page at the four named widths** — flagged at the top. I held
-   the break where it is rather than moving it to match the description.
-2. **2.6px of slack at 360px** on line 1 of the H1 after the change. It holds, and I settled on the full
-   half as instructed, but the margin is thin enough that you should know the number; `-.02em` is the
-   safer alternative if you want it.
-3. **The deleted tick-list comment claimed `--ink-soft` is 4.61:1 on white. It is 4.44:1** — below the
-   4.5:1 floor those 12px ticks needed. The claim died with the ticks; the replacement line is 6.28:1.
-4. **Everything below the hero sits 10.6px lower on mobile.** Unavoidable given the 16px gap; the band
-   and everything else are otherwise unchanged.
-5. I did not add `#4A627F` to the shared token block, on the brief's instruction to keep it hero-scoped.
-   If it later becomes the page's secondary grey, it should move there rather than being copied.
+1. **The 430px inference is behavioural, not observed.** It explains both Safari observations exactly and
+   nothing else I tested does, but I have not read the device's `innerWidth`.
+2. **`+14.4px`, not `+14px`** — a round `2.5rem` in preference to `2.475rem`.
+3. **Line 1 has 2.6px of slack at 320px.** It fits, and 320px is a width the brief allows to wrap, but it
+   is the tightest number in this report.
+4. **`LandingNav.tsx` was edited**, which the brief permitted conditionally. The reason is in §Files
+   changed: a CSS-only fix would have broken the DOM/visual order match the brief asks for.
+5. I did not touch the reveal's timings, trigger, transform or reduced-motion rule, and did not re-verify
+   the IntersectionObserver trigger point — it was out of scope and no rule it depends on was edited.

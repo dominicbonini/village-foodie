@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { isHatchGrab } from '@/lib/domain';
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
+import { safeHref } from '@/lib/safe-href';
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -210,7 +211,15 @@ export default function TruckClient({ slug }: { slug: string }) {
               {truckInfo.type}
             </p>
 
-            {truckInfo.websiteUrl && (
+            {/* 🔴 GATED ON THE HELPER'S RESULT, NOT ON THE RAW COLUMN. `hrefFromStoredUrl` returns ''
+                for a refused scheme, and `<a href="">` links to the CURRENT page — a worse outcome than
+                either alternative, which is why the gate moved. */}
+            {truckInfo.websiteUrl && !hrefFromStoredUrl(truckInfo.websiteUrl) && (
+                <p className="flex items-center justify-center gap-1.5 mt-3 text-sm font-semibold text-slate-500">
+                    <span className="truncate max-w-[200px] md:max-w-xs">{getDisplayWebsite(truckInfo.websiteUrl)}</span>
+                </p>
+            )}
+            {hrefFromStoredUrl(truckInfo.websiteUrl) && (
                 <a 
                     /* V3: one shared helper, byte-identical to the expression it replaces — see lib/url-normalise.ts */
                     href={hrefFromStoredUrl(truckInfo.websiteUrl)}
@@ -229,8 +238,12 @@ export default function TruckClient({ slug }: { slug: string }) {
       {truckInfo && (
         <div className="w-full max-w-2xl mx-auto px-4 mt-5 mb-2">
             <div className="flex justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
-              {truckInfo.menuUrl && (
-                <a href={truckInfo.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[80px] bg-slate-900 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+              {/* 🔴 `menu_url` and `order_url` are SCRAPER-WRITTEN and anon-readable. `safeHref` refuses
+                  anything that is not http(s); a refused value removes the button rather than rendering
+                  a dead one. ⚠️ The WEBSITE link below is deliberately NOT changed — it goes through
+                  `hrefFromStoredUrl`, whose own source forbids tightening without a decision. */}
+              {safeHref(truckInfo.menuUrl) && (
+                <a href={safeHref(truckInfo.menuUrl)!} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[80px] bg-slate-900 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                   📋 <span>Menu</span>
                 </a>
               )}
@@ -248,9 +261,9 @@ export default function TruckClient({ slug }: { slug: string }) {
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                 <span>Share</span>
               </button>
-              {!isHatchGrab() && truckInfo.orderUrl && (
+              {!isHatchGrab() && safeHref(truckInfo.orderUrl) && (
                 <a
-                  href={truckInfo.orderUrl}
+                  href={safeHref(truckInfo.orderUrl)!}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 min-w-[80px] border border-slate-200 text-slate-600 hover:text-slate-900 font-medium py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-50 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden"

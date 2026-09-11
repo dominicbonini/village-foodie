@@ -128,13 +128,27 @@ export function isScraperBlockedDomain(url: string): boolean {
 //   app/trucks/[slug]/TruckClient.tsx  — href={url.startsWith('http') ? url : `https://${url}`}
 //   app/venues/[slug]/VenueClient.tsx  — the same expression again
 //
-// ⚠️ BYTE-IDENTICAL TO THOSE COPIES, ON PURPOSE — `startsWith('http')` and not a stricter regex, and NO
-// trim. Both were considered and rejected: `/^https?:\/\//` would newly prefix a value beginning
+// ⚠️ BYTE-IDENTICAL TO THOSE COPIES ON EVERY ACCEPTED VALUE — `startsWith('http')` and not a stricter
+// regex, and NO trim. (V4 adds a refusal for non-http SCHEMES ahead of it; it does not touch the
+// expression itself, so an accepted value renders exactly as it always did.) Both were considered and rejected: `/^https?:\/\//` would newly prefix a value beginning
 // "httpx…", and trimming would change the href for a value stored with leading whitespace. Both would
 // be improvements in isolation and both would be behaviour changes on a customer-facing page, which V3
 // forbids. Fix the stored values if they matter, not the renderer.
 export function hrefFromStoredUrl(value: string | null | undefined): string {
   if (!value) return ''
+  // ── V4 (12 September 2026): THE ONE NEW BRANCH, AND IT IS A SCHEME FILTER, NOT A NORMALISER ────────
+  // 🔴 A SCHEME WE DO NOT ACCEPT IS REFUSED; EVERYTHING ELSE FALLS THROUGH UNTOUCHED. `data:` and
+  // `vbscript:` in an href are the hole this closes — 🧪 react-dom 19.2.3 blocks `javascript:` and
+  // passes those two through VERBATIM, so the framework is not the guard. `HAS_SCHEME` is the regex
+  // already declared above for `normaliseUrl`; no new helper was added for this.
+  // 🔴 IT DELIBERATELY DOES NOT NORMALISE. The line below is the ORIGINAL expression, unchanged, which
+  // is what keeps every accepted value BYTE-IDENTICAL to what it rendered before — including the 19
+  // live values that `new URL()` would have given a trailing slash. 🧪 All 360 populated values in
+  // `discovery_trucks.website` and `venues.website` were replayed through both versions: 360 identical,
+  // 0 refused. The never-refuse contract for http(s) is intact; only other schemes changed.
+  // ⚠️ `http:` and `https:` are matched by SCHEME NAME, not by `://`, so `http:example.com` — the http
+  // scheme written without slashes — still passes to the original expression rather than being refused.
+  if (HAS_SCHEME.test(value) && !/^https?:/i.test(value)) return ''
   return value.startsWith('http') ? value : `https://${value}`
 }
 

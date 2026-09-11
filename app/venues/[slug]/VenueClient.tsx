@@ -7,7 +7,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
-import { formatFriendlyDate, getVenueSlug } from '@/lib/utils'; 
+import { formatFriendlyDate, venueGroupKey } from '@/lib/utils'; 
 import { hrefFromStoredUrl } from '@/lib/url-normalise';
 
 export default function VenueClient({ slug }: { slug: string }) {
@@ -20,7 +20,8 @@ export default function VenueClient({ slug }: { slug: string }) {
   });
 
   const { venueEvents, venueInfo } = useMemo(() => {
-    const filtered = mapEvents.filter(event => getVenueSlug(event.venueName, event.village || '') === slug);
+    // 🔴 THE SAME KEY THE CARD LINKED WITH. These two must agree or the page renders empty.
+    const filtered = mapEvents.filter(event => venueGroupKey(event) === slug);
     
     const info = filtered.length > 0 ? {
         name: filtered[0].venueName,
@@ -57,7 +58,10 @@ export default function VenueClient({ slug }: { slug: string }) {
     if (posthog) posthog.capture('clicked_share_venue_profile', { venue: venueInfo.name });
 
     const shareUrl = window.location.href;
-    const shareText = `Check out the upcoming food truck schedule for ${venueInfo.name} in ${venueInfo.village}! 🍔🍻`;
+    // 🔴 THE LOCATION CLAUSE IS CONDITIONAL. With an empty village this read "…for The Affleck Arms in
+    // ! 🍔🍻" — a dangling preposition in text a CUSTOMER posts to someone else. 🧪 19 published rows can
+    // reach the empty state today. The sentence now simply ends after the venue name.
+    const shareText = `Check out the upcoming food truck schedule for ${venueInfo.name}${venueInfo.village ? ` in ${venueInfo.village}` : ''}! 🍔🍻`;
     
     try {
       if (navigator.share && navigator.canShare && navigator.canShare({ title: `${venueInfo.name} Food Trucks`, text: shareText, url: shareUrl })) {
@@ -159,17 +163,28 @@ export default function VenueClient({ slug }: { slug: string }) {
                     <h1 className="text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-lg pointer-events-auto">
                         {venueInfo.name}
                     </h1>
+                    {/* 🔴 AND THE WHOLE LINK GOES WHEN THERE IS NOTHING TO LABEL IT WITH. A 📍 on its
+                        own, linking to a map search built from an empty string, is not a smaller version
+                        of this control — it is a broken one. */}
+                    {(venueInfo.village || venueInfo.postcode) && (
                     <a 
-                        href={mapLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md pointer-events-auto"
-                    >
-                        <span className="group-hover:scale-110 transition-transform">📍</span>
-                        <span className="group-hover:underline underline-offset-2">
-                            {venueInfo.village} {venueInfo.postcode && `• ${venueInfo.postcode.toUpperCase()}`}
-                        </span>
-                    </a>
+                            href={mapLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md pointer-events-auto"
+                        >
+                            {/* 🔴 THREE STATES, BECAUSE TWO OF THEM USED TO RENDER PUNCTUATION WITH NOTHING
+                                ATTACHED TO IT. `{village} {postcode && \`• ${postcode}\`}` produced
+                                "📍  • CB8 8TG" when the village was empty — a bullet separating one thing
+                                from nothing — and "📍  " when neither existed, a map link labelled with a
+                                space. The separator now belongs to the JOIN, not to the postcode, and the
+                                whole line is dropped when there is nothing to put in it. */}
+                            <span className="group-hover:scale-110 transition-transform">📍</span>
+                            <span className="group-hover:underline underline-offset-2">
+                                {[venueInfo.village, venueInfo.postcode ? venueInfo.postcode.toUpperCase() : ''].filter(Boolean).join(' • ')}
+                            </span>
+                        </a>
+                    )}
                 </div>
             </div>
 

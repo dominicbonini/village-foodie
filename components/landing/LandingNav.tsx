@@ -73,7 +73,20 @@ export interface NavCta {
  * ✅ SO: the landing passes nothing and keeps bare fragments — byte-identical, no behaviour change — and
  * a child route passes '/landing', which is a real route on every host.
  */
-export function LandingNav({ cta, landingHref = '' }: { cta?: NavCta; landingHref?: string } = {}) {
+export function LandingNav({ cta, landingHref = '', ctaFirst = false }: { cta?: NavCta; landingHref?: string; ctaFirst?: boolean } = {}) {
+  // ONE definition, rendered by whichever branch `ctaFirst` selects — the two orders cannot drift apart.
+  const navCta = cta ? (
+    <a href={cta.href} className="btn btn-primary nav-cta">
+      <span className="cta-full">{cta.label}</span>
+      <span className="cta-short">{cta.shortLabel ?? cta.label}</span>
+    </a>
+  ) : (
+    <DemoCta className="btn btn-primary nav-cta">
+      <span className="cta-full">Upload my menu →</span>
+      <span className="cta-short">Upload menu</span>
+    </DemoCta>
+  )
+
   return (
   <nav className={HEADER_BG}>
     <div className="nav-in">
@@ -102,24 +115,37 @@ export function LandingNav({ cta, landingHref = '' }: { cta?: NavCta; landingHre
         <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
       </a>
       <div className="nav-r">
-        {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm) sits to
-            the LEFT of the CTA so small screens still get a login; the CTA drops its arrow on mobile to fit.
+        {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm)
+            gives small screens a login; `ctaFirst` decides which side of the CTA it sits on, and the CTA
+            drops its arrow on mobile to fit.
             ⚠️ BOTH Log in links point at /login — the real page (app/login/page.tsx), not `#`. They are plain
             <a> like every other link on this page (no next/link is imported here), so it is a full navigation
             out of the landing route, which is what a login needs. */}
         <a href={`${landingHref}#pricing`} className="btn btn-quiet nav-hide-sm">Pricing</a>
         <a href="/login" className="btn btn-ghost nav-hide-sm">Log in</a>
-        <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
-        {cta ? (
-          <a href={cta.href} className="btn btn-primary nav-cta">
-            <span className="cta-full">{cta.label}</span>
-            <span className="cta-short">{cta.shortLabel ?? cta.label}</span>
-          </a>
+        {/* ── 🔴 `ctaFirst` SWAPS TWO ELEMENTS, AND ONLY BELOW 640px DOES IT SHOW ──────────────────
+            The mobile-only Log in and the CTA are the same two nodes in both branches; `ctaFirst`
+            decides which is written first. The landing passes it so that, on a phone, "Log in" is the
+            LAST item in the row and therefore sits flush against the content's right edge, with the
+            header CTA to its left in the space that is otherwise empty.
+            🔴 WHY THE DOM AND NOT `order:`. A flex `order` would move the paint and leave the DOM
+            reading "Log in, Upload menu" while the eye reads "Upload menu, Log in" — tab order and
+            screen-reader order would disagree with the screen. Moving the ELEMENTS keeps reading order
+            and visual order identical: **logo → Upload menu → Log in**.
+            ⚠️ DESKTOP IS UNAFFECTED IN BOTH BRANCHES. `.nav-only-sm` is `display:none` above 639px, so
+            the element that moves generates no box there; the desktop row is Pricing, Log in
+            (`nav-hide-sm`), CTA either way.
+            ⚠️ /compare CALLS THIS WITHOUT THE PROP and keeps today's order exactly. */}
+        {ctaFirst ? (
+          <>
+            {navCta}
+            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
+          </>
         ) : (
-          <DemoCta className="btn btn-primary nav-cta">
-            <span className="cta-full">Upload my menu →</span>
-            <span className="cta-short">Upload menu</span>
-          </DemoCta>
+          <>
+            <a href="/login" className="btn btn-quiet nav-only-sm">Log in</a>
+            {navCta}
+          </>
         )}
       </div>
     </div>

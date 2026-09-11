@@ -495,3 +495,42 @@ export function assertNoWriteFailures(label, failures) {
     );
   }
 }
+
+// ── 🔴 THE MIRROR ASSERTION: A VILLAGE THAT IS JUST THE VENUE NAME AGAIN ────────────────────────────
+// Two extraction prompts used to demand a village with no way to decline, so when the source text had
+// none the model answered with the nearest string it had — the venue name. 🧪 That produced 76 rows in
+// `discovery_events` whose village is its own venue_name (71 future-dated, 62 of them from the manual
+// prompt). The prompts now permit `""`, and this is what proves it stayed fixed.
+//
+// 🔴 NO THRESHOLD, AND NONE IS WANTED. The existing 76 are historical and will not repair themselves;
+// what must never happen again is a NEW one. One is too many, so the test is `> 0` on this run's rows.
+// (The ratio assertion — this run's empty-village share against a 14-day baseline — is deliberately NOT
+// here: it needs a post-change run to calibrate against, and a guessed threshold fires on noise.)
+//
+// 🔴 IT SEES ONLY WHAT THIS RUN WROTE. Called with the rows the run is about to post; an assertion over
+// the whole table would throw on the existing 76 every night and be switched off within a week.
+//
+// ⚠️ AN EMPTY VILLAGE IS NOT A MATCH, AND THAT IS THE WHOLE POINT OF THE CHANGE. `norm('')` is `''` on
+// both sides, so a naive equality test would flag every honestly-blank row — the exact rows the prompt
+// edit is meant to produce — and turn the fix into a permanently red run. The length check is load-bearing.
+/**
+ * @param {Array<{venue_name?: string|null, village?: string|null}>} rows  rows THIS RUN is writing
+ * @param {string} label  what to call them in the failure message
+ * @throws if any row's village, normalised, equals its venue name
+ */
+export function assertNoInventedVillages(rows, label = 'Pass A') {
+  // Lowercase, strip every non-alphanumeric — the same comparison the diagnosis query uses, so a
+  // difference of punctuation or case cannot let one through ("Church View" vs "church-view").
+  const norm = (v) => String(v ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const bad = (rows || []).filter((r) => {
+    const v = norm(r && r.village);
+    return v.length > 0 && v === norm(r && r.venue_name);
+  });
+  if (bad.length > 0) {
+    throw new Error(
+      `${bad.length} ${label} row(s) have a village that is just the venue name again — the ` +
+      `invented-village behaviour is back. Check the VILLAGE rule in the extraction prompts:\n` +
+      bad.map((r) => `   • "${r.venue_name}" [${r.village}]`).join('\n')
+    );
+  }
+}

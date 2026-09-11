@@ -156,7 +156,13 @@ export async function GET(req: NextRequest) {
       const { data, error } = await supabase
         .from('outreach_contacts')
         .select('id, prospect_id, contacted_at, channel, direction, kind, message, created_at')
+        // 🔴 `created_at` IS THE TIE-BREAK, AND IT IS NOT DECORATION. `contacted_at` carries the DATE the
+        // operator picked, so two contacts logged on the same day hold the identical midnight timestamp
+        // and tie. Postgres does not promise an order for ties, so the pair came back in whatever order
+        // the scan produced — which is how an inbound logged BEFORE an outbound displayed after it.
+        // `created_at` is the insert time, already stored on every row, so it is the submission order.
         .order('contacted_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .range(from, from + 999)
       if (error) throw error
       if (!data || data.length === 0) break

@@ -176,7 +176,13 @@ export default function LandingPage() {
     <div className={`hg-landing hg-hero-watch ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
 
       {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
-      <LandingNav />
+      {/* 🔴 `ctaFirst` IS THE LANDING'S ORDER ONLY, AND IT IS A DOM CHANGE RATHER THAN A CSS ONE ON
+          PURPOSE. Below 640px "Log in" must sit flush against the content's right edge with the header
+          CTA to its LEFT. `order:` on the flex row would have done it without touching this file — and
+          would have left the DOM reading "Log in, Upload menu" while the eye reads "Upload menu, Log in".
+          Keeping those two in step is the requirement, so the ELEMENTS move, not their painted order.
+          ⚠️ /compare renders the same <LandingNav /> WITHOUT this prop and is byte-identical. */}
+      <LandingNav ctaFirst />
 
       {/* ============ HERO ============ */}
       <header className="hero">
@@ -216,9 +222,10 @@ export default function LandingPage() {
                 not merely invisible, it takes part in no layout: the hero above 640px is untouched.
                 It replaces BOTH the tagline and the CTA text on a phone, which are hidden there. */}
             {/* 🔴 THE <br /> IS THE COPY, NOT A LAYOUT ACCIDENT. Two deliberate lines: the ask, then
-                what it gets you. Line 2 is sized to hold on one line at 375px and 390px — see the
-                width note on `.hero-sub-sm` in landing.css. */}
-            <p className="hero-sub-sm">Upload your menu.<br />See a working demo in under 60 seconds.</p>
+                what it gets you. BOTH are sized to hold on one line from 360px up — see the width note
+                on `.hero-sub-sm` in landing.css. ⚠️ "no signup needed" moved UP into line 1 on
+                12 September, which is what allowed the separate line under the button to be deleted. */}
+            <p className="hero-sub-sm">Upload your menu, no signup needed.<br />See a working demo in under 60 seconds.</p>
             <p className="hero-tag">Less time booking.<br />More time <span className="lean">cooking.</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
@@ -226,15 +233,6 @@ export default function LandingPage() {
                   it. HeroCtaWatcher below watches this exact button to decide when the HEADER CTA
                   appears on mobile. */}
               <DemoCta id="hero-cta" className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
-              {/* 🔴 MOBILE-ONLY, AND IT SITS INSIDE THE CTA ROW ON PURPOSE. The row is a flex COLUMN
-                  below 940px, so as the item after the button this lands directly under it with the
-                  row's own gap — no new spacing mechanism, nothing to keep in sync. Above 640px it is
-                  `display:none`, so the row that becomes a horizontal flex line at 940px still contains
-                  exactly the two items it contains today.
-                  ⚠️ IT REPLACED A TWO-ITEM TICK LIST ("No signup" / "No account", each with a small
-                  stroked check). One plain sentence, no icon and no orange — it is a footnote to the
-                  button. It still says what the strip below does not: what the demo costs you to try. */}
-              <p className="hero-note-sm">No signup or account needed.</p>
               <div className="hero-cta-text">
                 <b>Upload a photo of your menu. See it working in under 60 seconds.</b>
                 <span>No signup, no account — just a working demo with your truck’s food in it.</span>

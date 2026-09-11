@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { safeHref } from '@/lib/safe-href'
 import { STOPPED_AFTER_MS, STOPPED_AFTER_LABEL, CHECK_CRON_EXPRESSION, CADENCE_DERIVED } from '@/lib/custom-domain/cadence'
 import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES, TRANSACTION_ROWS } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
@@ -1536,10 +1537,18 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 mb-1 block">Schedule URL</label>
-                  {editingTruck.schedule_url
-                    ? <a href={editingTruck.schedule_url} target="_blank" rel="noreferrer" className="text-sm text-orange-600 hover:underline truncate block max-w-[160px]">{editingTruck.schedule_url}</a>
-                    : <p className="text-sm text-slate-400">—</p>
-                  }
+                  {/* 🔴 THREE STATES, NOT TWO, AND THE MIDDLE ONE IS THE POINT. `schedule_url` is
+                      scraper-written: a value that `safeHref` refuses still has to be VISIBLE here,
+                      because this is the screen on which an operator would fix it. So a refused value
+                      renders as PLAIN TEXT — the stored string, unlinked and marked — rather than
+                      disappearing (which would read as "no URL") or staying clickable. The public
+                      surfaces drop the control instead; an admin needs to see the bad data. */}
+                  {(() => {
+                    const href = safeHref(editingTruck.schedule_url)
+                    if (href) return <a href={href} target="_blank" rel="noreferrer" className="text-sm text-orange-600 hover:underline truncate block max-w-[160px]">{editingTruck.schedule_url}</a>
+                    if (editingTruck.schedule_url) return <p className="text-sm text-slate-500 truncate max-w-[160px]" title="Not a usable http(s) URL — shown unlinked">⚠️ {editingTruck.schedule_url}</p>
+                    return <p className="text-sm text-slate-400">—</p>
+                  })()}
                 </div>
               </div>
               <div>

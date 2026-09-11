@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createSlug } from '@/lib/utils'
+import { createSlug, getVenueSlug } from '@/lib/utils'
 import { isHatchGrabHost } from '@/lib/brand'
 import { formatImageUrl } from '@/lib/image-utils'
 
@@ -53,6 +53,7 @@ const EV_SELECT = `
     show_on_hg
   ),
   venues!venue_id (
+    id,
     name,
     village,
     postcode,
@@ -172,6 +173,11 @@ export async function GET(req: NextRequest) {
       truckName: truck.name || e.truck_name,
       venueName: e.venue_name || '',
       village: e.village || venue.village || '',
+      // 🔴 THE VENUE-PAGE KEY, COMPUTED FROM THE VENUE ROW WHEN THERE IS ONE. Derived here rather than on
+      // the client because the client never sees `venue_id` — it only ever had the event's own scraped
+      // text to group by, which is why an empty village used to split a venue into two pages.
+      // ⚠️ Undefined when the event resolved no venue; `venueGroupKey` falls back to the old key there.
+      venueSlug: venue.id ? getVenueSlug(venue.name || '', venue.village || '') : undefined,
       postcode: venue.postcode || '',
       venueLat: venue.latitude ? parseFloat(String(venue.latitude)) : undefined,
       venueLong: venue.longitude ? parseFloat(String(venue.longitude)) : undefined,

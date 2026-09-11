@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
-import { parseDateString, getDistanceKm, createSlug, getVenueSlug } from '@/lib/utils';
+import { parseDateString, getDistanceKm, createSlug, venueGroupKey } from '@/lib/utils';
 
 export function useVillageData(
   userLocation: { lat: number; long: number } | null,
@@ -176,7 +176,9 @@ export function useVillageData(
     const stats: Record<string, { eventCount: number, trucks: Set<string> }> = {};
 
     events.forEach(e => {
-        const uniqueVenueId = getVenueSlug(e.venueName, e.village || '');
+        // 🔴 venueGroupKey, NOT getVenueSlug: a linked event groups by its VENUE, so a venue whose rows
+        // disagree about the village (or carry none) stays on ONE page. Unlinked events are unchanged.
+        const uniqueVenueId = venueGroupKey(e);
         const truckSlug = createSlug(e.truckName);
 
         if (!uniqueVenueId) return;

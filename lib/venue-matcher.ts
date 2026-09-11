@@ -135,17 +135,42 @@ function applyDistanceCeiling(m: VenueMatch, eventVillage: string | null, allVen
  *   (c) lexicographically smallest id.
  * No randomness, no "first in array" — so re-scrapes are stable.
  */
-function pickBest(cands: VenueRow[], scrapedName: string): VenueRow {
+function pickBest(cands: VenueRow[], scrapedName: string, eventVillage: string | null, allVenues: VenueRow[]): VenueRow {
   const normScraped = normName(scrapedName)
   const sTok = new Set(toks(scrapedName))
   const overlap = (v: VenueRow) => toks(v.name).filter(t => sTok.has(t)).length
+  // 🔴 DISTANCE IS NOW THE TIE-BREAK, AND IT USED TO BE THE UUID (12 September 2026).
+  // Two venues sharing a name tie on (a) and (b), so the winner was decided by whichever id sorted
+  // first — an arbitrary string. 🧪 That chose "The Bull" [Lower Green], 26.9 km from Bottisham, over
+  // "The Bull" [Burrough Green] at 8.8 km, and "The Plough" [Birdbrook] at 26.7 km over [Shepreth] at
+  // 8.2 km. The anchor needed to separate them was already being computed one function away, in
+  // applyDistanceCeiling, and simply was not consulted here.
+  //
+  // 🔴 IT IS A TIE-BREAK, NOT A RE-RANKING. It sits BELOW exact-name and token-overlap, so a candidate
+  // that matches the name better still wins — distance only decides candidates that were otherwise
+  // indistinguishable. This cannot make the matcher pick a WORSE-named venue than it used to.
+  //
+  // ⚠️ WHAT IT DOES WHEN THERE IS NO DISTANCE, STATED RATHER THAN LEFT TO THE READER:
+  //   • NEITHER candidate measurable (the event's village has no anchor, or neither venue has
+  //     coordinates) → both score Infinity, the comparison ties, and it falls through to (d) the
+  //     smallest id — byte-for-byte today's behaviour. The fallback is the OLD rule, not a new one.
+  //   • EXACTLY ONE measurable → the measurable one wins. A venue we can place near the event beats
+  //     one we cannot place at all, and it is also the only one R5 can later accept: r5Accept refuses
+  //     a venue with no coordinates outright, so preferring it strictly widens what can be linked.
+  const anchor = villageAnchors(allVenues).get(normName(eventVillage))
+  const km = (v: VenueRow): number =>
+    anchor && v.latitude != null && v.longitude != null
+      ? haversineKm(anchor.lat, anchor.lng, Number(v.latitude), Number(v.longitude))
+      : Number.POSITIVE_INFINITY
   return [...cands].sort((a, b) => {
     const ax = normName(a.name) === normScraped ? 1 : 0
     const bx = normName(b.name) === normScraped ? 1 : 0
     if (ax !== bx) return bx - ax                 // (a) exact-name first
     const ao = overlap(a), bo = overlap(b)
     if (ao !== bo) return bo - ao                 // (b) most token overlap
-    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0 // (c) smallest id
+    const ad = km(a), bd = km(b)
+    if (ad !== bd) return ad - bd                 // (c) nearer the event's village anchor
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0 // (d) smallest id — only when (c) cannot separate them
   })[0]
 }
 
@@ -219,8 +244,8 @@ export function findVenue(
     const exact = agree.find(c => normName(c.name) === normScraped)
     return exact
       ? applyDistanceCeiling({ venue: exact, confidence: 'high' }, village, allVenues)
-      : { venue: pickBest(agree, venueName), confidence: 'low' }
+      : { venue: pickBest(agree, venueName, village, allVenues), confidence: 'low' }
   }
   // 3) ≥2 candidates, none agree on village (the old bail) → deterministic best-pick across all → low.
-  return { venue: pickBest(cands, venueName), confidence: 'low' }
+  return { venue: pickBest(cands, venueName, village, allVenues), confidence: 'low' }
 }

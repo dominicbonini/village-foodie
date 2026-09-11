@@ -27,6 +27,7 @@
 import { useEffect, useMemo, useState, useCallback, useRef, memo, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'   // the contact popout — same portal-to-<body> rule as ScheduleEventsPopup
 import { nativeAuthHeader } from '@/lib/native/session'
+import { safeHref } from '@/lib/safe-href'
 import InlineField from '@/components/admin/InlineField'   // MOVED here from this file; same component, one copy
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
@@ -40,7 +41,7 @@ import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to b
 import {
   OUTREACH_STAGES, CONTACT_CHANNELS, CONTACT_DIRECTIONS,
   REPLY_KIND, kindsForDirection, defaultKindFor, kindOrder,
-  findDuplicateContact, contactSignature, contactDay,
+  contactDay,
   kindLabel, channelLabel, directionLabel, followUpDateFor,
   type OutreachStage,
   isOverdue,
@@ -60,6 +61,8 @@ import {
 type Contact = {
   id: string; contacted_at: string; channel: string | null; direction: string | null
   kind: string | null; message: string | null
+  /** Insert time. The ONLY thing that separates two contacts logged on the same day — see HistoryTable. */
+  created_at: string
 }
 type Prospect = {
   id: string; discovery_truck_id: string; name: string
@@ -574,7 +577,6 @@ export default function OutreachPanel() {
   // `logContact` awaits `load()` before it returns, so `p.contacts` is normally fresh by the time a
   // second click is possible — but a failed or slow refetch would leave the guard reading stale rows,
   // and a guard that silently stops guarding is the failure mode this whole task is about.
-  const writtenRef = useRef<Map<string, number>>(new Map())
 
   // ── 🔴 ONE DELETE PATH, TWO CALLERS — NOT TWO PATHS ────────────────────────────────────────────
   // The toast's Undo (immediately after logging) and the per-row Delete in the contact popout both come
@@ -587,7 +589,7 @@ export default function OutreachPanel() {
   // row from the screen while the database still held it — indistinguishable from success until reload.
   // 🔴 `deleted !== 1` IS TREATED AS FAILURE. The route now reports how many rows it removed; a delete
   // that matched nothing answers 404, and nothing is spliced out of state.
-  const deleteContact = useCallback(async (contactId: string, prospectId?: string, sigKey?: string) => {
+  const deleteContact = useCallback(async (contactId: string, prospectId?: string) => {
     let res: Response
     try {
       const h = await nativeAuthHeader()
@@ -627,11 +629,6 @@ export default function OutreachPanel() {
           (best, c) => (!best || c.contacted_at > best ? c.contacted_at : best), null),
       }
     }))
-    // 🔴 AND THE DOUBLE-LOG GUARD HAS TO FORGET IT. `writtenRef` remembers what this session wrote so a
-    // second identical log is refused; without this, deleting a contact would leave the session unable
-    // to log that same contact again — the guard would be defending a row that no longer exists. The
-    // Undo path already did this at its call site; the row path passes the same key here.
-    if (sigKey) writtenRef.current.delete(sigKey)
     showToast('Contact deleted')
   }, [load, showToast])
 
@@ -652,7 +649,7 @@ export default function OutreachPanel() {
   const deleteContactRow = useCallback(async (pr: Prospect, c: Contact) => {
     const impliedByDeleted = followUpDateFor(c.kind ?? '', contactDay(c.contacted_at))
 
-    await deleteContact(c.id, pr.id, `${pr.id}|${contactSignature(c)}`)   // throws → nothing below runs
+    await deleteContact(c.id, pr.id)   // throws → nothing below runs
 
     if (pr.next_action_at && pr.next_action_at === impliedByDeleted) {
       const remaining = pr.contacts.filter(x => x.id !== c.id && x.direction === 'outbound')
@@ -667,18 +664,13 @@ export default function OutreachPanel() {
     p: Prospect,
     fields: { channel: string; direction: string; kind: string; message: string; contacted_at: string },
   ): Promise<boolean> => {
-    // ── 🔴 THE DOUBLE-LOG GUARD LIVES IN THE WRITER, NOT IN THE FORM ──────────────────────────────
-    // There are two logging paths (the Log button and the compose window) and exactly one writer. A
-    // guard in either form would have to be written twice and could be true in one and false in the
-    // other — the same shape of bug as the follow-up date that only fired on one path.
-    // It refuses; it never silently succeeds and it never writes anything.
-    const sig = contactSignature({ ...fields })
-    const dup = findDuplicateContact(p.contacts, fields)
-    const seen = writtenRef.current.get(`${p.id}|${sig}`)
-    if (dup || seen) {
-      showToast(`Not logged — ${kindLabel(fields.kind)} by ${channelLabel(fields.channel)} is already recorded for that date`)
-      return false
-    }
+    // ── 🔴 THERE IS NO DUPLICATE GUARD HERE, AND ITS ABSENCE IS DELIBERATE (12 September 2026) ─────
+    // A "you already logged that" rule was removed from this writer and from the form above it. Two
+    // contacts of the same kind, on the same channel, on the same day are ORDINARY in outreach — a
+    // reply out and a reply in, or two calls — and refusing the second one made the operator edit the
+    // date to record something that really happened. Logging is an append-only record of events, not a
+    // uniqueness constraint. ⚠️ Double-SUBMIT is still handled: `submitLog` returns early while
+    // `logging` is true and the button is disabled for that window.
     // 🔴 LOGGING WRITES A CONTACT ROW AND NOTHING ELSE — no next_action_at is suggested, computed or sent.
     // Every next-action date is set by hand via the date picker.
     try {
@@ -699,14 +691,11 @@ export default function OutreachPanel() {
       if (!res.ok) { showToast(`Log failed (${res.status})`); return false }
       // 🔴 UNDO targets the id the route just returned — the specific row, not "the most recent".
       const { id: newId } = await res.json().catch(() => ({ id: null }))
-      // Recorded only AFTER the write succeeded, and dropped again by Undo, so an undone contact can be
-      // logged again immediately — a guard that outlived the row it guards would be a new bug.
-      writtenRef.current.set(`${p.id}|${sig}`, Date.now())
       showToast('Logged', newId
         // 🔴 `.catch` IS REQUIRED NOW: deleteContact REJECTS on failure so the confirm dialog can show
         // the reason. The toast has nowhere to show one, and an unhandled rejection helps nobody —
         // the toast raised by deleteContact itself is what reports the failure on this path.
-        ? () => { writtenRef.current.delete(`${p.id}|${sig}`); void deleteContact(newId).catch(() => {}) }
+        ? () => { void deleteContact(newId).catch(() => {}) }
         : undefined)
       await load()
       return true
@@ -1402,20 +1391,8 @@ const Row = memo(function Row({ p, onOpen, onOpenSchedule, onPatch, onUpload, on
 // existing button navigates to /admin/shikashack.co.uk instead of the site. `safeHref` prefixes https://
 // when a scheme is absent, which turns that one dead button into a working one. Display only; nothing is
 // written and the stored value is untouched.
-function safeHref(raw: string | null | undefined): string | null {
-  const v = String(raw ?? '').trim()
-  if (!v) return null
-  // 🔴 A RELATIVE PATH IS NOT A WEBSITE. Prefixing "https://" onto "/foo/bar" invents the host
-  // `https://foo/bar`, which is worse than doing nothing — it looks like a working link.
-  if (v.startsWith('/')) return null
-  // 🔴 http(s) ONLY. These columns are written by the scraper and are anon-readable, so the value is
-  // untrusted input: `javascript:alert(1)` in an <a href> executes on click. Caught by testing edge
-  // cases rather than the 231 live rows, every one of which is already http(s).
-  const ok = (u: URL) => (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : null
-  try { return ok(new URL(v)) } catch { /* fall through */ }
-  // No scheme: try it as https, and only use it if THAT parses to an http(s) URL.
-  try { return ok(new URL(`https://${v}`)) } catch { return null }
-}
+// 🔴 `safeHref` MOVED to lib/safe-href.ts on 12 September 2026 — byte-identical, imported above, and now
+// also guarding the four public sinks and the admin schedule link. Do not re-add a local copy here.
 
 /** The host-derived label. Falls back to `fallback` for anything that is not a known social host. */
 function linkLabel(raw: string | null | undefined, fallback: string): string {
@@ -1654,9 +1631,17 @@ function HistoryTable({ contacts, onDelete }: {
   // 🔴 OLDEST AT THE TOP — and sorted HERE, not upstream. /api/admin/outreach returns contacts
   // newest-first and `lastContactedAt` is read off contacts[0], so reversing the fetch would silently
   // change the table's "Last contacted" column. Sorting a copy at the point of display cannot.
-  // Array.prototype.sort is stable, so same-day rows keep the server's order rather than shuffling.
+  //
+  // 🔴 AND `created_at` BREAKS THE SAME-DAY TIE. `contacted_at` holds the DATE the operator picked, so
+  // every contact logged on one day carries the identical midnight timestamp. Comparing that column
+  // alone leaves those rows tied; a stable sort then preserves whatever order they arrived in, which is
+  // the server's newest-first — so an inbound logged BEFORE an outbound on the same day displayed
+  // AFTER it. `created_at` is the insert time and is therefore the order they were submitted in.
+  // ⚠️ Both keys ascend: older day first, and within a day, first-logged first.
   const rows = useMemo(
-    () => [...contacts].sort((a, b) => (a.contacted_at < b.contacted_at ? -1 : a.contacted_at > b.contacted_at ? 1 : 0)),
+    () => [...contacts].sort((a, b) =>
+      a.contacted_at < b.contacted_at ? -1 : a.contacted_at > b.contacted_at ? 1
+      : a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0),
     [contacts])
 
   if (contacts.length === 0) {
@@ -1854,12 +1839,8 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
   // the field immediately and can be overridden or cleared by hand afterwards.
   // 🔴 THE REFUSAL IS VISIBLE BEFORE THE CLICK, NOT ONLY AFTER IT. Same pure function the writer uses,
   // over the rows already loaded for this prospect — so the button and the guard cannot disagree.
-  const duplicate = useMemo(
-    () => findDuplicateContact(p.contacts, { contacted_at: contactedAt, direction, kind, channel }),
-    [p.contacts, contactedAt, direction, kind, channel])
-
   const submitLog = async () => {
-    if (logging || duplicate) return
+    if (logging) return
     setLogging(true)
     try {
       // 🔴 NOTHING ELSE HAPPENS IF THE WRITE WAS REFUSED. Clearing the textarea or moving the
@@ -2072,22 +2053,9 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
           </div>
         </div>
 
-        {/* 🔴 WHAT THE UI DOES WHEN IT REFUSES: it says which row it would duplicate and what to change,
-            and the button is disabled rather than clickable-then-rejected. Nothing is written, nothing
-            is cleared, and the message is not a toast that scrolls away — it stays until the stage, the
-            channel, the direction or the date changes, because those are the four things that would
-            make this a different contact. */}
-        {duplicate && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 flex-shrink-0"
-            role="status">
-            Already logged on {fmtDate(duplicate.contacted_at)}: <b>{kindLabel(kind)}</b> by <b>{channelLabel(channel)}</b>.
-            Change the stage, the channel or the date to log a different contact.
-          </p>
-        )}
-        <button onClick={submitLog} disabled={logging || !!duplicate}
-          title={duplicate ? 'An identical contact is already recorded for that date' : undefined}
+        <button onClick={submitLog} disabled={logging}
           className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold py-1.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
-          {logging ? 'Logging…' : duplicate ? 'Already logged' : 'Log contact'}
+          {logging ? 'Logging…' : 'Log contact'}
         </button>
 
 

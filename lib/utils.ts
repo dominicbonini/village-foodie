@@ -197,6 +197,24 @@ export function getVenueSlug(venueName: string, village: string): string {
     return `${nameSlug}-${villageSlug}`;
 }
 
+/**
+ * 🔴 THE VENUE-PAGE GROUPING KEY — ONE DEFINITION, USED BY THREE SURFACES.
+ * The event card's link, the venue grouping in useVillageData, and the venue page's own filter all have
+ * to agree; when they were three copies of `getVenueSlug(name, village)` they agreed only by accident.
+ *
+ * 🔴 IT PREFERS THE LINKED VENUE, AND THAT IS THE WHOLE POINT. `village` on an event row is scraped text
+ * and is sometimes wrong, sometimes absent; `venue_id` is a resolved identity. Keying on the venue means
+ * every event at one venue lands on one page no matter what its own village says — which is what stops a
+ * venue splitting in two the moment some of its rows arrive with an empty village.
+ * ⚠️ It does NOT group on name alone. Two venues that share a name keep their own villages and therefore
+ * their own keys, so `The Bull` [Bottisham] and `The Bull` [Burrough Green] stay apart.
+ *
+ * ⚠️ UNLINKED EVENTS ARE UNCHANGED: no `venueSlug` from the feed ⇒ today's name+village key exactly.
+ */
+export function venueGroupKey(ev: { venueSlug?: string; venueName: string; village?: string }): string {
+    return ev.venueSlug || getVenueSlug(ev.venueName, ev.village || '');
+}
+
 // ==========================================
 // --- TRUCK ALIAS NORMALIZATION ---
 // ==========================================
