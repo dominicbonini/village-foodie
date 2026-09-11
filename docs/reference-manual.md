@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V12.7
+HatchGrab Engineering Reference Manual · V12.9
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 12.7**
+**Version 12.9**
 
 September 2026
 
@@ -25,6 +25,20 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V12.9 — 11 September 2026 — THE DEDUP GATE IS THE LARGEST NEW SYSTEM AND IT IS NOT DEPLOYED, A RULE WE ADDED ON PURPOSE IS UNREACHABLE BY CONSTRUCTION, AND THE UNLINKED EVENTS TURN OUT TO BE A VENUE-DATA PROBLEM THAT NO EVENT RULE CAN REACH
+
+⚠️ **This entry post-dates V12.8 below, which was written on 9 September. Where they disagree, this entry is current.** V12.8 and V1.8 already cover the inertness class, the untrusted-URL class, the §14 media corrections, the outreach console and the phantom defect — **none of that is repeated here.** This entry covers only the 10–11 September work and the claims those two days falsified.
+
+**Covers:** **new §53 — the shared dedup gate** (`lib/discovery-gate.ts`): one admission path called by the scraper through the new `/api/discovery/ingest`, by `/api/inbound-schedule`, and by the one-off backfill; **R5** as an acceptance check on the venue matcher's output, leaving `venue_id` NULL by design where it fails; **four duplicate rules** — postcode, ≤ 500 m, identical coordinates, and name+time (containment on the existing normaliser, 4-character floor, ≤ 1,500 m); duplicates **stored and hidden, never deleted**, in four new `superseded_*` columns; 🧪 **live result: 16 rows marked — 8 postcode, 6 distance, 2 name-time, 0 identical-coords.** 🔴 **The identical-coordinate rule is UNREACHABLE as ordered** — identical coordinates always measure 0 m and the ≤ 500 m test fires first — recorded as a known ordering defect, not a passing test. 🔴 **The backfill's grouping key was wrong** (`discovery_truck_id || normalizeVenue(truck_name)` split one truck with one linked and one unlinked row into two groups); **the shipped gate never had it**; fixed to bucket by date with the truck test made per pair. 🔴 **A second defect the key did not cause:** 3 of the 13 first-applied marks point at a winner that is itself superseded, and the apply guard means a re-run cannot repair them.
+**Also:** 🔴 **new §53.6 — venue matching is now the largest open item**, and it is a **data** problem: 🧪 **225 future rows** stay unlinked because venue rows carry a place description in the **village** field (`Recreation Ground [Recreation Ground]`, `Near The King's Head Pub [Near The King's Head Pub]`, `Church View Campsite [Church View]`) or because exact-name matching finds the right name in the wrong county (`The Bull Pub [Great Paxton]` → `[Saffron Walden]`, **36.3 km, 42 rows**). R5 correctly refuses every one. **More event-level rules cannot fix this.**
+**Also:** **new §53.7 — the trading-truck rules, confirmed against the code** so that nobody disturbs them, including 🔴 the structural proof that an approved event cannot be silently rewritten: **no `onConflict` anywhere in the repository targets `truck_events`.**
+**Corrected in place:** the **Backlog**'s *"VENUE MATCHER — sole candidacy is treated as certainty"* entry, which has been **fixed in the code since V1.1** and was still being read as open — 🔎 `findVenue`'s single-candidate branch now calls `villageAgrees` then `applyDistanceCeiling`, exactly as the multi-candidate branch does. **§52.6's outstanding list is superseded by §53.8**, which is the single list.
+**Two figures this entry corrects:** `contact_name` is set on **2 of 231** prospects, not 3; and the `Chai Stall` media item is **closed** — 🧪 a sweep of **all 242** `photo_url`/`logo_url` values across 231 trucks finds **0 broken**.
+
+## V12.8 — 9 September 2026 (night) — A PROPERTY BEING WRITTEN IS NOT THE SAME AS IT BEING APPLIED (THREE MECHANISMS, ONE DAY), §14's LOGO NOTES DESCRIBE FALLBACKS THAT WERE DELETED ON PURPOSE, A SCRAPER-WRITTEN URL REACHED AN `href`, AND THE OUTREACH CONSOLE SHIPPED WITHOUT ANYONE SEEING IT RUN
+
+**Covers:** the inertness class (`text-center` on a flex child · the unlayered `!important` rule making `text-sm` inert on every form control · a single-file arbitrary Tailwind value with **no generated rule at all**, which painted the compose window under the modal it was opened from) → **§35**, with all three sweeps recorded OUTSTANDING; untrusted URLs from scraper-written columns, one scheme-less value resolving as a relative admin link and a first `safeHref` that passed `javascript:` through → **§35**, sweep OUTSTANDING; **three §14 claims corrected IN PLACE** — `resolveTruckLogo` has **no** `discovery_trucks` fallback (it was removed so that clearing a logo is visible), the public profile reads **neither** media column (it reads a published Sheets CSV), and the one fallback that **does** survive — the discovery feed's `foodPhotoUrl` → `discovery_trucks.photo_url` when `cover_image_path` is null — was never recorded and is why deleting a photo can change what a visitor sees; the outreach console, events tab, schedule popup, compose window and the new **`outreach_templates`** table (applied today; `lib/outreach-templates.ts` **deleted**; the footer, WhatsApp gate, visible placeholders and mailto ceiling deliberately left in code where a row cannot reach them) → **§52**; two data facts that change how the programme reads — `whatsapp_confirmed` is a **1:1 match with a scraped hint** on all 30 rows, and `contact_name` exists on **3 of 231** → **§52.3**; a phantom case-sensitivity defect measured by a diagnostic that did not use the code's own matcher → **§52.5**; and the figures that moved, including a supplied unlinked-venue count that was **pre-deletion and impossible against the current row total** → **§52.4**.
 
 ## V12.7 — 9 September 2026 (night) — AN UNVALIDATED COORDINATE WRITER HAS BEEN LIVE IN THE APP THE WHOLE TIME, TWO PROMPTS IN ONE FILE DIFFER BY 37 POINTS ON THE SAME PAGES, AND THREE CLAIMS THIS MANUAL REPEATED TURN OUT TO DESCRIBE CODE THAT DOES NOT EXIST
 
@@ -3944,7 +3958,7 @@ Per-dish grid FIXED (first colgroup `<col>` had no width under `table-layout:fix
 
 - **TOGGLE — promote Manage's label-prop duplicate into the shared `<Toggle>`, then delete every bespoke copy (option b; DEFERRED, own change + own verification).** The shared component (`components/dashboard/OrderCard.tsx:21-29`) is canonical and correct, but **six** toggles bypass it and are hand-matched: the dashboard header Sound/Screen pair (`app/dashboard/[token]/page.tsx`), and four in Manage (`:76` a full local `Toggle` DUPLICATE that already has the missing `label` prop, plus inline copies at `:3625`, `:5254`, `:7478`, `:7531`). Hand-matched classes are exactly how this drifts — Sound/Screen had already gone to `w-10`/`green-500`, and `:5254` is still `w-10`/`translate-x-5` (off-spec SIZE, uncorrected). FIX: add an optional `label` to the shared component (copy Manage's `:76` signature), convert all bespoke sites, delete the duplicate. ⚠️ BLAST RADIUS: the header sites wrap label+track in ONE `<button>` and the shared `<Toggle>` is itself a `<button>` — nesting is invalid HTML, so this RESTRUCTURES click targets on two live operator surfaces (dashboard + Manage, i.e. Gusto/RTF). Not a colour change; needs a browser check on both consoles. Do it as a pure refactor with no visible diff.
 
-- **🔴 VENUE MATCHER — sole candidacy is treated as certainty (`lib/venue-matcher.ts:81`).** `if (cands.length === 1) return { venue: cands[0], confidence: 'high' }` returns HIGH with no corroboration whatsoever — the village-agreement check at `:83` only runs at `cands.length >= 2`, so it is unreachable for a single candidate. PROVEN LIVE (2026-07-23): `"West Suffolk Classic Show"` matched venue **"The Suffolk Show", Ipswich** at `high` — toks `['suffolk','show']` ⊆ `['west','suffolk','classic','show']`, 0.50 token coverage, ~30 miles wrong. Uniqueness among **574** venues is a statement about our coverage, not about the match. HARM CHANNEL (`inbound-schedule:200-203, 217`): `latitude`/`longitude` come from the matched venue **unconditionally with no scraped fallback** (wrong match ⇒ always a wrong map pin), and `postcode: row.postcode || venuePostcode` takes the venue's when the scrape has none — that is how IP3 8UH landed on a Bury St Edmunds event. ⚠️ **NOTHING READS `venue_match_confidence`** — the only reference in the codebase is the WRITE at `inbound-schedule:232` plus the migration; the "approval UI flags low-confidence guesses" described in §V7.0 was never built. So reclassification alone changes nothing for anyone. FIX = **A + C**: (A) sole candidate ⇒ `high` ONLY with corroboration (exact normalised name, village agreement, or a token-coverage threshold), else `low`; (C) **don't inherit coords/postcode from an uncorroborated venue** (keep `venue_id` for traceability — `low` and visible beats `null` and invisible), and build the approval-card flag so a human actually sees the guess. REJECTED: refusing to attach `venue_id` at all (throws away the map pin even when the guess was right). BLAST RADIUS MEASURED by replaying the real matcher over all 35 events holding a `venue_id`: 15 sole-candidate, 14 corroborated, **exactly 1 would be re-classified** — the Suffolk Show row, whose event Gusto has already cancelled.
+- ~~**🔴 VENUE MATCHER — sole candidacy is treated as certainty.**~~ ✅ **[CORRECTED IN PLACE V12.9 — THIS WAS FIXED IN THE CODE AND THE ENTRY WAS NEVER STRUCK. It has been read as open twice in this series, which is the reason it is rewritten here rather than annotated.]** 🔎 `findVenue` (`lib/venue-matcher.ts`) no longer returns `high` for a lone candidate: the single-candidate branch now calls `villageAgrees(...)` for the confidence and then `applyDistanceCeiling(...)`, which is exactly what the multi-candidate branch does — the old line survives only as a quoted comment above it. The fix landed with the scraper manual's V1.1 (7 September); **only this backlog entry was left standing.** ⚠️ **The other half of the old entry is still true and is NOT struck:** `discovery_events` has **no confidence column at all**, so a discovery row still carries no record of how sure its match was — `venue_match_confidence` exists on `truck_events` only. The acceptance check that now guards the matcher's output on the discovery side is **R5** (§53.2), which leaves `venue_id` NULL rather than attaching a guess.
 
 - **🔴 MANUAL EVENT ADDS ARE STRUCTURALLY EXEMPT FROM DEDUP, and V7.0 conflict detection cannot reach them.** Two defects with one fix. (1) `upsert_event`'s create branch (`app/api/manage/route.ts:687`) is a bare insert — no same-date check, and it never sets `venue_id`, so any dedup keyed on `(truck_id, event_date, venue_id)` is inert for manual rows (`NULL != NULL` — two identical manual adds both insert). (2) `detectEventConflicts` IS deployed and imported (`manage/[token]/page.tsx:33`) but the call site `:5078` gates on `event.status === 'unconfirmed'`, while `route.ts:673` hard-codes `const eventStatus = 'confirmed'` for manual creates — **a manually-added event is born confirmed and is therefore never checked, ever.** The comment above `:5078` claims it covers "the operator-added 'Needs confirmation' card"; that lifecycle does not exist. §3739 already lists "operator-added duplicate" as one of four V7.0 cases never live-verified. PROVEN LIVE: Gusto got duplicate confirmed events on 25 + 26 Jul 2026 (both `source='manual'`, created 5s apart, `venue_id` null) after the venue-matcher error above put wrong locations on the scraped originals and the operator "fixed" them by re-adding. Both would have hit Check A Tier 1 `duplicate`. FIX: the check must run at **CREATE time, server-side** — a render-time check cannot see a row that does not exist yet, so relaxing the `unconfirmed` gate would NOT have caught these. Server runs `detectEventConflicts` on create; conflicts + no explicit ack ⇒ **409 with the conflict payload**; client renders it and resubmits with the ack. ⚠️ **NOT a hard block** — lunch pitch + evening pitch on one date is an ordinary trading day. This is V7.0's own WARN-WITH-FRICTION moved to create-time and made server-authoritative. `lib/event-conflicts.ts` needs no refactor (already pure + source-agnostic). Leave the existing render-time unconfirmed check alone — it is correct for the scraper approval flow. OPEN QUESTION (separate decision): should CONFIRMED rows in the schedule list also carry a conflict badge, so an existing duplicate stays visible after the fact? It would have made Gusto's obvious, but may badge every historical same-day pair as noise.
 
@@ -8996,13 +9010,65 @@ truck_user_vans links staff to vehicles. Empty access grants all trucks. Staff s
 > `trucks.logo_storage_path` and **never** `discovery_trucks.logo_url`, falling back to the truck's NAME
 > AS TEXT when the path is null — so it can never render a broken image on a page the operator owns.
 > The reason is ownership rather than availability: the surface sits at the operator's own address, and
-> `logo_storage_path` is the logo **they** uploaded. So the three surfaces now
+> `logo_storage_path` is the logo **they** uploaded. ~~So the three surfaces now
 > read: profile → discovery only · order page → operator, falling back to discovery · embed → operator
-> only, falling back to text.
+> only, falling back to text.~~
 >
-> **NOTE (V6.5)** — The public profile page (`/trucks/[slug]`) reads its truck logo from `discovery_trucks.logo_url` ONLY. The operator-uploaded logo lives in `trucks.logo_storage_path` and is NOT automatically mirrored into the discovery row, so a truck that uploaded a logo in Settings can still show a blank/placeholder logo on its public profile if `discovery_trucks.logo_url` is null. Test-kitchen's null `logo_url` was fixed by SQL this session (pointing it at the storage URL). The systemic fix — the discovery/profile mapping falling back to the linked operator truck's `logo_storage_path` when `logo_url` is null — is on the backlog (Section 27). The header logo SIZE was also enlarged this session (Section 3, AppHeader note).
+> 🔴 **[CORRECTED V12.8 — TWO OF THOSE THREE ARE NOW WRONG, AND THE SUMMARY LINE IS THE THING THAT
+> MISLED.]** 🧪 Verified 9 September against the code, not against this manual:
+> **order page → operator ONLY.** 🔎 `/api/menu/[truckId]` calls `resolveTruckLogo(supabase, truck.id,
+> truck.logo_storage_path)`, and 🔎 `lib/truck-logo.ts` `resolveTruckLogo` takes its supabase client and
+> truck id as **`_supabase` / `_truckId` — underscore-prefixed and unused** — and `return null` when the
+> path is null. **There is no `discovery_trucks` query in it at all.** The fallback the V7.5 note below
+> describes was **deliberately removed**: while it existed, clearing a logo in Settings did nothing
+> visible, because the discovery row silently supplied the old one. 🧪 All four callers
+> (`/api/menu`, `/api/dashboard`, `/api/orders/[id]`, `/api/manage`) pass `logo_storage_path` and nothing
+> else.
+> **profile → NEITHER.** 🧪 `app/trucks/[slug]/page.tsx` and `TruckClient.tsx` contain **0** occurrences
+> of `logo_url`, **0** of `photo_url` and **0** of `discovery_trucks`. The profile reads its truck row —
+> logo included — from a **published Google Sheets CSV** (`TRUCKS_CSV_URL`, column index 9, `revalidate:
+> 3600`). So the discovery media columns do not reach that page by any route.
+> **So the three surfaces read: profile → a Sheets CSV · order page → operator only, null when unset ·
+> embed/custom-domain → operator only, falling back to text.**
+>
+> 🔴 **[CORRECTED V12.8 — THE PREMISE OF THIS NOTE IS FALSE; DO NOT ACT ON THE BACKLOG ITEM IT CREATES.]**
+> 🧪 The public profile does **not** read `discovery_trucks` at all (see the correction above): 0
+> references to `logo_url`, `photo_url` or `discovery_trucks` in either of its two files. The "systemic
+> fix" this note puts on the Section 27 backlog — *the discovery/profile mapping falling back to
+> `logo_storage_path`* — therefore describes a mapping that does not exist, and building it would be
+> building a new feature under the name of a bug fix. **The original note is kept below, struck, because
+> it has been read as current twice in this series.**
+>
+> ~~**NOTE (V6.5)** — The public profile page (`/trucks/[slug]`) reads its truck logo from `discovery_trucks.logo_url` ONLY. The operator-uploaded logo lives in `trucks.logo_storage_path` and is NOT automatically mirrored into the discovery row, so a truck that uploaded a logo in Settings can still show a blank/placeholder logo on its public profile if `discovery_trucks.logo_url` is null. Test-kitchen's null `logo_url` was fixed by SQL this session (pointing it at the storage URL). The systemic fix — the discovery/profile mapping falling back to the linked operator truck's `logo_storage_path` when `logo_url` is null — is on the backlog (Section 27). The header logo SIZE was also enlarged this session (Section 3, AppHeader note).~~
 
-> **NOTE (V7.5) — order page now falls back the OTHER way (the two surfaces have OPPOSITE default sources).** The customer order page (`/trucks/[slug]/order`, via `/api/menu/[truckId]`) reads its logo from `trucks.logo_storage_path` (the operator upload). When that is null it now falls back to the linked `discovery_trucks.logo_url` (`discovery_trucks.hatchgrab_truck_id = truck.id`, `.maybeSingle()`), resolved through the shared `formatImageUrl(logo_url, 'logos')` helper — so a truck with no operator-uploaded logo shows its Village Foodie discovery logo on the order page, matching the profile. The extra `discovery_trucks` query is **null-gated**: it runs ONLY when `logo_storage_path` is null, so a truck WITH an uploaded logo incurs no extra query (no regression). `formatImageUrl` was EXTRACTED to `lib/image-utils.ts` (was a local copy in `/api/discovery/events`) and is now imported by BOTH `/api/discovery/events` and `/api/menu` — one helper, both callers, so the two surfaces can never drift again (that drift WAS this whole logo bug). Rendering: both the order page and the profile render the logo via next/image `<Image src={truck.logo}>`; the profile already renders this exact discovery URL successfully, and `next.config.ts` `images.remotePatterns` allows `*.supabase.co/storage/v1/object/public/**` (the discovery logos are same-origin `/logos/…` paths or supabase-storage URLs — both already handled), so the order page needs no new allowlist entry. This closes the order-page half of the Section 27 systemic-logo-fallback item. The profile/discovery half (profile reads `discovery_trucks.logo_url` only and does NOT fall back to `logo_storage_path` when null) is STILL open — see Section 27.
+> 🔴 **[CORRECTED V12.8 — THE FALLBACK DESCRIBED BELOW NO LONGER EXISTS AND ITS REMOVAL WAS THE POINT.]**
+> 🧪 `resolveTruckLogo` (🔎 `lib/truck-logo.ts`) returns `null` on a null path and never queries
+> `discovery_trucks`; its client and truck-id parameters are `_`-prefixed and unused. **The fallback was
+> removed deliberately: while it was live, an operator who cleared their logo in Settings saw no change,
+> because the discovery row kept supplying the old image — the removal is what made logo deletion
+> visible.** ⚠️ The note is kept below, struck, rather than deleted, because the paragraph after it
+> ("This closes the order-page half of the Section 27 systemic-logo-fallback item") is the sentence that
+> has been read as current and is now wrong in both halves.
+>
+> ~~**NOTE (V7.5) — order page now falls back the OTHER way (the two surfaces have OPPOSITE default sources).** The customer order page (`/trucks/[slug]/order`, via `/api/menu/[truckId]`) reads its logo from `trucks.logo_storage_path` (the operator upload). When that is null it now falls back to the linked `discovery_trucks.logo_url` (`discovery_trucks.hatchgrab_truck_id = truck.id`, `.maybeSingle()`), resolved through the shared `formatImageUrl(logo_url, 'logos')` helper — so a truck with no operator-uploaded logo shows its Village Foodie discovery logo on the order page, matching the profile. The extra `discovery_trucks` query is **null-gated**: it runs ONLY when `logo_storage_path` is null, so a truck WITH an uploaded logo incurs no extra query (no regression). `formatImageUrl` was EXTRACTED to `lib/image-utils.ts` (was a local copy in `/api/discovery/events`) and is now imported by BOTH `/api/discovery/events` and `/api/menu` — one helper, both callers, so the two surfaces can never drift again (that drift WAS this whole logo bug). Rendering: both the order page and the profile render the logo via next/image `<Image src={truck.logo}>`; the profile already renders this exact discovery URL successfully, and `next.config.ts` `images.remotePatterns` allows `*.supabase.co/storage/v1/object/public/**` (the discovery logos are same-origin `/logos/…` paths or supabase-storage URLs — both already handled), so the order page needs no new allowlist entry. This closes the order-page half of the Section 27 systemic-logo-fallback item. The profile/discovery half (profile reads `discovery_trucks.logo_url` only and does NOT fall back to `logo_storage_path` when null) is STILL open — see Section 27.~~
+
+> 🔴 **[NEW V12.8 — WHAT §14 DID NOT RECORD, AND IT IS THE ONE MAPPING THAT DOES STILL FALL BACK.]**
+> The **discovery feed's operator-event mapping** falls back to `discovery_trucks.photo_url` when the
+> linked operator truck's `trucks.cover_image_path` is null. 🔎 `app/api/discovery/events/route.ts`, in
+> the linked-truck branch:
+> ```
+> foodPhotoUrl: truck?.cover_image_path
+>   ? `${supabaseUrl}/storage/v1/object/public/truck-media/${truck.cover_image_path}`
+>   : formatImageUrl(linked.photo_url || null, 'photos'),
+> ```
+> 🔴 **This is why deleting a discovery photo can change what a visitor sees for a LINKED truck**, and it
+> is the reason a server-side refusal now exists on that delete (§ "Photo-delete guard", V12.8). 🧪 Live:
+> **4** `discovery_trucks` rows carry a `hatchgrab_truck_id`, of which **3** carry a `photo_url` — Pizzeria
+> Gusto, Real Thai Food and Tikka Tonic. Those three are exactly the rows where the discovery photo can be
+> the live public image.
+> ⚠️ **Note the asymmetry, because it is easy to misread:** the LOGO fallbacks are gone from every
+> surface; the PHOTO fallback survives on this one. "Media falls back" is not a property of the app — it
+> is a property of one branch of one route.
 
 ### 🔴 CORRECTION — GUSTO'S VAN CAPACITY IS 2, NOT 5 (V11.14)
 
@@ -17512,6 +17578,10 @@ is the cheap test.
 
 **⚠️ A NEW PATH PREFIX INHERITS NOTHING — AND A PREFIX SWEEP CAN OVER-REACH (V12.2).** Recorded at V11.51 when the scan target moved outside `/trucks/` and silently lost both its noindex header and its rate limiting. Re-encountered on the rename to `/order/`, and this time both were registered in the same change. 🔴 **THE NEW HALF OF THE LESSON IS THE OPPOSITE FAILURE.** `/order/` has a deeper child — `/order/<id>/manage`, a customer-facing per-order page — so registering the rate limiter with `startsWith('/order/')` would have **silently pulled a page into a 60/min limiter it had never been subject to.** The registration is deliberately **leaf-only**, keeping the metered scope identical to what `/o/` had. **A prefix rule is a claim about every path beneath it; count the children before writing one.**
 
+**🔴 A PROPERTY BEING WRITTEN IS NOT THE SAME AS IT BEING APPLIED.** *Evidence (V12.8) — three distinct mechanisms found in one day, all of the same class, and each made a source-level check report GREEN on a page that was visibly wrong.* **(1) `text-center` cannot centre a BLOCK-LEVEL flex child.** `display:flex` makes an element block-level and full-width, so `text-align` has nothing inline to move and `mx-auto` is a no-op on a full-width box; `inline-flex` is the fix. Asserting the class was present passed four times while the thumbnails sat hard left — and the actual cause turned out to be a **zero-width gap**, not the centring at all: a 40px thumbnail in a 56px column with a header that overflowed its own box. 🔴 **A centring rule and a zero-width gap produce identical output.** **(2) The unlayered `!important` block in `app/globals.css`** (iOS zoom prevention) beats **every** layered Tailwind utility regardless of specificity, so 🧪 `text-sm` is **INERT on every `input`, `select` and `textarea` in this app on desktop** — measured at 16px, not 14px. **And the inverse bites too:** the rule is an ATTRIBUTE selector (`input[type="text"]`), so an input that **omits** `type` **escapes** it, renders 14px against every other field's 16px, and will zoom on focus on iOS. That bug was introduced and caught in the same session. **(3) An arbitrary Tailwind value used by exactly ONE file may have NO GENERATED RULE AT ALL** — the JIT emits only what it has scanned, so a brand-new file's `z-[85]` resolved to `z-index: auto`, and a `position:fixed` overlay with `auto` paints level with `0`: **the compose window rendered underneath the modal it was opened from**, correctly laid out and full-viewport, only mis-painted. 🔴 **Raising the number would not have helped** — `z-[9999]` is another single-file arbitrary value with the same dependency. An **inline style** was the fix, because it is not a stylesheet rule and cannot be absent from one. ⚠️ **THE SWEEP IS OUTSTANDING FOR ALL THREE.** Documenting a class is not finished until someone has looked for the other instances: nobody has enumerated the flex-centred cells, nor the `type`-less inputs, nor the single-file arbitrary values. 🔴 **Named instance:** `z-[80]` on the schedule popup resolved only because **two unrelated files** (`components/native/AppLockGate.tsx`, `components/dashboard/DemoWelcome.tsx`) happen to use that same value — luck, not design. It has since been made an inline style, but the class of fault is untouched everywhere else.
+
+**🔴 A SCRAPER-WRITTEN URL IS UNTRUSTED INPUT, AND IT REACHES AN `href`.** *Evidence (V12.8):* `discovery_trucks.website` is populated by the scraper from pages it does not control, the discovery columns carry an unconditional public-read policy, and 🧪 **1 of 102** populated values is scheme-less — `Shika Shack` holds `"shikashack.co.uk"`, which a browser resolves as a **relative** link, so an admin clicking it navigates to `/admin/shikashack.co.uk`. The first `safeHref` written for it had two defects found by adversarial input rather than by the 231 live rows: a relative path was given an invented host, and **`javascript:alert(1)` passed straight through into an `href`**. The hardened form is an **http(s)-only allow-list** that rejects every other scheme and refuses relative paths outright. ⚠️ **THE SWEEP IS OUTSTANDING:** every place any scraper-written URL column (`website`, `order_url`, `menu_url`, `schedule_url`, venue and event links) reaches an `href` or `window.open` — **including the public surfaces, not only admin**. One hardened call site is not a hardened class; the same lesson as *fixing one writer of a bad-data class is not fixing the class*, one layer up.
+
 **🔴 A MEASURED DIFFERENCE BETWEEN TWO PROMPTS BEATS ANY REASONING ABOUT THE CODE AROUND THEM.** *Evidence (V12.7):* two Gemini prompts in the **same file**, on the same model, behind the same Puppeteer capture, writing to the same table, capture a postcode on 🧪 **1,100 of 2,952 rows (37%)** and 🧪 **0 of 108 (0%)** respectively. Every structural variable is held constant, so none of them explains the gap — 🔎 one prompt says *"Postcodes… go into the `Notes` field"* and the other says nothing. **Weeks of reading routes, retry policies and parsers could not have established this; one query did.** ⚠️ **The operational consequence: prompts are DATA, with an owner and a version — not string literals scattered across the routes that happen to need them.** A consolidation that unifies the code and leaves the prompts alone has consolidated the part that was not costing anything.
 
 **🔴 FIXING ONE WRITER OF A BAD-DATA CLASS IS NOT FIXING THE CLASS.** *Evidence (V12.7):* the coordinate gauntlet (postcodes.io first, model last, never an unchecked coordinate) was built on 7 September and the pipeline manual recorded the problem as solved, then narrowed once — *"true of the scraper only"* — when the Apps Script turned out to geocode unvalidated too. **Both statements were about individual writers. Nobody enumerated the writers.** 🔎 A third has been live in the app the whole time: `app/api/manage/geocode/route.ts` asks Gemini for raw lat/lng and three dashboard call sites put them straight into `truck_events`, 🧪 25 of 57 `manual` rows at a 0% `venue_id` rate. **The correct move on declaring any such class fixed is to grep for writers of the TABLE, not for callers of the fix** — the fix names itself, the defect does not.
@@ -23998,6 +24068,306 @@ SCREENSHOT extractor built today, which reuses `app/api/manage/process-schedule/
 implementation**, and the reason is recorded at 🔎 `lib/admin/screenshot-events.ts:8`. ⚠️ **Today's work
 added a divergence rather than removing one** — deliberately, and with a reason, but it must not be
 described as a reuse.
+
+# 52. The outreach console, the events tab and the templates system (V12.8 — 9 September 2026)
+
+🔴 **NOTHING IN THIS SECTION HAS BEEN OBSERVED WORKING EXCEPT ONE PHOTO UPLOAD.** No admin agent session
+is obtainable, so everything below is **compiler-confirmed** (`tsc --noEmit`, 0 errors), **measured
+against live data** where a number is given, or **structural** (read out of the source). No control was
+clicked, no email was sent, no template was saved through the UI. Where this section says a thing works,
+it means the code says so — not that anyone watched it.
+
+## 52.1 What was built
+
+| Built | State |
+|---|---|
+| **Outreach table** — media columns (logo/photo thumbnails with upload), filters, active-filter chips, inline phone/email editing | compiler-confirmed; **one photo upload observed** (Chai Stall — see §52.6) |
+| **Prospect modal rebuilt** — status strip, two columns, collapsed contact history, prev/next, compose entry point | compiler-confirmed, reasoned from source |
+| **Photo-delete guard** — a server-side **409** for the linked trucks whose discovery photo is the live public fallback | structural; the 409 path was never exercised |
+| **Events tab** — a `discovery_events` viewer and amender, orphan and no-venue flags, per-row delete | compiler-confirmed |
+| **Schedule popup** — the outreach Schedule count opens that truck's events, editable | compiler-confirmed |
+| **Compose window** — single editable pane, derived placeholder fields, `mailto:` send behind a length guard | compiler-confirmed; the guard was **proven to fire at 2,075 characters** |
+| **Templates system** — a database-backed templates tab with a live preview and click-to-insert tokens | compiler-confirmed |
+
+⚠️ **The photo-delete guard's subject is three rows, and they are named in §14**: Pizzeria Gusto, Real
+Thai Food and Tikka Tonic — the only linked trucks carrying a `photo_url`.
+
+## 52.2 🔴 The new table — `outreach_templates`
+
+**Migration `supabase/migrations/20260909_outreach_templates.sql`, applied 9 September.** Service-role
+only: RLS on, one `service_role` policy, and the default `anon`/`authenticated` grants **revoked** —
+enabling RLS alone leaves the capability in place. Seeded with five templates; 🧪 the table holds **6**
+rows now, the sixth created through the tab.
+
+🔴 **`lib/outreach-templates.ts` IS DELETED. The table is the only source of message copy.** The
+rendering half moved verbatim to `lib/outreach-template-render.ts`; the hardcoded `TEMPLATES` array went
+with the file. There is **no fallback to built-in copy** — if the table is unreachable the UI says so,
+and "unreachable" and "empty" render as visibly different states, because a silent fallback to stale copy
+is how a withdrawn template gets sent.
+
+**The guards stayed in code and cannot be switched off from the data:**
+
+| Guard | Where it lives | Why a row cannot reach it |
+|---|---|---|
+| **Opt-out footer** | `OPT_OUT_FOOTER` + `composeEmail` | concatenated *after* the body; a template controls only its own words |
+| **WhatsApp gating** | `templatesFor` | reads `whatsapp_confirmed` on the **prospect**; a `channel='whatsapp'` row is exactly what it refuses unless confirmed |
+| **Visible unresolved placeholders** | `substitute` | emits `[[token]]` when a token has no value — the renderer's own fallback |
+| **`mailto:` length refusal** | the compose window | not reachable from template data at all |
+
+A template controls its words and its `channel`. It controls none of the above. ⚠️ `active = false`
+retires a template rather than deleting it, because a contact-log row from months ago references the
+template that produced it.
+
+## 52.3 🔴 Two data facts that change how the outreach programme should be read
+
+**(a) The WhatsApp gate approves exactly the set a scraper guessed at.** 🧪 Re-derived 9 September:
+`whatsapp_confirmed = true` on **30 of 231** rows, and **all 30** carry the scraped hint `advertises` —
+and there are **exactly 30** `advertises` trucks in the whole table. **A 1:1 match, so not one row was
+personally verified.** The flag records what a truck's own listing advertises. Read against the PECR
+constraint already in this manual — *the ICO treats messaging apps as in scope, so cold WhatsApp
+marketing requires prior opt-in* — **this gate is not consent evidence.** It is a scraped hint wearing the
+word "confirmed". Hint distribution across all 231: `none` 166 · `mobile_not_advertised` 35 ·
+`advertises` 30.
+
+**(b) A template greeting must have a fallback.** 🧪 `contact_name` is present on **3 of 231** rows —
+Tikka Tonic (`Madhur`), Pizza Mondo (`Jo`), Pimp My Fish (`Tayyur`), all at stage `contacted`. A greeting
+that fills the name silently renders **"Hi ,"** on the other 228. The resolved tier therefore supports a
+declared fallback, and the shipped greeting renders a bare **"Hi,"** when no name is stored.
+
+## 52.4 Figures that moved on 9 September
+
+🧪 All re-derived from the live database on 9 September, count-asserted (fetched length checked against a
+`count=exact` header). **Old value → current.**
+
+| Figure | Manual/report said | **Live 9 Sep** | Note |
+|---|---|---|---|
+| `discovery_events` rows | 4,340 | **902** | after the deletion in the scraper manual §8; still moving as the scraper writes |
+| `discovery_events` with `venue_id` null | 2,219 → 2,267 | **404** | 🔴 **2,267 was a PRE-deletion figure.** With 902 rows total, 2,267 is arithmetically impossible now |
+| Hatches Up ordering trucks (`hu_ordering = true`) | 19 | **17** | 17 every time this series has measured it |
+| Emails present (`contact_email`) | 55 → 59 | **61** | |
+| Phones present (`phone`) | 69 → 70 | **71** | |
+| `Y (0)` schedule segment | 103 | **1** | `Test Kitchen`, last event 2026-08-31 — see the scraper manual §8 |
+| `venues` rows | 558 | **815** | |
+| `outreach_templates` | — | **6** | 5 seeded + 1 created through the tab |
+
+⚠️ **Two figures supplied to this update were already stale when supplied** — the unlinked-venue count
+(pre-deletion) and the email/phone counts (measured earlier the same day). Both are corrected above. This
+is the third time in this series that a number has moved between being measured and being written down.
+
+## 52.5 🔴 A phantom defect, and why it was phantom
+
+A hand-written diagnostic using **raw string equality** on truck names reported 10–12 orphaned events and
+an urgent case-sensitivity bug. 🧪 **It was measuring a system that does not exist.** All five truck-name
+normalisers **already lowercase** — 🔎 `normalizeName` (`run-scraper.js`), `scheduleNorm`
+(`lib/schedule-match.ts`), `normalize` (`/api/discovery/events`), `normName` (`lib/venue-matcher.ts`),
+`normalizeVenue` (`lib/venue-signature.ts`) — and under the code's own matching only **2** rows are
+genuinely orphaned.
+
+🔴 **The lesson: a diagnostic that does not use the code's own matching rule measures a system you do not
+have.** The fix that was nearly built — lowercasing at the call sites — would have changed nothing and
+been recorded as a fix.
+
+⚠️ **The five normalisers answer DIFFERENT questions and must stay separate.** They are not duplication:
+one is the scraper's dedup key, one is the outreach schedule key (strict, exact membership), one the
+discovery feed's, one the venue matcher's, one the byte-mirror. 🔎 `lib/venue-signature.ts` is the
+**documented byte-for-byte mirror** of the scraper's own rule and exists precisely so the bridge dedups
+the way the scraper does. Collapsing them would silently change which trucks match where. 🔴 A **sixth**
+must not be written either — when the outreach schedule key was needed in a second place it was **moved**
+to `lib/schedule-match.ts` and imported, not re-implemented.
+
+## 52.6 Outstanding (V12.8 — 🔴 SUPERSEDED BY §53.8, WHICH IS THE SINGLE LIST)
+
+⚠️ **Kept as the record of what was outstanding on 9 September. Two items below have moved since: the
+`Chai Stall` media item is closed, and the scraper mirror now writes through the gate. Read §53.8.**
+
+- 🔴 **The three inertness sweeps** (§35): flex-centred cells, `type`-less inputs, single-file arbitrary
+  Tailwind values. None has been enumerated.
+- 🔴 **The untrusted-URL sweep** (§35): every scraper-written URL column reaching an `href` or
+  `window.open`, public surfaces included.
+- ✅ **`Chai Stall`'s `photo_url` pointed at a file that did not exist** — **RESOLVED 9 September.** 🧪 It
+  now holds a `truck-media` storage URL that returns **HTTP 200**. This was the one photo upload observed
+  working.
+- 🔴 **An Escape defect in the schedule popup's delete dialog.** Both the popup and the dialog register
+  `keydown` with `{ capture: true }` on `window`; two capture listeners on the **same** target fire in
+  registration order, and `stopPropagation()` does **not** stop other listeners on that node — that needs
+  `stopImmediatePropagation()`, or the listeners on separate nodes. So Escape closes the dialog **and the
+  popup underneath it**. Pre-existing, not fixed.
+- 🔴 **The scraper mirror writes no `venue_id`** — see the scraper manual §8/§22.
+- ⚠️ **The whole day's work is UNCOMMITTED**, and `next build` was run once, at the end. The tree carries
+  unstaged work across ~25 files plus a new migration.
+
+---
+
+# 53. The shared dedup gate, R5, and the venue-matching wall (V12.9 — 10–11 September 2026)
+
+🧪 **Every figure in this section was re-derived against the live database on 11 September 2026 at
+11:45 UTC.** Table state at that moment: **`discovery_events` 935** (705 future, 230 past),
+**`venues` 819**, **`discovery_trucks` 231**, **`discovery_run_log` 348**, **16 rows marked superseded**.
+
+🔴 **NONE OF THIS IS DEPLOYED.** `lib/discovery-gate.ts` has **0 commits** against it and is untracked;
+so are the ingest route, the backfill and both migrations. Vercel deploys from git, so production runs
+none of it. What *has* happened to live data is the backfill, run by hand with `--apply`.
+
+⚠️ **Naming collision, flagged so nobody resolves it the wrong way:** the scraper manual already uses
+"R5" for an audit recommendation (§1 R5) and for a row in a rules table. The **R5** below is unrelated —
+it is the venue-acceptance check named in the dedup design.
+
+## 53.1 One gate, three callers — and why it is not allowed to trim the bridge
+
+`lib/discovery-gate.ts` exports `admitDiscoveryEvents`, which does truck match → venue match → R5 →
+duplicate check → write, in that order. 🔎 Its callers:
+
+| caller | what it is |
+|---|---|
+| `app/api/discovery/ingest/route.ts` | **new.** A secret-gated POST. The website scraper's Pass A posts here in chunks instead of writing `discovery_events` directly. No bridge, no email. |
+| `app/api/inbound-schedule/route.ts` | the existing shared desk — screenshots, the Apps Script, the admin upload |
+| `scripts/backfill-discovery-dedup.mjs` | the one-off pass over stored rows; loads the gate from source rather than importing a copy of its rules |
+
+🔴 **THE PLACEMENT RULE, AND IT IS NOT WHAT A SHORTHAND SUGGESTS.** It is sometimes written down as
+"the gate is not in `/api/inbound-schedule`". **That is not what the code does, and the code wins:** the
+gate **is** called there. What is forbidden — and not done — is letting dedup **trim the row list before
+the bridge loop**. 🔎 The gate receives `rows.map(...)`, a mapped copy, and returns one outcome per row;
+the bridge loop below it still iterates the same untrimmed `rows` array it always did. **If dedup trimmed
+that array, an event judged a duplicate would never be offered to an operator for approval** — a
+duplicate in the discovery feed is a tidiness problem, a missed approval is a trading decision taken away
+from the operator. A gate write failure is a 500 for the batch, so the bridge never runs on rows that did
+not land.
+
+## 53.2 R5 — an acceptance check on the matcher, not a replacement for it
+
+🔎 `findVenue` is **not modified**. R5 (`r5Accept`) judges what it returned:
+
+1. If the scraped text carries a postcode and its **sector** differs from the candidate venue's → reject.
+2. Else accept if the matcher itself said `high` (its own village agreement).
+3. Else the venue must lie **within 15 km** of the event village's anchor — the median position of the
+   other venues in that village, re-derived in the gate because the matcher's helper is private.
+
+🔴 **Where R5 fails, `venue_id` stays NULL, by design.** A wrong link is invisible and puts a pin in the
+wrong county; a missing one is a gap the admin table shows. ⚠️ "Village agrees" means **the matcher said
+`high`** and nothing wider — testing village agreement independently accepted one extra row out of 71,
+because the matcher returns `low` for a multi-candidate village tie it broke by `pickBest`, and that is a
+guess rather than an agreement.
+
+## 53.3 The four duplicate rules
+
+A pair qualifies only when it is the **same date** and the **same truck** — resolved truck ids when both
+rows have one, else exact equality on the existing `normalizeVenue` of the truck name. Then, in order:
+
+| # | rule | fires |
+|---|---|---|
+| 1 | same full postcode | 8 |
+| 2 | venues within **500 m** | 6 |
+| 3 | **identical coordinates** | **0 — see below** |
+| 4 | **name + time**: venue names contained either way after `normalizeVenue`, a **4-character floor**, both start times known and equal, venues within **1,500 m** | 2 |
+
+🔴 **RULE 3 IS UNREACHABLE AS ORDERED, AND THAT IS A DEFECT, NOT A PASSING TEST.** Identical coordinates
+means both venues have coordinates, so rule 2 measures 0 m, and 0 ≤ 500 always fires first. It is not
+"subsumed by today's data" — no data can reach it in this order. 🧪 It fires on **0 of the 197** same-truck
+pairs; the 5 pairs whose venues share a point all record `postcode` or `distance`. Moving it above rule 2
+is a two-line change and would relabel those 5.
+
+🔴 **THE 4-CHARACTER FLOOR IS LOAD-BEARING.** `normalizeVenue` strips the filler words `the` and
+`street`, so **`The Street` normalises to the empty string**, and every string contains the empty string.
+🧪 Without the floor, containment accepts **59** of the 197 pairs instead of 22 and merges two real
+pitches 2,581 m apart. ⚠️ It costs `MSC` (three characters), a genuine duplicate the postcode rule
+already catches.
+
+The 1,500 m ceiling is bounded by measurement on both sides: it must clear **1,111 m**
+(`Dog show` / `Dog show (CXD)`, the widest pair judged a true duplicate) and stay under **2,581 m**
+(`The Street` / `The Street - By Post Office`, two real pitches). Every value from 1,200 to 2,500 m gives
+the identical result set.
+
+## 53.4 Duplicates are stored and hidden, never rejected or deleted
+
+🔎 Four columns, from `supabase/migrations/20260911_discovery_events_superseded.sql`, and a second
+migration widening the reason constraint for the two added rules
+(`20260912_superseded_reason_values.sql`): `superseded_by` (the winner's id), `superseded_reason`,
+`superseded_meta` (distance, postcode, **time gap**, both sources, the winner's key) and `superseded_at`.
+The loser also gets `show_on_vf` and `show_on_hg` set false; the public feed filters `superseded_by is
+null` and the admin table shows the marks instead of hiding them. **Newest wins, decided by `created_at`**
+— a daily re-scrape is an UPDATE of an existing row, so it cannot flip a settled pair.
+
+⚠️ **Time is recorded but is not part of rules 1–3.** It is part of rule 4 only.
+
+## 53.5 🔴 Two defects found in the backfill, one of which touched live data
+
+**a. The grouping key.** It was `event_date + '|' + (discovery_truck_id || normalizeVenue(truck_name))` —
+one key per **row**, mixing a UUID and a name in the same key. A truck with one linked row and one
+unlinked row produced two keys, so the pair was never compared and no rule ever ran on it. 🧪 It split
+**14 of the 197** same-truck pairs apart and cost exactly **one** missed mark (The Forge Kitchen,
+`Debenham` / `Debenham Vets`, 0 m, same postcode, **both rows already pointing at the same venue row**).
+Isolated by running old-key and new-key passes over one snapshot: **0** marks removed, **0** winners or
+rules changed. **The shipped gate never had this defect** — it tests each pair individually. Fixed by
+bucketing on the date alone and making the truck test per pair.
+
+🧪 **The fix was proved not to over-group, which matters more than proving it found the missed pair:**
+a date bucket with **no** truck test marks **24** rows; with the per-pair test, **16**. Trucks it
+correctly refuses to join include **Pizza Mondo** vs **Steak & Honour** at `FoodPark CB1` on one day
+(same postcode — a food-park line-up), and **Between Buns** vs **Between Buns Royston** at the same
+address on the same day, which stay apart because the name fallback is **exact equality**, not
+containment.
+
+**b. Chained winners — not caused by the key.** 🧪 3 of the 13 marks applied on 11 September point at a
+winner that is **itself superseded** (Pig-Casso's `foodPark` → `FoodPark Biomedical` →
+`Biomedical Campus Cambridge`). The pairwise loop marked each row against the newest row *it personally
+matched*. The script now walks each winner to the cluster's survivor. ⚠️ **A re-run cannot repair the
+three already written**, because the apply step is guarded with `.is('superseded_by', null)` — which is
+the guard that stops it rewriting settled rows. They are hidden correctly; only the record of which row
+won is wrong.
+
+## 53.6 🔴 Venue matching is the largest open item, and it is a DATA problem
+
+🧪 **225 future rows** have a venue candidate that **R5 refuses**, and one more has no candidate at all —
+226 future rows unlinked, 322 across the whole table. R5 is behaving correctly in every case. The causes,
+by volume:
+
+| rows | pattern | example |
+|---|---|---|
+| 42 | right name, **wrong county** | `The Bull Pub [Great Paxton]` → `The Bull Pub [Saffron Walden]`, **36.3 km** from the Great Paxton anchor |
+| 29 | village spelled differently from any anchor | `Blackpit Brewery [Stow-Bridgwater]` → `[Stowbridge]` |
+| 27 + 9 + 9 + 9 + 8 + 8 | 🔴 **the village field holds a place description, not a village** | `Church View Campsite [Church View]`, `Near The King's Head Pub [Near The King's Head Pub]`, `Recreation Ground [Recreation Ground]`, `Barracks [Barracks]`, `Royal Square [Royal Square]`, `Near the Spar Shop [Near the Spar Shop]` |
+| 26 | village is a brand casing | `Roughacre Brewery [RoughAcre]` → `[Clare]` |
+| 9 + 8 + 1 | a real village, but the only same-name venue is 24–27 km away | `The Railway Tavern [Norwich]` → `[Dereham]`, 24.0 km |
+
+🧪 **33 of the 819 venue rows have a village that equals their own name** (31 by exact string, 33
+normalised); **43** have no village at all; **91** have no coordinates; **230** have no postcode. A
+village that is a place description can never match an anchor, so R5 can never accept it — **and no
+event-level rule reaches this**, because the failure happens before any two events are compared.
+
+**What would help, measured:** a venue merge on name containment within 750 m collapses **21 venue pairs
+/ 31 rows into 12 clusters** — 819 → 800 — and makes one of the two `name-time` marks unnecessary. It
+does **not** catch `Dog show` / `Dog show (CXD)` (1,111 m apart, and not a venue at all — a diary entry
+stored as one). 🔴 **Never merge venues on coordinates alone:** 116 venue pairs share a point and only 4
+carry events on both sides; the rest are diary lines (`Private Event`, `dr appointment`, `Poss leave`)
+geocoded to a town centroid — six sit on `NR1 1AA`.
+
+## 53.7 The trading-truck rules, confirmed against the code — do not disturb these
+
+🔎 Verified by reading, on 10 September:
+
+- **The `scraper_preference` gate** decides whether a linked truck's scraped events may bridge at all.
+- **`rejected_event_signatures`** is the reject-memory: correctly built and wired, and 🧪 **it has never
+  held a row**, so it has never been exercised.
+- The bridge **inserts with `status: 'unconfirmed'`** and sends the operator an email; nothing auto-confirms.
+- 🔴 **An approved event cannot be silently rewritten, and this is proven structurally rather than by not
+  having seen it happen:** 🧪 a repository-wide grep (no extension filter) finds **no `onConflict`
+  anywhere that targets `truck_events`**. The bridge only ever inserts. An upsert is the mechanism by
+  which an operator's edit could be overwritten, and that mechanism is absent.
+
+## 53.8 🔴 OUTSTANDING — the whole list, in one place (supersedes §52.6)
+
+| # | item | state |
+|---|---|---|
+| 1 | **The three inertness sweeps** (§35): flex-centred cells, `type`-less inputs, single-file arbitrary Tailwind values | 🔴 **OPEN — none enumerated.** ⚠️ `z-[80]` on the schedule popup resolves **only because two unrelated files happen to use that value**; it is one deletion away from `z-index: auto` |
+| 2 | **The untrusted-URL sweep** (§35): every scraper-written URL column reaching an `href` or `window.open`, public surfaces included | 🔴 **OPEN** |
+| 3 | **The identical-coordinate rule's ordering** (§53.3) | 🔴 **OPEN — unreachable by construction** |
+| 4 | **Venue matching** (§53.6) — 225 rows R5 must refuse | 🔴 **OPEN, and the largest** |
+| 5 | **Three chained `superseded_by` winners** (§53.5b) | 🔴 **OPEN — a re-run cannot repair them** |
+| 6 | **The run log has no retention rule** — 🧪 348 rows today, one per site per run, ~42,000/year | 🔴 **OPEN** (a prune workflow is written and uncommitted) |
+| 7 | **The Escape defect in the schedule popup's delete dialog** — two `{capture:true}` listeners on `window`; `stopPropagation()` does not stop same-node listeners | 🔴 **OPEN — pre-existing** |
+| 8 | **The opt-out footer and signature left the code** into an Outlook signature (§52) | 🔴 **OPEN as a compliance risk — a human responsibility, no longer enforced** |
+| 9 | **`Chai Stall`'s `photo_url`** | ✅ **CLOSED.** 🧪 A sweep of **all 242** `photo_url`/`logo_url` values across 231 trucks finds **0 broken** — every remote URL returns 200 and every local path exists |
+| 10 | **Two days of work are UNCOMMITTED** — ~14 modified files, ~60 untracked, four migrations, of which **two are unapplied** (`20260911_discovery_events_superseded.sql` is applied; `20260912_superseded_reason_values.sql` is applied; the prune workflow is not deployed) | 🔴 **OPEN** |
 
 ---
 

@@ -100,10 +100,16 @@ function useDemoModal() {
 
 /** Drop-in replacement for the old `<a href="#try">` CTAs — opens the modal wherever the visitor is,
  *  instead of scrolling them to a section. Same className in, same look out. */
-export function DemoCta({ className, children }: { className?: string; children: React.ReactNode }) {
+// ⚠️ `id` IS OPTIONAL AND PURELY ADDITIVE — every existing caller renders byte-identically (React omits
+// an undefined id). It exists so the landing hero's CTA can be OBSERVED: HeroCtaWatcher needs a stable
+// handle on this exact button to drive the header CTA's mobile reveal, and a CSS-class selector would
+// couple that behaviour to landing.css's class names. A wrapper element was the alternative and is
+// worse — `.hero-cta-row .btn-lg { width: 100% }` sizes the BUTTON, so a wrapper would become the flex
+// item and the button would collapse to its text width.
+export function DemoCta({ id, className, children }: { id?: string; className?: string; children: React.ReactNode }) {
   const { setOpen } = useDemoModal()
   return (
-    <button type="button" className={className} onClick={() => setOpen(true)}>
+    <button type="button" id={id} className={className} onClick={() => setOpen(true)}>
       {children}
     </button>
   )

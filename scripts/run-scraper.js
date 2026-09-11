@@ -2294,8 +2294,24 @@ if (newRowsToAdd.length > 0) {
     spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:I`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
   });
   console.log("🎉 Database Sync Complete!");
-  // DB mirror — parallel run
-  for (let i = 0; i < newRowsToAdd.length; i += 100) {
+  // ── 🔴 THE DB MIRROR NOW POSTS TO THE APP'S GATE. IT NO LONGER WRITES discovery_events ITSELF. ──
+  // /api/discovery/ingest hands every row to lib/discovery-gate: name+aliases truck match, findVenue +
+  // the R5 acceptance check (a rejected match leaves venue_id NULL rather than guessing), venue creation
+  // for a new (name, village), and the duplicate rule. This is the same enrichment the Apps Script and
+  // Pass B already get through /api/inbound-schedule — 🧪 the reason their rows carried venue_id on
+  // 74–100% while Pass A's carried it on 49%.
+  // 🔴 NOT /api/inbound-schedule: that route bridges into truck_events and emails operators, and 750
+  // discovery rows a day must never enter that loop. /api/discovery/ingest has no bridge.
+  // 🔴 ORDER IS UNCHANGED: the Sheet append above is awaited FIRST, so an endpoint outage never loses
+  // the Sheet row. What it costs: recovery needs the APP up (a Vercel deploy), not only Supabase.
+  // 🔴 FAILURE STAYS RED. assertInboundOk throws on any non-2xx — the gate answers 207 when even one
+  // row of a chunk did not land — and the throw is pushed into dbWriteFailures, which
+  // assertNoWriteFailures turns into exit 1 at the end of the run. A dead endpoint, a rotated secret
+  // and a partial chunk are all recorded, all named, and all red.
+  // Chunks of 100 (the old batch size); the route caps a request at 200.
+  if (!HATCHGRAB_API_URL || !INBOUND_SECRET) {
+    dbWriteFailures.push('discovery_events mirror: HATCHGRAB_API_URL or INBOUND_SCHEDULE_SECRET is unset — nothing was posted to the gate');
+  } else for (let i = 0; i < newRowsToAdd.length; i += 100) {
     const batch = newRowsToAdd.slice(i, i + 100).map(r => ({
       event_date: toISODate(r[0]),
       start_time: r[1] || null,
@@ -2307,10 +2323,18 @@ if (newRowsToAdd.length > 0) {
       source: r[7] || null,
       ai_notes: r[8] || null,
     }));
-    // 🔴 AWAITED (was fire-and-forget). This is the mirror that carries the map's entire event feed;
-    // a silent failure here is indistinguishable from "no events found" from outside.
-    const { error: evErr } = await supabase.from('discovery_events').upsert(batch, { onConflict: 'event_date,truck_name,venue_name' });
-    if (evErr) dbWriteFailures.push(`discovery_events batch ${i}-${i + batch.length}: [${evErr.code}] ${evErr.message}`);
+    try {
+      const res = await fetch(`${HATCHGRAB_API_URL}/api/discovery/ingest`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: INBOUND_SECRET, events: batch }),
+      });
+      const rawBody = await res.text();
+      assertInboundOk(res.status, rawBody);   // non-2xx (incl. 207 partial) → throws → recorded below
+      let r = {}; try { r = JSON.parse(rawBody); } catch { r = {}; }
+      console.log(`   ✅ gate chunk ${i}-${i + batch.length}: written ${r.written ?? '?'}, venues created ${r.venuesCreated ?? 0}, superseded ${r.superseded ?? 0}, R5-rejected ${r.rejectedByR5 ?? 0}${r.markFailed ? `, ⚠️ marks failed ${r.markFailed} (migration applied?)` : ''}`);
+    } catch (err) {
+      dbWriteFailures.push(`discovery_events gate chunk ${i}-${i + batch.length}: ${err.message}`);
+    }
   }
 } else { console.log("\n💤 No new events found."); }
 

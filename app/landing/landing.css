@@ -138,7 +138,14 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 }
 
 /* ---------- hero ---------- */
-.hg-landing .hero { padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
+/* `--hero-grey` IS DECLARED HERE AND USED BY THE TWO MOBILE-ONLY ELEMENTS BELOW — it is NOT a shared
+   token and must not join the `:root` block. #4A627F measures 6.28:1 on white (WCAG AA at any size,
+   AAA for large); `--ink-soft` (#5F7A99) measures 4.44:1, which MISSES the 4.5:1 normal-text floor —
+   the deleted tick-list comment claimed 4.61:1 for it and was wrong. `--ink` (#2C4766, 9.54:1) was the other
+   candidate and was rejected for reading as navy body copy rather than as secondary grey.
+   ⚠️ A CUSTOM-PROPERTY DECLARATION PAINTS NOTHING BY ITSELF. Nothing above 639px references it, so
+   tablet and desktop are byte-identical with it present. `--ink-soft` is untouched. */
+.hg-landing .hero { --hero-grey: #4A627F; padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
 .hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
 @media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
@@ -169,6 +176,128 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing .hero-cta-row .btn-lg { width: auto; flex: none; }
   .hg-landing .hero-cta-text { max-width: 30ch; margin-inline: 0; }
 }
+
+/* ══════════════ MOBILE HERO — BELOW 640px ONLY ══════════════════════════════════════════════════════
+   🔴 THE BREAKPOINT IS 639px BECAUSE THE NAV ALREADY USES 639px (see the nav block above), and because
+   tablet must not move. The hero's OTHER breakpoint, 939px, is the desktop/stacked split — everything
+   from 640px to 939px is the TABLET layout, and reusing 939px here would have rewritten it.
+   639px is also Tailwind's `sm` boundary, so the two agree by coincidence rather than by luck.
+
+   🔴 SPACING IS DECLARED HERE, NOT IN TAILWIND UTILITIES, AND THAT IS NOT A STYLE PREFERENCE.
+   `.hg-landing * { margin: 0; padding: 0 }` (:77) is a class+universal selector (0,1,0) in a sheet that
+   loads after Tailwind's, so `mb-4` (also 0,1,0) LOSES the tie on source order and is silently inert
+   inside this wrapper. Every rule below is `.hg-landing .x` (0,2,0), which beats the reset outright —
+   the same mechanism `h1 { margin-bottom: 1rem }` already relies on.
+
+   ⚠️ THE TWO NEW ELEMENTS ARE `display:none` BY DEFAULT (immediately below) AND ONLY TURNED ON INSIDE
+   THE MEDIA BLOCK. `display:none` generates no box, so above 639px they are not "hidden", they are
+   absent from layout — which is what keeps tablet and desktop byte-identical. The base rules must come
+   BEFORE the media block: both are (0,2,0) and a media query adds no specificity, so order decides. */
+
+/* Mobile supporting line — replaces BOTH the tagline and the CTA text on a phone. Regular weight: it
+   inherits `--body` at 400, unlike the tagline, which is display/700.
+   🧪 1rem/16px, RAISED FROM .95rem/15.2px, AND THAT IS THE WHOLE MARGIN THIS LINE HAS. Line 2 measures
+   307.5px at 16px (292.1px at 15.2px) against a 320px text column at a 360px viewport — 12.5px spare.
+   Anything larger, or any longer wording, wraps it. */
+/* 🔴 NO max-width. It was `30ch` (279px at this size), which re-wrapped line 2 onto a third line. The
+   copy now carries its own break — `Upload your menu.<br />See a working demo in under 60 seconds.` —
+   so a character cap can only fight it. 🧪 MEASURED: line 2 is 292.1px wide; the text column is 320px
+   at 360px viewport, 335px at 375px and 350px at 390px, so it holds on ONE line from 360px upward. At
+   320px it wraps to two — the brief's accepted outcome; the font is NOT shrunk to prevent it. */
+.hg-landing .hero-sub-sm { display: none; font-family: var(--body); font-weight: 400; font-size: 1rem; line-height: 1.45; color: var(--hero-grey); text-align: center; margin-inline: auto; margin-bottom: 1.1rem; }
+
+/* The one line under the mobile button. IT REPLACED A TWO-ITEM TICK LIST (`.hero-ticks-sm`, with an
+   11px stroked check on each item) — the list, its items, its icons and the `<CheckSm />` component in
+   page.tsx are all deleted, not hidden, so nothing is left to drift.
+   ⚠️ IT IS STILL A FLEX ITEM OF `.hero-cta-row`, EXACTLY WHERE THE LIST WAS. That is what keeps the gap
+   below the button at the row's own .85rem/13.6px without a margin of its own — 🧪 MEASURED identical
+   before and after. 13px, regular, centred, no icon and no orange: it is a footnote to the button, not
+   a second call to action.
+   🧪 ONE LINE AT EVERY WIDTH THIS RULE APPLIES TO: 179.0px against a 280px column at 320px. */
+.hg-landing .hero-note-sm { display: none; font-family: var(--body); font-weight: 400; font-size: .8125rem; line-height: 1.35; color: var(--hero-grey); text-align: center; }
+
+@media(max-width:639px){
+  /* ── what the phone drops. All three are display:none, so they cost no height and no space. ── */
+  .hg-landing .hero-tag { display: none; }        /* "Less time booking. More time cooking." */
+  .hg-landing .hero-cta-text { display: none; }   /* the 60-seconds heading + grey paragraph */
+  /* ⚠️ `.trust-strip` IS NO LONGER HIDDEN HERE. It was, because the hero ticks repeated its three
+     points; the line under the button now says something different ("No signup or account needed.") so
+     the band earns its place again. Its content, styling and position below the screenshots are exactly
+     what they were before that rule existed — the rule is deleted, not overridden, nothing to drift. */
+
+  /* ── what the phone gains: h1 → supporting line → button → note → screenshot ── */
+  .hg-landing .hero-sub-sm { display: block; }
+  .hg-landing .hero-note-sm { display: block; }
+
+  /* ── tightening, so the screenshot's top clears the ~660px fold on a 390x844 iPhone ── */
+  .hg-landing .hero { padding-block: 1.6rem 2rem; }   /* was clamp(2.5rem,5vw,4rem) / clamp(3rem,6vw,4.5rem) → 40px/48px at this width */
+  .hg-landing .hero-grid { gap: 1.6rem; }             /* was clamp(2.5rem,5vw,3.5rem) → 40px at this width */
+  /* 🔴 `.hero h1`, NOT `h1`. landing.css is imported by THREE surfaces — /landing, /compare and
+     app/contact/HatchGrabContact.tsx — and the contact page renders `<h1>How can we help?</h1>` inside
+     its own `.hg-landing` wrapper. A bare `.hg-landing h1` here would have retuned that page's mobile
+     spacing as a side effect. Every other selector in this block names a class that 🧪 grep shows only
+     app/landing/page.tsx renders; `h1` was the one that did not. */
+  /* 🔴 TWO DECLARATIONS, BOTH MOBILE-HERO-ONLY, NEITHER TOUCHING THE BASE `.hg-landing h1` RULE that
+     /compare and the contact page also render.
+     • `margin-bottom: 1rem` (16px) — 🧪 MEASURED 9.6px before. The heading and the supporting line were
+       reading as one block; 16px separates them. It costs 6.4px of fold, which the screenshot still
+       clears on a 390x844 iPhone (🧪 the fan's bottom moves from 640.8px to 651.4px, still inside the
+       ~660px fold).
+     • `letter-spacing: -.015em` — HALF the base rule's -.03em (-.48px vs -.96px at 32px), which is the
+       whole point: at 800 weight the tight tracking was closing the word gaps.
+     🔴 -.015em IS THE LOOSEST VALUE THE LINE BREAK SURVIVES, AND THE MARGIN IS 2.6px. Line 1 ("The
+     ordering system") measures 317.4px against the 320px text column at a 360px viewport — 308.3px
+     before. Loosen it any further and line 1 wraps early at 360px. 🧪 The break is unchanged at 360,
+     375, 390 and 414px. Font size, weight and family are untouched. */
+  .hg-landing .hero h1 { margin-bottom: 1rem; letter-spacing: -.015em; }   /* was .6rem, -.03em (inherited from the base rule) */
+  .hg-landing .hero-cta-row { gap: .85rem; }          /* was 1.2rem — now the button↔ticks gap */
+
+  /* ── the hero button: shorter, flatter-cornered, still full width and still a 48px+ tap target ──
+     ⚠️ padding-block ONLY. Font size and weight are untouched because `.btn-lg` is 1.2rem/700 precisely
+     so WCAG's LARGE-text threshold (3:1) applies to white-on-orange, which measures 3.56:1 and would
+     FAIL the 4.5:1 normal-text threshold. Shrinking the text here would break that, silently. */
+  .hg-landing .hero-cta-row .btn-lg { padding-block: .78rem; border-radius: 12px; }
+
+  /* ── the header CTA's reveal. `.hg-hero-watch` is rendered by app/landing/page.tsx ONLY, so /compare
+     (same <LandingNav />, no hero button) never matches and keeps today's always-visible CTA. ──
+     🔴 `visibility` + `opacity`, NEVER `display`. The brief's hard requirement is that nothing in the
+     header moves when this appears, and the CTA is a flex item: `display:none` would collapse its box
+     and slide "Log in" to the right on reveal. visibility:hidden keeps the box — so the row's geometry
+     is identical in both states — while removing the button from hit-testing AND from the tab order.
+     ⚠️ THE COST, STATED: the space is reserved from first paint, so "Log in" does not sit flush right
+     on a phone. That is the direct price of "nothing in the header may shift position".
+     🔴 THE `visibility` TRANSITION IS A DELAY, NOT A FADE — visibility is not interpolable. Hiding
+     holds it `visible` for the whole .18s so the opacity fade is actually seen; showing flips it at 0s
+     so the fade-in starts from a visible box. Without the delay, hiding would blank the button
+     instantly and the fade-out would never be drawn. */
+  /* 🔴 THE TRANSITION LIVES ON THE TARGET STATE, WHICH IS WHY THERE ARE TWO DURATIONS. A transition
+     declared on a rule governs the change INTO that rule's state: the hidden rule below owns the
+     fade-OUT (200ms) and the revealed rule owns the fade-IN (320ms). Writing one shared duration would
+     make them symmetrical, which is the opposite of what is wanted — arriving should be gentler than
+     leaving.
+     🔴 THE SLIDE IS `transform` AND NOTHING ELSE. A transform is applied at paint time and never
+     participates in layout, so the reserved box does not move, "Log in" does not move, and no sibling
+     can be pushed by it. Animating `left`, `margin` or `padding` instead would relayout the flex row on
+     every frame — that is the failure this avoids, not a stylistic preference.
+     ⚠️ IT ALSO SUPPRESSES `.btn-primary:hover`'s `translateY(-1px)` ON THIS ONE BUTTON, because both
+     write `transform` and this selector is (0,4,0) against the hover rule's (0,3,0). On a touch screen,
+     which is the only place this rule applies, there is no hover to lose. */
+  .hg-landing.hg-hero-watch .nav-cta { opacity: 0; visibility: hidden; transform: translateX(6px); transition: opacity .2s cubic-bezier(.2,.7,.2,1), transform .2s cubic-bezier(.2,.7,.2,1), visibility 0s linear .2s; }
+  .hg-landing.hg-hero-watch[data-hero-cta="gone"] .nav-cta { opacity: 1; visibility: visible; transform: translateX(0); transition: opacity .32s cubic-bezier(.2,.7,.2,1), transform .32s cubic-bezier(.2,.7,.2,1), visibility 0s linear 0s; }
+  /* compact on a phone: 13.6px text (was .95rem/15.2px) + shallower padding. Scoped to the landing so
+     /compare's header is byte-identical. padding-inline stays .9rem from the nav block above. */
+  .hg-landing.hg-hero-watch .nav-cta { font-size: .85rem; padding-block: .5rem; }
+}
+
+/* No fade when the operating system asks for less motion — the button still appears and disappears,
+   it just does so instantly. Matched at the same width so it cannot reach desktop. */
+@media(max-width:639px) and (prefers-reduced-motion:reduce){
+  /* `transform: none` as well as `transition: none` — without it the button would still ARRIVE 6px
+     out of place and simply snap there, which is a movement, just an instant one. */
+  .hg-landing.hg-hero-watch .nav-cta,
+  .hg-landing.hg-hero-watch[data-hero-cta="gone"] .nav-cta { transition: none; transform: none; }
+}
+
 .hg-landing .proof { list-style: none; display: grid; gap: .6rem; }
 .hg-landing .proof li { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
 .hg-landing .tick { width: 21px; height: 21px; border-radius: 50%; background: var(--orange); flex: none; display: flex; align-items: center; justify-content: center; }

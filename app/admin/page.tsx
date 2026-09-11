@@ -20,6 +20,8 @@ import { createSlug } from '@/lib/utils'   // slug preview in the create-truck m
 import { formatTimeRange } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import OutreachPanel from '@/components/admin/OutreachPanel'   // the outreach console, rendered as a tab
+import DiscoveryEventsPanel from '@/components/admin/DiscoveryEventsPanel' // discovery_events viewer/amender
+import TemplatesPanel from '@/components/admin/TemplatesPanel' // outreach message templates (DB-backed)
 import ScreenshotsPanel from '@/components/admin/ScreenshotsPanel' // the screenshot uploader, rendered as a tab
 
 interface AdminTruck {
@@ -224,7 +226,9 @@ const ADMIN_TABS = {
   features:    { icon: '📋', label: 'Features' },
   domains:     { icon: '🌐', label: 'Domains' },
   outreach:    { icon: '📣', label: 'Outreach' },
+  events:      { icon: '📅', label: 'Events' },
   screenshots: { icon: '🖼️', label: 'Screenshots' },
+  templates:   { icon: '✉️', label: 'Templates' },
 } as const
 type AdminTab = keyof typeof ADMIN_TABS
 
@@ -856,7 +860,7 @@ export default function AdminPage() {
           panel in here would push its last columns off-screen on EVERY monitor. That is arithmetic, not
           a small-screen problem, and it is the exact fault that was fixed on that table earlier. The
           wrapper is HIDDEN rather than unmounted so the three tab blocks inside keep their state. */}
-      <div className={adminTab === 'outreach' ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
+      <div className={(adminTab === 'outreach' || adminTab === 'events') ? 'hidden' : "w-full min-[1400px]:max-w-6xl min-[1400px]:mx-auto px-4 py-6"}>
 
         {/* ── EVENT SCREENSHOTS ─────────────────────────────────────────────────────────────────
             🔎 INSIDE this wrapper, unlike Outreach. Outreach is out there because its table needs
@@ -1340,9 +1344,26 @@ export default function AdminPage() {
           a hard 1510px floor. ⚠️ Mounted only while selected: that is deliberate, so /admin does not pay
           for a 231-row fetch on every visit — the cost is that switching away and back refetches.
           The panel was app/admin/outreach/page.tsx until this change; that route now redirects here. */}
+      {adminTab === 'templates' && (
+        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+          <TemplatesPanel />
+        </div>
+      )}
+
       {adminTab === 'outreach' && (
         <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
           <OutreachPanel />
+        </div>
+      )}
+
+      {/* ── DISCOVERY EVENTS ───────────────────────────────────────────────────────────────────────
+          Rendered OUTSIDE the max-w-6xl body wrapper for the same reason Outreach is: the table carries
+          minWidth 1060px and the wrapper caps at 1152px, which leaves no room for the page padding.
+          ⚠️ Unmounted when the tab is not selected, so it fetches on first selection rather than on
+          every /admin visit — and a stale event list is never held over from a previous visit. */}
+      {adminTab === 'events' && (
+        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+          <DiscoveryEventsPanel />
         </div>
       )}
 

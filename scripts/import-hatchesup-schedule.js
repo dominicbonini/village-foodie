@@ -715,13 +715,19 @@ ${scheduleText.slice(0, 150000)}`;
 
   console.log(`\n💾 Writing ${rows.length} events...`);
   let written = 0;
+  // 🔴 THROUGH THE GATE, NOT A DIRECT UPSERT. Every writer of discovery_events goes through
+  // /api/discovery/ingest so the truck match, the R5-checked venue match and the duplicate rule apply
+  // here too. Needs HATCHGRAB_API_URL + INBOUND_SCHEDULE_SECRET in the environment (as the scraper does).
+  // ⚠️ `visibility`/`discovery_truck_id` computed above are no longer sent — the gate resolves the truck
+  // itself, and a row for an unknown truck simply lands with discovery_truck_id NULL.
+  const GATE = process.env.HATCHGRAB_API_URL, SECRET = process.env.INBOUND_SCHEDULE_SECRET;
+  if (!GATE || !SECRET) { console.error('HATCHGRAB_API_URL / INBOUND_SCHEDULE_SECRET unset — nothing written'); process.exit(1); }
   for (let i = 0; i < rows.length; i += 100) {
-    const batch = rows.slice(i, i + 100);
-    const { error } = await supabase
-      .from('discovery_events')
-      .upsert(batch, { onConflict: 'event_date,truck_name,venue_name', ignoreDuplicates: false });
-    if (error) console.warn(`[DB] Batch ${Math.floor(i / 100) + 1} failed: ${error.message}`);
-    else written += batch.length;
+    const batch = rows.slice(i, i + 100).map(({ visibility, discovery_truck_id, ...r }) => r);
+    const res = await fetch(`${GATE}/api/discovery/ingest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: SECRET, events: batch }) });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) console.warn(`[gate] Batch ${Math.floor(i / 100) + 1}: HTTP ${res.status} — ${body.error ?? `${body.failed ?? '?'} row(s) failed`}`);
+    written += body.written ?? 0;
   }
 
   const publicCount = rows.filter(r => r.visibility === 'public').length;

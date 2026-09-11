@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
+import { admitDiscoveryEvents, type TruckRow } from '@/lib/discovery-gate'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
 
 const supabase = createClient(
@@ -61,60 +62,34 @@ export async function POST(req: NextRequest) {
     }))
     .filter(r => r.event_date && r.truck_name)
 
-  // Fetch lookup tables once for ID resolution. Venues carry coords + postcode so the bridge can
-  // fall back to the matched venue's postcode/coords without a second query.
+  // Fetch lookup tables once. The BRIDGE below still resolves each row's venue with `findVenue` for the
+  // truck_events coordinates/postcode it stamps — that is the bridge's own, unchanged behaviour.
   const [{ data: allDiscoveryTrucks }, { data: allVenuesRaw }] = await Promise.all([
-    supabase.from('discovery_trucks').select('id, name'),
+    supabase.from('discovery_trucks').select('id, name, aliases'),
     supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
   ])
-  // Shared venue matcher (lib/venue-matcher) takes allVenues as a param; pass once.
   const allVenues = (allVenuesRaw ?? []) as VenueRow[]
-
-  // Resolve each row's venue ONCE (was called twice — discovery enrichment + truck_events coords).
-  // Keyed by row reference; both passes below read from this map so the match (and its confidence)
-  // is computed a single time per event.
   const venueMatchByRow = new Map(rows.map(r => [r, findVenue(r.venue_name, r.village, allVenues)]))
 
-  // Enrich each row with resolved IDs before upserting
-  const enrichedRows = rows.map(row => {
-    // Match discovery_truck_id
-    let discoveryTruckId: string | null = null
-    if (allDiscoveryTrucks) {
-      const normIncoming = normName(row.truck_name)
-      const match = allDiscoveryTrucks.find(t => {
-        const normDb = normName(t.name)
-        return normDb === normIncoming || normDb.includes(normIncoming) || normIncoming.includes(normDb)
-      })
-      if (match) discoveryTruckId = match.id
-    }
-
-    // Match venue_id (same fuzzy matcher as the postcode/coords fallback below)
-    const venueId: string | null = venueMatchByRow.get(row)?.venue?.id ?? null
-
-    // Strip postcode: it belongs on truck_events only (the bridge insert reads row.postcode from
-    // `rows`). discovery_events has no postcode column — leaving it in would 500 the upsert (PGRST204).
-    const { postcode, ...discoveryRow } = row
-    return {
-      ...discoveryRow,
-      visibility: 'public',
-      show_on_vf: true,   // new scraped events default to both sites (mirrors visibility:'public')
-      show_on_hg: true,
-      discovery_truck_id: discoveryTruckId,
-      venue_id: venueId,
-    }
-  })
-
-  const { error } = await supabase
-    .from('discovery_events')
-    .upsert(enrichedRows, {
-      onConflict: 'event_date,truck_name,venue_name',
-      ignoreDuplicates: false
-    })
-
-  if (error) {
-    console.error('Inbound schedule write failed:', error.message)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  // ── 🔴 THE DISCOVERY WRITE GOES THROUGH THE SHARED GATE. ───────────────────────────────────────
+  // This replaces the enrichment + upsert that used to live here. What the gate adds: the name+aliases
+  // truck match, the R5 acceptance check on the venue match (a rejected match leaves venue_id NULL rather
+  // than guessing), venue creation for a genuinely new (name, village), and the duplicate rule.
+  // 🔴 IT DOES NOT TOUCH `rows`. The bridge loop below iterates the same untrimmed array it always did,
+  // so a row the gate marks as a duplicate is STILL offered to the operator for approval. That is the
+  // one placement constraint on this design (docs/trading-truck-rules-review.md §6) and this honours it.
+  // ⚠️ A write failure inside the gate is a 500 for the batch, exactly as the old upsert error was —
+  // the bridge does not run on rows that did not land in discovery_events.
+  const gate = await admitDiscoveryEvents(supabase, rows.map(r => ({
+    event_date: r.event_date!, start_time: r.start_time, end_time: r.end_time, truck_name: r.truck_name,
+    venue_name: r.venue_name, village: r.village, event_notes: r.event_notes, source: r.source, ai_notes: r.ai_notes,
+  })), { lookups: { trucks: (allDiscoveryTrucks ?? []) as TruckRow[], venues: allVenues } })
+  const gateFailed = gate.outcomes.filter(o => o.wrote === 'failed')
+  if (gateFailed.length > 0) {
+    console.error('Inbound schedule write failed:', gateFailed.map(o => `${o.key}: ${o.error}`).join(' | '))
+    return NextResponse.json({ error: `discovery write failed for ${gateFailed.length} row(s): ${gateFailed[0].error}` }, { status: 500 })
   }
+  if (gate.markFailed > 0) console.warn(`[inbound-schedule] ${gate.markFailed} duplicate mark(s) failed — superseded columns absent? apply 20260911_discovery_events_superseded.sql`)
 
   // ── Bridge: promote events to truck_events for linked HatchGrab trucks ──
   // Fetch all discovery_trucks that have a hatchgrab_truck_id once, then match locally

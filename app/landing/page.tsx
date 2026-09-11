@@ -24,6 +24,7 @@ import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/Demo
 // from one definition.
 // 🔴 MOVED, NOT REWRITTEN — proven byte-identical; see docs/cost-comparison-chrome-report.md §1.
 import { LandingNav } from '@/components/landing/LandingNav'
+import { HeroCtaWatcher } from '@/components/landing/HeroCtaWatcher'   // client: drives the header CTA's mobile reveal
 import { LandingFooter } from '@/components/landing/LandingFooter'
 import {
   FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
@@ -167,7 +168,12 @@ export default function LandingPage() {
     // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
     // CTA below open one shared modal without the page itself becoming a client component.
     <DemoModalProvider>
-    <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
+    {/* 🔴 `hg-hero-watch` IS THE LANDING-ONLY SCOPE FOR THE HEADER-CTA REVEAL, AND IT IS RENDERED ON THE
+        SERVER SO THE BUTTON IS HIDDEN IN THE FIRST PAINT. Every rule behind the reveal is written
+        `.hg-landing.hg-hero-watch …`, so /compare — which renders the SAME <LandingNav /> inside a
+        `.hg-landing` wrapper of its own and has no hero button to observe — never matches them and its
+        header CTA stays visible at every width, exactly as it is today. */}
+    <div className={`hg-landing hg-hero-watch ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
 
       {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
       <LandingNav />
@@ -205,15 +211,37 @@ export default function LandingPage() {
               }) }}
             />
             <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
+            {/* 🔴 MOBILE-ONLY (<640px), AND IT IS `display:none` BY DEFAULT — see landing.css. A block
+                that is display:none generates no box at all, so on tablet and desktop this element is
+                not merely invisible, it takes part in no layout: the hero above 640px is untouched.
+                It replaces BOTH the tagline and the CTA text on a phone, which are hidden there. */}
+            {/* 🔴 THE <br /> IS THE COPY, NOT A LAYOUT ACCIDENT. Two deliberate lines: the ask, then
+                what it gets you. Line 2 is sized to hold on one line at 375px and 390px — see the
+                width note on `.hero-sub-sm` in landing.css. */}
+            <p className="hero-sub-sm">Upload your menu.<br />See a working demo in under 60 seconds.</p>
             <p className="hero-tag">Less time booking.<br />More time <span className="lean">cooking.</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
-              <DemoCta className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
+              {/* 🔴 THE id IS THE OBSERVER'S TARGET, NOT A STYLING HOOK — nothing in landing.css selects
+                  it. HeroCtaWatcher below watches this exact button to decide when the HEADER CTA
+                  appears on mobile. */}
+              <DemoCta id="hero-cta" className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
+              {/* 🔴 MOBILE-ONLY, AND IT SITS INSIDE THE CTA ROW ON PURPOSE. The row is a flex COLUMN
+                  below 940px, so as the item after the button this lands directly under it with the
+                  row's own gap — no new spacing mechanism, nothing to keep in sync. Above 640px it is
+                  `display:none`, so the row that becomes a horizontal flex line at 940px still contains
+                  exactly the two items it contains today.
+                  ⚠️ IT REPLACED A TWO-ITEM TICK LIST ("No signup" / "No account", each with a small
+                  stroked check). One plain sentence, no icon and no orange — it is a footnote to the
+                  button. It still says what the strip below does not: what the demo costs you to try. */}
+              <p className="hero-note-sm">No signup or account needed.</p>
               <div className="hero-cta-text">
                 <b>Upload a photo of your menu. See it working in under 60 seconds.</b>
                 <span>No signup, no account — just a working demo with your truck’s food in it.</span>
               </div>
             </div>
+            {/* Renders nothing. Mounts the IntersectionObserver that reveals the header CTA on mobile. */}
+            <HeroCtaWatcher targetId="hero-cta" />
           </div>
 
           {/* ── Screenshot fan. Three real screenshots, absolutely positioned and rotated by landing.css. ──

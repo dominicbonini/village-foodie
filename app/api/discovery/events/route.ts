@@ -79,15 +79,28 @@ export async function GET(req: NextRequest) {
   let trData: any[] = []
 
   try {
+    // 🔴 SUPERSEDED DUPLICATES ARE HIDDEN HERE — `superseded_by is null`. The gate also flips the
+    // loser's show_on_* off, so this filter is belt-and-braces; it exists so a row marked by hand in
+    // SQL (superseded_by set, show_on_* untouched) is hidden too.
+    // ⚠️ TOLERANT OF THE COLUMN NOT EXISTING YET. Until 20260911_discovery_events_superseded.sql is
+    // applied, PostgREST rejects the filter (42703); the query is retried WITHOUT it and a warning is
+    // logged, so applying the migration late costs nothing but the hiding. Fail-closed on any OTHER
+    // error is unchanged below.
+    const evQuery = (withSuperseded: boolean) => {
+      let q = supabase.from('discovery_events').select(EV_SELECT).eq(showCol, true).gte('event_date', today)
+      if (withSuperseded) q = q.is('superseded_by', null)
+      return q.order('event_date', { ascending: true }).order('start_time', { ascending: true, nullsFirst: false }).limit(1000)
+    }
+    const evPromise = (async () => {
+      const r = await evQuery(true)
+      if (r.error && /superseded_by/.test(r.error.message || '')) {
+        console.warn('[Discovery] superseded_by column absent — migration 20260911 not applied; serving without the duplicate filter')
+        return await evQuery(false)
+      }
+      return r
+    })()
     const [evResult, trResult] = await Promise.all([
-      supabase
-        .from('discovery_events')
-        .select(EV_SELECT)
-        .eq(showCol, true)
-        .gte('event_date', today)
-        .order('event_date', { ascending: true })
-        .order('start_time', { ascending: true, nullsFirst: false })
-        .limit(1000),
+      evPromise,
 
       supabase
         .from('discovery_trucks')

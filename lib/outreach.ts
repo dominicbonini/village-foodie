@@ -24,15 +24,191 @@ export type ContactChannel = (typeof CONTACT_CHANNELS)[number]
 export const CONTACT_DIRECTIONS = ['outbound', 'inbound'] as const
 export type ContactDirection = (typeof CONTACT_DIRECTIONS)[number]
 
-export const CONTACT_KINDS = ['first_contact', 'follow_up', 'chase', 'reply'] as const
-export type ContactKind = (typeof CONTACT_KINDS)[number]
+// ── 🔴 THE CONTACT SEQUENCE — A NUMBERED LADDER, NOT A VOCABULARY OF SYNONYMS ───────────────────────
+// Was `['first_contact', 'follow_up', 'chase', 'reply']`. Three problems, all of which showed up in the
+// live rows within a week:
+//   • "follow up" and "chase" name the SAME step, so which one got logged depended on mood. 🧪 2 of the
+//     9 live rows are `follow_up` and 0 are `chase` — the split was already producing one dead value.
+//   • `reply` is not a stage. 🧪 The one live `reply` row is OUTBOUND, and the INBOUND row next to it is
+//     labelled `first_contact` — so the value was recording "my reply", while `direction` was already
+//     carrying "they replied". Two columns answering one question, disagreeing.
+//   • A stage that can be reached twice cannot drive an interval. The ladder is ordered and finite.
+// 🔴 A REPLY ENDS THE SEQUENCE RATHER THAN ADVANCING IT, and `direction = 'inbound'` records it.
+// 🔴 A CALL IS A CHANNEL, NOT A STAGE — `CONTACT_CHANNELS` already carries phone and in_person.
+// 🔴 FOUR RUNGS, NOT THREE — AND THIS REVERSES THE THREE-TOUCH CAP, DELIBERATELY AND ON REQUEST.
+// The cap was recorded as "a deliberate cap" and a terminal 'Final chase' was explicitly refused as a
+// fourth stage twice. The operator has since asked for BOTH a Chase 2 after Chase 1 AND a Final chase,
+// which is four touches; the reversal is recorded here rather than made silently.
+// ⚠️ '4_final_chase' IS A NEW STORED VALUE. No live row carries it (🧪 10 rows, none), and `kind` is
+// unconstrained text with no CHECK, so it needs no migration — see 20260903_outreach_tracking.sql:60.
+export const CONTACT_KINDS = ['1_first_contact', '2_chase_1', '3_chase_2', '4_final_chase'] as const
+/** A rung of the OUTBOUND ladder. Not every kind is one — see REPLY_KIND. */
+export type LadderKind = (typeof CONTACT_KINDS)[number]
+
+// ── 🔴 `reply` SITS OUTSIDE THE LADDER, BECAUSE `kind` IS MEANINGLESS ON AN INBOUND ROW ─────────────
+// 🧪 The live data is the argument. Azahar, all three rows dated 9 Sep 2026:
+//     outbound / first_contact   my approach
+//     inbound  / first_contact   THEM replying, wearing the label of my approach
+//     outbound / reply           my response, wearing a label that was never a rung
+// The ladder counts MY attempts. An inbound row is not an attempt, so no rung can describe it, and the
+// three numbered stages are therefore OUTBOUND-ONLY. `reply` is the one kind an inbound row can carry.
+// 🔴 THE STORED VALUE IS THE SAME STRING THE LEGACY ROW ALREADY USES — 'reply'. Adopting it rather than
+// minting 'inbound_reply' means the one legacy row needs no rewrite to become valid, and no migration
+// exists that could rewrite it wrongly.
+export const REPLY_KIND = 'reply' as const
+/** Every valid stored value: the ladder, then reply. This is what the API validates against. */
+export const CONTACT_KINDS_ALL = [...CONTACT_KINDS, REPLY_KIND] as const
+export type ContactKind = (typeof CONTACT_KINDS_ALL)[number]
+
+/** 🔴 WHICH KINDS A DIRECTION MAY CARRY. The picker maps over this, so an inbound row cannot be given a
+ *  rung of the outbound ladder by the UI at all.
+ *  🔴 `reply` IS IN BOTH LISTS — IT IS NOT GATED TO INBOUND. It was, and that was wrong: if a truck
+ *  emails me and I write back, that OUTBOUND row is a reply, not a chase. 🧪 The live Azahar row
+ *  46c6c4eb is exactly that, and gating made it permanently unrecordable — the previous pass listed it
+ *  as a row to correct by hand when in fact the code was what needed correcting.
+ *  ⚠️ IT IS STILL NOT A RUNG. It carries no follow-up interval (FOLLOW_UP_DAYS is keyed on LadderKind
+ *  only) and sorts at 90, outside the sequence — so it can never become a fourth touch. */
+export const kindsForDirection = (direction: string): readonly string[] =>
+  direction === 'inbound' ? [REPLY_KIND] : CONTACT_KINDS_ALL
+/** What Kind becomes when the direction changes. Inbound has exactly one answer. */
+export const defaultKindFor = (direction: string): string =>
+  direction === 'inbound' ? REPLY_KIND : CONTACT_KINDS[0]
+
+// ── 🔴 THE SORT ORDER LIVES HERE, IN THE STORED VALUES — NEVER IN THE LABELS ────────────────────────
+// The labels lost their numeric prefix ('1 - First contact' → 'First contact'), so alphabetical order of
+// the labels is now WRONG: it would give Chase 1, Chase 2, First contact, Reply. The ladder's order is
+// the ARRAY POSITION in CONTACT_KINDS above, and this map is derived from it rather than retyped, so the
+// two cannot drift. `reply` is deliberately 90 — outside the sequence, always last, never between rungs.
+export const KIND_ORDER: Record<string, number> = {
+  ...Object.fromEntries(CONTACT_KINDS.map((k, i) => [k, i + 1])),
+  [REPLY_KIND]: 90,
+  // 🔴 NO LEGACY ENTRIES. `first_contact`, `follow_up` and `chase` used to sort onto the rung they would
+  // become; the vocabulary is now First contact / Chase 1 / Final chase / Reply and nothing else. They
+  // fall through to 99 — last, and visibly not part of the sequence.
+}
+/** Position in the sequence; anything unknown sorts last, never silently first. */
+export const kindOrder = (v: string | null | undefined): number => (v ? KIND_ORDER[v] ?? 99 : 99)
+
+// 🔴 THE WHOLE VOCABULARY, AND NOTHING ELSE: First contact / Chase 1 / Chase 2 / Final chase / Reply.
+// ⚠️ 'Chase 2' WAS BRIEFLY 'Final chase' AND IS BACK — asked for, then reversed at the operator's
+// request. The concern behind the rename ("Chase 2 implies a Chase 3 exists") stands, but it is not the
+// label's job to carry the cap: CONTACT_KINDS has three rungs and nothing can add a fourth without
+// editing that array. 🔴 EITHER WAY THIS IS DISPLAY ONLY — the stored value is '3_chase_2' throughout,
+// and renaming a stored value would mean a migration over live rows to change one word of English.
+// 🔴 THE LEGACY KEYS ARE GONE — `first_contact`, `follow_up`, `chase`. They are still in the TABLE
+// (🧪 8 of the 10 live rows), so what matters is what the FALLBACK does; see kindLabel below.
+// 🔴 THE ORDER THESE SORT IN IS KIND_ORDER above, never this map and never the alphabet.
+const KIND_LABELS: Record<string, string> = {
+  '1_first_contact': 'First contact',
+  '2_chase_1': 'Chase 1',
+  '3_chase_2': 'Chase 2',
+  '4_final_chase': 'Final chase',
+  reply: 'Reply',
+}
+/** 🔴 THE FALLBACK IS THE POINT, NOT AN AFTERTHOUGHT. 8 of the 10 live rows store a value that is no
+ *  longer in the vocabulary, and the previous fallback rendered the raw column value — `follow_up`,
+ *  underscore and all. A row I cannot read is worse than a legacy label, so an unrecognised value is
+ *  HUMANISED (underscores out, first letter up) and rendered as words: `follow_up` → "Follow up".
+ *  ⚠️ HUMANISING ALONE WOULD BE DISHONEST — "Follow up" looks like a vocabulary item. The history table
+ *  pairs this with a ⚠ marker driven by `isKind`, so an unrecognised row reads as words AND is visibly
+ *  not one of the four. The two halves are deliberately separate: this function has no opinion about
+ *  markers, and the table has no opinion about spelling. */
+export const kindLabel = (v: string | null | undefined): string => {
+  if (!v) return '—'
+  const known = KIND_LABELS[v]
+  if (known) return known
+  const words = v.replace(/_/g, ' ').trim()
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : '—'
+}
+
+// 🔴 THE SAME LOOKUP-WITH-A-FALLBACK SHAPE FOR THE OTHER TWO VOCABULARIES. History used to render
+// the raw column values (`whatsapp`, `in_person`, and an arrow for direction). Those are storage values,
+// not display values — the table capitalises them here so no caller has to hand-roll a formatter, and an
+// unknown value still renders as itself rather than blank.
+const CHANNEL_LABELS: Record<string, string> = {
+  email: 'Email', whatsapp: 'WhatsApp', phone: 'Phone', in_person: 'In person',
+}
+export const channelLabel = (v: string | null | undefined): string =>
+  !v ? '—' : (CHANNEL_LABELS[v] ?? v.replace(/_/g, ' '))
+
+const DIRECTION_LABELS: Record<string, string> = { outbound: 'Outbound', inbound: 'Inbound' }
+export const directionLabel = (v: string | null | undefined): string =>
+  !v ? '—' : (DIRECTION_LABELS[v] ?? v)
+
+// ── 🔴 THE FOLLOW-UP INTERVAL, KEYED ON THE STAGE I SELECTED ────────────────────────────────────────
+// 🔴 THIS REVERSES THE MANUAL'S "NO DATE IS EVER SUGGESTED OR WRITTEN AUTOMATICALLY" RULE, DELIBERATELY.
+// The rule was written against a computation from the COUNT of outbound contacts, and its two recorded
+// failures were both properties of counting: a double-click made a first approach look like a third, and
+// a count cannot tell chasing silence from following up an engaged prospect (it also counted an email and
+// a WhatsApp about the same thing as two attempts).
+// 🔴 NEITHER OBJECTION SURVIVES A SELECTED STAGE. The interval now follows a value the operator picked
+// from a three-item list, so a double-click logs the same stage twice and yields the SAME date rather
+// than a compounding one, and "engaged" is expressed by an inbound row ending the ladder — not inferred.
+// ⚠️ THE OTHER HALF OF THE RULE STANDS UNCHANGED: nothing is written on OPEN. The field is seeded from
+// the stored column and stays empty when that is null.
+export const FOLLOW_UP_DAYS: Record<LadderKind, number | null> = {
+  '1_first_contact': 3,
+  '2_chase_1': 7,
+  // ⚠️ 14 IS MY CHOICE, NOT YOURS — SAY IF IT IS WRONG. `3_chase_2` used to be terminal (null) and had
+  // no interval to inherit; now that 'Final chase' follows it, it needs one. 3 → 7 → 14 keeps the gaps
+  // widening as a sequence goes cold, which is the shape the first two already had.
+  '3_chase_2': 14,
+  '4_final_chase': null,   // the sequence ends here; no date is proposed
+}
+
+/**
+ * The follow-up date a logged contact implies, as 'YYYY-MM-DD', or null when the ladder ends.
+ * 🔴 COUNTED FROM THE CONTACT'S OWN DATE, NOT FROM TODAY — logging Monday's email on Wednesday must
+ * schedule from Monday, or back-dating a contact silently pushes the chase out.
+ * ⚠️ Date-only arithmetic in UTC: `contactedAt` is a 'YYYY-MM-DD' string from the form, and building it
+ * through local time would shift the day either side of midnight for anyone west of Greenwich.
+ */
+export function followUpDateFor(kind: string, contactedAt: string): string | null {
+  const days = (FOLLOW_UP_DAYS as Record<string, number | null>)[kind]
+  if (days == null) return null
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(contactedAt)
+  if (!m) return null
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}
 
 // Runtime validators — the migration carries no CHECK, so THESE are the enforcement. Used by the route
 // before every write and by the page before it offers a value.
 export const isStage = (v: unknown): v is OutreachStage => OUTREACH_STAGES.includes(v as OutreachStage)
 export const isChannel = (v: unknown): v is ContactChannel => CONTACT_CHANNELS.includes(v as ContactChannel)
 export const isDirection = (v: unknown): v is ContactDirection => CONTACT_DIRECTIONS.includes(v as ContactDirection)
-export const isKind = (v: unknown): v is ContactKind => CONTACT_KINDS.includes(v as ContactKind)
+export const isKind = (v: unknown): v is ContactKind =>
+  (CONTACT_KINDS_ALL as readonly string[]).includes(v as string)
+
+// ── 🔴 THE DOUBLE-LOG GUARD — WHAT MAKES TWO TOUCHES THE SAME TOUCH ────────────────────────────────
+// 🧪 Tikka Tonic has two rows 0.755s apart (22:17:47.610099 and 22:17:48.365027 on 2026-09-03), same
+// prospect, direction, kind and channel. That is one double-click, and the manual already records the
+// damage it does: it makes a first approach count towards the touch cap twice (three at the time this
+// was written, four since 'Final chase' was added — the guard does not care which).
+//
+// 🔴 THE WINDOW IS THE CALENDAR DAY, AND THAT IS NOT A ROUND NUMBER PICKED FOR COMFORT.
+// `contacted_at` is `timestamptz`, but the modal sends a DATE ('YYYY-MM-DD'), which Postgres stamps at
+// midnight — 🧪 the live row 1aa26b89 was created at 13:53 and stored `2026-09-10T00:00:00+00:00`. So
+// two same-day logs of the same stage on the same channel are identical in EVERY stored field except
+// `id` and `created_at`. There is nothing in the data that distinguishes them, and a narrower window
+// (30s, 5 minutes) would only decide by wall-clock luck which indistinguishable row survives.
+// A legitimate second contact on the same day differs by KIND or by CHANNEL, and both still log.
+export const contactDay = (contactedAt: string | null | undefined): string =>
+  contactedAt ? String(contactedAt).slice(0, 10) : ''
+
+/** The identity of a touch. Two contacts with the same signature are the same touch. */
+export const contactSignature = (c: {
+  contacted_at?: string | null; direction?: string | null; kind?: string | null; channel?: string | null
+}): string => [contactDay(c.contacted_at), c.direction ?? '', c.kind ?? '', c.channel ?? ''].join('|')
+
+/** The already-recorded contact a candidate would duplicate, or null. Pure — no React, no network. */
+export function findDuplicateContact<T extends {
+  contacted_at?: string | null; direction?: string | null; kind?: string | null; channel?: string | null
+}>(existing: readonly T[], candidate: Parameters<typeof contactSignature>[0]): T | null {
+  const sig = contactSignature(candidate)
+  return existing.find(c => contactSignature(c) === sig) ?? null
+}
 
 // ── PLATFORM TAG FROM order_url — the SAME derivation the backfill SQL performs, kept here so a
 // re-derivation in the app can never diverge from the seed. 🔴 THE HOST IS THE SIGNAL (V12.1): read it,

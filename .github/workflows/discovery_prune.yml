@@ -1,0 +1,42 @@
+name: Prune past discovery events
+
+# 🔴 A SEPARATE WORKFLOW WITH ITS OWN RED. It does not run inside the scraper's job and does not inherit
+# its status: if this job exits non-zero — the count floor refused, the exclusion could not resolve all
+# four trucks, or a delete failed — THIS run is red on its own, with its own message.
+on:
+  schedule:
+    - cron: '30 3 * * *'          # daily, well clear of the 06:00 Pass A scrape
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Report only; delete nothing'
+        required: false
+        default: 'true'
+      allow_backlog:
+        description: 'One-off: raise the count floor to this number (leave blank normally)'
+        required: false
+        default: ''
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Prune past-dated discovery_events (FK-or-name exclusion, count floor)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ALLOW_BACKLOG: ${{ github.event.inputs.allow_backlog }}
+        # scheduled runs delete; a manual dispatch defaults to --dry-run unless dry_run is set to 'false'
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry_run }}" != "false" ]; then
+            node scripts/prune-discovery-events.mjs --dry-run
+          else
+            node scripts/prune-discovery-events.mjs
+          fi

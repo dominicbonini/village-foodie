@@ -13,6 +13,7 @@ import {
   type OutreachStage,
 } from '@/lib/outreach'
 import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'   // shared derivation — same as the live button
+import { scheduleNorm, scheduleKeys } from '@/lib/schedule-match'   // the SAME matcher the Schedule popup uses
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -26,20 +27,32 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SE
 // outside this task's "two new tables, change nothing else" scope — so this honours the real constraint
 // (no per-row query; O(events)+O(trucks), fixed number of round-trips) without widening the change. Both
 // derived values are computed at read time and NEVER stored. See docs/outreach-page-report.md.
-const norm = (s: string | null | undefined) => (s ?? '').trim().toLowerCase()
+// 🔴 MOVED to lib/schedule-match.ts so the events route can call the SAME function for the popup that
+// this route uses for the count. Same rule, same behaviour — see that module's header.
+const norm = scheduleNorm
 
-type Schedule = { futureCount: number; lastEventDate: string | null }
+// 🔴 `lastEventDate` IS THE MAX OVER ALL DATES — the FURTHEST future event, not the next one, and it
+// carries no venue. The templates need the NEXT event (soonest date >= today) and its venue, so those are
+// derived here as two more fields.
+// ⚠️ NO EXTRA QUERY, AND NOT ONE PER ROW. The same single bulk read now also selects `venue_name`; the
+// next-event fields are computed in the same in-memory pass that already builds futureCount.
+type Schedule = {
+  futureCount: number
+  lastEventDate: string | null
+  nextEventDate: string | null
+  nextEventVenue: string | null
+}
 
 async function buildScheduleIndex(): Promise<Map<string, Schedule>> {
   const todayYMD = new Date().toISOString().slice(0, 10)
   // One bulk read of the events we need — name + date only. Paged to defeat PostgREST's 1000-row default
   // cap so a growing event table never silently truncates the schedule (737 today, but do not assume).
-  const events: { truck_name: string | null; event_date: string | null }[] = []
+  const events: { truck_name: string | null; event_date: string | null; venue_name: string | null }[] = []
   const PAGE = 1000
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from('discovery_events')
-      .select('truck_name, event_date')
+      .select('truck_name, event_date, venue_name')
       .range(from, from + PAGE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
@@ -51,9 +64,25 @@ async function buildScheduleIndex(): Promise<Map<string, Schedule>> {
   for (const e of events) {
     const key = norm(e.truck_name)
     if (!key) continue
-    const cur = idx.get(key) ?? { futureCount: 0, lastEventDate: null }
+    const cur = idx.get(key) ?? { futureCount: 0, lastEventDate: null, nextEventDate: null, nextEventVenue: null }
     if (e.event_date) {
+      // 🔴 TWO DIFFERENT PREDICATES ON PURPOSE — READ BOTH BEFORE CHANGING EITHER.
+      //   futureCount uses `>= today` — it answers "is anything booked", and an event happening TODAY
+      //     counts. This is the Schedule cell's `Y (n)` and the number the schedule popup must agree
+      //     with, so it is deliberately UNCHANGED.
+      //   nextEvent*  uses `>  today` — it feeds a sentence in an email ("your Friday pitch at X").
+      //     An event happening as the email is written reads oddly, and an email composed today and
+      //     sent tomorrow names an event that has already happened. So the templates name the next
+      //     event AFTER today, or the line is dropped entirely.
+      // 🧪 21 of 231 prospects are affected: 19 now name a later event, 2 now drop the line.
       if (e.event_date >= todayYMD) cur.futureCount += 1
+      if (e.event_date > todayYMD) {
+        // The soonest one strictly after today — `<` so the first row seen for a date keeps its venue.
+        if (!cur.nextEventDate || e.event_date < cur.nextEventDate) {
+          cur.nextEventDate = e.event_date
+          cur.nextEventVenue = e.venue_name ?? null
+        }
+      }
       if (!cur.lastEventDate || e.event_date > cur.lastEventDate) cur.lastEventDate = e.event_date
     }
     idx.set(key, cur)
@@ -68,18 +97,23 @@ function scheduleFor(
   name: string | null,
   aliases: string[] | null,
 ): Schedule {
-  const keys = new Set<string>()
-  const n = norm(name); if (n) keys.add(n)
-  for (const a of aliases ?? []) { const k = norm(a); if (k) keys.add(k) }
+  const keys = scheduleKeys(name, aliases)   // the shared rule; was these three lines inline
   let futureCount = 0
   let lastEventDate: string | null = null
+  let nextEventDate: string | null = null
+  let nextEventVenue: string | null = null
   for (const k of keys) {
     const s = idx.get(k)
     if (!s) continue
     futureCount += s.futureCount
     if (s.lastEventDate && (!lastEventDate || s.lastEventDate > lastEventDate)) lastEventDate = s.lastEventDate
+    // Across a truck's name and aliases, the next event is the EARLIEST of their next events.
+    if (s.nextEventDate && (!nextEventDate || s.nextEventDate < nextEventDate)) {
+      nextEventDate = s.nextEventDate
+      nextEventVenue = s.nextEventVenue
+    }
   }
-  return { futureCount, lastEventDate }
+  return { futureCount, lastEventDate, nextEventDate, nextEventVenue }
 }
 
 // ── GET — the full list (prospects × their discovery truck × derived schedule × contact log summary) ───
@@ -95,7 +129,7 @@ export async function GET(req: NextRequest) {
     // select and their flag is reported to the page. This is a capability probe (did the select succeed?),
     // NOT an inference from row VALUES. Applying the migration and reloading flips a flag on the next load.
     const TRUCK_EMBED = `truck:discovery_trucks!outreach_prospects_discovery_truck_id_fkey (
-          id, name, aliases, contact_email, phone, mobile, accepted_methods, order_url, excluded, logo_url, website, schedule_url
+          id, name, aliases, contact_email, phone, mobile, accepted_methods, order_url, excluded, logo_url, photo_url, website, schedule_url
         )`
     const BASE_COLS = `id, discovery_truck_id, stage, platform, hu_map, hu_ordering, whatsapp_number, whatsapp_confirmed,
         next_action_at, notes, created_at, updated_at`
@@ -147,6 +181,7 @@ export async function GET(req: NextRequest) {
         discovery_truck_id: p.discovery_truck_id,
         name: truck?.name ?? '(unknown truck)',
         logo_url: truck?.logo_url ?? null,
+        photo_url: truck?.photo_url ?? null,
         contact_name: hasContactName ? (p.contact_name ?? null) : null,
         do_not_contact: hasDoNotContact ? (p.do_not_contact ?? null) : null,
         entity_type: hasEntityType ? (p.entity_type ?? null) : null,
@@ -172,6 +207,8 @@ export async function GET(req: NextRequest) {
         notes: p.notes,
         futureEventCount: sched.futureCount,
         lastEventDate: sched.lastEventDate,
+        nextEventDate: sched.nextEventDate,
+        nextEventVenue: sched.nextEventVenue,
         outboundCount,
         lastContactedAt,
         contacts,
@@ -189,8 +226,104 @@ export async function GET(req: NextRequest) {
 
 // ── POST — mutations. One handler, an `action` discriminator, every write validated against the shared
 // constants (the tables carry NO CHECK, so THIS is the enforcement). ─────────────────────────────────
+// ── MEDIA UPLOAD CONSTANTS ───────────────────────────────────────────────────────────────────────────
+// 🔴 `truck-media` IS THE ONLY RUNTIME-WRITABLE STORE. The `/logos/…` and `/photos/…` values that most
+// discovery rows carry are STATIC FILES IN `public/`, tracked in git and shipped with the deploy — a
+// serverless function cannot write one. So an upload here lands in the bucket and the column receives the
+// ABSOLUTE public URL, which is the shape 44 rows already hold and which `formatImageUrl` passes through
+// untouched. Both shapes therefore keep working and no consumer changes.
+const MEDIA_BUCKET = 'truck-media'
+const MAX_MEDIA_BYTES = 5 * 1024 * 1024        // 5 MB — a logo or a food photo, not a print master
+// Only the two media columns are writable this way. A map, not string interpolation, so no caller can
+// name an arbitrary column.
+const MEDIA_COLUMN: Record<string, 'logo_url' | 'photo_url'> = { logo: 'logo_url', photo: 'photo_url' }
+// Separated INSIDE the object path, not in the column value — the column holds a full URL either way.
+const MEDIA_FOLDER: Record<string, string> = { logo: 'logos', photo: 'photos' }
+
 export async function POST(req: NextRequest) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
+
+  // ── UPLOAD A LOGO OR PHOTO (multipart) ─────────────────────────────────────────────────────────────
+  // 🔴 A NEW SERVER ACTION, NOT A REUSE OF `get_upload_url`. That one is on /api/manage, gated by a
+  // dashboard_token, keyed on an OPERATOR truck id, and is a signed-URL the CLIENT then PUTs to. All
+  // three are wrong here: this is admin-gated, keyed on the DISCOVERY truck uuid, and the bytes go
+  // through this server with the service role — no client-side storage call, no anon key.
+  // ⚠️ Declared as new deliberately: app manual §51.7 records a "reuse" that was a fourth independent
+  // implementation, and this must not be described that way.
+  // 🔎 The COLUMN WRITE below is a genuine reuse — the same resolve-discovery_truck_id-then-update
+  // pattern `update_prospect` already uses for contact_email/phone, on this route, with this gate.
+  if ((req.headers.get('content-type') || '').startsWith('multipart/form-data')) {
+    let form: FormData
+    try { form = await req.formData() } catch { return NextResponse.json({ error: 'Bad form data' }, { status: 400 }) }
+
+    const prospectId = String(form.get('prospect_id') ?? '')
+    const kind = String(form.get('column') ?? '')
+    const file = form.get('file')
+    const column = MEDIA_COLUMN[kind]
+    if (!prospectId || !column) return NextResponse.json({ error: 'prospect_id and a valid column are required' }, { status: 400 })
+    if (!(file instanceof File) || file.size === 0) return NextResponse.json({ error: 'No file supplied' }, { status: 400 })
+
+    // ⚠️ VALIDATE BEFORE A SINGLE BYTE REACHES A PUBLIC BUCKET. Both checks are here rather than only in
+    // the browser: the browser's copy is a convenience, this one is the rule.
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json({ error: `That is not an image (${file.type || 'unknown type'})` }, { status: 400 })
+    }
+    if (file.size > MAX_MEDIA_BYTES) {
+      return NextResponse.json({ error: `Too large — ${(file.size / 1048576).toFixed(1)} MB, limit ${MAX_MEDIA_BYTES / 1048576} MB` }, { status: 400 })
+    }
+
+    try {
+      const { data: pr, error: prErr } = await supabase
+        .from('outreach_prospects').select('discovery_truck_id').eq('id', prospectId).single()
+      if (prErr || !pr?.discovery_truck_id) return NextResponse.json({ error: 'Prospect not found' }, { status: 404 })
+      const truckId = pr.discovery_truck_id as string
+
+      // 🔴 EMPTY SLOTS ONLY, ENFORCED HERE AND NOT JUST IN THE UI. Replacing is out of scope, and the UI
+      // not offering a drop target is a convention a direct POST could ignore. A filled column is refused.
+      const { data: cur, error: curErr } = await supabase
+        .from('discovery_trucks').select(column).eq('id', truckId).single()
+      if (curErr) return NextResponse.json({ error: 'Could not read the truck row' }, { status: 500 })
+      if ((cur as any)?.[column]) {
+        return NextResponse.json({ error: 'That slot already has an image — replacing is not supported' }, { status: 409 })
+      }
+
+      // 🔴 THE FILENAME SCHEME. `<discovery_truck_id>/<logos|photos>/<timestamp>-<safe name>`:
+      //   • the discovery truck UUID makes a collision BETWEEN trucks impossible — the failure that would
+      //     otherwise put one business's logo on another's public listing;
+      //   • the timestamp stops a re-upload silently overwriting the previous object;
+      //   • the folder separates the two kinds inside the bucket (the column value is a full URL either
+      //     way, so this is for humans reading the bucket, not for resolution).
+      const safeName = (file.name || 'image').replace(/[^A-Za-z0-9._-]/g, '_').slice(-80)
+      const path = `${truckId}/${MEDIA_FOLDER[kind]}/${Date.now()}-${safeName}`
+
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const { error: upErr } = await supabase.storage.from(MEDIA_BUCKET)
+        .upload(path, buffer, { contentType: file.type, upsert: false })
+      if (upErr) return NextResponse.json({ error: `Upload failed: ${upErr.message}` }, { status: 500 })
+
+      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL}/storage/v1/object/public/${MEDIA_BUCKET}/${path}`
+
+      // 🔴 THE ORPHAN WINDOW, AND IT IS ONE-DIRECTIONAL. The bytes must exist before the column can point
+      // at them, so the column write happens IMMEDIATELY here with nothing in between. If it fails, the
+      // object is deleted — because a public file nothing references is the worst of both outcomes.
+      // ⚠️ If the cleanup ALSO fails the path is logged EXPLICITLY rather than swallowed: an orphan that
+      // nobody can name is one nobody will ever remove.
+      const { error: dbErr } = await supabase
+        .from('discovery_trucks').update({ [column]: publicUrl }).eq('id', truckId)
+      if (dbErr) {
+        const { error: rmErr } = await supabase.storage.from(MEDIA_BUCKET).remove([path])
+        if (rmErr) {
+          console.error(`[admin/outreach] 🔴 ORPHANED PUBLIC OBJECT — column write failed AND cleanup failed. Path: ${MEDIA_BUCKET}/${path} · db: ${dbErr.message} · cleanup: ${rmErr.message}`)
+        }
+        return NextResponse.json({ error: `Saved the file but could not update the truck — no change made${rmErr ? ' (and the file could not be removed; see server log)' : ''}` }, { status: 500 })
+      }
+
+      return NextResponse.json({ ok: true, column, url: publicUrl })
+    } catch (e: any) {
+      console.error('[admin/outreach] media upload failed:', e?.message || e)
+      return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    }
+  }
 
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Bad JSON' }, { status: 400 }) }
@@ -282,9 +415,133 @@ export async function POST(req: NextRequest) {
     if (action === 'delete_contact') {
       const contact_id = String(body.contact_id ?? '')
       if (!contact_id) return NextResponse.json({ error: 'contact_id required' }, { status: 400 })
-      const { error } = await supabase.from('outreach_contacts').delete().eq('id', contact_id)
+      // 🔴 `.select('id')` IS THE FIX FOR A DELETE THAT DELETED NOTHING. PostgREST returns NO error when
+      // the filter matches zero rows — the statement ran, it just did not affect anything — so this
+      // action used to answer `{ ok: true }` to an id that does not exist, and the UI said "removed"
+      // about a row still in the table. Asking for the deleted rows back makes the count observable.
+      // ⚠️ NOT A NEW ACTION and not a new delete path: same action name, same single statement, same
+      // gate. What changed is that the answer now carries how many rows it actually removed.
+      const { data, error } = await supabase
+        .from('outreach_contacts').delete().eq('id', contact_id).select('id')
       if (error) throw error
-      return NextResponse.json({ ok: true })
+      const deleted = data?.length ?? 0
+      if (deleted === 0) {
+        return NextResponse.json(
+          { error: 'That contact no longer exists — it may already have been deleted.', deleted: 0 },
+          { status: 404 })
+      }
+      return NextResponse.json({ ok: true, deleted })
+    }
+
+    // ── REMOVE A LOGO OR PHOTO ────────────────────────────────────────────────────────────────────
+    // Clears the column so the slot becomes an empty drop target again. Used to correct a mistake or to
+    // replace an image (upload refuses a filled slot, so clearing is how you replace).
+    //
+    // 🔴 THE COLUMN IS CLEARED FIRST, THEN THE OBJECT — THE EXACT REVERSE OF UPLOAD, AND DELIBERATELY.
+    // On upload the bytes must exist before anything points at them, so a failed DB write leaves an
+    // orphan to clean up. On delete the danger runs the other way: removing the file first and then
+    // failing to clear the column would leave a row pointing at nothing — a broken image on a public
+    // page. Clearing the column first means the worst case is an unreferenced file, which is invisible.
+    //
+    // 🔴 AND THE FILE IS ONLY DELETED WHEN IT IS PROVABLY OURS TO DELETE. `discovery_trucks.logo_url`
+    // holds three kinds of value and only one of them is safe to remove from storage:
+    //   • `<discovery_truck_id>/…`  — uploaded from THIS surface. Ours. Delete it.
+    //   • `discovery-logos/…`       — the seeded discovery folder (🧪 49 of 50 absolute values today). Ours.
+    //   • anything else             — 🔴 NEVER TOUCHED. That includes `/logos/…` static files committed in
+    //     the repo (a function cannot delete one anyway) and, critically, paths inside an OPERATOR truck's
+    //     own folder: 🧪 `Test Kitchen.logo_url` is `test-truck/1779807893924-theraclettetruck.jpg`, and
+    //     `test-truck` is a `trucks.id`. Deleting that would reach into an operator's storage from a
+    //     prospecting screen. The column still clears; the file is left exactly where it is.
+    if (action === 'delete_media') {
+      const id = String(body.id ?? '')
+      const kind = String(body.column ?? '')
+      const column = MEDIA_COLUMN[kind]
+      if (!id || !column) return NextResponse.json({ error: 'id and a valid column are required' }, { status: 400 })
+
+      const { data: pr, error: prErr } = await supabase
+        .from('outreach_prospects').select('discovery_truck_id').eq('id', id).single()
+      if (prErr || !pr?.discovery_truck_id) return NextResponse.json({ error: 'Prospect not found' }, { status: 404 })
+      const truckId = pr.discovery_truck_id as string
+
+      const { data: cur, error: curErr } = await supabase
+        .from('discovery_trucks').select(column).eq('id', truckId).single()
+      if (curErr) return NextResponse.json({ error: 'Could not read the truck row' }, { status: 500 })
+      const value: string | null = (cur as any)?.[column] ?? null
+      if (!value) return NextResponse.json({ ok: true, alreadyEmpty: true, fileDeleted: false })
+
+      // ── 🔴 REFUSE A PHOTO DELETE WHOSE VALUE IS A LIVE PUBLIC FALLBACK ──────────────────────────
+      // 🔎 `app/api/discovery/events/route.ts:296-301` maps operator events with
+      //      foodPhotoUrl: truck?.cover_image_path ? <operator upload> : formatImageUrl(linked.photo_url…)
+      // so for a LINKED truck with no cover image of its own, THIS COLUMN IS WHAT THE PUBLIC MAP RENDERS.
+      // Deleting it would change what a Village Foodie / HatchGrab visitor sees.
+      //
+      // 🔴 THE GATE IS MIRRORED FROM THAT FILE, NOT REIMPLEMENTED FROM MEMORY. There (`:252-257`) it is:
+      //      if (!truck.active) return false
+      //      if (truck.excluded) return false            // master hide
+      //      if (!truck[showCol]) return false           // showCol = isHG ? 'show_on_hg' : 'show_on_vf'
+      // `showCol` depends on which SITE is being served, so the same row is public if it passes for
+      // EITHER — hence `show_on_vf || show_on_hg` here.
+      //
+      // 🔴 DELIBERATELY NOT PART OF THE CONDITION: whether the truck has a future event. An event-count
+      // test would make the refusal flicker — the same click succeeding today and refused tomorrow with
+      // nothing visible having changed. The condition is STRUCTURAL: is this column the live fallback for
+      // a publicly-visible truck. That is either true or false regardless of this week's schedule.
+      //
+      // ⚠️ PHOTO ONLY. The logo has the same fallback shape but `logo_storage_path` is set on every linked
+      // truck that is public, so the discovery logo is not a live source for any of them. No logo refusal.
+      //
+      // 🔴 EVERY INPUT IS RE-READ FROM THE DATABASE HERE. Nothing the client sent is trusted.
+      if (column === 'photo_url') {
+        const { data: dt, error: dtErr } = await supabase
+          .from('discovery_trucks').select('name, hatchgrab_truck_id').eq('id', truckId).single()
+        if (dtErr) return NextResponse.json({ error: 'Could not read the truck row' }, { status: 500 })
+        if (dt?.hatchgrab_truck_id) {
+          const { data: op } = await supabase
+            .from('trucks')
+            .select('name, active, excluded, show_on_vf, show_on_hg, cover_image_path')
+            .eq('id', dt.hatchgrab_truck_id).maybeSingle()
+          const publiclyVisible = !!op && !!op.active && !op.excluded && (!!op.show_on_vf || !!op.show_on_hg)
+          if (publiclyVisible && !op!.cover_image_path) {
+            const who = op!.name || dt.name || 'this truck'
+            return NextResponse.json({
+              error: `Refused: this photo is live on the public map. ${who} is a linked HatchGrab truck with no cover image of its own, so the discovery feed renders THIS photo for its events. Deleting it would change what visitors see. Set a cover image on the operator dashboard first, or delete the logo instead.`,
+              refused: 'public_photo_fallback',
+              truck: who,
+            }, { status: 409 })
+          }
+        }
+      }
+
+      // 1. CLEAR THE COLUMN. If this fails nothing has been lost — the image still displays.
+      const { error: dbErr } = await supabase
+        .from('discovery_trucks').update({ [column]: null }).eq('id', truckId)
+      if (dbErr) return NextResponse.json({ error: `Could not clear the column: ${dbErr.message}` }, { status: 500 })
+
+      // 2. THEN the object, and only if the path is one of ours.
+      let fileDeleted = false
+      let fileNote: string | null = null
+      const marker = `/storage/v1/object/public/${MEDIA_BUCKET}/`
+      const at = value.indexOf(marker)
+      if (at < 0) {
+        fileNote = 'the stored value is not a truck-media URL (a static /logos or /photos file, or another host) — column cleared, file untouched'
+      } else {
+        const path = value.slice(at + marker.length)
+        const firstSeg = path.split('/')[0]
+        const ours = firstSeg === truckId || firstSeg === 'discovery-logos'
+        if (!ours) {
+          fileNote = `the file lives under "${firstSeg}/", which is not this truck's own folder — column cleared, file deliberately left in place`
+          console.warn(`[admin/outreach] delete_media: NOT deleting ${MEDIA_BUCKET}/${path} — foreign folder "${firstSeg}"`)
+        } else {
+          const { error: rmErr } = await supabase.storage.from(MEDIA_BUCKET).remove([path])
+          if (rmErr) {
+            fileNote = 'column cleared, but the file could not be removed (see server log)'
+            console.error(`[admin/outreach] 🔴 ORPHANED PUBLIC OBJECT — column cleared but delete failed. Path: ${MEDIA_BUCKET}/${path} · ${rmErr.message}`)
+          } else {
+            fileDeleted = true
+          }
+        }
+      }
+      return NextResponse.json({ ok: true, column, fileDeleted, fileNote })
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
