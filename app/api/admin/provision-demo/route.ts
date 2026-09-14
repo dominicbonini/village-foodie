@@ -1,22 +1,40 @@
 // app/api/admin/provision-demo/route.ts
 //
-// ⚠️ TEMPORARY TEST SCAFFOLDING. This is NOT the real entry point. The production path is a PUBLIC upload
-// on the landing page (spec Stage 1-2) with no auth at all — anonymous by design. This route exists only so
-// provisionDemo() can be exercised against the live DB, by a human, before anonymous traffic drives it.
-// DELETE (or repurpose) when the public upload endpoint lands.
+// THE ADMIN DEMO ENTRY POINT — the outreach "Create Demo" action (components/admin/CreateDemoModal.tsx).
 //
-// It deliberately mirrors the real caller's shape — multipart file OR text, same as process-menu — so what
-// gets proven here is the same code path the public route will use.
+// HISTORY: this began as temporary test scaffolding for exercising provisionDemo() against the live DB
+// before the public upload (/api/demo) existed. It was REPURPOSED rather than deleted (12 September 2026)
+// because it is exactly the shape an admin-only demo needs and the public route can never be: it is
+// verifyAdmin-gated, so it can carry a truck NAME, a LOGO and a DISCOVERY ID — three things an anonymous
+// visitor must never be able to set on a demo, and which /api/demo therefore does not accept.
+//
+// WHAT IT ADDS OVER /api/demo, per request:
+//   discoveryTruckId — the discovery_trucks row this demo is built for. The row's own `name` and
+//                      `logo_url` are read SERVER-SIDE from that id (the client cannot supply a logo
+//                      source; it can only override the display name). Threads into provisionDemo →
+//                      demo_sessions.discovery_truck_id + public_ref + the 30-day tier + the branded
+//                      name/logo. 🔴 NEVER written to discovery_trucks.hatchgrab_truck_id — that column
+//                      means "this discovery row IS an operator truck" to every reader.
+//   name             — optional override of the discovery name for the demo truck.
+//   template         — the same sample-menu id /api/demo accepts, for a prospect with no menu to hand.
+// Everything the old scaffolding accepted (multipart file OR JSON/multipart text, existingTruckId) still
+// works unchanged; the verification counts it returned are kept because the modal shows them.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { provisionDemo, ProvisionDemoError } from '@/lib/provision-demo'
+import { getDemoTemplate } from '@/lib/demo-templates'
+
+// Same ceiling as /api/demo and for the same reason: the provision blocks for the whole extract + commit.
+export const maxDuration = 300
 
 const supabase = createClient(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL)!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
+
+const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v.trim() : null)
 
 export async function POST(req: NextRequest) {
   if (!await verifyAdmin(req)) {
@@ -26,6 +44,9 @@ export async function POST(req: NextRequest) {
   let file: File | null = null
   let text: string | null = null
   let existingTruckId: string | undefined
+  let discoveryTruckId: string | null = null
+  let nameOverride: string | null = null
+  let templateId: string | null = null
 
   const contentType = req.headers.get('content-type') || ''
   try {
@@ -33,29 +54,52 @@ export async function POST(req: NextRequest) {
       const form = await req.formData()
       const f = form.get('file')
       file = f instanceof File && f.size > 0 ? f : null
-      const t = form.get('text')
-      text = typeof t === 'string' && t.trim() ? t : null
-      const e = form.get('existingTruckId')
-      existingTruckId = typeof e === 'string' && e.trim() ? e.trim() : undefined
+      text = str(form.get('text'))
+      existingTruckId = str(form.get('existingTruckId')) ?? undefined
+      discoveryTruckId = str(form.get('discoveryTruckId'))
+      nameOverride = str(form.get('name'))
+      templateId = str(form.get('template'))
     } else {
       const body = await req.json()
-      text = typeof body.text === 'string' && body.text.trim() ? body.text : null
-      existingTruckId = typeof body.existingTruckId === 'string' && body.existingTruckId.trim()
-        ? body.existingTruckId.trim() : undefined
+      text = str(body.text)
+      existingTruckId = str(body.existingTruckId) ?? undefined
+      discoveryTruckId = str(body.discoveryTruckId)
+      nameOverride = str(body.name)
+      templateId = str(body.template)
     }
   } catch {
     return NextResponse.json({ error: 'Could not read request body' }, { status: 400 })
   }
 
-  if (!file && !text && !existingTruckId) {
+  const template = getDemoTemplate(templateId)
+  if (!file && !text && !existingTruckId && !template) {
     return NextResponse.json(
-      { error: 'Supply a menu file, menu text, or an existingTruckId to re-provision' },
+      { error: 'Supply a menu file, menu text, a sample template, or an existingTruckId to re-provision' },
       { status: 400 },
     )
   }
 
+  // ── The discovery row, read here and not trusted from the client ───────────────────────────────
+  // `name` and `logo_url` come from the row. The logo value then goes through lib/demo-logo's allowlist
+  // inside provisionDemo — a value outside it (an external host) builds the demo WITHOUT a logo and says
+  // so in `warnings`; it is never fetched.
+  let name: string | null = null
+  let logoUrl: string | null = null
+  if (discoveryTruckId) {
+    const { data: row, error } = await supabase
+      .from('discovery_trucks').select('id, name, logo_url').eq('id', discoveryTruckId).maybeSingle()
+    if (error) return NextResponse.json({ error: `Could not read the discovery truck: ${error.message}` }, { status: 500 })
+    if (!row) return NextResponse.json({ error: 'Discovery truck not found' }, { status: 404 })
+    name = nameOverride ?? str(row.name)
+    logoUrl = str(row.logo_url)
+    if (!name) return NextResponse.json({ error: 'That discovery truck has no name to brand the demo with' }, { status: 400 })
+  }
+
   try {
-    const result = await provisionDemo(supabase, { file, text, existingTruckId })
+    const result = await provisionDemo(supabase, {
+      file, text, template, existingTruckId,
+      ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl } : {}),
+    })
 
     // Counts read back from the DB rather than inferred — the point of this route is to verify what
     // ACTUALLY landed, so trusting the provisioner's own arithmetic would defeat it.
@@ -90,7 +134,12 @@ export async function POST(req: NextRequest) {
         slug: result.slug,
         dashboard_token: result.dashboardToken,
         van_id: result.vanId,
+        name,
+        logo_storage_path: result.logoStoragePath,
       },
+      // OUTREACH: null for an unlinked demo. The readable URL is `/demo/<publicRef>`.
+      publicRef: result.publicRef,
+      discoveryTruckId,
       event: ev ? {
         id: ev.id,
         event_date: eventRow?.event_date ?? ev.event_date,
@@ -113,6 +162,7 @@ export async function POST(req: NextRequest) {
         dashboard: `/dashboard/${result.dashboardToken}`,
         order: `/trucks/${result.slug}/order`,
         kds: `/dashboard/${result.dashboardToken}/kds`,
+        ...(result.publicRef ? { public: `/demo/${result.publicRef}` } : {}),
       },
       warnings: result.warnings,
     })

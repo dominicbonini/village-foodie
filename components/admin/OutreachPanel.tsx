@@ -32,6 +32,7 @@ import InlineField from '@/components/admin/InlineField'   // MOVED here from th
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
 import ComposeWindow from '@/components/admin/ComposeWindow'
+import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outreach "Create Demo" — stacked ABOVE the prospect modal
 // Only the two GATING helpers are needed here now; the picker, the renderer, the footer and the
 // copy action all live in ComposeWindow.
 // 🔴 TEMPLATES COME FROM THE DATABASE NOW. This module holds the MECHANISM only — no message copy.
@@ -66,6 +67,10 @@ type Contact = {
 }
 type Prospect = {
   id: string; discovery_truck_id: string; name: string
+  /** The NEWEST live demo built for this prospect (/api/admin/outreach), or null when there is none —
+   *  and null too when the demo_sessions migration is not applied yet (the route degrades rather than
+   *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */
+  demo?: { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number } | null
   logo_url: string | null; photo_url: string | null; contact_name: string | null
   do_not_contact: boolean | null; entity_type: string | null
   contact_email: string | null; phone: string | null; mobile: string | null
@@ -341,6 +346,15 @@ export default function OutreachPanel() {
     setFilter(f => ({ ...f, [k]: v }))
   // "Open" shows a MODAL for one prospect (by id, so optimistic edits stay live), not an inline expansion.
   const [modalId, setModalId] = useState<string | null>(null)
+  // The "Create Demo" modal, stacked above the prospect modal. Keyed by the PROSPECT ID it was opened
+  // for, not a boolean: it is open only while `createDemoForId === modalId`, so any change of prospect
+  // (Close, ←/→, filter) drops it with no reset effect and no stale flag popping it open on the next
+  // prospect. The REF mirrors that predicate at commit for the Escape listener below, which must not
+  // close the prospect modal while this one is open (see CreateDemoModal's header, rule 2).
+  const [createDemoForId, setCreateDemoForId] = useState<string | null>(null)
+  const createDemoOpen = createDemoForId !== null && createDemoForId === modalId
+  const createDemoOpenRef = useRef(false)
+  useEffect(() => { createDemoOpenRef.current = createDemoOpen }, [createDemoOpen])
   // The prospect whose schedule popup is open — state of its own, because the schedule popup and the
   // prospect modal are independent surfaces and opening one must never imply the other.
   // 🔴 LOADED FROM `outreach_templates`, NOT FROM CODE. `null` means "not loaded yet or unreachable" and
@@ -412,9 +426,13 @@ export default function OutreachPanel() {
 
   // Escape closes the modal (the backdrop still does NOT — no outside-click close). Belt-and-braces with
   // the always-visible Close button, since the modal can be tall.
+  // 🔴 GATED while the Create Demo modal is open: both listeners are bubble-phase on window and BOTH fire
+  // on one Escape; this one declines and the child closes itself. No capture phase, no stopPropagation,
+  // no registration-order dependence — the C15 trap (two capture listeners on one node) is avoided by
+  // not having two capture listeners.
   useEffect(() => {
     if (!modalId) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setModalId(null) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !createDemoOpenRef.current) setModalId(null) }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [modalId])
@@ -949,7 +967,19 @@ export default function OutreachPanel() {
                 <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Last contacted</span>
                 {fmtDate(modalProspect.lastContactedAt) ?? <span className="text-slate-400">never</span>}
               </span>
-              <div className="ml-auto">
+              <div className="ml-auto flex items-center gap-3">
+                {/* DEMO — the LINK when this prospect already has one, the CREATE button when it does not.
+                    🔴 BOTH ARE INLINE IN THIS MODAL — NO SECOND OVERLAY, NO NEW KEY LISTENER. The link is
+                    the state that is read most often and adding a layer to read it would be the
+                    modal-on-modal trap for nothing. (The Create flow still opens CreateDemoModal, which
+                    already handles its own stacking and Escape — see that file's header.)
+                    /api/admin/provision-demo with the discovery id; name and logo are read server-side. */}
+                {modalProspect.demo
+                  ? <DemoLinkChip demo={modalProspect.demo} />
+                  : <button type="button" onClick={() => setCreateDemoForId(modalProspect.id)}
+                      className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
+                      Create demo
+                    </button>}
                 <DoNotContactToggle p={modalProspect} enabled={hasDoNotContact} onPatch={patchProspect} />
               </div>
             </div>
@@ -971,6 +1001,20 @@ export default function OutreachPanel() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Layered ABOVE the prospect modal (inline zIndex 95, portaled), and only while that modal is open. */}
+      {modalProspect && createDemoOpen && (
+        <CreateDemoModal
+          prospect={{ id: modalProspect.id, discovery_truck_id: modalProspect.discovery_truck_id, name: modalProspect.name, logo_url: modalProspect.logo_url }}
+          onClose={() => setCreateDemoForId(null)}
+          onCreated={ref => {
+            showToast(ref ? `Demo ready: /demo/${ref}` : 'Demo ready')
+            // Re-read so this prospect's row carries its new `demo` and the header swaps the Create
+            // button for the link — without it the admin would have to reload to see what they built.
+            load()
+          }}
+        />
       )}
 
       {/* Layered ABOVE the prospect modal, and only while that modal is open. */}
@@ -1512,6 +1556,49 @@ const HISTORY_COLS = [
 // 🔴 STICKY HEADER AND ROW TINTS ARE INLINE STYLES, NOT UTILITIES. The container scrolls, so the header
 // has to stay put and must paint an opaque band over the rows sliding under it — a utility that failed to
 // generate would leave the header transparent and the rows would smear through it. The z-[85] lesson.
+// ── THE DEMO LINK CHIP ────────────────────────────────────────────────────────────────────────────
+// Shown in the prospect modal's header when this prospect already has a live demo. Read-only: the URL
+// that was (or can be) sent, its expiry, and a Copy button matching CreateDemoModal's affordance.
+//
+// 🔴 NO PORTAL, NO OVERLAY, NO KEY LISTENER. It renders inside the prospect modal that is already open,
+// so there is no second layer to stack and nothing new for Escape to hit — which is the only way to be
+// certain Escape still closes exactly one thing (C15: two capture listeners on one node, where
+// stopPropagation stops nothing).
+//
+// The origin is read at CLICK time, not at render: the copied link must be absolute (it is pasted into
+// an email) and `window` is not available during SSR.
+function DemoLinkChip({ demo }: { demo: NonNullable<Prospect['demo']> }) {
+  const [copied, setCopied] = useState(false)
+  if (!demo.publicRef) {
+    // A live demo with no readable segment — provisioned before public_ref, or its mint failed. Say so
+    // rather than rendering a broken link.
+    return <span className="text-xs text-slate-400" title="This prospect has a live demo but no readable URL">demo · no link</span>
+  }
+  const path = `/demo/${demo.publicRef}`
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+      setCopied(true); setTimeout(() => setCopied(false), 1500)
+    } catch { /* clipboard blocked — the path is on screen to copy by hand */ }
+  }
+  return (
+    <span className="flex items-center gap-2">
+      <a href={path} target="_blank" rel="noreferrer"
+        className="text-xs font-mono text-orange-700 hover:underline max-w-[18rem] truncate" title={path}>{path}</a>
+      <button type="button" onClick={copy}
+        className="text-xs font-semibold px-2 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+      {/* The expiry is the point of showing it: an outreach demo lives 30 days and a link sent three
+          weeks ago has a week left. fmtDate is the same formatter every other date on this page uses. */}
+      <span className="text-xs text-slate-400 whitespace-nowrap">
+        {demo.expiresAt ? `expires ${fmtDate(demo.expiresAt)}` : 'no expiry recorded'}
+        {demo.liveCount > 1 ? ` · newest of ${demo.liveCount}` : ''}
+      </span>
+    </span>
+  )
+}
+
 const HDR_CELL: CSSProperties = { position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }
 const INBOUND_BG = '#ecfdf5'
 

@@ -1058,6 +1058,31 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
     setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
   }, [events, selectedEventId])
 
+  // ── 🔴 DEMO ONLY — RE-POINT WHEN THE HELD EVENT HAS BEEN DELETED UNDER US ────────────────────────
+  // 🔴 `if (!isDemo) return` IS THE FIRST LINE AND IT IS THE WHOLE SAFETY ARGUMENT. For Pizzeria Gusto
+  // this effect returns before touching anything, so the "seed once, then hold" rule above is the only
+  // rule that runs on an operator screen — unchanged, including its deliberate refusal to auto-advance.
+  //
+  // WHY A DEMO NEEDS THE OPPOSITE RULE. `seededRef` is set on the first successful fetch and never
+  // cleared, so once the held event vanishes from `events` the board resolves `activeEvent` to null and
+  // NOTHING re-points it: the picker is reachable only from the event menu, whose mount requires
+  // `activeEvent` (null here) and whose "Change event" entry additionally requires `events.length > 1`
+  // (a demo has one). The screen strands on an empty board until the visitor thinks to reload.
+  // That is a real sequence now, not a hypothetical: the demo dashboard restarts itself on first open
+  // and when the board is not live (docs/demo-first-open-report.md, docs/demo-restart-report.md), and
+  // `restartDemoService` DELETES the event and its orders truck-wide before creating the replacement. A
+  // KDS opened in a second tab is holding the id that just stopped existing.
+  //
+  // ⚠️ IT CANNOT TAKE ORDERS OFF A COOK'S SCREEN, which is the hazard the hold rule exists to prevent.
+  // It fires ONLY when the held id is absent from the list the server just served — the event is gone,
+  // so there are no orders under it to lose. While the held event exists this is a no-op.
+  useEffect(() => {
+    if (!isDemo) return
+    if (!events.length) return
+    if (selectedEventId && events.some(e => e.id === selectedEventId)) return
+    setSelectedEventId(pickDefaultEventByTime(events)?.id ?? null)
+  }, [isDemo, events, selectedEventId])
+
   // ── HEARTBEAT — THE SHARED EMITTER (lib/native/useHeartbeat) ────────────────────────────────────
   // 🔴 THREE DEFECTS CLOSED BY ONE CALL. This was an inline near-duplicate of the dashboard's effect
   // that lacked two of its parts: no `deviceOnline` dep, so a reconnect waited up to 15s for the next
@@ -1909,11 +1934,6 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
       {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
       <AppLockGate />
 
-      {/* Shared with the dashboard and the customer order page — components/DemoModeBanner.tsx. Sits ABOVE
-          the header so it can't be mistaken for a kitchen control. The "what is this screen" explanation
-          lives in the one-time intro popup below, not here. */}
-      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} />} />}
-
       {/* ── Header ──────────────────────────────────────────────────────────────────────────────────
           🔴 THE SAFE-AREA INSET, AND IT IS THE SAME ONE AppHeader USES — NOT A SECOND MECHANISM.
           components/shared/AppHeader.tsx:45 carries `style={{ paddingTop: 'env(safe-area-inset-top)' }}`,
@@ -2525,6 +2545,41 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
           </div>
         )}
       </header>
+
+      {/* ── 🔴 DEMO MODE — MOVED BELOW THE HEADER (14 September 2026). IT USED TO SIT ABOVE IT. ──────
+          Shared with the dashboard and the customer order page — components/DemoModeBanner.tsx.
+          The "what is this screen" explanation lives in the one-time intro popup below, not here.
+
+          🔴 WHY IT MOVED: THE SAFE-AREA INSET IS ON THE HEADER, AND ONLY ON THE HEADER.
+          This screen's single `env(safe-area-inset-top)` is the `<header>`'s
+          `paddingTop: max(0.625rem, env(safe-area-inset-top))` just above. On a native iPad the WebView
+          extends under the status bar (viewport-fit=cover + contentInset:'never' — lib/native/statusBar),
+          so whatever is FIRST in this flex column is what the clock and battery sit on top of. Mounted
+          above the header, this bar was that element on a demo, and "DEMO MODE" rendered under the iOS
+          status glyphs. Below the header it is inside the region the header's inset has already cleared.
+
+          🔴 THE SAME FIX THE DASHBOARD MADE, AND NOT THE ONE THAT WAS TRIED FIRST. The dashboard's first
+          attempt wrapped its banners in a div carrying `paddingTop: env(safe-area-inset-top)`; that
+          produced TWO insets (wrapper + AppHeader) and painted the strip app-shell grey under white
+          system glyphs. It was removed and the banners were moved BELOW the header instead, so exactly
+          ONE element owns the inset — see the note at the dashboard's banner stack and
+          docs/status-strip-fix-report.md. 🚫 DO NOT ADD AN INSET TO THIS PAGE: the header already has it
+          and a second one is the double-inset defect returning.
+
+          ⚠️ PIZZERIA GUSTO'S DOM IS UNCHANGED BY THIS MOVE, BY CONSTRUCTION. The expression is
+          `{isDemo && …}`, and `isDemo` is `isDemoIdentifier(token)` — false for every operator token, so
+          this renders `false` (nothing) at the old position and `false` at the new one. A node that does
+          not exist cannot move.
+          ⚠️ WEB IS UNCHANGED FOR A DEMO TOO EXCEPT FOR THE BAR'S OWN POSITION: `env(safe-area-inset-top)`
+          resolves to 0 in every browser, so the header's padding is the `max()` floor either way.
+
+          ⚠️ IT IS DELIBERATELY NOT INSIDE THE ALERT STACK BELOW. That box is ordered
+          most-consequential-first (board empty → paused → offline → wake lock → extra wait); a calm
+          orange identity strip wedged between two of those would break an ordering the operator is meant
+          to be able to rely on. This is a persistent statement about the whole screen, so it sits
+          directly under the header, where it was directly over it. */}
+      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} />} />}
+
       {/* ── THE BANNER STACK — ONE CONTAINER, DIRECTLY UNDER THE HEADER ───────────────────────────
           🔴 THE WAKE-LOCK BAR USED TO RENDER HERE AND THE REST RENDERED FURTHER DOWN, so on a phone the
           "screen can't be kept on" notice appeared in the MIDDLE of the page, under the controls,
@@ -2543,10 +2598,13 @@ export default function KdsPage({ token: tokenProp, vanId: vanIdProp, vanName: v
             5. extra wait — informational, and self-clearing from its own button.
           ⚠️ NOT ONE CONDITION, ONE WORD OR ONE HANDLER CHANGED. Every block below is the block that was
           already in this file, moved. The wake-lock bar is still `KeepAwakePrompt` with the same props.
-          ⚠️ `OfflineBanner`, `WebOfflineBanner` and `DemoModeBanner` are NOT in here and deliberately so:
-          they are shared components mounted ABOVE the header on both surfaces (the dashboard mounts them
-          in the same order), they are already at the top of the page rather than mid-page, and moving
-          them would change the app shell rather than this screen's own banners. */}
+          ⚠️ `OfflineBanner` and `WebOfflineBanner` are NOT in here and deliberately so: they are shared
+          app-shell components mounted ABOVE the header, they are already at the top of the page rather
+          than mid-page, and moving them would change the app shell rather than this screen's own banners.
+          🔴 `DemoModeBanner` USED TO BE NAMED HERE TOO, ON THE GROUND THAT "the dashboard mounts them in
+          the same order". THAT REASON EXPIRED: the dashboard moved its whole banner stack, DemoModeBanner
+          included, BELOW `AppHeader` in the status-strip fix. This screen's demo bar has now followed it
+          and is mounted directly above this box — see its note. */}
       <div className="flex-shrink-0">
         {/* ── 🔴 EVENT SCOPE MISMATCH — THE BOARD IS EMPTY AND THIS SAYS WHY ────────────────────────
             🔴 THE ONE THING THIS SCREEN MUST NEVER DO IS SHOW ONE EVENT'S ORDERS UNDER ANOTHER EVENT'S

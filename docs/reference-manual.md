@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V12.9
+HatchGrab Engineering Reference Manual · V13.0
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 12.9**
+**Version 13.0**
 
 September 2026
 
@@ -25,6 +25,14 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.0 — 12 September 2026 — THE UNTRUSTED-URL CLASS IS CLOSED AND THE DEFENCE WE HAD TURNS OUT TO HAVE COME FROM A DEPENDENCY VERSION, A NAME TIE WAS BEING RESOLVED BY UUID, AND THE VILLAGE PROBLEM'S ROOT CAUSE WAS A PROMPT THAT GAVE THE MODEL NO WAY TO SAY "NOT IN THE TEXT"
+
+⚠️ **Everything in this entry is DEPLOYED.** V12.9 recorded the dedup gate as built-and-uncommitted; it is committed and live, and so is everything below.
+
+**Covers:** **§35's untrusted-URL sweep is DONE and the entry is corrected in place** — 🧪 **10 sinks, 7 of them PUBLIC**, all now guarded; `safeHref` moved **byte-identically** (936 bytes, `export` the only edit) to `lib/safe-href.ts` and applied to the five that were raw; `hrefFromStoredUrl` gained a **scheme filter** and kept its never-refuse contract, 🧪 **360 of 360 live values byte-identical, 0 refused**. 🔴 **THE HONEST NARROWING:** `javascript:` was blocked by **React 19.2.3**, not by our code, and `data:`/`vbscript:` passed through verbatim — at the three weak-guarded sinks those were already inert, so what the filter actually closed is the **`startsWith('http')` gap** where `httpx:alert(1)` reached an `href` unaltered. **§35 gains a new invariant, the SUBSTRING-TEST class**, because that mistake was made twice in one file. **And a second new invariant: A HARNESS THAT CANNOT FAIL PROVES NOTHING** — 🧪 five instrument failures in five tasks, each of which would have produced a confident, wrong green.
+**Also: new §54** — `pickBest` resolved a name tie on **smallest UUID** and chose a venue 26.9 km away over one 8.8 km away; it now breaks on **distance**, as a tie-break BELOW name and token overlap. 🧪 17 rows moved from R5 refusal to acceptance, **913 of 933 unaffected, 0 regressions**. The **extraction prompts** — the root cause of the village problem — now permit an empty town, matching `buildHgPrompt`, which had produced **0 bad villages in 86 rows**; 🔴 **this makes the field HONEST, NOT CORRECT**, and is **UNVERIFIED until a scrape runs**. A **mirror assertion** fails the run if a new row's village equals its venue name. The **rendering guards** and the **grouping change**: 🧪 **54 venue pages → 53**, one merge, **zero splits**, 16 of 99 published events change page, 15 URLs stop being produced.
+**Figures re-derived:** `village = venue_name` is **76** table-wide and **71** future — 🔴 **the 62 this series carried was the `Manual Entry` subset, and it was my error**. `discovery_events` **933** · `venue_id` NULL **326** · village NULL **28** · `venues` **819**.
 
 ## V12.9 — 11 September 2026 — THE DEDUP GATE IS THE LARGEST NEW SYSTEM AND IT IS NOT DEPLOYED, A RULE WE ADDED ON PURPOSE IS UNREACHABLE BY CONSTRUCTION, AND THE UNLINKED EVENTS TURN OUT TO BE A VENUE-DATA PROBLEM THAT NO EVENT RULE CAN REACH
 
@@ -17580,13 +17588,56 @@ is the cheap test.
 
 **🔴 A PROPERTY BEING WRITTEN IS NOT THE SAME AS IT BEING APPLIED.** *Evidence (V12.8) — three distinct mechanisms found in one day, all of the same class, and each made a source-level check report GREEN on a page that was visibly wrong.* **(1) `text-center` cannot centre a BLOCK-LEVEL flex child.** `display:flex` makes an element block-level and full-width, so `text-align` has nothing inline to move and `mx-auto` is a no-op on a full-width box; `inline-flex` is the fix. Asserting the class was present passed four times while the thumbnails sat hard left — and the actual cause turned out to be a **zero-width gap**, not the centring at all: a 40px thumbnail in a 56px column with a header that overflowed its own box. 🔴 **A centring rule and a zero-width gap produce identical output.** **(2) The unlayered `!important` block in `app/globals.css`** (iOS zoom prevention) beats **every** layered Tailwind utility regardless of specificity, so 🧪 `text-sm` is **INERT on every `input`, `select` and `textarea` in this app on desktop** — measured at 16px, not 14px. **And the inverse bites too:** the rule is an ATTRIBUTE selector (`input[type="text"]`), so an input that **omits** `type` **escapes** it, renders 14px against every other field's 16px, and will zoom on focus on iOS. That bug was introduced and caught in the same session. **(3) An arbitrary Tailwind value used by exactly ONE file may have NO GENERATED RULE AT ALL** — the JIT emits only what it has scanned, so a brand-new file's `z-[85]` resolved to `z-index: auto`, and a `position:fixed` overlay with `auto` paints level with `0`: **the compose window rendered underneath the modal it was opened from**, correctly laid out and full-viewport, only mis-painted. 🔴 **Raising the number would not have helped** — `z-[9999]` is another single-file arbitrary value with the same dependency. An **inline style** was the fix, because it is not a stylesheet rule and cannot be absent from one. ⚠️ **THE SWEEP IS OUTSTANDING FOR ALL THREE.** Documenting a class is not finished until someone has looked for the other instances: nobody has enumerated the flex-centred cells, nor the `type`-less inputs, nor the single-file arbitrary values. 🔴 **Named instance:** `z-[80]` on the schedule popup resolved only because **two unrelated files** (`components/native/AppLockGate.tsx`, `components/dashboard/DemoWelcome.tsx`) happen to use that same value — luck, not design. It has since been made an inline style, but the class of fault is untouched everywhere else.
 
-**🔴 A SCRAPER-WRITTEN URL IS UNTRUSTED INPUT, AND IT REACHES AN `href`.** *Evidence (V12.8):* `discovery_trucks.website` is populated by the scraper from pages it does not control, the discovery columns carry an unconditional public-read policy, and 🧪 **1 of 102** populated values is scheme-less — `Shika Shack` holds `"shikashack.co.uk"`, which a browser resolves as a **relative** link, so an admin clicking it navigates to `/admin/shikashack.co.uk`. The first `safeHref` written for it had two defects found by adversarial input rather than by the 231 live rows: a relative path was given an invented host, and **`javascript:alert(1)` passed straight through into an `href`**. The hardened form is an **http(s)-only allow-list** that rejects every other scheme and refuses relative paths outright. ⚠️ **THE SWEEP IS OUTSTANDING:** every place any scraper-written URL column (`website`, `order_url`, `menu_url`, `schedule_url`, venue and event links) reaches an `href` or `window.open` — **including the public surfaces, not only admin**. One hardened call site is not a hardened class; the same lesson as *fixing one writer of a bad-data class is not fixing the class*, one layer up.
+**🔴 A SCRAPER-WRITTEN URL IS UNTRUSTED INPUT, AND IT REACHES AN `href`.** *Evidence (V12.8):* `discovery_trucks.website` is populated by the scraper from pages it does not control, the discovery columns carry an unconditional public-read policy, and 🧪 **1 of 102** populated values is scheme-less — `Shika Shack` holds `"shikashack.co.uk"`, which a browser resolves as a **relative** link, so an admin clicking it navigates to `/admin/shikashack.co.uk`. The first `safeHref` written for it had two defects found by adversarial input rather than by the 231 live rows: a relative path was given an invented host, and **`javascript:alert(1)` passed straight through into an `href`**. The hardened form is an **http(s)-only allow-list** that rejects every other scheme and refuses relative paths outright. ✅ **[V13.0 — THE SWEEP IS DONE, AND THIS SENTENCE REPLACES THE "OUTSTANDING" ONE THAT STOOD HERE.]** 🧪 The census found **10 navigation sinks fed by scraper-written, anon-readable URL columns, 7 of them PUBLIC**; **2** were guarded, **3** carried a weak prefix helper and **5** were raw. All ten are guarded now — see **§54.1** for the census, the two helpers' deliberately different contracts, and the narrowing that matters: 🔴 **`javascript:` was being blocked by React 19.2.3 and not by our code**, which is a defence from a dependency version rather than a fixed bug.
 
 **🔴 A MEASURED DIFFERENCE BETWEEN TWO PROMPTS BEATS ANY REASONING ABOUT THE CODE AROUND THEM.** *Evidence (V12.7):* two Gemini prompts in the **same file**, on the same model, behind the same Puppeteer capture, writing to the same table, capture a postcode on 🧪 **1,100 of 2,952 rows (37%)** and 🧪 **0 of 108 (0%)** respectively. Every structural variable is held constant, so none of them explains the gap — 🔎 one prompt says *"Postcodes… go into the `Notes` field"* and the other says nothing. **Weeks of reading routes, retry policies and parsers could not have established this; one query did.** ⚠️ **The operational consequence: prompts are DATA, with an owner and a version — not string literals scattered across the routes that happen to need them.** A consolidation that unifies the code and leaves the prompts alone has consolidated the part that was not costing anything.
 
 **🔴 FIXING ONE WRITER OF A BAD-DATA CLASS IS NOT FIXING THE CLASS.** *Evidence (V12.7):* the coordinate gauntlet (postcodes.io first, model last, never an unchecked coordinate) was built on 7 September and the pipeline manual recorded the problem as solved, then narrowed once — *"true of the scraper only"* — when the Apps Script turned out to geocode unvalidated too. **Both statements were about individual writers. Nobody enumerated the writers.** 🔎 A third has been live in the app the whole time: `app/api/manage/geocode/route.ts` asks Gemini for raw lat/lng and three dashboard call sites put them straight into `truck_events`, 🧪 25 of 57 `manual` rows at a 0% `venue_id` rate. **The correct move on declaring any such class fixed is to grep for writers of the TABLE, not for callers of the fix** — the fix names itself, the defect does not.
 
 **⚠️ A PAGED READ THAT STOPS EARLY LOOKS EXACTLY LIKE A SMALL DATASET.** *Evidence (V12.7):* three pagination failures in a single pass each printed a confident, plausible, **wrong and small** total — PostgREST's 1,000-row default silently truncated a 4,300-row table (and reported a source as absent that had six rows); a `Range` header the server ignored produced an infinite loop; and an error object concatenated into a result array produced eleven "rows" from a query that had actually failed with `42703`. **None of the three threw.** The habit that catches all of them: take the count from a `count=exact` header and **assert the fetched length against it, in the same script, printing the assertion.**
+
+## 35.x 🔴 A SUBSTRING TEST IS NOT A SCHEME TEST (V13.0)
+
+**`value.startsWith('http')` and `value.includes('http')` both answer TRUE for `"httpx:alert(1)"`,
+`"httpsx:evil"` and `"httpfoo.com"`.** None of those is the http scheme; the first two are schemes we do
+not accept, and a value beginning with one reached an `href` **verbatim**.
+
+🔴 **THE MISTAKE WAS MADE TWICE, IN ONE FILE, BY DIFFERENT MEANS — which is what makes it a class and not
+an instance.** 🔎 `components/EventListCard.tsx`'s order button was gated on
+`ev.orderUrl.includes('http')`, and `lib/url-normalise.ts`'s `hrefFromStoredUrl` decided whether to
+prefix on `value.startsWith('http')`. Both read as "is this a web address"; both are prefix arithmetic on
+a string.
+
+**The rule: to ask what scheme a string carries, parse it or match the scheme grammar** — `new URL()`,
+or `/^https?:/i` against a `/^[a-z][a-z0-9+-]*:/i` scheme detector. ⚠️ Match the scheme **name**, not
+`://`: `http:example.com` is the http scheme written without slashes and must not be refused.
+
+⚠️ **AND THE DATA DOES CARRY NON-HTTP VALUES.** 🧪 `discovery_run_log.url` holds **`about:blank` on 6
+rows** and **3 scheme-less values**. That column is not rendered as a link today — the point is that
+"only http(s) ever arrives" was never true.
+
+## 35.y 🔴 A HARNESS THAT CANNOT FAIL PROVES NOTHING (V13.0)
+
+**Five instrument failures in five consecutive tasks. Every one would have produced a confident, wrong
+green**, and none was found by reading the harness — each was found by making it report failure on
+purpose.
+
+| # | the instrument | what it did |
+|---|---|---|
+| a | `grep … \| head` | the pipeline's exit status came from **`head`**, not grep, so a search that matched **nothing** reported success |
+| b | `for f in $F` over a path containing **`[slug]`** | the shell did not word-split it, so a lint **baseline swapped no files** and its "identical" result was meaningless |
+| c | a single-line `grep` for a sentence that **wraps across two lines** | a **FALSE NEGATIVE** that reads as though a control had been deleted — the tempting action is to "restore" something that was never damaged |
+| d | a Supabase join that omitted **`id`** | `venue.id ? … : …` was false for **every** row, so a whole grouping change would have been a **no-op that type-checked and linted clean** |
+| e | a template-literal extractor stopping at the first **nested backtick** | returned **221 bytes** of a twelve-rule prompt while appearing complete, so a "whole-literal diff" would have covered a fifth of it |
+
+🔴 **THE PRACTICE THAT CAUGHT THEM, AND IT IS CHEAP: point the harness at a deliberately broken variant
+and confirm it reports FAILURE, before trusting it to report success.** A regression diff is run against a
+knowingly-wrong implementation first; an assertion is fed a row that must throw; a render proof is run
+against the pre-fix expressions and must come back red. **A clean run passes under a working test and
+under a blind one — only the deliberate failure tells them apart.**
+
+⚠️ (c) and (d) are the two to fear, because they fail in the direction of *looking fine*: one reports
+damage that is not there, the other reports success that is not there.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
@@ -24317,9 +24368,13 @@ won is wrong.
 
 ## 53.6 🔴 Venue matching is the largest open item, and it is a DATA problem
 
-🧪 **225 future rows** have a venue candidate that **R5 refuses**, and one more has no candidate at all —
-226 future rows unlinked, 322 across the whole table. R5 is behaving correctly in every case. The causes,
-by volume:
+🧪 **225 future rows** had a venue candidate that **R5 refuses**, and one more had no candidate at all —
+226 future rows unlinked, 322 across the whole table, when this section was written on 11 September.
+✅ **[UPDATED IN PLACE V13.0.]** Two of the causes below have since been addressed and the figures have
+moved: **`venue_id` NULL is now 326** (five wrong links were nulled by hand — §54.5), **17 of these rows
+now pass R5** because the matcher no longer breaks a name tie on a UUID (**§54.2**), and the *writer* of
+the bad village has been fixed (**§54.3**) — which repairs tomorrow's rows and none of these. R5 is still
+behaving correctly in every remaining case. The causes, by volume, as measured on 11 September:
 
 | rows | pattern | example |
 |---|---|---|
@@ -24359,15 +24414,180 @@ geocoded to a town centroid — six sit on `NR1 1AA`.
 | # | item | state |
 |---|---|---|
 | 1 | **The three inertness sweeps** (§35): flex-centred cells, `type`-less inputs, single-file arbitrary Tailwind values | 🔴 **OPEN — none enumerated.** ⚠️ `z-[80]` on the schedule popup resolves **only because two unrelated files happen to use that value**; it is one deletion away from `z-index: auto` |
-| 2 | **The untrusted-URL sweep** (§35): every scraper-written URL column reaching an `href` or `window.open`, public surfaces included | 🔴 **OPEN** |
+| 2 | **The untrusted-URL sweep** (§35) | ✅ **CLOSED V13.0** — 🧪 10 sinks censused, 7 public, all guarded; see **§54.1**. ⚠️ Read the narrowing there: `javascript:` was React's doing, not ours |
 | 3 | **The identical-coordinate rule's ordering** (§53.3) | 🔴 **OPEN — unreachable by construction** |
-| 4 | **Venue matching** (§53.6) — 225 rows R5 must refuse | 🔴 **OPEN, and the largest** |
+| 4 | **Venue matching** (§53.6) | 🔴 **STILL OPEN AND STILL THE LARGEST**, but smaller: 🧪 17 rows recovered by the tie-break (§54.2) and the *cause* fixed upstream (§54.3), which repairs future rows only. **53 events still need a venue row that does not exist** — no rule reaches those |
 | 5 | **Three chained `superseded_by` winners** (§53.5b) | 🔴 **OPEN — a re-run cannot repair them** |
 | 6 | **The run log has no retention rule** — 🧪 348 rows today, one per site per run, ~42,000/year | 🔴 **OPEN** (a prune workflow is written and uncommitted) |
 | 7 | **The Escape defect in the schedule popup's delete dialog** — two `{capture:true}` listeners on `window`; `stopPropagation()` does not stop same-node listeners | 🔴 **OPEN — pre-existing** |
 | 8 | **The opt-out footer and signature left the code** into an Outlook signature (§52) | 🔴 **OPEN as a compliance risk — a human responsibility, no longer enforced** |
 | 9 | **`Chai Stall`'s `photo_url`** | ✅ **CLOSED.** 🧪 A sweep of **all 242** `photo_url`/`logo_url` values across 231 trucks finds **0 broken** — every remote URL returns 200 and every local path exists |
-| 10 | **Two days of work are UNCOMMITTED** — 14 modified files and ~60 untracked ones, including the whole gate. 🧪 **All four new migrations ARE applied** (`20260909_outreach_templates`, `20260910_outreach_contact_kinds`, `20260911_discovery_events_superseded`, `20260912_superseded_reason_values` — the last proved by 2 live `name-time` marks, which its widened constraint is what permits). 🔴 **So the database is ahead of `main`: the schema and the marked rows exist in production while the code that reads and writes them exists only in this working tree.** | 🔴 **OPEN — and this is the sharp edge** |
+| 10 | **Two days of work were UNCOMMITTED** | ✅ **CLOSED V13.0 — the tree is clean; everything in §53 and §54 is committed and deployed** |
+| 11 | **The ratio assertion** (§54.4) — this run's empty-village share against a 14-day baseline | 🔴 **OPEN — deliberately unbuilt.** It needs a post-change run to calibrate; a guessed threshold fires on noise |
+| 12 | **The prompt change is UNVERIFIED** (§54.3) | 🔴 **OPEN until a scrape runs.** A prompt cannot be tested without the model |
+
+---
+
+# 54. The URL guard class closed, the tie-break, the prompts, and the grouping (V13.0 — 12 September 2026)
+
+🧪 **Re-derived 12 September 2026:** `discovery_events` **933** · future **703** · `venue_id` NULL **326**
+· village NULL **28** · `venues` **819** · `discovery_trucks` **231** · `discovery_run_log` **348**.
+**All of this is deployed and the working tree is clean.**
+
+## 54.1 ✅ The untrusted-URL class — CLOSED
+
+**Ten navigation sinks are fed by scraper-written, anon-readable URL columns. Seven are public. All ten
+are guarded.**
+
+| guard | sinks | contract |
+|---|---|---|
+| **`safeHref`** (`lib/safe-href.ts`) | 7 | an **http(s)-only allow-list**. Refuses relative paths outright, parses the value and returns it only if the protocol is `http:`/`https:`, else retries once with an `https://` prefix under the same test. **Refuses.** |
+| **`hrefFromStoredUrl`** (`lib/url-normalise.ts`) | 3 | **never refuses an http(s) value**, repairs a scheme-less one, and now **refuses other schemes**. |
+
+🔴 **THE TWO CONTRACTS DIFFER ON PURPOSE AND MUST NOT BE MERGED.** `safeHref` guards a control that can
+disappear — a refused value removes the button, which is correct on a public page. `hrefFromStoredUrl`
+renders operator-entered values where dropping a link the customer used to see is worse than the odd
+broken one. Each helper's own header says so; read both before unifying them.
+
+**`safeHref` was MOVED, not rewritten.** 🧪 The function is **936 bytes** and byte-identical to the copy
+that lived in `OutreachPanel`; the **`export` keyword is the only edit**. The reason is §51.7 — a previous
+"reuse" turned out to be a fourth independent implementation. It is now the only copy.
+
+**The scheme filter kept its contract.** 🧪 All **360** populated values across `discovery_trucks.website`
+(102) and `venues.website` (258) were replayed through both versions: **360 byte-identical, 0 refused** —
+including the 19 that a `new URL()` round-trip would have given a trailing slash. It is a scheme filter,
+not a normaliser, and that is structural: the original expression is the untouched final line.
+
+### 🔴 The narrowing, because the headline is not what it looks like
+
+- 🧪 **React 19.2.3 blocks `javascript:` itself**, rewriting the href to a throwing stub — in every
+  obfuscation tried (case, leading space, embedded tab). **That is a defence from a dependency version,
+  not from our code.** A downgrade, or any non-React render path, restores the hole.
+- 🧪 **`data:` and `vbscript:` are NOT blocked by React** and passed through verbatim.
+- ⚠️ **At the three `hrefFromStoredUrl` sinks those were already inert**, because the old code prefixed
+  `https://` onto anything not starting with "http", turning `data:…` into a broken-but-harmless
+  `https://data:…`. **What the scheme filter actually closed there is the `startsWith('http')` gap** —
+  see §35.x — where `httpx:alert(1)` reached an `href` unaltered. The executable hole was at the five
+  raw sinks, and those are the ones `safeHref` now guards.
+
+**What a refused value renders as:** the four public buttons are not rendered at all; the admin schedule
+link renders the stored string **unlinked and flagged**, because that is the screen on which an operator
+would fix it.
+
+## 54.2 `pickBest` — a name tie was being resolved by UUID
+
+🔎 `pickBest` (`lib/venue-matcher.ts`) ranked candidates on exact name, then token overlap, then
+**lexicographically smallest `id`**. Two venues sharing a name tie on the first two, so **an arbitrary
+UUID decided the match** — 🧪 it chose `The Bull` [Lower Green] **26.9 km** from Bottisham over
+`The Bull` [Burrough Green] at **8.8 km**, and `The Plough` [Birdbrook] 26.7 km over [Shepreth] 8.2 km.
+The anchor needed to separate them was already being computed one function away in
+`applyDistanceCeiling`.
+
+**Now: distance from the event village's anchor is key (c), and the id drops to (d).**
+
+🔴 **IT IS A TIE-BREAK, NOT A RE-RANKING.** It sits **below** exact name and token overlap, so a
+better-named candidate still wins and the matcher cannot be made to choose a worse-named venue than
+before. ⚠️ When **neither** candidate is measurable — no anchor, or neither venue has coordinates — both
+score `Infinity`, the comparison ties, and it falls through to the **old** smallest-id rule. When exactly
+one is measurable, that one wins: `r5Accept` refuses a venue with no coordinates outright, so preferring
+it strictly widens what can be linked.
+
+🧪 **Measured over all 933 events, before and after:** **913 unaffected**, 20 changed, **0 regressions**
+(no R5 acceptance became a refusal). **17 rows moved from R5 refusal to acceptance** — the 9 Holy Loaded
+and 8 Gino's Pizza rows. Of the other 3 changes, 2 are already-linked rows and 1 is past-dated, so none
+moves stored data.
+
+## 54.3 The extraction prompts — the root cause, and what fixing them does NOT do
+
+🔎 Three prompts ask for a village. **Two demanded one with no way to decline; the third permits an empty
+town** — and that third, `buildHgPrompt`, 🧪 **has produced 0 invented villages in 86 rows**. An A/B that
+ran in production for weeks.
+
+Both faulty rules now carry the same escape, worded as the control words it, plus `do NOT repeat the
+venue name`. 🧪 `VILLAGE (MANDATORY)` appears **0** times in the repository.
+
+🔴 **THIS MAKES THE FIELD HONEST, NOT CORRECT.** A declined village is written as `null`. That repairs the
+falsehood and **links nothing**: R5 still gates the link and `venue_id` stays NULL when it fails. Given
+the choice between a NULL and an event attached to the wrong venue, NULL is the one to keep.
+
+⚠️ **One quiet benefit:** the gate creates a venue only when `venue_name` **and** `village` are present,
+so an empty village also stops new junk venues being minted on a place description.
+
+🔴 **A RE-SCRAPE OVERWRITES `village` ON AN EXISTING ROW.** 🔎 The gate's upsert carries `village` in the
+payload with `onConflict: 'event_date,truck_name,venue_name'` and `ignoreDuplicates: false`, so a
+conflict **updates**. 🧪 **422 linked future rows** could have their village nulled on re-emission;
+**421 of them are publicly unaffected**, because the feed reads `e.village || venue.village || ''` and the
+venue's own village fills the gap. **One** would go empty on screen. The conflict key does not include
+village, so a row whose venue *text* changed is inserted fresh and the old row is left behind.
+
+🔴 **UNVERIFIED UNTIL A SCRAPE RUNS. A prompt change cannot be tested without running the model, and it
+has not been run.** The claim is only that the wording matches the control's.
+
+## 54.4 The mirror assertion
+
+🔎 `assertNoInventedVillages` (`scripts/geo-validate.js`), beside `assertInboundOk` and
+`assertNoWriteFailures` — the file whose exit code the workflow reads. Wired to `newRowsToAdd`, **the rows
+each run writes**, and compared **normalised** (lowercased, non-alphanumerics stripped).
+
+- **No threshold.** The historical rows will not repair themselves; a **new** one is the signal, so the
+  test is `> 0`.
+- ⚠️ **An empty village is not a match, and the length check is load-bearing** — `norm('')` is `''` on
+  both sides, so a naive equality test would flag every honestly-blank row, which is exactly what the
+  prompt change is meant to produce, and make the fix a permanently red run.
+- 🧪 Proved on 12 cases (exit 0 only if every one matches) and against the live table: **fires on all 76
+  real bad rows, passes on all 857 clean rows and on the 28 already-empty ones**. The harness itself was
+  first pointed at a never-throwing variant, which it caught — §35.y.
+
+🔴 **THE GREEN-RUN CAVEAT.** A green run means **no new row had a village equal to its venue name**. It
+does **not** mean the model declined honestly: inventing a **different** wrong village is also green. The
+**ratio assertion** — this run's empty-village share against a 14-day baseline — is **unbuilt**, because
+it needs a post-change run to calibrate and a guessed threshold fires on noise.
+
+## 54.5 The rendering guards, and the grouping change
+
+An empty village reaches the public as `''` only for **unlinked** events; a linked one inherits the
+venue's village.
+
+- **Share text** — `…for The Affleck Arms in ! 🍔🍻` is gone; the location clause is conditional.
+- **The 📍 header** — the separator now belongs to the join, so it cannot appear with one side empty, and
+  the whole link is dropped when there is nothing to label it with.
+
+**Grouping now keys on the linked venue.** `venueGroupKey` (`lib/utils.ts`) — one definition, used by the
+event card's link, the hook's grouping and the venue page's filter, which were three copies agreeing by
+coincidence. The feed publishes `venueSlug` derived from the **venue row**; unlinked events fall back to
+`getVenueSlug(name, village)` exactly as before.
+
+🧪 **Effect: 54 venue pages → 53. One merge, ZERO splits. 16 of 99 published events change page. 15 page
+URLs stop being produced** — a bookmark to one of those renders an empty venue page.
+
+🔴 **WHY NAME-ALONE GROUPING WAS REJECTED:** it would merge `The Bull` [Bottisham] with `The Bull`
+[Burrough Green] — the pair §54.2 had just separated. Keying on the venue keeps them apart because their
+venue rows carry different villages.
+
+🔴 **AND THE GROUPING RULE MAKES BAD LINKS VISIBLE RATHER THAN CAUSING THEM.** While pages were named
+after the event's own text, a wrong `venue_id` was invisible on the public site; keying on the venue moves
+the event onto the wrong venue's page. Six were flagged; **five rows across three of them were nulled by
+hand before deploy**:
+
+| date | truck | event text [village] |
+|---|---|---|
+| 2026-09-12 | The Forge Kitchen | `Wine-Boutique` [Felixstowe] |
+| 2026-09-12 | The Forge Kitchen | `Wine-boutique, Felixstowe` [Felixstowe] |
+| 2026-08-30 | Pizzeria Gusto | `Sudbury Street Food Festival` [Sudbury] |
+| 2026-09-13 | Wagyu Burgers | `Sudbury Street Food Festival` [Sudbury] |
+| 2026-09-12 | Eat Greek | `Fest Lion` [Sawston] |
+
+⚠️ **Three flagged names were left linked** and are still worth a look: `The Red Lion` [Blewbury] → a
+Great Sampford venue, `The Cross Keys` [Henley] → Hatfield Peverel, and `Northstowe` [Cambridge] →
+`Northstowe Half Marathon`.
+
+## 54.6 🔴 The figure this series carried wrongly, corrected
+
+**`village = venue_name` is 76 table-wide and 71 future-dated**, compared normalised. **The 62 that
+appeared in three reports and one SQL snippet is the `Manual Entry` subset** — by writer it is
+`Manual Entry` 62, `URL:` 12, other 2. It came from a cross-tab and was carried forward as though it were
+the table count. **It was my error, in my own report, and it is the seventh corrected figure in this
+series.**
 
 ---
 

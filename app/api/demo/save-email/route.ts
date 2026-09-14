@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { isDemoIdentifier } from '@/lib/demo'
-import { saveDemoEmail, markReturnEmailSent, RETENTION_WITH_EMAIL_DAYS } from '@/lib/demo-session'
+import { saveDemoEmail, markReturnEmailSent } from '@/lib/demo-session'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 
 const supabase = createClient(
@@ -64,6 +64,9 @@ export async function POST(req: NextRequest) {
   }
 
   const deletionDate = formatDate(saved.expiresAt)
+  // expires_at is MONOTONIC (lib/demo-session.ts): an outreach demo on its 30-day tier keeps that date, so
+  // the window stated in the email is derived from the date actually stored, never assumed to be 14 days.
+  const daysLeft = Math.max(1, Math.round((new Date(saved.expiresAt).getTime() - Date.now()) / 86_400_000))
   const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
   // The return link goes through /api/demo/return, NOT straight to the dashboard: the event will be stale
   // by the time they click it, so it has to re-provision first.
@@ -96,7 +99,7 @@ export async function POST(req: NextRequest) {
                    demo_sessions.expires_at, so the promise and the data can't drift apart. -->
               <p style="color:#64748b;font-size:13px">
                 This is a demo, so we don’t keep it forever — we’ll delete it and the menu on
-                <strong>${deletionDate}</strong> (${RETENTION_WITH_EMAIL_DAYS} days). If you sign up before
+                <strong>${deletionDate}</strong> (${daysLeft} days). If you sign up before
                 then, your menu comes with you.
               </p>
               <p style="color:#94a3b8;font-size:12px">HatchGrab · hatchgrab.com</p>

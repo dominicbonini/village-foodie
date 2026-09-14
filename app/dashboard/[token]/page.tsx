@@ -171,6 +171,12 @@ async function pruneStaleEventCache(): Promise<void> {
   } catch { /* cache API unavailable / any error → no-op, never crash the dashboard */ }
 }
 
+/** DEMO auto-restart cooldown. Survives a reload (localStorage), so it is what stops a restart→reload→
+ *  restart loop in the one window where a fresh service can come back already ended: demoEventWindow
+ *  clamps the end to 23:59, so a restart at 23:58 yields a board with ~1 minute left. Two minutes is
+ *  longer than a restart + reload takes and far shorter than any real service. */
+const AUTO_RESTART_COOLDOWN_MS = 120_000
+
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
   const{token}=use(params)
   // ── DEMO MODE ────────────────────────────────────────────────────────────────────────────────────────
@@ -799,7 +805,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[highlightOrderKey,setHighlightOrderKey]=useState<string|null>(null)
   // DEMO ONLY — the server-side session block from /api/dashboard (see the route). Null for an operator
   // truck, where the key isn't sent at all.
-  const[demoSession,setDemoSession]=useState<{extraction_source:string|null;email:string|null;expires_at:string|null}|null>(null)
+  const[demoSession,setDemoSession]=useState<{extraction_source:string|null;email:string|null;expires_at:string|null;discovery_truck_id?:string|null;public_ref?:string|null;first_opened_at?:string|null}|null>(null)
+  // DEMO ONLY — BRANDED = an outreach demo built for a named prospect (demo_sessions.discovery_truck_id,
+  // migration 20260912). The server is the only authority: it is never inferred from the name or the logo.
+  // Unbranded demos (every landing-page demo) read false here and render exactly as before.
+  const demoBranded=isDemo&&!!demoSession?.discovery_truck_id
   // DEMO ONLY — "Start a new service" (the elapsed-event card below).
   const[restarting,setRestarting]=useState(false)
   // The SAME in-flight flag as `restarting`, held in a ref so the re-entry guard is SYNCHRONOUS.
@@ -808,6 +818,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // first just seeded. The ref closes that window; the state drives the button's busy label.
   const restartingRef=useRef(false)
   const[restartError,setRestartError]=useState<string|null>(null)
+  // 🔴 HAS THE EVENTS LIST BEEN READ AT LEAST ONCE THIS LOAD? Set ONLY by a SUCCESSFUL
+  // /api/events/manage response (fetchAll), never by a failed one — a 429/500 keeps the previous
+  // events and must not be read as "this truck has no events".
+  //
+  // IT IS THE GATE ON `demoServiceEnded` BELOW, AND WITHOUT IT THE DEMO EATS ITSELF: before the first
+  // fetch `upcomingEvents` is `[]`, so `activeEvent` is null, so "no live event" is TRUE on the very
+  // first render — the ended card would flash on every load and the auto-restart would wipe a healthy
+  // board before the client had even asked what was on it.
+  const[eventsLoaded,setEventsLoaded]=useState(false)
+  // DEMO ONLY — the auto-restart's ONCE-PER-PAGE-LOAD latch. A ref, not state: it must be readable and
+  // writable SYNCHRONOUSLY inside the effect, before any re-render, or the 60s poll's re-render could
+  // fire a second restart while the first is still in flight. See the effect for the second (cross-load,
+  // cross-tab) guard, which a ref cannot provide because a reload destroys it.
+  const autoRestartFiredRef=useRef(false)
+  // DEMO ONLY — the FIRST-OPEN trigger's own latches, kept SEPARATE from autoRestartFiredRef.
+  // `firstOpenAttemptedRef` is synchronous and stops the POST repeating within a load;
+  // `firstOpenChecked` is state, set when the server declines the claim (already opened, admin preview,
+  // anonymous demo, column missing), and its job is to RE-RUN the effect so the not-live trigger gets
+  // its turn. Sharing one latch would have meant an admin previewing a DEAD demo saw no restart at all.
+  const firstOpenAttemptedRef=useRef(false)
+  const[firstOpenChecked,setFirstOpenChecked]=useState(false)
+  // Written every render so the auto-restart effect can call the CURRENT handler without listing a
+  // non-memoised function in its dependency array (the same idiom as fetchAllRef below).
+  const startNewServiceRef=useRef<((opts?:{claimFirstOpen?:boolean})=>Promise<boolean>)|null>(null)
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
@@ -1158,6 +1192,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
           setTodayEvents(fetched)
           setUpcomingEvents(eventsData.events??[])
+          // SUCCESS ONLY — inside the `eventsRes.ok` branch, never in the warn-and-keep branch above.
+          setEventsLoaded(true)
           const currentTime=new Date().toTimeString().slice(0,5)
           const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
           for(const ev of stale){
@@ -1637,7 +1673,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
     // ⚠️ The van's STANDALONE /kds/[kds_token] surface is a different page and is left exactly as it
     // was — it has no dashboard behind it to hand anything over. Only the in-app KDS gains the seed.
-    window.open(van?.kds_token?`/kds/${van.kds_token}`:`/dashboard/${token}/kds${ev?`?${ev}`:''}`,'_blank')
+    //
+    // ── 🔴 A DEMO NEVER OPENS THE STANDALONE SCREEN, AND WITHOUT THIS IT ALWAYS DID ─────────────────
+    // `provisionTruck` omits `kds_token` on purpose so the DB default mints one
+    // (`encode(gen_random_bytes(24),'hex')`), so EVERY van has one — including a demo's "Van 1". A demo
+    // truck has exactly one van, so `handleOpenKDS` takes the `vans.length === 1` branch and arrives here
+    // with `van.kds_token` set: on the WEB, "Kitchen screen" opened `/kds/<kds_token>`.
+    // 🔴 THAT PAGE HAS NO DEMO HANDLING AT ALL — app/kds/[kds_token]/page.tsx contains not one reference
+    // to `isDemo`, `isDemoIdentifier`, `DemoModeBanner` or `DemoGetStarted` (searched; the file does use
+    // `kds_token` nine times, so the search was looking in the right place). A prospect therefore got a
+    // kitchen screen with no DEMO MODE strip, no signup CTA and no one-time intro — on desktop, which is
+    // where most of them open the link. Native was already correct: the branch above always uses the
+    // in-app KDS. This makes web agree with it.
+    // ⚠️ SCOPE: nothing about `/kds/[kds_token]` changes. This only stops a DEMO being sent there.
+    // ⚠️ PIZZERIA GUSTO IS UNAFFECTED BY CONSTRUCTION: with `isDemo === false`, `!isDemo` is `true`, so
+    // `!isDemo && van?.kds_token` is the identical expression to `van?.kds_token` for every input — the
+    // same branch is taken, with the same URL, on every call.
+    window.open(!isDemo&&van?.kds_token?`/kds/${van.kds_token}`:`/dashboard/${token}/kds${ev?`?${ev}`:''}`,'_blank')
   }
 
   // ── 🔴 SKIP WHEN UNAMBIGUOUS, ASK WHEN NOT ──────────────────────────────────────────────────────
@@ -1710,14 +1762,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Patching each of those by hand would be re-deriving a whole page load in pieces. A reload rebuilds
   // every derived value from one consistent server read, and this is a once-per-session action behind
   // a deliberate button press, so the cost is irrelevant.
-  const startNewService=async()=>{
+  // Returns TRUE when a restart actually happened and the page is about to reload, FALSE otherwise —
+  // the first-open trigger needs to know the difference so it can hand over to the not-live trigger when
+  // the server declines its claim.
+  const startNewService=async(opts?:{claimFirstOpen?:boolean}):Promise<boolean>=>{
     // Synchronous re-entry guard — see restartingRef. A second restart mid-flight would delete the
-    // orders the first one just seeded.
-    if(restartingRef.current)return
+    // orders the first one just seeded. It is SHARED by the button and both automatic triggers, so only
+    // one restart can ever be in flight per load however it was started.
+    if(restartingRef.current)return false
     restartingRef.current=true
     setRestarting(true); setRestartError(null)
     try{
-      const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
+      // ⚠️ `nativeAuthHeader()` IS NEW ON THIS CALL, and it is what makes the admin-preview check work in
+      // the native app: /api/demo/restart's verifyAdmin resolves a web admin from the session cookie
+      // (sent automatically on a same-origin POST) but the native shell has no cookie and passes its
+      // session as a Bearer. Web is unaffected — nativeAuthHeader() returns {} there.
+      const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},body:JSON.stringify({token,...(opts?.claimFirstOpen?{claimFirstOpen:true}:{})})})
       const data=await res.json().catch(()=>({}))
       // 🔴 FAILURE PATH — NO RELOAD. The restart did not happen, so the board behind this card is still
       // the dead one. Reloading would drop the operator back onto the same ended service with the error
@@ -1725,7 +1785,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok){
         setRestartError(data?.error||'Could not start a new service — try again.')
         restartingRef.current=false; setRestarting(false)
-        return
+        return false
+      }
+      // 🔴 A DECLINED FIRST-OPEN CLAIM IS A SUCCESS WITH NOTHING DONE. The route answers
+      // `{ok:true, restarted:false, skipped:<reason>}` when this viewer is an admin, when the link has
+      // already been opened, when it is an anonymous demo, or when the column is not there yet. Nothing
+      // was deleted and nothing was seeded, so reloading would be a pointless round trip on a board that
+      // is already correct — and NO error is shown, because nothing failed.
+      if(data?.restarted===false){
+        restartingRef.current=false; setRestarting(false)
+        return false
       }
       // RESET THE LOOP-COMPLETE STATE. Its baseline is a persisted list of order keys
       // (components/dashboard/DemoLoopComplete.tsx) — every key in it has just been deleted, so without
@@ -1740,12 +1809,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // SUCCESS, and only now. `restarting` is deliberately NOT cleared: the button stays disabled and
       // reading "Setting up…" until the document is replaced, so it is never pressable again in the gap.
       window.location.reload()
+      return true
     }catch{
       // Network/parse failure — same as above: the restart may not have happened, so stay put.
       setRestartError('Could not start a new service — try again.')
       restartingRef.current=false; setRestarting(false)
+      return false
     }
   }
+
+  // The auto-restart effect (above the early returns) calls THIS handler through the ref — one code
+  // path for the button and the automatic press, so they cannot drift.
+  // ⚠️ ASSIGNED IN AN EFFECT, NOT DURING RENDER. Writing a ref in the render body is what
+  // react-hooks/refs flags, and the ordering is safe without it: effects run in declaration order, so
+  // this one (declared here) always runs before the auto-restart effect declared further down — and on
+  // the first mount that effect returns immediately anyway, because `eventsLoaded` is still false.
+  useEffect(()=>{startNewServiceRef.current=startNewService})
 
   const handleShowQR=async()=>{
     const orderUrl=customerOrderUrl
@@ -2807,6 +2886,138 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
 
+  // ── DEMO — IS THERE A LIVE BOARD? ────────────────────────────────────────────────────────────────
+  // 🔴 DEFINED HERE, ABOVE THE EARLY RETURNS, BECAUSE A HOOK READS IT (the auto-restart effect below).
+  // It used to live down in the render body; it cannot any more — `if(loading)return …` sits between,
+  // and a hook after a conditional return is "Rendered more hooks than during the previous render".
+  //
+  // 🔴 IT NO LONGER REQUIRES `activeEvent`, AND THAT IS THE WHOLE FIX. The old predicate was
+  // `isDemo && activeEvent && (closed || past end_time)`, so it could only fire when an event was
+  // RESOLVED — and the one state that matters most resolves to nothing at all:
+  //   /api/events/manage?upcoming=true applies `.gte('event_date', today)`, so a demo built on Saturday
+  //   and opened on Monday returns ZERO events. upcomingEvents is empty, activeEvent is null, the first
+  //   clause is false, and the visitor gets "No event selected" with a picker that has nothing in it.
+  //   A dead end, and the only demo state a prospect is actually likely to arrive in.
+  // Inverting it — "ended unless something is LIVE" — covers no-event, closed and elapsed with one rule.
+  //
+  // `eventsLoaded` is the guard that makes the inversion safe: before the first successful events read
+  // there is no evidence either way, and "no evidence" must never read as "no event".
+  // A demo event that has not STARTED yet counts as LIVE, not ended — nothing is dead, it is pending.
+  // (demoEventWindow floors the start to the half hour so it is always <= now, but a predicate that
+  // wipes a board because it starts in four minutes would be wrong regardless of reachability.)
+  const demoBoardLive=!!(activeEvent&&activeEvent.status!=='closed'&&!(
+    activeEvent.event_date&&activeEvent.end_time&&
+    Date.now()>new Date(`${activeEvent.event_date}T${activeEvent.end_time}`).getTime()
+  ))
+  // Venue-local comparison via the event's own date + end_time, matching how every other surface reads
+  // these columns — they are wall-clock, not UTC.
+  // 🔴 `isDemo` IS THE OPERATOR FIREWALL. Gusto's dashboard has isDemo===false, so this is permanently
+  // false there and neither the card nor the effect below can ever render or run on a real truck.
+  const demoServiceEnded=!!(isDemo&&eventsLoaded&&!demoBoardLive)
+
+  // ── DEMO — FIRST OPEN (T2) ───────────────────────────────────────────────────────────────────────
+  // 🔴 THE NOT-LIVE TRIGGER BELOW CANNOT EXPRESS THIS, WHICH IS WHY THERE ARE TWO.
+  // An outreach demo built at 10:00 and opened by the prospect at 10:40 has a LIVE 10:00–13:00 event, so
+  // `demoServiceEnded` is false and T1 correctly stands down — and the prospect's first impression is a
+  // board whose orders have been running late for forty minutes. The original requirement was that the
+  // FIRST open produces a service starting from the visitor's own moment, whatever the time; "there is
+  // no live event" is a different question and answering it well does not answer this one.
+  //
+  // 🔴 THE LATCH IS SERVER-SIDE, AND IT HAS TO BE. localStorage carries T1's reload guard perfectly well
+  // and cannot carry this one: a prospect who opens the link on their phone and then on their laptop is
+  // one person opening one demo once, and two browsers hold two stamps. `demo_sessions.first_opened_at`
+  // is claimed with a conditional UPDATE inside /api/demo/restart (see claimDemoFirstOpen) — the client
+  // never decides, it only asks.
+  //
+  // WHAT THIS READS IS A CACHE, NOT THE DECISION: `first_opened_at` from /api/dashboard tells us whether
+  // it is worth asking at all. The server re-checks atomically, so a stale null here costs one POST that
+  // answers `skipped: already-opened`, never a second restart.
+  //
+  // ⚠️ ANONYMOUS DEMOS ARE EXCLUDED BY `discovery_truck_id`, and the exclusion is enforced in the SQL
+  // predicate rather than here. A landing-page demo is navigated to the instant it is provisioned
+  // (DemoUpload's `window.location.assign`), so its board was seeded against the same clock its visitor
+  // is reading it on; restarting would delete the orders they just watched appear.
+  //
+  // ⚠️ `!isAdmin` IS FOLDED INTO THE PREDICATE RATHER THAN CHECKED INSIDE THE EFFECT, so an admin simply
+  // never has a pending first open and the effect falls straight through to T1 — no state write, and an
+  // admin previewing a DEAD demo still gets the not-live restart they should get.
+  const demoFirstOpenPending=!!(isDemo&&!isAdmin&&demoSession&&demoSession.discovery_truck_id&&!demoSession.first_opened_at)
+
+  // ── DEMO — AUTO-RESTART ON LOAD ──────────────────────────────────────────────────────────────────
+  // A prospect who opens a demo link two days after it was built should land on a working service, not
+  // on a card asking them to press something. The card stays (it is the fallback when this cannot run);
+  // this just presses it for them, once.
+  //
+  // 🔴 A CLIENT-SIDE POST, AFTER THE PAGE HAS LOADED, AND DELIBERATELY NOT A GET SIDE EFFECT.
+  // /dashboard/<token> and GET /api/dashboard write NOTHING, and that must stay true: mail and
+  // messaging platforms fetch every link in a message at SEND time, so a GET that re-provisions would
+  // consume the fresh service before the prospect ever clicked. (/api/demo/return is exactly that GET,
+  // which is why this does not route through it — it also deletes by event_date only and rewrites
+  // expires_at.) This posts to /api/demo/restart, which is the same triple-guarded handler the button
+  // already uses, through the same `startNewService`.
+  //
+  // 🔴 THREE GUARDS, BECAUSE ONE IS NOT ENOUGH:
+  //   1. `autoRestartFiredRef` — synchronous, once per PAGE LOAD. The effect re-runs on every render,
+  //      including the ones the 60-second `fallbackInterval` poll causes; the deleted demo roll fired
+  //      on that poll and this must never repeat it.
+  //   2. `restartingRef` — the button's own in-flight latch, shared, so a click and this cannot race.
+  //   3. `hg_demo_autorestart_<token>` in localStorage — the only guard that survives a RELOAD, which
+  //      `startNewService` performs on success. Without it a demo restarted at 23:58 (window clamped to
+  //      23:59) would come back ended, restart, reload, and loop. Also the cross-TAB guard: the stamp is
+  //      CLAIMED BEFORE the POST, so a second tab loading a moment later sees it and stands down.
+  // The BUTTON is deliberately NOT gated by (3) — a visitor who presses "Start a new service" means it,
+  // whatever happened automatically a minute ago.
+  //
+  // ── ORDER: T2 IS ASKED FIRST, AND ONLY ONE RESTART MAY FIRE PER LOAD ─────────────────────────────
+  // T2 runs before T1 because its question is narrower and its answer is authoritative: if this is the
+  // first open, the board is being rebuilt regardless of whether the current one is live, so evaluating
+  // "is it live?" first would be asking a question whose answer cannot change the outcome. When T2
+  // declines, `firstOpenChecked` flips and this effect re-runs so T1 gets its turn on the same load.
+  // Both paths funnel through `startNewService`, whose `restartingRef` is a single synchronous latch —
+  // so even if both conditions were somehow true at once, the second call returns immediately.
+  useEffect(()=>{
+    if(!isDemo)return
+    if(restartingRef.current)return
+
+    // ── T2 — FIRST OPEN ───────────────────────────────────────────────────────────────────────────
+    if(demoFirstOpenPending&&!firstOpenChecked){
+      if(firstOpenAttemptedRef.current)return          // this load already asked; wait for the answer
+      // ⚠️ THE CLIENT-SIDE ADMIN CHECK (folded into demoFirstOpenPending above) IS AN OPTIMISATION, NOT
+      // THE GUARD. `isAdmin` is resolved asynchronously by the /api/auth/me effect and is `false` for the
+      // first moments of every load, so relying on it alone would let Dominic's own preview consume the
+      // prospect's first open in the race. /api/demo/restart runs verifyAdmin server-side and refuses the
+      // claim there; the client check only spares an admin a pointless round trip once that answer has
+      // arrived — and if the POST already went out, the server's refusal is what actually protects it.
+      firstOpenAttemptedRef.current=true
+      void (async()=>{
+        const restarted=await startNewServiceRef.current?.({claimFirstOpen:true})
+        // Declined (already opened on another device, an admin session, an anonymous demo, or the column
+        // is not there yet) → let T1 evaluate this same load. On a real restart the page reloads and
+        // nothing after this matters.
+        if(!restarted)setFirstOpenChecked(true)
+      })()
+      return
+    }
+
+    // ── T1 — NO LIVE EVENT ────────────────────────────────────────────────────────────────────────
+    if(!demoServiceEnded)return                       // includes !eventsLoaded
+    if(autoRestartFiredRef.current)return
+    let claimed=false
+    try{
+      const key=`hg_demo_autorestart_${token}`
+      const last=Number(localStorage.getItem(key)||'0')
+      if(Number.isFinite(last)&&last>0&&Date.now()-last<AUTO_RESTART_COOLDOWN_MS){
+        autoRestartFiredRef.current=true              // a very recent attempt — leave the card to the visitor
+        return
+      }
+      localStorage.setItem(key,String(Date.now()))    // CLAIM FIRST, then act
+      claimed=true
+    }catch{/* private mode / quota: (1) and (2) still bound this to once per load */}
+    autoRestartFiredRef.current=true
+    void claimed
+    void startNewServiceRef.current?.()
+  },[isDemo,demoFirstOpenPending,firstOpenChecked,isAdmin,demoServiceEnded,token])
+
   // ── 🔴 ANDROID HARDWARE BACK ───────────────────────────────────────────────────────────────────
   // ORDERED INNERMOST FIRST, and the ordering here is z-index, read off the overlays themselves. The
   // four z-[60] modals (finish confirm, edit-ITEM, demo lock) stack over the z-50 ones, and
@@ -3069,18 +3280,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
 
-  // DEMO — has this service finished? Two ways: the window ELAPSED (a demo is provisioned auto_close:false
-  // so it just runs out with status still 'open'), or the event was CLOSED. Either way the board is dead:
-  // slots are generated for the window, so past end_time there is nothing bookable and the demo's whole
-  // loop is impossible. Previously /api/dashboard silently rolled the window forward on every load; that
-  // is gone (see the note there), so the state is now surfaced instead of hidden.
-  // Venue-local comparison via the event's own date + end_time, matching how every other surface reads
-  // these columns — they are wall-clock, not UTC.
-  const demoServiceEnded=!!(isDemo&&activeEvent&&(
-    activeEvent.status==='closed'||
-    (activeEvent.event_date&&activeEvent.end_time&&
-      Date.now()>new Date(`${activeEvent.event_date}T${activeEvent.end_time}`).getTime())
-  ))
+  // DEMO — `demoServiceEnded` and the auto-restart that consumes it are DEFINED ABOVE THE EARLY
+  // RETURNS (beside `activeEvent`), because a hook reads them. See the block there.
+
+  // ── DEMO — THE "service has ended" CARD, DEFINED ONCE AND RENDERED IN TWO PLACES ────────────────
+  // 🔴 ONE DEFINITION, DELIBERATELY. The orders tab has two mutually exclusive arms — `activeEvent` and
+  // `!activeEvent` — and the restart has to be reachable from BOTH: the elapsed/closed case resolves an
+  // event, the no-event case (a demo whose only event is past-dated, so /api/events/manage?upcoming=true
+  // never returns it) resolves nothing. Copying the JSX into both arms is how the two copies drift, and
+  // this card is the demo's only route out of a dead board.
+  // Null for an operator truck and for a live demo, so `{demoEndedCard}` is a no-op on both.
+  const demoEndedCard=demoServiceEnded?(
+                <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
+                  <p className="text-base font-black text-slate-900">This service has ended</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Start a new one and we&apos;ll set up a fresh service for right now — your menu stays as it is.
+                  </p>
+                  {/* ⚠️ WRAPPED, NOT PASSED DIRECTLY. `startNewService` now takes an options object, and
+                      React would hand the click event straight into it — so the button would be sending a
+                      MouseEvent where `claimFirstOpen` is read. The wrapper also guarantees the BUTTON
+                      never claims the first open: pressing it is a deliberate restart, not a first view. */}
+                  <button type="button" onClick={()=>{void startNewService()}} disabled={restarting}
+                    className="mt-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-40 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm">
+                    {restarting?'Setting up…':'Start a new service'}
+                  </button>
+                  {restartError&&<p className="text-sm text-red-600 mt-2">{restartError}</p>}
+                </div>
+  ):null
 
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
   // orders resolve to the event-date-aware ASAP base, so they interleave with
@@ -3280,7 +3506,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           existed in prod (it is written by lib/provision-demo.ts but had no migration). Live schema
           confirmed it present and populated on 2026-07-28, and the migration now exists
           (20260728_demo_sessions_extraction_source.sql), so the fallback is gone. */}
-      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}/>}
+      {/* logoUrl: the SAME predicate as handleShowQR's `showBrandedQr` — plan feature AND qr_code_style ===
+          'branded' — so the welcome QR and the fullscreen QR cannot disagree. Unbranded demos pass null. */}
+      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
+        logoUrl={(demoBranded&&truck&&hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
@@ -3301,7 +3530,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         //    (components/shared/AppHeader.tsx:119,126), so gating it HERE covers the accessible name
         //    too; there is no second place to fix. `activeVanCount !== 1` hides the van on a one-van
         //    truck and `null` (not yet known) falls through to showing it.
-        truckName={isDemo ? null : (truck?.name ? ((vanName && activeVanCount!==1) ? `${truck.name} — ${vanName}` : truck.name) : null)}
+        // 🔴 DEMO: hidden UNLESS branded. A branded (outreach) demo carries the prospect's real name and shows
+        //    it here — that is the point of the demo. An unbranded demo stays `null`, byte-for-byte as before.
+        truckName={(isDemo && !demoBranded) ? null : (truck?.name ? ((vanName && activeVanCount!==1) ? `${truck.name} — ${vanName}` : truck.name) : null)}
         truckLogoUrl={truck?.logo || null}
         subtitle={truck?.venue_name || undefined}
       >
@@ -3577,6 +3808,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {activeTab==='orders'&&(
           <div className="lg:h-full lg:min-h-0 lg:flex lg:flex-col">
             {!activeEvent?(
+              // 🔴 A DEMO WITH NO EVENT GETS THE RESTART CARD, NOT THE EVENT PICKER. The amber panel
+              // sends the reader to a picker populated from `upcomingEvents` — which in this exact state
+              // is EMPTY (that is why there is no active event), so it is a button that opens nothing.
+              // `demoEndedCard` is null for an operator truck, so Gusto keeps the amber panel verbatim.
+              demoEndedCard??(
               <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="text-amber-500">⚠️</span>
@@ -3587,6 +3823,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   Select event
                 </button>
               </div>
+              )
             ):(
               <>
               {/* Day-load sidebar (desktop) sits right of the order list on lg+; the order
@@ -3612,19 +3849,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {/* DEMO — the service has finished. Shown INSTEAD of the loop-complete prompt: the board
                   behind this is dead (nothing bookable past end_time), so a signup prompt would be
                   pitching off the back of something that no longer works. One action, no dead ends. */}
-              {demoServiceEnded&&(
-                <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
-                  <p className="text-base font-black text-slate-900">This service has ended</p>
-                  <p className="text-sm text-slate-600 mt-1">
-                    Start a new one and we&apos;ll set up a fresh service for right now — your menu stays as it is.
-                  </p>
-                  <button type="button" onClick={startNewService} disabled={restarting}
-                    className="mt-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-40 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm">
-                    {restarting?'Setting up…':'Start a new service'}
-                  </button>
-                  {restartError&&<p className="text-sm text-red-600 mt-2">{restartError}</p>}
-                </div>
-              )}
+              {demoEndedCard}
               {isDemo&&!demoServiceEnded&&(
                 <DemoLoopComplete
                   token={token}
@@ -5641,7 +5866,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           {/* DEMO: the truck name is a generated internal id ("Demo Kitchen (12w7he)") — hidden everywhere
               else in demo for exactly that reason. Strip the trailing "(code)" so the QR label reads a clean
               "Demo Kitchen" instead of leaking the identifier. */}
-          <p className="text-lg font-bold text-slate-900 mt-4">{isDemo ? (truck?.name?.replace(/\s*\([^)]*\)\s*$/, '') || 'Demo') : truck?.name}</p>
+          <p className="text-lg font-bold text-slate-900 mt-4">{(isDemo && !demoBranded) ? (truck?.name?.replace(/\s*\([^)]*\)\s*$/, '') || 'Demo') : truck?.name}</p>
           <p className="text-xs text-slate-500 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
           <p className="text-xs text-slate-300 mt-4">Tap anywhere to close</p>
         </div>

@@ -28,9 +28,9 @@ import { CopyButton } from '@/components/dashboard/CopyButton'
 // function over a URL (dynamically imported, canvas-based, client-only) — it needs no Manage state and no
 // fetch, so the popup can render it directly. That replaced the old copy-the-link box entirely: copying a
 // URL and retyping it into a phone mid-demo is friction nobody actually goes through.
-//   Logo argument is null + the 'Your logo here' placeholder plate, matching what the nav QR renders in
-//   demo (a provisioned demo truck has no logo — provision-demo.ts never sets one). ⚠️ If demo trucks ever
-//   gain a logo, this and handleShowQR in app/dashboard/[token]/page.tsx will diverge — change both.
+//   Logo argument is null + the 'Your logo here' placeholder plate for an UNBRANDED demo, matching what
+//   the nav QR renders. A BRANDED (outreach) demo passes its resolved logo through `logoUrl`, computed by
+//   the dashboard with the same predicate handleShowQR uses — one predicate, two call sites, no divergence.
 // ⚠️ SUPERSEDED BY G1 — the paragraph above records why the copy-link box was once REMOVED in favour of
 // the QR ("copying a URL and retyping it into a phone mid-demo is friction nobody actually goes
 // through"). That reasoning was right about COPYING and wrong about the link itself, because it assumed
@@ -41,7 +41,12 @@ import { CopyButton } from '@/components/dashboard/CopyButton'
 
 import { useEffect, useState } from 'react'
 
-export function DemoWelcome({ token, orderUrl, isSample = false }: { token: string; orderUrl: string | null; isSample?: boolean }) {
+export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null }: {
+  token: string; orderUrl: string | null; isSample?: boolean
+  /** BRANDED (outreach) demos only: the resolved logo URL, passed by the dashboard under the same predicate
+   *  as its fullscreen QR. null (the default, and every landing-page demo) keeps the 'Your logo here' plate. */
+  logoUrl?: string | null
+}) {
   const storeKey = `hg_demo_welcome_${token}`
   const [open, setOpen] = useState(() => {
     if (typeof window === 'undefined') return false
@@ -58,7 +63,9 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
     ;(async () => {
       try {
         const { generateQRWithLogo } = await import('@/lib/generateQRCode')
-        const dataUrl = await generateQRWithLogo(orderUrl, null, 320, 'Your logo here')
+        // A real logo WINS over the placeholder inside generateQRWithLogo (its own `if (logo) … else if
+        // (placeholderText)` order — unchanged here). Passing null keeps today's plate exactly.
+        const dataUrl = await generateQRWithLogo(orderUrl, logoUrl, 320, 'Your logo here')
         if (live) setQrDataUrl(dataUrl)
       } catch (err) {
         console.error('[DemoWelcome] QR generation failed:', err)
@@ -66,7 +73,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
       }
     })()
     return () => { live = false }
-  }, [open, orderUrl, qrDataUrl, qrFailed])
+  }, [open, orderUrl, qrDataUrl, qrFailed, logoUrl])
 
   const dismiss = () => {
     try { localStorage.setItem(storeKey, 'seen') } catch { /* private mode — it'll ask again */ }

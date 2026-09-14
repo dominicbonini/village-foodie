@@ -128,6 +128,11 @@ export async function restartDemoService(
     })
     seededOrders = seeded.inserted
     if (seeded.skippedNoMenu) warnings.push('No menu items to seed orders from — board left empty.')
+    // 🔴 THE CAPACITY POST-CONDITION SPEAKS THROUGH HERE. seedDemoOrders now checks its own board with
+    // the REAL breach detector and sheds orders rather than ship one that is over capacity; anything it
+    // could not clear (or could not check) arrives as a warning naming the slot, the category and the
+    // counts. Never swallowed — these reach the admin response.
+    if (seeded.warnings.length) warnings.push(...seeded.warnings)
 
     // ── 4. Rebuild occupancy (§9.3 #2) ────────────────────────────────────────────────────────────
     // provisionDemoEvent already ran a rebuild, but against an EMPTY board. Without this second pass

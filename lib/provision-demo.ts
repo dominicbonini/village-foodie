@@ -26,7 +26,8 @@ import { buildDemoAssumptions } from '@/lib/demo-assumptions'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
 import { seedDemoOrders } from '@/lib/seed-demo-orders'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { createDemoSession, touchDemoSession } from '@/lib/demo-session'
+import { createDemoSession, touchDemoSession, DemoSessionError } from '@/lib/demo-session'
+import { copyDemoLogo } from '@/lib/demo-logo'
 import type { Actor } from '@/lib/allergen-audit'
 
 const DEMO_ACTOR: Actor = { actor_user_id: null, actor_role: null, auth_method: 'token' }
@@ -56,6 +57,12 @@ export interface ProvisionDemoResult {
   seededOrders: number
   /** Non-fatal notes for logs — never shown to the visitor. */
   warnings: string[]
+  /** OUTREACH demos only: the /demo/<public_ref> segment. null for an anonymous demo and on a return visit
+   *  (the session already holds it; the return path redirects by token and never needs it). */
+  publicRef: string | null
+  /** OUTREACH demos only: the bucket path written to trucks.logo_storage_path, or null when the discovery
+   *  logo was absent, refused by the allowlist, or failed to copy (see warnings). */
+  logoStoragePath: string | null
 }
 
 export interface ProvisionDemoInput {
@@ -67,6 +74,16 @@ export interface ProvisionDemoInput {
   /** Re-provision INTO an existing demo truck (return-visit path) instead of creating a new one. */
   existingTruckId?: string
   now?: Date
+  // ── OUTREACH "Create Demo" (admin-only; /api/admin/provision-demo) ──────────────────────────────
+  // All three absent on the anonymous landing-page path, which is then byte-identical to before.
+  /** The real truck's name. Becomes trucks.name (shown on the dashboard header and the QR) instead of
+   *  the `Demo Kitchen (xxxxxx)` default. Identity (id/slug/token) is NOT derived from it. */
+  name?: string | null
+  /** discovery_trucks.logo_url as stored. Allowlisted and copied by lib/demo-logo — never fetched. */
+  logoUrl?: string | null
+  /** discovery_trucks.id. Written to demo_sessions.discovery_truck_id (NEVER to hatchgrab_truck_id),
+   *  switches the session to the 30-day tier, and mints public_ref. */
+  discoveryTruckId?: string | null
 }
 
 export class ProvisionDemoError extends Error {
@@ -95,6 +112,7 @@ export async function provisionDemo(
   let slug: string
   let dashboardToken: string
   let vanId: string | null
+  let truckName = ''
 
   if (input.existingTruckId) {
     // RETURN VISIT: reuse the truck (its menu is what they came back for) and only rebuild the event.
@@ -111,12 +129,16 @@ export async function provisionDemo(
     try {
       const provisioned = await provisionTruck(supabase, {
         kind: 'demo',
+        // OUTREACH: the prospect's real name. Undefined (not null) on the anonymous path so the option is
+        // ABSENT and provisionTruck's `Demo Kitchen (xxxxxx)` default applies exactly as before.
+        ...(input.name && input.name.trim() ? { name: input.name.trim() } : {}),
         van: { name: 'Van 1', kitchen_capacity: DEMO_VAN_CAPACITY },
       })
       truckId = provisioned.truck.id
       slug = provisioned.truck.slug
       dashboardToken = provisioned.truck.dashboard_token
       vanId = provisioned.van?.id ?? null
+      truckName = provisioned.truck.name
       warnings.push(...provisioned.warnings)
     } catch (err) {
       const orphan = err instanceof ProvisionError ? err.orphanTruckId : undefined
@@ -137,8 +159,45 @@ export async function provisionDemo(
   // only when an email is captured (saveDemoEmail), which is also the only point at which we promise a
   // deletion date to a real person. A return visit pushes the existing tier out rather than resetting it.
   // Best-effort: if migration 20260723 isn't applied yet the demo still provisions, just unpersisted.
-  if (input.existingTruckId) await touchDemoSession(supabase, truckId, now)
-  else await createDemoSession(supabase, truckId, now)
+  //
+  // OUTREACH (discoveryTruckId set, first run only): the session write is STRICT and carries the
+  // discovery link, the 30-day tier and public_ref. A failure here is surfaced with the truck id: the
+  // truck has no menu and no event yet, so the orphan sweep reclaims it after its 2h window.
+  let publicRef: string | null = null
+  if (input.existingTruckId) {
+    await touchDemoSession(supabase, truckId, now)
+  } else if (input.discoveryTruckId) {
+    try {
+      const session = await createDemoSession(supabase, truckId, now, {
+        discoveryTruckId: input.discoveryTruckId,
+        // The stored name — what provisionTruck actually wrote, so the URL matches the header.
+        publicRefBase: truckName,
+      })
+      publicRef = session.publicRef
+    } catch (err) {
+      throw new ProvisionDemoError(
+        `Outreach demo session failed: ${err instanceof DemoSessionError ? err.message : (err instanceof Error ? err.message : 'unknown')}`, truckId)
+    }
+  } else {
+    await createDemoSession(supabase, truckId, now)
+  }
+
+  // ── 2b. BRANDING (outreach, first run only) — logo copy, then qr_code_style ──────────────────────
+  // Best-effort by design: a logo is decoration on a disposable truck. `branded` is written ONLY when a
+  // logo actually landed, so the dashboard's `showBrandedQr` (plan feature && qr_code_style === 'branded')
+  // never selects a branded composite with nothing to put in the centre. Both branded surfaces read the
+  // same logo_storage_path (see the build report, Phase 0a), so setting it here cannot make them disagree.
+  let logoStoragePath: string | null = null
+  if (!input.existingTruckId && input.discoveryTruckId) {
+    const logo = await copyDemoLogo(supabase, truckId, input.logoUrl ?? null, { now })
+    logoStoragePath = logo.logoStoragePath
+    if (logo.source.kind === 'refused') warnings.push(`Logo not copied — ${logo.source.reason}`)
+    if (logo.error) warnings.push(`Logo copy failed (non-fatal): ${logo.error}`)
+    if (logoStoragePath) {
+      const { error: qrErr } = await supabase.from('trucks').update({ qr_code_style: 'branded' }).eq('id', truckId)
+      if (qrErr) warnings.push(`Could not set qr_code_style=branded (non-fatal): ${qrErr.message}`)
+    }
+  }
 
   // ── 3. Menu (skipped on a return visit — theirs is already committed) ──────────────────────────────
   let menu: MenuOutcome
@@ -165,7 +224,7 @@ export async function provisionDemo(
   // leaves items=0/events=0 → the orphan sweep gate `if (hasMenu && hasEvent) continue` is false → reclaimed
   // (and the 24h expiry sweep catches it regardless, since a failed demo is never claimed).
   if (menu.kind === 'failed') {
-    return { truckId, slug, dashboardToken, vanId, event: null, menu, seededOrders: 0, warnings }
+    return { truckId, slug, dashboardToken, vanId, event: null, menu, seededOrders: 0, warnings, publicRef, logoStoragePath }
   }
 
   // ── 4. Live event + slot grid ─────────────────────────────────────────────────────────────────────
@@ -192,6 +251,11 @@ export async function provisionDemo(
     })
     seededOrders = seeded.inserted
     if (seeded.skippedNoMenu) warnings.push('No menu items to seed orders from — board left empty.')
+    // 🔴 THE CAPACITY POST-CONDITION SPEAKS THROUGH HERE. seedDemoOrders now checks its own board with
+    // the REAL breach detector and sheds orders rather than ship one that is over capacity; anything it
+    // could not clear (or could not check) arrives as a warning naming the slot, the category and the
+    // counts. Never swallowed — these reach the admin response.
+    if (seeded.warnings.length) warnings.push(...seeded.warnings)
 
     // Re-run the occupancy rebuild now that the orders exist. provisionDemoEvent ran it against an empty
     // board; the traffic lights read production_slot_usage, so without this second pass the seeded orders
@@ -206,7 +270,7 @@ export async function provisionDemo(
     warnings.push(`Order seeding failed (non-fatal): ${err instanceof Error ? err.message : 'unknown'}`)
   }
 
-  return { truckId, slug, dashboardToken, vanId, event, menu, seededOrders, warnings }
+  return { truckId, slug, dashboardToken, vanId, event, menu, seededOrders, warnings, publicRef, logoStoragePath }
 }
 
 // ── Menu: extract → assume → commit, with the honest three-outcome handling ──────────────────────────

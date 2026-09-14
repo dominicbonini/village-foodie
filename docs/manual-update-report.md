@@ -1,141 +1,149 @@
-# Manual update — V12.9 and V1.9
+# Manual update — V13.0 and V2.0
 
 **Documentation only.** Two files changed: `docs/reference-manual.md` and
-`docs/scraper-reference-manual.md`. No code, no schema, no migration, no database write. Every number was
-re-derived against the live database on **11 September 2026 at 11:45 UTC** before it was written down.
+`docs/scraper-reference-manual.md`. No code, no schema, no migration, no database write. 🧪 `git status`
+shows only those two files modified.
 
-Nothing in the brief arrived garbled. Two of its statements did not survive re-derivation and are
-corrected below rather than copied into the manuals.
+**No delta for this material existed.** The highest versions were **V12.9** and **V1.9**, so these are
+**V13.0** and **V2.0** — not a second delta over a first. The working tree was clean when I started,
+which is itself a fact worth recording: everything V12.9 described as "built and uncommitted" is now
+committed and deployed.
 
----
-
-## 🔴 FIRST: A VERSION OF THIS TASK HAD ALREADY RUN. I DID NOT WRITE A SECOND DELTA OVER THE FIRST.
-
-**V12.8 and V1.8 already existed**, both dated 9 September 2026 (night), and between them they already
-cover **items 1, 2, 3, 4, 5, 9, 10 and most of 11** of the brief:
-
-| brief item | already covered by | where |
-|---|---|---|
-| 2 · the inertness class, all three mechanisms, sweeps OUTSTANDING | V12.8 | §35, §52.6 |
-| 3 · untrusted URLs from scraper-written columns, sweep OUTSTANDING | V12.8 | §35 |
-| 1b, 1c · the three §14 media claims, corrected in place | V12.8 | §14 |
-| 9 · the whole outreach system, and that almost none of it was observed running | V12.8 | §52, §52.3 |
-| 10 · the phantom defect and the five normalisers | V12.8 / V1.8 | §52.5 / §21a |
-| 4 · the run log and `PGRST205` | V1.8 | §6, §8 |
-| 5 · the 3,444 deletions, the Sheet dependency, `DEDUP_FROM`, `Y (0)` 103 → 1 | V1.8 | §8.1 |
-| 11 · figures that moved | V12.8 / V1.8 | §52.4 / §22 |
-
-**So I wrote the next versions — V12.9 and V1.9 — covering only the 10–11 September work and the claims
-those two days falsified.** Nothing from the list above is restated; both new entries open with a line
-saying so and pointing at the older entry.
-
-**What was MISSING, and is what the new deltas contain:** the entire dedup gate (brief item 6), the
-re-diagnosed venue-matching wall (item 7), the trading-truck confirmations (item 8), a single
-consolidated outstanding list (item 12), and **item 1a — the venue-matcher backlog entry, which V12.8 did
-not touch and which was still being read as open.**
+**Every figure below was re-derived from the live database at 2026-09-11T20:22Z**, not carried from the
+source reports.
 
 ---
 
-## WHERE EVERY EDIT WENT, AND WHAT IT REPLACED
+## 🔴 THE FIGURE THIS SERIES CARRIED WRONGLY — THE SEVENTH CORRECTION, AND IT IS MINE
+
+| scope | rows |
+|---|---|
+| `village = venue_name`, **whole table**, normalised | **76** |
+| …by exact string equality | 69 |
+| …**future-dated only** | **71** |
+| …**written by `Manual Entry`** | **62** ← the number three of my reports and one SQL snippet carried |
+
+**62 is a by-writer subset, not the table count.** By writer: `Manual Entry` 62, `URL:` 12, other 2. It
+came from a cross-tab in the diagnosis and I promoted it to "the table figure" in
+`extraction-prompt-fix-report.md` without re-deriving. **It is corrected in place in both manuals and
+called out in both changelogs as my error.**
+
+## The rest, re-derived
+
+| | value |
+|---|---|
+| `discovery_events` | **933** (future **703**) |
+| `venue_id` NULL | **326** — up from 321; five wrong links nulled by hand |
+| village NULL | **28** |
+| `venues` | **819** |
+| `discovery_trucks` | **231** · `discovery_run_log` **348** |
+| the `hrefFromStoredUrl` regression set | **360** = `discovery_trucks.website` 102 + `venues.website` 258 |
+| `discovery_run_log.url` non-http | **6** `about:blank` + **3** scheme-less |
+
+## Code claims checked against the code, not the reports
+
+| claim | verdict |
+|---|---|
+| `safeHref` moved byte-identically, 936 bytes | ✅ 🧪 936, `export` the only edit |
+| ten sinks, seven public, all guarded | ✅ 🧪 re-censused; 9 matched by pattern, +2 computed consts (`menuHref`, `orderHref`), −1 out of scope (`DemoWelcome`, an internally built demo URL) = **10** |
+| `hrefFromStoredUrl` scheme filter | ✅ present |
+| `pickBest` distance tie-break, id as fallback | ✅ present, keys (c) and (d) |
+| `assertNoInventedVillages` wired | ✅ in `geo-validate.js`, called from `run-scraper.js` |
+| `venueGroupKey` used by three surfaces | ✅ hook, card, venue page |
+| prompts edited, control untouched | ✅ 🧪 `VILLAGE (MANDATORY)` **0**; `buildHgPrompt` **2**; wrap-safe `truly cannot be` **3** |
+
+---
+
+# WHERE EVERY EDIT WENT, AND WHAT IT REPLACED
 
 A longer file proves nothing, so each edit is named by what it displaced.
 
-### `docs/reference-manual.md` — six edits
+## `docs/reference-manual.md` — seven edits
 
 | # | edit | what it replaced |
 |---|---|---|
-| 1 | line 1 header `· V12.8` → `· V12.9` | the running header |
-| 2 | front matter `**Version 12.7**` → `**Version 12.9**` | 🔴 **the front matter was already TWO releases adrift** — it read 12.7 while the header read 12.8. This is the exact drift the manual's own standing rule exists to prevent, and V12.8 committed it. Both strings now agree. |
-| 3 | new `## V12.9` changelog block | inserted **directly under `# Changelog`, above `## V12.8`** — newest first, matching the file's existing order. Nothing was removed. |
-| 4 | **Backlog · "VENUE MATCHER — sole candidacy is treated as certainty"** | 🔴 **rewritten in place, struck through, not annotated beside.** The old paragraph — the `cands.length === 1` claim, the `574 venues` aside, the PROVEN LIVE example and the A+C fix plan — is gone and replaced by the correction. ⚠️ **The half that is still true was deliberately kept and marked as not struck**: `discovery_events` still has no confidence column. |
-| 5 | `## 52.6 Outstanding` heading + a two-line pointer | the heading now reads **"(V12.8 — SUPERSEDED BY §53.8, WHICH IS THE SINGLE LIST)"**. Its items were **not** deleted — they are the record of 9 September — but readers are sent to the one current list. |
-| 6 | new `# 53.` with §§53.1–53.8 | appended **after §52.6 and before the `*End of manual*` footer**, which is still the last line of the file. It replaced nothing. |
+| 1 | line 1 header `V12.9` → `V13.0` | the running header |
+| 2 | front matter `**Version 12.9**` → `**Version 13.0**` | the cover version. 🧪 Both now read 13.0 — the standing rule's grep passes |
+| 3 | new `## V13.0` changelog block | inserted **directly under `# Changelog`, above `## V12.9`** — newest first, the file's existing order. Nothing removed |
+| 4 | **§35, the untrusted-URL entry** | 🔴 **the sentence beginning "⚠️ THE SWEEP IS OUTSTANDING:" is GONE**, replaced by the census result and a pointer to §54.1. The rest of that paragraph — the `Shika Shack` evidence, the two defects in the first `safeHref` — is untouched and still true. ⚠️ The **other** "SWEEP IS OUTSTANDING" in §35, the one for the three **inertness** sweeps, was deliberately left: those are still unrun |
+| 5 | new **§35.x — A SUBSTRING TEST IS NOT A SCHEME TEST** | appended to §35, **before `# 36.`**. Replaced nothing |
+| 6 | new **§35.y — A HARNESS THAT CANNOT FAIL PROVES NOTHING** | same place, immediately after 35.x. Replaced nothing |
+| 7 | new **§54** with §§54.1–54.6 | appended **after §53.8 and before the `*End of manual*` footer**, which is still the last line. Replaced nothing |
 
-### `docs/scraper-reference-manual.md` — five edits
+**Two corrections made in place inside §53, not appended beside it:**
+
+- **§53.6's opening paragraph** — the "225 future rows / 322 across the whole table" figures now carry a
+  dated update saying `venue_id` NULL is **326**, that **17** of those rows now pass R5 because of the
+  tie-break, and that the *writer* has been fixed, which repairs future rows and none of these. The
+  cause table beneath it is unchanged and now explicitly marked as measured on 11 September.
+- **§53.8's outstanding table** — row 2 (untrusted-URL sweep) rewritten to **✅ CLOSED V13.0**; row 4
+  (venue matching) rewritten to **still open, still the largest, but smaller**; row 10 ("two days of work
+  are UNCOMMITTED") rewritten to **✅ CLOSED**; **two new rows added**, 11 (the unbuilt ratio assertion)
+  and 12 (the prompt change is unverified). ⚠️ The new rows first landed **above** rows 9 and 10; I
+  caught that and re-emitted the four rows in numeric order, so the table reads 1–12.
+
+## `docs/scraper-reference-manual.md` — five edits
 
 | # | edit | what it replaced |
 |---|---|---|
-| 1 | header `· V1.8` → `· V1.9`, and `**Version 1.8 · 9 September 2026 (night)**` → `**Version 1.9 · 11 September 2026**` | both strings, which agreed already |
-| 2 | new `## V1.9` changelog block | inserted under `# CHANGELOG`, above `## V1.8` |
-| 3 | **§5 live counts** | 🔴 **the sentence `574 venues, 46 with a NULL village, 24 where village equals name, 1 with no coordinates` is GONE**, replaced by the re-derived counts plus a marked note of what the old figures were. |
-| 4 | **§22 headline** | 🔴 **`venue_id is null on 404 of 902 rows (44.8%)` is GONE**, replaced by the current figure and a pointer saying §22.2's diagnosis is now only half the cause. |
-| 5 | new `## 22.4` and new `# 23.` | inserted **before `# WHAT I COULD NOT READ OR VERIFY`**, so the unread/unverified list stays at the end where the file keeps it |
+| 1 | header `V1.9` → `V2.0`, and `**Version 1.9 · 11 September 2026**` → `**Version 2.0 · 12 September 2026**` | both strings |
+| 2 | new `## V2.0` changelog block | under `# CHANGELOG`, above `## V1.9` |
+| 3 | **§22's headline figure** | 🔴 **`322 of 935` is GONE**, replaced by **`326 of 933`** with a dated note explaining the five hand-nulled links. The V1.9 correction note beneath it is kept, so the section now records both corrections in sequence |
+| 4 | new **§24** (the extraction prompts) and **§25** (the assertion) | inserted **before `# WHAT I COULD NOT READ OR VERIFY`**, so the unread list stays at the end where the file keeps it |
+| 5 | new **§26** (the matcher tie-break) | same block, after §25 |
 
 ---
 
-## THE NUMBERS, RE-DERIVED 11 SEPTEMBER 11:45 UTC
+# WHAT THE NEW SECTIONS SAY
 
-| | value | previous value recorded |
+**App manual §54** — §54.1 the URL class closed: 10 sinks, 7 public, two helpers whose contracts differ
+on purpose, the 360-of-360 regression, and 🔴 the narrowing that `javascript:` was blocked by **React
+19.2.3 and not by our code**, that `data:`/`vbscript:` passed through, and that at the three weak-guarded
+sinks those were already inert so what the filter actually closed was the `startsWith('http')` gap.
+§54.2 the tie-break, recorded as a tie-break **below** name and token overlap, with 913 of 933 unaffected
+and 0 regressions. §54.3 the prompts: honest not correct, the venue-creation side benefit, the
+re-scrape overwrite with 422 rows at risk and 421 publicly unaffected, and **unverified until a scrape
+runs**. §54.4 the assertion and its **green-run caveat**. §54.5 the rendering guards and the grouping
+change — 54 → 53 pages, one merge, zero splits, 16 of 99 events, why name-alone grouping was rejected,
+and the five hand-nulled rows **named in a table**. §54.6 the 76-versus-62 correction.
+
+**App manual §35.x and §35.y** — the substring-test class (made **twice in one file**, by
+`includes('http')` and `startsWith('http')`, with `about:blank` in the run log as proof that non-http
+values do arrive), and the five instrument failures with the practice that caught them.
+
+**Scraper manual §24, §25, §26** — the three prompts as a production A/B, the assertion with its caveat,
+and the tie-break. §24.2 also records, for the third time in this series, that `buildHgPrompt`'s escape
+sentence **wraps across two lines** and that a single-line grep for it returns a false negative that
+reads as a deleted control.
+
+---
+
+# THE OUTSTANDING LIST, AS IT NOW STANDS (§53.8)
+
+| # | item | state |
 |---|---|---|
-| `discovery_events` | **935** | 4,340 → 896/902 → 920 earlier today |
-| future (≥ today) / past | **705 / 230** | — |
-| rows with `venue_id` NULL | **322** (226 of the future rows) | 404 of 902 |
-| rows marked superseded | **16** — 8 `postcode`, 6 `distance`, 2 `name-time`, **0 `identical-coords`** | 13 |
-| `venues` | **819** | 574 |
-| venues: no village / village = name / no coordinates / no postcode | **43 / 31 / 91 / 230** | 46 / 24 / 1 / — |
-| `discovery_trucks` | **231** | — |
-| `discovery_run_log` | **348** | 232 |
-| outreach prospects | **231**, `whatsapp_confirmed` **30**, `contact_name` **2** | contact_name 3 |
-| `hu_ordering = Y` | **17** | 19 |
+| 1 | the three inertness sweeps | 🔴 **OPEN — still unrun** |
+| 2 | the untrusted-URL sweep | ✅ **CLOSED V13.0** |
+| 3 | the identical-coordinate rule's ordering | 🔴 **OPEN — unreachable, because the distance test fires first** |
+| 4 | venue matching | 🔴 **OPEN, still the largest** — 53 events need a venue row that does not exist |
+| 5 | three chained `superseded_by` winners | 🔴 **OPEN — a re-run cannot repair them** |
+| 6 | the run log has no retention rule | 🔴 **OPEN** — 348 rows, ~42,000/year |
+| 7 | the Escape defect on the schedule popup's delete dialog | 🔴 **OPEN** |
+| 8 | the opt-out footer left the code for an Outlook signature | 🔴 **OPEN as a compliance risk** |
+| 9 | `Chai Stall`'s `photo_url` | ✅ CLOSED |
+| 10 | two days of work uncommitted | ✅ **CLOSED — tree clean, all deployed** |
+| 11 | **the ratio assertion** | 🔴 **OPEN — deliberately unbuilt until a run exists to calibrate against** |
+| 12 | **the prompt change is unverified** | 🔴 **OPEN until a scrape runs** |
 
-## 🔴 TWO STATEMENTS IN THE BRIEF THAT DID NOT SURVIVE RE-DERIVATION
+# HOW I CHECKED
 
-1. **"`contact_name` exists on 3 of 231 rows."** 🧪 It is **2 of 231** — `Tikka Tonic` ("Madhur") and
-   `Pizza Mondo` ("Jo"). The manuals record 2.
-2. **"`Chai Stall`'s `photo_url` pointing at a file that does not exist"** — listed as outstanding.
-   🧪 **It is closed, and V12.8 had already closed it.** I went further and swept **all 242**
-   `photo_url`/`logo_url` values across the 231 trucks: every remote URL returns **HTTP 200** and every
-   local path exists on disk. **0 broken.** §53.8 records the sweep, not just the one row.
+Both manuals were read for an existing delta before anything was written, which is what established that
+V13.0 and V2.0 were new rather than duplicates. Every count came from a full read of the live tables with
+the same normalisation the diagnosis query uses; every code claim was verified by reading the shipped
+code rather than the report that described it, including a re-census of the ten sinks that accounts for
+the two computed-const sinks a naive pattern misses. Each edit was applied with an exact-match assertion
+so it could not land twice, and afterwards I confirmed every new heading appears **exactly once**, that
+both version strings agree, that the `*End of manual*` footer is still the last line, and that the
+inertness sweep's "OUTSTANDING" marker survived while the URL sweep's did not.
 
-**And one piece of shorthand that the code contradicts.** The brief says the gate is "🔴 NOT in
-`/api/inbound-schedule`". 🔎 **The gate IS called there** — `admitDiscoveryEvents` at the top of the
-handler — and the bridge loop below it iterates the same untrimmed `rows` array it always did. What is
-forbidden, and what the code does not do, is let dedup **trim the row list before the bridge loop**. The
-manual records the rule that way, with the reason: a duplicate in the feed is untidy, a missed approval
-takes a trading decision away from the operator. **The code wins, and §53.1 says so explicitly** so the
-shorthand is not read later as "the gate must be removed from that route".
-
-## OTHER CORRECTIONS MADE IN PLACE
-
-- **The venue-matcher "sole candidate = certainty" defect was still listed as OPEN** in the app manual's
-  Backlog. 🔎 `findVenue`'s single-candidate branch now calls `villageAgrees` and then
-  `applyDistanceCeiling`, exactly as the multi-candidate branch does; the old line survives only as a
-  quoted comment. Fixed in the code at V1.1 on 7 September, **struck in the manual only now** — it had
-  been read as open twice in this series, which is why it was rewritten rather than annotated.
-- **The scraper manual's 574-venue count** appeared in two places. The §5 live-counts line is corrected;
-  the `574 → 558` line in §9 is **historical** (it records a merge that happened) and was deliberately
-  left alone.
-- **A self-contradictory line I wrote and then caught** in §53.8: it said "four migrations, of which two
-  are unapplied" and then listed both as applied. 🧪 Re-checked: **all four are applied** — the last
-  proved by the 2 live `name-time` marks, which only its widened CHECK constraint permits. The entry now
-  records the sharper fact: **the database is ahead of `main`** — the schema and the marked rows exist in
-  production while the code that reads and writes them exists only in this working tree.
-
-## WHAT THE NEW SECTIONS SAY, IN ONE LINE EACH
-
-**App manual §53** — §53.1 one gate and its three callers, and why it may not trim the bridge; §53.2 R5
-and the NULL-by-design rule; §53.3 the four rules, with the identical-coordinate rule recorded as
-**unreachable by construction** and the 4-character floor as load-bearing; §53.4 stored-and-hidden
-duplicates and the four columns; §53.5 the two backfill defects, one of which touched live data and
-cannot be repaired by a re-run; §53.6 venue matching as the largest open item, with the 225 refusals
-grouped by cause; §53.7 the trading-truck rules including the structural proof that **no `onConflict`
-anywhere targets `truck_events`**; §53.8 the single outstanding list, ten items.
-
-**Scraper manual §22.4 and §23** — §22.4 re-diagnoses the linking gap as venue data rather than plumbing;
-§23 covers the POST to `/api/discovery/ingest`, the auth and red-run behaviour, the gate's four steps,
-that this is the **first duplicate check in the pipeline that reads the database rather than the Sheet**,
-and the grouping-key defect that the gate never had.
-
-## HOW I CHECKED
-
-Both manuals were read for existing coverage before anything was written, which is what caught the
-already-present V12.8/V1.8. Every count came from a `content-range`-asserted query or from running the
-shipped code against the live table. Code claims were verified by reading the code, not the reports:
-`findVenue`'s single-candidate branch, the gate's placement in the inbound route, the absence of any
-`onConflict` on `truck_events` (repo-wide grep, **no extension filter**), and the 242 media URLs. Each
-edit was applied with an exact-match assertion so it could not land twice, and after writing I confirmed
-every new heading and version string appears **exactly once** and that the `*End of manual*` footer is
-still the last line.
-
-**Not done:** no code, no schema, no migration, no database write, no scrape, nothing installed, and
-`truck_events` was not read.
+**Not done:** no code, no schema, no migration, no database write, no scrape, nothing installed.

@@ -13,6 +13,18 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { generateSlots } from '@/lib/slots'
 import { toMinor } from '@/lib/order-repricing'
+// 🔴 THE POST-CONDITION'S MACHINERY, ALL OF IT IMPORTED, NONE OF IT REIMPLEMENTED.
+// detectCapacityBreaches is the SAME function /api/dashboard calls to raise the "N slots over capacity"
+// banner, and it reads projectBackwardOccupancy (the engine). generateCollectionTimes is the SAME
+// function the dashboard builds its collection-slot list with. normaliseOrderLines /
+// orderItemsToQtyByCat / mergeQtyByCat / buildItemCatMap are the SAME helpers buildUnitsFromOrders uses
+// to turn orders into production_slot_usage. The only thing local is the five-line loop that walks the
+// in-memory rows — see buildUnitsInMemory, and the equivalence proof in the report.
+import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
+import { generateCollectionTimes } from '@/lib/slot-generation'
+import { normaliseOrderLines, buildItemCatMap, type ProductionSlotUnits } from '@/lib/slot-bookings'
+import { orderItemsToQtyByCat, mergeQtyByCat, type QtyByCat } from '@/lib/slot-capacity'
+import type { CatConfig } from '@/lib/prep-utils'
 
 const CUSTOMER_NAMES = [
   'Sarah', 'Dave', 'Priya', 'Tom', 'Aisha', 'Mark', 'Chloe', 'Raj', 'Ellie', 'Ben',
@@ -87,15 +99,73 @@ const FILL_PATTERN = [1.0, 0, 0.5, 0, 1.0, 0, 0.25, 0, 0.75, 0]
 
 const SLOT_INTERVAL_MINS = 5
 
+/** How many shed-and-recheck passes the post-condition may take before it gives up and WARNS.
+ *  Bounded on purpose: this loop runs inside /api/demo (a prospect is watching a spinner) and inside
+ *  restartDemoService (which now fires automatically on page load). Each pass is pure CPU over data
+ *  already in memory — no database round trip — so three is cheap; an unbounded loop would not be. */
+const MAX_BREACH_PASSES = 6
+
+/** Grace minutes the DASHBOARD appends to its collection-slot list (app/api/dashboard/route.ts,
+ *  `GRACE_MINS`). Mirrored here so the post-condition examines at least the slots the banner does. */
+const DASHBOARD_GRACE_MINS = 30
+
+/** A breach the post-condition could not clear, flattened for the callers' `warnings` channel. */
+export interface SeededBreach {
+  collection_time: string
+  /** The engine's own binding reason, e.g. "Mains 8/4" or "over capacity at event-start". */
+  reason: string
+  /** Categories over their batch in this window. */
+  over_cats: { cat: string; over: number }[]
+  /** Items over the kitchen_capacity total ceiling (0 when the breach is per-category only). */
+  over_total: number
+}
+
 export interface SeededOrders {
   inserted: number
+  /** COOKED item lines placed (prep_secs > 0). Was "mains" counted from ORDER_SHAPES.mains, which
+   *  under-counted whenever an accompaniment came from a cooked category. */
   mainsItems: number
-  /** Total item lines across all orders — mains + accompaniments. */
+  /** Total item lines across all orders — cooked + accompaniments. */
   totalItems: number
   slotsUsed: string[]
   skippedNoMenu: boolean
-  /** Highest mains-per-slot actually placed. MUST be <= capacity — surfaced so a breach is provable. */
-  peakPerSlot: number
+  /**
+   * 🔴 REPLACES `peakPerSlot`, WHICH WAS AN INSTRUMENT FAILURE.
+   * The old field counted `ORDER_SHAPES.mains` and was documented as existing "so a breach is provable".
+   * It reported 4 against a ceiling of 4 while the engine saw 14 cooked items in one slot, because every
+   * accompaniment drawn from a cooked category was invisible to it. It was also read by NOTHING — a
+   * comment claimed the admin provision panel surfaced it; no such read exists (see the report).
+   *
+   * This is the highest (category, collection-slot) cooked count actually placed, and `peakBatch` is the
+   * batch it is measured against, so the pair can FAIL: peak > batch means the planner over-filled a slot.
+   * It is NOT the safety check — `unresolvedBreaches` is. It is a description of the board.
+   */
+  peakCookedPerSlotPerCat: number
+  /** The per-category batch the peak above sits against (the binding category's `menu_categories.batch_size`). */
+  peakBatch: number
+  /** Collection slots that finished AT their category's batch — "some at max, none over" is the target,
+   *  so an empty board and a good board must be tellable apart. */
+  slotsAtCapacity: number
+  /** How many post-condition passes ran (1 = clean first time). */
+  breachPasses: number
+  /** Orders removed by the post-condition to clear a breach. */
+  shedOrders: number
+  /** 🔴 NON-EMPTY MEANS THE BOARD SHIPPED OVER CAPACITY. Never silently true — the callers push these
+   *  into their own `warnings`, which reach the admin response. */
+  unresolvedBreaches: SeededBreach[]
+  /** Human-readable notes for the callers' warnings channel. */
+  warnings: string[]
+}
+
+/** Every early return builds its result here, so a new field cannot be forgotten by one of them — the
+ *  exact class of bug the trucks-projection note in /api/dashboard records three instances of. */
+function emptyResult(over: Partial<SeededOrders> = {}): SeededOrders {
+  return {
+    inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: false,
+    peakCookedPerSlotPerCat: 0, peakBatch: 0, slotsAtCapacity: 0,
+    breachPasses: 0, shedOrders: 0, unresolvedBreaches: [], warnings: [],
+    ...over,
+  }
 }
 
 /** One REQUIRED group and every option this dish may legitimately be given for it. */
@@ -106,7 +176,18 @@ interface MenuLine {
   name: string
   price: number
   category: string
+  /** Lower-cased — the key the capacity engine and production_slot_usage use. */
+  catKey: string
   cooked: boolean
+  /** 🔴 THE COMMITTED CEILING, READ FROM `menu_categories.batch_size`, NOT the DEMO_MAINS_BATCH constant.
+   *  Resolved with `batch_size || 1` — BYTE-FOR-BYTE what /api/dashboard does when it builds catConfigs
+   *  (`batch: c.batch_size || 1`), so a category with prep_secs > 0 and batch_size 0 or null is batch 1
+   *  here exactly as it is there. Reading the constant instead is how the planner and the engine came to
+   *  disagree in the first place. */
+  batch: number
+  /** `menu_categories.prep_secs` — needed for the catConfigs the post-condition feeds the engine. */
+  prepSecs: number
+  countsToCapacity: boolean
   /** One entry per REQUIRED group — empty when the dish has none. */
   requiredMods: RequiredGroup[]
 }
@@ -171,6 +252,43 @@ async function resolveRequiredMods(
   return out
 }
 
+/**
+ * production_slot_usage AS IT WILL BE, computed from rows that are not inserted yet.
+ *
+ * 🔴 THE ONLY LOCAL CODE IN THE POST-CONDITION, AND IT IS FIVE LINES. Everything it calls is the
+ * exported helper the real write path calls: `normaliseOrderLines` (folds deal items in),
+ * `orderItemsToQtyByCat` and `mergeQtyByCat`. The loop body is `buildUnitsFromOrders`'s own loop:
+ * resolve the collection time, map it through the `collection_times` window key, merge the quantities.
+ *
+ * WHY NOT CALL buildUnitsFromOrders ITSELF: it is module-private and it reads the orders FROM THE
+ * DATABASE, so using it would mean inserting a breaching board first and deleting rows afterwards. The
+ * codebase already has a name for computing post-insert units without inserting — `computeEventUnitRows`,
+ * the atomic-RPC helper — and that is exactly this shape; it just takes ONE in-memory order, not N.
+ * The report proves this loop and the real read path produce identical units for the same orders.
+ */
+function buildUnitsInMemory(
+  rows: { slot?: unknown; items?: unknown; deals?: unknown }[],
+  timeMap: Record<string, string>,
+  itemCatMap: Record<string, string>,
+  eventStart: string,
+): ProductionSlotUnits {
+  const out: ProductionSlotUnits = {}
+  for (const row of rows) {
+    const ct = (typeof row.slot === 'string' && row.slot) || eventStart
+    if (!ct) continue
+    const productionSlot = timeMap[ct] || ct
+    const lines = normaliseOrderLines((row.items as never[]) || [], (row.deals as never[]) || null)
+    const delta = orderItemsToQtyByCat(lines, itemCatMap)
+    out[productionSlot] = mergeQtyByCat(out[productionSlot] || {}, delta as QtyByCat)
+  }
+  return out
+}
+
+/** Flatten a CapacityBreach to the shape the callers' warnings channel carries. */
+function toSeededBreach(b: CapacityBreach): SeededBreach {
+  return { collection_time: b.collection_time, reason: b.reason, over_cats: b.over_cats, over_total: b.over_total }
+}
+
 export async function seedDemoOrders(
   supabase: SupabaseClient,
   args: {
@@ -179,7 +297,13 @@ export async function seedDemoOrders(
     eventDate: string
     startTime: string
     endTime: string
-    /** The MAINS BATCH — the per-slot ceiling the seeder must never breach (fix 4/6). */
+    /**
+     * ⚠️ NO LONGER THE CEILING, AND KEPT ONLY AS A FALLBACK. The per-slot ceiling is now read from the
+     * committed `menu_categories.batch_size` for each cooked category (see MenuLine.batch) — a constant
+     * passed by the caller is precisely how the planner and the engine came to disagree. This value is
+     * used only to size the budget loop when the menu has NO cooked category at all, where there is no
+     * committed batch to read and nothing counts toward capacity anyway.
+     */
     capacity: number
     count?: number
     /** Wall-clock "now" for the FLOOR below. Passed in (not read via new Date()) so the seeder stays
@@ -189,11 +313,14 @@ export async function seedDemoOrders(
     tz?: string
   },
 ): Promise<SeededOrders> {
-  const ceiling = Math.max(1, args.capacity)
+  const warnings: string[] = []
 
+  // 🔴 `batch_size` AND `prep_secs` AND `counts_toward_capacity`, NOT just `prep_secs`. The planner's
+  // ceiling now comes from the committed category row, and the post-condition needs the same three
+  // columns to build the catConfigs the engine reads. One select, three more columns.
   const { data: itemRows } = await supabase
     .from('menu_items_db')
-    .select('id, name, price, menu_categories!category_id(name, prep_secs)')
+    .select('id, name, price, menu_categories!category_id(name, prep_secs, batch_size, counts_toward_capacity)')
     .eq('truck_id', args.truckId).eq('is_active', true).limit(120)
 
   const requiredMods = await resolveRequiredMods(
@@ -202,23 +329,41 @@ export async function seedDemoOrders(
   const all: MenuLine[] = (itemRows ?? []).map(r => {
     const row = r as Record<string, any>
     const cat = row.menu_categories
+    const name = String(cat?.name ?? '')
     return {
       id: String(row.id),
       name: String(row.name ?? ''),
       price: Number(row.price ?? 0),
-      category: String(cat?.name ?? ''),
+      category: name,
+      catKey: name.toLowerCase(),
       cooked: Number(cat?.prep_secs ?? 0) > 0,
+      // `|| 1` — the dashboard's own expression. See the field's note on MenuLine.
+      batch: Number(cat?.batch_size) || 1,
+      prepSecs: Number(cat?.prep_secs ?? 0),
+      countsToCapacity: !!cat?.counts_toward_capacity,
       requiredMods: requiredMods.get(String(row.id)) ?? [],
     }
   }).filter(l => l.name)
 
   const mains = all.filter(l => l.cooked)
   const others = all.filter(l => !l.cooked)
-  if (all.length === 0) return { inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: true, peakPerSlot: 0 }
+  if (all.length === 0) return emptyResult({ skippedNoMenu: true })
   // No cooked category (inference fell back, or a drinks-only menu) — seed from everything rather than
   // seeding nothing. The board still populates; it just has no capacity story to tell.
   const mainsPool = mains.length ? mains : all
+  // ⚠️ THE FALLBACK STAYS. When every category is cooked (`others` empty — Between Buns Royston, three
+  // cooked categories and zero instant items), accompaniments are drawn from the cooked pool and the
+  // board keeps its two- and three-item orders. That is the point: a board of singles undersells the
+  // product. What changed is that those lines are now CHARGED (see cookedByCat below), so the planner
+  // seats fewer orders per slot instead of pretending the extras were free.
   const otherPool = others.length ? others : all
+
+  /** Committed batch per cooked category key. The binding ceiling, per category, as the engine sees it. */
+  const batchByCat: Record<string, number> = {}
+  for (const l of all) if (l.cooked) batchByCat[l.catKey] = l.batch
+  /** catConfigs in EXACTLY the shape /api/dashboard builds for the engine. */
+  const catConfigs: Record<string, CatConfig> = {}
+  for (const l of all) catConfigs[l.catKey] = { secs: l.prepSecs, batch: l.batch, countsToCapacity: l.countsToCapacity }
 
   // ── Slot plan (fixes 2/3/4) ────────────────────────────────────────────────────────────────────────
   // FIRST COLLECTION = max(start+10, now+10), rounded UP to the 5-min grid.
@@ -232,7 +377,7 @@ export async function seedDemoOrders(
   const firstMins = Math.ceil(floorMins / SLOT_INTERVAL_MINS) * SLOT_INTERVAL_MINS
   const firstCollection = minsToHHMMLocal(firstMins)
   const slots = generateSlots(firstCollection, args.endTime, SLOT_INTERVAL_MINS)
-  if (!slots.length) return { inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: false, peakPerSlot: 0 }
+  if (!slots.length) return emptyResult({ warnings })
 
   // ── TARGET, DERIVED FROM THE WINDOW (see ORDERS_PER_SLOT) ─────────────────────────────────────────
   // Computed HERE, after `slots`, not at the top of the function — the whole point is that it depends on
@@ -243,41 +388,16 @@ export async function seedDemoOrders(
     Math.min(TARGET_ORDERS, Math.round(slots.length * ORDERS_PER_SLOT)),
   )
 
-  // ── ORDER SHAPES → the mains bill ─────────────────────────────────────────────────────────────────
+  // ── ORDER SHAPES → the COOKED bill ────────────────────────────────────────────────────────────────
+  // 🔴 THE LINES ARE BUILT BEFORE THE BUDGETS NOW, AND THAT ORDERING IS THE FIX.
+  // The planner used to budget against `ORDER_SHAPES.mains` — the count of lines drawn from `mainsPool`
+  // — and then draw `extras` from `otherPool`. When `otherPool` falls back to `all` (no instant category
+  // has any items) those extras are COOKED, and they were charged nothing. A slot budgeted 4 received 4
+  // counted mains plus up to 10 uncounted cooked accompaniments.
+  // Building each order's lines first makes the charge a FACT ABOUT THE LINES rather than a property of
+  // the shape that produced them, so the pool fallback cannot smuggle load past the budget again.
   const shapes = Array.from({ length: target }, (_, i) => ORDER_SHAPES[i % ORDER_SHAPES.length])
-  const totalMainsNeeded = shapes.reduce((s, sh) => s + sh.mains, 0)
 
-  // ── SLOT BUDGETS, strided across the whole window ─────────────────────────────────────────────────
-  // Budgets, not fixed counts: orders now carry 1 or 2 mains, so the planner has to PACK them into a
-  // per-slot allowance rather than emit one order per main. Walking the pattern slot-by-slot would exhaust
-  // the budget early on a long window (3h = 35 slots) and leave the back third dead, so the budgets are
-  // built first and then STRIDED evenly. Deterministic throughout — no Math.random, so an odd-looking
-  // board can be re-inspected.
-  const budgets: number[] = []
-  let mainsLeft = totalMainsNeeded
-  const nonZero = FILL_PATTERN.filter(f => f > 0)
-  for (let i = 0; mainsLeft > 0 && i < slots.length; i++) {
-    // 🔴 THE BREACH GUARD: a slot's budget NEVER exceeds the batch. Orders are packed within it below, so
-    // no combination of order sizes can push a slot over the ceiling.
-    const n = Math.min(Math.max(1, Math.round(ceiling * nonZero[i % nonZero.length])), ceiling, mainsLeft)
-    budgets.push(n)
-    mainsLeft -= n
-  }
-
-  const planned: { slot: string; budget: number }[] = []
-  const stride = budgets.length > 0 ? slots.length / budgets.length : 1
-  const taken = new Set<number>()
-  budgets.forEach((n, j) => {
-    let idx = Math.min(slots.length - 1, Math.round(j * stride))
-    while (taken.has(idx) && idx < slots.length - 1) idx++      // never double-book one slot
-    if (taken.has(idx)) return
-    taken.add(idx)
-    planned.push({ slot: slots[idx], budget: n })
-  })
-  planned.sort((a, b) => a.slot.localeCompare(b.slot))
-
-  // ── Build the orders ───────────────────────────────────────────────────────────────────────────────
-  const rows: Record<string, unknown>[] = []
   let nameIdx = 0
   let pick = 0
   // Deterministic pseudo-random: a cheap integer hash of (order index, group index). Varies the choice
@@ -295,6 +415,80 @@ export async function seedDemoOrders(
     const unit_price = src.price + modifiers.reduce((a, m) => a + m.price, 0)
     return { name: src.name, quantity, unit_price, ...(modifiers.length ? { modifiers } : {}) }
   }
+
+  /** An order the planner has composed but not yet seated. `cookedByCat` is what it costs. */
+  interface Prospect {
+    lines: ReturnType<typeof lineFor>[]
+    cookedByCat: Record<string, number>
+    cookedTotal: number
+  }
+  const prospects: Prospect[] = []
+  for (const shape of shapes) {
+    const lines: ReturnType<typeof lineFor>[] = []
+    const cookedByCat: Record<string, number> = {}
+    let cookedTotal = 0
+    const take = (src: MenuLine) => {
+      lines.push(lineFor(src, 1, pick)); pick++
+      if (src.cooked) { cookedByCat[src.catKey] = (cookedByCat[src.catKey] ?? 0) + 1; cookedTotal++ }
+    }
+    // ⚠️ ORDER_SHAPES IS UNTOUCHED. Multi-item orders stay — a board of singles undersells the product.
+    for (let m = 0; m < shape.mains; m++) take(mainsPool[pick % mainsPool.length])
+    for (let e = 0; e < shape.extras; e++) take(otherPool[pick % otherPool.length])
+    if (lines.length) prospects.push({ lines, cookedByCat, cookedTotal })
+  }
+  const totalCookedNeeded = prospects.reduce((n, p) => n + p.cookedTotal, 0)
+
+  // ── SLOT BUDGETS, strided across the whole window ─────────────────────────────────────────────────
+  // Budgets, not fixed counts: orders carry several cooked lines, so the planner has to PACK them into a
+  // per-slot allowance rather than emit one order per item. Walking the pattern slot-by-slot would exhaust
+  // the budget early on a long window (3h = 35 slots) and leave the back third dead, so the budgets are
+  // built first and then STRIDED evenly. Deterministic throughout — no Math.random, so an odd-looking
+  // board can be re-inspected.
+  //
+  // 🔴 THE REFERENCE BATCH IS THE SMALLEST COMMITTED ONE, not the DEMO_MAINS_BATCH constant and not the
+  // largest. It only decides HOW MANY slots get a budget; the ceiling that is actually enforced is
+  // per-category, below. Taking the smallest keeps the slot count honest when one category is tighter
+  // than the others (two cooked categories with different batch_size is a real shape — see the report).
+  const cookedBatches = Object.values(batchByCat)
+  const refBatch = cookedBatches.length ? Math.max(1, Math.min(...cookedBatches)) : Math.max(1, args.capacity)
+  const budgets: { n: number; f: number }[] = []
+  let cookedLeft = totalCookedNeeded
+  const nonZero = FILL_PATTERN.filter(f => f > 0)
+  for (let i = 0; cookedLeft > 0 && i < slots.length; i++) {
+    const f = nonZero[i % nonZero.length]
+    const n = Math.min(Math.max(1, Math.round(refBatch * f)), refBatch, cookedLeft)
+    budgets.push({ n, f })
+    cookedLeft -= n
+  }
+
+  // 🔴 THE ALLOWANCE IS PER CATEGORY, BECAUSE THE ENGINE'S CEILING IS PER CATEGORY.
+  // `projectBackwardOccupancy` compares each cooking window's load against `batchByCat[cat]`, one
+  // category at a time — a slot holding 4 items is fine when they are 2+2 across two categories and over
+  // when they are 4 of a category whose batch is 3. A single aggregate number cannot express that, which
+  // is the second half of why the old planner and the engine disagreed.
+  // Each category's allowance is its OWN batch scaled by the pattern fraction, never above that batch.
+  const allowanceFor = (f: number): Record<string, number> => {
+    const out: Record<string, number> = {}
+    for (const [cat, batch] of Object.entries(batchByCat)) {
+      out[cat] = Math.min(batch, Math.max(1, Math.round(batch * f)))
+    }
+    return out
+  }
+
+  const planned: { slot: string; allow: Record<string, number> }[] = []
+  const stride = budgets.length > 0 ? slots.length / budgets.length : 1
+  const taken = new Set<number>()
+  budgets.forEach((b, j) => {
+    let idx = Math.min(slots.length - 1, Math.round(j * stride))
+    while (taken.has(idx) && idx < slots.length - 1) idx++      // never double-book one slot
+    if (taken.has(idx)) return
+    taken.add(idx)
+    planned.push({ slot: slots[idx], allow: allowanceFor(b.f) })
+  })
+  planned.sort((a, b) => a.slot.localeCompare(b.slot))
+
+  // ── Build the orders ───────────────────────────────────────────────────────────────────────────────
+  const rows: Record<string, unknown>[] = []
   const makeOrder = (slot: string, lines: ReturnType<typeof lineFor>[]) => {
     // unit_price already includes modifiers (see lineFor), so this must NOT add them again.
     const total = lines.reduce((s, l) => s + l.unit_price * l.quantity, 0)
@@ -325,39 +519,232 @@ export async function seedDemoOrders(
     })
   }
 
-  // ── PACK orders into slot budgets ─────────────────────────────────────────────────────────────────
-  // An order goes into the first slot (in time order) whose REMAINING budget covers its mains. A 2-main
-  // order therefore skips a slot with only 1 left rather than overflowing it — the guarantee that no
-  // combination of order sizes can breach. A zero-main order (drinks only) can go anywhere a slot is in
-  // use, since it occupies no capacity.
-  const remaining = planned.map(p => ({ slot: p.slot, left: p.budget, used: 0 }))
+  // ── PACK orders into slot allowances ──────────────────────────────────────────────────────────────
+  // An order goes into the first slot (in time order) whose remaining allowance covers EVERY cooked
+  // category it carries. An order that fits nowhere is DROPPED — a thinner board, never a fuller one.
+  // A zero-cooked order (drinks only, or an all-instant menu) occupies no capacity and attaches to a
+  // slot already in use so it sits among real tickets.
+  const remaining = planned.map(p => ({ slot: p.slot, left: { ...p.allow }, used: {} as Record<string, number> }))
+  const fits = (r: typeof remaining[number], need: Record<string, number>) =>
+    Object.entries(need).every(([cat, n]) => (r.left[cat] ?? 0) >= n)
+
   let mainsItems = 0
   let totalItems = 0
-  let peakPerSlot = 0
-  const usedSlots: string[] = []
+  /** Parallel to `rows` — what each seeded order costs, so the post-condition can shed by load. */
+  const rowCost: Record<string, number>[] = []
 
-  for (const shape of shapes) {
-    const target = shape.mains > 0
-      ? remaining.find(r => r.left >= shape.mains)
-      // Drinks-only: attach to the busiest slot still in play so it sits among real tickets.
-      : remaining.find(r => r.used > 0) ?? remaining[0]
+  for (const p of prospects) {
+    const target = p.cookedTotal > 0
+      ? remaining.find(r => fits(r, p.cookedByCat))
+      : remaining.find(r => Object.keys(r.used).length > 0) ?? remaining[0]
     if (!target) continue      // no slot can take it — drop the order rather than breach
 
-    const lines: ReturnType<typeof lineFor>[] = []
-    for (let m = 0; m < shape.mains; m++) { lines.push(lineFor(mainsPool[pick % mainsPool.length], 1, pick)); pick++ }
-    for (let e = 0; e < shape.extras; e++) { lines.push(lineFor(otherPool[pick % otherPool.length], 1, pick)); pick++ }
-    if (!lines.length) continue
-
-    makeOrder(target.slot, lines)
-    target.left -= shape.mains
-    target.used += shape.mains
-    mainsItems += shape.mains
-    totalItems += lines.length
-    peakPerSlot = Math.max(peakPerSlot, target.used)
-    if (!usedSlots.includes(target.slot)) usedSlots.push(target.slot)
+    makeOrder(target.slot, p.lines)
+    rowCost.push(p.cookedByCat)
+    for (const [cat, n] of Object.entries(p.cookedByCat)) {
+      target.left[cat] = (target.left[cat] ?? 0) - n
+      target.used[cat] = (target.used[cat] ?? 0) + n
+    }
+    mainsItems += p.cookedTotal
+    totalItems += p.lines.length
   }
 
-  if (!rows.length) return { inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: false, peakPerSlot: 0 }
+  if (!rows.length) return emptyResult({ warnings })
+
+  // ══ THE POST-CONDITION ═══════════════════════════════════════════════════════════════════════════
+  // 🔴 A SEEDED BOARD MUST NEVER BE OVER CAPACITY. ONLY A MANUALLY PLACED ORDER MAY BREACH.
+  //
+  // Phase 1 above made the planner's arithmetic consistent with the engine's — but consistency is not
+  // the criterion, because the engine does something no planner models cheaply: it seats each category's
+  // load BACKWARD across windows (`numWindows = ceil(N/batch)`, `startMins = deadline − (numWindows−i) ×
+  // prepMins`) and it sums every PRE-OPEN window into a single event-start pile. A planner that modelled
+  // that would be a second implementation of the engine, and two implementations drift — which is the
+  // whole history of this file.
+  //
+  // So the seeder does not predict the verdict. It ASKS FOR IT: `detectCapacityBreaches`, the same
+  // function /api/dashboard calls to raise the "N slots over capacity" banner, over the units this board
+  // will produce. If it says the board breaches, orders are shed and it is asked again.
+  //
+  // ⏱ COST: the passes are pure CPU over data already in memory — no database round trip per pass. The
+  // reads below are ONE batch, and they happen once. Bounded at MAX_BREACH_PASSES either way, because a
+  // prospect is watching a spinner.
+  let breachPasses = 0
+  let shedOrders = 0
+  let unresolvedBreaches: SeededBreach[] = []
+  try {
+    // The engine's remaining inputs. `buildItemCatMap` is the SAME helper buildUnitsFromOrders uses.
+    const [truckRes, ctRes, evRes, itemCatMap] = await Promise.all([
+      supabase.from('trucks').select('collection_interval_mins, slot_duration_mins').eq('id', args.truckId).maybeSingle(),
+      supabase.from('collection_times').select('collection_time, production_slot').eq('truck_id', args.truckId),
+      supabase.from('truck_events').select('van_id').eq('id', args.eventId).maybeSingle(),
+      buildItemCatMap(supabase, args.truckId),
+    ])
+    const timeMap: Record<string, string> = {}
+    for (const r of (ctRes.data ?? []) as { collection_time: string; production_slot: string }[]) {
+      timeMap[r.collection_time] = r.production_slot
+    }
+
+    // 🔴 kitchen_capacity IS READ, NOT ASSUMED NULL. Provisioning writes null (DEMO_VAN_CAPACITY), which
+    // switches the global concurrency ceiling OFF — but the demo dashboard's Settings tab can SET it
+    // (update_van_settings has no demo gate), so a restarted demo can have a real ceiling. Assuming null
+    // would make the post-condition blind to exactly the ceiling Dominic just configured.
+    let kitchenCapacity: number | null = null
+    let capacityWindowMins = 5
+    const vanId = (evRes.data as { van_id?: string | null } | null)?.van_id ?? null
+    if (vanId) {
+      const { data: van } = await supabase
+        .from('truck_vans').select('kitchen_capacity, capacity_window_mins').eq('id', vanId).maybeSingle()
+      kitchenCapacity = (van as { kitchen_capacity?: number | null } | null)?.kitchen_capacity ?? null
+      capacityWindowMins = (van as { capacity_window_mins?: number | null } | null)?.capacity_window_mins ?? 5
+    }
+
+    // The collection slots to examine. The DASHBOARD's list, built by the SAME generateCollectionTimes
+    // with the truck's own interval + its 30-minute grace — UNIONED with the slots this seeder actually
+    // used, so a slot carrying load can never escape the check because the truck's interval does not
+    // land on it. Strictly a superset of what the banner reads: the check is at least as strict.
+    const intervalMins = (truckRes.data as { collection_interval_mins?: number | null } | null)?.collection_interval_mins ?? 0
+    const slotDurationMins = (truckRes.data as { slot_duration_mins?: number | null } | null)?.slot_duration_mins ?? intervalMins
+    const dashSlots = intervalMins > 0
+      ? generateCollectionTimes(args.startTime, args.endTime, intervalMins, slotDurationMins, DASHBOARD_GRACE_MINS)
+          .map(r => r.collection_time)
+      : []
+    const times = Array.from(new Set([...dashSlots, ...slots])).sort().map(collection_time => ({ collection_time }))
+    const eventStartMins = toMinsLocal(args.startTime)
+
+    const detect = (): CapacityBreach[] => detectCapacityBreaches({
+      times,
+      productionSlotUnits: buildUnitsInMemory(rows, timeMap, itemCatMap, args.startTime),
+      catConfigs,
+      kitchenCapacity,
+      eventStartMins,
+      capacityWindowMins,
+      // The detector uses these only to ATTRIBUTE a breach to orders for the banner's link text; the
+      // verdict itself comes from the units. Synthetic keys keep that output well-formed.
+      orders: rows.map((r, i) => ({ order_key: `seed-${i}`, id: i + 1, slot: (r.slot as string) ?? null, status: 'confirmed' })),
+    })
+
+    const slotMinsOf = (t: string) => toMinsLocal(t)
+    for (let pass = 1; pass <= MAX_BREACH_PASSES; pass++) {
+      breachPasses = pass
+      const breaches = detect()
+      if (breaches.length === 0) { unresolvedBreaches = []; break }
+
+      // SHED, DETERMINISTICALLY — AND USING THE DETECTOR'S OWN ATTRIBUTION, NOT A GUESS.
+      // 🔴 `breach.order_keys` IS THE ANSWER TO "WHICH ORDERS FEED THIS WINDOW", AND IT IS THE
+      // DETECTOR'S ANSWER. capacity-breach.ts inverts the backward projection with
+      // `contributingProductionSlots` precisely because the orders loading a window usually collect
+      // somewhere else — orders at 16:30 and 17:00 can put 16:50 over while nothing collects at 16:50.
+      // Choosing by "biggest order nearest the breach" instead was a second guess at that inversion, and
+      // it did not converge: with a global kitchen_capacity set, shedding removed heavy orders that fed
+      // a different window while the breached one stayed over. The synthetic `seed-<index>` keys handed
+      // to the detector come back here, so its inversion picks the candidates.
+      //
+      // Within the candidates: most of the over-category first (fewest orders removed per unit cleared),
+      // then the latest-placed, so two identical inputs shed identically. Enough orders are taken to
+      // cover the overshoot in ONE pass rather than one per pass.
+      //
+      // ⚠️ REMOVALS ARE COLLECTED AS INDICES AND APPLIED AFTER THE WHOLE PASS. Splicing inside the loop
+      // shifts every later index, so the second breach of a pass would shed the wrong order.
+      const toRemove = new Set<number>()
+      for (const b of breaches) {
+        const cat = b.over_cats.length
+          ? b.over_cats.slice().sort((x, y) => y.over - x.over)[0].cat
+          // A global-ceiling breach names no category — weigh candidates by their whole cooked load.
+          : null
+        let need = Math.max(1, Math.round(cat ? (b.over_cats.find(c => c.cat === cat)?.over ?? 1) : b.over_total))
+        const bMins = slotMinsOf(b.collection_time)
+        const attributed = new Set<number>()
+        for (const k of b.order_keys ?? []) {
+          const m = /^seed-(\d+)$/.exec(String(k))
+          if (m) attributed.add(Number(m[1]))
+        }
+        const carriedBy = (i: number) => {
+          const cost = rowCost[i]
+          if (!cost) return 0
+          return cat ? (cost[cat] ?? 0) : Object.values(cost).reduce((a, n) => a + n, 0)
+        }
+        // The detector's contributors first; if it attributed none (it can, when the window is fed only
+        // by pre-open spill), fall back to every order carrying the category, nearest slot first.
+        const pool = [...rows.keys()].filter(i => !toRemove.has(i) && carriedBy(i) > 0)
+        const primary = pool.filter(i => attributed.has(i))
+        const candidates = (primary.length ? primary : pool).sort((x, y) => {
+          const cx = carriedBy(x), cy = carriedBy(y)
+          if (cy !== cx) return cy - cx
+          const dx = Math.abs(slotMinsOf(String(rows[x].slot)) - bMins)
+          const dy = Math.abs(slotMinsOf(String(rows[y].slot)) - bMins)
+          if (dx !== dy) return dx - dy
+          return y - x
+        })
+        for (const i of candidates) {
+          if (need <= 0) break
+          toRemove.add(i)
+          need -= carriedBy(i)
+        }
+      }
+
+      let removedThisPass = 0
+      for (const i of [...toRemove].sort((a, b2) => b2 - a)) {
+        totalItems -= (rows[i].items as unknown[]).length
+        mainsItems -= Object.values(rowCost[i] ?? {}).reduce((a, n) => a + n, 0)
+        rows.splice(i, 1)
+        rowCost.splice(i, 1)
+        shedOrders++
+        removedThisPass++
+      }
+
+      if (removedThisPass === 0) {
+        // Nothing left to shed for these breaches — record and stop rather than spin.
+        unresolvedBreaches = breaches.map(toSeededBreach)
+        break
+      }
+      if (pass === MAX_BREACH_PASSES) {
+        const still = detect()
+        unresolvedBreaches = still.map(toSeededBreach)
+      }
+    }
+
+    if (shedOrders > 0) {
+      warnings.push(`Capacity post-condition shed ${shedOrders} seeded order(s) over ${breachPasses} pass(es) to keep the board within capacity.`)
+    }
+    if (unresolvedBreaches.length > 0) {
+      // 🔴 NEVER SILENT. This reaches the callers' warnings, which reach the admin response.
+      for (const b of unresolvedBreaches) {
+        const cats = b.over_cats.map(c => `${c.cat} over by ${c.over}`).join(', ')
+        warnings.push(
+          `🔴 SEEDED BOARD STILL OVER CAPACITY at ${b.collection_time} — ${b.reason}` +
+          (cats ? ` (${cats})` : '') + (b.over_total ? ` (total over by ${b.over_total})` : '') +
+          ` — after ${breachPasses} shed pass(es).`)
+      }
+      console.error(`[seed-demo-orders] POST_CONDITION_FAILED truck=${args.truckId} event=${args.eventId} breaches=${JSON.stringify(unresolvedBreaches)}`)
+    }
+  } catch (err) {
+    // The check could not RUN (a read failed, a column is missing). That is not a licence to ship an
+    // unchecked board quietly — the board stands, and the caller is told the guarantee is unverified.
+    const msg = err instanceof Error ? err.message : 'unknown'
+    warnings.push(`⚠️ Capacity post-condition could not run (${msg}) — the seeded board is UNVERIFIED.`)
+    console.error('[seed-demo-orders] post-condition failed to run:', msg)
+  }
+
+  // Slots re-measured from what SURVIVED the shed, never from what was planned.
+  const usedByCat: Record<string, Record<string, number>> = {}
+  rows.forEach((r, i) => {
+    const slot = String(r.slot)
+    const bucket = usedByCat[slot] ?? (usedByCat[slot] = {})
+    for (const [cat, n] of Object.entries(rowCost[i] ?? {})) bucket[cat] = (bucket[cat] ?? 0) + n
+  })
+  let peakCookedPerSlotPerCat = 0
+  let peakBatch = 0
+  let slotsAtCapacity = 0
+  for (const bucket of Object.values(usedByCat)) {
+    let atCap = false
+    for (const [cat, n] of Object.entries(bucket)) {
+      const batch = batchByCat[cat] ?? 1
+      if (n > peakCookedPerSlotPerCat) { peakCookedPerSlotPerCat = n; peakBatch = batch }
+      if (n >= batch) atCap = true
+    }
+    if (atCap) slotsAtCapacity++
+  }
+  const survivingSlots = Object.keys(usedByCat).sort()
 
   // ── RENUMBER IN COLLECTION-TIME ORDER (demo only) ───────────────────────────────────────────────
   // Orders were numbered in PACKING order above, which is the shape-cycle order, not time order. That is
@@ -398,10 +785,18 @@ export async function seedDemoOrders(
     inserted: rows.length,
     mainsItems,
     totalItems,
-    // peakPerSlot is returned so a breach is PROVABLE rather than assumed — it must never exceed
-    // `capacity` (the mains batch). The admin provision panel surfaces it.
-    slotsUsed: usedSlots,
+    // Re-measured from the rows that SURVIVED the post-condition, not from `usedSlots` (which records
+    // what the planner seated before anything was shed).
+    slotsUsed: survivingSlots,
     skippedNoMenu: false,
-    peakPerSlot,
+    // 🔴 NOT the safety check — `unresolvedBreaches` is. This pair DESCRIBES the board and can fail:
+    // peak > batch would mean the planner over-filled a slot, which the old `peakPerSlot` could not say.
+    peakCookedPerSlotPerCat,
+    peakBatch,
+    slotsAtCapacity,
+    breachPasses,
+    shedOrders,
+    unresolvedBreaches,
+    warnings,
   }
 }

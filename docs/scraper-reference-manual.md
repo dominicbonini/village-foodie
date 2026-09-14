@@ -1,6 +1,6 @@
-HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V1.9
+HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V2.0
 
-**Version 1.9 · 11 September 2026**
+**Version 2.0 · 12 September 2026**
 
 *This documents the discovery pipeline: a separate codebase path, a separate runtime and a separate deploy path from the Next.js app. It exists because this pipeline had never been documented, and that cost three months of silent venue-creation failure — nobody could tell "few trucks scraped" from "few venues created" from "nothing ran", because none of it was written down and every failure exits 0.*
 
@@ -11,6 +11,15 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ---
 
 # CHANGELOG
+
+## V2.0 — 12 September 2026 — THE VILLAGE PROBLEM'S ROOT CAUSE IS FIXED AT THE PROMPT, AN ASSERTION NOW FAILS THE RUN IF IT COMES BACK, AND A NAME TIE WAS BEING RESOLVED BY UUID
+
+⚠️ **This entry post-dates V1.9 and everything in it is DEPLOYED.** V1.9's account of the gate, the ingest route and §22.4's diagnosis all stand; what changed is that the *cause* has been addressed and the pipeline now fails loudly if it returns.
+
+**Covers:** **new §24 — the extraction prompts.** 🔎 Two of the three village instructions demanded a town the source text does not contain and gave the model no way to decline, so it answered with the nearest string it had: the venue name. The third, `buildHgPrompt`, permits `""` and 🧪 **has produced 0 invented villages in 86 rows** — an A/B that ran in production. Both faulty rules now carry the same escape; 🧪 `VILLAGE (MANDATORY)` appears **0** times in the repository, the whole-literal diffs show **one line changed in each and nothing adjacent moved**, and `buildHgPrompt` is untouched. 🔴 **THIS MAKES THE FIELD HONEST, NOT CORRECT** — a declined village writes `null`, which repairs the falsehood and links nothing; R5 still gates the link. 🔴 **UNVERIFIED UNTIL A SCRAPE RUNS.**
+**Also:** **new §25 — `assertNoInventedVillages`**, in `scripts/geo-validate.js` beside `assertInboundOk` and `assertNoWriteFailures`, wired to the rows each run writes, compared normalised, **no threshold**. 🔴 **The green-run caveat is recorded**: green means no new row had a village equal to its venue name, **not** that the model declined honestly — a *different* wrong village is also green.
+**Also:** the **matcher's tie-break** — `pickBest` resolved a name tie on **smallest UUID** and chose a venue **26.9 km** away over one **8.8 km** away; it now breaks on distance, as a tie-break *below* name and token overlap. 🧪 **17 rows moved from R5 refusal to acceptance; 913 of 933 unaffected; 0 regressions.**
+**Corrected in place:** **§5's live counts** and **§22's headline figures**, and 🔴 **the `village = venue_name` count, which this series carried as 62 — that is the `Manual Entry` SUBSET. It is 76 table-wide and 71 future-dated.**
 
 ## V1.9 — 11 September 2026 — THE MIRROR NO LONGER WRITES THE TABLE: IT POSTS THROUGH A SHARED GATE THAT MATCHES, ACCEPTS OR REFUSES A VENUE, AND MARKS DUPLICATES — AND THE VENUE-LINKING GAP TURNS OUT TO BE A VILLAGE FIELD FULL OF PLACE DESCRIPTIONS
 
@@ -2033,7 +2042,10 @@ was **moved** to `lib/schedule-match.ts` and imported by both callers, not re-im
 🧪 Re-derived 9 September against the live table, count-asserted, **after** the deletion in §8.1 —
 every figure here is post-deletion and the pre-deletion ones are marked as such.
 
-**`venue_id` is null on 322 of 935 rows (34.4%) — 226 of the 705 FUTURE rows.**
+**`venue_id` is null on 326 of 933 rows (34.9%) — 225 of the 703 FUTURE rows.**
+⚠️ **[CORRECTED IN PLACE V2.0 — 326, not 322: five wrong venue links were nulled by hand on 12 September
+before the grouping change went live, because keying venue pages on `venue_id` would have put those five
+events on a page named after a pub in another town. They are named in the app manual's §54.5.]**
 ⚠️ **[CORRECTED IN PLACE V1.9 — this section's headline read "404 of 902" until 11 September.]** The
 2,219 and 2,267 figures remain **PRE-deletion and unusable**; do not carry them forward either.
 🔴 **AND THE DIAGNOSIS BELOW IS NOW ONLY HALF THE CAUSE.** §22.2 is right that the mirror never writes
@@ -2194,6 +2206,109 @@ never had this** — it tests each pair individually. Fixed to bucket by date wi
 🧪 proved not to over-group: a date bucket with no truck test marks **24** rows against **16** with it,
 and it correctly keeps **Pizza Mondo** and **Steak & Honour** apart at one `FoodPark CB1` pitch on one
 day.
+
+---
+
+# 24. 🔴 THE EXTRACTION PROMPTS — THE ROOT CAUSE, FIXED AT THE WRITER (V2.0 — 12 September 2026)
+
+§22.4 measured the symptom: 225 future rows R5 must refuse, most of them because the event's **village**
+field holds a place description rather than a village. **This is where those values came from.**
+
+## 24.1 Three prompts, and only one let the model say "not in the text"
+
+🔎 All three are inline template literals in `scripts/run-scraper.js`.
+
+| prompt | the village instruction | escape? |
+|---|---|---|
+| the **rule / manual-schedule** prompt (produces `Manual Entry` rows) | *"VILLAGE (MANDATORY): Always extract the town, village, or city into a separate "village" field."* | ❌ **none** |
+| the **event** prompt (produces `URL:` rows) | *"**VILLAGE (MANDATORY):** You must extract the town, village, or city name."* | ❌ **none** |
+| **`buildHgPrompt`** (produces `hg_scraper` rows) | *"ALWAYS populate "town" … **If the town truly cannot be determined, use "".**"* | ✅ **yes** |
+
+🔴 **A MANDATORY FIELD WITH NO NULL OPTION IS ANSWERED BY THE NEAREST STRING TO HAND**, and for an event
+the nearest string is its venue name. **The A/B already existed in production:**
+
+| prompt | rows | village == venue name | R5 refusals |
+|---|---|---|---|
+| ① mandatory — `Manual Entry` | 252 | **62** | 122 |
+| ② mandatory — `URL:` scraper | 518 | 12 | 102 |
+| ③ **has the escape** — `hg_scraper` | **86** | **0** | **0** |
+
+⚠️ **The house style for the escape already existed inside prompt ②**, one rule below the faulty one:
+*"MISSING TIMES: If no time is explicitly stated for a venue, output "" (an empty string)"*. Times were
+given permission to be absent. Villages were not.
+
+## 24.2 What changed, and what it does not do
+
+Both faulty rules now read as ③ reads, plus an explicit `do NOT repeat the venue name and do NOT guess`.
+🧪 `VILLAGE (MANDATORY)` appears **0** times in the repository; the whole-literal diffs show **exactly one
+line changed in each prompt** with the numbered rules either side byte-identical; `buildHgPrompt` is
+untouched (🧪 it still appears twice, and the wrap-safe `truly cannot be` matches **3** times — once in the
+control, twice in the new rules).
+
+⚠️ **ITS ESCAPE SENTENCE WRAPS ACROSS TWO LINES.** A single-line grep for
+`town truly cannot be determined` returns **0** and reads as though the control had been deleted. It has
+not. Use `truly cannot be`. This has now cost two verification passes; it is recorded here so it costs a
+third nobody's time.
+
+🔴 **HONEST, NOT CORRECT.** A declined village is written as `null`. That removes a false village and
+**links nothing** — R5 still gates the link and `venue_id` stays NULL when it fails. The 225 already
+written are not repaired by this; see §22.4 for what they would each need.
+
+⚠️ **One quiet benefit:** the gate creates a venue only when `venue_name` **and** `village` are present,
+so an empty village also stops new junk venues being minted on a place description.
+
+🔴 **A RE-SCRAPE OVERWRITES `village` ON AN EXISTING ROW.** The gate's upsert carries `village` with
+`onConflict: 'event_date,truck_name,venue_name'` and `ignoreDuplicates: false`. 🧪 **422 linked future
+rows** could have their village nulled on re-emission; **421 are publicly unaffected** because the feed
+falls back to the venue's own village, and **one** would go empty on screen.
+
+🔴 **UNVERIFIED UNTIL A SCRAPE RUNS.** A prompt change cannot be tested without running the model and it
+has not been run. The claim is only that the wording matches the control's.
+
+---
+
+# 25. 🔴 `assertNoInventedVillages` — THE RUN FAILS IF THE BEHAVIOUR RETURNS (V2.0)
+
+🔎 `scripts/geo-validate.js`, beside `assertInboundOk` and `assertNoWriteFailures` — **the only file whose
+exit code the workflow reads**. Called from the end of Pass A with `newRowsToAdd`, the rows the run just
+wrote, and compared **normalised** (lowercased, non-alphanumerics stripped) so a difference of punctuation
+or case cannot let one through.
+
+- **It sees only this run's rows.** An assertion over the table would throw on the historical **76** every
+  night and be switched off within a week.
+- **No threshold.** Those 76 will not repair themselves; a **new** one is the signal, so the test is `> 0`.
+- ⚠️ **An empty village is not a match, and the length check is load-bearing.** `norm('')` is `''` on both
+  sides, so a naive equality test would flag every honestly-blank row — the exact rows §24 is meant to
+  produce — and make the fix a permanently red run.
+
+🧪 **Proved both ways:** 12 cases, the script exiting 0 only if every one matches — fires on exact, case-
+and punctuation-differing matches and on one bad row hidden among 99 clean; passes on empty, null,
+undefined, substring and empty-input cases. Against the live table it **fires on all 76 real bad rows,
+passes on all 857 clean rows and on the 28 already-empty ones**. The harness itself was first pointed at a
+never-throwing variant and reported failure, which is the only thing that distinguishes a working test
+from a blind one.
+
+🔴 **THE GREEN-RUN CAVEAT.** Green means **no new row had a village equal to its venue name**. It does
+**not** mean the model declined honestly — inventing a *different* wrong village is also green. The
+**ratio assertion** (this run's empty-village share against a 14-day baseline) is **deliberately
+unbuilt**: it needs a post-change run to calibrate, and a guessed threshold fires on noise.
+
+---
+
+# 26. THE MATCHER'S TIE-BREAK — A NAME TIE WAS RESOLVED BY UUID (V2.0)
+
+🔎 `pickBest` (`lib/venue-matcher.ts`, the app side, but it decides what the gate writes) ranked
+candidates by exact name, then token overlap, then **lexicographically smallest `id`**. Two venues sharing
+a name tie on the first two, so an **arbitrary UUID** picked the match: 🧪 `The Bull` [Lower Green]
+**26.9 km** from Bottisham over `The Bull` [Burrough Green] at **8.8 km**.
+
+**Distance from the event village's anchor is now key (c); the id is key (d).** 🔴 It is a **tie-break
+below** name and token overlap, not a re-ranking — a better-named candidate still wins. When neither
+candidate is measurable it falls through to the old smallest-id rule; when exactly one is, that one wins,
+because `r5Accept` refuses a venue with no coordinates anyway.
+
+🧪 **Measured over all 933 events: 913 unaffected, 20 changed, 0 regressions, and 17 rows moved from R5
+refusal to acceptance.**
 
 ---
 

@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { provisionTruck } from '@/lib/provision-truck'
 import { createSlug } from '@/lib/utils'
 import { DEMO_PREFIX } from '@/lib/demo'
+import { linkDiscoveryRowForSelfServe } from '@/lib/self-serve-discovery-link'
 // I4: the SAME validator Manage Settings and the signup modal use — one rule, so a number the client
 // accepts can never be rejected here.
 import { isValidUKPhone } from '@/lib/contact-validation'
@@ -116,7 +117,27 @@ export async function POST(req: NextRequest) {
         .update({ operator_id: operator.id, setup_step: 'menu' })
         .eq('id', result.truck.id)
 
-      return NextResponse.json({ ok: true, truck: result.truck, warnings: result.warnings })
+      // ── THE DISCOVERY LINK — self-serve conversion of an OUTREACH demo ──────────────────────────
+      // If this operator came from a demo that was built FOR a discovery truck (demo_sessions.
+      // discovery_truck_id, set by the admin "Create Demo" action and never by the landing page), the
+      // discovery row is now pointed at the NEW REAL truck: discovery_trucks.hatchgrab_truck_id =
+      // result.truck.id, plus the same shadow exclusion the admin promote's create-operator step applies.
+      // Without this the business exists twice — once as a discovery row, once as an operator.
+      //
+      // 🔴 FAILURE POLICY — DELIBERATELY NOT THE ADMIN PROMOTE'S. /api/admin/create-truck treats a failed
+      // link as a failed create and rolls the truck back with deleteTruckCascade. That is right when the
+      // admin is driving and wrong here: this is a real operator who just typed their details, and their
+      // truck is never deleted because a discovery link did not land. The truck is created regardless;
+      // the outcome is RECORDED on the demo session (discovery_link_status / _truck_id / _note) and logged
+      // with a greppable tag, so the admin can reconcile. Nothing in this block can throw past the
+      // response — the response is identical whether the link succeeded, conflicted, failed or was never
+      // attempted.
+      //
+      // ANONYMOUS DEMOS (no discovery_truck_id) and operators who never had a demo: the select below finds
+      // nothing and the block is a no-op — no write, no log line, the same response as before.
+      const discoveryLink = await linkDiscoveryRowForSelfServe(supabase, operator.id, result.truck.id)
+
+      return NextResponse.json({ ok: true, truck: result.truck, warnings: result.warnings, ...(discoveryLink ? { discoveryLink } : {}) })
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Could not create your truck.'
       console.error('[setup] provisionTruck failed:', msg)
@@ -215,3 +236,4 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ ok: true, extraction: session.extraction })
 }
+

@@ -176,6 +176,52 @@ export async function GET(req: NextRequest) {
 
     const schedIdx = await buildScheduleIndex()
 
+    // ── THE PROSPECT'S LIVE DEMO (migration 20260912_demo_sessions_outreach) ──────────────────────
+    // One bulk read keyed on the column that carries the link — demo_sessions.discovery_truck_id — so
+    // the modal can show the /demo/<public_ref> URL that was sent, and when it expires.
+    //
+    // 🔴 GUARDED, BECAUSE THE MIGRATION IS APPLIED BY HAND AND MAY NOT BE. An unapplied migration makes
+    // this select a PostgREST undefined-column error; letting that reach the outer catch would 500 the
+    // WHOLE outreach page over a decoration. Same capability-probe posture as contact_name above, except
+    // the probe IS the query: it either returns rows or it does not, and `hasDemoLinks` reports which.
+    //
+    // "LIVE" = a session row that has not expired. The row itself is the liveness signal — demo_sessions
+    // .truck_id → trucks is ON DELETE CASCADE, so a swept demo takes its row with it — and `expires_at`
+    // covers the window between expiry and the next hourly cleanup run.
+    const demoByDiscovery = new Map<string, { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number }>()
+    let hasDemoLinks = false
+    {
+      const ids = Array.from(new Set((prospects ?? [])
+        .map((row) => (row as { discovery_truck_id?: unknown }).discovery_truck_id)
+        .filter((v): v is string => typeof v === 'string' && v.length > 0)))
+      if (ids.length > 0) {
+        const { data: sessions, error: sErr } = await supabase
+          .from('demo_sessions')
+          .select('truck_id, discovery_truck_id, public_ref, expires_at, created_at')
+          .in('discovery_truck_id', ids)
+          .order('created_at', { ascending: false })
+        if (sErr) {
+          console.warn('[admin/outreach] demo_sessions read skipped (migration applied?):', sErr.message)
+        } else {
+          hasDemoLinks = true
+          for (const row of sessions ?? []) {
+            const key = row.discovery_truck_id as string
+            const expiresAt = (row.expires_at as string | null) ?? null
+            // Expired rows are not offered as a link — the cleanup is hourly, so they exist briefly.
+            if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) continue
+            const prev = demoByDiscovery.get(key)
+            if (prev) { prev.liveCount += 1; continue }   // ordered newest-first, so the first wins
+            demoByDiscovery.set(key, {
+              publicRef: (row.public_ref as string | null) ?? null,
+              expiresAt,
+              createdAt: (row.created_at as string | null) ?? null,
+              liveCount: 1,
+            })
+          }
+        }
+      }
+    }
+
     const rows = (prospects ?? []).map((p: any) => {
       const truck = Array.isArray(p.truck) ? p.truck[0] : p.truck
       const sched = scheduleFor(schedIdx, truck?.name ?? null, truck?.aliases ?? null)
@@ -218,12 +264,15 @@ export async function GET(req: NextRequest) {
         outboundCount,
         lastContactedAt,
         contacts,
+        // NEWEST live demo for this prospect, or null. `liveCount` > 1 means there are others and the
+        // modal says so rather than silently picking one.
+        demo: (p.discovery_truck_id && demoByDiscovery.get(p.discovery_truck_id)) || null,
       }
     })
 
     // Column-presence flags tell the page which fields it can offer as editable (rather than inferring
     // presence from data). Each flips to true on the load after its migration is applied.
-    return NextResponse.json({ prospects: rows, hasContactName, hasDoNotContact, hasEntityType })
+    return NextResponse.json({ prospects: rows, hasContactName, hasDoNotContact, hasEntityType, hasDemoLinks })
   } catch (e: any) {
     console.error('[admin/outreach] GET failed:', e?.message || e)
     return NextResponse.json({ error: 'Could not load outreach data' }, { status: 500 })

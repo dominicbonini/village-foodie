@@ -722,9 +722,15 @@ export async function GET(req: NextRequest) {
   // If the column is missing in an environment, a named select would 400 the whole dashboard; `*`
   // returns whatever exists and the field simply reads undefined → null. Same best-effort posture as
   // every other demo_sessions access (lib/demo-session.ts).
-  let demo: { extraction_source: string | null; email: string | null; expires_at: string | null } | null = null
+  // `discovery_truck_id` / `public_ref` — OUTREACH demos (migration 20260912). Non-null discovery_truck_id
+  // is what the client reads as "branded": show the real name, not the `Demo Kitchen` blank. Same
+  // select('*') posture: absent column ⇒ undefined ⇒ null ⇒ unbranded, never a failed dashboard.
+  // `first_opened_at` — the FIRST-OPEN restart's server-side latch (migration 20260914). Same select('*')
+  // posture: an unapplied migration reads as undefined → null, and the client treats a null it cannot
+  // claim as "do nothing" rather than "restart", so a missing column can never wipe a board.
+  let demo: { extraction_source: string | null; email: string | null; expires_at: string | null; discovery_truck_id: string | null; public_ref: string | null; first_opened_at: string | null } | null = null
   if (isDemoIdentifier(truck.id)) {
-    demo = { extraction_source: null, email: null, expires_at: null }
+    demo = { extraction_source: null, email: null, expires_at: null, discovery_truck_id: null, public_ref: null, first_opened_at: null }
     try {
       const { data: session, error: sessionErr } = await supabase
         .from('demo_sessions').select('*').eq('truck_id', truck.id).maybeSingle()
@@ -739,6 +745,9 @@ export async function GET(req: NextRequest) {
           extraction_source: (session.extraction_source as string | null) ?? null,
           email:             (session.email as string | null) ?? null,
           expires_at:        (session.expires_at as string | null) ?? null,
+          discovery_truck_id: (session.discovery_truck_id as string | null) ?? null,
+          public_ref:        (session.public_ref as string | null) ?? null,
+          first_opened_at:   (session.first_opened_at as string | null) ?? null,
         }
       }
     } catch (e) {
