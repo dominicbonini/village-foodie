@@ -71,7 +71,12 @@ type Prospect = {
    *  and null too when the demo_sessions migration is not applied yet (the route degrades rather than
    *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */
   demo?: { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number } | null
-  logo_url: string | null; photo_url: string | null; contact_name: string | null
+  logo_url: string | null; photo_url: string | null
+  /** 🔴 LEGACY AND UNREAD. Kept on the type because the route still returns it for one release — see
+   *  the note in app/api/admin/outreach/route.ts. The two fields below are what the form and the
+   *  template substitution use. */
+  contact_name: string | null
+  contact_first_name: string | null; contact_last_name: string | null
   do_not_contact: boolean | null; entity_type: string | null
   contact_email: string | null; phone: string | null; mobile: string | null
   website: string | null; schedule_url: string | null
@@ -313,7 +318,8 @@ export default function OutreachPanel() {
   const [prospects, setProspects] = useState<Prospect[]>([])
   const [error, setError] = useState<string | null>(null)
   // Whether each hand-applied column exists yet (probed by the route, not inferred from row values).
-  const [hasContactName, setHasContactName] = useState(false)
+  /** Whether BOTH name columns exist — one probe, because half a split is not usable. */
+  const [hasContactNames, setHasContactNames] = useState(false)
   const [hasDoNotContact, setHasDoNotContact] = useState(false)
   // item 1: client-side name filter over the already-loaded rows — no server round trip, no paging.
   // 🔴 ONE FILTER OBJECT, not nine useStates — so `visible` has one dependency and the Clear button is
@@ -390,7 +396,7 @@ export default function OutreachPanel() {
       if (!res.ok) { setError(`Could not load (${res.status})`); setChecking(false); return }
       const data = await res.json()
       setProspects(data.prospects || [])
-      setHasContactName(!!data.hasContactName)
+      setHasContactNames(!!data.hasContactNames)
       setHasDoNotContact(!!data.hasDoNotContact)
       setChecking(false)
     } catch {
@@ -906,22 +912,22 @@ export default function OutreachPanel() {
           with NO onClick, so an OUTSIDE CLICK DOES NOT CLOSE it — dismissal is the explicit Close button
           only. No in-component focus-trap or scroll-lock, matching those modals. */}
       {modalProspect && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 max-sm:p-2">
           {/* 🔴 THE MODAL ITSELF NO LONGER SCROLLS — `overflow-hidden`, and the ONLY scrollable region
               inside it is contact history. History holds full email bodies and is unbounded; when it
               shared the modal's scroll, reading an old email pushed the form off screen. Everything else
               is sized to fit, so the fields stay put no matter how long the history is.
               ⚠️ DESKTOP ONLY, as briefed — no sm: breakpoints, no mobile stacking. max-w-6xl (1152px)
               carries two working columns on a laptop. Backdrop still has NO onClick: Close or Escape. */}
-          <div className="bg-white rounded-2xl w-full max-w-6xl flex flex-col max-h-[calc(100vh-2rem)] overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-6xl flex flex-col max-h-[calc(100vh-2rem)] max-sm:max-h-[calc(100dvh-1rem)] overflow-hidden">
 
             {/* ── (1) HEADER — ONE LINE ──────────────────────────────────────────────────────────── */}
-            <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
+            <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0 max-sm:flex-wrap max-sm:gap-y-1 max-sm:px-4 max-sm:py-2">
               <ModalThumb value={modalProspect.logo_url} folder="logos" label="logo"
                 onRequestDelete={() => setConfirmKind('logo')} />
               <ModalThumb value={modalProspect.photo_url} folder="photos" label="photo"
                 onRequestDelete={() => setConfirmKind('photo')} />
-              <h3 className="text-lg font-semibold text-slate-900 truncate min-w-0">{modalProspect.name}</h3>
+              <h3 className="text-lg font-semibold text-slate-900 truncate min-w-0 max-sm:w-full max-sm:order-first">{modalProspect.name}</h3>
               {/* (4) The label says what the link OPENS. `safeHref` also rescues the one scheme-less value. */}
               {safeHref(modalProspect.website) && (
                 <a href={safeHref(modalProspect.website)!} target="_blank" rel="noreferrer" className={linkCls}
@@ -950,37 +956,28 @@ export default function OutreachPanel() {
                 `patchProspect(id, { stage })`, same OUTREACH_STAGES, same stageLabel. Position only.
                 Three previously separate lines (stage, the upcoming/last-event line, last contacted)
                 collapse into this one. */}
-            <div className="flex items-center gap-5 px-5 py-2 bg-slate-50 border-b border-slate-100 flex-shrink-0 text-xs">
+            <div className="flex items-center gap-5 px-5 py-2 bg-slate-50 border-b border-slate-100 flex-shrink-0 text-xs max-sm:flex-wrap max-sm:gap-x-4 max-sm:gap-y-1 max-sm:px-4 max-sm:py-1.5">
               <label className="flex items-center gap-2">
                 <span className="uppercase tracking-wide font-bold text-slate-400">Stage</span>
                 <select value={modalProspect.stage} onChange={e => patchProspect(modalProspect.id, { stage: e.target.value })}
-                  className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white">
+                  className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white max-sm:text-base max-sm:py-1.5">
                   {OUTREACH_STAGES.map(st => <option key={st} value={st}>{stageLabel(st)}</option>)}
                 </select>
               </label>
-              <span className="text-slate-500">
-                <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Upcoming</span>
-                <span className="font-semibold text-slate-700">{modalProspect.futureEventCount}</span>
-                {modalProspect.lastEventDate && <span className="text-slate-400"> · last {fmtDate(modalProspect.lastEventDate)}</span>}
-              </span>
-              <span className="text-slate-500">
-                <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Last contacted</span>
-                {fmtDate(modalProspect.lastContactedAt) ?? <span className="text-slate-400">never</span>}
-              </span>
-              <div className="ml-auto flex items-center gap-3">
-                {/* DEMO — the LINK when this prospect already has one, the CREATE button when it does not.
-                    🔴 BOTH ARE INLINE IN THIS MODAL — NO SECOND OVERLAY, NO NEW KEY LISTENER. The link is
-                    the state that is read most often and adding a layer to read it would be the
-                    modal-on-modal trap for nothing. (The Create flow still opens CreateDemoModal, which
-                    already handles its own stacking and Escape — see that file's header.)
-                    /api/admin/provision-demo with the discovery id; name and logo are read server-side. */}
-                {modalProspect.demo
-                  ? <DemoLinkChip demo={modalProspect.demo} />
-                  : <button type="button" onClick={() => setCreateDemoForId(modalProspect.id)}
-                      className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
-                      Create demo
-                    </button>}
-                <DoNotContactToggle p={modalProspect} enabled={hasDoNotContact} onPatch={patchProspect} />
+              {/* 🔴 `contents`, NOT a wrapper with layout. `display: contents` makes this div generate NO
+                  BOX, so its children participate in the strip's flex row exactly as they did when they
+                  were written here directly — the desktop row is unchanged, not merely similar.
+                  🧪 Compiled with the repo's own Tailwind: `.contents` is emitted with the base display
+                  utilities and `.max-sm\:hidden` inside `@media (width < 40rem)` AFTER all of them.
+                  Equal specificity, so ORDER decides and the `hidden` wins below 40rem — the whole group
+                  disappears there; STAGE above stays.
+                  ⚠️ THE ORDER IS THE CLAIM, NOT A LINE NUMBER. An earlier version of this comment cited
+                  absolute line numbers; those move with whatever classes the project happens to use, so
+                  they looked like facts about the build and were facts about a probe.
+                  Its phone counterpart is the `sm:hidden` block at the top of the scrolling body. */}
+              <div className="contents max-sm:hidden">
+                <ProspectMetaFacts p={modalProspect} hasDoNotContact={hasDoNotContact}
+                  onPatch={patchProspect} onCreateDemo={() => setCreateDemoForId(modalProspect.id)} />
               </div>
             </div>
 
@@ -994,8 +991,21 @@ export default function OutreachPanel() {
                 20px gap.
                 🔴 45/55, WAS 38/62. History moved to the left column and it needs width for four
                 columns; the right column lost its least interactive block and no longer needs 62%. */}
-            <div className="flex-1 min-h-0 grid gap-5 p-5" style={{ gridTemplateColumns: '45fr 55fr' }}>
-              <Detail p={modalProspect} hasContactName={hasContactName}
+            <div className="flex-1 min-h-0 grid gap-5 p-5 max-sm:flex max-sm:flex-col max-sm:overflow-y-auto max-sm:p-4" style={{ gridTemplateColumns: '45fr 55fr' }}>
+              {/* 🔴 THE PHONE COPY — INSIDE THE SCROLLER, SO IT SCROLLS AWAY. Same component, same props,
+                  same handlers as the strip copy above; exactly one of the two is ever displayed.
+                  ⚠️ IT DOES NOT DISTURB THE DESKTOP GRID. At >= 40rem `sm:hidden` makes this
+                  `display: none`, and an element with `display: none` generates no box and is therefore
+                  NOT a grid item — so the 45fr/55fr track assignment of the two real columns is
+                  untouched. Below `sm` the body is a flex COLUMN (the round-one `max-sm:flex` override),
+                  so this is simply the first stacked block.
+                  DOM order is the reading order: the prospect's facts, then their contact details, then
+                  the log form. No `order-*` anywhere. */}
+              <div className="sm:hidden flex flex-wrap items-center gap-x-4 gap-y-2 text-xs pb-1 border-b border-slate-100">
+                <ProspectMetaFacts p={modalProspect} hasDoNotContact={hasDoNotContact}
+                  onPatch={patchProspect} onCreateDemo={() => setCreateDemoForId(modalProspect.id)} />
+              </div>
+              <Detail p={modalProspect} hasContactNames={hasContactNames}
                 onPatch={patchProspect} onLog={logContact} templates={templates}
                 onDeleteContact={deleteContactRow} />
             </div>
@@ -1111,6 +1121,60 @@ function WhatsAppBox({ p, onPatch }: {
 // ── DO-NOT-CONTACT (item 5) — prominent toggle over the nullable do_not_contact column ───────────────
 // Checked → true; unchecked → NULL (never false), same rule as the other tri-state fields. Disabled with
 // a note until the column is applied (the route reports `enabled`), so it is never edited into the void.
+// ── 🔴 THE READ-ONCE META FACTS — ONE DEFINITION, RENDERED IN TWO PLACES ─────────────────────────
+// Below `sm` these four must SCROLL AWAY while STAGE stays locked, and no CSS can reparent a node: the
+// meta strip is a `flex-shrink-0` SIBLING of the scroller, not an ancestor of it. So the group is
+// rendered twice — once in the strip (`contents max-sm:hidden`, desktop) and once inside the scrolling
+// body (`sm:hidden`, phone) — and exactly one of the two is ever displayed.
+//
+// 🔴 EXTRACTED RATHER THAN COPY-PASTED, AND THAT IS THE POINT. `components/DemoModeBanner.tsx` records
+// what happens otherwise: "three separate copies that had ALREADY drifted — same strip, three different
+// sentences". Two call sites, one definition, nothing to drift.
+//
+// ⚠️ WHY DUPLICATE RENDERING IS SAFE HERE, CHECKED RATHER THAN ASSUMED (see the report):
+//   • NO `id`/`htmlFor` anywhere in this file — every label uses IMPLICIT association (the input is a
+//     child of the label), so two copies cannot collide on an id or break a label pairing.
+//   • `DoNotContactToggle` holds NO state, effect or ref: `on = p.do_not_contact === true` is a pure
+//     function of props, so both copies always agree by construction and both call the SAME `onPatch`.
+//   • `DemoLinkChip` holds only its own `copied` flag. Two instances hold two independent flags; the
+//     hidden one is never set, because a `display:none` element cannot be clicked or focused.
+//   • Nothing here registers a document/window listener or an effect, so there is no double fire.
+function ProspectMetaFacts({ p, hasDoNotContact, onPatch, onCreateDemo }: {
+  p: Prospect
+  hasDoNotContact: boolean
+  onPatch: (id: string, patch: Record<string, unknown>) => void
+  onCreateDemo: () => void
+}) {
+  return (
+    <>
+      <span className="text-slate-500">
+        <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Upcoming</span>
+        <span className="font-semibold text-slate-700">{p.futureEventCount}</span>
+        {p.lastEventDate && <span className="text-slate-400"> · last {fmtDate(p.lastEventDate)}</span>}
+      </span>
+      <span className="text-slate-500">
+        <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Last contacted</span>
+        {fmtDate(p.lastContactedAt) ?? <span className="text-slate-400">never</span>}
+      </span>
+      {/* DEMO — the LINK when this prospect already has one, the CREATE button when it does not.
+          🔴 BOTH ARE INLINE IN THIS MODAL — NO SECOND OVERLAY, NO NEW KEY LISTENER. The link is the
+          state that is read most often and adding a layer to read it would be the modal-on-modal trap
+          for nothing. (The Create flow still opens CreateDemoModal, which already handles its own
+          stacking and Escape — see that file's header.)
+          /api/admin/provision-demo with the discovery id; name and logo are read server-side. */}
+      <div className="ml-auto flex items-center gap-3 max-sm:ml-0 max-sm:w-full max-sm:flex-wrap max-sm:gap-y-2">
+        {p.demo
+          ? <DemoLinkChip demo={p.demo} />
+          : <button type="button" onClick={onCreateDemo}
+              className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
+              Create demo
+            </button>}
+        <DoNotContactToggle p={p} enabled={hasDoNotContact} onPatch={onPatch} />
+      </div>
+    </>
+  )
+}
+
 function DoNotContactToggle({ p, enabled, onPatch }: {
   p: Prospect
   enabled: boolean
@@ -1582,7 +1646,7 @@ function DemoLinkChip({ demo }: { demo: NonNullable<Prospect['demo']> }) {
     } catch { /* clipboard blocked — the path is on screen to copy by hand */ }
   }
   return (
-    <span className="flex items-center gap-2">
+    <span className="flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-1">
       <a href={path} target="_blank" rel="noreferrer"
         className="text-xs font-mono text-orange-700 hover:underline max-w-[18rem] truncate" title={path}>{path}</a>
       <button type="button" onClick={copy}
@@ -1738,7 +1802,7 @@ function HistoryTable({ contacts, onDelete }: {
 
   return (
     <>
-      <table className="w-full table-fixed text-xs border-collapse">
+      <table className="w-full table-fixed text-xs border-collapse max-sm:w-auto">
         <colgroup>
           {HISTORY_COLS.map(c => <col key={c.key} style={c.width ? { width: c.width } : undefined} />)}
         </colgroup>
@@ -1803,9 +1867,9 @@ function HistoryTable({ contacts, onDelete }: {
   )
 }
 
-function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact }: {
+function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact }: {
   p: Prospect
-  hasContactName: boolean
+  hasContactNames: boolean
   onPatch: (id: string, patch: Record<string, unknown>) => void
   /** Deletes ONE contact row. Rejects on failure so the confirm dialog can show why and stay open. */
   onDeleteContact: (pr: Prospect, c: Contact) => Promise<void>
@@ -1813,7 +1877,8 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
   /** Loaded templates, or null when the table is unreachable. */
   templates: MessageTemplate[] | null
 }) {
-  const [contactName, setContactName] = useState(p.contact_name ?? '')
+  const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
+  const [lastName, setLastName] = useState(p.contact_last_name ?? '')
   const [email, setEmail] = useState(p.contact_email ?? '')
   const [phone, setPhone] = useState(p.phone ?? '')
   const [notes, setNotes] = useState(p.notes ?? '')
@@ -1839,7 +1904,8 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
   // previous truck's typed-but-unsaved email into the next truck's form — the component is not remounted
   // because only `p` changes.
   useEffect(() => {
-    setContactName(p.contact_name ?? ''); setEmail(p.contact_email ?? ''); setPhone(p.phone ?? '')
+    setFirstName(p.contact_first_name ?? ''); setLastName(p.contact_last_name ?? '')
+    setEmail(p.contact_email ?? ''); setPhone(p.phone ?? '')
     setNotes(p.notes ?? ''); setNextAt(p.next_action_at ?? ''); setNextTouched(false)
     setChannel('email'); setDirection('outbound'); setKind(defaultKindFor('outbound'))
     setMessage(''); setContactedAt(today)
@@ -1849,7 +1915,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
     setComposeOpen(false)
   }, [p.id])   // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fieldCls = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm'
+  const fieldCls = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm max-sm:text-base max-sm:py-2'
   const labelCls = 'block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5'
   const sectionCls = 'text-xs font-bold uppercase text-slate-500'
   const quickCls = 'text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-slate-600'
@@ -1948,7 +2014,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
           safety valve. Now that history lives here it must be the shrinkable child, so the column takes
           the full height (`min-h-0`, no `self-start`) and every sibling is `flex-shrink-0`. All of the
           shrinkage therefore lands on history, exactly as it did in the right column. */}
-      <div className="flex flex-col gap-3 min-h-0 pr-1">
+      <div className="flex flex-col gap-3 min-h-0 pr-1 max-sm:shrink-0 max-sm:pr-0">
         {/* 🔴 EMAIL FIRST, on its own line with its own button: addresses are long and pairing one with
             anything else truncates it. Editable — writes discovery_trucks.contact_email on blur. */}
         <label className="block flex-shrink-0">
@@ -1960,18 +2026,40 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
           </div>
         </label>
 
-        {/* (4) PAIRED: contact name + phone (with the WhatsApp tick) share one line. Both short. */}
+        {/* (4) 🔴 THREE CELLS IN A TWO-COLUMN GRID — FIRST | LAST, THEN PHONE UNDER THEM.
+            The name split needs two boxes where there was one, and the obvious move — widening this row
+            to `grid-cols-3` — REPRODUCES THE ROUND-TWO DEFECT ON THE DESKTOP. Arithmetic, not a guess:
+            the panel is max-w-6xl (1152), the body has p-5 and gap-5, so the 45fr column is
+            (1152 - 40 - 20) x 0.45 = 491px, less `pr-1` = 487px. At `grid-cols-3` each track is
+            (487 - 16)/3 = 157px, and the PHONE cell holds an input plus the "WA" tick: an <input> has an
+            intrinsic min-content width of roughly 177px, a grid item's min-width computes to `auto`, so
+            that cell would refuse to shrink and would overlap its neighbour — which is exactly the
+            CONTACTED ON / CHANNEL overlap that round two diagnosed and fixed.
+            Keeping TWO columns and letting the third cell wrap to its own row leaves every track at
+            (487 - 8)/2 = 239px — the width the phone field has TODAY, unchanged.
+            ⚠️ BELOW `sm` the body is a flex COLUMN, so this column is the full panel width: at 390px
+            that is 390 - 16 (overlay p-2) - 32 (panel max-sm:p-4) = 342, i.e. tracks of (342 - 8)/2 =
+            167px — BELOW the ~177px intrinsic width above, so each cell needs `max-sm:min-w-0` or it
+            overflows its track by ~10px. That is round two's remedy applied to a row round two did not
+            touch, and the phone cell needed it already. */}
         <div className="grid grid-cols-2 gap-2 flex-shrink-0">
-          <label className="block">
-            <span className={labelCls}>Contact name</span>
-            <input className={fieldCls} value={contactName} disabled={!hasContactName}
-              placeholder={hasContactName ? 'Contact person' : 'needs the contact_name migration'}
-              onChange={e => setContactName(e.target.value)}
-              onBlur={() => hasContactName && contactName !== (p.contact_name ?? '') && onPatch(p.id, { contact_name: contactName })} />
+          <label className="block max-sm:min-w-0">
+            <span className={labelCls}>First name</span>
+            <input className={fieldCls} value={firstName} disabled={!hasContactNames}
+              placeholder={hasContactNames ? 'First name' : 'needs the name-split migration'}
+              onChange={e => setFirstName(e.target.value)}
+              onBlur={() => hasContactNames && firstName !== (p.contact_first_name ?? '') && onPatch(p.id, { contact_first_name: firstName })} />
           </label>
-          <label className="block">
+          <label className="block max-sm:min-w-0">
+            <span className={labelCls}>Last name</span>
+            <input className={fieldCls} value={lastName} disabled={!hasContactNames}
+              placeholder={hasContactNames ? 'Last name' : 'needs the name-split migration'}
+              onChange={e => setLastName(e.target.value)}
+              onBlur={() => hasContactNames && lastName !== (p.contact_last_name ?? '') && onPatch(p.id, { contact_last_name: lastName })} />
+          </label>
+          <label className="block max-sm:min-w-0">
             <span className={labelCls}>Phone</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-1">
               <input className={fieldCls} value={phone} onChange={e => setPhone(e.target.value)}
                 onBlur={() => phone !== (p.phone ?? '') && onPatch(p.id, { phone })} />
               <span className="flex items-center gap-1 text-xs text-slate-500 whitespace-nowrap"><WhatsAppBox p={p} onPatch={onPatch} /> WA</span>
@@ -2004,7 +2092,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
           {/* 🔴 WHITE, NOT THE GREY CARD. The grey ground + 4px inset padding made this read as a
               boxed note; a table reads as a table on paper-white with a ruled header. The container
               is still the ONLY scroller in the modal, and it is still the only shrinkable child. */}
-          <div className="min-h-0 shrink overflow-y-auto border border-slate-300 rounded-lg bg-white">
+          <div className="min-h-0 shrink overflow-y-auto border border-slate-300 rounded-lg bg-white max-sm:overflow-x-auto">
             <HistoryTable contacts={p.contacts} onDelete={c => onDeleteContact(p, c)} />
           </div>
         </div>
@@ -2019,7 +2107,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
       </div>
 
       {/* ── RIGHT COLUMN — history, then log a contact, then follow up ────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 min-h-0">
+      <div className="flex flex-col gap-2 min-h-0 max-sm:shrink-0">
         {/* 🔴 THE COMPOSE WINDOW — portalled to <body>, layered above this modal. It writes NOTHING until
           its own log control is pressed, and its `onLog` is the SAME `log_contact` writer this modal's
           Log button uses; there is no second write path. */}
@@ -2057,24 +2145,24 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
         <p className={`${sectionCls} flex-shrink-0`}>Log a contact</p>
         {/* (6) FOUR CONTROLS ON ONE ROW — they fit at this width (the modal is max-w-6xl, so a column is
             ~540px and each control gets ~130px). Date first: it is the one most often changed. */}
-        <div className="grid grid-cols-4 gap-2 flex-shrink-0">
+        <div className="grid grid-cols-4 gap-2 flex-shrink-0 max-sm:grid-cols-2">
           {/* 🔴 CAPPED AT TODAY. A contact cannot have happened in the future, and a mistyped future date
               would sort to the top of history and take `last contacted` with it. Past dates are free. */}
           {/* 🔴 LABELLED, AND THIS IS THE ACTUAL FIX FOR THE "next action shows today" REPORT. This input
               defaults to today BY DESIGN (a contact almost always happened today) and was the only
               UNLABELLED control in the modal — two bare date boxes, one showing today. `nextAt` never
               held today; this did. Both now say which is which. */}
-          <label className="block">
+          <label className="block max-sm:min-w-0">
             <span className={labelCls}>Contacted on</span>
             <input type="date" className={fieldCls} value={contactedAt} max={today}
               onChange={e => setContactedAt(e.target.value)} title="When this contact happened (cannot be in the future)" />
           </label>
-          <label className="block"><span className={labelCls}>Channel</span>
+          <label className="block max-sm:min-w-0"><span className={labelCls}>Channel</span>
             <select className={fieldCls} value={channel} onChange={e => setChannel(e.target.value)}>
               {CONTACT_CHANNELS.map(c => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
             </select>
           </label>
-          <label className="block"><span className={labelCls}>Direction</span>
+          <label className="block max-sm:min-w-0"><span className={labelCls}>Direction</span>
             {/* 🔴 CHANGING DIRECTION CHANGES KIND, because the two are not independent: an inbound row
                 can only be a reply, and a reply is not a rung of the outbound ladder. Switching to
                 inbound selects Reply (and clears the follow-up date, since a reply ends the sequence);
@@ -2090,7 +2178,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
               {CONTACT_DIRECTIONS.map(d => <option key={d} value={d}>{directionLabel(d)}</option>)}
             </select>
           </label>
-          <label className="block"><span className={labelCls}>Kind</span>
+          <label className="block max-sm:min-w-0"><span className={labelCls}>Kind</span>
             {/* 🔴 CHOOSING A STAGE FILLS THE FOLLOW-UP DATE IMMEDIATELY (local only, not written). */}
             <select className={fieldCls} value={kind}
               onChange={e => { setKind(e.target.value); fillNextFromKind(e.target.value) }}>
@@ -2129,7 +2217,7 @@ function Detail({ p, hasContactName, onPatch, onLog, templates, onDeleteContact 
         <div className="flex-shrink-0 border-t border-slate-100 pt-2">
           <span className={labelCls}>Follow up on</span>
           <div className="flex flex-wrap items-center gap-1.5">
-            <input type="date" className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm" value={nextAt}
+            <input type="date" className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm max-sm:text-base max-sm:py-2" value={nextAt}
               onChange={e => { setNextAt(e.target.value); setNextTouched(true) }}
               onBlur={() => nextAt !== (p.next_action_at ?? '') && onPatch(p.id, { next_action_at: nextAt || null })} />
             <button onClick={() => setNext(1)} className={quickCls}>Tomorrow</button>

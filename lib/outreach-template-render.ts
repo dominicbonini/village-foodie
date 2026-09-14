@@ -27,9 +27,11 @@
 //   1. RESOLVED   `{{token}}`      — comes from the loaded row. Filled silently.
 //        ⚠️ A resolved token may declare a FALLBACK (`{{token|fallback}}`), and `contact_name_prefixed`
 //        carries its own leading space so an absent name yields a bare "Hi,". 🧪
-//        `contact_name` is populated on 3 of 231 prospects, so "fill silently" with the empty string
+//        🧪 A first name is recorded on 3 of 231 prospects, so "fill silently" with the empty string
 //        would render "Hi ," on 228 rows. The fallback keeps the sentence grammatical while staying
 //        silent — which is what the tier asks for.
+//        🔴 AND ONE TOKEN DOES NOT DEGRADE AT ALL: see `MUST_RESOLVE`. `{{demo_link}}` has no honest
+//        fallback, so its absence stops the send instead of filling anything.
 //
 //   2. CONDITIONAL `?cond: line`   — a WHOLE LINE that is DROPPED when its condition is unmet.
 //        🔴 THIS IS THE POINT OF THE TIER. "your pitch at " with nothing after it is worse than a
@@ -65,11 +67,22 @@ export type MessageTemplate = {
 /** The fields a template can read. Everything is nullable — nothing may assume a value is present. */
 export type TemplateContext = {
   truckName: string | null
+  /** 🔴 DERIVED FROM THE TWO NAME COLUMNS, NOT FROM `outreach_prospects.contact_name`. See
+   *  `contextFromProspect` — the column still exists and is still returned by the route, but no code
+   *  reads it any more. */
   contactName: string | null
+  contactFirstName: string | null
+  contactLastName: string | null
   website: string | null
   orderUrl: string | null
   nextEventDate: string | null     // YYYY-MM-DD
   nextEventVenue: string | null
+  /** Absolute `https://<hatchgrab>/demo/<public_ref>` for this prospect's newest LIVE demo, or null.
+   *  🔴 NULL IS THE NORMAL CASE — 230 of 231 prospects. See `MUST_RESOLVE`: a template that asks for it
+   *  and cannot get it must not be sent, so this null REFUSES rather than falling back. */
+  demoLink: string | null
+  /** Absolute `/compare` URL. Always resolves — see `COMPARE_LINK`. */
+  compareLink: string | null
 }
 
 // ── RENDERING ────────────────────────────────────────────────────────────────────────────────────────
@@ -113,11 +126,33 @@ function resolvedValue(token: string, ctx: TemplateContext): string | null {
     // "Hi,". A plain fallback of '' would leave "Hi ," — a space before the comma — so this token carries
     // its OWN leading space when there is a name and expands to nothing when there is not:
     //   name present → "Hi Madhur,"      name absent → "Hi,"
-    // 🧪 contact_name is populated on 3 of 231 rows, so the bare form is the common case, not the edge.
+    // 🧪 A first name is recorded on 3 of 231 rows, so the bare form is the common case, not the edge.
     case 'contact_name_prefixed': {
-      const n = (ctx.contactName ?? '').trim()
+      // 🔴 IT IS THE **FIRST** NAME NOW, AND THAT IS A DELIBERATE CHANGE OF RENDERING. It used to be the
+      // whole of `contact_name`, so the one prospect with a surname was greeted "Hi George Greaves,".
+      // A greeting takes the first name; the surname belongs in `{{last_name}}` if a template wants it.
+      // ⚠️ The TOKEN NAME is unchanged on purpose — 5 active templates carry it and renaming it would
+      // silently blank every greeting. See the backlog note about the name.
+      const n = (ctx.contactFirstName ?? '').trim()
       return n ? ` ${n}` : ''
     }
+    // ── THE NAME SPLIT ────────────────────────────────────────────────────────────────────────────
+    // 🧪 3 of 231 rows have a first name and 1 has a last name, so BOTH of these resolve to null on the
+    // overwhelming majority. That is why neither carries a bare '' fallback here: a null makes
+    // `substitute` emit a VISIBLE `[[first_name]]`, which `unresolvedIn` counts and the compose window
+    // names. A template that wants a silent greeting uses `{{contact_name_prefixed}}`, which is the one
+    // token designed to vanish cleanly; a template that wants a word uses `{{first_name|there}}`.
+    case 'first_name': return (ctx.contactFirstName ?? '').trim() || null
+    case 'last_name': return (ctx.contactLastName ?? '').trim() || null
+    // 🔴 NO FALLBACK IS POSSIBLE FOR THIS ONE, AND `substitute` ENFORCES THAT — see `MUST_RESOLVE`.
+    // An empty string, a bare domain or a dead /demo/ path all arrive at a real food business as a
+    // broken promise, so the only safe behaviours are "the real link" or "do not send".
+    case 'demo_link': return (ctx.demoLink ?? '').trim() || null
+    // ⚠️ THE HOST IS NOT THE REQUEST ORIGIN, AND THAT IS LOAD-BEARING. `/compare` calls `notFound()`
+    // unless it is being served on HatchGrab, so an origin-derived link would 404 for anyone reading
+    // this console on the Village Foodie domain. It is also an EMAIL: there is no origin to resolve
+    // against at the point it is clicked. See `COMPARE_LINK`.
+    case 'compare_link': return (ctx.compareLink ?? '').trim() || null
     case 'website': return (ctx.website ?? '').trim() || null
     case 'order_url': return (ctx.orderUrl ?? '').trim() || null
     case 'next_event_day': return ctx.nextEventDate ? dayName(ctx.nextEventDate) : null
@@ -127,15 +162,44 @@ function resolvedValue(token: string, ctx: TemplateContext): string | null {
   }
 }
 
+// ── 🔴 TOKENS THAT MUST RESOLVE OR THE MESSAGE MUST NOT GO OUT ──────────────────────────────────────
+// Every other token degrades: it falls back, or it leaves a `[[marker]]` the operator can decide about.
+// `demo_link` cannot. There is no wording that stands in for a link to a demo that does not exist, and
+// the three plausible degradations are all worse than not sending:
+//   ''              → "Take a look here: " — a sentence pointing at nothing
+//   the bare host   → a link that does not go where the sentence says
+//   a dead /demo/…  → a 404 sent to a business that was told to click it
+// So this set names the tokens whose absence is a HARD STOP, and two things enforce it:
+//   • `substitute` ignores any declared `{{demo_link|…}}` fallback for them — a template author cannot
+//     opt out of the stop by writing one.
+//   • `renderTemplate` reports them in `blocking`, and the compose window refuses every exit.
+// 🔴 IT IS A SET, NOT AN `if (token === 'demo_link')`, so the next such token is one line and inherits
+// all of the enforcement rather than half of it.
+const MUST_RESOLVE = new Set(['demo_link'])
+
+/** Whether a token's absence blocks sending rather than falling back. Exported so the compose window
+ *  can keep these out of the "still to fill" fields — a hand-typed value must not lift the stop. */
+export function isMustResolveToken(name: string): boolean {
+  return MUST_RESOLVE.has(name)
+}
+
 /** Substitute resolved tokens. Unresolved `[[…]]` are deliberately untouched. */
 function substitute(line: string, ctx: TemplateContext): string {
   return line.replace(RESOLVED_RE, (_m, token: string, fallback?: string) => {
     const v = resolvedValue(token, ctx)
     if (v !== null) return v
+    // 🔴 A MUST-RESOLVE TOKEN IGNORES ITS DECLARED FALLBACK. `{{demo_link|hatchgrab.com}}` would
+    // otherwise render a plausible-looking wrong link and clear the stop at the same time.
+    if (MUST_RESOLVE.has(token)) return `[[${token}]]`
     // No value: use the declared fallback, or — with none — leave a VISIBLE marker rather than a blank,
     // so a missing field can never masquerade as intentionally empty prose.
     return fallback !== undefined ? fallback : `[[${token}]]`
   })
+}
+
+/** The must-resolve tokens still missing from `text` — non-empty means DO NOT SEND. */
+function blockingIn(text: string): string[] {
+  return unresolvedIn(text).filter(n => MUST_RESOLVE.has(n))
 }
 
 export type RenderedTemplate = {
@@ -145,6 +209,13 @@ export type RenderedTemplate = {
   body: string
   /** Distinct `[[…]]` placeholders still outstanding, in first-appearance order. */
   unresolved: string[]
+  /** 🔴 `{{…}}` spans the substitution could not consume — see `malformedTokensIn`. NON-EMPTY MEANS THE
+   *  TEXT WOULD REACH A PROSPECT WITH LITERAL BRACES IN IT. Carried on the result rather than left for a
+   *  caller to remember to ask for, so a new consumer is handed it without knowing to look. */
+  malformed: string[]
+  /** 🔴 MUST-RESOLVE tokens (see `MUST_RESOLVE`) that could not be resolved. NON-EMPTY MEANS THE
+   *  MESSAGE MUST NOT BE SENT — unlike `unresolved`, which warns and lets the operator decide. */
+  blocking: string[]
   /** Conditions whose lines were dropped — reported so the UI can explain a shorter message. */
   droppedConditions: string[]
 }
@@ -165,7 +236,16 @@ export function renderTemplate(tpl: MessageTemplate, ctx: TemplateContext): Rend
   // visible gap that says "something used to be here".
   const body = kept.join('\n').replace(/\n{3,}/g, '\n\n').trim()
   const subject = tpl.subject ? substitute(tpl.subject, ctx) : null
-  return { subject, body, unresolved: unresolvedIn(subject ? subject + '\n' + body : body), droppedConditions: dropped }
+  // 🔴 SUBJECT **AND** BODY. The defect that prompted this guard was in a SUBJECT, and the subject is the
+  // one part of an email that `fullText` does not carry — it travels in the mailto instead.
+  const whole = subject ? subject + '\n' + body : body
+  return {
+    subject, body,
+    unresolved: unresolvedIn(whole),
+    malformed: malformedTokensIn(whole),
+    blocking: blockingIn(whole),
+    droppedConditions: dropped,
+  }
 }
 
 /** The distinct `[[…]]` placeholders in a string, in order of first appearance. */
@@ -242,8 +322,12 @@ function caseLabelsOf(fn: Function): string[] {
 
 const TOKEN_DESCRIPTIONS: Record<string, string> = {
   truck_name: "The truck's name, as stored on its discovery row.",
-  contact_name: 'The named contact, when one is recorded (3 of 231 rows have one).',
-  contact_name_prefixed: 'A leading space plus the contact name, or nothing — write `Hi{{contact_name_prefixed}},` to get "Hi Sam," or a bare "Hi,".',
+  contact_name: 'First and last name joined, when a name is recorded (3 of 231 rows have one).',
+  contact_name_prefixed: 'A leading space plus the FIRST name, or nothing — write `Hi{{contact_name_prefixed}},` to get "Hi Sam," or a bare "Hi,". The one token that vanishes cleanly when there is no name.',
+  first_name: 'The contact\'s first name (3 of 231 rows). Renders [[first_name]] when absent — use {{contact_name_prefixed}} for a greeting, or {{first_name|there}} for a word.',
+  last_name: 'The contact\'s last name (1 of 231 rows). Renders [[last_name]] when absent.',
+  demo_link: '🔴 The full https://…/demo/… link to this prospect\'s live demo. If there is no live demo the message CANNOT BE SENT — there is no fallback and a declared one is ignored. Only 1 of 231 prospects has one today; use the Create demo button in the prospect modal first.',
+  compare_link: 'The full https://…/compare link to the plan-comparison page, on the HatchGrab domain. Always resolves.',
   website: "The truck's own website URL.",
   order_url: "The truck's existing online-ordering page.",
   next_event_day: 'Weekday of the next event AFTER today, e.g. "Friday".',
@@ -279,12 +363,78 @@ export function conditionReference(): TokenRefEntry[] {
 }
 
 // 🔴 A MISTYPED TOKEN MUST NOT REACH AN EMAIL AS PROSE.
-// An unknown `{{truk_name}}` is already safe: `substitute` cannot resolve it, so it emits `[[truk_name]]`
-// — which the "still to fill" list counts and the pre-send warning names. That is the mechanism's own
-// behaviour and is NOT changed here.
-// What it cannot catch is a SINGLE-bracket `[Truck Name]`, which is ordinary text to the renderer and
-// would print literally. This lint finds those so the editor and the preview can flag them BEFORE the
-// template is ever used. It reads text; it changes no rendering.
+//
+// ⚠️ THIS COMMENT USED TO STOP AFTER ITS FIRST EXAMPLE AND WAS WRONG ABOUT THE CLASS. It read: "An
+// unknown `{{truk_name}}` is already safe: `substitute` cannot resolve it, so it emits `[[truk_name]]`."
+// That sentence is TRUE OF THAT EXAMPLE AND FALSE OF THE CLASS, and the reassuring example is what
+// stopped anyone looking. `chase-1`'s subject carried `{{truck name}}` — a SPACE — for weeks, offerable
+// and active, and it would have gone out verbatim. See docs/outreach-token-guard-report.md.
+//
+// THE TWO CASES, AND ONLY ONE OF THEM WAS EVER SAFE:
+//   • WELL-FORMED but unknown — `{{truk_name}}` matches RESOLVED_RE (`[a-z_]+`), resolves to nothing,
+//     and emits `[[truk_name]]`, which `unresolvedIn` counts and the pre-send warning names. SAFE, and
+//     unchanged here.
+//   • MALFORMED — `{{truck name}}`, `{{Truck_Name}}`, `{{truck-name}}`, `{{truck2}}`, `{{}}` — does NOT
+//     match RESOLVED_RE at all, so `substitute` never sees it, emits nothing, and the text survives
+//     verbatim. 🔴 AND IT IS INVISIBLE TO EVERY OTHER GUARD TOO: `unresolvedIn` scans `[[…]]`,
+//     `suspectedMistypedTokens` scans single `[…]`. THREE GUARDS, ONE BLIND SPOT — all three keyed off a
+//     token PATTERN, so a span that fails to match the pattern was invisible to all of them at once.
+//
+// 🔴 WHICH IS WHY `malformedTokensIn` BELOW KEYS OFF THE DELIMITERS AND NOT THE PATTERN. It finds every
+// `{{`…`}}` span whatever is inside it, then asks whether RESOLVED_RE would have consumed it. A guard
+// built on the token pattern would have inherited the identical blind spot by construction.
+//
+// `suspectedMistypedTokens` remains what it always was: a lint for SINGLE-bracket `[Truck Name]`, which
+// is ordinary text to the renderer and would print literally. It reads text; it changes no rendering.
+// ── 🔴 THE MALFORMED-TOKEN GUARD — KEYED OFF THE DELIMITERS, DELIBERATELY ─────────────────────────
+// `BRACE_SPAN_RE` matches a `{{`…`}}` pair and captures WHATEVER is between them — letters, spaces,
+// capitals, digits, punctuation, nothing at all. It shares no character class with RESOLVED_RE, so a
+// span RESOLVED_RE cannot see is exactly a span this one CAN. That is the whole design: the previous
+// three guards were blind together because they were the same test written three times.
+//
+// ⚠️ NON-GREEDY (`*?`) so a nested `{{a{{b}}}}` reports the OUTER opening rather than silently matching
+// to the last `}}` and reporting one plausible-looking token.
+const BRACE_SPAN_RE = /\{\{([\s\S]*?)\}\}/g
+// What RESOLVED_RE would accept between the braces, expressed as a whole-string test: an optional run of
+// whitespace, a lower-case/underscore name, optional whitespace, and an optional `|fallback`.
+// 🔴 IT MIRRORS RESOLVED_RE AND MUST BE CHANGED WITH IT. If the resolver ever widens its character
+// class, this widens too or it starts reporting tokens that work.
+const WELL_FORMED_INNER_RE = /^\s*[a-z_]+\s*(?:\|[^}]*)?$/
+// An UNCLOSED `{{` never forms a span, so it cannot be found by scanning for pairs. Found by removing
+// every complete span first and asking whether an opening delimiter survives.
+const OPEN_DELIM = '{{'
+
+/**
+ * Every `{{…}}` in `text` that the substitution CANNOT consume — the ones that reach a prospect as
+ * literal characters with no warning anywhere else.
+ *
+ * Returns the offending span VERBATIM (braces included), because the operator has to find it in the
+ * text, and `truck name` alone is harder to spot than `{{truck name}}`.
+ *
+ * ⚠️ A well-formed but UNKNOWN token (`{{nope}}`) is NOT reported here — it is already handled, and
+ * visibly: it renders as `[[nope]]` and `unresolvedIn` lists it. Reporting it twice would train the
+ * operator to dismiss this list.
+ *
+ * 🔴 READS TEXT, CHANGES NO RENDERING. `substitute` is untouched by this change, which is why every
+ * valid token still renders byte-identically.
+ */
+export function malformedTokensIn(text: string): string[] {
+  const out: string[] = []
+  const src = String(text ?? '')
+  let stripped = ''
+  let last = 0
+  for (const m of src.matchAll(BRACE_SPAN_RE)) {
+    stripped += src.slice(last, m.index)
+    last = (m.index ?? 0) + m[0].length
+    if (WELL_FORMED_INNER_RE.test(m[1])) continue
+    if (!out.includes(m[0])) out.push(m[0])
+  }
+  stripped += src.slice(last)
+  // Whatever is left cannot contain a complete span, so a surviving `{{` is an unclosed one.
+  if (stripped.includes(OPEN_DELIM) && !out.includes(OPEN_DELIM)) out.push(OPEN_DELIM)
+  return out
+}
+
 const SUSPECT_RE = /(?<!\[)\[([^\[\]]{2,40})\](?!\])/g
 
 /** Single-bracket sequences that look like an attempted token — likely typos for `[[x]]` or `{{x}}`. */
@@ -312,22 +462,66 @@ export function suspectedMistypedTokens(text: string): string[] {
 /** The prospect fields the substitution reads. Anything with these keys will do. */
 export type ProspectLike = {
   name: string | null
-  contact_name: string | null
+  /** 🔴 NOT READ ANY MORE — kept in the type on purpose. The column still exists and the route still
+   *  returns it for one release; removing the field would make a remaining reader vanish from the type
+   *  system instead of erroring. Dropping the column is a LATER, SEPARATE change. */
+  contact_name?: string | null
+  contact_first_name: string | null
+  contact_last_name: string | null
   website: string | null
   order_url: string | null
   nextEventDate: string | null
   nextEventVenue: string | null
+  /** The prospect's newest LIVE demo, as /api/admin/outreach reports it. Optional so a caller that
+   *  predates the demo join still type-checks; absent means "no demo", which is the refusing case. */
+  demo?: { publicRef: string | null; expiresAt: string | null } | null
+}
+
+// ⚠️ THE HOST IS FIXED TO HATCHGRAB, NOT DERIVED FROM THE ORIGIN, for the two reasons in the
+// `compare_link` case above. This is the established pattern — the identical expression builds
+// HATCHGRAB_LOGO_URL in lib/email-config.ts — and the literal default is the deployed production host,
+// so a missing env var yields a WORKING link rather than `undefined/compare`.
+const HATCHGRAB_BASE = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? 'https://www.hatchgrab.com'
+const COMPARE_LINK = `${HATCHGRAB_BASE}/compare`
+
+/**
+ * The absolute demo URL for a prospect, or null.
+ *
+ * 🔴 LIVENESS IS `public_ref IS NOT NULL AND expires_at > now()`, AND NOTHING ELSE. In particular it is
+ * NOT `retired_at IS NULL`: `demo_sessions.retired_at` has no writer anywhere in this repository, so
+ * testing it would imply a retirement mechanism that does not exist.
+ * ⚠️ A live session can carry a NULL `public_ref` — the modal already renders "demo · no link" for
+ * that — so "has a live demo" and "has a link" are two different questions and this asks the second.
+ * ⚠️ The expiry is re-checked HERE as well as in the route, because the admin page can sit open for
+ * hours after the list was loaded and a demo expiring in that window must stop being offered.
+ */
+export function demoLinkFor(demo: ProspectLike['demo']): string | null {
+  const ref = demo?.publicRef
+  if (!ref) return null
+  const exp = demo?.expiresAt
+  if (!exp) return null
+  if (new Date(exp).getTime() <= Date.now()) return null
+  return `${HATCHGRAB_BASE}/demo/${ref}`
 }
 
 /** 🔴 ONE MAPPING. If the preview built its context differently it would render a different email. */
 export function contextFromProspect(p: ProspectLike): TemplateContext {
+  const first = (p.contact_first_name ?? '').trim()
+  const last = (p.contact_last_name ?? '').trim()
   return {
     truckName: p.name,
-    contactName: p.contact_name,
+    // 🔴 JOINED FROM THE TWO COLUMNS, NOT READ FROM `contact_name`. `{{contact_name}}` and
+    // `?contact_name:` keep their existing meaning — "the whole name" — while the stored column they
+    // used to read is no longer consulted by anything.
+    contactName: [first, last].filter(Boolean).join(' ') || null,
+    contactFirstName: first || null,
+    contactLastName: last || null,
     website: p.website,
     orderUrl: p.order_url,
     nextEventDate: p.nextEventDate,
     nextEventVenue: p.nextEventVenue,
+    demoLink: demoLinkFor(p.demo),
+    compareLink: COMPARE_LINK,
   }
 }
 
@@ -347,6 +541,10 @@ export type ComposedMessage = {
   /** The message WITHOUT the footer — what the operator edits. */
   body: string
   unresolved: string[]
+  /** 🔴 See RenderedTemplate.malformed. Non-empty ⇒ do not send. */
+  malformed: string[]
+  /** 🔴 See RenderedTemplate.blocking. Non-empty ⇒ do not send. */
+  blocking: string[]
   droppedConditions: string[]
 }
 
@@ -360,17 +558,31 @@ export function renderWithFills(
   const r = renderTemplate(tpl, ctx)
   const subject = r.subject === null ? null : applyPlaceholderFills(r.subject, fills)
   const body = applyPlaceholderFills(r.body, fills)
+  // Re-derived AFTER the fills, not carried over from `r`: a placeholder VALUE can itself contain a
+  // malformed token, and that value is typed by hand.
+  const whole = `${subject ?? ''}\n${body}`
   return {
     subject,
     body,
-    unresolved: unresolvedIn(`${subject ?? ''}\n${body}`),
+    unresolved: unresolvedIn(whole),
+    malformed: malformedTokensIn(whole),
+    // 🔴 RE-DERIVED AFTER THE FILLS, like `malformed` and for the harder version of the same reason: a
+    // placeholder value is typed by hand, and `defaultFillsOf` below refuses to carry a must-resolve
+    // key, so the only way this list shrinks is the operator editing the visible text themselves.
+    blocking: blockingIn(whole),
     droppedConditions: r.droppedConditions,
   }
 }
 
-/** The placeholder defaults for a template, flattened to the shape the fill functions take. */
+/** The placeholder defaults for a template, flattened to the shape the fill functions take.
+ *  🔴 A MUST-RESOLVE KEY IS DROPPED. `placeholder_defaults` is editable data; a stored `demo_link`
+ *  default would otherwise fill `[[demo_link]]` on load and lift the send block before anyone saw it. */
 export function defaultFillsOf(tpl: MessageTemplate): Record<string, string> {
   const out: Record<string, string> = {}
-  for (const [k, v] of Object.entries(tpl.defaults ?? {})) if (v?.value) out[k] = v.value
+  for (const [k, v] of Object.entries(tpl.defaults ?? {})) {
+    if (!v?.value) continue
+    if (MUST_RESOLVE.has(k.trim())) continue
+    out[k] = v.value
+  }
   return out
 }

@@ -15,7 +15,7 @@ import { nativeAuthHeader } from '@/lib/native/session'
 import { createSlug } from '@/lib/utils'   // the repo's existing slug function — not a second one
 import {
   contextFromProspect, renderWithFills, unresolvedIn, defaultFillsOf,
-  resolvedTokenReference, conditionReference, suspectedMistypedTokens,
+  resolvedTokenReference, conditionReference, suspectedMistypedTokens, malformedTokensIn,
   type MessageTemplate,
 } from '@/lib/outreach-template-render'
 
@@ -26,8 +26,14 @@ type Row = {
   created_at: string | null; updated_at: string | null
 }
 type Prospect = {
-  id: string; name: string; contact_name: string | null; website: string | null
+  id: string; name: string; website: string | null
+  /** The two name columns the substitution reads. `contact_name` is deliberately NOT here: the preview
+   *  must render what a real send renders, and nothing reads that column any more. */
+  contact_first_name: string | null; contact_last_name: string | null
   order_url: string | null; nextEventDate: string | null; nextEventVenue: string | null
+  /** The prospect's newest live demo, as the outreach route reports it — what `{{demo_link}}` needs.
+   *  🧪 Exactly 1 of 231 prospects has one, so picking any other prospect previews the REFUSAL. */
+  demo?: { publicRef: string | null; expiresAt: string | null } | null
   whatsapp_confirmed: boolean | null
 }
 
@@ -100,8 +106,9 @@ export default function TemplatesPanel() {
   }, [])
 
   // ⚠️ A READ-ONLY REUSE of the EXISTING outreach route, declared as such: it already returns every field
-  // the substitution needs (name, contact_name, website, order_url, nextEventDate, nextEventVenue), so
-  // the preview reads the same rows the compose window renders against. Nothing is written here.
+  // the substitution needs (name, contact_first_name, contact_last_name, website, order_url,
+  // nextEventDate, nextEventVenue, demo), so the preview reads the same rows the compose window renders
+  // against. Nothing is written here.
   const loadProspects = useCallback(async () => {
     try {
       const h = await nativeAuthHeader()
@@ -209,6 +216,12 @@ export default function TemplatesPanel() {
   const condRef = useMemo(() => conditionReference(), [])
   const mistyped = useMemo(
     () => suspectedMistypedTokens(`${draft.subject ?? ''}\n${draft.body ?? ''}`), [draft.subject, draft.body])
+  /** 🔴 `{{…}}` the renderer cannot read. Shown HERE as well as in the compose window because this is
+   *  where the template is written — catching it at compose time is the safety net, catching it here is
+   *  the fix. Unlike `mistyped` (a hint about single brackets) this is an error: the compose window
+   *  REFUSES to send or copy a message containing one. */
+  const malformed = useMemo(
+    () => malformedTokensIn(`${draft.subject ?? ''}\n${draft.body ?? ''}`), [draft.subject, draft.body])
   const bodyPlaceholders = useMemo(
     () => unresolvedIn(`${draft.subject ?? ''}\n${draft.body ?? ''}`), [draft.subject, draft.body])
 
@@ -465,6 +478,29 @@ export default function TemplatesPanel() {
                     {halfPairs.map(x => x.pos ? `?${x.c}: without ?no_${x.c}:` : `?no_${x.c}: without ?${x.c}:`).join('; ')}.
                     {' '}Whichever half is missing, that branch never renders — the sentence simply
                     disappears for those prospects, with nothing on screen to say so.
+                  </p>
+                )}
+                {/* 🔴 THE SECOND HARD STOP, SHOWN WHERE THE TEMPLATE IS WRITTEN. Unlike the unreadable-token
+                    error this one is about DATA, not syntax: the token is spelled correctly and the
+                    prospect simply has no live demo. It is prospect-specific, so it moves as the preview
+                    prospect changes — which is exactly what makes it informative here. */}
+                {(preview?.blocking.length ?? 0) > 0 && (
+                  <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                    <span className="font-bold">Cannot be sent to {previewProspect?.name}:</span>{' '}
+                    {preview!.blocking.map(b => `{{${b}}}`).join(', ')}{' '}
+                    — there is no live demo link for this prospect, and this token has no fallback on
+                    purpose. 🧪 Only 1 of 231 prospects has one; the compose window refuses to send,
+                    copy or log while it is unresolved.
+                  </p>
+                )}
+                {malformed.length > 0 && (
+                  <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                    <span className="font-bold">Unreadable token{malformed.length > 1 ? 's' : ''}:</span>{' '}
+                    <code className="font-mono">{malformed.join('  ')}</code>{' '}
+                    — the renderer cannot read {malformed.length > 1 ? 'these' : 'this'} and would leave the
+                    braces in the message, so the compose window will refuse to send it. Tokens are
+                    lower-case with underscores: <code className="font-mono">{'{{truck_name}}'}</code>, not{' '}
+                    <code className="font-mono">{'{{truck name}}'}</code>.
                   </p>
                 )}
                 {mistyped.length > 0 && (

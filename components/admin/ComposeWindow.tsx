@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  renderTemplate, unresolvedIn, applyPlaceholderFills, defaultFillsOf,
+  renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf,
   type MessageTemplate, type TemplateContext,
 } from '@/lib/outreach-template-render'
 
@@ -149,7 +149,13 @@ export default function ComposeWindow({
   //   `outstanding` — the placeholders STILL IN THE MESSAGE that is about to go out. Read from the
   //                   LIVE text, so typing over [[X]] by hand clears it from the banner, and so does
   //                   filling its field. This is what "Still to fill" counts.
-  const tokens = useMemo(() => unresolvedIn(`${sourceSubject}\n${sourceBody}`), [sourceSubject, sourceBody])
+  // 🔴 MUST-RESOLVE TOKENS GET NO FIELD, AND THAT IS THE POINT. `[[demo_link]]` is a STOP, not a blank
+  // to be filled: offering a box for it would invite a hand-typed bare domain — one of the three
+  // renderings `MUST_RESOLVE` exists to prevent — and typing anything into it would clear the stop at
+  // the same moment. The only way past it is a real demo, or editing the visible text.
+  const tokens = useMemo(
+    () => unresolvedIn(`${sourceSubject}\n${sourceBody}`).filter(t => !isMustResolveToken(t)),
+    [sourceSubject, sourceBody])
 
   // 🔴 HOW HAND EDITS AND FIELD VALUES BOTH SURVIVE — THE ONE DESIGN DECISION IN THIS FILE.
   // The `[[token]]` markers STAY in the editable body. Filling a field never rewrites the textarea; the
@@ -168,6 +174,48 @@ export default function ComposeWindow({
   /** Placeholders still present in the LIVE message — what "Still to fill" counts and what the
    *  warnings name. Derived from the text on screen, so it stays true after hand edits. */
   const outstanding = useMemo(() => unresolvedIn(`${subject}\n${body}`), [subject, body])
+
+  /** 🔴 `{{…}}` SPANS THE SUBSTITUTION CANNOT CONSUME — THE HARD STOP.
+   *  Derived from `finalSubject`/`finalBody` below rather than the template source, for the same reason
+   *  `outstanding` is derived from the text on screen: the operator can TYPE one into the textarea, and
+   *  a placeholder VALUE can contain one. Whatever leaves this window is what gets checked.
+   *
+   *  🔴 THIS REFUSES, WHERE `outstanding` ONLY WARNS, AND THE DIFFERENCE IS DELIBERATE. A `[[placeholder]]`
+   *  left in may be intentional — the operator is told and decides. A malformed `{{…}}` is never
+   *  intentional: it is a typo that would arrive at a food business as literal braces. There is nothing
+   *  to decide, so there is no "send anyway".
+   *  See docs/outreach-token-guard-report.md — `chase-1` carried `{{truck name}}`, active and offerable. */
+  const malformed = useMemo(
+    () => malformedTokensIn(`${applyFills(subject)}\n${applyFills(body)}`), [applyFills, subject, body])
+  const malformedNotice = malformed.length === 0 ? null
+    : `This message contains ${malformed.length === 1 ? 'a token' : 'tokens'} the renderer cannot read: `
+      + `${malformed.join(', ')}. It would arrive with the braces in it. Tokens are lower-case with `
+      + `underscores — {{truck_name}}, not {{truck name}}. Fix the template on the Templates tab, or edit `
+      + `the text above.`
+
+  /** 🔴 MUST-RESOLVE TOKENS STILL MISSING — THE SECOND HARD STOP, AND IT REUSES THE FIRST ONE'S CHANNEL.
+   *  Read from `outstanding`, i.e. the LIVE text, for the same reason `malformed` is: whatever leaves
+   *  this window is what gets checked. Placeholder fills cannot shrink this list — `tokens` above
+   *  refuses to offer a field for these names and `defaultFillsOf` refuses to carry one — so the only
+   *  thing that clears it is a real value or a deliberate edit to the text on screen.
+   *
+   *  🔴 WHY THIS IS A SECOND SIGNAL RATHER THAN AN EXTRA CASE IN `malformedTokensIn`: that function
+   *  answers "is this span shaped like a token?", keyed off the DELIMITERS precisely so it cannot
+   *  inherit the resolver's blind spot. `{{demo_link}}` is perfectly well shaped — it is the DATA that
+   *  is missing. Folding a data question into a syntax check would make both harder to reason about and
+   *  would give the operator one message for two unrelated problems. The REFUSAL MECHANISM is shared:
+   *  the same `sendError` channel, the same three guarded exits, the same always-visible red line. */
+  const blocking = useMemo(() => outstanding.filter(isMustResolveToken), [outstanding])
+  const blockingNotice = blocking.length === 0 ? null
+    : blocking.includes('demo_link')
+      ? `${truckName} has no live demo link, so this template cannot be sent to them. Close this window `
+        + `and use “Create demo” on the prospect, then compose again — or pick a template that does not `
+        + `use {{demo_link}}. There is no fallback for it on purpose: an empty space, a bare domain or an `
+        + `expired /demo/ link all arrive as a broken promise.`
+      : `This message needs ${blocking.map(b => `{{${b}}}`).join(', ')}, which cannot be resolved for `
+        + `${truckName}. It cannot be sent.`
+  /** Either hard stop. Both refuse the same three exits through the same error line. */
+  const refusal = malformedNotice ?? blockingNotice
 
   // 🔴 THE RE-SUBSTITUTION, AND THE ONE RULE THAT GOVERNS IT.
   // While `edited` is false the message IS the render with field values applied, so typing in a field
@@ -222,7 +270,11 @@ export default function ComposeWindow({
   // signature Outlook appends underneath is styled by OUTLOOK. A hard-styled body would therefore arrive
   // in a visibly different font from the signature below it. Plain text lets Outlook style the whole
   // message as one. Fewer moving parts, and no secure-context/ClipboardItem fallback to get wrong.
+  // 🔴 COPY IS AN EXIT, AND IT WAS THE UNGUARDED ONE. It had no check of any kind — not even the
+  // placeholder warning the other two carry — and for a WhatsApp template it is the ONLY way out, since
+  // there is no mailto. So it is guarded first.
   const doCopy = () => {
+    if (refusal) { setSendError(refusal); return }
     void navigator.clipboard?.writeText(fullText)
     setCopied(true); setTimeout(() => setCopied(false), 1400)
   }
@@ -234,6 +286,9 @@ export default function ComposeWindow({
   // ⚠️ STRUCTURAL, NOT A PROMISE: `onLog` is not referenced anywhere in this function. Grep it.
   const sendNow = () => {
     setPending(null); setSendError(null)
+    // 🔴 BEFORE the address and length checks: a malformed token is wrong whether or not the mailto
+    // would have opened, and the subject travels in the mailto rather than in `fullText`.
+    if (refusal) { setSendError(refusal); return }
     if (!mailtoUrl) { setSendError('This prospect has no email address on the row.'); return }
     if (mailtoUrl.length > MAILTO_URL_CEILING) {
       // Refuse rather than truncate. A handler given an over-long URL still opens — with the end of the
@@ -255,6 +310,10 @@ export default function ComposeWindow({
   const logNow = async () => {
     setPending(null)
     if (logging || !body.trim()) return
+    // 🔴 THE LOG IS A RECORD OF WHAT WAS SENT. Writing a row containing `{{truck name}}` would put a
+    // message into the history that was never sent in that form — the same reasoning the placeholder
+    // warning already applies to logging, taken to a refusal because this one is never deliberate.
+    if (refusal) { setSendError(refusal); return }
     setLogging(true)
     // 🔴 THE EDITED BODY IS WHAT IS LOGGED — `body`, the textarea's current value, never the template's
     // original render. The log records what I actually sent; if the two can diverge, the edited text is
@@ -480,6 +539,25 @@ export default function ComposeWindow({
         </div>
 
         <div className="px-5 py-3 border-t border-slate-100 flex-shrink-0 space-y-2">
+          {/* 🔴 SHOWN WHETHER OR NOT A BUTTON HAS BEEN PRESSED. The three exits refuse, but a refusal the
+              operator only meets after clicking is a worse experience than a line that is simply there —
+              and this one names the offending span so it can be found in the text above. */}
+          {malformed.length > 0 && (
+            <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+              <span className="font-bold">Cannot send — unreadable token{malformed.length > 1 ? 's' : ''}:</span>{' '}
+              <code className="font-mono">{malformed.join('  ')}</code>{' '}
+              — this would arrive with the braces in it. Tokens are lower-case with underscores, e.g.{' '}
+              <code className="font-mono">{'{{truck_name}}'}</code>.
+            </p>
+          )}
+          {/* 🔴 THE SAME TREATMENT AS THE MALFORMED LINE, BECAUSE IT IS THE SAME KIND OF STOP — shown
+              before any button is pressed, and it names the prospect so the message is actionable
+              rather than abstract. */}
+          {blockingNotice && (
+            <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+              <span className="font-bold">Cannot send — no demo link:</span> {blockingNotice}
+            </p>
+          )}
           {sendError && (
             <p className="text-[12px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">{sendError}</p>
           )}

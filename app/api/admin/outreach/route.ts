@@ -124,7 +124,8 @@ export async function GET(req: NextRequest) {
     // Prospects joined to their discovery truck via PostgREST embedding (one round trip). The FK
     // discovery_truck_id → discovery_trucks makes the embed resolvable.
     // 🔴 SOME COLUMNS MAY NOT EXIST YET — migrations are applied by hand and this route cannot read
-    // information_schema. So it PROBES each optional column (contact_name, do_not_contact, entity_type)
+    // information_schema. So it PROBES each optional column (contact_name, the contact_first_name /
+    // contact_last_name pair, do_not_contact, entity_type)
     // with a cheap select; a PostgREST undefined-column error means absent. Present ones join the main
     // select and their flag is reported to the page. This is a capability probe (did the select succeed?),
     // NOT an inference from row VALUES. Applying the migration and reloading flips a flag on the next load.
@@ -137,11 +138,21 @@ export async function GET(req: NextRequest) {
       const { error } = await supabase.from('outreach_prospects').select(col).limit(1)
       return !error   // any error (undefined column) → treat as absent
     }
-    const [hasContactName, hasDoNotContact, hasEntityType] = await Promise.all([
-      columnExists('contact_name'), columnExists('do_not_contact'), columnExists('entity_type'),
+    // 🔴 ONE PROBE FOR THE PAIR. `columnExists` passes its argument straight to `.select()`, and a
+    // PostgREST select of two columns fails if EITHER is missing — which is the question worth asking:
+    // half a name split is not usable, so the UI must offer both fields or neither.
+    const [hasContactName, hasContactNames, hasDoNotContact, hasEntityType] = await Promise.all([
+      columnExists('contact_name'),
+      columnExists('contact_first_name, contact_last_name'),
+      columnExists('do_not_contact'), columnExists('entity_type'),
     ])
     const optionalCols = [
+      // ⚠️ STILL SELECTED, DELIBERATELY, THOUGH NOTHING READS IT ANY MORE. The split moved every reader
+      // to the two columns below and stopped WRITING this one; the column and this select stay for one
+      // release so an old row is still inspectable and a missed reader fails loudly instead of silently
+      // reading a field that vanished. Dropping it is a LATER, SEPARATE change.
       hasContactName && 'contact_name',
+      hasContactNames && 'contact_first_name, contact_last_name',
       hasDoNotContact && 'do_not_contact',
       hasEntityType && 'entity_type',
     ].filter(Boolean).join(', ')
@@ -234,7 +245,9 @@ export async function GET(req: NextRequest) {
         name: truck?.name ?? '(unknown truck)',
         logo_url: truck?.logo_url ?? null,
         photo_url: truck?.photo_url ?? null,
-        contact_name: hasContactName ? (p.contact_name ?? null) : null,
+        contact_name: hasContactName ? (p.contact_name ?? null) : null,   // legacy, unread — see above
+        contact_first_name: hasContactNames ? (p.contact_first_name ?? null) : null,
+        contact_last_name: hasContactNames ? (p.contact_last_name ?? null) : null,
         do_not_contact: hasDoNotContact ? (p.do_not_contact ?? null) : null,
         entity_type: hasEntityType ? (p.entity_type ?? null) : null,
         contact_email: truck?.contact_email ?? null,
@@ -272,7 +285,7 @@ export async function GET(req: NextRequest) {
 
     // Column-presence flags tell the page which fields it can offer as editable (rather than inferring
     // presence from data). Each flips to true on the load after its migration is applied.
-    return NextResponse.json({ prospects: rows, hasContactName, hasDoNotContact, hasEntityType, hasDemoLinks })
+    return NextResponse.json({ prospects: rows, hasContactName, hasContactNames, hasDoNotContact, hasEntityType, hasDemoLinks })
   } catch (e: any) {
     console.error('[admin/outreach] GET failed:', e?.message || e)
     return NextResponse.json({ error: 'Could not load outreach data' }, { status: 500 })
@@ -406,7 +419,12 @@ export async function POST(req: NextRequest) {
       // distinction. `=== true ? true : null` collapses false/undefined/0/'' to NULL, so an untick clears.
       if ('hu_map' in body) patch.hu_map = body.hu_map === true ? true : null
       if ('hu_ordering' in body) patch.hu_ordering = body.hu_ordering === true ? true : null
-      if ('contact_name' in body) patch.contact_name = body.contact_name === '' ? null : body.contact_name
+      // 🔴 `contact_name` IS NO LONGER WRITTEN, AND ITS WRITER IS GONE RATHER THAN GUARDED. Leaving
+      // `if ('contact_name' in body)` here would keep a live write path for a column the UI has stopped
+      // maintaining, so the two names and the joined one would drift the first time anything posted the
+      // old key. The column stays readable (see the select above); nothing updates it.
+      if ('contact_first_name' in body) patch.contact_first_name = body.contact_first_name === '' ? null : body.contact_first_name
+      if ('contact_last_name' in body) patch.contact_last_name = body.contact_last_name === '' ? null : body.contact_last_name
       if ('whatsapp_number' in body) patch.whatsapp_number = body.whatsapp_number === '' ? null : body.whatsapp_number
       if ('whatsapp_confirmed' in body) patch.whatsapp_confirmed = body.whatsapp_confirmed === true ? true : null
       if ('do_not_contact' in body) patch.do_not_contact = body.do_not_contact === true ? true : null

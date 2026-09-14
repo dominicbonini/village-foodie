@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.0
+HatchGrab Engineering Reference Manual · V13.1
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.0**
+**Version 13.1**
 
 September 2026
 
@@ -25,6 +25,55 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.1 — 14 September 2026 — THE OUTREACH DEMO IS BUILT AND FOUR OF ITS DEFECTS WERE FOUND BY A PROOF FAILING RATHER THAN A FEATURE BREAKING, A "SAFETY CHECK" TURNED OUT TO BE A DECORATIVE NUMBER NO CODE READ, AND A DEMO'S KITCHEN-SCREEN BUTTON HAD BEEN OPENING THE BARE OPERATOR KDS ON EVERY DESKTOP
+
+⚠️ **Everything in this entry is DEPLOYED**, including all four migrations. The unfixed items are listed at the end of the entry and are unfixed **on purpose**, not pending.
+
+**Covers:** the **outreach demo** — a Create Demo button in the prospect modal that builds a branded, one-month demo from a discovery row and hands back a readable link; the **restart triggers** that keep that link from ever showing a stale board; the **seeder capacity post-condition**; and **item 7, the demo KDS**. New **§55** (the outreach demo) and **§56** (the restart triggers); **§52** extended.
+
+🔴 **THE LINK COLUMN IS NOT `hatchgrab_truck_id`, AND THIS IS THE LOAD-BEARING DECISION OF THE WHOLE ARC.** Every reader of `discovery_trucks.hatchgrab_truck_id` acts on the claim *this discovery row IS an operator truck*. A demo written there would hide the admin "Create account" button (shown only on unlinked rows), make `/api/admin/create-truck`'s `.is('hatchgrab_truck_id', null)` guard refuse the later **real** promotion **and fire its compensating `deleteTruckCascade`**, push scraped events onto the demo through the `inbound-schedule` bridge, fold the row out of the admin console, and be silently nulled by `ON DELETE SET NULL` when the cleanup cron removes the demo. The demo link lives on **`demo_sessions.discovery_truck_id`** (uuid, `ON DELETE SET NULL`), which cascades away with the demo, permits rebuilding for the same prospect, and doubles as the **"this is an outreach demo" flag** that retention, branding and the first-open restart all read. `hatchgrab_truck_id` **is** written — but only when a prospect **self-serves into a real truck**, at which point the claim it encodes becomes true.
+
+**Self-serve now links, and its failure policy DIFFERS FROM THE ADMIN PROMOTE ON PURPOSE.** The promote treats a failed link as a failed create and deletes the truck it just made — correct when Dominic is driving it and can retry. Here it is wrong: never delete a real operator's just-created truck because a discovery link failed. Self-serve **creates the truck regardless** and records the outcome on the session (`discovery_link_status` / `_truck_id` / `_note` / `discovery_linked_at`). A discovery row already linked to a different truck is recorded as `conflict`, never overwritten and never silently swallowed.
+
+🔴 **A "SAFETY CHECK" THAT NO CODE READ.** `seedDemoOrders` returned `peakPerSlot` with a comment stating it existed *so a breach is provable*. It counted only `shape.mains`, and it reported **4 against a ceiling of 4 while the engine saw 14**. It also had **zero readers** — so it was not a guard that failed, it was decoration shaped like one. This is the **sixth** instrument failure in the family V13.0 opened, and the first where the instrument was *designed* as the safety check. **New invariant, §35.z: A NUMBER WHOSE FAILURE NOBODY CONSUMES IS NOT A CHECK.**
+
+**The seeder defect itself:** `otherPool = others.length ? others : all`. When an extraction yields **no instant-category items**, "extras" are drawn from the mains pool, cook, and are **never charged against the slot budget**. 🧪 Reproduced with the real seeder and real engine at **14 cooked items in one slot against a batch of 4**; the sample-shaped menu came back clean through the identical harness. 🧪 Live confirmation: `Between Buns Royston` has **1 cooked category, 3 active items, 0 instant items**, and its board carried **8 breaching slots, peak 14/4**. 🔴 **THE FIX IS A POST-CONDITION, NOT BETTER ARITHMETIC.** The planner was made honest (every cooked line charged, budgeted per category, ceiling read from committed `menu_categories.batch_size` with the dashboard's own `|| 1`) — but the acceptance rule is **Dominic's**: *a seeded board must never be over capacity; only a manually placed order may breach.* So `seedDemoOrders` now runs the **real `detectCapacityBreaches`** over its own board **before inserting anything**, sheds orders using the detector's own attribution until it clears, and warns rather than ever shipping a breaching board. **Modelling the engine would have been a second implementation of it**, because the engine seats load **backward** across windows (`projectBackwardOccupancy`) and sums all pre-open windows into `pileByStart`. 🧪 22 harness cases, 0 breaches; the pre-fix seeder produces **34** through the identical harness.
+
+🔴 **A SINGLE ORDER CAN NEVER SELF-BREACH.** A control that piled 8 items into one slot produced **no breach**, because the backward projection self-distributes one order across `ceil(N/batch)` windows, each holding at most `batch`. A breach is always a **collision between two chains**. This is why the check must ask the engine rather than predict it — and the control that established it is the reason the passing results above mean anything.
+
+**LOGO: ABSOLUTE IS NOT THE SAME QUESTION AS EXTERNAL, AND THAT MISREADING ALMOST BOUGHT AN SSRF GUARD WE DID NOT NEED.** 🧪 `discovery_trucks.logo_url`, 231 rows: **109** `/logos/` static paths, **45 our own `truck-media` storage URLs**, **77** empty, **0 external hosts**. An earlier sweep bucketed by *is it absolute*, and this series carried "45 absolute URLs = a new untrusted-fetch class" until it was re-derived. The 45 need **no copy at all** — extract the object path and write `logo_storage_path` directly. The 109 are repo files: read from disk, upload to the bucket. 🔴 **The allowlist stays regardless**: accept only our own `truck-media` prefix or a `/logos/` path, refuse anything else and carry on without a logo. The scraper writes `logo_url`, so tomorrow's row may be external. **Do not trust a distribution as if it were a constraint.**
+
+**BRANDED QR: THE V11.14 ORDERING CONSTRAINT IS STALE AND IS CORRECTED IN PLACE (§14).** It said do not auto-select `qr_code_style='branded'` until the two branded surfaces agree. That divergence existed **because** the dashboard read a resolved logo that fell back to `discovery_trucks.logo_url` while the manage poster read `logo_storage_path` raw. **V12.8 removed that fallback**, so both now derive the same value and the constraint has dissolved. Outreach demos are provisioned `branded`. `generateQRWithLogo`'s logo-over-placeholder precedence is **shared with Gusto** and was not touched — only what is passed to it.
+
+🔴 **`/api/events/manage?upcoming=true` APPLIES `.gte('event_date', today)`, AND THAT IS WHAT MADE A STALE DEMO A DEAD END.** A demo built Saturday and opened Monday returned **zero events**, so `activeEvent` was null, so the `isDemo && activeEvent && …` gate on the "This service has ended / Start a new service" card **could never fire**. The dashboard showed an empty board, a Select-event button, and no event to select. `demoServiceEnded` is now **inverted** — *ended unless something is live* — gated on a new `eventsLoaded` flag so it cannot flash during load. **The card was never broken; its precondition was unreachable.**
+
+**TWO RESTART TRIGGERS, AND ONE OF THEM EXISTS BECAUSE THE FIRST SPEC WAS WRONG.** T1 restarts when there is **no live event** (none, closed, or past `end_time`). T1 cannot express what was actually wanted: an event running 10:00–13:00 opened at 10:40 **is live**, and its orders from 10:10 are in the past — 🧪 observed on a real link. **T2** restarts on the prospect's **first open**, live or not. 🔴 **T2's latch MUST be server-side**: a prospect opening on a phone and then a laptop is one person opening one link once, so `localStorage` would restart twice. `demo_sessions.first_opened_at` is claimed by a **compare-and-set** (`update … where first_opened_at is null`, with `.select()` to make the affected-row count observable — an UPDATE matching nothing is **not an error** in PostgREST). Two simultaneous opens → the second blocks on the row lock, re-evaluates under READ COMMITTED, matches zero rows, and does nothing. T2 is asked **before** T1, because if it is the first open the board is being rebuilt regardless.
+
+🔴 **NEITHER TRIGGER MAY BE A GET SIDE EFFECT.** Mail and messaging link scanners fetch URLs at send time, so a first-open flag on a GET would be consumed by a bot before the prospect ever clicks. Both are **client-side POSTs after load**. `/api/demo/return` remains **a GET that writes** and is not on either path. 🧪 `.insert(` / `.update(` / `.upsert(` / `.delete(` / `.rpc(` each searched **alone** in `app/api/dashboard/route.ts`: **0 each**, with a positive control finding 4 `.delete(` in `lib/demo-restart.ts`.
+
+🔴 **AN ADMIN PREVIEW MUST NOT CONSUME THE FIRST OPEN**, and the check is **server-side `verifyAdmin`**, not the client's `isAdmin` — the latter resolves asynchronously from `/api/auth/me` and is `false` for the first moments of every load, so a client-only check would lose the race. It **fails open**: if the check cannot run, the viewer is treated as a prospect. The bounded harm is a prospect landing inside a window at most 3 h old, after which T1 catches it.
+
+**`startNewService`'s POST carried no auth header.** The web session cookie rides along automatically on a same-origin POST; **the native shell has no cookie and passes a Bearer**, so `verifyAdmin` was blind in the iPad app and a native preview would have consumed a prospect's first open. `nativeAuthHeader()` added. **Any POST whose server side identifies the caller must send it.**
+
+**RETENTION: ONE MONTH, AND `expires_at` IS NOW MONOTONIC.** `touchDemoSession` and `saveDemoEmail` both rewrote it unconditionally from `now`, so an outreach demo would have been pulled back to 24 h or 14 d by ordinary activity. Both now **extend only**. 🧪 `expires_at` is computed by **application code before the insert**, not by a DB default (observed `created_at + 23:59:59.80`) — so a retention tier is a code change, not a column default. "One month" is implemented as **30 days**.
+
+**ITEM 7 — THE DEMO KDS. The banner was the smaller half.** 🔴 On the **web**, a demo's "Kitchen screen" button opened the van's standalone **`/kds/<kds_token>`** — a page with **zero** demo handling: no DEMO MODE bar, no CTA, no intro. Cause: `provisionTruck` omits `kds_token` and lets the DB default mint one **for every van including a demo's**, and `handleOpenKDS` takes the single-van branch. Native was already correct. Desktop is where most prospects open a link, so **every desktop prospect clicking Kitchen screen saw a bare operator screen.** Fixed with `!isDemo && van?.kds_token`, which for an operator **is** the original expression. 🧪 21 input shapes identical for `isDemo === false`; a deliberately wrong guard diverges on 3.
+
+**And the KDS stranded on a restart — a defect the restart work created.** `activeEvent` is a **held** `selectedEventId` with no fallback chain, deliberately, because a status- or time-keyed fallback *would take a cook's unserved orders off a screen nobody is watching*. T1/T2 delete the event truck-wide, so a KDS open in a second tab held a dead id: empty board, no picker (the picker needs `activeEvent`, and its entry additionally needs `events.length > 1`), recovery only by reload. Now an `isDemo`-gated effect re-points **only when the held id is absent from the list the server just served** — a no-op while the event exists, and it cannot remove a cook's orders because there are none under a deleted event. **The operator rule is untouched.**
+
+🔴 **ONLY ONE ELEMENT MAY OWN A SAFE-AREA INSET, AND THE FIX IS TO MOVE THE BANNER, NOT TO ADD AN INSET.** The KDS's `DemoModeBanner` sat **above** the `<header>` that carries `max(0.625rem, env(safe-area-inset-top))`, so on native it was the element under the iOS status bar. It now renders **below** the header. **A prompt in this series instructed the opposite** — a bare `env()` on a wrapper around the banner stack — which is precisely the **double-inset defect `docs/status-strip-fix-report.md` removed**; that report's "bare `env()` leaves web byte-identical" line is its justification for **deleting** a declaration, not for adding one. **No inset was added anywhere.** 🔴 Not establishable from source: `env()` has no value outside an iOS WebView, so the rendered offset is an **iPad check**, not a proof.
+
+**Re-derived and corrected in place:** `MAX_GRID_VISIBLE` (the 8-card grid cap) is **gone** — onboarding-spec **G2 is closed**. The KDS mounts **no capacity component at all**, so a demo KDS shows no breach banner and no traffic lights and the capacity story lives entirely on the dashboard. `/manage` on a demo token is reachable **only for signed-in users** — the edge blocks anonymous prospects, so the unmarked QR poster is not prospect-reachable. The review-era claim that *demo hides the avatar menu* is **refuted**: demo hides the identity block (`showIdentity={!isDemo}`), not the menu, and the desktop utility strip carries the Kitchen screen button.
+
+**A STALE MIGRATION HEADER IS A TRAP, NOT A TYPO.** `20260912_demo_sessions_outreach.sql` was applied while its header still read *"⚠️ NOT YET APPLIED"*. That invites appending a column to an applied file, where `add column if not exists` runs clean and **adds nothing** — a column that exists in the repo and not in the database. Corrected in place; this is the **fifth** instance of the family `20260723_demo_sessions_phase4.sql` records.
+
+**UNFIXED, ON PURPOSE — carried into the Backlog:**
+- 🔴 **Gusto's own banners are still above the inset.** The degraded strip, `OfflineBanner` and `WebOfflineBanner` sit above the KDS header and none carries an inset, so on a native iPad whichever is showing is the element under the status bar — **on a live operator's kitchen screen.** Fixing it moves elements Gusto sees, so it cannot be byte-identical and was not done here.
+- **The day-30 reclaim.** The cleanup cron's claimed-but-abandoned sweep keys on `created_at < now − 30 days` while an outreach demo's `expires_at` is `created_at + 30 days`, so both predicates become true in the same hour — **no grace at all**, where the 14-day tier has 16 days of slack.
+- **`max-h-[85vh]`** (not `dvh`) on a KDS card modal: pre-existing, shared with Gusto.
+- **The `??` fragment after `resolvePaidStep`** leaves the documented `activeEvent` fallback inert — harmless today, but a live line that does not do what its comment says.
+- **`NEXT_PUBLIC_SIGNUP_PUBLIC`** is not `'true'` in at least one environment, so the demo banner offers "Save my menu" rather than signup. Dominic **wants** prospects able to self-serve — and onboarding-spec **G11** rides on the same flag.
 
 ## V13.0 — 12 September 2026 — THE UNTRUSTED-URL CLASS IS CLOSED AND THE DEFENCE WE HAD TURNS OUT TO HAVE COME FROM A DEPENDENCY VERSION, A NAME TIE WAS BEING RESOLVED BY UUID, AND THE VILLAGE PROBLEM'S ROOT CAUSE WAS A PROMPT THAT GAVE THE MODEL NO WAY TO SAY "NOT IN THE TEXT"
 
@@ -1795,7 +1844,13 @@ while preparing App Store screenshots.**
   capacity, `cantFit = []`**, no negative remaining in any window, across three slot grids. 🔴
   **`peakPerSlot = 5` EQUALS THE BATCH, WHICH IS WHY NOTHING CAN GO OVER** — a slot never exceeds one
   batch, so it seats into exactly one cooking window, and the twelve loaded slots are ≥10 minutes apart.
-  **Structural, not tuned.**
+  **Structural, not tuned.** ⚠️ **[V13.1 — READ THIS WITH §35.z.]** The *conclusion* above survives
+  because it was checked against the **real engine** for this board (3 red, 4 amber, 0 over capacity), not
+  because `peakPerSlot` said so. **`peakPerSlot` itself was not a check**: it counted `shape.mains` only,
+  missed every cooked "extra", and had no code reader anywhere. It is gone, replaced by
+  `peakCookedPerSlotPerCat` + `peakBatch` and by a post-condition that runs the detector. The reasoning
+  that a one-batch slot seats into one window is still right — and is also why a **single order can never
+  self-breach**, which V13.1 established with a control that failed first.
 - 🔴 **A CEILING BELOW THE BATCH IS THE ONLY CEILING THAT BINDS: `kitchen_capacity = 8` IS INERT AT
   `batch_size = 5`.** Cooking windows are on the 5-minute prep grid, so the Mains batch binds long before
   the global ceiling. ⚠️ **So on a truck whose category batches are smaller than its ceiling, the ceiling
@@ -5555,6 +5610,27 @@ No inline dropdowns anywhere.
 
 components/shared/AppHeader.tsx is the single operator-facing page header, used by the dashboard, the manage page, the admin page (V6), and any future operator surface. Layout: Village Foodie logo left (links to /), the truck logo and name centred, and a right-hand slot supplied via children (typically the UserMenu avatar dropdown). It is bg-slate-900 and sticky top-0 z-50. Pages must not build their own inline header.
 
+🔴 **ONLY ONE ELEMENT MAY OWN `env(safe-area-inset-top)` IN A COLUMN, AND THE FIX FOR A BANNER ABOVE IT
+IS TO MOVE THE BANNER (V13.1).** 🧪 Re-derived: the repository contains **exactly two executable**
+occurrences — `AppHeader`'s bare `env(safe-area-inset-top)` and the KDS's hand-rolled header at
+`max(0.625rem, env(safe-area-inset-top))`. Everything else is prose.
+
+- **The dashboard** once wrapped its banner stack in a div carrying `paddingTop: env(safe-area-inset-top)`
+  **above** `AppHeader`. That wrapper painted nothing, so on a native iPad it reserved the status-bar
+  strip and left the app-shell grey showing under white system glyphs — **while `AppHeader`'s own inset
+  added the same height again, putting the page at 2 × the inset.** `docs/status-strip-fix-report.md`
+  removed it and moved the banners **below** the header. Its line *"bare `env()` is the one form that
+  leaves web byte-identical"* is the justification for **DELETING** that declaration safely — it is not a
+  recommendation to add one, and it has been misread as one since.
+- **The KDS** kept its `DemoModeBanner` above its header until V13.1, so on native the DEMO MODE bar was
+  the element under the status bar. It now renders **below** the header. **No inset was added.**
+- ⚠️ **STILL OPEN, AND IT AFFECTS A LIVE OPERATOR:** the KDS's degraded strip, `OfflineBanner` and
+  `WebOfflineBanner` are all still **above** that header and none carries an inset, so whichever is
+  showing is the element under the status bar on Pizzeria Gusto's kitchen screen. Fixing it moves
+  elements a live truck sees, so it cannot be done under a byte-identical constraint.
+- ⚠️ **NOT PROVABLE FROM SOURCE.** `env(safe-area-inset-top)` has no value outside an iOS WebView, so
+  every claim about the rendered offset is an **iPad check**, never a code read.
+
 > **NOTE (V6.5)** — The centred truck logo (the scroll-revealed one) was enlarged this session: mobile w-10 h-10 (40px), desktop sm:w-12 sm:h-12 (48px), intrinsic 48×48, inside the existing 60px header via the absolute inset-0 centered overlay (it grows within the bar, never pushing the bar taller). The large profile-body badge (w-24 h-24) is separate and unchanged.
 
 Colour constants live in lib/brand.ts: HEADER_BG, PAGE_BG, and TABS_BG, all slate-900.
@@ -9112,6 +9188,31 @@ capacity control.
 heartbeat to write to, and no per-van settings. **The van is not the incorrect part; the capacity guess
 is.**
 
+### 🔴 `discovery_trucks.logo_url` — THE SHAPES IT ACTUALLY HOLDS, AND WHY "ABSOLUTE" IS THE WRONG QUESTION (V13.1)
+
+🧪 **231 rows, re-derived 14 September 2026:** **109** root-relative `/logos/…` paths, **45** absolute
+URLs that are **our own** `…/storage/v1/object/public/truck-media/…`, **77** empty, **0 external hosts.**
+
+🔴 **AN EARLIER SWEEP BUCKETED BY "IS IT ABSOLUTE", AND THAT IS A DIFFERENT QUESTION FROM "IS IT
+SOMEBODY ELSE'S".** On that bucketing the 45 read as *"45 absolute URLs — a new untrusted-fetch class"*,
+and the outreach-demo series carried that sentence for days, budgeting an SSRF guard for a fetch nobody
+needed to make. **All 45 are ours.** They need **no copy at all**: extract the object path after the
+bucket prefix and write it straight into `trucks.logo_storage_path`. The 109 are static files in
+`public/logos` shipped with the deploy — read from disk, upload to the bucket. **No bytes are fetched
+from any host at any point.**
+
+🔴 **THE ALLOWLIST STAYS ANYWAY, AND THE REASON IS NOT THE CURRENT DISTRIBUTION.** `lib/demo-logo.ts`
+accepts exactly two shapes — our own `truck-media` prefix, or a plain `/logos/<basename>` — refuses
+everything else with a reason, and builds the demo **without a logo** when it refuses. **The scraper
+writes this column**, so tomorrow's row may hold anything. **Do not trust a distribution as if it were a
+constraint:** a measurement of what is in a column today is evidence about today, and a column an
+untrusted writer can reach has no constraint unless the code enforces one.
+
+⚠️ Two writers, two shapes, both live: the scraper/import path writes `/logos/…`, and the **outreach
+media upload** (`/api/admin/outreach`) writes the absolute `truck-media` URL. `formatImageUrl` is the
+shared resolver that renders both, and it is what `classifyDemoLogoSource` normalises through before the
+allowlist runs — so the allowlist and the thumbnail cannot disagree about what a value means.
+
 ### 🔴 ONE LOGO RESOLVER, FIVE BYPASSES (V11.14)
 
 `lib/truck-logo.ts` is the shared resolver and four API routes use it. **Five sites do not:**
@@ -9132,6 +9233,18 @@ control, and confusing side by side.
 
 **Same truck, same setting, two outputs.** Neither errors; neither reverts to `'standard'`.
 
+> ✅ **[DISSOLVED V13.1 — THIS CONSTRAINT NO LONGER BINDS, AND THE TABLE ABOVE DESCRIBES A STATE THAT
+> ENDED IN V12.8.]** The two surfaces diverged **because** the dashboard read a RESOLVED logo that fell
+> back to `discovery_trucks.logo_url` while the poster read `logo_storage_path` raw. **V12.8 deleted that
+> fallback** (`resolveTruckLogo` now returns null on a null path and nothing else), so both surfaces
+> derive the identical string from the identical column and "a logo is present" has one answer again.
+> 🧪 Re-read in V13.1: the dashboard passes `showBrandedQr ? truck.logo : null` where `truck.logo` is
+> `resolveTruckLogo(…, logo_storage_path)`, and the poster's `buildQr` builds the same
+> `…/truck-media/${truck.logo_storage_path}` template — same row, same string, or null on both.
+> **Outreach demos are therefore provisioned `qr_code_style: 'branded'`.** The original wording is kept
+> below because the REASONING is still the rule — an artefact that gets stuck to a van cannot be recalled,
+> so a printed surface and a screen surface must never disagree about what they are rendering.
+>
 > 🔴 **DO NOT AUTO-SELECT `branded` ON CREATION UNTIL THESE AGREE.** "A logo is present" currently has
 > two answers, so the QR you print depends on which screen you printed from — on an artifact that gets
 > stuck to a van and cannot be recalled. **And the logo is inherited, not owned:** breaking the
@@ -17641,6 +17754,43 @@ damage that is not there, the other reports success that is not there.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
+
+## 35.z 🔴 A NUMBER WHOSE FAILURE NOBODY CONSUMES IS NOT A CHECK (V13.1)
+
+**The instance.** `seedDemoOrders` returned `peakPerSlot`, documented in its own comment as existing
+*"so a breach is PROVABLE rather than assumed — it must never exceed `capacity`"*. Two things were wrong
+with it at once, and the second is the reason this is an invariant rather than a bug report:
+
+1. **It measured the wrong thing.** It counted `ORDER_SHAPES.mains` — the lines drawn from the mains pool
+   — while the engine counts every item whose category has `prep_secs > 0`. When `otherPool` fell back to
+   the mains pool, the "extras" cooked and were invisible to it. 🧪 It reported **4 against a ceiling of
+   4** on a board the engine measured at **14**.
+2. 🔴 **NOTHING READ IT.** A repo-wide search for `peakPerSlot` outside its own file found one stale
+   comment, one line of a SQL script and documentation — **zero code readers**. A second comment claimed
+   *"The admin provision panel surfaces it"*; no such read exists.
+
+**So it was never a check.** A check is a value that something consumes and can act on. This was a number
+returned into the void with a sentence next to it asserting a guarantee, and the sentence was doing all
+the work — for weeks, in a file whose whole job is not to over-fill a kitchen.
+
+**THE RULE.** A value that a comment describes as proving something must satisfy both halves:
+- **A NAMED READER.** Point at the code that consumes it and the branch it changes. "It is returned" is
+  not a reader. If the only consumer is a human reading a log, say *that* in the comment.
+- **A TEST IN WHICH IT FAILS.** If you cannot state the input that makes the number exceed its bound and
+  watch something react, the bound is decoration. This is §35.y applied to a return value rather than to
+  a harness: **an instrument that cannot report failure is not an instrument.**
+
+**What replaced it.** The guarantee moved from a number to a **post-condition**: the seeder now runs the
+real `detectCapacityBreaches` over its own board before inserting, sheds until it clears, and returns
+`unresolvedBreaches` — which the callers push into `warnings`, which reach the admin response. The
+descriptive number survives as `peakCookedPerSlotPerCat` **paired with `peakBatch`**, so the pair can be
+compared and can disagree; it is documented as a description of the board and explicitly **not** the
+safety check.
+
+⚠️ **SWEEP STATUS — OPEN.** The class is "a returned value whose comment claims a guarantee". Swept
+`lib/` for the same shape at the time of writing; `seedDemoOrders` was the only member found with **no**
+reader, but the sweep was not exhaustive across `app/`. Anything matching should be either wired to a
+consumer or have its comment demoted to what it actually is.
 ## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
 
 **All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
@@ -24249,6 +24399,30 @@ to `lib/schedule-match.ts` and imported, not re-implemented.
 
 ---
 
+## 52.9 The prospect modal's demo controls, and the modal-on-modal trap (V13.1)
+
+The prospect modal now carries the outreach demo. When the prospect has **no** live demo it shows a
+**Create demo** button; when it has one it shows that demo's **`/demo/<public_ref>` link with a copy
+control and its expiry date**, and `· newest of N` when more than one live demo exists for the row. The
+list endpoint reads `demo_sessions` by `discovery_truck_id` in one bulk query, **guarded in the same
+capability-probe spirit the route already uses for `contact_name`** — an unapplied migration is logged and
+degrades to "no demo", never a 500 on the whole console.
+
+🔴 **THE MODAL-ON-MODAL TRAP — READ THIS BEFORE ADDING ANY OVERLAY TO THIS PAGE.** The prospect modal is
+`z-50`, **not portaled**, with a **bubble-phase** Escape listener on `window`.
+
+- **Stacking:** use an **inline `zIndex`**. An arbitrary Tailwind `z-[85]` once painted the compose window
+  **under** its own parent because no rule was generated for that value, and raising the number made it
+  worse. The schedule popout uses inline `80`, compose `85`, the Create Demo modal `95`.
+- **Escape:** do **not** add a second **capture**-phase listener on `window`. Two capture listeners on the
+  same node both fire in registration order, and `stopPropagation` does not stop a sibling — only
+  `stopImmediatePropagation` would. That is **C15**, and it is still live between `ScheduleEventsPopup`
+  and `ConfirmDeleteDialog`: one Escape closes the dialog **and** the popup beneath it.
+- **What V13.1 did instead:** the child modal keeps a **bubble**-phase listener that closes itself, and the
+  parent's existing bubble listener is **gated** by a ref. Both fire; one acts. No ordering dependence, no
+  propagation control, and the demo **link** adds no listener at all because it renders inline rather than
+  as a layer.
+
 # 53. The shared dedup gate, R5, and the venue-matching wall (V12.9 — 10–11 September 2026)
 
 🧪 **Every figure in this section was re-derived against the live database on 11 September 2026 at
@@ -24425,6 +24599,12 @@ geocoded to a town centroid — six sit on `NR1 1AA`.
 | 10 | **Two days of work were UNCOMMITTED** | ✅ **CLOSED V13.0 — the tree is clean; everything in §53 and §54 is committed and deployed** |
 | 11 | **The ratio assertion** (§54.4) — this run's empty-village share against a 14-day baseline | 🔴 **OPEN — deliberately unbuilt.** It needs a post-change run to calibrate; a guessed threshold fires on noise |
 | 12 | **The prompt change is UNVERIFIED** (§54.3) | 🔴 **OPEN until a scrape runs.** A prompt cannot be tested without the model |
+| 13 | 🔴 **Gusto's own KDS banners sit ABOVE the safe-area inset** (§3) — the degraded strip, `OfflineBanner` and `WebOfflineBanner` are above the KDS header and none carries an inset, so on a native iPad whichever is showing is the element under the iOS status bar **on a live operator's kitchen screen** | 🔴 **OPEN — NOT a demo issue.** V13.1 moved only the demo banner, which is `{isDemo && …}` and therefore absent for an operator. Fixing this moves elements Gusto sees, so it cannot be done under a byte-identical constraint and needs its own change |
+| 14 | **The day-30 reclaim on an outreach demo** (§55) — the cleanup cron's claimed-but-abandoned sweep keys on `created_at < now − 30 days` while an outreach demo's `expires_at` is `created_at + 30 days` | 🔴 **OPEN — both predicates become true in the same hour, so there is no grace at all**, where the 14-day tier has 16 days of slack |
+| 15 | **`max-h-[85vh]`** (not `dvh`) on a KDS card modal | 🔴 **OPEN — pre-existing and shared with Gusto.** On mobile Safari `vh` is the *largest* viewport, so with the URL bar showing 85vh can exceed what is visible |
+| 16 | **The `??` fragment after `resolvePaidStep`** on the dashboard leaves the documented `activeEvent` fallback **inert** | 🔴 **OPEN — harmless today** (`setUpcomingEvents` is only called on a successful fetch, so the list cannot go transiently empty) **but it is a live line that does not do what the comment above it says** |
+| 17 | **`NEXT_PUBLIC_SIGNUP_PUBLIC` is not `'true'`** in at least one environment, so the demo banner offers "Save my menu" rather than signup — and onboarding-spec **G11** rides on the same flag | 🔴 **OPEN — Dominic WANTS prospects able to self-serve.** ⚠️ V11.14 blocks the flip until the signup sender is fixed; close G11 in the same change |
+| 18 | **§35.z's sweep** — "a returned value whose comment claims a guarantee" | 🔴 **OPEN — swept `lib/` only.** `peakPerSlot` was the one member found with no reader; `app/` was not swept |
 
 ---
 
@@ -24588,6 +24768,85 @@ appeared in three reports and one SQL snippet is the `Manual Entry` subset** —
 `Manual Entry` 62, `URL:` 12, other 2. It came from a cross-tab and was carried forward as though it were
 the table count. **It was my error, in my own report, and it is the seventh corrected figure in this
 series.**
+
+---
+
+# 55. The outreach demo (V13.1 — 14 September 2026)
+
+**Purpose.** A branded, one-month demo built from a discovery row in under a minute, sent to a prospect
+as a readable link, which always opens on a fresh board.
+
+**Creation.** `/api/admin/provision-demo` (`verifyAdmin`, repurposed from the July scaffolding rather than
+deleted) accepts the menu upload plus `name`, a logo source and `discoveryTruckId`. The public `/api/demo`
+is **not** used: it is rate-limited 5/hour/IP and cannot carry a discovery id. The **Create Demo** button
+lives in the prospect modal (`components/admin/OutreachPanel.tsx`), reuses `MenuUploadFields`, and
+deliberately does **not** navigate on success — it shows the link (see §52.9 for the stacking rules).
+
+**The link column.** `demo_sessions.discovery_truck_id` (uuid, FK `discovery_trucks`, `ON DELETE SET
+NULL`). 🔴 **NEVER `discovery_trucks.hatchgrab_truck_id`** — every reader of that column acts on the claim
+*this discovery row IS an operator truck*, and a demo satisfies none of it. See the V13.1 changelog entry
+for the five readers and what each would do. The same column doubles as the **"this is an outreach demo"
+flag** read by retention, branding and the first-open restart.
+
+**Identity.** `demoIdentity()` generates `trucks.id`, `slug` and `dashboard_token` **independently**; the
+`demo-` prefix is a **security boundary** (`assertReservedPrefix`, and `proxy.ts` waives the `/dashboard`
+session gate on it). `demo_sessions.public_ref` is the readable URL segment — `/demo/<name-slug>`, unique,
+random-suffixed on collision — and is a **LOOKUP KEY ONLY, NEVER AN ACCESS CREDENTIAL**. Dominic has
+accepted that it is guessable; `dashboard_token` remains the credential, and `/demo/<ref>` resolves one to
+the other server-side and redirects. That route **writes nothing**.
+
+**Branding.** `trucks.name` carries the real name; `logo_storage_path` is written from an allowlisted
+source (§14); `qr_code_style` is `branded` — and only once a logo has actually landed, so the branded
+composite never renders with an empty centre. ⚠️ **Sweep `trucks.name` as a MATCH KEY before changing
+anything here** — a demo carrying a real truck's name must not collide with that truck or its discovery
+row. The demo's `excluded: true` is what protects the public slug path in `/api/discovery/events`.
+
+**Customer-facing exposure.** The order page shows a DEMO strip and demo orders send **no customer
+confirmation email**. The one unmarked artefact is the **`/manage` QR poster**, which renders the real
+name and logo with no demo marking — reachable **only for signed-in users**, because `proxy.ts` puts
+`/manage` behind the session gate with no demo exemption.
+
+**Retention.** One month, implemented as **30 days**, written at creation. `expires_at` is **monotonic**:
+any writer may extend it, none may shorten it. ⚠️ It is computed by **application code before the
+insert**, not by a DB default — a retention tier is a code change.
+
+**Self-serve conversion.** When the prospect signs up from the demo, `/api/setup create_truck` writes
+`discovery_trucks.hatchgrab_truck_id = <the new real truck>` under the same `.is(null)` guard the admin
+promote uses, then applies the shadow `excluded: true`. 🔴 **Its failure policy differs from the promote
+on purpose:** it **never** deletes the operator's just-created truck, and records `linked` / `conflict` /
+`failed` on the session instead.
+
+# 56. Demo restart triggers — T1 (not live) and T2 (first open) (V13.1 — 14 September 2026)
+
+Both reuse `restartDemoService` (`lib/demo-restart.ts`, **triple-guarded** on the `demo-` prefix: the
+route checks the token, the route checks the resolved truck id, the library asserts it again). It deletes
+orders **before** events — `orders.event_id` is `ON DELETE SET NULL`, so the other order would leave every
+order dangling and still counted — clears `slot_capacity` and `production_slot_usage` **by truck, not by
+date**, re-provisions from `demoEventWindow(now)`, re-seeds via `seedDemoOrders`, and **never touches the
+menu**.
+
+- **T1 — no live event.** `demoServiceEnded = isDemo && eventsLoaded && !demoBoardLive`. Inverted in
+  V13.1 from `isDemo && activeEvent && …`, which could not fire in the one state that mattered (see the
+  changelog). Guarded by a per-load ref, the shared in-flight latch, and a `localStorage` cooldown that is
+  the only guard surviving the reload `startNewService` performs.
+- **T2 — first open.** Claims `demo_sessions.first_opened_at` with a compare-and-set and restarts only if
+  it wins. **Asked before T1.** Outreach demos only: the predicate includes `discovery_truck_id is not
+  null`, in the SQL rather than in a caller.
+- `demoEventWindow(now)` floors the start to the half hour (0–29 min back, **never ahead**) and ends
+  `+3h`, clamped to 23:59. 🧪 built 09:05 → 09:00–12:00; first open 10:40 → **10:30–13:30**.
+- **T2 does not apply to anonymous landing-page demos:** `DemoUpload` navigates the visitor to the
+  dashboard the instant `/api/demo` answers, so the board was seeded against the clock they are reading it
+  on. Restarting would delete the orders they just watched appear.
+- **No session row → T2 never fires**, deliberately: without a row nothing can record that the first open
+  happened, so a restart would repeat on **every** load.
+- 🔴 **NEITHER TRIGGER MAY BE A GET SIDE EFFECT** — link scanners fetch URLs at send time. Both are
+  client-side POSTs after load. `/api/demo/return` remains a GET that writes and is on neither path.
+- **Seeded vs visitor-placed orders are distinguishable** by `customer_email IS NULL` — the seeder never
+  populates it and `/api/orders/submit` requires it. A restart deletes both; accepted, it is a demo.
+- ⚠️ **The KDS holds its event and does not follow.** `activeEvent` is a held `selectedEventId` with no
+  fallback chain, deliberately — a status- or time-keyed fallback would take a cook's unserved orders off
+  an unattended screen. A restart therefore strands an already-open KDS. V13.1 added an **`isDemo`-gated**
+  re-point that fires only when the held id is absent from the served list; the operator rule is untouched.
 
 ---
 
