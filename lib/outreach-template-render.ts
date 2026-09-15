@@ -626,41 +626,71 @@ export function renderWithFills(
  *  default would otherwise fill `[[demo_link]]` on load and lift the send block before anyone saw it. */
 export function defaultFillsOf(
   tpl: MessageTemplate,
-  globals?: Record<string, string> | null,
+  snippets?: Record<string, string> | null,
 ): Record<string, string> {
   const out: Record<string, string> = {}
-  // 🔴 THE GLOBAL LAYER GOES IN FIRST SO THE PER-TEMPLATE VALUE OVERWRITES IT. Order is the whole
-  // precedence rule: nothing compares, nothing branches, and a template default always wins because it
-  // is written second. A rate stated once therefore reaches every template that has no opinion, and a
-  // template that DOES have one is unaffected.
-  for (const [k, v] of Object.entries(globals ?? {})) {
-    if (!v || !v.trim()) continue
-    if (MUST_RESOLVE.has(k.trim())) continue
-    out[k] = v
-  }
+  // 🔴 THE LEGACY PER-TEMPLATE VALUE GOES IN FIRST AND THE SNIPPET OVERWRITES IT. Order is the whole
+  // precedence rule — nothing compares, nothing branches — and the order is the REVERSE of what this
+  // function did until today. That inversion is the point of the redesign, not an accident:
+  //
+  //   🔴 THE SNIPPET WINS, BECAUSE "ONE PLACE TO EDIT" HAS TO BE TRUE OR IT IS WORSE THAN NOTHING.
+  //   If a value left behind in `placeholder_defaults` could override the library, the operator would
+  //   edit the snippet, watch four emails not change, and have nothing on screen telling him why. That
+  //   is the exact failure this replaces — it is not improved by pointing it the other way.
+  //
+  // ⚠️ THE LEGACY VALUE IS NOT DESTROYED, ONLY OUTRANKED. Nothing here writes a template row; the value
+  // stays in the column and the Templates tab names it out loud when a snippet is shadowing it, so an
+  // override is visible rather than silent. Clearing it is the operator's to do.
+  // 🧪 As at writing he reports `placeholder_defaults` is `{}` on all 9 rows, so this branch is latent
+  // rather than live — but latent is not the same as absent, and it is handled.
   for (const [k, v] of Object.entries(tpl.defaults ?? {})) {
     if (!v?.value) continue
     if (MUST_RESOLVE.has(k.trim())) continue
     out[k] = v.value
   }
+  // ⚠️ A BLANK SNIPPET DOES NOT FILL, AND DOES NOT UNSET EITHER. `''` means "ask me per truck", so it is
+  // skipped and the compose window prompts — the same outcome as no snippet at all. It deliberately does
+  // NOT clear a legacy value that is already in `out`: blanking a snippet is a decision about the
+  // library, not an instruction to erase something stored on a template.
+  for (const [k, v] of Object.entries(snippets ?? {})) {
+    if (!v || !v.trim()) continue
+    if (MUST_RESOLVE.has(k.trim())) continue
+    out[k] = v
+  }
   return out
 }
 
 /**
- * WHICH LAYER SUPPLIED EACH VALUE — so the field can say so rather than showing a value with no origin.
- * 🔴 THE RISK THIS EXISTS FOR: two sources for one value means a stale global can hide behind a field
- * that looks freshly filled. The compose window already shows an age badge for a stored default; with a
- * second source that badge has to name WHICH source, or it is worse than no badge at all.
- * ⚠️ Returns 'template' when both layers hold a value, because that is the one that won.
+ * WHICH LAYER SUPPLIED EACH VALUE — so a field can say where its content came from rather than showing
+ * a value with no origin.
+ * 🔴 TWO SOURCES FOR ONE VALUE WITH NO VISIBLE WINNER IS THE DEFECT THIS TIER KEEPS PRODUCING. There is
+ * one source in normal operation — the snippet — and a second only where a legacy per-template value
+ * survives. Whenever both exist this returns 'snippet', because that is the one that won.
  */
 export function fillSourceOf(
   tpl: MessageTemplate,
-  globals: Record<string, string> | null | undefined,
+  snippets: Record<string, string> | null | undefined,
   name: string,
-): 'template' | 'global' | null {
+): 'snippet' | 'template' | null {
+  const s = snippets?.[name]
+  if (s && s.trim()) return 'snippet'
   const t = tpl.defaults?.[name]?.value
   if (t && t.trim()) return 'template'
-  const g = globals?.[name]
-  if (g && g.trim()) return 'global'
   return null
+}
+
+/**
+ * 🔴 IS A LEGACY PER-TEMPLATE VALUE BEING SHADOWED BY A SNIPPET? For the Templates tab, which must say
+ * so rather than let the operator wonder why a stored value has no effect.
+ * Returns the shadowed value, or null when there is nothing being overridden.
+ */
+export function shadowedTemplateValue(
+  tpl: MessageTemplate,
+  snippets: Record<string, string> | null | undefined,
+  name: string,
+): string | null {
+  const t = tpl.defaults?.[name]?.value
+  if (!t || !t.trim()) return null
+  const s = snippets?.[name]
+  return s && s.trim() ? t : null
 }

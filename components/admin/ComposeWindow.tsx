@@ -20,7 +20,7 @@ import {
   type MessageTemplate, type TemplateContext,
 } from '@/lib/outreach-template-render'
 import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
-import { readOutreachGlobals } from '@/lib/outreach-globals'
+import { snippetMapOf, type Snippet } from '@/lib/outreach-snippets'
 
 const DEFAULT_STALE_DAYS = 60
 const defaultIsStale = (iso: string | null | undefined) => {
@@ -44,7 +44,7 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
   globals: Record<string, string>) {
   const empty = { id: '', subject: '', body: '', fills: {} as Record<string, string>,
     fromDefault: {} as Record<string, string | null>,
-    fillSource: {} as Record<string, 'template' | 'global' | null> }
+    fillSource: {} as Record<string, 'snippet' | 'template' | null> }
   if (!id) return empty
   const tpl = TPL_BY_ID(offerable, id)
   if (!tpl) return empty
@@ -63,13 +63,13 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
     ) as Record<string, string | null>,
     fillSource: Object.fromEntries(
       Object.keys(fills).map(k => [k, fillSourceOf(tpl, globals, k)]),
-    ) as Record<string, 'template' | 'global' | null>,
+    ) as Record<string, 'snippet' | 'template' | null>,
   }
 }
 
 export default function ComposeWindow({
   truckName, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
-  whatsappConfirmed, templatesLoaded, logFormKind, onClose, onLog,
+  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog,
 }: {
   truckName: string
   /** The prospect's address — the mailto recipient. Null when the row has none. */
@@ -99,6 +99,9 @@ export default function ComposeWindow({
   /** What the prospect panel’s log form currently has selected. Display only — used to say when a
    *  tagged template is about to log a DIFFERENT rung. The compose window never sets it. */
   logFormKind: string
+  /** 🔴 THE SNIPPET LIBRARY, loaded once by the panel. A name with a non-blank value pre-fills its
+   *  field; a blank one, or a name with no snippet, prompts exactly as before. */
+  snippets?: Snippet[]
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -119,7 +122,10 @@ export default function ComposeWindow({
   // ⚠️ SEEDED IN A LAZY `useState`, NOT AN EFFECT. An effect that calls setState on mount is the
   // `react-hooks/set-state-in-effect` pattern this repo already carries 11 of; this adds none, and it
   // also means the first paint already has the template rather than flashing an empty pane.
-  const [globalsSeed] = useState(() => readOutreachGlobals())
+  // 🔴 THE SNIPPET LIBRARY IS FETCHED BY THE PANEL AND PASSED IN, not read from storage here. The
+  // layer it replaces lived in localStorage and was therefore per-browser; a library has to be the
+  // same for every window that opens, so it comes from the table through the parent.
+  const globalsSeed = useMemo(() => snippetMapOf(snippets ?? []), [snippets])
   const [seed] = useState(() => seedFrom(initialTemplateId, offerable, ctx, globalsSeed))
   const [templateId, setTemplateId] = useState(seed.id)
   // 🔴 TWO LAYERS, ONE VISIBLE PANE.
@@ -167,7 +173,7 @@ export default function ComposeWindow({
    *  the Templates tab is where it is edited, and the next compose window picks the new value up. */
   const globals = globalsSeed
   /** Which layer supplied each pre-filled value. Display only — see the badge. */
-  const [fillSource, setFillSource] = useState<Record<string, 'template' | 'global' | null>>(seed.fillSource)
+  const [fillSource, setFillSource] = useState<Record<string, 'snippet' | 'template' | null>>(seed.fillSource)
   // Which action is waiting on the unfilled-placeholder confirmation: null | 'send' | 'log'.
   const [pending, setPending] = useState<null | 'send' | 'log'>(null)
   const [sendError, setSendError] = useState<string | null>(null)
@@ -578,13 +584,13 @@ export default function ComposeWindow({
                             freshly filled — the exact risk of two sources for one value. The template layer keeps its
                             age badge; the global layer says GLOBAL and carries NO age, because localStorage stores no
                             timestamp and inventing one would be worse than admitting there is none. */}
-                        {filled && fillSource[t] === 'global' && (
+                        {filled && fillSource[t] === 'snippet' && (
                           <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-100 text-violet-800"
-                            title="Pre-filled from your GLOBAL default (Templates tab → Global defaults), not from this template. A value stored on the template itself overrides it. Editing here changes neither.">
-                            from global
+                            title="Pre-filled from the SNIPPET library (Templates tab → Snippets), which is where it is edited. One value, every template that uses this name. Editing it here changes only this message.">
+                            from snippet
                           </span>
                         )}
-                        {filled && fillSource[t] !== 'global' && fromDefault[t] !== undefined && (
+                        {filled && fillSource[t] !== 'snippet' && fromDefault[t] !== undefined && (
                           <span
                             className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
                               defaultIsStale(fromDefault[t]) ? 'bg-red-100 text-red-800' : 'bg-sky-100 text-sky-800'}`}

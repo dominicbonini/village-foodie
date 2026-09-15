@@ -43,6 +43,7 @@ interface CreateDemoResult {
   order: string
   counts: { categories: number; items: number; orders: number }
   logoStoragePath: string | null
+  logoNote: string | null
   warnings: string[]
 }
 
@@ -100,6 +101,7 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
         order: data.urls?.order ?? '',
         counts: { categories: data.counts?.categories ?? 0, items: data.counts?.items ?? 0, orders: data.counts?.orders ?? 0 },
         logoStoragePath: data.truck?.logo_storage_path ?? null,
+        logoNote: typeof data.logoNote === 'string' ? data.logoNote : null,
         warnings: Array.isArray(data.warnings) ? data.warnings : [],
       }
       setResult(r)
@@ -126,7 +128,7 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
         className="bg-white rounded-2xl w-full max-w-lg flex flex-col max-h-[calc(100vh-2rem)] overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
           {logoSrc
-            ? <img src={logoSrc} alt="" className="w-9 h-9 rounded-lg object-cover bg-slate-100 flex-shrink-0" />
+            ? <img src={logoSrc} alt="" className="w-9 h-9 rounded-lg object-contain p-0.5 bg-slate-100 flex-shrink-0" />
             : <div className="w-9 h-9 rounded-lg bg-slate-100 flex-shrink-0" />}
           <div className="min-w-0">
             <h3 id="create-demo-title" className="text-base font-semibold text-slate-900 truncate">Create demo · {prospect.name}</h3>
@@ -166,8 +168,18 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
                   </div>
                 </div>
               )}
+              {/* 🔴 AN UNBRANDED DEMO SAYS SO, AND SAYS WHY, WITHOUT BEING OPENED. This was a grey
+                  one-liner with the REASON hidden in the collapsed "Notes" list below it; a demo went
+                  out unbranded and the only evidence was a disclosure triangle nobody had reason to
+                  click. Amber, and it names the cause. */}
               {!result.logoStoragePath && (
-                <p className="text-xs text-slate-500">No logo was copied — the QR shows the “Your logo here” plate.</p>
+                <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2">
+                  <p className="text-xs font-bold text-amber-900">This demo is unbranded — no logo was copied.</p>
+                  <p className="text-xs text-amber-800 mt-0.5">
+                    {result.logoNote ?? 'No logo was available for this prospect.'}{' '}
+                    The QR shows the “Your logo here” plate. Set a logo on the prospect and create the demo again.
+                  </p>
+                </div>
               )}
               {result.warnings.length > 0 && (
                 <details className="text-xs text-slate-500"><summary className="cursor-pointer">Notes ({result.warnings.length})</summary>

@@ -9592,7 +9592,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
             {form.logo_storage_path
-              ? <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${form.logo_storage_path}`} alt="" className="w-full h-full object-cover" />
+              ? <img src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${form.logo_storage_path}`} alt="" className="w-full h-full object-contain p-1" />
               : <span className="text-3xl">🚚</span>
             }
           </div>

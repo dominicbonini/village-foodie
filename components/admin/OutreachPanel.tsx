@@ -36,6 +36,7 @@ import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outrea
 // copy action all live in ComposeWindow.
 // 🔴 TEMPLATES COME FROM THE DATABASE NOW. This module holds the MECHANISM only — no message copy.
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
+import type { Snippet } from '@/lib/outreach-snippets'
 import { formatImageUrl } from '@/lib/image-utils'   // shared resolver — the SAME one /api/discovery/events uses
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to build the wa.me link
 // 🔴 THE DERIVED STEP. Pure, no I/O, no stored state — see lib/outreach-step.ts. Imported here rather
@@ -79,6 +80,13 @@ type Prospect = {
    *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */
   demo?: { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number } | null
   logo_url: string | null; photo_url: string | null
+  // 🔴 OPTION A — WHOSE LOGO THIS ACTUALLY IS. `logo_url` above is now the AUTHORITATIVE value the route
+  // resolved (trucks.logo_storage_path for a linked prospect, discovery_trucks.logo_url otherwise), so the
+  // cell renders one candidate and never has to choose. These three say what a WRITE would touch.
+  logo_target?: 'truck' | 'demo' | 'prospect'
+  logo_truck_name?: string | null
+  /** True when a write would change a live truck's order page, confirmation email and QR poster. */
+  logo_needs_confirm?: boolean
   /** 🔴 LEGACY AND UNREAD. Kept on the type because the route still returns it for one release — see
    *  the note in app/api/admin/outreach/route.ts. The two fields below are what the form and the
    *  template substitution use. */
@@ -126,7 +134,7 @@ type SortState = { key: SortKey; dir: SortDir } | null
 const COLUMNS: { key: SortKey; label: string; title?: string }[] = [
   // 🔴 MEDIA FIRST. These are the two columns being filled in, so they lead; the filter bar follows this
   // array, so adding them here moves their filters to the front of the bar too.
-  { key: 'logo', label: 'Logo', title: 'discovery_trucks.logo_url. Drop an image on an EMPTY slot to upload it. A slot showing a broken marker has a value that does not resolve — it is not a drop target, because replacing is out of scope.' },
+  { key: 'logo', label: 'Logo', title: "The truck's logo. Once a prospect has a HatchGrab truck or a live demo this IS that truck's own logo (trucks.logo_storage_path) — changing it changes what its customers see. Until then it is the prospect's scraped logo (discovery_trucks.logo_url). Drop an image on an EMPTY slot to upload. A broken marker means the stored value does not resolve." },
   { key: 'photo', label: 'Photo', title: 'discovery_trucks.photo_url. Drop an image on an EMPTY slot to upload it.' },
   { key: 'name', label: 'Truck' },
   // 🔴 ONE DERIVED COLUMN REPLACING THE PHONE AND EMAIL VALUE COLUMNS. It answers the only question the
@@ -289,7 +297,7 @@ const FILTER_CONTROLS: {
   // as Email and Phone.
   { key: 'logo', label: 'Logo',
     options: [['any', 'Any'], ['yes', 'Has'], ['no', 'Missing']],
-    title: 'discovery_trucks.logo_url — Has = a value is stored, Missing = the column is null (an empty drop target).' },
+    title: "The truck's logo, wherever it is authoritative — the linked truck's own logo if it has one, else the prospect's scraped logo. Has = a value is stored, Missing = none (an empty drop target)." },
   { key: 'photo', label: 'Photo',
     options: [['any', 'Any'], ['yes', 'Has'], ['no', 'Missing']],
     title: 'discovery_trucks.photo_url — Has = a value is stored, Missing = the column is null (an empty drop target).' },
@@ -357,6 +365,31 @@ const fmtDate = (d: string | null) => {
 // ⚠️ THIS REPLACES A LOCAL `logoSrc` THAT DID THE SAME JOB SLIGHTLY DIFFERENTLY. App manual §51.7 records
 // a "reuse" that was really a fourth independent implementation; a second private copy of image
 // resolution in this file is the same mistake one size down, so the duplicate is gone.
+// ── MEDIA UPLOAD ──────────────────────────────────────────────────────────────────────────────────
+// 🔴 NO OPTIMISTIC UPDATE HERE, DELIBERATELY, and this is the opposite choice to patchProspect above.
+// patchProspect writes a value the client already knows; an upload's result is a URL only the SERVER
+// can produce, and the row must not show an image until the column actually holds one. Showing it
+// early would make a failed DB write look like a success — the precise failure this flow guards.
+// The row is patched ONLY from the URL the server returns, after it has written the column.
+// ⚠️ Throws on failure so the cell can render the message; the cell owns that display, not a toast,
+// because the failure belongs to one slot.
+// 🔴 THE GUSTO CONFIRMATION. Returns the truck name to echo back, or null to proceed, or false to
+// abandon. The SERVER demands the name too — this is the sentence a person reads, not the enforcement.
+function confirmLogoWrite(p: Prospect, verb: string): string | null | false {
+  if (!p.logo_needs_confirm) return null
+  const name = (p.logo_truck_name ?? p.name ?? 'this truck').trim()
+  const ok = window.confirm(
+    [
+      `${verb} the logo for ${name}?`,
+      '',
+      `${name} is a LIVE HatchGrab truck. This changes what its customers see:`,
+      'its order page, its order confirmation email and its QR poster.',
+      '',
+      'Press OK to continue.',
+    ].join('\n'))
+  return ok ? name : false
+}
+
 const mediaSrc = (u: string | null, folder: 'logos' | 'photos'): string | null =>
   formatImageUrl(u, folder) || null
 
@@ -417,6 +450,12 @@ export default function OutreachPanel() {
   // is deliberately distinct from `[]`, which means "the table is there and has none" — the compose
   // window says something different for each.
   const [templates, setTemplates] = useState<MessageTemplate[] | null>(null)
+  /** 🔴 THE SNIPPET LIBRARY. Loaded once beside the templates and handed to the compose window, so a
+   *  value set on the Templates tab reaches every message without the window reading storage itself —
+   *  which is what the layer it replaces did, and why that layer only worked in one browser.
+   *  ⚠️ An empty array is the honest degrade: before the migration is applied the route answers 200
+   *  with `{ snippets: [], hasSnippets: false }`, and every field prompts exactly as it does today. */
+  const [snippets, setSnippets] = useState<Snippet[]>([])
   const [schedFor, setSchedFor] = useState<Prospect | null>(null)
   // 🔴 (4) Prospect ids whose Schedule count is known to be out of date. See the popup's onEdited.
   const [staleCountIds, setStaleCountIds] = useState<Set<string>>(new Set())
@@ -497,6 +536,13 @@ export default function OutreachPanel() {
             .map(([k, v]: [string, any]) => [k, { value: v?.value ?? '', updatedAt: v?.updated_at ?? null }])),
         })))
       } catch { if (alive) setTemplates(null) }
+      // 🔴 A SEPARATE, NON-FATAL FETCH. The snippet library failing must never stop templates loading —
+      // it is a convenience over a tier that has always worked by prompting.
+      try {
+        const h2 = await nativeAuthHeader()
+        const r2 = await fetch('/api/admin/outreach-snippets', { headers: h2, credentials: 'same-origin' })
+        if (r2.ok && alive) { const d2 = await r2.json(); setSnippets(d2.snippets ?? []) }
+      } catch { /* the tier prompts, as it always has */ }
     })()
     return () => { alive = false }
   }, [])
@@ -699,20 +745,14 @@ export default function OutreachPanel() {
     } catch { showToast('Save failed — reloading'); load() }
   }, [load, showToast])
 
-  // ── MEDIA UPLOAD ──────────────────────────────────────────────────────────────────────────────────
-  // 🔴 NO OPTIMISTIC UPDATE HERE, DELIBERATELY, and this is the opposite choice to patchProspect above.
-  // patchProspect writes a value the client already knows; an upload's result is a URL only the SERVER
-  // can produce, and the row must not show an image until the column actually holds one. Showing it
-  // early would make a failed DB write look like a success — the precise failure this flow guards.
-  // The row is patched ONLY from the URL the server returns, after it has written the column.
-  // ⚠️ Throws on failure so the cell can render the message; the cell owns that display, not a toast,
-  // because the failure belongs to one slot.
-  const uploadMedia = useCallback(async (prospectId: string, kind: 'logo' | 'photo', file: File) => {
+
+  const uploadMedia = useCallback(async (prospectId: string, kind: 'logo' | 'photo', file: File, confirmTruck?: string) => {
     const h = await nativeAuthHeader()
     const fd = new FormData()
     fd.append('prospect_id', prospectId)
     fd.append('column', kind)
     fd.append('file', file)
+    if (confirmTruck) fd.append('confirm_truck', confirmTruck)
     // ⚠️ NO Content-Type header — the browser must set the multipart boundary itself.
     const res = await fetch('/api/admin/outreach', { method: 'POST', headers: { ...h }, credentials: 'same-origin', body: fd })
     const data = await res.json().catch(() => ({} as any))
@@ -728,13 +768,13 @@ export default function OutreachPanel() {
   // ⚠️ The server reports whether the FILE was removed as well as the column; when it deliberately left a
   // file alone (a static /logos asset, or one inside an operator truck's folder) it says so, and that
   // note is surfaced in the toast rather than swallowed.
-  const deleteMedia = useCallback(async (prospectId: string, kind: 'logo' | 'photo') => {
+  const deleteMedia = useCallback(async (prospectId: string, kind: 'logo' | 'photo', confirmTruck?: string) => {
     const h = await nativeAuthHeader()
     const res = await fetch('/api/admin/outreach', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...h },
       credentials: 'same-origin',
-      body: JSON.stringify({ action: 'delete_media', id: prospectId, column: kind }),
+      body: JSON.stringify({ action: 'delete_media', id: prospectId, column: kind, confirm_truck: confirmTruck ?? null }),
     })
     const data = await res.json().catch(() => ({} as any))
     if (!res.ok) throw new Error(data?.error || `Remove failed (${res.status})`)
@@ -1200,7 +1240,7 @@ export default function OutreachPanel() {
               </div>
               <Detail p={modalProspect} step={steps.get(modalProspect.id)} hasContactNames={hasContactNames}
                 hasLeadTypeFreeze={hasLeadTypeFreeze}
-                onPatch={patchProspect} onLog={logContact} templates={templates}
+                onPatch={patchProspect} onLog={logContact} templates={templates} snippets={snippets}
                 onDeleteContact={deleteContactRow} />
             </div>
           </div>
@@ -1227,7 +1267,17 @@ export default function OutreachPanel() {
           title={`Delete the ${confirmKind} for ${modalProspect.name}?`}
           confirmLabel={`Delete ${confirmKind}`}
           onCancel={() => setConfirmKind(null)}
-          onConfirm={async () => { await deleteMedia(modalProspect.id, confirmKind); setConfirmKind(null) }}
+          onConfirm={async () => {
+            // 🔴 A SECOND, NAMED CONFIRMATION FOR A LIVE TRUCK. The generic delete dialog says "remove this
+            // logo"; it cannot say WHOSE, and under Option A that is the only thing that matters here.
+            let confirmTruck: string | undefined
+            if (confirmKind === 'logo') {
+              const c = confirmLogoWrite(modalProspect, 'Remove')
+              if (c === false) { setConfirmKind(null); return }
+              confirmTruck = c ?? undefined
+            }
+            await deleteMedia(modalProspect.id, confirmKind, confirmTruck); setConfirmKind(null)
+          }}
         >
           {/* 🔴 THE STRICT SENTENCE, NO PER-ROW VARIATION. For a file this surface uploaded, the object is
               removed from storage and there is no restore. Saying "usually recoverable" would be true for
@@ -1456,7 +1506,7 @@ function FilterChip({ label, value, onDismiss }: {
 function MediaCell({ p, kind, onUpload }: {
   p: Prospect
   kind: 'logo' | 'photo'
-  onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File) => Promise<void>
+  onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File, confirmTruck?: string) => Promise<void>
 }) {
   const value = kind === 'logo' ? p.logo_url : p.photo_url
   const src = mediaSrc(value, kind === 'logo' ? 'logos' : 'photos')
@@ -1476,7 +1526,14 @@ function MediaCell({ p, kind, onUpload }: {
     // pointless round trip and gives an instant reason.
     if (!file.type.startsWith('image/')) { setErr(`Not an image (${file.type || 'unknown'})`); return }
     setBusy(true); setErr(null)
-    try { await onUpload(p.id, kind, file) }
+    // 🔴 THE CONFIRMATION HAPPENS BEFORE A BYTE IS SENT. Logos only: a photo never reaches a truck row.
+    let confirmTruck: string | undefined
+    if (kind === 'logo') {
+      const c = confirmLogoWrite(p, 'Replace')
+      if (c === false) { setBusy(false); return }        // he said no — nothing uploaded, nothing written
+      confirmTruck = c ?? undefined
+    }
+    try { await onUpload(p.id, kind, file, confirmTruck) }
     catch (e: any) { setErr(e?.message || 'Upload failed') }
     finally { setBusy(false) }
   }
@@ -1512,7 +1569,11 @@ function MediaCell({ p, kind, onUpload }: {
       // eslint-disable-next-line @next/next/no-img-element
       <img src={src} alt="" onError={() => setBroken(true)}
         title={`${kind} — ${value}`}
-        className={`${box} object-cover border border-slate-200 bg-white`} />
+        // 🔴 LOGOS ARE CONTAINED, PHOTOS ARE COVERED. `object-cover` fills the box and crops the overflow,
+        // which for a WIDE WORDMARK in a 40px circle can crop away every letter and render as a blank disc —
+        // a logo that is present looking exactly like one that is missing. A brand mark must be shown whole.
+        // A food photo is a scene and still wants `cover`, or it letterboxes into a strip.
+        className={`${box} ${kind === 'logo' ? 'object-contain p-0.5' : 'object-cover'} border border-slate-200 bg-white`} />
     )
   }
 
@@ -1557,7 +1618,7 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
   onOpenSchedule: (p: Prospect) => void
   isCountStale: boolean
   onPatch: (id: string, patch: Record<string, unknown>) => void
-  onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File) => Promise<void>
+  onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File, confirmTruck?: string) => Promise<void>
 }) {
   const overdue = isOverdue(p.next_action_at)
   // 🔴 DERIVED PER ROW FROM THE SHARED PREDICATE, NOT FROM THE STEP. See the COLUMNS note: a stopped
@@ -1792,7 +1853,7 @@ function ModalThumb({ value, folder, label, onRequestDelete }: {
         <a href={src} target="_blank" rel="noreferrer" title={`Open full-size ${label}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={src} alt={label} onError={() => setBroken(true)}
-            className={`${box} object-cover border border-slate-200 bg-white hover:ring-2 hover:ring-orange-400`} />
+            className={`${box} ${folder === 'logos' ? 'object-contain p-0.5' : 'object-cover'} border border-slate-200 bg-white hover:ring-2 hover:ring-orange-400`} />
         </a>
         {removeBadge}
       </span>
@@ -2107,7 +2168,7 @@ function HistoryTable({ contacts, onDelete }: {
   )
 }
 
-function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, onDeleteContact }: {
+function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact }: {
   p: Prospect
   /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
   step?: Step
@@ -2120,6 +2181,8 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   onLog: (p: Prospect, f: { channel: string; direction: string; kind: string; message: string; contacted_at: string }) => Promise<boolean>
   /** Loaded templates, or null when the table is unreachable. */
   templates: MessageTemplate[] | null
+  /** The snippet library, passed through to the compose window. Display/pre-fill only. */
+  snippets: Snippet[]
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -2434,6 +2497,7 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
           whatsappConfirmed={p.whatsapp_confirmed === true}
           templatesLoaded={templates !== null}
           logFormKind={kind}
+          snippets={snippets}
           onClose={() => setComposeOpen(false)}
           onLog={async (editedBody, ch, servesKind) => {
             // 🔴 `editedBody` IS THE TEXTAREA'S CURRENT VALUE, passed straight through to the writer.

@@ -63,6 +63,11 @@ export interface ProvisionDemoResult {
   /** OUTREACH demos only: the bucket path written to trucks.logo_storage_path, or null when the discovery
    *  logo was absent, refused by the allowlist, or failed to copy (see warnings). */
   logoStoragePath: string | null
+  /** 🔴 WHY THERE IS NO LOGO, IN ONE SENTENCE FIT TO SHOW A HUMAN. null when one was copied, or when
+   *  none was ever asked for. It is separate from `warnings` deliberately: warnings are a collapsed
+   *  list of incidental notes, and an unbranded demo went out silently because the reason was in there
+   *  with them. This is the one the UI puts on screen. */
+  logoNote: string | null
 }
 
 export interface ProvisionDemoInput {
@@ -188,11 +193,13 @@ export async function provisionDemo(
   // never selects a branded composite with nothing to put in the centre. Both branded surfaces read the
   // same logo_storage_path (see the build report, Phase 0a), so setting it here cannot make them disagree.
   let logoStoragePath: string | null = null
+  let logoNote: string | null = null
   if (!input.existingTruckId && input.discoveryTruckId) {
     const logo = await copyDemoLogo(supabase, truckId, input.logoUrl ?? null, { now })
     logoStoragePath = logo.logoStoragePath
-    if (logo.source.kind === 'refused') warnings.push(`Logo not copied — ${logo.source.reason}`)
-    if (logo.error) warnings.push(`Logo copy failed (non-fatal): ${logo.error}`)
+    if (logo.source.kind === 'refused') { warnings.push(`Logo not copied — ${logo.source.reason}`); logoNote = `The logo was refused: ${logo.source.reason}` }
+    if (logo.error) { warnings.push(`Logo copy failed (non-fatal): ${logo.error}`); logoNote = `The logo could not be copied: ${logo.error}` }
+    if (logo.source.kind === 'none') logoNote = 'This prospect has no logo stored, so the demo is unbranded.'
     if (logoStoragePath) {
       const { error: qrErr } = await supabase.from('trucks').update({ qr_code_style: 'branded' }).eq('id', truckId)
       if (qrErr) warnings.push(`Could not set qr_code_style=branded (non-fatal): ${qrErr.message}`)
@@ -224,7 +231,7 @@ export async function provisionDemo(
   // leaves items=0/events=0 → the orphan sweep gate `if (hasMenu && hasEvent) continue` is false → reclaimed
   // (and the 24h expiry sweep catches it regardless, since a failed demo is never claimed).
   if (menu.kind === 'failed') {
-    return { truckId, slug, dashboardToken, vanId, event: null, menu, seededOrders: 0, warnings, publicRef, logoStoragePath }
+    return { truckId, slug, dashboardToken, vanId, event: null, menu, seededOrders: 0, warnings, publicRef, logoStoragePath, logoNote }
   }
 
   // ── 4. Live event + slot grid ─────────────────────────────────────────────────────────────────────
@@ -270,7 +277,7 @@ export async function provisionDemo(
     warnings.push(`Order seeding failed (non-fatal): ${err instanceof Error ? err.message : 'unknown'}`)
   }
 
-  return { truckId, slug, dashboardToken, vanId, event, menu, seededOrders, warnings, publicRef, logoStoragePath }
+  return { truckId, slug, dashboardToken, vanId, event, menu, seededOrders, warnings, publicRef, logoStoragePath, logoNote }
 }
 
 // ── Menu: extract → assume → commit, with the honest three-outcome handling ──────────────────────────

@@ -861,7 +861,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       <div className="flex items-center gap-3">
                         <div className="w-14 h-14 rounded-xl border border-slate-200 overflow-hidden shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element -- transient object-URL blob preview; next/image can't optimise it */}
-                          <img src={logoPreview} alt="Logo preview" className="w-full h-full object-cover" />
+                          <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain p-1" />
                         </div>
                         <label className="inline-flex items-center gap-2 text-sm font-semibold rounded-lg border border-slate-300 px-3 py-1.5 cursor-pointer hover:bg-slate-50">
                           Change logo

@@ -12,7 +12,18 @@ import {
   canonicalisePlatform,
   type OutreachStage,
 } from '@/lib/outreach'
-import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'   // shared derivation — same as the live button
+import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'
+// 🔴 OPTION A: which row owns a prospect's logo. Pure, shared, and the ONLY place that decision is made.
+import { resolveLogoTarget, needsTruckConfirmation, type LogoTruckRow } from '@/lib/outreach-logo-target'
+/** The truck columns this route needs: the decision fields plus the logo it is going to read or write. */
+type LogoTruckWithPath = LogoTruckRow & { logo_storage_path: string | null }
+
+/** The two fields the logo pre-pass reads off a prospect row, named rather than cast away. */
+type LogoScanRow = {
+  discovery_truck_id?: string | null
+  truck?: { hatchgrab_truck_id?: string | null } | { hatchgrab_truck_id?: string | null }[] | null
+}
+import { resolveTruckLogo } from '@/lib/truck-logo'   // shared derivation — same as the live button
 import { isLeadType } from '@/lib/outreach-step'   // the ONLY validator for lead_type_at_first_contact
 import { scheduleNorm, scheduleKeys } from '@/lib/schedule-match'   // the SAME matcher the Schedule popup uses
 
@@ -218,7 +229,7 @@ export async function GET(req: NextRequest) {
     // "LIVE" = a session row that has not expired. The row itself is the liveness signal — demo_sessions
     // .truck_id → trucks is ON DELETE CASCADE, so a swept demo takes its row with it — and `expires_at`
     // covers the window between expiry and the next hourly cleanup run.
-    const demoByDiscovery = new Map<string, { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number }>()
+    const demoByDiscovery = new Map<string, { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number; truckId: string | null }>()
     let hasDemoLinks = false
     {
       const ids = Array.from(new Set((prospects ?? [])
@@ -246,23 +257,80 @@ export async function GET(req: NextRequest) {
               expiresAt,
               createdAt: (row.created_at as string | null) ?? null,
               liveCount: 1,
+              // 🔴 THE DEMO'S OWN trucks.id — already selected, never previously used. Option A needs it:
+              // a prospect with a live demo and no real truck stores its logo on the DEMO's truck row.
+              truckId: (row.truck_id as string | null) ?? null,
             })
           }
         }
       }
     }
 
-    const rows = (prospects ?? []).map((p: any) => {
+    // ── 🔴 OPTION A — THE AUTHORITATIVE LOGO, RESOLVED ONCE, IN BULK ────────────────────────────────
+    // `trucks.logo_storage_path` is authoritative the moment a truck exists, so the LOGO column can no
+    // longer just print `discovery_trucks.logo_url`: for a linked prospect that column is stale history.
+    // ⚠️ ONE QUERY FOR THE WHOLE PAGE, not one per row. The ids come from two places — the real truck
+    // (`hatchgrab_truck_id`) and the demo (`demo_sessions.truck_id`) — and `resolveLogoTarget` decides
+    // which of the two wins per prospect.
+    // 🔴 NON-FATAL. If this read fails the list still renders; every row simply falls back to reporting
+    // the discovery column, which is what it did before this change. A logo is not worth a 500.
+    const logoTruckById = new Map<string, LogoTruckWithPath>()
+    {
+      const ids = new Set<string>()
+      for (const row of (prospects ?? []) as LogoScanRow[]) {
+        const t = Array.isArray(row.truck) ? row.truck[0] : row.truck
+        const real = t?.hatchgrab_truck_id ?? null
+        if (real) ids.add(real)
+        const d = row.discovery_truck_id ? demoByDiscovery.get(row.discovery_truck_id) : null
+        if (d?.truckId) ids.add(d.truckId)
+      }
+      if (ids.size > 0) {
+        const { data: tks, error: tErr } = await supabase
+          .from('trucks')
+          .select('id, name, active, excluded, show_on_vf, show_on_hg, logo_storage_path')
+          .in('id', Array.from(ids))
+        if (tErr) console.warn('[admin/outreach] truck logo read skipped (non-fatal):', tErr.message)
+        else for (const t of (tks ?? []) as LogoTruckWithPath[]) logoTruckById.set(t.id, t)
+      }
+    }
+
+    // ⚠️ async + Promise.all ONLY so the shared `resolveTruckLogo` can be awaited. It is declared async
+    // but performs NO I/O (it builds a URL string), so this adds no round trips — it reuses the one
+    // resolver instead of re-implementing its string format here, which is how the two would drift.
+    const rows = await Promise.all((prospects ?? []).map(async (p: any) => {
       const truck = Array.isArray(p.truck) ? p.truck[0] : p.truck
       const sched = scheduleFor(schedIdx, truck?.name ?? null, truck?.aliases ?? null)
       const contacts = contactsByProspect.get(p.id) ?? []
       const outboundCount = contacts.filter((c: any) => c.direction === 'outbound').length
       const lastContactedAt = contacts.length ? contacts[0].contacted_at : null // newest-first
+      // 🔴 WHICH ROW OWNS THIS PROSPECT'S LOGO (Option A). Real truck first, else a live demo, else the
+      // prospect itself. One shared pure function — the write paths below call the same one.
+      const demoLink = p.discovery_truck_id ? demoByDiscovery.get(p.discovery_truck_id) : null
+      const logoTruckRow = logoTruckById.get(truck?.hatchgrab_truck_id ?? demoLink?.truckId ?? '') ?? null
+      const logoTarget = resolveLogoTarget({
+        hatchgrabTruckId: truck?.hatchgrab_truck_id ?? null,
+        demoTruckId: demoLink?.truckId ?? null,
+        truckRow: logoTruckRow,
+      })
+      // 🔴 PATH → URL THROUGH THE ONE RESOLVER, not a second string build. `resolveTruckLogo` returns null
+      // for a null path and adds NO fallback — an operator who cleared their logo sees it cleared here too,
+      // which is the whole point of Option A.
+      const authoritativeLogo = logoTarget.truckId
+        ? await resolveTruckLogo(supabase, logoTarget.truckId, logoTruckRow?.logo_storage_path ?? null)
+        : (truck?.logo_url ?? null)
       return {
         id: p.id,
         discovery_truck_id: p.discovery_truck_id,
         name: truck?.name ?? '(unknown truck)',
-        logo_url: truck?.logo_url ?? null,
+        // 🔴 THE AUTHORITATIVE LOGO, not the discovery column. For a linked prospect this is
+        // `trucks.logo_storage_path` resolved to a URL; for an unlinked one it is `discovery_trucks.logo_url`
+        // exactly as before. The UI renders this and never sees two candidates.
+        logo_url: authoritativeLogo,
+        /** 🔴 WHAT THE UI MUST WARN ABOUT BEFORE WRITING. 'truck' = a real business; publiclyVisible = its
+         *  order page, confirmation email and QR poster would change. */
+        logo_target: logoTarget.kind,
+        logo_truck_name: logoTarget.truckName,
+        logo_needs_confirm: needsTruckConfirmation(logoTarget),
         photo_url: truck?.photo_url ?? null,
         contact_name: hasContactName ? (p.contact_name ?? null) : null,   // legacy, unread — see above
         // 🔴 THE FROZEN LEAD TYPE. Null both when the column is absent and when it is genuinely unset —
@@ -312,7 +380,7 @@ export async function GET(req: NextRequest) {
         // modal says so rather than silently picking one.
         demo: (p.discovery_truck_id && demoByDiscovery.get(p.discovery_truck_id)) || null,
       }
-    })
+    }))
 
     // Column-presence flags tell the page which fields it can offer as editable (rather than inferring
     // presence from data). Each flips to true on the load after its migration is applied.
@@ -331,6 +399,65 @@ export async function GET(req: NextRequest) {
 // serverless function cannot write one. So an upload here lands in the bucket and the column receives the
 // ABSOLUTE public URL, which is the shape 44 rows already hold and which `formatImageUrl` passes through
 // untouched. Both shapes therefore keep working and no consumer changes.
+/**
+ * 🔴 WHICH ROW OWNS THIS PROSPECT'S LOGO, RESOLVED FROM THE DATABASE, FOR A WRITE.
+ * The GET resolves the same thing in bulk; this is the single-row version the two write paths share, so
+ * a write can never disagree with what the list showed. The DECISION is `resolveLogoTarget` — pure, one
+ * copy, in lib/outreach-logo-target.ts. This function only fetches what that decision needs.
+ * ⚠️ EVERY INPUT IS RE-READ FROM THE DATABASE. Nothing the client sent about linkage is trusted.
+ */
+async function logoTargetFor(discoveryTruckId: string) {
+  const { data: dt } = await supabase
+    .from('discovery_trucks').select('name, hatchgrab_truck_id').eq('id', discoveryTruckId).maybeSingle()
+  const realId = (dt?.hatchgrab_truck_id as string | null) ?? null
+
+  // Only look for a demo when there is no real truck — the real one wins, so the query is wasted work.
+  let demoTruckId: string | null = null
+  if (!realId) {
+    const { data: ds } = await supabase
+      .from('demo_sessions').select('truck_id, expires_at, created_at')
+      .eq('discovery_truck_id', discoveryTruckId).order('created_at', { ascending: false })
+    // ⚠️ AN EXPIRED DEMO IS NOT A TARGET. The cleanup is hourly, so expired rows exist briefly; writing a
+    // logo onto one would be writing to a truck that is about to be deleted.
+    demoTruckId = ((ds ?? []) as { truck_id: string | null; expires_at: string | null }[])
+      .find(r => !r.expires_at || new Date(r.expires_at).getTime() > Date.now())?.truck_id ?? null
+  }
+
+  const id = realId ?? demoTruckId
+  let row: LogoTruckWithPath | null = null
+  if (id) {
+    const { data } = await supabase.from('trucks')
+      .select('id, name, active, excluded, show_on_vf, show_on_hg, logo_storage_path')
+      .eq('id', id).maybeSingle()
+    row = (data as LogoTruckWithPath | null) ?? null
+  }
+  const target = resolveLogoTarget({ hatchgrabTruckId: realId, demoTruckId, truckRow: row })
+  return { target, row, discoveryName: (dt?.name as string | null) ?? null }
+}
+
+/**
+ * 🔴 THE GUSTO GATE. A logo write that would change what a CUSTOMER sees must be confirmed by name, and
+ * the client has to echo the truck's name back — a bare `confirm: true` from a stale tab would pass a
+ * boolean check without anyone having read the sentence. Returns a 409 to answer with, or null to proceed.
+ * ⚠️ Applies to BOTH the upload and the delete. It is not a delete-only guard: replacing Pizzeria Gusto's
+ * logo changes its order page, its confirmation email and its QR poster exactly as removing it would.
+ */
+function confirmationRefusal(
+  target: ReturnType<typeof resolveLogoTarget>,
+  supplied: string | null,
+  verb: string,
+) {
+  if (!needsTruckConfirmation(target)) return null
+  const name = target.truckName ?? 'this truck'
+  if ((supplied ?? '').trim() === (target.truckName ?? '').trim() && (target.truckName ?? '') !== '') return null
+  return NextResponse.json({
+    error: `Confirm required: ${name} is a live HatchGrab truck. ${verb} its logo changes its customer order page, its order confirmation email and its QR poster. Re-send with the truck's name to confirm.`,
+    needsConfirm: true,
+    truck: name,
+    target: target.kind,
+  }, { status: 409 })
+}
+
 const MEDIA_BUCKET = 'truck-media'
 const MAX_MEDIA_BYTES = 5 * 1024 * 1024        // 5 MB — a logo or a food photo, not a print master
 // Only the two media columns are writable this way. A map, not string interpolation, so no caller can
@@ -377,13 +504,30 @@ export async function POST(req: NextRequest) {
       if (prErr || !pr?.discovery_truck_id) return NextResponse.json({ error: 'Prospect not found' }, { status: 404 })
       const truckId = pr.discovery_truck_id as string
 
+      // ── 🔴 OPTION A: FOR A LOGO, FIND OUT WHOSE LOGO THIS ACTUALLY IS BEFORE WRITING ANYTHING ──────
+      // A photo is unchanged — it stays on `discovery_trucks.photo_url`, which is still its only home.
+      const lt = kind === 'logo' ? await logoTargetFor(truckId) : null
+      if (lt && lt.target.truckId) {
+        const refusal = confirmationRefusal(lt.target, String(form.get('confirm_truck') ?? '') || null, 'Replacing')
+        if (refusal) return refusal
+      }
+
       // 🔴 EMPTY SLOTS ONLY, ENFORCED HERE AND NOT JUST IN THE UI. Replacing is out of scope, and the UI
       // not offering a drop target is a convention a direct POST could ignore. A filled column is refused.
+      // ⚠️ IT TESTS THE AUTHORITATIVE COLUMN, NOT ALWAYS THE DISCOVERY ONE. For a linked prospect the
+      // slot that matters is `trucks.logo_storage_path`; checking `discovery_trucks.logo_url` there would
+      // call a filled slot empty and silently overwrite a live truck's branding.
+      if (lt && lt.target.truckId) {
+        if (lt.row?.logo_storage_path) {
+          return NextResponse.json({ error: 'That slot already has an image — replacing is not supported' }, { status: 409 })
+        }
+      } else {
       const { data: cur, error: curErr } = await supabase
         .from('discovery_trucks').select(column).eq('id', truckId).single()
       if (curErr) return NextResponse.json({ error: 'Could not read the truck row' }, { status: 500 })
       if ((cur as any)?.[column]) {
         return NextResponse.json({ error: 'That slot already has an image — replacing is not supported' }, { status: 409 })
+      }
       }
 
       // 🔴 THE FILENAME SCHEME. `<discovery_truck_id>/<logos|photos>/<timestamp>-<safe name>`:
@@ -407,8 +551,15 @@ export async function POST(req: NextRequest) {
       // object is deleted — because a public file nothing references is the worst of both outcomes.
       // ⚠️ If the cleanup ALSO fails the path is logged EXPLICITLY rather than swallowed: an orphan that
       // nobody can name is one nobody will ever remove.
-      const { error: dbErr } = await supabase
-        .from('discovery_trucks').update({ [column]: publicUrl }).eq('id', truckId)
+      // 🔴 OPTION A: THE WRITE GOES WHERE THE AUTHORITY IS. A linked prospect's logo is stored on the
+      // TRUCK row as a bucket PATH; an unlinked prospect's stays on the discovery row as a full URL.
+      // ⚠️ NO SHAPE CONVERSION IS NEEDED HERE AND NONE IS WRITTEN: this branch just uploaded the object
+      // and already holds `path`, which is exactly what `logo_storage_path` wants.
+      // `classifyDemoLogoSource` remains the one URL→path converter, used where a stored URL must be
+      // turned back into a path; re-implementing that here is the drift this file already warns about.
+      const { error: dbErr } = lt && lt.target.truckId
+        ? await supabase.from('trucks').update({ logo_storage_path: path }).eq('id', lt.target.truckId)
+        : await supabase.from('discovery_trucks').update({ [column]: publicUrl }).eq('id', truckId)
       if (dbErr) {
         const { error: rmErr } = await supabase.storage.from(MEDIA_BUCKET).remove([path])
         if (rmErr) {
@@ -581,10 +732,25 @@ export async function POST(req: NextRequest) {
       if (prErr || !pr?.discovery_truck_id) return NextResponse.json({ error: 'Prospect not found' }, { status: 404 })
       const truckId = pr.discovery_truck_id as string
 
+      // ── 🔴 OPTION A ON THE DELETE PATH TOO ─────────────────────────────────────────────────────────
+      const ltDel = kind === 'logo' ? await logoTargetFor(truckId) : null
+      if (ltDel && ltDel.target.truckId) {
+        const refusal = confirmationRefusal(ltDel.target, typeof body.confirm_truck === 'string' ? body.confirm_truck : null, 'Removing')
+        if (refusal) return refusal
+      }
+
       const { data: cur, error: curErr } = await supabase
         .from('discovery_trucks').select(column).eq('id', truckId).single()
       if (curErr) return NextResponse.json({ error: 'Could not read the truck row' }, { status: 500 })
-      const value: string | null = (cur as any)?.[column] ?? null
+      // 🔴 THE VALUE THAT MATTERS IS THE AUTHORITATIVE ONE. For a linked prospect that is the truck's
+      // `logo_storage_path` (a bucket PATH); for an unlinked one it is the discovery column (a full URL).
+      // ⚠️ The file-ownership rules below are written against the URL shape, so a path is normalised to
+      // the same shape here rather than duplicating those rules for a second spelling.
+      const value: string | null = ltDel && ltDel.target.truckId
+        ? (ltDel.row?.logo_storage_path
+            ? `${process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL}/storage/v1/object/public/${MEDIA_BUCKET}/${ltDel.row.logo_storage_path}`
+            : null)
+        : ((cur as any)?.[column] ?? null)
       if (!value) return NextResponse.json({ ok: true, alreadyEmpty: true, fileDeleted: false })
 
       // ── 🔴 REFUSE A PHOTO DELETE WHOSE VALUE IS A LIVE PUBLIC FALLBACK ──────────────────────────
@@ -605,8 +771,16 @@ export async function POST(req: NextRequest) {
       // nothing visible having changed. The condition is STRUCTURAL: is this column the live fallback for
       // a publicly-visible truck. That is either true or false regardless of this week's schedule.
       //
-      // ⚠️ PHOTO ONLY. The logo has the same fallback shape but `logo_storage_path` is set on every linked
-      // truck that is public, so the discovery logo is not a live source for any of them. No logo refusal.
+      // ⚠️ THIS BLOCK IS PHOTO-ONLY, AND THE LOGO IS GUARDED DIFFERENTLY — NOT UNGUARDED.
+      // 🔴 THE OLD COMMENT HERE SAID "no logo refusal" BECAUSE `logo_storage_path` WAS ASSUMED SET ON
+      // EVERY PUBLIC LINKED TRUCK. Under Option A that reasoning no longer applies at all: the logo of a
+      // linked prospect IS the operator's own `trucks.logo_storage_path`, so a delete here removes a live
+      // business's branding directly rather than removing a fallback.
+      // The guard for that is `confirmationRefusal` above, which runs on the logo path for BOTH upload
+      // and delete and demands the truck's name back. It is a confirmation rather than a flat refusal
+      // because, unlike the photo case, this value is the operator's own logo and changing it is a
+      // legitimate thing to want — a refusal would make the feature unusable. The photo block below stays
+      // a hard refusal because a discovery photo is a FALLBACK the operator cannot reach from anywhere.
       //
       // 🔴 EVERY INPUT IS RE-READ FROM THE DATABASE HERE. Nothing the client sent is trusted.
       if (column === 'photo_url') {
@@ -631,8 +805,12 @@ export async function POST(req: NextRequest) {
       }
 
       // 1. CLEAR THE COLUMN. If this fails nothing has been lost — the image still displays.
-      const { error: dbErr } = await supabase
-        .from('discovery_trucks').update({ [column]: null }).eq('id', truckId)
+      // 🔴 CLEAR THE AUTHORITATIVE COLUMN. `resolveTruckLogo` returns null for a null path and adds NO
+      // fallback, so this genuinely removes the logo everywhere it renders — which is exactly the
+      // behaviour lib/truck-logo.ts was changed to guarantee. Nothing here re-introduces a fallback.
+      const { error: dbErr } = ltDel && ltDel.target.truckId
+        ? await supabase.from('trucks').update({ logo_storage_path: null }).eq('id', ltDel.target.truckId)
+        : await supabase.from('discovery_trucks').update({ [column]: null }).eq('id', truckId)
       if (dbErr) return NextResponse.json({ error: `Could not clear the column: ${dbErr.message}` }, { status: 500 })
 
       // 2. THEN the object, and only if the path is one of ours.

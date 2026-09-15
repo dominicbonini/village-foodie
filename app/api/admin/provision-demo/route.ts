@@ -165,6 +165,10 @@ export async function POST(req: NextRequest) {
         ...(result.publicRef ? { public: `/demo/${result.publicRef}` } : {}),
       },
       warnings: result.warnings,
+      // 🔴 SURFACED AT CREATION, NOT DISCOVERED ON THE DEMO PAGE. A refused logo used to reach the
+      // operator only inside the collapsed "Notes" list, which is how a demo went out unbranded with
+      // nothing on screen that said so.
+      logoNote: result.logoNote,
     })
   } catch (err) {
     if (err instanceof ProvisionDemoError) {

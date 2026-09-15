@@ -14,8 +14,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { createSlug } from '@/lib/utils'
 import { CONTACT_KINDS, kindLabel } from '@/lib/outreach'
-import { LEAD_TYPES, LEAD_TYPE_LABELS } from '@/lib/outreach-step'
-import { readOutreachGlobals, writeOutreachGlobals } from '@/lib/outreach-globals'   // the repo's existing slug function — not a second one
+import {
+  LEAD_TYPES, nextStep, templateForStep, type LeadType, type Step,
+} from '@/lib/outreach-step'
+// ⚠️ SHARED WITH A CUSTOMER PATH — `components/EventListCard.tsx` (the live call/message button) imports
+// this same module. It is READ here and NOTHING ELSE; lib/whatsapp-hint.ts carries no change from this
+// task. It is imported for one reason: `nextStep` needs `waPhone` to decide a prospect's channel, and
+// OutreachPanel already builds it exactly this way. A second derivation here would be a second answer.
+import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { snippetIndex, snippetMapOf, isUnset, type Snippet, type SnippetUse } from '@/lib/outreach-snippets'
 import {
   contextFromProspect, renderWithFills, unresolvedIn, defaultFillsOf,
   resolvedTokenReference, conditionReference, suspectedMistypedTokens, malformedTokensIn,
@@ -55,6 +62,17 @@ type Prospect = {
    *  preview exists not to do. */
   lead_type_at_first_contact?: string | null
   whatsapp_confirmed: boolean | null
+  // 🔴 THE FIELDS `nextStep` READS, so the match count under section 2 can drive the REAL step
+  // derivation rather than a second copy of it. All are already returned by /api/admin/outreach — this
+  // type simply never declared them, because until now the preview was the only consumer.
+  // ⚠️ Optional throughout: a route running against an unapplied migration omits some, and `nextStep`
+  // treats every one of them as optional too. A missing field must degrade the COUNT, never throw.
+  contacts?: { contacted_at?: string | null; direction?: string | null; kind?: string | null; channel?: string | null }[]
+  phone?: string | null
+  contact_email?: string | null
+  do_not_contact?: boolean | null
+  stage?: string | null
+  hatchgrab_truck_id?: string | null
 }
 
 // The rail's two tabs. 🔴 Preview is the default: it is the only way to see the conditional branch
@@ -65,16 +83,148 @@ const RAIL_TABS = [
 ]
 type RailTab = typeof RAIL_TABS[number]['key']
 
+
+// ── 🔴 THE SNIPPETS LIBRARY ─────────────────────────────────────────────────────────────────────────
+// One row per DISTINCT `[[name]]` across every loaded template — not per template, not per occurrence.
+// Beside each, the real LABELS of the templates that use it, because the point of the redesign is that
+// the blast radius is visible BEFORE saving: a value used by four emails should say so while you are
+// changing it, not after.
+function SnippetsLibrary({ uses, snippets, draft, setDraft, onSave, enabled }: {
+  uses: SnippetUse[]
+  snippets: Snippet[]
+  draft: Record<string, string>
+  setDraft: React.Dispatch<React.SetStateAction<Record<string, string>>>
+  onSave: (name: string) => void
+  enabled: boolean
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-baseline gap-3 mb-3">
+        <p className="text-sm font-semibold text-slate-900">Snippets</p>
+        <p className="text-[12px] text-slate-500">
+          A value set here is used by every template that writes <code className="font-mono">[[its name]]</code>.
+          Leave one blank to be asked per truck.
+        </p>
+      </div>
+
+      {!enabled && (
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2">
+          <p className="text-[12px] font-bold text-amber-900">The snippets table is not there yet.</p>
+          <p className="text-[12px] text-amber-800 mt-0.5">
+            Apply <code className="font-mono">supabase/migrations/20260916_outreach_snippets.sql</code>, then run{' '}
+            <code className="font-mono">notify pgrst, &apos;reload schema&apos;;</code> — PostgREST answers from a
+            cached schema until it is told to reload. Until then every placeholder is asked per truck, as before.
+          </p>
+        </div>
+      )}
+
+      {uses.length === 0 ? (
+        // ⚠️ THE EMPTY STATE NAMES ITS CAUSE. An empty library is not a fault — it means no template
+        // body contains a `[[marker]]` — and saying so stops it reading as a failed load.
+        <p className="text-[13px] text-slate-500">
+          No <code className="font-mono">[[placeholders]]</code> in any template, so there is nothing to define.
+          Add one to a template body and it appears here.
+        </p>
+      ) : (
+        <div className="divide-y divide-slate-100">
+          {uses.map(u => {
+            const stored = snippets.find(s => s.name === u.name)
+            const value = draft[u.name] ?? ''
+            const dirty = (stored?.value ?? '') !== value
+            // 🔴 THREE STATES, AND TWO OF THEM LOOK THE SAME TO THE RENDERER BUT NOT TO A PERSON.
+            //   a value      → filled in every message
+            //   blank ROW    → "ask me per truck", a decision that was made
+            //   NO row       → nobody has looked at this one yet
+            // Both blanks prompt at compose time; only the operator needs them told apart.
+            const unset = isUnset(snippets, u.name)
+            return (
+              <div key={u.name} className="py-2.5 flex items-start gap-3 flex-wrap">
+                <div className="w-44 flex-shrink-0">
+                  <div className="text-[12px] font-mono font-semibold text-slate-800 truncate"
+                    title={`[[${u.name}]]`}>{`[[${u.name}]]`}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                    {unset ? 'never set' : (stored?.value ?? '').trim() === '' ? 'ask per truck' : 'set'}
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-[12rem]">
+                  <input type="text" disabled={!enabled}
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white disabled:bg-slate-50"
+                    placeholder="(blank = ask me per truck)"
+                    value={value}
+                    onChange={e => setDraft(d => ({ ...d, [u.name]: e.target.value }))} />
+                </div>
+
+                {/* 🔴 THE BLAST RADIUS. Real labels, not counts alone — "four templates" does not tell
+                    you WHICH four, and the whole reason this screen exists is to see that a change
+                    reaches the general approach AND the chaser before making it.
+                    ⚠️ An INACTIVE template is listed and marked, not hidden: it is still a template the
+                    value reaches if it is ever switched back on, and hiding it would understate the
+                    radius. */}
+                <div className="flex-1 min-w-[14rem]">
+                  <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-0.5">
+                    Used by {u.templates.length} template{u.templates.length === 1 ? '' : 's'}
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {u.templates.map(t => (
+                      <span key={t.id}
+                        className={`text-[11px] px-1.5 py-0.5 rounded border ${t.active
+                          ? 'border-slate-200 bg-slate-50 text-slate-700'
+                          : 'border-slate-200 bg-white text-slate-400 line-through'}`}
+                        title={t.active ? t.label : `${t.label} — retired, but still uses this snippet`}>
+                        {t.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <button type="button" disabled={!enabled || !dirty} onClick={() => onSave(u.name)}
+                  className="flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-700 text-white hover:bg-violet-800 disabled:bg-slate-200 disabled:text-slate-400">
+                  {dirty ? 'Save' : 'Saved'}
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// 🔴 A SENTINEL ID, AND IT IS LOAD-BEARING. `templateForStep` falls back to the hardcoded
+// `STEP_TEMPLATE` slug map when no tagged template matches, and then returns THAT slug — so probing
+// with the template's own slug would count a FALLBACK hit as a TAG match, and a template whose slug
+// happened to be `chaser_email` would read as matching everything. `@` cannot appear in a slug (the
+// route validates `^[a-z0-9_-]{3,60}$`) and appears in no STEP_TEMPLATE entry, so the fallback branch
+// can only ever return `slug_absent` — making `slug === PROBE_ID` true if and only if the TAG branch
+// matched. 🧪 The mutation test for this is the "probe id equals a real slug" control in the report.
+const PROBE_ID = '@@match-probe@@'
+
+// 🔴 PLAIN WORDING FOR THE FOUR LEAD TYPES — A LABEL MAP, NOT A RENAME.
+// The KEYS are `LeadType`, so this map is checked against the real union at compile time and cannot
+// drift out of step with it; the VALUES are only what the dropdown prints. Nothing here changes a
+// stored string, a column, or `LEAD_TYPE_LABELS` — which stays exactly as it is because the outreach
+// list and the compose window render it, and two screens disagreeing about a truck's description would
+// be worse than either wording.
+// ⚠️ THE LIST ITSELF STAYS IN CODE, AND THAT IS THE HONEST ANSWER, NOT A SHORTCUT. `leadTypeOf` decides
+// a truck's type with a fixed predicate over `hu_ordering` / `hu_map` / `show_on_vf`; a fifth type typed
+// into a settings screen would have no branch there, so no truck could ever derive to it and a template
+// tagged with it would silently match nobody. The fix for "these seem hardcoded" is that the wording is
+// plain and the explanation is ON THE PAGE — not a dropdown the operator can add dead entries to.
+const LEAD_TYPE_PLAIN: Record<LeadType, string> = {
+  hu_ordering: 'On Hatches Up, taking orders',
+  hu_map: 'On Hatches Up, map only',
+  on_vf: 'On the Village Foodie map',
+  not_listed: 'Not listed anywhere',
+}
+
 const FIELD = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm'
 const LABEL = 'block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5'
-const fmtWhen = (iso: string | null) => {
-  if (!iso) return 'never'
-  const d = new Date(iso)
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-/** Days since an ISO timestamp, for the staleness marker. */
-const daysSince = (iso: string | null) =>
-  iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000) : null
+// 🔴 `fmtWhen` AND `daysSince` ARE GONE WITH THE BADGES THEY SERVED. They rendered a per-placeholder
+// age — amber "none" when unset, red "stale" past 60 days — on a value the operator sets once and
+// changes when his rate changes. Tracking how old it is answered a question nobody was asking, and it
+// made an unset field look like a warning. The snippet library says "not set" or "asked per truck" and
+// stops there.
 
 /** The DB row as the shared mechanism wants it. One mapping, used for preview and for the picker. */
 function toMessageTemplate(r: Row): MessageTemplate {
@@ -106,31 +256,62 @@ export default function TemplatesPanel() {
   const [forceNoEvent, setForceNoEvent] = useState(false)
   const [rail, setRail] = useState<RailTab>('preview')
   const [draft, setDraft] = useState<Partial<Row>>({})
-  const [defaultsDraft, setDefaultsDraft] = useState<Record<string, string>>({})
   /** Whether 20260915_outreach_template_tags.sql is applied AND PostgREST has reloaded. Reported by
    *  the route as a capability flag, exactly like hasContactNames on the outreach route. */
   const [hasTemplateTags, setHasTemplateTags] = useState(false)
-  /** 🔴 GLOBAL PLACEHOLDER DEFAULTS — values stated ONCE and used by every template that has no
-   *  default of its own. Read lazily so the server render never touches localStorage. */
-  // 🔴 LAZY INITIALISERS, NOT A MOUNT EFFECT, AND THE SSR ARGUMENT IS SPELLED OUT BECAUSE THIS FILE'S
-  // SIBLING DELIBERATELY DOES THE OPPOSITE. OutreachPanel restores its filter blob in an effect and
-  // says why: a 'use client' component is still server-rendered for the initial HTML, so seeding state
-  // from localStorage would make the server and client markup disagree.
-  // ⚠️ THAT ARGUMENT DOES NOT APPLY HERE, and the reason is structural rather than lucky: everything
-  // these two values feed is inside `{allPlaceholders.length > 0 && …}`, and `allPlaceholders` derives
-  // from `rows`, which starts `[]` and only fills after a fetch. So on the server AND on the hydration
-  // render this block renders NOTHING — the state differs between the two, but no markup does.
-  // 🔴 If that gate is ever removed, these must go back to the restore-after-mount pattern.
-  const [globals, setGlobals] = useState<Record<string, string>>(() => readOutreachGlobals())
-  const [globalsDraft, setGlobalsDraft] = useState<Record<string, string>>(() => readOutreachGlobals())
-  /** Every [[placeholder]] across every LOADED template — what a global could usefully cover. 🔴 It is
-   *  DERIVED from the bodies, never a hand-written list, so a placeholder invented tomorrow appears
-   *  here without anyone remembering to add it. */
-  const allPlaceholders = useMemo(() => {
-    const set = new Set<string>()
-    for (const r of rows) for (const n of unresolvedIn(`${r.subject ?? ''}\n${r.body}`)) set.add(n)
-    return [...set].sort()
-  }, [rows])
+  // 🔴 THE SNIPPET LIBRARY — the single place a `[[name]]` value is set, replacing BOTH of the panels
+  // that used to do this job: the per-template "Placeholder defaults" row (one value, one edit per
+  // template that mentioned it) and the localStorage "Global defaults" box added on 15 September (one
+  // edit, but only in the browser it was typed into). Neither was a library; this is.
+  const [snippets, setSnippets] = useState<Snippet[]>([])
+  const [snippetDraft, setSnippetDraft] = useState<Record<string, string>>({})
+  /** False until 20260916_outreach_snippets.sql is applied AND PostgREST has reloaded its schema. */
+  const [hasSnippets, setHasSnippets] = useState(false)
+  const [snippetNote, setSnippetNote] = useState<string | null>(null)
+  /** Which top-level view the tab is showing. Snippets is global, so it cannot live in the rail — the
+   *  rail only renders with a template selected. See the report for the alternatives considered. */
+  const [view, setView] = useState<'templates' | 'snippets'>('templates')
+
+  /** name → value, for the read-only display on the template editor and for the compose pre-fill. */
+  const snippetValues = useMemo(() => snippetMapOf(snippets), [snippets])
+
+  // 🔴 EVERY DISTINCT `[[name]]` ACROSS EVERY LOADED TEMPLATE, WITH THE TEMPLATES THAT USE IT.
+  // ⚠️ THE INPUT IS THE TEMPLATE BODIES, so the library is only as right as they are: a template the
+  // route did not return is not counted, and a name typed two ways is two snippets. That is a property
+  // of the marker being free text — normalising case here would silently merge two markers the
+  // renderer treats as distinct, which is worse than showing both.
+  const snippetUses = useMemo(
+    () => snippetIndex(rows.map(r => ({
+      id: r.id, label: r.label, slug: r.slug, active: r.active, subject: r.subject, body: r.body,
+    })), unresolvedIn),
+    [rows])
+
+
+  // ── 🔴 THE MATCH COUNT — "how many prospects would this actually pick up?" ───────────────────────
+  // A rule you cannot count is a rule you cannot check. These two memos turn the three dropdowns in
+  // section 2 into a number against the live list.
+  //
+  // 🔴 IT DRIVES THE REAL FUNCTIONS. `nextStep` derives the rung, the channel and the lead type exactly
+  // as the outreach list does; `templateForStep` is THE matcher the compose window's pre-selection
+  // uses. Nothing here re-implements either. A second copy would agree on the day it was written and
+  // drift afterwards, and the drift would surface as a count that quietly disagreed with what the
+  // composer actually opened.
+  //
+  // ⚠️ COST. `steps` is keyed on `prospects` ALONE, so it is computed once per load — not per keystroke.
+  // The count is keyed on the three rule fields only, so typing in Label, Subject or Body recomputes
+  // NOTHING. Changing a dropdown walks the prospect list once.
+  const steps = useMemo(() => {
+    const m = new Map<string, Step>()
+    for (const p of prospects) {
+      // ⚠️ `waPhone` from the SHARED `phoneWhatsApp`, built exactly as OutreachPanel builds it — the
+      // same call, so the two cannot disagree about who is reachable on WhatsApp.
+      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone }, p.contacts ?? []))
+    }
+    return m
+  }, [prospects])
+
+
+
 
   const say = (m: string) => { setToast(m); setTimeout(() => setToast(null), 1800) }
 
@@ -146,6 +327,18 @@ export default function TemplatesPanel() {
         setLoading(false); return
       }
       setRows(data.templates || [])
+      // 🔴 THE LIBRARY, FETCHED BESIDE THE TEMPLATES AND NEVER FATAL. Before the migration is applied
+      // the route answers 200 with `hasSnippets: false`, so the tab keeps working and every field
+      // simply prompts — which is what the `[[…]]` tier has always done.
+      try {
+        const rs = await fetch('/api/admin/outreach-snippets', { headers: h, credentials: 'same-origin' })
+        if (rs.ok) {
+          const ds = await rs.json()
+          setSnippets(ds.snippets ?? [])
+          setHasSnippets(!!ds.hasSnippets)
+          setSnippetDraft(Object.fromEntries((ds.snippets ?? []).map((x: Snippet) => [x.name, x.value ?? ''])))
+        }
+      } catch { /* the tier prompts, as it always has */ }
       setHasTemplateTags(!!data.hasTemplateTags)
     } catch (e: any) { setLoadError({ message: e?.message || 'Could not load templates', needsMigration: false }) }
     setLoading(false)
@@ -169,18 +362,89 @@ export default function TemplatesPanel() {
 
   const selected = useMemo(() => rows.find(r => r.id === selId) ?? null, [rows, selId])
 
+  const match = useMemo(() => {
+    if (!selected) return null
+    // 🔴 NULL RUNG IS NOT "ANY". `templateForStep` tests `servesKind === step.kind`, so a null rung
+    // never tag-matches anything — the template falls through to the hardcoded map instead. Reporting
+    // "0 prospects" there would be true but misleading, so this reports a DIFFERENT state.
+    if (!draft.serves_kind) return { kind: 'untagged' as const, n: 0 }
+    if (prospects.length === 0) return { kind: 'noprospects' as const, n: 0 }
+    const probe = [{
+      id: PROBE_ID,
+      channel: draft.channel ?? 'email',
+      sortOrder: 0,
+      servesKind: draft.serves_kind ?? null,
+      servesLeadType: draft.serves_lead_type ?? null,
+    }]
+    let n = 0
+    for (const p of prospects) {
+      const step = steps.get(p.id)
+      if (!step) continue
+      if (templateForStep(step, probe).slug === PROBE_ID) n++
+    }
+    return { kind: 'counted' as const, n }
+  }, [selected, prospects, steps, draft.channel, draft.serves_kind, draft.serves_lead_type])
+  // ── 🔴 THE UNSAVED-DRAFT GUARD ──────────────────────────────────────────────────────────────────
+  // `draft` is reset by the effect on [selected], so clicking another template in the list USED TO
+  // destroy every unsaved edit with no warning and no undo. That is the worse of the two silent losses
+  // in this file: the work was typed, it was on screen, and one click erased it.
+  //
+  // 🔴 DIRTY IS COMPARED FIELD BY FIELD AGAINST THE STORED ROW, not tracked with an onChange flag. A
+  // flag says "something was typed", which is true even after typing a character and deleting it again
+  // — and a guard that fires when nothing actually changed is a guard people learn to click through.
+  // ⚠️ `?? null` on both sides of every comparison: the route returns null for an absent subject and
+  // the draft holds '' after the field is emptied, and null !== '' would mark a clean row dirty for ever.
+  const dirty = useMemo(() => {
+    if (!selected) return false
+    const a = draft
+    return (a.label ?? '') !== (selected.label ?? '')
+      || (a.channel ?? 'email') !== (selected.channel ?? 'email')
+      || (a.subject ?? '') !== (selected.subject ?? '')
+      || (a.body ?? '') !== (selected.body ?? '')
+      || (a.serves_kind ?? null) !== (selected.serves_kind ?? null)
+      || (a.serves_lead_type ?? null) !== (selected.serves_lead_type ?? null)
+  }, [draft, selected])
+
+  /** The row the operator asked for while an edit was outstanding. Null when nothing is pending. */
+  const [pendingSelId, setPendingSelId] = useState<string | null>(null)
+
+  // 🔴 EVERY SELECTION GOES THROUGH HERE. The list calls this, never `setSelId` directly, so there is
+  // exactly one place the guard can be bypassed — and it is not bypassed.
+  const requestSelect = (id: string) => {
+    if (id === selId) return
+    if (dirty) { setPendingSelId(id); return }   // hold it; the bar below decides
+    setSelId(id)
+  }
+
   // Seed the editor when the selection changes.
   useEffect(() => {
-    if (!selected) { setDraft({}); setDefaultsDraft({}); return }
+    if (!selected) { setDraft({}); return }
     // 🔴 THE TAGS ARE SEEDED INTO THE DRAFT TOO, or saving any other field would post the draft
     // without them and the update would read as "no change" for the tags while silently keeping the
     // stored value. Seeding them makes what is on screen what gets sent.
     setDraft({ label: selected.label, channel: selected.channel, subject: selected.subject,
       body: selected.body, sort_order: selected.sort_order, active: selected.active,
       serves_kind: selected.serves_kind ?? null, serves_lead_type: selected.serves_lead_type ?? null })
-    setDefaultsDraft(Object.fromEntries(
-      Object.entries(selected.placeholder_defaults ?? {}).map(([k, v]) => [k, v?.value ?? ''])))
   }, [selected])
+
+  /** 🔴 ONE NAME PER SAVE. A bulk write would make "which of these did I just change" unanswerable,
+   *  and the blast radius shown beside each row is per name. */
+  const saveSnippet = async (name: string) => {
+    const h = await nativeAuthHeader()
+    const res = await fetch('/api/admin/outreach-snippets', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { ...h, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'set_snippet', name, value: snippetDraft[name] ?? '' }),
+    })
+    const out = await res.json().catch(() => null)
+    if (!res.ok) { setSnippetNote(out?.error || 'Could not save'); return }
+    setSnippets(cur => {
+      const rest = cur.filter(x => x.name !== name)
+      return [...rest, out.snippet].sort((a, b) => a.name.localeCompare(b.name))
+    })
+    const used = snippetUses.find(u => u.name === name)?.templates.length ?? 0
+    setSnippetNote(`Saved [[${name}]] — used by ${used} template${used === 1 ? '' : 's'}`)
+  }
 
   const post = useCallback(async (payload: Record<string, unknown>) => {
     const h = await nativeAuthHeader()
@@ -194,24 +458,51 @@ export default function TemplatesPanel() {
     return data
   }, [])
 
-  const saveDraft = async () => {
-    if (!selected) return
+  // 🔴 IT REPORTS WHETHER IT ACTUALLY SAVED. The unsaved-changes bar switches template only on a
+  // TRUE here: a failed write that switched anyway would discard the draft in the one flow built to
+  // protect it, and the operator would have pressed a button labelled "Save" to lose their work.
+  const saveDraft = async (): Promise<boolean> => {
+    if (!selected) return false
     const out = await post({ action: 'update_template', id: selected.id, ...draft })
-    if (out) say('Saved')
+    if (out) { say('Saved'); return true }
+    return false            // `post` has already shown the error in the toast
   }
-  const saveDefaults = async () => {
-    if (!selected) return
-    const out = await post({ action: 'set_defaults', id: selected.id, defaults: defaultsDraft })
-    if (out) say('Defaults saved')
-  }
+  // 🔴 `saveDefaults` IS GONE. It was the only caller of the route's `set_defaults` action and the only
+  // way the UI wrote `outreach_templates.placeholder_defaults` — which is exactly the per-template
+  // storage this redesign replaces. The ROUTE ACTION IS DELIBERATELY LEFT IN PLACE: it is the only
+  // mechanism that can clear a legacy value, and removing it would leave a shadowed value with no way
+  // out short of hand-written SQL. Nothing in the UI calls it, so nothing writes a template row.
   const toggleActive = async (r: Row) => { await post({ action: 'update_template', id: r.id, active: !r.active }) }
+  // ── 🔴 REORDER — REBUILT, BECAUSE THE OLD ONE WAS DEAD ON EXACTLY THE ROWS DOMINIC USES ──────────
+  // The old body SWAPPED the two rows' `sort_order` values. 🧪 `chase-1` and `wa_chaser` both sit at
+  // 999 (his figure), and swapping 999 with 999 writes 999 over 999 — the button posted twice, the
+  // list reloaded, and nothing moved. Every template created through this tab gets 999 from the route,
+  // so the arrows were dead for every row the tab itself made.
+  //
+  // 🔴 THE FIX IS TO STOP MOVING VALUES AND START ASSIGNING POSITIONS. Build the order the operator
+  // asked for, then number it 10, 20, 30 … A position is unambiguous where a swap is not, so a move
+  // ALWAYS reorders — including when every row in the list shares one value.
+  //
+  // ⚠️ IT WRITES ONLY THE ROWS WHOSE NUMBER ACTUALLY CHANGES. Renumbering the whole list on every click
+  // would touch template rows the operator did not ask to touch; the filter below means moving one of
+  // two tied rows writes those rows and nothing else. 🔴 NOTHING RENUMBERS ON LOAD, on save, or in a
+  // migration — the only thing that ever writes `sort_order` is this click. See the report's SQL if a
+  // one-off tidy of the stored numbers is wanted; that is Dominic's to run, not this code's.
   const move = async (r: Row, dir: -1 | 1) => {
-    const ordered = [...rows].sort((a, b) => a.sort_order - b.sort_order)
+    // 🔴 THE SAME COMPARATOR THE LIST RENDERS WITH, INCLUDING THE TIE-BREAK. Sorting here by
+    // `sort_order` alone would let two tied rows come back in a different order than the one on screen,
+    // and the arrow would then move a row the operator was not pointing at.
+    const ordered = [...rows].sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug))
     const i = ordered.findIndex(x => x.id === r.id)
     const j = i + dir
-    if (j < 0 || j >= ordered.length) return
-    await post({ action: 'update_template', id: r.id, sort_order: ordered[j].sort_order })
-    await post({ action: 'update_template', id: ordered[j].id, sort_order: r.sort_order })
+    if (i < 0 || j < 0 || j >= ordered.length) return
+    ;[ordered[i], ordered[j]] = [ordered[j], ordered[i]]     // positions, not values
+    const writes = ordered
+      .map((row, idx) => ({ row, next: (idx + 1) * 10 }))
+      .filter(({ row, next }) => row.sort_order !== next)
+    for (const { row, next } of writes) {
+      await post({ action: 'update_template', id: row.id, sort_order: next })
+    }
     void load()
   }
   // 🔴 ASK FOR THE NAME, NOT THE SLUG. It used to prompt for a slug and reject anything outside
@@ -234,6 +525,12 @@ export default function TemplatesPanel() {
     const out = await post({ action: 'create_template', slug, label: name, channel: 'email', body: 'Hi,\n\n' })
     if (out?.template) {
       setRows(rs => [...rs, out.template]); setSelId(out.template.id)
+      // 🔴 AND SWITCH TO THE VIEW THAT CAN SHOW IT. The New template button sits ABOVE the view switch,
+      // so it is clickable from the Snippets view — but the editor lives in the other branch of that
+      // switch and is not rendered there. Without this line the row is inserted, selected, and drawn
+      // NOWHERE: the only evidence is an 1800ms toast, which is how a blank template got left behind.
+      // 🧪 Creating from the Templates view already sets this to the value it already has — a no-op there.
+      setView('templates')
       // Name the derived slug rather than letting it appear silently — it is fixed after creation.
       say(`Created "${name}" (slug: ${slug})`)
     }
@@ -389,16 +686,73 @@ export default function TemplatesPanel() {
             that is precisely what left the compose window painting at `z-index: auto` behind the modal
             today. If this class went missing the three panes would stack into one column, which is the
             exact layout being fixed. An inline style cannot be absent from a stylesheet. */}
+        {/* ── 🔴 A TOP-LEVEL VIEW SWITCH, NOT A THIRD RAIL TAB ──────────────────────────────────────
+            The rail (Preview / Tokens) renders only inside `{selected && …}`, so a Snippets tab there
+            would be unreachable with no template selected — and the library is GLOBAL: its whole point
+            is that it is not about one template. A switch here is always reachable, leaves the
+            master–detail–rail grid untouched, and keeps the two views from competing for width.
+            ⚠️ Alternatives weighed and rejected: a fourth grid column (squeezes the editor at every
+            width), a collapsible strip above the grid (pushes the editor down permanently), and its own
+            admin nav item (a whole tab for one table). */}
+        <div className="flex items-center gap-2 mb-4">
+          {([['templates', 'Templates'], ['snippets', `Snippets${snippetUses.length ? ` (${snippetUses.length})` : ''}`]] as const)
+            .map(([v, label]) => (
+              <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
+                className={`text-sm rounded-lg px-3 py-1.5 border font-semibold ${view === v
+                  ? 'bg-slate-800 border-slate-800 text-white'
+                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}>
+                {label}
+              </button>
+            ))}
+          {view === 'snippets' && snippetNote && (
+            <span className="text-xs text-slate-600">{snippetNote}</span>
+          )}
+        </div>
+
+        {/* ── 🔴 THE UNSAVED-CHANGES BAR ────────────────────────────────────────────────────────────
+            What happens if Dominic clicks another template with an edit outstanding: NOTHING happens
+            until he answers this. The click is HELD, not applied and not thrown away — the editor still
+            shows his work, and the three buttons are the three things he could mean. There is no fourth
+            outcome, and no path that discards typed text without him pressing a button that says so. */}
+        {pendingSelId && (
+          <div className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 flex items-center gap-3 flex-wrap">
+            <span className="text-[13px] font-bold text-amber-900">Unsaved changes</span>
+            <span className="text-[12px] text-amber-800 flex-1 min-w-[12rem]">
+              You edited <b>{selected?.label}</b> without saving. Switching now would lose it.
+            </span>
+            <button type="button"
+              onClick={async () => { const go = pendingSelId; if (await saveDraft()) { setPendingSelId(null); setSelId(go) } }}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-700 text-white hover:bg-violet-800">
+              Save, then switch
+            </button>
+            <button type="button"
+              onClick={() => { const go = pendingSelId; setPendingSelId(null); setSelId(go) }}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-amber-400 bg-white text-amber-900 hover:bg-amber-100">
+              Discard my changes
+            </button>
+            <button type="button" onClick={() => setPendingSelId(null)}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50">
+              Stay here
+            </button>
+          </div>
+        )}
+
+        {view === 'snippets' ? <SnippetsLibrary
+          uses={snippetUses} snippets={snippets} draft={snippetDraft} setDraft={setSnippetDraft}
+          onSave={saveSnippet} enabled={hasSnippets} /> : (
         <div className="grid gap-4 items-start" style={{ gridTemplateColumns: '240px minmax(0, 1fr) minmax(0, 1fr)' }}>
 
           {/* ── LIST — ONE LINE PER ROW ──────────────────────────────────────────────────────────── */}
           <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-            {[...rows].sort((a, b) => a.sort_order - b.sort_order).map((r, i, arr) => {
+            {/* 🔴 THE SAME COMPARATOR `move` USES. Sorting on `sort_order` alone left ties to Array.sort
+                stability — the order the API happened to return — so the list and the arrows could disagree
+                about which row sits where. Declared here, declared there, identical. */}
+            {[...rows].sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug)).map((r, i, arr) => {
               const isSel = selId === r.id
               return (
                 <div key={r.id}
                   className={`group flex items-center gap-1.5 px-2.5 py-1.5 border-b border-slate-100 last:border-b-0 cursor-pointer ${isSel ? 'bg-orange-50' : 'hover:bg-slate-50'}`}
-                  onClick={() => setSelId(r.id)}>
+                  onClick={() => requestSelect(r.id)}>
                   <span className={`text-sm truncate flex-1 min-w-0 ${r.active ? (isSel ? 'font-semibold text-slate-900' : 'text-slate-800') : 'text-slate-400 line-through'}`}>
                     {r.label}
                   </span>
@@ -430,176 +784,258 @@ export default function TemplatesPanel() {
             )}
             {selected && (
               <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
-                {/* 🔴 DEFAULTS FIRST. They were below the body, which put them off screen — the one
-                    thing on this pane that is set once and then rarely touched was the hardest to reach.
-                    Above the label row they are visible the moment a template is selected, and they
-                    still occupy a single row. */}
-                {/* ── DEFAULTS — ONE ROW ─────────────────────────────────────────────────────────── */}
-                <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
-                  <div className="flex items-baseline gap-2 mb-1.5">
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">Placeholder defaults</p>
-                    {bodyPlaceholders.length > 0 && (
-                      <button onClick={saveDefaults}
-                        className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-100">
-                        Save defaults
-                      </button>
+                {/* ══ 1 · NAME IT ═══════════════════════════════════════════════════════════════════
+                    🔴 THE THREE SECTIONS ARE THE EDITOR, NOT A WIZARD. Dominic spends most of his time
+                    editing templates that already exist, and a stepper only ever runs once — it would
+                    have left the common case exactly as it was. These are headed groups on one screen:
+                    identical markup for a new row and a ten-month-old one, every field reachable at all
+                    times, no "next" to press and no state to be half-way through.
+                    ⚠️ The order is the order the fields were already in. What was missing was the
+                    headings, and one visible sentence each saying what the group is for. */}
+                <div>
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">1</span>
+                    <h3 className="text-sm font-bold text-slate-900">Name it</h3>
+                  </div>
+                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
+                    This name is for you — it appears in your template list and the compose picker.
+                    <b> Nobody you contact ever sees it.</b>
+                  </p>
+                  <div className="ml-7 flex items-end gap-3">
+                    <label className="block flex-1 min-w-0"><span className={LABEL}>Template name</span>
+                      <input type="text" className={FIELD} value={draft.label ?? ''}
+                        onChange={e => setDraft(d => ({ ...d, label: e.target.value }))} />
+                    </label>
+                    {/* 🔴 THE SLUG APPEARS ONCE, HERE, FOR THE SELECTED TEMPLATE ONLY — it is fixed and
+                        rarely relevant, so it does not belong on every list row. */}
+                    <span className="flex-shrink-0 pb-1.5 text-[11px] text-slate-400 font-mono"
+                      title="The key the compose picker resolves against. Fixed after creation — renaming it would orphan the suggestion.">
+                      {selected.slug}
+                    </span>
+                  </div>
+                </div>
+
+                {/* ══ 2 · WHEN TO USE IT ════════════════════════════════════════════════════════════
+                    🔴 THE EXPLANATIONS USED TO BE `title=` TOOLTIPS AND THEY MAY AS WELL NOT HAVE
+                    EXISTED. A tooltip needs a hover and a wait, never appears on a touch screen, and is
+                    invisible to someone who does not already know it is there — which is everyone who
+                    needed it. The same sentences are now on the page. */}
+                <div className="pt-3 border-t border-slate-100">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">2</span>
+                    <h3 className="text-sm font-bold text-slate-900">When to use it</h3>
+                  </div>
+                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
+                    When a truck is due to be contacted, Village Foodie works out which stage they are at
+                    and what kind of truck they are. <b>If that matches the three settings below, this
+                    template is the one it opens for you.</b> Leave them alone and this template is only
+                    ever chosen by hand.
+                  </p>
+
+                  <div className="ml-7 flex items-end gap-3 flex-wrap">
+                    <label className="block w-40 flex-shrink-0"><span className={LABEL}>Send by</span>
+                      <select className={FIELD} value={draft.channel ?? 'email'}
+                        onChange={e => setDraft(d => ({ ...d, channel: e.target.value as 'email' | 'whatsapp' }))}>
+                        <option value="email">Email</option>
+                        <option value="whatsapp">WhatsApp</option>
+                      </select>
+                    </label>
+
+                    {/* 🔴 LABELS ONLY. `CONTACT_KINDS` supplies the VALUES and they are written to the
+                        database unchanged; `kindLabel` supplies the words, and it already spells them
+                        the way Dominic does — "First contact", "Chase 1", "Chase 2", "Final chase".
+                        Nothing here renames a column, a constant or a stored string. */}
+                    <label className="block w-52 flex-shrink-0">
+                      <span className={LABEL}>At which stage</span>
+                      <select className={FIELD} disabled={!hasTemplateTags}
+                        value={draft.serves_kind ?? ''}
+                        onChange={e => setDraft(d => ({ ...d, serves_kind: e.target.value || null }))}>
+                        {/* 🔴 NULL IS NOT "ANY STAGE". `templateForStep` tests `servesKind === step.kind`,
+                            so an untagged template is never picked automatically at all — it falls
+                            through to the built-in map. The option has to say that, or it reads as a
+                            wildcard and the operator waits for a match that cannot come. */}
+                        <option value="">Never picked automatically</option>
+                        {CONTACT_KINDS.map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
+                      </select>
+                    </label>
+
+                    <label className="block w-64 flex-shrink-0">
+                      <span className={LABEL}>For which trucks</span>
+                      <select className={FIELD} disabled={!hasTemplateTags}
+                        value={draft.serves_lead_type ?? ''}
+                        onChange={e => setDraft(d => ({ ...d, serves_lead_type: e.target.value || null }))}>
+                        {/* Here null REALLY IS "any" — `servesLeadType == null || === step.leadType`. */}
+                        <option value="">Any truck</option>
+                        {LEAD_TYPES.map(lt => (
+                          <option key={lt} value={lt}>{LEAD_TYPE_PLAIN[lt]}</option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+
+                  {/* ── 🔴 THE MATCH COUNT — the rule, made concrete ─────────────────────────────────
+                      Three dropdowns describe a rule; this says who it actually catches, from the live
+                      prospect list, using the same two functions the outreach list and the compose
+                      window use. It is the difference between "I think this is right" and "this picks
+                      up 105 trucks". ⚠️ It costs one walk of the prospect list when a dropdown changes
+                      and NOTHING when typing — the memo above is keyed on the three rule fields only. */}
+                  <div className="ml-7 mt-2">
+                    {match?.kind === 'untagged' && (
+                      <p className="text-[12px] text-slate-500">
+                        Not picked automatically. You can still choose it by hand in the compose window.
+                      </p>
+                    )}
+                    {match?.kind === 'noprospects' && (
+                      <p className="text-[12px] text-slate-400">
+                        Counting needs the prospect list — it has not loaded, so this is not a zero.
+                      </p>
+                    )}
+                    {match?.kind === 'counted' && (
+                      <p className={`text-[12px] ${match.n === 0 ? 'text-amber-800' : 'text-slate-700'}`}>
+                        {match.n === 0 ? (
+                          <>
+                            <b>No trucks match this right now.</b> Nothing is broken — it means nobody is
+                            currently due at this stage with this description. It will pick up trucks as
+                            they become due.
+                          </>
+                        ) : (
+                          <>
+                            Matches <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
+                            {' '}<span className="text-slate-500">
+                              Another template tagged the same way and sitting higher in the list would
+                              be chosen instead.
+                            </span>
+                          </>
+                        )}
+                      </p>
                     )}
                   </div>
+
+                  {/* ⚠️ THE DISABLED STATE NAMES BOTH CAUSES, BECAUSE THEY LOOK IDENTICAL FROM HERE.
+                      The probe is a `select` on the two columns: a column that does not exist and a
+                      PostgREST schema cache that has not reloaded fail it in exactly the same way, and
+                      the old message named only the first. 🧪 Dominic has confirmed the columns EXIST,
+                      so if this is on screen it is the cache — which is why the reload is named first. */}
+                  {!hasTemplateTags && (
+                    <div className="ml-7 mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2">
+                      <p className="text-[12px] font-bold text-amber-900">These two are switched off right now.</p>
+                      <p className="text-[12px] text-amber-800 mt-0.5">
+                        Either PostgREST has not reloaded its schema — run{' '}
+                        <code className="font-mono">notify pgrst, &apos;reload schema&apos;;</code> — or
+                        <code className="font-mono"> 20260915_outreach_template_tags.sql</code> has not been
+                        applied. The reload is the likelier of the two and costs nothing to try.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* ══ 3 · WRITE IT ══════════════════════════════════════════════════════════════════ */}
+                <div className="pt-3 border-t border-slate-100">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">3</span>
+                    <h3 className="text-sm font-bold text-slate-900">Write it</h3>
+                  </div>
+                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
+                    This is what actually gets sent. <code className="font-mono">{'{{double braces}}'}</code> fill
+                    themselves in; <code className="font-mono">[[square brackets]]</code> are values you set
+                    once in Snippets or are asked for per truck.
+                  </p>
+
+                  <div className="ml-7 space-y-3">
+                    {/* 🔴 THE SUBJECT IS HIDDEN, NOT CLEARED — and the warning says what saving will do.
+                        Switching to WhatsApp used to make a typed subject vanish with no warning, and
+                        the ROUTE (not this form) is what discards it: `update_template` sets
+                        `subject = null` whenever the patch carries `channel: 'whatsapp'`. So hiding the
+                        field alone would be a LIE — the text would still be destroyed on save. The draft
+                        keeps it, switching back to Email brings it straight back, and if he saves as
+                        WhatsApp he does it having been told. */}
+                    {draft.channel === 'whatsapp' && (draft.subject ?? '').trim() !== '' && (
+                      <div className="rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2">
+                        <p className="text-[12px] font-bold text-amber-900">WhatsApp messages have no subject line.</p>
+                        <p className="text-[12px] text-amber-800 mt-0.5">
+                          Your subject — “{draft.subject}” — is still here and comes back if you switch to
+                          Email. <b>Saving while this is set to WhatsApp will clear it permanently.</b>
+                        </p>
+                      </div>
+                    )}
+
+                    {draft.channel !== 'whatsapp' && (
+                      <label className="block"><span className={LABEL}>Subject</span>
+                        <input type="text" ref={subjectRef} className={FIELD} value={draft.subject ?? ''}
+                          onFocus={() => setLastFocus('subject')}
+                          onChange={e => setDraft(d => ({ ...d, subject: e.target.value }))} />
+                      </label>
+                    )}
+
+                    <label className="block">
+                      <span className={LABEL}>Message</span>
+                      {/* 🔴 15 ROWS = 404px, MEASURED, AND THE 16TH ROW WAS CUT DELIBERATELY. At 16 rows
+                          (430px) the Save button's bottom lands at 899px with the admin chrome above it
+                          — a ONE-PIXEL margin on a 1440x900 laptop. 15 rows puts it at 873px with real
+                          margin, and the box is `resize-y` so it can be dragged taller.
+                          🔴 SIZED WITH `rows`, NOT A CLASS: `text-sm` is INERT on a textarea here — the
+                          unlayered rule in globals.css forces `font-size: inherit`, so only `rows` can
+                          set the height. */}
+                      <textarea ref={bodyRef} rows={15} className={`${FIELD} resize-y leading-relaxed font-normal`}
+                        value={draft.body ?? ''}
+                        onFocus={() => setLastFocus('body')}
+                        onChange={e => setDraft(d => ({ ...d, body: e.target.value }))} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* ── 🔴 (S4 / item 6) THE SNIPPET LINE — UNDER THE MESSAGE, AND READ-ONLY ──────────
+                    Moved here from the top of the pane. It was the first thing on screen, which put
+                    step-3 detail above the template's own name and broke the 1-2-3 reading before it
+                    started. It belongs under the message it describes.
+                    🔴 STILL NO INPUT. This used to be an editable "Placeholder defaults" row, and that
+                    is exactly what made one value four edits: the same `[[my rate]]` had its own box on
+                    every template that mentioned it. One place to edit, one place to look — an editable
+                    field here would recreate the problem on the screen that replaced it. */}
+                <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
+                  <div className="flex items-baseline gap-2 mb-1.5">
+                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
+                      Values this message fills in
+                    </p>
+                    <button type="button" onClick={() => setView('snippets')}
+                      className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded border border-violet-300 bg-white text-violet-800 hover:bg-violet-50">
+                      Edit in Snippets
+                    </button>
+                  </div>
                   {bodyPlaceholders.length === 0 ? (
-                    <p className="text-[12px] text-slate-500">No <code className="font-mono">[[placeholders]]</code> in this template.</p>
+                    <p className="text-[12px] text-slate-500">
+                      This message has no <code className="font-mono">[[bracketed values]]</code>, so nothing
+                      needs setting.
+                    </p>
                   ) : (
-                    <div className="flex gap-2.5">
+                    <div className="flex flex-wrap gap-2.5">
                       {bodyPlaceholders.map(name => {
-                        const stored = selected.placeholder_defaults?.[name]
-                        const age = daysSince(stored?.updated_at ?? null)
-                        const stale = age !== null && age > 60
+                        const v = snippetValues[name]
+                        const has = typeof v === 'string' && v.trim() !== ''
+                        const askPer = typeof v === 'string' && v.trim() === ''
+                        // 🔴 A LEGACY PER-TEMPLATE VALUE THAT A SNIPPET IS NOW OVERRIDING. It is not
+                        // deleted — nothing here writes a template row — so it is named instead. An
+                        // override the operator cannot see is the defect this whole screen replaces.
+                        const shadowed = has ? (selected.placeholder_defaults?.[name]?.value ?? '') : ''
                         return (
-                          <label key={name} className="block flex-1 min-w-0">
-                            <span className="flex items-center gap-1 mb-0.5 min-w-0">
-                              <span className="text-[11px] font-semibold text-slate-700 truncate">{`[[${name}]]`}</span>
-                              {stored
-                                ? <span className={`text-[9px] font-bold uppercase px-1 py-0.5 rounded flex-shrink-0 ${stale ? 'bg-red-100 text-red-800' : 'bg-slate-200 text-slate-600'}`}
-                                    title={`Last changed ${fmtWhen(stored.updated_at)}${stale ? ' — over 60 days ago; check it is still correct.' : ''}`}>
-                                    {stale ? 'stale' : fmtWhen(stored.updated_at)}
-                                  </span>
-                                : <span className="text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-amber-100 text-amber-800 flex-shrink-0">none</span>}
-                            </span>
-                            <input type="text" className="w-full border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white"
-                              value={defaultsDraft[name] ?? ''} placeholder="(typed per truck)"
-                              onChange={e => setDefaultsDraft(d => ({ ...d, [name]: e.target.value }))} />
-                          </label>
+                          <div key={name} className="min-w-[11rem] flex-1">
+                            <div className="text-[11px] font-semibold text-slate-700 truncate">{`[[${name}]]`}</div>
+                            <div className={`text-sm truncate ${has ? 'text-slate-900' : 'text-slate-400'}`}
+                              title={has ? v : undefined}>
+                              {has ? v : askPer ? 'you are asked each time' : 'not set — you are asked each time'}
+                            </div>
+                            {shadowed.trim() !== '' && (
+                              <div className="mt-0.5 text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1 py-0.5"
+                                title={`This template still stores "${shadowed}" for [[${name}]] from the old per-template defaults. The snippet above is what actually gets used. Nothing here has changed the stored value.`}>
+                                overrides a stored “{shadowed}”
+                              </div>
+                            )}
+                          </div>
                         )
                       })}
                     </div>
                   )}
                 </div>
-
-                <div className="flex items-end gap-3">
-                  <label className="block flex-1 min-w-0"><span className={LABEL}>Label</span>
-                    <input type="text" className={FIELD} value={draft.label ?? ''}
-                      onChange={e => setDraft(d => ({ ...d, label: e.target.value }))} />
-                  </label>
-                  <label className="block w-36 flex-shrink-0"><span className={LABEL}>Channel</span>
-                    <select className={FIELD} value={draft.channel ?? 'email'}
-                      onChange={e => setDraft(d => ({ ...d, channel: e.target.value as 'email' | 'whatsapp' }))}>
-                      <option value="email">email</option>
-                      <option value="whatsapp">whatsapp</option>
-                    </select>
-                  </label>
-                  {/* 🔴 THE SLUG APPEARS ONCE, HERE, FOR THE SELECTED TEMPLATE ONLY — it is fixed and
-                      rarely relevant, so it does not belong on every list row. */}
-                  <span className="flex-shrink-0 pb-1.5 text-[11px] text-slate-400 font-mono"
-                    title="The key the compose picker resolves against. Fixed after creation — renaming it would orphan the suggestion.">
-                    {selected.slug}
-                  </span>
-                </div>
-
-                {/* ── 🔴 GLOBAL PLACEHOLDER DEFAULTS — SET ONCE, USED EVERYWHERE ─────────────────────
-                    🧪 [[my rate]] appears in 4 of the 5 seeded templates. The per-template default
-                    below stores a value on ONE template, so "set my rate" meant typing the same figure
-                    four times and changing it meant editing four rows again. A value here reaches every
-                    template that has no default of its own.
-                    🔴 PRECEDENCE, STATED ONCE: a template default BEATS a global. The compose window
-                    badges say which layer won — violet FROM GLOBAL, blue FROM DEFAULT with its age — so
-                    a stale global cannot hide behind a field that looks freshly filled.
-                    ⚠️ STORED IN THIS BROWSER (localStorage), not in the database. One operator, one
-                    machine, and no second migration; the cost is that another machine will not have it.
-                    🔴 IT SHIPS EMPTY. Nothing seeds a rate — these boxes start blank and stay blank
-                    until you type in them, and nothing here writes to any template row. */}
-                {allPlaceholders.length > 0 && (
-                  <div className="rounded-xl border border-violet-200 bg-violet-50/50 p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-violet-800">Global defaults</span>
-                      <span className="text-[11px] text-violet-700">used when a template has no default of its own</span>
-                      <button type="button"
-                        onClick={() => { writeOutreachGlobals(globalsDraft); setGlobals(readOutreachGlobals()); say('Global defaults saved') }}
-                        className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-700 text-white hover:bg-violet-800">
-                        Save globals
-                      </button>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {allPlaceholders.map(name => (
-                        <label key={name} className="block flex-1 min-w-[12rem]">
-                          <span className="flex items-center gap-1 mb-0.5 min-w-0">
-                            <span className="text-[11px] font-semibold text-slate-700 truncate">{}</span>
-                            {globals[name] ? null : <span className="text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-slate-200 text-slate-600 flex-shrink-0">unset</span>}
-                          </span>
-                          <input type="text" className="w-full border border-violet-200 rounded-lg px-2 py-1 text-sm bg-white"
-                            value={globalsDraft[name] ?? ''} placeholder="(not set)"
-                            onChange={e => setGlobalsDraft(d => ({ ...d, [name]: e.target.value }))} />
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {/* ── 🔴 WHAT THIS TEMPLATE SERVES — BOTH SHIP EMPTY AND NOTHING SETS THEM ─────────────
-                    "— any —" is the stored NULL and is where every row starts. Setting a rung makes the
-                    compose window log THAT rung when this template is used, which is the Pizza Mondo
-                    defect: a chaser was sent and recorded as a first contact because the log form's
-                    dropdown had the last word.
-                    🔴 LEAD TYPE HERE PICKS THE TEMPLATE; IT DOES NOT VARY THE TEXT. The `?lead_*:` lines
-                    inside a body already vary the wording per type, and lead type must drive exactly one
-                    of the two — if a rule selected on lead type AND the chosen body still carried four
-                    `?lead_*` lines, three would be dead in every message and nothing on screen would say
-                    which. The rule of thumb in the field title below is the whole of it.
-                    ⚠️ Disabled until the migration is applied AND PostgREST has reloaded its schema. */}
-                <div className="flex items-end gap-3">
-                  <label className="block w-52 flex-shrink-0">
-                    <span className={LABEL}>Serves rung</span>
-                    <select className={FIELD} disabled={!hasTemplateTags}
-                      value={draft.serves_kind ?? ''}
-                      title={hasTemplateTags
-                        ? 'When set, choosing this template in the compose window LOGS this rung — instead of whatever the log form’s dropdown happens to hold. "— any —" leaves the dropdown in charge, which is how every template behaves today.'
-                        : 'Needs migration 20260915_outreach_template_tags.sql, then notify pgrst, ‘reload schema’'}
-                      onChange={e => setDraft(d => ({ ...d, serves_kind: e.target.value || null }))}>
-                      <option value="">— any —</option>
-                      {CONTACT_KINDS.map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
-                    </select>
-                  </label>
-                  <label className="block w-60 flex-shrink-0">
-                    <span className={LABEL}>Serves lead type</span>
-                    <select className={FIELD} disabled={!hasTemplateTags}
-                      value={draft.serves_lead_type ?? ''}
-                      title={hasTemplateTags
-                        ? 'Narrows which prospects this template is pre-selected for. "— any —" means it can serve all four. 🔴 Use this to pick a DIFFERENT template per type; use the ?lead_ lines inside the body to vary a sentence within ONE template. Not both for the same distinction.'
-                        : 'Needs migration 20260915_outreach_template_tags.sql, then notify pgrst, ‘reload schema’'}
-                      onChange={e => setDraft(d => ({ ...d, serves_lead_type: e.target.value || null }))}>
-                      <option value="">— any —</option>
-                      {LEAD_TYPES.map(lt => <option key={lt} value={lt}>{LEAD_TYPE_LABELS[lt]}</option>)}
-                    </select>
-                  </label>
-                  {!hasTemplateTags && (
-                    <span className="pb-1.5 text-[11px] text-amber-700">
-                      Tagging needs <code className="font-mono">20260915_outreach_template_tags.sql</code>
-                    </span>
-                  )}
-                </div>
-
-                {draft.channel !== 'whatsapp' && (
-                  <label className="block"><span className={LABEL}>Subject</span>
-                    <input type="text" ref={subjectRef} className={FIELD} value={draft.subject ?? ''}
-                      onFocus={() => setLastFocus('subject')}
-                      onChange={e => setDraft(d => ({ ...d, subject: e.target.value }))} />
-                  </label>
-                )}
-
-                <label className="block">
-                  <span className={LABEL}>Body</span>
-                  {/* Sized with `rows`: `text-sm` is INERT on a textarea (the unlayered rule in
-                      globals.css forces font-size: inherit), so a class cannot set this height. */}
-                  {/* 🔴 15 ROWS = 404px, MEASURED, AND THE 16TH ROW WAS CUT DELIBERATELY.
-                      At 16 rows (430px) the Save button's bottom lands at 899px with the admin chrome
-                      above it (AppHeader 52 + tab bar 37) — a ONE-PIXEL margin on a 1440x900 laptop,
-                      which is not "fits". 15 rows puts it at 873px with real margin. The cost is 26px of
-                      body height, and the box is `resize-y` so it can be dragged taller on a big screen.
-                      🔴 SIZED WITH `rows`, NOT A CLASS: `text-sm` is INERT on a textarea here — the
-                      unlayered rule in globals.css forces `font-size: inherit`, so the box renders at
-                      16px whatever class it carries and only `rows` can set the height. */}
-                  <textarea ref={bodyRef} rows={15} className={`${FIELD} resize-y leading-relaxed font-normal`}
-                    value={draft.body ?? ''}
-                    onFocus={() => setLastFocus('body')}
-                    onChange={e => setDraft(d => ({ ...d, body: e.target.value }))} />
-                </label>
 
                 {/* 🔴 (5) A HALF-WRITTEN CONDITIONAL HAS NO VISIBLE FAILURE MODE — the branch just never
                     fires. This is the only warning that can catch it before an email goes out. */}
@@ -813,7 +1249,7 @@ export default function TemplatesPanel() {
               )}
             </div>
           )}
-        </div>
+        </div>)}
       </div>
       {toast && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg" style={{ zIndex: 60 }}>{toast}</div>
