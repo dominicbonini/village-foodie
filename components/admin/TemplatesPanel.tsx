@@ -12,7 +12,10 @@
 // 🔴 IT NEVER READS OR WRITES `truck_events`, `discovery_events` or `discovery_trucks`.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { createSlug } from '@/lib/utils'   // the repo's existing slug function — not a second one
+import { createSlug } from '@/lib/utils'
+import { CONTACT_KINDS, kindLabel } from '@/lib/outreach'
+import { LEAD_TYPES, LEAD_TYPE_LABELS } from '@/lib/outreach-step'
+import { readOutreachGlobals, writeOutreachGlobals } from '@/lib/outreach-globals'   // the repo's existing slug function — not a second one
 import {
   contextFromProspect, renderWithFills, unresolvedIn, defaultFillsOf,
   resolvedTokenReference, conditionReference, suspectedMistypedTokens, malformedTokensIn,
@@ -23,6 +26,10 @@ type Row = {
   id: string; slug: string; label: string; channel: 'email' | 'whatsapp'
   subject: string | null; body: string; sort_order: number; active: boolean
   placeholder_defaults: Record<string, { value: string; updated_at: string | null }> | null
+  /** 🔴 NULLABLE = ANY, and every row ships null. Optional on the type too, because the route omits
+   *  them entirely until the migration is applied and its schema cache reloaded. */
+  serves_kind?: string | null
+  serves_lead_type?: string | null
   created_at: string | null; updated_at: string | null
 }
 type Prospect = {
@@ -34,6 +41,19 @@ type Prospect = {
   /** The prospect's newest live demo, as the outreach route reports it — what `{{demo_link}}` needs.
    *  🧪 Exactly 1 of 231 prospects has one, so picking any other prospect previews the REFUSAL. */
   demo?: { publicRef: string | null; expiresAt: string | null } | null
+  /** 🔴 THE LEAD-TYPE INPUTS. The preview must render the SAME lead line a real send would, so it needs
+   *  the same four fields `leadTypeOf` reads. The compiler required these — `ProspectLike` makes them
+   *  mandatory precisely so a preview cannot quietly fall back to "not listed". */
+  hu_ordering: boolean | null
+  hu_map: boolean | null
+  show_on_vf?: boolean | null
+  excluded?: boolean | null
+  futureEventCount?: number | null
+  /** 🔴 THE FROZEN LEAD TYPE. Carried so the preview renders the SAME ?lead_ line a real send would:
+   *  for a prospect mid-sequence that is the value frozen at first contact, NOT today's derivation.
+   *  Without it the preview would quietly disagree with the message, which is the one thing this
+   *  preview exists not to do. */
+  lead_type_at_first_contact?: string | null
   whatsapp_confirmed: boolean | null
 }
 
@@ -62,6 +82,7 @@ function toMessageTemplate(r: Row): MessageTemplate {
     id: r.slug, label: r.label, channel: r.channel,
     subject: r.subject ?? undefined, body: r.body,
     sortOrder: r.sort_order, active: r.active,
+    servesKind: r.serves_kind ?? null, servesLeadType: r.serves_lead_type ?? null,
     defaults: Object.fromEntries(Object.entries(r.placeholder_defaults ?? {})
       .map(([k, v]) => [k, { value: v?.value ?? '', updatedAt: v?.updated_at ?? null }])),
   }
@@ -86,6 +107,30 @@ export default function TemplatesPanel() {
   const [rail, setRail] = useState<RailTab>('preview')
   const [draft, setDraft] = useState<Partial<Row>>({})
   const [defaultsDraft, setDefaultsDraft] = useState<Record<string, string>>({})
+  /** Whether 20260915_outreach_template_tags.sql is applied AND PostgREST has reloaded. Reported by
+   *  the route as a capability flag, exactly like hasContactNames on the outreach route. */
+  const [hasTemplateTags, setHasTemplateTags] = useState(false)
+  /** 🔴 GLOBAL PLACEHOLDER DEFAULTS — values stated ONCE and used by every template that has no
+   *  default of its own. Read lazily so the server render never touches localStorage. */
+  // 🔴 LAZY INITIALISERS, NOT A MOUNT EFFECT, AND THE SSR ARGUMENT IS SPELLED OUT BECAUSE THIS FILE'S
+  // SIBLING DELIBERATELY DOES THE OPPOSITE. OutreachPanel restores its filter blob in an effect and
+  // says why: a 'use client' component is still server-rendered for the initial HTML, so seeding state
+  // from localStorage would make the server and client markup disagree.
+  // ⚠️ THAT ARGUMENT DOES NOT APPLY HERE, and the reason is structural rather than lucky: everything
+  // these two values feed is inside `{allPlaceholders.length > 0 && …}`, and `allPlaceholders` derives
+  // from `rows`, which starts `[]` and only fills after a fetch. So on the server AND on the hydration
+  // render this block renders NOTHING — the state differs between the two, but no markup does.
+  // 🔴 If that gate is ever removed, these must go back to the restore-after-mount pattern.
+  const [globals, setGlobals] = useState<Record<string, string>>(() => readOutreachGlobals())
+  const [globalsDraft, setGlobalsDraft] = useState<Record<string, string>>(() => readOutreachGlobals())
+  /** Every [[placeholder]] across every LOADED template — what a global could usefully cover. 🔴 It is
+   *  DERIVED from the bodies, never a hand-written list, so a placeholder invented tomorrow appears
+   *  here without anyone remembering to add it. */
+  const allPlaceholders = useMemo(() => {
+    const set = new Set<string>()
+    for (const r of rows) for (const n of unresolvedIn(`${r.subject ?? ''}\n${r.body}`)) set.add(n)
+    return [...set].sort()
+  }, [rows])
 
   const say = (m: string) => { setToast(m); setTimeout(() => setToast(null), 1800) }
 
@@ -101,6 +146,7 @@ export default function TemplatesPanel() {
         setLoading(false); return
       }
       setRows(data.templates || [])
+      setHasTemplateTags(!!data.hasTemplateTags)
     } catch (e: any) { setLoadError({ message: e?.message || 'Could not load templates', needsMigration: false }) }
     setLoading(false)
   }, [])
@@ -126,8 +172,12 @@ export default function TemplatesPanel() {
   // Seed the editor when the selection changes.
   useEffect(() => {
     if (!selected) { setDraft({}); setDefaultsDraft({}); return }
+    // 🔴 THE TAGS ARE SEEDED INTO THE DRAFT TOO, or saving any other field would post the draft
+    // without them and the update would read as "no change" for the tags while silently keeping the
+    // stored value. Seeding them makes what is on screen what gets sent.
     setDraft({ label: selected.label, channel: selected.channel, subject: selected.subject,
-      body: selected.body, sort_order: selected.sort_order, active: selected.active })
+      body: selected.body, sort_order: selected.sort_order, active: selected.active,
+      serves_kind: selected.serves_kind ?? null, serves_lead_type: selected.serves_lead_type ?? null })
     setDefaultsDraft(Object.fromEntries(
       Object.entries(selected.placeholder_defaults ?? {}).map(([k, v]) => [k, v?.value ?? ''])))
   }, [selected])
@@ -442,6 +492,87 @@ export default function TemplatesPanel() {
                     title="The key the compose picker resolves against. Fixed after creation — renaming it would orphan the suggestion.">
                     {selected.slug}
                   </span>
+                </div>
+
+                {/* ── 🔴 GLOBAL PLACEHOLDER DEFAULTS — SET ONCE, USED EVERYWHERE ─────────────────────
+                    🧪 [[my rate]] appears in 4 of the 5 seeded templates. The per-template default
+                    below stores a value on ONE template, so "set my rate" meant typing the same figure
+                    four times and changing it meant editing four rows again. A value here reaches every
+                    template that has no default of its own.
+                    🔴 PRECEDENCE, STATED ONCE: a template default BEATS a global. The compose window
+                    badges say which layer won — violet FROM GLOBAL, blue FROM DEFAULT with its age — so
+                    a stale global cannot hide behind a field that looks freshly filled.
+                    ⚠️ STORED IN THIS BROWSER (localStorage), not in the database. One operator, one
+                    machine, and no second migration; the cost is that another machine will not have it.
+                    🔴 IT SHIPS EMPTY. Nothing seeds a rate — these boxes start blank and stay blank
+                    until you type in them, and nothing here writes to any template row. */}
+                {allPlaceholders.length > 0 && (
+                  <div className="rounded-xl border border-violet-200 bg-violet-50/50 p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-violet-800">Global defaults</span>
+                      <span className="text-[11px] text-violet-700">used when a template has no default of its own</span>
+                      <button type="button"
+                        onClick={() => { writeOutreachGlobals(globalsDraft); setGlobals(readOutreachGlobals()); say('Global defaults saved') }}
+                        className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-700 text-white hover:bg-violet-800">
+                        Save globals
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {allPlaceholders.map(name => (
+                        <label key={name} className="block flex-1 min-w-[12rem]">
+                          <span className="flex items-center gap-1 mb-0.5 min-w-0">
+                            <span className="text-[11px] font-semibold text-slate-700 truncate">{}</span>
+                            {globals[name] ? null : <span className="text-[9px] font-bold uppercase px-1 py-0.5 rounded bg-slate-200 text-slate-600 flex-shrink-0">unset</span>}
+                          </span>
+                          <input type="text" className="w-full border border-violet-200 rounded-lg px-2 py-1 text-sm bg-white"
+                            value={globalsDraft[name] ?? ''} placeholder="(not set)"
+                            onChange={e => setGlobalsDraft(d => ({ ...d, [name]: e.target.value }))} />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* ── 🔴 WHAT THIS TEMPLATE SERVES — BOTH SHIP EMPTY AND NOTHING SETS THEM ─────────────
+                    "— any —" is the stored NULL and is where every row starts. Setting a rung makes the
+                    compose window log THAT rung when this template is used, which is the Pizza Mondo
+                    defect: a chaser was sent and recorded as a first contact because the log form's
+                    dropdown had the last word.
+                    🔴 LEAD TYPE HERE PICKS THE TEMPLATE; IT DOES NOT VARY THE TEXT. The `?lead_*:` lines
+                    inside a body already vary the wording per type, and lead type must drive exactly one
+                    of the two — if a rule selected on lead type AND the chosen body still carried four
+                    `?lead_*` lines, three would be dead in every message and nothing on screen would say
+                    which. The rule of thumb in the field title below is the whole of it.
+                    ⚠️ Disabled until the migration is applied AND PostgREST has reloaded its schema. */}
+                <div className="flex items-end gap-3">
+                  <label className="block w-52 flex-shrink-0">
+                    <span className={LABEL}>Serves rung</span>
+                    <select className={FIELD} disabled={!hasTemplateTags}
+                      value={draft.serves_kind ?? ''}
+                      title={hasTemplateTags
+                        ? 'When set, choosing this template in the compose window LOGS this rung — instead of whatever the log form’s dropdown happens to hold. "— any —" leaves the dropdown in charge, which is how every template behaves today.'
+                        : 'Needs migration 20260915_outreach_template_tags.sql, then notify pgrst, ‘reload schema’'}
+                      onChange={e => setDraft(d => ({ ...d, serves_kind: e.target.value || null }))}>
+                      <option value="">— any —</option>
+                      {CONTACT_KINDS.map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
+                    </select>
+                  </label>
+                  <label className="block w-60 flex-shrink-0">
+                    <span className={LABEL}>Serves lead type</span>
+                    <select className={FIELD} disabled={!hasTemplateTags}
+                      value={draft.serves_lead_type ?? ''}
+                      title={hasTemplateTags
+                        ? 'Narrows which prospects this template is pre-selected for. "— any —" means it can serve all four. 🔴 Use this to pick a DIFFERENT template per type; use the ?lead_ lines inside the body to vary a sentence within ONE template. Not both for the same distinction.'
+                        : 'Needs migration 20260915_outreach_template_tags.sql, then notify pgrst, ‘reload schema’'}
+                      onChange={e => setDraft(d => ({ ...d, serves_lead_type: e.target.value || null }))}>
+                      <option value="">— any —</option>
+                      {LEAD_TYPES.map(lt => <option key={lt} value={lt}>{LEAD_TYPE_LABELS[lt]}</option>)}
+                    </select>
+                  </label>
+                  {!hasTemplateTags && (
+                    <span className="pb-1.5 text-[11px] text-amber-700">
+                      Tagging needs <code className="font-mono">20260915_outreach_template_tags.sql</code>
+                    </span>
+                  )}
                 </div>
 
                 {draft.channel !== 'whatsapp' && (

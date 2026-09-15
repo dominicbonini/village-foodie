@@ -16,9 +16,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf,
+  renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
 } from '@/lib/outreach-template-render'
+import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
+import { readOutreachGlobals } from '@/lib/outreach-globals'
 
 const DEFAULT_STALE_DAYS = 60
 const defaultIsStale = (iso: string | null | undefined) => {
@@ -31,8 +33,43 @@ const fmtDefaultDate = (iso: string | null | undefined) =>
 /** Look a template up in the loaded list by its slug. */
 const TPL_BY_ID = (all: MessageTemplate[], id: string) => all.find(t => t.id === id) ?? null
 
+/**
+ * The window's opening state for a pre-selected template — the same three calls `applyTemplate` makes,
+ * in the same order, so an opened-from-the-queue window and a hand-picked one cannot render differently.
+ * 🔴 RETURNS THE EMPTY SHAPE FOR ANY REASON IT CANNOT PROCEED: no id, or an id that is not in
+ * `offerable`. A slug that has been retired or renamed on the Templates tab therefore degrades to "no
+ * template chosen" — visibly — rather than throwing or selecting something else.
+ */
+function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], ctx: TemplateContext,
+  globals: Record<string, string>) {
+  const empty = { id: '', subject: '', body: '', fills: {} as Record<string, string>,
+    fromDefault: {} as Record<string, string | null>,
+    fillSource: {} as Record<string, 'template' | 'global' | null> }
+  if (!id) return empty
+  const tpl = TPL_BY_ID(offerable, id)
+  if (!tpl) return empty
+  const out = renderTemplate(tpl, ctx)
+  // 🔴 THE SAME TWO LAYERS AS applyTemplate. A window opened from the due queue pre-selects its
+  // template here rather than through applyTemplate, so missing the global layer here would make the
+  // global work only when a template was picked BY HAND — the least likely path.
+  const fills = defaultFillsOf(tpl, globals)
+  return {
+    id,
+    subject: out.subject ?? '',
+    body: out.body,
+    fills,
+    fromDefault: Object.fromEntries(
+      Object.entries(tpl.defaults ?? {}).filter(([, v]) => !!v?.value).map(([k, v]) => [k, v.updatedAt]),
+    ) as Record<string, string | null>,
+    fillSource: Object.fromEntries(
+      Object.keys(fills).map(k => [k, fillSourceOf(tpl, globals, k)]),
+    ) as Record<string, 'template' | 'global' | null>,
+  }
+}
+
 export default function ComposeWindow({
-  truckName, toEmail, offerable, suggestedId, ctx, whatsappConfirmed, templatesLoaded, onClose, onLog,
+  truckName, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
+  whatsappConfirmed, templatesLoaded, logFormKind, onClose, onLog,
 }: {
   truckName: string
   /** The prospect's address — the mailto recipient. Null when the row has none. */
@@ -40,36 +77,97 @@ export default function ComposeWindow({
   /** Already gated: WhatsApp templates are present only when this prospect is confirmed. */
   offerable: MessageTemplate[]
   suggestedId: string | null
+  /** 🔴 PRE-SELECT THIS TEMPLATE ON OPEN. Null/absent ⇒ the historical behaviour, byte for byte.
+   *  See the seeding note below for why this is allowed where `suggestedId` is not. */
+  initialTemplateId?: string | null
+  /** 🔴 outreach_prospects.do_not_contact. True ⇒ every exit refuses. */
+  doNotContact?: boolean | null
   ctx: TemplateContext
   whatsappConfirmed: boolean
   /** False when the templates table could not be read — distinct from "it has none". */
   templatesLoaded: boolean
   onClose: () => void
   /** Writes one outbound contact row. Resolves true on success. */
-  onLog: (body: string, channel: string) => Promise<boolean>
+  /** Writes one outbound contact row. Resolves true on success.
+   *  🔴 THE THIRD ARGUMENT IS THE TEMPLATE'S OWN RUNG (`serves_kind`), or null when it has no opinion.
+   *  It exists because the logged `kind` used to come from the log form's dropdown alone: a chaser was
+   *  sent to Pizza Mondo and recorded as a FIRST CONTACT, which then drove the derived step, the
+   *  follow-up date and the queue. The template knows what it is; the dropdown only knows what was last
+   *  left there. ⚠️ null means "no opinion" and the caller keeps using the dropdown — which is every
+   *  template today, because the tagging columns ship empty. */
+  onLog: (body: string, channel: string, servesKind: string | null) => Promise<boolean>
+  /** What the prospect panel’s log form currently has selected. Display only — used to say when a
+   *  tagged template is about to log a DIFFERENT rung. The compose window never sets it. */
+  logFormKind: string
 }) {
-  const [templateId, setTemplateId] = useState('')      // '' = none chosen; NEVER auto-selected
+  // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
+  // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
+  // right for what it governed. 🔎 docs/outreach-templates-report.md: the thing it refused to auto-select
+  // was `suggestTemplateId` — a heuristic over `stage` + `hu_ordering` where 🧪 214 of 231 rows get the
+  // same answer and `hu_ordering` is TRI-STATE, so "not on Hatches Up" really means "not recorded as on
+  // it". Auto-selecting THAT would dress a low-confidence guess as a decision, and the operator would
+  // not know which it was.
+  //
+  // 🔴 `initialTemplateId` IS A DIFFERENT KIND OF VALUE AND THE DEFAULT IS UNCHANGED:
+  //   • It is passed ONLY when the composer is opened from a due-queue row whose step is KNOWN — an
+  //     explicit act that already names the step on screen. Every other caller passes nothing and gets
+  //     `''`, exactly as before.
+  //   • It comes from the derived ladder (a rung actually reached), not from a 214-of-231 heuristic.
+  //   • `nextStep` refuses to produce a rung at all when the history is unreadable (state 'unknown'),
+  //     so a low-confidence case cannot reach this parameter.
+  //   • It is still only a SELECTION: the picker is unchanged and re-selectable, and nothing is sent.
+  // ⚠️ SEEDED IN A LAZY `useState`, NOT AN EFFECT. An effect that calls setState on mount is the
+  // `react-hooks/set-state-in-effect` pattern this repo already carries 11 of; this adds none, and it
+  // also means the first paint already has the template rather than flashing an empty pane.
+  const [globalsSeed] = useState(() => readOutreachGlobals())
+  const [seed] = useState(() => seedFrom(initialTemplateId, offerable, ctx, globalsSeed))
+  const [templateId, setTemplateId] = useState(seed.id)
   // 🔴 TWO LAYERS, ONE VISIBLE PANE.
   //   sourceSubject / sourceBody — the template's RENDER, still carrying [[placeholders]]. Never shown.
   //   subject / body            — the editable message, which is the render with field values applied.
   // The pane you type in is the second one, so what is on screen is what will be sent. The first exists
   // only so a field can be changed or cleared and the message rebuilt from it — see `edited` below.
-  const [sourceSubject, setSourceSubject] = useState('')
-  const [sourceBody, setSourceBody] = useState('')
-  const [subject, setSubject] = useState('')
-  const [body, setBody] = useState('')
+  const [sourceSubject, setSourceSubject] = useState(seed.subject)
+  const [sourceBody, setSourceBody] = useState(seed.body)
+  const [subject, setSubject] = useState(seed.subject)
+  const [body, setBody] = useState(seed.body)
   // 🔴 THE PRECEDENCE FLAG. False: the fields drive the message. True: I have typed in the message and
   // the fields stop rewriting it. It is never set by anything except a keystroke in the subject or body.
   const [edited, setEdited] = useState(false)
+  // 🔴 HAS THE OPERATOR TYPED ANYTHING THAT RE-OPENING WOULD NOT REPRODUCE?
+  //   `edited`      — a keystroke landed in the subject or body.
+  //   `fillsTouched`— a placeholder field was typed into. Tracked SEPARATELY from `fills` itself
+  //                   because `fills` is pre-populated from the template's stored defaults, so a
+  //                   non-empty `fills` is not evidence that anyone typed.
+  // ⚠️ SELECTING A TEMPLATE ALONE IS NOT A DRAFT. The render is deterministic — re-opening the window
+  // produces the identical text — so guarding on "body is non-empty" would make Escape useless the
+  // moment a template was picked, which is every time the queue pre-selects one.
+  const [fillsTouched, setFillsTouched] = useState(false)
+  const dirty = edited || fillsTouched
+  // 🔴 READ THROUGH A REF INSIDE THE ESCAPE HANDLER. That effect depends on `onClose` only — adding
+  // `dirty` would tear down and re-register the window listener on every keystroke, which is exactly
+  // the registration churn the C15 note warns about. The ref lets the handler see the current value
+  // without the listener ever moving.
+  // ⚠️ WRITTEN IN AN EFFECT, NOT DURING RENDER. `dirtyRef.current = dirty` in the render body is a
+  // render-time side effect — the `react-hooks/refs` pattern this repo has already had to correct once
+  // (a KDS ref write moved into an effect for the same reason). The write lands after commit, which is
+  // strictly before any keystroke can reach the handler.
+  const dirtyRef = useRef(dirty)
+  useEffect(() => { dirtyRef.current = dirty }, [dirty])
   // Set when the re-render control is pressed once, so it can warn before discarding.
   const [confirmRerender, setConfirmRerender] = useState(false)
   // 🔴 PLACEHOLDER VALUES LIVE HERE, NOT IN THE BODY TEXT. See the note on applyFills below.
-  const [fills, setFills] = useState<Record<string, string>>({})
+  const [fills, setFills] = useState<Record<string, string>>(seed.fills)
   // 🔴 WHICH VALUES CAME FROM A STORED DEFAULT RATHER THAN BEING TYPED, and when each was last changed
   // on the Templates tab. A stale default goes out in an email that LOOKS correctly filled — every guard
   // (the NEEDED chip, the still-to-fill banner, both confirmations) stays silent on it — so the only
   // protection is showing its provenance and its age on the field itself.
-  const [fromDefault, setFromDefault] = useState<Record<string, string | null>>({})
+  const [fromDefault, setFromDefault] = useState<Record<string, string | null>>(seed.fromDefault)
+  /** 🔴 READ ONCE, LAZILY. Re-reading localStorage mid-compose could change a field under the operator;
+   *  the Templates tab is where it is edited, and the next compose window picks the new value up. */
+  const globals = globalsSeed
+  /** Which layer supplied each pre-filled value. Display only — see the badge. */
+  const [fillSource, setFillSource] = useState<Record<string, 'template' | 'global' | null>>(seed.fillSource)
   // Which action is waiting on the unfilled-placeholder confirmation: null | 'send' | 'log'.
   const [pending, setPending] = useState<null | 'send' | 'log'>(null)
   const [sendError, setSendError] = useState<string | null>(null)
@@ -91,10 +189,23 @@ export default function ComposeWindow({
   // bubble-phase listener on window, whatever order they registered in, so this one always sees Escape
   // first and calls `stopPropagation()`, ending the event before the modal's handler is reached.
   // ⚠️ Registration order is NOT relied on — that would be a coin toss between two window listeners.
+  //
+  // 🔴 AND IT NOW DECLINES TO CLOSE WHEN THERE IS A DRAFT TO LOSE. A stray Escape over a half-written
+  // message is the same fault as a stray click on the backdrop, so it gets the same answer.
+  // 🔴 THE CRITICAL DETAIL IS THAT IT STILL CALLS `stopPropagation()` EVEN WHEN IT DECLINES. Returning
+  // early — the shape used elsewhere in this tree, where a child is meant to handle the key instead —
+  // would let the event reach the prospect modal's bubble listener, and one Escape would close the
+  // PARENT while leaving the draft's own window open underneath it. Worse than the bug being fixed.
+  // So: swallow the key always; act on it only when nothing is lost.
+  // ⚠️ NO LISTENER IS ADDED OR REMOVED BY THIS CHANGE — the C15 trap (two CAPTURE listeners on one node,
+  // where `stopPropagation` does not stop a sibling) is neither introduced nor worsened. Same one
+  // listener, same phase, same target; only the body of the handler changed.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
-      e.stopPropagation(); e.preventDefault(); onClose()
+      e.stopPropagation(); e.preventDefault()
+      if (dirtyRef.current) return          // a draft exists — swallow the key, keep the window
+      onClose()
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
@@ -120,7 +231,13 @@ export default function ComposeWindow({
     // component has no route to the templates table; changing a stored default is a deliberate action on
     // the Templates tab.
     const chosen = TPL_BY_ID(offerable, id)
-    setFills(chosen ? defaultFillsOf(chosen) : {})
+    setFills(chosen ? defaultFillsOf(chosen, globals) : {})
+    // 🔴 PROVENANCE RECORDED AT THE SAME MOMENT THE VALUES ARE, from the SAME two layers, so the badge
+    // can never disagree with what was actually used.
+    setFillSource(chosen
+      ? Object.fromEntries(Object.keys(defaultFillsOf(chosen, globals))
+          .map(k => [k, fillSourceOf(chosen, globals, k)]))
+      : {})
     setFromDefault(chosen
       ? Object.fromEntries(Object.entries(chosen.defaults ?? {})
           .filter(([, v]) => !!v?.value)
@@ -214,8 +331,26 @@ export default function ComposeWindow({
         + `expired /demo/ link all arrive as a broken promise.`
       : `This message needs ${blocking.map(b => `{{${b}}}`).join(', ')}, which cannot be resolved for `
         + `${truckName}. It cannot be sent.`
-  /** Either hard stop. Both refuse the same three exits through the same error line. */
-  const refusal = malformedNotice ?? blockingNotice
+  /** 🔴 DO NOT CONTACT — THE THIRD HARD STOP, AND IT IS FIRST IN THE CHAIN.
+   *  Until now this flag blocked NOTHING: it drew a 🚫 chip on the table and drove a filter, and the
+   *  composer, the sender, the copier and the logger all ignored it completely. 🧪 Searched alone,
+   *  `do_not_contact` appeared 0 times in this file, 0 in lib/outreach-template-render.ts and 0 in the
+   *  route's log_contact branch, while those same files carried 25 / 17 / 2 refusal symbols — so the
+   *  search finds gating where it exists, and there was none here.
+   *
+   *  🔴 IT REFUSES COMPOSING, NOT RECORDING, AND THAT LINE IS DELIBERATE. This window produces an
+   *  OUTBOUND message, which is the thing the flag forbids. Logging elsewhere is how the operator
+   *  records what already happened — including an inbound reply FROM a do-not-contact prospect — and
+   *  blocking that would make the history lie. So the modal's own log form is untouched.
+   *
+   *  It is first because it is the most absolute: a malformed token is a typo to fix and a missing demo
+   *  is a demo to create, but this one has no remedy inside the window. */
+  const dncNotice = doNotContact === true
+    ? `${truckName} is flagged DO NOT CONTACT, so this message cannot be sent, copied or logged from `
+      + `here. Untick "Do not contact" on the prospect if that flag is wrong.`
+    : null
+  /** Every hard stop. All three refuse the same three exits through the same error line. */
+  const refusal = dncNotice ?? malformedNotice ?? blockingNotice
 
   // 🔴 THE RE-SUBSTITUTION, AND THE ONE RULE THAT GOVERNS IT.
   // While `edited` is false the message IS the render with field values applied, so typing in a field
@@ -318,7 +453,7 @@ export default function ComposeWindow({
     // 🔴 THE EDITED BODY IS WHAT IS LOGGED — `body`, the textarea's current value, never the template's
     // original render. The log records what I actually sent; if the two can diverge, the edited text is
     // the one that matters. The footer is included for email because it is part of what was sent.
-    const ok = await onLog(fullText, selected?.channel ?? 'email')
+    const ok = await onLog(fullText, selected?.channel ?? 'email', selected?.servesKind ?? null)
     setLogging(false)
     if (ok) setLogged(true)
   }
@@ -347,9 +482,19 @@ export default function ComposeWindow({
     // it cannot be absent from one. The VALUE is unchanged at 85; only its delivery changed.
     <div style={{ zIndex: 85 }}
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
-      onClick={onClose} role="presentation">
+      role="presentation">
+      {/* 🔴 THE BACKDROP NO LONGER CLOSES THIS WINDOW, AND THE HANDLER IS REMOVED RATHER THAN GUARDED.
+          It used to be `onClick={onClose}` with `stopPropagation` on the dialog, so any click that
+          missed the panel — including a click that STARTED inside the textarea and ended outside it
+          while selecting text — threw the draft away with no warning and no undo.
+          ⚠️ A guarded version ("close only when clean") was rejected: a backdrop that sometimes closes
+          and sometimes does not is a control nobody can predict, and the window has a Close button two
+          inches away. Escape keeps the clean/dirty distinction because it has an accessibility role to
+          play; a backdrop click has none.
+          🔴 `stopPropagation` ON THE DIALOG IS GONE TOO — it existed only to stop clicks inside the
+          panel reaching the backdrop handler that no longer exists. Leaving it would be a guard against
+          nothing, and the next reader would have to work out what it was for. */}
       <div role="dialog" aria-modal="true" aria-labelledby="compose-title"
-        onClick={e => e.stopPropagation()}
         className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden">
 
         <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
@@ -427,7 +572,19 @@ export default function ComposeWindow({
                         )}
                         {/* 🔴 A DEFAULTED VALUE MUST NOT LOOK LIKE A TYPED ONE. This is the only thing
                             standing between a stale rate and an email that reads as correctly filled. */}
-                        {filled && fromDefault[t] !== undefined && (
+                        {/* 🔴 THE BADGE NAMES ITS SOURCE, BECAUSE THERE ARE NOW TWO. A value can arrive from this
+                            template’s own stored default OR from the global default set once on the Templates tab.
+                            Showing "from default" for both would let a stale global hide behind a field that looks
+                            freshly filled — the exact risk of two sources for one value. The template layer keeps its
+                            age badge; the global layer says GLOBAL and carries NO age, because localStorage stores no
+                            timestamp and inventing one would be worse than admitting there is none. */}
+                        {filled && fillSource[t] === 'global' && (
+                          <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-100 text-violet-800"
+                            title="Pre-filled from your GLOBAL default (Templates tab → Global defaults), not from this template. A value stored on the template itself overrides it. Editing here changes neither.">
+                            from global
+                          </span>
+                        )}
+                        {filled && fillSource[t] !== 'global' && fromDefault[t] !== undefined && (
                           <span
                             className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
                               defaultIsStale(fromDefault[t]) ? 'bg-red-100 text-red-800' : 'bg-sky-100 text-sky-800'}`}
@@ -448,7 +605,7 @@ export default function ComposeWindow({
                         type="text"
                         placeholder={`[[${t}]]`}
                         value={fills[t] ?? ''}
-                        onChange={e => { setFills(f => ({ ...f, [t]: e.target.value })); setFromDefault(d => ({ ...d, [t]: undefined as unknown as string | null })); setLogged(false); setPending(null); setSendError(null) }}
+                        onChange={e => { setFills(f => ({ ...f, [t]: e.target.value })); setFillsTouched(true); setFromDefault(d => ({ ...d, [t]: undefined as unknown as string | null })); setFillSource(f => ({ ...f, [t]: null })); setLogged(false); setPending(null); setSendError(null) }}
                         className={`w-full rounded-lg px-2.5 py-2 text-sm bg-white border-2 focus:outline-none focus:ring-2 ${
                           filled
                             ? 'border-slate-300 text-slate-900 focus:ring-slate-400'
@@ -542,7 +699,7 @@ export default function ComposeWindow({
           {/* 🔴 SHOWN WHETHER OR NOT A BUTTON HAS BEEN PRESSED. The three exits refuse, but a refusal the
               operator only meets after clicking is a worse experience than a line that is simply there —
               and this one names the offending span so it can be found in the text above. */}
-          {malformed.length > 0 && (
+          {!dncNotice && malformed.length > 0 && (
             <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
               <span className="font-bold">Cannot send — unreadable token{malformed.length > 1 ? 's' : ''}:</span>{' '}
               <code className="font-mono">{malformed.join('  ')}</code>{' '}
@@ -550,12 +707,30 @@ export default function ComposeWindow({
               <code className="font-mono">{'{{truck_name}}'}</code>.
             </p>
           )}
+          {/* 🔴 SHOWN FIRST AND ALONE WHEN IT APPLIES. A do-not-contact prospect does not need to be
+              told about its tokens as well; the only useful next action is to untick the flag. */}
+          {dncNotice && (
+            <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+              <span className="font-bold">Cannot send — do not contact:</span> {dncNotice}
+            </p>
+          )}
           {/* 🔴 THE SAME TREATMENT AS THE MALFORMED LINE, BECAUSE IT IS THE SAME KIND OF STOP — shown
               before any button is pressed, and it names the prospect so the message is actionable
               rather than abstract. */}
-          {blockingNotice && (
+          {!dncNotice && blockingNotice && (
             <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
               <span className="font-bold">Cannot send — no demo link:</span> {blockingNotice}
+            </p>
+          )}
+          {/* 🔴 A TEMPLATE THAT SETS THE LOGGED RUNG SAYS SO, BEFORE Log is pressed. Fixing the Pizza
+              Mondo defect by making the template win is only half the job — a template silently
+              overriding the operator’s dropdown is the same class of surprise pointing the other way.
+              Shown only when the two actually differ, so a tagged template that agrees with the form
+              adds no noise. */}
+          {selected?.servesKind && selected.servesKind !== logFormKind && (
+            <p className="text-[12px] text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2">
+              This template logs as <span className="font-semibold">{kindLabel(selected.servesKind)}</span>,
+              not <span className="font-semibold">{kindLabel(logFormKind)}</span> — it is tagged for that rung.
             </p>
           )}
           {sendError && (

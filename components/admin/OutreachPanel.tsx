@@ -28,7 +28,6 @@ import { useEffect, useMemo, useState, useCallback, useRef, memo, type CSSProper
 import { createPortal } from 'react-dom'   // the contact popout — same portal-to-<body> rule as ScheduleEventsPopup
 import { nativeAuthHeader } from '@/lib/native/session'
 import { safeHref } from '@/lib/safe-href'
-import InlineField from '@/components/admin/InlineField'   // MOVED here from this file; same component, one copy
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
 import ComposeWindow from '@/components/admin/ComposeWindow'
@@ -39,6 +38,13 @@ import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outrea
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
 import { formatImageUrl } from '@/lib/image-utils'   // shared resolver — the SAME one /api/discovery/events uses
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to build the wa.me link
+// 🔴 THE DERIVED STEP. Pure, no I/O, no stored state — see lib/outreach-step.ts. Imported here rather
+// than reimplemented so the queue, the row label and the composer's pre-selection read ONE answer.
+import {
+  nextStep, templateForStep, needsAttention, LEAD_TYPE_LABELS, LEAD_TYPES,
+  leadTypeOf, isLeadType, shouldFreezeLeadType, channelFor,
+  type Step,
+} from '@/lib/outreach-step'
 import {
   OUTREACH_STAGES, CONTACT_CHANNELS, CONTACT_DIRECTIONS,
   REPLY_KIND, kindsForDirection, defaultKindFor, kindOrder,
@@ -48,6 +54,7 @@ import {
   isOverdue,
   isHatchesUp,
   toYMD,
+  leadOf, LEAD_LABELS,
 } from '@/lib/outreach'
 // 🔴 (1) THE FILTER PREDICATE LIVES OUTSIDE THIS COMPONENT — one pure function, testable with no React,
 // no network and no admin session (which is not obtainable here at all). Adding a filter is one entry in
@@ -81,6 +88,13 @@ type Prospect = {
   contact_email: string | null; phone: string | null; mobile: string | null
   website: string | null; schedule_url: string | null
   order_url: string | null; excluded: boolean
+  /** discovery_trucks.show_on_vf — NOT NULL DEFAULT true. Part of the lead-type derivation. */
+  show_on_vf: boolean
+  /** discovery_trucks.hatchgrab_truck_id — non-null ⇒ converted; the queue stops chasing. */
+  hatchgrab_truck_id: string | null
+  /** 🔴 outreach_prospects.lead_type_at_first_contact — the FROZEN lead type, or null.
+   *  Null (including while the migration is unapplied) ⇒ derive live. See effectiveLeadType. */
+  lead_type_at_first_contact: string | null
   stage: OutreachStage; platform: string | null
   // 🔴 TRI-STATE: true = yes, false = checked-and-absent, null = nobody checked. NULL ≠ false.
   hu_map: boolean | null; hu_ordering: boolean | null
@@ -100,7 +114,7 @@ type Prospect = {
 // is not "the smallest value", it is "no value", so it is pinned to the bottom regardless of asc/desc.
 // The Hatches Up column sorts by the tick state; Schedule by upcoming-event count, with "no schedule at
 // all" (no upcoming and no past) treated as null → last.
-type SortKey = 'logo' | 'photo' | 'name' | 'phone' | 'whatsapp' | 'email' | 'hu_map' | 'hu_ordering' | 'schedule' | 'stage' | 'last_contacted' | 'next_action'
+type SortKey = 'logo' | 'photo' | 'name' | 'contact' | 'whatsapp' | 'hu_map' | 'hu_ordering' | 'schedule' | 'stage' | 'last_contacted' | 'next_action' | 'next_step'
 type SortDir = 'asc' | 'desc'
 type SortState = { key: SortKey; dir: SortDir } | null
 // 🔴 THE WHATSAPP COLUMN IS TICKABLE (step E): it reflects MY confirmation (whatsapp_confirmed). Two states
@@ -115,9 +129,19 @@ const COLUMNS: { key: SortKey; label: string; title?: string }[] = [
   { key: 'logo', label: 'Logo', title: 'discovery_trucks.logo_url. Drop an image on an EMPTY slot to upload it. A slot showing a broken marker has a value that does not resolve — it is not a drop target, because replacing is out of scope.' },
   { key: 'photo', label: 'Photo', title: 'discovery_trucks.photo_url. Drop an image on an EMPTY slot to upload it.' },
   { key: 'name', label: 'Truck' },
-  { key: 'phone', label: 'Phone', title: 'discovery_trucks.phone — read-only, not editable here' },
+  // 🔴 ONE DERIVED COLUMN REPLACING THE PHONE AND EMAIL VALUE COLUMNS. It answers the only question the
+  // list can act on: can I reach this truck, and if not, what is the lead worth chasing?
+  //   reachable  → the channel a message would go out on — "Email" or "WhatsApp"
+  //   NOT        → the LEAD host instead — hatchesup.app, a real site, a Facebook page, or nothing
+  // 🔴 THE PREDICATE IS `channelFor`, REUSED, NOT REWRITTEN. 🧪 It already computes exactly the operator's
+  // rule (an email, OR whatsapp_confirmed with a usable discovery_trucks.phone) and therefore exactly his
+  // 76/155 split — see the queue report. A second copy here would be a second definition of "contactable".
+  // ⚠️ IT CALLS `channelFor(p)` DIRECTLY AND DELIBERATELY IGNORES `step.channel`. 🧪 `nextStep` builds its
+  // `base` with `channel: null` and every STOP returns that base, so a do-not-contact prospect WITH an
+  // email reports `step.channel === null`. Reading the step here would file 6 reachable trucks under
+  // "no lead" — proved before this column was written, not after.
+  { key: 'contact', label: 'Contact', title: 'DERIVED, not stored. Reachable: the channel a message would use (email, or WhatsApp where the number is confirmed). Not reachable: the best lead to chase instead — a Hatches Up storefront, the truck’s own site, a Facebook page, or nothing. Phone and email VALUES moved to the prospect panel; their filters are still in the bar.' },
   { key: 'whatsapp', label: 'WhatsApp', title: 'MY confirmation the number works on WhatsApp (outreach_prospects.whatsapp_confirmed). Ticked = confirmed; empty = not confirmed. Untick clears to "not checked".' },
-  { key: 'email', label: 'Email' },
   // ⚠️ ORDERING BEFORE MAP, at the operator's request: "seen USING online ordering" is the stronger
   // buying signal, so it reads first. The FILTER BAR follows this array, so swapping these two moves the
   // matching filters as well — that is the point of driving both from one declared order.
@@ -127,21 +151,41 @@ const COLUMNS: { key: SortKey; label: string; title?: string }[] = [
   { key: 'stage', label: 'Stage' },
   { key: 'last_contacted', label: 'Last contacted' },
   { key: 'next_action', label: 'Next action' },
+  // 🔴 DERIVED, NOT STORED. Read from the contact ladder by `nextStep` every render — there is no
+  // column behind it and nothing writes it. It sorts by the ladder's own order (KIND_ORDER), so the
+  // work reads First contact → Chase 1 → Chase 2 → Final chase rather than alphabetically.
+  { key: 'next_step', label: 'Next step', title: 'DERIVED from the contact history — the next rung of the sequence, its due date, and the lead type. Nothing stores this; correct the contact log and it changes. "Can\'t tell" means a logged contact carries a kind outside the vocabulary.' },
 ]
 // A tri-state → sortable rank: true=2, false=1, null→null (sorts LAST both directions via compareBySort).
 const triRank = (v: boolean | null): number | null => v === true ? 2 : v === false ? 1 : null
 // number | string | null. isHatchesUp kept in the signature for the (unchanged) default priority sort.
-function sortValue(p: Prospect, key: SortKey, _hatchesUp: (v: string | null) => boolean): number | string | null {
+function sortValue(p: Prospect, key: SortKey, _hatchesUp: (v: string | null) => boolean, step?: Step): number | string | null {
   switch (key) {
     // Present sorts before absent; null last, as everywhere else on this table.
+    // 🔴 SORTED BY WHAT THE OPERATOR IS LOOKING FOR: work first, then unreadable history, then the
+    // rest. Within "due" the ladder's own order applies, so a screen of due work reads in sequence.
+    // Anything with no step sorts LAST, like every other null on this table.
+    case 'next_step': {
+      if (!step) return null
+      if (step.state === 'due') return `1${step.kind ? kindOrder(step.kind) : 9}`
+      if (step.state === 'unknown') return '2'
+      if (step.state === 'scheduled') return `3${step.dueOn ?? ''}`
+      return null       // stopped / complete — nothing to do, sorts last
+    }
     case 'logo': return p.logo_url ? 1 : null
     case 'photo': return p.photo_url ? 1 : null
     case 'name': return p.name || null
-    case 'phone': return p.phone || null
+    // 🔴 SORTS REACHABLE FIRST, THEN BY LEAD QUALITY. Two groups in one key so a single click gives the
+    // order the work is actually done in: everyone you can message, then everyone you cannot, best lead
+    // first. `channelFor`, never `step.channel` — see the COLUMNS note.
+    case 'contact': {
+      const ch = channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone })
+      if (ch) return `0${ch}`
+      return `1${leadOf(p.order_url, p.website).order}`
+    }
     // WhatsApp confirmation: confirmed (true) sorts first, not-confirmed (null) last. Two states only.
     case 'whatsapp':
       return p.whatsapp_confirmed === true ? 1 : null
-    case 'email': return p.contact_email || null
     case 'hu_map': return triRank(p.hu_map)          // true > false > null(last)
     case 'hu_ordering': return triRank(p.hu_ordering)
     // 🔴 SPLIT 8 September 2026. This column used to render "N upcoming · last <date>" and sort by the
@@ -161,9 +205,9 @@ function sortValue(p: Prospect, key: SortKey, _hatchesUp: (v: string | null) => 
     case 'next_action': return p.next_action_at || null        // 'YYYY-MM-DD' sorts lexically
   }
 }
-function compareBySort(a: Prospect, b: Prospect, s: SortState, hatchesUp: (v: string | null) => boolean): number {
+function compareBySort(a: Prospect, b: Prospect, s: SortState, hatchesUp: (v: string | null) => boolean, steps?: Map<string, Step>): number {
   if (!s) return 0
-  const va = sortValue(a, s.key, hatchesUp), vb = sortValue(b, s.key, hatchesUp)
+  const va = sortValue(a, s.key, hatchesUp, steps?.get(a.id)), vb = sortValue(b, s.key, hatchesUp, steps?.get(b.id))
   // Nulls last, ALWAYS — independent of direction.
   if (va == null && vb == null) return 0
   if (va == null) return 1
@@ -254,17 +298,21 @@ const FILTER_CONTROLS: {
   // have pinned it first and broken the one invariant this array exists to hold.
   { key: 'search', label: 'Truck', kind: 'text', options: [],
     title: 'Free-text match on the truck name.' },
-  { key: 'phone', label: 'Phone',
+  // 🔴 A FILTER THAT OUTLIVED ITS COLUMN. The Phone and Email VALUE columns were cut; these two
+  // presence filters are untouched and keep working, because FILTER_CONTROLS is a separate array from
+  // COLUMNS and `noColumn` already existed for exactly this (🧪 `doNotContact` has used it since it was
+  // added). They sort to the end of the bar, after every filter that still has a column.
+  { key: 'phone', label: 'Phone', noColumn: true,
     options: [['any', 'Any'], ['yes', 'Yes'], ['no', 'No']],
-    title: 'discovery_trucks.phone. Yes = we hold a number, No = we hold none. Genuinely two-valued — presence is a fact.' },
+    title: 'discovery_trucks.phone. Yes = we hold a number, No = we hold none. Genuinely two-valued — presence is a fact. The VALUE is edited in the prospect panel; this column was removed, the filter was not.' },
   // ⚠️ "No" is fair HERE, unlike the two HU columns below: whatsapp_confirmed is Dominic's OWN
   // hand-entered confirmation, so an absent value genuinely means "I have not confirmed this works".
   { key: 'whatsapp', label: 'WhatsApp',
     options: [['any', 'Any'], ['yes', 'Yes'], ['unknown', 'No']],
     title: 'outreach_prospects.whatsapp_confirmed — your own hand-entered confirmation. Yes = confirmed working. No = not confirmed by you (stored as NULL; nothing ever writes false).' },
-  { key: 'email', label: 'Email',
+  { key: 'email', label: 'Email', noColumn: true,
     options: [['any', 'Any'], ['yes', 'Yes'], ['no', 'No']],
-    title: 'discovery_trucks.contact_email. Yes = we hold an address, No = we hold none. Genuinely two-valued — presence is a fact.' },
+    title: 'discovery_trucks.contact_email. Yes = we hold an address, No = we hold none. Genuinely two-valued — presence is a fact. The VALUE is edited in the prospect panel; this column was removed, the filter was not.' },
   // 🔴 THE LABEL SAYS "No"; THE DATA MEANS "no record that anyone checked". Changed on request — but
   // hu_ordering was backfilled from ONE Hatches Up map capture over a seven-day window, so absence from
   // it is NOT evidence against (manual V12.2). The predicate is unchanged: 'unknown' still matches NULL
@@ -320,6 +368,8 @@ export default function OutreachPanel() {
   // Whether each hand-applied column exists yet (probed by the route, not inferred from row values).
   /** Whether BOTH name columns exist — one probe, because half a split is not usable. */
   const [hasContactNames, setHasContactNames] = useState(false)
+  /** Whether 20260914_outreach_lead_type_freeze.sql has been applied. False ⇒ never write the column. */
+  const [hasLeadTypeFreeze, setHasLeadTypeFreeze] = useState(false)
   const [hasDoNotContact, setHasDoNotContact] = useState(false)
   // item 1: client-side name filter over the already-loaded rows — no server round trip, no paging.
   // 🔴 ONE FILTER OBJECT, not nine useStates — so `visible` has one dependency and the Clear button is
@@ -377,7 +427,26 @@ export default function OutreachPanel() {
   // here and HOLDS across edits — an optimistic patch re-runs the memo but reads THIS state, so a chosen
   // sort is never silently reset to the default. See the report on what happens to the sort when a row is
   // edited.
-  const [sort, setSort] = useState<SortState>(null)
+  // 🔴 THE DEFAULT SORT IS NEXT ACTION, NEWEST FIRST — the operator's choice, recorded with what it
+  // actually does. 🧪 Against today's data (231 prospects, 9 with a date: 6 overdue, 1 today, 2 ahead,
+  // 222 null) 'asc' puts the MOST OVERDUE row at the top — the work-queue convention, and the operator's
+  // choice. The previous default was 'desc', which put the furthest-future date first and buried the
+  // most overdue row NINTH; that was the wrong end of the list to be looking at.
+  //
+  // ⚠️ THE 222 NULLS LAND AT THE BOTTOM, AND THAT IS NOT A PROPERTY OF THIS LINE. 🔎 `compareBySort`
+  // tests for null BEFORE it applies the direction and returns 1 / -1 directly, so the `s.dir === 'asc'
+  // ? cmp : -cmp` negation never reaches a null. A naive comparator flipped to ascending WOULD raise
+  // nulls to the top and bury all 9 dated rows under 222 blanks — a null `next_action_at` means "no
+  // action scheduled", not "overdue since the beginning of time". This one cannot, by construction.
+  // 🧪 Driven over a fixture of Dominic's exact shape: the top five rows are the 2026-09-13 overdue row
+  // and its four successors, and the first null appears at position 10.
+  //
+  // 🔴 ONE LINE FLIPS IT BACK: 'asc' → 'desc'. Nothing else needs to change, and nothing else did.
+  // ⚠️ THE HEADER CYCLE FROM THIS DEFAULT IS: oldest → newest → the PRIORITY sort → oldest. The third
+  // position is `sort = null`, which is the 5-way ready-to-send rank, NOT the state the page loaded in —
+  // so "clear" lands somewhere the operator never saw on load. That is pre-existing `toggleSort`
+  // behaviour and is deliberately NOT changed here; see the report if it should be.
+  const [sort, setSort] = useState<SortState>({ key: 'next_action', dir: 'asc' })
 
   // Stable callbacks so React.memo'd rows don't all re-render on every edit (item 5 responsiveness).
   const showToast = useCallback((message: string, undo?: () => void) => {
@@ -397,6 +466,7 @@ export default function OutreachPanel() {
       const data = await res.json()
       setProspects(data.prospects || [])
       setHasContactNames(!!data.hasContactNames)
+      setHasLeadTypeFreeze(!!data.hasLeadTypeFreeze)
       setHasDoNotContact(!!data.hasDoNotContact)
       setChecking(false)
     } catch {
@@ -422,6 +492,7 @@ export default function OutreachPanel() {
           id: r.slug, label: r.label, channel: r.channel,
           subject: r.subject ?? undefined, body: r.body,
           sortOrder: r.sort_order, active: r.active,
+          servesKind: r.serves_kind ?? null, servesLeadType: r.serves_lead_type ?? null,
           defaults: Object.fromEntries(Object.entries(r.placeholder_defaults ?? {})
             .map(([k, v]: [string, any]) => [k, { value: v?.value ?? '', updatedAt: v?.updated_at ?? null }])),
         })))
@@ -448,11 +519,86 @@ export default function OutreachPanel() {
   // (item 2); discovery_trucks.excluded is untouched and still gates the public site elsewhere. When
   // `sort` is null, the DEFAULT priority sort applies: Hatches Up trucks that have an email and are not yet
   // contacted, first. When the user picks a column, that column's asc/desc sort applies (nulls last).
+  // 🔴 THE DUE-WORK QUEUE, AS A NARROWING OF THIS TABLE — decision D3. Not a tab, not a page, not an
+  // endpoint: the rows are already loaded and the step is already derived, so the queue is one boolean.
+  // ⚠️ IT IS NOT PART OF `OutreachFilterState`, deliberately. That object feeds `matchesOutreachFilter`,
+  // which is pure over ONE ROW and has neither the contact ladder nor a clock; putting a step-aware key
+  // in it would make that pure function ignore one of its own fields, which is worse than a second flag.
+  // 🔴 THREE VIEWS OVER ONE TABLE, not three pages — decision D3 of the queue report, widened by one
+  // value. The rows are already loaded and every step is already derived, so a view is a narrowing.
+  //   'all'    — everything, as before
+  //   'due'    — 🔴 work that can ACTUALLY BE DONE: due or unreadable, AND reachable
+  //   'leads'  — the prospects with no contact route, best lead first (Phase 4)
+  // ⚠️ STILL NOT PART OF `OutreachFilterState`. That object feeds `matchesOutreachFilter`, which is pure
+  // over ONE ROW and has neither a clock nor `waPhone`; a view-aware key in it would make that function
+  // ignore one of its own fields.
+  const [listView, setListView] = useState<'all' | 'due' | 'leads'>('all')
+
+  // 🔴 ONE STEP PER PROSPECT, COMPUTED ONCE. `nextStep` is pure and cheap, but the queue, the row label
+  // and the composer's pre-selection all ask for it, and computing it three times would let them
+  // disagree if the clock ticked across midnight between calls. One Map, one answer.
+  // ⚠️ `waPhone` comes from the SHARED `phoneWhatsApp` — the same function the CUSTOMER-FACING live
+  // button uses. It is READ here and nothing else; lib/whatsapp-hint.ts is not modified by this change.
+  const steps = useMemo(() => {
+    const m = new Map<string, Step>()
+    for (const p of prospects) {
+      m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }, p.contacts))
+    }
+    return m
+  }, [prospects])
+
+  /** 🔴 CONTACTABILITY, FROM THE SHARED PREDICATE, FOR EVERY ROW — independent of step state.
+   *  `channelFor` and not `step.channel`: 🧪 `nextStep` returns its `base` (channel: null) for every
+   *  STOP, so a do-not-contact prospect holding an email reports null. Using the step would have made
+   *  the Due gate look right while quietly filing reachable trucks under "no lead". */
+  const channels = useMemo(() => {
+    const m = new Map<string, 'email' | 'whatsapp' | null>()
+    for (const p of prospects) {
+      m.set(p.id, channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }))
+    }
+    return m
+  }, [prospects])
+
+  // 🔴 COUNTED FROM THE SAME MAP THE ROWS READ, over ALL prospects rather than the filtered set — the
+  // badge answers "how much work is there", not "how much work is on screen".
+  // 🔴 THE GATE. Before this, the button counted every `state === 'due'` row whether or not anyone could
+  // be reached — 🧪 the channel was computed by `channelFor`, carried on the step, and then never
+  // consulted. That is how it read 224 when the operator's actionable figure is 70: 154 of those rows
+  // have no email and no confirmed WhatsApp number, so "do the next step" is not an instruction that can
+  // be followed. `due` now requires a channel; the unreachable ones are counted as `leads` instead and
+  // are one click away rather than hidden.
+  const dueCounts = useMemo(() => {
+    let due = 0, unknown = 0, leads = 0
+    for (const [id, st] of steps) {
+      const reachable = channels.get(id) != null
+      if (!reachable) { leads++; continue }
+      if (st.state === 'due') due++
+      else if (st.state === 'unknown') unknown++
+    }
+    return { due, unknown, leads, total: due + unknown }
+  }, [steps, channels])
+
   const computedVisible = useMemo(() => {
     // 🔴 (1) CLIENT-SIDE OVER THE ROWS ALREADY LOADED. No endpoint, no query param, no refetch — this
     // is a pure narrowing of `prospects`, which is why changing a filter cannot alter a row or lose an
     // optimistic edit. All predicates combine with AND inside matchesOutreachFilter.
-    const rows = prospects.filter(p => matchesOutreachFilter(p, filter))
+    // 🔴 TWO STAGES, AND THE SPLIT IS DELIBERATE. `matchesOutreachFilter` is a PURE function of one row
+    // — no contacts, no clock — which is why it is testable with no React and no database, and that
+    // property is worth keeping. "Due" is not a property of a row: it needs the contact ladder AND
+    // today's date. So the row filters run first, unchanged, and the queue narrows what survives.
+    // ⚠️ A prospect never contacted has NO next_action_at, so the existing date filters cannot see that
+    // it is due at all. The derived step can — which is the whole reason the queue is not just 'overdue'.
+    const rows = prospects
+      .filter(p => matchesOutreachFilter(p, filter))
+      .filter(p => {
+        if (listView === 'all') return true
+        const reachable = channels.get(p.id) != null
+        // 🔴 'leads' IS EVERY UNREACHABLE PROSPECT, whatever its step state. 🧪 The operator's data says
+        // all 155 are `not_contacted`, so no state filter is needed today — and adding one would hide a
+        // row the day that stops being true, which is the opposite of what this view is for.
+        if (listView === 'leads') return !reachable
+        return reachable && needsAttention(steps.get(p.id)!)
+      })
     const rank = (p: Prospect) => {
       // 🔴 CASE-INSENSITIVE BACKSTOP (isHatchesUp) rather than `=== HATCHES_UP`: a value that somehow
       // escaped canonicalisation on save (e.g. seeded before this existed) still sorts to the top.
@@ -467,45 +613,46 @@ export default function OutreachPanel() {
       return 4
     }
     return [...rows].sort((a, b) => {
+      // 🔴 AN EXPLICIT COLUMN SORT ALWAYS WINS, IN EVERY VIEW. The view decides which rows; the header
+      // decides their order. Making a view override a click the operator just made would be the kind of
+      // invisible override this table has avoided everywhere else.
       if (sort) {
-        const c = compareBySort(a, b, sort, isHatchesUp)
+        const c = compareBySort(a, b, sort, isHatchesUp, steps)
         if (c !== 0) return c
         return a.name.localeCompare(b.name)   // stable tiebreak by name
+      }
+      // 🔴 THE LEADS VIEW HAS ITS OWN DEFAULT ORDER — best lead first (Phase 4). The normal priority
+      // rank is useless here by construction: it ranks on `hasEmail`, and every row in this view has no
+      // email. So it would collapse to one bucket and leave 155 rows in arbitrary order.
+      // ⚠️ Ordering is `leadOf().order`, the array position in LEAD_RANKS, so the sequence
+      // hatchesup → other ordering page → real website → Facebook → nothing is declared in one place
+      // and never retyped here.
+      if (listView === 'leads') {
+        const la = leadOf(a.order_url, a.website).order, lb = leadOf(b.order_url, b.website).order
+        if (la !== lb) return la - lb
+        return a.name.localeCompare(b.name)
       }
       const r = rank(a) - rank(b)
       if (r !== 0) return r
       return a.name.localeCompare(b.name)
     })
-  }, [prospects, sort, filter])
+  }, [prospects, sort, filter, listView, steps, channels])
 
-  // ── 🔴 THE LIST IS FROZEN WHILE AN INLINE INPUT HAS FOCUS ────────────────────────────────────────
-  // WHAT HAPPENS, PLAINLY: focus an inline Phone or Email box and the set of rows and their order are
-  // pinned exactly as they are. Nothing can move or vanish under the cursor while you type — not a
-  // filter that the edit stops matching, not a re-sort of the column being edited. On blur the freeze
-  // lifts and the list recomputes: if your edit means the row no longer matches an active filter it
-  // disappears THEN, with the change saved, which is the moment you can see it happen.
-  // ⚠️ Data stays LIVE while frozen — the ids are pinned, the objects are re-read from `prospects` — so
-  // the cell shows the value you just committed rather than a stale snapshot.
+  // ── 🔴 THE LIST-FREEZE MECHANISM IS GONE, AND THIS RECORDS WHY RATHER THAN DELETING IT SILENTLY ──
+  // It pinned the row set and its order while an inline input had focus, so a row could not move or
+  // vanish under the cursor mid-edit, and released a tick late so tabbing Phone → Email did not unmount
+  // the row focus was travelling to. It existed for exactly two controls: the inline Phone and Email
+  // editors in the table.
+  // 🔴 BOTH COLUMNS WERE CUT IN THIS CHANGE, SO NOTHING IN A ROW TAKES TEXT FOCUS ANY MORE — 🧪 `Row`
+  // was the only consumer of `onHold`, and with no inline input left, `holdList` could never be called,
+  // `heldOrder` was permanently null and `visible` was always `computedVisible`. It was unreachable
+  // code, not merely unused, so removing it changes nothing observable.
+  // ⚠️ IF AN INLINE EDITOR EVER RETURNS TO THIS TABLE, BRING THIS BACK WITH IT. The reasoning is in
+  // docs/outreach-list-columns-report.md and the implementation is in this file's history.
   // Which media slot is awaiting confirmation. Held HERE rather than in the thumbnail so the dialog can
   // render at the top of the tree, above the prospect modal, instead of inside a 44px box.
   const [confirmKind, setConfirmKind] = useState<'logo' | 'photo' | null>(null)
-  const [heldOrder, setHeldOrder] = useState<string[] | null>(null)
-  const releaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const visible = useMemo(() => {
-    if (!heldOrder) return computedVisible
-    const byId = new Map(prospects.map(p => [p.id, p]))
-    return heldOrder.map(id => byId.get(id)).filter(Boolean) as Prospect[]
-  }, [computedVisible, heldOrder, prospects])
-
-  // ⚠️ THE RELEASE IS DEFERRED BY A TICK ON PURPOSE. Tabbing from Phone to Email fires blur then focus;
-  // releasing synchronously on that blur would recompute the list between the two and could unmount the
-  // row the focus was travelling to. The pending release is cancelled if another input takes focus.
-  const holdList = useCallback((hold: boolean) => {
-    if (releaseTimer.current) { clearTimeout(releaseTimer.current); releaseTimer.current = null }
-    if (hold) setHeldOrder(cur => cur ?? computedVisible.map(p => p.id))
-    else releaseTimer.current = setTimeout(() => setHeldOrder(null), 0)
-  }, [computedVisible])
-  useEffect(() => () => { if (releaseTimer.current) clearTimeout(releaseTimer.current) }, [])
+  const visible = computedVisible
 
   // Click a header: none → asc → desc → back to default. The active column + direction show at a glance
   // via the ▲/▼ marker rendered on that header.
@@ -759,10 +906,41 @@ export default function OutreachPanel() {
                 the list, so a filter that matches everything is still visibly a filter, and a filter that
                 matches nothing reads as 0 of N rather than as an empty page. */}
             <p className="text-sm text-slate-500">
-              {isFilterActive(filter)
+              {isFilterActive(filter) || listView !== 'all'
                 ? <><span className="font-semibold text-slate-700">{visible.length}</span> of {prospects.length} trucks</>
                 : <>{prospects.length} trucks</>}
             </p>
+          </div>
+          {/* 🔴 THREE VIEWS OVER THE TABLE THAT IS ALREADY THERE. Not tabs, not pages: every row is
+              loaded and every step derived, so a view is a narrowing. Counts come from the SAME `steps`
+              and `channels` maps the rows render from, so a badge and its list cannot disagree.
+              ⚠️ "Needs a look" stays counted SEPARATELY from "due" and is NOT a subset of it — an
+              unreadable history is work, but it needs the contact log corrected, not a message sent.
+              🔴 AND "NEEDS DETAILS" IS NOT HIDDEN WORK. The 155 with no contact route used to be folded
+              into Due work, where they made the number meaningless; they are now their own view with
+              their own count, one click away. Hiding them was never the alternative. */}
+          <div className="flex items-center gap-2">
+            {dueCounts.unknown > 0 && (
+              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1"
+                title="Reachable prospects whose logged contacts carry a kind outside the vocabulary, so the next step cannot be derived. Open one and check its history.">
+                ⚠ {dueCounts.unknown} need{dueCounts.unknown === 1 ? 's' : ''} a look
+              </span>
+            )}
+            {([
+              ['all', `All (${prospects.length})`, 'Every prospect, unfiltered by view.'],
+              ['due', `Due work (${dueCounts.total})`,
+                'Work that can actually be done: due today or overdue, AND reachable by email or a confirmed WhatsApp number. Prospects with no contact route are in Needs details instead.'],
+              ['leads', `Needs details (${dueCounts.leads})`,
+                'No email and no confirmed WhatsApp number. The Contact column shows the best lead to chase instead — a Hatches Up storefront first, then a real website, then a Facebook page. Sorted best-first.'],
+            ] as const).map(([v, label, title]) => (
+              <button key={v} type="button" onClick={() => setListView(v)}
+                aria-pressed={listView === v} title={title}
+                className={`text-sm rounded-lg px-3 py-1.5 border font-semibold ${listView === v
+                  ? 'bg-orange-600 border-orange-600 text-white'
+                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}>
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -841,27 +1019,42 @@ export default function OutreachPanel() {
             item 4: `table-fixed` + an explicit <colgroup> — column widths come from the colgroup, NOT cell
             content, so they DO NOT reflow when rows reorder on sort. */}
         <div className="overflow-auto rounded-xl border border-slate-200 bg-white max-h-[calc(100vh-9rem)]">
-          <table className="table-fixed text-sm w-full" style={{ minWidth: '1198px' }}>
-            {/* 🔴 THE SUM OF THESE EQUALS `minWidth` EXACTLY (1198px), AND THAT IS THE POINT.
-                Every previous version had minWidth ABOVE the colgroup sum (1510 vs 1348, then 1638 vs
-                1476), and `table-fixed` distributes that surplus across every column — so each one
-                rendered WIDER than its declared value and the table sprawled. Keeping the two in step
-                means a column is exactly the width written here.
+          <table className="table-fixed text-sm w-full" style={{ minWidth: '1321px' }}>
+            {/* 🔴 THE SUM OF THESE EQUALS `minWidth` EXACTLY (1321px), AND THAT IS THE POINT.
+                🧪 RE-DERIVED, NOT TRANSCRIBED:
+                  64 + 64 + 210 + 150 + 72 + 76 + 68 + 78 + 125 + 112 + 112 + 190 = 1321
+                Keeping the two in step means a column is exactly the width written here at the floor,
+                and above it `table-fixed` widens every column PROPORTIONALLY — at 1440px each renders
+                x1.090, so nothing that fits here starts truncating as the window grows.
+
+                🔴 THE INVARIANT WAS BROKEN AND THIS IS THE REPAIR, RECORDED RATHER THAN QUIETLY FIXED.
+                The queue task added a 13th column (NEXT STEP) and NO 13th <col>. Under `table-fixed` a
+                column with no declared width absorbs ALL the surplus, so the twelve declared columns
+                stayed pinned at 115/210/88… at every window width while NEXT STEP took up to ~600px in
+                an 1800px container. That is why email, phone and every date truncated mid-value on a
+                wide screen — it was never the columns being too narrow for the content.
+                ⚠️ THE COUNT IS THE CHECK: this colgroup must have EXACTLY as many <col> as COLUMNS has
+                entries, because <thead> maps over COLUMNS. 12 and 12.
+
                 Widths are set by whichever is larger: the widest unbreakable word in the heading
-                (headings wrap on spaces) plus 16px of px-2 padding, or the widest cell content. */}
+                (headings wrap on spaces) plus 16px of px-2 padding, or the widest cell content at
+                text-sm plus 24px of px-3. 🧪 Two of the old values were simply too small for their own
+                content and are corrected here: `stage` held "not contacted" (13 chars ≈ 94px + 24 = 118)
+                in 105px, and the date columns hold `fmtDate`'s "10 Sept 2026" (12 chars ≈ 86 + 24 = 110)
+                in 88px. Both truncated at ANY width, independently of the missing <col>. */}
             <colgroup>
               <col style={{ width: '64px' }} />{/* logo — 40px thumb, 12px gap each side */}
               <col style={{ width: '64px' }} />{/* photo */}
-              <col style={{ width: '170px' }} />{/* name — truncates */}
-              <col style={{ width: '115px' }} />{/* phone — "01223 360747" */}
+              <col style={{ width: '210px' }} />{/* name — was 170; took part of the 325px freed by phone+email */}
+              <col style={{ width: '150px' }} />{/* contact — "Email"/"WhatsApp", or a lead host like "hatchesup.app" */}
               <col style={{ width: '72px' }} />{/* whatsapp — a checkbox; "WHATSAPP" is the binding word */}
-              <col style={{ width: '210px' }} />{/* email — truncates; the longest content on the row */}
               <col style={{ width: '76px' }} />{/* hu_ordering — "ORDERING" is the binding word */}
               <col style={{ width: '68px' }} />{/* hu_map */}
               <col style={{ width: '78px' }} />{/* schedule — "SCHEDULE" binds, content is "Y (11)" */}
-              <col style={{ width: '105px' }} />{/* stage — "not contacted" */}
-              <col style={{ width: '88px' }} />{/* last_contacted — "CONTACTED" binds */}
-              <col style={{ width: '88px' }} />{/* next_action */}
+              <col style={{ width: '125px' }} />{/* stage — was 105, which truncated "not contacted" */}
+              <col style={{ width: '112px' }} />{/* last_contacted — was 88; "10 Sept 2026" needs ~110 */}
+              <col style={{ width: '112px' }} />{/* next_action — same */}
+              <col style={{ width: '190px' }} />{/* next_step — "Chase 2 · 10 Sept 2026" ≈ 158 + 24 = 182 */}
             </colgroup>
             <thead className="bg-slate-100 text-slate-600 text-xs uppercase tracking-wide sticky top-0 z-10">
               <tr>
@@ -895,7 +1088,7 @@ export default function OutreachPanel() {
             </thead>
             <tbody>
               {visible.map(p => (
-                <Row key={p.id} p={p} onOpen={openModal} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} onHold={holdList} isCountStale={staleCountIds.has(p.id)} />
+                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openModal} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} />
               ))}
               {visible.length === 0 && (
                 <tr><td colSpan={12} className="px-3 py-8 text-center text-slate-400">
@@ -1005,7 +1198,8 @@ export default function OutreachPanel() {
                 <ProspectMetaFacts p={modalProspect} hasDoNotContact={hasDoNotContact}
                   onPatch={patchProspect} onCreateDemo={() => setCreateDemoForId(modalProspect.id)} />
               </div>
-              <Detail p={modalProspect} hasContactNames={hasContactNames}
+              <Detail p={modalProspect} step={steps.get(modalProspect.id)} hasContactNames={hasContactNames}
+                hasLeadTypeFreeze={hasLeadTypeFreeze}
                 onPatch={patchProspect} onLog={logContact} templates={templates}
                 onDeleteContact={deleteContactRow} />
             </div>
@@ -1354,16 +1548,31 @@ function MediaCell({ p, kind, onUpload }: {
 // 🔴 React.memo (item 5): with stable onOpen/onPatch, a row re-renders only when its OWN `p` changes, so a
 // single-cell edit does not re-render all 231 rows. Truncation (`truncate`) plus the fixed <colgroup>
 // keeps every cell within its column width, so content never widens a column on sort (item 4).
-const Row = memo(function Row({ p, onOpen, onOpenSchedule, onPatch, onUpload, onHold, isCountStale }: {
+const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUpload, isCountStale }: {
   p: Prospect
+  /** The derived next step for this row. Passed IN rather than computed here so every consumer of it —
+   *  the queue filter, this cell and the composer — reads the identical object. */
+  step?: Step
   onOpen: (id: string) => void
   onOpenSchedule: (p: Prospect) => void
   isCountStale: boolean
   onPatch: (id: string, patch: Record<string, unknown>) => void
   onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File) => Promise<void>
-  onHold: (hold: boolean) => void
 }) {
   const overdue = isOverdue(p.next_action_at)
+  // 🔴 DERIVED PER ROW FROM THE SHARED PREDICATE, NOT FROM THE STEP. See the COLUMNS note: a stopped
+  // prospect's `step.channel` is always null, even when it has an email, so reading the step here would
+  // mislabel every do-not-contact / replied / converted row as unreachable.
+  // ⚠️ `phoneWhatsApp` is the SHARED derivation the customer-facing live button also uses. It is READ
+  // here and nowhere modified; lib/whatsapp-hint.ts carries no change from this task.
+  const contactChannel = channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone })
+  const lead = leadOf(p.order_url, p.website)
+  const contactTitle = contactChannel
+    ? (contactChannel === 'whatsapp'
+      ? `Reachable on WhatsApp — ${p.phone ?? ''} (confirmed)`
+      : `Reachable by email — ${p.contact_email ?? ''}`)
+    : `Not reachable: no email, and no confirmed WhatsApp number. Lead: ${LEAD_LABELS[lead.rank]}${
+      lead.host ? ` — ${p.order_url || p.website}` : ' — nothing on file'}`
   // 🔴 TWO CELLS, ONE QUESTION EACH. Was a single string, "N upcoming · last <date>", which truncated
   // at 150px so neither half was reliably readable. `hasSchedule` is the same test the old string used
   // for "no schedule" — nothing about what counts as a schedule changed.
@@ -1419,20 +1628,23 @@ const Row = memo(function Row({ p, onOpen, onOpenSchedule, onPatch, onUpload, on
       {/* 🔴 SAME WRITE PATH AS THE MODAL — `onPatch(id, { phone })` -> update_prospect -> the route
           resolves discovery_truck_id and updates discovery_trucks with the SERVICE ROLE behind
           verifyAdmin. No new action, no second branch: two writers for one column is how they drift. */}
-      <td className="px-2 py-1">
-        <InlineField value={p.phone} type="text" placeholder="—" onHold={onHold}
-          onCommit={v => onPatch(p.id, { phone: v })} />
+      {/* ── 🔴 CONTACT — ONE DERIVED CELL REPLACING THE PHONE AND EMAIL VALUE COLUMNS ────────────────
+          Reachable → the channel a message would actually go out on. Not reachable → the lead to chase
+          instead, shown as its HOST because that is the signal; the full URL is in the title.
+          🔴 NO <a href> IS ADDED. Nothing in a row has ever linked anywhere — 🧪 zero href / mailto: /
+          tel: / wa.me in this component's rows — and everything is still "open the modal". A host
+          rendered as TEXT says which lead to chase without changing what a row DOES; making these
+          clickable is a deliberate decision for another day, not a side effect of a column swap. */}
+      <td className="px-3 py-2 truncate text-center" title={contactTitle}>
+        {contactChannel
+          ? <span className="text-slate-700 font-medium">{contactChannel === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
+          : lead.host
+            ? <span className={lead.rank === 'hatchesup' ? 'text-orange-700 font-semibold' : 'text-slate-500'}>{lead.host}</span>
+            : <span className="text-slate-300">—</span>}
       </td>
       {/* item 3: checkbox centred. step E: reflects MY confirmation (whatsapp_confirmed). */}
       <td className="px-3 py-2 text-center"><WhatsAppBox p={p} onPatch={onPatch} /></td>
-      {/* Same single write path. 🧪 The column is 210px (186px of content) and the median stored address
-          is 25 characters, so ~63% fit untruncated at rest; the full value is in the title and the box
-          switches to left-aligned on focus so a long address reads from the start while editing. */}
-      <td className="px-2 py-1">
-        <InlineField value={p.contact_email} type="email" placeholder="—" onHold={onHold}
-          title={p.contact_email ?? undefined}
-          onCommit={v => onPatch(p.id, { contact_email: v })} />
-      </td>
+
       {/* item 3: checkboxes centred. step D: two independent tri-state columns. */}
       <td className="px-3 py-2 text-center"><TriStateBox value={p.hu_ordering} onSet={v => onPatch(p.id, { hu_ordering: v })} label="HU ordering" /></td>
       <td className="px-3 py-2 text-center"><TriStateBox value={p.hu_map} onSet={v => onPatch(p.id, { hu_map: v })} label="HU map" /></td>
@@ -1478,10 +1690,38 @@ const Row = memo(function Row({ p, onOpen, onOpenSchedule, onPatch, onUpload, on
         {stageLabel(p.stage)}
       </td>
       <td className="px-3 py-2 text-slate-600 truncate text-center">{fmtDate(p.lastContactedAt) || <span className="text-slate-300">—</span>}</td>
+      {/* 🔴 THE DATE OPENS THE PROSPECT, LIKE THE TRUCK NAME DOES — the same `onOpen(p.id)` handler and
+          the same reason it is a real <button>: it is in the tab order, takes focus, and activates on
+          Enter and Space for free, which an onClick on a <span> does none of.
+          ⚠️ THE BUTTON WRAPS ONLY THE DATE, NOT THE CELL. An empty cell (🧪 222 of 231 rows today) stays
+          inert — a full-width target on a dash would be 222 rows of clickable nothing — and the <tr>
+          still carries no onClick, so a mis-click while scanning cannot open a modal.
+          🧪 IT ADDS NO LINK. There is still no href / mailto: / tel: / wa.me anywhere in a row; opening
+          the modal is what every other interactive cell in this table already does. */}
       <td className="px-3 py-2 truncate text-center">
         {p.next_action_at
-          ? <span className={overdue ? 'text-red-600 font-semibold' : 'text-slate-600'}>{fmtDate(p.next_action_at)}{overdue && ' ⚠'}</span>
+          ? <button type="button" onClick={() => onOpen(p.id)}
+              title={`Open ${p.name}`}
+              className={`rounded focus:outline-none focus:ring-2 focus:ring-orange-400 hover:underline ${
+                overdue ? 'text-red-600 font-semibold' : 'text-slate-600'}`}>
+              {fmtDate(p.next_action_at)}{overdue && ' ⚠'}
+            </button>
           : <span className="text-slate-300">—</span>}
+      </td>
+      {/* 🔴 THE DERIVED NEXT STEP. Four visual states, and "can't tell" is one of them ON PURPOSE —
+          decision D1. A prospect whose logged contacts carry a kind outside the vocabulary must read as
+          unreadable, never as "first contact", or the queue would tell the operator to introduce himself
+          to someone he has already chased. The amber ⚠ is the same marker the history table uses for the
+          same reason. */}
+      <td className="px-3 py-2 truncate text-center" title={step ? `${step.label}${step.dueOn ? ` · due ${fmtDate(step.dueOn)}` : ''} · ${LEAD_TYPE_LABELS[step.leadType]}` : undefined}>
+        {!step ? <span className="text-slate-300">—</span>
+          : step.state === 'unknown'
+            ? <span className="text-amber-700 font-semibold">⚠ Can&rsquo;t tell</span>
+            : step.state === 'due'
+              ? <span className="text-orange-700 font-semibold">{step.label}</span>
+              : step.state === 'scheduled'
+                ? <span className="text-slate-500">{step.label}{step.dueOn ? ` · ${fmtDate(step.dueOn)}` : ''}</span>
+                : <span className="text-slate-400">{step.label}</span>}
       </td>
     </tr>
   )
@@ -1867,9 +2107,13 @@ function HistoryTable({ contacts, onDelete }: {
   )
 }
 
-function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact }: {
+function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, onDeleteContact }: {
   p: Prospect
+  /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
+  step?: Step
   hasContactNames: boolean
+  /** False until the freeze migration is applied; gates both the write and the control. */
+  hasLeadTypeFreeze: boolean
   onPatch: (id: string, patch: Record<string, unknown>) => void
   /** Deletes ONE contact row. Rejects on failure so the confirm dialog can show why and stay open. */
   onDeleteContact: (pr: Prospect, c: Contact) => Promise<void>
@@ -1969,7 +2213,30 @@ function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact
     const due = nextTouched ? (nextAt || null) : followUpDateFor(k, contactedAt)
     setNextAt(due ?? '')
     setNextTouched(false)
-    onPatch(p.id, { next_action_at: due })
+    const patch: Record<string, unknown> = { next_action_at: due }
+
+    // ── 🔴 FREEZE THE LEAD TYPE ON THE RUNG-1 LOG, AND ONLY THERE ──────────────────────────────────
+    // WHERE: this function is the ONE place both logging paths converge — the modal's own Log button
+    // (`submitLog`) and the compose window's log control both call it, and both only on a write that
+    // SUCCEEDED. Putting the freeze anywhere else would repeat the bug this function was created to fix,
+    // where the compose path logged a contact and set no follow-up date at all.
+    //
+    // 🔴 THREE CONDITIONS, ALL NECESSARY:
+    //   • `k === CONTACT_KINDS[0]` — the rung-1 log, not any log. A chase must not re-stamp the framing
+    //     the approach was written in; that is the whole point of freezing.
+    //   • `!isLeadType(p.lead_type_at_first_contact)` — WRITE ONCE. Re-logging a first contact later, or
+    //     logging it on a second channel, must not overwrite a value already set (by an earlier log or
+    //     by hand in the control below).
+    //   • `hasLeadTypeFreeze` — the column exists. Until the migration is applied this is false and the
+    //     write is skipped entirely, so the console behaves exactly as it did before.
+    //
+    // ⚠️ `leadTypeOf`, NOT `effectiveLeadType`. Every READER uses the effective value; this is the one
+    // WRITER, and it must capture what the prospect is RIGHT NOW. (With the column null they return the
+    // same thing — but the intent differs, and the next person reading this should see which is which.)
+    if (shouldFreezeLeadType(k, p, hasLeadTypeFreeze)) {
+      patch.lead_type_at_first_contact = leadTypeOf(p)
+    }
+    onPatch(p.id, patch)
   }
 
   // 🔴 LOGGING NOW SETS THE FOLLOW-UP DATE — A DELIBERATE REVERSAL OF THE MANUAL'S STANDING RULE.
@@ -2065,6 +2332,44 @@ function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact
               <span className="flex items-center gap-1 text-xs text-slate-500 whitespace-nowrap"><WhatsAppBox p={p} onPatch={onPatch} /> WA</span>
             </div>
           </label>
+          {/* ── 🔴 (5) THE FROZEN LEAD TYPE — VISIBLE, AND CORRECTABLE ──────────────────────────────
+              A wrong freeze is otherwise INVISIBLE AND PERMANENT: it would quietly pick the wrong
+              `?lead_*` line in every remaining message of the sequence, and nothing on any screen would
+              say why. So it is shown, and it can be changed.
+              🔴 A FOURTH CELL IN THE SAME TWO-COLUMN GRID, NOT A THIRD COLUMN. The arithmetic is the one
+              round two established and the name split re-used: the panel is max-w-6xl (1152), the body
+              has p-5 and gap-5, so the 45fr column is (1152 - 40 - 20) x 0.45 = 491px, less `pr-1` =
+              487px, and each track is (487 - 8)/2 = 239px — the width Phone already has. Going to
+              `grid-cols-3` would give (487 - 16)/3 = 157px, under the ~177px intrinsic width of an
+              <input>, and a grid item's min-width computes to `auto` — the CONTACTED ON / CHANNEL
+              overlap all over again. A fourth cell simply wraps to row two beside Phone.
+              ⚠️ BELOW `sm` the body is a flex COLUMN, so this column is the full panel width: at 390px
+              that is 390 - 16 (overlay p-2) - 32 (panel max-sm:p-4) = 342, i.e. tracks of
+              (342 - 8)/2 = 167px. A <select>'s min-content width is its longest option — "Hatches Up —
+              map only" is wider than 167px — so `max-sm:min-w-0` is REQUIRED here exactly as it is on
+              the three cells beside it, or this cell overflows its track.
+              🔴 `fieldCls` carries `max-sm:text-base` (16px), which is what stops iOS zooming on focus.
+              Rounds 1-3 are untouched: no cell was removed, no class was dropped, and the grid is still
+              `grid-cols-2`. */}
+          <label className="block max-sm:min-w-0">
+            <span className={labelCls}>Lead type {step?.leadTypeFrozen ? '(frozen)' : '(live)'}</span>
+            <select className={fieldCls} disabled={!hasLeadTypeFreeze}
+              value={isLeadType(p.lead_type_at_first_contact) ? p.lead_type_at_first_contact : ''}
+              title={hasLeadTypeFreeze
+                ? (step?.leadTypeFrozen
+                  ? 'Frozen when the first contact was logged. Every remaining rung reads this value.'
+                  : 'Not frozen yet — derived live from HU flags, visibility and upcoming events. It freezes when a first contact is logged.')
+                : 'Needs the 20260914_outreach_lead_type_freeze migration'}
+              onChange={e => onPatch(p.id, { lead_type_at_first_contact: e.target.value })}>
+              {/* 🔴 THE EMPTY OPTION IS "DERIVE LIVE", NOT "UNKNOWN", and choosing it CLEARS the column
+                  back to null — which is how a wrong freeze is undone rather than merely re-pointed. */}
+              {/* 🔴 SHOWS THE LIVE DERIVATION, NOT `step.leadType`. On a frozen row those differ —
+                  `step.leadType` IS the frozen value — and labelling this option with it would promise
+                  that clearing the freeze changes nothing, which is exactly backwards. */}
+              <option value="">— derive live ({LEAD_TYPE_LABELS[leadTypeOf(p)]}) —</option>
+              {LEAD_TYPES.map(lt => <option key={lt} value={lt}>{LEAD_TYPE_LABELS[lt]}</option>)}
+            </select>
+          </label>
         </div>
 
         {(p.phone || (p.whatsapp_confirmed === true && waPhone)) && (
@@ -2111,23 +2416,40 @@ function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact
         {/* 🔴 THE COMPOSE WINDOW — portalled to <body>, layered above this modal. It writes NOTHING until
           its own log control is pressed, and its `onLog` is the SAME `log_contact` writer this modal's
           Log button uses; there is no second write path. */}
+      {/* 🔴 PRE-SELECTION COMES FROM THE DERIVED STEP, NOT FROM `suggestedId`. `templateForStep`
+          resolves against the LOADED list, so a retired or renamed slug yields null and the picker
+          opens empty — the historical behaviour — rather than selecting the wrong row.
+          ⚠️ It is null whenever the step is 'unknown', because `nextStep` produces no rung there: a
+          history nobody can read must never pre-load a chase.
+          🔴 `doNotContact` is what finally makes that flag block something. See ComposeWindow. */}
       {composeOpen && (
         <ComposeWindow
           truckName={p.name}
           toEmail={p.contact_email}
           offerable={offerable}
           suggestedId={suggestedId}
+          initialTemplateId={step ? templateForStep(step, offerable).slug : null}
+          doNotContact={p.do_not_contact === true}
           ctx={tplCtx}
           whatsappConfirmed={p.whatsapp_confirmed === true}
           templatesLoaded={templates !== null}
+          logFormKind={kind}
           onClose={() => setComposeOpen(false)}
-          onLog={async (editedBody, ch) => {
+          onLog={async (editedBody, ch, servesKind) => {
             // 🔴 `editedBody` IS THE TEXTAREA'S CURRENT VALUE, passed straight through to the writer.
             // It is never re-rendered from the template here — if the two diverge, what was edited is
-            // what gets stored. `kind` and `contacted_at` come from the log form so the compose window
-            // respects what is already selected there rather than inventing its own.
+            // what gets stored. `contacted_at` still comes from the log form.
+            //
+            // 🔴 BUT `kind` NO LONGER DOES, WHEN THE TEMPLATE HAS AN OPINION. This block used to read
+            // "respects what is already selected there rather than inventing its own", and that is
+            // exactly how a chaser sent to Pizza Mondo was logged as a FIRST CONTACT: the dropdown had
+            // not been touched, so the history recorded an approach that never happened — and the
+            // derived step, the follow-up interval and the whole queue read that history.
+            // A TAGGED template states its own rung and wins. An UNTAGGED one passes null and the
+            // dropdown governs, byte for byte as before — which is every template today.
+            const effectiveKind = servesKind ?? kind
             const ok = await onLog(p, {
-              channel: ch, direction: 'outbound', kind,
+              channel: ch, direction: 'outbound', kind: effectiveKind,
               message: editedBody, contacted_at: contactedAt,
             })
             // 🔴 THE BUG THIS FIXES: this path logged a contact and set NO follow-up date, because the
@@ -2135,7 +2457,9 @@ function Detail({ p, hasContactNames, onPatch, onLog, templates, onDeleteContact
             // the compose window is the path actually used to send, so the feature never fired there.
             // 🔴 AND IT RESPECTS A REFUSAL. `false` leaves the window un-logged, so the compose window
             // does not mark a send that was never recorded; the reason arrives as the writer's toast.
-            if (ok) persistFollowUpAfterLog(kind)
+            // 🔴 THE SAME effective kind, or the follow-up date would be counted from a rung that
+            // was never logged — 3 days for a "first contact" that was actually a final chase.
+            if (ok) persistFollowUpAfterLog(effectiveKind)
             return ok
           }}
         />

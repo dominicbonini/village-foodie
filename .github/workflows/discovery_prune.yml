@@ -13,7 +13,7 @@ on:
         required: false
         default: 'true'
       allow_backlog:
-        description: 'One-off: raise the count floor to this number (leave blank normally)'
+        description: 'One-off: accept a backlog of up to this many rows, relaxing the age and per-day guards (leave blank normally). Must be a whole number. It can never relax the exclusion-health check.'
         required: false
         default: ''
 

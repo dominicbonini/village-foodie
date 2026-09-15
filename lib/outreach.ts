@@ -245,17 +245,83 @@ export function isHatchesUp(platform: string | null | undefined): boolean {
   return platform.replace(/\s+/g, '').toLowerCase() === 'hatchesup'
 }
 
-export function platformFromOrderUrl(orderUrl: string | null | undefined): string | null {
-  if (!orderUrl || !orderUrl.trim()) return null
+/**
+ * The host of a URL, lower-cased, or null. 🔴 EXTRACTED FROM `platformFromOrderUrl`, WHICH NOW CALLS IT
+ * — the expression is byte-identical, not a second parser. A URL host is now wanted in two places (the
+ * platform tag and the uncontactable lead ranking), and two copies of a five-step string chain is
+ * exactly the drift this file exists to prevent.
+ * ⚠️ Deliberately NOT `new URL()`: stored values include scheme-less hosts (🧪 `shikashack.co.uk` is
+ * recorded in `website` with no scheme), which `new URL` throws on. This tolerates them.
+ */
+export function hostOf(url: string | null | undefined): string | null {
+  if (!url || !url.trim()) return null
   // host = everything after the scheme, up to the first '/', ':' or '?'. Lower-cased.
-  const host = orderUrl
+  const host = url
     .trim()
     .replace(/^https?:\/\//i, '')
     .split(/[/:?#]/)[0]
     .toLowerCase()
+  return host || null
+}
+
+export function platformFromOrderUrl(orderUrl: string | null | undefined): string | null {
+  const host = hostOf(orderUrl)
   if (!host) return null
   if (host === 'hatchesup.app' || host.endsWith('.hatchesup.app')) return HATCHES_UP
   return host
+}
+
+// ── 🔴 THE UNCONTACTABLE LEAD RANKING — WHAT TO CHASE WHEN THERE IS NO EMAIL AND NO WHATSAPP ────────
+// 🧪 155 of 231 prospects have no contact route at all (the operator's figure). They are not dead ends:
+// ~46 carry a competitor storefront, ~30 a Facebook page, ~45 nothing. This ranks what to open first.
+//
+// 🔴 A hatchesup.app ORDER URL IS THE STRONGEST LEAD, and that is a judgement about the BUSINESS rather
+// than about the data: the truck is already selling online through a competitor, so it has a menu, a
+// payment setup, and a rate to compare. A Facebook page is the weakest thing that is still a lead — you
+// can message it, but it carries no address.
+//
+// ⚠️ AN UNRECOGNISED HOST RANKS AS A REAL WEBSITE (2), NOT AS "nothing". A host this code has not seen
+// before is far likelier to be a small trader's own site than to be worthless, and ranking it last
+// would bury exactly the leads nobody has looked at yet.
+// 🔴 `menu_url` IS DELIBERATELY NOT CONSULTED. 🧪 It is usually the order URL repeated, and on some rows
+// it is a raw Facebook CDN image link that expires (Naked Fish). A lead that dies silently is worse
+// than no lead, so this reads `order_url` and `website` ONLY.
+export const LEAD_RANKS = ['hatchesup', 'other_order', 'website', 'facebook', 'none'] as const
+export type LeadRank = (typeof LEAD_RANKS)[number]
+
+const FACEBOOK_HOSTS = ['facebook.com', 'fb.com', 'fb.me']
+const isFacebookHost = (h: string): boolean =>
+  FACEBOOK_HOSTS.some(f => h === f || h.endsWith('.' + f))
+
+export type Lead = {
+  rank: LeadRank
+  /** Sort key: 0 is the best lead. The array position in LEAD_RANKS, never retyped. */
+  order: number
+  /** The host to show — the signal, not the whole URL, which would truncate in any sane column. */
+  host: string | null
+}
+
+/** Which lead a prospect with no contact route offers, and how good it is. Pure; no I/O. */
+export function leadOf(orderUrl: string | null | undefined, website: string | null | undefined): Lead {
+  const oh = hostOf(orderUrl)
+  const wh = hostOf(website)
+  const mk = (rank: LeadRank, host: string | null): Lead => ({ rank, order: LEAD_RANKS.indexOf(rank), host })
+  if (oh && (oh === 'hatchesup.app' || oh.endsWith('.hatchesup.app'))) return mk('hatchesup', oh)
+  if (oh && !isFacebookHost(oh)) return mk('other_order', oh)
+  // 🔴 A FACEBOOK *ORDER* URL IS STILL ONLY A FACEBOOK LEAD. Tested before the website so a truck whose
+  // "order url" is a Facebook page cannot outrank one that has a real site.
+  if (wh && !isFacebookHost(wh)) return mk('website', wh)
+  if (oh && isFacebookHost(oh)) return mk('facebook', oh)
+  if (wh) return mk('facebook', wh)
+  return mk('none', null)
+}
+
+export const LEAD_LABELS: Record<LeadRank, string> = {
+  hatchesup: 'Hatches Up store',
+  other_order: 'Ordering page',
+  website: 'Website',
+  facebook: 'Facebook',
+  none: 'No lead',
 }
 
 // ── NEXT-ACTION DATE ─────────────────────────────────────────────────────────────────────────────────

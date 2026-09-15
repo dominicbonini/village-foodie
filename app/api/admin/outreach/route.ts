@@ -13,6 +13,7 @@ import {
   type OutreachStage,
 } from '@/lib/outreach'
 import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'   // shared derivation — same as the live button
+import { isLeadType } from '@/lib/outreach-step'   // the ONLY validator for lead_type_at_first_contact
 import { scheduleNorm, scheduleKeys } from '@/lib/schedule-match'   // the SAME matcher the Schedule popup uses
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
@@ -130,21 +131,38 @@ export async function GET(req: NextRequest) {
     // select and their flag is reported to the page. This is a capability probe (did the select succeed?),
     // NOT an inference from row VALUES. Applying the migration and reloading flips a flag on the next load.
     const TRUCK_EMBED = `truck:discovery_trucks!outreach_prospects_discovery_truck_id_fkey (
-          id, name, aliases, contact_email, phone, mobile, accepted_methods, order_url, excluded, logo_url, photo_url, website, schedule_url
+          id, name, aliases, contact_email, phone, mobile, accepted_methods, order_url, excluded, logo_url, photo_url, website, schedule_url,
+          show_on_vf, hatchgrab_truck_id
         )`
     const BASE_COLS = `id, discovery_truck_id, stage, platform, hu_map, hu_ordering, whatsapp_number, whatsapp_confirmed,
         next_action_at, notes, created_at, updated_at`
+    // 🔴 THE FAILURE IS NOW LOGGED WITH ITS CODE, AND THAT IS THE WHOLE OF THE PHASE 0 FIX.
+    // This probe returned false for lead_type_at_first_contact while the column DEMONSTRABLY EXISTS
+    // (information_schema returned it).  collapses two completely different states into one:
+    //   PGRST204 / PGRST205 → PostgREST is serving a STALE SCHEMA CACHE. The column is there; the API
+    //                          in front of it has not been told. Fix: notify pgrst, 'reload schema'.
+    //   42703               → the column is genuinely absent. Fix: run the migration.
+    // Swallowing the difference is the same class of defect the scraper manual records for the run log,
+    // where a guard tested 42P01 (a Postgres code) while PostgREST returns PGRST205.
+    // ⚠️ THE RETURN VALUE IS UNCHANGED — still `!error`, still fail-closed to "absent", so nothing
+    // about the degrade path moves. Only the diagnosis stops being invisible.
     const columnExists = async (col: string): Promise<boolean> => {
       const { error } = await supabase.from('outreach_prospects').select(col).limit(1)
+      if (error) console.warn('[admin/outreach] column probe failed:', col, error.code, error.message)
       return !error   // any error (undefined column) → treat as absent
     }
     // 🔴 ONE PROBE FOR THE PAIR. `columnExists` passes its argument straight to `.select()`, and a
     // PostgREST select of two columns fails if EITHER is missing — which is the question worth asking:
     // half a name split is not usable, so the UI must offer both fields or neither.
-    const [hasContactName, hasContactNames, hasDoNotContact, hasEntityType] = await Promise.all([
+    const [hasContactName, hasContactNames, hasDoNotContact, hasEntityType, hasLeadTypeFreeze] = await Promise.all([
       columnExists('contact_name'),
       columnExists('contact_first_name, contact_last_name'),
       columnExists('do_not_contact'), columnExists('entity_type'),
+      // 🔴 PROBED LIKE EVERY OTHER HAND-APPLIED COLUMN. 20260914_outreach_lead_type_freeze.sql is
+      // written and NOT applied; until it is, this is false, the field is reported as null, and
+      // `effectiveLeadType` derives live — which is exactly the documented meaning of null, so the
+      // console works identically before and after the migration.
+      columnExists('lead_type_at_first_contact'),
     ])
     const optionalCols = [
       // ⚠️ STILL SELECTED, DELIBERATELY, THOUGH NOTHING READS IT ANY MORE. The split moved every reader
@@ -153,6 +171,7 @@ export async function GET(req: NextRequest) {
       // reading a field that vanished. Dropping it is a LATER, SEPARATE change.
       hasContactName && 'contact_name',
       hasContactNames && 'contact_first_name, contact_last_name',
+      hasLeadTypeFreeze && 'lead_type_at_first_contact',
       hasDoNotContact && 'do_not_contact',
       hasEntityType && 'entity_type',
     ].filter(Boolean).join(', ')
@@ -246,6 +265,9 @@ export async function GET(req: NextRequest) {
         logo_url: truck?.logo_url ?? null,
         photo_url: truck?.photo_url ?? null,
         contact_name: hasContactName ? (p.contact_name ?? null) : null,   // legacy, unread — see above
+        // 🔴 THE FROZEN LEAD TYPE. Null both when the column is absent and when it is genuinely unset —
+        // and those two collapse deliberately, because the app's response to either is the same: derive.
+        lead_type_at_first_contact: hasLeadTypeFreeze ? (p.lead_type_at_first_contact ?? null) : null,
         contact_first_name: hasContactNames ? (p.contact_first_name ?? null) : null,
         contact_last_name: hasContactNames ? (p.contact_last_name ?? null) : null,
         do_not_contact: hasDoNotContact ? (p.do_not_contact ?? null) : null,
@@ -257,6 +279,15 @@ export async function GET(req: NextRequest) {
         schedule_url: truck?.schedule_url ?? null,
         order_url: truck?.order_url ?? null,
         excluded: truck?.excluded ?? false,
+        // 🔴 TWO FIELDS ADDED FOR THE DUE-WORK QUEUE, BOTH ALREADY ON discovery_trucks — no migration.
+        // `show_on_vf` completes the lead-type derivation (leadTypeOf): being on the Village Foodie map
+        // is `!excluded && show_on_vf && a future event`, which is the feed's own gate in
+        // app/api/discovery/events/route.ts. ⚠️ The column is NOT NULL DEFAULT true, so `?? true`
+        // matches the database rather than inventing a safer-looking false.
+        show_on_vf: truck?.show_on_vf ?? true,
+        // `hatchgrab_truck_id` is the CONVERSION exit: non-null means this prospect became a customer
+        // and must stop being chased. The column was already here; the list simply never selected it.
+        hatchgrab_truck_id: truck?.hatchgrab_truck_id ?? null,
         // 🔴 THE SCRAPED WHATSAPP HINT — derived read-only from the SAME shared function the live call
         // button uses (lib/whatsapp-hint.ts), so the two can never disagree. Three states, never two: an
         // absent tag on a mobile is 'mobile_not_advertised', not 'no WhatsApp'. `phone` (not `mobile`) per
@@ -285,7 +316,7 @@ export async function GET(req: NextRequest) {
 
     // Column-presence flags tell the page which fields it can offer as editable (rather than inferring
     // presence from data). Each flips to true on the load after its migration is applied.
-    return NextResponse.json({ prospects: rows, hasContactName, hasContactNames, hasDoNotContact, hasEntityType, hasDemoLinks })
+    return NextResponse.json({ prospects: rows, hasContactName, hasContactNames, hasDoNotContact, hasEntityType, hasLeadTypeFreeze, hasDemoLinks })
   } catch (e: any) {
     console.error('[admin/outreach] GET failed:', e?.message || e)
     return NextResponse.json({ error: 'Could not load outreach data' }, { status: 500 })
@@ -423,6 +454,20 @@ export async function POST(req: NextRequest) {
       // `if ('contact_name' in body)` here would keep a live write path for a column the UI has stopped
       // maintaining, so the two names and the joined one would drift the first time anything posted the
       // old key. The column stays readable (see the select above); nothing updates it.
+      // 🔴 THE ONLY WRITE PATH FOR THE FROZEN LEAD TYPE, AND IT IS VALIDATED. The column is
+      // unconstrained text (no CHECK, by the house rule), so `isLeadType` IS the enforcement — an
+      // unrecognised value is a 400, not a stored string that later reads as "cannot parse, derive
+      // instead". '' clears it back to null, which restores the live derivation.
+      // ⚠️ This accepts a write at ANY rung, because it also serves the modal's correction control. The
+      // "only on rung 1" rule is the CLIENT's (see persistFollowUpAfterLog); the route's job is to
+      // refuse invalid values, not to police which button called it.
+      if ('lead_type_at_first_contact' in body) {
+        const v = body.lead_type_at_first_contact
+        if (v !== '' && v !== null && !isLeadType(v)) {
+          return NextResponse.json({ error: 'Invalid lead type' }, { status: 400 })
+        }
+        patch.lead_type_at_first_contact = v === '' ? null : v
+      }
       if ('contact_first_name' in body) patch.contact_first_name = body.contact_first_name === '' ? null : body.contact_first_name
       if ('contact_last_name' in body) patch.contact_last_name = body.contact_last_name === '' ? null : body.contact_last_name
       if ('whatsapp_number' in body) patch.whatsapp_number = body.whatsapp_number === '' ? null : body.whatsapp_number

@@ -1,6 +1,6 @@
-HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V2.0
+HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V2.1
 
-**Version 2.0 · 12 September 2026**
+**Version 2.1 · 14 September 2026**
 
 *This documents the discovery pipeline: a separate codebase path, a separate runtime and a separate deploy path from the Next.js app. It exists because this pipeline had never been documented, and that cost three months of silent venue-creation failure — nobody could tell "few trucks scraped" from "few venues created" from "nothing ran", because none of it was written down and every failure exits 0.*
 
@@ -11,6 +11,44 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ---
 
 # CHANGELOG
+
+## V2.1 — 14 September 2026 — THE DATABASE HAS HAD A PRUNER SINCE 11 SEPTEMBER, THIS MANUAL NEVER MENTIONED IT, AND IT HAD DEADLOCKED ITSELF WITHIN FIVE DAYS OF GOING LIVE
+
+⚠️ **This entry post-dates V2.0 and supersedes §8.3, §8.4 and §8.5 where they disagree.** V2.0's account of the extraction prompts, `assertNoInventedVillages` and the matcher tie-break stands unchanged and is **not** repeated here.
+
+**Covers: new §8.8 — `scripts/prune-discovery-events.mjs`, run by `.github/workflows/discovery_prune.yml` at `30 3 * * *`.** 🔴 **This manual has never mentioned either file.** §1.2 has said "**The three workflows**" since V1.0; 🧪 there are **four** on disk and `discovery_prune.yml` appears **0** times in 2,349 lines. V2.0 was written on 12 September, the day after the pruner landed, and did not notice it.
+
+### 🔴 §8.3'S HEADLINE CLAIM IS RETIRED
+
+**OLD VALUE (§8.3, present at the oldest changelog entry, V1.1; ⚠️ anything earlier is UNREAD — this repo's `git` is currently license-blocked and history could not be checked):** *"So: if you are looking for the job that prunes duplicates or old events, it is not in this repository and it has never run against the database."*
+
+🔴 **False since 11 September 2026.** There is now a scheduled, repository-owned delete against `discovery_events` — and a second one against `discovery_run_log`, which V1.8 recorded as having **no retention rule**. The duplicate half of the sentence still stands: **nothing prunes duplicates**, then or now. §8.8.
+
+### 🔴 THE DEFECT — IT WAS A DEADLOCK, AND IT HAD ALREADY STOPPED THE JOB FOR FIVE DAYS
+
+🧪 The 03:30 run on 14 September exited **1** with `178 candidates exceed the ceiling of 88`. 🧪 Read live the same day: **all 178 candidates are dated 9–13 September** (30 · 42 · 46 · 38 · 22) and **none is older** — so the last successful prune was 9 September and five consecutive runs had refused.
+
+🔴 **The guard compared a STOCK to a FLOW.** Candidates accumulate as `event_date` rolls past; the ceiling was `max(3 × mean, 2 × max, 60)` over rows **created** per day. 🧪 Rows went past at **~36/day** while `created_at` averaged **21.9/day**, so the ceiling of **88** was **~2.4 days of headroom** — and the script's own header recorded the first run squeaking through at **72 against 88**.
+
+🔴 **And it could only ratchet.** Every refusal left the backlog one day bigger, so the next run was further over the line. **A guard that cannot clear itself is a deadlock, not a safety guard.** It would never have recovered unattended.
+
+### 🔴 THE FINDING THAT MATTERS MOST — AN FK-ONLY BREAK IS INVISIBLE TO EVERY COUNT-BASED GUARD
+
+🧪 Disabling the FK half of the exclusion and re-running produced **`past 338 · kept 160 · candidates 178`** — **identical to a healthy run, to the row**. The reason is measurable: 🧪 the name half matches **165** rows table-wide and the FK half **142**, and the 142 are a **subset** of the 165 — so removing the FK test changes the candidate set by **zero**. ⚠️ **No count ceiling, old or new, can ever see that break.** It is caught only by testing the exclusion directly, which is what the replacement does.
+
+### THE REPLACEMENT — THREE GUARDS, SHAPED SO THEY CANNOT DEADLOCK
+
+- **GUARD A — exclusion health**, measured over the **whole table** rather than past rows only, so an empty backlog cannot make it vacuously true. The FK half and the NAME half must each still match rows. 🧪 Refuses on all four break modes; the **only** guard that catches an FK-only break. `ALLOW_BACKLOG` cannot relax it.
+- **GUARD B — backlog AGE, not size** (30 days). Under daily operation candidates are a few days old; 🧪 a broken exclusion immediately exposes linked rows back to **2026-05-22, 115 days**. Absorbs an outage then clears itself.
+- **GUARD C — blast radius per DAY**, `max(60, 2 × the busiest upcoming day)`, measured on the **future** side that pruning never touches. Scale-free in the number of days, so a long backlog passes and a runaway date does not.
+
+⚠️ **The name half is tested on its OWN matches, not on "rows the FK missed."** Those 🧪 23 rows exist only because some scraped rows never got a `discovery_truck_id`; if the scraper is ever fixed to set it everywhere that number legitimately becomes **0**, and a guard keyed on it would then refuse for ever — the same deadlock shape being removed.
+
+**Also fixed:** 🔴 `ALLOW_BACKLOG` was `parseInt`'d and not validated. `parseInt('yes')` is `NaN` and `n > NaN` is **false**, so a typo in the workflow input **silently disabled the size guard entirely** rather than failing. It is now rejected unless it is a whole number.
+
+**Corrected in place:** **§1.2** (three workflows → four), **§8.3**, **§8.4**, **§8.5** (no longer "the one scheduled delete"), and the three places carrying 🔴 *"`discovery_run_log` … no retention rule"* — 🧪 it has had one since 11 September; the table holds **696** rows (116/day since 9 September) and **0** are older than 30 days, so the rule has not yet had anything to delete. First deletions ~9 October.
+
+🔴 **NOT YET VERIFIED IN CI.** Everything above was run locally against the live database with `--dry-run`; **no row has been deleted**. The 178-row backlog clears on the next scheduled run.
 
 ## V2.0 — 12 September 2026 — THE VILLAGE PROBLEM'S ROOT CAUSE IS FIXED AT THE PROMPT, AN ASSERTION NOW FAILS THE RUN IF IT COMES BACK, AND A NAME TIE WAS BEING RESOLVED BY UUID
 
@@ -31,7 +69,7 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 
 ## V1.8 — 9 September 2026 (night) — THE FIRST DELETION FROM `discovery_events` IN THIS CODEBASE'S HISTORY, THE RUN LOG'S MISSING-TABLE GUARD TESTED A CODE POSTGREST NEVER RETURNS, AND THE VENUE-LINKING GAP TURNS OUT TO BE THE MIRROR NOT WRITING THE COLUMN AT ALL
 
-**Covers:** **§8.1 superseded in place** — 3,444 past-dated rows deleted by hand, **4,340 → 902**, four trucks excluded **by name because the FK is populated on only a fraction of their rows**; the deletions hold **only because `existingEvents` is built from the Sheet and never from `discovery_events`**, which makes the existing `DEDUP_FROM` warning concrete — 🔴 **the database is now missing 3,444 rows the Sheet still has, and switching the dedup set to the database would reverse every one of them**; the visible consequence is the outreach `Y (0)` segment falling from **103 trucks to 1**. **The run log is APPLIED** (corrected in place in three places, including the §6 defect table): it went in after the 06:00 run exited 1 with **116 identical failures**, because 🔴 **the guard tested `42P01` — a Postgres code — while PostgREST returns `PGRST205`**, so the tolerated-failure branch never ran; **six earlier migrations already document `PGRST205` as the correct code**, making the scraper the outlier. One row per site per run — **116 rows, ~42,000/year, no retention rule**. **New §22 — the venue-linking gap**: `venue_id` null on **404 of 902** (the 2,219/2,267 figures are pre-deletion and unusable), 🔴 **`venue_id` appears zero times in `run-scraper.js`** so the mirror never resolves it, while `/api/inbound-schedule` does — which is a second, independent reason to route the mirror through it; **27 of the top 30** unlinked venue names already have a `venues` row, so this is **enrichment, not discovery** — but `venues` holds **10** "foodpark" rows for one pitch, so a name-based backfill would cement the duplication. ⚠️ A dated "backfill clusters" claim is **withdrawn as unprovable**: `created_at` records row creation, not when `venue_id` was written.
+**Covers:** **§8.1 superseded in place** — 3,444 past-dated rows deleted by hand, **4,340 → 902**, four trucks excluded **by name because the FK is populated on only a fraction of their rows**; the deletions hold **only because `existingEvents` is built from the Sheet and never from `discovery_events`**, which makes the existing `DEDUP_FROM` warning concrete — 🔴 **the database is now missing 3,444 rows the Sheet still has, and switching the dedup set to the database would reverse every one of them**; the visible consequence is the outreach `Y (0)` segment falling from **103 trucks to 1**. **The run log is APPLIED** (corrected in place in three places, including the §6 defect table): it went in after the 06:00 run exited 1 with **116 identical failures**, because 🔴 **the guard tested `42P01` — a Postgres code — while PostgREST returns `PGRST205`**, so the tolerated-failure branch never ran; **six earlier migrations already document `PGRST205` as the correct code**, making the scraper the outlier. One row per site per run — **116 rows, ~42,000/year, no retention rule**. 🔴 **[CORRECTED V2.1 — IT HAS ONE SINCE 11 SEP: 30 days, §8.8.4.]** **New §22 — the venue-linking gap**: `venue_id` null on **404 of 902** (the 2,219/2,267 figures are pre-deletion and unusable), 🔴 **`venue_id` appears zero times in `run-scraper.js`** so the mirror never resolves it, while `/api/inbound-schedule` does — which is a second, independent reason to route the mirror through it; **27 of the top 30** unlinked venue names already have a `venues` row, so this is **enrichment, not discovery** — but `venues` holds **10** "foodpark" rows for one pitch, so a name-based backfill would cement the duplication. ⚠️ A dated "backfill clusters" claim is **withdrawn as unprovable**: `created_at` records row creation, not when `venue_id` was written.
 
 ## V1.7 — 9 September 2026 (night) — TWO PROMPTS IN ONE FILE DIFFER BY 37 POINTS ON THE SAME PAGES, THE POSTCODES.IO GAUNTLET TURNS OUT TO GOVERN ONE WRITER OF THREE, AND THE SCREENSHOT UPLOAD IS BUILT BUT HAS NEVER BEEN SEEN RUN
 
@@ -254,7 +292,7 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 
 - 🧪 **Three commits, `HEAD` = `origin/main` = `6fe8634`, pushed 17:38.** ⚠️ Two admin files remain uncommitted behind it.
 - 🔴 **The scraper's red-on-failure changes mean runs that previously went GREEN MAY NOW GO RED, starting with the 06:00 cron. A red run tomorrow is not automatically a regression** — check which failure it names.
-~~🔴 **`supabase/migrations/20260907_discovery_run_log.sql` is WRITTEN AND NOT APPLIED.** The code **warns once on `42P01` and continues**, so the run log **does not exist yet**.~~ 🔴 **[CORRECTED V1.8 — THE TABLE IS APPLIED, AND THE GUARD NEVER MATCHED.]** The migration was applied on 9 September, after the 06:00 run exited **1** with **116 identical failures**. 🔴 The guard tests `error.code === '42P01'` — the **Postgres** code for a missing relation — but the write goes through **PostgREST**, which returns **`PGRST205`** (*"Could not find the table … in the schema cache"*). So the tolerated-failure branch was never reached and every site's failure went to `dbWriteFailures` instead, which is what turned the run red. 🧪 **The scraper is the outlier, not the exception:** `PGRST205` is already documented as the correct code in **six** migrations that pre-date this one. ⚠️ After applying, `notify pgrst, 'reload schema';` is required — until the cache reloads, a table that exists still answers `PGRST205`. 🧪 The write is **one row per site per run**: `discovery_run_log` holds **116** rows after a single run, so roughly **42,000 a year**, and **there is no retention rule on it** — unlike `scraper_run_log`, which the scraper prunes at 90 days. ⚠️ A survivable warning is one that is easy to stop noticing.
+~~🔴 **`supabase/migrations/20260907_discovery_run_log.sql` is WRITTEN AND NOT APPLIED.** The code **warns once on `42P01` and continues**, so the run log **does not exist yet**.~~ 🔴 **[CORRECTED V1.8 — THE TABLE IS APPLIED, AND THE GUARD NEVER MATCHED.]** The migration was applied on 9 September, after the 06:00 run exited **1** with **116 identical failures**. 🔴 The guard tests `error.code === '42P01'` — the **Postgres** code for a missing relation — but the write goes through **PostgREST**, which returns **`PGRST205`** (*"Could not find the table … in the schema cache"*). So the tolerated-failure branch was never reached and every site's failure went to `dbWriteFailures` instead, which is what turned the run red. 🧪 **The scraper is the outlier, not the exception:** `PGRST205` is already documented as the correct code in **six** migrations that pre-date this one. ⚠️ After applying, `notify pgrst, 'reload schema';` is required — until the cache reloads, a table that exists still answers `PGRST205`. 🧪 The write is **one row per site per run**: `discovery_run_log` holds **116** rows after a single run, so roughly **42,000 a year**, and ~~**there is no retention rule on it**~~ 🔴 **[CORRECTED V2.1 — since 11 September it is pruned at 30 days by `scripts/prune-discovery-events.mjs`; 🧪 696 rows live, 0 older than 30 days. §8.8.4]** — unlike `scraper_run_log`, which the scraper prunes at 90 days. ⚠️ A survivable warning is one that is easy to stop noticing.
 - ⚠️ **"Deployed" is asserted, not verified here** — I read the commits and the push, not a Vercel build record.
 
 ### THE STANDING LESSONS FROM THIS PASS
@@ -418,7 +456,7 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 
 🔴 **Its runtime is GitHub Actions, not Vercel.** Nothing about it deploys with the app. A Vercel rollback does not touch it; a Vercel env var is not its env var.
 
-## 1.2 The three workflows
+## 1.2 The four workflows
 
 🔎 **SOURCE-READ**, `.github/workflows/`:
 
@@ -426,9 +464,10 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 |---|---|---|---|
 | **`daily_scrape.yml`** | `0 6 * * *` (once a day) | `discovery` | **Pass A** — the global Sheet scrape. **This is the only thing that creates venues.** |
 | **`hatchgrab_scrape.yml`** | `0 * * * *` (hourly) | `hatchgrab` | **Pass B** — HatchGrab-linked trucks, POSTed to `/api/inbound-schedule` |
+| **`discovery_prune.yml`** | `30 3 * * *` (once a day) | — | 🔴 **[NEW V2.1]** the **only** thing in this repository that DELETES from `discovery_events`. Deliberately 2½ hours clear of the 06:00 Pass A. §8.8 |
 | **`process-next-truck.yml`** | ⚠️ **cron disabled** — the file records it *was* `*/30 * * * *` | — | "Hatchesup Menu Scraper", a separate menu job |
 
-⚠️ **GitHub's scheduled crons fire late.** `hatchgrab_scrape.yml` carries the evidence in its own comments: *"the discovery cron '0 6' arrives ~09:2x"*. 🔴 **A previous gate required an exact local hour and therefore almost never matched — "scheduled scraping silently stopped (06-28 regression)".** That is why Pass B now uses a duration window rather than a clock match.
+⚠️ **THIS SECTION SAID "THE THREE WORKFLOWS" UNTIL V2.1** — through all **10** changelog entries from V1.1 to V2.0, while a fourth workflow had been on disk since 11 September. 🔴 **An inventory is only as good as the day it was last counted**, and this one was carried forward without being recounted. ⚠️ Whether it predates V1.1 is **UNREAD**: the oldest changelog entry is V1.1 and `git` history was not available.
 
 ## 1.3 The mode split
 
@@ -822,7 +861,7 @@ const { error: exErr } = await supabase.from('excluded_terms').upsert({
 | 20 | ⚠️ **NEW V1.5 — 88 of 231 `discovery_trucks` rows have ZERO events** | 🧪 55 from the 3 September import (now `excluded`), **27** from the 22 May migration (untouched), 6 others. §18.4 || 14 | 🔴 **STILL OPEN — `:920` stamps `finalVenue = site.name` unconditionally** | 🔎 Source-read. Discards the model's own venue field on **all 7 venue-page sites**. 🧪 Reproduced live on Saffron Walden: 9 trucks returned where the true split is 7 / 2. §12 |
 | 15 | 🔴 **STILL OPEN — prose rules inside `ai_instructions` age silently** | 🧪 The Common's instruction says *"Do NOT extract Kerief or Just Baked By Sophie"* and **both are on The Common today** — **that pass under-extracts two trucks a week and nothing reports it.** §10 |
 | 16 | 🔴 **STILL OPEN — 10 silent `manual` trucks, UNEXPLAINED** | 🧪 They never fetch a page, so none of the three explained silence causes applies. §on the four causes |
-| 17 | ✅ **[RESOLVED V1.8 — APPLIED 9 Sep.]** ~~the `discovery_run_log` table does not exist~~ | 🧪 Applied after the 06:00 run exited 1 with **116 identical failures**. 🔴 The code's guard tested `42P01` (a **Postgres** code); PostgREST returns **`PGRST205`**, so the guard never matched and the failures went to `dbWriteFailures`. **Six earlier migrations already document `PGRST205` as the right code.** One row per site per run — 116 rows, ~42,000/year, **no retention rule**. §8.5 |
+| 17 | ✅ **[RESOLVED V1.8 — APPLIED 9 Sep.]** ~~the `discovery_run_log` table does not exist~~ | 🧪 Applied after the 06:00 run exited 1 with **116 identical failures**. 🔴 The code's guard tested `42P01` (a **Postgres** code); PostgREST returns **`PGRST205`**, so the guard never matched and the failures went to `dbWriteFailures`. **Six earlier migrations already document `PGRST205` as the right code.** One row per site per run — 116 rows, ~42,000/year, ~~**no retention rule**~~ 🔴 **[CORRECTED V2.1 — 30-day rule since 11 Sep, §8.8.4]**. §8.5 |
 
 ---
 
@@ -861,8 +900,10 @@ const showCol = isHG ? 'show_on_hg' : 'show_on_vf'
 ## 8.1 🔴 [SUPERSEDED V1.8] Nothing in this REPOSITORY deletes from `discovery_events` — but 3,444 rows were deleted BY HAND on 9 September
 
 🔴 **THE FIRST DELETION FROM `discovery_events` IN THIS CODEBASE'S HISTORY HAPPENED ON 9 SEPTEMBER 2026.**
-The sweeps below are still true of the **code** — no repository path deletes from these tables, and that
-is unchanged. What changed is that a human did, in the SQL editor.
+The sweeps below were still true of the **code** when this was written — no repository path deleted from
+these tables. What changed in V1.8 is that a human did, in the SQL editor.
+
+🔴 **[CORRECTED V2.1 — THE CODE CLAIM IS NOW FALSE TOO.]** Since **11 September 2026** `scripts/prune-discovery-events.mjs` deletes from `discovery_events` and `discovery_run_log` on a daily schedule. **§8.1a's sweeps below are a snapshot dated 8 September and must not be re-cited as current.** §8.8.
 
 🧪 **3,444 past-dated rows deleted. Total 4,340 → 902** (re-derived 9 Sep; the number keeps moving as the
 scraper writes). Four trucks were excluded from the delete **BY NAME, not by foreign key** — Pizzeria
@@ -888,7 +929,9 @@ is a **precondition** of that step, not a follow-up, and this deletion is the re
 nothing ahead — went from **103 trucks to 1** (`Test Kitchen`), because trucks whose only events were
 past now have no events at all and read as `N`.
 
-## 8.1a The sweeps, unchanged — nothing in the repository deletes from these tables
+## 8.1a 🔴 [SUPERSEDED V2.1] The sweeps as at 8 September — when nothing in the repository deleted from these tables
+
+⚠️ **THIS IS A DATED SNAPSHOT, NOT A STANDING FACT.** Every sweep below was run on **8 September 2026**. 🔴 A seventh file has existed since **11 September** — `scripts/prune-discovery-events.mjs` — which sweep A would now find: it chains `.delete()` after `from('discovery_events')` and after `from('discovery_run_log')`. **Re-run the sweeps before citing them.** §8.8.
 
 🔎 **Six independent sweeps, across every file extension** — `.md .ts .tsx .js .mjs .cjs .sql .yml .swift .java .gradle .xml .json .plist` and the rest; **nothing was scoped by extension**, because `run-scraper.js` is `.js` and that mistake has already cost this project a round:
 
@@ -914,26 +957,40 @@ past now have no events at all and read as `N`.
 
 🔴 **Nothing anywhere references `discovery_events`. No cascade can delete an event, by construction.** And 🔎 `lib/delete-truck.ts:54` is correct where it says deleting an operator truck only **SET NULLs** `discovery_trucks.hatchgrab_truck_id` — the discovery shadow survives.
 
-## 8.3 🔴 There is no duplicate rule and no old-event rule. There never has been.
+## 8.3 🔴 [SUPERSEDED V2.1] There is no duplicate rule and — until 11 September 2026 — there was no old-event rule
 
-🧪 `discovery_events` holds **3,577 rows dated before today, oldest `2026-05-22`** — the first day of the migration from Sheets — distributed flatly across every month since (May 312 · Jun 1,050 · Jul 1,072 · Aug 955 · Sep 188). **A retention rule of any age would have left a cliff. There is none. No old event has ever been deleted from Supabase.**
+🧪 **AS READ 8 SEPTEMBER 2026:** `discovery_events` held **3,577 rows dated before today, oldest `2026-05-22`** — the first day of the migration from Sheets — distributed flatly across every month since (May 312 · Jun 1,050 · Jul 1,072 · Aug 955 · Sep 188). **A retention rule of any age would have left a cliff. There was none.**
 
-🧪 **0 exact duplicates** on `(event_date, truck_name, venue_name)`, and **0 rows with a NULL `venue_name`**. ⚠️ **That is the unique index refusing duplicates at insert, not something removing them afterwards** — the two causes look identical in a row count, and what separates them is that a remover would need a schedule, and §1.2 has none.
+🧪 **0 exact duplicates** on `(event_date, truck_name, venue_name)`, and **0 rows with a NULL `venue_name`**. ⚠️ **That is the unique index refusing duplicates at insert, not something removing them afterwards** — the two causes look identical in a row count, and what separates them is that a remover would need a schedule.
 
-**So: if you are looking for the job that prunes duplicates or old events, it is not in this repository and it has never run against the database.**
+~~**So: if you are looking for the job that prunes duplicates or old events, it is not in this repository and it has never run against the database.**~~
 
-## 8.4 What DOES prune — the Sheet, from outside this repository
+🔴 **[CORRECTED V2.1 — HALF OF THAT SENTENCE IS NOW FALSE.]** Since **11 September 2026** there **is** a repository-owned, scheduled delete against `discovery_events`: `scripts/prune-discovery-events.mjs`, run daily by `discovery_prune.yml`. 🧪 The cliff §8.3 said would exist if a rule existed **now exists** — read live 14 September, the oldest past-dated row that is *not* one of the four excluded trucks is **2026-09-09**, five days old, against an oldest excluded row of **2026-05-22**. **§8.8 is the full account.**
+
+✅ **The DUPLICATE half of the old sentence still stands.** Nothing prunes duplicates, then or now. The pruner deletes on `event_date` alone and has no duplicate rule of any kind.
+
+## 8.4 🔴 [AMENDED V2.1] What prunes the SHEET — from outside this repository
+
+⚠️ **This section is about the SHEET only, and was the whole answer to "what prunes" until V2.1.** The database now has its own pruner inside this repository — §8.8.
 
 🧪 The Sheet's **Events** tab holds **713 rows, all future, none past** — against 3,577 past rows in the database. 🔎 The scraper only appends to it. 🔴 **An Apps Script project outside this repo prunes that tab, and because `existingEvents` is built from it (§4.5), that pruner defines the dedup window.** The same project ~~writes `discovery_events`~~ **[V1.4: POSTs to `/api/inbound-schedule`]** and creates `venues` **[V1.4: in the Sheet only]**. ~~**Its predicate and schedule are UNREAD.**~~ ✅ **[READ V1.4 — the predicate is `removePastEvents` (§16.5): every row dated before today in the Sheet's timezone, on a time trigger; frequency UNKNOWN.]**
 
-## 8.5 The one scheduled delete in the pipeline — and it is not on these tables
+## 8.5 🔴 [CORRECTED V2.1] The scheduled deletes in the pipeline — there are three now, and two are not on these tables
+
+⚠️ **This section was titled "The ONE scheduled delete in the pipeline" until V2.1.** There are three:
+
+| # | What | Where | Rule |
+|---|---|---|---|
+| 1 | `scraper_run_log` | 🔎 `scripts/run-scraper.js:1268-1274`, called at `:1641` on every run | older than **90 days** |
+| 2 | 🔴 **[NEW V2.1]** `discovery_events` | 🔎 `scripts/prune-discovery-events.mjs`, daily at 03:30 | `event_date` before today, **minus the four linked trucks**. §8.8 |
+| 3 | 🔴 **[NEW V2.1]** `discovery_run_log` | 🔎 the same script, step 6 | older than **30 days** — this is the retention rule V1.8 recorded as absent |
 
 🔎 `scripts/run-scraper.js:1268-1274`, called at `:1641` on every run:
 ```js
 const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 await supabase.from('scraper_run_log').delete().lt('run_at', cutoff);
 ```
-**Table: `scraper_run_log`. 90-day retention. Not one of the three.** It is the only `.delete()` the scraper issues.
+**Table: `scraper_run_log`. 90-day retention.** ⚠️ **Not one of the three DISCOVERY tables** (`discovery_events`, `discovery_trucks`, `venues`) — do not read that as "not one of the three deletes above"; it is delete #1. It is the only `.delete()` the SCRAPER issues; deletes #2 and #3 belong to the pruner, which is a different script on a different workflow.
 
 ## 8.6 🔴 `ignoreDuplicates: true` and a deleted venue — V1.1 got this half wrong
 
@@ -944,6 +1001,70 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 - ~~🔴 The Apps Script's code, triggers and Events-tab predicate.~~ ✅ **[RESOLVED V1.4 — code read (§16); four time triggers listed by the owner on 9 September 2026, frequencies UNKNOWN; predicate is `removePastEvents`.]**
 - 🔴 Whether a `pg_cron` job or a non-internal trigger exists that no migration records. **`cron.job` and `pg_trigger` are unreachable through PostgREST.** One query in the SQL editor settles it: `select * from cron.job;` and `select tgname, tgrelid::regclass from pg_trigger where not tgisinternal;`
 - ⚠️ Whether RLS is enabled on the three tables in production. **No policy in this repository grants DELETE on any of them.**
+
+## 8.8 🔴 [NEW V2.1] THE DATABASE PRUNER — what it deletes, what it refuses, and the deadlock it shipped with
+
+🔎 `scripts/prune-discovery-events.mjs`, run by `.github/workflows/discovery_prune.yml` at `30 3 * * *`. **Its own workflow, its own exit code, its own red** — it does not run inside the scraper's job and does not inherit its status.
+
+**What it deletes:** every `discovery_events` row whose `event_date` is before today, **except** rows belonging to the four trading trucks. ⚠️ It never reads or writes `truck_events`, and it never deletes a row dated today or later — the delete carries `.lt('event_date', TODAY)` as well as the id list, so a stale candidate set cannot reach a future row.
+
+### 8.8.1 The exclusion — FK **or** name, both tested every run
+
+🔎 The four trucks are `Pizzeria Gusto`, `Real Thai Food`, `Tikka Tonic`, `Test Kitchen`, resolved from `discovery_trucks.hatchgrab_truck_id` at run time — 🔴 **never a hardcoded uuid**. A row is kept if **either** test matches:
+
+| half | how | 🧪 matches table-wide, 14 Sep |
+|---|---|---|
+| **FK** | `linkedIds.has(e.discovery_truck_id)` | **142** |
+| **NAME** | normalised containment on `truck_name` (letters+digits, either direction) | **165** |
+
+🔴 **THE FK HALF IS CURRENTLY REDUNDANT, AND THAT IS A TRAP.** 🧪 The 142 FK matches are a **subset** of the 165 name matches. So deleting the FK test changes the candidate set by **zero rows** — 🧪 verified by running a copy with `fkHit` forced false: `past 338 · kept 160 · candidates 178`, **identical to a healthy run**. ⚠️ **No count-based guard can detect an FK-only break.** This is why §8.8.2's Guard A exists and why it is not optional.
+
+⚠️ The name test is **bidirectional containment**, so it over-keeps rather than under-keeps: a truck whose normalised name is a substring of a linked one is kept. **That is the safe direction** — the cost is a few undeleted rows, not a deleted trading truck.
+
+### 8.8.2 The three guards
+
+| | tests | refuses when | relaxable? |
+|---|---|---|---|
+| **A** | **exclusion health**, over the **whole table** — not past rows only, so an empty backlog cannot make it vacuously true | the FK half **or** the name half matches **0** rows | 🔴 **never** |
+| **B** | **backlog AGE**, not size | the oldest candidate is more than **30 days** old | `ALLOW_BACKLOG` |
+| **C** | **blast radius per DAY**: `max(60, 2 × busiest upcoming day)`, measured on the **future** side pruning never touches | any single `event_date` contributes more than that | `ALLOW_BACKLOG` |
+
+🧪 **All four break modes refuse, verified 14 September against the live database, `--dry-run` only:**
+
+```
+  healthy                       exit 0   past 338 · kept 160 · candidates 178 · FK 142 · NAME 165
+  --simulate-broken-exclusion   exit 1   Guard A: FK half matched NO row
+  FK half dead                  exit 1   Guard A  ← the ONLY guard that sees this one
+  NAME half dead                exit 1   Guard A: NAME half matched NO row
+  ALLOW_BACKLOG=yes             exit 1   rejected as not a whole number
+  ALLOW_BACKLOG= (every cron)   exit 0   treated as unset
+```
+
+⚠️ **Guard A tests the name half on its OWN matches, not on "rows the FK missed."** 🧪 Those 23 rows exist only because some scraped rows never received a `discovery_truck_id`; if the scraper is ever fixed to set it everywhere that count legitimately becomes **0**, and a guard keyed on it would then refuse for ever — the exact deadlock shape §8.8.3 describes.
+
+### 8.8.3 🔴 THE DEADLOCK IT SHIPPED WITH — a guard that could only ratchet
+
+**The original had ONE guard:** refuse if candidates exceeded `max(3 × mean, 2 × max, 60)` of rows **created** per day over the last 14 days. It stopped the job dead within five days of going live.
+
+🧪 **14 September, 03:30:** `🔴 REFUSED: 178 candidates exceed the ceiling of 88`. 🧪 All 178 candidates dated **9–13 September** — 30 · 42 · 46 · 38 · 22 — and **none older**, so the last successful prune was **9 September** and five consecutive runs had refused.
+
+**Two faults, and the second is the one that mattered:**
+
+1. 🔴 **IT COMPARED A STOCK TO A FLOW.** Candidates accumulate as `event_date` rolls past; the ceiling measured `created_at`. **Different populations.** 🧪 Rows went past at **~36/day** against a `created_at` mean of **21.9/day**, so the ceiling of **88** was **~2.4 days of headroom**. The script's own header recorded the very first run clearing it by 16 rows — **72 against 88**.
+2. 🔴 **IT COULD ONLY RATCHET.** Every refusal left the backlog one day bigger, so the next run was further over the line. **A guard that cannot clear itself is a deadlock, not a safety guard.** Nothing short of a hand-set `ALLOW_BACKLOG` would ever have restarted it.
+
+⚠️ **AND THE CEILING WAS PROXYING FOR THE WRONG QUESTION.** Its stated purpose was to catch a silently broken exclusion. 🧪 §8.8.1 shows it could not: the break that matters most produces **identical counts**. The replacement tests the exclusion directly and keeps the size checks only as a blast-radius brake.
+
+### 8.8.4 `discovery_run_log` — V1.8's "no retention rule" is answered
+
+🔎 Step 6 of the same script deletes `discovery_run_log` rows older than **30 days**, refusing if there are more than `116 × 60 = 6,960` of them. 🧪 Read live 14 September: **696 rows**, oldest `2026-09-09T11:22Z` (the day the table was applied), newest `2026-09-14T11:48Z` — **116 per day**, and **0** older than 30 days. **The rule exists but has had nothing to delete yet; first deletions ~9 October.** Steady state is **116 × 30 ≈ 3,480 rows**, not the ~42,000/year V1.8 projected.
+
+⚠️ **This step runs AFTER the events delete and is gated behind every guard above** — so during the five refused days the run log was not pruned either. A refusal at step 4 stops step 6.
+
+### 8.8.5 Still UNREAD
+
+- ⚠️ **Whether the 03:30 cron has ever actually fired on time.** §1.2 records that GitHub's scheduled crons arrive late; the five-day gap is consistent with either a late/missed cron or five on-time refusals, and 🔴 **the workflow's run history was not read.** The candidate dates prove the *effect*, not the *cause*.
+- ⚠️ **Whether `ALLOW_BACKLOG` has ever been used.** Nothing records it.
 
 ---
 
@@ -1149,7 +1270,7 @@ V1.1 records `ignoreDuplicates: true` as *"retained deliberately, meaning a re-r
 
 🔴 **WHAT THIS CHANGES OPERATIONALLY, STARTING WITH THE 06:00 CRON: the scraper's red-on-failure changes mean runs that previously went GREEN MAY NOW GO RED.** **A red run tomorrow is not automatically a new fault — it may be the first honest report of an old one.** ⚠️ Do not read the first red run as a regression without checking which failure it names.
 
-~~🔴 **`supabase/migrations/20260907_discovery_run_log.sql` IS WRITTEN AND NOT APPLIED.**~~ 🔴 **[CORRECTED V1.8 — THE TABLE IS APPLIED, AND THE GUARD NEVER MATCHED.]** The migration was applied on 9 September, after the 06:00 run exited **1** with **116 identical failures**. 🔴 The guard tests `error.code === '42P01'` — the **Postgres** code for a missing relation — but the write goes through **PostgREST**, which returns **`PGRST205`** (*"Could not find the table … in the schema cache"*). So the tolerated-failure branch was never reached and every site's failure went to `dbWriteFailures` instead, which is what turned the run red. 🧪 **The scraper is the outlier, not the exception:** `PGRST205` is already documented as the correct code in **six** migrations that pre-date this one. ⚠️ After applying, `notify pgrst, 'reload schema';` is required — until the cache reloads, a table that exists still answers `PGRST205`. 🧪 The write is **one row per site per run**: `discovery_run_log` holds **116** rows after a single run, so roughly **42,000 a year**, and **there is no retention rule on it** — unlike `scraper_run_log`, which the scraper prunes at 90 days. 🧪 The file exists (5,469 bytes, 7 Sep 11:59). The code **warns once on `42P01` and continues**, so **the run log does not exist yet and nothing is being recorded into it.** ⚠️ The warning is designed to be survivable, which also means it is easy to stop noticing.
+~~🔴 **`supabase/migrations/20260907_discovery_run_log.sql` IS WRITTEN AND NOT APPLIED.**~~ 🔴 **[CORRECTED V1.8 — THE TABLE IS APPLIED, AND THE GUARD NEVER MATCHED.]** The migration was applied on 9 September, after the 06:00 run exited **1** with **116 identical failures**. 🔴 The guard tests `error.code === '42P01'` — the **Postgres** code for a missing relation — but the write goes through **PostgREST**, which returns **`PGRST205`** (*"Could not find the table … in the schema cache"*). So the tolerated-failure branch was never reached and every site's failure went to `dbWriteFailures` instead, which is what turned the run red. 🧪 **The scraper is the outlier, not the exception:** `PGRST205` is already documented as the correct code in **six** migrations that pre-date this one. ⚠️ After applying, `notify pgrst, 'reload schema';` is required — until the cache reloads, a table that exists still answers `PGRST205`. 🧪 The write is **one row per site per run**: `discovery_run_log` holds **116** rows after a single run, so roughly **42,000 a year**, and ~~**there is no retention rule on it**~~ 🔴 **[CORRECTED V2.1 — since 11 September it is pruned at 30 days by `scripts/prune-discovery-events.mjs`; 🧪 696 rows live, 0 older than 30 days. §8.8.4]** — unlike `scraper_run_log`, which the scraper prunes at 90 days. 🧪 The file exists (5,469 bytes, 7 Sep 11:59). The code **warns once on `42P01` and continues**, so **the run log does not exist yet and nothing is being recorded into it.** ⚠️ The warning is designed to be survivable, which also means it is easy to stop noticing.
 
 ⚠️ **Deployment itself is asserted, not verified from this repository.** What I can prove from here is that the commits exist and are pushed to `origin/main`; **I did not query Vercel, so "deployed" rests on the push plus the user's statement, not on a build record I read.**
 

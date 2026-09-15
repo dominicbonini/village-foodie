@@ -46,6 +46,8 @@
 // 🔴 NOTHING HERE SENDS, LOGS OR WRITES ANYTHING. This module is pure string work: it imports no client,
 // no fetch and no route. That is a property of the file, provable by grep, not a promise in a comment.
 
+import { effectiveLeadType, LEAD_TYPE_LABELS, type LeadType, type LeadTypeInput } from '@/lib/outreach-step'
+
 export type TemplateChannel = 'email' | 'whatsapp'
 
 export type MessageTemplate = {
@@ -62,6 +64,15 @@ export type MessageTemplate = {
   active?: boolean
   /** Per-placeholder default values, and when each was last changed. See the Templates tab. */
   defaults?: Record<string, { value: string; updatedAt: string | null }>
+  /** 🔴 WHICH RUNG THIS TEMPLATE IS FOR — `outreach_templates.serves_kind`, or null/absent = ANY.
+   *  When set, choosing this template in the compose window sets the logged contact kind too. That is
+   *  the Pizza Mondo defect: a chaser was sent and logged as a first contact, because the kind came
+   *  from a dropdown the template had no say over.
+   *  ⚠️ EVERY ROW SHIPS NULL and the migration sets nothing, so the default path is "no opinion". */
+  servesKind?: string | null
+  /** Which lead type this template is written for, or null/absent = ANY. Used to PREFER a template
+   *  when pre-selecting for a due prospect. Never used to vary the TEXT — see the `?lead_*` note. */
+  servesLeadType?: string | null
 }
 
 /** The fields a template can read. Everything is nullable — nothing may assume a value is present. */
@@ -83,6 +94,11 @@ export type TemplateContext = {
   demoLink: string | null
   /** Absolute `/compare` URL. Always resolves — see `COMPARE_LINK`. */
   compareLink: string | null
+  /** 🔴 WHICH OF THE FOUR LEAD TYPES THIS PROSPECT IS — the FROZEN value once a first contact has been
+   *  logged, otherwise derived live. See `effectiveLeadType` in lib/outreach-step.ts.
+   *  Drives the `?lead_*:` conditions, so ONE template can carry a per-type line instead of there being
+   *  one template per type per rung. */
+  leadType: LeadType | null
 }
 
 // ── RENDERING ────────────────────────────────────────────────────────────────────────────────────────
@@ -114,6 +130,21 @@ function conditionMet(cond: string, ctx: TemplateContext): boolean {
     case 'order_url': return !!(ctx.orderUrl ?? '').trim()
     case 'website': return !!(ctx.website ?? '').trim()
     case 'contact_name': return !!(ctx.contactName ?? '').trim()
+    // ── 🔴 LEAD TYPE AS FOUR CONDITIONS, NOT AS FOUR TIMES THE TEMPLATES ──────────────────────────
+    // The operator's steer: unify the templates and adjust per type, rather than 4 rungs x 4 types = 16
+    // rows to keep in step. This tier already drops a WHOLE LINE when its condition is unmet, which is
+    // exactly the granularity a per-type sentence needs, and it needed NO parser change: COND_LINE_RE
+    // matches any [a-z_]+ and conditionReference() reads these case labels out of this function's own
+    // source, so adding them here is the whole change and the Templates tab lists them automatically.
+    // 🔴 EXACTLY ONE OF THESE FOUR IS TRUE FOR ANY PROSPECT, because `leadTypeOf` returns exactly one
+    // value and these compare against it. Four lines, one survives — the same shape as the existing
+    // `?next_event:` / `?no_next_event:` pair, widened from two branches to four.
+    // ⚠️ A NULL leadType makes all four false, so every lead line drops and the template still renders.
+    // That is the safe direction: a missing type costs a sentence, never a wrong one.
+    case 'lead_hu_ordering': return ctx.leadType === 'hu_ordering'
+    case 'lead_hu_map': return ctx.leadType === 'hu_map'
+    case 'lead_on_vf': return ctx.leadType === 'on_vf'
+    case 'lead_not_listed': return ctx.leadType === 'not_listed'
     default: return false      // an unknown condition drops its line rather than leaking the marker
   }
 }
@@ -340,6 +371,10 @@ const CONDITION_DESCRIPTIONS: Record<string, string> = {
   order_url: 'Keeps the line only when the truck has an ordering URL.',
   website: 'Keeps the line only when the truck has a website.',
   contact_name: 'Keeps the line only when a contact name is recorded.',
+  lead_hu_ordering: `Lead type 1 — ${LEAD_TYPE_LABELS.hu_ordering}. Exactly one of the four ?lead_ lines survives, so write all four and let the prospect's type choose.`,
+  lead_hu_map: `Lead type 2 — ${LEAD_TYPE_LABELS.hu_map}.`,
+  lead_on_vf: `Lead type 3 — ${LEAD_TYPE_LABELS.on_vf}.`,
+  lead_not_listed: `Lead type 4 — ${LEAD_TYPE_LABELS.not_listed}. The fallback: not Hatches Up, and not showing on the map.`,
 }
 
 export type TokenRefEntry = { syntax: string; name: string; description: string; documented: boolean }
@@ -476,6 +511,12 @@ export type ProspectLike = {
    *  predates the demo join still type-checks; absent means "no demo", which is the refusing case. */
   demo?: { publicRef: string | null; expiresAt: string | null } | null
 }
+  /** 🔴 THE LEAD-TYPE INPUTS ARE REQUIRED, NOT OPTIONAL, AND THAT IS THE POINT.
+   *  Made optional they would default every caller that forgot them to `not_listed` — a silently wrong
+   *  type on every rendered message, which is the exact class of failure this file keeps flagging.
+   *  Required, the compiler names each call site instead. `LeadTypeInput` is imported rather than
+   *  restated so the two cannot drift. */
+  & LeadTypeInput
 
 // ⚠️ THE HOST IS FIXED TO HATCHGRAB, NOT DERIVED FROM THE ORIGIN, for the two reasons in the
 // `compare_link` case above. This is the established pattern — the identical expression builds
@@ -522,6 +563,12 @@ export function contextFromProspect(p: ProspectLike): TemplateContext {
     nextEventVenue: p.nextEventVenue,
     demoLink: demoLinkFor(p.demo),
     compareLink: COMPARE_LINK,
+    // 🔴 DERIVED HERE, IN THE ONE MAPPING, so the compose window and the Templates preview cannot
+    // disagree about a prospect's type — the same reason every other field is built here.
+    // 🔴 `effectiveLeadType`, NOT `leadTypeOf`: a sequence keeps the framing it started with. Once the
+    // first contact is logged the type is frozen on the row, and every later rung reads that value, so
+    // a chase cannot contradict the approach it is chasing. Null falls back to the live derivation.
+    leadType: effectiveLeadType(p),
   }
 }
 
@@ -577,12 +624,43 @@ export function renderWithFills(
 /** The placeholder defaults for a template, flattened to the shape the fill functions take.
  *  🔴 A MUST-RESOLVE KEY IS DROPPED. `placeholder_defaults` is editable data; a stored `demo_link`
  *  default would otherwise fill `[[demo_link]]` on load and lift the send block before anyone saw it. */
-export function defaultFillsOf(tpl: MessageTemplate): Record<string, string> {
+export function defaultFillsOf(
+  tpl: MessageTemplate,
+  globals?: Record<string, string> | null,
+): Record<string, string> {
   const out: Record<string, string> = {}
+  // 🔴 THE GLOBAL LAYER GOES IN FIRST SO THE PER-TEMPLATE VALUE OVERWRITES IT. Order is the whole
+  // precedence rule: nothing compares, nothing branches, and a template default always wins because it
+  // is written second. A rate stated once therefore reaches every template that has no opinion, and a
+  // template that DOES have one is unaffected.
+  for (const [k, v] of Object.entries(globals ?? {})) {
+    if (!v || !v.trim()) continue
+    if (MUST_RESOLVE.has(k.trim())) continue
+    out[k] = v
+  }
   for (const [k, v] of Object.entries(tpl.defaults ?? {})) {
     if (!v?.value) continue
     if (MUST_RESOLVE.has(k.trim())) continue
     out[k] = v.value
   }
   return out
+}
+
+/**
+ * WHICH LAYER SUPPLIED EACH VALUE — so the field can say so rather than showing a value with no origin.
+ * 🔴 THE RISK THIS EXISTS FOR: two sources for one value means a stale global can hide behind a field
+ * that looks freshly filled. The compose window already shows an age badge for a stored default; with a
+ * second source that badge has to name WHICH source, or it is worse than no badge at all.
+ * ⚠️ Returns 'template' when both layers hold a value, because that is the one that won.
+ */
+export function fillSourceOf(
+  tpl: MessageTemplate,
+  globals: Record<string, string> | null | undefined,
+  name: string,
+): 'template' | 'global' | null {
+  const t = tpl.defaults?.[name]?.value
+  if (t && t.trim()) return 'template'
+  const g = globals?.[name]
+  if (g && g.trim()) return 'global'
+  return null
 }
