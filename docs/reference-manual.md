@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.2
+HatchGrab Engineering Reference Manual · V13.3
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.2**
+**Version 13.3**
 
 September 2026
 
@@ -25,6 +25,112 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.3 — 16 September 2026 — WHATSAPP AUTO-REPLIES WENT LIVE: A CONNECTED TRUCK RECEIVED NOTHING AND WOULD HAVE SENT ON OUR KEY, COEXISTENCE WAS PROVEN ON A REAL UK NUMBER, AND A MIGRATION "SUCCEEDED" WITHOUT CREATING THE TABLE THE CODE NEEDED
+
+**Covers:** Meta approval and Live mode; the go-live review and what it found; routing and send-credential fixes; the Safari pop-up fix; coexistence proven end to end; the Settings WhatsApp box (connected number, disconnect, monthly limit, billing); background jobs (token refresh, validity and payment checks, alert emails, payment-block detection); the go-live flip; footnote merge.
+
+### 🔴 THE HEADLINE LESSONS
+
+1. **An onboarded truck would have received nothing.** [REASONED, from code] Signup wrote `whatsapp_connections.phone_number_id`; the webhook routed only on `trucks.phone_number_id`, which had no writer. Fixed by routing on a ready connection first.
+2. **Every send used the platform token.** [REASONED] `decryptToken` had zero callers, so "trucks pay Meta directly" was not true of the code. Fixed: the credential is chosen by the receiving number, and the connection path never falls back to the platform token.
+3. **`create table if not exists` is not proof the table has the migration's shape.** [OBSERVED] `whatsapp_alerts` had been created earlier by hand with a different shape (`recipient NOT NULL`, `sent_at`, uuid id, a `kind` CHECK). The background-jobs migration used `if not exists`, reported success, and left the old table in place, so every alert claim would have failed and no alert email would ever send (the sender fails closed). Found by comparing the migration text with the live columns; the table had 0 rows and was dropped and recreated to the code's shape. **New rule: after any migration that uses `if not exists`, check the live columns in `information_schema` against the migration text.** Sweep status: **OPEN — not swept** for other `if not exists` migrations whose live shape may differ.
+4. **A harness went stale and nobody noticed for a workstream.** [OBSERVED] The settings-row change made `showSetupControl` false for a ready connection; `whatsapp-connection-view-harness.cjs` still asserted true for every state and failed 4 cases until the next workstream ran it. **Rule: after any change in an area, rerun every harness in that area, not only the one the change added.**
+5. **A fixture invented a route the database cannot produce.** [OBSERVED] Two reports claimed Gusto's WhatsApp replies depended on the sender fallback and "would stop" without `META_WHATSAPP_PHONE_NUMBER_ID`. In the real data the platform test number belongs to `test-truck` (matched first), and Gusto's `whatsapp_sender` was a tester's mobile no message is ever sent to. Gusto had **no** reachable WhatsApp route. Same class as V13.2's "never print a fixture's distribution as the database's".
+
+### Meta, Vercel and database state (as of 16 September)
+
+- [OBSERVED] `whatsapp_business_management` approved. HatchGrab is a Meta **Tech Provider** with **Advanced access** on `whatsapp_business_messaging`, `whatsapp_business_management` and `public_profile`.
+- [OBSERVED] Meta app switched from Development to **Live** on 15 September. The first coexistence attempt, made while still in Development, failed with `#4563039` ("missing required Graph API permissions for Cloud API companion pairing").
+- [OBSERVED] Two Facebook Login for Business configs exist, **both issuing 60-day tokens**: `2892063604490064` ("WhatsApp embedded sign-up configuration with 60-day expiry token", the one Meta's dashboard landing page links) and `1544768623597981` ("WhatsApp v4"). **Production uses the v4 config.** The manual's earlier claim that the first config was deleted is wrong; neither was deleted.
+- [OBSERVED] Webhook callback `https://www.hatchgrab.com/api/webhooks/meta/whatsapp`. Subscribed fields: account alerts, account review update, account update, calls, message template quality update, message template status update, messages, phone number name update, phone number quality update, security, **plus `smb_message_echoes` and `history`** (added this session).
+- [OBSERVED] Vercel: `META_APP_SECRET` is **absent** (the old env debt is closed; the Messenger/Instagram stub webhooks still read it and refuse everything, deliberately). Added this session, **Production only**: `NEXT_PUBLIC_WHATSAPP_SIGNUP_APP_ID` = `2196172484540444`, `NEXT_PUBLIC_WHATSAPP_SIGNUP_CONFIG_ID` = `1544768623597981`, `WHATSAPP_TOKEN_ENCRYPTION_KEY` (Sensitive; a copy is kept in Dominic's Apple Passwords). **There is no key rotation: changing or losing this key makes every stored token unreadable.** A different key existed in `.env.local`; it must never be used against the production database.
+- [OBSERVED] `WHATSAPP_TOKEN_AUTO_REFRESH` is **not set** as of writing (see open items). `TWILIO_WHATSAPP_NUMBER` is a legacy variable for the dormant Twilio route.
+- [OBSERVED] RLS: `whatsapp_connections` is service-role only. `whatsapp_logs` carries full grants to `anon`/`authenticated` but has RLS on and **no policies**, so no rows are exposed.
+- [OBSERVED] Trial expiries: Pizzeria Gusto **31 December 2026** (not 17 October as previously recorded), `real-thai-food` 30 September 2026, `village-spice` null (grants the full trial set with no end date). `trucks.timezone` is null on all 12 trucks.
+- [OBSERVED] Gusto's `whatsapp_sender` (`07380736226`, a tester's mobile) was **cleared to null** on 16 September with Dominic's approval. [REASONED] It had been feeding a "Message us on WhatsApp" link in Gusto's order emails (`lib/email.ts` reads the column).
+
+### Corrections to earlier manual text
+
+- **The reply cap was already built and shipped** (`lib/whatsapp/reply-cap.ts`, commit `7ee844f`). It has since been rewritten (below).
+- **`WHATSAPP_LIVE` lives in `lib/whatsapp-live.ts`** and had **never been committed as `true`** before this release (all 790 commits checked). There was no 8 September revert commit: the "whatsapp-landing-revert" was an investigation whose outcome was a decision not to stage. The live wording already existed behind the flag. The body text saying the flag was a boolean in the manage page set to `true` is wrong.
+- **The flag never controlled Instagram or Messenger.** Their rows are a separate hand-maintained plan-features entry and remain "coming soon".
+- **`payment_method_present` has never been written except as null.** Both signup writes store null deliberately.
+- **The 60-day token lifetime is Meta's default template choice,** not something inherited from a deleted configuration.
+
+### Coexistence — proven end to end [OBSERVED]
+
+- A UK Business-app number is eligible. Meta recognised +44 7404 511310 as a WhatsApp Business app account.
+- The failed 15 September attempt left a new business portfolio **"HatchGrab test"** (admin@hatchgrab.com, UK) holding the number as **Offline**. **Do not delete that portfolio**; deleting portfolios is where Meta's account-integrity risk lies.
+- 16 September 10:30 UTC, through our own Set up button on `test-truck` ("Pizza Kitchen", renamed from Thai Kitchen; slug `test-kitchen`): `finish_type = FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING`, WABA `918170214089054`, phone number id `1304026496124275`, display `+44 7404 511310`, verified name `HatchGrab`, token expiry **15 November 2026**, payment method step skipped.
+- A customer message got a bot reply (`routed path=connection truck=test-truck`). The owner saw **both the customer's message and the bot's reply** in the WhatsApp Business app, replied from the app, and the customer received it. `smb_message_echoes` arrived (`value_keys=contacts,message_echoes,messaging_product,metadata`).
+- `test-truck` now holds two numbers: Meta's test number via `trucks.phone_number_id` = `1179821708546925` (platform token) and the connected number via `whatsapp_connections` (its own token).
+- The first Settings attempt left the button stuck on "Opening" after Safari blocked the pop-up (fixed below).
+- [CLAIM, partner docs] The Business app must be opened at least every ~13 days to keep coexistence active; onboarding unlinks companion devices; up to six months of history is shared.
+
+### What was built — rules not to undo
+
+**Inbound routing** (`resolveWhatsAppRoute`, `lib/whatsapp/inbound-route.ts`). Order: a **ready** `whatsapp_connections` row by `phone_number_id` → `trucks.phone_number_id` → the `whatsapp_sender` fallback. If the first two name **different** trucks, log a conflict, send nothing, return 200. One log line per inbound names the path; never the customer's number or text. The plan gate now logs when it denies.
+
+**Send credential** (`chooseSendCredential`). Chosen by the receiving number. Connection path: decrypt that row's token; if the ciphertext is null, the token is revoked, expired, has no expiry, or will not decrypt → **send nothing and log**. **Never fall back to `META_WHATSAPP_ACCESS_TOKEN` on this path.** Truck-column path: platform token. Fallback path: platform token only if the inbound number equals `META_WHATSAPP_PHONE_NUMBER_ID`. The credential is resolved **before** the model call. `sendMetaWhatsApp` takes the token as an argument; the platform env var is read only in `platformAccessToken()`. Sends now throw `MetaSendError` with numeric `code`/`subcode` (message text unchanged); `isPaymentBlockedError` matches `131042` by code.
+
+**Graph versions.** Server-side calls share `GRAPH_VERSION` = `v21.0` (`lib/whatsapp/graph-version.ts`); the browser SDK stays on `v26.0`. The send path was on `v19.0`, which Meta lists as available only until 21 May 2026 (`v20.0` until 24 September 2026). Check the admin templates page still loads after version changes.
+
+**Preview gate** (`hasWhatsAppSetupPreview`, `lib/whatsapp/setup-preview.ts`). `feature_overrides.whatsapp_setup_preview === true` exactly (the string `"true"` is refused). **Never routed through `canAccess`**, because trial plans inherit every plan feature. Enforced on the signup and disconnect routes as well as the page. `test-truck` carries it; it is redundant while the flag is true and kept so the flag can be switched back.
+
+**Safari pop-up** (`WhatsAppSetupControl`, reducer `lib/whatsapp/setup-machine.ts`, harness `scripts/whatsapp-setup-machine-harness.cjs`). Root cause: the whole Facebook SDK downloaded between the click and `FB.login`, so Safari's user activation expired; the button's only exit was Meta's callback, which never fired for a window Safari opened itself. Rules: load the SDK when the button **mounts**; call `FB.login` **synchronously** in the click; "Start again" exits without any server call; after 20 seconds add a pop-up hint; **no automatic timeout**; a success from a superseded attempt is **never discarded**; no POST on abandonment or error.
+
+**Connected number.** New nullable columns `whatsapp_connections.display_phone_number` and `verified_name`, filled by one Graph GET after signup's final write. That lookup can never fail or roll back onboarding; failures store nulls and log the HTTP status only. The free-text number box is gone from the live branch; it was the only UI writer of `trucks.whatsapp_sender`.
+
+**Monthly reply limit.** `trucks.whatsapp_monthly_reply_limit` integer, default 1000, CHECK in (250, 500, 1000, 2000, 5000), validated server-side in `update_truck` (the route's first value validation). Same choices on every plan. **No daily limit** (removed). Per-customer limit unchanged at 3 in 24 hours. **The handoff message counts.** Month boundary is the truck's timezone, defaulting to Europe/London (`lib/whatsapp/usage.ts`, shared by enforcement and display). At the limit the bot goes silent. **Only messages Meta accepted count**: sends now happen before the `whatsapp_logs` insert, `response_sent` is set only on success, and the insert is **awaited** (an un-awaited insert can be lost when the function ends, under-counting the limit).
+
+**Payment method.** A missing payment method **no longer blocks sending** (`awaiting_payment_method` is sendable). [CLAIM, partner docs] Meta allows sends within the free allowance without a card; beyond it, error `131042` blocks every send from the account.
+
+**Disconnect** (`planDisconnect`, `lib/whatsapp/disconnect-plan.ts`). Best-effort `DELETE {waba}/subscribed_apps` with the business token, then **delete the connection row regardless** (removing the stored key). **Never call deregister**: a coexistence number is the operator's working phone. `trucks.phone_number_id` and `whatsapp_sender` are never touched. The confirmation tells the operator to also remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.
+
+**Settings WhatsApp box.** All display decisions live in `whatsAppRowView` (`lib/whatsapp/connection-view.ts`); the markup computes nothing but a bar width. Layout: header (title, number · business name, Connected pill or Set up/Reconnect) → Auto-replies (limit select, usage bar, two rule lines) → Billing (payment row, dated summary, "How Meta charges" expander with two links, amber warning above 1,000) → footer (Disconnect). **The payment row shows only when status is known** (`added`/`missing`), never "Not checked". Red payment-blocked banner under the header when `payment_blocked_at` is set; it suppresses the amber warning. Starter trucks see "WhatsApp auto-replies are included on Pro and Max." plus the `FeatureGate` "Upgrade →" link inside `purchaseCtaAllowed()`. Instagram and Messenger have their own boxes. Native apps still hide the whole card (`!isNativeApp()`).
+
+**Billing copy constants** (`lib/whatsapp/copy.ts`): `META_PRICING_CHECKED_ON` = "16 September 2026", `META_FREE_ALLOWANCE_FROM` = "1 October 2026", `META_PRICING_URL`, `WHATSAPP_MANAGER_URL`, `formatLimit`. `META_FREE_REPLIES_PER_MONTH` = 1000 stays in `reply-cap.ts`. **Update the checked-on date whenever Meta's pricing is rechecked.** No literal dates or "1,000" in the copy.
+
+**Background jobs.**
+- `lib/whatsapp/meta-admin.ts`: `refreshBusinessToken` (`oauth/access_token`, `grant_type=fb_exchange_token`, `set_token_expires_in_60_days=true`; expiry taken from Meta's `expires_in`, never assumed), `inspectBusinessToken` (`debug_token`, authorised with the app access token; `expires_at: 0` means never), `readPaymentStatus` (`{waba}?fields=primary_funding_id`; an error is never "missing"; the funding id is never returned or logged). **None of these logs anything**, because tokens travel in query strings.
+- Admin page `/admin/whatsapp-connections` (not linked from the admin console): Check token, Check payment status, Refresh token now. No response ever contains a token, ciphertext or funding id.
+- Daily job `/api/cron/whatsapp-maintenance`, Vercel cron `0 3 * * *` in `vercel.json` (the app's scheduled jobs are Vercel crons with `CRON_SECRET`; pg_cron also exists in the database for other jobs). Per connection: inspect (invalid → set `token_revoked_at`, admin alert) → refresh when 30 days or fewer remain **only if `WHATSAPP_TOKEN_AUTO_REFRESH === 'on'` exactly** → read payment status. **Never emails an operator.** Refuses to run without the encryption key or app credentials. Safe to run twice.
+- Alerts (`lib/whatsapp/alerts.ts`, copy in `alert-copy.ts`): claim the `whatsapp_alerts` row first (unique on truck, kind, period), send only if the claim won, delete the row if the send fails. Operator kinds `limit_80`, `limit_100`, `payment_blocked` go to `trucks.contact_email` (skipped and not recorded if blank), keyed by local month. Admin kinds `token_refresh_failing` (after 2 consecutive failures), `token_refresh_urgent` (7 days or fewer), `token_invalid` go to `ADMIN_ALERT_TO` (`lib/custom-domain/alert.ts`, a deliberate constant), keyed by UTC day. Only truck id and kind are logged. `sendConfirmationEmail` now returns a boolean (never throws).
+- `whatsapp_connections` gained `token_last_refreshed_at`, `token_refresh_failed_at`, `token_refresh_failures`, `token_refresh_last_error` (Meta code only), `token_checked_at`, `payment_blocked_at`. `payment_blocked_at` is set on the first `131042` and cleared on the next accepted send; it is read through `lib/whatsapp/payment-block.ts` and deliberately kept out of the webhook's credential select.
+- `whatsapp_alerts` final shape [OBSERVED]: `id` bigserial, `truck_id` text FK, `kind` text (no CHECK, by house rule), `period_key` text, `created_at`; unique `(truck_id, kind, period_key)`; RLS on with a service-role policy; grants revoked from anon, authenticated and public, including on the id sequence.
+
+**Go-live.** `WHATSAPP_LIVE = true`. Plans pro, max, trial, tester and demo see Set up; starter does not. `findPlanParityViolations` now checks the WhatsApp row in **both** directions and treats a `coming_soon` cell as a violation while the flag is true (and a live cell while false); other rows are unchanged. `WHATSAPP_ROW_NAME` is a single constant. **Pizzeria Gusto's Settings page now loads `connect.facebook.net`** (approved; the component mounts only where Set up is shown).
+
+**Footnotes.** Footnote 6 is removed; both auto-reply rows use **footnote 4**, whose text depends on the flag. Live: "Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From {1 October 2026} the first {1,000} a month are free. Correct at {16 September 2026}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong." Not live: the first and last sentences only. **Numbering stops at 5; append new footnotes, never insert** (the manage page masks the pricing footnote by the literal `'2'`). The landing Pro-card marker now reads ⁴.
+
+**Harnesses** (plain `node`, self-compiling): `whatsapp-setup-machine`, `whatsapp-connection-view`, `whatsapp-settings-row`, `whatsapp-background-jobs`, `whatsapp-golive-parity`. Each runs deliberately broken variants first and must see them fail.
+
+### Decisions recorded
+
+- **60-day tokens with automatic refresh**, not never-expiring. Meta labels expiring tokens "Suggested"; a leaked token then stops working within 60 days. Refresh must be proven by the admin button before the flag is switched on.
+- **Disconnect is a full disconnect** (stop replies, remove access, delete the key).
+- **Monthly limit only**, same choices on every plan, default 1,000 (matches Meta's free allowance so a truck on the default should not pay Meta).
+- **Launch without a "bot steps back when the owner replies" rule.** Revisit if double replies become a problem; the echo payload is now observed.
+- **Website and Set up went live together** (16 September).
+- **Payment status is shown only when known.**
+
+### Meta pricing facts [CLAIM, partner sources checked 16 September]
+
+From 1 October 2026 Meta charges for service messages (free-form replies within the 24-hour window, including third-party bot replies). Each business phone number gets 1,000 free service messages a month, resetting monthly with no rollover. Incoming messages stay free. Messages sent from the free WhatsApp Business app are not charged. Rates vary by country and Meta can change them.
+
+### Open items
+
+1. **Prove token refresh and switch it on.** Run "Refresh token now" on `test-truck`, confirm a new ~60-day expiry and that a reply still sends, then set `WHATSAPP_TOKEN_AUTO_REFRESH=on` and redeploy. **Until then nothing refreshes and nobody is warned.** Pizza Kitchen's token expires **15 November 2026**. Consider an admin alert when a refresh is due while auto-refresh is off.
+2. **`primary_funding_id` is unproven** as a payment-method signal. The payment row stays hidden until the admin check has been shown to report correctly.
+3. **Order emails should use the connected number** instead of `trucks.whatsapp_sender`.
+4. **Retire the `whatsapp_sender` fallback route** (nothing matches it any more) and review the column's remaining readers (emails, dashboard, the dormant Twilio webhook).
+5. **Limit alerts do not re-arm** if an operator raises the limit mid-month (period key is the month only).
+6. **Check the features PDF** still fits the longer footnote 4.
+7. **Manual tests Dominic chose to skip:** disconnect and reconnect, the 80%/100% emails, the payment-blocked banner, starter-truck view, narrow widths.
+8. **Sweep other `if not exists` migrations** against live columns (lesson 3).
+9. The Settings box's Set up instruction renders under the header rather than after the connected number, for `onboarding_incomplete`/`revoked` states only (accepted).
+10. As of writing, all of 16 September's code (Settings layout, payment row, background jobs, go-live, billing wording, footnote merge) was **uncommitted** and due to go out as one commit, because `app/manage/[token]/page.tsx` mixes several workstreams. Record the commit hash once it lands, and confirm the deployed state matches this entry. **[OBSERVED, added when folding this delta] It landed as `88f1dff` ("whatsapp live") on 16 September, with `origin/main` at the same hash.** The deployed state has not been re-checked against this entry.
 
 ## V13.2 — 15 September 2026 — THE OUTREACH CONSOLE BECAME A WORK QUEUE, A "GLOBAL DEFAULTS" PANEL TURNED OUT TO BE READING A PASTED PRICING TABLE, AND A TRUCK'S LOGO WAS BEING KILLED BY A URL FORMATTER THREE SHAPES BEFORE THE SECURITY CHECK IT WAS BLAMED ON
 
@@ -5979,8 +6085,10 @@ timezone change cannot land in one and miss the other.
 > live trucks was an unrelated per-device toggle defaulting to off. §42.
 >
 > ⚠️ **AND THE CLIFF HAS NO RECORDED HANDLING.** When `trial_expires_at` passes, a truck drops from
-> **every Max feature** to `false` for **everything** — not to Starter, per the rows above. **Gusto's
-> expiry is 17 October 2026.** There is no cron, no warning path and no downgrade; **nothing in the
+> **every Max feature** to `false` for **everything** — not to Starter, per the rows above. ~~**Gusto's
+> expiry is 17 October 2026.**~~ 🔴 **CORRECTED V13.3 — it is 31 December 2026** (read from the database
+> 16 September 2026); `real-thai-food` is 30 September 2026 and `village-spice` is null. There is no cron,
+> no warning path and no downgrade; **nothing in the
 > product prepares an operator for that cliff or tells them it has happened.** BACKLOG.
 
 > ⛔ **STRUCK V11.44 — THE PLAN GATE IS NOT A SECURITY CONTROL, AND ANY ENTRY IN THIS MANUAL THAT
@@ -6202,6 +6310,14 @@ Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders u
 ⚠️ **[CORRECTED V11.5]** Footnote 4 previously ended *"Apple iPad recommended"*, and footnote 3 carried a matching recommendation. **Both removed** — it was **a preference stated as a finding**. The full order flow has **never been run on hardware on either platform**, and on current evidence **Android is the better-validated of the two** (§36). See §44 for the standing landing-copy rules. ⚠️ The footnote **numbering above is load-bearing**: `hide_pricing` masks footnote **2** by the magic string `f.number !== '2'`, so renumbering this list silently unmasks the suppressed figures (§44, §27).
 
 > **NOTE (V6.5)** — footnote 6 ("Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.") was REMOVED. Footnotes 1–5 are unchanged and still referenced.
+>
+> ⚠️ **V13.3 — A SECOND FOOTNOTE 6 EXISTED BRIEFLY AND IS ALSO GONE, so this note is accurate again.**
+> Between 4 and 16 September 2026 the number was reused for a WhatsApp-only billing footnote, because a
+> row carries exactly one footnote and the shared footnote 4 could not name Meta's charges without
+> claiming them for the unbuilt Messenger & Instagram row. That was resolved by making **footnote 4's
+> text conditional on `WHATSAPP_LIVE`** instead, and **both auto-reply rows now point at footnote 4**.
+> 🔴 **NUMBERING STOPS AT 5. APPEND NEW FOOTNOTES, NEVER INSERT** — the manage page masks the pricing
+> footnote by the literal `'2'`, so renumbering silently unmasks a hidden price with no error and no test.
 
 ## Per-truck pricing suppression — `trucks.hide_pricing` (V11.3)
 
@@ -10990,14 +11106,25 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_lo
 
 ## Platform compliance and tone
 
-> 🔴 **`WHATSAPP_LIVE` IS THE PRODUCT SWITCH, AND THIS MANUAL HAD NEVER RECORDED IT (added V12.3).** A
-> module-level boolean in `app/manage/[token]/page.tsx` decides whether the operator's WhatsApp control
+> 🔴 **`WHATSAPP_LIVE` IS THE PRODUCT SWITCH, AND THIS MANUAL HAD NEVER RECORDED IT (added V12.3).**
+> ⚠️ **CORRECTED V13.3 — BOTH THE LOCATION AND THE VALUE BELOW WERE WRONG.** It is
+> `export const WHATSAPP_LIVE` in **`lib/whatsapp-live.ts`**, not a module-level boolean in
+> `app/manage/[token]/page.tsx` — it was moved out of the page on 8 September 2026 because the landing
+> page and `lib/plan-features.ts` both need it, and a flag defined in the page and read by the lib is a
+> cycle. The page **imports** it. It decides whether the operator's WhatsApp control
 > renders live or greyed out behind a "Coming soon" badge. **It is not derived from the plan matrix and
 > nothing checks the two against each other**, so the flag and `lib/plan-features.ts`'s WhatsApp row are
 > **two halves of one statement that must be flipped together** — a comment at each now says so.
 > ⚠️ **A diagnostic written from this manual concluded WhatsApp was described as coming-soon in ZERO
 > places, partly because this flag was absent here.** It was the actual switch, and it was set to hide the
-> feature. **Both are `true`/live as of 4 September 2026.**
+> feature. ~~**Both are `true`/live as of 4 September 2026.**~~
+> 🔴 **CORRECTED V13.3 — THAT SENTENCE WAS NEVER TRUE OF ANY COMMIT.** `WHATSAPP_LIVE` had **never been
+> committed as `true`** before 16 September 2026; all 790 commits were checked, in both the file it lives
+> in now and the page it used to live in. The 4 September go-live existed only in an unstaged working
+> tree, and the "whatsapp-landing-revert" was an **investigation** whose outcome was a decision not to
+> stage it — there is no revert commit. **It is `true` from 16 September 2026** (V13.3), and the flag and
+> the plan-features row are still two halves of one statement, now enforced by
+> `findPlanParityViolations` in both directions rather than by a comment.
 
 Official Meta Graph/Cloud API; stay within the 24-hour window; customer initiates. Full URLs, no shorteners. Responses sound like the owner ("Hey! 👋 … — {truckName} {emoji}"). 🔴 **WhatsApp auto-replies are PRO+MAX; Messenger and Instagram are `coming_soon` and unbuilt.** ⚠️ **CORRECTED 20 August 2026 — this sentence read *"Instagram/Messenger are Pro; WhatsApp is Max only."*, which was wrong on both halves from the V8.9 fix onwards.** See §4 for the executed verification.
 
@@ -11117,10 +11244,30 @@ not 200 and deliberately not Stripe's 400.
 against `trucks.phone_number_id`, behind a fail-closed HMAC gate. ⚠️ **But that column has NO WRITER
 anywhere and is set by hand in Supabase** — that is the onboarding step being done manually today.
 
-🔴 **SENDING IS ONE PLATFORM CREDENTIAL.** `lib/meta-whatsapp.ts` addresses a per-truck `phone_number_id`
+> 🔴 **SUPERSEDED V13.3 — AND THE GAP ABOVE IS EXACTLY WHAT WOULD HAVE BROKEN GO-LIVE.** Embedded Signup
+> writes `whatsapp_connections.phone_number_id`, **not** `trucks.phone_number_id`, so an onboarded truck
+> routed nowhere and **would have received nothing**. The order is now, in `resolveWhatsAppRoute`
+> (`lib/whatsapp/inbound-route.ts`): **a `ready` `whatsapp_connections` row by `phone_number_id` first**,
+> then `trucks.phone_number_id`, then the `whatsapp_sender` fallback. If the first two name **different**
+> trucks it logs a conflict, sends nothing and returns 200. One log line per inbound names the path,
+> never the customer's number or text.
+
+🔴 **SENDING IS ONE PLATFORM CREDENTIAL.** ⚠️ **SUPERSEDED V13.3 — see the note after this block.**
+`lib/meta-whatsapp.ts` addresses a per-truck `phone_number_id`
 in the URL but authorises every send with a single `META_WHATSAPP_ACCESS_TOKEN`. ✅ **It has exactly one
 call site**, so the blast radius of the rewrite is one function — **and its only consumer is the inbound
 auto-reply.**
+
+> 🔴 **V13.3 — THE REWRITE HAPPENED, AND THE OLD BEHAVIOUR WAS WORSE THAN THIS ENTRY IMPLIES.**
+> `decryptToken` had **zero callers**, so every send — including a truck that had onboarded specifically
+> so it would pay Meta directly — went out on the platform token. **"Trucks pay Meta directly" was not
+> true of the code.** `chooseSendCredential` now picks the credential from the **receiving** number:
+> the connection path decrypts that row's own token and, if the ciphertext is null or the token is
+> revoked, expired, undated or undecryptable, **sends nothing and logs** — it **never** falls back to
+> `META_WHATSAPP_ACCESS_TOKEN`. The truck-column path uses the platform token; the fallback path uses it
+> only when the inbound number equals `META_WHATSAPP_PHONE_NUMBER_ID`. The credential is resolved
+> **before** the model call, `sendMetaWhatsApp` takes the token as an argument, and the platform env var
+> is read in exactly one place, `platformAccessToken()`.
 
 ⚠️ **THE WEBHOOK MUST KEEP RETURNING 200 OR META DISABLES THE SUBSCRIPTION FOR EVERY TRUCK.** One truck's
 bad state can take inbound down for all of them.
@@ -11134,8 +11281,14 @@ launches Meta's flow, the JS SDK captures an exchangeable code, and a server-to-
 for a **business token**. Tech Provider status needs **business verification and app review**, and review
 requires **TWO screen recordings: a message created and sent FROM OUR APP and received in the WhatsApp
 client, AND our app being used to create a message template.** **Embedded Signup v2 is deprecated on 15
-October 2026 — build v4.** ⚠️ **Onboarded trucks must add a payment method to their own WhatsApp Business
-account** — a friction step in the wizard that cannot be removed.
+October 2026 — build v4.** ⚠️ ~~**Onboarded trucks must add a payment method to their own WhatsApp Business
+account** — a friction step in the wizard that cannot be removed.~~
+🔴 **CORRECTED V13.3 — IT IS NOT MANDATORY AND IT IS NOT A BLOCKER.** In the coexistence onboarding
+proven on 16 September the **payment method step was skipped** and the connection worked. A missing
+payment method **no longer blocks sending** in our own state machine either (`awaiting_payment_method`
+is sendable). [CLAIM, partner docs] Meta allows sends **within the free allowance** with no card; beyond
+it, error **`131042`** blocks every send from that account — which is why the code detects that code
+specifically rather than pre-judging the account.
 
 🔴 **COEXISTENCE IS THE PATH THAT FITS THIS MARKET.** Embedded Signup can onboard a business on its
 **existing WhatsApp Business app account and number**, keeping one-to-one messaging in that app with
@@ -11160,7 +11313,13 @@ backups and exports. Say that rather than calling it "encrypted at rest" and sto
 **Built and unblocked:** an admin-gated template list/create tool on the platform credential, and a pure
 connection-state machine mirroring `payments-state.ts`, imported by nothing.
 
-⚠️ **THE SENDER IS PINNED TO GRAPH API `v19.0`** and that pin is shared by the template calls. ✅ **CHECKED
+⚠️ **THE SENDER IS PINNED TO GRAPH API `v19.0`** and that pin is shared by the template calls.
+🔴 **SUPERSEDED V13.3 — THE PIN MOVED TO `v21.0`.** Every server-side call now shares `GRAPH_VERSION` in
+`lib/whatsapp/graph-version.ts`; the **browser SDK stays on `v26.0`** and is a separate number. The send
+path had been left on `v19.0`, which Meta lists as available only until **21 May 2026** (`v20.0` until
+24 September 2026) — so it was past its own deprecation date while being described as pinned deliberately.
+⚠️ **Check the admin templates page still loads after any version change**, because the template calls
+share the constant. ✅ **CHECKED
 V11.36 BY AN AUTHENTICATED CALL: `v19.0` IS STILL SERVED**, and the pin deliberately STAYS there through the
 app-review recording — the reasoning is in the first-authenticated-call block later in this section.
 🔴 **The first authenticated call must not be the one on camera** — and it no longer is.
@@ -11260,7 +11419,8 @@ A template LIST call was executed against the live platform credential and retur
 
 - ✅ **Graph API `v19.0` IS STILL SERVED.** ⚠️ **Note it is PAST its scheduled deprecation date of
   21 May 2026** — so it is alive on borrowed time, not safe. `v20.0` was scheduled for 24 September
-  2026, so a one-notch bump buys nothing.
+  2026, so a one-notch bump buys nothing. 🔴 **RESOLVED V13.3: the bump went to `v21.0`, not one
+  notch**, for exactly this reason.
 - ✅ The platform access token is valid in production.
 - ✅ **`META_WHATSAPP_BUSINESS_ACCOUNT_ID` IS SET AND CORRECT IN PRODUCTION.** The readiness report
   explicitly could not determine this from the repository.
@@ -11277,6 +11437,10 @@ the general lesson: *an authentication failure is evaluated before, or instead o
 downstream of it.*
 
 ### DECISION TAKEN — the version pin stays on `v19.0` through the app-review recording
+
+> ⚠️ **THIS DECISION HAS EXPIRED (V13.3).** The recording is done and the pin is now `v21.0` in
+> `lib/whatsapp/graph-version.ts`. The reasoning below is kept because it records **why** a known-stale
+> version was deliberately held, which is the part worth reusing — not the version number.
 
 The pin is a **single constant** (`GRAPH_API_VERSION` in the Meta WhatsApp module) with **three
 executable consumers** — the sender, the template list and the template create — and two
@@ -11429,8 +11593,10 @@ third-party credential.**
 - 🔴 **THE WEBSITE IS REVIEWED BY WHATSAPP'S INTEGRITY TEAM** and must be live, publicly accessible,
   SSL-secured, and clearly describe the business. ⚠️ **An incomplete Business Info section triggers a
   WABA restriction that takes time to clear.**
-- **Onboarded trucks must add a payment method to their own WhatsApp Business account** — a wizard
-  friction step that cannot be removed. (Unchanged; re-confirmed.)
+- ~~**Onboarded trucks must add a payment method to their own WhatsApp Business account** — a wizard
+  friction step that cannot be removed. (Unchanged; re-confirmed.)~~ 🔴 **CORRECTED V13.3 — the step was
+  SKIPPED in the onboarding proven on 16 September, and a missing payment method does not block sending
+  within Meta's free allowance.** See the corrected note earlier in this section.
 
 ## V11.36 — 🔴 THE ADMIN TEMPLATE TOOL IS A COMPLIANCE ARTEFACT, NOT A FEATURE — DO NOT POLISH IT
 
@@ -11667,6 +11833,11 @@ the reply** — ours is a third-party AI, so we are squarely in the service-mess
 
 **Today the platform credential pays for everything** — sending is one `META_WHATSAPP_ACCESS_TOKEN`
 against a per-truck phone number id. Volume is nil, so the exposure is nil.
+🔴 **SUPERSEDED V13.3 — "after Embedded Signup" ARRIVED.** A truck that onboards through Embedded Signup
+now sends on **its own** token and Meta bills **its** WhatsApp Business account; the platform credential
+pays only for the platform test number and the `whatsapp_sender` fallback. ⚠️ **The code did not match
+this paragraph until V13.3** — `decryptToken` had no callers, so every send was still on the platform
+token no matter who had onboarded.
 **After Embedded Signup, Meta bills the truck**, because an onboarded business adds a payment method to
 its own WhatsApp Business account. 🔴 **GEMINI STAYS OURS UNDER EVERY DESIGN.** Model spend never
 transfers.
@@ -11692,6 +11863,23 @@ webhook. Built during the deploy freeze; joins the queued batch.**
 - **The daily ceiling is DERIVED as one tenth of the monthly, rounded up** — one free parameter instead of
   two. ⚠️ **DERIVING IT CHANGED THE NUMBER: 2000 a month yields 200 a day, not the 300 written by hand
   first. Nobody chose 200 directly.**
+
+> 🔴 **SUPERSEDED V13.3 — THERE ARE NOW TWO LIMITS, NOT THREE, AND THE DAILY WINDOW IS GONE.** The
+> per-truck **daily** ceiling and the derived one-tenth rule were **removed**, so the argument above for
+> keeping a daily window did not survive the decision. What remains:
+> - **Per customer, rolling 24 hours: 3 replies**, then one handoff, then silence. Unchanged — it is the
+>   loop-breaker and the reason the whole module exists.
+> - **Per truck, per calendar month: `trucks.whatsapp_monthly_reply_limit`** — integer, default 1000,
+>   `CHECK in (250, 500, 1000, 2000, 5000)`, validated server-side in `update_truck`, **the same choices
+>   on every plan**. The operator chooses it in Settings. At the limit the bot goes silent.
+> - 🔴 **THE HANDOFF MESSAGE COUNTS.** It is a message Meta bills for, so excluding it meant the operator
+>   paid for sends their own ceiling could not see.
+> - 🔴 **ONLY MESSAGES META ACCEPTED COUNT.** The send now happens **before** the `whatsapp_logs` insert,
+>   `response_sent` is set only on success, and **the insert is awaited** — an un-awaited insert can be
+>   dropped when the serverless function ends, silently under-counting the ceiling the operator chose.
+> - The month boundary is the **truck's** timezone, defaulting to Europe/London (`lib/whatsapp/usage.ts`),
+>   and the same function serves both enforcement and the Settings usage line, so the number that stops
+>   replies and the number the operator reads cannot diverge.
 - **The per-customer limit is a PARAMETER of the decision function, not a constant read inside it.** The
   route passes the default of 3. **An operator-settable value, intended ceiling 5, is one line at the call
   site** — no column, no UI, no plan tiering built today.
@@ -11936,7 +12124,9 @@ URL and a missing field subscription all present **identically: a 200 and no row
 gate — truck id, plan, feature, decision — would have made this a thirty-second diagnosis instead of an
 hour.** **Backlog item with a demonstrated cost.**
 
-⚠️ **AND IT WILL RECUR ON A TRADING TRUCK.** **Pizzeria Gusto's trial expires 17 October 2026.** When it
+⚠️ **AND IT WILL RECUR ON A TRADING TRUCK.** ~~**Pizzeria Gusto's trial expires 17 October 2026.**~~
+🔴 **CORRECTED V13.3 — GUSTO'S EXPIRY IS 31 DECEMBER 2026** (read from the database 16 September 2026).
+The cliff is real and unhandled exactly as described; only the date moved. When it
 passes, every Max-inherited feature switches off on a live truck with **no warning, no error and no log
 line** — the operator reports "it's broken" with no way to say what. `real-thai-food` expires
 **30 September**. 🔴 **THESE ARE DATES, NOT A BACKLOG ITEM.** Decide before them: extend, move to a real
@@ -14457,7 +14647,8 @@ and nothing in the build can substitute for them. Everything else below is work,
 - 🔴 **The print lead time is measured from COLLECTION, not from cook time** (§42, §6).
   `calcQueueAwareReadySecs` already exists and is simply not consulted. **Design gap, not a bug.**
 - 🔴 **The trial-expiry cliff has no recorded handling** (§4). Both live trucks are on `trial`, which
-  grants every Max feature; Gusto's expiry is **17 October 2026**, after which `canAccess` returns
+  grants every Max feature; Gusto's expiry is ~~**17 October 2026**~~ **31 December 2026**
+  (corrected V13.3, read from the database 16 September), after which `canAccess` returns
   `false` for **everything**. No cron, no warning, no downgrade path.
 - **`All {n} changes synced.`** — the offline consolidation replaced `Synced {n} ✓` with
   `All changes synced.` and **the count went with it. The number is the load-bearing part**; restore it

@@ -8577,7 +8577,13 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-sm font-bold text-slate-700 mb-0.5">Try it before you connect</p>
+        {/* ⚠️ `text-slate-800` TO MATCH THE OTHER BOX TITLES (WhatsApp, Instagram, Messenger), changed
+            from slate-700 when this block became a box of its own. slate-700 is what this file uses for
+            SECTION labels such as "Channels"; slate-800 is what it uses for the bold title INSIDE a box.
+            ⚠️ THE DESCRIPTION BELOW KEEPS `text-sm`, NOT the `text-xs` the channel boxes use — that size
+            is a recorded decision ("SIZE MATCHED, NOT INVENTED", see the note under it) and shrinking it
+            here would undo it for the sake of symmetry. */}
+        <p className="text-sm font-bold text-slate-800 mb-0.5">Try it before you connect</p>
         {/* ⚠️ SIZE MATCHED, NOT INVENTED. `text-sm text-slate-500` is the class this Settings tab already
             uses for explanatory copy sitting under a heading — the "Remove {van}?", "Add another truck"
             and "Upgrade to add more vans" bodies all use it. These are per-element Tailwind utilities,
@@ -8809,13 +8815,11 @@ function QrPreview({ src, alt, onOpen, locked }: {
 //   • STUCK because the ONLY way out of `setupBusy` was that promise settling, and it settles only from
 //     inside FB.login's callback. A window the SDK never owned is a callback that never fires. Fixed by
 //     giving the operator "Start again", which needs no event from Meta at all.
-function WhatsAppSetupControl({ token, offerReauthorise, showButton, showInstruction, onNotice, onConnectionUpdate }: {
+function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, onConnectionUpdate }: {
   token: string
   offerReauthorise: boolean
   /** From the view model. False on a working connection — see `showSetupControl`. */
   showButton: boolean
-  /** The pop-up instruction is only useful before a window has to open. */
-  showInstruction: boolean
   onNotice: (n: { tone: 'ok' | 'warn' | 'error'; text: string } | null) => void
   onConnectionUpdate: (c: WhatsAppConnectionView) => void
 }) {
@@ -8932,18 +8936,16 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, showInstruc
           Start again
         </button>
       )}
-      {/* ── THE STANDING INSTRUCTION. ALWAYS VISIBLE WHILE THE BUTTON IS SHOWN. ─────────────────────
-          🔴 IT IS NOT AN ERROR MESSAGE AND MUST NOT WAIT FOR ONE. Nothing on this page told the operator
-          a separate window would open, so a blocked pop-up looked like a broken button. Said before the
-          press, it is an instruction; said after, it is an excuse.
-          ⚠️ `basis-full` makes it take its own line inside the parent's `flex-wrap` row, so it sits UNDER
-          the button rather than competing with the number field for width. */}
-      {showInstruction && (
-        <p className="basis-full text-xs text-slate-500 mt-1">
-          A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow
-          pop-ups for hatchgrab.com in your browser, then press Set up again.
-        </p>
-      )}
+      {/* 🔴 THE STANDING INSTRUCTION IS NO LONGER RENDERED HERE (16 September 2026). It moved to the
+          PARENT, below the header row — see the call site. It is a long, full-width paragraph, and as a
+          sibling of the button inside the header's right-hand group its `basis-full` forced that whole
+          group onto its own line, which dropped the Set up button out of the top-right corner and left
+          it sitting under the title. The parent owns `showInstruction` already (it is
+          `view.showPopupInstruction`), so moving the markup moved no state and changed no condition.
+          ⚠️ THE AMBER HINT BELOW STAYS HERE, because it is driven by THIS component's reducer state and
+          lifting it would mean either a second component instance with its own state or a new callback.
+          It keeps `basis-full`, so in the rare blocked-pop-up case the group does still wrap to its own
+          line — the button stays visible, just below the title, for as long as that hint is showing. */}
       {state.showPopupHint && (
         <p className="basis-full text-xs text-amber-700">
           Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then
@@ -10105,7 +10107,21 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             place — removing it changes nothing on either platform (on web both are false; on native the
             outer one already short-circuits) and touching it would edit the Connect subsection, which
             this task does not own. */}
-        <WhatsAppReplyPreview token={token} />
+        {/* ── 🔴 THE PREVIEW SITS IN ITS OWN BOX, THE SAME ONE THE CHANNEL ROWS USE. ─────────────────
+            `rounded-xl border border-slate-200 p-3` — the page's own box-within-a-section pattern
+            (:1200, :1241, :5431 and the three Channels boxes below). Reused, not invented, so this card
+            does not become the one place with its own idea of what a box looks like.
+            🔴 THE BOX IS HERE, NOT INSIDE WhatsAppReplyPreview, and that is deliberate: the component
+            stays a plain block that its container positions. It is rendered in exactly one place, so
+            nothing else can be affected by the wrapper either way.
+            ⚠️ SPACING COMES FROM THE CARD, NOT FROM THIS ELEMENT. The Card is `p-4 space-y-3`, the same
+            rhythm the Channels list uses, so this box sits at the same distance from its neighbours as
+            the WhatsApp/Instagram/Messenger boxes do from each other. Do not add a margin here.
+            ⚠️ NO NESTED <Card>. `Card` carries `bg-white shadow-sm rounded-2xl` and is the SECTION
+            container; nesting it inside itself would stack two shadows and two radii. */}
+        <div className="rounded-xl border border-slate-200 p-3">
+          <WhatsAppReplyPreview token={token} />
+        </div>
 
         {!isNativeApp() && (<>
         {/* Connect subsection. 🔴 ITS OWN HEADING WAS ABSORBED INTO THE CARD TITLE — the caption stays,
@@ -10172,7 +10188,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                             <p className="text-xs text-slate-500 mt-0.5">Requires a WhatsApp Business account.</p>
                           )}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2">
+                        {/* ⚠️ `flex-shrink-0` AND NO `flex-wrap`: this group must hug the top-right corner
+                            and keep its natural width. It previously wrapped, and with the long setup
+                            instruction rendered inside it that wrap fired on every load — pushing the
+                            Set up button below the title. The instruction now renders below this row. */}
+                        <div className="flex flex-shrink-0 items-center gap-2">
                           {view.showConnectedLabel && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
                               Connected
@@ -10183,12 +10203,31 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                             token={token}
                             offerReauthorise={!!whatsappConnection?.offerReauthorise}
                             showButton={view.showSetupControl}
-                            showInstruction={view.showPopupInstruction}
                             onNotice={setSetupNotice}
                             onConnectionUpdate={onConnectionUpdate}
                           />
                         </div>
                       </div>
+
+                      {/* ── A1. THE STANDING SETUP INSTRUCTION. ─────────────────────────────────────
+                          🔴 IT IS NOT AN ERROR MESSAGE AND MUST NOT WAIT FOR ONE. Nothing else on this
+                          page tells the operator that a separate window will open, so a blocked pop-up
+                          looks like a broken button. Said before the press it is an instruction; said
+                          after, it is an excuse.
+                          🔴 IT LIVES HERE, NOT INSIDE WhatsAppSetupControl, AND THAT IS A LAYOUT
+                          CONSTRAINT RATHER THAN A PREFERENCE (16 September 2026). Rendered inside the
+                          control it was a sibling of the Set up button in the header's right-hand group;
+                          being a full-width paragraph it forced that group onto its own line, so the
+                          button rendered under the title instead of in the top-right corner. Below the
+                          header it takes the full width it needs and the button keeps its corner.
+                          ⚠️ SAME CONDITION, NOT A NEW ONE: `view.showPopupInstruction` is the exact value
+                          that used to be passed in as the control's `showInstruction` prop. */}
+                      {view.showPopupInstruction && (
+                        <p className="mt-2 text-xs text-slate-500">
+                          A Facebook window will open to connect your WhatsApp Business account. If nothing
+                          appears, allow pop-ups for hatchgrab.com in your browser, then press Set up again.
+                        </p>
+                      )}
 
                       {/* ── A2. PAYMENT BLOCKED ──────────────────────────────────────────────────
                           🔴 FIRST THING IN THE BOX AFTER THE HEADER, AND RED RATHER THAN AMBER. Every
