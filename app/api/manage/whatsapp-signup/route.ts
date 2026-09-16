@@ -33,6 +33,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { encryptToken, encryptionKeyConfigured } from '@/lib/whatsapp/token-crypto'
+import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 import { parseMetaAppSecrets } from '@/lib/meta/webhook-signature'
 import { FINISH_COEXISTENCE, FINISH_CLOUD_API, FINISH_ONLY_WABA, FINISH_OBO_MIGRATION, FINISH_GRANT_ONLY_API_ACCESS } from '@/lib/whatsapp/embedded-signup'
 import { readWhatsAppConnection, type WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
@@ -123,10 +125,29 @@ export async function POST(req: NextRequest) {
   // 🔴 THE TRUCK COMES FROM THE TOKEN AND FROM NOTHING ELSE. See the header.
   const { data: truck } = await supabase
     .from('trucks')
-    .select('id, name')
+    .select('id, name, feature_overrides')
     .eq('dashboard_token', token)
     .single()
   if (!truck) return fail('unauthorised', 'Invalid token', 401)
+
+  // ── 🔴 THE PREVIEW GATE. BEFORE ANY GRAPH CALL AND BEFORE ANY WRITE. ──────────────────────────────
+  // The UI already hides the Set up button unless this passes, but the UI is not the enforcement: this
+  // route is a plain POST behind a dashboard token, and a token holder can call it directly. Refusing
+  // here is what makes "only test-truck can do this" true rather than merely displayed.
+  //
+  // 🔴 IT SITS ABOVE THE EXCHANGE DELIBERATELY. An Embedded Signup code is single-use; letting an
+  // ungated caller burn one before being refused would cost a real operator a second run of the whole
+  // wizard for a refusal we could have issued for free.
+  // ⚠️ `feature_overrides` is READ here, never written. Its only writer is /api/admin — this route's
+  // sibling `update_truck` allowlist excludes it precisely so a token holder cannot self-grant.
+  if (!WHATSAPP_LIVE && !hasWhatsAppSetupPreview(truck.feature_overrides)) {
+    console.warn(`${TAG} setup refused — preview not enabled`, { truck_id: truck.id })
+    return fail(
+      'not_available',
+      'WhatsApp setup is not available for this account yet. Nothing was changed.',
+      403,
+    )
+  }
 
   const kind = typeof body.kind === 'string' ? body.kind : ''
 

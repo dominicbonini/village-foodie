@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.1
+HatchGrab Engineering Reference Manual · V13.2
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.1**
+**Version 13.2**
 
 September 2026
 
@@ -25,6 +25,181 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.2 — 15 September 2026 — THE OUTREACH CONSOLE BECAME A WORK QUEUE, A "GLOBAL DEFAULTS" PANEL TURNED OUT TO BE READING A PASTED PRICING TABLE, AND A TRUCK'S LOGO WAS BEING KILLED BY A URL FORMATTER THREE SHAPES BEFORE THE SECURITY CHECK IT WAS BLAMED ON
+
+**Covers:** the **outreach work queue** (derived next step, lead types, the contactable gate); the
+**token guard** and four new tokens; the **name split**; the **Snippets library**; the **template
+editor** rebuild; and the **single-store logo fix**.
+
+🔴 **THREE GUARDS SHARED ONE BLIND SPOT, AND THAT IS THE STRUCTURAL LESSON OF THIS RELEASE.** A
+template subject read `{{truck name}}` — a space, not an underscore — and shipped on an ACTIVE
+template. It survived because the resolver, `unresolvedIn` and the mistype lint all key off the SAME
+token pattern: a token that fails to MATCH that pattern is invisible to all three at once. It was not
+one missing check; it was three checks that could not see it. **New invariant, §35: WHEN SEVERAL GUARDS
+SHARE ONE PATTERN THEY ARE ONE GUARD.** The fix keys off the `{{`…`}}` DELIMITERS and only then asks
+whether the resolver would consume the contents. 🧪 The control proves the distinction: a pattern-keyed
+guard sees nothing in 6 of 7 malformed cases. The new guard refuses at all three exits — `sendNow`,
+`logNow`, and `doCopy`, **which had no guard of any kind and is the ONLY way out for a WhatsApp
+template**.
+
+**THE OUTREACH WORK QUEUE.** The sequence was already in the code — `CONTACT_KINDS` is four rungs,
+`FOLLOW_UP_DAYS` is 3/7/14/null, `followUpDateFor` writes `next_action_at` on every log. What was
+missing is that nothing named the next rung. The step is **DERIVED** from the contact ladder — highest
+rung reached, plus exits (`do_not_contact`, any inbound reply, a terminal stage, a converted truck) —
+with **no new state and no scheduler**. 🔴 **An unrecognised `kind` makes the step UNKNOWN and says so,
+never rung 0.** Guessing "first contact" for a prospect with four unrecognised contacts is the exact
+failure the feature exists to prevent.
+
+🔴 **THE `kind` VOCABULARY SPLIT MID-FLIGHT AND NOTHING MIGRATED.** `first_contact` ran 3–9 Sep,
+`1_first_contact` from 10 Sep, plus `follow_up` on WhatsApp — **8 of 17 rows outside the ladder**. Fixed
+by hand. Two further data facts fell out: an inbound row was labelled `first_contact` when it was a
+reply, and **two contacts 0.755 seconds apart** show `logNow` can double-submit.
+
+🔴 **ONLY 76 OF 231 PROSPECTS ARE CONTACTABLE**, and the queue was counting 224 as due. 61 have an
+email, 30 are WhatsApp-confirmed with a phone, 15 overlap — so **15 are WhatsApp-ONLY** and fall out of
+the queue entirely if a channel rule ever defaults to email. Of the 155 unreachable: 46 carry a
+`*.hatchesup.app` order URL (competitor storefronts — the strongest leads), 25 a Facebook page, 6 a real
+website, **78 nothing at all**. The queue now gates on contactability (70 due) and the rest appear as a
+"needs details" list ordered best-lead-first. ⚠️ An earlier 46/34/30/45 split came from a **synthetic
+test fixture** and was printed as if it were the database — **never print a fixture's distribution as
+the database's.**
+
+🔴 **`whatsapp_number` IS EMPTY ON ALL 231 ROWS AND HAS ZERO READERS**, while `whatsapp_confirmed` is
+true on 30 and two WhatsApp messages have been sent. The real number is `discovery_trucks.phone`;
+the checkbox means "this number is on WhatsApp". Any channel rule reading `whatsapp_number` would find
+nothing forever. The column is dead and can be dropped.
+
+**LEAD TYPE, AND WHY IT IS FROZEN.** Four types: `hu_ordering` (17) · `hu_map` (105) · `on_vf` (25) ·
+`not_listed` (84). Types 1 and 2 are hand-set flags and stable; **3 and 4 turn on whether the truck has
+upcoming `discovery_events`, which the scraper refreshes** — so 109 of 231 can flip between sends. A
+prospect could be told "your schedule is listed" in the first email and "you aren't listed" in the
+chase. `lead_type_at_first_contact` is therefore written once, at the rung-1 log, and read thereafter;
+**null falls back to the live derivation**, so no backfill was needed. 🔴 **The list of lead types
+belongs in CODE.** `leadTypeOf` is a fixed predicate over `hu_ordering`/`hu_map`/`show_on_vf`; a
+user-added type would have no derivation, match no prospect, and silently switch its template off. What
+needed fixing was that the explanation lived in an invisible `title=` tooltip.
+
+**FOUR NEW TOKENS AND THE NAME SPLIT.** `{{first_name}}`, `{{last_name}}`, `{{demo_link}}`,
+`{{compare_link}}`. `contact_name` split into `contact_first_name`/`contact_last_name`; the column stays
+readable for one release and is no longer written. 🧪 Only **3 of 231** prospects had a name at all, so
+the split was a UI change, not a migration. 🔴 **THE FALLBACK IS THE DEFAULT PATH, NOT AN EDGE CASE** —
+228 have no name, so `{{contact_name_prefixed}}`'s fold-the-separator-into-the-token pattern carries the
+whole greeting for nearly every email. ⚠️ It renders the FULL name today ("Hi George Greaves,"), so
+pointing it at the first name is a deliberate change to 4 active templates, not a preservation.
+🔴 `{{demo_link}}` is **must-resolve**: 230 of 231 prospects cannot resolve it, so refusing to compose is
+the NORMAL path. Three independent blocks enforce it, including ignoring a declared fallback and
+dropping the key from `defaultFillsOf` — a stored default must not quietly satisfy the marker.
+⚠️ A backfill wrote one-word names into BOTH columns (`position(' ' in 'Jo')` returns 0, so
+`substring` returned the whole string). The preview query showed it one line above the update. **A check
+that runs and is not read is not a check.**
+
+🔴 **THE "GLOBAL DEFAULTS" PANEL WAS READING A PASTED PRICING TABLE.** Sixteen unlabelled UNSET rows had
+no bug behind them: a `Test` template contained `[[250]]`, `[[500]]` … `[[4000]]`, and **anything inside
+`[[…]]` is a fill-in by definition**. The panel was faithfully reporting its input. This is the cost of
+a **DERIVED** library — the fill-in list is exactly as right as the template bodies are — and it remains
+true: a stray `[[bracket]]` still becomes a snippet row. Declared snippets (created deliberately,
+inserted into a body) is the alternative and is NOT built.
+
+**THE SNIPPETS LIBRARY** replaces both defaults panels. One row per distinct `[[name]]` across all
+templates, **naming the real LABELS of every template that uses it** — "4 templates" does not tell you
+*which* four, and seeing the blast radius before saving is the whole point of the screen. Values live in
+`outreach_snippets` (name PK, value). 🔴 Phase 3's short-lived "global defaults" kept values in
+**`localStorage`** — per browser, invisible on another device — which is why it was replaced rather than
+extended. The snippet **wins** over a legacy per-template value, and both the editor and the compose
+badge say which source won; nothing is silently deleted.
+
+**THE TEMPLATE EDITOR** is now Dominic's 1-2-3 — name it · when to use it · write it — with **no schema
+change**: `label` / `channel`+`serves_kind`+`serves_lead_type` / `subject`+`body` were already one row
+in that order. Labels are plain ("Send by", "At which stage", "For which trucks") while stored values
+are untouched. A **live match count** under section 2 drives the REAL `nextStep`/`templateForStep`, not
+a second copy. 🔴 **`serves_kind` now drives the logged `kind`** — the Pizza Mondo defect was a chaser
+logging as first contact because the call site took the dropdown's value.
+
+**Three defects fixed alongside it, all silent:** `createTemplate` never called `setView`, so New
+template from the Snippets view wrote a row into a branch that was not rendered — the row saved
+invisibly behind an 1800ms toast; changing channel to WhatsApp **discarded a typed subject**; switching
+templates **discarded an unsaved draft**. And ↑/↓ were dead for every tab-made template because `move`
+SWAPS `sort_order` and swapping 999 with 999 is a no-op — now fixed by assigning positions. 🧪 A one-off
+renumber put all 7 templates on a 10–70 ladder, touching only the 2 rows that needed it.
+
+**THE LIST VIEW.** 🔴 A 13th column (NEXT STEP) was added without a 13th `<col>`; under `table-fixed`
+the twelve declared columns stayed pinned and every spare pixel — up to ~600px — landed on the one
+undeclared column. The file's own comment stated the invariant that was broken. Two columns were also
+simply too small for their own content: stage held a 118px value in 105px, dates a 110px value in 88px.
+`PHONE` and `EMAIL` are gone, replaced by one derived CONTACT indicator reusing `channelFor`.
+⚠️ `HU ORDERING`, `HU MAP`, `LOGO` and `PHOTO` are NOT informational — the checkboxes are the only editor
+for those flags and the images the only upload path. Default sort is NEXT ACTION **oldest first**, nulls
+last (🧪 222 of 231 are null, so a naive comparator would bury all 9 dated rows).
+
+🔴 **THE MOBILE DEFECT WAS OFF-CANVAS, NOT MISSING.** An inline `gridTemplateColumns: '45fr 55fr'` gives
+tracks an implicit `auto` minimum; the history table alone carries 368px of fixed `<colgroup>` widths;
+the panel is `overflow-hidden`. Everything past ~318px was cut with no scrollbar in either axis. An
+inline style cannot be beaten by a media query, so the fix switches `display` to flex below 640px,
+rendering the inline template **inert** without touching it. ⚠️ **That override rests on Tailwind's
+EMISSION ORDER** — `.max-sm\:flex` is emitted after `.grid` at equal specificity — so it is load-bearing
+on the toolchain, not on our code, exactly as V13.0's `javascript:` defence turned out to rest on React
+19.2.3. Verified by compiling, not by reading.
+**A second mobile fault, independent:** a grid item's `min-width` computes to `auto`, so a native
+`input[type=date]` refused to shrink and painted over its neighbour. The 16px iOS-zoom floor raised its
+intrinsic width but did not create the mechanism. Fixed two-belt — `max-sm:grid-cols-2` **and**
+`max-sm:min-w-0` — because the control's width is decided by iOS Safari and cannot be measured from
+source.
+
+🔴 **A LOGO WAS BEING KILLED BY A URL FORMATTER, THREE SHAPES BEFORE THE SECURITY CHECK IT WAS BLAMED
+ON.** An outreach-uploaded logo never reached a demo. The suspected cause was a folder allowlist in
+`classifyDemoLogoSource`; the real cause was that **`formatImageUrl` rewrites a bare bucket path to
+`/logos/<path>`, so three of the four live shapes were refused by the STATIC-FILE branch before any
+bucket branch saw them.** The storage branch never had a folder list — it already matched at bucket
+level. **Four logo path shapes exist in live data:** `/logos/<name>` (repo static) ·
+`discovery-logos/<name>` (scraper) · `<truck-id>/<ts>-<name>` (operator Settings) ·
+`<discovery-uuid>/logos/<ts>-<name>` (the outreach drag-and-drop; the uuid is the row's own
+`discovery_trucks.id`). All four now copy; external hosts, `data:`/`file:`, a host mimicking our storage
+path, and `/logos` traversal are all still refused. 🔴 **The refusal is now VISIBLE in the admin
+response** — Pig-Casso's demo provisioned unbranded with nothing on screen, and was found by looking at
+the page.
+
+**ONE STORE PER STATE — the logo rule.** Neither column can be the single store: a truck can exist with
+no discovery row, and 231 prospects exist with no truck. So: **`trucks.logo_storage_path` is
+authoritative the moment a truck exists; `discovery_trucks.logo_url` keeps its job only while there is
+none.** Provisioning is the single moment they meet. 🧪 Only 4 linked trucks exist and the 3 with both
+columns set **agree** (same file, two shapes), so **no reconciliation and no backfill were needed**.
+🔴 **DO NOT RE-ADD A FALLBACK TO `resolveTruckLogo`.** It was removed deliberately so that clearing a
+logo in Settings is visible — "removed" and "never uploaded" are the same row, and no fallback can
+honour both. Any "just add a fallback" fix re-breaks a fixed bug.
+🔴 **GUSTO GATE:** an outreach logo change now edits a live operator's customer-facing branding, so a
+write against a linked, publicly-visible truck demands the truck's NAME echoed back server-side — a
+stale tab's `confirm: true` cannot pass. Real truck beats demo when a prospect has both. ⚠️ The brief
+asked both to extend the photo REFUSAL to logos and to require CONFIRMATION; those contradict, and
+confirmation is correct — under this rule the logo IS the operator's, so a flat refusal would make the
+feature unusable. Photo deletion keeps its hard refusal.
+**Independently:** logos rendered `object-cover`, which crops a wide wordmark into a 40px circle until
+it can read as blank — logos are now `object-contain`, photos stay `object-cover`.
+
+🔴 **`notify pgrst, 'reload schema'` BIT THREE TIMES IN TWO DAYS.** A column can exist in
+`information_schema` while PostgREST refuses to select it — the two are compatible states, because
+PostgREST answers from an in-memory cache. It disabled the lead-type freeze, then both template-tag
+dropdowns. **Every migration that adds a column needs the notify, and a capability probe must log
+`PGRST204` and `42703` distinguishably** — they previously looked identical, which is what made it take
+a round trip each time.
+
+**UNFIXED, ON PURPOSE — carried forward from V13.1 and added to:**
+- 🔴 **Gusto's own banners are still above the safe-area inset** on a native iPad — the one item in this
+  series that affects a live operator's kitchen screen.
+- **The day-30 reclaim**: an outreach demo's `expires_at` is `created_at + 30 days` and the
+  claimed-abandoned sweep keys on `created_at < now − 30 days`, so both fire in the same hour.
+- **Sub-44px touch targets** on the prospect modal — Call and WhatsApp at ~26px, and they are the
+  primary phone action.
+- **C15**: two capture listeners on one node in the schedule popup's delete dialog; `stopPropagation`
+  does not stop a sibling, so Escape closes both layers.
+- **`max-h-[85vh]`** (not `dvh`) on a KDS card modal.
+- **The `??` fragment after `resolvePaidStep`** leaves the documented `activeEvent` fallback inert.
+- **The outreach list was never made mobile-friendly** — only the modal was.
+- **`{{demo_link}}` and `{{compare_link}}` are unused** in every template; `[[my rate]]` is unset.
+- **All 7 templates have `serves_kind` and `serves_lead_type` null**, so the rules and the match count
+  do nothing until Dominic tags them.
+
+---
 
 ## V13.1 — 14 September 2026 — THE OUTREACH DEMO IS BUILT AND FOUR OF ITS DEFECTS WERE FOUND BY A PROOF FAILING RATHER THAN A FEATURE BREAKING, A "SAFETY CHECK" TURNED OUT TO BE A DECORATIVE NUMBER NO CODE READ, AND A DEMO'S KITCHEN-SCREEN BUTTON HAD BEEN OPENING THE BARE OPERATOR KDS ON EVERY DESKTOP
 
@@ -1838,6 +2013,19 @@ while preparing App Store screenshots.**
   surfaces. ⚠️ **Found while preparing screenshots; it is an operator-facing bug on the live path, not a
   screenshot fix.** ⚠️ **Stated cost: a truck that never uploaded a logo now shows none, because "removed"
   and "never uploaded" are the same database state and no fallback can honour both.**
+  🔴 **V13.2 — DO NOT RE-ADD THE FALLBACK.** It was removed on purpose; any "just add a fallback" fix
+  re-breaks this. **Four logo path shapes exist in live data:** `/logos/<name>` (repo static) ·
+  `discovery-logos/<name>` (scraper) · `<truck-id>/<ts>-<name>` (operator Settings) ·
+  `<discovery-uuid>/logos/<ts>-<name>` (the outreach drag-and-drop). ⚠️ **`formatImageUrl` rewrites any
+  bare bucket path to `/logos/<path>`**, which is what intercepted three of those four shapes and sent
+  them to the static-file branch of `classifyDemoLogoSource` — the demo-logo refusal was blamed on a
+  folder allowlist the storage branch never had. **ONE STORE PER STATE:** `trucks.logo_storage_path`
+  is authoritative the moment a truck exists; `discovery_trucks.logo_url` keeps its job only while
+  there is none; provisioning is the single moment they meet. See §14 notes and the V13.2 entry.
+  ⚠️ **CHECKED V13.2, AND IT HOLDS:** the outreach delete guard's comment — "`logo_storage_path` is set
+  on every linked truck that is public, so the discovery logo is not a live source for any of them" —
+  was investigated and the query returned **zero** rows. The truck that appeared to contradict it was
+  **not linked at all** (`hatchgrab_truck_id` null); it was a DEMO. Recorded so it is not re-opened.
 - ✅ **THE SCREENSHOT SEED REUSES THE DEMO SEEDER'S PLANNER RATHER THAN A HAND-DRAWN BOARD.** Its
   constants, 12-shape cycle, `FILL_PATTERN`, stride, packing and renumber were transcribed and run for the
   event — **37 orders, 43 mains, 94 item lines** — then fed to the real engine: **3 red, 4 amber, 0 over
@@ -14848,8 +15036,11 @@ verification, and a fix in the repository is not a fix in production.** §36, §
   variant of an existing row and created anyway, at the founder's direction.
 - ⚠️ **OPEN — `entity_type` and `do_not_contact` are unpopulated**, and the PECR constraint above is
   unresolved.
-- ⚠️ **OPEN — `whatsapp_number` is retained but unrendered**, and `platform` likewise. Neither is dead
-  data; both are unreachable from the UI.
+- ⚠️ **OPEN — `whatsapp_number` is retained but unrendered**, and `platform` likewise. Neither is
+  reachable from the UI. 🔴 **CORRECTED V13.2: `whatsapp_number` IS dead data.** 🧪 Empty on **all 231
+  rows** with **zero readers**. The WhatsApp number is `discovery_trucks.phone`; `whatsapp_confirmed`
+  only means "this number is on WhatsApp". Any channel rule keyed on `whatsapp_number` would find
+  nothing for ever — see §57.5. The column can be dropped.
 - 🔴 **OPEN — everything carried forward from V12.1**, including: the operator dashboard unopened since
   the anon grants were revoked; `orders` anon-readable with customer contact details; the
   `discovery_trucks` contact columns anon-readable; seven tables holding unused anon SELECT grants; the
@@ -24316,8 +24507,17 @@ is how a withdrawn template gets sent.
 | **`mailto:` length refusal** | the compose window | not reachable from template data at all |
 
 A template controls its words and its `channel`. It controls none of the above. ⚠️ `active = false`
-retires a template rather than deleting it, because a contact-log row from months ago references the
-template that produced it.
+retires a template rather than deleting it.
+
+🔴 **CORRECTED V13.2 — THE STATED REASON FOR THAT WAS FALSE.** This section, the route header and the
+migration comment all said "a contact-log row from months ago **references the template that produced
+it**". **It does not.** `outreach_contacts` is
+`(id, prospect_id, contacted_at, channel, direction, kind, message, created_at)` — **no template column
+of any kind.** What the log stores is `message`, the rendered text that was actually sent, which is
+self-contained and survives a template delete unharmed. Nothing else references a template except two
+hardcoded slug maps (`STEP_TEMPLATE`, `suggestTemplateId`), and `templateForStep` already returns a
+named `slug_absent` miss for a slug it cannot find. **There is still no delete function** — but the
+reason recorded for that was never true, and it is why the question kept being closed early.
 
 ## 52.3 🔴 Two data facts that change how the outreach programme should be read
 
@@ -24422,6 +24622,47 @@ degrades to "no demo", never a 500 on the whole console.
   parent's existing bubble listener is **gated** by a ref. Both fire; one acts. No ordering dependence, no
   propagation control, and the demo **link** adds no listener at all because it renders inline rather than
   as a layer.
+
+
+## 52.10 The list view, the CONTACT indicator, and three rounds of mobile work (V13.2)
+
+🔴 **A 13TH COLUMN WAS ADDED WITHOUT A 13TH `<col>`.** Under `table-fixed` the twelve declared widths
+stayed pinned and every spare pixel — up to ~600px at a wide window — landed on the one undeclared
+column (NEXT STEP), truncating Email and the dates at any width. **The file's own comment stated the
+invariant that was broken.** Two columns were also simply too small for their own content: stage held a
+118px value in 105px, dates a 110px value in 88px.
+
+**`PHONE` and `EMAIL` are gone**, replaced by one derived **CONTACT** indicator that reuses `channelFor`
+— the same predicate the queue gates on, so the column and the queue cannot disagree.
+
+⚠️ **`HU ORDERING`, `HU MAP`, `LOGO` and `PHOTO` are NOT informational and must not be cut.** The
+checkboxes are the only editor for those flags and the images the only upload path.
+
+**Default sort is NEXT ACTION, oldest first, nulls last.** 🧪 222 of 231 are null, so a naive comparator
+buries all 9 dated rows. Nulls-last holds **independently of direction** — the null tests return before
+the direction negation, deliberately.
+
+### 🔴 The modal's mobile work — three rounds, and the mechanism each time
+
+1. **Off-canvas, not missing.** An inline `gridTemplateColumns: '45fr 55fr'` gives tracks an implicit
+   `auto` minimum; the history table alone carries 368px of fixed `<colgroup>` widths; the panel is
+   `overflow-hidden`. Everything past ~318px was cut **with no scrollbar in either axis**. An inline
+   style cannot be beaten by a media query, so the fix switches `display` to flex below 640px, rendering
+   the inline template **inert** without touching it.
+   ⚠️ **That override rests on Tailwind's EMISSION ORDER** — `.max-sm\:flex` is emitted after `.grid` at
+   equal specificity — so it is load-bearing on the toolchain, not on our code, exactly as V13.0's
+   `javascript:` defence turned out to rest on React 19.2.3. **Verified by compiling, not by reading.**
+2. **A grid item's `min-width` computes to `auto`**, so a native `input[type=date]` refused to shrink and
+   painted over its neighbour. The 16px iOS-zoom floor raised its intrinsic width but did not create the
+   mechanism. Fixed two-belt — **`max-sm:grid-cols-2` AND `max-sm:min-w-0`** — because the control's
+   width is decided by iOS Safari and cannot be measured from source.
+3. **Only STAGE stays locked below the breakpoint.** `ProspectMetaFacts` is rendered twice via
+   `display: contents`. 🔴 **`display: none` is not a grid item** — that is what stops the phone copy
+   becoming a third track in the desktop grid.
+
+⚠️ **The outreach LIST was never made mobile-friendly — only the modal.** Still open.
+
+---
 
 # 53. The shared dedup gate, R5, and the venue-matching wall (V12.9 — 10–11 September 2026)
 
@@ -24847,6 +25088,201 @@ menu**.
   fallback chain, deliberately — a status- or time-keyed fallback would take a cook's unserved orders off
   an unattended screen. A restart therefore strands an already-open KDS. V13.1 added an **`isDemo`-gated**
   re-point that fires only when the held id is absent from the served list; the operator rule is untouched.
+
+---
+
+# 57. The outreach work queue (V13.2 — 15 September 2026)
+
+**V13.2.** The console names the next action for every prospect instead of listing 231 rows in no order.
+
+## 57.1 The step is DERIVED, and nothing stores it
+
+`nextStep(prospect, contacts)` reads the contact ladder and returns the next rung, its due date, its
+channel and the lead type. **There is no new state and no scheduler.** Correct the contact log and the
+answer changes; nothing needs re-running.
+
+Key symbols: `nextStep` · `CONTACT_KINDS` · `FOLLOW_UP_DAYS` · `followUpDateFor` · `channelFor` ·
+`leadTypeOf` · `effectiveLeadType` · `templateForStep`.
+
+- **The ladder** is `CONTACT_KINDS` — `1_first_contact` · `2_chase_1` · `3_chase_2` · `4_final_chase`.
+- **The intervals** are `FOLLOW_UP_DAYS` — 3 / 7 / 14 / null. `followUpDateFor` already wrote
+  `next_action_at` on every log before this feature existed.
+- **The exits**, in order of certainty: `do_not_contact`; any inbound reply; a terminal stage; a
+  converted truck (`hatchgrab_truck_id` non-null).
+
+🔴 **AN UNRECOGNISED `kind` MAKES THE STEP `unknown` AND SAYS SO — NEVER RUNG 0.** Guessing "first
+contact" for a prospect with four unrecognised contacts is the exact failure the queue exists to
+prevent. `templateForStep` returns a **reason** (`no_step` / `no_channel` / `slug_absent`), not a bare
+null, so "nothing was pre-selected" and "the template this step wants has been retired" read differently.
+
+## 57.2 The contactable gate
+
+🧪 **Only 76 of 231 prospects are contactable**, and the queue was counting 224 as due. 61 have an
+email; 30 are WhatsApp-confirmed with a phone; 15 overlap — so **15 are WhatsApp-ONLY** and fall out of
+the queue entirely if any channel rule ever defaults to email. The queue gates on contactability and
+the remaining 155 appear as a **"needs details"** list ordered best-lead-first: 46 carry a
+`*.hatchesup.app` order URL (competitor storefronts — the strongest leads), 25 a Facebook page, 6 a real
+website, **78 nothing at all**.
+
+⚠️ **`channelFor(p)`, never `step.channel`.** `nextStep` returns its `base` (channel `null`) for every
+*stopped* step, so a caller reading `step.channel` would call a stopped prospect uncontactable.
+
+## 57.3 ⚠️ The queue's input is the contact log
+
+A send that is never logged **stalls** the sequence; a send logged with the wrong `kind` **advances it
+wrongly**. Auto-logging on send is **NOT built** and is the obvious next question.
+
+🔴 **The `kind` vocabulary split mid-flight and nothing migrated** — `first_contact` ran 3–9 Sep,
+`1_first_contact` from 10 Sep, plus `follow_up` on WhatsApp: **8 of 17 rows outside the ladder**, fixed
+by hand. `kindLabel` therefore humanises an unrecognised value and the history table marks it, rather
+than rendering a raw column value. Two further data facts fell out: an inbound row was labelled
+`first_contact` when it was a reply, and **two contacts 0.755 seconds apart** show `logNow` can
+double-submit.
+
+## 57.4 Lead type, and why it is frozen
+
+🧪 `hu_ordering` **17** · `hu_map` **105** · `on_vf` **25** · `not_listed` **84**.
+
+Types 1 and 2 are hand-set flags and stable. **Types 3 and 4 turn on whether the truck has upcoming
+`discovery_events`, which the scraper refreshes nightly and the prune deletes from** — so 109 of 231 can
+flip between sends. A prospect could be told "your schedule is listed" in the first email and "you
+aren't listed" in the chase.
+
+`lead_type_at_first_contact` is written **once**, at the rung-1 log, and read thereafter.
+🔴 **Null falls back to the live derivation**, which is what made a backfill unnecessary — the 9
+prospects already mid-sequence and the 222 not yet contacted all behave exactly as before. An
+unrecognised stored value also falls back rather than propagating; nothing rewrites the column.
+
+🔴 **THE LIST OF LEAD TYPES BELONGS IN CODE.** `leadTypeOf` is a fixed predicate over
+`hu_ordering` / `hu_map` / `isOnVillageFoodieMap`. A user-added type would have **no derivation**, so no
+prospect could ever carry it and a template tagged with it would silently match nobody. What needed
+fixing was not the list — it was that the explanation lived in an invisible `title=` tooltip.
+
+## 57.5 🔴 `whatsapp_number` is dead
+
+🧪 Empty on **all 231 rows**, with **zero readers**, while `whatsapp_confirmed` is true on 30 and two
+WhatsApp messages have been sent. **The real number is `discovery_trucks.phone`**; the checkbox means
+"this number is on WhatsApp". Any channel rule reading `whatsapp_number` would find nothing, for ever.
+The column can be dropped.
+
+⚠️ And `whatsapp_confirmed` is **not consent evidence** — see §52.3(a): all 30 are a 1:1 match with a
+scraped hint, so not one row was personally verified.
+
+---
+
+# 58. Template tokens, snippets and the two tiers (V13.2 — 15 September 2026)
+
+**V13.2.** Three tiers live in a template body, and only one of them is filled by a person.
+
+## 58.1 The vocabularies
+
+- **`{{token}}` — resolved from data.** The vocabulary is **derived from code** and rendered on the
+  Templates tab, so the reference cannot drift from the resolver:
+  `truck_name` · `contact_name` · `contact_name_prefixed` · `first_name` · `last_name` · `website` ·
+  `order_url` · `demo_link` · `compare_link` · `next_event_day` · `next_event_date` · `next_event_venue`.
+- **`?cond:` — whole-line drop.** `next_event` · `no_next_event` · `order_url` · `website` ·
+  `contact_name` · the four `lead_*`. ⚠️ Negation is by convention, not syntax: `no_next_event` is a
+  separate case, not an operator.
+- **`[[placeholder]]` — filled by Dominic.** Values live in `outreach_snippets`, one row per distinct
+  name.
+
+## 58.2 🔴 The malformed-token guard keys off DELIMITERS, not the token pattern
+
+A subject read `{{truck name}}` — a space, not an underscore — and shipped on an **active** template. It
+survived because the resolver, `unresolvedIn` and the mistype lint all key off the **same** token
+pattern: a token that fails to *match* that pattern is invisible to all three at once.
+
+🔴 **WHEN SEVERAL GUARDS SHARE ONE PATTERN THEY ARE ONE GUARD.** See §35. The fix keys off the
+`{{`…`}}` delimiters and only then asks whether the resolver would consume the contents. 🧪 The control
+proves the distinction: a pattern-keyed guard sees nothing in **6 of 7** malformed cases.
+
+**Do not "simplify" it to reuse the resolver's regex** — that reintroduces the shared blind spot.
+
+⚠️ It refuses at **all three exits** — `sendNow`, `logNow`, and `doCopy`, **which had no guard of any
+kind and is the ONLY way out for a WhatsApp template**.
+
+## 58.3 🔴 `MUST_RESOLVE`
+
+Currently `{ demo_link }`. It **refuses composition** rather than rendering an empty value into an email
+to a real business. 🧪 230 of 231 prospects cannot resolve it, so refusing is the **normal** path, not an
+edge case. Three independent blocks enforce it — including ignoring a declared fallback and dropping the
+key from `defaultFillsOf`, so a stored default cannot quietly satisfy the marker.
+
+## 58.4 The Snippets library, and what DERIVED costs
+
+One row per distinct `[[name]]` across all templates, **naming the real LABELS of every template that
+uses it** — "4 templates" does not tell you *which* four, and seeing the blast radius before saving is
+the whole point of the screen.
+
+🔴 **The library is DERIVED from the template bodies, and is exactly as right as they are.** Sixteen
+unlabelled rows once had no bug behind them: a `Test` template contained `[[250]]`, `[[500]]` …
+`[[4000]]`, and **anything inside `[[…]]` is a fill-in by definition**. The panel was faithfully
+reporting its input. **A stray `[[bracket]]` still becomes a snippet row.** Declared snippets — created
+deliberately and inserted into a body — is the alternative and is **NOT built**.
+
+🔴 Phase 3's short-lived "global defaults" kept values in **`localStorage`** — per browser, invisible on
+another device — which is why it was replaced rather than extended. The snippet **wins** over a legacy
+per-template `placeholder_defaults` value; the editor and the compose badge both name which source won,
+and nothing is silently deleted.
+
+⚠️ A blank snippet value is a legitimate state meaning "ask me per truck", and is distinguished in the
+UI from "never set" — both prompt at compose time; the difference is for the operator, not the renderer.
+
+## 58.5 The name split and the greeting
+
+`contact_name` split into `contact_first_name` / `contact_last_name`; the old column stays readable for
+one release and is no longer written. 🧪 Only **3 of 231** prospects had a name at all, so this was a UI
+change, not a migration.
+
+🔴 **THE FALLBACK IS THE DEFAULT PATH, NOT AN EDGE CASE.** 228 have no name, so
+`{{contact_name_prefixed}}`'s fold-the-separator-into-the-token pattern carries the whole greeting for
+nearly every email. ⚠️ It renders the **full** name today ("Hi George Greaves,"), so pointing it at the
+first name is a deliberate change to 4 active templates, not a preservation.
+
+⚠️ A backfill wrote one-word names into **both** columns — `position(' ' in 'Jo')` returns 0, so
+`substring` returned the whole string. The preview query showed it one line above the update.
+**A check that runs and is not read is not a check.**
+
+## 58.6 The template editor, and three silent defects it hid (V13.2)
+
+The editor is Dominic's **1-2-3** — *name it · when to use it · write it* — with **no schema change**:
+`label` / `channel` + `serves_kind` + `serves_lead_type` / `subject` + `body` were already one row in
+that order. What was missing was the headings and one visible sentence per group. Field labels are plain
+("Send by", "At which stage", "For which trucks") while **every stored value is untouched**.
+
+A **live match count** under section 2 drives the **real** `nextStep` / `templateForStep`, never a second
+copy — a second matcher would agree on the day it was written and drift afterwards.
+
+🔴 **`serves_kind` NOW DRIVES THE LOGGED `kind`.** The Pizza Mondo defect was a chaser logged as a first
+contact because the call site took the compose form's dropdown value; `effectiveKind = servesKind ?? kind`.
+
+⚠️ **Null on the two tags is not symmetrical.** `templateForStep` tests `servesKind === step.kind`, so a
+**null rung means the template is never picked automatically at all** — it falls through to the
+hardcoded map. A null lead type genuinely means "any". Labelling both "— any —" was the more misleading
+of the two.
+
+**Three silent defects fixed alongside it:**
+1. `createTemplate` never called `setView`, so **New template** pressed from the Snippets view wrote a
+   row into a branch that was not rendered — the row saved invisibly behind an 1800ms toast.
+2. Changing channel to WhatsApp **discarded a typed subject** — and the *route* is what discarded it, so
+   hiding the field alone would still have lost the text on save.
+3. Switching templates **discarded an unsaved draft** with no warning.
+
+🔴 **↑/↓ WERE DEAD FOR EVERY TAB-MADE TEMPLATE.** `move` SWAPPED `sort_order`, and every template the tab
+creates gets the route's default **999** — swapping 999 with 999 writes 999 over 999. Fixed by assigning
+**positions** (10, 20, 30 …) and writing only the rows whose number actually changes. 🧪 A one-off
+renumber put all 7 templates on a 10–70 ladder, touching only the 2 rows that needed it.
+
+### Two corrections recorded here
+
+- **`suggestTemplateId` is now a display-only fallback, not the selector.** It is a heuristic over
+  `stage` + `hu_ordering` returning three hardcoded slugs, and 🧪 **214 of 231 rows get the same answer**.
+  Template choice is `templateForStep` — tagged templates first, `STEP_TEMPLATE` as the fallback.
+  `suggestTemplateId` only appends "(suggested)" to a picker option. **Not deleted; not the rule.**
+- 🔴 **The Templates tab is capped at `max-w-[1800px]`, not the shell's `max-w-6xl`.** The tab renders in
+  its own wrapper; the shell wrapper closes earlier. The editor column gets **568–748px**, not the 424px
+  an earlier report calculated by assuming the shell cap applied. The list rail is a **fixed 240px track
+  at every viewport width** — widening the window gives every extra pixel to the editor and preview.
 
 ---
 

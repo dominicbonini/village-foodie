@@ -35,6 +35,7 @@ import { PaymentsTab } from '@/components/manage/PaymentsTab'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // 🔴 THE REPLY CAP'S PER-CUSTOMER LIMIT, READ FROM THE MODULE THAT DECIDES IT rather than typed into the
 // copy. lib/whatsapp/reply-cap.ts is a PURE module — "NO DATABASE, NO IMPORTS" by its own header — so a
 // client page can import it with no server dependency and no bundle risk. The webhook passes this same
@@ -9175,6 +9176,18 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
     truck.trial_expires_at ?? null
   )
 
+  // ── 🔴 THE WHATSAPP SETUP PREVIEW ────────────────────────────────────────────────────────────────
+  // `WHATSAPP_LIVE` is false and stays false. This lets ONE truck — the one carrying the admin-set
+  // override key — reach the interactive Set up control so the Embedded Signup flow can be exercised
+  // end to end before anything is announced.
+  // 🔴 IT IS DELIBERATELY NOT A `can()` CALL. `canAccess` consults PLAN_FEATURES, and
+  // `TRIAL_FEATURES = [...MAX_FEATURES]` — so a key in any plan list would switch this on for EVERY
+  // trial truck, Pizzeria Gusto included. hasWhatsAppSetupPreview reads the per-truck override map and
+  // nothing else. See lib/whatsapp/setup-preview.ts.
+  // ⚠️ For every truck WITHOUT the key this is `false || false` — byte-identical to the previous
+  // expression, so nothing any other truck sees changes.
+  const whatsAppSetupVisible = WHATSAPP_LIVE || hasWhatsAppSetupPreview(truck.feature_overrides)
+
   // £/month for each additional van beyond included count
   // TODO: Wire to Stripe billing API when payments are integrated.
   const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }
@@ -9276,6 +9289,20 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
 
       const outcome = await launchEmbeddedSignup({ appId, configId })
 
+      // 🔴 THE OUTCOME IS JUDGED BEFORE THE SERVER IS TOLD ANYTHING. These two checks used to sit AFTER
+      // the fetch, so closing Meta's window still POSTed — the server did its configuration checks and
+      // its truck lookup for a flow that had already been abandoned, and only then did the browser say
+      // "Nothing was changed." The message was true; the request was pointless. Both messages are
+      // unchanged; only the ordering moved.
+      if (outcome.kind === 'abandoned') {
+        setSetupNotice({ tone: 'warn', text: 'Setup was closed before it finished. Nothing was changed — press Set up to try again.' })
+        return
+      }
+      if (outcome.kind === 'error') {
+        setSetupNotice({ tone: 'error', text: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
+        return
+      }
+
       // 🔴 NO `console.log(outcome)` AND NO `console.log(code)`. Meta's own sample carries four such
       // lines marked "remove after testing"; two of them print the payload and the code. A credential
       // in a browser console is a credential in a screen-share and in a support screenshot.
@@ -9285,15 +9312,6 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
         body: JSON.stringify({ token, ...outcome, kind: outcome.kind }),
       })
       const json = await res.json().catch(() => ({}))
-
-      if (outcome.kind === 'abandoned') {
-        setSetupNotice({ tone: 'warn', text: 'Setup was closed before it finished. Nothing was changed — press Set up to try again.' })
-        return
-      }
-      if (outcome.kind === 'error') {
-        setSetupNotice({ tone: 'error', text: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
-        return
-      }
       if (!res.ok || json?.ok === false) {
         setSetupNotice({ tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' })
         return
@@ -9970,8 +9988,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
                 feature (starter) — which is what the card description was worded around while it did not. */}
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <label className={`text-sm w-20 flex-shrink-0 ${WHATSAPP_LIVE ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
-                {WHATSAPP_LIVE && can('whatsapp_replies') ? (
+                <label className={`text-sm w-20 flex-shrink-0 ${whatsAppSetupVisible ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
+                {whatsAppSetupVisible && can('whatsapp_replies') ? (
                   <>
                     <input
                       type="tel"

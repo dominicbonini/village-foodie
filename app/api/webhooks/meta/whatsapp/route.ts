@@ -12,6 +12,13 @@ import {
   CLASSIFICATION_TRUCK_DAY_CAP, CLASSIFICATION_TRUCK_MONTH_CAP,
 } from '@/lib/whatsapp/reply-cap'
 import { parseMetaAppSecrets, verifyMetaSignature, metaRefusalLog } from '@/lib/meta/webhook-signature'
+import {
+  resolveWhatsAppRoute, chooseSendCredential,
+  type WhatsAppRoutePath,
+} from '@/lib/whatsapp/inbound-route'
+import { deriveWhatsAppConnectionState, canSendWhatsApp } from '@/lib/whatsapp/connection-state'
+import { decryptToken } from '@/lib/whatsapp/token-crypto'
+import { platformAccessToken } from '@/lib/meta-whatsapp'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +27,24 @@ const supabase = createClient(
 
 // The columns both truck lookups below read. Declared ONCE: two queries that select different shapes
 // is how a fallback path starts returning a row the code downstream cannot use.
+// The whatsapp_connections columns this route reads. Same list as lib/whatsapp/connection-read.ts's
+// CONNECTION_FIELDS, declared here rather than imported because that module reads BY TRUCK and this
+// reads BY PHONE NUMBER — sharing the query would have meant a second signature on a module whose
+// header says it answers one question.
+const CONNECTION_FIELDS =
+  'truck_id, waba_id, phone_number_id, access_token_ciphertext, token_expires_at, token_revoked_at, token_issued_at, payment_method_present'
+
+interface ConnectionTokenRow {
+  truck_id: string
+  waba_id: string | null
+  phone_number_id: string | null
+  access_token_ciphertext: string | null
+  token_expires_at: string | null
+  token_revoked_at: string | null
+  token_issued_at: string | null
+  payment_method_present: boolean | null
+}
+
 const TRUCK_FIELDS = `
   id, name, slug, truck_emoji,
   whatsapp_sender, whatsapp, phone_number_id,
@@ -138,7 +163,27 @@ export async function POST(req: NextRequest) {
     const messages = value?.messages
 
     if (!messages?.length) {
-      // Status update or other non-message event — acknowledge and ignore
+      // ── 🔴 NON-MESSAGE CHANGES ARE NOW NAMED, NOT SILENTLY SWALLOWED ──────────────────────────────
+      // Everything without a `messages` array lands here: delivery statuses, template status updates,
+      // account alerts — and `smb_message_echoes`, the coexistence field that carries an operator's own
+      // reply typed in the WhatsApp Business app. Until now they were indistinguishable from each other
+      // and from nothing arriving at all, so "is Meta even sending us echoes?" was unanswerable.
+      //
+      // 🔴 SHAPE ONLY, NEVER CONTENT. The field name and the TOP-LEVEL KEY NAMES of its value — no
+      // values, no numbers, no text. An echo's value carries the operator's own message body and the
+      // customer's number; a status carries the customer's number too. Logging keys answers "what is
+      // arriving" without putting a single byte of anyone's conversation in a log aggregator.
+      //
+      // ⚠️ NO BEHAVIOUR IS ADDED FOR ECHOES. This is observation, deliberately. Acting on an echo means
+      // deciding what an operator's own reply does to the reply cap and to the greeting's "first message
+      // of the day" test, and that is a product decision, not a logging one.
+      const nonMessageField = typeof changes?.field === 'string' ? changes.field : 'unknown'
+      const valueKeys = value && typeof value === 'object' && !Array.isArray(value)
+        ? Object.keys(value as Record<string, unknown>).sort().join(',')
+        : 'none'
+      console.log(
+        `[webhook/meta-whatsapp] non-message change field=${nonMessageField} value_keys=${valueKeys}`,
+      )
       return NextResponse.json({ ok: true })
     }
 
@@ -161,19 +206,43 @@ export async function POST(req: NextRequest) {
     console.log('[webhook/meta-whatsapp] inbound for phone_number_id:', phoneNumberId)
 
     // ---- THE TRUCK LOOKUP: MATCHED ON THE NUMBER THE CUSTOMER MESSAGED *TO* ----
-    // WHAT WAS WRONG, AND IT IS WORTH SPELLING OUT BECAUSE IT PASSED A LIVE TEST. This matched
-    // `whatsapp_sender` — the TRUCK's own number — against `from`, which is the CUSTOMER's number:
-    //     .or(fromVariants.map(v => `whatsapp_sender.eq.${v}`).join(','))
-    // For any real customer that finds nothing. It only ever appeared to work because the tester's own
-    // mobile was sitting in `whatsapp_sender`, which made the two values identical and the wrong field
-    // look right. With two trucks it does something worse than nothing: it can match the OTHER truck.
-    // The Twilio webhook in this repo has always done it correctly — `.eq('whatsapp_sender', toNumber)`,
-    // the number messaged TO — and this is that, using the identifier Meta actually addresses.
+    // 🔴 REWRITTEN 15 September 2026. THE DECISION IS NOW A PURE FUNCTION — `resolveWhatsAppRoute`
+    // (lib/whatsapp/inbound-route.ts). This block FETCHES; it no longer DECIDES. The order, the conflict
+    // case and the precedence are testable without a database, which is what they were not before.
     //
-    // PRIMARY: phone_number_id. Opaque and stable, so there is no format to normalise and no ambiguity.
-    // The partial unique index added in 20260816_trucks_phone_number_id.sql makes it impossible for two
-    // trucks to claim the same one, so this can never return a second row.
+    // WHAT WAS WRONG ORIGINALLY, kept because it passed a live test: this matched `whatsapp_sender` —
+    // the TRUCK's own number — against `from`, the CUSTOMER's number. It only ever appeared to work
+    // because the tester's own mobile sat in `whatsapp_sender`, making the two values identical.
+    //
+    // THE ORDER, and why:
+    //   1. connection      a READY whatsapp_connections row — a truck holding its OWN Meta credential.
+    //                      It MUST win: answering it on the platform token would bill us for messages
+    //                      the truck onboarded specifically in order to pay for itself.
+    //   2. truck_column    trucks.phone_number_id, hand-set. The platform's Meta test number.
+    //   3. sender_fallback the pre-existing whatsapp_sender bridge, unchanged.
     let truck: TruckRow | null = null
+    let routePath: WhatsAppRoutePath | null = null
+    let connectionRow: ConnectionTokenRow | null = null
+
+    // ── (1) THE CONNECTION ROW. Service-role client, so RLS (service_role only) permits this read. ────
+    {
+      const { data, error } = await supabase
+        .from('whatsapp_connections')
+        .select(CONNECTION_FIELDS)
+        .eq('phone_number_id', phoneNumberId)
+        .maybeSingle()
+      if (error) {
+        // A lookup we could not complete is NOT a match — the same posture the two truck lookups take.
+        console.error(
+          `[webhook/meta-whatsapp] LOOKUP FAILED (whatsapp_connections) code=${error.code} ` +
+          `message=${error.message} -> treated as no connection.`,
+        )
+      }
+      connectionRow = (data as ConnectionTokenRow | null) ?? null
+    }
+
+    // ── (2) trucks.phone_number_id — the primary lookup, unchanged in shape. ──────────────────────────
+    let truckColumnRow: TruckRow | null = null
     {
       const { data, error } = await supabase
         .from('trucks')
@@ -181,20 +250,76 @@ export async function POST(req: NextRequest) {
         .eq('phone_number_id', phoneNumberId)
         .eq('active', true)
         .maybeSingle()
-      // A QUERY THAT ERRORED IS NOT A QUERY THAT FOUND NOTHING, AND `const { data }` COULD NOT TELL THEM
-      // APART. A failed lookup arrived here as `data: null` and was indistinguishable from an honest
-      // no-match, so the message was dropped with the log line for the wrong cause. maybeSingle() returns
-      // an ERROR rather than a row when MORE THAN ONE row matches; the partial unique index on
-      // phone_number_id makes that unreachable for THIS lookup, but the fallback below has no such index
-      // and the two sites must not diverge in how they read a result.
-      // console.error and the word FAILED, so this is greppable apart from the NO TRUCK warn below.
+      // A QUERY THAT ERRORED IS NOT A QUERY THAT FOUND NOTHING. maybeSingle() errors on >1 row; the
+      // partial unique index makes that unreachable HERE, but the fallback below has no such index and
+      // the two sites must not diverge in how they read a result.
       if (error) {
         console.error(
           `[webhook/meta-whatsapp] LOOKUP FAILED (primary, phone_number_id) code=${error.code} ` +
           `message=${error.message} -> treated as no match; falling through to the fallback.`,
         )
       }
+      truckColumnRow = (data as TruckRow | null) ?? null
+    }
+
+    // ── THE DECISION, minus the fallback, which is still fetched lazily. ──────────────────────────────
+    // ⚠️ THE FALLBACK QUERY IS DELIBERATELY NOT RUN YET. It only ever ran when the primary found nothing,
+    // and running it eagerly would add a query to every inbound for Thai Kitchen and every connected
+    // truck. `senderFallbackTruckId: null` here asks the resolver the same question the old code asked.
+    const firstPass = resolveWhatsAppRoute({
+      phoneNumberId,
+      connection: connectionRow
+        ? {
+            truckId: connectionRow.truck_id,
+            phoneNumberId: connectionRow.phone_number_id,
+            // 🔴 READINESS COMES FROM THE STATE MACHINE, NOT FROM A HAND-ROLLED TEST HERE.
+            ready: canSendWhatsApp(deriveWhatsAppConnectionState({
+              wabaId: connectionRow.waba_id,
+              phoneNumberId: connectionRow.phone_number_id,
+              tokenPresent: !!connectionRow.access_token_ciphertext,
+              tokenExpiresAt: connectionRow.token_expires_at,
+              tokenRevokedAt: connectionRow.token_revoked_at,
+              tokenIssuedAt: connectionRow.token_issued_at,
+              paymentMethodPresent: connectionRow.payment_method_present,
+            })),
+          }
+        : null,
+      truckColumnTruckId: truckColumnRow?.id ?? null,
+      senderFallbackTruckId: null,
+    })
+
+    // 🔴 THE SAME NUMBER CLAIMED BY TWO DIFFERENT TRUCKS. Nothing is sent and nothing is guessed:
+    // picking one would put one business's customer conversation in front of another business.
+    if (firstPass.kind === 'conflict') {
+      console.error(
+        `[webhook/meta-whatsapp] ROUTING CONFLICT phone_number_id=${firstPass.phoneNumberId} ` +
+        `connection_truck=${firstPass.connectionTruckId} truck_column_truck=${firstPass.truckColumnTruckId} ` +
+        `— nothing sent, nothing guessed. Clear one of the two claims.`,
+      )
+      return NextResponse.json({ ok: true })
+    }
+
+    if (firstPass.kind === 'matched' && firstPass.path === 'connection') {
+      routePath = 'connection'
+      const { data, error } = await supabase
+        .from('trucks').select(TRUCK_FIELDS).eq('id', firstPass.truckId).eq('active', true).maybeSingle()
+      if (error) {
+        console.error(
+          `[webhook/meta-whatsapp] LOOKUP FAILED (connection truck) code=${error.code} message=${error.message}`,
+        )
+      }
       truck = (data as TruckRow | null) ?? null
+      if (!truck) {
+        // A connection pointing at a missing or inactive truck is a data fault, not a routing miss.
+        console.warn(
+          `[webhook/meta-whatsapp] connection row names truck=${firstPass.truckId} which is absent or ` +
+          `inactive — nothing sent.`,
+        )
+        return NextResponse.json({ ok: true })
+      }
+    } else if (firstPass.kind === 'matched' && firstPass.path === 'truck_column') {
+      routePath = 'truck_column'
+      truck = truckColumnRow
     }
 
     // FALLBACK: the DISPLAYED number against whatsapp_sender, still the number messaged TO and never
@@ -230,6 +355,7 @@ export async function POST(req: NextRequest) {
       }
       truck = (data as TruckRow | null) ?? null
       if (truck) {
+        routePath = 'sender_fallback'
         console.warn(
           `[webhook/meta-whatsapp] routed by whatsapp_sender FALLBACK, not phone_number_id — ` +
           `truck=${truck.id} phone_number_id=${phoneNumberId} is not stored. Set it to retire this path.`,
@@ -247,7 +373,59 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
+    // 🔴 ONE LINE PER INBOUND, NAMING THE PATH AND THE TRUCK. Which of the three routes answered is the
+    // single most useful fact when a truck reports "it did not reply", and until now nothing recorded it.
+    // ⚠️ NO CUSTOMER NUMBER AND NO MESSAGE TEXT — see the note above the identifiers. The truck id and the
+    // path are enough to reproduce a routing decision; the customer's details are not ours to log.
+    console.log(`[webhook/meta-whatsapp] routed path=${routePath ?? 'unknown'} truck=${truck.id}`)
+
+    // 🔴 THE PLAN GATE NOW SAYS SO. It was a bare `return` — a customer messaged a truck on an expired
+    // trial, nothing was sent, and NOTHING ANYWHERE recorded that a reply had been suppressed. That is
+    // indistinguishable from the webhook never firing, which is how it would have been diagnosed.
     if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      console.warn(
+        `[webhook/meta-whatsapp] PLAN GATE DENIED truck=${truck.id} plan=${truck.plan} ` +
+        `feature=whatsapp_replies decision=deny — nothing sent.`,
+      )
+      return NextResponse.json({ ok: true })
+    }
+
+    // ── 🔴 THE SEND CREDENTIAL, RESOLVED BEFORE THE CLASSIFIER ───────────────────────────────────────
+    // Deliberately here and not beside the send: `generateWhatsAppReply` is a MODEL CALL, and paying for
+    // a reply we then discover we cannot deliver is money spent to produce nothing. Resolving first also
+    // means the cap handoff below — which is itself a send — is covered by the same decision.
+    //
+    // 🔴 THE `connection` PATH NEVER FALLS BACK TO THE PLATFORM TOKEN. A truck that onboarded through
+    // Embedded Signup did so to pay Meta directly; answering on our token would bill us for its messages
+    // and make "trucks pay Meta directly" false. Unusable means SILENT — the operator is told through
+    // Settings' Reconnect affordance (shouldOfferReauthorise covers `revoked`, which is also what an
+    // elapsed expiry derives to), not by us quietly paying.
+    //
+    // ⚠️ `META_WHATSAPP_PHONE_NUMBER_ID` IS A NEW VARIABLE AND THE FALLBACK PATH DEPENDS ON IT. If it is
+    // unset, every sender_fallback inbound refuses — which is Pizzeria Gusto's path today. It MUST be set
+    // before this deploys. The refusal names itself so one log line diagnoses it.
+    const credential = chooseSendCredential({
+      path: routePath ?? 'sender_fallback',
+      connectionToken: connectionRow
+        ? {
+            ciphertext: connectionRow.access_token_ciphertext,
+            tokenExpiresAt: connectionRow.token_expires_at,
+            tokenRevokedAt: connectionRow.token_revoked_at,
+          }
+        : null,
+      platformToken: platformAccessToken(),
+      inboundPhoneNumberId: phoneNumberId,
+      platformPhoneNumberId: process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? null,
+      decrypt: decryptToken,
+    })
+
+    if (credential.kind === 'refuse') {
+      // 🔴 NO TOKEN MATERIAL IN THE LOG. `reason` is a fixed sentence chosen by chooseSendCredential from
+      // a closed set; it never carries ciphertext, key bytes or a decrypt error message.
+      console.warn(
+        `[webhook/meta-whatsapp] NO USABLE CREDENTIAL path=${routePath ?? 'unknown'} truck=${truck.id} ` +
+        `reason=${credential.reason} — nothing sent, no model call made.`,
+      )
       return NextResponse.json({ ok: true })
     }
 
@@ -415,7 +593,7 @@ export async function POST(req: NextRequest) {
       const capMessage = handoffMessage(
         `${hgUrlCap}/trucks/${truck.slug}/order`, truck.whatsapp)
       try {
-        await sendMetaWhatsApp(from, capMessage, phoneNumberId)
+        await sendMetaWhatsApp(from, capMessage, phoneNumberId, credential.accessToken)
       } catch (sendErr) {
         console.error('[webhook/meta-whatsapp] handoff send failed:', sendErr)
       }
@@ -475,7 +653,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      await sendMetaWhatsApp(from, reply, phoneNumberId)
+      await sendMetaWhatsApp(from, reply, phoneNumberId, credential.accessToken)
       console.log('[webhook/meta-whatsapp] reply sent')
     } catch (err) {
       console.error('[webhook/meta-whatsapp] send failed:', err)

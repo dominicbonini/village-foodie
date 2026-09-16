@@ -16,22 +16,49 @@
 // changelog. It was deliberately NOT bumped to a guessed number: a wrong version that looks deliberate
 // is worse than an old one that is honestly labelled. If it must change, change it HERE and both the
 // send path and the template calls move together.
-export const GRAPH_API_VERSION = 'v19.0'
+import { GRAPH_VERSION } from '@/lib/whatsapp/graph-version'
+
+// 🔴 MOVED TO THE SHARED CONSTANT (lib/whatsapp/graph-version.ts), v19.0 → v21.0, so the send path and
+// onboarding are on ONE version. Re-exported under its original name: four consumers read it by that
+// name and a rename would have been a second change riding on a version bump.
+export const GRAPH_API_VERSION = GRAPH_VERSION
 export const GRAPH_BASE_URL = `https://graph.facebook.com/${GRAPH_API_VERSION}`
 
-// ⚠️ UNCHANGED. Same signature, same body, same throw-on-failure contract, same env read. The only edit
+/**
+ * 🔴 THE ONLY PLACE `META_WHATSAPP_ACCESS_TOKEN` IS READ FOR SENDING. One reader, so "which credential
+ * went out" is answerable by reading one function rather than grepping a codebase.
+ * ⚠️ Returns null rather than throwing: a missing platform token must degrade to "send nothing and log",
+ * not take the webhook down for every truck.
+ */
+export function platformAccessToken(): string | null {
+  const t = process.env.META_WHATSAPP_ACCESS_TOKEN
+  return t && t.trim() ? t : null
+}
+
+// ⚠️ THE SIGNATURE CHANGED on 15 September 2026 — it takes the access token. Same body, same URL shape,
+// same throw-on-failure contract. The env read moved OUT; see the note inside. The only other edit
 // is that the URL is composed from the constants above instead of carrying its own literal.
 export async function sendMetaWhatsApp(
   to: string,
   message: string,
-  phoneNumberId: string
+  phoneNumberId: string,
+  accessToken: string,
 ): Promise<void> {
+  // 🔴 THE TOKEN IS AN ARGUMENT, NOT AN ENV READ, AND THAT IS THE WHOLE POINT OF THIS CHANGE.
+  // This function used to read `process.env.META_WHATSAPP_ACCESS_TOKEN` itself, which meant EVERY send
+  // went out on the platform credential no matter whose number it was answering — including trucks that
+  // onboarded through Embedded Signup specifically so they would pay Meta directly. The caller now
+  // decides (chooseSendCredential), and the platform env var is read in exactly ONE place:
+  // `platformAccessToken()` below.
+  // ⚠️ REFUSED RATHER THAN DEFAULTED. An empty token here would reach Meta as `Bearer ` and return a
+  // 401 the caller would log as "Meta refused", hiding OUR bug inside THEIR error.
+  if (!accessToken) throw new Error('[meta-whatsapp] refusing to send with no access token')
   const toDigits = to.replace(/^\+/, '')
 
   const res = await fetch(`${GRAPH_BASE_URL}/${phoneNumberId}/messages`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.META_WHATSAPP_ACCESS_TOKEN}`,
+      'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
