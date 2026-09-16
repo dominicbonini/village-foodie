@@ -18,6 +18,12 @@ export interface WhatsAppRowInput {
   state: WhatsAppConnectionState
   displayPhoneNumber: string | null
   verifiedName: string | null
+  /** Whether the operator may reconnect — from `shouldOfferReauthorise`, not re-derived here. */
+  offerReauthorise?: boolean
+  /** The truck's chosen ceiling, for the "above the free allowance" note. */
+  monthlyLimit?: number
+  /** Meta's free allowance. Injected so this module carries no number of Meta's. */
+  freeAllowance?: number
 }
 
 export interface WhatsAppRowFact { label: string; value: string }
@@ -32,6 +38,16 @@ export interface WhatsAppRowView {
   showBareConnected: boolean
   /** The Set up / Reconnect control is offered whenever the operator can act. */
   showSetupControl: boolean
+  /** 🔴 A green "Connected" label REPLACES the button on a working connection. */
+  showConnectedLabel: boolean
+  /** The pop-up instruction is only useful before a window has to open. */
+  showPopupInstruction: boolean
+  /** Disconnect is offered whenever there is something to disconnect. */
+  showDisconnect: boolean
+  /** The limit select and usage line only make sense once a connection exists. */
+  showMonthlyLimit: boolean
+  /** 🔴 Only when the chosen limit is ABOVE Meta's free allowance. */
+  showAboveAllowanceNote: boolean
 }
 
 const trimmed = (v: string | null): string | null => (v && v.trim() ? v.trim() : null)
@@ -56,12 +72,29 @@ export function whatsAppRowView(input: WhatsAppRowInput): WhatsAppRowView {
   if (connected && number) facts.push({ label: 'Connected number', value: number })
   if (connected && name) facts.push({ label: 'Business name', value: name })
 
+  // 🔴 "CONNECTED" IS `ready` AND NOTHING ELSE. Every other state has something wrong with it, and a
+  // green label beside a Reconnect button would contradict the button.
+  const ready = input.state === 'ready'
+  const reconnect = input.offerReauthorise === true
+  const limit = input.monthlyLimit ?? 0
+  const allowance = input.freeAllowance ?? 0
+
   return {
     showNumberInput: false,
     facts,
-    showBareConnected: input.state === 'ready' && facts.length === 0,
-    // Offered in every state: `not_connected` needs Set up, everything else needs Reconnect or is
-    // harmless to offer. The control's own label is chosen by connection-state, not here.
-    showSetupControl: true,
+    showBareConnected: ready && facts.length === 0,
+    showConnectedLabel: ready,
+    // ⚠️ HIDDEN THE MOMENT THERE IS NOTHING TO OPEN. The instruction exists to pre-empt a blocked pop-up;
+    // on a working connection it is a sentence about a window that is not going to appear.
+    showPopupInstruction: !ready,
+    showDisconnect: connected,
+    showMonthlyLimit: connected,
+    // 🔴 STRICTLY ABOVE. At exactly the allowance the operator is still inside it, and telling them they
+    // will be charged would be false.
+    showAboveAllowanceNote: connected && limit > allowance && allowance > 0,
+    // 🔴 THE BUTTON GOES AWAY ON A WORKING CONNECTION. It used to render in every state, so a truck that
+    // was answering messages perfectly well still saw "Set up" — an invitation to redo something that
+    // was done. Offered when not ready, or when a reconnect is genuinely on the table.
+    showSetupControl: !ready || reconnect,
   }
 }

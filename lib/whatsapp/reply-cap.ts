@@ -18,28 +18,38 @@
 // ── THE LIMITS ──────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * 🔴 A DEFAULT, NOT A CONSTANT THE DECISION READS. `decideReplyCap` takes the per-customer limit as an
- * ARGUMENT and never reaches module scope for it — see the note on that parameter. This export exists so
- * the route has something to pass today.
+ * 🔴 THE PER-CUSTOMER LIMIT, UNCHANGED BY THIS WORKSTREAM. Three replies to one customer in any rolling
+ * 24 hours, then ONE handoff, then silence for that customer. It is a DEFAULT and is passed in at the
+ * call site, so a future per-truck value needs no change in this module.
  */
 export const DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H = 3
 
-// ── ⚠️ A RUNAWAY CEILING, NOT A BUDGET LEVER. THE DISTINCTION IS LOAD-BEARING. ──────────────────────
-// This number exists to stop an unbounded loop converting into unbounded spend. It is NOT a spend
-// control, and it must NOT be lowered into budget territory — a few hundred, say — until an operator
-// notification exists.
-// 🔴 THE REASON IS A FAILURE THIS CODEBASE HAS ALREADY DOCUMENTED ONCE: a truck that silently exhausts
-// its month, with nobody told, looks exactly like a truck whose WhatsApp integration has broken. Nothing
-// on any operator surface reads `whatsapp_logs`, so the first signal would be a customer complaining
-// that nobody answered. **A cap nobody is told about is an outage with a good excuse.**
-export const MAX_REPLIES_PER_TRUCK_MONTH = 2000
 
-/**
- * 🔴 DERIVED, NEVER A SECOND LITERAL. A day ceiling written independently drifts the first time the
- * month one moves, and the two would then disagree about what "a tenth of the month" means.
- * One tenth, rounded up — a truck may legitimately have a very busy day inside a normal month.
- */
-export const MAX_REPLIES_PER_TRUCK_DAY = Math.ceil(MAX_REPLIES_PER_TRUCK_MONTH / 10)
+/** 🔴 META'S FREE ALLOWANCE, AND THE ONLY NUMBER IN THIS FILE THAT IS NOT OURS. Declared once so the
+ *  Settings copy and the default cannot drift apart. Meta sets it and may change it. */
+export const META_FREE_REPLIES_PER_MONTH = 1000
+
+/** The values an operator may choose. 🔴 MIRRORS THE DATABASE CHECK on trucks.whatsapp_monthly_reply_limit
+ *  — the constraint is the backstop, this is the one the API validates against and the select renders. */
+export const MONTHLY_REPLY_LIMIT_CHOICES = [250, 500, 1000, 2000, 5000] as const
+export type MonthlyReplyLimit = (typeof MONTHLY_REPLY_LIMIT_CHOICES)[number]
+
+/** The column's default, matching `trucks.whatsapp_monthly_reply_limit`'s DEFAULT 1000. */
+export const DEFAULT_MONTHLY_REPLY_LIMIT: MonthlyReplyLimit = 1000
+
+/** 🔴 THE ONE VALIDATOR. Integers only — `250.0` is fine, `"250"` and `1500` are not. */
+export function isMonthlyReplyLimit(v: unknown): v is MonthlyReplyLimit {
+  return typeof v === 'number' && Number.isInteger(v)
+    && (MONTHLY_REPLY_LIMIT_CHOICES as readonly number[]).includes(v)
+}
+
+// 🔴 THE PER-TRUCK DAILY WINDOW IS GONE. It was `Math.ceil(month / 10)` — a tenth of the month, invented
+// here and never chosen by anyone. It capped a truck that had a busy Saturday while its month was barely
+// touched, which is the opposite of what a spend ceiling is for: the money is monthly, so the ceiling is
+// monthly. Removed rather than set high, because a limit nobody picked is a limit nobody can reason about.
+// 🔴 AND `MAX_REPLIES_PER_TRUCK_MONTH = 2000` IS GONE TOO. The monthly ceiling is now per truck, read
+// from `trucks.whatsapp_monthly_reply_limit`, and passed into `decideReplyCap`. A module-scope constant
+// would be silently ignored the moment a truck chose a different value.
 
 // ── THE FOUR CLASSIFICATION STRINGS — THEY LIVE HERE AND NOWHERE ELSE ───────────────────────────────
 // They are written into `whatsapp_logs.classification` and then READ BACK to exclude cap rows from every
@@ -48,14 +58,17 @@ export const MAX_REPLIES_PER_TRUCK_DAY = Math.ceil(MAX_REPLIES_PER_TRUCK_MONTH /
 // unrepresentable, and `isCapClassification` below means no caller ever lists them either.
 export const CLASSIFICATION_CUSTOMER_CAP      = 'CAP_CUSTOMER_24H'
 export const CLASSIFICATION_CUSTOMER_NOTIFIED = 'CAP_CUSTOMER_NOTIFIED'
-export const CLASSIFICATION_TRUCK_DAY_CAP     = 'CAP_TRUCK_DAY'
+// 🔴 `CLASSIFICATION_TRUCK_DAY_CAP` IS GONE WITH THE WINDOW IT NAMED. ⚠️ The STRING 'CAP_TRUCK_DAY'
+// may still exist in historic whatsapp_logs rows; `CAP_CLASSIFICATIONS` below keeps it so those rows are
+// still recognised as cap rows and are not miscounted as replies.
+const LEGACY_CLASSIFICATION_TRUCK_DAY_CAP = 'CAP_TRUCK_DAY'
 export const CLASSIFICATION_TRUCK_MONTH_CAP   = 'CAP_TRUCK_MONTH'
 
 /** Every cap classification, in one place, so no caller writes the list out. */
 export const CAP_CLASSIFICATIONS: readonly string[] = [
   CLASSIFICATION_CUSTOMER_CAP,
   CLASSIFICATION_CUSTOMER_NOTIFIED,
-  CLASSIFICATION_TRUCK_DAY_CAP,
+  LEGACY_CLASSIFICATION_TRUCK_DAY_CAP,
   CLASSIFICATION_TRUCK_MONTH_CAP,
 ]
 
@@ -110,23 +123,21 @@ export function handoffMessage(orderLink: string, contactNumber: string | null |
  *   REPLY                            → carry on into the classifier and the shared reply function.
  *   NOTIFY_CUSTOMER_CAP              → send ONE handoff, log it with response_sent set.
  *   SILENT_CUSTOMER_ALREADY_NOTIFIED → send nothing; this customer has already had their handoff.
- *   SILENT_TRUCK_DAY_CAP             → send nothing; this truck is done for its local day.
  *   SILENT_TRUCK_MONTH_CAP           → send nothing; this truck is done for its local month.
  */
 export type ReplyCapDecision =
   | 'REPLY'
   | 'NOTIFY_CUSTOMER_CAP'
   | 'SILENT_CUSTOMER_ALREADY_NOTIFIED'
-  | 'SILENT_TRUCK_DAY_CAP'
   | 'SILENT_TRUCK_MONTH_CAP'
 
 export interface ReplyCapInput {
   /** Replied rows for this (truck, customer) in the rolling 24h window, EXCLUDING cap rows. */
   customerReplies24h: number
-  /** Replied rows for this truck, all customers, in its local calendar day, EXCLUDING cap rows. */
-  truckRepliesToday: number
-  /** Replied rows for this truck, all customers, in its local calendar month, EXCLUDING cap rows. */
+  /** 🔴 EVERY MESSAGE WE SENT FOR THIS TRUCK in its local calendar month, HANDOFFS INCLUDED. */
   truckRepliesThisMonth: number
+  /** The truck's own ceiling — `trucks.whatsapp_monthly_reply_limit`. Passed in, never module scope. */
+  monthlyReplyLimit: number
   /** True when a customer-cap row already exists in this customer's window. */
   customerCapNoticeSent: boolean
   /**
@@ -141,7 +152,7 @@ export interface ReplyCapInput {
 }
 
 /**
- * 🔴 PRECEDENCE IS MONTH, THEN DAY, THEN CUSTOMER, AND IT IS NOT ARBITRARY.
+ * 🔴 PRECEDENCE IS MONTH, THEN CUSTOMER, AND IT IS NOT ARBITRARY.
  * A truck over its ceiling sends **nothing at all — not even the handoff**, because the handoff is
  * itself a billable message. Deciding the customer case first would let a truck that is already over
  * budget keep paying for handoffs, one per customer, which is the exact spend the ceiling exists to
@@ -150,8 +161,10 @@ export interface ReplyCapInput {
  * ⚠️ ALL THREE LIMITS ARE INCLUSIVE — `>=`. At the limit caps; it does not wait for one over.
  */
 export function decideReplyCap(input: ReplyCapInput): ReplyCapDecision {
-  if (input.truckRepliesThisMonth >= MAX_REPLIES_PER_TRUCK_MONTH) return 'SILENT_TRUCK_MONTH_CAP'
-  if (input.truckRepliesToday >= MAX_REPLIES_PER_TRUCK_DAY) return 'SILENT_TRUCK_DAY_CAP'
+  // 🔴 THE MONTHLY CEILING IS THE TRUCK'S OWN, PASSED IN. At the limit the truck goes SILENT for the rest
+  // of its month — no extra message, not even a handoff, because the handoff is itself billable and
+  // counted. An operator who set 250 to control spend must not be charged for 250 handoffs on top.
+  if (input.truckRepliesThisMonth >= input.monthlyReplyLimit) return 'SILENT_TRUCK_MONTH_CAP'
 
   if (input.customerReplies24h >= input.maxRepliesPerCustomer24h) {
     // ── 🔴 THIS MEMBER FIXES A REAL DEFECT, IT IS NOT TIDYING. ───────────────────────────────────────

@@ -10,6 +10,13 @@ import { resolveTruckLogo } from '@/lib/truck-logo'
 // 🔴 THE SERVER-SIDE REDUCTION. This is the ONLY thing that reads whatsapp_connections for the client,
 // and it returns no token, no ciphertext and no ids — see lib/whatsapp/connection-read.ts.
 import { readWhatsAppConnection, type WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
+import { isMonthlyReplyLimit, MONTHLY_REPLY_LIMIT_CHOICES, DEFAULT_MONTHLY_REPLY_LIMIT } from '@/lib/whatsapp/reply-cap'
+import { readMonthlyUsage } from '@/lib/whatsapp/usage'
+import { planDisconnect } from '@/lib/whatsapp/disconnect-plan'
+import { decryptToken } from '@/lib/whatsapp/token-crypto'
+import { GRAPH_VERSION } from '@/lib/whatsapp/graph-version'
+import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
@@ -291,9 +298,38 @@ export async function GET(req: NextRequest) {
   // is applied BY HAND and may not have been run. That must not take out the Settings tab.
   const whatsappConnection = await readWhatsAppConnection(supabase, truck.id)
 
+  // ── 🔴 THIS MONTH'S USAGE, THROUGH THE SAME FUNCTION THE WEBHOOK ENFORCES WITH ──────────────────
+  // `readMonthlyUsage` owns the month boundary and the "what counts" rule. If this line computed its own
+  // window, the operator could read "120 of 250" while the webhook had already gone silent — the single
+  // worst thing a usage display can do.
+  // ⚠️ NON-FATAL. A failed count must not take Settings down; `used: 0` with the real limit is an honest
+  // "we could not read it" that still renders the row.
+  let whatsappUsage: { used: number; limit: number; resetsOn: string; atLimit: boolean } | null = null
+  try {
+    const limit = (truck.whatsapp_monthly_reply_limit as number | null) ?? DEFAULT_MONTHLY_REPLY_LIMIT
+    const u = await readMonthlyUsage({
+      truckId: truck.id,
+      timezone: (truck.timezone as string | null) ?? null,
+      limit,
+      count: async (truckId, sinceIso) => {
+        const { count } = await supabase
+          .from('whatsapp_logs')
+          .select('*', { count: 'exact', head: true })
+          .eq('truck_id', truckId)
+          .not('response_sent', 'is', null)
+          .gte('created_at', sinceIso)
+        return count ?? 0
+      },
+    })
+    whatsappUsage = { used: u.used, limit: u.limit, resetsOn: u.resetsOn, atLimit: u.atLimit }
+  } catch (e) {
+    console.warn('[manage] whatsapp usage read failed — row still renders', e instanceof Error ? e.message : e)
+  }
+
   return NextResponse.json({
     truck: { ...truck, logo },
     whatsappConnection,
+    whatsappUsage,
     categories: categories || [],
     items: items || [],
     subcategories: subcategories || [],
@@ -1592,13 +1628,100 @@ export async function POST(req: NextRequest) {
     // unreachable. Grep-verified before removal.
     // 🔴 RE-ADD IT BEFORE PUTTING ANY MANAGE CONTROL FOR IT BACK: the filter below drops unlisted keys
     // SILENTLY, so a control without the entry appears to save, returns {ok:true}, and writes nothing.
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled', 'setup_step', 'show_paid_step', 'takes_cash', 'completion_presses']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled', 'setup_step', 'show_paid_step', 'takes_cash', 'completion_presses', 'whatsapp_monthly_reply_limit']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
+
+    // ── 🔴 THE FIRST VALUE VALIDATION ON THIS ROUTE, AND IT NEEDED TO BE ────────────────────────────
+    // Every other key here is a free-text or boolean field where any value is a legitimate (if odd)
+    // choice. This one has a DATABASE CHECK behind it, so an unlisted number would come back as a raw
+    // Postgres 23514 rendered straight into a toast — a constraint name where a sentence should be.
+    // ⚠️ THE CHECK STAYS AS THE BACKSTOP. This is not a replacement for it: this is the layer that can
+    // say something useful, and the constraint is the one that cannot be bypassed.
+    if ('whatsapp_monthly_reply_limit' in safeData && !isMonthlyReplyLimit(safeData.whatsapp_monthly_reply_limit)) {
+      return NextResponse.json({
+        error: `Monthly reply limit must be one of ${MONTHLY_REPLY_LIMIT_CHOICES.join(', ')}.`,
+      }, { status: 400 })
+    }
     const { error } = await supabase.from('trucks').update(safeData).eq('id', truck.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
     return NextResponse.json({ ok: true })
+  }
+
+
+  // ── 🔴 DISCONNECT WHATSAPP ───────────────────────────────────────────────────────────────────────
+  // Same token scoping as every other write here: `getTruck(token)` resolved the truck above and every
+  // statement below is `.eq('truck_id', truck.id)`. A token holder cannot name another truck.
+  //
+  // 🔴 IT NEVER CALLS `/{phone_number_id}/deregister`, AND THERE IS NO BRANCH THAT COULD. For a
+  // coexistence truck the number is their own, working in the WhatsApp Business app; deregistering it
+  // would break the phone they answer customers on in order to tidy up our side. Disconnect removes OUR
+  // access. The operation list comes from `planDisconnect`, whose type has no deregister member.
+  //
+  // ⚠️ IT NEVER TOUCHES `trucks.phone_number_id` OR `trucks.whatsapp_sender`. test-truck holds Meta's
+  // test number in the former and it must survive; the latter is the webhook's sender fallback and
+  // customer-email contact value.
+  if (action === 'disconnect_whatsapp') {
+    // Gated exactly like the signup route — the UI hides the link, but the UI is not the enforcement.
+    if (!WHATSAPP_LIVE && !hasWhatsAppSetupPreview(truck.feature_overrides)) {
+      return NextResponse.json({ error: 'WhatsApp setup is not available for this account yet.' }, { status: 403 })
+    }
+
+    const { data: row } = await supabase
+      .from('whatsapp_connections')
+      .select('truck_id, waba_id, access_token_ciphertext, token_expires_at, token_revoked_at')
+      .eq('truck_id', truck.id)
+      .maybeSingle()
+
+    // 🔴 "USABLE" IS DECIDED BY THE SAME RULES THE SEND PATH USES — present, not revoked, not expired,
+    // and it must actually decrypt. Deciding it here rather than inside the plan keeps the plan pure.
+    let token: string | null = null
+    if (row?.access_token_ciphertext && !row.token_revoked_at) {
+      const exp = row.token_expires_at ? Date.parse(row.token_expires_at as string) : NaN
+      if (!Number.isNaN(exp) && exp > Date.now()) {
+        try { token = decryptToken(row.access_token_ciphertext as string) } catch { token = null }
+      }
+    }
+
+    const plan = planDisconnect({
+      connection: row ? { wabaId: (row.waba_id as string | null) ?? null } : null,
+      tokenUsable: !!token,
+    })
+
+    if (plan.alreadyDisconnected) {
+      // Idempotent: the operator's intent is already satisfied.
+      console.info('[manage] disconnect_whatsapp', { truck_id: truck.id, outcome: 'already_disconnected' })
+      return NextResponse.json({ ok: true, unsubscribed: true, alreadyDisconnected: true })
+    }
+
+    let unsubscribed = false
+    for (const op of plan.ops) {
+      if (op.kind === 'unsubscribe_app') {
+        try {
+          const res = await fetch(
+            `https://graph.facebook.com/${GRAPH_VERSION}/${encodeURIComponent(op.wabaId)}/subscribed_apps`,
+            { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } },
+          )
+          unsubscribed = res.ok
+        } catch {
+          unsubscribed = false
+        }
+      } else {
+        // 🔴 ALWAYS, EVEN WHEN META REFUSED. The operator asked us to stop; keeping the row would keep
+        // replies going out on a connection they have disowned. Removing it deletes the stored key too —
+        // the ciphertext lives on this row and nowhere else.
+        const del = await supabase.from('whatsapp_connections').delete().eq('truck_id', truck.id)
+        if (del.error) {
+          console.error('[manage] disconnect_whatsapp', { truck_id: truck.id, outcome: 'row_delete_failed' })
+          return NextResponse.json({ error: 'Could not disconnect. Nothing was changed — please try again.' }, { status: 500 })
+        }
+      }
+    }
+
+    // ⚠️ TRUCK ID AND OUTCOME ONLY. No WABA id, no token, no number.
+    console.info('[manage] disconnect_whatsapp', { truck_id: truck.id, outcome: unsubscribed ? 'unsubscribed' : 'row_deleted_meta_not_reached' })
+    return NextResponse.json({ ok: true, unsubscribed, alreadyDisconnected: false })
   }
 
   // ── TEAM CRUD ─────────────────────────────────────────────────

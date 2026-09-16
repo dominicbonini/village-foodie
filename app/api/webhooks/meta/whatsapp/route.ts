@@ -4,12 +4,12 @@ import { canAccess, type Plan } from '@/lib/features'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { sendMetaWhatsApp } from '@/lib/meta-whatsapp'
 import { getLocalDateInTz, localDateOfInstant } from '@/lib/time-utils'
+import { monthStartIso, truckTimezone } from '@/lib/whatsapp/usage'
 import {
   decideReplyCap, type ReplyCapDecision, isCapClassification, handoffMessage,
-  CAP_CLASSIFICATIONS,
-  DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, MAX_REPLIES_PER_TRUCK_DAY, MAX_REPLIES_PER_TRUCK_MONTH,
+  DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, DEFAULT_MONTHLY_REPLY_LIMIT,
   CLASSIFICATION_CUSTOMER_CAP, CLASSIFICATION_CUSTOMER_NOTIFIED,
-  CLASSIFICATION_TRUCK_DAY_CAP, CLASSIFICATION_TRUCK_MONTH_CAP,
+  CLASSIFICATION_TRUCK_MONTH_CAP,
 } from '@/lib/whatsapp/reply-cap'
 import { parseMetaAppSecrets, verifyMetaSignature, metaRefusalLog } from '@/lib/meta/webhook-signature'
 import {
@@ -48,7 +48,8 @@ interface ConnectionTokenRow {
 const TRUCK_FIELDS = `
   id, name, slug, truck_emoji,
   whatsapp_sender, whatsapp, phone_number_id,
-  plan, feature_overrides, trial_expires_at
+  plan, feature_overrides, trial_expires_at,
+  whatsapp_monthly_reply_limit, timezone
 `
 
 interface TruckRow {
@@ -62,6 +63,8 @@ interface TruckRow {
   plan: Plan
   feature_overrides: Record<string, boolean> | null
   trial_expires_at: string | null
+  whatsapp_monthly_reply_limit: number | null
+  timezone: string | null
 }
 
 const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN
@@ -431,7 +434,10 @@ export async function POST(req: NextRequest) {
 
     // FOLLOW-UP GREETING — greet ONCE per calendar day per sender (timezone-correct, never UTC-date).
     // Single tz swap point: → truck.timezone ?? 'Europe/London' once that column exists.
-    const truckTz = 'Europe/London'
+    // 🔴 THE TRUCK'S OWN TIMEZONE NOW, THROUGH THE SHARED HELPER. `trucks.timezone` is null on every
+    // truck today, so 'Europe/London' is still the branch that runs — but it is a real fallback rather
+    // than a hardcoded assumption, and the day the column is populated this follows it.
+    const truckTz = truckTimezone(truck.timezone)
 
     // ── 🔴 ONE READ SERVES THE GREETING AND THE PER-CUSTOMER CAP. THAT EQUIVALENCE IS ARGUED, NOT
     //    ASSUMED. ──────────────────────────────────────────────────────────────────────────────────
@@ -454,11 +460,9 @@ export async function POST(req: NextRequest) {
     let capDecision: ReplyCapDecision = 'REPLY'
     try {
       const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-      // ⚠️ 26 HOURS, NOT 24, FOR THE TRUCK READ. The truck window is a LOCAL CALENDAR DAY and a DST
-      // day is 25 hours long, so a 24h fetch could miss the start of it. The rows are then filtered to
-      // the local date in JS using `localDateOfInstant` — THE SAME PRIMITIVE THE GREETING USES — so no
-      // new timezone helper and no migration is needed to express "the truck's day".
-      const since26h = new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString()
+      // 🔴 THE 26-HOUR WINDOW IS GONE WITH THE DAILY CAP IT SERVED. It over-fetched by two hours so a
+      // local-date filter in JS could pick out "today" across a DST change; there is no daily window to
+      // filter for any more, and the monthly count is a database-side `count` over an exact boundary.
       // ── 🔴 THE LOCAL MONTH BOUNDARY, BUILT FROM THE PRIMITIVE THE DAY BOUNDARY ALREADY USES. ────
       // NO NEW TIMEZONE HELPER. `localDateOfInstant` is the only tz function touched here; the search
       // below converts "the 1st of the local month" into an INSTANT, which is what a count-only query
@@ -477,17 +481,12 @@ export async function POST(req: NextRequest) {
       // a cap by an hour. On the MONTH boundary it shifts A WHOLE BILLING PERIOD — silently, and in the
       // direction of a cap that RESETS EARLY, i.e. a ceiling that quietly stops being a ceiling. The
       // first non-UK truck is not an edge case here; it is a hole.
-      const monthFirstLocal = `${getLocalDateInTz(truckTz).slice(0, 7)}-01`
-      let lo = Date.parse(`${monthFirstLocal}T00:00:00Z`) - 18 * 3600_000
-      let hi = Date.parse(`${monthFirstLocal}T00:00:00Z`) + 18 * 3600_000
-      while (hi - lo > 60_000) {
-        const mid = lo + Math.floor((hi - lo) / 2)
-        if (localDateOfInstant(new Date(mid), truckTz) < monthFirstLocal) lo = mid
-        else hi = mid
-      }
-      const monthStart = new Date(hi).toISOString()
+      // 🔴 ONE MONTH BOUNDARY, SHARED WITH THE SETTINGS USAGE LINE (lib/whatsapp/usage.ts). The binary
+      // search that used to live here is that function's body now, so the number that stops replies and
+      // the number the operator reads cannot be computed two different ways.
+      const monthStart = monthStartIso(truckTz)
 
-      const [mine, day, month] = await Promise.all([
+      const [mine, month] = await Promise.all([
         supabase.from('whatsapp_logs')
           .select('created_at, classification')
           .eq('customer_number', from)
@@ -495,26 +494,19 @@ export async function POST(req: NextRequest) {
           .not('response_sent', 'is', null)
           .gte('created_at', since24h)
           .order('created_at', { ascending: false }),
-        supabase.from('whatsapp_logs')
-          .select('created_at, classification')
-          .eq('truck_id', truck.id)
-          .not('response_sent', 'is', null)
-          .gte('created_at', since26h),
-        // ── 🔴 COUNT-ONLY. A MONTH OF ROWS IS NEVER PULLED INTO MEMORY. ──────────────────────────────
-        // `head: true` means the rows never leave Postgres — only the count comes back. At the ceiling
-        // this would otherwise be 2,000 rows fetched on EVERY inbound message, to compute a number.
-        // ⚠️ THE CAP ROWS ARE EXCLUDED IN SQL, WHICH IS WHY THIS CANNOT BE A PLAIN `.not(... 'in' ...)`.
-        // `NOT IN` evaluates to NULL for a NULL classification and Postgres drops those rows, so a row
-        // with no classification would vanish from the count. The `or` keeps them.
+        // ── 🔴 COUNT-ONLY, AND CAP ROWS ARE NOW COUNTED. ────────────────────────────────────────────
+        // `head: true` means the rows never leave Postgres — only the count comes back.
+        // 🔴 THE `.or(...)` THAT EXCLUDED CAP CLASSIFICATIONS IS GONE, DELIBERATELY. The handoff is a
+        // message Meta BILLS FOR, and excluding it meant the operator paid for messages their ceiling
+        // could not see. Every row with `response_sent` set is a message we sent, and every message we
+        // sent counts.
         supabase.from('whatsapp_logs')
           .select('*', { count: 'exact', head: true })
           .eq('truck_id', truck.id)
           .not('response_sent', 'is', null)
-          .gte('created_at', monthStart)
-          .or(`classification.is.null,classification.not.in.(${CAP_CLASSIFICATIONS.join(',')})`),
+          .gte('created_at', monthStart),
       ])
       if (mine.error) throw mine.error
-      if (day.error) throw day.error
       if (month.error) throw month.error
 
       // ⚠️ ONE PREDICATE, FROM THE MODULE. The route never lists the four names.
@@ -528,15 +520,11 @@ export async function POST(req: NextRequest) {
 
       capDecision = decideReplyCap({
         customerReplies24h: mineRows.filter(r => !isCapRow(r.classification as string | null)).length,
-        truckRepliesToday: (day.data ?? []).filter(r =>
-          !isCapRow(r.classification as string | null) &&
-          localDateOfInstant(r.created_at, truckTz) === today).length,
         truckRepliesThisMonth: month.count ?? 0,
-        // "Already notified" is the PRESENCE of a customer-cap row in this customer's window.
+        // 🔴 THE TRUCK'S OWN CEILING. `?? DEFAULT` covers a row written before the column existed; the
+        // column is NOT NULL DEFAULT 1000 so in practice it is always set.
+        monthlyReplyLimit: truck.whatsapp_monthly_reply_limit ?? DEFAULT_MONTHLY_REPLY_LIMIT,
         customerCapNoticeSent: mineRows.some(r => r.classification === CLASSIFICATION_CUSTOMER_CAP),
-        // ⚠️ THE LIMIT IS PASSED, NOT READ FROM MODULE SCOPE INSIDE THE DECISION. When a per-truck
-        // operator-settable value lands (intended ceiling 5), THIS LINE is the one-line change:
-        //   truck.max_replies_per_customer ?? DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H
         maxRepliesPerCustomer24h: DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H,
       })
     } catch (err) {
@@ -568,7 +556,6 @@ export async function POST(req: NextRequest) {
       // never claim a cap that did not fire.
       const silentClassification =
         capDecision === 'SILENT_TRUCK_MONTH_CAP' ? CLASSIFICATION_TRUCK_MONTH_CAP
-        : capDecision === 'SILENT_TRUCK_DAY_CAP' ? CLASSIFICATION_TRUCK_DAY_CAP
         : CLASSIFICATION_CUSTOMER_NOTIFIED
       // Nothing is sent. `response_sent` is NULL, which is also what keeps this row out of every count.
       await supabase.from('whatsapp_logs').insert({
@@ -579,7 +566,7 @@ export async function POST(req: NextRequest) {
       console.warn(
         `[webhook/meta-whatsapp] ${capDecision} for truck=${truck.id} — nothing sent. ` +
         `limits: customer/24h=${DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} ` +
-        `truck/day=${MAX_REPLIES_PER_TRUCK_DAY} truck/month=${MAX_REPLIES_PER_TRUCK_MONTH}`)
+        `truck/month=${truck.whatsapp_monthly_reply_limit ?? DEFAULT_MONTHLY_REPLY_LIMIT}`)
       return NextResponse.json({ ok: true })
     }
 
@@ -592,15 +579,22 @@ export async function POST(req: NextRequest) {
       const hgUrlCap = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
       const capMessage = handoffMessage(
         `${hgUrlCap}/trucks/${truck.slug}/order`, truck.whatsapp)
+      // 🔴 `response_sent` NOW RECORDS WHAT META ACCEPTED, NOT WHAT WE COMPOSED. The send's failure was
+      // caught and logged, and then the row was written claiming `response_sent: capMessage` anyway — so
+      // a refused message counted against the truck's ceiling and, from this month, would be billed to
+      // their allowance in our figures while Meta had charged them nothing. The message is still logged
+      // either way; only the "we sent this" field now tells the truth.
+      let handoffSent = false
       try {
         await sendMetaWhatsApp(from, capMessage, phoneNumberId, credential.accessToken)
+        handoffSent = true
       } catch (sendErr) {
         console.error('[webhook/meta-whatsapp] handoff send failed:', sendErr)
       }
       await supabase.from('whatsapp_logs').insert({
         truck_id: truck.id, customer_number: from, message_in: text,
         classification: CLASSIFICATION_CUSTOMER_CAP, events_found: 0,
-        response_sent: capMessage, possible_miss: false,
+        response_sent: handoffSent ? capMessage : null, possible_miss: false,
       })
       console.warn(
         `[webhook/meta-whatsapp] CUSTOMER 24H CAP reached ` +
@@ -634,30 +628,35 @@ export async function POST(req: NextRequest) {
 
     console.log('[webhook/meta-whatsapp] classification:', classification, 'reply:', reply)
 
-    // Fire-and-forget interaction log — never blocks the response
+    // 🔴 THE SEND HAPPENS FIRST NOW, AND THE LOG RECORDS ITS OUTCOME. This block used to insert the row
+    // BEFORE sending — fire-and-forget — so `response_sent` said "we replied" even when Meta then refused.
+    // With the month's count now driving a spend ceiling the operator chose, a refused message must not
+    // consume their allowance.
+    // ⚠️ THE IGNORE BUCKET IS STILL LOGGED. `reply` null means the classifier chose silence: the row is
+    // written with `response_sent: null`, exactly as before, because that is a real outcome worth keeping.
+    // ⚠️ STILL FIRE-AND-FORGET — the insert is not awaited, so the 200 is not held behind it.
+    let replySent = false
+    if (reply) {
+      try {
+        await sendMetaWhatsApp(from, reply, phoneNumberId, credential.accessToken)
+        replySent = true
+        console.log('[webhook/meta-whatsapp] reply sent')
+      } catch (err) {
+        console.error('[webhook/meta-whatsapp] send failed:', err)
+      }
+    }
+
     supabase.from('whatsapp_logs').insert({
       truck_id:        truck.id,
       customer_number: from,
       message_in:      text,
       classification,
       events_found:    events?.length ?? 0,
-      response_sent:   reply ?? null,
+      response_sent:   replySent ? reply : null,
       possible_miss:   classification === 'SPECIFIC_QUERY' && (events?.length ?? 0) === 0,
     }).then(({ error }) => {
       if (error) console.error('[webhook/meta-whatsapp] log failed:', error)
     })
-
-    if (!reply) {
-      // IGNORE bucket — logged above, no message sent
-      return NextResponse.json({ ok: true })
-    }
-
-    try {
-      await sendMetaWhatsApp(from, reply, phoneNumberId, credential.accessToken)
-      console.log('[webhook/meta-whatsapp] reply sent')
-    } catch (err) {
-      console.error('[webhook/meta-whatsapp] send failed:', err)
-    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {

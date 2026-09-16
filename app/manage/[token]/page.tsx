@@ -40,7 +40,11 @@ import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 // copy. lib/whatsapp/reply-cap.ts is a PURE module — "NO DATABASE, NO IMPORTS" by its own header — so a
 // client page can import it with no server dependency and no bundle risk. The webhook passes this same
 // constant at its decideReplyCap call site, so the number an operator reads is the number enforced.
-import { DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H } from '@/lib/whatsapp/reply-cap'
+import {
+  DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, META_FREE_REPLIES_PER_MONTH,
+  MONTHLY_REPLY_LIMIT_CHOICES, DEFAULT_MONTHLY_REPLY_LIMIT,
+} from '@/lib/whatsapp/reply-cap'
+import { META_PRICING_URL, WHATSAPP_MANAGER_URL, formatLimit, formatResetDate } from '@/lib/whatsapp/copy'
 // S2/S3: the connection VIEW type only — a state and three booleans. No token shape exists on the
 // client by construction; see lib/whatsapp/connection-read.ts for the server-side reduction.
 import type { WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
@@ -94,7 +98,7 @@ import { isNativeApp } from '@/lib/native/device'
 import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -225,6 +229,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
   const [whatsappConnection, setWhatsappConnection] = useState<WhatsAppConnectionView | null>(null)
+  const [whatsappUsage, setWhatsappUsage] = useState<{ used: number; limit: number; resetsOn: string; atLimit: boolean } | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [subcategories, setSubcategories] = useState<Subcategory[]>([])
@@ -383,6 +388,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       // 🔴 FAIL TOWARD 'not_connected'. An older deployment (or a payload without the field) must offer
       // setup rather than imply a connection. Never default to anything that reads as connected.
       setWhatsappConnection(data.whatsappConnection ?? null)
+      setWhatsappUsage(data.whatsappUsage ?? null)
       setUserRole(data.userRole || 'owner')
       setCurrentUserId(data.currentUserId || null)
       setOwnerEmail(data.ownerEmail || null)
@@ -850,7 +856,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} whatsappConnection={whatsappConnection} whatsappUsage={whatsappUsage} onConnectionUpdate={setWhatsappConnection} token={token} api={api} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
         {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
@@ -8791,9 +8797,13 @@ function QrPreview({ src, alt, onOpen, locked }: {
 //   • STUCK because the ONLY way out of `setupBusy` was that promise settling, and it settles only from
 //     inside FB.login's callback. A window the SDK never owned is a callback that never fires. Fixed by
 //     giving the operator "Start again", which needs no event from Meta at all.
-function WhatsAppSetupControl({ token, offerReauthorise, onNotice, onConnectionUpdate }: {
+function WhatsAppSetupControl({ token, offerReauthorise, showButton, showInstruction, onNotice, onConnectionUpdate }: {
   token: string
   offerReauthorise: boolean
+  /** From the view model. False on a working connection — see `showSetupControl`. */
+  showButton: boolean
+  /** The pop-up instruction is only useful before a window has to open. */
+  showInstruction: boolean
   onNotice: (n: { tone: 'ok' | 'warn' | 'error'; text: string } | null) => void
   onConnectionUpdate: (c: WhatsAppConnectionView) => void
 }) {
@@ -8884,6 +8894,11 @@ function WhatsAppSetupControl({ token, offerReauthorise, onNotice, onConnectionU
   // The reducer's notice is the single source; push it up so the existing panel renders it unchanged.
   useEffect(() => { if (state.notice) onNotice(state.notice) }, [state.notice, onNotice])
 
+  // 🔴 NOTHING IS RENDERED ON A WORKING CONNECTION EXCEPT WHAT THE ROW ITSELF SHOWS. The button used
+  // to appear in every state, so a truck answering messages perfectly well was invited to "Set up" again.
+  // ⚠️ The SDK still loads (this component still mounts), so a later Reconnect is instant.
+  if (!showButton) return null
+
   return (
     <>
       <button
@@ -8911,10 +8926,12 @@ function WhatsAppSetupControl({ token, offerReauthorise, onNotice, onConnectionU
           press, it is an instruction; said after, it is an excuse.
           ⚠️ `basis-full` makes it take its own line inside the parent's `flex-wrap` row, so it sits UNDER
           the button rather than competing with the number field for width. */}
-      <p className="basis-full text-xs text-slate-500 mt-1">
-        A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow
-        pop-ups for hatchgrab.com in your browser, then press Set up again.
-      </p>
+      {showInstruction && (
+        <p className="basis-full text-xs text-slate-500 mt-1">
+          A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow
+          pop-ups for hatchgrab.com in your browser, then press Set up again.
+        </p>
+      )}
       {state.showPopupHint && (
         <p className="basis-full text-xs text-amber-700">
           Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then
@@ -8925,7 +8942,7 @@ function WhatsAppSetupControl({ token, offerReauthorise, onNotice, onConnectionU
   )
 }
 
-function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
+function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
   userRole: UserRole
@@ -8933,6 +8950,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
   /** S2: the reduced, client-safe connection view. null = not loaded yet or the
    *  payload predates this field — both treated as 'not connected'. */
   whatsappConnection: WhatsAppConnectionView | null
+  /** This month's usage, from the manage API — the SAME counting function the webhook enforces with. */
+  whatsappUsage: { used: number; limit: number; resetsOn: string; atLimit: boolean } | null
   /** S4: push the post-signup connection view up to the parent. Sibling of `onTruckUpdate` and for the
    *  same reason — the alternative is a parent reload(), which unmounts this tab behind a spinner. */
   onConnectionUpdate: (v: WhatsAppConnectionView) => void
@@ -9345,6 +9364,48 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
   // ⚠️ For every truck WITHOUT the key this is `false || false` — byte-identical to the previous
   // expression, so nothing any other truck sees changes.
   const whatsAppSetupVisible = WHATSAPP_LIVE || hasWhatsAppSetupPreview(truck.feature_overrides)
+
+  // ── THE MONTHLY LIMIT, AND THE DISCONNECT CONFIRMATION ──────────────────────────────────────────
+  // ⚠️ OPTIMISTIC, THEN CORRECTED. The select shows the new value immediately and reverts if the write
+  // is refused — a dropdown that snaps back with no explanation is the shape operators report as "it
+  // didn't save", so the error is toasted at the same moment.
+  const [monthlyLimit, setMonthlyLimit] = useState<number>(
+    truck.whatsapp_monthly_reply_limit ?? DEFAULT_MONTHLY_REPLY_LIMIT)
+  const [disconnectOpen, setDisconnectOpen] = useState(false)
+  const [disconnectBusy, setDisconnectBusy] = useState(false)
+
+  const saveMonthlyLimit = async (next: number) => {
+    const previous = monthlyLimit
+    setMonthlyLimit(next)
+    try {
+      await api('update_truck', { data: { whatsapp_monthly_reply_limit: next } })
+      onTruckUpdate({ whatsapp_monthly_reply_limit: next })
+      showToast('Monthly reply limit saved')
+    } catch (e: unknown) {
+      setMonthlyLimit(previous)
+      showToast(e instanceof Error ? e.message : 'Could not save the limit', 'error')
+    }
+  }
+
+  const doDisconnect = async () => {
+    setDisconnectBusy(true)
+    try {
+      const res = await api('disconnect_whatsapp', {})
+      setDisconnectOpen(false)
+      // 🔴 THE ROW'S NEW STATE COMES FROM A RE-READ, NOT FROM THIS HANDLER ASSUMING SUCCESS.
+      onConnectionUpdate({
+        state: 'not_connected', offerSignup: true, offerReauthorise: false, expiringSoon: false,
+        displayPhoneNumber: null, verifiedName: null,
+      })
+      setSetupNotice(res?.unsubscribed === false
+        ? { tone: 'warn', text: 'WhatsApp is disconnected. We couldn’t reach Meta to remove access. Please remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.' }
+        : { tone: 'ok', text: 'WhatsApp is disconnected. Auto-replies have stopped.' })
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : 'Could not disconnect', 'error')
+    } finally {
+      setDisconnectBusy(false)
+    }
+  }
 
   // £/month for each additional van beyond included count
   // TODO: Wire to Stripe billing API when payments are integrated.
@@ -10053,8 +10114,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
               ⚠️ NO PRICE AND NO DATE — same reason as footnote 6: Meta's rates are unread, and this card
               must not carry a figure the product cannot stand behind. */}
           <p className="text-xs text-slate-500 mb-3">
-            Each customer gets up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} replies in 24 hours. After that
-            they get one more message handing them over to you — Meta charges for that one too.
+            Auto-replies answer up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} messages from each customer in
+            any 24 hours. If a customer keeps going, they get one last message saying you&apos;ll reply
+            personally.
           </p>
 
           <div className="space-y-3">
@@ -10100,46 +10162,111 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
                         state: whatsappConnection?.state ?? 'not_connected',
                         displayPhoneNumber: whatsappConnection?.displayPhoneNumber ?? null,
                         verifiedName: whatsappConnection?.verifiedName ?? null,
+                        offerReauthorise: !!whatsappConnection?.offerReauthorise,
+                        monthlyLimit: monthlyLimit,
+                        freeAllowance: META_FREE_REPLIES_PER_MONTH,
                       })
-                      if (view.facts.length === 0 && !view.showBareConnected) return null
                       return (
-                        <div className="flex-1 min-w-0 text-sm">
-                          {view.showBareConnected && <p className="text-slate-700">Connected</p>}
-                          {view.facts.map(f => (
-                            <p key={f.label} className="truncate text-slate-700">
-                              <span className="text-slate-500">{f.label}: </span>{f.value}
+                        <>
+                          {(view.facts.length > 0 || view.showBareConnected) && (
+                            <div className="flex-1 min-w-0 text-sm">
+                              {view.showBareConnected && <p className="text-slate-700">Connected</p>}
+                              {view.facts.map(f => (
+                                <p key={f.label} className="truncate text-slate-700">
+                                  <span className="text-slate-500">{f.label}: </span>{f.value}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* 🔴 A GREEN LABEL REPLACES THE BUTTON when the connection is working. It is a
+                              STATE, not an action — there is nothing useful to press. */}
+                          {view.showConnectedLabel && (
+                            <span className="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Connected
+                            </span>
+                          )}
+
+                          <WhatsAppSetupControl
+                            token={token}
+                            offerReauthorise={!!whatsappConnection?.offerReauthorise}
+                            showButton={view.showSetupControl}
+                            showInstruction={view.showPopupInstruction}
+                            onNotice={setSetupNotice}
+                            onConnectionUpdate={onConnectionUpdate}
+                          />
+
+                          {view.showDisconnect && (
+                            <button
+                              type="button"
+                              onClick={() => setDisconnectOpen(true)}
+                              className="flex-shrink-0 text-xs font-semibold text-slate-500 underline hover:text-red-700"
+                            >
+                              Disconnect
+                            </button>
+                          )}
+
+                          {/* ── 🔴 THE MONTHLY LIMIT. Only once there is a connection to limit. ──────── */}
+                          {view.showMonthlyLimit && (
+                            <div className="basis-full mt-2 space-y-1">
+                              <label className="block text-sm">
+                                <span className="text-slate-600">Monthly reply limit</span>
+                                <select
+                                  value={monthlyLimit}
+                                  onChange={e => { void saveMonthlyLimit(Number(e.target.value)) }}
+                                  className="ml-2 border border-slate-200 rounded-lg px-2 py-1 text-sm"
+                                >
+                                  {MONTHLY_REPLY_LIMIT_CHOICES.map(v => (
+                                    <option key={v} value={v}>{formatLimit(v)}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              {whatsappUsage && (
+                                <p className="text-xs text-slate-600">
+                                  This month: {formatLimit(whatsappUsage.used)} of {formatLimit(whatsappUsage.limit)} used
+                                  {' · '}resets {formatResetDate(whatsappUsage.resetsOn)}
+                                </p>
+                              )}
+                              {/* ⚠️ THE EMAILS THIS PROMISES ARE NOT BUILT YET — next workstream. The copy
+                                  is the founder's, kept verbatim; see the report. */}
+                              <p className="text-xs text-slate-500">
+                                Auto-replies pause when you reach your limit. We&apos;ll email you at 80% and 100%.
+                                Staying at {formatLimit(META_FREE_REPLIES_PER_MONTH)} or below keeps you within
+                                Meta&apos;s free allowance.
+                              </p>
+                              {view.showAboveAllowanceNote && (
+                                <p className="text-xs text-amber-700">
+                                  Above {formatLimit(META_FREE_REPLIES_PER_MONTH)}, Meta charges for each extra
+                                  reply, and your WhatsApp Business account needs a payment method. Without one,
+                                  Meta stops all your replies once the free allowance is used.{' '}
+                                  <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
+                                    Add a payment method
+                                  </a>
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* ── 🔴 THE BILLING NOTE. ALWAYS VISIBLE IN THE LIVE BRANCH, connected or not.
+                              Who charges for what is the thing an operator most needs to know BEFORE
+                              connecting, not after their first invoice. */}
+                          <div className="basis-full mt-2 text-xs text-slate-500">
+                            <p className="font-semibold text-slate-700">Meta charges for WhatsApp replies, not HatchGrab.</p>
+                            <p>
+                              Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business
+                              account. Meta currently includes {formatLimit(META_FREE_REPLIES_PER_MONTH)} free
+                              replies a month per number; after that, each reply is charged at Meta&apos;s rate.
+                              Replies you send yourself from the WhatsApp Business app aren&apos;t charged. Meta
+                              sets these prices and may change them.{' '}
+                              <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
+                                See Meta&apos;s pricing
+                              </a>
                             </p>
-                          ))}
-                        </div>
+                          </div>
+                        </>
                       )
                     })()}
-                    {/* ── 🔴 SETUP (S3, 4 September 2026). DECOUPLED FROM `saveWhatsappSender`. ─────────
-                        THE BUG THIS FIXES, QUOTED FROM THE HANDLER IT NO LONGER CALLS:
-                            if (whatsappSender === lastSavedSender.current) {
-                              showToast('WhatsApp number saved')
-                              return
-                            }
-                        The old button was `onClick={saveWhatsappSender}`. Once this control launches a
-                        flow, that early return means an operator who presses it WITHOUT editing the
-                        number field gets a "WhatsApp number saved" toast and NO WIZARD — a success
-                        message for something that did not happen. That is worse than the bare `return`
-                        it replaced, because it is indistinguishable from working.
-                        🔴 LAUNCHING A WIZARD IS NOT A SAVE. `onSetup` shares no code path with the
-                        save: it runs unconditionally, reads no `lastSavedSender`, and cannot early-return.
-                        The save-on-blur stays on the input beside it, unchanged, because saving the
-                        number IS still a save.
-                        ⚠️ LABEL: "Set up" / "Reconnect", chosen by the STATE (shouldOfferSignup /
-                        shouldOfferReauthorise, derived server-side). Still a forward-looking verb, still
-                        NOT a connected/disconnected indicator — no state is fabricated anywhere. */}
-                    {/* 🔴 THE BUTTON, ITS COPY AND ITS STATE MOVED INTO WhatsAppSetupControl — see that
-                        component for why. It mounts only here, which is what keeps Meta's SDK off every
-                        other truck's page. */}
-                    <WhatsAppSetupControl
-                      token={token}
-                      offerReauthorise={!!whatsappConnection?.offerReauthorise}
-                      onNotice={setSetupNotice}
-                      onConnectionUpdate={onConnectionUpdate}
-                    />
+
                   </>
                 ) : (
                   <>
@@ -10179,6 +10306,31 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
                   'onboarding_incomplete', not a guess made in the browser. Nothing is fabricated here.
                   ⚠️ THE `warn` WORDING ALWAYS TELLS THEM NOT TO RUN IT AGAIN when a token is already
                   stored. Re-running burns another wizard for a fault support can fix in one query. */}
+              {/* ── 🔴 THE DISCONNECT CONFIRMATION ────────────────────────────────────────────────
+                  Inline rather than a modal: the sentence about WhatsApp Business is an INSTRUCTION the
+                  operator may need while they act, and a dialog they must dismiss takes it away.
+                  ⚠️ It says plainly what does NOT happen — their number keeps working — because the fear
+                  this control creates is "will this break my phone?", and it will not. */}
+              {disconnectOpen && (
+                <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs space-y-2">
+                  <p className="font-bold text-red-900">Disconnect WhatsApp?</p>
+                  <p className="text-red-800">
+                    Auto-replies stop straight away and HatchGrab loses access to your WhatsApp account.
+                    Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely,
+                    also open WhatsApp Business → Settings → Account → Business Platform.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" disabled={disconnectBusy} onClick={() => setDisconnectOpen(false)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+                      Cancel
+                    </button>
+                    <button type="button" disabled={disconnectBusy} onClick={() => { void doDisconnect() }}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60">
+                      {disconnectBusy ? 'Disconnecting…' : 'Disconnect'}
+                    </button>
+                  </div>
+                </div>
+              )}
               {setupNotice && (
                 <div className={`mt-2 rounded-xl border p-3 text-xs space-y-1 ${
                   setupNotice.tone === 'ok'    ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :

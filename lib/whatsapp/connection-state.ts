@@ -208,7 +208,15 @@ export function isTokenExpiringSoon(
  * have something to try with. The send path must still report Meta's own refusal.
  */
 export function canSendWhatsApp(state: WhatsAppConnectionState): boolean {
-  return state === 'ready'
+  // 🔴 CHANGED 16 SEPTEMBER 2026 — `awaiting_payment_method` NO LONGER BLOCKS SENDING.
+  // A missing payment method is not a missing credential. Meta allows sends inside its free monthly
+  // allowance without one, so refusing here silenced trucks Meta would have happily delivered for — and
+  // it did it on the strength of `payment_method_present`, a column we never populate (it is null on the
+  // one live connection). The state is KEPT: `needsOperatorAction` still surfaces it, and the Settings
+  // copy still tells an operator who raises their limit above the free allowance to add one.
+  // ⚠️ THIS IS STILL A CLOSED LIST, NOT A "NOT THESE". A state added later is not sendable until someone
+  // writes it here on purpose — which is the property the single equality was protecting.
+  return state === 'ready' || state === 'awaiting_payment_method'
 }
 
 /** States the OPERATOR can act on themselves, and therefore the ones a settings surface gives a button.
