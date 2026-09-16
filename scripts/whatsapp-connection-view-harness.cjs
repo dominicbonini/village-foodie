@@ -40,7 +40,12 @@ function runSuite({ view, parse }) {
                                     ['number only', NUM, null], ['name only', null, NAME]]) {
       const v = view({ state, displayPhoneNumber: num, verifiedName: name })
       t(`🔴 no number input: ${state} / ${tag}`, v.showNumberInput === false)
-      t(`setup control offered: ${state} / ${tag}`, v.showSetupControl === true)
+      // 🔴 CORRECTED 16 September 2026, WITH SIGN-OFF. This asserted `=== true` for EVERY state, which
+      // stopped being the intended behaviour when a ready connection began showing a green "Connected"
+      // pill INSTEAD of a button (lib/whatsapp/connection-view.ts, `showSetupControl: !ready || reconnect`).
+      // The assertion was stale, not the code. ⚠️ These rows carry no reconnect offer, so `ready` is the
+      // only state that hides the control; the both-directions cases live in the settings-row harness.
+      t(`setup control offered: ${state} / ${tag}`, v.showSetupControl === (state !== 'ready'))
     }
   }
 

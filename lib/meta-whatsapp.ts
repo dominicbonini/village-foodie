@@ -17,6 +17,7 @@
 // is worse than an old one that is honestly labelled. If it must change, change it HERE and both the
 // send path and the template calls move together.
 import { GRAPH_VERSION } from '@/lib/whatsapp/graph-version'
+import { parseMetaError } from '@/lib/whatsapp/meta-admin'
 
 // 🔴 MOVED TO THE SHARED CONSTANT (lib/whatsapp/graph-version.ts), v19.0 → v21.0, so the send path and
 // onboarding are on ONE version. Re-exported under its original name: four consumers read it by that
@@ -38,6 +39,39 @@ export function platformAccessToken(): string | null {
 // ⚠️ THE SIGNATURE CHANGED on 15 September 2026 — it takes the access token. Same body, same URL shape,
 // same throw-on-failure contract. The env read moved OUT; see the note inside. The only other edit
 // is that the URL is composed from the constants above instead of carrying its own literal.
+/**
+ * Meta's code for "this WhatsApp Business Account cannot send because of a billing problem" — no
+ * payment method, a declined card, or a balance the account cannot cover.
+ * 🔴 THIS IS THE ONLY META ERROR CODE THIS APP TREATS AS MEANING ANYTHING SPECIFIC. Every other failure
+ * is logged and retried; this one is the operator's to fix, so it raises a banner and sends an email.
+ */
+export const META_ERROR_PAYMENT_ISSUE = 131042
+
+/**
+ * A refusal from Meta's send endpoint, carrying the parsed error code.
+ * ⚠️ THE MESSAGE TEXT IS UNCHANGED from the plain Error this replaces, so existing log lines and the
+ * catch blocks that only stringify it read exactly as before. The subclass adds `code`/`subcode` so
+ * the webhook can recognise a billing refusal by NUMBER rather than by matching Meta's prose — which
+ * is localised, reworded without notice, and would silently stop matching.
+ */
+export class MetaSendError extends Error {
+  readonly status: number
+  readonly code: number | null
+  readonly subcode: number | null
+  constructor(status: number, code: number | null, subcode: number | null, message: string) {
+    super(message)
+    this.name = 'MetaSendError'
+    this.status = status
+    this.code = code
+    this.subcode = subcode
+  }
+}
+
+/** True when Meta refused this send for a billing reason. False for any other error, including a plain Error. */
+export function isPaymentBlockedError(err: unknown): boolean {
+  return err instanceof MetaSendError && err.code === META_ERROR_PAYMENT_ISSUE
+}
+
 export async function sendMetaWhatsApp(
   to: string,
   message: string,
@@ -71,7 +105,12 @@ export async function sendMetaWhatsApp(
 
   if (!res.ok) {
     const err = await res.text().catch(() => res.statusText)
-    throw new Error(`Meta WhatsApp error ${res.status}: ${err}`)
+    // Meta answers errors as JSON, but not always — a gateway can return HTML. A body we cannot parse
+    // yields null codes rather than an exception on top of the failure we are already reporting.
+    let parsed: unknown = null
+    try { parsed = JSON.parse(err) } catch { parsed = null }
+    const e = parseMetaError(parsed)
+    throw new MetaSendError(res.status, e.code, e.subcode, `Meta WhatsApp error ${res.status}: ${err}`)
   }
 }
 

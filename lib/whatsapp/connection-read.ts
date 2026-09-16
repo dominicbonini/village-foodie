@@ -42,12 +42,32 @@ export interface WhatsAppConnectionView {
   displayPhoneNumber: string | null
   /** Meta's verified business name, or null (it is empty until Meta approves one). */
   verifiedName: string | null
+  /** 🔴 READ-ONLY, AND ALREADY SELECTED. The column was fetched for the state derivation and then thrown
+   *  away; the Settings box needs to SAY what it holds, so it is now carried through too. No query
+   *  changed — `CONNECTION_FIELDS` already listed it.
+   *  ⚠️ THREE-VALUED AND IT MATTERS: true = added, false = confirmed absent, null = never asked.
+   *  🧪 Nothing writes true or false today (both signup writes store null), so null is the live case. */
+  paymentMethodPresent: boolean | null
+  /** 🔴 WHEN META ITSELF REFUSED A REAL SEND FOR BILLING (error 131042), or null. This is an OBSERVED
+   *  refusal, not a setting and not a guess — which is exactly why it is trusted enough to raise a
+   *  banner while `paymentMethodPresent` (null on every live row) is not.
+   *  ⚠️ NULL ALSO MEANS "the column is not there yet". The migration is applied by hand; until it is,
+   *  this reads null everywhere and no banner appears — the behaviour before this field existed. */
+  paymentBlockedAt: string | null
 }
 
 /** The columns this read needs. Named, never `select('*')` — the habit that caused the class of bug the
  *  migration header records. `access_token_ciphertext` is selected ONLY to test presence, below. */
 const CONNECTION_FIELDS =
   'truck_id, waba_id, phone_number_id, access_token_ciphertext, token_expires_at, token_revoked_at, token_issued_at, payment_method_present, display_phone_number, verified_name'
+
+/** 🔴 SELECTED SEPARATELY, WITH A FALLBACK, BECAUSE THE MIGRATION THAT ADDS IT IS APPLIED BY HAND.
+ *  Appending `payment_blocked_at` to CONNECTION_FIELDS unconditionally would make the ENTIRE select
+ *  fail with 42703 until somebody runs the SQL — and this function turns any read failure into
+ *  'not_connected', so a trading truck's WhatsApp box would go blank and offer to set up a connection
+ *  it already has. One extra column is not worth that, so the read asks for it, and asks again without
+ *  it if the first attempt fails. */
+const CONNECTION_FIELDS_WITH_BLOCK = CONNECTION_FIELDS + ', payment_blocked_at'
 
 /** Minimal shape of the supabase client this needs, so the module imports no client library and cannot
  *  drag a server dependency anywhere.
@@ -78,11 +98,23 @@ export async function readWhatsAppConnection(
 ): Promise<WhatsAppConnectionView> {
   let row: Record<string, unknown> | null = null
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('whatsapp_connections')
-      .select(CONNECTION_FIELDS)
+      .select(CONNECTION_FIELDS_WITH_BLOCK)
       .eq('truck_id', truckId)
       .maybeSingle()
+    if (error) {
+      // ⚠️ RETRY WITHOUT THE HAND-APPLIED COLUMN BEFORE GIVING UP. If this second attempt succeeds, the
+      // only thing that was wrong was the missing column: the connection is read in full and
+      // `paymentBlockedAt` simply stays null. If it fails too, the original handling below takes over
+      // unchanged and the box lands on 'not_connected' exactly as it did before.
+      const retry = await supabase
+        .from('whatsapp_connections')
+        .select(CONNECTION_FIELDS)
+        .eq('truck_id', truckId)
+        .maybeSingle()
+      if (!retry.error) { data = retry.data; error = null }
+    }
     if (error) {
       // Table absent (not yet applied by hand) or any read failure. Logged, never thrown.
       console.warn('[whatsapp/connection-read] read failed, treating as not_connected:', error.message)
@@ -120,5 +152,8 @@ export async function readWhatsAppConnection(
     // rather than `undefined` reaching the view model.
     displayPhoneNumber: (row?.display_phone_number as string | null) ?? null,
     verifiedName: (row?.verified_name as string | null) ?? null,
+    // Reuses `input.paymentMethodPresent`, already narrowed above — not a second read of the row.
+    paymentMethodPresent: input.paymentMethodPresent,
+    paymentBlockedAt: (row?.payment_blocked_at as string | null) ?? null,
   }
 }

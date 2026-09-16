@@ -70,10 +70,12 @@ export const metadata: Metadata = {
   // Problem-shaped, in an operator's own words, and it names the one thing this is NOT so the wrong
   // buyer self-selects out of the click rather than out of the trial. "POS" appears exactly once and
   // only to draw that boundary.
-  // ⚠️ "MESSAGES GOING UNANSWERED" WAS DELIBERATELY LEFT OUT — see the report. WhatsApp auto-replies
-  // are the only feature that answers messages and they are COMING SOON behind WHATSAPP_LIVE
-  // (lib/whatsapp-live.ts). Naming that problem here would advertise an unshipped capability in the
-  // one place nobody re-reads when a flag flips.
+  // ⚠️ "MESSAGES GOING UNANSWERED" IS STILL LEFT OUT, AND THE REASON HAS CHANGED (16 September 2026).
+  // It was excluded because WhatsApp auto-replies were coming soon behind WHATSAPP_LIVE; the flag is now
+  // true and the feature ships. It stays out on EDITORIAL grounds instead: this description is two lines
+  // of search metadata for "ordering and kitchen-screen software", and auto-replies are not what someone
+  // typing that is looking for. 🔴 If it is ever added, it is now a factual claim rather than a forbidden
+  // one — but check the flag before assuming that, because metadata is the place nobody re-reads.
   description:
     'Take orders and pre-orders from your pitch without the queue. Ordering and kitchen-screen '
     + 'software for UK food trucks and mobile catering — not a POS.',
@@ -527,17 +529,23 @@ export default function LandingPage() {
                     auto-replies — Coming soon". WhatsApp now ships and carries NO badge; the other two
                     keep theirs. Third surface of the same fact as the does-item block above and the
                     matrix row in lib/plan-features.ts. */}
-                {/* ⚠️ THE ⁶ IS A HAND-WRITTEN TWIN OF THE MATRIX ROW'S `footnote: '6'`
+                {/* ⚠️ THE ⁴ IS A HAND-WRITTEN TWIN OF THE MATRIX ROW'S `footnote: '4'`
                     (lib/plan-features.ts) — these pricing-card bullets are literals, not rendered from
-                    FEATURE_SECTIONS, and nothing checks the two against each other. 🔴 IF FOOTNOTE 6 IS
+                    FEATURE_SECTIONS, and nothing checks the two against each other. 🔴 IF FOOTNOTE 4 IS
                     EVER RENUMBERED OR RETIRED, THIS MARKER MUST MOVE WITH IT; it will not error, it will
                     just point at the wrong note. Same `.f-note` class the comparison table uses for row
-                    footnotes, so it resolves to the numbered list under that table on this same page. */}
+                    footnotes, so it resolves to the numbered list under that table on this same page.
+                    🔴 CHANGED 6 → 4 ON 16 September 2026, exactly the move this warning was written for.
+                    The WhatsApp-only footnote 6 was retired and its billing text folded into the shared
+                    footnote 4; a marker left on 6 would have pointed at a note that no longer exists.
+                    ⚠️ IT IS NO LONGER FLAG-DEPENDENT. Footnote 4 exists in both states, so this literal
+                    is correct whichever way WHATSAPP_LIVE is set — which is why it can sit outside the
+                    ternary below without a second branch. */}
                 {/* 🔴 BEHIND THE SINGLE SWITCH. OFF is the production bullet at 08ac368, verbatim: ONE
                     welded line for all three channels carrying the badge. ON splits it in two, WhatsApp
                     without a badge and with the ⁶ marker that only exists while the flag is on. */}
                 {WHATSAPP_LIVE ? (<>
-                <li>WhatsApp auto-replies<sup className="f-note">6</sup></li>
+                <li>WhatsApp auto-replies<sup className="f-note">4</sup></li>
                 <li>Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
                 </>) : (
                 <li>WhatsApp, Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>

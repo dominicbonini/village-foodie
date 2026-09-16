@@ -44,7 +44,7 @@ import {
   DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H, META_FREE_REPLIES_PER_MONTH,
   MONTHLY_REPLY_LIMIT_CHOICES, DEFAULT_MONTHLY_REPLY_LIMIT,
 } from '@/lib/whatsapp/reply-cap'
-import { META_PRICING_URL, WHATSAPP_MANAGER_URL, formatLimit, formatResetDate } from '@/lib/whatsapp/copy'
+import { META_PRICING_URL, WHATSAPP_MANAGER_URL, formatLimit, formatResetDate, META_PRICING_CHECKED_ON, META_FREE_ALLOWANCE_FROM } from '@/lib/whatsapp/copy'
 // S2/S3: the connection VIEW type only — a state and three booleans. No token shape exists on the
 // client by construction; see lib/whatsapp/connection-read.ts for the server-side reduction.
 import type { WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
@@ -8592,11 +8592,12 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
             something. Do not revert this to descriptive phrasing as a stylistic preference — the change
             of voice is the change.
 
-            🔴 "BEFORE YOU CONNECT" IS DELIBERATELY FORWARD-LOOKING. DO NOT "CORRECT" IT. There is no
-            connect action on this card today — WhatsApp is coming-soon behind WHATSAPP_LIVE — and that
-            is beside the point: the preview exists so an operator can try the feature AHEAD of
-            connecting, which is its purpose whether or not the control is live this week. This is not an
-            oversight and it is not a stale reference to a removed button. */}
+            🔴 "BEFORE YOU CONNECT" IS DELIBERATELY FORWARD-LOOKING. DO NOT "CORRECT" IT. It was written
+            when there was no connect action at all; since 16 September 2026 WHATSAPP_LIVE is true and the
+            Set up control is live in the WhatsApp box further down. The phrasing still holds and for the
+            better reason: the preview exists so an operator can try the feature AHEAD of connecting, and
+            most operators reading this genuinely have not connected yet. Not an oversight, and not a
+            stale reference to a removed button. */}
         <p className="text-sm text-slate-500">Type a question like a customer would ask, and see exactly what they&apos;d get back. Nothing is sent to anyone.</p>
       </div>
 
@@ -8724,9 +8725,14 @@ function WhatsAppReplyPreview({ token }: { token: string }) {
 
       {/* ── THE AI FOOTNOTE ────────────────────────────────────────────────────────────────────────
           🔴 WORDING TAKEN VERBATIM FROM THE LANDING PAGE, NOT WRITTEN HERE. Source: `FOOTNOTES` number
-          '4' in lib/plan-features.ts — "Auto-replies require a Business account on each platform.
-          Replies are AI-generated and can occasionally be wrong — you can view every message and reply
-          yourself at any time."
+          '4' in lib/plan-features.ts, as it read at the time — "Auto-replies require a Business account
+          on each platform. Replies are AI-generated and can occasionally be wrong — you can view every
+          message and reply yourself at any time."
+          ⚠️ FOOTNOTE 4 HAS MOVED ON TWICE SINCE. The "view every message" clause was cut (see below),
+          and on 16 September 2026 it absorbed the WhatsApp billing sentences and became conditional on
+          WHATSAPP_LIVE. NONE of that reaches this line, which is intentional — see the decoupling note
+          below. The quotation above is kept as the provenance of this sentence, not as a description of
+          what footnote 4 says today.
           🔴 ONLY THE VERIFIED CLAUSE IS REPEATED. The footnote's second half — "you can view every
           message" — HAS NO PRODUCT BEHIND IT. `whatsapp_logs` stores `message_in` and `response_sent`,
           but the only reads anywhere select `classification, possible_miss` (the Reports counts) and
@@ -8784,8 +8790,14 @@ function QrPreview({ src, alt, onOpen, locked }: {
 // A SEPARATE COMPONENT, AND THAT IS THE MECHANISM, NOT TIDINESS. Its `useEffect` loads Meta's SDK, and
 // an effect runs when the component MOUNTS — so the SDK is fetched exactly when this button renders and
 // never otherwise. A hook cannot live inside the `{whatsAppSetupVisible && can(…) ? … : …}` conditional;
-// a component rendered by that conditional can. Pizzeria Gusto renders the ELSE branch, so this never
-// mounts for it and connect.facebook.net is never contacted from its page.
+// a component rendered by that conditional can.
+// 🔴 CHANGED 16 September 2026 — READ THIS BEFORE ASSUMING THE SDK IS NEVER LOADED. This used to say
+// "Pizzeria Gusto renders the ELSE branch, so this never mounts for it and connect.facebook.net is never
+// contacted from its page." That is NO LONGER TRUE. With WHATSAPP_LIVE true, every truck whose plan
+// grants whatsapp_replies renders the LIVE branch — Pizzeria Gusto included (plan 'trial', and
+// TRIAL_FEATURES spreads MAX_FEATURES) — so this component mounts and Meta's SDK IS fetched on their
+// Settings tab. ⚠️ Only a STARTER truck now renders the else branch, because canAccess denies it there.
+// The mechanism above is unchanged; only which trucks reach it has.
 //
 // ── WHAT WAS WRONG, AND WHY BOTH HALVES HAD TO MOVE ─────────────────────────────────────────────────
 // 🧪 Observed in Safari: pressing Set up showed "Opening…", Safari blocked the Facebook window, and after
@@ -8988,7 +9000,8 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // ⚠️ VALUE ONLY — THE SETTER IS GONE WITH THE EDITABLE INPUT. `whatsapp_sender` is still READ here,
   // because the else branch shows it in a disabled box, and still read by the webhook's sender fallback
   // and by customer order emails. Nothing in Manage writes it any more.
-  const [whatsappSender] = useState(truck.whatsapp_sender ?? '')
+  // 🔴 `whatsappSender` REMOVED 16 September 2026. It was a read-only `useState` with no setter whose
+  // only consumer was the disabled input in the else branch below; deleting that input left it unused.
   const [preferredContact, setPreferredContact] = useState(truck.preferred_contact_method ?? '')
   const [allowCancellation, setAllowCancellation] = useState(truck.allow_customer_cancellation ?? true)
   const [cancellationCutoff, setCancellationCutoff] = useState(truck.cancellation_cutoff_mins ?? 30)
@@ -9353,10 +9366,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     truck.trial_expires_at ?? null
   )
 
-  // ── 🔴 THE WHATSAPP SETUP PREVIEW ────────────────────────────────────────────────────────────────
-  // `WHATSAPP_LIVE` is false and stays false. This lets ONE truck — the one carrying the admin-set
-  // override key — reach the interactive Set up control so the Embedded Signup flow can be exercised
-  // end to end before anything is announced.
+  // ── 🔴 THE WHATSAPP SETUP PREVIEW — NOW REDUNDANT, DELIBERATELY KEPT ────────────────────────────
+  // ⚠️ SUPERSEDED 16 September 2026. `WHATSAPP_LIVE` is TRUE, so this expression short-circuits to true
+  // for every truck and the per-truck override decides nothing any more. It was written to let ONE truck
+  // — the one carrying the admin-set override key — reach the interactive Set up control so Embedded
+  // Signup could be exercised end to end before anything was announced. That job is done.
+  // 🔴 IT IS KEPT RATHER THAN DELETED so the flag can be switched back to false without also having to
+  // rebuild the preview path: flip the flag and the override is load-bearing again, unchanged. Deleting
+  // it would make a revert a two-file job under time pressure.
   // 🔴 IT IS DELIBERATELY NOT A `can()` CALL. `canAccess` consults PLAN_FEATURES, and
   // `TRIAL_FEATURES = [...MAX_FEATURES]` — so a key in any plan list would switch this on for EVERY
   // trial truck, Pizzeria Gusto included. hasWhatsAppSetupPreview reads the per-truck override map and
@@ -9395,7 +9412,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       // 🔴 THE ROW'S NEW STATE COMES FROM A RE-READ, NOT FROM THIS HANDLER ASSUMING SUCCESS.
       onConnectionUpdate({
         state: 'not_connected', offerSignup: true, offerReauthorise: false, expiringSoon: false,
-        displayPhoneNumber: null, verifiedName: null,
+        displayPhoneNumber: null, verifiedName: null, paymentMethodPresent: null,
+        // Disconnecting ends the connection the banner is about, so it must go with it.
+        paymentBlockedAt: null,
       })
       setSetupNotice(res?.unsubscribed === false
         ? { tone: 'warn', text: 'WhatsApp is disconnected. We couldn’t reach Meta to remove access. Please remove HatchGrab in WhatsApp Business → Settings → Account → Business Platform.' }
@@ -9974,12 +9993,17 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       {/* Online presence & social */}
       {/* ── 🔴 THE WHOLE AUTO-REPLIES CARD IS HIDDEN IN THE NATIVE APP (25 August 2026). ─────────────
           ALL account types, ALL plans, heading included — so no empty bordered box is left behind.
-          🔴 WHY: the section can currently only SIMULATE a reply. There is no way to connect a number
-          from it (`WHATSAPP_LIVE` is false and self-serve provisioning is not built). A control a user
-          can see and cannot operate is a Guideline 2.1 completeness defect, and this build is answering
-          a 2.1 rejection.
-          ⚠️ THIS IS A HIDE, NOT A REMOVAL. Every line below is intact and unchanged. When WhatsApp
-          provisioning ships, delete this wrapper and the section returns exactly as it was.
+          🔴 WHY IT WAS HIDDEN: at the time the section could only SIMULATE a reply — there was no way to
+          connect a number from it, and a control a user can see and cannot operate is a Guideline 2.1
+          completeness defect, which this build was answering a rejection for.
+          ⚠️ THE ORIGINAL REASON NO LONGER HOLDS, AND THE HIDE STAYS ANYWAY (16 September 2026).
+          `WHATSAPP_LIVE` is now true and Embedded Signup works, so the card is operable on the web. It
+          remains hidden on native because Set up opens a Meta-hosted pop-up flow that has never been
+          exercised inside the app's web view, and shipping an untested external-auth flow into a store
+          build is a worse risk than a missing card. 🔴 REMOVING THIS WRAPPER IS NOW A DELIBERATE DECISION
+          WITH ITS OWN TESTING, not the tidy-up the next line used to describe.
+          ⚠️ THIS IS A HIDE, NOT A REMOVAL. Every line below is intact and unchanged — deleting the
+          wrapper returns the section exactly as it was, once the pop-up flow has been tested on device.
           ⚠️ `isNativeApp()`, THE SAME MECHANISM THE CONNECT SUBSECTION INSIDE ALREADY USES — imported
           at :63 from lib/native/device, `typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()`.
           🔴 NOT `purchaseCtaAllowed()`. That predicate answers a COMMERCE question (3.1.1) and
@@ -10096,97 +10120,65 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               exactly what all three rows now are. The 14 August removal took two such rows OUT of the
               build entirely for that reason; they are back only because the wrapper keeps them off
               every native build. Do not lift any of this above the wrapper. */}
-          <p className="text-sm font-bold text-slate-700 mb-0.5">Channels</p>
-          {/* Moved under "Channels" — it now has three rows as its subject rather than one. */}
-          <p className="text-xs text-slate-400 mb-3">Requires Business accounts on each platform.</p>
-
-          {/* ── 🔴 THE REPLY CAP, STATED WHERE IT IS SET UP (4 September 2026). ──────────────────────
-              MOVED HERE OUT OF PRICING FOOTNOTE 6. A per-customer limit is an OPERATIONAL fact an
-              operator needs while configuring the feature, not a line on a marketing comparison table
-              they read once before signing up.
-              🔴 THE NUMBER IS READ FROM SOURCE, NOT TYPED. `DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H` is 3
-              (lib/whatsapp/reply-cap.ts:25) and the webhook passes exactly that constant at its
-              decideReplyCap call site — so this renders the live value and cannot drift from it. When
-              the intended per-truck override lands (ceiling 5), this reads the truck's value instead.
-              🔴 "AND ONE MORE" IS NOT A ROUNDING. reply-cap.ts:68-70 is explicit: the handoff is ITSELF
-              a billable message, so a limit of 3 yields THREE replies PLUS ONE handoff — **four billable
-              messages, not three.** Saying "3 a day" alone would understate the invoice by 25%.
-              ⚠️ NO PRICE AND NO DATE — same reason as footnote 6: Meta's rates are unread, and this card
-              must not carry a figure the product cannot stand behind. */}
-          <p className="text-xs text-slate-500 mb-3">
-            Auto-replies answer up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} messages from each customer in
-            any 24 hours. If a customer keeps going, they get one last message saying you&apos;ll reply
-            personally.
-          </p>
+          {/* ── 🔴 THREE BOXES, ONE PER CHANNEL, USING THE PAGE'S OWN BOX-WITHIN-A-SECTION PATTERN ────
+              `rounded-xl border border-slate-200 p-3` with a bold `text-sm` title and `text-xs
+              text-slate-500` helper text is what this file already uses three times elsewhere
+              (:1200, :1241, :5431). Reused rather than invented, so this card does not become the one
+              place with its own idea of what a box looks like.
+              ⚠️ NO NESTED <Card>. `Card` carries `bg-white shadow-sm rounded-2xl` and is the SECTION
+              container; nesting it inside itself would stack two shadows and two radii.
+              🔴 THIS IS LAYOUT ONLY. Every visibility test below is a field of `whatsAppRowView` or an
+              existing predicate; not one decision moved into this markup. */}
+          <p className="text-sm font-bold text-slate-700 mb-3">Channels</p>
 
           <div className="space-y-3">
-            {/* ── WhatsApp ────────────────────────────────────────────────────────────────────────────
-                🟢 LIVE SINCE 4 September 2026. `WHATSAPP_LIVE` is true (:8444), so the editable input and
-                the Connect button render for any truck whose plan grants `whatsapp_replies` — which is
-                Pro, Max AND trial/tester/demo, because TRIAL_FEATURES spreads MAX_FEATURES
-                (lib/features.ts:51/55/72). Both live trucks are plan='trial', so both see this row.
-                ⚠️ THE ELSE BRANCH BELOW IS KEPT, not dead code: it is the presentation this row returns
-                to if the flag is ever flipped back.
-                🔴 THE PREVIOUS COMMENT HERE WAS STALE AND SAID THE OPPOSITE — CORRECTED 4 September 2026.
-                It read: "THIS STATE DELIBERATELY DOES **NOT** COME FROM lib/plan-features.ts, AND MUST
-                NOT. That module's WhatsApp row reads `pro: true, max: true` … Setting it to 'coming_soon'
-                there would rewrite the public landing pricing matrix … Two different facts; two different
-                homes." Every factual clause in that had stopped being true: the row was deliberately MOVED
-                to `coming_soon` (lib/plan-features.ts:272 records why, and names this flag as the reason),
-                and it cited `:8378` for a const that had drifted to `:8444`. The two files are now
-                deliberately KEPT IN STEP — this flag and that row are two halves of one statement, and the
-                4 September change flipped both together. If you flip one back, flip the other.
-                ⚠️ CONSEQUENCE, RECORDED: the `can('whatsapp_replies')` FeatureGate lives in the live
-                branch, so the card now carries its upgrade affordance again for a plan that lacks the
-                feature (starter) — which is what the card description was worded around while it did not. */}
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <label className={`text-sm w-20 flex-shrink-0 ${whatsAppSetupVisible ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
-                {whatsAppSetupVisible && can('whatsapp_replies') ? (
-                  <>
-                    {/* ── 🔴 THE FREE-TEXT NUMBER BOX IS GONE FROM EVERY LIVE STATE ────────────────────
-                        It asked the operator to type a number that had NO CONNECTION to the one Meta had
-                        actually linked — two sources for one fact, one of them a guess, and the row
-                        happily showed the guess. What is shown now is only what Meta itself returned for
-                        the connected phone number id.
-                        ⚠️ IT WROTE `trucks.whatsapp_sender`, WHICH IS NOT DELETED AND IS STILL READ —
-                        by the webhook's sender fallback and by customer order emails (lib/email.ts). The
-                        column and its stored values are untouched; only this UI writer is gone. A truck
-                        on the live branch can no longer SET it from here, which is the intended trade:
-                        the connection now supplies the number.
-                        🔴 THE ELSE BRANCH BELOW IS UNTOUCHED and keeps its own disabled input.
-                        🔴 WHAT IS SHOWN IS DECIDED BY `whatsAppRowView`, NOT HERE. Fourteen state/value
-                        combinations is too many to reason about in markup; this renders its answer. */}
-                    {(() => {
-                      const view = whatsAppRowView({
-                        state: whatsappConnection?.state ?? 'not_connected',
-                        displayPhoneNumber: whatsappConnection?.displayPhoneNumber ?? null,
-                        verifiedName: whatsappConnection?.verifiedName ?? null,
-                        offerReauthorise: !!whatsappConnection?.offerReauthorise,
-                        monthlyLimit: monthlyLimit,
-                        freeAllowance: META_FREE_REPLIES_PER_MONTH,
-                      })
-                      return (
-                        <>
-                          {(view.facts.length > 0 || view.showBareConnected) && (
-                            <div className="flex-1 min-w-0 text-sm">
-                              {view.showBareConnected && <p className="text-slate-700">Connected</p>}
-                              {view.facts.map(f => (
-                                <p key={f.label} className="truncate text-slate-700">
-                                  <span className="text-slate-500">{f.label}: </span>{f.value}
-                                </p>
-                              ))}
-                            </div>
-                          )}
 
-                          {/* 🔴 A GREEN LABEL REPLACES THE BUTTON when the connection is working. It is a
-                              STATE, not an action — there is nothing useful to press. */}
+            {/* ── WHATSAPP ───────────────────────────────────────────────────────────────────────── */}
+            <div className="rounded-xl border border-slate-200 p-3">
+              {whatsAppSetupVisible && can('whatsapp_replies') ? (
+                (() => {
+                  const view = whatsAppRowView({
+                    state: whatsappConnection?.state ?? 'not_connected',
+                    displayPhoneNumber: whatsappConnection?.displayPhoneNumber ?? null,
+                    verifiedName: whatsappConnection?.verifiedName ?? null,
+                    offerReauthorise: !!whatsappConnection?.offerReauthorise,
+                    monthlyLimit: monthlyLimit,
+                    freeAllowance: META_FREE_REPLIES_PER_MONTH,
+                    paymentMethodPresent: whatsappConnection?.paymentMethodPresent ?? null,
+                    paymentBlockedAt: whatsappConnection?.paymentBlockedAt ?? null,
+                  })
+                  // 🔴 EVERY `{…&&}` BELOW READS A FIELD OF `view`. Nothing in this markup decides anything;
+                  // the usage percentage is arithmetic on two numbers the API returned, not a decision.
+                  const usedPct = whatsappUsage && whatsappUsage.limit > 0
+                    // ⚠️ CAPPED AT 100. A truck that overshot before its limit was lowered would otherwise
+                    // render a bar wider than its track.
+                    ? Math.min(100, Math.round((whatsappUsage.used / whatsappUsage.limit) * 100))
+                    : 0
+                  return (
+                    <>
+                      {/* ── A. HEADER ────────────────────────────────────────────────────────────────
+                          ⚠️ `flex-wrap` + `items-start` + `justify-between` is what makes this safe at
+                          ~360px: the control wraps BELOW the title block instead of squashing it. */}
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-slate-800">WhatsApp</p>
+                          {/* 🔴 THE SUBTITLE REPLACES THE OLD "Connected number:" / "Business name:" LINES.
+                              It is built in the view model from values META returned, and is null when
+                              there are none — it never invents a number. */}
+                          {view.subtitle && (
+                            <p className="text-xs text-slate-500 mt-0.5 truncate">{view.subtitle}</p>
+                          )}
+                          {view.showRequiresAccountHelper && (
+                            <p className="text-xs text-slate-500 mt-0.5">Requires a WhatsApp Business account.</p>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
                           {view.showConnectedLabel && (
-                            <span className="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
                               Connected
                             </span>
                           )}
-
+                          {/* ⚠️ DISCONNECT IS NO LONGER HERE — it moved to the footer (D). */}
                           <WhatsAppSetupControl
                             token={token}
                             offerReauthorise={!!whatsappConnection?.offerReauthorise}
@@ -10195,122 +10187,265 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                             onNotice={setSetupNotice}
                             onConnectionUpdate={onConnectionUpdate}
                           />
+                        </div>
+                      </div>
 
-                          {view.showDisconnect && (
-                            <button
-                              type="button"
-                              onClick={() => setDisconnectOpen(true)}
-                              className="flex-shrink-0 text-xs font-semibold text-slate-500 underline hover:text-red-700"
+                      {/* ── A2. PAYMENT BLOCKED ──────────────────────────────────────────────────
+                          🔴 FIRST THING IN THE BOX AFTER THE HEADER, AND RED RATHER THAN AMBER. Every
+                          other note on this card is about what MIGHT happen; this one is the only one
+                          reporting something that IS happening — Meta is refusing this truck's replies
+                          right now. It sits above the limit control and the billing detail because neither
+                          matters while nothing is going out.
+                          ⚠️ IT DOES NOT SAY "you have no payment method". It says what Meta told us:
+                          the sends are being refused for billing. The operator may well have a card on
+                          file that has expired or been declined, and telling them to add one they
+                          already added is how a true alert gets dismissed as broken. */}
+                      {view.showPaymentBlockedBanner && (
+                        <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
+                          <p className="text-sm font-bold text-red-800">Your replies are not being delivered</p>
+                          <p className="mt-1 text-xs text-red-700">
+                            WhatsApp is refusing to send your automatic replies because of a billing problem on your
+                            WhatsApp Business account. Customers can still message you and you will still see everything
+                            they send — but they are not getting a reply.
+                          </p>
+                          <p className="mt-1 text-xs text-red-700">
+                            You pay WhatsApp directly for these messages, so this is fixed in WhatsApp Manager.{' '}
+                            <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
+                              className="underline font-semibold whitespace-nowrap">
+                              Check your payment method
+                            </a>
+                          </p>
+                        </div>
+                      )}
+
+                      {/* ── B. AUTO-REPLIES ──────────────────────────────────────────────────────── */}
+                      {view.showMonthlyLimit && (
+                        <div className="mt-3 border-t border-slate-100 pt-3">
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Auto-replies</p>
+                          {/* ⚠️ THE ROW WRAPS AND THE USAGE BLOCK TAKES ITS OWN LINE ON A PHONE.
+                              `basis-full sm:basis-auto sm:flex-1` with `min-w-0` is what stops the bar
+                              forcing a horizontal scroll at 360px. */}
+                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+                            <label className="text-sm text-slate-600" htmlFor="wa-monthly-limit">Monthly limit</label>
+                            <select
+                              id="wa-monthly-limit"
+                              value={monthlyLimit}
+                              onChange={e => { void saveMonthlyLimit(Number(e.target.value)) }}
+                              className="min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-sm"
                             >
-                              Disconnect
-                            </button>
-                          )}
-
-                          {/* ── 🔴 THE MONTHLY LIMIT. Only once there is a connection to limit. ──────── */}
-                          {view.showMonthlyLimit && (
-                            <div className="basis-full mt-2 space-y-1">
-                              <label className="block text-sm">
-                                <span className="text-slate-600">Monthly reply limit</span>
-                                <select
-                                  value={monthlyLimit}
-                                  onChange={e => { void saveMonthlyLimit(Number(e.target.value)) }}
-                                  className="ml-2 border border-slate-200 rounded-lg px-2 py-1 text-sm"
+                              {MONTHLY_REPLY_LIMIT_CHOICES.map(v => (
+                                <option key={v} value={v}>{formatLimit(v)}</option>
+                              ))}
+                            </select>
+                            {whatsappUsage && (
+                              <div className="basis-full sm:basis-auto sm:flex-1 min-w-0">
+                                {/* 🔴 NO PROGRESS-BAR PATTERN EXISTED ON THIS PAGE — track + fill built from
+                                    the page's own palette and radius. `aria-*` so it is not a bare div to a
+                                    screen reader. */}
+                                <div
+                                  className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden"
+                                  role="progressbar"
+                                  aria-valuemin={0}
+                                  aria-valuemax={whatsappUsage.limit}
+                                  aria-valuenow={whatsappUsage.used}
                                 >
-                                  {MONTHLY_REPLY_LIMIT_CHOICES.map(v => (
-                                    <option key={v} value={v}>{formatLimit(v)}</option>
-                                  ))}
-                                </select>
-                              </label>
-                              {whatsappUsage && (
-                                <p className="text-xs text-slate-600">
-                                  This month: {formatLimit(whatsappUsage.used)} of {formatLimit(whatsappUsage.limit)} used
+                                  <div
+                                    className={`h-full rounded-full ${usedPct >= 100 ? 'bg-amber-500' : 'bg-green-500'}`}
+                                    style={{ width: `${usedPct}%` }}
+                                  />
+                                </div>
+                                <p className="mt-1 text-xs text-slate-600">
+                                  {formatLimit(whatsappUsage.used)} of {formatLimit(whatsappUsage.limit)} used
                                   {' · '}resets {formatResetDate(whatsappUsage.resetsOn)}
                                 </p>
+                              </div>
+                            )}
+                          </div>
+                          <p className="mt-2 text-xs text-slate-500">
+                            Up to {DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H} replies per customer in 24 hours, then one
+                            message saying you&apos;ll reply personally.
+                          </p>
+                          {/* ⚠️ THE EMAILS THIS PROMISES ARE NOT BUILT YET — recorded in the settings-row
+                              report. The wording is the founder's and is rendered verbatim. */}
+                          <p className="mt-1 text-xs text-slate-500">
+                            Replies pause at your limit. We&apos;ll email you at 80% and 100%.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* ── C. BILLING ───────────────────────────────────────────────────────────── */}
+                      {view.showBillingSection && (
+                        <div className="mt-3 border-t border-slate-100 pt-3">
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Billing</p>
+
+                          {view.showBillingPaymentRow && (
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <span className="text-sm text-slate-600">Payment method</span>
+                              {/* 🔴 TWO PILLS, AND THE ROW IS ABSENT WHEN WE DO NOT KNOW. It used to carry a
+                                  grey "Not checked" for `unknown` — which is EVERY connection today, because
+                                  nothing writes the column. A row whose normal state is "we haven't looked"
+                                  tells the operator nothing and invites them to fix a problem we cannot say
+                                  they have. `showBillingPaymentRow` now excludes 'unknown' entirely. */}
+                              {view.paymentStatus === 'added' && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                                  Payment method added
+                                </span>
                               )}
-                              {/* ⚠️ THE EMAILS THIS PROMISES ARE NOT BUILT YET — next workstream. The copy
-                                  is the founder's, kept verbatim; see the report. */}
-                              <p className="text-xs text-slate-500">
-                                Auto-replies pause when you reach your limit. We&apos;ll email you at 80% and 100%.
-                                Staying at {formatLimit(META_FREE_REPLIES_PER_MONTH)} or below keeps you within
-                                Meta&apos;s free allowance.
-                              </p>
-                              {view.showAboveAllowanceNote && (
-                                <p className="text-xs text-amber-700">
-                                  Above {formatLimit(META_FREE_REPLIES_PER_MONTH)}, Meta charges for each extra
-                                  reply, and your WhatsApp Business account needs a payment method. Without one,
-                                  Meta stops all your replies once the free allowance is used.{' '}
-                                  <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
-                                    Add a payment method
+                              {view.paymentStatus === 'missing' && (
+                                <>
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                    No payment method added
+                                  </span>
+                                  <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
+                                    className="text-xs font-semibold underline text-slate-600 hover:text-slate-800">
+                                    Add in WhatsApp Manager
                                   </a>
-                                </p>
+                                </>
                               )}
                             </div>
                           )}
 
-                          {/* ── 🔴 THE BILLING NOTE. ALWAYS VISIBLE IN THE LIVE BRANCH, connected or not.
-                              Who charges for what is the thing an operator most needs to know BEFORE
-                              connecting, not after their first invoice. */}
-                          <div className="basis-full mt-2 text-xs text-slate-500">
-                            <p className="font-semibold text-slate-700">Meta charges for WhatsApp replies, not HatchGrab.</p>
-                            <p>
-                              Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business
-                              account. Meta currently includes {formatLimit(META_FREE_REPLIES_PER_MONTH)} free
-                              replies a month per number; after that, each reply is charged at Meta&apos;s rate.
-                              Replies you send yourself from the WhatsApp Business app aren&apos;t charged. Meta
-                              sets these prices and may change them.{' '}
-                              <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
-                                See Meta&apos;s pricing
+                          {/* ── 🔴 THE BILLING SUMMARY. EXACT OPERATOR WORDING, 16 September 2026. ─────────
+                              It replaced "Meta bills your WhatsApp account for replies, not HatchGrab. The
+                              first 1,000 each month are free." — which asserted the allowance as a present
+                              fact when it does not begin until META_FREE_ALLOWANCE_FROM, and gave a reader
+                              no way to tell how old the figure was.
+                              🔴 THE SAME SENTENCE IS FOOTNOTE 6 ON THE PUBLIC PRICING TABLE
+                              (lib/plan-features.ts). Both read the SAME three constants, so the operator's
+                              Settings page and the page that sold them the plan cannot quote different
+                              dates or a different allowance.
+                              ⚠️ THIS ONE LINKS AND THE FOOTNOTE DOES NOT. The footnote is printed in the
+                              features PDF, where a link cannot be clicked, so it says "check with Meta"
+                              instead. Same fact, different medium — not a drift to reconcile. */}
+                          <p className="mt-2 text-xs text-slate-500">
+                            Meta, not HatchGrab, bills your WhatsApp account for replies. From{' '}
+                            {META_FREE_ALLOWANCE_FROM} the first {formatLimit(META_FREE_REPLIES_PER_MONTH)} a
+                            month are free. Correct at {META_PRICING_CHECKED_ON}; check{' '}
+                            <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
+                              Meta&apos;s pricing
+                            </a>{' '}
+                            for changes.
+                          </p>
+
+                          {/* ⚠️ A NATIVE <details>, MATCHING THE PAGE'S EXISTING EXPANDER (:7435): `list-none`
+                              with a `group-open:rotate-90` marker. No JavaScript, no state, and it keeps
+                              working if hydration fails. */}
+                          <details className="mt-2 group">
+                            <summary className="text-xs text-slate-500 cursor-pointer select-none hover:text-slate-700 list-none flex items-center gap-1">
+                              <span className="transition-transform group-open:rotate-90 inline-block text-slate-300">▶</span>
+                              <span>How Meta charges</span>
+                            </summary>
+                            <div className="mt-2 text-xs text-slate-500">
+                              <p className="font-semibold text-slate-700">Meta charges for WhatsApp replies, not HatchGrab.</p>
+                              <p className="mt-0.5">
+                                Each reply HatchGrab sends for you is billed by Meta to your WhatsApp Business
+                                account. {/* ⚠️ "From <date>, Meta includes" REPLACED "Meta currently includes"
+                                on 16 September 2026, and only that phrase — the rest of this approved
+                                paragraph and both its links are untouched. "Currently" was true of neither
+                                period: before the date the allowance has not started, and after it the word
+                                ages silently on a surface nobody re-reads. */}
+                                From {META_FREE_ALLOWANCE_FROM}, Meta includes {formatLimit(META_FREE_REPLIES_PER_MONTH)} free
+                                replies a month per number; after that, each reply is charged at Meta&apos;s rate.
+                                Replies you send yourself from the WhatsApp Business app aren&apos;t charged. Meta
+                                sets these prices and may change them.{' '}
+                                <a href={META_PRICING_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
+                                  See Meta&apos;s pricing
+                                </a>
+                              </p>
+                              {/* 🔴 THE ACTION MOVED IN HERE with the grey row that used to carry it. Someone
+                                  reading how Meta charges is exactly the person who wants to go and add a
+                                  payment method, and this is now the only always-available route to it. */}
+                              <p className="mt-1">
+                                <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer" className="underline font-semibold">
+                                  Add a payment method in WhatsApp Manager
+                                </a>
+                              </p>
+                            </div>
+                          </details>
+
+                          {view.showAboveAllowanceWarning && (
+                            <p className="mt-2 text-xs text-amber-700">
+                              {/* 🔴 'general' DESCRIBES THE REQUIREMENT; 'missing' STATES A FACT. The old second
+                                  wording said "if you haven't added a payment method", which is a guess dressed
+                                  as advice — we have never asked Meta. The general wording says what is needed
+                                  without claiming to know what they have. */}
+                              {view.aboveAllowanceWarningVariant === 'missing'
+                                ? `Your limit is above Meta's ${formatLimit(META_FREE_REPLIES_PER_MONTH)} free replies. Without a payment method, Meta will stop all replies once those are used.`
+                                : `Your limit is above Meta's ${formatLimit(META_FREE_REPLIES_PER_MONTH)} free replies. Replies beyond that need a payment method on your WhatsApp account; without one, Meta stops all replies once the free ones are used.`}
+                              {' '}
+                              <a href={WHATSAPP_MANAGER_URL} target="_blank" rel="noreferrer"
+                                className="underline font-semibold whitespace-nowrap">
+                                {view.aboveAllowanceWarningVariant === 'missing' ? 'Add in WhatsApp Manager' : 'Add a payment method'}
                               </a>
                             </p>
-                          </div>
-                        </>
-                      )
-                    })()}
+                          )}
+                        </div>
+                      )}
 
-                  </>
-                ) : (
-                  <>
-                    {/* ── ONE ROW: label, number, badge — 21 August 2026. ─────────────────────────────
-                        The number moved back up from its own line, and the badge sits where the Connect
-                        button used to, so the row keeps the shape an operator already knows.
-                        ⚠️ THE PARENT ROW CARRIES `flex-wrap`, WHICH IS WHAT MAKES THIS SAFE NARROW. If
-                        the three items cannot fit, the badge wraps to the next line INSIDE the same
-                        flex row — so it stays associated with WhatsApp and cannot collide with the
-                        field. `min-w-0` lets the input shrink instead of forcing an overflow, and
-                        `flex-shrink-0` on the badge stops it being crushed into an ellipsis.
-                        ⚠️ The input is `disabled` and shows the saved number: an operator who set one
-                        should still be able to see it while the control is frozen. */}
-                    <input
-                      type="tel"
-                      disabled
-                      value={whatsappSender}
-                      placeholder="+447700900000"
-                      className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
-                    />
-                    {/* ⚠️ THE "Coming soon" BADGE THAT SAT HERE WAS REMOVED 4 September 2026 with the
-                        WHATSAPP_LIVE flip. 🔴 CONSEQUENCE, RECORDED RATHER THAN DISCOVERED: this is the
-                        ELSE branch, so it renders ONLY while WHATSAPP_LIVE is false — removing the badge
-                        changed nothing on the live path. If the flag is ever flipped BACK to false, this
-                        frozen row will show a disabled input with NO "coming soon" label on it. Put the
-                        badge back in the same change if that ever happens. */}
-                  </>
-                )}
-              </div>
+                      {/* ── D. FOOTER ────────────────────────────────────────────────────────────── */}
+                      {view.showDisconnect && (
+                        <div className="mt-3 border-t border-slate-100 pt-3 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setDisconnectOpen(true)}
+                            className="text-xs font-semibold text-red-600 underline hover:text-red-700"
+                          >
+                            Disconnect WhatsApp
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )
+                })()
+              ) : (
+                <>
+                  {/* ── 🔴 THE ELSE BRANCH — WHAT A TRUCK WITHOUT THE FEATURE SEES. ───────────────────
+                      🔴 WHO REACHES IT CHANGED ON 16 September 2026. It used to be every truck without the
+                      preview override, Pizzeria Gusto included. With WHATSAPP_LIVE true it is now ONLY
+                      trucks whose plan does not grant `whatsapp_replies` — i.e. STARTER. Pizzeria Gusto
+                      (plan 'trial') renders the live branch above.
+                      🔴 THE DISABLED NUMBER FIELD IS GONE (16 September 2026). It showed `whatsapp_sender`
+                      in a greyed `<input>` with no badge and no sentence saying why it could not be typed
+                      in — so the one thing starter saw was a control that looked broken. A disabled input
+                      is not an explanation; it is a question the page refuses to answer. Nothing was lost
+                      with it: the value was read-only here, and the operator's public WhatsApp number is
+                      edited in its own field elsewhere on this tab.
+                      ⚠️ "Requires a WhatsApp Business account." WENT WITH IT, deliberately. It is a
+                      prerequisite for setting the feature up, and this truck cannot set it up at any
+                      price without changing plan first — leading with Meta's requirement answered a
+                      question starter has not reached yet. The plan sentence is the one that applies.
+                      🔴 THE UPGRADE LINK IS THE PAGE'S EXISTING PATTERN, NOT A NEW ONE: the same
+                      `?tab=billing` / "Upgrade →" anchor components/FeatureGate.tsx renders, wrapped in
+                      the SAME `purchaseCtaAllowed()` guard. That guard is App Store 3.1.1/3.1.3
+                      compliance (lib/commerce-policy.ts) and is NOT optional decoration — a purchase CTA
+                      must not render inside the native iOS shell. It is belt and braces here, because the
+                      whole card already sits inside `!isNativeApp()`, and it stays because the predicate
+                      is how this codebase states the rule and a future change to that wrapper must not
+                      silently ship an iOS violation.
+                      ⚠️ FeatureGate ITSELF WAS NOT USED. It renders its own panel with its own sentence
+                      ("This feature requires the Pro plan"), its own price line and its own border — which
+                      would put a second, different message beside the exact wording this box is required
+                      to show, inside a box whose layout is fixed. The LINK is the reusable part; the copy
+                      is not.
+                      ⚠️ If `WHATSAPP_LIVE` is ever flipped back to false, EVERY truck lands here and this
+                      plan sentence becomes wrong for Pro and Max trucks. Restore a coming-soon branch in
+                      that change — do not leave this one to cover both states. */}
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-sm font-bold text-slate-800">WhatsApp</p>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">WhatsApp auto-replies are included on Pro and Max.</p>
+                  {purchaseCtaAllowed() && (
+                    <p className="mt-1">
+                      <a href="?tab=billing" className="text-xs font-medium text-teal-600 hover:text-teal-700 whitespace-nowrap">
+                        Upgrade &rarr;
+                      </a>
+                    </p>
+                  )}
+                </>
+              )}
 
-              {/* ── 🔴 S4: WHAT THE FLOW SAID. THE ONLY THING THIS PANEL EVER SHOWS IS AN OUTCOME. ──
-                  Three tones, one per real result: `ok` when the row genuinely derives 'ready', `warn`
-                  when the flow was closed or Meta half-finished (the row is saved but NOT sendable), and
-                  `error` when nothing was written at all.
-                  🔴 IT NEVER SAYS "CONNECTED" OF ITS OWN ACCORD. The text comes from the route, which
-                  read the state back out of the database after writing — so a `warn` really is a row in
-                  'onboarding_incomplete', not a guess made in the browser. Nothing is fabricated here.
-                  ⚠️ THE `warn` WORDING ALWAYS TELLS THEM NOT TO RUN IT AGAIN when a token is already
-                  stored. Re-running burns another wizard for a fault support can fix in one query. */}
-              {/* ── 🔴 THE DISCONNECT CONFIRMATION ────────────────────────────────────────────────
-                  Inline rather than a modal: the sentence about WhatsApp Business is an INSTRUCTION the
-                  operator may need while they act, and a dialog they must dismiss takes it away.
-                  ⚠️ It says plainly what does NOT happen — their number keeps working — because the fear
-                  this control creates is "will this break my phone?", and it will not. */}
+              {/* ── 🔴 THE NOTICES STAY INSIDE THE WHATSAPP BOX. They are about this channel and nothing
+                  else; at section level they read as if they applied to all three. */}
               {disconnectOpen && (
                 <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs space-y-2">
                   <p className="font-bold text-red-900">Disconnect WhatsApp?</p>
@@ -10319,7 +10454,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                     Your number keeps working in the WhatsApp Business app. To remove HatchGrab completely,
                     also open WhatsApp Business → Settings → Account → Business Platform.
                   </p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button type="button" disabled={disconnectBusy} onClick={() => setDisconnectOpen(false)}
                       className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-60">
                       Cancel
@@ -10331,6 +10466,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   </div>
                 </div>
               )}
+
               {setupNotice && (
                 <div className={`mt-2 rounded-xl border p-3 text-xs space-y-1 ${
                   setupNotice.tone === 'ok'    ? 'border-emerald-200 bg-emerald-50 text-emerald-800' :
@@ -10346,15 +10482,9 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                 </div>
               )}
 
-              {/* ── 🔴 EXPIRY IS THE NORMAL CASE, SO IT IS PROMPTED BEFORE IT BITES. ─────────────────
-                  ⚠️ This read "(60-day tokens)". The lifetime is now taken from Meta's `expires_in` on
-                  the exchange and has not been observed — see lib/whatsapp/connection-state.ts.
-                  `expiringSoon` is true only while the state is still 'ready' — the truck IS answering
-                  customers, and this asks them to reconnect before that stops. It is NOT a state and must
-                  not become one: `canSendWhatsApp` stays a single equality on 'ready'.
-                  The window is REAUTHORISE_WINDOW_FRACTION (0.25 of the token's own life — 15 days
-                  against today's 60-day configuration), one named constant in
-                  lib/whatsapp/connection-state.ts — never a literal here. */}
+              {/* ── 🔴 EXPIRY IS THE NORMAL CASE, SO IT IS PROMPTED BEFORE IT BITES. `expiringSoon` is
+                  true only while the state is still 'ready' — the truck IS answering customers, and this
+                  asks them to reconnect before that stops. It is NOT a state and must not become one. */}
               {whatsappConnection?.expiringSoon && (
                 <p className="mt-2 text-xs text-amber-700">
                   Your WhatsApp connection needs renewing soon. Press Reconnect to keep auto-replies running.
@@ -10362,24 +10492,34 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               )}
             </div>
 
-            {/* ── Instagram and Messenger ─────────────────────────────────────────────────────────────
-                🔴 RE-ADDED 21 August 2026, AND ONLY BECAUSE THE NATIVE HIDE NOW COVERS THEM. They were
-                removed on 14 August for Guideline 2.1 — a control a user can see and cannot operate.
-                These carry NO input and NO button, so there is no control to operate at all; they are a
-                roadmap LABEL, which the manual distinguishes from an incomplete control. On the web that
-                distinction is ours to make; on native it is Apple's, which is why they stay inside the
-                wrapper regardless.
-                ⚠️ THE LABEL COMES FROM THE MATRIX, NOT FROM HERE — see isRowComingSoon. One row governs
-                both channels because the matrix carries one row for the pair. */}
+            {/* ── INSTAGRAM AND MESSENGER ─────────────────────────────────────────────────────────────
+                🔴 THE GATE IS UNCHANGED. `isRowComingSoon(MESSENGER_INSTAGRAM_ROW)` reads the matrix row
+                in lib/plan-features.ts and is the condition these rows already carried. Keeping it means
+                this change alters no behaviour: if that row ever stops being `coming_soon`, these boxes
+                disappear exactly as the rows do today. It is an EXISTING predicate, not a new decision.
+                🔴 RE-ADDED 21 August 2026 AND ONLY BECAUSE THE NATIVE HIDE COVERS THEM. Apple rejects
+                non-functional controls under Guideline 2.1; these carry no input and no button, so there
+                is no control to operate — but they stay inside the `!isNativeApp()` wrapper regardless. */}
             {isRowComingSoon(MESSENGER_INSTAGRAM_ROW) && (
               <>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-slate-400 w-20 flex-shrink-0">Instagram</label>
-                  <Badge label="Coming soon" colour="slate" />
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-sm font-bold text-slate-800">Instagram</p>
+                    <Badge label="Coming soon" colour="slate" />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Auto-replies to Instagram direct messages. Will require an Instagram professional account.
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-slate-400 w-20 flex-shrink-0">Messenger</label>
-                  <Badge label="Coming soon" colour="slate" />
+
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-sm font-bold text-slate-800">Messenger</p>
+                    <Badge label="Coming soon" colour="slate" />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Auto-replies to Facebook Messenger. Will require a Facebook Page.
+                  </p>
                 </div>
               </>
             )}

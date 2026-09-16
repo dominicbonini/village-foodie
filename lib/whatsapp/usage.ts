@@ -96,3 +96,35 @@ export async function readMonthlyUsage(input: {
     atLimit: used >= input.limit,
   }
 }
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════
+// THE ALLOWANCE WARNINGS
+// ════════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** Warn the operator once the month's sends reach this share of their ceiling. */
+export const USAGE_WARN_FRACTION = 0.8
+
+/**
+ * PURE. Which allowance alert (if any) is due now that `countAfterSend` messages have been sent this
+ * month against a ceiling of `limit`.
+ *
+ * 🔴 IT ASKS "ARE WE AT OR PAST THE LINE?", NOT "DID WE JUST CROSS IT?". A crossing test needs the count
+ * before AND after and gets the wrong answer the moment anything is counted out of order, a send is
+ * retried, or the operator LOWERS their limit mid-month (which jumps them past a line they never
+ * crossed). The "at or past" test is total: it is correct for every count, in any order. Sending the
+ * alert only ONCE is not this function's job at all — that is the unique constraint in whatsapp_alerts,
+ * keyed on the month. Two mechanisms, each doing one thing.
+ *
+ * ⚠️ 100% WINS OVER 80% RATHER THAN SENDING BOTH. A truck that lands straight on the ceiling gets the
+ * email that is true ("they have paused"), not the one that is already out of date ("you are at 80%").
+ */
+export function usageAlertDue(
+  countAfterSend: number, limit: number,
+): 'limit_100' | 'limit_80' | null {
+  // A zero or negative ceiling is not a 0%-used truck, it is a misconfiguration; warning on it would
+  // email every operator whose limit column was somehow cleared.
+  if (!Number.isFinite(limit) || limit <= 0) return null
+  if (countAfterSend >= limit) return 'limit_100'
+  if (countAfterSend >= Math.ceil(limit * USAGE_WARN_FRACTION)) return 'limit_80'
+  return null
+}

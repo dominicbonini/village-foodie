@@ -93,8 +93,10 @@ export const NAME_OVERRIDES: Record<string, string> = WHATSAPP_LIVE ? {} : {
 // THAT COMMENT DEMANDED. It read: "SAFE ONLY BECAUSE THE TWO ROWS CARRY IDENTICAL CELL VALUES (both
 // starter:false, pro:'coming_soon', max:'coming_soon', both footnote 4). IF THEY EVER DIVERGE THIS MERGE
 // BECOMES A LIE and must be undone: one row cannot show two different sets of ticks."
-// They diverged: WhatsApp is now `pro: true, max: true` on footnote 6; Messenger & Instagram is still
-// `coming_soon` on footnote 4. Hiding the second row while renaming the first would have printed one
+// They diverged: WhatsApp is `pro: true, max: true`; Messenger & Instagram is still `coming_soon`.
+// ⚠️ THE FOOTNOTES MATCH AGAIN (both '4', 16 September 2026) BUT THE CELLS STILL DO NOT, and it is the
+// CELLS this precondition is about. A merged row can only print one set of ticks. Do not read "same
+// footnote" as permission to re-merge. Hiding the second row while renaming the first would have printed one
 // line reading "WhatsApp, Messenger & Instagram auto-replies" with a tick under Pro and Max — advertising
 // two verify-handshake stubs as shipped, on the landing page AND in the PDF sent to prospects.
 // ⚠️ The original reasoning for never merging at SOURCE still stands and is why this was a render-only

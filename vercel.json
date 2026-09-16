@@ -80,6 +80,10 @@
     {
       "path": "/api/cron/custom-domain-check",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/whatsapp-maintenance",
+      "schedule": "0 3 * * *"
     }
   ]
 }

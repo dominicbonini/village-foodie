@@ -2,6 +2,26 @@ import { PLAN_META, canAccess, type Plan, type Feature } from '@/lib/features'
 export type { Plan }
 
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
+// 🔴 THE FREE ALLOWANCE, IMPORTED RATHER THAN RETYPED. lib/whatsapp/reply-cap.ts has NO imports of its
+// own, so this cannot create a cycle. Footnote 6 quotes this number; the Settings card quotes the same
+// constant. A hand-typed "1,000" in the footnote would be a second source of truth for a figure Meta
+// can change, on the one surface nobody re-reads.
+import { META_FREE_REPLIES_PER_MONTH } from '@/lib/whatsapp/reply-cap'
+// The two dates and the one number formatter. lib/whatsapp/copy.ts has NO imports of its own, so this
+// cannot create a cycle either. 🔴 `formatLimit` rather than a local `.toLocaleString` call: the Settings
+// card formats the same number with it, and two formatters is how "1,000" and "1000" end up on two
+// surfaces describing one allowance.
+import { META_PRICING_CHECKED_ON, META_FREE_ALLOWANCE_FROM, formatLimit } from '@/lib/whatsapp/copy'
+
+/**
+ * 🔴 THE WHATSAPP ROW LABEL, IN ONE PLACE. It is simultaneously the rendered row name, the
+ * ROW_FEATURE_MAP key, and the row the parity checker singles out. Three literals that had to agree by
+ * hand — and the file's own comment warned that renaming the row without the key "drops the row from
+ * the parity check silently, and the check then reports clean". A const makes that impossible.
+ * ⚠️ lib/landing-table.ts keys its overrides on this same string. Those are separate literals by
+ * design (that module is render-only), so changing this value means changing them too.
+ */
+const WHATSAPP_ROW_NAME = 'WhatsApp auto-replies'
 
 export type FeatureValue = boolean | 'coming_soon'
 
@@ -274,31 +294,39 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // other two were not; as of 1 September 2026 ALL THREE are coming soon, so the split now carries a
       // different fact: WhatsApp is the one being built first. Do not re-merge them into one row — a
       // combined row loses that ordering, and re-merging is a decision to take deliberately, not a tidy-up.
-      // 🟢 WHATSAPP WENT LIVE 4 September 2026 — this row moved BACK to `pro: true, max: true` in the same
-      // change that set `WHATSAPP_LIVE = true` (now lib/whatsapp-live.ts — moved 8 Sep 2026). It had been
-      // `coming_soon` only because that flag was false and the surfaces had to agree; they agree again.
+      // 🟢 WHATSAPP IS LIVE SINCE 16 September 2026, when `WHATSAPP_LIVE` was set true for the first time
+      // in a commit (lib/whatsapp-live.ts). The ON branch below is what now renders.
+      // ⚠️ CORRECTING THE RECORD: a previous version of this comment said the row "moved BACK to
+      // pro: true, max: true" on 4 September 2026. It did not — that change lived in an unstaged working
+      // tree and was never committed (docs/whatsapp-landing-revert-report.md established this on
+      // 8 September). Both branches were then preserved behind the switch, which is why the flip is a
+      // one-line change today rather than a copy rewrite.
       // 🔴 FLIP BOTH OR NEITHER. This row and that flag are two halves of one statement — the operator's
       // Connect control and the public matrix must never disagree about whether the feature exists.
       // 🟢 THE GATE ALREADY MATCHED AND DID NOT MOVE. lib/features.ts:51 grants `whatsapp_replies` to Pro,
       // :55 spreads it into Max and :72 into trial/tester/demo — so `pro: true, max: true` is exactly what
       // the gate enforces, and the recorded marketing-vs-gate gap is closed rather than papered over.
-      // 🔴 THIS ROW IS NOW ARMED IN findPlanParityViolations(). It only inspects cells that are literally
-      // `true`, so while this was `coming_soon` the check passed VACUOUSLY. It is now genuinely compared
-      // against `whatsapp_replies` via ROW_FEATURE_MAP below.
-      // 🔴 DO NOT RENAME THIS ROW. The label string IS the ROW_FEATURE_MAP key; renaming it without
-      // renaming the key drops the row from the parity check silently, and the check then reports clean.
-      // ⚠️ FOOTNOTE MOVED '4' → '6' IN THIS CHANGE, and the reason is that a row carries exactly ONE
-      // footnote (`FeatureRow.footnote?: string`). Footnote 4 is SHARED with the Messenger & Instagram row
-      // below, which is unbuilt and bills nothing — so the WhatsApp charges text could not go there without
-      // being false for that row. Footnote 6 is WhatsApp-specific and carries both the auto-reply caveat
-      // and the Meta charges. Nothing was renumbered: 6 was free.
+      // 🔴 THIS ROW IS SINGLED OUT BY findPlanParityViolations(), IN BOTH DIRECTIONS (16 September 2026).
+      // The checker used to inspect only cells that are literally `true`, so while this row read
+      // 'coming_soon' it passed VACUOUSLY — the one row with a "flip both or neither" rule was the one
+      // row the check could not see. It now also fails when a cell says 'coming_soon' while the flag is
+      // true, and when a cell says live while the flag is false.
+      // 🟢 RENAMING IS NO LONGER A SILENT HAZARD. The label, the ROW_FEATURE_MAP key and the checker's
+      // test all read WHATSAPP_ROW_NAME, so they cannot drift apart by hand.
+      // ⚠️ lib/landing-table.ts still keys its render-only overrides on the same string as separate
+      // literals; changing WHATSAPP_ROW_NAME means changing those too.
+      // ⚠️ FOOTNOTE '4' IN BOTH BRANCHES, AND THE NUMBER NO LONGER MOVES WITH THE FLAG (16 September
+      // 2026). This row briefly pointed at a WhatsApp-only footnote 6 while live, because a row carries
+      // exactly ONE footnote (`FeatureRow.footnote?: string`) and the shared footnote 4 could not carry
+      // Meta's charges without claiming billing for the Messenger & Instagram row below it. That is
+      // resolved by making footnote 4's TEXT conditional instead of the row's NUMBER: see FOOTNOTES.
+      // 🟢 SO THE ONLY THING THE FLAG CHANGES HERE IS THE CELLS. Both branches are otherwise identical,
+      // which is deliberate — it is now impossible for the marker and the footnote to disagree.
       // 🔴 BEHIND THE SINGLE SWITCH (lib/whatsapp-live.ts). OFF is byte-identical to what production
       //    rendered at 08ac368: footnote '4', coming_soon on both tiers. ON is the go-live row.
-      //    ⚠️ THE FOOTNOTE NUMBER MOVES WITH THE FLAG. Footnote 6 only EXISTS when the flag is on
-      //    (see FOOTNOTES below), so pointing at '6' while off would be an orphan marker.
       WHATSAPP_LIVE
-        ? { name: 'WhatsApp auto-replies',            footnote: '6', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
-        : { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+        ? { name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true, max: true }
+        : { name: WHATSAPP_ROW_NAME,                  footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       // 🔴 MOVED HERE FROM THE PAYMENTS SECTION, AND FOOTNOTED. It sits with the other coming-soon
@@ -517,10 +545,36 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // `!isNativeApp()` wrapper that hides the whole Auto-replies card (app/manage/[token]/page.tsx:9642
     // opens it, :9834 closes it, the preview is at :9719), so it does not exist for an iPad or Android
     // operator — and this footnote renders to them on the Billing tab.
-    // ⚠️ THIS FOOTNOTE NOW SERVES THE MESSENGER & INSTAGRAM ROW, which is `coming_soon` and unbuilt, so
-    // it must claim nothing about delivery, charges or an inbox. WhatsApp moved to footnote 6.
+    // ⚠️ THIS FOOTNOTE SERVES **BOTH** AUTO-REPLY ROWS AGAIN (16 September 2026). WhatsApp briefly had
+    // its own footnote 6; that split is undone and 6 is gone. See the note on the text below for why one
+    // footnote can now carry both rows when it previously could not.
     number: '4',
-    text: 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
+    // ── 🔴 ONE FOOTNOTE, TWO ROWS, AND THE TEXT MOVES WITH THE FLAG. ────────────────────────────────
+    // A row carries exactly ONE footnote (`FeatureRow.footnote?: string`), so a shared footnote must be
+    // true of EVERY row pointing at it. That is what forced the split in the first place: while WhatsApp
+    // was live and this text was static, putting Meta's charges here would have claimed billing for the
+    // Messenger & Instagram row, which is unbuilt and bills nothing.
+    // 🟢 WHAT CHANGED IS THE CONDITION, NOT THE RULE. The billing sentences appear only when
+    // WHATSAPP_LIVE is true — which is exactly when a row pointing here can actually be billed — and the
+    // opening clause was already platform-neutral ("a Business account on each platform"), so it stays
+    // true of both rows in both states. The ONE claim that is WhatsApp-specific is the billing, and it
+    // is now the only part that is conditional.
+    // ⚠️ IT IS STILL SLIGHTLY OVER-BROAD WHEN LIVE, AND THAT IS ACCEPTED AND RECORDED. A reader of the
+    // Messenger & Instagram row sees a footnote naming WhatsApp billing. It names WhatsApp explicitly
+    // rather than saying "the platform bills you", so it cannot be read as a claim ABOUT Messenger or
+    // Instagram — and those rows say "Coming soon", so nothing is promised about them anyway.
+    // 🔴 OFF-BRANCH IS BYTE-IDENTICAL TO THE PREVIOUS STATIC STRING. Do not "simplify" it into the
+    // template literal: with the flag off this footnote must claim nothing about charges at all.
+    text: WHATSAPP_LIVE
+      // 🔴 EVERY WORD OPERATOR-SUPPLIED AND EXACT. Do not tidy it, reorder the clauses or "improve" the
+      // punctuation — the semicolon in "Correct at <date>; Meta may change" is deliberate, and so is
+      // "check with Meta" rather than a link: this string is printed into the features PDF as well as
+      // the page, and a PDF cannot be clicked.
+      // 🔴 NOTHING IN IT IS A LITERAL. Both dates and the allowance are interpolated, because the same
+      // three constants render the Settings billing summary — and the one thing worse than a stale date
+      // on a pricing surface is two surfaces carrying DIFFERENT stale dates.
+      ? `Auto-replies require a Business account on each platform. Meta, not HatchGrab, bills your WhatsApp account for replies. From ${META_FREE_ALLOWANCE_FROM} the first ${formatLimit(META_FREE_REPLIES_PER_MONTH)} a month are free. Correct at ${META_PRICING_CHECKED_ON}; Meta may change its prices, so check with Meta. Replies are AI-generated and can occasionally be wrong.`
+      : 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.',
   },
   {
     number: '5',
@@ -532,37 +586,14 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // HatchGrab kitchen app" stays true whichever backend lands first.
     text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
   },
-  // 🔴 FOOTNOTE 6 EXISTS ONLY WHILE THE FLAG IS ON. The WhatsApp row points at '6' when live and
-  // at '4' when not, so the marker and the footnote appear and disappear together — never an
-  // orphan superscript, never a footnote nothing references.
-  // ⚠️ APPENDED, NEVER INSERTED. Numbers 1–5 do not move in either state, so `hide_pricing`'s
-  // `f.number !== '2'` mask (docs/reference-manual.md §44) is undisturbed by the flip.
-  ...(WHATSAPP_LIVE ? [
-  {
-    // ── ADDED 4 September 2026, WHATSAPP-SPECIFIC. APPENDED, NEVER INSERTED. ─────────────────────────
-    // 🔴 NUMBERING IS LOAD-BEARING — DO NOT RENUMBER OR REORDER THIS ARRAY. `hide_pricing` masks the
-    // pricing footnote by the magic string `f.number !== '2'`; renumbering would silently unmask it with
-    // no error, no type failure and no test. 6 was free (the branded-QR footnote was removed at V6.5), so
-    // appending it moves nothing.
-    // 🔴 WHY A SEPARATE FOOTNOTE INSTEAD OF EXTENDING 4: a row carries exactly ONE footnote
-    // (`FeatureRow.footnote?: string`), and footnote 4 is shared with the Messenger & Instagram row, which
-    // is unbuilt and bills nothing. Putting charges there would be false for that row. This one is
-    // attached only to 'WhatsApp auto-replies'.
-    // 🔴 NO FIGURE AND NO DATE, DELIBERATELY. Meta's per-country rates have not been read, and a date in
-    // a pricing footnote goes stale on a surface nobody re-reads. "check Meta's current pricing" sends
-    // the reader to the only source that is correct on the day they read it.
-    // ⚠️ THE CAP DETAIL WAS DELIBERATELY MOVED OUT OF THIS FOOTNOTE (4 September 2026) into the Manage →
-    // Settings auto-replies card, where the operator configuring the feature actually reads it. A pricing
-    // footnote on a marketing table is not where an operational limit gets absorbed. The numbers there
-    // are read from lib/whatsapp/reply-cap.ts, not restated from memory.
-    // 🔴 OPERATOR-SUPPLIED WORDING, 4 September 2026. Do not "tidy" it — see the flag in
-    // docs/whatsapp-golive-copy-report.md about the "bills you directly" clause, which is true of the
-    // arrangement this footnote describes (the operator's own WhatsApp Business account) and NOT of
-    // today's platform-credential sending. That tension is recorded, not silently edited away.
-    number: '6',
-    text: 'Auto-replies require a WhatsApp Business account. Meta bills you directly for these messages — check Meta\'s current pricing. Responses are AI-generated and can occasionally be wrong.',
-  },
-  ] : []),
+  // 🔴 THERE IS NO FOOTNOTE 6, AND THE NUMBERING STOPS AT 5 IN BOTH FLAG STATES (16 September 2026).
+  // It existed only while WHATSAPP_LIVE was true and carried the WhatsApp billing text; that text has
+  // moved into footnote 4, which both auto-reply rows now share.
+  // 🔴 NUMBERING IS LOAD-BEARING — DO NOT RENUMBER OR REORDER THIS ARRAY TO "TIDY UP". `hide_pricing`
+  // masks the pricing footnote by the magic string `f.number !== '2'` (docs/reference-manual.md §44);
+  // renumbering would silently unmask it with no error, no type failure and no test. Removing 6 is safe
+  // precisely because it was LAST and CONDITIONAL: 1-5 do not move, in either state.
+  // ⚠️ 6 IS NOW FREE AGAIN. If a future footnote needs a number, append 6 — do not insert.
 ]
 
 // ── DRIFT GUARD (the structural fix) ────────────────────────────────────────────────────────────────────
@@ -607,7 +638,7 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   'Smart Slot Management': 'smart_batch_pacing',
   'Auto-accept online orders': 'auto_accept',
   'Branded QR code': 'branded_qr_code',
-  'WhatsApp auto-replies': 'whatsapp_replies',
+  [WHATSAPP_ROW_NAME]: 'whatsapp_replies',
   'Messenger & Instagram auto-replies': 'instagram_messenger_replies',
   'Advanced reporting': 'advanced_reporting',
   'Multi-device kitchen sync': 'multi_device_kds',
@@ -636,8 +667,43 @@ export function findPlanParityViolations(): string[] {
       const feature = ROW_FEATURE_MAP[row.name]
       if (!feature) continue
       for (const tier of tiers) {
+        // ── DIRECTION 1 — EVERY ROW, UNCHANGED. Advertised as a hard tick but the gate refuses it.
         if (row[tier] === true && !canAccess(tier, feature)) {
           out.push(`"${row.name}" advertised for ${tier} but canAccess('${tier}','${feature}') is false`)
+        }
+
+        // ── DIRECTION 2 — THE WHATSAPP ROW ONLY ───────────────────────────────────────────────────
+        // 🔴 WHY ONLY THIS ROW. The reverse test — "the gate allows it, so the table must tick it" — is
+        // WRONG as a general rule. A feature can legitimately be gated on and deliberately unadvertised
+        // (soft launch, an internal capability, a row still being written), and applying this to every
+        // row would turn each of those into a build-breaking error at module load. This row is different
+        // because it has a PUBLISHED SWITCH: WHATSAPP_LIVE is a single declaration that is supposed to
+        // make the gate, the matrix, the landing tile and the Settings control agree. That promise is
+        // exactly the thing worth enforcing, and it is enforceable precisely because the switch exists.
+        //
+        // 🔴 AND WHY IT IS NEEDED AT ALL. Until now this row passed VACUOUSLY: the check only ever
+        // inspected cells that are literally `true`, and while the flag was off the cells read
+        // 'coming_soon' — so the one row with a documented "flip both or neither" rule was the one row
+        // the checker could not see. It reported clean on a state it had never actually tested.
+        if (row.name !== WHATSAPP_ROW_NAME) continue
+
+        if (WHATSAPP_LIVE) {
+          // A coming-soon cell while the product says the feature is live. This is the half that would
+          // leave the public matrix saying "coming soon" under a Settings page offering Set up.
+          if (row[tier] === 'coming_soon') {
+            out.push(`"${row.name}" is 'coming_soon' for ${tier} but WHATSAPP_LIVE is true`)
+          }
+          // The gate allows it, so the table must say so rather than nothing.
+          if (canAccess(tier, feature) && row[tier] !== true) {
+            out.push(`"${row.name}" is not advertised for ${tier} but canAccess('${tier}','${feature}') is true and WHATSAPP_LIVE is true`)
+          }
+        } else {
+          // 🔴 THE OTHER DIRECTION OF THE SAME PROMISE. A live cell while the flag is off would
+          // advertise on the pricing table what the Settings card still calls coming soon — the exact
+          // mismatch the 8 September investigation was commissioned to prevent.
+          if (row[tier] === true) {
+            out.push(`"${row.name}" advertised as live for ${tier} but WHATSAPP_LIVE is false`)
+          }
         }
       }
     }

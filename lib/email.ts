@@ -538,6 +538,15 @@ export function formatNewOrderEmail(params: {
   return { subject, html, text }
 }
 
+/**
+ * 🔴 RETURNS WHETHER BREVO ACCEPTED THE MESSAGE — IT STILL NEVER THROWS.
+ * Every pre-existing caller writes `await sendConfirmationEmail(...)` and ignores the result, so
+ * widening void → boolean changes nothing for them. It exists for the WhatsApp alert sender, which
+ * claims a row in `whatsapp_alerts` BEFORE sending and must release that claim when the send fails —
+ * it cannot tell the difference between sent and silently dropped without an answer here.
+ * ⚠️ false means "not delivered to Brevo", which includes the no-API-key case: nothing was sent, so a
+ * caller that retries on false is right to retry.
+ */
 export async function sendConfirmationEmail(params: {
   to: string
   subject: string
@@ -545,11 +554,11 @@ export async function sendConfirmationEmail(params: {
   text: string
   truckName?: string
   senderName?: string  // override sender display name (e.g. 'HatchGrab' for operator copies)
-}): Promise<void> {
+}): Promise<boolean> {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey) {
     console.warn('BREVO_API_KEY not set — skipping email')
-    return
+    return false
   }
   try {
     const senderName = params.senderName || params.truckName || 'HatchGrab'
@@ -571,10 +580,13 @@ export async function sendConfirmationEmail(params: {
     if (!res.ok) {
       const err = await res.text()
       console.error('Brevo email send failed:', err)
+      return false
     }
+    return true
   } catch (err) {
     console.error('Email error:', err)
     // Never throw — email failure must not fail the order
+    return false
   }
 }
 

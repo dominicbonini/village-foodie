@@ -19,6 +19,14 @@ import {
 import { deriveWhatsAppConnectionState, canSendWhatsApp } from '@/lib/whatsapp/connection-state'
 import { decryptToken } from '@/lib/whatsapp/token-crypto'
 import { platformAccessToken } from '@/lib/meta-whatsapp'
+import { isPaymentBlockedError } from '@/lib/meta-whatsapp'
+import { usageAlertDue } from '@/lib/whatsapp/usage'
+import { markPaymentBlocked, clearPaymentBlocked } from '@/lib/whatsapp/payment-block'
+import { sendWhatsAppAlert, supabaseAlertStore, type WhatsAppAlertKind } from '@/lib/whatsapp/alerts'
+import { limit80Email, limit100Email, paymentBlockedEmail } from '@/lib/whatsapp/alert-copy'
+import { monthResetLocalDate } from '@/lib/whatsapp/usage'
+import { usageMonthKey } from '@/lib/whatsapp/maintenance'
+import { WHATSAPP_MANAGER_URL } from '@/lib/whatsapp/copy'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -45,11 +53,121 @@ interface ConnectionTokenRow {
   payment_method_present: boolean | null
 }
 
+// ════════════════════════════════════════════════════════════════════════════════════════════════════
+// WHAT HAPPENS AFTER A SEND — THE OPERATOR ALERTS
+// ════════════════════════════════════════════════════════════════════════════════════════════════════
+//
+// 🔴 BOTH HELPERS ARE BEST-EFFORT AND NEITHER MAY THROW. They run after a customer's reply has already
+// gone out (or failed), on a route where EVERY path must return 200 — a thrown error here would be
+// caught by the outer handler and logged as though the reply itself had failed.
+
+/**
+ * The manage link for an operator email, fetched only when an email is actually being sent.
+ * 🔴 `dashboard_token` IS A CREDENTIAL AND IS DELIBERATELY NOT IN TRUCK_FIELDS. It is read here, on the
+ * rare alert path, rather than on every inbound customer message — so the hot path never holds it and
+ * cannot leak it through a log line or a future response body. Same link shape the schedule-approval
+ * email already uses.
+ */
+async function manageLinkFor(truckId: string): Promise<string> {
+  const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
+  try {
+    const { data } = await supabase.from('trucks').select('dashboard_token').eq('id', truckId).maybeSingle()
+    const token = (data?.dashboard_token as string | null) ?? null
+    return token ? `${base}/manage/${token}?tab=settings` : `${base}/manage`
+  } catch {
+    return `${base}/manage`
+  }
+}
+
+/**
+ * Called after META ACCEPTED a send. Two jobs: clear any billing block, and warn the operator if this
+ * send has taken them to 80% or 100% of the month's allowance.
+ * ⚠️ `countBefore` IS THE COUNT BEFORE THIS MESSAGE, so the count after it is +1. Null means the count
+ * read failed earlier and no allowance email is sent at all — see the hoist comment.
+ */
+async function afterAcceptedSend(args: {
+  truck: { id: string; name: string | null; contact_email: string | null; whatsapp_monthly_reply_limit: number | null; timezone: string | null }
+  countBefore: number | null
+  tz: string
+}): Promise<void> {
+  const { truck, countBefore, tz } = args
+  // A send Meta accepted is proof the billing problem is over, whatever we recorded before.
+  await clearPaymentBlocked(supabase, truck.id)
+
+  if (countBefore === null) return
+  const limit = truck.whatsapp_monthly_reply_limit ?? DEFAULT_MONTHLY_REPLY_LIMIT
+  const kind = usageAlertDue(countBefore + 1, limit)
+  if (!kind) return
+  // No address, no email. Nullable on trucks, and blank on plenty of them.
+  const to = truck.contact_email
+  if (!to || !to.trim()) return
+
+  try {
+    const manageUrl = await manageLinkFor(truck.id)
+    const name = truck.name || 'there'
+    const resetLabel = monthResetLocalDate(tz)
+    const email = kind === 'limit_100'
+      ? limit100Email({ truckName: name, limit, resetLabel, manageUrl })
+      : limit80Email({ truckName: name, used: countBefore + 1, limit, resetLabel, manageUrl })
+    await sendWhatsAppAlert({
+      store: supabaseAlertStore(supabase),
+      kind: kind as WhatsAppAlertKind,
+      truckId: truck.id,
+      // 🔴 THE TRUCK'S LOCAL MONTH, the same window the allowance itself resets on. A UTC month key
+      // would let the email fire for a month the counter has already rolled out of.
+      periodKey: usageMonthKey(tz, new Date()),
+      to,
+      email,
+    })
+  } catch (e) {
+    console.error(`[webhook/meta-whatsapp] allowance alert failed: ${truck.id} ${kind}`, e instanceof Error ? e.message : String(e))
+  }
+}
+
+/**
+ * Called after Meta REFUSED a send. Only one refusal means anything specific: 131042, no usable payment
+ * method on the WABA.
+ * ⚠️ EVERY OTHER ERROR FALLS STRAIGHT THROUGH. It has already been logged by the caller, and guessing at
+ * a cause we cannot name would put a wrong banner in front of an operator.
+ */
+async function afterRefusedSend(args: {
+  err: unknown
+  truck: { id: string; name: string | null; contact_email: string | null; timezone: string | null }
+  tz: string
+}): Promise<void> {
+  const { err, truck, tz } = args
+  if (!isPaymentBlockedError(err)) return
+
+  const marked = await markPaymentBlocked(supabase, truck.id, new Date().toISOString())
+  // The column is not there yet (migration unapplied), or the write failed. Either way there is no
+  // banner to back the email up, so nothing is sent — fail closed.
+  if (!marked) return
+
+  const to = truck.contact_email
+  if (!to || !to.trim()) return
+  try {
+    const manageUrl = await manageLinkFor(truck.id)
+    await sendWhatsAppAlert({
+      store: supabaseAlertStore(supabase),
+      kind: 'payment_blocked',
+      truckId: truck.id,
+      periodKey: usageMonthKey(tz, new Date()),
+      to,
+      email: paymentBlockedEmail({
+        truckName: truck.name || 'there', manageUrl, whatsappManagerUrl: WHATSAPP_MANAGER_URL,
+      }),
+    })
+  } catch (e) {
+    console.error(`[webhook/meta-whatsapp] payment_blocked alert failed: ${truck.id}`, e instanceof Error ? e.message : String(e))
+  }
+}
+
 const TRUCK_FIELDS = `
   id, name, slug, truck_emoji,
   whatsapp_sender, whatsapp, phone_number_id,
   plan, feature_overrides, trial_expires_at,
-  whatsapp_monthly_reply_limit, timezone
+  whatsapp_monthly_reply_limit, timezone,
+  contact_email
 `
 
 interface TruckRow {
@@ -65,6 +183,8 @@ interface TruckRow {
   trial_expires_at: string | null
   whatsapp_monthly_reply_limit: number | null
   timezone: string | null
+  /** Nullable, and blank on plenty of trucks — the allowance and payment emails skip when it is. */
+  contact_email: string | null
 }
 
 const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN
@@ -458,6 +578,11 @@ export async function POST(req: NextRequest) {
     // no-op (no cap rows exist); the exclusion is what keeps it a no-op once they do.
     let isFollowUp = false
     let capDecision: ReplyCapDecision = 'REPLY'
+    // 🔴 THE MONTH'S COUNT, HOISTED SO THE SEND SITES BELOW CAN SEE IT. Null means the count read failed
+    // (the fail-open branch) — and null must never be treated as zero, because zero would read as "this
+    // truck has sent nothing" and could fire a 100%-used email at a truck on its first message of the
+    // month, or suppress one that is genuinely due. No count, no allowance email.
+    let monthCountBefore: number | null = null
     try {
       const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       // 🔴 THE 26-HOUR WINDOW IS GONE WITH THE DAILY CAP IT SERVED. It over-fetched by two hours so a
@@ -508,6 +633,7 @@ export async function POST(req: NextRequest) {
       ])
       if (mine.error) throw mine.error
       if (month.error) throw month.error
+      monthCountBefore = month.count ?? null
 
       // ⚠️ ONE PREDICATE, FROM THE MODULE. The route never lists the four names.
       const isCapRow = (c: string | null) => isCapClassification(c)
@@ -590,7 +716,12 @@ export async function POST(req: NextRequest) {
         handoffSent = true
       } catch (sendErr) {
         console.error('[webhook/meta-whatsapp] handoff send failed:', sendErr)
+        // 🔴 THE HANDOFF IS A BILLABLE SEND LIKE ANY OTHER, so a billing refusal here counts exactly as
+        // it would on a normal reply. Leaving it out would mean a truck whose only remaining traffic is
+        // capped customers never learns why nothing is arriving.
+        await afterRefusedSend({ err: sendErr, truck, tz: truckTz })
       }
+      if (handoffSent) await afterAcceptedSend({ truck, countBefore: monthCountBefore, tz: truckTz })
       await supabase.from('whatsapp_logs').insert({
         truck_id: truck.id, customer_number: from, message_in: text,
         classification: CLASSIFICATION_CUSTOMER_CAP, events_found: 0,
@@ -643,10 +774,18 @@ export async function POST(req: NextRequest) {
         console.log('[webhook/meta-whatsapp] reply sent')
       } catch (err) {
         console.error('[webhook/meta-whatsapp] send failed:', err)
+        await afterRefusedSend({ err, truck, tz: truckTz })
       }
     }
+    if (replySent) await afterAcceptedSend({ truck, countBefore: monthCountBefore, tz: truckTz })
 
-    supabase.from('whatsapp_logs').insert({
+    // 🔴 AWAITED NOW, NOT FIRE-AND-FORGET. This row IS the monthly counter: the spend ceiling, the
+    // Settings usage line and the 80%/100% emails are all a `count` over these rows. An un-awaited
+    // insert can be cut off when the serverless invocation ends at the `return` below — so a message
+    // Meta billed the operator for is never counted, and the ceiling they chose silently leaks.
+    // ⚠️ IT STILL CANNOT FAIL THE REQUEST. The error is logged and the 200 is returned regardless; a
+    // failed log must not become a Meta retry of a message we have already sent.
+    const { error: logErr } = await supabase.from('whatsapp_logs').insert({
       truck_id:        truck.id,
       customer_number: from,
       message_in:      text,
@@ -654,9 +793,8 @@ export async function POST(req: NextRequest) {
       events_found:    events?.length ?? 0,
       response_sent:   replySent ? reply : null,
       possible_miss:   classification === 'SPECIFIC_QUERY' && (events?.length ?? 0) === 0,
-    }).then(({ error }) => {
-      if (error) console.error('[webhook/meta-whatsapp] log failed:', error)
     })
+    if (logErr) console.error('[webhook/meta-whatsapp] log failed:', logErr)
 
     return NextResponse.json({ ok: true })
   } catch (err) {

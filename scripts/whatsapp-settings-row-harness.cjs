@@ -45,6 +45,9 @@ const stateMod = require(path.join(out, 'whatsapp/connection-state.js'))
 const discMod = require(path.join(out, 'whatsapp/disconnect-plan.js'))
 
 const ALLOWANCE = cap.META_FREE_REPLIES_PER_MONTH
+// Sample values for the subtitle cases. Distinct strings so a swapped field is visible.
+const NUM = '+44 7700 900000'
+const NAME = 'Pizzeria Gusto'
 const STATES = ['not_connected', 'onboarding_incomplete', 'token_missing', 'awaiting_payment_method', 'revoked', 'ready']
 
 function runSuite({ decide, isLimit, monthStart, view, canSend, plan }) {
@@ -145,13 +148,83 @@ function runSuite({ decide, isLimit, monthStart, view, canSend, plan }) {
 
   // the >allowance note
   for (const [limit, want] of [[250, false], [1000, false], [2000, true], [5000, true]]) {
-    t(`above-allowance note at ${limit}: ${want}`,
+    t(`above-allowance warning at ${limit}: ${want}`,
       view({ state: 'ready', displayPhoneNumber: null, verifiedName: null, monthlyLimit: limit, freeAllowance: ALLOWANCE })
-        .showAboveAllowanceNote === want)
+        .showAboveAllowanceWarning === want)
   }
-  t('🔴 the note never shows without a connection',
+  t('🔴 the warning never shows without a connection',
     view({ state: 'not_connected', displayPhoneNumber: null, verifiedName: null, monthlyLimit: 5000, freeAllowance: ALLOWANCE })
-      .showAboveAllowanceNote === false)
+      .showAboveAllowanceWarning === false)
+
+
+  // ── PAYMENT STATUS: THREE VALUES, AND 'unknown' IS NOT 'missing' ────────────────────────────────
+  const vw = (over = {}) => view({
+    state: 'ready', displayPhoneNumber: NUM, verifiedName: NAME,
+    offerReauthorise: false, monthlyLimit: 1000, freeAllowance: ALLOWANCE, ...over,
+  })
+  t('payment true  -> added',   vw({ paymentMethodPresent: true }).paymentStatus === 'added')
+  t('payment false -> missing', vw({ paymentMethodPresent: false }).paymentStatus === 'missing')
+  t('🔴 payment null -> unknown, NOT missing', vw({ paymentMethodPresent: null }).paymentStatus === 'unknown')
+  t('🔴 payment undefined -> unknown', vw({}).paymentStatus === 'unknown')
+  t('🔴 no connection -> paymentStatus is null (not a state about an account that does not exist)',
+    view({ state: 'not_connected', displayPhoneNumber: null, verifiedName: null, monthlyLimit: 1000,
+           freeAllowance: ALLOWANCE, paymentMethodPresent: false }).paymentStatus === null)
+
+  // ── THE WARNING: five limits x three payment states ─────────────────────────────────────────────
+  for (const limit of [250, 500, 1000, 2000, 5000]) {
+    for (const [tag, pmp, status] of [['added', true, 'added'], ['missing', false, 'missing'], ['unknown', null, 'unknown']]) {
+      const v = vw({ monthlyLimit: limit, paymentMethodPresent: pmp })
+      const want = limit > ALLOWANCE && status !== 'added'
+      t(`warning at ${limit} / payment ${tag} -> ${want}`, v.showAboveAllowanceWarning === want)
+      // 🔴 TWO VARIANTS NOW. Only a KNOWN-missing method gets the 'missing' wording; 'unknown' — which
+      // is every live connection — gets 'general', which states the requirement without guessing.
+      const wantVariant = want ? (status === 'missing' ? 'missing' : 'general') : null
+      t(`…variant at ${limit} / ${tag}`, v.aboveAllowanceWarningVariant === wantVariant)
+    }
+  }
+  t('🔴 at EXACTLY the allowance there is no warning, whatever the payment state',
+    [true, false, null].every(pmp => vw({ monthlyLimit: ALLOWANCE, paymentMethodPresent: pmp }).showAboveAllowanceWarning === false))
+  t('🔴 no connection -> no warning even at 5000 with no payment method',
+    view({ state: 'not_connected', displayPhoneNumber: null, verifiedName: null, monthlyLimit: 5000,
+           freeAllowance: ALLOWANCE, paymentMethodPresent: false }).showAboveAllowanceWarning === false)
+
+  // ── THE SUBTITLE: NEVER INVENTED ───────────────────────────────────────────────────────────────
+  t('subtitle: both values joined',  vw().subtitle === `${NUM} · ${NAME}`)
+  t('subtitle: number only',         vw({ verifiedName: null }).subtitle === NUM)
+  t('subtitle: name only',           vw({ displayPhoneNumber: null }).subtitle === NAME)
+  t('🔴 subtitle: NEITHER -> null, nothing invented',
+    vw({ displayPhoneNumber: null, verifiedName: null }).subtitle === null)
+  t('🔴 subtitle: whitespace-only values are treated as absent',
+    vw({ displayPhoneNumber: '   ', verifiedName: '' }).subtitle === null)
+  t('🔴 subtitle: null while disconnected, even with stored values',
+    view({ state: 'not_connected', displayPhoneNumber: NUM, verifiedName: NAME, monthlyLimit: 1000,
+           freeAllowance: ALLOWANCE }).subtitle === null)
+
+  // ── THE HELPER AND THE TWO BILLING FLAGS ───────────────────────────────────────────────────────
+  t('🔴 requires-account helper shows ONLY when not connected',
+    view({ state: 'not_connected', displayPhoneNumber: null, verifiedName: null, monthlyLimit: 1000,
+           freeAllowance: ALLOWANCE }).showRequiresAccountHelper === true)
+  for (const state of ['onboarding_incomplete', 'token_missing', 'awaiting_payment_method', 'revoked', 'ready']) {
+    t(`🔴 requires-account helper hidden on ${state}`,
+      vw({ state }).showRequiresAccountHelper === false)
+  }
+  // ── THE PAYMENT ROW: SHOWN ONLY FOR THE TWO STATES WE CAN STAND BEHIND ─────────────────────────
+  t('payment row: shown for added',   vw({ paymentMethodPresent: true }).showBillingPaymentRow === true)
+  t('payment row: shown for missing', vw({ paymentMethodPresent: false }).showBillingPaymentRow === true)
+  t('🔴 payment row: HIDDEN for unknown — the live state for every connection',
+    vw({ paymentMethodPresent: null }).showBillingPaymentRow === false)
+  t('🔴 payment row: hidden for undefined too', vw({}).showBillingPaymentRow === false)
+  t('🔴 payment row: hidden when not connected',
+    view({ state: 'not_connected', displayPhoneNumber: null, verifiedName: null, monthlyLimit: 1000,
+           freeAllowance: ALLOWANCE, paymentMethodPresent: true }).showBillingPaymentRow === false)
+  // 🔴 THE WARNING AND THE ROW ARE INDEPENDENT: at 2000 with unknown payment the warning shows and the
+  // row does not. That combination is the live one, and it is the pair most easily got wrong.
+  t('🔴 at 2000 / unknown: warning YES, payment row NO',
+    vw({ monthlyLimit: 2000, paymentMethodPresent: null }).showAboveAllowanceWarning === true &&
+    vw({ monthlyLimit: 2000, paymentMethodPresent: null }).showBillingPaymentRow === false)
+  t('billing SECTION shows in every live state, connected or not',
+    STATES.every(state => view({ state, displayPhoneNumber: null, verifiedName: null, monthlyLimit: 1000,
+                                 freeAllowance: ALLOWANCE }).showBillingSection === true))
 
   // ── THE DISCONNECT PLAN ─────────────────────────────────────────────────────────────────────────
   const kinds = (p) => p.ops.map(o => o.kind)
@@ -215,6 +288,69 @@ for (const [name, impl] of [
   if (r.fails.length > 2) console.log(`        …and ${r.fails.length - 2} more`)
 }
 if (!all) { console.log('\n🔴 A VARIANT PASSED. Abandoned.'); process.exit(1) }
+
+// ── STEP 4c VARIANTS: the six ways the new fields could be wrong ────────────────────────────────────
+// Each wraps the REAL view model and corrupts exactly one answer. Each must make the suite FAIL.
+const W1 = { ...REAL, view: (i) => { const v = REAL.view(i)   // warning shows even when a method is added
+  return v.paymentStatus === 'added' && (i.monthlyLimit ?? 0) > (i.freeAllowance ?? 0)
+    ? { ...v, showAboveAllowanceWarning: true, aboveAllowanceWarningVariant: 'missing' } : v } }
+const W2 = { ...REAL, view: (i) => { const v = REAL.view(i)   // hidden when unknown at 2000
+  return v.paymentStatus === 'unknown' && (i.monthlyLimit ?? 0) === 2000
+    ? { ...v, showAboveAllowanceWarning: false, aboveAllowanceWarningVariant: null } : v } }
+const W3 = { ...REAL, view: (i) => { const v = REAL.view(i)   // null payment maps to 'missing'
+  return v.paymentStatus === 'unknown'
+    ? { ...v, paymentStatus: 'missing', aboveAllowanceWarningVariant: v.showAboveAllowanceWarning ? 'missing' : null } : v } }
+const W4 = { ...REAL, view: (i) => { const v = REAL.view(i)   // warning at EXACTLY the allowance
+  return (i.monthlyLimit ?? 0) === (i.freeAllowance ?? 0) && v.paymentStatus && v.paymentStatus !== 'added'
+    ? { ...v, showAboveAllowanceWarning: true, aboveAllowanceWarningVariant: v.paymentStatus } : v } }
+const W5 = { ...REAL, view: (i) => { const v = REAL.view(i)   // subtitle invented when both are null
+  return v.subtitle === null && i.state !== 'not_connected' ? { ...v, subtitle: 'Not available' } : v } }
+const W6 = { ...REAL, view: (i) => ({ ...REAL.view(i), showRequiresAccountHelper: true }) }  // helper always on
+
+console.log('\n── STEP 4c VARIANTS: each MUST report FAILURE ──────────────────────────────────────────')
+let allW = true
+for (const [name, impl] of [
+  ['V1 the warning shows when paymentStatus is "added"', W1],
+  ['V2 the warning is hidden when unknown at 2000', W2],
+  ['V3 null payment_method_present maps to "missing"', W3],
+  ['V4 the warning shows at exactly the allowance', W4],
+  ['V5 the subtitle invents a value when both are null', W5],
+  ['V6 the Requires-account helper shows on a ready connection', W6],
+]) {
+  const rr = runSuite(impl)
+  const detected = rr.fails.length > 0
+  if (!detected) allW = false
+  console.log(`  ${detected ? '✓ FAILED as required' : '🔴 PASSED — PROVES NOTHING'}  ${name}`)
+  for (const f of rr.fails.slice(0, 2)) console.log(`        caught: ${f}`)
+  if (rr.fails.length > 2) console.log(`        …and ${rr.fails.length - 2} more`)
+}
+if (!allW) { console.log('\n🔴 A STEP-4c VARIANT PASSED. Abandoned.'); process.exit(1) }
+
+// ── PAYMENT-ROW VARIANTS: the three ways this change could be wrong ─────────────────────────────────
+const P1 = { ...REAL, view: (i) => { const v = REAL.view(i)   // the row shows for 'unknown'
+  return v.paymentStatus === 'unknown' ? { ...v, showBillingPaymentRow: true } : v } }
+const P2 = { ...REAL, view: (i) => { const v = REAL.view(i)   // 'unknown' takes the 'missing' wording
+  return v.showAboveAllowanceWarning && v.paymentStatus === 'unknown'
+    ? { ...v, aboveAllowanceWarningVariant: 'missing' } : v } }
+const P3 = { ...REAL, view: (i) => { const v = REAL.view(i)   // the warning shows when a method is added
+  return v.paymentStatus === 'added' && (i.monthlyLimit ?? 0) > (i.freeAllowance ?? 0)
+    ? { ...v, showAboveAllowanceWarning: true, aboveAllowanceWarningVariant: 'general' } : v } }
+
+console.log('\n── PAYMENT-ROW VARIANTS: each MUST report FAILURE ──────────────────────────────────────')
+let allP = true
+for (const [name, impl] of [
+  ['V1 the payment row shows for "unknown"', P1],
+  ['V2 the variant is "missing" for "unknown"', P2],
+  ['V3 the warning shows when the method is "added"', P3],
+]) {
+  const rr = runSuite(impl)
+  const detected = rr.fails.length > 0
+  if (!detected) allP = false
+  console.log(`  ${detected ? '✓ FAILED as required' : '🔴 PASSED — PROVES NOTHING'}  ${name}`)
+  for (const f of rr.fails.slice(0, 2)) console.log(`        caught: ${f}`)
+  if (rr.fails.length > 2) console.log(`        …and ${rr.fails.length - 2} more`)
+}
+if (!allP) { console.log('\n🔴 A PAYMENT-ROW VARIANT PASSED. Abandoned.'); process.exit(1) }
 
 console.log('\n── THE REAL CODE ───────────────────────────────────────────────────────────────────────')
 const r = runSuite(REAL)
