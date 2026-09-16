@@ -2,7 +2,7 @@
 // app/manage/[token]/page.tsx
 // Truck management page — menu, modifiers, deals, schedule, settings
 
-import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from 'react'
+import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment, useReducer } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
@@ -46,7 +46,10 @@ import { DEFAULT_MAX_REPLIES_PER_CUSTOMER_24H } from '@/lib/whatsapp/reply-cap'
 import type { WhatsAppConnectionView } from '@/lib/whatsapp/connection-read'
 // S4: the Embedded Signup launcher. Client-only by construction — it loads Meta's JS SDK and captures
 // the one-time code; it makes NO Graph call and stores nothing. See lib/whatsapp/embedded-signup.ts.
-import { launchEmbeddedSignup } from '@/lib/whatsapp/embedded-signup'
+import { startEmbeddedSignup, loadFacebookSdk, type FBGlobal, type EmbeddedSignupOutcome } from '@/lib/whatsapp/embedded-signup'
+import {
+  setupReducer, INITIAL_SETUP_STATE, setupButtonLabel, setupButtonDisabled,
+} from '@/lib/whatsapp/setup-machine'
 import { FeatureGate } from '@/components/FeatureGate'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -8770,6 +8773,157 @@ function QrPreview({ src, alt, onOpen, locked }: {
   )
 }
 
+// ── 🔴 THE WHATSAPP SET UP CONTROL ─────────────────────────────────────────────────────────────────
+// A SEPARATE COMPONENT, AND THAT IS THE MECHANISM, NOT TIDINESS. Its `useEffect` loads Meta's SDK, and
+// an effect runs when the component MOUNTS — so the SDK is fetched exactly when this button renders and
+// never otherwise. A hook cannot live inside the `{whatsAppSetupVisible && can(…) ? … : …}` conditional;
+// a component rendered by that conditional can. Pizzeria Gusto renders the ELSE branch, so this never
+// mounts for it and connect.facebook.net is never contacted from its page.
+//
+// ── WHAT WAS WRONG, AND WHY BOTH HALVES HAD TO MOVE ─────────────────────────────────────────────────
+// 🧪 Observed in Safari: pressing Set up showed "Opening…", Safari blocked the Facebook window, and after
+// the operator allowed it by hand and then closed it, the button stayed on "Opening…" for ever.
+//   • BLOCKED because the old handler `await`ed `launchEmbeddedSignup`, which DOWNLOADS the SDK before
+//     calling FB.login. A browser permits `window.open` only while the click's transient activation is
+//     live; a network round trip ends that. Fixed by loading the SDK at render and calling
+//     `startEmbeddedSignup` synchronously inside the click.
+//   • STUCK because the ONLY way out of `setupBusy` was that promise settling, and it settles only from
+//     inside FB.login's callback. A window the SDK never owned is a callback that never fires. Fixed by
+//     giving the operator "Start again", which needs no event from Meta at all.
+function WhatsAppSetupControl({ token, offerReauthorise, onNotice, onConnectionUpdate }: {
+  token: string
+  offerReauthorise: boolean
+  onNotice: (n: { tone: 'ok' | 'warn' | 'error'; text: string } | null) => void
+  onConnectionUpdate: (c: WhatsAppConnectionView) => void
+}) {
+  const [state, dispatch] = useReducer(setupReducer, INITIAL_SETUP_STATE)
+  const fbRef = useRef<FBGlobal | null>(null)
+  // 🔴 THE ATTEMPT ID IS A REF, NOT STATE, BECAUSE THE CLICK NEEDS IT *NOW*. `dispatch` is asynchronous;
+  // the callbacks handed to Meta must carry the id of the attempt they belong to at the moment the
+  // window opens. The reducer computes the same number the same way (lastAttempt + 1, only on an
+  // accepted click) and both guard on `phase === 'idle'`, so they cannot drift apart.
+  const attemptRef = useRef(0)
+
+  const configId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_CONFIG_ID
+  const appId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_APP_ID
+
+  // ── LOAD THE SDK ON MOUNT ─────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    let alive = true
+    if (!appId || !configId) {
+      dispatch({ type: 'sdk_failed', message: 'WhatsApp setup is not available in this environment.' })
+      return
+    }
+    loadFacebookSdk(appId)
+      .then(FB => { if (!alive) return; fbRef.current = FB; dispatch({ type: 'sdk_ready' }) })
+      .catch((e: Error) => { if (!alive) return; dispatch({ type: 'sdk_failed', message: e.message }) })
+    return () => { alive = false }
+  }, [appId, configId])
+
+  // ── THE 20-SECOND HINT ────────────────────────────────────────────────────────────────────────────
+  // 🔴 IT ADDS A LINE. IT DOES NOT ABANDON THE ATTEMPT. A genuine signup runs for minutes — business
+  // verification, number entry, an SMS code — so a timeout that gave up would break the normal case in
+  // order to tidy the broken one. The attempt id is carried so a tick for a superseded attempt is inert.
+  useEffect(() => {
+    if (state.phase !== 'waiting' || state.attempt === null) return
+    const a = state.attempt
+    const t = setTimeout(() => dispatch({ type: 'waited_20s', attempt: a }), 20_000)
+    return () => clearTimeout(t)
+  }, [state.phase, state.attempt])
+
+  const submit = async (outcome: EmbeddedSignupOutcome, attempt: number) => {
+    dispatch({ type: 'succeeded', attempt })
+    try {
+      const res = await fetch('/api/manage/whatsapp-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, ...outcome, kind: outcome.kind }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok || json?.ok === false) {
+        dispatch({ type: 'submit_finished', notice: { tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' } })
+        return
+      }
+      dispatch({ type: 'submit_finished', notice: { tone: json?.state === 'ready' ? 'ok' : 'warn', text: json?.message || 'Setup finished.' } })
+      // 🔴 THE NEW STATE COMES FROM THE DATABASE, NOT FROM THIS HANDLER, and is patched rather than
+      // reloaded — a parent reload unmounts this tab behind a spinner (the §23 "iPhone" violation).
+      if (json?.connection) onConnectionUpdate(json.connection as WhatsAppConnectionView)
+    } catch (e: unknown) {
+      // `unknown`, not `any` — a thrown value need not be an Error, and narrowing here is one line.
+      const text = e instanceof Error && e.message ? e.message : 'Setup could not be completed. Nothing was changed.'
+      dispatch({ type: 'submit_finished', notice: { tone: 'error', text } })
+    }
+  }
+
+  // 🔴 SYNCHRONOUS. NO await, NO promise, NO timer, NO state read that could defer — between this click
+  // and FB.login there is one ref read and one dispatch. That is what keeps the pop-up permitted.
+  const onClick = () => {
+    const FB = fbRef.current
+    if (state.phase !== 'idle' || !FB || !configId) return
+    const attempt = attemptRef.current + 1
+    attemptRef.current = attempt
+    dispatch({ type: 'clicked' })
+    onNotice(null)
+    startEmbeddedSignup(FB, { configId }, {
+      // 🔴 A SUCCESS IS PROCESSED WHATEVER THE OPERATOR PRESSED IN THE MEANTIME. The code is single-use
+      // and the account link has ALREADY been made at Meta; dropping it because "Start again" moved our
+      // bookkeeping on would strand the operator with a connection they can neither see nor redo.
+      complete: (o) => { void submit(o, attempt) },
+      // Only closed/cancel/error may be ignored, and only when superseded — the reducer decides.
+      cancelled: (o) => {
+        if (o.kind === 'error') {
+          dispatch({ type: 'window_error', attempt, message: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
+        } else {
+          dispatch({ type: 'window_closed', attempt })
+        }
+      },
+    })
+  }
+
+  // The reducer's notice is the single source; push it up so the existing panel renders it unchanged.
+  useEffect(() => { if (state.notice) onNotice(state.notice) }, [state.notice, onNotice])
+
+  return (
+    <>
+      <button
+        onClick={onClick}
+        disabled={setupButtonDisabled(state)}
+        className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {setupButtonLabel(state, offerReauthorise)}
+      </button>
+      {/* 🔴 "START AGAIN" NEEDS NO EVENT FROM META, which is the entire point: the state it rescues is
+          the one where Meta will never tell us anything. It makes NO request and says nothing alarming —
+          the operator is reporting a missing window, not a failure. */}
+      {state.phase === 'waiting' && (
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'start_again' })}
+          className="flex-shrink-0 text-xs font-semibold text-orange-700 underline hover:text-orange-800"
+        >
+          Start again
+        </button>
+      )}
+      {/* ── THE STANDING INSTRUCTION. ALWAYS VISIBLE WHILE THE BUTTON IS SHOWN. ─────────────────────
+          🔴 IT IS NOT AN ERROR MESSAGE AND MUST NOT WAIT FOR ONE. Nothing on this page told the operator
+          a separate window would open, so a blocked pop-up looked like a broken button. Said before the
+          press, it is an instruction; said after, it is an excuse.
+          ⚠️ `basis-full` makes it take its own line inside the parent's `flex-wrap` row, so it sits UNDER
+          the button rather than competing with the number field for width. */}
+      <p className="basis-full text-xs text-slate-500 mt-1">
+        A Facebook window will open to connect your WhatsApp Business account. If nothing appears, allow
+        pop-ups for hatchgrab.com in your browser, then press Set up again.
+      </p>
+      {state.showPopupHint && (
+        <p className="basis-full text-xs text-amber-700">
+          Can’t see the Facebook window? It may have been blocked. Allow pop-ups for hatchgrab.com, then
+          press Start again.
+        </p>
+      )}
+    </>
+  )
+}
+
 function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   /** 🔴 OWNER-ONLY gating for the danger zone at the bottom. The Settings TAB itself is owner+manager,
    *  so this is the existing role value narrowed one step further — not a new check. */
@@ -9263,73 +9417,25 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
   //
   // ── 🔴 THE 30-SECOND CODE. NOTHING GOES BETWEEN CAPTURE AND EXCHANGE. ────────────────────────────
   // Meta's one-time code lives 30 seconds. So there is no confirmation dialog, no "review and continue",
-  // no toast the operator has to dismiss first: the moment `launchEmbeddedSignup` resolves with a code,
-  // this posts it. If you add a step in here, you break the flow for everyone.
+  // no toast the operator has to dismiss first: the moment Meta hands back a code, it is posted.
+  // ⚠️ THE CODE PATH MOVED (15 Sep 2026) into `WhatsAppSetupControl`'s `submit`, which `startEmbeddedSignup`
+  // calls from its `complete` callback. The 30-second guarantee is unchanged and still load-bearing: if
+  // you add a step between the callback and the fetch, you break the flow for everyone.
   //
-  // ⚠️ ABANDONMENT AND ERRORS ARE POSTED TOO, AND THAT IS DELIBERATE. They write nothing and change no
-  // state — they exist so a truck saying "it didn't work" has a screen name and a Meta error code
+  // 🔴 ABANDONMENT AND ERRORS ARE NO LONGER POSTED. This note said they were, which stopped being true
+  // when the outcome checks moved above the fetch; nothing is sent for a flow that produced no code
   // behind it. See the route: they go to the server log, not to a table.
   //
   // 🔴 META REQUIRES HTTPS FOR EMBEDDED SIGNUP DOMAINS, so this cannot be exercised on localhost —
   // the flow will refuse to open. That is an environment limit, not a bug in this handler.
-  const [setupBusy, setSetupBusy] = useState(false)
   const [setupNotice, setSetupNotice] = useState<{ tone: 'ok' | 'warn' | 'error'; text: string } | null>(null)
 
-  const onWhatsAppSetup = async () => {
-    if (setupBusy) return   // ⚠️ re-entrancy only: a second press mid-flow, NOT a value comparison.
-    setSetupBusy(true)
-    setSetupNotice(null)
-    try {
-      const appId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_APP_ID
-      const configId = process.env.NEXT_PUBLIC_WHATSAPP_SIGNUP_CONFIG_ID
-      if (!appId || !configId) {
-        setSetupNotice({ tone: 'error', text: 'WhatsApp setup is not available in this environment.' })
-        return
-      }
-
-      const outcome = await launchEmbeddedSignup({ appId, configId })
-
-      // 🔴 THE OUTCOME IS JUDGED BEFORE THE SERVER IS TOLD ANYTHING. These two checks used to sit AFTER
-      // the fetch, so closing Meta's window still POSTed — the server did its configuration checks and
-      // its truck lookup for a flow that had already been abandoned, and only then did the browser say
-      // "Nothing was changed." The message was true; the request was pointless. Both messages are
-      // unchanged; only the ordering moved.
-      if (outcome.kind === 'abandoned') {
-        setSetupNotice({ tone: 'warn', text: 'Setup was closed before it finished. Nothing was changed — press Set up to try again.' })
-        return
-      }
-      if (outcome.kind === 'error') {
-        setSetupNotice({ tone: 'error', text: 'Meta reported a problem during setup. Nothing was changed. Try again, and contact us if it keeps happening.' })
-        return
-      }
-
-      // 🔴 NO `console.log(outcome)` AND NO `console.log(code)`. Meta's own sample carries four such
-      // lines marked "remove after testing"; two of them print the payload and the code. A credential
-      // in a browser console is a credential in a screen-share and in a support screenshot.
-      const res = await fetch('/api/manage/whatsapp-signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ...outcome, kind: outcome.kind }),
-      })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok || json?.ok === false) {
-        setSetupNotice({ tone: 'error', text: json?.error || 'Setup could not be completed. Nothing was changed.' })
-        return
-      }
-      setSetupNotice({ tone: json?.state === 'ready' ? 'ok' : 'warn', text: json?.message || 'Setup finished.' })
-      // 🔴 THE NEW STATE COMES FROM THE DATABASE, NOT FROM THIS HANDLER. The route returns the same S2
-      // view the Manage payload carries, read back through `readWhatsAppConnection` after the writes —
-      // so the button label flips to "Reconnect" (or stays "Set up") because the ROW says so.
-      // ⚠️ DELIBERATELY NOT `reload()`. A parent reload unmounts this tab behind a spinner, which the
-      // sibling `onCategoriesPatch` comment records as the §23 "iPhone" violation. Patch, don't remount.
-      if (json?.connection) onConnectionUpdate(json.connection as WhatsAppConnectionView)
-    } catch (e: any) {
-      setSetupNotice({ tone: 'error', text: e?.message || 'Meta’s setup window could not be opened.' })
-    } finally {
-      setSetupBusy(false)
-    }
-  }
-
+  // 🔴 `onWhatsAppSetup` AND `setupBusy` ARE GONE, DELETED RATHER THAN LEFT. The handler awaited
+  // `launchEmbeddedSignup`, which downloads Meta's SDK before calling FB.login — the await is what got
+  // the pop-up blocked in Safari — and `setupBusy` had exactly one exit, that promise settling, which is
+  // why the button could stick on "Opening…" for ever. Both concerns now live in WhatsAppSetupControl,
+  // whose state is a pure reducer (lib/whatsapp/setup-machine.ts). Leaving the old handler in place would
+  // have left a second, broken way to start the same flow.
   const saveFormField = async (overrides?: Record<string, unknown>) => {
     try {
       // update_settings returns the updated row ({ truck }); push it up so the parent `truck` is
@@ -10017,16 +10123,15 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
                         ⚠️ LABEL: "Set up" / "Reconnect", chosen by the STATE (shouldOfferSignup /
                         shouldOfferReauthorise, derived server-side). Still a forward-looking verb, still
                         NOT a connected/disconnected indicator — no state is fabricated anywhere. */}
-                    <button
-                      onClick={onWhatsAppSetup}
-                      disabled={setupBusy}
-                      className="flex-shrink-0 text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {/* ⚠️ `disabled` HERE IS RE-ENTRANCY, NOT A VALUE CHECK. It blocks a second press
-                          while Meta's window is open; it can never make the FIRST press do nothing,
-                          which is the failure the S3 decoupling exists to prevent. */}
-                      {setupBusy ? 'Opening…' : whatsappConnection?.offerReauthorise ? 'Reconnect' : 'Set up'}
-                    </button>
+                    {/* 🔴 THE BUTTON, ITS COPY AND ITS STATE MOVED INTO WhatsAppSetupControl — see that
+                        component for why. It mounts only here, which is what keeps Meta's SDK off every
+                        other truck's page. */}
+                    <WhatsAppSetupControl
+                      token={token}
+                      offerReauthorise={!!whatsappConnection?.offerReauthorise}
+                      onNotice={setSetupNotice}
+                      onConnectionUpdate={onConnectionUpdate}
+                    />
                   </>
                 ) : (
                   <>

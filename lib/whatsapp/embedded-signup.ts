@@ -120,7 +120,7 @@ export interface EmbeddedSignupError {
 export type EmbeddedSignupOutcome = EmbeddedSignupSuccess | EmbeddedSignupAbandoned | EmbeddedSignupError
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FBGlobal = any
+export type FBGlobal = any
 
 declare global {
   interface Window {
@@ -250,6 +250,84 @@ function listenForSession(
  * 🔴 RESOLVES, NEVER THROWS, FOR A USER-VISIBLE OUTCOME. Abandonment is not an exception; it is an
  * answer. Only an SDK that will not load rejects.
  */
+/**
+ * 🔴 THE SYNCHRONOUS LAUNCHER. `FB.login` IS CALLED IN THE CLICK'S OWN CALL STACK, WITH NO AWAIT BEFORE IT.
+ *
+ * ── WHY THIS EXISTS, AND WHY THE PROMISE VERSION BELOW COULD NOT BE FIXED IN PLACE ──────────────────
+ * A browser grants a click handler TRANSIENT USER ACTIVATION, and `window.open` — which FB.login uses —
+ * is permitted only while that activation is live. Awaiting anything ends the synchronous portion of the
+ * handler and, in Safari, the pop-up is then treated as programmatic and blocked. `launchEmbeddedSignup`
+ * awaited `loadFacebookSdk`, which on a first press DOWNLOADS connect.facebook.net/en_US/sdk.js — a whole
+ * network round trip between the click and the window. Even with the SDK already cached, `.then()` is a
+ * microtask boundary, which Safari has been the strictest about.
+ * 🧪 Observed in production: first press, Safari blocked the window. The operator allowed it by hand.
+ *
+ * So the caller must hold an already-initialised `FB` and call this directly. The SDK is loaded when the
+ * BUTTON RENDERS, not when it is pressed.
+ *
+ * ⚠️ CALLBACKS, NOT A PROMISE, AND DELIBERATELY. Returning a promise would put the caller's handling
+ * behind a `.then`, which is fine — but it would also tempt the next reader to `await` it at the call
+ * site and reintroduce exactly the gap this removes. There is nothing to await here: this function
+ * returns immediately and the outcome arrives later.
+ * ⚠️ `stop()` IS CALLED ON EVERY PATH so the window `message` listener cannot outlive the attempt.
+ */
+export function startEmbeddedSignup(
+  FB: FBGlobal,
+  opts: { configId: string },
+  on: { complete: (o: EmbeddedSignupSuccess) => void; cancelled: (o: EmbeddedSignupAbandoned | EmbeddedSignupError) => void },
+): void {
+  let session: Partial<EmbeddedSignupSuccess> = {}
+  let cancel: EmbeddedSignupAbandoned | EmbeddedSignupError | null = null
+  const stop = listenForSession(s => {
+    if (s.cancel) cancel = s.cancel
+    else session = { ...session, ...s.waba }
+  })
+
+  FB.login(
+    (response: any) => {
+      stop()
+      const code = response?.authResponse?.code
+      // 🔴 NO `console.log('response: ', code)`. Meta's sample has exactly that line, twice, marked
+      // "remove after testing". A code in the console is a credential in the console.
+      if (typeof code === 'string' && code) {
+        on.complete({
+          kind: 'complete',
+          code,
+          wabaId: session.wabaId ?? null,
+          phoneNumberId: session.phoneNumberId ?? null,
+          businessId: session.businessId ?? null,
+          finishType: session.finishType ?? '',
+        })
+        return
+      }
+      if (cancel) { on.cancelled(cancel); return }
+      on.cancelled({ kind: 'abandoned', currentStep: null, sessionId: null })
+    },
+    LOGIN_OPTIONS(opts.configId),
+  )
+}
+
+/** The FB.login options object, shared by both launchers so they cannot drift. */
+const LOGIN_OPTIONS = (configId: string) => ({
+  config_id: configId,
+  response_type: 'code',
+  override_default_response_type: true,
+  // ── 🔴 THE v4 extras OBJECT. FOUR KEYS. SEE THE MODULE HEADER BEFORE CHANGING ANY OF THEM. ──
+  // 🔴 `version` IS WHAT MAKES THIS v4. Remove it and the flow silently drops to v2, which Meta
+  // deprecates on 15 October 2026 — no error, no warning, just an old version until it dies.
+  extras: {
+    setup: {},
+    featureType: COEXISTENCE_FEATURE_TYPE,
+    sessionInfoVersion: SESSION_INFO_VERSION,
+    version: EMBEDDED_SIGNUP_VERSION,
+  },
+})
+
+/**
+ * ⚠️ THE ORIGINAL PROMISE LAUNCHER, KEPT FOR ITS CONTRACT AND NO LONGER USED BY THE MANAGE PAGE.
+ * 🔴 DO NOT CALL IT FROM A CLICK HANDLER. It awaits the SDK load, which is precisely the gap that gets
+ * the pop-up blocked. Use `startEmbeddedSignup` with an SDK loaded at render time.
+ */
 export function launchEmbeddedSignup(opts: { appId: string; configId: string }): Promise<EmbeddedSignupOutcome> {
   return loadFacebookSdk(opts.appId).then(FB => new Promise<EmbeddedSignupOutcome>(resolve => {
     let session: Partial<EmbeddedSignupSuccess> = {}
@@ -280,25 +358,9 @@ export function launchEmbeddedSignup(opts: { appId: string; configId: string }):
         // No code and no session message: the window was closed before anything happened.
         resolve({ kind: 'abandoned', currentStep: null, sessionId: null })
       },
-      {
-        config_id: opts.configId,
-        response_type: 'code',
-        override_default_response_type: true,
-        // ── 🔴 THE v4 extras OBJECT. FOUR KEYS. SEE THE MODULE HEADER BEFORE CHANGING ANY OF THEM. ──
-        // 🔴 `version` IS WHAT MAKES THIS v4. Remove it and the flow silently drops to v2, which Meta
-        // deprecates on 15 October 2026 — no error, no warning, just an old version until it dies.
-        // ⚠️ `setup: {}` IS KEPT EVEN THOUGH META'S GENERATED URI OMITS IT. It is still in the current
-        // implementation page's FB.login sample, it is an EMPTY object so it carries no data and can
-        // change no behaviour, and the generated URI is a LANDING-PAGE form of the flow rather than the
-        // FB.login form — an omission there is not evidence that FB.login rejects it. Keeping the
-        // documented key is the lower-risk half of a disagreement we cannot test without HTTPS.
-        extras: {
-          setup: {},
-          featureType: COEXISTENCE_FEATURE_TYPE,
-          sessionInfoVersion: SESSION_INFO_VERSION,
-          version: EMBEDDED_SIGNUP_VERSION,
-        },
-      },
+      // ⚠️ `setup: {}` IS KEPT EVEN THOUGH META'S GENERATED URI OMITS IT — see LOGIN_OPTIONS above, which
+      // both launchers now share so the two cannot drift.
+      LOGIN_OPTIONS(opts.configId),
     )
   }))
 }
