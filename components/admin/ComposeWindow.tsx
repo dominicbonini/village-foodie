@@ -185,6 +185,11 @@ export default function ComposeWindow({
   const [logged, setLogged] = useState(false)
   const [mounted, setMounted] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
+  /**
+   * 🔴 THE DOUBLE-SUBMIT GUARD. A ref, NOT state, because only a ref is written and read in the same
+   * synchronous turn — see `logNow`. Never reset on re-render, released in `logNow`'s `finally`.
+   */
+  const logInFlight = useRef(false)
 
   useEffect(() => { setMounted(true) }, [])
   useEffect(() => { closeRef.current?.focus() }, [])
@@ -450,18 +455,49 @@ export default function ComposeWindow({
 
   const logNow = async () => {
     setPending(null)
+    // 🔴 THE SYNCHRONOUS GATE, AND IT IS FIRST. `logging` is React STATE: two clicks in the same tick
+    // both read the pre-update value and both proceed, because `setLogging(true)` does not take effect
+    // until the next render. 🧪 The manual records two contacts logged 0.755s apart from THIS function.
+    // A ref is written and read in the same synchronous turn, so the second press cannot get past here.
+    // ⚠️ THE STATE FLAG STAYS — it is what disables the button and renders "Logging…". The ref is the
+    // correctness guard; the state is the UI. Removing either re-opens a different half of the defect.
+    if (logInFlight.current) return
     if (logging || !body.trim()) return
     // 🔴 THE LOG IS A RECORD OF WHAT WAS SENT. Writing a row containing `{{truck name}}` would put a
     // message into the history that was never sent in that form — the same reasoning the placeholder
     // warning already applies to logging, taken to a refusal because this one is never deliberate.
+    // ⚠️ EVERY PRE-EXISTING GUARD STILL RUNS BEFORE THE WRITE, and `refusal` still runs AFTER the
+    // in-flight gate but BEFORE the ref is claimed, so a refused attempt does not lock the button.
     if (refusal) { setSendError(refusal); return }
+    logInFlight.current = true
     setLogging(true)
+    setSendError(null)
     // 🔴 THE EDITED BODY IS WHAT IS LOGGED — `body`, the textarea's current value, never the template's
     // original render. The log records what I actually sent; if the two can diverge, the edited text is
-    // the one that matters. The footer is included for email because it is part of what was sent.
-    const ok = await onLog(fullText, selected?.channel ?? 'email', selected?.servesKind ?? null)
-    setLogging(false)
-    if (ok) setLogged(true)
+    // the one that matters.
+    let ok = false
+    try {
+      ok = await onLog(fullText, selected?.channel ?? 'email', selected?.servesKind ?? null)
+    } finally {
+      // 🔴 RELEASED IN `finally`. If `onLog` ever throws, a ref left true would disable logging for the
+      // life of the window with no way back except closing it.
+      logInFlight.current = false
+      setLogging(false)
+    }
+    if (ok) {
+      setLogged(true)
+      // 🔴 CLOSE ON SUCCESS (16 September 2026). The window used to stay open showing "Logged ✓", which
+      // left the operator looking at a composed message that had already been recorded — the state in
+      // which the double-log happened. The prospect modal UNDERNEATH stays open: `onClose` only clears
+      // `composeOpen` in the panel, and `modalId` is untouched.
+      // ⚠️ THE LIST AND MODAL REFRESH THEMSELVES. `logContact` awaits `load()` before returning true, so
+      // by the time we get here the panel has already re-read the list route. Nothing is merged by hand
+      // here, which is why the server-derived values (logo_url among them) cannot be clobbered.
+      onClose()
+    }
+    // 🔴 ON FAILURE THE WINDOW STAYS OPEN, deliberately. `onLog` returns false for a refusal or a failed
+    // write and raises its own toast; closing here would discard the composed body the operator would
+    // have to retype. `logged` is not set, so the button returns to "Log" and can be pressed again.
   }
   const doLog = () => {
     if (logging || logged || !body.trim()) return
@@ -643,7 +679,14 @@ export default function ComposeWindow({
           )}
 
           <label className="block">
-            <span className={LABEL}>Message — exactly what will be sent (the footer is added below)</span>
+            {/* 🔴 CORRECTED 16 September 2026 — THE OLD LABEL WAS FALSE AND IT WAS FALSE ABOUT A LEGAL LINE.
+                It read "(the footer is added below)". `OPT_OUT_FOOTER` was deleted from the codebase when
+                the sign-off moved into the Outlook signature (lib/outreach-template-render.ts records the
+                removal). A repo-wide search finds the symbol in docs only — NOTHING appends an opt-out
+                line on any exit: not the mailto path, not Copy, not the logged message text.
+                ⚠️ So the operator was being told, on the screen where they decide whether a message is
+                compliant, that a PECR line would be added that no code adds. */}
+            <span className={LABEL}>Message — exactly what will be sent. No opt-out line is added here: it must be in your Outlook signature.</span>
             {/* 🔴 SIZED WITH `rows`, NOT WITH A FONT CLASS. The unlayered !important rule in globals.css
                 forces `font-size: inherit` on every textarea on desktop, so `text-sm` here is INERT and
                 the box renders at 16px whatever class it carries. `rows` sets the visible line count and

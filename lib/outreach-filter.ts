@@ -55,7 +55,6 @@ export type OutreachFilterState = {
   huOrdering: TriFilter
   huMap: TriFilter
   whatsapp: TriFilter
-  doNotContact: TriFilter
   email: PresenceFilter
   phone: PresenceFilter
   stage: 'any' | OutreachStage
@@ -70,7 +69,6 @@ export const EMPTY_OUTREACH_FILTER: OutreachFilterState = {
   huOrdering: 'any',
   huMap: 'any',
   whatsapp: 'any',
-  doNotContact: 'any',
   email: 'any',
   phone: 'any',
   stage: 'any',
@@ -140,7 +138,10 @@ export function matchesOutreachFilter(row: FilterableRow, f: OutreachFilterState
   if (!triMatch(row.hu_ordering, f.huOrdering)) return false
   if (!triMatch(row.hu_map, f.huMap)) return false
   if (!triMatch(row.whatsapp_confirmed, f.whatsapp)) return false
-  if (!triMatch(row.do_not_contact, f.doNotContact)) return false
+  // 🔴 THE do_not_contact PREDICATE WAS REMOVED 16 September 2026. It is no longer a per-row filter:
+  // flagged prospects are excluded from the POOL in OutreachPanel (`pool`), so they vanish from the
+  // rows AND from every count, which a predicate here could never do — this function narrows rows and
+  // the totals are computed elsewhere.
 
   if (!presenceMatch(row.contact_email, f.email)) return false
   if (!presenceMatch(row.phone, f.phone)) return false
@@ -173,7 +174,7 @@ export function matchesOutreachFilter(row: FilterableRow, f: OutreachFilterState
 export function isFilterActive(f: OutreachFilterState): boolean {
   return (
     f.search.trim() !== '' ||
-    f.huOrdering !== 'any' || f.huMap !== 'any' || f.whatsapp !== 'any' || f.doNotContact !== 'any' ||
+    f.huOrdering !== 'any' || f.huMap !== 'any' || f.whatsapp !== 'any' ||
     f.email !== 'any' || f.phone !== 'any' || f.stage !== 'any' || f.schedule !== 'any' ||
     f.nextAction !== 'any' || f.logo !== 'any' || f.photo !== 'any'
   )

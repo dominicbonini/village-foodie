@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.3
+HatchGrab Engineering Reference Manual · V13.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.3**
+**Version 13.4**
 
 September 2026
 
@@ -25,6 +25,24 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.4 — 16 September 2026 — TOKEN REFRESH PROVEN AND SWITCHED ON; META REFUSES OUR PAYMENT-STATUS CHECK, SO THE PAYMENT ROW STAYS HIDDEN FOR GOOD
+
+**Token refresh works.** [OBSERVED] The admin "Refresh token now" action on `test-truck` returned a new token with a ~60-day expiry, reported it valid, and customer messages to the connected number still got bot replies afterwards. This closes V13.3 open item 1's proof step.
+
+**Automatic refresh.** Dominic was instructed to add `WHATSAPP_TOKEN_AUTO_REFRESH` = `on` (Production only) and redeploy. ⚠️ Confirm it is present in Vercel; the flag only takes effect after a deploy. [REASONED] With `test-truck`'s token freshly refreshed, the first automatic refresh should fall around mid-October (the job refreshes at 30 days or fewer remaining). Evidence it is running: `token_checked_at` in `/admin/whatsapp-connections` updates each day after 03:00 UTC.
+
+🔴 **Payment status cannot be read.** [OBSERVED] "Check payment status" returned `Meta could not be asked (http, code 10)`. Code 10 is Meta's permission-denied error: the business token issued by Embedded Signup cannot read `{waba}?fields=primary_funding_id`. [REASONED] Reading it would need a broader permission and another App Review, not worth it for a status pill. **Decision:**
+- The Settings payment row stays **permanently hidden**. It only renders for a known status, and none will ever be known. `payment_method_present` stays null.
+- The amber warning above 1,000 keeps its **general** wording, which is true whether or not a card exists.
+- The real protection is unchanged: a send Meta refuses with `131042` sets `payment_blocked_at`, shows the red Settings banner and emails the operator.
+- The daily job still calls `readPaymentStatus`; on error it writes nothing, so it is harmless. **Tidy later:** remove that call and the admin "Check payment status" button.
+
+This closes V13.3 open item 2 as "not possible with our permissions".
+
+**Commit.** All of 16 September's code was due to go out as one commit. ⚠️ Record the hash here when known.
+
+**Still open (carried from V13.3):** order emails should use the connected number; retire the `whatsapp_sender` fallback route; limit alerts do not re-arm when a limit is raised mid-month; check the features PDF fits footnote 4; sweep `if not exists` migrations against live columns; skipped manual tests (disconnect/reconnect, 80%/100% emails, payment-blocked banner, starter view, narrow widths).
 
 ## V13.3 — 16 September 2026 — WHATSAPP AUTO-REPLIES WENT LIVE: A CONNECTED TRUCK RECEIVED NOTHING AND WOULD HAVE SENT ON OUR KEY, COEXISTENCE WAS PROVEN ON A REAL UK NUMBER, AND A MIGRATION "SUCCEEDED" WITHOUT CREATING THE TABLE THE CODE NEEDED
 
@@ -12357,17 +12375,62 @@ reaches it. Both, in that order.**
 
 | Date | What |
 |---|---|
-| **~14 Sep 2026** | Meta App Review's 20-day outer bound from submission |
+| ~~**~14 Sep 2026**~~ | ~~Meta App Review's 20-day outer bound from submission~~ ✅ **PASSED — approved; Tech Provider with Advanced access (V13.3)** |
 | **30 Sep 2026** | `real-thai-food` trial expires |
-| **1 Oct 2026** | WhatsApp service messages become billable per message — **the reply cap should ship before this** |
-| **15 Oct 2026** | Embedded Signup v2 deprecated — **build v4** |
-| **17 Oct 2026** | 🔴 **Pizzeria Gusto's trial expires — a TRADING truck, silently** |
+| **1 Oct 2026** | WhatsApp service messages become billable per message — ~~the reply cap should ship before this~~ ✅ **the cap shipped (V13.3); this is also when Meta's 1,000-a-month free allowance starts** |
+| **15 Oct 2026** | ~~Embedded Signup v2 deprecated~~ ✅ **v4 was built and is live (V13.3)** |
+| **15 Nov 2026** | 🔴 **`test-truck`'s WhatsApp token expires.** Auto-refresh is on and should renew it around mid-October — **verify via `token_checked_at`** (V13.4) |
+| ~~**17 Oct 2026**~~ **31 Dec 2026** | 🔴 **Pizzeria Gusto's trial expires — a TRADING truck, silently.** ⚠️ **DATE CORRECTED V13.4 — it is 31 December 2026**, read from the database 16 September; the 17 October figure was wrong here and in three other places (corrected V13.3). The cliff itself is unchanged and still unhandled. |
 
 ## ✅ THE DUPLICATED SECRET IS GONE, AND THE DELETION IS PROVEN HARMLESS (V11.43)
 
 `META_APP_SECRET` deleted from Vercel and the deployment rebuilt. **Proven by a live inbound WhatsApp
 message afterwards, not inferred.** The running build `1d85241` contains `3c1989b`, verified with a
 resolve guard.
+
+## V13.4 — ✅ TOKEN REFRESH IS PROVEN AND ON; ❌ PAYMENT STATUS IS UNREADABLE AND THE ROW IS GONE FOR GOOD
+
+**The background jobs shipped in V13.3. This is what is TRUE of them now** — the V13.3 entry records how
+they were built, and two of its open items are closed here.
+
+### ✅ Token refresh — proven, not assumed
+
+[OBSERVED] The admin **"Refresh token now"** action on `test-truck` returned a new token with a **~60-day
+expiry**, reported it valid, and **customer messages to the connected number still got bot replies
+afterwards**. 🔴 **That last clause is the proof that matters** — a refresh that returns a token but
+breaks sending would report success at every point a human looks.
+
+**`WHATSAPP_TOKEN_AUTO_REFRESH` = `on`** (Production only), added and redeployed. ⚠️ **THE FLAG ONLY
+TAKES EFFECT AFTER A DEPLOY** — setting it in Vercel alone changes nothing, and the comparison is exact
+(`=== 'on'`), so `true`, `1`, `ON` or a stray space all mean off. **Confirm it is present in Vercel.**
+- [REASONED] With `test-truck` freshly refreshed, the **first automatic refresh falls around mid-October**
+  — the daily job refreshes at 30 days or fewer remaining.
+- 🔴 **EVIDENCE IT IS ACTUALLY RUNNING:** `token_checked_at` in `/admin/whatsapp-connections` **updates
+  each day after 03:00 UTC**. If that date stops moving, the job has stopped, and nothing else will say so.
+
+### ❌ Payment status cannot be read, and the row is permanently hidden
+
+[OBSERVED] **"Check payment status" returned `Meta could not be asked (http, code 10)`.** Code 10 is
+Meta's **permission-denied** error: the business token issued by Embedded Signup **cannot read**
+`{waba}?fields=primary_funding_id`. [REASONED] Reading it would need a broader permission and **another
+App Review** — not worth it for a status pill.
+
+**Decision, and it is settled:**
+- The Settings **payment row stays permanently hidden**. It renders only for a *known* status
+  (`added`/`missing`), and **none will ever be known**. `payment_method_present` stays **null** for good.
+- The amber warning above 1,000 keeps its **general** wording, which is true whether or not a card exists.
+  🔴 **Do not "improve" it to name the operator's card state** — we cannot see it.
+- 🔴 **THE REAL PROTECTION IS UNCHANGED AND DOES NOT DEPEND ON ANY OF THIS.** A send Meta refuses with
+  **`131042`** sets `payment_blocked_at`, shows the red Settings banner and emails the operator. That is
+  an *observed refusal of a real send*, which is why it was always the trustworthy signal and the status
+  pill never was.
+
+⚠️ **TIDY LATER, DELIBERATELY NOT NOW:** the daily job still calls `readPaymentStatus`, and on error it
+**writes nothing**, so it is harmless. **Remove that call and the admin "Check payment status" button**
+when the WhatsApp code is next touched. They are marked here so the next reader knows they are dead
+weight rather than a feature to preserve.
+
+**This closes V13.3 open item 2 as "not possible with our permissions"** — not as "not done".
 
 
 # 21. Competitive positioning

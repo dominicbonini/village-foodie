@@ -10,6 +10,10 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import {
   isStage, isChannel, isDirection, isKind,
   canonicalisePlatform,
+  // 🔴 THE CONSTANTS, NEVER LITERALS. lib/outreach.ts's header states the vocabulary "lives here and
+  // nowhere else" precisely because the migration writes no CHECK constraint — typing 'contacted' or
+  // 'not_contacted' here would be a second, unchecked copy of the vocabulary.
+  DEFAULT_STAGE,
   type OutreachStage,
 } from '@/lib/outreach'
 import { phoneWhatsApp, type WhatsAppHint } from '@/lib/whatsapp-hint'
@@ -466,6 +470,15 @@ const MEDIA_COLUMN: Record<string, 'logo_url' | 'photo_url'> = { logo: 'logo_url
 // Separated INSIDE the object path, not in the column value — the column holds a full URL either way.
 const MEDIA_FOLDER: Record<string, string> = { logo: 'logos', photo: 'photos' }
 
+/**
+ * The stage an outbound contact advances a not-yet-contacted prospect to.
+ * 🔴 ANNOTATED `OutreachStage`, WHICH IS THE ACTUAL CHECK. The annotation makes this a compile error the
+ * day 'contacted' leaves `OUTREACH_STAGES` — the union is derived from that array. An index into the
+ * array (`OUTREACH_STAGES[1]`) would NOT have caught a reorder: it would have kept compiling and quietly
+ * written a different stage. `DEFAULT_STAGE` is imported for the other half of the condition.
+ */
+const CONTACTED_STAGE: OutreachStage = 'contacted'
+
 export async function POST(req: NextRequest) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
 
@@ -676,7 +689,51 @@ export async function POST(req: NextRequest) {
       // 🔴 LOGGING WRITES A CONTACT ROW AND NOTHING ELSE. The old automatic next_action_at update (from the
       // now-deleted outbound-count/weekend-roll suggestion) was removed — no date is ever set automatically.
       // next_action_at is set only by hand via update_prospect.
-      return NextResponse.json({ ok: true, id: inserted?.id ?? null })
+
+      // ── 🔴 THE ONE AUTOMATIC STAGE MOVE: not_contacted → contacted, ON AN OUTBOUND CONTACT ─────────
+      // Added 16 September 2026. It is the only thing other than `update_prospect` that writes `stage`.
+      //
+      // 🔴 THE CONDITION LIVES IN THE QUERY, NOT IN THE CLIENT, AND THAT IS THE WHOLE DESIGN.
+      // `.eq('stage', DEFAULT_STAGE)` is what makes a manually set stage unoverwritable — including from
+      // a STALE TAB whose in-memory copy still says not_contacted. A client-side "only if it looks
+      // not_contacted" test reads a value that may be minutes old; the database reads the current row.
+      //
+      // 🔴 INBOUND NEVER TRIGGERS IT. A reply arriving is not us making contact, and `nextStep` already
+      // treats any inbound row as a `replied` stop — moving the stage to 'contacted' on an inbound row
+      // would write a *less* advanced stage than the truth.
+      //
+      // 🟢 SAFE AGAINST nextStep: 'contacted' is NOT in `TERMINAL_STAGES`
+      // (`new Set(['signed','not_interested','replied'])`, lib/outreach-step.ts), and the ladder is
+      // derived from CONTACT ROWS, not from `stage`. So this changes no prospect's next step.
+      //
+      // ⚠️ `.select()` IS LOAD-BEARING, NOT DECORATION. In PostgREST an UPDATE that matches no row is
+      // NOT an error — without a representation there is no way to tell "moved" from "left alone".
+      let resultStage: string | null = null
+      let stageWarning: string | null = null
+      if (direction === 'outbound') {
+        const { data: moved, error: sErr } = await supabase
+          .from('outreach_prospects')
+          .update({ stage: CONTACTED_STAGE, updated_at: new Date().toISOString() })
+          .eq('id', prospect_id)
+          .eq('stage', DEFAULT_STAGE)
+          .select('id, stage')
+        if (sErr) {
+          // 🔴 THE CONTACT IS KEPT AND THE LOG IS NOT REPORTED AS FAILED. The row is written and correct;
+          // only the derived stage is behind. Throwing here would make the client believe nothing was
+          // recorded and invite a second press — creating the duplicate this release is removing.
+          console.error('[admin/outreach] stage advance failed after log_contact:', sErr.message)
+          stageWarning = 'Contact logged, but the stage could not be updated. Set it by hand if needed.'
+        } else {
+          // 🔴 ZERO ROWS IS THE NORMAL, CORRECT OUTCOME for any prospect already past not_contacted.
+          // It is not a warning and must never be reported as one.
+          resultStage = moved && moved.length > 0 ? (moved[0] as { stage: string }).stage : null
+        }
+      }
+
+      // ⚠️ `stage` is the RESULTING stage when this call moved it, and null when it did not — either
+      // because the row was not not_contacted, because the contact was inbound, or because the update
+      // failed (in which case `warning` says so). The client must not treat null as "now not_contacted".
+      return NextResponse.json({ ok: true, id: inserted?.id ?? null, stage: resultStage, warning: stageWarning })
     }
 
     // Undo a just-logged contact. Deletes ONE contact row by its id (the id returned by log_contact),

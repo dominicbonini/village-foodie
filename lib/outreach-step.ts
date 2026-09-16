@@ -210,10 +210,25 @@ const TERMINAL_STAGES = new Set(['signed', 'not_interested', 'replied'])
  * treats messaging apps as in scope. So this picks a DRAFT channel for a human to send; it does not
  * authorise anything. Decision D4: the system drafts, the operator sends.
  */
+/**
+ * 🔴 THE PRESENCE TEST, EXTRACTED SO THE LIST'S TICKS AND THE QUEUE CANNOT DISAGREE (16 September 2026).
+ * It is `channelFor`'s own test, lifted verbatim: a value is present when it is a non-null string that is
+ * not blank AFTER TRIMMING. `channelFor` now calls it instead of repeating `(x ?? '').trim()`, so the
+ * EMAIL and MOBILE columns in the outreach list are testing the identical rule the queue gates on.
+ * ⚠️ WHITESPACE-ONLY IS ABSENT, and that is `channelFor`'s pre-existing behaviour, not a new decision —
+ * a row holding " " would have produced no channel before this extraction either.
+ * 🧪 LIVE, 16 September 2026: 0 of 231 `discovery_trucks` rows hold a non-null blank `contact_email` or
+ * `phone`, so this distinction changes nothing about today's data. It is the rule, not a fix.
+ */
+export const hasValue = (v: string | null | undefined): boolean => !!(v ?? '').trim()
+
 export function channelFor(p: StepProspect): 'email' | 'whatsapp' | null {
-  const wa = p.whatsapp_confirmed === true && !!(p.waPhone ?? '').trim()
+  // ⚠️ REWRITTEN TO CALL `hasValue`, WITH IDENTICAL RESULTS. The old body read
+  // `!!(p.waPhone ?? '').trim()` and `(p.contact_email ?? '').trim()`; both are exactly `hasValue`.
+  // The characterisation harness (scripts/outreach-channel-for.cjs) pins every input shape.
+  const wa = p.whatsapp_confirmed === true && hasValue(p.waPhone)
   if (wa) return 'whatsapp'
-  if ((p.contact_email ?? '').trim()) return 'email'
+  if (hasValue(p.contact_email)) return 'email'
   return null
 }
 

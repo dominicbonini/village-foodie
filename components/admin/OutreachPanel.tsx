@@ -43,7 +43,7 @@ import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to b
 // than reimplemented so the queue, the row label and the composer's pre-selection read ONE answer.
 import {
   nextStep, templateForStep, needsAttention, LEAD_TYPE_LABELS, LEAD_TYPES,
-  leadTypeOf, isLeadType, shouldFreezeLeadType, channelFor,
+  leadTypeOf, isLeadType, shouldFreezeLeadType, channelFor, hasValue,
   type Step,
 } from '@/lib/outreach-step'
 import {
@@ -55,7 +55,9 @@ import {
   isOverdue,
   isHatchesUp,
   toYMD,
-  leadOf, LEAD_LABELS,
+  // ⚠️ `LEAD_LABELS` IMPORT REMOVED 16 September 2026 — its only reader here was the Contact cell's
+  // tooltip. It is still exported from lib/outreach.ts for any future reader; nothing there changed.
+  leadOf,
 } from '@/lib/outreach'
 // 🔴 (1) THE FILTER PREDICATE LIVES OUTSIDE THIS COMPONENT — one pure function, testable with no React,
 // no network and no admin session (which is not obtainable here at all). Adding a filter is one entry in
@@ -122,7 +124,7 @@ type Prospect = {
 // is not "the smallest value", it is "no value", so it is pinned to the bottom regardless of asc/desc.
 // The Hatches Up column sorts by the tick state; Schedule by upcoming-event count, with "no schedule at
 // all" (no upcoming and no past) treated as null → last.
-type SortKey = 'logo' | 'photo' | 'name' | 'contact' | 'whatsapp' | 'hu_map' | 'hu_ordering' | 'schedule' | 'stage' | 'last_contacted' | 'next_action' | 'next_step'
+type SortKey = 'logo' | 'photo' | 'name' | 'email' | 'mobile' | 'whatsapp' | 'hu_map' | 'hu_ordering' | 'schedule' | 'stage' | 'last_contacted' | 'next_action' | 'next_step'
 type SortDir = 'asc' | 'desc'
 type SortState = { key: SortKey; dir: SortDir } | null
 // 🔴 THE WHATSAPP COLUMN IS TICKABLE (step E): it reflects MY confirmation (whatsapp_confirmed). Two states
@@ -148,7 +150,18 @@ const COLUMNS: { key: SortKey; label: string; title?: string }[] = [
   // `base` with `channel: null` and every STOP returns that base, so a do-not-contact prospect WITH an
   // email reports `step.channel === null`. Reading the step here would file 6 reachable trucks under
   // "no lead" — proved before this column was written, not after.
-  { key: 'contact', label: 'Contact', title: 'DERIVED, not stored. Reachable: the channel a message would use (email, or WhatsApp where the number is confirmed). Not reachable: the best lead to chase instead — a Hatches Up storefront, the truck’s own site, a Facebook page, or nothing. Phone and email VALUES moved to the prospect panel; their filters are still in the bar.' },
+  // 🔴 THE DERIVED "Contact" COLUMN WAS REPLACED BY TWO PRESENCE TICKS (16 September 2026). It printed
+  // either the channel a message would go out on or the best lead host to chase instead — one cell doing
+  // two unrelated jobs, neither of which answered the question actually asked of the list ("do we hold an
+  // address / a number for this truck?").
+  // 🔴 `channelFor` IS UNTOUCHED AND STILL GATES THE WORK QUEUE (§57.2). Only this COLUMN went; the
+  // derivation and the queue still call it. These two columns share `channelFor`'s own presence test via
+  // the extracted `hasValue`, so a tick and the queue can never disagree.
+  // ⚠️ READ-ONLY GLYPHS, NOT INPUTS. Every other tick in this table (WhatsApp, HU ordering, HU map) IS an
+  // editor, so these two deliberately render a character rather than a checkbox — a disabled checkbox
+  // still reads as "a control you may not use" rather than "a fact".
+  { key: 'email', label: 'Email', title: 'discovery_trucks.contact_email — ✓ when an address is stored. READ-ONLY here; the value is edited in the prospect panel. Same presence test the work queue gates on (non-blank after trimming).' },
+  { key: 'mobile', label: 'Mobile', title: 'discovery_trucks.phone — ✓ when a number is stored. READ-ONLY here; the value is edited in the prospect panel. Same presence test the work queue gates on (non-blank after trimming). ⚠️ This is `phone`, the column the prospect modal shows — NOT `mobile`, which the modal does not display.' },
   { key: 'whatsapp', label: 'WhatsApp', title: 'MY confirmation the number works on WhatsApp (outreach_prospects.whatsapp_confirmed). Ticked = confirmed; empty = not confirmed. Untick clears to "not checked".' },
   // ⚠️ ORDERING BEFORE MAP, at the operator's request: "seen USING online ordering" is the stronger
   // buying signal, so it reads first. The FILTER BAR follows this array, so swapping these two moves the
@@ -186,11 +199,12 @@ function sortValue(p: Prospect, key: SortKey, _hatchesUp: (v: string | null) => 
     // 🔴 SORTS REACHABLE FIRST, THEN BY LEAD QUALITY. Two groups in one key so a single click gives the
     // order the work is actually done in: everyone you can message, then everyone you cannot, best lead
     // first. `channelFor`, never `step.channel` — see the COLUMNS note.
-    case 'contact': {
-      const ch = channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone })
-      if (ch) return `0${ch}`
-      return `1${leadOf(p.order_url, p.website).order}`
-    }
+    // 🔴 PRESENCE SORTS, AND IT USES THE SAME PREDICATE THE CELL RENDERS. Held first (1), absent last
+    // (null sorts to the end by the comparator's existing rule), so one click groups the rows you can
+    // actually reach. ⚠️ `hasValue`, not truthiness — a whitespace-only value must sort as absent
+    // because that is how the queue treats it.
+    case 'email': return hasValue(p.contact_email) ? 1 : null
+    case 'mobile': return hasValue(p.phone) ? 1 : null
     // WhatsApp confirmation: confirmed (true) sorts first, not-confirmed (null) last. Two states only.
     case 'whatsapp':
       return p.whatsapp_confirmed === true ? 1 : null
@@ -345,11 +359,14 @@ const FILTER_CONTROLS: {
     options: [['any', 'Any'], ['overdue', 'Overdue'], ['scheduled', 'Scheduled'], ['none', 'None set']],
     title: 'outreach_prospects.next_action_at. Overdue = dated before today (the same test as the row\'s red ⚠). Scheduled = today or later. None set = no date.' },
   // ── filters with NO column, last ──────────────────────────────────────────────────────────────────
-  // ⚠️ "No" is fair here too — do_not_contact is a flag YOU set, so an absent value means "not flagged",
-  // which is operationally the same as no.
-  { key: 'doNotContact', label: 'Do not contact', noColumn: true,
-    options: [['any', 'Any'], ['yes', 'Yes'], ['unknown', 'No']],
-    title: 'outreach_prospects.do_not_contact — a flag you set. Yes = flagged do-not-contact. No = not flagged (stored as NULL; nothing ever writes false). No table column; shows as the 🚫 DNC chip on the Truck cell.' },
+  // 🔴 THE `doNotContact` TRI-STATE FILTER WAS REMOVED 16 September 2026 and replaced by the
+  // "Show do not contact" TICKBOX rendered beside this bar. It read:
+  //     options: [['any','Any'], ['yes','Yes'], ['unknown','No']]
+  // and defaulted to 'any', i.e. FLAGGED PROSPECTS WERE SHOWN UNLESS THE OPERATOR OPTED OUT. That is the
+  // wrong default for a suppression list: the safe state has to be the one you get by doing nothing.
+  // ⚠️ THE TICKBOX IS NOT A FILTER AND DELIBERATELY NOT IN THIS ARRAY. Everything here is a per-row
+  // predicate ANDed inside `matchesOutreachFilter`; the tickbox instead chooses the POOL those
+  // predicates run over, which is what makes it narrow the counts as well as the rows.
 ]
 
 const fmtDate = (d: string | null) => {
@@ -397,6 +414,13 @@ export default function OutreachPanel() {
   const [checking, setChecking] = useState(true)
   const [denied, setDenied] = useState(false)
   const [prospects, setProspects] = useState<Prospect[]>([])
+  /**
+   * 🔴 THE REFRESH NONCE. Incremented by `load()` on success and passed to both thumbnails, whose shared
+   * `useThumbLatch` clears its `broken` flag when it changes. Its VALUE means nothing; only that it
+   * changes. It exists because `load()` returns an IDENTICAL `logo_url` string for an unchanged row, so
+   * the thumbs' old `[value]`-only reset could never fire on a refresh — see useThumbLatch.
+   */
+  const [refreshNonce, setRefreshNonce] = useState(0)
   const [error, setError] = useState<string | null>(null)
   // Whether each hand-applied column exists yet (probed by the route, not inferred from row values).
   /** Whether BOTH name columns exist — one probe, because half a split is not usable. */
@@ -507,6 +531,11 @@ export default function OutreachPanel() {
       setHasContactNames(!!data.hasContactNames)
       setHasLeadTypeFreeze(!!data.hasLeadTypeFreeze)
       setHasDoNotContact(!!data.hasDoNotContact)
+      // 🔴 BUMPED ONLY ON A SUCCESSFUL READ, AND AFTER THE ROWS ARE SET. Every early return above leaves
+      // it alone, so a 401, a 404, a non-ok status or a thrown fetch does NOT clear a thumbnail's broken
+      // latch — there is no fresh data to justify a fresh attempt. That is what stops this becoming a
+      // retry loop: the nonce changes at most once per SUCCESSFUL refresh.
+      setRefreshNonce(x => x + 1)
       setChecking(false)
     } catch {
       setError('Could not reach the server')
@@ -585,13 +614,39 @@ export default function OutreachPanel() {
   // disagree if the clock ticked across midnight between calls. One Map, one answer.
   // ⚠️ `waPhone` comes from the SHARED `phoneWhatsApp` — the same function the CUSTOMER-FACING live
   // button uses. It is READ here and nothing else; lib/whatsapp-hint.ts is not modified by this change.
+  // ── 🔴 DO-NOT-CONTACT IS HIDDEN BY DEFAULT (item 5, 16 September 2026) ────────────────────────────
+  // 🔴 NOT PERSISTED, BY INSTRUCTION AND FOR A REASON. No localStorage, no URL state: this suppresses
+  // people who have asked not to be contacted, and a remembered "show" would mean an operator opening
+  // the console tomorrow sees them without having chosen to today. It resets on every load — the safe
+  // direction.
+  const [showDoNotContact, setShowDoNotContact] = useState(false)
+
+  /**
+   * 🔴 THE ONE POOL EVERY COUNT AND THE LIST READ FROM. It exists so the exclusion happens in exactly
+   * ONE place. The alternative — filtering inside `computedVisible`, again inside `dueCounts`, and again
+   * at each `prospects.length` — is four copies of one rule, and V13.2's lesson is that guards which
+   * must agree by hand eventually do not. `steps`, `channels`, `dueCounts`, `computedVisible` and every
+   * displayed total derive from this, so a flagged prospect cannot appear in one number and not another.
+   * ⚠️ `=== true` IS THE TEST, matching `nextStep`'s own first stop. The column is nullable and nothing
+   * ever writes `false`, so null and false both mean NOT flagged.
+   * ⚠️ `prospects` ITSELF IS NEVER FILTERED — the modal resolves a prospect by id from `prospects`, so a
+   * row flagged while its modal is open keeps rendering rather than blanking.
+   */
+  const pool = useMemo(
+    () => (showDoNotContact ? prospects : prospects.filter(p => p.do_not_contact !== true)),
+    [prospects, showDoNotContact])
+  /** How many the tickbox is currently hiding. 0 when it is ticked, so the note disappears. */
+  const hiddenDnc = useMemo(
+    () => (showDoNotContact ? 0 : prospects.filter(p => p.do_not_contact === true).length),
+    [prospects, showDoNotContact])
+
   const steps = useMemo(() => {
     const m = new Map<string, Step>()
-    for (const p of prospects) {
+    for (const p of pool) {
       m.set(p.id, nextStep({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }, p.contacts))
     }
     return m
-  }, [prospects])
+  }, [pool])
 
   /** 🔴 CONTACTABILITY, FROM THE SHARED PREDICATE, FOR EVERY ROW — independent of step state.
    *  `channelFor` and not `step.channel`: 🧪 `nextStep` returns its `base` (channel: null) for every
@@ -599,11 +654,11 @@ export default function OutreachPanel() {
    *  the Due gate look right while quietly filing reachable trucks under "no lead". */
   const channels = useMemo(() => {
     const m = new Map<string, 'email' | 'whatsapp' | null>()
-    for (const p of prospects) {
+    for (const p of pool) {
       m.set(p.id, channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone }))
     }
     return m
-  }, [prospects])
+  }, [pool])
 
   // 🔴 COUNTED FROM THE SAME MAP THE ROWS READ, over ALL prospects rather than the filtered set — the
   // badge answers "how much work is there", not "how much work is on screen".
@@ -634,7 +689,9 @@ export default function OutreachPanel() {
     // today's date. So the row filters run first, unchanged, and the queue narrows what survives.
     // ⚠️ A prospect never contacted has NO next_action_at, so the existing date filters cannot see that
     // it is due at all. The derived step can — which is the whole reason the queue is not just 'overdue'.
-    const rows = prospects
+    // ⚠️ `pool`, NOT `prospects` — the do-not-contact exclusion happens once, above. Because `visible`
+    // is what prev/next walks, hidden rows are skipped by navigation for free.
+    const rows = pool
       .filter(p => matchesOutreachFilter(p, filter))
       .filter(p => {
         if (listView === 'all') return true
@@ -682,7 +739,7 @@ export default function OutreachPanel() {
       if (r !== 0) return r
       return a.name.localeCompare(b.name)
     })
-  }, [prospects, sort, filter, listView, steps, channels])
+  }, [pool, sort, filter, listView, steps, channels])
 
   // ── 🔴 THE LIST-FREEZE MECHANISM IS GONE, AND THIS RECORDS WHY RATHER THAN DELETING IT SILENTLY ──
   // It pinned the row set and its order while an inline input had focus, so a row could not move or
@@ -758,8 +815,23 @@ export default function OutreachPanel() {
     const data = await res.json().catch(() => ({} as any))
     if (!res.ok) throw new Error(data?.error || `Upload failed (${res.status})`)
     if (!data?.url || !data?.column) throw new Error('Upload returned no URL')
-    setProspects(ps => ps.map(x => x.id === prospectId ? { ...x, [data.column]: data.url } as Prospect : x))
-  }, [])
+    // 🔴 RE-READ, DO NOT HAND-MERGE (round 3, 16 September 2026). This used to spread the UPLOAD route's
+    // `data.url` over the row:
+    //     setProspects(ps => ps.map(x => x.id === prospectId ? { ...x, [data.column]: data.url } : x))
+    // 🧪 Measured: for a demo-backed prospect the two strings are EQUAL TODAY — the upload returns
+    // `${SUPABASE_URL}/storage/v1/object/public/truck-media/${path}` and the list route returns
+    // `resolveTruckLogo(...)` = `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${path}`
+    // over the path it just wrote. So this is NOT a bug fix for a wrong value.
+    // 🔴 IT IS THE REMOVAL OF A SECOND BUILDER OF ONE STRING. `logo_url` is DERIVED by the list route
+    // (resolveLogoTarget → resolveTruckLogo) and the client has no business reconstructing it: the two
+    // already differ in which env var they read (the route falls back to SUPABASE_URL, the resolver uses
+    // NEXT_PUBLIC_SUPABASE_URL only), and for a LINKED prospect the upload writes a bucket PATH to
+    // `trucks.logo_storage_path` while returning a URL — two shapes the client would have to know about.
+    // Re-reading means the client never holds a value the server did not derive.
+    // ⚠️ `load()` also bumps `refreshNonce`, which clears any thumbnail error latch — so a retried upload
+    // after a failed load shows the new image rather than a stale ⚠.
+    await load()
+  }, [load])
 
   // ── REMOVE A LOGO OR PHOTO ────────────────────────────────────────────────────────────────────────
   // 🔴 NO OPTIMISTIC CLEAR, for the same reason uploadMedia has no optimistic set: the row must not show
@@ -778,6 +850,18 @@ export default function OutreachPanel() {
     })
     const data = await res.json().catch(() => ({} as any))
     if (!res.ok) throw new Error(data?.error || `Remove failed (${res.status})`)
+    // 🔴 THIS ONE STAYS AN OPTIMISTIC CLEAR, AND THE REASON IS MEASURED, NOT ASSUMED (round 3).
+    // The upload path above now re-reads instead of merging, so the obvious move would be to do the same
+    // here. It is not needed, because null is exactly what a reload WOULD return in every case:
+    //   • demo-backed or linked prospect — the delete route clears `trucks.logo_storage_path`, and the
+    //     list route computes `logoTarget.truckId ? resolveTruckLogo(…, null) : …`. `resolveTruckLogo`
+    //     returns null for a null path and 🔴 ADDS NO FALLBACK to `discovery_trucks.logo_url` — its own
+    //     comment says so: "an operator who cleared their logo sees it cleared here too".
+    //   • unlinked prospect — the discovery column itself is cleared, so `truck?.logo_url ?? null` is null.
+    //   • photo — always `discovery_trucks.photo_url`, cleared, so null.
+    // ⚠️ SO THERE IS NO CASE WHERE A RELOAD WOULD RETURN A NON-NULL LOGO FOR A ROW JUST CLEARED, which is
+    // the condition that would have forced a load() here. Leaving it optimistic also keeps the delete
+    // feeling instant, and `deleteMedia` is called from a confirm dialog where a re-read would be visible.
     setProspects(ps => ps.map(x => x.id === prospectId
       ? ({ ...x, [kind === 'logo' ? 'logo_url' : 'photo_url']: null } as Prospect) : x))
     showToast(data?.fileNote ? `${kind} cleared — ${data.fileNote}` : `${kind} removed`)
@@ -901,7 +985,13 @@ export default function OutreachPanel() {
       })
       if (!res.ok) { showToast(`Log failed (${res.status})`); return false }
       // 🔴 UNDO targets the id the route just returned — the specific row, not "the most recent".
-      const { id: newId } = await res.json().catch(() => ({ id: null }))
+      // ⚠️ `warning` ARRIVES ON A SUCCESSFUL LOG. The route returns it when the contact was written but
+      // the not_contacted → contacted advance failed. The contact is real, so this must NOT be reported
+      // as a failure — but it must be SEEN, or the operator is left with a stage that silently disagrees
+      // with the history. `stage` is the resulting stage when this call moved it, and null otherwise
+      // (already past not_contacted, inbound, or the update failed) — never treat null as not_contacted.
+      const { id: newId, warning } = await res.json().catch(() => ({ id: null, warning: null }))
+      if (warning) showToast(String(warning))
       showToast('Logged', newId
         // 🔴 `.catch` IS REQUIRED NOW: deleteContact REJECTS on failure so the confirm dialog can show
         // the reason. The toast has nowhere to show one, and an unhandled rejection helps nobody —
@@ -947,8 +1037,8 @@ export default function OutreachPanel() {
                 matches nothing reads as 0 of N rather than as an empty page. */}
             <p className="text-sm text-slate-500">
               {isFilterActive(filter) || listView !== 'all'
-                ? <><span className="font-semibold text-slate-700">{visible.length}</span> of {prospects.length} trucks</>
-                : <>{prospects.length} trucks</>}
+                ? <><span className="font-semibold text-slate-700">{visible.length}</span> of {pool.length} trucks</>
+                : <>{pool.length} trucks</>}
             </p>
           </div>
           {/* 🔴 THREE VIEWS OVER THE TABLE THAT IS ALREADY THERE. Not tabs, not pages: every row is
@@ -967,7 +1057,7 @@ export default function OutreachPanel() {
               </span>
             )}
             {([
-              ['all', `All (${prospects.length})`, 'Every prospect, unfiltered by view.'],
+              ['all', `All (${pool.length})`, 'Every prospect, unfiltered by view.'],
               ['due', `Due work (${dueCounts.total})`,
                 'Work that can actually be done: due today or overdue, AND reachable by email or a confirmed WhatsApp number. Prospects with no contact route are in Needs details instead.'],
               ['leads', `Needs details (${dueCounts.leads})`,
@@ -1018,6 +1108,37 @@ export default function OutreachPanel() {
                 onChange={v => setF(c.key, v as never)}
                 options={c.options} />
             ))}
+
+            {/* ── 🔴 "SHOW DO NOT CONTACT" — A TICKBOX, NOT A FILTER (item 5, 16 September 2026) ────────
+                It replaced the `doNotContact` tri-state select, which defaulted to 'any' and therefore
+                SHOWED flagged prospects unless the operator opted out. The safe state has to be the one
+                you get by doing nothing.
+                🔴 IT IS DELIBERATELY A CHECKBOX WHERE EVERY OTHER CONTROL IN THIS BAR IS A <select>, and
+                that breaks the bar's own stated rule on purpose. That rule exists because the nullable
+                booleans are THREE-valued (true / NULL-meaning-nobody-checked / absent) and a checkbox
+                would conflate two of them. This control is not reading a three-valued column: it is a
+                two-position choice about MY OWN VIEW — show them or do not — and it writes nothing.
+                ⚠️ NOT IN `FILTER_CONTROLS`. Everything in that array is a per-row predicate ANDed inside
+                `matchesOutreachFilter`; this instead chooses the POOL those predicates run over, which is
+                what lets it narrow the counts as well as the rows.
+                ⚠️ NOT PERSISTED — no localStorage, no URL state, unticked on every load. */}
+            <label className="flex items-center gap-1.5 self-end pb-1 cursor-pointer"
+              title="Prospects flagged do_not_contact are hidden from the list and from every count. Tick to show them; they appear with a 🚫 DNC marker. This resets every time the page loads.">
+              <input type="checkbox" checked={showDoNotContact}
+                onChange={e => setShowDoNotContact(e.target.checked)}
+                className="h-3.5 w-3.5 accent-orange-600" />
+              <span className="text-xs font-semibold text-slate-600">Show do not contact</span>
+            </label>
+
+            {/* 🔴 THE COUNT IS SHOWN WHILE THEY ARE HIDDEN, so the suppression is never silent. An
+                operator who cannot see a truck they expect gets told why, here, rather than concluding
+                the row was lost. It disappears when the tickbox is on, because then nothing is hidden. */}
+            {hiddenDnc > 0 && (
+              <span className="text-xs text-slate-500 self-end pb-1"
+                title="Flagged do_not_contact, and excluded from every count on this view.">
+                {hiddenDnc} hidden — do not contact
+              </span>
+            )}
 
             {isFilterActive(filter) && (
               <button onClick={() => setFilter(EMPTY_OUTREACH_FILTER)}
@@ -1086,7 +1207,8 @@ export default function OutreachPanel() {
               <col style={{ width: '64px' }} />{/* logo — 40px thumb, 12px gap each side */}
               <col style={{ width: '64px' }} />{/* photo */}
               <col style={{ width: '210px' }} />{/* name — was 170; took part of the 325px freed by phone+email */}
-              <col style={{ width: '150px' }} />{/* contact — "Email"/"WhatsApp", or a lead host like "hatchesup.app" */}
+              <col style={{ width: '76px' }} />{/* email — a ✓ or a dash; "EMAIL" is the binding word */}
+              <col style={{ width: '82px' }} />{/* mobile — a ✓ or a dash; "MOBILE" is the binding word */}
               <col style={{ width: '72px' }} />{/* whatsapp — a checkbox; "WHATSAPP" is the binding word */}
               <col style={{ width: '76px' }} />{/* hu_ordering — "ORDERING" is the binding word */}
               <col style={{ width: '68px' }} />{/* hu_map */}
@@ -1128,7 +1250,7 @@ export default function OutreachPanel() {
             </thead>
             <tbody>
               {visible.map(p => (
-                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openModal} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} />
+                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openModal} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} refreshNonce={refreshNonce} />
               ))}
               {visible.length === 0 && (
                 <tr><td colSpan={12} className="px-3 py-8 text-center text-slate-400">
@@ -1157,9 +1279,11 @@ export default function OutreachPanel() {
             {/* ── (1) HEADER — ONE LINE ──────────────────────────────────────────────────────────── */}
             <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0 max-sm:flex-wrap max-sm:gap-y-1 max-sm:px-4 max-sm:py-2">
               <ModalThumb value={modalProspect.logo_url} folder="logos" label="logo"
-                onRequestDelete={() => setConfirmKind('logo')} />
+                onRequestDelete={() => setConfirmKind('logo')}
+                refreshNonce={refreshNonce} name={modalProspect.name} />
               <ModalThumb value={modalProspect.photo_url} folder="photos" label="photo"
-                onRequestDelete={() => setConfirmKind('photo')} />
+                onRequestDelete={() => setConfirmKind('photo')}
+                refreshNonce={refreshNonce} name={modalProspect.name} />
               <h3 className="text-lg font-semibold text-slate-900 truncate min-w-0 max-sm:w-full max-sm:order-first">{modalProspect.name}</h3>
               {/* (4) The label says what the link OPENS. `safeHref` also rescues the one scheme-less value. */}
               {safeHref(modalProspect.website) && (
@@ -1503,21 +1627,72 @@ function FilterChip({ label, value, onDismiss }: {
 //
 // 🔴 BROKENNESS IS DETECTED, NOT ASSUMED. There is no way to know from the string whether it resolves, so
 // the <img> reports it via onError. State 3 is therefore reachable only after a real load failure.
-function MediaCell({ p, kind, onUpload }: {
+/**
+ * 🔴 THE THUMBNAIL ERROR LATCH, IN ONE PLACE FOR BOTH THUMBS (round 3, 16 September 2026).
+ *
+ * ── THE DEFECT IT FIXES ─────────────────────────────────────────────────────────────────────────────
+ * Both thumbs latched `broken` on `<img onError>` and reset it with `useEffect(…, [value])` — i.e. ONLY
+ * when the URL string CHANGED. `load()` re-reads the list route, which for an unchanged row returns the
+ * IDENTICAL string, so refreshing the data could never clear the latch. One transient image failure
+ * therefore hid a logo until the page was RELOADED, which remounts the component. 🧪 Reproduced in
+ * scripts/outreach-logo-latch.cjs, whose control proved the latch is the mechanism.
+ *
+ * ── WHAT IS DELIBERATELY KEPT ───────────────────────────────────────────────────────────────────────
+ * 🔴 THE LATCH ITSELF. After a real failure the ⚠ marker still shows — never an inviting empty slot,
+ * which is the behaviour the surrounding comments were written to protect. A value that fails AGAIN
+ * after a refresh latches again, and shows ⚠ again.
+ * 🔴 AT MOST ONE FRESH ATTEMPT PER REFRESH, so this cannot become a retry loop: `refreshNonce` only
+ * changes when `load()` SUCCEEDS, and nothing here schedules a retry of its own.
+ *
+ * ⚠️ NO CACHE-BUSTER. The `src` is untouched — no query parameter is appended. Clearing the flag lets
+ * React render the <img> again; whether the browser re-requests it is the browser's business.
+ *
+ * @param refreshNonce bumped by `load()` on success. Its VALUE is meaningless; only that it changes.
+ */
+function useThumbLatch(input: {
+  value: string | null
+  src: string | null
+  refreshNonce: number
+  kind: string
+  name: string
+}): { broken: boolean; onError: () => void } {
+  const { value, src, refreshNonce, kind, name } = input
+  const [broken, setBroken] = useState(false)
+  // 🔴 `refreshNonce` IS THE SECOND DEPENDENCY AND IT IS THE ENTIRE FIX. `value` alone could not clear a
+  // latch for a row whose URL had not changed — which is every row a refresh returns.
+  useEffect(() => { setBroken(false) }, [value, refreshNonce])
+  const onError = useCallback(() => {
+    setBroken(true)
+    // 🔴 ONE LINE, SO THE ORIGINAL TRANSIENT FAILURE CAN BE SEEN IN SAFARI'S CONSOLE. Until now the
+    // failure left no trace at all: the symptom was reported as "the logo vanished", with nothing to say
+    // whether the request 404'd, timed out or was blocked. Prefix, kind, name, the exact src, and an ISO
+    // timestamp — and nothing else is logged anywhere in this path.
+    console.warn(`[outreach-thumb] ${kind} failed to load for ${name} — src=${src ?? ''} at ${new Date().toISOString()}`)
+  }, [kind, name, src])
+  return { broken, onError }
+}
+
+function MediaCell({ p, kind, onUpload, refreshNonce }: {
   p: Prospect
   kind: 'logo' | 'photo'
   onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File, confirmTruck?: string) => Promise<void>
+  /** Bumped by load() on success. Only that it CHANGES matters — see useThumbLatch. */
+  refreshNonce: number
 }) {
   const value = kind === 'logo' ? p.logo_url : p.photo_url
   const src = mediaSrc(value, kind === 'logo' ? 'logos' : 'photos')
-  const [broken, setBroken] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [over, setOver] = useState(false)
+  // 🔴 THE LATCH MOVED INTO THE SHARED HOOK — see useThumbLatch. `broken` now also clears on a refresh,
+  // not only on a changed value.
+  const { broken, onError: onThumbError } = useThumbLatch({
+    value, src, refreshNonce, kind, name: p.name,
+  })
 
-  // A new value deserves a fresh verdict — otherwise a successful upload would inherit the previous
-  // value's broken flag and show the ⚠ over an image that loads perfectly well.
-  useEffect(() => { setBroken(false); setErr(null) }, [value])
+  // A new value deserves a fresh verdict for the ERROR TEXT too — otherwise a successful upload would
+  // inherit the previous value's message. ⚠️ `broken` is no longer reset here; the hook owns it.
+  useEffect(() => { setErr(null) }, [value])
 
   const accept = async (files: FileList | null) => {
     const file = Array.from(files ?? [])[0]
@@ -1567,7 +1742,7 @@ function MediaCell({ p, kind, onUpload }: {
   if (src) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt="" onError={() => setBroken(true)}
+      <img src={src} alt="" onError={onThumbError}
         title={`${kind} — ${value}`}
         // 🔴 LOGOS ARE CONTAINED, PHOTOS ARE COVERED. `object-cover` fills the box and crops the overflow,
         // which for a WIDE WORDMARK in a 40px circle can crop away every letter and render as a blank disc —
@@ -1609,7 +1784,7 @@ function MediaCell({ p, kind, onUpload }: {
 // 🔴 React.memo (item 5): with stable onOpen/onPatch, a row re-renders only when its OWN `p` changes, so a
 // single-cell edit does not re-render all 231 rows. Truncation (`truncate`) plus the fixed <colgroup>
 // keeps every cell within its column width, so content never widens a column on sort (item 4).
-const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUpload, isCountStale }: {
+const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUpload, isCountStale, refreshNonce }: {
   p: Prospect
   /** The derived next step for this row. Passed IN rather than computed here so every consumer of it —
    *  the queue filter, this cell and the composer — reads the identical object. */
@@ -1619,21 +1794,16 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
   isCountStale: boolean
   onPatch: (id: string, patch: Record<string, unknown>) => void
   onUpload: (prospectId: string, kind: 'logo' | 'photo', file: File, confirmTruck?: string) => Promise<void>
+  /** 🔴 PASSED THROUGH TO BOTH MEDIA CELLS. `Row` is `memo`-wrapped, so this must be a prop rather than
+   *  read from a context — a context read would not re-render a memoised row when the nonce changed. */
+  refreshNonce: number
 }) {
   const overdue = isOverdue(p.next_action_at)
-  // 🔴 DERIVED PER ROW FROM THE SHARED PREDICATE, NOT FROM THE STEP. See the COLUMNS note: a stopped
-  // prospect's `step.channel` is always null, even when it has an email, so reading the step here would
-  // mislabel every do-not-contact / replied / converted row as unreachable.
-  // ⚠️ `phoneWhatsApp` is the SHARED derivation the customer-facing live button also uses. It is READ
-  // here and nowhere modified; lib/whatsapp-hint.ts carries no change from this task.
-  const contactChannel = channelFor({ ...p, waPhone: phoneWhatsApp(p.phone, null).waPhone })
-  const lead = leadOf(p.order_url, p.website)
-  const contactTitle = contactChannel
-    ? (contactChannel === 'whatsapp'
-      ? `Reachable on WhatsApp — ${p.phone ?? ''} (confirmed)`
-      : `Reachable by email — ${p.contact_email ?? ''}`)
-    : `Not reachable: no email, and no confirmed WhatsApp number. Lead: ${LEAD_LABELS[lead.rank]}${
-      lead.host ? ` — ${p.order_url || p.website}` : ' — nothing on file'}`
+  // 🔴 `contactChannel`, `lead` AND `contactTitle` WENT WITH THE CONTACT CELL (16 September 2026).
+  // All three existed ONLY to render that one cell and its tooltip; lint confirmed each had no other
+  // reader in this row once the cell was removed. `channelFor`, `leadOf` and `phoneWhatsApp` themselves
+  // are untouched and still used elsewhere — the work queue gates on `channelFor` (§57.2) and the
+  // needs-details list ranks on `leadOf`.
   // 🔴 TWO CELLS, ONE QUESTION EACH. Was a single string, "N upcoming · last <date>", which truncated
   // at 150px so neither half was reliably readable. `hasSchedule` is the same test the old string used
   // for "no schedule" — nothing about what counts as a schedule changed.
@@ -1667,8 +1837,8 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
             3. `mx-auto` on the box itself    — centres a BLOCK-level child of definite width.
           A block image ignores (1); an inline-flex box ignores (3); (2) covers both. Any ONE suffices and
           they cannot conflict — they all resolve to the same position. */}
-      <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="logo" onUpload={onUpload} /></div></td>
-      <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="photo" onUpload={onUpload} /></div></td>
+      <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="logo" onUpload={onUpload} refreshNonce={refreshNonce} /></div></td>
+      <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="photo" onUpload={onUpload} refreshNonce={refreshNonce} /></div></td>
       {/* 🔴 (4) THE TRUCK NAME IS THE CONTROL. The dedicated "Open" column is gone and the name opens the
           modal, using the SAME `onOpen(p.id)` handler the Open link used — nothing about opening changed.
           🔴 A REAL <button>, NOT AN onClick ON A DIV OR A SPAN: it is in the tab order, takes focus, and
@@ -1696,12 +1866,18 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
           tel: / wa.me in this component's rows — and everything is still "open the modal". A host
           rendered as TEXT says which lead to chase without changing what a row DOES; making these
           clickable is a deliberate decision for another day, not a side effect of a column swap. */}
-      <td className="px-3 py-2 truncate text-center" title={contactTitle}>
-        {contactChannel
-          ? <span className="text-slate-700 font-medium">{contactChannel === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
-          : lead.host
-            ? <span className={lead.rank === 'hatchesup' ? 'text-orange-700 font-semibold' : 'text-slate-500'}>{lead.host}</span>
-            : <span className="text-slate-300">—</span>}
+      {/* 🔴 TWO READ-ONLY PRESENCE TICKS, replacing the derived Contact cell. A glyph, never an <input>:
+          these are facts about the row, and a checkbox — even disabled — reads as a control.
+          ⚠️ The VALUES are still edited in the prospect panel; nothing here writes. */}
+      <td className="px-3 py-2 text-center" title={hasValue(p.contact_email) ? 'An email address is stored' : 'No email address stored'}>
+        {hasValue(p.contact_email)
+          ? <span className="text-slate-700 font-semibold" aria-label="has email">✓</span>
+          : <span className="text-slate-300" aria-label="no email">—</span>}
+      </td>
+      <td className="px-3 py-2 text-center" title={hasValue(p.phone) ? 'A phone number is stored' : 'No phone number stored'}>
+        {hasValue(p.phone)
+          ? <span className="text-slate-700 font-semibold" aria-label="has mobile">✓</span>
+          : <span className="text-slate-300" aria-label="no mobile">—</span>}
       </td>
       {/* item 3: checkbox centred. step E: reflects MY confirmation (whatsapp_confirmed). */}
       <td className="px-3 py-2 text-center"><WhatsAppBox p={p} onPatch={onPatch} /></td>
@@ -1828,15 +2004,19 @@ const linkCls = 'text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-s
 // table uses the SAME one rather than a second implementation. Behaviour here is unchanged: same focus,
 // same capture-phase Escape, same backdrop-cancels, same in-place error, same rendered markup. The only
 // difference is that the title/label/sentence now arrive as props instead of being derived from `kind`.
-function ModalThumb({ value, folder, label, onRequestDelete }: {
+function ModalThumb({ value, folder, label, onRequestDelete, refreshNonce, name }: {
   value: string | null
   folder: 'logos' | 'photos'
   label: string
   onRequestDelete: () => void
+  /** Bumped by load() on success. Only that it CHANGES matters — see useThumbLatch. */
+  refreshNonce: number
+  /** The prospect's name, for the [outreach-thumb] warning only. */
+  name: string
 }) {
   const src = mediaSrc(value, folder)
-  const [broken, setBroken] = useState(false)
-  useEffect(() => { setBroken(false) }, [value])
+  // 🔴 THE SAME SHARED LATCH THE ROW THUMB USES — one implementation, not two copies that must agree.
+  const { broken, onError: onThumbError } = useThumbLatch({ value, src, refreshNonce, kind: label, name })
   const box = 'w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] text-center leading-tight'
 
   // ⚠️ The badge now only ASKS. The confirmation, the busy state and the error all moved to the dialog,
@@ -1852,7 +2032,7 @@ function ModalThumb({ value, folder, label, onRequestDelete }: {
       <span className="relative flex-shrink-0 inline-flex">
         <a href={src} target="_blank" rel="noreferrer" title={`Open full-size ${label}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={label} onError={() => setBroken(true)}
+          <img src={src} alt={label} onError={onThumbError}
             className={`${box} ${folder === 'logos' ? 'object-contain p-0.5' : 'object-cover'} border border-slate-200 bg-white hover:ring-2 hover:ring-orange-400`} />
         </a>
         {removeBadge}
