@@ -50,6 +50,7 @@ import { startEmbeddedSignup, loadFacebookSdk, type FBGlobal, type EmbeddedSignu
 import {
   setupReducer, INITIAL_SETUP_STATE, setupButtonLabel, setupButtonDisabled,
 } from '@/lib/whatsapp/setup-machine'
+import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -8965,7 +8966,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
-  const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
+  // ⚠️ VALUE ONLY — THE SETTER IS GONE WITH THE EDITABLE INPUT. `whatsapp_sender` is still READ here,
+  // because the else branch shows it in a disabled box, and still read by the webhook's sender fallback
+  // and by customer order emails. Nothing in Manage writes it any more.
+  const [whatsappSender] = useState(truck.whatsapp_sender ?? '')
   const [preferredContact, setPreferredContact] = useState(truck.preferred_contact_method ?? '')
   const [allowCancellation, setAllowCancellation] = useState(truck.allow_customer_cancellation ?? true)
   const [cancellationCutoff, setCancellationCutoff] = useState(truck.cancellation_cutoff_mins ?? 30)
@@ -9383,32 +9387,13 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
     }
   }
 
-  // Auto-replies WhatsApp sender — saves on blur (like the rest of Settings) AND on the button.
-  // The ref guards the blur→click double-fire (clicking the button blurs the input first) and skips
-  // pointless writes when nothing changed, so the operator gets exactly one success toast.
-  const lastSavedSender = useRef(truck.whatsapp_sender ?? '')
-  const saveWhatsappSender = async () => {
-    // ── 🔴 AN UNCHANGED VALUE NOW STILL ANSWERS. ────────────────────────────────────────────────────
-    // This used to be a bare `return`, so tapping Connect without editing did VISIBLY NOTHING — no
-    // request, no toast, no error. §20 records that as the likeliest source of the "it doesn't work"
-    // report, and it is the worst shape a control can have: indistinguishable from a dead button.
-    // ⚠️ THE EARLY RETURN ITSELF IS KEPT ON PURPOSE — re-sending an identical value would be a pointless
-    // write, and the whole point of the guard is that it is already saved. Only the SILENCE is fixed.
-    // What is written, which column, and the server allow-list are all untouched.
-    if (whatsappSender === lastSavedSender.current) {
-      showToast('WhatsApp number saved')
-      return
-    }
-    try {
-      await api('update_truck', { data: { whatsapp_sender: whatsappSender } })
-      lastSavedSender.current = whatsappSender
-      onTruckUpdate({ whatsapp_sender: whatsappSender })
-      showToast('WhatsApp number saved')
-    } catch (e: any) {
-      showToast(e.message, 'error')
-    }
-  }
-
+  // 🔴 `saveWhatsappSender` AND `lastSavedSender` ARE GONE, with the editable number box they served.
+  // They wrote `trucks.whatsapp_sender` through `update_truck`. That column is NOT deleted and is still
+  // read — by the webhook's sender fallback and by customer order emails — but Manage no longer offers a
+  // way to set it, because the number the row shows now comes from Meta, for the number Meta linked.
+  // ⚠️ IF AN EDITABLE SENDER IS EVER WANTED AGAIN, it needs the server allow-list entry it already has
+  // (`update_truck`'s `allowed` array still lists `whatsapp_sender`) plus a new control; the allow-list
+  // was deliberately left alone so nothing else that posts to it changes meaning.
   // ── 🔴 S4: THE SETUP HANDLER. SHARES NO CODE PATH WITH `saveWhatsappSender` ABOVE. ─────────────────
   // That handler early-returns when the number is unchanged; this one CANNOT — it takes no arguments,
   // reads no previous value, and has no branch. Pressing Set up always launches, whether the operator
@@ -10097,14 +10082,37 @@ function SettingsTab({ userRole, truck, whatsappConnection, onConnectionUpdate, 
                 <label className={`text-sm w-20 flex-shrink-0 ${whatsAppSetupVisible ? 'text-slate-600' : 'text-slate-400'}`}>WhatsApp</label>
                 {whatsAppSetupVisible && can('whatsapp_replies') ? (
                   <>
-                    <input
-                      type="tel"
-                      value={whatsappSender}
-                      onChange={e => setWhatsappSender(e.target.value)}
-                      onBlur={saveWhatsappSender}
-                      placeholder="+447700900000"
-                      className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    />
+                    {/* ── 🔴 THE FREE-TEXT NUMBER BOX IS GONE FROM EVERY LIVE STATE ────────────────────
+                        It asked the operator to type a number that had NO CONNECTION to the one Meta had
+                        actually linked — two sources for one fact, one of them a guess, and the row
+                        happily showed the guess. What is shown now is only what Meta itself returned for
+                        the connected phone number id.
+                        ⚠️ IT WROTE `trucks.whatsapp_sender`, WHICH IS NOT DELETED AND IS STILL READ —
+                        by the webhook's sender fallback and by customer order emails (lib/email.ts). The
+                        column and its stored values are untouched; only this UI writer is gone. A truck
+                        on the live branch can no longer SET it from here, which is the intended trade:
+                        the connection now supplies the number.
+                        🔴 THE ELSE BRANCH BELOW IS UNTOUCHED and keeps its own disabled input.
+                        🔴 WHAT IS SHOWN IS DECIDED BY `whatsAppRowView`, NOT HERE. Fourteen state/value
+                        combinations is too many to reason about in markup; this renders its answer. */}
+                    {(() => {
+                      const view = whatsAppRowView({
+                        state: whatsappConnection?.state ?? 'not_connected',
+                        displayPhoneNumber: whatsappConnection?.displayPhoneNumber ?? null,
+                        verifiedName: whatsappConnection?.verifiedName ?? null,
+                      })
+                      if (view.facts.length === 0 && !view.showBareConnected) return null
+                      return (
+                        <div className="flex-1 min-w-0 text-sm">
+                          {view.showBareConnected && <p className="text-slate-700">Connected</p>}
+                          {view.facts.map(f => (
+                            <p key={f.label} className="truncate text-slate-700">
+                              <span className="text-slate-500">{f.label}: </span>{f.value}
+                            </p>
+                          ))}
+                        </div>
+                      )
+                    })()}
                     {/* ── 🔴 SETUP (S3, 4 September 2026). DECOUPLED FROM `saveWhatsappSender`. ─────────
                         THE BUG THIS FIXES, QUOTED FROM THE HANDLER IT NO LONGER CALLS:
                             if (whatsappSender === lastSavedSender.current) {

@@ -33,6 +33,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { encryptToken, encryptionKeyConfigured } from '@/lib/whatsapp/token-crypto'
+import { fetchPhoneNumberProfile } from '@/lib/whatsapp/phone-profile'
 import { WHATSAPP_LIVE } from '@/lib/whatsapp-live'
 import { hasWhatsAppSetupPreview } from '@/lib/whatsapp/setup-preview'
 import { parseMetaAppSecrets } from '@/lib/meta/webhook-signature'
@@ -412,7 +413,47 @@ export async function POST(req: NextRequest) {
     return ok(truck.id, 'Almost there — we could not finish saving. Your setup is saved, please contact support rather than running it again.')
   }
 
-  console.info(TAG, 'connection established', {
+  // ── 🔴 THE DISPLAY PROFILE. LAST, AND DELIBERATELY AFTER EVERYTHING THAT MATTERS. ───────────────
+  // By this line the token is stored, the number is registered, the app is subscribed and phase B has
+  // succeeded — the truck IS connected. This lookup is cosmetic: it fetches the number and business name
+  // Meta holds so Settings can show them instead of asking the operator to type a number that had no
+  // connection to the one Meta linked.
+  //
+  // 🔴 IT CANNOT FAIL ONBOARDING, AND ITS POSITION IS HALF OF WHY. `fetchPhoneNumberProfile` never throws
+  // and never rejects; there is no `await` after it that could be skipped, no write it can roll back, and
+  // the success message below is returned whatever it does. The other half is that the columns are
+  // nullable: nulls are a legitimate stored state, not a missing write to retry.
+  //
+  // ⚠️ THE LOG CARRIES AN HTTP STATUS AND NOTHING ELSE. Not the number, not the name, not the token, not
+  // Meta's error body — which can echo request parameters. A status is enough to tell a network failure
+  // from a 401 from a 404, which is the whole diagnostic question here.
+  {
+    const profile = await fetchPhoneNumberProfile({
+      graphBase: GRAPH, phoneNumberId, accessToken,
+    })
+    if (profile.failure) {
+      console.warn(TAG, 'phone profile lookup failed — stored as null, onboarding unaffected', {
+        truck_id: truck.id, failure: profile.failure, status: profile.status,
+      })
+    }
+    // ⚠️ WRITTEN EVEN WHEN THE LOOKUP FAILED, so a retried signup overwrites a stale pair with nulls
+    // rather than leaving yesterday's number beside today's connection.
+    const prof = await supabase
+      .from('whatsapp_connections')
+      .update({
+        display_phone_number: profile.profile.displayPhoneNumber,
+        verified_name: profile.profile.verifiedName,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('truck_id', truck.id)
+    if (prof.error) {
+      console.warn(TAG, 'phone profile write failed — onboarding unaffected', {
+        truck_id: truck.id, code: prof.error.code,
+      })
+    }
+  }
+
+    console.info(TAG, 'connection established', {
     truck_id: truck.id, finish_type: finishType || null,
     coexistence: isCoexistence, registered: rule.register, register_skipped: registerSkipped,
   })

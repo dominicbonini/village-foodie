@@ -36,12 +36,18 @@ export interface WhatsAppConnectionView {
   offerReauthorise: boolean
   /** Still working, but inside the last REAUTHORISE_WINDOW_FRACTION of the token's life. NOT a state. */
   expiringSoon: boolean
+  /** 🔴 META'S OWN ANSWER FOR THE CONNECTED NUMBER, OR NULL. Never the operator's typed `whatsapp_sender`
+   *  — that is a different field with a different meaning and was the source of the number the row used
+   *  to show. Null when the lookup failed or Meta had nothing; the row then shows nothing, not a guess. */
+  displayPhoneNumber: string | null
+  /** Meta's verified business name, or null (it is empty until Meta approves one). */
+  verifiedName: string | null
 }
 
 /** The columns this read needs. Named, never `select('*')` — the habit that caused the class of bug the
  *  migration header records. `access_token_ciphertext` is selected ONLY to test presence, below. */
 const CONNECTION_FIELDS =
-  'truck_id, waba_id, phone_number_id, access_token_ciphertext, token_expires_at, token_revoked_at, token_issued_at, payment_method_present'
+  'truck_id, waba_id, phone_number_id, access_token_ciphertext, token_expires_at, token_revoked_at, token_issued_at, payment_method_present, display_phone_number, verified_name'
 
 /** Minimal shape of the supabase client this needs, so the module imports no client library and cannot
  *  drag a server dependency anywhere.
@@ -110,5 +116,9 @@ export async function readWhatsAppConnection(
     offerSignup: shouldOfferSignup(state),
     offerReauthorise: shouldOfferReauthorise(state),
     expiringSoon: state === 'ready' && isTokenExpiringSoon(tokenExpiresAt, tokenIssuedAt, now),
+    // ⚠️ `?? null` ON BOTH, so a row written before these columns existed reads as "nothing to show"
+    // rather than `undefined` reaching the view model.
+    displayPhoneNumber: (row?.display_phone_number as string | null) ?? null,
+    verifiedName: (row?.verified_name as string | null) ?? null,
   }
 }
