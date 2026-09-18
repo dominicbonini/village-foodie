@@ -20,7 +20,11 @@ import { toMinor } from '@/lib/order-repricing'
 // orderItemsToQtyByCat / mergeQtyByCat / buildItemCatMap are the SAME helpers buildUnitsFromOrders uses
 // to turn orders into production_slot_usage. The only thing local is the five-line loop that walks the
 // in-memory rows — see buildUnitsInMemory, and the equivalence proof in the report.
+import { randomUUID } from 'crypto'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
+import { resolveIntervalsFor } from '@/lib/slot-interval'
+import { resolveBatchReservations } from '@/lib/features'
+import { admitForManual, writeReservationRecord, writeCookingReservation } from '@/lib/orders/cooking-reservation'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { normaliseOrderLines, buildItemCatMap, type ProductionSlotUnits } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, type QtyByCat } from '@/lib/slot-capacity'
@@ -97,7 +101,14 @@ const ORDER_SHAPES: { mains: number; extras: number }[] = [
  *  and orders are packed WITHIN it, so a breach is impossible by construction. */
 const FILL_PATTERN = [1.0, 0, 0.5, 0, 1.0, 0, 0.25, 0, 0.75, 0]
 
-const SLOT_INTERVAL_MINS = 5
+// ── 🔴 THE PLANNING GRID IS RESOLVED, NOT A CONSTANT (19 September 2026) ────────────────────────────
+// `const SLOT_INTERVAL_MINS = 5` stood here. It seated seeded orders on a 5-minute grid whatever the van
+// was set to, while the capacity ceiling was read from the van — the split docs/slot-interval-van-level-
+// report.md recorded and left. A van at 15 minutes then showed a prospect orders at 15:05 and 15:10 that
+// no picker on the board could ever offer. The grid now comes from `resolveIntervalsFor` — the SAME
+// resolver the customer submit path uses: event override → van → 5/5 — so the seeder and the engine
+// cannot disagree about which times exist. Seeded orders are customer-style orders and sit on the
+// CUSTOMER grid; the post-condition below examines the OPERATOR grid, which is what the dashboard draws.
 
 /** How many shed-and-recheck passes the post-condition may take before it gives up and WARNS.
  *  Bounded on purpose: this loop runs inside /api/demo (a prospect is watching a spinner) and inside
@@ -371,21 +382,48 @@ export async function seedDemoOrders(
   // up to 29 min in the PAST. The front-weighted FILL_PATTERN puts the fullest budgets in the earliest
   // slots, so without this clamp a prospect's first impression would be a block of orders already late.
   // Clamping the floor to now+10 pushes the busy front into the near-future. Ceil-to-5 keeps it on grid.
+  // The event's van, the truck's switch and the resolved grid — ONE read each, reused by the post-condition
+  // and the admission loop below. The van id comes from the event, exactly as eventKitchenCapacity resolves it.
+  const [{ data: evRow }, { data: truckRow }] = await Promise.all([
+    supabase.from('truck_events').select('van_id').eq('id', args.eventId).maybeSingle(),
+    supabase.from('trucks').select('plan, feature_overrides, slot_duration_mins').eq('id', args.truckId).maybeSingle(),
+  ])
+  const vanId = (evRow as { van_id?: string | null } | null)?.van_id ?? null
+  const intervals = await resolveIntervalsFor(supabase, vanId, args.eventId)
+  /** The CUSTOMER grid — the times a customer (and a seeded customer-style order) can be given. */
+  const gridMins = intervals.customer
+  const reservationsOn = resolveBatchReservations(truckRow as { plan?: string | null; feature_overrides?: Record<string, unknown> | null } | null)
+
   const startPlusMins = toMinsLocal(args.startTime) + FIRST_COLLECTION_OFFSET_MINS
   const nowMins = args.now ? venueNowMins(args.now, args.tz ?? 'Europe/London') : null
   const floorMins = nowMins != null ? Math.max(startPlusMins, nowMins + FIRST_COLLECTION_OFFSET_MINS) : startPlusMins
-  const firstMins = Math.ceil(floorMins / SLOT_INTERVAL_MINS) * SLOT_INTERVAL_MINS
+  // Clock-anchored: the first time is the first MULTIPLE OF THE INTERVAL FROM MIDNIGHT at or after the
+  // floor, and every later one steps by the interval — the same rule generateCollectionTimes applies.
+  const firstMins = Math.ceil(floorMins / gridMins) * gridMins
   const firstCollection = minsToHHMMLocal(firstMins)
-  const slots = generateSlots(firstCollection, args.endTime, SLOT_INTERVAL_MINS)
+  const slots = generateSlots(firstCollection, args.endTime, gridMins)
   if (!slots.length) return emptyResult({ warnings })
 
   // ── TARGET, DERIVED FROM THE WINDOW (see ORDERS_PER_SLOT) ─────────────────────────────────────────
   // Computed HERE, after `slots`, not at the top of the function — the whole point is that it depends on
   // how much window there actually is. An explicit `args.count` still wins (callers/tests that want a
   // fixed board), and the result is clamped so it can never exceed the full-window figure.
+  // 🔴 THE REFERENCE BATCH IS THE SMALLEST COMMITTED ONE, not the DEMO_MAINS_BATCH constant and not the
+  // largest: a board must be within the tightest category's ceiling. Computed HERE, before the target,
+  // because the target now scales with it (below); the budget loop further down reads the same value.
+  const cookedBatches = Object.values(batchByCat)
+  const refBatch = cookedBatches.length ? Math.max(1, Math.min(...cookedBatches)) : Math.max(1, args.capacity)
+  // ── 🔴 THE ORDER COUNT SCALES WITH THE BATCH AS WELL AS THE WINDOW (19 September 2026) ─────────────
+  // ORDERS_PER_SLOT was tuned for the demo default of 4 a batch on a 5-minute grid (35 slots → 37 orders).
+  // On a 15-minute grid there are 12 slots, so the same rule gave 13 orders — and at 8 a batch those
+  // 13 orders carried barely two batches' worth of cooking, so the budget loop put load on THREE of the
+  // twelve times and left nine empty: a board that read as a quiet afternoon, not a service. The count
+  // now scales by the batch relative to the 4 it was tuned for, so LOAD relative to capacity is what stays
+  // constant. At 4 a batch the factor is 1 and every existing demo seeds exactly as before.
+  const batchScale = Math.max(1, refBatch / Math.max(1, args.capacity))
   const target = args.count ?? Math.max(
     MIN_TARGET_ORDERS,
-    Math.min(TARGET_ORDERS, Math.round(slots.length * ORDERS_PER_SLOT)),
+    Math.min(TARGET_ORDERS, Math.round(slots.length * ORDERS_PER_SLOT * batchScale)),
   )
 
   // ── ORDER SHAPES → the COOKED bill ────────────────────────────────────────────────────────────────
@@ -449,8 +487,6 @@ export async function seedDemoOrders(
   // largest. It only decides HOW MANY slots get a budget; the ceiling that is actually enforced is
   // per-category, below. Taking the smallest keeps the slot count honest when one category is tighter
   // than the others (two cooked categories with different batch_size is a real shape — see the report).
-  const cookedBatches = Object.values(batchByCat)
-  const refBatch = cookedBatches.length ? Math.max(1, Math.min(...cookedBatches)) : Math.max(1, args.capacity)
   const budgets: { n: number; f: number }[] = []
   let cookedLeft = totalCookedNeeded
   const nonZero = FILL_PATTERN.filter(f => f > 0)
@@ -571,14 +607,14 @@ export async function seedDemoOrders(
   let breachPasses = 0
   let shedOrders = 0
   let unresolvedBreaches: SeededBreach[] = []
+  let itemCatMapForAdmission: Record<string, string> | null = null
   try {
     // The engine's remaining inputs. `buildItemCatMap` is the SAME helper buildUnitsFromOrders uses.
-    const [truckRes, ctRes, evRes, itemCatMap] = await Promise.all([
-      supabase.from('trucks').select('collection_interval_mins, slot_duration_mins').eq('id', args.truckId).maybeSingle(),
+    const [ctRes, itemCatMap] = await Promise.all([
       supabase.from('collection_times').select('collection_time, production_slot').eq('truck_id', args.truckId),
-      supabase.from('truck_events').select('van_id').eq('id', args.eventId).maybeSingle(),
       buildItemCatMap(supabase, args.truckId),
     ])
+    itemCatMapForAdmission = itemCatMap
     const timeMap: Record<string, string> = {}
     for (const r of (ctRes.data ?? []) as { collection_time: string; production_slot: string }[]) {
       timeMap[r.collection_time] = r.production_slot
@@ -590,7 +626,6 @@ export async function seedDemoOrders(
     // would make the post-condition blind to exactly the ceiling Dominic just configured.
     let kitchenCapacity: number | null = null
     let capacityWindowMins = 5
-    const vanId = (evRes.data as { van_id?: string | null } | null)?.van_id ?? null
     if (vanId) {
       const { data: van } = await supabase
         .from('truck_vans').select('kitchen_capacity, capacity_window_mins').eq('id', vanId).maybeSingle()
@@ -602,8 +637,9 @@ export async function seedDemoOrders(
     // with the truck's own interval + its 30-minute grace — UNIONED with the slots this seeder actually
     // used, so a slot carrying load can never escape the check because the truck's interval does not
     // land on it. Strictly a superset of what the banner reads: the check is at least as strict.
-    const intervalMins = (truckRes.data as { collection_interval_mins?: number | null } | null)?.collection_interval_mins ?? 0
-    const slotDurationMins = (truckRes.data as { slot_duration_mins?: number | null } | null)?.slot_duration_mins ?? intervalMins
+    // The OPERATOR grid: the list the dashboard draws and the banner reads. Resolved above, from the van.
+    const intervalMins = intervals.truck
+    const slotDurationMins = (truckRow as { slot_duration_mins?: number | null } | null)?.slot_duration_mins ?? intervalMins
     const dashSlots = intervalMins > 0
       ? generateCollectionTimes(args.startTime, args.endTime, intervalMins, slotDurationMins, DASHBOARD_GRACE_MINS)
           .map(r => r.collection_time)
@@ -761,10 +797,58 @@ export async function seedDemoOrders(
   // Array.prototype.sort is stable (spec-guaranteed since ES2019), so orders sharing a slot keep their
   // packing order and the numbering stays deterministic across rebuilds.
   rows.sort((a, b) => String(a.slot).localeCompare(String(b.slot)))
-  rows.forEach((r, i) => { r.id = String(i + 1) })
 
-  const { error } = await supabase.from('orders').insert(rows)
-  if (error) throw new Error(`Seeding demo orders failed: ${error.message}`)
+  // ── 🔴 EVERY SEEDED ORDER IS ADMITTED THE WAY A REAL ONE IS (19 September 2026) ───────────────────
+  // A bulk `orders.insert(rows)` stood here: the rows landed with no cooking reservation, and the board's
+  // first real order was then projected against unreserved load the engine had to guess a split for.
+  // Now each row is inserted and then admitted through `admitForManual` — the SAME call the dashboard's
+  // Add Order path makes for an operator's walk-up — and its reservation written with
+  // `writeReservationRecord`. A row the engine will not admit at its planned time is DELETED and counted
+  // as shed, so no seeded order can exceed the batch or the kitchen cap at any instant: the in-memory
+  // post-condition above planned within capacity; this is the engine confirming it, row by row, exactly
+  // as it would for the prospect's own first order. With the switch OFF the row keeps the fallback split
+  // `writeCookingReservation` records, as the manual path does.
+  // ⚠️ DEGRADATION: if the very first row — which by construction fits an empty board — is refused, the
+  // reservation column is unreadable (migration not applied / schema cache stale). The remaining rows are
+  // then inserted WITHOUT admission and a warning says so, rather than seeding an empty board.
+  const itemCatMap = itemCatMapForAdmission ?? await buildItemCatMap(supabase, args.truckId)
+  let refused = 0
+  let admissionUnavailable = false
+  const inserted: Record<string, unknown>[] = []
+  for (const r of rows) {
+    const orderKey = randomUUID()
+    r.order_key = orderKey
+    r.id = String(inserted.length + 1)
+    const { error } = await supabase.from('orders').insert(r)
+    if (error) throw new Error(`Seeding demo orders failed: ${error.message}`)
+    const lines = normaliseOrderLines((r.items as { name: string; quantity: number }[]) ?? [], null)
+    // An order that cooks nothing (sides only) reserves nothing and needs no admission — the engine has
+    // no window to give it and `admitForManual` returns null for it, exactly as it does for a refusal.
+    // The two are told apart HERE, by the order's own lines, never by the null.
+    const cooksSomething = Object.entries(orderItemsToQtyByCat(lines, itemCatMap))
+      .some(([cat, n]) => n > 0 && (catConfigs[cat.toLowerCase()]?.secs ?? 0) > 0)
+    if (reservationsOn && !admissionUnavailable && cooksSomething) {
+      const rec = await admitForManual(supabase, args.truckId, args.eventId, args.eventDate, orderKey, String(r.slot), lines, itemCatMap)
+      if (rec) {
+        await writeReservationRecord(supabase, { truckId: args.truckId, orderKey, record: rec })
+      } else if (!inserted.some(x => x.cooking_admitted)) {
+        admissionUnavailable = true
+        warnings.push('⚠️ Cooking reservations could not be written (the column is unreadable) — seeded orders carry no reservation.')
+      } else {
+        await supabase.from('orders').delete().eq('order_key', orderKey).eq('truck_id', args.truckId)
+        refused++
+        shedOrders++
+        continue
+      }
+    } else if (!reservationsOn && cooksSomething) {
+      await writeCookingReservation(supabase, { truckId: args.truckId, eventId: args.eventId, orderKey, gridIntervalMins: gridMins })
+    }
+    if (cooksSomething && reservationsOn && !admissionUnavailable) r.cooking_admitted = true   // in-memory marker only (stripped below)
+    inserted.push(r)
+  }
+  if (refused > 0) warnings.push(`The engine refused ${refused} seeded order(s) at their planned time; they were not seeded.`)
+  for (const r of inserted) delete r.cooking_admitted
+  rows.splice(0, rows.length, ...inserted)
 
   // Advance the per-event counter past the seeded block so the visitor's first real test order can't
   // collide with a seeded display number (orders_event_display_id is UNIQUE on (event_id, id)).

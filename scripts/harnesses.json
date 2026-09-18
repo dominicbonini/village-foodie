@@ -49,6 +49,7 @@
     "printing-network-guard.cjs",
     "printing-transport-contract.cjs",
     "ready-press-one-press.cjs",
+    "seed-demo-grid.cjs",
     "sixteen-pizza-admission.cjs",
     "slot-interval-dots.cjs",
     "slot-interval-engine-identity.cjs",

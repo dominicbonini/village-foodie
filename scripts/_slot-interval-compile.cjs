@@ -30,9 +30,12 @@ function compile(root, files, tag, extraCompilerOptions) {
   return { out, req }
 }
 /** A clean checkout of HEAD, for "before" compilation. Caller removes it. */
-function headWorktree(tag) {
+// `ref` defaults to HEAD. A harness whose meaning is "compare against the PRE-FIX engine" must pin the
+// last pre-fix commit instead: on 18 September 2026 the V13.5 engine work was committed (5f70e07), and
+// every "HEAD vs working tree" identity check whose premise was "HEAD is the old engine" became false.
+function headWorktree(tag, ref = 'HEAD') {
   const wt = fs.mkdtempSync(path.join(os.tmpdir(), `slot-head-${tag}-`))
-  execFileSync('git', ['worktree', 'add', '--detach', wt, 'HEAD'], { cwd: REPO, stdio: 'pipe' })
+  execFileSync('git', ['worktree', 'add', '--detach', wt, ref], { cwd: REPO, stdio: 'pipe' })
   fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(wt, 'node_modules'))
   return { wt, remove: () => { try { execFileSync('git', ['worktree', 'remove', wt, '--force'], { cwd: REPO, stdio: 'pipe' }) } catch {} } }
 }

@@ -28,7 +28,13 @@ const { compile, headWorktree } = require('./_slot-interval-compile.cjs')
 const REPO = path.resolve(__dirname, '..')
 const FILES = ['lib/slot-availability.ts']
 
-const head = headWorktree('engine')
+// 🔴 PINNED TO THE LAST PRE-FIX COMMIT, NOT HEAD (19 September 2026). This harness strips the two
+// parameters the V13.5 work ADDED to earliestBackwardFitSlot and expects the rest to equal the old
+// engine byte for byte. When that work was committed (5f70e07 "kitchen capacity"), HEAD stopped being
+// the old engine and the comparison inverted — it started failing on a tree with no engine change at
+// all. fc0fddc is the last commit before the V13.5 engine changes; the check means what it always did.
+const PRE_FIX_ENGINE_COMMIT = 'fc0fddc'
+const head = headWorktree('engine', PRE_FIX_ENGINE_COMMIT)
 const A = compile(head.wt, FILES, 'engineHEAD').req('lib/slot-availability.js')
 const B = compile(REPO, FILES, 'engineNOW').req('lib/slot-availability.js')
 
@@ -106,7 +112,9 @@ for (const [label, c] of CASES) {
   // The remaining five symbols stay byte-identical here.
   const SEVEN = [['lib/slot-availability.ts', ['backwardWindowStepMins', 'loadRunsOffFront', 'placeInstantPoints']], ['lib/slot-bookings.ts', ['buildUnitsFromOrders', 'rebuildProductionSlotUsage']]]
   {
-    const headSrc = execFileSync('git', ['show', 'HEAD:lib/slot-availability.ts'], { cwd: REPO }).toString(), nowSrc = fs.readFileSync(path.join(REPO, 'lib/slot-availability.ts'), 'utf8')
+    // Same pinned commit as the worktree above — the byte comparison read `HEAD:` directly and so did not
+    // follow the pin, which is how it kept failing after HEAD moved onto the committed engine work.
+    const headSrc = execFileSync('git', ['show', `${PRE_FIX_ENGINE_COMMIT}:lib/slot-availability.ts`], { cwd: REPO }).toString(), nowSrc = fs.readFileSync(path.join(REPO, 'lib/slot-availability.ts'), 'utf8')
     const a = body(headSrc, 'earliestBackwardFitSlot'), b = body(nowSrc, 'earliestBackwardFitSlot')
     // P1 added `reservations`; P3 added `batchReservations` (forwarded to the projection AND the fit).
     const stripped = b && b
