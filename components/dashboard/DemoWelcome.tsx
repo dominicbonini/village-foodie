@@ -39,8 +39,8 @@ import { CopyButton } from '@/components/dashboard/CopyButton'
 // (tappable, and copyable for a third device), rendered whenever an orderUrl exists rather than only
 // when the QR is missing. The QR is untouched. The remaining no-link case is genuinely no URL at all.
 
-import { useEffect, useState } from 'react'
-import { demoWelcomeKey } from '@/lib/demo-board-build'
+import { useEffect, useState, useSyncExternalStore } from 'react'
+import { demoWelcomeSeen, markDemoWelcomeSeen, subscribeDemoWelcome } from '@/lib/demo-board-build'
 
 export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null }: {
   token: string; orderUrl: string | null; isSample?: boolean
@@ -48,13 +48,21 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
    *  as its fullscreen QR. null (the default, and every landing-page demo) keeps the 'Your logo here' plate. */
   logoUrl?: string | null
 }) {
-  // The SHARED key (lib/demo-board-build): DemoLoopComplete clears it when it detects the board has been
-  // replaced, so a rebuilt demo introduces itself again instead of opening on a signup prompt.
-  const storeKey = demoWelcomeKey(token)
-  const [open, setOpen] = useState(() => {
-    if (typeof window === 'undefined') return false
-    try { return localStorage.getItem(storeKey) !== 'seen' } catch { return true }
-  })
+  // ── 🔴 SUBSCRIBED, NOT SNAPSHOTTED ONCE (19 September 2026) ──────────────────────────────────────
+  // This read `localStorage` in a `useState` initialiser: once, during first paint, before any effect had
+  // run. The self-heal that clears a stale flag lives in DemoLoopComplete's effect and is gated on the
+  // orders fetch, so it always arrived AFTER this decision and nothing re-read it — the introduction
+  // appeared on the next load, never the one that repaired it. `useSyncExternalStore` makes the flag a
+  // subscription: clearing it re-opens the panel in the same render pass.
+  // The server snapshot is `true` (seen) so nothing flashes during hydration; the client's first read
+  // decides. See lib/demo-board-build for why the state is session-scoped rather than stored or server-side.
+  const seen = useSyncExternalStore(
+    subscribeDemoWelcome,
+    () => demoWelcomeSeen(token),
+    () => true,
+  )
+  const [dismissed, setDismissed] = useState(false)
+  const open = !seen && !dismissed
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [qrFailed, setQrFailed] = useState(false)
 
@@ -79,8 +87,10 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
   }, [open, orderUrl, qrDataUrl, qrFailed, logoUrl])
 
   const dismiss = () => {
-    try { localStorage.setItem(storeKey, 'seen') } catch { /* private mode — it'll ask again */ }
-    setOpen(false)
+    markDemoWelcomeSeen(token)
+    // Local too, so a browser that refuses sessionStorage (private mode) still closes on the tap rather
+    // than re-rendering straight back open. The store is the durable half; this is the immediate half.
+    setDismissed(true)
   }
 
   // ── 🔴 `copy` IS GONE (5 September 2026), AND IT REPORTED SUCCESS IT HAD NOT CHECKED. ───────────

@@ -31,6 +31,7 @@
     "cover-dot-own-window.cjs",
     "customer-path-identity.cjs",
     "demo-seed-parameters.cjs",
+    "demo-welcome-open.cjs",
     "dot-overlap-labels.cjs",
     "ops-write-guard.cjs",
     "outreach-channel-for.cjs",

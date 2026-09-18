@@ -42,7 +42,7 @@
 // that lands in the same tick appears as a SECOND fresh key, which is detectable (see `ambiguous`).
 
 import { useState, useEffect } from 'react'
-import { demoBaselineKey, demoWelcomeKey, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
+import { demoBaselineKey, demoWelcomeSeen, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
 import { DemoGetStarted, SIGNUP_OFFER } from '@/components/DemoGetStarted'
 import type { Order } from '@/components/dashboard/types'
 
@@ -123,7 +123,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
     // 🔴 THE INTRODUCTION GOES FIRST. While DemoWelcome is still unseen it is on screen as a full-screen
     // modal, and a signup prompt behind it is the wrong first thing for a demo to say. Its flag is
     // cleared on dismissal, so this is a deferral of one render, not a suppression.
-    try { if (localStorage.getItem(demoWelcomeKey(token)) !== 'seen') return } catch { /* private mode */ }
+    if (!demoWelcomeSeen(token)) return
 
     // Loop complete. Respect an active snooze, and re-arm so it returns without needing a reload.
     let snoozedUntil = 0

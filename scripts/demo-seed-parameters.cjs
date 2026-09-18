@@ -324,15 +324,24 @@ async function board(seedDemoOrders, E, opts) {
       'a prospect placing their own order ADDS a key, which must never read as a replacement — this is the case that must still fire the signup panel')
     check(B.boardWasReplaced(null, seeded) === false && B.boardWasReplaced(seeded, []) === false,
       'no baseline, or an empty board, is not a replacement')
-    // the flags themselves, through a localStorage stand-in
-    const store = new Map()
+    // 🔴 THE TWO FLAGS NOW LIVE IN DIFFERENT STORES, AND THAT IS THE POINT (19 September 2026). The
+    // BASELINE stays in localStorage — it answers "which orders were here when this viewer first saw the
+    // board" and must survive a reload and a tab close, or the signup prompt would fire on the seeded
+    // board every time the demo is opened. The WELCOME's flag moved to sessionStorage so that opening the
+    // link again shows the introduction again, and so that a check before sending leaves nothing behind.
+    const local = new Map(), session = new Map()
+    const face = m => ({ getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k) })
     global.window = global.window || {}
-    global.localStorage = { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) }
-    store.set(B.demoWelcomeKey('tok'), 'seen'); store.set(B.demoBaselineKey('tok'), JSON.stringify(seeded))
+    global.localStorage = face(local); global.sessionStorage = face(session)
+    session.set(B.demoWelcomeKey('tok'), 'seen'); local.set(B.demoBaselineKey('tok'), JSON.stringify(seeded))
     B.resetDemoBoardFlags('tok', rebuilt)
-    check(store.get(B.demoWelcomeKey('tok')) === undefined, 'a replaced board CLEARS the welcome flag, so the rebuilt demo introduces itself again')
-    check(JSON.parse(store.get(B.demoBaselineKey('tok'))).join() === rebuilt.join(),
+    check(session.get(B.demoWelcomeKey('tok')) === undefined, 'a replaced board CLEARS the welcome flag, so the rebuilt demo introduces itself again')
+    check(JSON.parse(local.get(B.demoBaselineKey('tok'))).join() === rebuilt.join(),
       'and re-baselines on the seeded orders, so they are never mistaken for the visitor\'s own')
+    check(B.demoWelcomeSeen('tok') === false, 'and the shared reader agrees the introduction is due')
+    B.markDemoWelcomeSeen('tok')
+    check(B.demoWelcomeSeen('tok') === true && local.has(B.demoWelcomeKey('tok')) === false,
+      'a dismissal is recorded for the SESSION only — nothing durable says anyone has seen it')
   }
 
   console.log('\n── ITEM 1: THE LOGO WARNING ─────────────────────────────────────────────────────────────')
