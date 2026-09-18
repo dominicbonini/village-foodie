@@ -112,12 +112,23 @@ export function buildSlotAvailability(params: {
   /** Event timezone for the "today"/is_past comparison. Default 'Europe/London'. The caller must
    *  pass `nowMins` computed in the SAME tz (getNowMinsInTz(tz)) so the two agree. */
   tz?: string
+  /**
+   * 🔴 THE DISPLAYED GRID'S INTERVAL (5/10/15/20/30). DISPLAY ONLY — it changes which windows the
+   * no-basket DOT reads (coverDotWindows), never the fit. Default 5 ⇒ the original single-window read,
+   * unchanged. Passed by /api/slots from the customer or truck interval; the customer page omits it.
+   */
+  displayIntervalMins?: number
+  /** P1: per-order cooking reservations for the event; absent ⇒ today's projection exactly. */
+  reservations?: EngineReservation[]
+  /** P3: the per-truck switch. Absent/false ⇒ P2 behaviour exactly. */
+  batchReservations?: boolean
 }): SlotAvailabilityRow[] {
   const {
     times, productionSlotUnits, catConfigs, kitchenCapacity, capacityWindowMins,
     date, nowMins, earliestCollectionMins, eventStartMins, eventEndMins,
-    basketByCat, tz,
+    basketByCat, tz, displayIntervalMins, reservations, batchReservations,
   } = params
+  const displayInterval = displayIntervalMins ?? 5
   const capWindow = Math.max(1, Math.round(capacityWindowMins ?? 5))
   // "today" in the EVENT timezone — must agree with the tz-computed nowMins passed in. UTC would
   // roll over at UTC midnight and mis-flag a future event's slots as is_past.
@@ -133,7 +144,7 @@ export function buildSlotAvailability(params: {
   // fit. Retires the old (a) collection-bucket ceiling AND (b) cumulative throughput: the
   // lead-time check is now "the order's backward windows all have spare and none precede
   // event start" (run-off-front), expressed per-window.
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capWindow)
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capWindow, reservations ?? [], batchReservations === true)
   // A collection slot at T is served by the cooking window ENDING at T (keyed T−step), NOT
   // the window starting at T — the off-by-one that blocked one slot early.
   const step = backwardWindowStepMins(catConfigs)
@@ -141,6 +152,11 @@ export function buildSlotAvailability(params: {
   // mins-of-day, so for a future-date event it would mis-compare across days). Future event ⇒ -Inf
   // (no clamp): the legacy eventStart-only behaviour, correct because the whole event is after now.
   const nowClamp = date === today ? nowMins : Number.NEGATIVE_INFINITY
+
+  // The dots need each slot's PREDECESSOR on the displayed grid (coverDotWindows covers the span between
+  // them). Sorted once; `times` itself is not reordered.
+  const orderedMins = [...times].map(t => parseMins(t.collection_time)).sort((a, b) => a - b)
+  const prevOf = (m: number): number | null => { const i = orderedMins.indexOf(m); return i > 0 ? orderedMins[i - 1] : null }
 
   return times.map(s => {
     const slotMins = parseMins(s.collection_time)
@@ -156,6 +172,7 @@ export function buildSlotAvailability(params: {
     let boundBy: string | null
     let bindCurrent: number
     let bindCap: number
+    let windowToneForAvailable: SlotTone = 'green'
     if (hasBasket) {
       // Operator/customer placing THIS order: does it fit the backward windows ending at S?
       const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow, nowClamp, productionSlotUnits[s.collection_time] || {})
@@ -176,14 +193,22 @@ export function buildSlotAvailability(params: {
       // display-only pileByStart (keyed by eventStartMins ⇒ hits ONLY the event-start collection slot);
       // every other slot keeps the §39 single-window occupancy read. ONE engine-computed field, also read
       // by buildSlotIndicators (the strip), so the API dot and the strip cannot diverge.
-      const w = back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - step) ?? null
-      tone = w?.tone ?? 'green'
+      // 🔴 AT 5 THIS IS THE ORIGINAL LINE, UNTOUCHED. Only a 10–30 display grid takes the covering read.
+      // 18 September 2026: ONE shared read for every dot — dotOccupancyAt. Its `window` is the line above,
+      // byte-for-byte; its `tone` is that window's tone OR, on a grid finer than the prep, the rolling
+      // load an order at T would share (see the helper). 🔴 `available` BELOW KEEPS TODAY'S WINDOW TONE:
+      // the customer's empty-basket list gates on it, and the times offered to customers must not move.
+      const read = dotOccupancyAt(back, slotMins, prevOf(slotMins), step, eventStartMins, catConfigs, kitchenCapacity, displayInterval, batchReservations === true)
+      const w = read.window
+      tone = read.tone
       boundBy = w?.bound_by ?? null
       bindCurrent = Math.round(w?.total ?? 0)
       bindCap = kitchenCapacity ?? UNLIMITED
+      windowToneForAvailable = w?.tone ?? 'green'
     }
 
-    const capacityAvailable = tone !== 'red'
+    // The offered/available verdict reads the window tone (today's), never the display tone.
+    const capacityAvailable = (hasBasket ? tone : windowToneForAvailable) !== 'red'
     const w = back.byStart.get(slotMins - step) ?? null
     const bindRemaining = w ? (kitchenCapacity == null ? UNLIMITED : Math.max(0, Math.round(w.remainingTotal))) : (kitchenCapacity ?? UNLIMITED)
 
@@ -413,6 +438,262 @@ export function projectOrderTailWindow(
 // the per-window map keys by exact window-start minute, so differing cadences accumulate
 // honestly by minute. Instant categories (secs 0) occupy no oven time and are skipped.
 
+/**
+ * ── 🔴 THE WIDER-GRID DOT READ (16 September 2026) — DISPLAY ONLY, READS THE ENGINE, COMPUTES NOTHING ──
+ *
+ * WHY IT EXISTS. A dot at collection time T reads the ONE cooking window ending at T
+ * (`byStart.get(T − step)`). That is exact while the displayed grid step equals the cooking step (5 and
+ * 5). On a 15-minute display grid with 5-minute cooking windows, two of every three windows are on NO dot:
+ * 🧪 3 pizzas collected 18:10 / batch 2 seat in windows starting 18:00 (2) and 18:05 (1); the 18:00 dot
+ * reads 17:55 (empty) and the 18:15 dot reads 18:10 (empty) — a full batch cooking, both dots green.
+ *
+ * WHAT IT DOES. A dot at T covers every window in `back.byStart` whose window ENDS in (T_prev, T] — i.e.
+ * startMins in (T_prev − step, T − step] — never earlier than the event start; the FIRST dot also covers
+ * `back.pileByStart` for the event start (pre-open load), so the pile stays visible even when the event
+ * start is not itself a displayed time (clock anchoring: a 17:50 start puts the pile on the 18:00 dot).
+ *   tone         = the WORST covered tone
+ *   byCat/total  = the covered window with the HIGHEST total (the PEAK), so the count is a real
+ *                  concurrency, never a sum across windows — three windows of 2 are not "6"
+ *   bound_by     = that peak window's, and `peak: true` so the label can say "peak 2 Pizzas"
+ * INVARIANT (10–30): every non-empty byStart window and the pile land on EXACTLY ONE dot.
+ *
+ * 🔴 IT IS ONLY CALLED WHEN THE DISPLAY INTERVAL IS 10–30. At 5, both readers run their original single-
+ * window line unchanged, so a 5-minute truck's dots are byte-identical to before. The gate is at each
+ * call site, deliberately in the open, so `git diff` shows the original expression intact.
+ * 🔴 IT DOES NOT TOUCH `byStart`, `pileByStart`, `windows` OR ANYTHING ELSE ON `back` — it reads.
+ */
+export interface CoveredDotWindow extends BackwardWindow {
+  /** True when this dot summarises more than one window and its count is the peak, not a total. */
+  peak: boolean
+}
+
+export function coverDotWindows(
+  back: { byStart: Map<number, BackwardWindow>; pileByStart: Map<number, BackwardWindow>; intervals: CookInterval[]; batchByCat: Record<string, number> },
+  slotMins: number,
+  prevSlotMins: number | null,
+  step: number,
+  eventStartMins: number,
+): CoveredDotWindow | null {
+  const covered: BackwardWindow[] = []
+  // The first displayed dot carries the pre-open pile, whatever time it is at.
+  if (prevSlotMins === null) {
+    const pile = back.pileByStart.get(eventStartMins)
+    if (pile) covered.push(pile)
+  }
+  // Windows ENDING in (T_prev, T] ⇒ starting in (T_prev − step, T − step]; never before the event start,
+  // because everything before it is already summed into the pile above.
+  const lo = prevSlotMins === null ? eventStartMins : Math.max(eventStartMins, prevSlotMins - step + 1)
+  const hi = slotMins - step
+  for (const [startMins, w] of back.byStart) {
+    if (startMins < lo || startMins > hi) continue
+    if (w.total <= 1e-9 && w.tone === 'green') continue           // empty windows carry nothing
+    covered.push(w)
+  }
+  if (covered.length === 0) return null
+
+  // ── 🔴 THE DOT REPORTS ITS OWN STRETCH (19 September 2026) ────────────────────────────────────────
+  // This used to answer `{ ...peakW, tone: worst.tone }` — the record of the fullest window it covered.
+  // That window's `byCat`, `remainingByCat`, `total` and `bound_by` describe ITS OWN prep-length span,
+  // which on a misaligned board begins before the stretch this dot stands for. Dominic's 12:15 dot on a
+  // 15-minute grid covered the window at 11:50, whose own [11:50, 12:05) really does hold 8 of 8 — so the
+  // dot reported 8/8 and went red, while its own stretch [12:00, 12:15) held 4 and had room for 2 more.
+  // One wrong record produced three wrong answers: the label read 8, the tone read red, and /api/slots'
+  // `available` read false, which made getAsapSlot skip the time and ASAP disagree with the picker.
+  // (docs/full-batch-bookable-bug-report.md.)
+  //
+  // The record is now BUILT for [from, slotMins) — the same span the label sums and the same one
+  // reserveBatches judges — by the same rules the window builder uses: `byCat` is the items cooking in
+  // the stretch (each batch counted once), `remainingByCat` is batch − the stretch's PEAK, `total` is the
+  // stretch's peak concurrency, and the tone falls out of those. Nothing here reads a neighbour.
+  // = slotMins − max(prep, grid). The FIRST listed dot has no predecessor and stands for everything since
+  // the event opened, so its stretch reaches back to the open (or a prep before the dot, whichever is
+  // earlier) — otherwise a cohort cooking between the open and the first time would light no dot at all.
+  const from = prevSlotMins === null
+    ? Math.min(eventStartMins, slotMins - step)
+    : Math.min(prevSlotMins, slotMins - step)
+
+  // ⚠️ THE EVENT-START PILE KEEPS TODAY'S ANSWER. §31's first dot shows the RAW PILED COUNT — load that
+  // could not seat in a real pre-open window — which is not a fact about any span and cannot be rebuilt
+  // from the intervals. When the pile is covered this returns exactly what it always did.
+  const pileCovered = prevSlotMins === null && back.pileByStart.has(eventStartMins)
+  let worst = covered[0]
+  let peakW = covered[0]
+  for (const w of covered) {
+    if (RANK[w.tone] > RANK[worst.tone]) worst = w
+    if (w.total > peakW.total) peakW = w
+  }
+  if (pileCovered) {
+    return {
+      ...peakW,
+      tone: worst.tone,
+      bound_by: worst === peakW ? peakW.bound_by : (worst.bound_by ?? peakW.bound_by),
+      peak: covered.length > 1,
+    }
+  }
+
+  // The kitchen ceiling is not a parameter here, so it is recovered from a covered window: every window
+  // records `remainingTotal = kc − total`, so `total + remainingTotal === kc` exactly. All-Infinity ⇒ no
+  // ceiling is set, and `remainingTotal` stays Infinity as it does everywhere else.
+  let kc: number | null = null
+  for (const w of covered) if (Number.isFinite(w.remainingTotal)) { kc = w.total + w.remainingTotal; break }
+
+  const byCat: Record<string, number> = {}
+  for (const iv of back.intervals) {
+    if (!iv.cat || iv.items <= 0 || iv.endMins <= iv.startMins) continue
+    if (iv.startMins < slotMins && from < iv.endMins) byCat[iv.cat] = (byCat[iv.cat] || 0) + iv.items
+  }
+  const remainingByCat: Record<string, number> = {}
+  let tone: SlotTone = 'green'
+  let bound_by: string | null = null
+  let bindRank = -1
+  let bindUsed = -1
+  for (const cat of Object.keys(byCat)) {
+    const batch = back.batchByCat[cat]
+    if (batch == null) continue
+    const used = categoryLoadOver(back.intervals, cat, from, slotMins)     // the stretch's own peak
+    remainingByCat[cat] = batch - used
+    const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
+    const r = RANK[t]
+    if (r > bindRank || (r === bindRank && used > bindUsed)) {
+      bindRank = r; bindUsed = used
+      tone = t; bound_by = `${capWord(cat)} ${Math.round(used)}/${Math.round(batch)}`
+    }
+  }
+  const conc = peakLoadOver(back.intervals, from, slotMins, false)
+  if (kc != null && conc >= kc - EPS) { tone = 'red'; bound_by = 'global ceiling' }
+  return {
+    startMins: from,
+    start: `${String(Math.floor(from / 60) % 24).padStart(2, '0')}:${String(from % 60).padStart(2, '0')}`,
+    beforeEventStart: from < eventStartMins,
+    byCat,
+    total: conc,
+    remainingByCat,
+    remainingTotal: kc == null ? Infinity : kc - conc,
+    tone,
+    bound_by,
+    peak: covered.length > 1,
+  }
+}
+
+// ── THE DOT'S READ — ONE HELPER FOR EVERY DOT (18 September 2026) ──────────────────────────────────
+// Called by buildSlotIndicators (Add Order list, edit picker, the day strip via /api/dashboard and the
+// offline strip recompute) and by buildSlotAvailability's no-basket branch (/api/slots' `tone`). Nothing
+// else reads a dot, and no surface may re-derive one.
+//
+// 🔴 THE PROBLEM IT CLOSES. The dot at T read only the load BOOKED AT T's own cooking window — the window
+// ending at T (or, on a 10–30 grid, the windows a dot covers). On a grid finer than the prep that misses
+// a batch that merely OVERLAPS: 8 pizzas @17:00 cook 16:45–17:00; a 17:05 order would cook 16:50–17:05
+// and share the grill with all eight, so the picker refuses it — while the 17:05 dot, reading only the
+// window keyed 16:50, stayed green with no count. Operators asked why free-looking times were refused.
+//
+// THE RULE. For each cooking category the ROLLING load an order collected at T would share:
+//   categoryLoadOver(back.intervals, cat, T − prep_cat, T)  — the SAME helper and the SAME half-open
+// overlap fitOrderBackward judges a one-batch order at T with — plus the kitchen ceiling AS THE FIT
+// APPLIES IT over that same span: switch OFF, the window-scoped peak concurrency (windowScopedPeak's own
+// instants — the span start and every existing start inside it); switch ON, reserveBatches' overlapping
+// total. The dot's colour is the WORST of today's window read and this rolling read.
+//
+// 🔴 HOW IT COMBINES WITH TODAY'S READ, EXACTLY. `window` below is today's read, byte-for-byte: the
+// event-start pile, else the single window ending at T on a 5-minute grid, else coverDotWindows on a
+// 10–30 grid (the "peak" coverage). `tone` = max(window.tone, overlap tone). The overlap is REPORTED
+// (`overlap` non-null, so a reason label can be shown) ONLY when its tone is STRICTLY WORSE than the
+// window's, i.e. only when it says something the window did not. On an ALIGNED grid — the step a whole
+// multiple of every cooking prep — every interval that overlaps [T − prep, T) starts exactly at T − prep,
+// which is the window today's read already looks at (5-minute grids) or one of the windows the dot
+// covers (10–30), so the overlap is never worse: the colour and the label are today's, by construction.
+// scripts/dot-overlap-labels.cjs proves that over the aligned fixtures and a seeded sweep.
+//
+// 🔴 A VERDICT IS NOT READ HERE AND NONE IS CHANGED. This is display: fitOrderBackward,
+// earliestBackwardFitSlot, placement, reservations, detectCapacityBreaches and /api/slots' `available`
+// (which the customer's empty-basket list gates on) are untouched — `available` keeps reading today's
+// window, not this tone. AGREEMENT is a property, not a coupling: a dot red by overlap for category c
+// ⇔ a one-item order of c at T is refused, proven by the same harness over ≥ 2,000 states.
+export type DotOverlap =
+  | { kind: 'batch'; cat: string; used: number; batch: number; free: number }
+  | { kind: 'kitchen'; used: number; cap: number; free: number }
+export interface DotCatRead { used: number; batch: number; free: number; prepMins: number; kitchenUsed: number | null; full: boolean }
+export interface DotRead {
+  /** Today's read, unchanged: the pile / the window ending at T / the covered windows. */
+  window: (BackwardWindow & { peak?: boolean }) | null
+  /** max(window tone, overlap tone). */
+  tone: SlotTone
+  /** The binding rolling limit at T — null unless it is strictly worse than the window's own tone. */
+  overlap: DotOverlap | null
+  /** The rolling read per cooking category, for callers that must name a limit ("next free" by limit). */
+  perCat: Record<string, DotCatRead>
+  /** The kitchen ceiling over the longest cooking span at T, when a ceiling is set. */
+  kitchen: { used: number; cap: number; free: number } | null
+}
+/** The kitchen's PEAK over [fromMins, toMins) for the dot — the same read under both switch states
+ *  (18 September 2026; the switch-ON branch used to SUM every real interval overlapping the span, so two
+ *  back-to-back batches read as one). Points count at the span's start and at cooking starts, exactly as
+ *  the window's own ceiling read counts them (peakLoadOver, `includePointsInside` false). */
+function kitchenLoadOver(intervals: CookInterval[], fromMins: number, toMins: number): number {
+  return peakLoadOver(intervals, fromMins, toMins, false)
+}
+export function dotOccupancyAt(
+  back: BackwardOccupancy,
+  slotMins: number,
+  prevSlotMins: number | null,
+  step: number,
+  eventStartMins: number,
+  catConfigs: Record<string, CatConfig>,
+  kitchenCapacity: number | null,
+  displayIntervalMins: number = 5,
+  batchReservations: boolean = false,
+  /** Tie-break for the binding category among equals: lower rank first (menu order). Default: config order. */
+  rankOf: (cat: string) => number = () => 0,
+): DotRead {
+  // The kitchen read no longer depends on the switch (18 September 2026: one peak under both states);
+  // the parameter stays in place for its callers and the harnesses that pass it positionally.
+  void batchReservations
+  // 1. Today's read, byte-for-byte.
+  const window = displayIntervalMins > 5
+    ? coverDotWindows(back, slotMins, prevSlotMins, step, eventStartMins)
+    : (back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - step) ?? null)
+  const windowTone: SlotTone = window?.tone ?? 'green'
+
+  // 2. The rolling read per cooking category over [T − prep, T).
+  const perCat: Record<string, DotCatRead> = {}
+  let kitchen: { used: number; cap: number; free: number } | null = null
+  for (const [catRaw, cfg] of Object.entries(catConfigs)) {
+    if (!cfg || !cfg.secs) continue
+    const cat = catRaw.toLowerCase()
+    const batch = Math.max(1, cfg.batch)
+    const prepMins = Math.max(1, Math.round(cfg.secs / 60))
+    const used = categoryLoadOver(back.intervals, cat, slotMins - prepMins, slotMins)
+    const kitchenUsed = kitchenCapacity == null ? null : kitchenLoadOver(back.intervals, slotMins - prepMins, slotMins)
+    const full = used >= batch - EPS || (kitchenUsed != null && kitchenUsed >= kitchenCapacity! - EPS)
+    perCat[cat] = { used, batch, free: Math.max(0, Math.round(batch - used)), prepMins, kitchenUsed, full }
+    if (kitchenUsed != null && (kitchen === null || kitchenUsed > kitchen.used)) kitchen = { used: kitchenUsed, cap: kitchenCapacity!, free: Math.max(0, Math.round(kitchenCapacity! - kitchenUsed)) }
+  }
+
+  // 3. The binding category: worst tone, then the fullest, then menu order.
+  const toneOf = (r: DotCatRead): SlotTone => r.full ? 'red' : r.used > EPS ? 'amber' : 'green'
+  let bindCat: string | null = null
+  for (const cat of Object.keys(perCat)) {
+    if (bindCat === null) { bindCat = cat; continue }
+    const a = perCat[cat], b = perCat[bindCat]
+    const ra = RANK[toneOf(a)], rb = RANK[toneOf(b)]
+    if (ra > rb || (ra === rb && (a.used / a.batch > b.used / b.batch || (a.used / a.batch === b.used / b.batch && rankOf(cat) < rankOf(bindCat))))) bindCat = cat
+  }
+  const overlapTone: SlotTone = bindCat ? toneOf(perCat[bindCat]) : 'green'
+  const tone: SlotTone = RANK[overlapTone] > RANK[windowTone] ? overlapTone : windowTone
+
+  // 4. The reason, only when the rolling read is strictly worse than the window's own.
+  let overlap: DotOverlap | null = null
+  if (bindCat && RANK[overlapTone] > RANK[windowTone]) {
+    const r = perCat[bindCat]
+    const kitchenBinds = r.kitchenUsed != null && kitchenCapacity != null && (
+      overlapTone === 'red' ? r.kitchenUsed >= kitchenCapacity - EPS && r.used < r.batch - EPS      // full by the ceiling, not the batch
+                            : Math.max(0, kitchenCapacity - r.kitchenUsed) < r.free)                 // fewer free by the ceiling than by the batch
+    overlap = kitchenBinds
+      ? { kind: 'kitchen', used: Math.round(r.kitchenUsed!), cap: kitchenCapacity!, free: Math.max(0, Math.round(kitchenCapacity! - r.kitchenUsed!)) }
+      : { kind: 'batch', cat: bindCat, used: Math.round(r.used), batch: r.batch, free: r.free }
+  }
+  return { window, tone, overlap, perCat, kitchen }
+}
+
 export interface BackwardWindow {
   /** Window start minutes-from-midnight (== collectionDeadline − k*prepMins). May be < eventStartMins (run-off-front). */
   startMins: number
@@ -484,6 +765,93 @@ export interface CookInterval {
   endMins: number
   /** Counted items present across [startMins, endMins). */
   items: number
+  /** The cooking category this interval belongs to. ADDITIVE (17 September 2026): set for cooking
+   *  batches, absent for instant points. Read ONLY by categoryLoadOver, the rolling per-category batch
+   *  check. The sweep-line and every other reader ignore it. */
+  cat?: string
+}
+
+/**
+ * ── THE ROLLING PER-CATEGORY BATCH CHECK — ONE HELPER, EVERY READER (17 September 2026) ────────────
+ * The MOST items of category `cat` on the grill at any one instant of the window [fromMins, toMins):
+ * the PEAK concurrent load, not the sum of every batch that overlaps. Half-open: an interval ending
+ * exactly at fromMins, or starting exactly at toMins, does NOT overlap — a batch finishing as the next
+ * starts is two batches, not one — and at an instant t a batch counts iff startMins ≤ t < endMins.
+ *
+ * 🔴 PEAK, NOT SUM (18 September 2026, Dominic's decision — docs/peak-load-rule-report.md). The sum
+ * over-counted: 5 pizzas cooking 21:55–22:10 and 8 cooking 22:10–22:25 are back to back — never more
+ * than 8 in the oven — yet both overlap [22:00, 22:15), so the span summed to 13. Two back-to-back
+ * batches of 4 summed to 8 and REFUSED a single pizza at 22:15 although only 5 would ever cook at once.
+ * The peak is what the physical rule means — at no instant more than `batch` of a category — and it
+ * is what every reader now gets: admission (reserveBatches / fitOrderBackward), the window tone,
+ * the dot label (via remainingByCat) and detectCapacityBreaches, so all four agree. Peak ≤ sum, so
+ * nothing the sum accepted is refused; where the grid is a whole multiple of the prep every
+ * overlapping batch starts at fromMins and peak == sum, so aligned trucks are byte-identical.
+ *
+ * 🔴 WHY THIS EXISTS. The per-category batch used to be judged by START MINUTE alone —
+ * `back.byStart.get(ws)?.byCat[cat]` in fitOrderBackward, and each window's own `byCat` for the tone —
+ * which is a rolling check only while every window of a category starts on a grid at least as coarse
+ * as its prep. With 5-minute collection slots and a 15-minute cook, A=8 @18:15 cooks [18:00,18:15) and
+ * B=8 @18:20 cooks [18:05,18:20); they share no start minute, so 16 burgers sat on an 8-batch grill
+ * from 18:05 to 18:15 and nothing said so (docs/batch-overlap-review-report.md). §31's "every rolling
+ * cooking window" was a claim the batch path did not implement; the kitchen-capacity ceiling always did
+ * (windowScopedPeak / concurrencyAt). This makes the batch path mean what §31 says.
+ *
+ * 🔴 PROVABLY A NO-OP WHEN THE COLLECTION STEP IS A MULTIPLE OF THE PREP (prep ≤ step). Every window
+ * of a category then starts on the grid and is at most one step long, so two windows either share a
+ * start minute or are disjoint — and the overlap sum equals the same-start sum exactly. Gusto (prep 5,
+ * step 5) is that case; scripts/batch-rolling-identity.cjs proves it against the frozen baseline.
+ * ⚠️ NOT a no-op when prep exceeds the step, whatever the ratio: prep 10 on a 5-minute grid overlaps
+ * (A @18:10 → [18:00,18:10), B @18:15 → [18:05,18:15)). That is the case this fixes.
+ *
+ * 🔴 DISPLAY == PICKER by construction: fitOrderBackward's verdict and projectBackwardOccupancy's tone
+ * both call this, with the same intervals. Instant points carry no `cat` and are never counted.
+ */
+export function categoryLoadOver(intervals: CookInterval[], cat: string, fromMins: number, toMins: number): number {
+  const batches: CookInterval[] = []
+  for (const iv of intervals) {
+    if (iv.cat !== cat || iv.items <= 0) continue
+    if (iv.endMins <= iv.startMins) continue                       // a point is never a batch
+    batches.push(iv)
+  }
+  return peakLoadOver(batches, fromMins, toMins, false)
+}
+
+/**
+ * ── THE ONE PEAK (18 September 2026) ────────────────────────────────────────────────────────────
+ * The most counted items present at any one instant of [fromMins, toMins), read with concurrencyAt —
+ * reals cover [start, end), a zero-width point hits only its own instant. The load is piecewise
+ * constant and rises only where something STARTS, so the peak is attained at fromMins or at a start
+ * inside the span; those are the only instants read. Half-open throughout: a batch ending at an
+ * instant has left it, one starting there is in it — touching batches never share an instant.
+ *
+ * `includePointsInside` says whether a zero-width instant point strictly inside the span, at no
+ * cooking start, is an evaluated instant:
+ *   • false — the DISPLAY and BREACH reads (the window's ceiling `conc`, kitchenLoadOver, and the
+ *     per-category batch via categoryLoadOver, where there are no points anyway). Points count at
+ *     the span's start and at cooking starts, exactly as today's window read counts them; a point
+ *     seated strictly inside is read by the window it keys (capacity step), as before. This is what
+ *     keeps an aligned grid byte-identical: no cooking start lies strictly inside an aligned window.
+ *   • true — ADMISSION (reserveBatches' per-window ceiling and windowScopedPeak): every instant the
+ *     order's span covers, points included, so no admitted order can put the kitchen over the cap at
+ *     any minute. windowScopedPeak has always read points inside an order's span; reserveBatches
+ *     now sees them too, which can only tighten toward the verdict windowScopedPeak already gave.
+ *
+ * Every ceiling and batch reader goes through here: categoryLoadOver, kitchenLoadOver, the window
+ * builder's `conc`, reserveBatches, windowScopedPeak. One implementation, so a sum can never creep
+ * back into one of them alone (docs/peak-ceiling-rule-report.md).
+ */
+export function peakLoadOver(intervals: CookInterval[], fromMins: number, toMins: number, includePointsInside: boolean): number {
+  if (toMins <= fromMins) return 0
+  const instants = new Set<number>([fromMins])
+  for (const iv of intervals) {
+    if (iv.items <= 0) continue
+    if (iv.startMins <= fromMins || iv.startMins >= toMins) continue
+    if (iv.endMins > iv.startMins || includePointsInside) instants.add(iv.startMins)
+  }
+  let peak = 0
+  for (const t of instants) { const c = concurrencyAt(intervals, t); if (c > peak) peak = c }
+  return peak
 }
 
 // Sweep-line peak concurrency over counted intervals. Tie-break at equal timestamps:
@@ -542,25 +910,122 @@ function concurrencyAt(intervals: CookInterval[], t: number): number {
 // the order's cooking spans is hit at one of: the order's own interval starts (cooking + points), OR
 // any allIntervals start that falls inside an order COOKING span [oS,oE) — evaluating both catches a
 // spanning existing batch that begins mid-order-window (the no-oversell requirement).
-function windowScopedPeak(allIntervals: CookInterval[], focus: CookInterval[]): number {
-  if (!focus.length) return 0
+// ── DESCRIPTIVE FIT DETAIL — WHY A SLOT DOES NOT FIT (18 September 2026) ───────────────────────────
+// 🔴 PURELY DESCRIPTIVE. Nothing here decides anything. Every number below is recorded AT THE POINT THE
+// VERDICT IS ALREADY BEING MADE, from the same values that made it, so the popup cannot contradict the
+// engine. The old confirm re-derived its own totals from bound_by and printed a combined figure ("it
+// would need 16") that exists nowhere in the kitchen: 16 is two separate batches of 8, never sixteen
+// pizzas in one oven. The operator's question is "which batch is full, and by how much" — these fields
+// answer exactly that and nothing else.
+// ⚠️ `cat` is the ENGINE'S LOWERCASE KEY, deliberately. The stored display name lives in
+// menu_categories.name and this module has never seen it; the caller maps key → name with the map it
+// already holds. Putting a capWord() guess in here would print "Pizza" for a category stored as "PIZZA".
+
+/** One cooking window this order occupies, for ONE category. */
+export interface FitWhyWindow {
+  /** Window start, minutes from midnight (inclusive). */
+  startMins: number
+  /** Window end, minutes from midnight (exclusive) — startMins + the category's prep. */
+  endMins: number
+  /** Rolling load of OTHER orders across this window — categoryLoadOver's own answer, not a re-read. */
+  existing: number
+  /** batch − existing, floored at 0. What this window could still take. */
+  free: number
+  /** This order's items cooking in THIS window (one batch, except the last which may be a part batch). */
+  share: number
+}
+
+/** A category whose batch ceiling blocks this slot. */
+export interface FitWhyBatch {
+  kind: 'batch'
+  /** Lowercase engine key — the caller maps it to the stored display name. */
+  cat: string
+  /** Items per batch (cfg.batch). */
+  batch: number
+  /** Minutes per batch (cfg.secs / 60, rounded). */
+  prepMins: number
+  /** Every window this order occupies for this category, EARLIEST FIRST. */
+  windows: FitWhyWindow[]
+}
+
+/** The shared kitchen ceiling, at the instant it peaked. */
+export interface FitWhyKitchen {
+  kind: 'kitchen'
+  /** kitchen_capacity. */
+  cap: number
+  /** The window the peak instant falls in (the order's own cooking window, or the capacity cadence). */
+  startMins: number
+  endMins: number
+  /** Items OTHER orders have cooking at that instant. */
+  existing: number
+  /** Items THIS order adds at that instant. existing + add === the `peak` field above. */
+  add: number
+}
+
+/** Cooking that would have to start before the event opens. */
+export interface FitWhyPreOpen {
+  kind: 'preopen'
+  cat: string
+  /** Event start, minutes from midnight. */
+  eventStartMins: number
+}
+
+/** Ordered blocking reasons: batch first, then kitchen, then pre-open. Empty when fits is true. */
+export type FitWhy = Array<FitWhyBatch | FitWhyKitchen | FitWhyPreOpen>
+
+/**
+ * WHERE the window-scoped peak happened, and how it splits between existing load and this order.
+ * 🔴 IT IS THE SAME CALCULATION AS windowScopedPeak, NOT A SECOND ONE: identical instant set, and the
+ * count comes from the same `concurrencyAt` primitive. windowScopedPeak stays byte-identical (it is one
+ * of the frozen §31 symbols) so this records the argmax alongside it instead of changing it.
+ * scripts/add-order-fit-message.cjs asserts `existing + add === fit.peak` on every swept fixture, so the
+ * two can never drift apart unnoticed.
+ */
+function peakDetailOver(allIntervals: CookInterval[], focus: CookInterval[], capacityStep: number): { instant: number; total: number; add: number; startMins: number; endMins: number } | null {
+  if (!focus.length) return null
   const instants = new Set<number>()
   const cookingSpans: Array<[number, number]> = []
   for (const f of focus) {
     if (f.items <= 0) continue
-    instants.add(f.startMins)                                  // order's own start (cooking) / point instant
+    instants.add(f.startMins)
     if (f.endMins > f.startMins) cookingSpans.push([f.startMins, f.endMins])
   }
-  if (!instants.size) return 0
-  for (const iv of allIntervals) {                            // existing/other starts within an order cooking span
+  if (!instants.size) return null
+  for (const iv of allIntervals) {
     if (iv.items <= 0) continue
     for (const [oS, oE] of cookingSpans) {
       if (iv.startMins >= oS && iv.startMins < oE) { instants.add(iv.startMins); break }
     }
   }
+  let best = -1, total = 0
+  for (const t of instants) { const c = concurrencyAt(allIntervals, t); if (c > total) { total = c; best = t } }
+  if (best < 0) return null
+  const add = concurrencyAt(focus, best)
+  // Name the window the peak sits in: the order's own cooking window containing it, else the capacity
+  // cadence starting there (an instant-only order has no cooking span to name).
+  let startMins = best, endMins = best + capacityStep
+  for (const f of focus) {
+    if (f.endMins > f.startMins && f.startMins <= best && best < f.endMins) { startMins = f.startMins; endMins = f.endMins; break }
+  }
+  return { instant: best, total, add, startMins, endMins }
+}
+
+// 18 September 2026: the SAME instant set as before — each order cooking span [oS, oE) is read by
+// peakLoadOver with points included (oS itself, every start inside, points inside), and each of the
+// order's own instant points at its instant — now through the one peak implementation. What it counts
+// is unchanged; scripts/peak-ceiling-rule.cjs holds the old body and proves the verdicts identical.
+function windowScopedPeak(allIntervals: CookInterval[], focus: CookInterval[]): number {
   let peak = 0
-  for (const t of instants) { const c = concurrencyAt(allIntervals, t); if (c > peak) peak = c }
-  return peak
+  let any = false
+  for (const f of focus) {
+    if (f.items <= 0) continue
+    any = true
+    const c = f.endMins > f.startMins
+      ? peakLoadOver(allIntervals, f.startMins, f.endMins, true)   // the span: its start, every start inside, points inside
+      : concurrencyAt(allIntervals, f.startMins)                    // the order's own point, at its instant
+    if (c > peak) peak = c
+  }
+  return any ? peak : 0
 }
 
 // Greedy backward placement of zero-prep COUNTED instant items as concurrency points. Instant
@@ -659,16 +1124,190 @@ export function contributingProductionSlots(
   return out.sort((a, b) => parseMins(a) - parseMins(b))
 }
 
+// ── COOKING RESERVATIONS — PHASE P1 (18 September 2026): the ENGINE INPUT, no behaviour change ────────
+// An order may carry `orders.cooking_reservation`: the cooking windows it was seated in when it was
+// placed (P2 writes today's split of the order's own items). projectBackwardOccupancy can now be handed
+// those reservations. In THIS phase they are used under one strict rule, chosen so the output is byte-
+// identical to seating the slot total with today's split:
+//   a (slot, category) is seated from its reservation ONLY when exactly ONE counting order at that slot
+//   carries a reservation for the category, its items equal the slot's stored total for the category,
+//   and it was computed with the category's current batch and prep. Anything else — two orders sharing
+//   a slot, a stale batch, a missing reservation, an instant category — falls back to today's split.
+// Why so strict: storage holds per-slot TOTALS. Two orders of 5 at one slot are seated by today's rule
+// as 8 + 2 across two windows; their two per-order reservations say 5 + 5 in the nearest window. Neither
+// seating them verbatim nor mixing one reservation with a fallback remainder reproduces 8 + 2 — only
+// "sole reservation equal to the total" does, and then only because P2 wrote today's split. P3 changes
+// the rule; this phase changes nothing an operator or customer can see (scripts/batch-reservation-p2-
+// identity.cjs proves it over 5,000 random sequences, and the committed golden still passes).
+/** One cooking window an order was seated in. Minutes from midnight; endMins = startMins + prep. */
+export interface CookingReservationWindow { startMins: number; endMins: number; items: number }
+/** What the ENGINE needs from a stored reservation. Built from orders.cooking_reservation by
+ *  readCookingReservations (lib/slot-bookings.ts); never read from the row by anything else. */
+export interface EngineReservation {
+  orderKey: string
+  /** The order's collection time, "HH:MM" — the slot whose stored total it is part of. */
+  slot: string
+  /** 'override' = placed anyway over the batch (P4); read by detectCapacityBreaches to name the order. */
+  source?: 'fit' | 'override'
+  cats: Record<string, { items: number; batch: number; prepMins: number; windows: CookingReservationWindow[] }>
+}
+
+/** P3 projection: every VALID reservation at (slot, cat) — the batch and prep must match the current
+ *  config — and the items they account for. Pure. */
+export function validReservationsAt(reservations: EngineReservation[] | undefined, slot: string, cat: string, batch: number, prepMins: number): { windows: CookingReservationWindow[]; items: number } {
+  const windows: CookingReservationWindow[] = []; let items = 0
+  for (const r of reservations || []) {
+    if (r.slot !== slot) continue
+    const c = r.cats?.[cat]; if (!c) continue
+    if (c.batch !== batch || c.prepMins !== prepMins) continue
+    const ws = (c.windows || []).filter(w => w.items > 0 && w.endMins - w.startMins === prepMins)
+    if (!ws.length) continue
+    windows.push(...ws); items += ws.reduce((a, w) => a + w.items, 0)
+  }
+  return { windows: windows.sort((a, b) => a.startMins - b.startMins), items }
+}
+
+/** P1/P2 IDENTITY RULE — the windows to seat for (slot, cat), or null ⇒ today's split. Pure. */
+export function cachedReservationWindows(
+  reservations: EngineReservation[] | undefined,
+  slot: string,
+  cat: string,
+  totalItems: number,
+  batch: number,
+  prepMins: number,
+): CookingReservationWindow[] | null {
+  if (!reservations || !reservations.length) return null
+  let found: EngineReservation['cats'][string] | null = null
+  let count = 0
+  for (const r of reservations) {
+    if (r.slot !== slot) continue
+    const c = r.cats?.[cat]
+    if (!c) continue
+    count++; found = c
+  }
+  if (count !== 1 || !found) return null                         // sole reservation at this slot+cat, or fallback
+  if (Math.round(found.items) !== Math.round(totalItems)) return null   // it must account for the WHOLE stored total
+  if (found.batch !== batch || found.prepMins !== prepMins) return null // computed with the current config
+  const ws = (found.windows || []).filter(w => w.items > 0)
+  if (!ws.length) return null
+  const sum = ws.reduce((a, w) => a + w.items, 0)
+  if (Math.round(sum) !== Math.round(totalItems)) return null
+  if (ws.some(w => w.endMins - w.startMins !== prepMins)) return null
+  return [...ws].sort((a, b) => a.startMins - b.startMins)
+}
+
+// ── reserveBatches — DOMINIC'S RULE, the shared helper for P3 (18 September 2026) ───────────────────
+// NOT CALLED BY fitOrderBackward YET. It exists now so its behaviour is pinned by tests before anything
+// depends on it (scripts/batch-reservation-helper.cjs). The rule, verbatim from the decision:
+//   • an order of a category uses EXACTLY ceil(items / batch) back-to-back windows ending at T;
+//   • an order that fits one batch is never split;
+//   • it fits if those windows' free space adds up (rolling load, half-open, as categoryLoadOver reads it);
+//   • it reserves nearest-first (freshest food);
+//   • the pre-open floor (eventStart − prep) and the now-clamp apply to the earliest window.
+// Free space is min(batch − category load, kc − total load) per window; the caller re-checks the
+// kitchen ceiling across categories with the sweep-line exactly as today.
+export interface ReserveBatchesWindow { startMins: number; endMins: number; existing: number; free: number; share: number }
+export function reserveBatches(args: {
+  intervals: CookInterval[]
+  cat: string
+  slotMins: number
+  items: number
+  batch: number
+  prepMins: number
+  kitchenCapacity: number | null
+  /** Earliest minute a window may START (eventStartMins − prep, the one pre-open run-up). */
+  floorMins: number
+  nowMins?: number
+}): { fits: boolean; windows: ReserveBatchesWindow[]; reason: 'ok' | 'batch' | 'preopen' | 'now' } {
+  const { intervals, cat, slotMins, items, batch, prepMins, kitchenCapacity, floorMins } = args
+  const nowMins = args.nowMins ?? Number.NEGATIVE_INFINITY
+  const B = Math.max(1, batch), P = Math.max(1, prepMins)
+  const nw = Math.max(1, Math.ceil(items / B))
+  const windows: ReserveBatchesWindow[] = []
+  for (let i = 0; i < nw; i++) {
+    const ws = slotMins - (i + 1) * P
+    const existing = categoryLoadOver(intervals, cat, ws, ws + P)
+    let free = B - existing
+    if (kitchenCapacity != null) {
+      // 18 September 2026: the PEAK in the kitchen over this window, points inside included — the
+      // instants windowScopedPeak reads for the same span — not the sum of every real overlapping it.
+      const total = peakLoadOver(intervals, ws, ws + P, true)
+      free = Math.min(free, kitchenCapacity - total)
+    }
+    windows.push({ startMins: ws, endMins: ws + P, existing, free: Math.max(0, free), share: 0 })
+  }
+  const earliest = windows[windows.length - 1].startMins
+  if (earliest < floorMins) return { fits: false, windows, reason: 'preopen' }
+  if (earliest < nowMins) return { fits: false, windows, reason: 'now' }
+  let rem = items
+  for (const w of windows) { const take = Math.min(rem, w.free); if (take > 0) { w.share = take; rem -= take } }   // nearest-first
+  if (rem > 0) { for (const w of windows) w.share = 0; return { fits: false, windows, reason: 'batch' } }
+  return { fits: true, windows, reason: 'ok' }
+}
+
+// ── buildAdmittedReservation — WHAT A PLACEMENT STORES, switch ON (P3 + P4) ───────────────────────
+// From the SAME projection the admission used (`back`), for the order's own categories at its slot:
+//   • fits (every cooking category's reserveBatches fits) ⇒ source 'fit', its nearest-first windows;
+//   • otherwise — "Place it anyway", any manual placement that does not fit, or an edit the operator
+//     confirmed — source 'override': greedy where there is free space, and the SHORTFALL goes into the
+//     NEAREST window, over the batch. An order of ≤ batch items still uses one window (all of it there).
+// The dot then shows the true over-count in red (the projection seats this verbatim) and
+// detectCapacityBreaches names the order. Instant categories reserve nothing, as in P2.
+export function buildAdmittedReservation(args: {
+  back: BackwardOccupancy
+  slotLabel: string
+  qtyByCat: QtyByCat
+  catConfigs: Record<string, CatConfig>
+  kitchenCapacity: number | null
+  eventStartMins: number
+  capacityWindowMins: number
+  nowMins?: number
+  gridIntervalMins?: number | null
+}): { fits: boolean; record: { v: 1; source: 'fit' | 'override'; slot: string; computed: { eventStartMins: number; capacityWindowMins: number; kitchenCapacity: number | null; gridIntervalMins: number | null }; cats: Record<string, { items: number; batch: number; prepMins: number; windows: CookingReservationWindow[] }> } | null } {
+  const { back, slotLabel, qtyByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins } = args
+  const slotMins = parseMins(slotLabel)
+  const cats: Record<string, { items: number; batch: number; prepMins: number; windows: CookingReservationWindow[] }> = {}
+  let fits = true
+  for (const [catRaw, rawM] of Object.entries(qtyByCat)) {
+    const cat = catRaw.toLowerCase(); const cfg = catConfigs[cat]; const M = Number(rawM) || 0
+    if (!cfg || !cfg.secs || M <= 0) continue
+    const batch = Math.max(1, cfg.batch), prep = Math.max(1, Math.round(cfg.secs / 60))
+    const r = reserveBatches({ intervals: back.intervals, cat, slotMins, items: M, batch, prepMins: prep, kitchenCapacity, floorMins: eventStartMins - prep, nowMins: args.nowMins })
+    let windows: CookingReservationWindow[]
+    if (r.fits) windows = r.windows.filter(w => w.share > 0).map(w => ({ startMins: w.startMins, endMins: w.endMins, items: w.share }))
+    else {
+      fits = false
+      // greedy into free space nearest-first, then the shortfall into the NEAREST window, over the batch
+      let rem = M; const shares = r.windows.map(w => { const t = Math.min(rem, Math.max(0, w.free)); rem -= t; return t })
+      if (rem > 0) shares[0] += rem
+      windows = r.windows.map((w, i) => ({ startMins: w.startMins, endMins: w.endMins, items: shares[i] })).filter(w => w.items > 0)
+    }
+    cats[cat] = { items: M, batch, prepMins: prep, windows: windows.sort((a, b) => a.startMins - b.startMins) }
+  }
+  if (!Object.keys(cats).length) return { fits, record: null }
+  return { fits, record: { v: 1, source: fits ? 'fit' : 'override', slot: slotLabel, computed: { eventStartMins, capacityWindowMins, kitchenCapacity, gridIntervalMins: args.gridIntervalMins ?? null }, cats } }
+}
+
 export function projectBackwardOccupancy(
   productionSlotUnits: Record<string, QtyByCat>,
   catConfigs: Record<string, CatConfig>,
   eventStartMins: number,
   kitchenCapacity: number | null,
   capacityWindowMins: number = 5,
+  // P1 (18 September 2026): per-order cooking reservations, used ONLY under cachedReservationWindows'
+  // identity rule. Absent or empty ⇒ this function is byte-for-byte today's.
+  reservations: EngineReservation[] = [],
+  // P3 (18 September 2026): the per-truck switch. ON ⇒ every valid reservation is seated verbatim and
+  // only the UNRESERVED remainder of each slot total takes today's split (so an order placed before the
+  // switch, with no reservation, keeps exactly its current arrangement). OFF ⇒ P2's identity rule.
+  batchReservations: boolean = false,
 ): BackwardOccupancy {
   // Accumulate COOKING load per window-start minute → { cat: items } (drives per-category batch tones).
   const loadByStart = new Map<number, Record<string, number>>()
   const batchByCat: Record<string, number> = {}
+  // Each cooking category's window length, so the rolling tone below spans [start, start+prep) for THAT
+  // category — categories with different preps share a start minute but not a span.
+  const prepByCat: Record<string, number> = {}
   const cantFit: CantFitFlag[] = []
   // step = PREP grid (cooking window keying + the no-basket single-window lookup). UNCHANGED.
   const step = backwardWindowStepMins(catConfigs)
@@ -715,22 +1354,52 @@ export function projectBackwardOccupancy(
       const batch = Math.max(1, cfg.batch)
       const prepMins = Math.max(1, Math.round(cfg.secs / 60))
       batchByCat[cat] = batch
+      prepByCat[cat] = prepMins
       const numWindows = Math.ceil(N / batch)
       const earliestWindowMins = deadline - numWindows * prepMins
       if (earliestWindowMins < eventStartMins) {
         cantFit.push({ productionSlot: ps, cat, qty: N, earliestWindowMins, eventStartMins })
       }
+      // P1: a SOLE reservation that accounts for this slot's whole category total is seated verbatim
+      // (earliest window first, the same order the loop below produces). Everything else — including
+      // every slot shared by two orders — takes today's split below. See cachedReservationWindows.
+      const cached = batchReservations ? null : cachedReservationWindows(reservations, ps, cat, N, batch, prepMins)
+      if (cached) {
+        for (const rw of cached) {
+          const w = loadByStart.get(rw.startMins) ?? {}
+          w[cat] = (w[cat] || 0) + rw.items
+          loadByStart.set(rw.startMins, w)
+          cookIntervals.push({ startMins: rw.startMins, endMins: rw.endMins, items: rw.items, cat })
+        }
+        continue
+      }
+      // P3 (switch ON): seat every valid reservation at this slot verbatim — including an override's
+      // over-the-batch nearest window, which is how the dot shows the true over-count — then fall through
+      // to today's split for whatever part of the stored total is NOT reserved (pre-switch orders).
+      let seatN = N
+      if (batchReservations) {
+        const v = validReservationsAt(reservations, ps, cat, batch, prepMins)
+        for (const rw of v.windows) {
+          const w = loadByStart.get(rw.startMins) ?? {}
+          w[cat] = (w[cat] || 0) + rw.items
+          loadByStart.set(rw.startMins, w)
+          cookIntervals.push({ startMins: rw.startMins, endMins: rw.endMins, items: rw.items, cat })
+        }
+        seatN = Math.max(0, N - v.items)
+        if (seatN <= 0) continue
+      }
       // Seat batches backward on the PREP grid (UNCHANGED): earliest windows full (batch), the
       // window ADJACENT to collection holds the remainder N − batch*(numWindows-1) ∈ [1, batch].
       // Each window is ALSO a [S, S+prep) concurrency interval for the global sweep.
-      for (let i = 0; i < numWindows; i++) {
-        const startMins = deadline - (numWindows - i) * prepMins
-        const isAdjacent = i === numWindows - 1
-        const items = isAdjacent ? N - batch * (numWindows - 1) : batch
+      const numWindowsSeat = batchReservations ? Math.ceil(seatN / batch) : numWindows
+      for (let i = 0; i < numWindowsSeat; i++) {
+        const startMins = deadline - (numWindowsSeat - i) * prepMins
+        const isAdjacent = i === numWindowsSeat - 1
+        const items = isAdjacent ? seatN - batch * (numWindowsSeat - 1) : batch
         const w = loadByStart.get(startMins) ?? {}
         w[cat] = (w[cat] || 0) + items
         loadByStart.set(startMins, w)
-        cookIntervals.push({ startMins, endMins: startMins + prepMins, items })
+        cookIntervals.push({ startMins, endMins: startMins + prepMins, items, cat })
       }
     }
     if (instantHere > 0) instantByDeadline.push({ deadline, count: instantHere })
@@ -769,9 +1438,18 @@ export function projectBackwardOccupancy(
       let bound_by: string | null = null
       let bindRank = -1
       let bindUsed = -1
-      for (const [cat, used] of Object.entries(byCat)) {
+      // 🔴 ROLLING PER-CATEGORY TONE (17 September 2026). `byCat` (the LABEL) is still this start
+      // minute's own load, unchanged. The TONE, `remainingByCat` and `bound_by` now use the rolling
+      // category load over this window's span [startMins, startMins + prep_cat) — every batch of the
+      // category overlapping it, via the SAME categoryLoadOver the picker uses — so two half-overlapping
+      // full batches read red here exactly as fitOrderBackward refuses them. Identical to the old
+      // per-start value whenever the collection step is a multiple of the prep (see the helper).
+      // remainingByCat = batch − rolling load: detectCapacityBreaches reads it and now flags an overlap
+      // with no kitchen ceiling set, which it could not before.
+      for (const cat of Object.keys(byCat)) {
         const batch = batchByCat[cat]
         if (batch == null) continue
+        const used = categoryLoadOver(cookIntervals, cat, startMins, startMins + (prepByCat[cat] ?? step))
         remainingByCat[cat] = batch - used
         const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
         const r = RANK[t]
@@ -780,10 +1458,23 @@ export function projectBackwardOccupancy(
           tone = t; bound_by = `${capWord(cat)} ${Math.round(used)}/${Math.round(batch)}`
         }
       }
-      // Global ceiling for the no-basket display = EXACT concurrency at this window's instant
-      // (cooking spanning + instant points), not a per-window sum. Identical to the old per-window
-      // total when capacityStep == prep and nothing spans a boundary (today's state).
-      const conc = concurrencyAt(intervals, startMins)
+      // Global ceiling for the no-basket display = the kitchen's PEAK over this window's span (18
+      // September 2026) — its start and every cooking start inside it, points counted where they sit at
+      // those instants — the same read as kitchenLoadOver, so the dot, the breach detector and this tone
+      // name one number. Until today this was the concurrency at the window's START instant alone, which
+      // an overlapping batch starting inside the span could slip past. The span is the longest cooking
+      // prep among this window's categories (an instant-only window has no span — see below). Where the
+      // grid is a whole multiple of every prep no start lies strictly inside, so the read is unchanged.
+      let spanMins = 0
+      for (const cat of Object.keys(byCat)) if (batchByCat[cat] != null) spanMins = Math.max(spanMins, prepByCat[cat] ?? step)
+      // An instant-only window (keyed at deadline − capacityStep, holding zero-width points) has no span:
+      // its points occupy their instant, so it reads exactly today's concurrency there.
+      const conc = spanMins > 0 ? peakLoadOver(intervals, startMins, startMins + spanMins, false) : concurrencyAt(intervals, startMins)
+      // `total` stays today's read — the concurrency at this window's START instant. It is the cover's
+      // tie-break only (coverDotWindows picks the "peak" window by it on a 10–30 grid) and is what keeps
+      // a mixed-prep aligned grid's cover label byte-identical; the ceiling itself (tone, remainingTotal,
+      // the breach detector, /api/slots' remaining) reads `conc`, the span peak.
+      const atStart = concurrencyAt(intervals, startMins)
       if (kitchenCapacity != null && conc >= kitchenCapacity - EPS) {
         tone = 'red'; bound_by = 'global ceiling'
       }
@@ -792,7 +1483,7 @@ export function projectBackwardOccupancy(
         start: fmt(startMins),
         beforeEventStart: startMins < eventStartMins,
         byCat,
-        total: conc,
+        total: atStart,
         remainingByCat,
         remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - conc,
         tone,
@@ -935,6 +1626,9 @@ export function fitOrderBackward(
   // window rejects new load. Default {} = legacy (new order only) for callers that don't pass it; an
   // EMPTY slot is unchanged either way (existing 0 ⇒ nwCombined == nw).
   existingAtSlot: QtyByCat = {},
+  // P3 (18 September 2026): the per-truck switch. ON ⇒ the per-category batch decision is reserveBatches
+  // (Dominic's rule) and the order's cooking intervals are the windows it would reserve. OFF ⇒ today.
+  batchReservations: boolean = false,
 ): {
   tone: SlotTone
   bound_by: string | null
@@ -947,6 +1641,14 @@ export function fitOrderBackward(
    *  the real window span [spanFromMins, slotMins) rather than just the collection time. Null when the
    *  order has no cooking load (instant-only). Display-only. */
   spanFromMins: number | null
+  /** WHY it does not fit, in the order a human should read it: batch, then kitchen, then pre-open.
+   *  ALWAYS EMPTY when fits is true. Purely descriptive — see FitWhy. ADDITIVE: every field above is
+   *  unchanged for every input, which scripts/batch-rolling-identity.cjs proves against the committed
+   *  golden. */
+  why: FitWhy
+  /** P3, switch ON only (the key is ABSENT otherwise): per cooking category, the windows reserveBatches
+   *  would reserve — the exact record the writers store — or null when the category does not fit. */
+  reserved?: Record<string, CookingReservationWindow[] | null>
 } {
   // Order's COOKING load on the PREP grid (drives per-category batch tones) + its concurrency
   // intervals; counted-instant items are tallied for capacity-cadence placement below.
@@ -954,6 +1656,18 @@ export function fitOrderBackward(
   const batchOf: Record<string, number> = {}
   const orderCookIntervals: CookInterval[] = []
   let orderInstant = 0
+  // ── DESCRIPTIVE ACCUMULATORS (18 September 2026). Written where the verdict is written, read nowhere
+  // in this function. `why` is assembled at the end in reading order: batch, kitchen, pre-open. ──────
+  const whyPreOpen: FitWhyPreOpen[] = []
+  /** cat → every window this order occupies for it, with the load that window already carries. */
+  const whyWindows = new Map<string, FitWhyWindow[]>()
+  /** cats whose batch ceiling is actually EXCEEDED — the ones that block. */
+  const whyBatchBlocked = new Set<string>()
+  const prepOf: Record<string, number> = {}
+  let whyKitchen: FitWhyKitchen | null = null
+  // P3 (switch ON): the verdict per category from reserveBatches, and the windows it would reserve.
+  const onVerdicts: Array<{ tone: SlotTone; label: string }> = []
+  const reservedByCat: Record<string, CookingReservationWindow[] | null> = {}
   const capacityStep = Math.max(1, Math.round(capacityWindowMins))
   // One pre-open batch is allowed for COOKING lead: a window may extend at most one prep-interval
   // before eventStart. (Instant lead is enforced by placeInstantPoints against eventStart.)
@@ -971,6 +1685,7 @@ export function fitOrderBackward(
     const batch = Math.max(1, cfg.batch)
     const prep = Math.max(1, Math.round(cfg.secs / 60))
     batchOf[cat] = batch
+    prepOf[cat] = prep
     const nw = Math.ceil(M / batch)
     // Front floor = max(eventStart pre-open allowance, NOW). eventStart keeps its ONE pre-open window
     // (`- prep`, the batch-1-ready-AT-start pre-prep credit, Manual s.6); NOW has NO allowance — you
@@ -984,7 +1699,36 @@ export function fitOrderBackward(
     // Lead check via the shared verdict helper (ONE source with the no-basket display dot) — judged on
     // the COMBINED load (this slot's committed total for the cat + the new order). Identical formula
     // to the prior inline check (nw = ceil((existing+M)/batch); start = slotMins − nw·prep < floor).
-    if (loadRunsOffFront({ [cat]: (Number(existingAtSlot[cat]) || 0) + M }, catConfigs, slotMins, eventStartMins, nowMins)) runsOffFront = true
+    if (loadRunsOffFront({ [cat]: (Number(existingAtSlot[cat]) || 0) + M }, catConfigs, slotMins, eventStartMins, nowMins)) {
+      runsOffFront = true
+      whyPreOpen.push({ kind: 'preopen', cat, eventStartMins })   // descriptive only — the flag above is the verdict
+    }
+    if (batchReservations) {
+      // ── P3, SWITCH ON: DOMINIC'S RULE ───────────────────────────────────────────────────────────
+      // reserveBatches decides this category: exactly ceil(M/batch) back-to-back windows ending at T,
+      // never split when M ≤ batch, fits iff the free space adds up, nearest-first. Its windows ARE the
+      // order's cooking intervals (so the kitchen-ceiling sweep below sees the real arrangement) and ARE
+      // `why` and the stored reservation — one function, so DISPLAY == PICKER by construction.
+      const r = reserveBatches({ intervals: back.intervals, cat, slotMins, items: M, batch, prepMins: prep, kitchenCapacity, floorMins: eventStartMins - prep, nowMins })
+      const wins = r.windows.map(w => ({ startMins: w.startMins, endMins: w.endMins, existing: Math.round(w.existing), free: Math.round(w.free), share: Math.round(w.share) })).sort((a, b) => a.startMins - b.startMins)
+      whyWindows.set(cat, wins)
+      reservedByCat[cat] = r.fits ? wins.filter(w => w.share > 0).map(w => ({ startMins: w.startMins, endMins: w.endMins, items: w.share })) : null
+      if (r.fits) {
+        let full = false
+        for (const w of r.windows) if (w.share > 0) {
+          const o = orderLoad.get(w.startMins) ?? {}; o[cat] = (o[cat] || 0) + w.share; orderLoad.set(w.startMins, o)
+          orderCookIntervals.push({ startMins: w.startMins, endMins: w.endMins, items: w.share, cat })
+          if (w.existing + w.share >= batch - EPS) full = true
+        }
+        onVerdicts.push({ tone: full ? 'amber' : 'green', label: `${capWord(cat)} ${Math.round(r.windows[0].existing + r.windows[0].share)}/${Math.round(batch)}` })
+      } else {
+        // Refused: seat today's split so the ceiling/peak/spanFromMins stay meaningful; the verdict is red.
+        for (let i = 0; i < nw; i++) { const ws = slotMins - (i + 1) * prep; const items = i === 0 ? M - batch * (nw - 1) : batch; orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items, cat }) }
+        whyBatchBlocked.add(cat)
+        onVerdicts.push({ tone: 'red', label: `${capWord(cat)} ${Math.round(r.windows[0].existing + M)}/${Math.round(batch)}` })
+      }
+      continue
+    }
     for (let i = 0; i < nw; i++) {
       // The order COOKS in the windows ENDING at the collection slot T: latest/adjacent window
       // [T−prep, T) keyed T−prep (i=0), stepping back … T−nw*prep. Mirrors projectBackwardOccupancy.
@@ -993,7 +1737,7 @@ export function fitOrderBackward(
       const w = orderLoad.get(ws) ?? {}
       w[cat] = (w[cat] || 0) + items
       orderLoad.set(ws, w)
-      orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items })
+      orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items, cat })
     }
   }
 
@@ -1007,15 +1751,25 @@ export function fitOrderBackward(
   // Insufficient COOKING lead (needs more than one pre-open window) ⇒ red, regardless of capacity.
   if (runsOffFront) consider('red', 'too soon (insufficient lead)')
 
-  // PER-CATEGORY batch tones (PREP grid) — UNCHANGED: existing per-cat load ⊕ order's per-cat load.
-  for (const [ws, ord] of orderLoad) {
-    const existing = back.byStart.get(ws)
+  // PER-CATEGORY batch tones — 🔴 ROLLING (17 September 2026). The existing load for this order's window
+  // [ws, ws+prep) is every existing batch of the category that OVERLAPS it (categoryLoadOver over
+  // back.intervals — the same intervals the sweep-line reads), no longer only the batch that starts at
+  // the same minute. combined / thresholds / consider / bound_by are unchanged.
+  if (batchReservations) { for (const v of onVerdicts) consider(v.tone, v.label) }
+  for (const [ws, ord] of batchReservations ? [] : orderLoad) {
     for (const [cat, add] of Object.entries(ord)) {
       const batch = batchOf[cat]
       if (batch == null) continue
-      const combined = (existing?.byCat[cat] ?? 0) + add
+      const prep = Math.max(1, Math.round((catConfigs[cat]?.secs ?? 0) / 60))
+      const existing = categoryLoadOver(back.intervals, cat, ws, ws + prep)
+      const combined = existing + add
       const t: SlotTone = combined > batch + EPS ? 'red' : combined >= batch - EPS ? 'amber' : 'green'
       consider(t, `${capWord(cat)} ${Math.round(combined)}/${Math.round(batch)}`)
+      // DESCRIPTIVE, from the very numbers above — no second read of back.intervals.
+      const list = whyWindows.get(cat) ?? []
+      list.push({ startMins: ws, endMins: ws + prep, existing: Math.round(existing), free: Math.max(0, Math.round(batch - existing)), share: Math.round(add) })
+      whyWindows.set(cat, list)
+      if (t === 'red') whyBatchBlocked.add(cat)
     }
   }
 
@@ -1039,11 +1793,16 @@ export function fitOrderBackward(
     reportedPeak = cookingPeak
     if (cookingPeak > kitchenCapacity + EPS) {
       consider('red', 'global ceiling')
+      const d = peakDetailOver(realIntervals, orderCookIntervals, capacityStep)
+      if (d) whyKitchen = { kind: 'kitchen', cap: kitchenCapacity, startMins: d.startMins, endMins: d.endMins, existing: Math.round(d.total - d.add), add: Math.round(d.add) }
     } else {
       const { points, runsOffFront: instantOff } =
         placeInstantPoints(orderInstant, slotMins, realIntervals, kitchenCapacity, capacityStep, eventStartMins, nowMins)
       if (instantOff) {
         consider('red', 'global ceiling')
+        // The instants could not be seated at all, so the cooking peak is the honest thing to name.
+        const d = peakDetailOver(realIntervals, orderCookIntervals, capacityStep)
+        if (d) whyKitchen = { kind: 'kitchen', cap: kitchenCapacity, startMins: d.startMins, endMins: d.endMins, existing: Math.round(d.total - d.add), add: Math.round(d.add) }
       } else {
         const peak = points.length
           ? windowScopedPeak([...realIntervals, ...points], [...orderCookIntervals, ...points])
@@ -1062,7 +1821,22 @@ export function fitOrderBackward(
 
   // fits derived from bindRank (number) — `tone` is closure-mutated, so a direct
   // `tone !== 'red'` would mis-narrow to the literal 'green'.
-  return { tone, bound_by, fits: bindRank < RANK.red, peak: Math.round(reportedPeak), spanFromMins }
+  const fits = bindRank < RANK.red
+  // ── ASSEMBLE `why` — reading order, and ONLY when the slot actually does not fit ──────────────────
+  // Every element was recorded above at the moment its own verdict was taken; nothing is recomputed
+  // here and nothing here can change `fits`, `tone`, `bound_by`, `peak` or `spanFromMins`.
+  const why: FitWhy = []
+  if (!fits) {
+    for (const cat of Object.keys(batchOf)) {
+      if (!whyBatchBlocked.has(cat)) continue
+      const windows = (whyWindows.get(cat) ?? []).slice().sort((a, b) => a.startMins - b.startMins)
+      why.push({ kind: 'batch', cat, batch: Math.round(batchOf[cat]), prepMins: prepOf[cat] ?? 0, windows })
+    }
+    if (whyKitchen) why.push(whyKitchen)
+    for (const p of whyPreOpen) why.push(p)
+  }
+  if (batchReservations) return { tone, bound_by, fits, peak: Math.round(reportedPeak), spanFromMins, why, reserved: reservedByCat }
+  return { tone, bound_by, fits, peak: Math.round(reportedPeak), spanFromMins, why }
 }
 
 // ── ASAP / auto-placement (Stage 3): earliest collection slot that BACKWARD-FITS ──
@@ -1086,13 +1860,16 @@ export function earliestBackwardFitSlot(
   // fitOrderBackward so a placement whose backward cooking windows extend before now is rejected — the
   // returned ASAP/booked slot is physically achievable, not just ≥ fromMins.
   nowMins: number = Number.NEGATIVE_INFINITY,
+  // P1: forwarded to the projection; empty ⇒ today's walk exactly.
+  reservations: EngineReservation[] = [],
+  batchReservations: boolean = false,
 ): string | null {
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins, reservations, batchReservations)
   const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
   for (const t of sorted) {
     const m = parseMins(t.collection_time)
     if (m < fromMins) continue
-    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, nowMins, productionSlotUnits[t.collection_time] || {}).fits) {
+    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, nowMins, productionSlotUnits[t.collection_time] || {}, batchReservations).fits) {
       return t.collection_time
     }
   }

@@ -431,7 +431,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // 🟢 THE FEATURE IS BUILT, AND FULLY: assignment from BOTH operator surfaces (the board's bell
       // chip, components/dashboard/OrderCard.tsx:724-732, and the KDS grid, components/dashboard/
       // BuzzerGrid.tsx), through one atomic server action (assign_buzzer_atomic, migration 20260804),
-      // displayed on the board and printed on the thermal ticket. The rack size is an operator setting
+      // displayed on the board and printed on the kitchen ticket. The rack size is an operator setting
       // (truck_vans.buzzer_count) and the setup wizard asks for it as Q5 of its review step.
       // 🟢 THE COPY DESCRIBES THE WHOLE FEATURE. The customer NEVER sees a buzzer number — grepped the
       // order page, the submit route, the emails, Twilio and WhatsApp: zero references. So "so you know"
@@ -465,7 +465,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // ⚠️ It also cannot break findPlanParityViolations(): that guard only inspects cells that are hard
       // `true` (`row[tier] === true && !canAccess(...)`), so turning one into 'coming_soon' removes a
       // check rather than adding one. 'coming_soon' is explicitly a legitimate divergence (:231).
-      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a thermal printer in the kitchen.', starter: false, pro: false, max: true },
+      { name: 'Kitchen ticket printing',  footnote: '5', detail: 'Print order tickets to a Bluetooth or wired printer in the kitchen.', starter: false, pro: false, max: true },
       // Coming soon (kept at the bottom of the section)
       { name: 'Customer-facing display',   detail: 'A screen customers can see showing order numbers and when they’re ready.', starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', detail: 'Set different prices for specific events or festivals.', starter: false, pro: false, max: 'coming_soon'  },
@@ -584,7 +584,7 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
     // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
     // HatchGrab kitchen app" stays true whichever backend lands first.
-    text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
+    text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible Bluetooth or wired printer (neither supplied). Compatible printers listed in our help centre.',
   },
   // 🔴 THERE IS NO FOOTNOTE 6, AND THE NUMBERING STOPS AT 5 IN BOTH FLAG STATES (16 September 2026).
   // It existed only while WHATSAPP_LIVE was true and carried the WhatsApp billing text; that text has

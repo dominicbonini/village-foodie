@@ -62,6 +62,7 @@ const PROVISION_FAILED: Record<'taken' | 'not_configured' | 'refused' | 'error',
   error: 'We could not add that address just now. Nothing has changed at your end. Try again shortly.',
 }
 import { sendConfirmationEmail } from '@/lib/email'
+import { INTERVAL_CHOICES, isIntervalChoice, readVanIntervalsForTruck, DEFAULT_INTERVAL } from '@/lib/slot-interval'
 
 // ── PER-ROUTE CEILING ─────────────────────────────────────────────────────────────────────────────
 // THE MANAGE PAYLOAD. One GET assembling the whole console: truck, categories, items, subcategories,
@@ -1639,6 +1640,10 @@ export async function POST(req: NextRequest) {
     // Postgres 23514 rendered straight into a toast — a constraint name where a sentence should be.
     // ⚠️ THE CHECK STAYS AS THE BACKSTOP. This is not a replacement for it: this is the layer that can
     // say something useful, and the constraint is the one that cannot be bypassed.
+    // 🔴 THE TWO COLLECTION INTERVALS — validated here for the same reason the reply limit is: both
+    // columns carry a DATABASE CHECK (20260916_collection_intervals), so an unlisted value would come
+    // back as a raw 23514. This layer says the sentence; the CHECK is the backstop. Both must be one of
+    // INTERVAL_CHOICES; a null is refused (the UI never sends one — "Every 5 minutes" sends 5).
     if ('whatsapp_monthly_reply_limit' in safeData && !isMonthlyReplyLimit(safeData.whatsapp_monthly_reply_limit)) {
       return NextResponse.json({
         error: `Monthly reply limit must be one of ${MONTHLY_REPLY_LIMIT_CHOICES.join(', ')}.`,
@@ -1824,12 +1829,35 @@ export async function POST(req: NextRequest) {
       // ⚠️ NAMED SELECT — `buzzer_count` is added by 20260803_buzzer_settings.sql. A named select over
       // a column PostgREST cannot see returns 42703 and fails the whole statement, which here means
       // Manage → Settings renders no vans at all. Apply the migration BEFORE deploying.
+      // 🔴 THE INTERVAL COLUMNS ARE DELIBERATELY NOT NAMED HERE. This is the HEAD column list, and it
+      // must stay that way. PostgREST fails the WHOLE statement with 42703 when one named column does
+      // not exist, so adding a new column here does not degrade one field — it returns NO VANS, and
+      // with them no Kitchen capacity box, no offline protection, no buzzers, no display settings.
+      // OBSERVED on localhost, 17 September 2026, for exactly that reason. Deployed ahead of its
+      // migration it would have hidden Pizzeria Gusto's only van from its own operator.
+      // ⚠️ THE SAME TRAP STILL APPLIES TO buzzer_count (20260803) AND TO ANY FUTURE COLUMN: a setting
+      // whose column may not exist yet belongs in a SEPARATE, probed read — see below — not here.
       .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, offline_protection_mode, offline_auto_reject_mins, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins, buzzer_count')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ vans: data || [] })
+    // The intervals, SEPARATELY and tolerantly. `ok: false` ⇒ the columns could not be read at all;
+    // every van still comes back, at the values every van holds anyway (5 / null), and the client is
+    // told so it can say the setting is unavailable rather than silently showing a wrong default.
+    const intervals = await readVanIntervalsForTruck(supabase, truck.id)
+    const vans = (data || []).map(v => {
+      const iv = intervals.byVanId.get((v as { id: string }).id)
+      return {
+        ...v,
+        collection_interval_mins: iv ? iv.customer : DEFAULT_INTERVAL,
+        // 🔴 THE RAW STORED OVERRIDE, never the resolved `truck`. The tickbox is derived from this
+        // being non-null, and an override deliberately set EQUAL to the customer value is still an
+        // override — deriving it from `truck !== customer` would untick the box on the next load.
+        operator_collection_interval_mins: iv ? iv.rawOverride : null,
+      }
+    })
+    return NextResponse.json({ vans, intervalsAvailable: intervals.ok })
   }
 
   // ── 🔴 THIS DESTRUCTURE IS AN ALLOWLIST, AND IT DROPS SILENTLY. ────────────────────────────────
@@ -1839,8 +1867,10 @@ export async function POST(req: NextRequest) {
   // array allowlist (:854), which carries the same warning. ADD NEW SETTINGS IN BOTH PLACES:
   // here AND in get_vans' named select above, or the value writes but never reads back.
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, offlineProtectionMode, offlineAutoRejectMins, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count } = body
+    const { vanId, autoPauseOnOffline, offlineProtectionMode, offlineAutoRejectMins, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count, collection_interval_mins, operator_collection_interval_mins } = body
     const updates: Record<string, unknown> = {}
+    // Written in their OWN statement — see the two-statement note at the write below.
+    const intervalUpdates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     // The MODE beside the switch. Validated to the same vocabulary as the DB CHECK so a bad value is a
     // dropped field rather than a 23514 — and an absent field is untouched, per this handler's rule.
@@ -1865,11 +1895,89 @@ export async function POST(req: NextRequest) {
     // definition lives at lib/buzzer.ts. `!== undefined` and
     // not a truthiness test, so an explicit null CLEARS rather than being skipped.
     if (buzzer_count !== undefined)       updates.buzzer_count = buzzer_count
-    await supabase
-      .from('truck_vans')
-      .update(updates)
-      .eq('id', vanId)
-      .eq('truck_id', truck.id)
+    // ── COLLECTION INTERVALS — VALIDATED, NOT SILENTLY DROPPED ──────────────────────────────────────
+    // 🔴 THESE TWO RETURN A 400 RATHER THAN BEING SKIPPED. Every other field in this handler drops a bad
+    // value, which is right for a toggle nobody can mistype. These come from a <select> whose options
+    // ARE the vocabulary, so a value outside it means something is wrong an operator should be told
+    // about rather than left wondering why "Every 15 minutes" keeps reverting.
+    // ⚠️ NULL IS A REAL VALUE FOR THE OVERRIDE AND MEANS "follow the customer setting" — it is what
+    // UNTICKING the box writes. So this is `!== undefined` with an explicit null branch, never a
+    // truthiness test, or the box could be ticked and never unticked.
+    if (collection_interval_mins !== undefined) {
+      if (!isIntervalChoice(collection_interval_mins)) {
+        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+      }
+      intervalUpdates.collection_interval_mins = collection_interval_mins
+    }
+    if (operator_collection_interval_mins !== undefined) {
+      if (operator_collection_interval_mins !== null && !isIntervalChoice(operator_collection_interval_mins)) {
+        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+      }
+      intervalUpdates.operator_collection_interval_mins = operator_collection_interval_mins
+    }
+    // 🔴 TWO STATEMENTS, ON PURPOSE. An UPDATE naming a column PostgREST cannot see fails ENTIRELY, so
+    // one missing interval column in a combined statement would silently discard the buzzer count, the
+    // capacity and everything else the operator changed in the same save. Keeping the interval write
+    // separate means a missing column can only ever cost the interval.
+    // ⚠️ THIS FIRST WRITE IS UNCHECKED, EXACTLY AS IT HAS ALWAYS BEEN. Not an oversight to fix in
+    // passing: changing it would alter how every existing van setting reports failure, which is not
+    // this change's business.
+    if (Object.keys(updates).length) {
+      await supabase
+        .from('truck_vans')
+        .update(updates)
+        .eq('id', vanId)
+        .eq('truck_id', truck.id)
+    }
+    // 🔴 THE INTERVAL WRITE IS CHECKED, AND A FAILURE IS VISIBLE. Without this an operator changing
+    // "Every 15 minutes" on a database that has not been migrated would get a green toast and no
+    // write — the silent-success shape this file's own allowlist comment warns about. A 42703 here
+    // says the migration has not been applied, and the operator is told rather than misled.
+    if (Object.keys(intervalUpdates).length) {
+      const { error: ivErr } = await supabase
+        .from('truck_vans')
+        .update(intervalUpdates)
+        .eq('id', vanId)
+        .eq('truck_id', truck.id)
+      if (ivErr) {
+        const code = (ivErr as { code?: string }).code
+        if (code === 'PGRST204') console.warn(`[slot-interval] van ${vanId}: interval save rejected — columns not in PostgREST's schema cache (PGRST204); reload the schema`)
+        else if (code === '42703') console.warn(`[slot-interval] van ${vanId}: interval save rejected — columns absent (42703); migration not applied`)
+        else console.warn(`[slot-interval] van ${vanId}: interval save failed (${code ?? 'no code'}): ${ivErr.message}`)
+        return NextResponse.json({ error: 'Collection times could not be saved right now.' }, { status: 500 })
+      }
+    }
+    // ── MASTER SWITCH (collection times): a Manage change RESETS this van's events ─────────────────
+    // 🔴 DOMINIC'S DECISION, 17 September 2026, taken against the alternative. The codebase carries TWO
+    // rules for this and says so out loud: order_ready_override is bulk-written when the default flips
+    // ("they reset to the new value, by design"), while the paid-step family is deliberately the
+    // opposite — lib/payments/paid-step.ts calls the bulk write "WRONG here" for a setting an operator
+    // sets per event. Collection times follow the ORDER-READY rule: Manage is the master switch, and a
+    // change here puts every one of this van's events back in step.
+    //
+    // 🔴 IT CLEARS TO NULL RATHER THAN WRITING THE NEW NUMBER, AND THAT IS NOT A SHORTCUT. Writing the
+    // van's value into every event would leave each event permanently HOLDING an override — and the
+    // customer column being non-null is the definition of "this event has its own pair". Every event
+    // would stop following the van forever, the revert control would have nothing to revert, and the
+    // NEXT Manage change would be the only thing that could move them. Clearing gives the same
+    // effective grid today AND keeps them following the van tomorrow, which is what "reset" means.
+    //
+    // ⚠️ SCOPE IS THIS VAN'S EVENTS, NOT THE TRUCK'S. order_ready's bulk write is `.eq('truck_id', …)`
+    // because order_ready_enabled is one value per van applied truck-wide by that switch; collection
+    // times are per-van, so resetting another van's events for a change that cannot affect them would
+    // be a bug wearing consistency's clothes. Same rule, correct scope.
+    // ⚠️ NO DATE FILTER, matching order_ready. A past event's grid is inert, and filtering would make
+    // the two master switches differ in a way nobody could remember.
+    // ⚠️ BEST-EFFORT AND UNCHECKED, LIKE order_ready's. A failure here leaves an event on its own pair,
+    // which is visible on the dashboard and fixable there — it must never fail the van save itself.
+    if (Object.keys(intervalUpdates).length) {
+      const { error: resetErr } = await supabase
+        .from('truck_events')
+        .update({ collection_interval_mins_override: null, operator_collection_interval_mins_override: null })
+        .eq('truck_id', truck.id)
+        .eq('van_id', vanId)
+      if (resetErr) console.warn(`[slot-interval] van ${vanId}: could not reset event overrides (${(resetErr as { code?: string }).code ?? 'no code'}): ${resetErr.message}`)
+    }
     // MASTER SWITCH (order-ready): flipping the Settings default bulk-writes order_ready_override onto
     // EVERY event for this truck — including events previously toggled on the dashboard (they reset to the
     // new value, by design). Scope = all of the truck's events (simplest; single-van trucks are the norm).

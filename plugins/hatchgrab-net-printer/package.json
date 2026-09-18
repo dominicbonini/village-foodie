@@ -1,0 +1,12 @@
+{
+  "name": "@hatchgrab/net-printer",
+  "version": "0.1.0",
+  "description": "HatchGrab local Capacitor plugin: raw TCP to a network receipt printer (port 9100). No third-party code.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "private": true,
+  "license": "UNLICENSED",
+  "files": ["index.js", "index.d.ts", "ios/Sources", "android/src/main", "android/build.gradle", "Package.swift"],
+  "capacitor": { "ios": { "src": "ios" }, "android": { "src": "android" } },
+  "peerDependencies": { "@capacitor/core": ">=8.0.0" }
+}

@@ -16,9 +16,11 @@
 //
 // LOCK-FREE, unchanged: the CALLER must already hold the per-event booking lock.
 import { supabase } from '@/lib/supabase'
-import { getProductionSlotUnits } from '@/lib/slot-bookings'
+import { getProductionSlotUnits, readCookingReservations } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { earliestBackwardFitSlot } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot, projectBackwardOccupancy, buildAdmittedReservation } from '@/lib/slot-availability'
+import { buildReservationForOrder } from '@/lib/orders/cooking-reservation'
+import type { StoredCookingReservation } from '@/lib/slot-bookings'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
@@ -39,7 +41,11 @@ export async function eventKitchenCapacity(
   truckId: string,
   eventDate: string,
   eventId: string | null,
-): Promise<{ kitchenCapacity: number | null; capacityWindowMins: number; eventStartMins: number }> {
+// 🔴 `vanId` IS RETURNED, NOT THE INTERVALS. The select below is a NAMED select; naming the two
+// interval columns on it would make the WHOLE statement 42703 before the migration is applied, and
+// this is the read customer placement depends on for capacity. The caller takes the van id and reads
+// the intervals through readVanIntervals, which is capability-probed and cannot fail the placement.
+): Promise<{ kitchenCapacity: number | null; capacityWindowMins: number; eventStartMins: number; vanId: string | null }> {
   // Resolve the SPECIFIC event by id (the order's actual event) so a multi-event-same-date
   // day reads the right van/capacity. Fall back to the date's first event only when no
   // event_id is available (warn).
@@ -78,7 +84,7 @@ export async function eventKitchenCapacity(
     kitchenCapacity = van?.kitchen_capacity ?? null
     capacityWindowMins = van?.capacity_window_mins ?? 5
   }
-  return { kitchenCapacity, capacityWindowMins, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
+  return { kitchenCapacity, capacityWindowMins, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0, vanId: ev?.van_id ?? null }
 }
 
 /**
@@ -120,7 +126,11 @@ export async function placeOrderInSlotLocked(
   // The PLACING order's own order_key — excluded from the fit's occupancy reseed so it can't count
   // itself (it's inserted pending+null-slot before this fit). Opt-in; only the submit path passes it.
   excludeOrderKey?: string | null,
-): Promise<{ finalSlot: string | null; booked: boolean }> {
+  // P3 (18 September 2026): the per-truck switch. ON ⇒ the walk admits by Dominic's rule and the
+  // returned `reservation` is the exact record to store (computed from the SAME fresh read, under the
+  // caller's lock). OFF ⇒ today's walk; `reservation` is P2's today's-split record for the same state.
+  batchReservations: boolean = false,
+): Promise<{ finalSlot: string | null; booked: boolean; reservation?: StoredCookingReservation | null }> {
   // event_id scopes the production_slot_usage read/write so same-date events don't pool.
   {
     const { data: staticTimes } = await supabase
@@ -163,6 +173,8 @@ export async function placeOrderInSlotLocked(
     // One FRESH read under the event lock — we are the sole writer for its duration. excludeOrderKey
     // drops THIS order from the empty-cache reseed so it doesn't self-occupy the start window (Option B).
     const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId, excludeOrderKey)
+    // P1: the counting orders' reservations, read under the SAME lock; [] on any failure ⇒ today's walk.
+    const reservations = await readCookingReservations(supabase, truckId, eventId, excludeOrderKey)
     const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
     const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
 
@@ -192,11 +204,17 @@ export async function placeOrderInSlotLocked(
     const placeNowMins = eventDate === getLocalDateInTz('Europe/London')
       ? getNowMinsInTz('Europe/London')
       : Number.NEGATIVE_INFINITY
-    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins)
+    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins, reservations, batchReservations)
     if (!placement || timeToMins(placement) > eventEndMins) {
       // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
     }
-    return { finalSlot: placement, booked: true }
+    // The record for the admitted slot, from the SAME read the walk used. OFF ⇒ today's split of this
+    // order alone (what P2 stores); ON ⇒ reserveBatches' windows (fits by construction — the walk chose it).
+    const back = projectBackwardOccupancy(slotUnits, catConfigs, eventStartMins, kitchenCapacity ?? null, capacityWindowMins ?? 5, reservations, batchReservations)
+    const reservation = batchReservations
+      ? buildAdmittedReservation({ back, slotLabel: placement, qtyByCat: basketByCat, catConfigs, kitchenCapacity: kitchenCapacity ?? null, eventStartMins, capacityWindowMins: capacityWindowMins ?? 5, nowMins: placeNowMins, gridIntervalMins: intervalMins ?? null }).record
+      : buildReservationForOrder({ slot: placement, qtyByCat: basketByCat, catConfigs, eventStartMins, kitchenCapacity: kitchenCapacity ?? null, capacityWindowMins: capacityWindowMins ?? 5, gridIntervalMins: intervalMins ?? null, source: 'fit' })
+    return { finalSlot: placement, booked: true, reservation }
   }
 }

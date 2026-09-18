@@ -5,10 +5,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getCatConfig, calcMinReadyMins, type CatConfig } from '@/lib/prep-utils'
-import { getProductionSlotUnits } from '@/lib/slot-bookings'
+import { getProductionSlotUnits, readCookingReservations } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
+import { resolveBatchReservations } from '@/lib/features'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -36,12 +38,32 @@ interface TruckRow {
   slot_duration_mins: number | null
 }
 
+// ── 🔴 WHO IS ASKING: OPERATOR OR CUSTOMER? ──────────────────────────────────────────────────────────
+// The Add Order panel sends the DASHBOARD TOKEN it already holds (`?token=`, the same way it calls
+// /api/events/manage). It is verified here against `trucks.dashboard_token` FOR THIS TRUCK — the identical
+// check /api/dashboard performs — so "operator" is decided by authentication the server already trusts,
+// never by a client-supplied flag. A missing, wrong, or other-truck token is simply a customer request:
+// the customer grid, never an error, so a stale operator link can only ever see what a customer sees.
+async function isOperatorOf(truckId: string, token: string | null): Promise<boolean> {
+  if (!token) return false
+  const { data } = await supabase.from('trucks').select('id').eq('dashboard_token', token).maybeSingle()
+  return !!data && (data as { id: string }).id === truckId
+}
+
 async function resolveTruck(truckIdOrSlug: string): Promise<TruckRow | null> {
-  const cols = 'id, collection_interval_mins, slot_duration_mins' // extra-wait is now event-scoped
+  // 🔴 THIS SELECT IS UNCHANGED, AND THAT IS THE POINT. Both interval settings now live on truck_vans
+  // and are read by readVanIntervals — a SEPARATE, capability-probed select. This route serves every
+  // customer order page; if it named a column the (hand-applied) migration has not created yet, every
+  // customer would get a 42703 instead of a menu.
+  // ⚠️ `trucks.collection_interval_mins` IS STILL READ HERE and is still needed: it is the customer
+  // interval for an event whose van cannot be resolved, and it carries the legacy
+  // "interval 0 ⇒ fall back to the collection_times table" contract. It is simply no longer editable.
+  // P3: plan + feature_overrides are EXISTING columns (named here for the batch-reservations switch).
+  const cols = 'id, collection_interval_mins, slot_duration_mins, plan, feature_overrides' // extra-wait is now event-scoped
   const bySlug = await supabase.from('trucks').select(cols).eq('slug', truckIdOrSlug).single()
-  if (bySlug.data) return bySlug.data as TruckRow
+  if (bySlug.data) return bySlug.data as unknown as TruckRow
   const byId = await supabase.from('trucks').select(cols).eq('id', truckIdOrSlug).single()
-  return (byId.data ?? null) as TruckRow | null
+  return (byId.data ?? null) as unknown as TruckRow | null
 }
 
 function effectiveExtraWaitMins(mins: number, startedAt: string | null): number {
@@ -57,6 +79,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const paramStart = req.nextUrl.searchParams.get('start') || null
   const paramEnd   = req.nextUrl.searchParams.get('end')   || null
   const eventIdParam = req.nextUrl.searchParams.get('event_id')
+  const tokenParam = req.nextUrl.searchParams.get('token') || null
 
   const truck = await resolveTruck(truckIdParam)
   if (!truck) {
@@ -138,7 +161,21 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
 
   // Use dynamically generated times: prefer truck_events row, fall back to caller-supplied
   // start/end params (e.g. from Google Sheets), then static collection_times table
-  const intervalMins = truck.collection_interval_mins ?? 0
+  // ── 🔴 TWO GRIDS, ONE ROUTE. Customer by default; the TRUCK grid only for an authenticated operator.
+  // `intervalMins` keeps its legacy 0-means-"no grid" contract for the generator gate below; the
+  // DISPLAY interval handed to the dot reader is always normalised into the vocabulary.
+  // 🔴 THE INTERVALS COME FROM THE EVENT, THEN ITS VAN — the SAME van_id this route already resolves
+  // kitchen_capacity and capacity_window_mins from below. One van, one resolution, four settings.
+  // A tolerant probe, never a named column on the customer select: see readVanIntervals.
+  const vanIntervals = await resolveIntervalsFor(supabase, todayEvent?.van_id ?? null, todayEvent?.id ?? null)
+  const operator = await isOperatorOf(truckId, tokenParam)
+  // 🔴 NO VAN ⇒ THE LEGACY CONTRACT, UNCHANGED. `intervalMins` keeps its 0-means-"no grid" meaning for
+  // the generator gate below, and 0 can only come from trucks.collection_interval_mins — which is what
+  // this route has always read, and which still falls through to the static collection_times table.
+  // A van that DOES resolve always yields 5-30, so the gate always passes and the fallback is unreachable.
+  const customerInterval = todayEvent?.van_id ? vanIntervals.customer : (truck.collection_interval_mins ?? 0)
+  const intervalMins = operator ? vanIntervals.truck : customerInterval
+  const displayIntervalMins = normaliseInterval(intervalMins)
   const slotDurationMins = truck.slot_duration_mins ?? intervalMins
   const eventStart = todayEvent?.start_time || paramStart
   const eventEnd   = todayEvent?.end_time   || paramEnd
@@ -251,6 +288,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const productionSlotUnits = todayEvent?.id
     ? await getProductionSlotUnits(supabase, truckId, todayEvent.id)
     : {}
+  // P1: the counting orders' cooking reservations (probed; [] on any failure ⇒ today's projection).
+  const reservations = todayEvent?.id ? await readCookingReservations(supabase, truckId, todayEvent.id) : []
+  // P3: the per-truck switch, resolved from the truck row this route already read.
+  const batchReservations = resolveBatchReservations(truck as { plan?: string | null; feature_overrides?: Record<string, unknown> | null })
 
   const slots = buildSlotAvailability({
     times,
@@ -258,6 +299,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     catConfigs,
     kitchenCapacity,
     capacityWindowMins,
+    displayIntervalMins,
+    reservations,
+    batchReservations,
     date,
     nowMins,
     earliestCollectionMins,
@@ -275,7 +319,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     tz: eventTz, // event timezone — client derives isSlotPast/ASAP live in this tz
     queryDate: date, // the event date these slots belong to (for isSlotPast future/prior-day guard)
     capacityInputs: {
+      // 🔴 The interval THIS grid was built on, so the client's own dot reads cover the same windows.
+      intervalMins: displayIntervalMins,
       productionSlotUnits,
+      // P1: so the customer page and the panel project with the SAME reservations the server used.
+      reservations,
+      batchReservations,
       kitchenCapacity,
       capacityWindowMins,
       eventStartMins,

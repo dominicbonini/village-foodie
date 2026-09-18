@@ -26,8 +26,15 @@
 // ⚠️ The settings below are REAL and stay configurable: paper width and lead minutes are device values,
 // and the trigger mode is a truck column. Only the CONNECTION claim changed.
 import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { Preferences } from '@capacitor/preferences'
-import { getPrinterTransport, type PrinterAvailability, type DiscoveredPrinter } from '@/lib/printing/transport'
+import { getPrinterTransport, loadPrinterKind, setPrinterKind, type PrinterKind, type PrinterAvailability, type DiscoveredPrinter } from '@/lib/printing/transport'
+import { fetchNetPrinting, claimNetPrinting, setNetPrinterAddress, bumpNetGuard, decideNetPrinting, readCachedClaim, NET_GUARD_COPY, NET_GUARD_MOVE_BUTTON, type NetPrintingRead, type NetGuardState } from '@/lib/printing/networkGuard'
+import { NET_ADDRESS_KEY } from '@/lib/printing/netTransport'
+import { parseNetAddress, NET_ADDRESS_HELP } from '@/lib/printing/netAddress'
+import { renderTestTicket } from '@/lib/printing/testTicket'
+import { PrinterTypeChoice } from '@/components/printing/PrinterTypeChoice'
+import { getDeviceId } from '@/lib/native/device'
 import { isNativeApp } from '@/lib/native/device'
 import { canAccess, type Plan } from '@/lib/features'
 import { Toggle } from '@/components/dashboard/OrderCard'
@@ -79,6 +86,35 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
   const [showOther, setShowOther] = useState(false)      // "Other devices" starts collapsed, never hidden
   const liveConnected = localConnected ?? connected
 
+  // ── PRINTER TYPE (17 September 2026): 'ble' (today, and the value an absent setting reads as) or 'net'.
+  // The dashboard token comes from the route — this card renders only under /dashboard/[token] and takes
+  // no token prop, and the dashboard page is not edited by the wired build.
+  const params = useParams<{ token?: string }>()
+  const token = typeof params?.token === 'string' ? params.token : ''
+  const [kind, setKind] = useState<PrinterKind>('ble')
+  const [netAddress, setNetAddress] = useState('')            // the input
+  const [netInfo, setNetInfo] = useState<NetPrintingRead | undefined>(undefined)   // undefined = not fetched; 'pin' = PIN truck
+  const [netGuard, setNetGuard] = useState<NetGuardState | null>(null)
+  const [netBusy, setNetBusy] = useState<'connect' | 'test' | 'move' | null>(null)
+  const [netMsg, setNetMsg] = useState<string | null>(null)   // the last connect/test result, operator-facing
+  const [netOk, setNetOk] = useState<boolean | null>(null)     // this device's last probe/send result
+  const [netAvailability, setNetAvailability] = useState<PrinterAvailability | null>(null)
+
+  const refreshNet = async () => {
+    const deviceId = getDeviceId()
+    const info = await fetchNetPrinting(token, deviceId)
+    setNetInfo(info)
+    const vanId = info && info !== 'pin' ? info.vanId : null
+    const cached = vanId ? await readCachedClaim(vanId) : null
+    setNetGuard(decideNetPrinting({ deviceId, info, cachedHolder: cached }).state)
+    // A PIN truck stops here: no address is pre-filled and no claim is ever attempted.
+    if (info === 'pin') return
+    // Pre-fill from the VAN's stored address (shared), else this device's last address.
+    if (info?.address) setNetAddress(a => a || info.address || '')
+    else { try { const mine = (await Preferences.get({ key: NET_ADDRESS_KEY })).value; if (mine) setNetAddress(a => a || mine) } catch { /* leave empty */ } }
+    try { setNetAvailability(await getPrinterTransport().availability()) } catch { /* unknown */ }
+  }
+
   useEffect(() => {
     if (!isNativeApp()) return
     let off = false
@@ -88,10 +124,15 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
       const l = parseInt((await Preferences.get({ key: K.lead })).value ?? '10', 10)
       const w = parseInt((await Preferences.get({ key: K.paper })).value ?? '80', 10)
       if (off) return
+      const k = await loadPrinterKind()
+      if (off) return
       setEnabled(en === 'true'); setPrinter(p); setLead(Number.isFinite(l) ? l : 10); setPaper(w === 58 ? 58 : 80)
+      setKind(k)
       setReady(true)
+      if (k === 'net') void refreshNet()
     })()
     return () => { off = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!isNativeApp() || !ready) return null
@@ -195,6 +236,16 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
               is the single most likely thing a reviewer will see: they have no thermal printer on the desk.
               EVERY branch below carries its own sentence — radio off, permission refused, web, scanning,
               none found, an error, connected. Nothing renders inert. */}
+          {/* ── PRINTER TYPE — ask "Bluetooth or wired?" FIRST, inside the enabled block only (17 Sep 2026).
+              A device with printing OFF still sees only the title, description and toggle. Absent ⇒
+              Bluetooth is selected and the stored Bluetooth pairing is untouched — switching the type
+              retires the transport singleton, it never disconnects or clears a pairing. Dominic asked for
+              a connect step that asks wired-or-wireless; this is that question, placed where the
+              connect controls begin, so it reads as the first step of connecting rather than a setting
+              hidden elsewhere. */}
+          <PrinterTypeChoice kind={kind} onChoose={async k => { if (k === kind) return; await setPrinterKind(k); setKind(k); setNetMsg(null); setNetOk(null); if (k === 'net') void refreshNet() }} />
+          {kind !== 'net' ? (
+            <>
           {liveConnected ? (
             <div className="flex items-center justify-between gap-3 text-xs border border-green-200 bg-green-50 rounded-lg px-3 py-2">
               <span className="text-green-800 min-w-0 truncate">
@@ -295,6 +346,116 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt, mode,
                   </div>
                 )
               })()}
+            </div>
+          )}
+            </>
+          ) : (
+            /* ── WIRED PRINTER — an address on the kitchen router, one socket per ticket ──────────────
+               Every line here is wired-only copy. The Bluetooth sentences live in the branch above and
+               nowhere else. The guard states come from the SAME decideNetPrinting usePrinting gates on. */
+            <div className="text-xs text-slate-600 border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 flex flex-col gap-2">
+              {/* 🔴 A PIN TRUCK SHOWS THIS SENTENCE AND NOTHING ELSE. /api/printing answered 401 with
+                  requiresPin, so no address field, no Connect, no test ticket and NO CLAIM — every one of
+                  them would 401 too. See NetPrintingRead in lib/printing/networkGuard.ts. */}
+              {netInfo === 'pin' ? (
+                <p className="text-amber-800">{NET_GUARD_COPY.pin}</p>
+              ) : (
+                <>
+              {netInfo === null && (
+                <p className="text-amber-800">Can&apos;t check which device is printing right now.</p>
+              )}
+              {netInfo && !netInfo.columnsAvailable && (
+                <p className="text-amber-800">Wired printing isn&apos;t available right now.</p>
+              )}
+              {netInfo && netInfo.columnsAvailable && !netInfo.vanId && (
+                <p className="text-amber-800">{NET_GUARD_COPY.unbound}</p>
+              )}
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-800">Printer address</span>
+                <input
+                  type="text" inputMode="decimal" autoCapitalize="off" autoCorrect="off" spellCheck={false}
+                  value={netAddress} placeholder="192.168.1.50"
+                  onChange={e => { setNetAddress(e.target.value); setNetMsg(null) }}
+                  className="mt-1 w-full border border-slate-300 rounded-lg px-2 py-1 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+              </label>
+              <p className="text-slate-500">Print the printer&apos;s settings page to find its address. Ask whoever set up your router to keep this address fixed.</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button disabled={!!netBusy || !parseNetAddress(netAddress)}
+                  onClick={async () => {
+                    setNetBusy('connect'); setNetMsg(null)
+                    try {
+                      const res = await getPrinterTransport().connect(netAddress)
+                      setNetOk(res.ok)
+                      if (res.ok) {
+                        const norm = parseNetAddress(netAddress)?.normalised ?? netAddress
+                        setNetMsg(`Connected to ${norm}`)
+                        // Share the address with the van, so the next device is pre-filled with it.
+                        const saved = await setNetPrinterAddress(token, getDeviceId(), netAddress)
+                        if (!saved.ok) setNetMsg(`Connected to ${norm}. ${saved.error ?? ''}`.trim())
+                        await refreshNet(); bumpNetGuard()
+                      } else setNetMsg(res.error ?? `Can't reach the printer at ${netAddress}`)
+                    } catch (e) { setNetOk(false); setNetMsg(e instanceof Error ? e.message : `Can't reach the printer at ${netAddress}`) }
+                    finally { setNetBusy(null); try { setNetAvailability(await getPrinterTransport().availability()) } catch { /* unknown */ } }
+                  }}
+                  className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">
+                  {netBusy === 'connect' ? 'Connecting...' : 'Connect'}
+                </button>
+                <button disabled={!!netBusy || netOk !== true}
+                  onClick={async () => {
+                    // 🔴 NOT an order: straight to the transport, never through the watcher, never into the
+                    // dedupe record, never marking anything printed.
+                    setNetBusy('test'); setNetMsg(null)
+                    try {
+                      const bytes = renderTestTicket({ truckName: netInfo?.truckName, paper })
+                      const res = await getPrinterTransport().sendBytes(bytes)
+                      setNetOk(res.ok)
+                      setNetMsg(res.ok ? 'Test ticket sent — check the printer.' : (res.error ?? 'The test ticket did not print.'))
+                    } catch (e) { setNetOk(false); setNetMsg(`The test ticket may have printed only partly. ${e instanceof Error ? e.message : ''}`.trim()) }
+                    finally { setNetBusy(null) }
+                  }}
+                  className="shrink-0 font-semibold text-orange-700 border border-orange-300 bg-white hover:bg-orange-50 disabled:opacity-50 px-3 py-1.5 rounded-lg">
+                  {netBusy === 'test' ? 'Printing...' : 'Print test ticket'}
+                </button>
+                {netOk === true && netAddress && (
+                  <button onClick={async () => { await getPrinterTransport().disconnect(); setNetOk(null); setNetMsg(null) }}
+                    className="shrink-0 font-semibold text-red-600 hover:text-red-700">Disconnect</button>
+                )}
+              </div>
+              {/* THE STATUS LINE — this device's last probe/send, never inferred from a stored address. */}
+              {netAddress && netOk === true && <p className="text-green-800"><strong>Connected</strong> to {parseNetAddress(netAddress)?.normalised ?? netAddress}. Tickets will print automatically.</p>}
+              {netAddress && netOk === false && !netMsg && <p className="text-amber-800">Can&apos;t reach the printer at {parseNetAddress(netAddress)?.normalised ?? netAddress}</p>}
+              {netMsg && <p className={netOk ? 'text-green-800' : 'text-amber-800'}>{netMsg}</p>}
+              {netAvailability === 'unauthorised' && (
+                <p className="text-amber-800">HatchGrab needs permission to reach your printer. Turn on Local Network for HatchGrab in Settings.</p>
+              )}
+              {netAvailability === 'unsupported' && (
+                <p className="text-amber-800">Printing needs the HatchGrab app.</p>
+              )}
+              {!parseNetAddress(netAddress) && netAddress.trim() !== '' && <p className="text-amber-800">{NET_ADDRESS_HELP}</p>}
+              {/* THE ONE-PRINTING-DEVICE GUARD — the same decision usePrinting gates `active` on. */}
+              {netGuard === 'other' && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-amber-800">{NET_GUARD_COPY.other}</span>
+                  <button disabled={!!netBusy}
+                    onClick={async () => {
+                      setNetBusy('move')
+                      try { const r = await claimNetPrinting(token, getDeviceId()); if (!r.ok) setNetMsg(r.error ?? 'Could not move printing'); await refreshNet(); bumpNetGuard() }
+                      finally { setNetBusy(null) }
+                    }}
+                    className="shrink-0 font-bold text-white bg-orange-600 hover:bg-orange-700 disabled:opacity-50 px-3 py-1.5 rounded-lg">{NET_GUARD_MOVE_BUTTON}</button>
+                </div>
+              )}
+              {netGuard === 'unknown' && netInfo !== null && netInfo?.columnsAvailable !== false && (
+                <p className="text-amber-800">{NET_GUARD_COPY.unknown}</p>
+              )}
+              {waitingCount > 0 && netGuard !== 'ok' && (
+                <span className="block font-semibold text-amber-800">
+                  {waitingCount === 1 ? '1 ticket is waiting' : `${waitingCount} tickets are waiting`} and will print once this device is printing. Nothing has been lost.
+                </span>
+              )}
+                </>
+              )}
             </div>
           )}
           {/* The WHOLE summary row is the disclosure control, with a chevron (▾ collapsed / ▲ expanded) —

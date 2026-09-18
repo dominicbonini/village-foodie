@@ -7,6 +7,17 @@
  * (uses upsert). Does not touch the live website.
  */
 
+// ── 🔴 PRODUCTION WRITE GUARD (17 September 2026) ────────────────────────────────────────────────────
+// THIS MUST REMAIN THE FIRST EXECUTABLE STATEMENT IN THE FILE. On 17 September 2026 a harness sweep that
+// globbed `scripts/*.cjs` ran this file against the LIVE database with the service role: 132 rows of
+// public.discovery_trucks were overwritten from the sheet and 19 new rows inserted, in 1.2 seconds, with
+// no confirmation and no trace (the table has no updated_at trigger). See
+// docs/discovery-upsert-incident-report.md. The flag is deliberately long and unguessable by a glob.
+// ⚠️ It gates the WHOLE file, including any --dry-run style listing, because the cost of a false refusal
+// is one re-run and the cost of a false permit is what the report describes.
+// The check reads only process.argv: no env is read and no client is built above this line.
+if (!process.argv.includes('--yes-write-to-production')) { console.error('This script WRITES to production. Re-run with --yes-write-to-production.'); process.exit(1) }
+
 require('dotenv').config({ path: '.env.local' });
 const { google } = require('googleapis');
 const { createClient } = require('@supabase/supabase-js');

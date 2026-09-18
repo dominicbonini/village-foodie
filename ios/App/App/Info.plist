@@ -26,6 +26,8 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>HatchGrab connects to your kitchen printer on your local network so order tickets can print automatically. It is not used for anything else.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>HatchGrab uses Bluetooth to connect to your kitchen receipt printer so order tickets can be printed automatically. It is not used for anything else.</string>
 	<key>NSCameraUsageDescription</key>

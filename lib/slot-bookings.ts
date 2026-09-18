@@ -10,6 +10,7 @@ import {
   type QtyByCat,
 } from '@/lib/slot-capacity'
 import type { CatConfig } from '@/lib/prep-utils'
+import type { EngineReservation } from '@/lib/slot-availability'
 
 export type ProductionSlotUnits = Record<string, QtyByCat>
 
@@ -177,6 +178,72 @@ async function readProductionSlotUnits(
 
 /** All production windows for ONE event → item qty by category. Event-scoped: returns
  *  only this event's rows, never pooled with other same-date events. */
+// ── COOKING RESERVATIONS — THE PROBED READ (P1, 18 September 2026) ─────────────────────────────────
+// orders.cooking_reservation is added by migration 20260920 and may not exist yet. It is named HERE
+// ONLY, in a query of its own, so its absence can never take a surface down: PGRST204 (the schema cache
+// has not reloaded) and 42703 (the column is absent) are logged distinguishably and the answer is [] —
+// today's behaviour. The status filter is the ONE occupying set every capacity reader uses (§R3):
+// pending, confirmed, modified, cooking — an order leaves it and its reservation is dropped exactly as
+// its load is dropped by buildUnitsFromOrders.
+export const OCCUPYING_STATUSES = ['pending', 'confirmed', 'modified', 'cooking'] as const
+
+/** The stored v1 shape. Anything else (no `v`, wrong `v`, missing cats) is ignored by the reader. */
+export interface StoredCookingReservation {
+  v: 1
+  source: 'fit' | 'override'
+  slot: string
+  computed: { eventStartMins: number; capacityWindowMins: number; kitchenCapacity: number | null; gridIntervalMins: number | null }
+  cats: Record<string, { items: number; batch: number; prepMins: number; windows: Array<{ startMins: number; endMins: number; items: number }> }>
+}
+
+let reservationColumnMissingLogged = false
+export async function readCookingReservations(
+  supabase: SupabaseClient,
+  truckId: string,
+  eventId: string | null,
+  excludeOrderKey?: string | null,
+): Promise<EngineReservation[]> {
+  if (!eventId) return []
+  try {
+    let q = supabase
+      .from('orders')
+      .select('order_key, slot, cooking_reservation')
+      .eq('truck_id', truckId)
+      .eq('event_id', eventId)
+      .in('status', [...OCCUPYING_STATUSES])
+      .not('cooking_reservation', 'is', null)
+    if (excludeOrderKey) q = q.neq('order_key', excludeOrderKey)
+    const { data, error } = await q
+    if (error) {
+      const code = (error as { code?: string }).code
+      if (!reservationColumnMissingLogged) {
+        reservationColumnMissingLogged = true
+        if (code === 'PGRST204') console.warn(`[reservations] orders.cooking_reservation not in PostgREST's schema cache (PGRST204) — reload the schema; falling back to the slot totals`)
+        else if (code === '42703') console.warn(`[reservations] orders.cooking_reservation absent (42703) — migration 20260920 not applied; falling back to the slot totals`)
+        else console.warn(`[reservations] read failed (${code ?? 'unknown'}): ${error.message} — falling back to the slot totals`)
+      }
+      return []
+    }
+    const out: EngineReservation[] = []
+    for (const row of data || []) {
+      const r = row.cooking_reservation as StoredCookingReservation | null
+      if (!r || r.v !== 1 || !r.cats || !row.slot) continue
+      if (r.slot !== row.slot) continue            // the order moved slot since; the cached split is stale
+      const cats: EngineReservation['cats'] = {}
+      for (const [cat, c] of Object.entries(r.cats)) {
+        if (!c || !Array.isArray(c.windows)) continue
+        cats[cat] = { items: Number(c.items) || 0, batch: Number(c.batch) || 0, prepMins: Number(c.prepMins) || 0,
+          windows: c.windows.map(w => ({ startMins: Number(w.startMins), endMins: Number(w.endMins), items: Number(w.items) || 0 })) }
+      }
+      if (Object.keys(cats).length) out.push({ orderKey: String(row.order_key), slot: String(row.slot), source: r.source === 'override' ? 'override' : 'fit', cats })
+    }
+    return out
+  } catch (e) {
+    if (!reservationColumnMissingLogged) { reservationColumnMissingLogged = true; console.warn('[reservations] read threw — falling back to the slot totals:', e instanceof Error ? e.message : e) }
+    return []
+  }
+}
+
 export async function getProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
@@ -259,6 +326,27 @@ async function buildUnitsFromOrders(
     out[productionSlot] = mergeQtyByCat(out[productionSlot] || {}, delta)
   })
   return out
+}
+
+/**
+ * 🔴 THE BOARD WITHOUT ONE ORDER, FOR THE SWITCH-ON ADMISSION OF A MANUAL OR EDITED ORDER (19 September 2026).
+ * The manual path inserts the order, REBUILDS production_slot_usage (so the table now holds the order's own
+ * load), and only then admits it; the edit path re-books the new lines and then admits. Both used to read
+ * the board through getProductionSlotUnits(…, excludeOrderKey) — but that exclusion is honoured ONLY on the
+ * two reseed paths (an empty or unreadable table); with stored rows the key is ignored and the order's own
+ * load comes back as "existing". 16 pizzas at 20:30 then read as two full batches already there, the
+ * admission was refused, and an 'override' record with all 16 in one window was stored for an order the
+ * operator never placed anyway (docs/sixteen-pizza-bug-report.md). This read ALWAYS excludes by key — it is
+ * buildUnitsFromOrders, unchanged, with the key mandatory — so the admission judges the board without the
+ * order, exactly what the submit path's fit-read sees. Read-only: nothing is persisted.
+ */
+export async function readUnitsWithoutOrder(
+  supabase: SupabaseClient,
+  truckId: string,
+  eventId: string,
+  orderKey: string,
+): Promise<ProductionSlotUnits> {
+  return buildUnitsFromOrders(supabase, truckId, eventId, orderKey)
 }
 
 /**

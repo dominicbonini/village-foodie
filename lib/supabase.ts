@@ -67,5 +67,7 @@ export interface Truck {
   items_per_minute: number | null
   walkin_buffer_pct: number
   slot_duration_mins: number
+  /** CUSTOMER collection interval (5/10/15/20/30). Nullable in the DB; read as 5 when null. */
   collection_interval_mins: number
+  /** TRUCK (Add Order) collection interval (5/10/15/20/30). NOT NULL DEFAULT 5 — added 20260916. */
 }

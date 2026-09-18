@@ -28,6 +28,15 @@
 // truck's account is the merchant of record and the domain must be registered against THAT account.
 // Registering it on the platform is the no-op that looks like the Dashboard toggle undoing itself.
 
+// ── 🔴 PRODUCTION WRITE GUARD (17 September 2026) ────────────────────────────────────────────────────
+// THIS MUST REMAIN THE FIRST EXECUTABLE STATEMENT IN THE FILE. Added after a harness sweep that globbed
+// `scripts/*.cjs` ran a sibling operational script against production (docs/discovery-upsert-incident-
+// report.md). This one talks to LIVE Stripe, so it gets the same gate.
+// ⚠️ It gates the WHOLE file, INCLUDING `--dry-run` and `--all`: a glob cannot type the flag, and a
+// deliberate dry-run costs one extra flag. The check reads only process.argv: no env is read and no
+// Stripe or Supabase client is built above this line.
+if (!process.argv.includes('--yes-write-to-production')) { console.error('This script WRITES to production. Re-run with --yes-write-to-production.'); process.exit(1) }
+
 const fs = require('fs')
 const path = require('path')
 

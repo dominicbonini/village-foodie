@@ -19,7 +19,7 @@ import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-sto
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
-import { canAccess } from '@/lib/features'
+import { canAccess, resolveBatchReservations } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { isDemoIdentifier } from '@/lib/demo'
 import { enforceStockLimits } from '@/lib/stock-availability'
@@ -29,10 +29,12 @@ import { sendOrderPendingPush } from '@/lib/apns'
 import { sendOrderPendingPush as sendOrderPendingPushFcm } from '@/lib/fcm'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
+import { resolveIntervalsFor } from '@/lib/slot-interval'
 // ── PHASE 2b: the card fork. See the block just above the event lock in POST. ──────────────────────
 import { newOrderKey, createOrderDraft, getOrderDraft, markAuthorizationCancelled } from '@/lib/payments/order-drafts'
 import { authorizeDraft, cancelAuthorization, stripeAccountForTruck } from '@/lib/payments/authorize'
 import { captureOnConfirmation } from '@/lib/payments/capture'
+import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // CUSTOMER CHECKOUT. Calls authorizeDraft (:806) -> Stripe PaymentIntent creation. This one is NOT, and the reason is measured rather than assumed.
@@ -869,6 +871,9 @@ export async function POST(req: NextRequest) {
     // acquireEventLock's retry budget (which absorbs the timing blip); only if the budget is
     // genuinely exhausted do we bail WITHOUT inserting and ask the client to retry — we never
     // fall back to a non-atomic insert.
+    // P3: the switch from the truck row read above (select('*')), and the record the walk admitted.
+    const batchReservationsOn = resolveBatchReservations(truck)
+    let claimReservation: import('@/lib/slot-bookings').StoredCookingReservation | null = null
     const lock = await acquireEventLock(resolvedTruckId, orderEventDate)
     const haveLock = lock.ok
     let order: { order_key: string } | null = null
@@ -933,17 +938,26 @@ export async function POST(req: NextRequest) {
       if (eventDate) {
         // Live kitchen_capacity (items) from the event's van — same source as the operator traffic
         // light, so customer placement and the dot agree on "full".
-        const { kitchenCapacity, capacityWindowMins } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
+        const { kitchenCapacity, capacityWindowMins, vanId } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
+        // 🔴 THE CUSTOMER GRID COMES FROM THE SAME VAN THE CAPACITY DID. No van ⇒ the legacy read of
+        // trucks.collection_interval_mins, including its 0-means-"use collection_times" contract,
+        // exactly as before. A resolved van always yields 5-30.
+        // Event override → van → (no van) the legacy truck read, including its 0 contract.
+        const vanIv = await resolveIntervalsFor(supabase, vanId, eventRow?.id ?? null)
+        const customerIntervalMins = (vanId || vanIv.fromEvent) ? vanIv.customer : (truck.collection_interval_mins ?? 0)
         const claim = await placeOrderInSlotLocked(
           resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
           eventRow?.start_time ?? null,
           eventRow?.end_time ?? null,
-          truck.collection_interval_mins ?? 0,
-          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
+          customerIntervalMins,
+          truck.slot_duration_mins ?? customerIntervalMins,
           kitchenCapacity,
           capacityWindowMins,
           // NO excludeOrderKey: no order exists pre-resolve now (insert + book are atomic in the RPC).
+          undefined,
+          batchReservationsOn,
         )
+        claimReservation = claim.reservation ?? null
         if (claim.booked && claim.finalSlot) {
           booked = true
           // The SERVER-resolved boundary is authoritative (it knows if the requested slot was full and
@@ -1052,6 +1066,10 @@ export async function POST(req: NextRequest) {
       }
       orderId = String((rpcData as any).order_number)
       order = { order_key: (rpcData as any).order_key }
+      // P2/P3: the reservation, written INSIDE the lock (released in the finally below). Switch ON ⇒ the
+      // exact record the walk admitted (claimReservation, from the same read); OFF ⇒ P2's today's split.
+      if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: resolvedTruckId, orderKey: String(order.order_key), record: claimReservation })
+      else await writeCookingReservation(supabase, { truckId: resolvedTruckId, eventId: eventRow?.id ?? null, orderKey: String(order.order_key) })
     } finally {
       if (haveLock) await releaseEventLock(resolvedTruckId, orderEventDate)
     }

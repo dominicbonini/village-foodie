@@ -1,0 +1,127 @@
+diff --git a/lib/slot-availability.ts b/lib/slot-availability.ts
+index 08a657e..57de5f4 100644
+--- a/lib/slot-availability.ts
++++ b/lib/slot-availability.ts
+@@ -566,6 +566,46 @@ export interface CookInterval {
+   endMins: number
+   /** Counted items present across [startMins, endMins). */
+   items: number
++  /** The cooking category this interval belongs to. ADDITIVE (17 September 2026): set for cooking
++   *  batches, absent for instant points. Read ONLY by categoryLoadOver, the rolling per-category batch
++   *  check. The sweep-line and every other reader ignore it. */
++  cat?: string
++}
++
++/**
++ * ── THE ROLLING PER-CATEGORY BATCH CHECK — ONE HELPER, TWO CALLERS (17 September 2026) ─────────────
++ * Items of category `cat` on the grill at some instant of the window [fromMins, toMins): the sum over
++ * every interval of that category that OVERLAPS the window. Half-open: an interval ending exactly at
++ * fromMins, or starting exactly at toMins, does NOT overlap — a batch finishing as the next starts is
++ * two batches, not one.
++ *
++ * 🔴 WHY THIS EXISTS. The per-category batch used to be judged by START MINUTE alone —
++ * `back.byStart.get(ws)?.byCat[cat]` in fitOrderBackward, and each window's own `byCat` for the tone —
++ * which is a rolling check only while every window of a category starts on a grid at least as coarse
++ * as its prep. With 5-minute collection slots and a 15-minute cook, A=8 @18:15 cooks [18:00,18:15) and
++ * B=8 @18:20 cooks [18:05,18:20); they share no start minute, so 16 burgers sat on an 8-batch grill
++ * from 18:05 to 18:15 and nothing said so (docs/batch-overlap-review-report.md). §31's "every rolling
++ * cooking window" was a claim the batch path did not implement; the kitchen-capacity ceiling always did
++ * (windowScopedPeak / concurrencyAt). This makes the batch path mean what §31 says.
++ *
++ * 🔴 PROVABLY A NO-OP WHEN THE COLLECTION STEP IS A MULTIPLE OF THE PREP (prep ≤ step). Every window
++ * of a category then starts on the grid and is at most one step long, so two windows either share a
++ * start minute or are disjoint — and the overlap sum equals the same-start sum exactly. Gusto (prep 5,
++ * step 5) is that case; scripts/batch-rolling-identity.cjs proves it against the frozen baseline.
++ * ⚠️ NOT a no-op when prep exceeds the step, whatever the ratio: prep 10 on a 5-minute grid overlaps
++ * (A @18:10 → [18:00,18:10), B @18:15 → [18:05,18:15)). That is the case this fixes.
++ *
++ * 🔴 DISPLAY == PICKER by construction: fitOrderBackward's verdict and projectBackwardOccupancy's tone
++ * both call this, with the same intervals. Instant points carry no `cat` and are never counted.
++ */
++export function categoryLoadOver(intervals: CookInterval[], cat: string, fromMins: number, toMins: number): number {
++  let load = 0
++  for (const iv of intervals) {
++    if (iv.cat !== cat || iv.items <= 0) continue
++    if (iv.endMins <= iv.startMins) continue                       // a point is never a batch
++    if (iv.startMins < toMins && fromMins < iv.endMins) load += iv.items   // half-open overlap
++  }
++  return load
+ }
+ 
+ // Sweep-line peak concurrency over counted intervals. Tie-break at equal timestamps:
+@@ -751,6 +791,9 @@ export function projectBackwardOccupancy(
+   // Accumulate COOKING load per window-start minute → { cat: items } (drives per-category batch tones).
+   const loadByStart = new Map<number, Record<string, number>>()
+   const batchByCat: Record<string, number> = {}
++  // Each cooking category's window length, so the rolling tone below spans [start, start+prep) for THAT
++  // category — categories with different preps share a start minute but not a span.
++  const prepByCat: Record<string, number> = {}
+   const cantFit: CantFitFlag[] = []
+   // step = PREP grid (cooking window keying + the no-basket single-window lookup). UNCHANGED.
+   const step = backwardWindowStepMins(catConfigs)
+@@ -797,6 +840,7 @@ export function projectBackwardOccupancy(
+       const batch = Math.max(1, cfg.batch)
+       const prepMins = Math.max(1, Math.round(cfg.secs / 60))
+       batchByCat[cat] = batch
++      prepByCat[cat] = prepMins
+       const numWindows = Math.ceil(N / batch)
+       const earliestWindowMins = deadline - numWindows * prepMins
+       if (earliestWindowMins < eventStartMins) {
+@@ -812,7 +856,7 @@ export function projectBackwardOccupancy(
+         const w = loadByStart.get(startMins) ?? {}
+         w[cat] = (w[cat] || 0) + items
+         loadByStart.set(startMins, w)
+-        cookIntervals.push({ startMins, endMins: startMins + prepMins, items })
++        cookIntervals.push({ startMins, endMins: startMins + prepMins, items, cat })
+       }
+     }
+     if (instantHere > 0) instantByDeadline.push({ deadline, count: instantHere })
+@@ -851,9 +895,18 @@ export function projectBackwardOccupancy(
+       let bound_by: string | null = null
+       let bindRank = -1
+       let bindUsed = -1
+-      for (const [cat, used] of Object.entries(byCat)) {
++      // 🔴 ROLLING PER-CATEGORY TONE (17 September 2026). `byCat` (the LABEL) is still this start
++      // minute's own load, unchanged. The TONE, `remainingByCat` and `bound_by` now use the rolling
++      // category load over this window's span [startMins, startMins + prep_cat) — every batch of the
++      // category overlapping it, via the SAME categoryLoadOver the picker uses — so two half-overlapping
++      // full batches read red here exactly as fitOrderBackward refuses them. Identical to the old
++      // per-start value whenever the collection step is a multiple of the prep (see the helper).
++      // remainingByCat = batch − rolling load: detectCapacityBreaches reads it and now flags an overlap
++      // with no kitchen ceiling set, which it could not before.
++      for (const cat of Object.keys(byCat)) {
+         const batch = batchByCat[cat]
+         if (batch == null) continue
++        const used = categoryLoadOver(cookIntervals, cat, startMins, startMins + (prepByCat[cat] ?? step))
+         remainingByCat[cat] = batch - used
+         const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
+         const r = RANK[t]
+@@ -1075,7 +1128,7 @@ export function fitOrderBackward(
+       const w = orderLoad.get(ws) ?? {}
+       w[cat] = (w[cat] || 0) + items
+       orderLoad.set(ws, w)
+-      orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items })
++      orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items, cat })
+     }
+   }
+ 
+@@ -1089,13 +1142,16 @@ export function fitOrderBackward(
+   // Insufficient COOKING lead (needs more than one pre-open window) ⇒ red, regardless of capacity.
+   if (runsOffFront) consider('red', 'too soon (insufficient lead)')
+ 
+-  // PER-CATEGORY batch tones (PREP grid) — UNCHANGED: existing per-cat load ⊕ order's per-cat load.
++  // PER-CATEGORY batch tones — 🔴 ROLLING (17 September 2026). The existing load for this order's window
++  // [ws, ws+prep) is every existing batch of the category that OVERLAPS it (categoryLoadOver over
++  // back.intervals — the same intervals the sweep-line reads), no longer only the batch that starts at
++  // the same minute. combined / thresholds / consider / bound_by are unchanged.
+   for (const [ws, ord] of orderLoad) {
+-    const existing = back.byStart.get(ws)
+     for (const [cat, add] of Object.entries(ord)) {
+       const batch = batchOf[cat]
+       if (batch == null) continue
+-      const combined = (existing?.byCat[cat] ?? 0) + add
++      const prep = Math.max(1, Math.round((catConfigs[cat]?.secs ?? 0) / 60))
++      const combined = categoryLoadOver(back.intervals, cat, ws, ws + prep) + add
+       const t: SlotTone = combined > batch + EPS ? 'red' : combined >= batch - EPS ? 'amber' : 'green'
+       consider(t, `${capWord(cat)} ${Math.round(combined)}/${Math.round(batch)}`)
+     }

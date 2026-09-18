@@ -56,6 +56,8 @@ import {
 } from '@/lib/whatsapp/setup-machine'
 import { whatsAppRowView } from '@/lib/whatsapp/connection-view'
 import { FeatureGate } from '@/components/FeatureGate'
+import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
+import { intervalExample } from '@/lib/slot-generation'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { describePreorderDeadline } from '@/lib/preorder'
@@ -105,7 +107,7 @@ interface Subcategory { id: string; category_id: string; name: string; sort_orde
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -6886,10 +6888,21 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
     onClearPendingVerify?.()
   }, [pendingVerifyEvents])
 
+  // 🔴 A TRADED EVENT IS THE MOST LIKELY ONE TO COPY (18 September 2026). This admitted only
+  // 'confirmed' and 'open', so an event dropped out of the list the moment it closed — and 'closed' is
+  // where every event that has actually happened ends up. Pizza Kitchen had 32 closed events since July
+  // and the modal offered exactly ONE template: a 12 July date that was confirmed but never opened,
+  // carrying no start/end time, so it rendered as "Sun 12 Jul · –". Its three siblings were the same
+  // venue on consecutive days, collapsed by the dedupe below.
+  // The list is the operator's OWN history: 'unconfirmed' (an unapproved scraper find) and 'rejected'
+  // stay out because they were never adopted, and 'cancelled' never reaches this page at all
+  // (/api/events/manage filters it out). Copying carries venue, address, times and van only —
+  // handleCopyEvent never touches status or id — so a closed event is a safe template.
   const recentEvents = useMemo(() => {
+    const COPYABLE = new Set(['confirmed', 'open', 'closed'])
     const seen = new Set<string>()
     return [...events]
-      .filter(e => e.status === 'confirmed' || e.status === 'open')
+      .filter(e => COPYABLE.has(e.status))
       .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())
       .filter(e => {
         const key = `${e.venue_name}-${e.town}`.toLowerCase()
@@ -9008,6 +9021,10 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   const [allowCancellation, setAllowCancellation] = useState(truck.allow_customer_cancellation ?? true)
   const [cancellationCutoff, setCancellationCutoff] = useState(truck.cancellation_cutoff_mins ?? 30)
   const [vans, setVans] = useState<Van[]>([])
+  // 🔴 WHETHER THE INTERVAL COLUMNS COULD BE READ AT ALL. Defaults TRUE so a response that omits the
+  // flag behaves exactly as before; get_vans sets it false only when its separate, probed read failed.
+  // The van list itself is NEVER gated on this — that is the whole point of the hardening.
+  const [intervalsAvailable, setIntervalsAvailable] = useState(true)
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
   const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
@@ -9111,7 +9128,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   }
 
   useEffect(() => {
-    api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
+    api('get_vans').then(r => {
+      setVans(r.vans || [])
+      // Absent ⇒ true (an older response shape), never false — a missing flag must not disable a
+      // working setting.
+      setIntervalsAvailable(r.intervalsAvailable !== false)
+    }).catch(() => {})
     api('get_exclusion_terms').then(r => setSettingsExclusionList(r.terms || [])).catch(() => {})
   }, [])
 
@@ -9653,7 +9675,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins',
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count' | 'offline_protection_mode' | 'offline_auto_reject_mins' | 'collection_interval_mins' | 'operator_collection_interval_mins',
     value: boolean | number | string | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
@@ -11634,6 +11656,77 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   </select>
                 </div>
               )}
+            </div>
+
+            {/* ── COLLECTION TIMES — PER VAN, AND ABOVE KITCHEN CAPACITY ON PURPOSE ─────────────────
+                Two settings for WHICH times can be chosen: the customer's grid, and optionally a
+                different one for orders the operator adds. 🔴 THEY ARE NOT CAPACITY SETTINGS — the
+                intro line says so, and nothing in §31's engine reads either column. They sit here, one
+                box above Kitchen capacity, because both are properties of THIS van's service and an
+                operator setting up a van reads down the column.
+                🔴 THE TICKBOX HAS NO COLUMN OF ITS OWN. It is derived from operator_collection_interval_mins
+                being non-null: ticking writes the current customer value, unticking writes NULL. A
+                separate boolean would be a second home for one fact and the two would drift.
+                ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
+                carry these keys, or the value writes and never reads back. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+              <p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>
+              <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
+              {!intervalsAvailable ? (
+                /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the
+                   controls would be lying about what is stored. One line, no controls — and every other
+                   box on this van, Kitchen capacity included, renders exactly as it always does. */
+                <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
+              ) : (() => {
+                const customer = normaliseInterval(van.collection_interval_mins)
+                const overrideOn = van.operator_collection_interval_mins != null
+                const operator = overrideOn ? normaliseInterval(van.operator_collection_interval_mins) : customer
+                return (
+                  <div className="flex flex-col gap-3">
+                    <label className="block">
+                      <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
+                      <select
+                        value={customer}
+                        aria-label="Customer Collection Times"
+                        onChange={e => updateVanSetting(van.id, 'collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
+                        className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                        {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                      </select>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {overrideOn ? 'Customers can pick ' : 'You and your customers can pick '}{intervalExample(customer)}
+                      </p>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={overrideOn}
+                        aria-label="Use different times for orders I add"
+                        onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', e.target.checked ? customer : null)}
+                        className="accent-orange-500"
+                      />
+                      <span className="text-sm text-slate-800">Use different times for orders I add</span>
+                    </label>
+                    {overrideOn && (
+                      <label className="block">
+                        <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
+                        <select
+                          value={operator}
+                          aria-label="Your Collection Times"
+                          onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
+                          className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                          {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
+                      </label>
+                    )}
+                    {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
+                        (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when ticked,
+                        else the customers') is not a whole multiple of a cooking category's prep. Same line,
+                        same rule, on the dashboard. `categories` is the tab's existing prop — no new read. */}
+                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{collectionTimesHint(mc)}</p> : null })()}
+                  </div>
+                )
+              })()}
             </div>
 
             {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:

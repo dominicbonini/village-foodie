@@ -1,0 +1,106 @@
+{
+  "$comment": [
+    "THE EXPLICIT HARNESS LIST. scripts/run-harnesses.cjs runs exactly these files and nothing else.",
+    "WHY THIS FILE EXISTS: on 17 September 2026 a verification sweep written as `ls scripts/*.cjs` ran",
+    "scripts/migrate-from-sheets.cjs against the LIVE database with the service role — 132 rows of",
+    "public.discovery_trucks overwritten and 19 inserted in 1.2 seconds. See",
+    "docs/discovery-upsert-incident-report.md. A glob cannot tell a proof from a migration; a list can.",
+    "RULE: never glob scripts/. Add a new harness HERE or the runner will report it as unregistered."
+  ],
+  "generated": "2026-09-17",
+  "harnesses": [
+    "add-order-fit-message.cjs",
+    "add-order-refresh-inputs.cjs",
+    "add-order-refresh.cjs",
+    "add-order-render.cjs",
+    "batch-reservation-display-equals-picker.cjs",
+    "batch-reservation-edit-lock.cjs",
+    "batch-reservation-golden-on.cjs",
+    "batch-reservation-helper.cjs",
+    "batch-reservation-immutability.cjs",
+    "batch-reservation-instants.cjs",
+    "batch-reservation-lock.cjs",
+    "batch-reservation-p2-identity.cjs",
+    "batch-reservation-p3-worked-case.cjs",
+    "batch-reservation-switch.cjs",
+    "batch-reservation-writers.cjs",
+    "batch-rolling-check.cjs",
+    "batch-rolling-identity.cjs",
+    "breach-banner-dismiss.cjs",
+    "collection-times-hint.cjs",
+    "cover-dot-own-window.cjs",
+    "customer-path-identity.cjs",
+    "dot-overlap-labels.cjs",
+    "ops-write-guard.cjs",
+    "outreach-channel-for.cjs",
+    "outreach-dnc-pool.cjs",
+    "outreach-list-columns.cjs",
+    "outreach-log-once.cjs",
+    "outreach-logo-latch.cjs",
+    "outreach-stage-advance.cjs",
+    "outreach-upload-refresh.cjs",
+    "peak-ceiling-rule.cjs",
+    "peak-load-rule.cjs",
+    "printing-copy.cjs",
+    "printing-dedupe.cjs",
+    "printing-escpos-identity.cjs",
+    "printing-failure-split.cjs",
+    "printing-gating.cjs",
+    "printing-network-guard.cjs",
+    "printing-transport-contract.cjs",
+    "ready-press-one-press.cjs",
+    "sixteen-pizza-admission.cjs",
+    "slot-interval-dots.cjs",
+    "slot-interval-engine-identity.cjs",
+    "slot-interval-event-override.cjs",
+    "slot-interval-generator.cjs",
+    "slot-interval-grid-routing.cjs",
+    "slot-interval-settings.cjs",
+    "slot-interval-van-list-tolerance.cjs",
+    "slot-interval-van-resolution.cjs",
+    "whatsapp-background-jobs-harness.cjs",
+    "whatsapp-connection-view-harness.cjs",
+    "whatsapp-golive-parity-harness.cjs",
+    "whatsapp-settings-row-harness.cjs",
+    "whatsapp-setup-machine-harness.cjs"
+  ],
+  "excluded": {
+    "$comment": "Every other scripts/*.cjs file, with the reason it is NOT in the list above. The runner checks this covers the directory.",
+    "operational_refused": {
+      "$why": "Builds a real client and WRITES to production. The runner refuses these by source inspection even if someone lists one.",
+      "files": [
+        "migrate-from-sheets.cjs",
+        "register-payment-domain.cjs"
+      ]
+    },
+    "operational_read_only": {
+      "$why": "Talks to live Stripe/Supabase. Read-only today, but it is an operational tool, not a proof, and it must never run unattended.",
+      "files": [
+        "list-stranded-authorisations.cjs"
+      ]
+    },
+    "server": {
+      "$why": "A long-running local TCP server. It never exits, so a sequential runner would hang on it (it held the 17 Sep sweep for 200s).",
+      "files": [
+        "dev-virtual-printer.cjs"
+      ]
+    },
+    "shared_modules": {
+      "$why": "Required BY the harnesses. They export helpers and assert nothing, so running them proves nothing.",
+      "files": [
+        "_batch-reservation-sim.cjs",
+        "_batch-rolling-snapshot.cjs",
+        "_printing-mocks.cjs",
+        "_slot-interval-compile.cjs",
+        "_mini-dom.cjs"
+      ]
+    },
+    "fixture_generators": {
+      "$why": "🔴 THESE REWRITE THE COMMITTED GOLDEN FIXTURES. Running them in a sweep would silently regenerate the baseline that batch-rolling-identity.cjs and batch-reservation-golden-on.cjs check AGAINST, turning both proofs into tautologies. Run by hand, deliberately, only from a build whose harnesses already pass.",
+      "files": [
+        "_batch-reservation-golden-on-generate.cjs",
+        "_batch-rolling-golden-generate.cjs"
+      ]
+    }
+  }
+}

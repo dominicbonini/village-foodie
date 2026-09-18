@@ -1,0 +1,1823 @@
+{
+ "header": {
+  "generator": "scripts/_batch-reservation-golden-on-generate.cjs",
+  "generatedAt": "2026-09-18T12:06:15.433Z",
+  "engineSha256": "01ee4c1c76e64a41caf5782e485c26273d59f874db9b5022c41fb9a4636140dc",
+  "mode": "batchReservations ON",
+  "inputsFrom": "scripts/fixtures/batch-rolling-golden.json",
+  "note": "digests of the ON-mode snapshot; fixture inputs are read from the rolling golden (not repeated)",
+  "counts": {
+   "s31": 8,
+   "gustoShaped": 300,
+   "aligned240": 240,
+   "gustoLive": 6,
+   "reserved": 300
+  }
+ },
+ "s31": [
+  {
+   "label": "3 pizzas @17:05 → 17:00=2 red, 17:05=1 amber",
+   "digest": "6ae8d14ad38242915431e5fc"
+  },
+  {
+   "label": "2 pizzas + 2 desserts @17:05, cap 4 — full",
+   "digest": "bab5fc80e7d23377dc149a3f"
+  },
+  {
+   "label": "1 pizza + 3 desserts @17:05, cap 4 — full",
+   "digest": "c39ee8d341851ded3d670268"
+  },
+  {
+   "label": "2 pizzas + 3 desserts — rejected by the ceiling",
+   "digest": "279a6b9055158365dcdee8f4"
+  },
+  {
+   "label": "3 pizzas — rejected by batch",
+   "digest": "eca5ad934359dfc62417ad14"
+  },
+  {
+   "label": "6 @16:30 pile red/6",
+   "digest": "e39054e4591b6a454df84473"
+  },
+  {
+   "label": "6 @16:30 + 8 @16:35 pile 10",
+   "digest": "338b319462ca55f093b590ae"
+  },
+  {
+   "label": "17:00 & 17:05 full, add 2 pizzas + 7 desserts → 17:15",
+   "digest": "6d72d3c4fb996c3d4fd4be3c"
+  }
+ ],
+ "gustoShaped": [
+  "94e70c802a8d769ed0d99471",
+  "0f3930b4c749a9f6f0d2cc58",
+  "4c4f4a8a627ab99324061771",
+  "b21e0e8c86d80da49fed2874",
+  "d7b4e9868dc659e6ea36bbf7",
+  "985037374e99df176bebf07e",
+  "75ae6f85450cc318e2fd9f80",
+  "427c39ac72dbae9c9cd4a4f5",
+  "92da7f8b7d354f93dfaf474f",
+  "d541042347d8c2da21f519a1",
+  "c0866655a6e47535dcc2343f",
+  "f1b0a2dbec4ba59f4c18deb7",
+  "874737708caf826ba6276ad6",
+  "e11e5016bb2335b04adbd9ac",
+  "5f3d43dd77ffc7849811e768",
+  "9f7d33e6152039e3fec56b4a",
+  "185c582942907e1f4df102d0",
+  "bed47f8d87c8c8b9363c2e9a",
+  "20d4cc936d7d9ce70c7d3be4",
+  "d810f950416a58c20b38d390",
+  "c4da0bb214af70ea5aed0817",
+  "41bbbb1ffe838e87f3f46da7",
+  "7754861ca74df0d738789516",
+  "53bb945edb3804a3bcaaebf2",
+  "fb84ee12fe74d73e64796d43",
+  "ead084efbcf86e01ea860af1",
+  "e2a9bdf18424879ab9ef90db",
+  "98799e0ed35db6ecfebc811e",
+  "fc83926ca6e935243e91e627",
+  "42c72a89c13e1f7f7fdc968f",
+  "596732650c14f106ccd6c6d4",
+  "8c0e5ba3eddb75c0f19db4c9",
+  "0c914091db19269c2c6b7616",
+  "87af0bcfae3ba34a42609f08",
+  "d329f22946767975fd052b70",
+  "aa33e7ac5a2a573f96f268f4",
+  "2b84162645473efa245251d4",
+  "4805c5632507fcdf11b0af6c",
+  "0c2c6a1f72aedbb1950a89bc",
+  "e90ee976f4f5ca9b0a8fd06b",
+  "a1008458468bb693a62e2427",
+  "624748d2b1e00f6f3e91788d",
+  "4e6f2be15664ac6509919780",
+  "fd7cbf760ab857d183734752",
+  "39d29c72f73960864dc7a2c0",
+  "be68150b9d721c4ad9fa31de",
+  "dcbcae7131981bfd22bbcb08",
+  "e62b591e749df24523e847d9",
+  "453f8006674429e979513dac",
+  "9167365a5fe488a8a9042bf9",
+  "4494f0db837e8be423880f35",
+  "dc9851559056ac1b2a52d851",
+  "233c0868d079a3234dd3e509",
+  "c50ac09fbee2c1a37a64caeb",
+  "f40c49a352a3b49176ebe807",
+  "7ca20759c55e6cf110f007a9",
+  "1aa343e62bbfa5a0606ad5dd",
+  "12d07d29de56bb708bbc4f36",
+  "16792726f9904961331399c7",
+  "33887ae2f0d667551d4ed7f6",
+  "0df6d884eff74c08827b9f46",
+  "92467e276f43b5fe7b83651a",
+  "90c99b522a29081602310d1d",
+  "be91092f107cb6649e4023e9",
+  "553401088bf1802c83c777f7",
+  "0f06ca95cfe1b16590816f62",
+  "143948d762b7d32d916c1679",
+  "4a10292953504738f6459e29",
+  "ecbddb30eec89087db28fdb1",
+  "8372a5d52dbf0daaeabf42c2",
+  "10cf6a9ff57f25a712c751ec",
+  "529acdc1d801628db04c4a50",
+  "3edfc79e572c35d17654f468",
+  "1862c386ec634719a1fbefe4",
+  "18a6bf28124cb504aea05a9b",
+  "38403724a49ba4951666d296",
+  "fce2b26bee3434174fd22ed3",
+  "8e60c69adc877381196f2b0f",
+  "b28da40e0c5b9d1936075964",
+  "377fae92ad08b0e4d28c3db0",
+  "0a1ef34930248ced2d41c103",
+  "ca45896f3c4a5a11df4a990e",
+  "1eceeb26dc7d63a6adf12d89",
+  "8fb5009e2694615c9a3c8e68",
+  "ae8f6f5e997077d82e5e8b47",
+  "49eb1b01d4d6fbe76aa1a08e",
+  "52ae0229dd978117ea277b97",
+  "1d477a124485f02e5b7d6617",
+  "c0bbfaec0d138c6a7b2cf30e",
+  "a9a34f8a1e2dbec3cebdd1c7",
+  "240e9af6ffa61632ad881c68",
+  "0a9fe6fdc62c30e97ef24ec7",
+  "bdf34f5925cecf448b390557",
+  "7867ec3f52db34b3a54d1570",
+  "4222a3046956dd245039dcde",
+  "b760d041648e0a52fd9b5cbc",
+  "ce81c6f8990610fdc795a359",
+  "4d760cef0a12c9c567de11d9",
+  "5bf9705316a06828ae8c5706",
+  "73d74045afeb990681e3f908",
+  "eca44ba102fed232f2dc074e",
+  "f0d611681b23282f7b0bc1a7",
+  "cd8c29a634368a69c9daeab2",
+  "499c43149eabfb9216de1e85",
+  "e3ddc5c4f8a7db68b2c841c7",
+  "778e9eede38dce989bcfd98a",
+  "34c22abd856a96b2477e8f55",
+  "bd00358c30cf4821b7a3fd39",
+  "3c35a6a4a6ef36dbc630da1e",
+  "a3c41fa57a28fb96fbce4e94",
+  "781a89c575f14e72ba744770",
+  "1af484cba43457617ac9f528",
+  "da674877c07e605e2bfa8a21",
+  "1bc2a3eaa663faa0ea7a4f47",
+  "11a7ab94984e3d1410f35dfe",
+  "d8dcd9c0646a780d58f18eff",
+  "08adcfc9a8ab80ecceaf6ce9",
+  "b5b45f6f965dd53e20ca2123",
+  "c1d08e07a86f79cf8b188583",
+  "1ae2a875673d963632ed4b79",
+  "a968b1f4b5361cb4eb367945",
+  "e282e7d2c0b41c132d9df91d",
+  "503a5c564c092259b36ed287",
+  "bc27059c9d05d1025c8b8050",
+  "02ab677437f60f5e74efe54c",
+  "5f160f562832d3f41f1038d8",
+  "ced650c0a594b6fe0f6d2608",
+  "9e370694fbd9988c2735bb71",
+  "9b2ff87490f6ce08e5a94c33",
+  "053828a1a30832dedc0d5d52",
+  "81c0d1c92a3cbad6fe60ce9e",
+  "a1cb22c4010b5befd5a2ef9e",
+  "540ad97ebd3643f9b3155aa0",
+  "28940157ccc6824afdff65b1",
+  "42f8dc37d6838cf0436c66de",
+  "f1a3a1de6523c3f7f67a4f36",
+  "e580c9c3b128e4f3224afb3d",
+  "88f56cb4524205ce3715723d",
+  "7eb72c74269c4222c0123052",
+  "a4d6e9bdbb6c2360f72ed595",
+  "fdca10d27bb5540c0e6d3a72",
+  "8bb71165bb29c5244d7f4ec1",
+  "6218a957f8366ea7c2e43f59",
+  "534a3a5fa535d7086e44336b",
+  "ca661d46437ecd30d63148d6",
+  "837fd2845efa2ceefa5874f0",
+  "00806e11ada9eafc6704e8e2",
+  "138e504228d5de8f10146011",
+  "09ea87247012519fc1df5009",
+  "79e77fa6d7be6290d470c9ee",
+  "9eaf940222ef95c6ea19bb5e",
+  "44dbbcc3d4992227c31d5883",
+  "bc8f72d3fb1d2c3a485eeb0b",
+  "bd1629a2844f56e1c2ee85ec",
+  "0f9877e479771de0ac3779ec",
+  "58a8ae64c797b6a7e116cfde",
+  "5315678ea0d5f059e959999d",
+  "2a9644679fb2b03deeccd663",
+  "75607b728317010678a82975",
+  "1d19df4008efb115735692b1",
+  "6fa583aad07f1b3832491145",
+  "25ed3193b5a5f59dbb3849af",
+  "234d00e4ca130a7f8cb22cab",
+  "c9d5d0a6279824832d03da4b",
+  "f882f630b674e28577747c5e",
+  "702801de23d35bd6c171cf48",
+  "24120fc05c339eadc3800dfd",
+  "8bcc27b80b061cf0362a7fe4",
+  "740044225e638f24887131ef",
+  "4f7341c22c3a34f62a0ff754",
+  "08f7e4f3223436c8496e201c",
+  "4c3784335f71827fff51eb40",
+  "78d74b1a9807544ba658d58f",
+  "45c902bd0cfea9d519ece465",
+  "37d313f7f36929a7ec075ac4",
+  "907297cd50110ec65c124fa3",
+  "399563dc55f3c9d967691c41",
+  "a6f98d068a399020fbab5ffc",
+  "d49bbf10fb89eb75133a3e7b",
+  "7cd7eb27e38013104357ddca",
+  "d7e575837bdc77ee5f4bc9ba",
+  "b499513028908cee1dd73001",
+  "67a7bb1516cbe248ee978243",
+  "537d7b08d19cf1d1294a311c",
+  "d9688a4988dd962ccc5938e0",
+  "f5692114804158e8d4fce49f",
+  "9d6b9d18fdbc0be0ef2aefff",
+  "626e27fcf7f28698cbaca818",
+  "b6e5f783b60b179a9170b11a",
+  "7119c4b70a3c811ec3845cf9",
+  "87fb7b7424a242fc23958513",
+  "6283f17f2e03c584f2f0af41",
+  "d814e8c8358b77eb0d7f2b6a",
+  "3d469947ad198ca75c02f187",
+  "c48805850a0ba2a83710daab",
+  "49973c3e38a98852d882c45d",
+  "c07fd83f3b61d8442be03a08",
+  "45a62fe1c40fe1ff1b53063e",
+  "fce0873b77c2a257bad20abe",
+  "44b173c7c1b773c1674da0fe",
+  "e4f54b35322a9da957136549",
+  "1ebeef4234bbc1fea279ded9",
+  "1ae53224e2d1eee1a7e9533c",
+  "2d8710b02436af9096875fcd",
+  "378723350f3dd56fee6c9682",
+  "18d0663e951263902c7f0a1c",
+  "825f7b77f23dde366b37694e",
+  "31df3eaace54b4dc85d80bcf",
+  "150fcc5fe1feede5b4cba753",
+  "9387a49194edc460a9ca4798",
+  "e42c4edba6064a0e84f98112",
+  "df36a8fb7945d85bfbb5bd6e",
+  "4d86219459acbac4883459aa",
+  "53810d8b8720a20da7fd618a",
+  "07b60931e8277c65d2d20470",
+  "2c01d4cac7179b6cedda6cb6",
+  "c9e5cf25c328e88cd8f1f552",
+  "e0a73b37a7ff3c513b5d1555",
+  "ae279d71a8cff638d604c5aa",
+  "af4be4ef097e5043a4d9dba4",
+  "ba42354bf20ad9ed1a1472d1",
+  "3e13fd6bc07f76d521dd1ccf",
+  "ed9895e2e7609b05d2644095",
+  "4edcc8b1e07b10838b2f8577",
+  "608e72a30e3f8cac9c82f8d3",
+  "80e1e3167ff67d1653a5fe7b",
+  "6ab49577a2e1db6d66693e29",
+  "848c8b148bcf6fceb54f7c81",
+  "fb01bf32e97ff01de3deddaf",
+  "9bc22296aa7260adf374b4f2",
+  "3f5ce1bd3b628e885cdd2f11",
+  "62c8c2c257e0849408d7669e",
+  "83542df1c86ca008db73798d",
+  "5d7a57eb306c7a3e5f47c080",
+  "cdcceff43599658f856f0b07",
+  "4d95805bfceb19b2b29e1b66",
+  "9114c6bc5e7c56d7f0ea0187",
+  "874d39d33fc0d925201f096f",
+  "cc5ceb092c901e374f5ddcb0",
+  "a1c58f4397a03d4b462db2a4",
+  "1baa6014c63331c2643a956d",
+  "f38864304f9fe98cb6331bb3",
+  "56e17e6c025c35f09a0015a2",
+  "2ad86ad6c18225d0d5ae1891",
+  "735a31fa22e4d2828ac4bb7f",
+  "72879d091408187c12c01d56",
+  "d9438cc78165526de5f99d5e",
+  "6adc121880a65b40c40083b6",
+  "fcbc91cb359ab7d84211b184",
+  "54fcc3677ae53867286e2596",
+  "b93291d6c3542bd4d1ffe2b8",
+  "a7cfd49c6a7d33cb8a46519b",
+  "ce9ee106eb3788ac922422a3",
+  "5aab4a4d17be0bedf3422f0a",
+  "336ef99253d5eadddeaa4c3c",
+  "0e7525e8066153bb7b2dcb1f",
+  "c0c7d765187fd4fbb20a7d27",
+  "f259e282785ee89bca810766",
+  "f83e18643ce7a2bee3668eef",
+  "dfa5c6a599507bd9e92e9c9d",
+  "7561ac9868c2b856cfad24a7",
+  "1da5642345f6f609a0a36d98",
+  "4341f177bf9416262d619eb4",
+  "fd217d2b3d09ee219a12194a",
+  "b6d1afd7e91afe977ef2f337",
+  "305ce0da0f3a3e171c88267f",
+  "df2b3d71ef72567686d7d301",
+  "408046ec4a3536712cad5576",
+  "b9232680ebcd2c20e5b884a1",
+  "18577dd81bdc59c276b80500",
+  "26c9ce2c801c5b8e26dd7d2e",
+  "729281f68959e065f99d9544",
+  "6db862f47358e8856e1a5485",
+  "04068a4335b5fd1b6869f4fd",
+  "5df8d7e3fec04f8bc8cfcffb",
+  "1494639490c22553fe130a48",
+  "2833ce70064b890bc5aa76af",
+  "4c05ca009643bb45a5208336",
+  "f1a443e3c6c9eac9ba3c48a6",
+  "3cff82a83cffa90ed0d8843f",
+  "928b022206b6914722f0f0fc",
+  "139cc533f265ad92faabc174",
+  "7e1ab63fb80482684ef87aee",
+  "411006b035b92480ae9d9937",
+  "9e7cf1453d9e504a788b4733",
+  "6e653817de4d334e504dec3b",
+  "523c8017409e20e528ad539c",
+  "cacc59d3c80c47ed049cb142",
+  "1eceeb26dc7d63a6adf12d89",
+  "8fb5009e2694615c9a3c8e68",
+  "ae8f6f5e997077d82e5e8b47",
+  "49eb1b01d4d6fbe76aa1a08e",
+  "52ae0229dd978117ea277b97",
+  "1d477a124485f02e5b7d6617",
+  "c0bbfaec0d138c6a7b2cf30e",
+  "a9a34f8a1e2dbec3cebdd1c7",
+  "240e9af6ffa61632ad881c68",
+  "0a9fe6fdc62c30e97ef24ec7",
+  "bdf34f5925cecf448b390557",
+  "7867ec3f52db34b3a54d1570"
+ ],
+ "aligned240": [
+  "4931ad9be78899a92e905d2e",
+  "c67767eb7031434908ee04f5",
+  "9c3c53ee6a0db44df9524659",
+  "ed949a04103604c6dfc93a88",
+  "b6eaa07d51b767403054ca84",
+  "abcaf18ea410707d0c7c863e",
+  "62756ae37f576fad9469a1f4",
+  "d1c5a42dfc9995aaf09e60bf",
+  "1ff2589407f61f821051b1eb",
+  "27a5da72cae0660a7f1c4cf2",
+  "fe06f6ab5291628e586a18c9",
+  "40bd05601abd16599ed7d214",
+  "eb7605cc16b89abfb12a9d48",
+  "aa5ef1c690566d8db01cc317",
+  "a166fb4d0d20513ec30f6262",
+  "8c63af9b4c7da698964e4ab0",
+  "adcebe850c7cb16a7eeeb910",
+  "66420e49abf1e5749039a680",
+  "e251d524cb8bda3bcbc8088a",
+  "6ebcc761cc8d5a60505c4962",
+  "a4fa4217d993b904b2ec7fd0",
+  "56b41261868f71fa4fdcdf20",
+  "77bf8b4313e4e546f1504057",
+  "764e304b15ae17572eb6aea4",
+  "2dbcc1392acb08b2e1791704",
+  "a3afac0ea9edf7f53726c7fc",
+  "fc8729ea01423618e444f545",
+  "cceeb6422d4f992eec6a3331",
+  "672716c4896920605fc502c0",
+  "7cb96dd9e5eddaa6d0ce8f64",
+  "e03d7e19a85b52520287870e",
+  "00835a14f13ce2ff5d42c4c6",
+  "ebc66c11defa01d977fd6626",
+  "262d7dead688d2a66259eb20",
+  "3b499d8903130a77b2b2444c",
+  "12671bde40ed71fdb883226a",
+  "c279c853cfd390befd8bab08",
+  "32bc60744fc28863e3f57676",
+  "4138090ea7abfac14d195469",
+  "e64eb649a6caa39b3d9ff345",
+  "d6df68ca737c0f82bd59d9e7",
+  "4c8c0a9bb7063993fa836caf",
+  "13536bf5bda59df4ff3b31fc",
+  "d6e21f8e5cad3b27167827e8",
+  "f4210363189eb5af6831557e",
+  "4b4e8a944bfb1436ea1f660a",
+  "d4a1b90d952e10ba1a93a567",
+  "d0bc516093d9cf18d505a2f8",
+  "11e83330af0388f02d7ee25f",
+  "f6958c587d3fff51a356e656",
+  "3c07f483ebcbf4cb50aaaa9d",
+  "202c921058c21420d14d0d30",
+  "7799b608171288eb2dda6603",
+  "2ceb54ef38a1f0967ae18623",
+  "6dc71901df49b909ef725e89",
+  "005a8035e7ca1419eda55d32",
+  "46fc4df9fedaaaf93fcf1918",
+  "0cbc46becb00cddcc0a8234f",
+  "5410de012bd0317ecf91fbb5",
+  "c37a4019c79228d38eaadbf1",
+  "150913c0cb192215600624b1",
+  "f291c45def2e028613566d57",
+  "194edce8b2af797f5e897857",
+  "4cd2a98046017dd18183f80d",
+  "48fe2133dacf54a396f1ceb5",
+  "93283194a7d8fee29e1d5068",
+  "01cbf60d811ec8c234f2b1bc",
+  "d25d713b70caa2595a4a94bd",
+  "73948a77ecbd3536832d0971",
+  "f5d8ed3fdfeae5833549d584",
+  "0ac888c8b150ee5a60f32bb8",
+  "e8e1ec46e19aa0d06f2b141e",
+  "5324838f254e16e35febbdac",
+  "0352bc8e786229df5a5860ed",
+  "7f9ca1fdff788f6730ccc213",
+  "2c5d58c9bba6acd4aaf3e4a8",
+  "a8e82074feb023a7ecee1213",
+  "39077a95657379505422a952",
+  "6ca01321a149a9b5a92d58bf",
+  "b2b2d9a9643db61663bae866",
+  "9f4819f338c45ad872430b97",
+  "af16d1378eb3d4db1fd70ce3",
+  "df8aa98ffaa3afb94f793195",
+  "d95ad58038c2a2533439a7f2",
+  "70db35238d3d4731f344804e",
+  "2549700947a3658a1f4dfa44",
+  "443554bf2a5d3dfe65b803f4",
+  "c37ea542c03abb6c7723bd2f",
+  "9cb243c2be312d7bb7b1e808",
+  "5c006ae11a4b026849c142ef",
+  "dc32a0926873b05893c840a4",
+  "3b11e509bcf3a2ff83e45d3d",
+  "a58e76810c7fab5e2632dfe8",
+  "0c6674a8e4c1680212e34703",
+  "47647b52598e7581f35b8493",
+  "abc72ae620fce8fbf3e59614",
+  "feacb3e9dde334ca74017191",
+  "68fdc89567ce8f6a3a3abe94",
+  "1719beaa2b3959581d110978",
+  "44e56b81fdebb02c76735c0d",
+  "61b5e07f0952c5cf5f1092c7",
+  "d17a65532bb497ce34d49b0f",
+  "ab3b8fad071a3973e699c49b",
+  "6f735584ec295da4f76b11eb",
+  "8ba5500f90875e944777a7a6",
+  "2e8bd4874f6d9aaf18105930",
+  "947101b38994719e24c40b4f",
+  "f31805c74dafa9fff725ad19",
+  "b69b9e1172982030d6660340",
+  "fb5fa5f5281108cc0be0c5ee",
+  "18959fa1f882decfe00a0d77",
+  "f119a13d1e372368cffd39b4",
+  "f8e6e30fd09972ef829e5615",
+  "d16a939a5b3aa522fa8d5243",
+  "23e7b0d2535cbbfe86ca6202",
+  "5a20af8d4caa0571cb36e490",
+  "ae88729fe2133bad37e9abe0",
+  "477fe4601ba338f8e6312dd4",
+  "40084191d6d4b1ee461f0804",
+  "7a89267ee584996eecdd849a",
+  "751ebfdfed98e8b92248241f",
+  "99356d850147a13c280b5611",
+  "324b2287e1040c4b91df49ad",
+  "08454964be2a26b1866ed61c",
+  "e31dda55f4a0f4c391fc6860",
+  "c325a41b19510c208fdcc57d",
+  "1be4fa95c86e9f396a4df578",
+  "8e52e60c7339770510e7b5ee",
+  "fb3b351f5c5c08218a8d48de",
+  "4011861ffa58448f90aa5686",
+  "85e519f793577a6439120337",
+  "cfcf40118d7fc447c620866f",
+  "3d51a57b4bac86ac6b2cbdb1",
+  "70468c093e00498fae6dc379",
+  "ee295fc8b72b46537d473733",
+  "f186e002cb2ae1bc11b54f8b",
+  "575fb9ac572bcfde027ed843",
+  "3530c527d18ad54756aba509",
+  "b2bb86ce87eecf21838f902b",
+  "20558508b2e6de3e280080a4",
+  "43a22254c553f1d0a450b894",
+  "824a5b977340b29769797661",
+  "8547cd552804ea2369a2db5d",
+  "65bb9be41345a94245cc4841",
+  "b8fed3ef90632272b40cfa13",
+  "5935ef1c1743d206eca442ef",
+  "49cda9faae6bca1eee062c38",
+  "5a7a7a1be5166d5799769e52",
+  "7ff30c127a0455b5665ad203",
+  "7d89b6aebbd7061c65c77c68",
+  "902d6d674ed2d32530759b6f",
+  "5f82d94d84a4850a87b46b5c",
+  "26cf1e71c8a87faf66b014f8",
+  "942c462703164df9980a255a",
+  "38826d1236e463f2ae3906b4",
+  "a0737898d20420969f0b99ba",
+  "655c4fbe4885de06838587cb",
+  "6d2e9a7af8134d42a70ec79a",
+  "17609c431bcd3133d3b250c9",
+  "ea5e4b7a2f63feb6f432e20c",
+  "45a29ed5139dbde2528c576c",
+  "5305e89408a186e8829675d5",
+  "53a0b9ca4964003250a53804",
+  "3648ca9a99fc2c669575ad6e",
+  "bad301124376620419f47290",
+  "4ca1a6adef0577f42fc47a9e",
+  "41cbbb392afd449eb1238992",
+  "1abe2b78cd081ca2f5bae08d",
+  "a716e8c2e5a5cc18cd3571e7",
+  "2e0389c125fb3223a25e14cf",
+  "59cdaaa5bc6feaf99ed9df9a",
+  "e106fbca4fc61fc5659f9d01",
+  "834c1bd297d91ee7d38f7c49",
+  "99c52298c530f482addbb5cb",
+  "4cea20b3cd5484ae47114b0c",
+  "73d35e20f7d44339ffaf2aef",
+  "8c23a384d0bd3e85b6be3967",
+  "2c118a30272d37405adb1ee2",
+  "43565473d86999d6cf9752b6",
+  "5df1b818e2fd339f72b1f5c8",
+  "b38574cb842d6c1af17bc79f",
+  "3b7b7bcd772a5e2b9ffe1ea6",
+  "3c565310eda7c37deff31cb5",
+  "7cb66b799714eb9b0c9153d9",
+  "012c5c92e9ea6f58ad379697",
+  "100f8e764540772da8d375ce",
+  "bfc0d8e4a302e480bedd7272",
+  "b0b2d5bb3c861ab5004a8c23",
+  "38084a7137881a9db743edcd",
+  "8aeb52c46d5b91185ae1a32d",
+  "849cc1cf273965f538862e04",
+  "2e705e2d4ef3b82702a8b8ab",
+  "961146fcc1810c777d28c832",
+  "9bca38e4d3d03a38e3fb400c",
+  "800f40bd1929987ea4b19410",
+  "316b3dd16d59f66ee2982d22",
+  "330b4800bda4cb47ed9d32af",
+  "9572f2d36375907159af64b4",
+  "ddf5ee643e40358c75e4b83b",
+  "48d6e46553f88a6f1c57cadf",
+  "eee25248b2ffeb82e28b5ff5",
+  "7b967187b8b128703f934bd9",
+  "94233eaadf52d0ba9e9da8b1",
+  "efff286956509c8e0b540cc2",
+  "df89849310dfc91a13238b94",
+  "e37dbf84b562bdde200222eb",
+  "2bee153c7bebfe2646e1073a",
+  "a3c5d4299a08c152e51cffe1",
+  "b870d35b3e4565e432427ed6",
+  "f7faaa5598882b81218bbbf1",
+  "db2796207a75cd15d5fd30b5",
+  "e70a11881a193cead9fee458",
+  "f7fff9057b25610d95b32a6e",
+  "38069e725cdc82105c30f56b",
+  "670eacd5a2cbea8a77162d64",
+  "b61ebdea6e2ae8f5f0a6036f",
+  "a06651bf56bcb8a9b8e79c73",
+  "cefdad4de64a0979753b2ea2",
+  "ce67bad9217f8f471df5eec6",
+  "d3372523e9a9778af97878c4",
+  "314480d2756cd36f419f31fd",
+  "0eead8d52440163e7a29aeab",
+  "8aab6ff94360cdb3579cdbcf",
+  "ec691251c072525887c257af",
+  "2b75aa61c6e8e4fd995df9b6",
+  "6185acbd12646a5cabf5e266",
+  "f36eadfd5f7fcfe21be0a122",
+  "6c40d61c68bfb94a7d6e2895",
+  "e9b51184501b25b2fa3b6757",
+  "ffc568d232e77ab213d3f136",
+  "03742260d85f12e23a9dcd90",
+  "d91ce9a6b9324cb26454824e",
+  "8b6ab5489c9b86fc7abf8bf2",
+  "eba20bcc6de4f09fa73b575f",
+  "b6d5e089a229d560d5501bf8",
+  "6782278393f31c03f1732d01",
+  "e499f0e4e5c6d26f8f18b0af",
+  "1dd6e8d745220a1ebaaa1574",
+  "5f73cea16391d8523af432ce",
+  "519b94d0eba1a7f4393b5f6c"
+ ],
+ "gustoLive": [
+  {
+   "label": "Gusto event 2026-06-28 12:00–18:00 (1 stored slots)",
+   "digest": "64d59bd119ea387280fdb03a"
+  },
+  {
+   "label": "Gusto event 2026-07-24 17:00–20:00 (5 stored slots)",
+   "digest": "048de8c93b18b4d763f981af"
+  },
+  {
+   "label": "Gusto event 2026-07-24 17:00–20:00 (0 stored slots)",
+   "digest": "eab6c026ae6f5feb4294f253"
+  },
+  {
+   "label": "Gusto event 2026-09-18 17:00–20:00 (0 stored slots)",
+   "digest": "eab6c026ae6f5feb4294f253"
+  },
+  {
+   "label": "Gusto event 2026-09-19 12:00–20:00 (0 stored slots)",
+   "digest": "4fca13c72e83116560f0a49e"
+  },
+  {
+   "label": "Gusto event 2026-09-20 14:00–20:00 (0 stored slots)",
+   "digest": "8a03268f5c4d8ff1144e3d01"
+  }
+ ],
+ "reserved": [
+  {
+   "reservations": 10,
+   "digest": "dbefd4f640c391bfe96087ff"
+  },
+  {
+   "reservations": 10,
+   "digest": "1d7f7329ab25a541e5fa5278"
+  },
+  {
+   "reservations": 11,
+   "digest": "dffdb44da33bc34df13d31e7"
+  },
+  {
+   "reservations": 11,
+   "digest": "a9ee7258caa9b1d6184c9fac"
+  },
+  {
+   "reservations": 8,
+   "digest": "d1406ec904c888f736d587fd"
+  },
+  {
+   "reservations": 8,
+   "digest": "e047543d1a917eca2d549d04"
+  },
+  {
+   "reservations": 8,
+   "digest": "fb6c012535c09f2a5668ac69"
+  },
+  {
+   "reservations": 12,
+   "digest": "dac1fc80d9405ab55ba4f0bc"
+  },
+  {
+   "reservations": 10,
+   "digest": "16953805b00ccae8a5001548"
+  },
+  {
+   "reservations": 10,
+   "digest": "a8d50161c9db81cf9322dce1"
+  },
+  {
+   "reservations": 10,
+   "digest": "a6081d2b1407cbf608175979"
+  },
+  {
+   "reservations": 10,
+   "digest": "9072559917261bd3cd592749"
+  },
+  {
+   "reservations": 11,
+   "digest": "4ea20c78d7431e5be3a34835"
+  },
+  {
+   "reservations": 11,
+   "digest": "6ab57c599d5f5b3781beda60"
+  },
+  {
+   "reservations": 13,
+   "digest": "50e3c17528e84d61f08d652f"
+  },
+  {
+   "reservations": 9,
+   "digest": "716ace22b3414af09ac14c63"
+  },
+  {
+   "reservations": 9,
+   "digest": "ba791c4335955e004623db32"
+  },
+  {
+   "reservations": 9,
+   "digest": "1c3254cd2a94e8dbaa941b9d"
+  },
+  {
+   "reservations": 11,
+   "digest": "082341a3b02009d1ce702986"
+  },
+  {
+   "reservations": 6,
+   "digest": "83c5bae1219666aa886dcdb2"
+  },
+  {
+   "reservations": 10,
+   "digest": "1dca9faff296d98526fc36cd"
+  },
+  {
+   "reservations": 11,
+   "digest": "d23055971c530c2b04190df2"
+  },
+  {
+   "reservations": 10,
+   "digest": "148b7d072d09af4609ceeb55"
+  },
+  {
+   "reservations": 12,
+   "digest": "66e622075728089677a266ea"
+  },
+  {
+   "reservations": 8,
+   "digest": "b504cb5178288447817248aa"
+  },
+  {
+   "reservations": 9,
+   "digest": "09cbb4a9b38f8dcfc96ce64d"
+  },
+  {
+   "reservations": 6,
+   "digest": "fe2c241d7256812a1d95b4b2"
+  },
+  {
+   "reservations": 12,
+   "digest": "cc16ee3dbcdb1faa21f2e5f4"
+  },
+  {
+   "reservations": 12,
+   "digest": "be80c2631830da137ae873ab"
+  },
+  {
+   "reservations": 7,
+   "digest": "fb9ec81f57528fcdbcff1915"
+  },
+  {
+   "reservations": 6,
+   "digest": "af5c16e52d552f46928a58ad"
+  },
+  {
+   "reservations": 6,
+   "digest": "a7debd28e3f48830e6dcc15a"
+  },
+  {
+   "reservations": 6,
+   "digest": "970e564652520e92cffbd0f7"
+  },
+  {
+   "reservations": 12,
+   "digest": "54f91d862b09d1ac53a51e15"
+  },
+  {
+   "reservations": 10,
+   "digest": "090b034601219399437d5d8b"
+  },
+  {
+   "reservations": 11,
+   "digest": "b6438b9b688c6b7be120a1b9"
+  },
+  {
+   "reservations": 10,
+   "digest": "2f2bca63a103caf2777254eb"
+  },
+  {
+   "reservations": 7,
+   "digest": "f0db63c0d9d01768f9ab191a"
+  },
+  {
+   "reservations": 6,
+   "digest": "186de0b6f43bdc9e80577700"
+  },
+  {
+   "reservations": 10,
+   "digest": "2669abf407c044717be4a3dc"
+  },
+  {
+   "reservations": 8,
+   "digest": "64fb8a770978a06bf1ddca74"
+  },
+  {
+   "reservations": 11,
+   "digest": "9620870ddf35adbdfcd702cd"
+  },
+  {
+   "reservations": 10,
+   "digest": "16ba54c68ffb70f2fab6f3d9"
+  },
+  {
+   "reservations": 10,
+   "digest": "c246c07e53069b24d18b2cd9"
+  },
+  {
+   "reservations": 11,
+   "digest": "d947eb186c33fc61d85eb58d"
+  },
+  {
+   "reservations": 3,
+   "digest": "2619c0fd5b16f4290a8e9473"
+  },
+  {
+   "reservations": 12,
+   "digest": "9b127f6be37a806d7484e82f"
+  },
+  {
+   "reservations": 10,
+   "digest": "2247112dbb74e95313748939"
+  },
+  {
+   "reservations": 11,
+   "digest": "e948869590c9302ed043047f"
+  },
+  {
+   "reservations": 12,
+   "digest": "fd2ca7b49f12154f39775723"
+  },
+  {
+   "reservations": 10,
+   "digest": "8a87013e7d2fbbd505be28ed"
+  },
+  {
+   "reservations": 10,
+   "digest": "f9ad3d3c1c098b5723c3177e"
+  },
+  {
+   "reservations": 13,
+   "digest": "29a964d7b923b669b7d96913"
+  },
+  {
+   "reservations": 11,
+   "digest": "c64c9e42b6231642aebb78ef"
+  },
+  {
+   "reservations": 10,
+   "digest": "bcbab4c72474c95fb0dfa0ee"
+  },
+  {
+   "reservations": 16,
+   "digest": "c324494fc57d86a56a42fb1b"
+  },
+  {
+   "reservations": 9,
+   "digest": "408b875ace1b968378c5ec90"
+  },
+  {
+   "reservations": 12,
+   "digest": "7d32c3b20e76964d4503909b"
+  },
+  {
+   "reservations": 12,
+   "digest": "33d10d048c79c94a9afb5a01"
+  },
+  {
+   "reservations": 6,
+   "digest": "3df31c1c48af9125f6c4b7a5"
+  },
+  {
+   "reservations": 13,
+   "digest": "3da45e0832693c2a1b40846e"
+  },
+  {
+   "reservations": 12,
+   "digest": "5a15b2fe1d089a7fadbec734"
+  },
+  {
+   "reservations": 9,
+   "digest": "b6454e2b46260fb9f7ceec4c"
+  },
+  {
+   "reservations": 13,
+   "digest": "94f3b2da7bebbdcef49d0c7a"
+  },
+  {
+   "reservations": 11,
+   "digest": "424c0f83ff6266dc0091683a"
+  },
+  {
+   "reservations": 10,
+   "digest": "f9d7d0507542828d01fcb2ca"
+  },
+  {
+   "reservations": 8,
+   "digest": "4de8f763bfc5c9b9dbaacc0e"
+  },
+  {
+   "reservations": 8,
+   "digest": "5687bca68bb74d56a0027ea0"
+  },
+  {
+   "reservations": 11,
+   "digest": "042d3437726fcad66ebd535b"
+  },
+  {
+   "reservations": 12,
+   "digest": "22160c6ab686a52c19ce9e8b"
+  },
+  {
+   "reservations": 7,
+   "digest": "d2d0dd1cd17d9fff48924ff5"
+  },
+  {
+   "reservations": 13,
+   "digest": "f90823b952cb00a18821ba02"
+  },
+  {
+   "reservations": 8,
+   "digest": "e05d47baa5b30cd6dcf01480"
+  },
+  {
+   "reservations": 7,
+   "digest": "00acf7fcaa3ed2ac0d5c9227"
+  },
+  {
+   "reservations": 13,
+   "digest": "2e0d287e92a2325152aa7007"
+  },
+  {
+   "reservations": 10,
+   "digest": "0af69fdced2024b8b41e68f3"
+  },
+  {
+   "reservations": 9,
+   "digest": "8718ca9759760a9ed2d5c993"
+  },
+  {
+   "reservations": 10,
+   "digest": "059577f8e52c30af9d730f14"
+  },
+  {
+   "reservations": 10,
+   "digest": "fa9cd3c15fae9b1b7968479c"
+  },
+  {
+   "reservations": 15,
+   "digest": "68694d279396bf001f3fb02c"
+  },
+  {
+   "reservations": 10,
+   "digest": "24115c00a59274920e1d3d52"
+  },
+  {
+   "reservations": 14,
+   "digest": "7673a8155b0b5c140900cef0"
+  },
+  {
+   "reservations": 10,
+   "digest": "67e1385205f0acd94446bf11"
+  },
+  {
+   "reservations": 10,
+   "digest": "5e6c4c6c0cf02d5325cf16c3"
+  },
+  {
+   "reservations": 12,
+   "digest": "83477a41f57cd95df2a92456"
+  },
+  {
+   "reservations": 10,
+   "digest": "d8d1c582587a440adea25dea"
+  },
+  {
+   "reservations": 8,
+   "digest": "9abc320f9e698d5d5ceab9b0"
+  },
+  {
+   "reservations": 9,
+   "digest": "11f456305e27245026a40cb2"
+  },
+  {
+   "reservations": 11,
+   "digest": "5179de07422e2b5e265380d6"
+  },
+  {
+   "reservations": 10,
+   "digest": "c2d54579f0327f7f266aaf22"
+  },
+  {
+   "reservations": 11,
+   "digest": "f40e2e21fa6ed8c40b0e1d9c"
+  },
+  {
+   "reservations": 9,
+   "digest": "4b17a4e0339e3a20afc13194"
+  },
+  {
+   "reservations": 14,
+   "digest": "fbd48ed6bcf889993f3ba293"
+  },
+  {
+   "reservations": 11,
+   "digest": "f103e068e0c6efffdb942005"
+  },
+  {
+   "reservations": 11,
+   "digest": "3aa283c06f9004ccf64c59fa"
+  },
+  {
+   "reservations": 10,
+   "digest": "b7ac71885b41de818f5fa277"
+  },
+  {
+   "reservations": 6,
+   "digest": "65b9278332efa33e029b36fa"
+  },
+  {
+   "reservations": 8,
+   "digest": "a42f6e28c0d266a3413b22a1"
+  },
+  {
+   "reservations": 10,
+   "digest": "e3f44a1e5c4c0852bd775088"
+  },
+  {
+   "reservations": 9,
+   "digest": "72142d371d7262520bce720f"
+  },
+  {
+   "reservations": 17,
+   "digest": "4e675a286cae3a46c48c8f52"
+  },
+  {
+   "reservations": 7,
+   "digest": "55341714ee31b96fc7b73be7"
+  },
+  {
+   "reservations": 8,
+   "digest": "ffeb33b28d0979c01da9bc7d"
+  },
+  {
+   "reservations": 12,
+   "digest": "c8dcda49036d255dea4dc91f"
+  },
+  {
+   "reservations": 10,
+   "digest": "5e2cb98b8e118c86a0cae2ee"
+  },
+  {
+   "reservations": 9,
+   "digest": "ef0ac3864716ddf795ad450b"
+  },
+  {
+   "reservations": 6,
+   "digest": "6b925a39fcaf96ec60d9b2d1"
+  },
+  {
+   "reservations": 6,
+   "digest": "8afe8a0fa5e5cb40589bdf38"
+  },
+  {
+   "reservations": 11,
+   "digest": "e6d20bebe21af108ac745463"
+  },
+  {
+   "reservations": 11,
+   "digest": "429c833abb8aaf87f21adcea"
+  },
+  {
+   "reservations": 11,
+   "digest": "6cdc7a5fec85aaebef4bf46c"
+  },
+  {
+   "reservations": 7,
+   "digest": "99faa59e3685d67097279123"
+  },
+  {
+   "reservations": 11,
+   "digest": "a6e62b1c2089c6ef0a437e22"
+  },
+  {
+   "reservations": 10,
+   "digest": "2fc2ee4c548ba58868918299"
+  },
+  {
+   "reservations": 10,
+   "digest": "ccddf56608e2120e63608893"
+  },
+  {
+   "reservations": 7,
+   "digest": "acfb3434fb5f8a12c1ad07ac"
+  },
+  {
+   "reservations": 11,
+   "digest": "48d27c5b9938b8f38c7e7886"
+  },
+  {
+   "reservations": 15,
+   "digest": "355005cbf80d1ca7219de347"
+  },
+  {
+   "reservations": 10,
+   "digest": "cd51443e2356596eb1d9d656"
+  },
+  {
+   "reservations": 9,
+   "digest": "fc61f84d293a901e0ee33af7"
+  },
+  {
+   "reservations": 10,
+   "digest": "50362c7ce002dbfc5d284ec5"
+  },
+  {
+   "reservations": 8,
+   "digest": "d6e139b0f66ad7b52a88cfaa"
+  },
+  {
+   "reservations": 13,
+   "digest": "9d3f32ce55bc65c141f7c9a0"
+  },
+  {
+   "reservations": 12,
+   "digest": "9a4baedbe278926b1ee7f793"
+  },
+  {
+   "reservations": 12,
+   "digest": "b0827829256429f7933d17e2"
+  },
+  {
+   "reservations": 9,
+   "digest": "3a78dcd9b944c8d5705da2dc"
+  },
+  {
+   "reservations": 13,
+   "digest": "bb919d6d44b3bbf0178de556"
+  },
+  {
+   "reservations": 11,
+   "digest": "42105692b576725362e66981"
+  },
+  {
+   "reservations": 11,
+   "digest": "fe5a4325b8b7efcb4272a140"
+  },
+  {
+   "reservations": 10,
+   "digest": "3a0e0ba711f008011699a6bf"
+  },
+  {
+   "reservations": 14,
+   "digest": "21a054f368a516865ab31abb"
+  },
+  {
+   "reservations": 12,
+   "digest": "5fb30424e624ea501b6e2508"
+  },
+  {
+   "reservations": 12,
+   "digest": "562030f9984b7ca0f97b9ffc"
+  },
+  {
+   "reservations": 13,
+   "digest": "634e5709ff705caec9a0a8d8"
+  },
+  {
+   "reservations": 14,
+   "digest": "54b2ec406c569b9850bd7a09"
+  },
+  {
+   "reservations": 7,
+   "digest": "af4b3674cfb35074862a07b0"
+  },
+  {
+   "reservations": 15,
+   "digest": "180c06aa941aec140e768738"
+  },
+  {
+   "reservations": 12,
+   "digest": "bbd3752e9ce27a3d03aa6d79"
+  },
+  {
+   "reservations": 9,
+   "digest": "f2d043be05c9e24847762594"
+  },
+  {
+   "reservations": 7,
+   "digest": "f81ddacdf54767d65ca13ffc"
+  },
+  {
+   "reservations": 9,
+   "digest": "cf4afe7aa729e70019e90258"
+  },
+  {
+   "reservations": 11,
+   "digest": "497a980308803fa553e94e0c"
+  },
+  {
+   "reservations": 8,
+   "digest": "d506cd3b40545851f5460032"
+  },
+  {
+   "reservations": 14,
+   "digest": "154213c102fc55439e63a85d"
+  },
+  {
+   "reservations": 7,
+   "digest": "ed769442b48302a2d1baa779"
+  },
+  {
+   "reservations": 11,
+   "digest": "0ae8593652fe5459c280eb24"
+  },
+  {
+   "reservations": 10,
+   "digest": "255365d845905d745840c536"
+  },
+  {
+   "reservations": 10,
+   "digest": "623ddb4f44296da33afbc7a3"
+  },
+  {
+   "reservations": 11,
+   "digest": "67935feed7d664fa718e9545"
+  },
+  {
+   "reservations": 5,
+   "digest": "77cc680bea55def3cffcef9d"
+  },
+  {
+   "reservations": 9,
+   "digest": "4ee6f0551377249e41f09a4c"
+  },
+  {
+   "reservations": 9,
+   "digest": "a2f849bf0b10f588027344f8"
+  },
+  {
+   "reservations": 7,
+   "digest": "0e4ffe2b98661aa17e95f9f9"
+  },
+  {
+   "reservations": 10,
+   "digest": "6538cffe215349079212d3af"
+  },
+  {
+   "reservations": 11,
+   "digest": "b3effe7597da81bcf6f12d0b"
+  },
+  {
+   "reservations": 10,
+   "digest": "bb7bff8dd46faefb493b9eca"
+  },
+  {
+   "reservations": 11,
+   "digest": "f53e2fa494366ef237b2f549"
+  },
+  {
+   "reservations": 12,
+   "digest": "e8ddb641a765b0de3dd6bc49"
+  },
+  {
+   "reservations": 11,
+   "digest": "0a893ae060a1b213f52d9b82"
+  },
+  {
+   "reservations": 6,
+   "digest": "f2d5dc24800b9a16600180ba"
+  },
+  {
+   "reservations": 8,
+   "digest": "60d35f445139a489304a99fa"
+  },
+  {
+   "reservations": 10,
+   "digest": "f8357bb755c4ae553e15dfcb"
+  },
+  {
+   "reservations": 11,
+   "digest": "30a026de952c732eb1f0eb75"
+  },
+  {
+   "reservations": 10,
+   "digest": "75781867a9add1e015b35f30"
+  },
+  {
+   "reservations": 13,
+   "digest": "8e7919c9de13858c7177f91f"
+  },
+  {
+   "reservations": 8,
+   "digest": "06d828bfbacc5bfd89ab6ef0"
+  },
+  {
+   "reservations": 14,
+   "digest": "72b9017052578f603160eb4f"
+  },
+  {
+   "reservations": 10,
+   "digest": "ace4b467c0967f5a55cbee15"
+  },
+  {
+   "reservations": 12,
+   "digest": "5ec6fcd6a10acbd45746e768"
+  },
+  {
+   "reservations": 12,
+   "digest": "41a0496f04423af58c6e09d6"
+  },
+  {
+   "reservations": 11,
+   "digest": "294aba64f7cf168400d19108"
+  },
+  {
+   "reservations": 12,
+   "digest": "c8ab7cab41c7b6fbcb60fecc"
+  },
+  {
+   "reservations": 13,
+   "digest": "13366c40c551937769d337b0"
+  },
+  {
+   "reservations": 10,
+   "digest": "9f0c72d92bb94d279a9429d6"
+  },
+  {
+   "reservations": 7,
+   "digest": "7fe50c758346dd472c436e9e"
+  },
+  {
+   "reservations": 13,
+   "digest": "47efffece757690f8863385b"
+  },
+  {
+   "reservations": 12,
+   "digest": "de6f9590671b9f6b8fdbe8f6"
+  },
+  {
+   "reservations": 12,
+   "digest": "55be6fc80a1e74d313786ed6"
+  },
+  {
+   "reservations": 11,
+   "digest": "cb841859f89c518b93ffb625"
+  },
+  {
+   "reservations": 14,
+   "digest": "7f043a20a8a07f7ef3d1800c"
+  },
+  {
+   "reservations": 12,
+   "digest": "aa005d8785d04bb6e6b22aa1"
+  },
+  {
+   "reservations": 13,
+   "digest": "2400c7aa564e249e509bac9c"
+  },
+  {
+   "reservations": 9,
+   "digest": "c2d4bb6703121f52b63151ea"
+  },
+  {
+   "reservations": 10,
+   "digest": "3ceae8493ec9e516204d0438"
+  },
+  {
+   "reservations": 13,
+   "digest": "6d1f88c82b96cc1e2fff9d4b"
+  },
+  {
+   "reservations": 8,
+   "digest": "ef018233032015cd1b866819"
+  },
+  {
+   "reservations": 8,
+   "digest": "f8afa39789b4f9229eebc8b4"
+  },
+  {
+   "reservations": 11,
+   "digest": "82b48612e325be14a23b8c61"
+  },
+  {
+   "reservations": 12,
+   "digest": "d1a5f54a53014f748ce8e550"
+  },
+  {
+   "reservations": 14,
+   "digest": "cf246cdc1a0c68646d94d68a"
+  },
+  {
+   "reservations": 16,
+   "digest": "22af3a6a6d6e8ecf6d869bbd"
+  },
+  {
+   "reservations": 10,
+   "digest": "8f4dcbf6436e50a7aa580523"
+  },
+  {
+   "reservations": 7,
+   "digest": "df6ef9d3ed77e9e9f465b301"
+  },
+  {
+   "reservations": 14,
+   "digest": "3ec84537ed3721199ae64903"
+  },
+  {
+   "reservations": 13,
+   "digest": "3a938d1289b226dc48a21d37"
+  },
+  {
+   "reservations": 12,
+   "digest": "3a831efd1a997ebe9ea493fb"
+  },
+  {
+   "reservations": 10,
+   "digest": "d7f7ca0ac28355fe03ae623d"
+  },
+  {
+   "reservations": 10,
+   "digest": "a4ee33933aa8aed6964cffc1"
+  },
+  {
+   "reservations": 12,
+   "digest": "9dcacf131a0538ef55206698"
+  },
+  {
+   "reservations": 9,
+   "digest": "808d20046b10fdd2558cc4ca"
+  },
+  {
+   "reservations": 12,
+   "digest": "6b04da8317ccb235491bccd9"
+  },
+  {
+   "reservations": 12,
+   "digest": "c7eb328c4c8b074362bc6fab"
+  },
+  {
+   "reservations": 10,
+   "digest": "3fbcc3ded65eefb482e7d482"
+  },
+  {
+   "reservations": 11,
+   "digest": "e369138448cd6c6259124a35"
+  },
+  {
+   "reservations": 8,
+   "digest": "56668f6d4412dd30534f3fc5"
+  },
+  {
+   "reservations": 7,
+   "digest": "0f2ff8644ccd1fb412c51d3d"
+  },
+  {
+   "reservations": 7,
+   "digest": "2f9d5079cca04778a4d349ef"
+  },
+  {
+   "reservations": 8,
+   "digest": "5c7dd8981966fbb1c00b80e3"
+  },
+  {
+   "reservations": 8,
+   "digest": "cd58ea2c5ac63775b2ad6a94"
+  },
+  {
+   "reservations": 10,
+   "digest": "93a12c9a3d8dbfb44103ff12"
+  },
+  {
+   "reservations": 7,
+   "digest": "51f21beb22af2c14e73fb49f"
+  },
+  {
+   "reservations": 8,
+   "digest": "95c203dd243178bdf741233f"
+  },
+  {
+   "reservations": 10,
+   "digest": "7dcdf2eaec8c91d35ba3d09b"
+  },
+  {
+   "reservations": 8,
+   "digest": "c306ee6cdc63388876a39160"
+  },
+  {
+   "reservations": 10,
+   "digest": "3aa979a0009b4f978d8f4e9c"
+  },
+  {
+   "reservations": 14,
+   "digest": "4634c2f6dbb7a61d35373b3b"
+  },
+  {
+   "reservations": 9,
+   "digest": "55cbfba92a2deac13e45cf9f"
+  },
+  {
+   "reservations": 10,
+   "digest": "d2bb8a69887b0e32536b5bbd"
+  },
+  {
+   "reservations": 10,
+   "digest": "247d8ae1f14523b17acba99a"
+  },
+  {
+   "reservations": 9,
+   "digest": "f1b4b9c4a883ba6d56bfaad9"
+  },
+  {
+   "reservations": 10,
+   "digest": "8a1fd432635ea667e7cbf696"
+  },
+  {
+   "reservations": 15,
+   "digest": "dd7a0a87e90a1a289277d675"
+  },
+  {
+   "reservations": 12,
+   "digest": "9515d4d68c88e3f56259038a"
+  },
+  {
+   "reservations": 8,
+   "digest": "137ca54272e9a6fa027a8386"
+  },
+  {
+   "reservations": 8,
+   "digest": "f20e621015dfc701990888e4"
+  },
+  {
+   "reservations": 13,
+   "digest": "26fdfed75be9ce79936ebff2"
+  },
+  {
+   "reservations": 10,
+   "digest": "8a3061d3948acc2ac6f0c684"
+  },
+  {
+   "reservations": 11,
+   "digest": "967b659fb66e192561e535f6"
+  },
+  {
+   "reservations": 13,
+   "digest": "f7f99b10dd57a5022c44c479"
+  },
+  {
+   "reservations": 8,
+   "digest": "9b5f896dbda6a825a9483a9e"
+  },
+  {
+   "reservations": 9,
+   "digest": "d38a3502427345f0c82f1472"
+  },
+  {
+   "reservations": 15,
+   "digest": "02205b7566ea0ee7b778748b"
+  },
+  {
+   "reservations": 9,
+   "digest": "d695ca6b88f4c710a5da8f48"
+  },
+  {
+   "reservations": 11,
+   "digest": "7d628b91f72d6d4ce56d9703"
+  },
+  {
+   "reservations": 8,
+   "digest": "92bbaf8e3c17f0e7caec5ac1"
+  },
+  {
+   "reservations": 11,
+   "digest": "9668c40fbfe1c9e8ca349f8b"
+  },
+  {
+   "reservations": 11,
+   "digest": "6915286ac53df506b4e73aff"
+  },
+  {
+   "reservations": 11,
+   "digest": "08839ae2101c26e99f94922f"
+  },
+  {
+   "reservations": 13,
+   "digest": "dc1fc6f44add47cfe79d1669"
+  },
+  {
+   "reservations": 7,
+   "digest": "7dd5329f9da3bafd0d738b3b"
+  },
+  {
+   "reservations": 10,
+   "digest": "fb1a2bed9a3abccd22275a56"
+  },
+  {
+   "reservations": 12,
+   "digest": "91385d9b13ee4994eb8f5fa3"
+  },
+  {
+   "reservations": 13,
+   "digest": "c4dda15d2287dcd0a475900e"
+  },
+  {
+   "reservations": 6,
+   "digest": "9d8e385ba8eaf694fbdb72e4"
+  },
+  {
+   "reservations": 11,
+   "digest": "80b3069dd58756b9e28ed314"
+  },
+  {
+   "reservations": 8,
+   "digest": "913d71b9ee6bda4f2b239a90"
+  },
+  {
+   "reservations": 9,
+   "digest": "30869337e4bd5ab6f264dfdc"
+  },
+  {
+   "reservations": 9,
+   "digest": "101ef375abcde320b28037b0"
+  },
+  {
+   "reservations": 7,
+   "digest": "7c5f6de466fa2bda7797a606"
+  },
+  {
+   "reservations": 10,
+   "digest": "b25fdfe8347af7220bc0f166"
+  },
+  {
+   "reservations": 11,
+   "digest": "c37f5b61b144a880e902192f"
+  },
+  {
+   "reservations": 8,
+   "digest": "4bd54facb01dc29fc005d633"
+  },
+  {
+   "reservations": 9,
+   "digest": "1167afcbafc506d782d3b255"
+  },
+  {
+   "reservations": 7,
+   "digest": "80aa8213beab978f403a895d"
+  },
+  {
+   "reservations": 8,
+   "digest": "89f7d962ebaecc8cf3d0c800"
+  },
+  {
+   "reservations": 10,
+   "digest": "16bda9a5690b36db0b67d544"
+  },
+  {
+   "reservations": 14,
+   "digest": "bcd3a209a60d4cbc354d0a99"
+  },
+  {
+   "reservations": 13,
+   "digest": "ae53624ebf33153d71b5e5b5"
+  },
+  {
+   "reservations": 12,
+   "digest": "78796debdf09c84bb88ac5f3"
+  },
+  {
+   "reservations": 15,
+   "digest": "c4616035dd38a45c5720b291"
+  },
+  {
+   "reservations": 11,
+   "digest": "18fb3848ba05d38214d7b584"
+  },
+  {
+   "reservations": 15,
+   "digest": "be1c2dc18b5e10c38fe0e38c"
+  },
+  {
+   "reservations": 7,
+   "digest": "8b046b42cd934bf202e8b70d"
+  },
+  {
+   "reservations": 8,
+   "digest": "9d8ff7f2ef4bbed92f7bb9e4"
+  },
+  {
+   "reservations": 12,
+   "digest": "fd8cf17b405c39d94348a135"
+  },
+  {
+   "reservations": 6,
+   "digest": "3764c11c0ffe4276c68f828e"
+  },
+  {
+   "reservations": 14,
+   "digest": "39f19e9491253b448b2db48d"
+  },
+  {
+   "reservations": 9,
+   "digest": "f8426386e45c9eb6fea61b5a"
+  },
+  {
+   "reservations": 7,
+   "digest": "beb4a8372b17666caf1b09a8"
+  },
+  {
+   "reservations": 7,
+   "digest": "d16f26e9ac727cf333ba5ce1"
+  },
+  {
+   "reservations": 13,
+   "digest": "a380f291342686db63949cc6"
+  },
+  {
+   "reservations": 11,
+   "digest": "66e9ce436c364e1bd44c7868"
+  },
+  {
+   "reservations": 12,
+   "digest": "fa4509df14de1e868acc5c75"
+  },
+  {
+   "reservations": 8,
+   "digest": "263ac7b699dc0465972ef77e"
+  },
+  {
+   "reservations": 11,
+   "digest": "791bca94b5312b87f695d289"
+  },
+  {
+   "reservations": 11,
+   "digest": "2024380405c5bdac3ac2880e"
+  },
+  {
+   "reservations": 13,
+   "digest": "382084ae223f35d51aef6fd5"
+  },
+  {
+   "reservations": 9,
+   "digest": "b25f7a6136005c7beb16a73c"
+  },
+  {
+   "reservations": 14,
+   "digest": "5fe0acdf415fdb1c78193de0"
+  },
+  {
+   "reservations": 10,
+   "digest": "e0c2452a194f146d8c4d44f1"
+  },
+  {
+   "reservations": 13,
+   "digest": "449aebfb8bac48b022b1bfb7"
+  },
+  {
+   "reservations": 12,
+   "digest": "32dc7f77ca16a27873a9f6c8"
+  },
+  {
+   "reservations": 10,
+   "digest": "65f8a9b9a3fdd6a8416fbdfc"
+  },
+  {
+   "reservations": 10,
+   "digest": "5ea5b06ddcd94897d534479c"
+  },
+  {
+   "reservations": 14,
+   "digest": "72b1c0d21bc8b70d0ea5a79c"
+  },
+  {
+   "reservations": 9,
+   "digest": "5ed078c9cf12642b31558cbe"
+  },
+  {
+   "reservations": 10,
+   "digest": "b8554e216daeca1e5e15b655"
+  },
+  {
+   "reservations": 14,
+   "digest": "1dcb3a11b6681efb01419720"
+  },
+  {
+   "reservations": 10,
+   "digest": "67e1385205f0acd94446bf11"
+  },
+  {
+   "reservations": 10,
+   "digest": "5e6c4c6c0cf02d5325cf16c3"
+  },
+  {
+   "reservations": 12,
+   "digest": "83477a41f57cd95df2a92456"
+  },
+  {
+   "reservations": 10,
+   "digest": "d8d1c582587a440adea25dea"
+  },
+  {
+   "reservations": 8,
+   "digest": "9abc320f9e698d5d5ceab9b0"
+  },
+  {
+   "reservations": 9,
+   "digest": "11f456305e27245026a40cb2"
+  },
+  {
+   "reservations": 11,
+   "digest": "5179de07422e2b5e265380d6"
+  },
+  {
+   "reservations": 10,
+   "digest": "c2d54579f0327f7f266aaf22"
+  },
+  {
+   "reservations": 11,
+   "digest": "f40e2e21fa6ed8c40b0e1d9c"
+  },
+  {
+   "reservations": 9,
+   "digest": "4b17a4e0339e3a20afc13194"
+  },
+  {
+   "reservations": 14,
+   "digest": "fbd48ed6bcf889993f3ba293"
+  },
+  {
+   "reservations": 11,
+   "digest": "f103e068e0c6efffdb942005"
+  }
+ ]
+}

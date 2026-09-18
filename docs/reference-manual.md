@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.4
+HatchGrab Engineering Reference Manual · V13.5
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.4**
+**Version 13.5**
 
 September 2026
 
@@ -25,6 +25,177 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.5 — 18 September 2026 — COLLECTION TIMES BECOME A PER-VAN, PER-AUDIENCE SETTING; BOTH CAPACITY CEILINGS BECOME PHYSICAL (PEAK, NOT SUM); ORDERS NOW RESERVE THEIR COOKING BATCHES; WIRED PRINTING BUILT; A STRAY SCRIPT OVERWROTE 132 DISCOVERY ROWS
+
+**Status:** built and tested on localhost against the live database, **NOT YET DEPLOYED** at the time of
+writing. Five migrations are already applied by hand (table at the end of this entry). Update this line once
+the commit is live.
+
+**Collection times are now a setting, per van and per audience.** Manage → Settings carries a Collection
+times box above each van's Kitchen capacity box: "Customer Collection Times" (5/10/15/20/30, default 5) and,
+behind "Use different times for orders I add", "Your Collection Times" (nullable — NULL means "same as
+customers"). The dashboard Settings tab carries the same box for the SELECTED EVENT, with "Use my usual
+setting" to clear it. Three layers resolve in order: `truck_events.*_override` → `truck_vans` → (no van)
+`trucks.collection_interval_mins`.
+
+**Grids are clock-anchored.** Selectable times are multiples of the interval measured from midnight; the
+first is the first multiple at or after the event start. At interval 5 this is byte-identical to V13.4 for
+every truck: LIVE-verified 16 September that no Gusto event, and no event from that date onward for any
+truck, starts off a 5-minute mark.
+
+**🔴 THE PER-CATEGORY BATCH CEILING WAS SAME-START, NOT ROLLING — AND IS NOW PEAK.** [OBSERVED, fixture]
+`fitOrderBackward` compared only batches beginning at the identical minute, so on a grid finer than the prep
+two overlapping batches both passed: 8 pizzas at 18:15 (cooking 18:00–18:15) plus 8 at 18:20 (cooking
+18:05–18:20) put **16 on an 8-batch grill**. Fixed in two steps: first made rolling, then made **peak** —
+`peakLoadOver` returns the maximum concurrent load at any instant of a span, not the sum of batches touching
+it. The sum wrongly refused back-to-back batches (4 @22:10 + 4 @22:25 read 8 across 22:00–22:15 though only
+4 are ever in the oven). **The kitchen ceiling uses the same `peakLoadOver`**, and `windowScopedPeak` is now
+that same code. Admission is a strict superset of V13.4: 0 lost admissions across 2,520 + 2,592 seeded
+states, 0 minute-level violations.
+
+**Orders now record which batches they cook in.** `orders.cooking_reservation` (jsonb, nullable) is written
+under the same event lock that admitted the order. A reservation never moves once written; a new order only
+checks free space. Orders placed before this carry NULL and fall back to V13.4's split, so nothing already
+on a board moved.
+
+**Dominic's rule, behind a per-truck switch.** An order of a category uses exactly `ceil(items / batch)`
+back-to-back windows ending at its collection time — never more; an order that fits one batch is never
+split; it fits if those windows' free space adds up; it reserves nearest-collection-first (freshest food).
+ON iff `trucks.feature_overrides->>'batch_reservations' = 'true'` OR `plan = 'demo'`. **Pizzeria Gusto is
+OFF** and sees V13.4 admission. Measured on Gusto's shape: +2.9% admissions, 0 refusals of anything accepted
+today, −15% food waiting.
+
+**🔴 AN OPERATOR ORDER WAS COUNTED TWICE.** [OBSERVED, live test kitchen] The manual path rebuilt the slot
+totals *before* `admitForManual` read them, and the own-key exclusion only applied on the reseed path. A
+16-pizza order for 20:30 was admitted, then judged against a board already containing its own 16, stored as
+an `override` nobody chose, and flagged over capacity. `admitForManual` now reads the board through
+`readUnitsWithoutOrder`. The customer path was never affected.
+
+**🔴 A DOT REPORTED A NEIGHBOUR'S WINDOW.** [OBSERVED, live test kitchen] `coverDotWindows` returned the
+fullest covered window's own record, so on a 15-minute grid the 12:15 dot reported `[11:50, 12:05)` — full —
+instead of its own `[12:00, 12:15)`, which held 4 of 8. That one fault produced the wrong count, the wrong
+tone, a false `available: false`, and ASAP skipping to 12:30 while the per-time fit accepted 12:15. Each dot
+now builds its own record for `[T − max(prep, grid), T)`, and ASAP no longer pre-filters on the no-basket
+`available`. Across all 20,540 golden cases the fix moved **0 fit verdicts, 0 placements, 0 reservations** —
+only dots (54) and breach wordings (21).
+
+**🔴 A DISMISSED OVER-CAPACITY WARNING CAME BACK.** [OBSERVED, live test kitchen] Dismissal was keyed to a
+signature of the WHOLE breach set compared for equality, so any change to the set re-showed the banner —
+including the set getting **smaller**. A warning covering six slots was dismissed; cancelling the order that
+had pushed one of them over re-raised the other five, which had just been reviewed. `unreviewedBreaches` now
+records each slot at the severity it was dismissed at and returns only what is **new or worse**: a slot never
+dismissed, one further over the kitchen ceiling, or one further over a category batch. The acknowledgement is
+rewritten to the current set while hidden, so a breach that clears and returns is new again. Reading the
+stored signature back also had a parsing bug — `split(':')` on `"13:45:0:pizza2"` gave time `13`, over-total
+`45` — now one anchored regex.
+
+**Add Order display.** The time list shows: the total cooked in the stretch a dot covers (each batch counted
+once); a leading `× ` (U+00D7 MULTIPLICATION SIGN) on times the current order cannot be placed at, with a
+same-width FIGURE SPACE (U+2007) on pickable rows; and `· Not enough time` on green and amber rows only.
+⚠️ **The marker pair is matched by DEFINITION, not by eye:** `×` is a mathematical operator, which fonts set
+to the width of a digit, and U+2007 *is* a digit's width. `✕` (U+2715) was tried first and is NOT the same
+width as any standard space — the times sat left and right of each other down the list. The over-capacity
+popup is now "Can't be ready by {T}" and names the real limit ("Pizza over batch — 16 for 20:30 (8 per
+batch)"), replacing V13.4's "Around 18:15–18:45 it would need 16". The word "peak" no longer appears in any
+rendered string.
+
+**The Add Order panel's own capacity snapshot now invalidates on every capacity input** — grid, categories,
+van capacity, event, orders — so cancelling, editing, a settings change or a new order updates the list
+without a manual refresh. Previously only the panel's own actions did.
+
+**The edit path takes the event lock (switch ON only), before the write.** V13.4 took none; the first
+attempt took it *after* the row update, so a busy refusal would have said "try again" about an order already
+changed. A busy lock now returns the manual path's 409 `{ error, retry: true }` with nothing written.
+
+**Wired printing is built, not shipped.** A local Capacitor plugin (`@hatchgrab/net-printer`) sends ESC/POS
+over raw TCP to port 9100 from both native apps; a "Printer type: Bluetooth / Wired" choice sits inside the
+connect step. One device per van may print wired (`truck_vans.network_printer_address`,
+`network_print_device_id`), because a LAN printer is reachable by every device on the network — the physical
+protection BLE gave for free. **Every wired surface is gated on `Capacitor.isPluginAvailable('NetPrinter')`**,
+so a store binary loading this web build sees no change at all. Still true: **nothing has ever printed on
+paper**.
+
+**🔴 INCIDENT — a `scripts/*.cjs` glob ran `migrate-from-sheets.cjs` against production.** [OBSERVED, 17
+September 12:53 UTC] It upserted the master Google Sheet over `public.discovery_trucks`: **132 rows
+overwritten across 20 columns, 19 rows inserted** (several not food trucks). No other table and no storage
+object was touched; Gusto's row, its `hatchgrab_truck_id` link and its visibility flags were unaffected.
+Images were recovered by relinking 12 rows to storage objects that still existed; the 19 new rows were
+hidden (`excluded = true`, both show flags false). `contact_email`, `phone`, and anything the enrichment job
+or the Hatches Up importer wrote that the Sheet lacks remain lost pending a backup.
+
+**Safeguards.** `scripts/harnesses.json` lists every harness; `scripts/run-harnesses.cjs` runs only what is
+listed and **refuses the whole run** if a listed file contains `createClient`, a service-role key,
+`googleapis`, `stripe`, or a non-localhost `fetch(`. `migrate-from-sheets.cjs` and
+`register-payment-domain.cjs` refuse to run without `--yes-write-to-production` as their first executable
+statement. **Standing rule: never glob `scripts/`; run only named files.** See §59.
+
+**Harnesses: 53 and rising, with true exit codes.** An earlier loop reported success even when a harness
+failed, which hid a WhatsApp parity failure introduced by a printing copy change. Fixed; every report since
+records `rc` per file.
+
+**🔴 THE ADD ORDER TIME LIST WENT STALE THREE TIMES, FOR THREE DIFFERENT REASONS.** [OBSERVED, localhost]
+Each fix passed its fixtures and then failed in the browser, which is the lesson worth keeping.
+
+1. **The panel kept its own /api/slots snapshot that nothing invalidated.** Fixed by deriving a snapshot key
+   from the dashboard payload's capacity-relevant fields and refetching when it changes.
+2. **The dashboard's own refetch discarded itself.** `fetchAll` opened with a guard that returned early when
+   a read was already in flight, so an operator action taken during the 60-second poll was DROPPED, NEVER
+   QUEUED — the key had nothing to notice. `fetchAll` gains a third mode, `supersede`, used by the six
+   operator-action refetches; only the poll is ever discarded, and exactly one read stays in flight. The key
+   now reads the orders' STATUSES rather than a fold of them, so a cancellation changes it.
+3. **The refresher was disposed at mount under React StrictMode**, Next's dev default, so every trigger
+   returned false and no read was ever made. Fixed by creating it in an effect. Reproduced with 0 reads
+   against the real component.
+
+Triggers now: a basket change, the dropdown opening, the tab being shown, a dashboard refetch or realtime
+event, and a snapshot older than 10 seconds. Throttled to one read per 5 seconds with a TRAILING call, so a
+burst never loses the final state. Updates happen in place: no remount, no reload, the dropdown stays open.
+
+**🔴 "Can't reach the server" appeared on every action that writes an order row.** [OBSERVED, localhost] A
+regression from the `supersede` change above: a read the client deliberately aborted and replaced shares one
+`AbortController` with the 10-second read timeout, and both reject identically, so our own abort was
+classified as a connectivity failure. A superseded read is now silent, and an application error has its own
+wording — a failing backend no longer tells the operator to check their connection. The Ready press itself
+was correct throughout: one write per press, identical under one-press and two-press completion.
+
+### Migrations applied by hand (all five live before deploy)
+
+| File | What it did |
+|---|---|
+| `20260916_collection_intervals.sql` | `trucks.operator_collection_interval_mins` + CHECKs (the column is dropped again by 20260917) |
+| `20260917_van_collection_intervals.sql` | Both `truck_vans` interval columns; drops the `trucks` operator column |
+| `20260918_event_collection_intervals.sql` | Both `truck_events` override columns |
+| `20260919_van_network_printer.sql` | Both `truck_vans` wired-printer columns |
+| `20260920_orders_cooking_reservation.sql` | `orders.cooking_reservation` |
+
+**Do not write an "applied / not applied" status into a migration header.** A stale header is a trap (§35).
+
+### Open items
+
+1. **Off-list collection times are still confirmed with NO capacity check.** Reachable from a stale page or
+   an offline replay just after a settings change. Decided: leave as is (18 September).
+2. **Contact emails and phones for 132 discovery rows** — lost in the 17 September incident; recoverable only
+   from a pre-12:53 UTC backup.
+3. **The 19 inserted discovery rows** are hidden, not deleted. Decide whether any are real trucks.
+4. **Two unconfirmed Gusto events carry no van.** Harmless while unconfirmed (excluded from `/api/events` and
+   `/api/menu`); a *confirmed* van-less event takes orders with NO capacity ceiling.
+5. **`/api/inbound-schedule` omits `van_id`** — the van is assigned at confirm by `/api/events/action`.
+6. **PIN-protected dashboards cannot use wired printing** — two props on the dashboard page.
+7. **Landing, plan-features and store-listing copy** say "Bluetooth or wired printer" — HOLD until both store
+   updates are live.
+8. **`plugins/hatchgrab-net-printer/**/build` and `.swiftpm`** — 34 untracked build files want a `.gitignore`
+   entry.
+9. **Two stale detached worktrees** under `/private/var/folders/…/slot-head-dots-*`, left by harness runs.
+10. **Add Order places the order if its own capacity re-check ERRORS** — long-standing; tighten to warn.
+11. **The frozen rolling golden has been patched three times rather than rebuilt** — see §59.
+12. **The over-capacity banner's headline counts breached windows while its lines group by contributing
+    order slot**, so "4 slots over capacity" can sit above six lines. Display only; not yet fixed.
+13. **The browser test for the stale list is not automated** — `scripts/add-order-stale-browser.cjs` needs
+    an operator session; run it headed after any change to the dashboard's fetch or the panel's refresh
+    triggers.
+14. **`seedDemoOrders` splits its resolution** — capacity from the van, collection interval from the truck.
+    Identical while everything is 5; wrong the moment a demo van is set to another interval.
 
 ## V13.4 — 16 September 2026 — TOKEN REFRESH PROVEN AND SWITCHED ON; META REFUSES OUR PAYMENT-STATUS CHECK, SO THE PAYMENT ROW STAYS HIDDEN FOR GOOD
 
@@ -15578,12 +15749,83 @@ baseline is still stale.
 ### The one-paragraph model
 5-minute **collection slots are a SELECTION CONVENIENCE ONLY** — easy times for the customer/operator to pick. They are NOT cooking units. **Cooking capacity is the ENGINE's job**, handled by a rolling backward-fit/sweep-line over prep-length windows, constrained by two ceilings (batch + kitchen capacity). **There are NO fixed production windows.** A collection slot of 17:05 does not mean "cook in the 17:00–17:10 box"; it means "the customer collects at 17:05, and the engine ensures the food can be cooked to be ready by then."
 
-### The two ceilings (this is the whole capacity model)
-Every rolling cooking window (length = prep time, e.g. 5 min) is constrained by BOTH, independently:
-1. **Batch (per-category):** max of ONE category per window. E.g. pizza batch 2 = max 2 pizzas cooking at once.
-2. **Kitchen capacity (cross-category total):** max TOTAL items of any kind per window. E.g. kitchen capacity 4 = max 4 items total, any mix.
+### Selectable collection times — every N minutes, per van, per audience (V13.5)
+N is 5, 10, 15, 20 or 30. Resolution order for an event:
+`truck_events.collection_interval_mins_override` (and `operator_collection_interval_mins_override`) → the
+event's van (`truck_vans`) → 5 where no van resolves. The legacy `interval 0 ⇒ collection_times` contract
+still reads `trucks.collection_interval_mins`.
 
-A window is FULL when EITHER ceiling is hit. Both always apply.
+**Grids are clock-anchored from midnight.** The first selectable time is the first multiple at or after the
+event start, the last the last multiple at or before end + grace. An event opening at 17:50 on 15-minute
+times therefore starts at 18:00.
+
+**Columns.**
+- `truck_vans` gains `collection_interval_mins` (integer NOT NULL default 5, CHECK in 5/10/15/20/30) and
+  `operator_collection_interval_mins` (integer NULL, no default, same CHECK or NULL). ⚠️ **NULL means "same
+  as customers"**, not 5.
+- `truck_events` gains `collection_interval_mins_override` and `operator_collection_interval_mins_override`
+  (both integer NULL). The customer column is the switch: an event has an override iff it is non-null, and
+  then the event owns its WHOLE pair and the van is ignored. An operator override with no customer override
+  is rejected by the save route with a 400 (no cross-column CHECK, so a bulk clear cannot trip a 23514).
+- `trucks.collection_interval_mins` is **no longer editable** and is read only for the no-van fallback and
+  the legacy contract. `trucks.operator_collection_interval_mins` existed 16–17 September and is dropped.
+- The interval keys are on `update_van_settings` and the dashboard event save, **not** `update_truck`, and an
+  invalid value returns a visible error rather than being silently dropped.
+
+🔴 **MANAGE vs DASHBOARD — the rule the codebase does not agree on.** Two incompatible precedents exist for
+what a Manage change does to existing event overrides: `order_ready_override` bulk-writes them, the paid-step
+family deliberately does not. **Collection times follow the order-ready rule, by Dominic's decision of 17
+September 2026**: a Manage change CLEARS that van's event overrides to NULL (so events resume inheriting),
+scoped to the van being edited, with no date filter. Without this written down the next person will read
+`paid-step.ts`'s reasoning, find it persuasive, and build the other behaviour.
+
+**"Use my usual setting"** exists on the Collection times box and nowhere else. The three payment overrides
+still have no route back to inheriting. That inconsistency is deliberate and unresolved.
+
+**The settings box shows one conditional line** — *"{Category} takes {prep} minutes to cook, so some times
+between batches will show as full."* — only when the chosen interval is not a whole multiple of some cooking
+category's prep. It names the longest misaligned category.
+
+### The two ceilings — both PHYSICAL, both PEAK (V13.5)
+Both ceilings are limits on what is in the kitchen **at one instant**, judged over every rolling cooking
+window an order would occupy. Intervals are half-open: a batch that finishes as the next starts never
+overlaps it.
+1. **Batch (per-category):** at no instant may more than `batch_size` items of a category be cooking. For a
+   candidate window `[S, S+prep)` the existing load is `peakLoadOver(intervals, cat, S, S+prep)` — the
+   MAXIMUM CONCURRENT load at any instant of the span. E.g. pizza batch 2 = max 2 pizzas cooking at once.
+2. **Kitchen capacity (cross-category total):** at no instant may more than `truck_vans.kitchen_capacity`
+   items of any kind be cooking — every category's batches plus ticked no-prep items, which count at the
+   instant they are seated. Same `peakLoadOver`, across categories.
+
+A window is FULL when EITHER peak reaches its limit. Both always apply.
+
+🔴 **BOTH READINGS REPLACED PRE-V13.5 ONES, AND THE HISTORY MATTERS.** The batch was a **same-start-minute**
+lookup, which let two partly overlapping batches pass — 8 pizzas at 18:15 and 8 at 18:20 put 16 on an
+8-batch grill. The interim rolling reading, and the kitchen ceiling's own reads, **summed every batch
+touching the span**, which wrongly REFUSED back-to-back batches (4 @22:10 + 4 @22:25 read 8 across
+22:00–22:15 though only 4 are ever in the oven). Peak is the physical quantity. ONE implementation
+(`peakLoadOver`) answers every reader — admission (`reserveBatches`, `fitOrderBackward`), the dot tone, the
+dot label and `detectCapacityBreaches` — so they cannot disagree; `windowScopedPeak` is now that same code.
+
+🔴 **WHERE THE GRID IS A WHOLE MULTIPLE OF EVERY PREP, PEAK == SUM AND NOTHING CHANGED.** That is the proof
+that protects Pizzeria Gusto (prep 5 on a 5-minute grid, `kitchen_capacity` 2 = batch 2): measured 0
+differences across 320 seeded states, 300 Gusto-shaped and 20,000 sweep fixtures.
+
+### Cooking reservations (V13.5)
+`orders.cooking_reservation` (jsonb, nullable) records the windows an order was admitted into: per category,
+`{startMins, endMins, items}`, plus the grid, prep and batch it was computed under, and
+`source: 'fit' | 'override'`. It is written **under the same event lock that admitted the order**, before the
+lock is released; a failed write leaves NULL and never fails the order.
+
+- Reservations are seated verbatim by `projectBackwardOccupancy`. The unreserved remainder of a slot total is
+  seated with the pre-V13.5 split, so orders placed before this keep exactly their old arrangement.
+- A reservation whose recorded batch or prep no longer matches the truck's settings is discarded by
+  `validReservationsAt` and that order falls back to the split. ⚠️ This is common in practice: change a
+  category's prep or batch mid-event and every reservation on the board stops being read.
+- **Shared slots fall back wholly.** Where a collection time carries load from more than one order, the
+  per-order representation cannot reproduce the aggregate display, so reservations are ignored for that slot.
+  Proven identical over 50,000 simulated steps.
+- Nothing that arrives later ever moves an existing reservation.
 
 **Worked example** (pizza batch 2, dessert batch 3, kitchen capacity 4, prep 5):
 - 2 pizzas + 2 desserts = 4 total ✓ (pizza at batch 2; total at capacity 4) — full.
@@ -15599,6 +15841,18 @@ An order's items spread BACKWARD across cooking windows from its collection time
 - Window ending 17:05 holds the remainder (1 pizza); window ending 17:00 holds a full batch (2 pizzas).
 - So: cooking window ending 17:00 = 2 pizzas, window ending 17:05 = 1 pizza.
 - The food for all 3 is ready by the 17:05 collection time. The 2 cooked "early" (by 17:00) wait; the engine just ensures throughput.
+
+**Admission under `batch_reservations` (V13.5, per-truck switch).** For each cooking category in an order
+collected at T: the order uses exactly `ceil(items / batch)` back-to-back windows ending at T, never more; an
+order of `batch` items or fewer uses exactly ONE window and is never split; it FITS iff the free space across
+those windows sums to at least its item count; it reserves **nearest-collection-first**, so the fullest batch
+is the one closest to hand-over (freshest food).
+
+Switch: ON iff `trucks.feature_overrides->>'batch_reservations' = 'true'` OR `trucks.plan = 'demo'`.
+**OFF (Pizzeria Gusto) is byte-identical to V13.4 admission.** With the switch OFF the engine keeps the old
+"full batches early, remainder nearest the deadline" spread, which refuses orders that would fit the other
+way round — the 9-pizzas-at-17:30 case. Measured on Gusto's shape with the switch ON: **+2.9% admissions, 0
+refusals of anything accepted today, −15% food waiting.**
 
 ### Event-start pre-open seating — the run-up + first-slot pile-up (event-start ONLY)
 Cooking CAN begin before event-start, but only by ONE batch-window — the **run-up**. For a 16:30 open at 5-min prep / batch 4, the first batch cooks 16:25→16:30 and is ready BY open; that pre-open window shows against the 16:30 slot. This is the existing `eventStartMins − prep` one-window credit (V7.2) — and it applies to the DISPLAY dot as well as the fit path.
@@ -15676,7 +15930,39 @@ Every break in this saga was the SAME mistake: a PARALLEL model maintained along
 - ENGINE (source of truth): `lib/slot-availability.ts` — projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot, the sweep-line (concurrencyAt/maxConcurrentCount) enforcing kitchen_capacity.
 - WRITE: `lib/slot-bookings.ts` — buildUnitsFromOrders (timeMap[ct]||ct, single-time keys), rebuildProductionSlotUsage.
 - DISPLAYS (must read the engine): `lib/slot-display.ts` buildSlotIndicators (dots), AddOrderPanel.tsx (ASAP label + ready-time).
+
+### DISPLAYS — what a dot means (V13.5)
+Every operator surface — the dashboard capacity strip, the Add Order time list and the edit picker — reads
+ONE helper, which reads the same numbers admission reads.
+
+- **Tone** = the PEAK concurrent load for the dot's OWN stretch `[T − max(prep, grid), T)` against batch and
+  cap. 🔴 **A dot NEVER reports a neighbouring window's record.** Pre-V13.5 `coverDotWindows` returned the
+  fullest COVERED window's own record, so on a 15-minute grid the 12:15 dot reported `[11:50, 12:05)` — full
+  — instead of its own `[12:00, 12:15)`, which held 4 of 8. One fault, four wrong answers: the count, the
+  tone, `available: false`, and ASAP skipping the time.
+- **Label** = the TOTAL items cooked in that same stretch, each batch counted ONCE. On a grid wider than the
+  prep this legitimately exceeds the batch: 2-per-batch on 10-minute times reads "4 Pizzas". On a grid finer
+  than the prep the SAME batch is named on each time it covers — "8 Pizzas", never 16. Strings removed in
+  V13.5: `peak …`, `Full`, `Pizza full`, `Kitchen full`, `{n} free`, `Kitchen: {n} free`.
+- **The event-start pile keeps its RAW piled count**, unchanged (the 6-of-batch-4 example above).
+- **Add Order only:** a leading `× ` (U+00D7) where `fitOrderBackward` refuses the CURRENT basket at that
+  time, a same-width figure space (U+2007) where it fits, and `· Not enough time` on GREEN and AMBER rows
+  only — a red dot already says the kitchen is full and does not repeat itself. Refused rows are never
+  `disabled`: they stay selectable and open the "Can't be ready by {T}" popup with "Place it anyway". The
+  native `<select>` cannot be greyed on macOS or iOS; a custom listbox is the only route to that and was
+  deliberately NOT built.
+- 🔴 **A RED DOT IS NOT THE SAME AS AN UNBOOKABLE TIME** where the grid is wider than the prep: the dot means
+  the oven is full at some instant of its stretch, while the order may land in the free part of it. **The
+  cross, not the colour, is the bookability signal**, and ASAP follows the cross — it no longer pre-filters
+  on the no-basket `available`.
+- **The customer order page renders no tone or label at all** — it simply omits times that do not fit.
 - GRID GEN (display-only, never persisted): `lib/slot-generation.ts` generateCollectionTimes.
+
+**The Add Order list's freshness contract (V13.5).** The picker is a convenience; the submit's own re-check
+is what protects capacity, and it is unchanged. The list refreshes on a basket change, the dropdown opening,
+the tab being shown, a dashboard refetch or realtime event, and a snapshot older than 10 seconds — at most
+one read per 5 seconds, with a trailing call. It never remounts, never reloads the page, and fails silently
+to the last known data. Offline it uses the cached payload and makes no read.
 <!-- ============================================================ -->
 <!-- END SLOT & CAPACITY ENGINE SPEC -->
 <!-- ============================================================ -->
@@ -22695,6 +22981,37 @@ The Settings card **no longer manufactures a connection**. ⚠️ The settings w
 > restored parity-guard coverage that `'coming_soon'` had silently removed. **The billing-tab exposure
 > stands until a ticket has come out of a real printer.**
 
+## Wired (network) printing — Phase C (V13.5, BUILT, NOT SHIPPED)
+`PrinterClass` gains `'net'`. `lib/printing/netTransport.ts` implements the existing `PrinterTransport` seam
+over a local Capacitor plugin, `@hatchgrab/net-printer` (Android `java.net.Socket`; iOS `Network.framework`),
+sending ESC/POS to `host[:port]`, default **9100**, one socket per ticket.
+
+- 🔴 **THE FAILED/UNKNOWN SPLIT IS PRESERVED BY `bytesWritten`.** Any failure BEFORE a byte is written
+  returns `{ ok: false }` ('failed', clean reprint); any failure AFTER at least one byte THROWS ('unknown',
+  and the next ticket carries POSSIBLE DUPLICATE). ⚠️ A printer that buffers a whole small ticket and then
+  dies is invisible to any sender, hardware included — **recorded, not solved**.
+- **iOS needs `NSLocalNetworkUsageDescription`** and shows a one-time Local Network prompt; a refusal maps to
+  `availability: 'unauthorised'` with its own operator copy. No `NSBonjourServices`: there is no discovery,
+  the address is typed in.
+- **One device per van** may print wired: `truck_vans.network_printer_address` and `network_print_device_id`
+  (both text, nullable). A second device shows "Printing is on another device. Move printing to this
+  device?". This exists because **a LAN printer is reachable by every device on the network** — the physical
+  protection BLE gave for free. Bluetooth is unchanged: it is paired to one device physically.
+- 🔴 **EVERYTHING WIRED IS GATED ON THE PLUGIN BEING PRESENT IN THE RUNNING BINARY**
+  (`Capacitor.isPluginAvailable('NetPrinter')`). A store build loading this web build renders no Printer type
+  choice at all, and a stored `'net'` reads back as `'ble'`. **The apps load `https://www.hatchgrab.com/app`,
+  so a web deploy reaches today's binaries: this gate is what makes that safe.**
+- **PIN-protected dashboards cannot use wired printing yet** — the card says so. The proper fix is two props
+  on the dashboard page.
+- **Web printing remains OFF.** The browser cannot reach a LAN printer; the only route is a
+  printer-polls-server queue (Star CloudPRNT / Epson Server Direct Print), which needs internet at the event
+  and moves dedupe server-side.
+
+Marketing copy (landing page, `lib/plan-features.ts`, store listing) says **"Bluetooth or wired printer"** and
+the word "thermal" is gone. ⚠️ **HOLD those files until both app store updates are live.**
+
+**Still true: nothing has ever printed on paper.**
+
 **`/dev` is now gated by `app/dev/layout.tsx`, which `notFound()`s in production** — the **directory**, so future dev pages are covered by default. ⚠️ Known limit: **a layout does not gate Route Handlers.**
 
 # 43. Legal, email and domain (V11.4)
@@ -24918,6 +25235,26 @@ the direction negation, deliberately.
 
 ---
 
+## V13.5 round (18 September 2026)
+Logging a contact now **closes the compose window** (guarded by a synchronous in-flight ref, which also ends
+the 0.755s double-submit); an outbound log moves the stage `not_contacted → contacted` via a **CONDITIONAL**
+update, so a manually set stage is never overwritten, including from a stale tab; the CONTACT column is
+replaced by read-only EMAIL and MOBILE ticks using `channelFor`'s own presence tests; do-not-contact
+prospects are hidden by default behind an unticked "Show do not contact", replacing the old filter.
+
+🔴 **§52.2's opt-out footer row is STALE and §53.8 item 8 is CORRECT:** `OPT_OUT_FOOTER` exists in no code
+file. The compose window's label now says so rather than claiming a footer is added. ⚠️ **Anything sent via
+Copy (WhatsApp) carries no opt-out line at all** — open compliance item.
+
+**The row thumb's real symbol is `MediaCell`**, not `Thumb` (a V13.5 report named it wrongly). Both thumbs
+share `useThumbLatch`: the error latch now clears on a successful `load()`, not only on a changed value, so a
+transient image failure no longer hides a logo until a page refresh, and each failure logs one
+`[outreach-thumb]` line. The upload path re-reads via `load()` instead of merging the route's URL.
+
+⚠️ **Latent trap:** the upload route falls back `NEXT_PUBLIC_SUPABASE_URL || SUPABASE_URL`; `resolveTruckLogo`
+reads only the public var. If the public var were ever unset, the upload would return a working URL and the
+list would return `undefined/storage/…`.
+
 # 53. The shared dedup gate, R5, and the venue-matching wall (V12.9 — 10–11 September 2026)
 
 🧪 **Every figure in this section was re-derived against the live database on 11 September 2026 at
@@ -25537,6 +25874,60 @@ renumber put all 7 templates on a 10–70 ladder, touching only the 2 rows that 
   its own wrapper; the shell wrapper closes earlier. The editor column gets **568–748px**, not the 424px
   an earlier report calculated by assuming the shell cap applied. The list rail is a **fixed 240px track
   at every viewport width** — widening the window gives every extra pixel to the editor and preview.
+
+---
+
+# 59. Operational scripts, harnesses and the goldens (V13.5 — 17–19 September 2026)
+
+🔴 **NEVER GLOB `scripts/`.** On 17 September a `scripts/*.cjs` verification sweep ran
+`migrate-from-sheets.cjs` against production, upserting the master Google Sheet over
+`public.discovery_trucks`: 132 rows overwritten across 20 columns, 19 inserted, in 1.2 seconds, with no
+confirmation and no trace (the table has no `updated_at` trigger). **A glob cannot tell a proof from a
+migration; a list can.** Run only `node scripts/run-harnesses.cjs`, or a file named explicitly in the task.
+
+**The three safeguards built in response.**
+1. `scripts/harnesses.json` lists every harness. `scripts/run-harnesses.cjs` runs only what is listed and
+   **refuses the WHOLE run** — not just the offending file — if any listed file contains `createClient`, a
+   service-role key, `googleapis`, `stripe`, or a non-localhost `fetch(`.
+2. `migrate-from-sheets.cjs` and `register-payment-domain.cjs` refuse to run without
+   `--yes-write-to-production` **as their first executable statement**, above any import, so the check
+   cannot be reached after a client has been built. The flag is deliberately long and unguessable by a glob.
+3. Golden generators (`scripts/_*-generate.cjs`) are deliberately **NOT** in the harness list.
+
+**True exit codes.** An earlier sweep loop reported success even when a harness failed, which hid a WhatsApp
+parity failure introduced by a printing copy change. Every report since records `rc` per file.
+
+**The goldens.** `scripts/fixtures/batch-rolling-golden.json` and `batch-reservation-golden-on.json` hold
+~20,540 pre-change outputs and are the regression net for the capacity engine. They must **never** be
+regenerated to make a failure go away. Regeneration is allowed only when every differing entry is listed,
+shown to be display-only, and **no fit verdict, placement or reservation differs** — the test that let the
+V13.5 dot fixes through (0 fits, 0 asap, 0 placements, 0 windows; 54 dots and 21 breach wordings).
+
+⚠️ **THE FROZEN ROLLING BASELINE HAS BEEN PATCHED THREE TIMES RATHER THAN REBUILT.**
+`_batch-rolling-golden-generate.cjs` refuses any tree whose `lib/slot-availability.ts` does not hash to
+`108f72a832df067c…` — the original pre-fix baseline — which is correct, since rebuilding it from a post-fix
+tree would erase the very thing it proves. So each legitimate display change has instead been recorded as a
+reconstruction in `scripts/batch-rolling-identity.cjs`, which now compiles one copy of the tree with the
+pre-fix label span, the `peak ` prefix, the label floor **and** the cover record restored. **Rebuild it
+properly before the next engine change** — either narrow its snapshot to the engine fields (`windows`,
+`intervals`, `fits`, `asap`) and let the dot harnesses own the display, or retire it in favour of
+`batch-reservation-golden-on.json`, which pins current behaviour and regenerates cleanly.
+
+**Every harness runs its BROKEN VARIANTS FIRST.** A harness that cannot fail proves nothing; each one
+compiles a patched copy of `lib/` with the defect reintroduced and asserts that it FAILS before asserting
+the real result. This is what caught the V13.5 signature parser (`split(':')` on `"13:45:0:pizza2"`).
+
+**Fixtures cannot catch a mount-time defect.** Three stale-list fixes passed their fixture harnesses while
+the bug was live in the browser: the failures were a dropped refetch, an abort classified as a network error,
+and a StrictMode double-invoke disposing the refresher at mount. A browser-level test now exists for the
+cancel → add item → open dropdown sequence (`scripts/add-order-stale-browser.cjs`), but it needs an operator
+session and must be run headed, so it is not in `harnesses.json`. Run it by hand after any change to the
+dashboard's fetch or the panel's refresh triggers.
+
+**React StrictMode is the dev default in Next.** Anything created at mount and disposed on unmount runs
+twice in development, and a resource disposed by the second invocation is gone for the life of the page.
+Create such resources in an effect, and prove it against the real component rather than a fixture —
+`scripts/add-order-refresh-inputs.cjs` now mounts under `React.StrictMode` for exactly this reason.
 
 ---
 

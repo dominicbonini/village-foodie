@@ -35,8 +35,42 @@
 // is not printed, the order stays due, and the next tick tries again.
 
 import { Capacitor } from '@capacitor/core'
+import { Preferences } from '@capacitor/preferences'
 
-export type PrinterClass = 'mfi' | 'ble'
+// 'net' ADDED 17 September 2026 — the wired (network, port 9100) backend, lib/printing/netTransport.ts.
+export type PrinterClass = 'mfi' | 'ble' | 'net'
+
+/** The operator's choice of backend, stored per DEVICE in Preferences under PRINTER_KIND_KEY.
+ *  🔴 ABSENT MEANS 'ble' — exactly today's selection and today's behaviour. A device that has never
+ *  chosen a printer type must never see a new backend. */
+export type PrinterKind = 'ble' | 'net'
+export const PRINTER_KIND_KEY = 'hg_printer_kind'
+
+// ── 🔴 THE SHELL LOADS THE LIVE SITE, SO OLD BINARIES RUN NEW WEB CODE (17 September 2026) ─────────
+// capacitor.config's `server.url` is https://www.hatchgrab.com/app — the native app is a REMOTE-URL
+// shell (§36 / V11.3: "a VERCEL DEPLOY IS NOW AN INSTANT CHANGE TO A SHIPPED APP"). The moment this web
+// code deploys, every device still running the store build executes it — and those binaries contain NO
+// NetPrinterPlugin. Without the check below, such a device could choose Wired, store 'net', build the
+// wired transport, and every plugin call would reject with "NetPrinter does not have an implementation"
+// — which netTransport.sendBytes turns into a THROW, i.e. outcome 'unknown', i.e. a POSSIBLE DUPLICATE
+// banner on a printer that was never even addressable. WIRED MUST NOT EXIST UNTIL THE BINARY HAS IT.
+//
+// Capacitor.isPluginAvailable(name) is exactly this test. In @capacitor/core 8.4.0 a registered plugin
+// carries `platforms: new Set([...Object.keys(jsImplementations), ...(pluginHeader ? [platform] : [])])`
+// and the check is `platforms.has(getPlatform()) || getPluginHeader(name)`. Our registration
+// (plugins/hatchgrab-net-printer/index.js) supplies only a `web` implementation, so on iOS/Android the
+// answer comes solely from PluginHeaders — the list the NATIVE BRIDGE injects for the classes compiled
+// into THIS binary. Old binary ⇒ no header ⇒ false. New binary ⇒ header ⇒ true.
+// ⚠️ isNativePlatform() is required too: on web `platforms.has('web')` is true (the refusing stub), and
+// a browser must never be told the wired backend exists.
+/** The name BOTH native classes register under: @CapacitorPlugin(name = "NetPrinter") /
+ *  CAPPluginRegistration "NetPrinter", and registerPlugin('NetPrinter') in the JS. */
+export const NET_PRINTER_PLUGIN = 'NetPrinter'
+
+/** Is the wired backend present in the RUNNING BINARY? Every wired surface is gated on this. */
+export function isNetPrinterAvailable(): boolean {
+  try { return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable(NET_PRINTER_PLUGIN) } catch { return false }
+}
 
 export interface PrintResult { ok: boolean; error?: string }
 
@@ -86,6 +120,11 @@ export interface PrinterTransport {
   disconnect(): Promise<void>
   sendBytes(bytes: Uint8Array): Promise<PrintResult>
   status(): Promise<PrinterStatus>
+  /** Bring a stored pairing back after the app was backgrounded. OPTIONAL and backend-specific: BLE
+   *  re-opens its GATT link (a BLE session does not survive backgrounding); the wired backend has no
+   *  session — one socket per ticket — so it is a no-op there. Added 17 September 2026 so usePrinting
+   *  no longer imports a BLE function directly: reconnect is a transport concern, behind the seam. */
+  reconnect?(): Promise<void>
 }
 
 /** Phase-A stub: NO HARDWARE, AND IT SAYS SO. Discovers nothing, therefore connects to nothing, therefore
@@ -119,20 +158,58 @@ export function createStubTransport(sink: (bytes: Uint8Array) => void): PrinterT
 // this accessor, which is why the bytes are dropped here rather than buffered — a buffer nobody reads is
 // a memory leak wearing a feature's clothes.
 let _transport: PrinterTransport | null = null
+/** Which kind the live singleton was built for, so a kind change can retire it. */
+let _transportKind: PrinterKind | null = null
+/** The stored kind, once loaded. null = not loaded yet OR absent — both read as 'ble' (today). */
+let _kind: PrinterKind | null = null
 
-/** The app's single transport.
- *  NATIVE -> the real Bluetooth LE backend (lib/printing/bleTransport.ts).
- *  WEB    -> the honest stub, which refuses everything and says why. A browser has no printer, and a
- *            stub that refuses is the truthful answer rather than an error.
- *  The BLE module is required lazily so a web bundle never pulls the native plugin in. */
+/** The effective kind: 'net' only when the device has explicitly chosen it AND the running binary
+ *  actually carries the plugin. A stored 'net' on an older binary therefore reads as 'ble' — today's
+ *  transport, today's `active`, no guard, no /api/printing — which is the whole of FIX 1. */
+export function getPrinterKind(): PrinterKind { return _kind === 'net' && isNetPrinterAvailable() ? 'net' : 'ble' }
+
+/** Load the stored kind. Called once by usePrinting before the first transport use, and by the card.
+ *  Any failure reads as 'ble'. If the singleton was built for a different kind it is retired so the
+ *  next getPrinterTransport() builds the right one. */
+export async function loadPrinterKind(): Promise<PrinterKind> {
+  try { _kind = (await Preferences.get({ key: PRINTER_KIND_KEY })).value === 'net' ? 'net' : 'ble' }
+  catch { _kind = 'ble' }
+  if (_transport && _transportKind !== getPrinterKind()) { _transport = null; _transportKind = null }
+  return getPrinterKind()
+}
+
+/** The card's write. 🔴 KIND CHANGE WITHOUT A RELOAD: the singleton is RETIRED, not disconnected — the
+ *  BLE pairing stays stored and its session is simply no longer the one usePrinting reads. The next
+ *  getPrinterTransport() constructs the chosen backend, which reads its own stored state (the BLE
+ *  pairing, or the wired address) lazily. Switching back therefore finds the old pairing intact. */
+export async function setPrinterKind(kind: PrinterKind): Promise<void> {
+  await Preferences.set({ key: PRINTER_KIND_KEY, value: kind })
+  _kind = kind
+  // The EFFECTIVE kind, not the stored one: on a binary without the plugin 'net' still resolves to 'ble'.
+  if (_transportKind !== getPrinterKind()) { _transport = null; _transportKind = null }
+}
+
+/** The app's single transport, chosen by the device's stored kind.
+ *  NATIVE + 'ble' (or absent) -> the Bluetooth LE backend (lib/printing/bleTransport.ts) — TODAY'S path.
+ *  NATIVE + 'net'             -> the wired backend (lib/printing/netTransport.ts).
+ *  WEB                        -> the honest stub, whatever the kind: a browser has no printer.
+ *  The native modules are required lazily so a web bundle never pulls a native plugin in. */
 export function getPrinterTransport(): PrinterTransport {
-  if (_transport) return _transport
+  const kind = getPrinterKind()
+  if (_transport && _transportKind === kind) return _transport
   if (Capacitor.isNativePlatform()) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createBleTransport } = require('./bleTransport') as typeof import('./bleTransport')
-    _transport = createBleTransport()
+    if (kind === 'net') {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { createNetTransport } = require('./netTransport') as typeof import('./netTransport')
+      _transport = createNetTransport()
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { createBleTransport } = require('./bleTransport') as typeof import('./bleTransport')
+      _transport = createBleTransport()
+    }
   } else {
     _transport = createStubTransport(() => { /* no sink in the app; see the note above */ })
   }
+  _transportKind = kind
   return _transport
 }

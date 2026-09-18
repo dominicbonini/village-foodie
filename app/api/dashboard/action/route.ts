@@ -46,6 +46,9 @@ import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
+import { INTERVAL_CHOICES, isIntervalChoice } from '@/lib/slot-interval'
+import { writeCookingReservation, writeReservationRecord, admitForManual } from '@/lib/orders/cooking-reservation'
+import { resolveBatchReservations } from '@/lib/features'
 
 // ── \u{1F534} PER-ROUTE CEILING: 300s, AND THAT IS A DECISION, NOT AN INHERITED DEFAULT ─────────────────
 // OPERATOR WRITES. Most handlers are fast DB writes, but this route imports captureOnConfirmation
@@ -824,6 +827,30 @@ export async function POST(req: NextRequest) {
       const dealsToStore = (editedDeals === undefined && dealsCanonical.length === 0) ? order.deals : dealsCanonical
 
       const newSlot = slot !== undefined ? slot : order.slot
+      // ── P3: THE EDIT LOCK, TAKEN BEFORE THE ROW IS WRITTEN (19 September 2026) ─────────────────
+      // With the batch-reservation switch ON an edit is an admission: it frees this order's load and
+      // reservation and re-admits it at its (possibly new) time against the state read under the SAME
+      // per-event lock the placements hold. The lock used to be taken just before the re-booking, AFTER
+      // the row update below — so a contended edit that could not get the lock had already saved the
+      // edit and then either ran the re-booking unlocked (the first P3 build) or, had it refused, would
+      // have said "try again" about an order it had already changed. Now: no lock ⇒ NOTHING is written,
+      // and the operator gets the manual path's busy answer (same status, same shape, same handling).
+      // 🔴 SWITCH OFF ⇒ NO LOCK, NO REFUSAL, NO CHANGE: editNeedsLock is false, editLock is null, the
+      // try/finally below adds nothing — the OFF edit flow is byte-for-byte HEAD's.
+      // The lock condition is the re-booking block's own (an event date and an item or slot change).
+      const editBatchOn = resolveBatchReservations(truck)
+      const editNeedsLock = editBatchOn && !!order.event_date && !!(items || slot !== undefined)
+      const editLock = editNeedsLock ? await acquireEventLock(truck.id, order.event_date) : null
+      if (editNeedsLock && !editLock?.ok) {
+        // The manual path's busy response, verbatim in status and shape (409, { error, retry: true }):
+        // the dashboard reads `retry` and keeps the operator's edits on screen for another go.
+        return NextResponse.json(
+          { error: 'Someone else is updating orders right now. Please try again.', retry: true },
+          { status: 409 },
+        )
+      }
+      let slotWarning: string | null = null
+      try {
       // CHECK THE WRITE. This update used to discard its result and the handler reported success
       // regardless — a failed write looked identical to a saved edit, and the operator only found out
       // when a later refetch showed the old order. Now a failure is a real error.
@@ -891,8 +918,12 @@ export async function POST(req: NextRequest) {
       // Slot re-booking is reported, NOT rolled back: the order above is already saved and correct.
       // A capacity-board write failure is a display/planning problem that the next rebuild self-heals
       // — losing the operator's edit over it would be far worse.
-      let slotWarning: string | null = null
       if (order.event_date && (items || slot !== undefined)) {
+        // P3: with the switch ON this runs under the edit lock taken above the row update — free this
+        // order's own load and reservation, re-check it from scratch at its (possibly new) time against
+        // the state read under the lock, reserve; the finally below releases. Nothing else moves.
+        // `acquireEventLock` is NOT re-entrant (one booking_locks row per truck+date), so nothing called
+        // in here may take it again — scripts/batch-reservation-edit-lock.cjs checks.
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         // REMOVE uses the PRIOR stored state (old items + old deals) to subtract exactly
         // what was previously booked. ADD uses the EDITED state — the SAME items+deals
@@ -909,12 +940,22 @@ export async function POST(req: NextRequest) {
         const rebooked = await addOrderToProductionSlot(
           supabase, truck.id, order.event_id, newSlot, newLines, itemCatMap
         )
+        // P2/P3: the edited order's reservation, its own row only. Switch ON ⇒ re-admitted from scratch at
+        // newSlot against the state WITHOUT this order (units after the unbook, reservations excluding
+        // it); fits ⇒ 'fit', else 'override' (the operator confirmed the warning client-side). OFF ⇒ P2.
+        if (order.event_id) {
+          if (editBatchOn && newSlot) {
+            const rec = await admitForManual(supabase, truck.id, order.event_id, order.event_date, orderKey, String(newSlot), newLines, itemCatMap)
+            await writeReservationRecord(supabase, { truckId: truck.id, orderKey, record: rec })
+          } else await writeCookingReservation(supabase, { truckId: truck.id, eventId: order.event_id, orderKey })
+        }
         const slotErrors = [unbooked.error, rebooked.error].filter(Boolean)
         if (slotErrors.length) {
           console.error('[edit] production slot re-booking failed (order WAS saved):', slotErrors.join(' | '))
           slotWarning = 'Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.'
         }
       }
+      } finally { if (editLock?.ok) await releaseEventLock(truck.id, order.event_date) }
 
       if (order.customer_email) {
         // ── 🔴 WAS "THE ONE SITE THAT DOES NOT USE formatConfirmationEmail". IT DOES NOW. ────────
@@ -1666,6 +1707,17 @@ export async function POST(req: NextRequest) {
         //     SAME event lock. Null event → nothing to rebuild (matches the old addOrderToProductionSlot
         //     skip; a null-event walk-up isn't counted by buildUnitsFromOrders anyway). Event-date-scoped.
         if (orderEventId) await rebuildProductionSlotUsage(supabase, truck.id, eventDate)
+        // P2/P3: the walk-up's reservation, INSIDE the lock. Switch ON ⇒ admit by Dominic's rule against
+        // the state read here (units + reservations, this order excluded) and store exactly those
+        // windows — 'fit' if it fits, else 'override' with the shortfall in the nearest window (P4: a
+        // walk-up is never refused; "Place it anyway" and an outbox replay land here too). OFF ⇒ P2.
+        if (orderEventId && manualOrderRow?.order_key) {
+          const okey = String(manualOrderRow.order_key)
+          if (resolveBatchReservations(truck) && slot) {
+            const rec = await admitForManual(supabase, truck.id, orderEventId, eventDate, okey, String(slot), manualLines, itemCatMap)
+            await writeReservationRecord(supabase, { truckId: truck.id, orderKey: okey, record: rec })
+          } else await writeCookingReservation(supabase, { truckId: truck.id, eventId: orderEventId, orderKey: okey })
+        }
       } finally {
         if (haveLock) await releaseEventLock(truck.id, eventDate)
         // (Ceiling model — no option-draw compensation: nothing is decremented at placement, so a
@@ -2545,6 +2597,54 @@ export async function POST(req: NextRequest) {
       const { error } = await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })
+    }
+
+    // ── set_collection_intervals_override ── EVENT-scoped, BOTH columns in ONE statement ───────────
+    // 🔴 THE PAIR IS WRITTEN TOGETHER, ALWAYS. The customer column is the switch: an event HAS an
+    // override iff it is non-null. Writing one without the other would leave a row whose operator value
+    // has no customer grid to sit beside — see the migration header. One UPDATE, both columns, every time.
+    //
+    // 🔴 UNTICKING WRITES NULL, NOT THE OLD NUMBER. "Use different times for orders I add" unticked means
+    // "same as customers for THIS event". If this wrote back the previous operator value instead, an
+    // operator who tried 10 and then unticked would silently keep the 10 — the box would say the
+    // operator follows customers while the grid disagreed.
+    //
+    // 🔴 BOTH NULL CLEARS THE EVENT ENTIRELY ("Use my usual setting") and the event follows its van again.
+    // That is the only route back from an override; without it a hand-matched value silently stops
+    // tracking the van. See app/dashboard/[token]/page.tsx's note above USUAL_SETTING_TOAST.
+    //
+    // ⚠️ VALIDATED, NOT COERCED, and `undefined` is REJECTED — the same discipline
+    // set_show_paid_step_override uses. An omitted field is a client bug, and silently clearing an
+    // override on one would be the quiet kind of wrong.
+    if (action === 'set_collection_intervals_override') {
+      const { customer, operator, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      if (customer !== null && !isIntervalChoice(customer)) {
+        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+      }
+      if (operator !== null && !isIntervalChoice(operator)) {
+        return NextResponse.json({ error: `Collection times must be every ${INTERVAL_CHOICES.join(', ')} minutes.` }, { status: 400 })
+      }
+      // 🔴 E2's INVALID SHAPE. An operator value with no customer value has no defensible meaning —
+      // there is no answer to "which customer grid does this event use" — so it is refused rather than
+      // stored and ignored later.
+      if (customer === null && operator !== null) {
+        return NextResponse.json({ error: 'Set the customer collection times before setting your own.' }, { status: 400 })
+      }
+      // ⚠️ select('*'), NOT a named list — the same rule set_show_paid_step_override follows: a named
+      // select naming a column that does not exist fails the WHOLE statement with 42703.
+      const { data: rows, error } = await supabase.from('truck_events')
+        .update({ collection_interval_mins_override: customer, operator_collection_interval_mins_override: operator })
+        .eq('id', eventId).eq('truck_id', truck.id)
+        .select('*')
+      if (error) {
+        const code = (error as { code?: string }).code
+        if (code === 'PGRST204') console.warn(`[slot-interval] event ${eventId}: override save rejected — columns not in PostgREST's schema cache (PGRST204); reload the schema`)
+        else if (code === '42703') console.warn(`[slot-interval] event ${eventId}: override save rejected — columns absent (42703); migration not applied`)
+        else console.warn(`[slot-interval] event ${eventId}: override save failed (${code ?? 'no code'}): ${error.message}`)
+        return NextResponse.json({ error: 'Collection times could not be saved right now.' }, { status: 500 })
+      }
+      return NextResponse.json({ success: true, event: rows?.[0] ?? null })
     }
 
     // ── set_order_ready_override ── EVENT-scoped order_ready_override (truck_events) ────────────────

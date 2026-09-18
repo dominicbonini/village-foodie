@@ -314,6 +314,13 @@ export function createBleTransport(): PrinterTransport {
         detail: stored ? `${stored} is not connected` : 'No printer paired yet',
       }
     },
+
+    // The seam's reconnect hook: the SAME reconnectStoredPrinter usePrinting used to call directly, now
+    // reached through the interface so the bridge no longer imports a BLE function. Byte-identical
+    // behaviour — same function, same argument, same silence on failure.
+    async reconnect(): Promise<void> {
+      await reconnectStoredPrinter(transport)
+    },
   }
 
   return transport

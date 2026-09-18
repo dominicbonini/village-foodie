@@ -115,8 +115,16 @@ const SOON_ROW = `footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about
 // 🔴 BOTH AUTO-REPLY ROWS NOW CARRY footnote '4', so LIVE_ROW and SOON_ROW are distinguished ONLY by
 // their cells. Keep the full cell list in each — truncating either would make `swap` hit the wrong one.
 // The tail of footnote 5, used to append a bogus footnote 6 after it (F1).
-const FN5_TAIL = `        text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
-    },`
+// ⚠️ DERIVED FROM THE LIVE FILE (17 September 2026): the footnote's wording changed when printing gained a
+// wired option ("thermal printer" → "Bluetooth or wired printer"), and a LITERAL needle silently stopped
+// applying — the runner then reports F1 as a hard error. Matching the line by its stable prefix keeps the
+// mutation applying whatever the rest of the sentence says; if the footnote is missing entirely, fail loudly.
+function fn5Tail(dir) {
+  const src = fs.readFileSync(path.join(dir, PF), 'utf8')
+  const m = src.match(/^ *text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible [^\n]*\n *\},/m)
+  if (!m) { console.log("🔴 footnote 5 ('Kitchen ticket printing requires…') not found in the compiled " + PF + " — F1 cannot be built"); process.exit(1) }
+  return m[0]
+}
 // The OFF branch of footnote 4's conditional text (F3).
 const FN4_OFF = `'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong.'`
 
@@ -136,11 +144,11 @@ const CASES = [
   // parity variants above; renaming those would make the previous report's captured output unmatchable.
   // F1 = the brief's V1, F2 = V2, F3 = V3.
   ['F1', 'footnote 6 still present (the retired footnote reinstated)',
-    d => swap(d, PF, FN5_TAIL, FN5_TAIL + `
+    d => { const T = fn5Tail(d); return swap(d, PF, T, T + `
     {
         number: '6',
         text: 'Auto-replies need a WhatsApp Business account.',
-    },`), 'footnote', true],
+    },`) }, 'footnote', true],
   ['F2', 'the WhatsApp row still points at footnote 6',
     d => swap(d, PF, LIVE_ROW, LIVE_ROW.replace(`footnote: '4'`, `footnote: '6'`)), 'footnote', true],
   ['F3', 'footnote 4 carries the billing sentences even when the flag is FALSE',

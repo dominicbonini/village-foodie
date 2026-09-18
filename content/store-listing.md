@@ -56,7 +56,7 @@ Village pitches, festival fields and car parks are not known for their connectio
 
 A KITCHEN SCREEN THAT SUITS YOUR SETUP
 
-Run a kitchen display that shows what to cook and when. Choose the layout that fits how you work, set your own prep timings, and mark orders off as they go out. Connect a Bluetooth receipt printer if you would rather work from tickets.
+Run a kitchen display that shows what to cook and when. Choose the layout that fits how you work, set your own prep timings, and mark orders off as they go out. Connect a Bluetooth or wired printer if you would rather work from tickets.
 
 Running more than one van? Each device can be set to its own van and its own starting screen.
 
@@ -100,7 +100,7 @@ Use the Play Store description above, with these differences:
   currently claims these and that claim is a live problem, not a precedent to copy.
 - 🔴 **Tap to pay / card payments through HatchGrab.** Coming soon in the product, not built.
 - 🔴 **A website embed or an order page on the operator's own domain.** Not built.
-- ⚠️ **Bluetooth receipt printing on Android** is built but has never been observed against a
+- ⚠️ **Bluetooth and wired receipt printing on Android** are built but have never been observed against a
   physical printer on Android. The copy above mentions printing generally; decide whether
   that is defensible for the Play listing before submitting.
 - ⚠️ **Any claim about the number of trucks using the platform.** There are no onboarded

@@ -7,17 +7,67 @@
 // Appears whenever the authoritative production_slot_usage has a slot genuinely OVER a ceiling —
 // the common cause being an offline order colliding with an online booking on the same slot while the
 // truck was offline (accepted as unavoidable; §31 only asks that it be FLAGGED on reconnect). Also
-// covers an operator override that pushed a slot over. Dismiss hides it until the breach set CHANGES
-// (a new/worse breach re-shows), so it never nags about an already-reviewed slot.
+// covers an operator override that pushed a slot over. Dismiss hides it until a NEW OR WORSE breach
+// appears, so it never nags about an already-reviewed slot.
 
+import { useEffect } from 'react'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 
-/** Stable signature of the current breach set — dismiss is keyed to this so a NEW breach re-shows. */
+/** Stable signature of the current breach set — what a dismissal records. */
 export function breachSignature(breaches: CapacityBreach[]): string {
   return (breaches || [])
     .map(b => `${b.collection_time}:${b.over_total}:${b.over_cats.map(c => `${c.cat}${c.over}`).join(',')}`)
     .sort()
     .join('|')
+}
+
+/** One reviewed slot, parsed back out of a stored signature. */
+type Reviewed = { overTotal: number; byCat: Record<string, number> }
+function parseBreachSignature(sig: string | null): Map<string, Reviewed> {
+  const out = new Map<string, Reviewed>()
+  for (const entry of (sig || '').split('|')) {
+    if (!entry) continue
+    // ⚠️ THE TIME CONTAINS A COLON, so this cannot be a plain split(':') — "13:45:0:pizza2" would parse as
+    // time "13", over_total 45. One regex, anchored: HH:MM, then the over-total, then the categories.
+    const m = /^(\d{1,2}:\d{2}):(-?\d+(?:\.\d+)?):(.*)$/.exec(entry)
+    if (!m) continue
+    const [, time, total, cats] = m
+    const byCat: Record<string, number> = {}
+    for (const c of (cats || '').split(',')) {
+      if (!c) continue
+      const m = /^(.*?)(\d+)$/.exec(c)
+      if (m) byCat[m[1]] = Number(m[2]) || 0
+    }
+    out.set(time, { overTotal: Number(total) || 0, byCat })
+  }
+  return out
+}
+
+/**
+ * 🔴 THE BREACHES THE OPERATOR HAS NOT ALREADY REVIEWED (19 September 2026).
+ *
+ * Dismissal used to be keyed to the WHOLE SET's signature, compared for equality — so ANY change to the
+ * set brought the banner back, including the set getting SMALLER. Dominic dismissed a warning covering
+ * six slots, cancelled the order that had pushed one of them over, and was warned again about the other
+ * five, which he had just reviewed. Cancelling an order is the operator doing exactly what the banner
+ * asked; being re-warned for it is the opposite of helpful.
+ *
+ * A breach is unreviewed only when it is NEW or WORSE than what was dismissed:
+ *   • its slot was not in the dismissal at all, or
+ *   • it is further over the ceiling than the dismissed one, or
+ *   • some category is further over its batch than the dismissed one (a category not dismissed at all
+ *     counts as further over).
+ * A slot that is unchanged, or LESS over than when it was dismissed, stays quiet: nothing new has
+ * happened there that the operator has not already seen.
+ */
+export function unreviewedBreaches(breaches: CapacityBreach[], dismissedSig: string | null): CapacityBreach[] {
+  const reviewed = parseBreachSignature(dismissedSig)
+  return (breaches || []).filter(b => {
+    const seen = reviewed.get(b.collection_time)
+    if (!seen) return true                                            // a slot never dismissed
+    if ((b.over_total ?? 0) > seen.overTotal) return true              // further over the kitchen ceiling
+    return (b.over_cats || []).some(c => (c.over ?? 0) > (seen.byCat[c.cat] ?? 0))   // further over a batch
+  })
 }
 
 export function CapacityBreachBanner({
@@ -33,9 +83,21 @@ export function CapacityBreachBanner({
    *  headline and the bare order numbers exactly as it did before, so no caller is forced to change. */
   orders?: Array<{ order_key: string; id: string | number; slot?: string | null; items?: Array<{ quantity?: number }> }>
 }) {
-  if (!breaches || breaches.length === 0) return null
-  const sig = breachSignature(breaches)
-  if (sig === dismissedSig) return null
+  const sig = breachSignature(breaches || [])
+  const unreviewed = unreviewedBreaches(breaches || [], dismissedSig)
+  const hasBreaches = !!breaches && breaches.length > 0
+  const allReviewed = hasBreaches && unreviewed.length === 0
+  // 🔴 KEEP THE RECORD EQUAL TO WHAT IS ACTUALLY OVER. When everything still over has already been
+  // reviewed but the set has since changed — an order cancelled, a slot no longer over — the stored
+  // acknowledgement is rewritten to the current set. Without this a breach that goes away and later
+  // comes back would stay silent, because the old signature still listed it; with it, that return is a
+  // genuinely new breach and warns again. This is the only write, and it happens only while hidden.
+  useEffect(() => {
+    if (allReviewed && sig !== dismissedSig) onDismiss(sig)
+  }, [allReviewed, sig, dismissedSig, onDismiss])
+
+  if (!hasBreaches) return null
+  if (allReviewed) return null
 
   const n = breaches.length
   // WHAT AN OPERATOR CAN ACT ON: a collection slot, a quantity, and order numbers.
@@ -104,15 +166,37 @@ export function CapacityBreachBanner({
               <>
                 {rows.map(([slot, list]) => {
                   const total = list.reduce((t, c) => t + c.qty, 0)
+                  // 19 September 2026: NAME THE REAL LIMIT. The detector's `reason` is the engine's own
+                  // bound_by — "Pizza 16/8" for a category batch, "global ceiling" for the kitchen ceiling,
+                  // "over capacity at event-start" for the pre-open pile. This line used to say "Kitchen over
+                  // capacity" for all three, which is false for a truck with no kitchen ceiling at all.
+                  // The breach whose window ENDS at this slot names it; failing that, the first breach that
+                  // lists one of these orders.
+                  const keysHere = new Set(list.map(c => String(c.id)))
+                  const b = breaches.find(x => x.collection_time === slot)
+                    ?? breaches.find(x => x.order_ids.some(id => keysHere.has(String(id))))
+                  const batchM = b ? /^(.+?) (\d+)\/(\d+)$/.exec(b.reason) : null
+                  const headline = batchM && (b!.over_total ?? 0) <= 0
+                    ? `${batchM[1]} over batch — ${batchM[2]} for ${slot} (${batchM[3]} per batch)`
+                    : b && /event-start/.test(b.reason)
+                      ? `Over capacity at event start — ${total} ${total === 1 ? 'item' : 'items'} for ${slot}`
+                      : `Kitchen over capacity — ${total} ${total === 1 ? 'item' : 'items'} cooking for ${slot}`
                   return (
                     <span key={slot}>
                       <span className="font-semibold">
-                        {`Kitchen over capacity — ${total} ${total === 1 ? 'item' : 'items'} cooking for ${slot}`}
+                        {headline}
                       </span>
                       {list.length > 0 && (
                         <>
                           {'  '}
                           {list.map(c => `#${c.id}${c.qty > 0 ? ` — ${c.qty} ${c.qty === 1 ? 'item' : 'items'}` : ''}`).join('  ·  ')}
+                          {/* P4: the order(s) placed anyway, named — the over-count is theirs by choice. */}
+                          {(() => {
+                            const placedAnyway = breaches.filter(x => x.collection_time === slot).flatMap(x => x.override_orders ?? [])
+                            return placedAnyway.length > 0
+                              ? <span className="block mt-0.5">{`Placed anyway: ${placedAnyway.map(o => `#${o.id} for ${o.slot}`).join(', ')}`}</span>
+                              : null
+                          })()}
                         </>
                       )}
                     </span>

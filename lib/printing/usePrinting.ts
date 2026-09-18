@@ -27,8 +27,9 @@ import { isNativeApp } from '@/lib/native/device'
 import { usePrintWatcher, selectDueToPrint, type PrintAttempt, type PrintAttemptContext, type PrintTriggerMode } from '@/lib/printing/printWatcher'
 import { mapOrderToTicket, reprintFromContext } from '@/lib/printing/mapOrderToTicket'
 import { renderTicket, type PaperWidth } from '@/lib/printing/ticket'
-import { getPrinterTransport, type PrinterStatus } from '@/lib/printing/transport'
-import { reconnectStoredPrinter } from '@/lib/printing/bleTransport'
+import { getPrinterTransport, loadPrinterKind, type PrinterStatus, type PrinterKind } from '@/lib/printing/transport'
+import { resolveNetGuard, subscribeNetGuard, NET_GUARD_COPY, type NetGuardState } from '@/lib/printing/networkGuard'
+import { getDeviceId } from '@/lib/native/device'
 import { onAppResume } from '@/lib/native/app'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import type { LedgerRow } from '@/lib/payments/ledger'
@@ -83,6 +84,10 @@ export function usePrinting(args: {
   const [paper, setPaper] = useState<PaperWidth>(80)
   const [ready, setReady] = useState(false)
   const [status, setStatus] = useState<PrinterStatus>({ connected: false })
+  // ── THE PRINTER KIND (17 September 2026). Absent ⇒ 'ble' ⇒ today's transport and today's `active`. ──
+  const [kind, setKind] = useState<PrinterKind>('ble')
+  // ── THE WIRED GUARD: one printing device per van. Only consulted when kind === 'net'. ──────────────
+  const [netGuard, setNetGuard] = useState<NetGuardState>('unknown')
 
   // Refs so onPrint never goes stale without re-subscribing the watcher's interval.
   const ordersRef = useRef(orders); ordersRef.current = orders
@@ -102,19 +107,44 @@ export function usePrinting(args: {
       const en = (await Preferences.get({ key: K.enabled })).value
       const l = parseInt((await Preferences.get({ key: K.lead })).value ?? '10', 10)
       const w = parseInt((await Preferences.get({ key: K.paper })).value ?? '80', 10)
+      // The kind is loaded BEFORE ready flips, so the first getPrinterTransport() already sees it.
+      const k = await loadPrinterKind()
       if (off) return
       setEnabled(en === 'true')
       setLead(Number.isFinite(l) ? l : 10)
       setPaper(w === 58 ? 58 : 80)
+      setKind(k)
       setReady(true)
     })()
     return () => { off = true }
   }, [])
 
+  // ── THE WIRED GUARD, RESOLVED BEFORE `active` MAY BECOME TRUE FOR 'net' ─────────────────────────────
+  // A wired printer is reachable by every device on the router; the dedupe record is device-local. So for
+  // 'net' this device may print ONLY while it holds the van's network_print_device_id (claiming it if
+  // nobody does), and must not print while another device holds it or the claim cannot be read. Re-run on
+  // resume, and whenever the card bumps it (the "Move printing to this device" button). Never runs for
+  // 'ble' — Bluetooth is physically paired to one device and is left exactly as today.
+  useEffect(() => {
+    if (!(isNativeApp() && canPrint && enabled && ready && kind === 'net')) return
+    let off = false
+    const run = async () => {
+      try { const st = await resolveNetGuard(token, getDeviceId()); if (!off) setNetGuard(st) }
+      catch { if (!off) setNetGuard('unknown') }
+    }
+    void run()
+    const unsub = subscribeNetGuard(() => { void run() })
+    const offResume = onAppResume(() => { void run() })
+    return () => { off = true; unsub(); offResume() }
+  }, [canPrint, enabled, ready, kind, token])
+
   // 🔴 THE THREE GATES, ALL REQUIRED. Native app (a browser has no printer), the PLAN (printing is Max),
   // and the device's own On/Off. Any false and the watcher does not run at all — not "runs and does
   // nothing", which would still burn a timer and still write the durable set.
-  const active = isNativeApp() && canPrint && enabled && ready
+  // For 'ble' (or an absent kind) `guardOk` is true and this is EXACTLY today's expression. For 'net' the
+  // watcher additionally waits for this device to hold the van's claim.
+  const guardOk = kind !== 'net' || netGuard === 'ok'
+  const active = isNativeApp() && canPrint && enabled && ready && guardOk
 
   // Poll the transport for status. Cheap (the stub answers from memory) and it is what lets the card say
   // WHY nothing is connected rather than showing a bare false.
@@ -145,8 +175,11 @@ export function usePrinting(args: {
     const off = onAppResume(() => {
       void (async () => {
         try {
-          await reconnectStoredPrinter(getPrinterTransport())
-          setStatus(await getPrinterTransport().status())
+          // Through the seam: BLE re-opens its stored pairing (the same reconnectStoredPrinter as before,
+          // now behind transport.reconnect); the wired backend has nothing to reconnect and no-ops.
+          const t = getPrinterTransport()
+          await t.reconnect?.()
+          setStatus(await t.status())
         } catch { /* status stays false, which is the truth */ }
       })()
     })
@@ -210,5 +243,12 @@ export function usePrinting(args: {
     return selectDueToPrint(orders, { mode, nowMins: nowMinsLocal(), leadMins: lead, printed: new Set<string>() }).length
   }, [active, orders, mode, lead])
 
-  return { active, status, waitingCount }
+  // When the wired guard blocks, the card must say WHY — through the same `status.detail` it already
+  // shows, so no new prop reaches the dashboard page. Bluetooth never enters this branch.
+  const shownStatus: PrinterStatus =
+    kind === 'net' && enabled && ready && netGuard !== 'ok'
+      ? { connected: false, detail: NET_GUARD_COPY[netGuard] }
+      : status
+
+  return { active, status: shownStatus, waitingCount }
 }

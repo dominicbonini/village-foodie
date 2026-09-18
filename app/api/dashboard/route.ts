@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { resolveActor } from '@/lib/audit/actor'
 import { resolveTruckLogo } from '@/lib/truck-logo'
-import { getProductionSlotUnits } from '@/lib/slot-bookings'
-import { buildSlotAvailability } from '@/lib/slot-availability'
+import { getProductionSlotUnits, readCookingReservations } from '@/lib/slot-bookings'
+import { buildSlotAvailability, type EngineReservation } from '@/lib/slot-availability'
 import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
+import { resolveIntervalsFor, readEventIntervalsForTruck } from '@/lib/slot-interval'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
@@ -18,6 +19,7 @@ import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
 // the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
 import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
 import { readHeldAuthorisations } from '@/lib/payments/held-authorisation'
+import { resolveBatchReservations } from '@/lib/features'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -426,7 +428,20 @@ export async function GET(req: NextRequest) {
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   )
 
-  const intervalMins = truck.collection_interval_mins ?? 0
+  // 🔴 THE EFFECTIVE TRUCK INTERVAL, FROM THE SELECTED EVENT'S VAN — the operator's grid, and the ONE
+  // interval every operator-facing read on this route uses: the generated grid, the day-load dots,
+  // detectCapacityBreaches, buildSlotAvailability's display read, and the grid cached for offline
+  // Add Order. `truck` here means "the operator's own grid", not "truck-level" — it is the van's
+  // override if it has one, else that van's customer value (readVanIntervals resolves the ??).
+  // Read by capability probe (PGRST204 / 42703 logged distinctly, 5/5 on any failure). No van on the
+  // selected event ⇒ 5, which is what every truck reads today.
+  const vanIntervals = await resolveIntervalsFor(supabase, selectedEvent?.van_id ?? null, selectedEvent?.id ?? null)
+  const truckIntervalMins = vanIntervals.truck
+  // The per-event overrides for the WHOLE event list, so the dashboard's Collection times box can show
+  // the effective pair for whichever event the operator selects without a fetch per event. A separate
+  // probed read: a missing column costs the box, never the board.
+  const eventIntervalOverrides = await readEventIntervalsForTruck(supabase, truck.id)
+  const intervalMins = truckIntervalMins
   const slotDurationMins = truck.slot_duration_mins ?? intervalMins
   const GRACE_MINS = 30
 
@@ -516,6 +531,9 @@ export async function GET(req: NextRequest) {
   // consume. Returned so the NATIVE client can re-run the SAME engine OFFLINE with its optimistic orders folded
   // in (offline-aware capacity, Piece 1). Response-only addition — the online slots computation is unchanged.
   let dashProductionSlotUnits: Record<string, Record<string, number>> = {}
+  // P1: surfaced beside the raw occupancy so the offline iPad re-runs the engine with the same input.
+  let dashReservations: EngineReservation[] = []
+  let dashBatchReservations = false   // P3: the per-truck switch, from the truck row already read
   let activeVanName: string | null = null
   // ── 🔴 THE TRUCK'S ACTIVE VAN COUNT — ADDITIVE, AND THE ONLY NON-SINGULAR VAN FACT ON THIS RESPONSE
   // Every other van field here is about the SELECTED EVENT'S van (`activeVanName`, `vanShowCookingStep`,
@@ -624,6 +642,10 @@ export async function GET(req: NextRequest) {
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
       : {}
+    // P1: the counting orders' cooking reservations (probed; [] ⇒ today's dots and breaches exactly).
+    const eventReservations = selectedEventId ? await readCookingReservations(supabase, truck.id, selectedEventId) : []
+    dashReservations = eventReservations
+    dashBatchReservations = resolveBatchReservations(truck)
     dashProductionSlotUnits = productionSlotUnits   // surface the raw occupancy for the offline client re-run
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
@@ -640,6 +662,9 @@ export async function GET(req: NextRequest) {
       eventStartMins ?? 0,
       categoryOrder,
       capacityWindowMins,
+      truckIntervalMins,
+      eventReservations,
+      resolveBatchReservations(truck),
     )
     slotsWithCapacity = buildSlotAvailability({
       times: slots || [],
@@ -647,6 +672,15 @@ export async function GET(req: NextRequest) {
       catConfigs,
       kitchenCapacity,
       capacityWindowMins,
+      // 🔴 THE GRID'S OWN INTERVAL, AND IT WAS MISSING (R3). `times` above is generated at
+      // truckIntervalMins, but this call took the parameter's default of 5 — so on a 10-30 grid
+      // `current_orders`, `remaining`, `available` and `bound_by` were read from the SINGLE cooking
+      // window ending at each slot, i.e. from windows two thirds of which no dot covers. The tone and
+      // label are overwritten below from dayIndicators (which DID get the right interval), so the
+      // strip showed a correct red dot beside a `current_orders` of 0 and `available: true` — and
+      // AddOrderPanel's offline default-slot pick reads that same `available`. Passing it makes every
+      // field on this row come from the grid the row is actually displayed on.
+      displayIntervalMins: truckIntervalMins,
       date,
       nowMins,
       earliestCollectionMins: earliestMins,
@@ -675,6 +709,7 @@ export async function GET(req: NextRequest) {
     // no engine change). Strictly-over only (raw remainingTotal/remainingByCat < 0), so legitimately
     // full slots don't cry wolf. The client surfaces a dismissible "N slot(s) over capacity" banner.
     capacityBreaches = detectCapacityBreaches({
+      intervalMins: truckIntervalMins,
       times: slots || [],
       productionSlotUnits,
       catConfigs,
@@ -682,6 +717,8 @@ export async function GET(req: NextRequest) {
       eventStartMins: eventStartMins ?? 0,
       capacityWindowMins,
       orders: (orders || []) as any,
+      reservations: eventReservations,
+      batchReservations: resolveBatchReservations(truck),
     })
   } catch (slotErr) {
     console.error('[dashboard] slot capacity error:', slotErr)
@@ -826,6 +863,16 @@ export async function GET(req: NextRequest) {
     // replaces the RLS-blocked anon truck_vans read the client used to do.
     kitchenCapacity,
     capacityWindowMins,
+    // The TRUCK interval the strip and the offline grid were built on; the client passes it to its own
+    // dot reads so they cover the same windows the server did.
+    truckIntervalMins,
+    // 🔴 THE EVENT LAYER, FOR THE DASHBOARD BOX ONLY — nothing about ordering reads these three.
+    // `eventIntervalsAvailable` false ⇒ the columns could not be read, so the box says so and every
+    // other setting on this tab renders and works exactly as before.
+    eventIntervals: Object.fromEntries(eventIntervalOverrides.byEventId),
+    eventIntervalsAvailable: eventIntervalOverrides.ok,
+    // The SELECTED event's van pair, so the box knows what "use my usual setting" returns it to.
+    vanIntervals: { customer: vanIntervals.customer, truck: vanIntervals.truck },
     activeVanName,
     activeVanCount,                                // the TRUCK's active van count (null ⇒ unknown ⇒ clients show the van)
     vanAutoPause,
@@ -850,6 +897,8 @@ export async function GET(req: NextRequest) {
     paymentFailures: [...paymentFailures],          // order_keys whose ledger write failed → hasUnrecordedPayment
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
+    reservations: dashReservations,                 // P1 — same input the server projected with; [] ⇒ today
+    batchReservations: dashBatchReservations,       // P3 — the switch, so the offline iPad draws the same picture
     capacityBreaches,                               // Piece 2 — slots genuinely over a ceiling (reconnect flag)
     // ── BUZZER LOSSES (phase 2) — SERVER-COMPUTED, exactly like capacityBreaches. ────────────────
     // Orders left without a buzzer by AUTOMATIC conflict resolution on offline replay, and still open.

@@ -17,7 +17,7 @@
 //   remainingByCat (NOT the /api/slots `remaining` field, which is Math.max(0,…)-clamped and can
 //   NEVER show a breach).
 
-import { projectBackwardOccupancy, backwardWindowStepMins, contributingProductionSlots } from '@/lib/slot-availability'
+import { projectBackwardOccupancy, backwardWindowStepMins, contributingProductionSlots, coverDotWindows, type EngineReservation } from '@/lib/slot-availability'
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 
@@ -42,9 +42,16 @@ export interface CapacityBreach {
   order_keys: string[]
   /** Their per-event display numbers — for the banner link text. */
   order_ids: number[]
+  /** P4: orders placed ANYWAY whose over-the-batch reservation lands in this window — for the banner
+   *  to name them. Empty unless the switch is on and an override reservation overlaps the window. */
+  override_orders?: Array<{ order_key: string; id: number | string; slot: string }>
 }
 
 export interface DetectCapacityBreachesParams {
+  /** P1: per-order cooking reservations for the event; absent ⇒ today's projection exactly. */
+  reservations?: EngineReservation[]
+  /** P3: the per-truck switch; false ⇒ P2 exactly. */
+  batchReservations?: boolean
   /** The collection slots (same list the strip renders). */
   times: Array<{ collection_time: string }>
   /** production_slot → qty-by-cat, post-rebuild (authoritative). */
@@ -53,6 +60,9 @@ export interface DetectCapacityBreachesParams {
   kitchenCapacity: number | null
   eventStartMins: number
   capacityWindowMins?: number
+  /** The DISPLAYED grid's interval. Default 5 ⇒ the original single-window read; 10–30 ⇒ the same
+   *  covering read the dots use, so a breach in a window between two displayed times is still flagged. */
+  intervalMins?: number
   /** Active/terminal orders for the event (only OCCUPYING ones map into breaches). */
   orders: Array<{ order_key: string; id: number; slot: string | null; status: string }>
 }
@@ -66,8 +76,9 @@ export interface DetectCapacityBreachesParams {
  * and the tone logic are all untouched; this only consumes their output.
  */
 export function detectCapacityBreaches(p: DetectCapacityBreachesParams): CapacityBreach[] {
-  const { times, productionSlotUnits, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, orders } = p
+  const { times, productionSlotUnits, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, intervalMins, orders, reservations, batchReservations } = p
   if (!Array.isArray(times) || times.length === 0) return []
+  const displayInterval = intervalMins ?? 5
 
   // SAME projection the strip / /api/dashboard already run — identical inputs, identical model (§31).
   const back = projectBackwardOccupancy(
@@ -76,6 +87,8 @@ export function detectCapacityBreaches(p: DetectCapacityBreachesParams): Capacit
     eventStartMins,
     kitchenCapacity,
     Math.max(1, Math.round(capacityWindowMins ?? 5)),
+    reservations ?? [],
+    batchReservations === true,
   )
   const step = backwardWindowStepMins(catConfigs || {})
   const parseMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
@@ -89,11 +102,17 @@ export function detectCapacityBreaches(p: DetectCapacityBreachesParams): Capacit
     ordersBySlot.set(o.slot, arr)
   }
 
+  const orderedMins = times.map(t => parseMins(t.collection_time)).sort((a, b) => a - b)
+  const prevOf = (m: number): number | null => { const i = orderedMins.indexOf(m); return i > 0 ? orderedMins[i - 1] : null }
+
   const breaches: CapacityBreach[] = []
   for (const s of times) {
     const slotMins = parseMins(s.collection_time)
     // EXACT display read: the event-start pile at the first slot, else the cooking window ENDING here.
-    const w = back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - step) ?? null
+    // 🔴 AT 5 THIS IS THE ORIGINAL LINE, UNTOUCHED. Only a 10–30 display grid takes the covering read.
+    const w = displayInterval > 5
+      ? coverDotWindows(back, slotMins, prevOf(slotMins), step, eventStartMins)
+      : (back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - step) ?? null)
     if (!w) continue
 
     // STRICTLY OVER only — read the RAW window fields (never the clamped API `remaining`).
@@ -141,6 +160,10 @@ export function detectCapacityBreaches(p: DetectCapacityBreachesParams): Capacit
       over_cats: overCats.map(o => ({ cat: o.cat, over: Math.round(o.over) })),
       order_keys: grp.map(o => o.order_key),
       order_ids: grp.map(o => o.id),
+      // P4: present ONLY with the switch on (an absent key keeps the OFF output byte-identical to the golden).
+      ...(batchReservations ? { override_orders: (reservations || [])
+        .filter(r => r.source === 'override' && Object.values(r.cats).some(c => c.windows.some(rw => rw.startMins < (w.startMins + step) && w.startMins < rw.endMins)))
+        .map(r => { const o = (orders || []).find(x => x && x.order_key === r.orderKey); return { order_key: r.orderKey, id: o ? o.id : '?', slot: r.slot } }) } : {}),
     })
   }
   return breaches

@@ -93,6 +93,8 @@ import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
 import { usePrinting } from '@/lib/printing/usePrinting'   // the ONE mount of the print watcher — dashboard only, never the KDS
+import { INTERVAL_CHOICES, normaliseInterval, misalignedCookingCategory, collectionTimesHint } from '@/lib/slot-interval'
+import { intervalExample } from '@/lib/slot-generation'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
@@ -102,8 +104,10 @@ import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNI
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
+import type { EngineReservation } from '@/lib/slot-availability'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/lib/slot-capacity'
+import { decideRead, classifyReadFailure, nextDegraded, degradedBanner, type ReadSlot, type Degraded } from '@/lib/dashboard-read'
 
 /** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
  *  added to the UI without becoming linkable, or removed without ceasing to be. */
@@ -306,7 +310,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // while this route took a median of 148 SECONDS. A probe measures only what it exercises.
   // ⚠️ Deliberately NOT wired to lib/native/reachability.ts — that module is batch 2 and separately
   // gated. This is a local fact about a local fetch.
-  const[degradedSince,setDegradedSince]=useState<Date|null>(null)
+  // 🔴 NOW CARRIES *WHY*, NOT JUST *SINCE* (19 September 2026). A read can fail because the device
+  // cannot reach the server, or because the server answered with an error — two different things for the
+  // operator to do about it, so two different sentences. See lib/dashboard-read.ts.
+  const[degraded,setDegraded]=useState<Degraded>(null)
+  const degradedSince=degraded?.since??null
   // 🔴 NON-NULL ⇒ THE MENU ON SCREEN CAME FROM THE DEVICE, NOT THE SERVER, and the operator is
   // composing against prices that were correct at `menuSnapshotAt`. Drives the banner below. Cleared the
   // moment a live menu lands, so it can never outlive the condition it describes.
@@ -544,10 +552,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[dismissedBuzzerLosses,setDismissedBuzzerLosses]=useState<Set<string>>(new Set())
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
+  // The TRUCK collection interval the server built the strip on. 5 until /api/dashboard says otherwise.
+  const[truckIntervalMins,setTruckIntervalMins]=useState<number>(5)
+  // ── THE EVENT LAYER, FOR THE COLLECTION TIMES BOX ONLY. Nothing about ordering reads these.
+  // `eventIntervalsAvailable` defaults TRUE so a response that omits it behaves exactly as before.
+  const[eventIntervals,setEventIntervals]=useState<Record<string,{collection_interval_mins_override?:number|null;operator_collection_interval_mins_override?:number|null}>>({})
+  const[eventIntervalsAvailable,setEventIntervalsAvailable]=useState(true)
+  const[vanIntervalPair,setVanIntervalPair]=useState<{customer:number;truck:number}>({customer:5,truck:5})
+  const[savingIntervals,setSavingIntervals]=useState(false)
   // Frozen server occupancy + server catConfigs (with countsToCapacity) — inputs the OFFLINE capacity re-run
   // folds deviceQueuedOrders into (Piece 1). Only refresh on a successful (online) fetch → they hold the
   // last-synced state while offline. Unused online.
   const[productionSlotUnits,setProductionSlotUnits]=useState<Record<string,Record<string,number>>>({})
+  // P1/P3 (18 September 2026): the counting orders' cooking reservations and the per-truck batch-reservation
+  // switch, exactly as /api/dashboard projected with them. They ride beside productionSlotUnits so the
+  // offline re-run (day strip + Add Order picker) draws the same picture as the server. [] / false ⇒ today.
+  const[serverReservations,setServerReservations]=useState<EngineReservation[]>([])
+  const[batchReservationsOn,setBatchReservationsOn]=useState<boolean>(false)
   const[serverCatConfigs,setServerCatConfigs]=useState<Record<string,CatConfig>>({})
   // Piece 2 — server-detected over-capacity slots (reconnect flag). Dismiss keyed to the breach set
   // signature so a NEW/worse breach re-shows but an already-reviewed one stays hidden.
@@ -768,7 +789,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editSlots,setEditSlots]=useState<Slot[]>([])
   // Engine inputs from /api/slots so the edit picker runs the SAME oven-occupancy
   // projection as Add Order (shared buildSlotIndicators) — not a count ratio.
-  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;windowSecs:number;eventStartMins:number}|null>(null)
+  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;intervalMins?:number;windowSecs:number;eventStartMins:number;reservations?:EngineReservation[];batchReservations?:boolean}|null>(null)
   // Server catConfigs (with countsToCapacity) for the edited order's event — fed to the edit
   // picker's buildSlotIndicators instead of the flag-less `categoryConfigs`, so instant items
   // count on the edit path too. Same source/shape as Add Order's serverCatConfigs.
@@ -883,13 +904,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // attempt started anyway — ~5 concurrent invocations per open tab, and the dashboard and KDS are two
   // tabs both calling this route. Closing every operator client halved the observed latency (44.8s →
   // 23.5s), which is the measurement that proves the clients were sustaining roughly half of it. §28.
-  const inFlightRef=useRef<AbortController|null>(null)
+  const inFlightRef=useRef<ReadSlot|null>(null)
   /** Hard ceiling on ONE dashboard read. Healthy is ~750ms; 10s is >10x headroom, and the 60s poll is
    *  the retry. NOT a fix for a slow backend — it decides how much damage one slow read does. */
   const READ_TIMEOUT_MS=10_000
   // R5 — abort any outstanding dashboard read on unmount, so a closed/backgrounded screen stops
   // holding a request open. Empty deps: registered once, fires on teardown only.
-  useEffect(()=>()=>{inFlightRef.current?.abort()},[])
+  useEffect(()=>()=>{inFlightRef.current?.controller.abort()},[])
   // Last successfully resolved event — survives transient empty upcomingEvents (e.g. failed refetch)
   const lastActiveEventRef=useRef<TruckEvent|null>(null)
   // SINGLE status-INDEPENDENT event resolution (cross-event fix): the explicitly-selected
@@ -1039,7 +1060,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }).catch(()=>{setStockFetchFailed(true)})
   },[token])
 
-  const fetchAll=useCallback(async(currentPin=pin,forceSeed=false)=>{
+  const fetchAll=useCallback(async(currentPin=pin,forceSeed=false,supersede=false)=>{
     // ── R4 — IN-FLIGHT GUARD. DROPPED, NEVER QUEUED. ──────────────────────────────────────────────
     // A poll that fires while a read is outstanding is DISCARDED: queueing it would rebuild the very
     // backlog this exists to prevent, and the next tick is only 60s away.
@@ -1048,11 +1069,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // are looking at. Dropping it would leave the board on the previous event until the next poll, up
     // to 60s, on a live service. So it aborts the outstanding read and takes its place: still exactly
     // one in flight, and the operator's own action is never the thing that gets discarded.
-    if(inFlightRef.current){
-      if(!forceSeed) return
-      inFlightRef.current.abort()
+    // 🔴 AN OPERATOR ACTION'S OWN REFETCH IS NOT A POLL, AND MUST NOT BE DROPPED (18 September 2026).
+    // THE BUG THIS CLOSES: `handleGateResult` ends every action with `await refetch()` — a plain
+    // fetchAll. Cancel an order while the 60s poll happens to be outstanding and that refetch hit the
+    // guard below and RETURNED. `orders` never changed, so `offlineCapacity` never changed, so the Add
+    // Order panel's snapshot key never moved and it never asked for a fresh /api/slots read: the time
+    // list kept showing the cancelled order's pizzas until the next poll (up to 60s) or a page reload.
+    // Intermittent exactly as reported, because it depends on whether a read was in flight.
+    // `supersede` is the same ruled exception `forceSeed` already carries — the operator's own action
+    // takes the outstanding read's place — WITHOUT forceSeed's config re-seed, which would undo
+    // operator-edited settings. Still exactly one read in flight; only the POLL is ever discarded.
+    const decision=decideRead(inFlightRef.current,{forceSeed,supersede})
+    if(decision==='drop') return
+    if(decision==='supersede'&&inFlightRef.current){
+      // 🔴 MARK IT BEFORE ABORTING IT. This flag is the ONLY way the aborted read can tell our own
+      // deliberate replacement from the READ_TIMEOUT_MS abort — both reject the same signal with the
+      // same DOMException. Without it, every superseded read raised "Can't reach the server".
+      inFlightRef.current.superseded=true
+      inFlightRef.current.controller.abort()
     }
-    const ctrl=new AbortController(); inFlightRef.current=ctrl
+    const ctrl=new AbortController(); const slot:ReadSlot={controller:ctrl,superseded:false}; inFlightRef.current=slot
     // R5 — AbortController + setTimeout rather than AbortSignal.timeout(), because this ONE signal must
     // carry both the deadline and the supersede above. Same pattern as lib/native/reachability.ts.
     const timeoutId=setTimeout(()=>ctrl.abort(),READ_TIMEOUT_MS)
@@ -1080,7 +1116,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }
       // Any response at all means the server answered → we are not degraded. Cleared here rather than
       // on success only, so a 4xx that we handle gracefully also clears the banner.
-      if(res.ok) setDegradedSince(null)
+      if(res.ok) setDegraded(null)
       // Initial-load 429 = transient rate-limit burst → back off + retry, NEVER the hard "Access denied"
       // lockout (operators are now exempt in proxy.ts; this is belt-and-braces for any first-paint edge on
       // a shared IP). Up to 5 tries (1s,2s,4s,8s,8s). Keeps the loading spinner; self-heals on recovery.
@@ -1090,7 +1126,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }
       // Transient failure after successful auth — keep existing state, never blank the dashboard
       if(!res.ok){
-        if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state');setDegradedSince(prev=>prev??new Date())}
+        if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state');setDegraded(prev=>nextDegraded(prev,classifyReadFailure({aborted:false,superseded:false,status:res.status}),new Date()))}
         // 🔴 A FIRST LOAD THAT FAILS IS NO LONGER FATAL. This used to `setError(...)`, which took the
         // full-page "Access denied" return — so a cold launch against a degraded backend never reached
         // the board, let alone the Add-order panel, no matter what was cached on the device.
@@ -1129,6 +1165,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // fires DURING the operator's own optimistic edit (before the write commits) can't clobber it.
         if(data.kitchenCapacity !== undefined) setKitchenCapacity(applyPending('kitchenCapacity',data.kitchenCapacity))
         if(data.capacityWindowMins !== undefined) setCapacityWindowMins(applyPending('capacityWindowMins',data.capacityWindowMins ?? 5))
+        if(data.truckIntervalMins !== undefined) setTruckIntervalMins(data.truckIntervalMins ?? 5)
+      if(data.eventIntervals !== undefined) setEventIntervals(data.eventIntervals ?? {})
+      // Absent ⇒ available. A missing field must never disable a working setting.
+      setEventIntervalsAvailable(data.eventIntervalsAvailable !== false)
+      if(data.vanIntervals) setVanIntervalPair(data.vanIntervals)
         if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
         if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
       if(data.vanOfflineMode !== undefined) setVanOfflineMode(data.vanOfflineMode==='no_auto_accept'?'no_auto_accept':'pause')
@@ -1163,6 +1204,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setExtraWaitMins(applyPending('extraWaitMins',data.truck?.extra_wait_mins||0))           // operator extra-wait (dual-source)
       setExtraWaitStartedAt(applyPending('extraWaitStartedAt',data.truck?.extra_wait_started_at||null))
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
+      if(data.reservations !== undefined) setServerReservations(Array.isArray(data.reservations)?data.reservations:[])   // P1 — same input the server projected with
+      if(data.batchReservations !== undefined) setBatchReservationsOn(data.batchReservations===true)               // P3 — the switch
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.buzzerLosses !== undefined) setBuzzerLosses(data.buzzerLosses || [])                        // phase 2 — orders that lost a buzzer to conflict resolution
       if(data.payments !== undefined) setPayments(data.payments||{})
@@ -1211,15 +1254,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       //   not yet authenticated → surface it, exactly as this line did before.
       // ⚠️ `ctrl.signal.aborted` is the test, NOT the thrown value: abort() rejects with a DOMException
       // whose shape we would otherwise have to trust.
-      if(ctrl.signal.aborted&&authenticatedRef.current){
-        console.warn('[fetchAll] dashboard read aborted after',READ_TIMEOUT_MS,'ms or superseded — keeping existing state; the 60s poll retries')
-        setDegradedSince(prev=>prev??new Date())
+      const failure=classifyReadFailure({aborted:ctrl.signal.aborted,superseded:slot.superseded})
+      if(failure.kind==='superseded'){
+        // 🔴 SILENT, AND THAT IS THE FIX. We aborted this read ourselves because a newer one is already
+        // in flight. Nothing is stale, nothing is lost, and the operator has nothing to do about it.
+        // Raising the degraded banner here is what made "Can't reach the server" flash on every Ready
+        // press and every order placed — the realtime-triggered read was superseded by the action's own.
+      } else if(ctrl.signal.aborted&&authenticatedRef.current){
+        console.warn('[fetchAll] dashboard read timed out after',READ_TIMEOUT_MS,'ms — keeping existing state; the 60s poll retries')
+        setDegraded(prev=>nextDegraded(prev,failure,new Date()))
       } else if(!authenticatedRef.current) await enterBoardUnavailable('no response')
-      else setDegradedSince(prev=>prev??new Date())
+      else setDegraded(prev=>nextDegraded(prev,failure,new Date()))
     } finally{
       clearTimeout(timeoutId)
       // Only clear if this call still owns the slot — a superseding call has already claimed it.
-      if(inFlightRef.current===ctrl) inFlightRef.current=null
+      if(inFlightRef.current===slot) inFlightRef.current=null
       setLoading(false)
     }
   },[token,pin,fetchMenu,fetchStock,applyPending,peekPendingBuzzer])
@@ -1974,6 +2023,32 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   //
   // ⚠️ FALLBACK RETAINED, DELIBERATELY. No row (a zero-row update, or an older deploy that still returns
   // a bare {success:true}) ⇒ full refetch, i.e. exactly the previous behaviour. Never a silent no-update.
+  // ── COLLECTION TIMES, PER EVENT ───────────────────────────────────────────────────────────────────
+  // 🔴 BOTH COLUMNS, ONE CALL, EVERY TIME. The customer value is the switch; writing one without the
+  // other would leave the event in a shape the resolver refuses to honour. `customer: null` with
+  // `operator: null` is the revert — the event follows its van again.
+  const saveCollectionIntervals=async(customer:number|null,operator:number|null)=>{
+    if(!activeEvent)return
+    setSavingIntervals(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_collection_intervals_override',customer,operator,eventId:activeEvent.id})
+      })
+      if(!res.ok){
+        let msg='Collection times could not be saved right now.'
+        try{ msg=(await res.clone().json())?.error ?? msg }catch{}
+        showToast(msg,'error')
+        return
+      }
+      // Keep the local map in step so the box re-renders from the value the server stored, not a guess.
+      setEventIntervals(prev=>({...prev,[activeEvent.id]:{collection_interval_mins_override:customer,operator_collection_interval_mins_override:operator}}))
+      await applyEventPatch(res)
+      showToast(customer===null?USUAL_SETTING_TOAST:'Collection times saved for this event')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingIntervals(false)}
+  }
+
   const applyEventPatch=async(res:Response)=>{
     let ev:any=null
     try{ ev=(await res.clone().json())?.event ?? null }catch{ ev=null }
@@ -1982,7 +2057,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setTodayEvents(prev=>prev.map(e=>e.id===ev.id?{...e,...ev}:e))
       return
     }
-    await fetchAll()
+    await fetchAll(undefined,false,true)
   }
 
   // PER-EVENT ONLY. This writes truck_events.show_paid_step_override for the CURRENT event and must
@@ -2155,7 +2230,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // The guard is NOT dropped here. It is released by fetchAll, and only once the SERVER row
       // actually carries the new value (echoedBuzzerKeys) — dropping it on the 2xx would re-open the
       // window for an already-in-flight stale read to revert the cell.
-      await fetchAll()
+      await fetchAll(undefined,false,true)
     }catch{
       // ── THE WRITE FAILED — REVERT, AND SAY SO. ──────────────────────────────────────────────────
       // The one case where reverting is correct: the board must show what is actually recorded, not a
@@ -2394,7 +2469,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json().catch(()=>({}))
       const money=`£${(amountMinor/100).toFixed(2)}`
       if(!res.ok) return {ok:false,settled:false,message:typeof data?.error==='string'?data.error:'That refund could not be sent.'}
-      fetchAll()
+      fetchAll(undefined,false,true)
       // 🔴 "SENT" IS NOT "REFUNDED", AND THE PENDING CASE SAYS SO. Stripe accepts a refund on a direct
       // charge as `pending` when the connected account's balance is short; no money has moved yet and
       // the ledger is untouched. Reporting it as done would be the false-success class again.
@@ -2450,7 +2525,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     refreshPendingStatus,dropOverlayEntry,scheduleReadyEmail,undoReady,
     runAction:(a,k)=>doAction(a,k),
     plainPaidMethod,
-    refetch:fetchAll,setActionLoading,refreshPendingPayment,
+    refetch:()=>fetchAll(undefined,false,true),setActionLoading,refreshPendingPayment,
     onPrepStrike:(orderKey,order)=>{
       setStruckPrep(prev=>{
         const n=new Set(prev)
@@ -2549,12 +2624,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         setEditReprice({total:Number(data.total),unresolved:data.unresolved||[],signature:editBasketSignature(sendItems,editDeals)})
         return
       }
+      // 409 + retry: the event lock was busy and NOTHING was saved (the server refuses before any write) —
+      // the same shape the Add Order panel handles for a manual order: show the message, keep the edit on
+      // screen, let the operator try again. Not an error thrown: the modal and its edits stay as they are.
+      if(res.status===409&&data?.retry){
+        showToast(data?.error||'Someone else is updating orders right now. Please try again.','error')
+        return
+      }
       if(!res.ok)throw new Error(data.error)
       setEditReprice(null)
       // A slot-rebooking failure does NOT undo the saved edit — the server reports it so the operator
       // knows the capacity board is stale, and surfacing it must not read as "the edit failed".
       showToast(data?.slotWarning??`Order #${editingOrder.id} updated`,data?.slotWarning?'error':'success')
-      setEditingOrder(null); await fetchAll()
+      setEditingOrder(null); await fetchAll(undefined,false,true)
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
   }
 
@@ -2866,6 +2948,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       editCapacityInputs.eventStartMins,
       categoryOrder,
       editCapacityInputs.capacityWindowMins ?? 5,
+      editCapacityInputs.intervalMins ?? 5,
+      editCapacityInputs.reservations ?? [],          // P1/P3 — /api/slots' capacityInputs carry both; [] / false ⇒ today
+      editCapacityInputs.batchReservations === true,
     )
   }, [editCapacityInputs, editSlots, editServerCatConfigs, categoryOrder])
 
@@ -3167,13 +3252,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const merged=offlineOccupancy
       const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
       const eventStartMins=(h||0)*60+(m||0)
-      const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins)
+      const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins,truckIntervalMins,serverReservations,batchReservationsOn)
       return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
     }catch(e){
       console.warn('[displaySlots] offline capacity recompute failed — using server slots',e)
       return slots
     }
-  },[slots,offlineOccupancy,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins])
+  },[slots,offlineOccupancy,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,truckIntervalMins,serverReservations,batchReservationsOn])
 
   // Cached, ADVISORY capacity for the Add-Order picker when /api/slots is unavailable (offline). Same inputs
   // the day strip uses (SW-cached /api/dashboard) + the SHARED offlineOccupancy fold, scoped to the active
@@ -3188,10 +3273,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       productionSlotUnits:offlineOccupancy,
       kitchenCapacity,
       capacityWindowMins,
+      intervalMins:truckIntervalMins,
       eventStartMins:(h||0)*60+(m||0),
       catConfigs:serverCatConfigs,
+      reservations:serverReservations,          // P1/P3 — so the offline picker admits exactly as the server would
+      batchReservations:batchReservationsOn,
     }
-  },[activeEvent,slots,offlineOccupancy,kitchenCapacity,capacityWindowMins,serverCatConfigs])
+  },[activeEvent,slots,offlineOccupancy,kitchenCapacity,capacityWindowMins,truckIntervalMins,serverCatConfigs,serverReservations,batchReservationsOn])
 
   // STOCK ↔ ORDERS (offline): fold offline-order consumption into the displayed orders_count so remaining
   // ticks down as the operator takes orders offline. EXACTLY-ONCE: only offline orders NOT yet in server
@@ -3436,9 +3524,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           🔴 "New orders may be missing" is the one that matters — stale-and-complete and
           stale-and-incomplete are different risks and only the second costs a customer their food.
           ⚠️ It never says anything is "saved". Nothing here is saved by rendering it. */}
-      {degradedSince&&!error&&(
+      {degraded&&!error&&(
         <div className="shrink-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold text-center">
-          Can&apos;t reach the server. Showing orders from {lastRefresh.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}. New orders may be missing.
+          {degradedBanner(degraded,lastRefresh)}
         </div>
       )}
       {/* 🔴 THE MENU IS FROM THIS DEVICE, NOT THE SERVER — its own bar, separate from the degraded
@@ -4400,7 +4488,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             categoryOrder={categoryOrder}
             itemCategoryMap={itemCategoryMap}
             showToast={showToast}
-            onOrderPlaced={(optimistic?:Order)=>{if(optimistic){setDeviceQueuedOrders(p=>[optimistic,...p])}else{fetchAll()}setActiveTab('orders')}}
+            onOrderPlaced={(optimistic?:Order)=>{if(optimistic){setDeviceQueuedOrders(p=>[optimistic,...p])}else{fetchAll(undefined,false,true)}setActiveTab('orders')}}
             onOpenEvent={openEvent}
             requestEventPickerOpen={pendingOpenEventPicker}
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
@@ -4906,6 +4994,108 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
                 an operator must never be able to silence "your orders were paused while you were away".
                 The per-event ack still prevents re-firing for the same pause. */}
+            {/* ── COLLECTION TIMES — PER EVENT ─────────────────────────────────────────────────────
+                The SAME box as Manage → Settings, with the same copy and the same controls. What differs
+                is scope, and per this card's house rule scope is a property of THE SCREEN, not of a row:
+                Manage sets the van, this screen sets THIS EVENT. 🔴 NO "this event only" WORDING — the
+                30 July ruling above the paid-step card forbids per-row scope copy and it applies here.
+                🔴 THE CONTROLS SHOW THE EFFECTIVE PAIR, not the stored one. An event with no override of
+                its own shows its van's values, so the operator sees what is actually in force rather
+                than a blank. The tickbox is ticked when the effective operator value came from an
+                explicit override — the event's if it has one, otherwise the van's.
+                🔴 EVERY CHANGE WRITES BOTH EVENT COLUMNS. Untick writes operator NULL ("same as
+                customers for this event"), so a 10 that was tried and unticked is not kept.
+                🔴 "Use my usual setting" writes BOTH to null and the event follows its van again. It is
+                the only route back, and the dashboard's own note above USUAL_SETTING_TOAST names this
+                exact control as the way to restore it.
+                🔴 POSITION: DIRECTLY ABOVE THE KITCHEN CAPACITY CARD, matching Manage → Settings, where
+                the same box sits directly above the same card. Moved here 17 September 2026; nothing
+                but its position changed. */}
+            {activeEvent&&(
+              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <p className="text-sm font-semibold text-slate-800">Collection times</p>
+                <p className="text-xs text-slate-500 mt-0.5 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
+                {!eventIntervalsAvailable ? (
+                  /* The columns could not be read, so the controls would be lying about what is stored.
+                     One line, no controls — and every other setting on this tab is untouched. */
+                  <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
+                ) : (() => {
+                  const ov = eventIntervals[activeEvent.id] ?? {}
+                  const evCustomer = ov.collection_interval_mins_override
+                  const hasEventOv = evCustomer !== null && evCustomer !== undefined
+                  // EFFECTIVE pair: the event's when it has one, else the van's.
+                  const customer = hasEventOv ? normaliseInterval(evCustomer) : normaliseInterval(vanIntervalPair.customer)
+                  const evOperator = ov.operator_collection_interval_mins_override
+                  // Ticked iff the effective operator value came from an EXPLICIT override.
+                  const overrideOn = hasEventOv
+                    ? (evOperator !== null && evOperator !== undefined)
+                    : normaliseInterval(vanIntervalPair.truck) !== normaliseInterval(vanIntervalPair.customer)
+                  const operator = overrideOn
+                    ? (hasEventOv ? normaliseInterval(evOperator) : normaliseInterval(vanIntervalPair.truck))
+                    : customer
+                  return (
+                    <div className="flex flex-col gap-3">
+                      <label className="block">
+                        <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
+                        <select
+                          value={customer}
+                          aria-label="Customer Collection Times"
+                          disabled={isOffline||savingIntervals}
+                          onChange={e=>saveCollectionIntervals(normaliseInterval(parseInt(e.target.value)),overrideOn?operator:null)}
+                          className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50">
+                          {INTERVAL_CHOICES.map(n=><option key={n} value={n}>Every {n} minutes</option>)}
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {overrideOn?'Customers can pick ':'You and your customers can pick '}{intervalExample(customer)}
+                        </p>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={overrideOn}
+                          aria-label="Use different times for orders I add"
+                          disabled={isOffline||savingIntervals}
+                          onChange={e=>saveCollectionIntervals(customer,e.target.checked?customer:null)}
+                          className="accent-orange-500"
+                        />
+                        <span className="text-sm text-slate-800">Use different times for orders I add</span>
+                      </label>
+                      {overrideOn&&(
+                        <label className="block">
+                          <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
+                          <select
+                            value={operator}
+                            aria-label="Your Collection Times"
+                            disabled={isOffline||savingIntervals}
+                            onChange={e=>saveCollectionIntervals(customer,normaliseInterval(parseInt(e.target.value)))}
+                            className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50">
+                            {INTERVAL_CHOICES.map(n=><option key={n} value={n}>Every {n} minutes</option>)}
+                          </select>
+                          <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
+                        </label>
+                      )}
+                      {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
+                          (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when
+                          ticked, else the customers') is not a whole multiple of a cooking category's prep.
+                          Same line, same rule, on Manage. */}
+                      {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, truckMenu?.categories ?? []); return mc ? <p className="text-xs text-amber-700 mt-1">{collectionTimesHint(mc)}</p> : null })()}
+                      <div className="flex items-center gap-3">
+                        {hasEventOv&&(
+                          <button
+                            onClick={()=>saveCollectionIntervals(null,null)}
+                            disabled={isOffline||savingIntervals}
+                            className="text-xs font-semibold text-orange-600 hover:text-orange-700 disabled:opacity-50">
+                            Use my usual setting
+                          </button>
+                        )}
+                        {savingIntervals&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
             {/* Kitchen capacity — its own card now (was nested in Stock & availability). Event-scoped
                 ceiling + category scope; the control's bold "Kitchen capacity" label doubles as the
                 card heading. One tight, left-aligned unit (max-w stops it stretching on the wide
@@ -5673,7 +5863,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       // ❗ = STRICTLY over the ceiling, not merely full — red alone conflates the two
                       // (tone goes red at conc >= ceiling). Same mark, same rule as the Add Order
                       // picker. Permanent property of the slot's load; unaffected by any acknowledgement.
-                      const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:'',overTotal:0}
+                      const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:'',overTotal:0,overlap:null,ownLabel:false}
                       const label=`${ind.label?` ${ind.label}`:''}${isCurrent?' · (current)':''}`
                       return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.overTotal>0?'❗':''}{label}</option>
                     })}

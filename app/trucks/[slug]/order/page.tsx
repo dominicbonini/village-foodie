@@ -21,13 +21,14 @@ import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasket
 import { calcAddableRemaining } from '@/lib/stock-utils';
 import { OptionStockBadge } from '@/components/OptionStockBadge';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
-import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
+import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot, type EngineReservation } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
 import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
 import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
+import { clockGridMinutes } from '@/lib/slot-generation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,6 +68,8 @@ interface EventData {
   postcode?: string
   notes: string
   status?: string       // 'open' = operator-started/auto-opened = LIVE; else Pre-order. From /api/events.
+  /** This event's van's CUSTOMER collection interval, from /api/events. The fallback picker's grid. */
+  collection_interval_mins?: number
   opened_at?: string | null
 }
 
@@ -163,7 +166,10 @@ type PendingPayment = {
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'))
-const MINUTES = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
+// 🔴 THE HARDCODED MINUTE LIST IS GONE (16 September 2026). The fallback picker's minutes now come from
+// `clockGridMinutes(interval)` in lib/slot-generation.ts — the SAME rule the server's grid uses — so the
+// two cannot disagree at any interval. The old list agreed with the server only because the server was
+// start-anchored and every start was a 5-minute mark. (`MINUTES` had no reader besides its own definition.)
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 // Shared pre-order label for a GROUP (category or sub-category): returns the label only when EVERY
@@ -675,7 +681,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
   // Backward-occupancy inputs from /api/slots — for the client-side basket-aware fit overlay
   // (hard-blocks a slot the customer's order can't fit; no override on the customer surface).
-  const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;eventStartMins:number}|null>(null)
+  const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;eventStartMins:number;reservations?:EngineReservation[];batchReservations?:boolean}|null>(null)
   const [notes, setNotes] = useState('')
 
   // ── 🔴 THE CONFIRMATION BRANCH'S OWN STATE — SEPARATE FROM THE FORM'S, ON PURPOSE ────────────────
@@ -707,7 +713,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // Filter minutes based on first/last hour of event
   const availableMinutes = useMemo(() => {
-    const allMinutes = ['00','05','10','15','20','25','30','35','40','45','50','55']
+    // 🔴 FROM THE SHARED RULE, NOT A LOCAL LIST. At 5 this is exactly the twelve entries this used to
+    // hard-code; at 15 it is :00/:15/:30/:45 — the same clock-anchored multiples /api/slots generates.
+    // 🔴 THE SELECTED EVENT'S interval, not the truck's — a two-van truck offers a different grid per
+    // event, and this picker is only ever used for the event being ordered against.
+    const allMinutes = clockGridMinutes(event?.collection_interval_mins ?? 5)
     
     if (!event?.start_time || !event?.end_time || !slotHour) {
       return allMinutes
@@ -1665,13 +1675,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       capacityInputs.eventStartMins,
       capacityInputs.kitchenCapacity,
       capacityInputs.capacityWindowMins ?? 5,
+      capacityInputs.reservations ?? [],
+      capacityInputs.batchReservations === true,
     )
     // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): a basket can't
     // fit a slot whose cooking windows extend before now. void nowTick forces a live re-derive.
     void nowTick
     const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
     for (const s of availableSlots) {
-      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp, (capacityInputs.productionSlotUnits || {})[s.collection_time] || {})
+      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp, (capacityInputs.productionSlotUnits || {})[s.collection_time] || {}, capacityInputs.batchReservations === true)
       if (!fit.fits) out.add(s.collection_time)
     }
     return out
@@ -1699,6 +1711,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       Number.NEGATIVE_INFINITY,
       capacityInputs.capacityWindowMins ?? 5,
       nowClamp,
+      capacityInputs.reservations ?? [],
+      capacityInputs.batchReservations === true,
     )
   }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
 

@@ -24,6 +24,7 @@
     "@capacitor/push-notifications": "8.1.1",
     "@capacitor/status-bar": "8.0.2",
     "@google/generative-ai": "^0.24.1",
+    "@hatchgrab/net-printer": "file:plugins/hatchgrab-net-printer",
     "@sparticuz/chromium": "148.0.0",
     "@stripe/connect-js": "^3.4.6",
     "@stripe/react-connect-js": "^3.4.4",

@@ -106,6 +106,21 @@ export function hasFeature(plan: Plan, feature: Feature): boolean {
   return PLAN_FEATURES[plan]?.has(feature) ?? false
 }
 
+// ── BATCH RESERVATIONS — THE PER-TRUCK SWITCH (P3, 18 September 2026) ─────────────────────────────
+// ON iff trucks.feature_overrides->>'batch_reservations' = 'true' OR trucks.plan = 'demo'. OFF otherwise.
+// It is NOT a Feature and never passes through canAccess: feature_overrides already carries one non-plan
+// key (whatsapp_setup_preview, lib/whatsapp/setup-preview.ts) and canAccess only ever looks up a known
+// Feature, so a second such key changes no entitlement, no parity check and no plan matrix — only the
+// admin card's "(n active)" count, which the existing key already inflates. Resolved SERVER-SIDE from the
+// truck row the routes already read (select('*') everywhere except /api/slots, which names the two
+// existing columns) and carried in capacityInputs so web and device draw the same picture.
+export function resolveBatchReservations(truck: { plan?: string | null; feature_overrides?: Record<string, unknown> | null } | null | undefined): boolean {
+  if (!truck) return false
+  if (truck.plan === 'demo') return true
+  const v = truck.feature_overrides && typeof truck.feature_overrides === 'object' ? (truck.feature_overrides as Record<string, unknown>)['batch_reservations'] : undefined
+  return v === true || v === 'true'
+}
+
 // Full check — respects feature_overrides and trial expiry
 export function canAccess(
   plan: Plan,

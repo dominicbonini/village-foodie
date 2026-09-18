@@ -705,6 +705,9 @@ export async function GET(
       mode: truck.mode,
       venue_name: truck.venue_name,
       time_selection_enabled: truck.time_selection_enabled ?? false,
+      // 🔴 THE CUSTOMER INTERVAL, for the page's fallback picker — the ONLY client-side grid left, and it
+      // must build from the same rule the server does (clockGridMinutes). Normalised into the vocabulary
+      // so a null column reads 5 here exactly as it does in /api/slots.
       paused: isPaused,
       pauseReason: pauseReason,
       extra_wait_mins: (() => {

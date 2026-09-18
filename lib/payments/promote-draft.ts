@@ -55,6 +55,7 @@ import { checkOptionCeilingShortfall, findSoldOutOption } from '@/lib/option-sto
 import { buildItemCatMap, normaliseOrderLines, rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { eventKitchenCapacity, placeOrderInSlotLocked } from '@/lib/orders/place-in-slot'
+import { resolveIntervalsFor } from '@/lib/slot-interval'
 // 🔴 THE ONE AUTO-ACCEPT DECISION, SHARED WITH app/api/orders/submit. This file used to compute its own
 // and the two drifted — see that module's header for what it cost.
 import { decideAutoAccept } from '@/lib/orders/auto-accept'
@@ -68,6 +69,9 @@ import { toMinor } from '@/lib/order-repricing'
 // OTHER trigger refused and only the machine reason survived, and the order page for a pay-at-hatch
 // refusal that has no server sentence at all. See lib/payments/sold-out-copy.
 import { soldOutRefusalMessage } from '@/lib/payments/sold-out-copy'
+import { writeCookingReservation, writeReservationRecord } from '@/lib/orders/cooking-reservation'
+import { resolveBatchReservations } from '@/lib/features'
+import type { StoredCookingReservation } from '@/lib/slot-bookings'
 
 /** The one refusal we cannot name a cause for. Every other branch says what happened. */
 const GENERIC_REFUSAL = 'Sorry — we could not place your order. No money has been taken.'
@@ -202,6 +206,9 @@ export async function promoteDraft(
     }
 
     // ── 3. THE LOCK. Everything binding happens inside it. ─────────────────────────────────────
+    // P3: the switch from the truck row read above (select('*')); the record the walk admitted.
+    const batchReservationsOn = resolveBatchReservations(truck)
+    let claimReservation: StoredCookingReservation | null = null
     const lock = await acquireEventLock(draft.truck_id, eventDate)
     if (!lock.ok) {
       // 🔴 NOT A REFUSAL — OURS, AND RETRYABLE. Contention is not the customer's fault and their money is
@@ -252,15 +259,22 @@ export async function promoteDraft(
       let finalSlot: string | null = draft.requested_slot
       let booked = false
       if (draft.event_date) {
-        const { kitchenCapacity, capacityWindowMins } = await eventKitchenCapacity(draft.truck_id, draft.event_date, eventRow?.id ?? null)
+        const { kitchenCapacity, capacityWindowMins, vanId } = await eventKitchenCapacity(draft.truck_id, draft.event_date, eventRow?.id ?? null)
+        // Same van, same rule as the pay-at-hatch path — a card order must be placed on the identical grid.
+        // Same three-layer rule as the pay-at-hatch path — a card order is placed on the identical grid.
+        const vanIv = await resolveIntervalsFor(supabase, vanId, eventRow?.id ?? null)
+        const customerIntervalMins = (vanId || vanIv.fromEvent) ? vanIv.customer : (truck.collection_interval_mins ?? 0)
         const claim = await placeOrderInSlotLocked(
           draft.truck_id, draft.event_date, eventRow?.id ?? null, draft.requested_slot, orderLines,
           itemCatMap, catConfigs,
           eventRow?.start_time ?? null, eventRow?.end_time ?? null,
-          truck.collection_interval_mins ?? 0,
-          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
+          customerIntervalMins,
+          truck.slot_duration_mins ?? customerIntervalMins,
           kitchenCapacity, capacityWindowMins,
+          undefined,
+          batchReservationsOn,
         )
+        claimReservation = claim.reservation ?? null
         if (claim.booked && claim.finalSlot) {
           booked = true
           finalSlot = claim.finalSlot
@@ -372,6 +386,9 @@ export async function promoteDraft(
         return { status: 'refused', orderKey, reason: 'insert_failed', cancelled,
                  customerMessage: GENERIC_REFUSAL }
       }
+      // P2: record today's split for the promoted order (best-effort, separate UPDATE; null on failure).
+      if (batchReservationsOn && claimReservation) await writeReservationRecord(supabase, { truckId: draft.truck_id, orderKey, record: claimReservation })
+      else await writeCookingReservation(supabase, { truckId: draft.truck_id, eventId: eventRow?.id ?? null, orderKey })
 
       // ── 7a. 🔴 THE ORDER EXISTS. ERASE THE DRAFT'S COPY OF THE CUSTOMER'S DETAILS. ─────────────
       // Only now: the order holds them from this point, so the draft must not. Deliberately after the

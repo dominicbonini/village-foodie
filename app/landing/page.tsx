@@ -579,7 +579,7 @@ export default function LandingPage() {
                     way this comment already warned about. THE BULLET IS NOT A KEY — nothing joins on it;
                     it is display copy that must simply agree with the row. Change both or neither. */}
                 <li>Schedule page on your own website</li>
-                <li>Kitchen ticket printing</li>
+                <li>Kitchen ticket printing (Bluetooth or wired printer)</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
               </ul>

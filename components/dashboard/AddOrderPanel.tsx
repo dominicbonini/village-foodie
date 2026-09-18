@@ -8,9 +8,10 @@ import type {
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { isSlotPast } from '@/lib/slot-utils'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { earliestBackwardFitSlot, projectBackwardOccupancy, fitOrderBackward, backwardWindowStepMins, contributingProductionSlots } from '@/lib/slot-availability'
-import { normaliseOrderLines } from '@/lib/slot-bookings'
-import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
+import { earliestBackwardFitSlot, projectBackwardOccupancy, fitOrderBackward, backwardWindowStepMins, coverDotWindows, type EngineReservation } from '@/lib/slot-availability'
+import { buildSlotIndicators, formatFitSuffix, type SlotIndicator } from '@/lib/slot-display'
+import { buildFitMessage, type FitMessage } from '@/lib/slot-fit-message'
+import type { FitWhy } from '@/lib/slot-availability'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
@@ -31,6 +32,7 @@ import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { isNativeApp } from '@/lib/native/device'
 import { newUuid } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
+import { createCapacityRefresher, type CapacityRefresher } from '@/lib/capacity-refresh'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -50,6 +52,19 @@ function getAsapBaseTime(event: { event_date: string; start_time: string } | nul
   }
   return now
 }
+
+// ── "HH:MM" → minutes from midnight ────────────────────────────────────────────────────────────────
+// 🔴 MODULE LEVEL, AND IT MUST STAY THERE (18 September 2026). This was a `const` arrow declared partway
+// down the component body. It is pure — it reads only its argument — so the position was arbitrary, until
+// `manualFitWhy` (added the day before) called it from a useMemo declared ABOVE it. A useMemo body runs
+// DURING render, so the call landed in the temporal dead zone and every Add Order render with an item in
+// the basket threw `ReferenceError: Cannot access 'readyToMins' before initialization`.
+// ⚠️ NEITHER tsc NOR next build CAN SEE THIS: both are happy with a const referenced earlier in source
+// order, because whether it has been initialised depends on the ORDER THE CODE RUNS, not its types. Only
+// rendering the component finds it — which is what scripts/add-order-render.cjs now does.
+// Hoisting rather than moving the memo keeps every existing caller's behaviour identical and removes the
+// whole class of error for this helper, instead of re-creating the closure on every render.
+function readyToMins(t: string): number { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -128,9 +143,13 @@ interface AddOrderPanelProps {
     slots: Slot[]
     productionSlotUnits: Record<string, Record<string, number>>
     kitchenCapacity: number | null
+    intervalMins?: number
     capacityWindowMins: number
     eventStartMins: number
     catConfigs: Record<string, { secs: number; batch: number }>
+    /** P1/P3: the cached cooking reservations and the per-truck switch, as /api/dashboard sent them. */
+    reservations?: EngineReservation[]
+    batchReservations?: boolean
   } | null
   isEventLoaded?: (eventId: string) => boolean
   /** Always-mounted tab pattern (manual s.22): panel stays mounted, data effects
@@ -288,6 +307,13 @@ function ScrollMenuSections({ cats, categoryStocks, renderCategory }: {
 
 /** Shared frozen default so an absent prop does not mint a new Map on every render. */
 const EMPTY_CONSUMED: ReadonlyMap<string, number> = new Map()
+// ── STABLE EMPTIES (18 September 2026) ────────────────────────────────────────────────────────────
+// `?? []` and `?? {}` inside a component body mint a NEW object on every render, which silently defeats
+// every useMemo downstream that lists the value as a dependency — the memo's deps compare unequal, so it
+// recomputes on every keystroke. These are the one shared instance each, so the fallback branch is
+// referentially stable. They are never mutated.
+const EMPTY_SLOTS: Slot[] = []
+const EMPTY_CAT_CONFIGS: Record<string, { secs: number; batch: number }> = {}
 
 export function AddOrderPanel({
   truck, truckMenu, menuGroups,
@@ -349,17 +375,23 @@ export function AddOrderPanel({
   const [apiQueueByCat, setApiQueueByCat] = useState<Record<string, number>>({})
   // Engine inputs from /api/slots so the dot/modal can recompute basket-inclusive
   // tones with the SAME buildSlotAvailability the server traffic-light uses.
-  const [apiCapacityInputs, setApiCapacityInputs] = useState<{
+  type ApiCapacityInputs = { reservations?: EngineReservation[]; batchReservations?: boolean;
     productionSlotUnits: Record<string, Record<string, number>>
     kitchenCapacity: number | null
     capacityWindowMins?: number
+    /** The TRUCK interval the grid was built on, from /api/slots (operator) or the offline snapshot. */
+    intervalMins?: number
     eventStartMins: number
     eventEndMins: number | null
     earliestCollectionMins: number
     date: string
     nowMins: number
     windowSecs: number
-  } | null>(null)
+  }
+  /** One /api/slots response body, as fetchFreshSlots returns it and applyFreshSlots consumes it. */
+  type FreshSlotsBody = { slots?: Slot[]; queueByCat?: Record<string, number>; capacityInputs?: ApiCapacityInputs | null
+    catConfigs?: Record<string, { secs: number; batch: number }>; tz?: string }
+  const [apiCapacityInputs, setApiCapacityInputs] = useState<ApiCapacityInputs | null>(null)
   // Server catConfigs from /api/slots — the SAME complete object the customer page feeds the
   // engine. It carries countsToCapacity (mapped from counts_toward_capacity at /api/slots:155);
   // the flag-less `categoryConfigs` prop does NOT, which is why instant items never counted on
@@ -370,15 +402,25 @@ export function AddOrderPanel({
   //    offlineCapacity for THIS event (offline / pre-first-fetch). All consumers below read these derived
   //    consts unchanged, so the offline fallback flows everywhere AND drains live as offlineCapacity re-folds.
   const offlineForThisEvent = offlineCapacity && (!manualEvent || offlineCapacity.eventId === manualEvent.id) ? offlineCapacity : null
-  const manualSlots: Slot[] = apiSlots.length ? apiSlots : (offlineForThisEvent?.slots ?? [])
-  const capacityInputs = apiCapacityInputs ?? (offlineForThisEvent ? {
+  const manualSlots: Slot[] = apiSlots.length ? apiSlots : (offlineForThisEvent?.slots ?? EMPTY_SLOTS)
+  // 🔴 MEMOISED (18 September 2026), AND THE VALUE IS UNCHANGED. The offline branch built a fresh object
+  // literal on EVERY render, so `capacityInputs` was never referentially equal to itself and the three
+  // memos that depend on it — slotIndicators, manualFitWhy, manualPlacement — recomputed on every
+  // keystroke while offline. Measured worst case for manualFitWhy alone on a full 15-hour, 5-minute,
+  // three-category board: 37 ms per recompute, well past a 16 ms frame. Online this was already stable
+  // (apiCapacityInputs is state); this makes the offline path behave the same way. Same fields, same
+  // order, same nulls — only its identity is now held across renders.
+  const capacityInputs = useMemo(() => apiCapacityInputs ?? (offlineForThisEvent ? {
+    intervalMins: offlineForThisEvent.intervalMins ?? 5,
     productionSlotUnits: offlineForThisEvent.productionSlotUnits,
     kitchenCapacity: offlineForThisEvent.kitchenCapacity,
     capacityWindowMins: offlineForThisEvent.capacityWindowMins,
     eventStartMins: offlineForThisEvent.eventStartMins,
+    reservations: offlineForThisEvent.reservations ?? [],            // P1/P3 — absent from an older cache ⇒ today
+    batchReservations: offlineForThisEvent.batchReservations === true,
     eventEndMins: null, earliestCollectionMins: 0, date: '', nowMins: 0, windowSecs: 0,   // unused by the panel
-  } : null)
-  const serverCatConfigs = Object.keys(apiCatConfigs).length ? apiCatConfigs : (offlineForThisEvent?.catConfigs ?? {})
+  } : null), [apiCapacityInputs, offlineForThisEvent])
+  const serverCatConfigs = Object.keys(apiCatConfigs).length ? apiCatConfigs : (offlineForThisEvent?.catConfigs ?? EMPTY_CAT_CONFIGS)
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
   // ── 🔴 liveEvent — THE FRESH VERSION OF WHICHEVER EVENT manualEvent NAMES (V9.6) ─────────────────
@@ -453,21 +495,15 @@ export function AddOrderPanel({
     /** 'filled' = the window got worse while they were building the order; 'over' = it already was, or
      *  this basket is what tips it; 'toosoon' = a LEAD failure, not a capacity one (see the copy). */
     variant: 'over' | 'filled' | 'toosoon'
-    /** Start of the cooking window span this order occupies, "HH:MM". Null ⇒ no cooking load. */
-    windowFrom: string | null
-    /** The binding constraint, already resolved from fit.bound_by. */
-    bind: { kind: 'ceiling'; limit: number; needed: number }
-        | { kind: 'category'; cat: string; limit: number; needed: number }
-        | { kind: 'lead' }
-    unitWord: string
-    /** Orders collecting at the slots that feed this window, with their OWN quantities.
-     *  🔴 NOT an attribution of spilled units — see contributingProductionSlots. */
-    contributors: Array<{ id: string; slot: string; qty: number }>
+    /** 🔴 THE WHOLE MESSAGE, BUILT FROM fitOrderBackward's `why` (18 September 2026) — the modal renders
+     *  these strings and computes nothing. It replaces `bind`/`unitWord`/`windowFrom`/`contributors`/
+     *  `thisOrderQty`, every one of which existed so the modal could RE-DERIVE figures the engine had
+     *  already discarded. That is how it came to print "it would need 16" for two batches of 8. */
+    message: FitMessage
     /** TRUE when the projection came from CACHED inputs because the device was offline. The modal says
      *  so: a stale check can MISS a breach (an order placed since the last poll is invisible to it), so
      *  the operator must know the answer is provisional rather than authoritative. */
     stale?: boolean
-    thisOrderQty: number
     override: boolean
   } | null>(null)
 
@@ -564,11 +600,73 @@ export function AddOrderPanel({
       capacityInputs.eventStartMins,
       categoryOrder,
       capacityInputs.capacityWindowMins ?? 5,
+      capacityInputs.intervalMins ?? 5,
+      capacityInputs.reservations ?? [],
+      capacityInputs.batchReservations === true,
     )
   }, [capacityInputs, manualSlots, serverCatConfigs, categoryOrder])
 
+  // The engine speaks in lowercase keys (orderItemsToQtyByCat lowercases every category); the operator
+  // reads the truck's own spelling. `categoryOrder` and `itemCategoryMap` both carry menu_categories.name
+  // as stored, so this inverts them once. Unknown key ⇒ the builder's own capitalising fallback.
+  const catLabelFor = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const name of categoryOrder) if (name) m.set(name.toLowerCase(), name)
+    for (const name of Object.values(itemCategoryMap)) if (name && !m.has(name.toLowerCase())) m.set(name.toLowerCase(), name)
+    return (cat: string) => m.get(cat) ?? ''
+  }, [categoryOrder, itemCategoryMap])
+
+  // ── B3: WHICH LISTED TIMES THIS ORDER WILL NOT FIT (18 September 2026) ────────────────────────────
+  // 🔴 THE DOTS ABOVE ARE BASKET-AGNOSTIC AND ALWAYS WERE. buildSlotIndicators answers "how busy is this
+  // window", which is the right question with an empty order and the WRONG one once there is a basket:
+  // a green 18:45 can still be impossible for 9 pizzas. The customer picker has answered the basket-aware
+  // question since Stage 3 (`unfittableSlots` in app/trucks/[slug]/order/page.tsx); the operator never
+  // did, so the only way to discover it was to place the order and meet the popup. This is that same
+  // memo, same engine, same inputs — the DOT IS UNTOUCHED, a label is appended beside it.
+  // COST: one projectBackwardOccupancy plus one fitOrderBackward per listed time — ~43 fits for a
+  // 17:00–21:00 five-minute grid, sub-millisecond in total (measured in scripts/add-order-fit-message.cjs)
+  // — memoised on the basket, the grid and the capacity inputs, so typing a name recomputes nothing.
+  // 🔴 NO DATA ⇒ NO LABEL. An empty map is returned when capacityInputs is absent (offline with no cached
+  // grid, or a failed read). A label is a verdict; without inputs there is no verdict to report, and
+  // "Not enough time" on a slot that fits fine would be worse than silence.
+  const manualFitWhy = useMemo(() => {
+    const out = new Map<string, FitWhy>()
+    if (!capacityInputs || !manualSlots.length) return out
+    if (!Object.keys(basketByCat).length) return out            // empty order ⇒ the list is unchanged
+    const back = projectBackwardOccupancy(
+      capacityInputs.productionSlotUnits || {},
+      serverCatConfigs,
+      capacityInputs.eventStartMins,
+      capacityInputs.kitchenCapacity ?? null,
+      capacityInputs.capacityWindowMins ?? 5,
+      capacityInputs.reservations ?? [],
+      capacityInputs.batchReservations === true,
+    )
+    // The SAME now-clamp rule the popup's fit and the customer page use.
+    const nowClamp = manualEvent?.event_date === getLocalDateInTz(eventTz)
+      ? getNowMinsInTz(eventTz)
+      : Number.NEGATIVE_INFINITY
+    for (const s of manualSlots) {
+      if (s.is_grace) continue
+      const fit = fitOrderBackward(
+        back,
+        readyToMins(s.collection_time),
+        basketByCat,
+        serverCatConfigs,
+        capacityInputs.kitchenCapacity ?? null,
+        capacityInputs.eventStartMins,
+        capacityInputs.capacityWindowMins ?? 5,
+        nowClamp,
+        (capacityInputs.productionSlotUnits || {})[s.collection_time] || {},
+        capacityInputs.batchReservations === true,
+      )
+      if (!fit.fits) out.set(s.collection_time, fit.why)
+    }
+    return out
+  }, [capacityInputs, manualSlots, serverCatConfigs, basketByCat, eventTz, manualEvent])
+
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
-    slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', overTotal: 0, occ: null }
+    slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', overTotal: 0, occ: null, overlap: null, ownLabel: false }
 
   // ASAP "ready around" slot — the BASKET-AWARE earliest BACKWARD-FITTING slot (Stage 3):
   // the earliest collection slot whose cooking windows have room for this order, via the SAME
@@ -576,7 +674,19 @@ export function AddOrderPanel({
   // in-progress basket influences the display, and it now agrees with what the picker offers.
   const asapResult = useMemo(() => {
     if (!manualSlots.length || !capacityInputs) return { slot: manualAsapSlot, noFit: false }
-    const asapStart = manualAsapSlot?.collection_time ?? manualSlots.find(s => !s.is_grace)?.collection_time
+    // 🔴 ASAP SEARCHES FROM THE FIRST OFFERABLE TIME, NOT THE FIRST `available` ONE (19 September 2026).
+    // It used to start at `manualAsapSlot` = getAsapSlot(...), whose rule is "the first not-past,
+    // server-`available`, non-grace slot". `available` is the NO-BASKET dot tone, and a dot stands for a
+    // stretch that can be longer than an order's cooking window — so on a grid wider than the prep a time
+    // can read red (something fills part of its stretch) while a short order still fits in the free part.
+    // ASAP then skipped a time the picker accepts, which is exactly what Dominic saw: "ASAP — 12:30" over
+    // a bookable 12:15. The capacity question is `fitOrderBackward`'s, and the loop below asks it at every
+    // time; pre-filtering on a second, coarser answer could only ever disagree with it.
+    // ⚠️ NOT-PAST AND NON-GRACE STILL APPLY — they are not capacity, and `isSlotPast` remains the single
+    // source of truth for the first of them. getAsapSlot itself is untouched: other surfaces use it for
+    // "the earliest SELECTABLE slot", which is a different question from "the earliest this order fits".
+    const asapStart = manualSlots.find(s => !s.is_grace && !isSlotPast(s, eventTz, manualEvent?.event_date))?.collection_time
+      ?? manualSlots.find(s => !s.is_grace)?.collection_time
     if (!asapStart) return { slot: manualAsapSlot, noFit: false }
     const [sh, sm] = asapStart.split(':').map(Number)
     // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): the operator
@@ -594,6 +704,8 @@ export function AddOrderPanel({
       (sh || 0) * 60 + (sm || 0),
       capacityInputs.capacityWindowMins ?? 5,
       nowClamp,
+      capacityInputs.reservations ?? [],
+      capacityInputs.batchReservations === true,
     )
     const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
     // noFit = there IS a basket but the engine found NO genuinely-fitting slot all day (truly full /
@@ -629,7 +741,6 @@ export function AddOrderPanel({
   // only changes what the readout READS. Fallback to queueAware/calcReadyTime only when there's no fit slot.
   const hasBasketForReady = manualItems.length > 0 || appliedDeals.length > 0
   const fitReadyTime = (hasBasketForReady && capacityInputs) ? (adjustedAsapSlot?.collection_time || null) : null
-  const readyToMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
   // The collection slot that gridding the honest queueAware estimate UP lands on (earliest slot ≥ it).
   const queueAwareGridSlot = queueAware.readyTime
     ? (manualSlots
@@ -698,25 +809,87 @@ export function AddOrderPanel({
     finally { setEventsLoading(false) }
   }, [token])
 
+  // ── THE ONE FRESH READ (18 September 2026) ──────────────────────────────────────────────────────
+  // Every /api/slots read this panel makes — the tab/event fetch, submitManual's re-check, and the
+  // safety-net refresh — goes through this function, so the list and the popup are always judged on
+  // the same call: same grid (the operator token), same event scope, same `cache: 'no-store'`.
+  // Returns the parsed body; throws on a network failure. It applies NO state — the callers decide.
+  const fetchFreshSlots = useCallback(async (ev: { event_date: string; start_time?: string | null; end_time?: string | null; id?: string | null }) => {
+    const p = new URLSearchParams({ date: ev.event_date })
+    if (ev.start_time) p.set('start', ev.start_time)
+    if (ev.end_time) p.set('end', ev.end_time)
+    // event_id scopes the panel's capacity projection to THIS event (re-key fix).
+    if (ev.id) p.set('event_id', ev.id)
+    // 🔴 THE DASHBOARD TOKEN IDENTIFIES THIS CALLER AS THE OPERATOR, so /api/slots serves the TRUCK grid
+    // (operator_collection_interval_mins) rather than the customer's. Verified server-side against
+    // trucks.dashboard_token for this truck — the same check /api/dashboard makes; a bad token gets the
+    // customer grid, never an error. Same `?token=` shape this file already uses for /api/events/manage.
+    p.set('token', token)
+    const res = await fetch(`/api/slots/${truck.id}?${p}`, { cache: 'no-store' })
+    return res.json() as Promise<FreshSlotsBody>
+  }, [truck.id, token])
+
+  /** Puts one /api/slots body into the panel's state — the list's dots and labels recompute from it. */
+  /** When the panel last APPLIED an /api/slots body. Read by the max-age backstop below; a failed read
+   *  does not stamp it, so a run of failures keeps asking rather than pretending the data is fresh. */
+  // Seeded to MOUNT time, not 0, for two reasons: the mount's own direct read is already in flight, so a
+  // backstop read here would simply double it; and if that mount read FAILS it never stamps this ref, so
+  // the backstop fires 10 s later and retries — which a `0` seed would have done immediately and forever.
+  const lastAppliedAtRef = useRef(Date.now())
+  const applyFreshSlots = useCallback((data: FreshSlotsBody) => {
+    lastAppliedAtRef.current = Date.now()
+    setApiSlots(data.slots || [])
+    setApiQueueByCat(data.queueByCat || {})
+    setApiCapacityInputs(data.capacityInputs ?? null)
+    setApiCatConfigs(data.catConfigs || {})
+    if (data.tz) setEventTz(data.tz)
+  }, [])
+
   const fetchManualSlots = useCallback(async (eventDate: string, startTime?: string, endTime?: string, eventId?: string) => {
     if (!truck?.id) return
     try {
-      const p = new URLSearchParams({ date: eventDate })
-      if (startTime) p.set('start', startTime)
-      if (endTime) p.set('end', endTime)
-      // event_id scopes the panel's capacity projection to THIS event (re-key fix).
-      if (eventId) p.set('event_id', eventId)
-      const res = await fetch(`/api/slots/${truck.id}?${p}`)
-      const data = await res.json()
-      setApiSlots(data.slots || [])
-      setApiQueueByCat(data.queueByCat || {})
-      setApiCapacityInputs(data.capacityInputs ?? null)
-      setApiCatConfigs(data.catConfigs || {})
-      if (data.tz) setEventTz(data.tz)
+      applyFreshSlots(await fetchFreshSlots({ event_date: eventDate, start_time: startTime, end_time: endTime, id: eventId }))
       // Null the raw /api/slots state on failure (offline). NOT bare times — the derived `manualSlots`/
       // `capacityInputs` fall back to the cached advisory `offlineCapacity`, so the picker keeps its lights.
     } catch { setApiSlots([]); setApiQueueByCat({}); setApiCapacityInputs(null); setApiCatConfigs({}) }
-  }, [truck?.id])
+  }, [truck?.id, fetchFreshSlots, applyFreshSlots])
+
+  // ── THE SAFETY NET — see lib/capacity-refresh.ts for the rules it enforces ────────────────────────
+  // Latest-value refs, so the refresher (created once) never reads a stale event or a stale online flag.
+  const manualEventRef = useRef(manualEvent); manualEventRef.current = manualEvent
+  const isOfflineRef = useRef(isOffline); isOfflineRef.current = isOffline
+  const fetchFreshRef = useRef(fetchFreshSlots); fetchFreshRef.current = fetchFreshSlots
+  const applyFreshRef = useRef(applyFreshSlots); applyFreshRef.current = applyFreshSlots
+  // ── 🔴 CREATED IN AN EFFECT, NOT IN useMemo — THE BUG BEHIND THREE STALE-LIST ROUNDS (19 Sept 2026) ──
+  // The refresher used to be built once in `useMemo(() => createCapacityRefresher(...), [])` with a
+  // cleanup effect that called `dispose()`. Under React StrictMode — Next's DEV DEFAULT, i.e. Dominic's
+  // localhost — every mount is simulated as mount → unmount → mount. The memoised OBJECT survives that,
+  // but the cleanup ran on the simulated unmount and set its `disposed` flag, and nothing ever unset it.
+  // From then on every `request()` returned false before doing anything: no cancel, basket change,
+  // dropdown open, tab switch or max-age tick could ever read /api/slots. The mount's own direct read
+  // (`fetchManualSlots`) bypasses the refresher, which is why a page reload "fixed" it and why the list
+  // loaded correctly in the first place. Production builds do not double-invoke, so this never reached
+  // a live truck — it only ever broke where Dominic looks. The fixture harnesses mounted without
+  // StrictMode and so proved the logic of an object the real page had already killed.
+  // The rule: anything with a dispose() belongs in an effect's SETUP, disposed in its CLEANUP, so that a
+  // remount — simulated or real — gets a fresh instance. The facade below keeps every call site the same.
+  const refresherRef = useRef<CapacityRefresher | null>(null)
+  useEffect(() => {
+    const r = createCapacityRefresher<FreshSlotsBody>({
+      fetchFresh: () => { const ev = manualEventRef.current; return ev ? fetchFreshRef.current(ev) : Promise.reject(new Error('no event')) },
+      apply: data => applyFreshRef.current(data),
+      isOnline: () => !isOfflineRef.current && isOnline(),
+      minIntervalMs: 5000,
+    })
+    refresherRef.current = r
+    return () => { r.dispose(); if (refresherRef.current === r) refresherRef.current = null }
+  }, [])
+  /** Stable handle for the triggers. Before the effect above has run there is nothing to ask, and that is
+   *  correct: the mount's own direct read is already in flight. */
+  const capacityRefresher = useMemo(() => ({
+    request: (reason: string): boolean => refresherRef.current?.request(reason) ?? false,
+    get pending(): boolean { return refresherRef.current?.pending ?? false },
+  }), [])
 
   // Live 30s tick so the ASAP label + the dropdown's isSlotPast re-evaluate as time passes.
   useEffect(() => {
@@ -771,6 +944,99 @@ export function AddOrderPanel({
     setManualSlot('')
   }, [controlledEvent?.id, isActive]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── ONE RULE: THE LIST REFRESHES WHENEVER ANYTHING THE LIST IS MADE OF CHANGES (19 September 2026) ──
+  //
+  // 🔴 WHAT WAS WRONG. This key covered THREE fields — productionSlotUnits, reservations and the switch —
+  // so only a change to the ORDERS ever asked for a fresh read. Everything else that shapes the list was
+  // invisible to it: the collection-times grid, the cooking categories (prep, batch, counts_toward_
+  // capacity), the van's kitchen capacity and capacity window, and the event's own slot flags (paused,
+  // extra wait, grace, past). Dominic set the van to 2 per batch with a 5-minute cook and the times to
+  // every 5 minutes: the dashboard strip changed at once (it reads the payload directly) while Add Order
+  // kept showing 4-per-batch counts on a 15-minute grid, because nothing told it to look again.
+  //
+  // 🔴 THE RULE, rather than a list of special cases: the key is EVERY capacity-relevant field of the
+  // dashboard's own payload for this event — the same object the strip renders from. If the strip can see
+  // a change, so can this key, and the panel re-reads. That covers every trigger at once, whatever its
+  // origin: a customer or operator order arriving, a cancel, reject, refund, ready/collected, an edit, a
+  // Manage or dashboard Settings save (grid, capacity, event override), a Menu & Stock prep/batch change,
+  // extra wait, pause/resume, opening or closing the event, an offline replay, and the same done in
+  // another tab or on another device — all of them reach /api/dashboard and land in this payload.
+  //
+  // 🔴 IT COSTS NOTHING EXTRA ON THE DASHBOARD. No new endpoint and no new polling: the key is derived
+  // from a payload the page already holds. One change ⇒ at most ONE /api/slots read, throttled to one
+  // per 5 s with a trailing call, so a burst of orders collapses into one read at the window's end.
+  // 🔴 AND IT NEVER REFRESHES THE SCREEN. The result goes through `applyFreshSlots`, which sets the
+  // list's own state only — the basket, the customer fields and the scroll position are untouched.
+  const capacitySignature = useMemo(() => {
+    const c = offlineForThisEvent
+    if (!c) return ''
+    return JSON.stringify([
+      // the GRID and each time's own state (available / past / too soon / grace ⇒ pauses, extra wait, closing)
+      (c.slots ?? []).map(s => `${s.collection_time}|${s.production_window_key ?? s.production_slot ?? ''}|${s.available ? 1 : 0}|${s.is_past ? 1 : 0}|${s.too_soon ? 1 : 0}|${s.is_grace ? 1 : 0}`),
+      c.catConfigs ?? null,          // prep, batch, counts_toward_capacity
+      c.kitchenCapacity ?? null,     // van kitchen capacity
+      c.capacityWindowMins ?? null,  // van capacity window
+      c.intervalMins ?? null,        // the truck/event collection interval the grid was built on
+      c.eventStartMins ?? null,      // event start (its times moving re-bases every window)
+      c.productionSlotUnits,         // the orders' load
+      c.reservations ?? null,        // their cooking reservations
+      c.batchReservations ?? null,   // the per-truck switch
+    ])
+  }, [offlineForThisEvent])
+  // ── 🔴 THE HALF OF THE KEY THAT NOTICES A STATUS CHANGE (18 September 2026) ────────────────────
+  // `capacitySignature` above is built from `offlineCapacity`, which is a FOLD: the dashboard's
+  // buildOfflineOccupancy sums the items of the orders it considers OCCUPYING. It is therefore an
+  // INDIRECT witness to a cancellation — it moves only in so far as the cancelled order's items
+  // survived the fold, and it says nothing at all about a status change that does not alter oven load
+  // (an order marked collected out of a window already at zero, a reject of an order whose items
+  // mapped to no category). The fold is also the only thing that changes: the per-slot flags in the
+  // key (available/is_past/too_soon/is_grace) do not move when an order's status does.
+  // So the key now carries the ORDERS THEMSELVES — order key, STATUS, slot and total quantity, sorted.
+  // Status is a literal field of the key, so ANY transition (cancel, reject, refund, collected, an
+  // edit's quantity change, a new order, one made on another device and delivered by realtime) changes
+  // the string by construction rather than by inference. Scoped to the panel's own event so another
+  // event's traffic cannot churn it. `orders` is already a prop — no new data source, no new fetch.
+  const ordersSignature = useMemo(() => {
+    const evId = manualEvent?.id
+    if (!evId) return ''
+    const rows: string[] = []
+    for (const o of orders) {
+      const r = o as unknown as { order_key?: string; id?: string | number; event_id?: string | null
+        status?: string | null; slot?: string | null; items?: Array<{ name?: string; quantity?: number | string }> | null }
+      if (r.event_id !== evId) continue
+      let qty = 0
+      for (const it of r.items ?? []) qty += Number(it?.quantity) || 0
+      rows.push(`${r.order_key ?? r.id ?? ''}|${r.status ?? ''}|${r.slot ?? ''}|${qty}`)
+    }
+    rows.sort()
+    return rows.join(';')
+  }, [orders, manualEvent?.id])
+  /** The whole snapshot key: the capacity view AND the orders' statuses. Either half moving asks for a read. */
+  const snapshotKey = `${capacitySignature}\u00a6${ordersSignature}`
+  // DEV-ONLY DIAGNOSTIC (19 September 2026): the browser trace in scripts/add-order-stale-browser.cjs reads
+  // the key before and after a cancel to say whether it moved. Never set in production builds.
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return
+    ;(window as unknown as { __hgSnapshotKey?: string }).__hgSnapshotKey = snapshotKey
+  }, [snapshotKey])
+  const lastSignatureRef = useRef<string | null>(null)
+  // 🔴 A CHANGE WHILE THE TAB IS HIDDEN IS REMEMBERED, NOT DISCARDED. The old effect advanced its ref and
+  // THEN bailed on `!isActive`, so a cancel made from the Orders tab was consumed with no read asked for
+  // and, the signature now matching, never asked for again. It is now held and fired on activation.
+  const signatureDirtyRef = useRef(false)
+  useEffect(() => {
+    if (lastSignatureRef.current === null) { lastSignatureRef.current = snapshotKey; return }
+    if (snapshotKey !== lastSignatureRef.current) { lastSignatureRef.current = snapshotKey; signatureDirtyRef.current = true }
+    if (!signatureDirtyRef.current) return
+    if (!isActive || !manualEvent) return                 // held: the activation run below picks it up
+    // 🔴 THE FLAG IS CONSUMED ONLY WHEN THE READ WILL ACTUALLY HAPPEN. `request()` returns false for
+    // three unlike reasons; two of them (throttled, in flight) schedule a TRAILING read and so carry
+    // the change, while OFFLINE carries nothing. Clearing on the bare call dropped an offline change
+    // for good — the key had already advanced, so it never asked again. `pending` separates them.
+    const started = capacityRefresher.request('capacity-changed')
+    if (started || capacityRefresher.pending) signatureDirtyRef.current = false
+  }, [snapshotKey, isActive, manualEvent, capacityRefresher])
+
   // RECONNECT: fetchManualSlots is keyed on manualEvent id/date/times, so if the panel stays OPEN on the same
   // event across a reconnect it won't refire on its own → refetch authoritative /api/slots when we come back
   // online, replacing the advisory offlineCapacity view with server truth. (The strip corrects via reseedRef.)
@@ -798,12 +1064,68 @@ export function AddOrderPanel({
     setManualEvent(pickDefaultEventByTime(upcomingEvents))
   }, [upcomingEvents])
 
+  // An EVENT change (id/date/times) fetches immediately — a new grid must never wait on a throttle. The
+  // tab merely being SHOWN again on the same event is the safety net's job (throttled, never dropped).
+  const fetchedEventKeyRef = useRef<string | null>(null)
   useEffect(() => {
     if (!isActive) return
-    if (manualEvent?.event_date) {
+    if (!manualEvent?.event_date) return
+    const key = `${manualEvent.id}|${manualEvent.event_date}|${manualEvent.start_time}|${manualEvent.end_time}`
+    if (fetchedEventKeyRef.current !== key) {
+      fetchedEventKeyRef.current = key
       fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time, manualEvent.id)
+    } else {
+      capacityRefresher.request('tab-shown')
     }
-  }, [manualEvent?.id, manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive])
+  }, [manualEvent?.id, manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive, capacityRefresher])
+
+  // ── 🔴 THE BASKET IS A REFRESH TRIGGER (18 September 2026) ──────────────────────────────────────
+  // Adding the FIRST item is the moment the list stops being decoration and starts being a promise:
+  // the crosses, the greying and the "Not enough time" labels all appear, and they are computed from
+  // whatever snapshot the panel happens to be holding. Before this, that snapshot could be minutes old
+  // — taken when the tab was shown — so the operator could be shown a time the kitchen had since lost,
+  // and only the submit's own re-check would say so, by refusing. Every basket change now asks for a
+  // read; the 5 s throttle collapses a burst of taps into one read plus a trailing one.
+  const basketSignature = useMemo(
+    () => `${manualItems.map(i => `${i.name}\u00d7${i.quantity}`).sort().join(',')}|${appliedDeals.length}`,
+    [manualItems, appliedDeals])
+  // Only a CHANGE asks for a read: the first run merely records the basket the panel mounted with (the
+  // mount's own read already covers it), and a re-run caused by the tab being shown is not a basket change.
+  const lastBasketSigRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (lastBasketSigRef.current === null) { lastBasketSigRef.current = basketSignature; return }
+    if (basketSignature === lastBasketSigRef.current) return
+    lastBasketSigRef.current = basketSignature
+    if (!isActive || !manualEvent) return
+    capacityRefresher.request('basket-changed')
+  }, [basketSignature, isActive, manualEvent, capacityRefresher])
+
+  // ── 🔴 THE MAX-AGE BACKSTOP — SLOT_SNAPSHOT_MAX_AGE_MS ──────────────────────────────────────────
+  // Runs after EVERY render, so it is checked before the operator acts on whatever that render drew.
+  // It does not replace the triggers above; it makes the list's worst case a bounded 10 s rather than
+  // "until something fires". That matters because the triggers depend on the dashboard noticing the
+  // change first, and the dashboard's own post-action refetch was being dropped whenever a poll was
+  // outstanding (fixed in app/dashboard/[token]/page.tsx — but the list should not depend on it).
+  // Cheap: a clock comparison, then the refresher's own 5 s throttle. Hidden tab or offline → nothing.
+  // A FAILED read does not stamp lastAppliedAtRef, so failures keep asking instead of going quiet.
+  const requestIfStale = useCallback(() => {
+    if (Date.now() - lastAppliedAtRef.current < SLOT_SNAPSHOT_MAX_AGE_MS) return
+    capacityRefresher.request('stale-snapshot')
+  }, [capacityRefresher])
+  // (i) before the operator can act on what this render drew…
+  useEffect(() => { if (isActive && manualEvent) requestIfStale() })
+  // (ii) …and on a clock of its own, because a screen nobody is touching does not re-render, so the
+  // render-time check above would never run again — which is precisely the case this backstop is for:
+  // the dashboard failed to tell the panel anything, so nothing re-rendered, so nothing re-checked.
+  // The tick is cheap (one subtraction); a READ happens only when the snapshot is actually past its age,
+  // and is still subject to the 5 s throttle, the hidden-tab gate and the offline gate.
+  useEffect(() => {
+    if (!isActive || !manualEvent) return
+    // A TENTH of the max age, so the guarantee is "10 s, plus at most one tick" rather than "somewhere
+    // between 10 and 12". One subtraction per second; a read only when the snapshot is genuinely past it.
+    const id = setInterval(requestIfStale, Math.round(SLOT_SNAPSHOT_MAX_AGE_MS / 10))
+    return () => clearInterval(id)
+  }, [isActive, manualEvent, requestIfStale])
 
   // ── item manipulation ───────────────────────────────────────────────────────
   // Option shared-pool pre-warning (D2): would drawing one more of `optNames` exceed any option's
@@ -1022,17 +1344,16 @@ setItemModal({ item, modGroups, editCartKey })
     // event has nothing to project from, and a check with no data must not pretend to have run.
     if (!skipFitCheck && effectiveSlot && manualEvent) {
       try {
-        let ci: { productionSlotUnits?: Record<string, Record<string, number>>; kitchenCapacity?: number | null; eventStartMins: number; capacityWindowMins?: number } | null = null
+        let ci: { productionSlotUnits?: Record<string, Record<string, number>>; kitchenCapacity?: number | null; eventStartMins: number; capacityWindowMins?: number; intervalMins?: number; reservations?: EngineReservation[]; batchReservations?: boolean } | null = null
         let freshCfgs: Record<string, { secs: number; batch: number }> = {}
         let stale = false
         if (isOnline()) {
-          const p = new URLSearchParams({ date: manualEvent.event_date })
-          if (manualEvent.start_time) p.set('start', manualEvent.start_time)
-          if (manualEvent.end_time) p.set('end', manualEvent.end_time)
-          if (manualEvent.id) p.set('event_id', manualEvent.id)
-          const checkRes = await fetch(`/api/slots/${truck.id}?${p}`, { cache: 'no-store' })
-          const checkData = await checkRes.json()
-          ci = checkData.capacityInputs
+          // 🔴 THE SAME READ THE LIST USES (fetchFreshSlots: operator token, event scope, no-store), and its
+          // body is applied to the list too — so after any submit the dots, the labels and the popup were
+          // all judged on one response and cannot disagree.
+          const checkData = await fetchFreshSlots(manualEvent)
+          applyFreshSlots(checkData)
+          ci = checkData.capacityInputs ?? null
           freshCfgs = checkData.catConfigs || {}
         } else if (capacityInputs) {
           ci = capacityInputs
@@ -1046,6 +1367,8 @@ setItemModal({ item, modGroups, editCartKey })
             ci.eventStartMins,
             ci.kitchenCapacity ?? null,
             ci.capacityWindowMins ?? 5,
+            ci.reservations ?? [],
+            ci.batchReservations === true,
           )
           // SAME now-clamp rule the panel/customer page use: now-mins for a today event,
           // -Infinity for a future-dated event (mins-of-day would mis-compare across days).
@@ -1062,81 +1385,30 @@ setItemModal({ item, modGroups, editCartKey })
             ci.capacityWindowMins ?? 5,
             nowClamp,
             (ci.productionSlotUnits || {})[effectiveSlot] || {},
+            ci.batchReservations === true,
           )
           if (!fit.fits) {
-            const slotMins = readyToMins(effectiveSlot)
-            const capWord = (c: string) => c.charAt(0).toUpperCase() + c.slice(1)
-            const isCounted = (cat: string) => {
-              const cf = freshCfgs[(cat || '').toLowerCase()] as { secs?: number; countsToCapacity?: boolean } | undefined
-              return !!(cf && (cf.secs || cf.countsToCapacity))
-            }
-
-            // ── WHICH COPY? Compare LIKE WITH LIKE ────────────────────────────────────────────
-            // `slotIndicators` is the basket-agnostic window state the operator has been LOOKING AT —
-            // capacityInputs has no poll and no realtime invalidation, so it genuinely is what was on
-            // screen when they picked. Measure the same thing from THIS fresh read. Worse now than
-            // then ⇒ the board moved under them ⇒ "filled up". Otherwise ⇒ "over capacity": either it
-            // already was when they chose it, or this basket is what tips it — in both cases nothing
-            // changed while they worked, so blaming another order would be a lie.
+            // ── THE COPY IS NOW ENTIRELY fit.why ─────────────────────────────────────────────────
+            // Everything that used to live here — capWord/isCounted, the bound_by regex, unitWord, the
+            // contributing-orders scan, contributingProductionSlots, fit.peak — was the modal working
+            // out for itself what the engine had just decided and thrown away. It is gone. The engine
+            // records the windows as it judges them (FitWhy) and lib/slot-fit-message.ts turns them into
+            // sentences. ONE calculation, in the place that owns it.
+            // `seenTone` vs `freshTone` stays: it is not about capacity arithmetic but about whether the
+            // board moved while the operator was typing, which only this component can know.
             const seenTone = slotIndicators.get(effectiveSlot)?.tone ?? 'green'
             const freshStep = backwardWindowStepMins(freshCfgs)
-            const freshW = back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - freshStep) ?? null
+            const freshInterval = ci.intervalMins ?? 5
+            const freshPrev = (() => { const ms = manualSlots.map(sl => readyToMins(sl.collection_time)).sort((x, y) => x - y); const i = ms.indexOf(readyToMins(effectiveSlot)); return i > 0 ? ms[i - 1] : null })()
+            const freshW = freshInterval > 5
+              ? coverDotWindows(back, readyToMins(effectiveSlot), freshPrev, freshStep, ci.eventStartMins)
+              : (back.pileByStart.get(readyToMins(effectiveSlot)) ?? back.byStart.get(readyToMins(effectiveSlot) - freshStep) ?? null)
             const freshTone = freshW?.tone ?? 'green'
-
-            // ── THE BINDING CONSTRAINT, from fit.bound_by (previously computed and discarded) ──
-            // "too soon (insufficient lead)" | "global ceiling" | "<Cat> used/batch".
-            const bb = fit.bound_by ?? ''
-            const catMatch = bb.match(/^(.+?) (\d+)\/(\d+)$/)
-            const bind: NonNullable<typeof capacityConfirm>['bind'] =
-              bb.startsWith('too soon')
-                ? { kind: 'lead' }
-                : catMatch
-                  ? { kind: 'category', cat: catMatch[1], limit: Number(catMatch[3]), needed: Number(catMatch[2]) }
-                  : { kind: 'ceiling', limit: ci.kitchenCapacity ?? 0, needed: fit.peak }
-
-            // Unit noun: only honest when the basket's counted load is a SINGLE category —
-            // kitchen_capacity is a global item ceiling across every cooked category, so naming one
-            // category's word for a mixed basket would misdescribe the limit.
-            const cookedCats = Object.keys(basketByCat).filter(isCounted)
-            const singleCat = cookedCats.length === 1 ? cookedCats[0] : null
-            const thisOrderQty = cookedCats.reduce((s, c) => s + (basketByCat[c] || 0), 0)
-            const unitWord = singleCat
-              ? (thisOrderQty === 1 ? capWord(singleCat) : `${capWord(singleCat)}s`).toLowerCase()
-              : 'items'
-
-            // ── CONTRIBUTING ORDERS (variant 'over' only) ─────────────────────────────────────
-            // 🔴 BY COLLECTION SLOT, with each order's OWN quantity. productionSlotUnits is a per-slot
-            // aggregate, so a unit that spilled backward out of a later slot belongs to every order at
-            // that slot JOINTLY — there is nothing anywhere that could attribute it to one of them.
-            // We therefore never say which order supplied which unit, only who is cooking in the span.
-            const spanFrom = fit.spanFromMins ?? (slotMins - freshStep)
-            const feedSlots = new Set(contributingProductionSlots(
-              ci.productionSlotUnits || {}, freshCfgs, spanFrom, slotMins, ci.capacityWindowMins ?? 5,
-            ))
-            const OCCUPYING = new Set(['pending', 'confirmed', 'modified', 'cooking'])
-            const contributors = (orders || [])
-              .filter(o => o.slot && feedSlots.has(o.slot) && OCCUPYING.has(o.status)
-                && (!manualEvent?.id || !o.event_id || o.event_id === manualEvent.id))
-              .map(o => ({
-                id: String(o.id),
-                slot: o.slot as string,
-                // Deal constituents counted via the SAME shared extractor every capacity path uses.
-                qty: normaliseOrderLines(o.items || [], o.deals ?? null)
-                  .reduce((s, l) => s + (isCounted(itemCategoryMap[l.name] || '') ? l.quantity : 0), 0),
-              }))
-              .filter(c => c.qty > 0)
-              .sort((a, b) => a.slot.localeCompare(b.slot) || a.id.localeCompare(b.id))
-
-            const fmtMins = (m: number) => `${String(Math.floor(((m % 1440) + 1440) % 1440 / 60)).padStart(2, '0')}:${String(((m % 1440) + 1440) % 1440 % 60).padStart(2, '0')}`
 
             setCapacityConfirm({
               slot: effectiveSlot,
-              variant: bind.kind === 'lead' ? 'toosoon' : (seenTone !== 'red' && freshTone === 'red') ? 'filled' : 'over',
-              windowFrom: fit.spanFromMins != null ? fmtMins(fit.spanFromMins) : null,
-              bind,
-              unitWord,
-              contributors,
-              thisOrderQty,
+              variant: fit.why.some(w => w.kind === 'preopen') ? 'toosoon' : (seenTone !== 'red' && freshTone === 'red') ? 'filled' : 'over',
+              message: buildFitMessage({ slotLabel: effectiveSlot, why: fit.why, catLabel: catLabelFor }),
               override,
               stale,
             })
@@ -1446,6 +1718,35 @@ setItemModal({ item, modGroups, editCartKey })
   // time+buzzer row, and wrapping it would move that sizing onto a div and re-open the width work.
   // pl-3 pr-9 (was px-3) reserves the arrow's column so a long option label can never run under it.
   // Defined once and used by BOTH branches below — they were already byte-identical and must stay so.
+  // ── THE REFUSAL MARKER (19 September 2026) ──────────────────────────────────────────────────────
+  // 🔴 A TEXT CROSS, BECAUSE THE LIST IS A NATIVE <select>. The rows are OS-drawn <option> elements and
+  // the dot is an emoji INSIDE the option's text: there is no element to stroke, and per-option styling is
+  // ignored on macOS and iOS (the `color` below still greys on Android and desktop Chrome, so it stays).
+  // So the mark is a character, LEADING the row, where the eye scans first.
+  //
+  // ⚠️ EVERY ROW CARRIES A MARKER so the times — and with them the dots — stay in one column, and the two
+  // markers must be the SAME WIDTH. That is the whole difficulty: an <option> is drawn in the OS's own
+  // proportional UI font, which the page can neither measure nor override.
+  //
+  // 🔴 THE PAIR IS MATCHED BY DEFINITION, NOT BY EYE. Guessing a space was a dead end — U+2007 FIGURE
+  // SPACE came out slightly wider than ✕ (U+2715), U+2002 EN SPACE slightly narrower, and there is no
+  // standard space in between. So the marker is now `×` U+00D7 MULTIPLICATION SIGN, a MATHEMATICAL
+  // OPERATOR, which text fonts set to the width of a DIGIT so that operators line up in columns of
+  // figures — and U+2007 FIGURE SPACE *is*, by its Unicode definition, the width of a digit. The two are
+  // specified to match, in any font that honours either, rather than happening to match in one.
+  // 🔴 IF IT IS STILL OFF, the font does not honour the convention, and no other character will fix it:
+  // the answer is then to drop the padding and put the mark AFTER the dot, where every row begins with a
+  // fixed-width "HH:MM " and alignment needs no matching at all.
+  // ⚠️ NEITHER IS RENDERED ON AN EMPTY ORDER: with nothing in the basket no time can be refused, and the
+  // list must look exactly as it does today.
+  /** 🔴 THE BACKSTOP. However the list was reached, a snapshot older than this is re-read BEFORE the
+ *  list is used. It is not a poll: the 5 s throttle still applies, and nothing is read while the tab is
+ *  hidden or the device offline. It exists so that a refresh trigger which fails to fire — a dropped
+ *  dashboard refetch, a realtime event that never arrived, a tab restored from bfcache — costs the
+ *  operator 10 s of staleness rather than a page reload. */
+const SLOT_SNAPSHOT_MAX_AGE_MS = 10_000
+const CROSS_MARK = '\u00d7 '        // × + space — this order cannot be ready by then
+  const BLANK_MARK = '\u2007 '        // figure space + space — a digit's width, the same as ×, no mark
   const SLOT_SELECT_CLASS = 'flex-1 min-w-0 appearance-none border border-slate-200 rounded-xl pl-3 pr-9 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400'
   const SLOT_SELECT_STYLE: React.CSSProperties = {
     backgroundImage:
@@ -1471,6 +1772,10 @@ setItemModal({ item, modGroups, editCartKey })
         <select
           value={manualSlot}
           onChange={e => handleSlotChange(e.target.value)}
+          // SAFETY NET (18 September 2026): opening the list asks for a fresh read — pointer or keyboard —
+          // through the throttled refresher. Synchronous and fire-and-forget: it never delays the open.
+          onPointerDown={() => { capacityRefresher.request('dropdown-open') }}
+          onFocus={() => { capacityRefresher.request('dropdown-focus') }}
           className={SLOT_SELECT_CLASS}
           style={SLOT_SELECT_STYLE}
         >
@@ -1489,7 +1794,28 @@ setItemModal({ item, modGroups, editCartKey })
             // two (tone goes red at conc >= ceiling), so an at-capacity slot and an over-subscribed
             // one were indistinguishable. A permanent property of the slot's load — it does NOT clear
             // when an operator acknowledges a placement. Mark only, no wording, by design.
-            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{ind.label ? ` ${ind.label}` : ''}</option>
+            // B3: the basket-aware verdict, AFTER the dot and its "{n} {Category}" label, both untouched.
+            // 19 September 2026: the wording, the separators AND the decision to show it at all now live in
+            // ONE place — formatFitSuffix (lib/slot-display). "Not enough time", on GREEN and AMBER only; a red
+            // dot already says the kitchen is full and does not repeat itself.
+            // Still selectable — picking it is allowed and raises the same popup at submit, which is the
+            // one place the operator can read WHY and choose "Place it anyway".
+            const wontFit = manualFitWhy.has(s.collection_time)
+            // A time blocked by an OVERLAPPING batch carries a reason ("Full" / "{n} free") instead of a
+            // count; a time with its own booking keeps the count. Both are `ind.label`, from the ONE shared
+            // formatter in lib/slot-display.
+            // 🔴 THIS PANEL NO LONGER RE-FORMATS THE LABEL (19 September 2026). It used to call
+            // formatOverlapLabel again with its own "next free" — the earliest later time THIS order fits —
+            // because the label carried that wording and the order in hand had a different answer to it
+            // than an empty basket would. The wording is gone, so the two answers collapsed into one and
+            // the second calculation went. One helper, one string, every operator surface.
+            const label = ind.label
+            // 🔴 NEVER `disabled`. A refused time stays SELECTABLE: picking it raises the "Can't be ready
+            // by {T}" popup, which is the one place the operator reads why and can choose "Place it
+            // anyway". `disabled` would take the row out of the tab order and out of the picker entirely,
+            // which is the opposite of what the mark is for — it flags the time, it does not withhold it.
+            const mark = hasItems ? (wontFit ? CROSS_MARK : BLANK_MARK) : ''
+            return <option key={s.collection_time} value={s.collection_time} style={wontFit ? { color: '#94a3b8' } : undefined}>{mark}{s.collection_time} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{label ? ` ${label}` : ''}{formatFitSuffix(ind.tone, wontFit, !!label)}</option>
           })}
         </select>
       ) : (
@@ -2444,53 +2770,31 @@ setItemModal({ item, modGroups, editCartKey })
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="px-5 pt-5 pb-5">
-              <h3 className="font-black text-slate-900 text-lg mb-1">
-                {capacityConfirm.variant === 'toosoon'
-                  ? `${capacityConfirm.slot} is too soon`
-                  : capacityConfirm.variant === 'filled'
-                    ? `${capacityConfirm.slot} has filled up`
-                    : `${capacityConfirm.slot} is over capacity`}
-              </h3>
+              <h3 className="font-black text-slate-900 text-lg mb-1">{capacityConfirm.message.title}</h3>
 
               {capacityConfirm.variant === 'filled' && (
                 <p className="text-sm text-slate-600 mb-2">Another order came in while you were adding this one.</p>
               )}
 
-              <p className="text-sm text-slate-600">
-                {capacityConfirm.bind.kind === 'lead'
-                  ? `There isn't enough time to make this order by ${capacityConfirm.slot}.`
-                  : capacityConfirm.bind.kind === 'category'
-                    ? `${capacityConfirm.bind.cat} can be made ${capacityConfirm.bind.limit} at a time.${capacityConfirm.windowFrom ? ` Around ${capacityConfirm.windowFrom}–${capacityConfirm.slot}` : ' Here'} it would need ${capacityConfirm.bind.needed}.`
-                    : `The oven holds ${capacityConfirm.bind.limit} ${capacityConfirm.unitWord} at a time.${capacityConfirm.windowFrom ? ` Around ${capacityConfirm.windowFrom}–${capacityConfirm.slot}` : ' Here'} it would be making ${capacityConfirm.bind.needed}.`}
-              </p>
+              {/* 🔴 STRINGS ONLY. Every line came from lib/slot-fit-message.ts, which read
+                  fitOrderBackward's `why`. This block does no arithmetic and must never start: the
+                  moment it recomputes a figure, the popup can disagree with the engine that refused
+                  the slot — which is exactly how "it would need 16" survived for weeks.
+                  A window line ("18:15–18:30 · Pizza · Full") is set slightly back and in tabular
+                  numerals so a column of them scans as a list of batches rather than prose. */}
+              <div className="space-y-1">
+                {capacityConfirm.message.lines.map((ln, i) => (
+                  ln.includes(' · ')
+                    ? <p key={i} className="text-sm text-slate-600 pl-3 tabular-nums">{ln}</p>
+                    : <p key={i} className="text-sm text-slate-600">{ln}</p>
+                ))}
+              </div>
 
-              {/* Orders already cooking in that window, BY COLLECTION SLOT with their own quantities.
-                  Deliberately not an attribution of which order caused the overage — see the 🔴 note
-                  in contributingProductionSlots. Variant 'over' only: on 'filled' the point is that
-                  something arrived late, and on 'toosoon' the list is meaningless. */}
-              {/* THE PROVISIONAL NOTE -- offline placements only. The check ran against the last data
-                  this device pulled, so it can miss an order placed since. Never shown online, where the
-                  read is fresh and no-store. */}
               {capacityConfirm.stale && (
                 <p className="mt-3 text-xs font-semibold text-amber-700">
                   Checked against the last data this device downloaded -- you&apos;re offline, so a newer order may not be counted.
                 </p>
               )}
-              {capacityConfirm.variant === 'over' && capacityConfirm.contributors.length > 0 && (
-                <div className="mt-3 border-t border-slate-100 pt-3 space-y-1">
-                  {capacityConfirm.contributors.map(c => (
-                    <div key={`${c.slot}-${c.id}`} className="flex justify-between text-sm text-slate-600">
-                      <span>#{c.id} · {c.slot}</span>
-                      <span className="tabular-nums">{c.qty}</span>
-                    </div>
-                  ))}
-                  <div className="flex justify-between text-sm font-black text-slate-900 pt-1">
-                    <span>This order</span>
-                    <span className="tabular-nums">{capacityConfirm.thisOrderQty} {capacityConfirm.unitWord}</span>
-                  </div>
-                </div>
-              )}
-
               <div className="flex gap-2 mt-5">
                 <button
                   type="button"

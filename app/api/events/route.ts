@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { readVanIntervals, readEventIntervalsForTruck, applyEventIntervals, NO_VAN_INTERVALS, type VanIntervals } from '@/lib/slot-interval'
 
 export const revalidate = 0
 
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest) {
     .from('truck_events')
     // status + opened_at expose the operator-STARTED signal so customer surfaces derive "live" from
     // status==='open' (live-redefinition), not the published clock window. Times stay DISPLAY-only.
-    .select('id, event_date, start_time, end_time, venue_name, town, postcode, notes, status, opened_at')
+    .select('id, event_date, start_time, end_time, venue_name, town, postcode, notes, status, opened_at, van_id')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
     .gte('event_date', today)
@@ -82,6 +83,25 @@ export async function GET(req: NextRequest) {
     console.error('Events API error:', error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // ── 🔴 THE CUSTOMER COLLECTION INTERVAL, PER EVENT — NOT PER TRUCK ────────────────────────────────
+  // The order page's FALLBACK picker (reached only when /api/slots fails or returns nothing) needs to
+  // offer the same minutes the server grid would have. That interval belongs to the EVENT'S VAN, so a
+  // two-van truck running two events in one day offers each its own grid. Putting it on the truck
+  // would be wrong for exactly that truck, silently.
+  // ⚠️ ONLY THE CUSTOMER VALUE IS EXPOSED. `operator_collection_interval_mins` is the operator's own
+  // grid and has no business on a public endpoint — readVanIntervals returns both, and only `.customer`
+  // is read here.
+  // ONE tolerant read for the whole page of events, keyed by van id, so this stays a single extra query
+  // whatever the event count. Any failure ⇒ every event reads 5, which is today's behaviour.
+  const vanIds = [...new Set((rows || []).map(e => (e as { van_id?: string | null }).van_id).filter(Boolean) as string[])]
+  const vanPairByVan = new Map<string, VanIntervals>()
+  await Promise.all(vanIds.map(async id => {
+    vanPairByVan.set(id, await readVanIntervals(supabase, id))
+  }))
+  // 🔴 THE EVENT LAYER. One probed read for the whole page; a failure leaves every event on its van,
+  // which is this endpoint's behaviour before the event columns existed.
+  const eventOverrides = await readEventIntervalsForTruck(supabase, truck.id)
 
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
@@ -102,6 +122,13 @@ export async function GET(req: NextRequest) {
       notes:         e.notes || '',
       status:        e.status || 'confirmed', // 'open' = operator-started/auto-opened = LIVE
       opened_at:     e.opened_at || null,
+      // The minutes the fallback picker may offer for THIS event: the event's own override when it has
+      // one, else its van's, else 5. 🔴 ONLY `.customer` is published — the operator grid has no
+      // business on a public endpoint, and applyEventIntervals returns both.
+      collection_interval_mins: applyEventIntervals(
+        vanPairByVan.get((e as { van_id?: string | null }).van_id || '') ?? NO_VAN_INTERVALS,
+        eventOverrides.byEventId.get(e.id) ?? null,
+      ).customer,
     }
   }).filter(Boolean)
 
