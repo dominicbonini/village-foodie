@@ -42,6 +42,7 @@
 // that lands in the same tick appears as a SECOND fresh key, which is detectable (see `ambiguous`).
 
 import { useState, useEffect } from 'react'
+import { demoBaselineKey, demoWelcomeKey, boardWasReplaced, resetDemoBoardFlags } from '@/lib/demo-board-build'
 import { DemoGetStarted, SIGNUP_OFFER } from '@/components/DemoGetStarted'
 import type { Order } from '@/components/dashboard/types'
 
@@ -78,7 +79,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
    *  with null on click, to clear a previous ring and let the CSS animation retrigger on a second press. */
   onHighlight?: (orderKey: string | null) => void
 }) {
-  const baseKey = `hg_demo_seen_orders_${token}`
+  const baseKey = demoBaselineKey(token)
   const stateKey = `hg_demo_loop_${token}`
 
   const [visible, setVisible] = useState(false)
@@ -101,6 +102,14 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
     } catch { /* unreadable → treated as unset below */ }
 
     // FIRST LOAD — record what was already on the board (the seeded service) and fire nothing.
+    // 🔴 A BOARD THAT SHARES NO KEY WITH THE BASELINE IS A DIFFERENT BOARD. A rebuild (or the first-open
+    // auto-restart) deletes every order and seeds new ones, so every key reads as fresh and this panel
+    // used to fire on the seeded board as though the visitor had placed it. Re-baseline and say nothing;
+    // `resetDemoBoardFlags` also clears the welcome's flag so the rebuilt demo introduces itself again.
+    if (boardWasReplaced(baseline, keys)) {
+      resetDemoBoardFlags(token, keys)
+      return
+    }
     if (!baseline) {
       try { localStorage.setItem(baseKey, JSON.stringify(keys)) } catch { /* private mode */ }
       return
@@ -111,6 +120,10 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
     // than discarded so the card can name and locate what arrived; the TRIGGER is unchanged.
     const fresh = keys.filter(k => !seen.has(k))
     if (fresh.length === 0) return                      // nothing new — loop not completed yet
+    // 🔴 THE INTRODUCTION GOES FIRST. While DemoWelcome is still unseen it is on screen as a full-screen
+    // modal, and a signup prompt behind it is the wrong first thing for a demo to say. Its flag is
+    // cleared on dismissal, so this is a deferral of one render, not a suppression.
+    try { if (localStorage.getItem(demoWelcomeKey(token)) !== 'seen') return } catch { /* private mode */ }
 
     // Loop complete. Respect an active snooze, and re-arm so it returns without needing a reload.
     let snoozedUntil = 0
@@ -122,7 +135,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
     const wait = Math.max(0, snoozedUntil - Date.now())
     const t = setTimeout(() => { setFreshKeys(fresh); setVisible(true) }, wait)
     return () => clearTimeout(t)
-  }, [baseKey, stateKey, sig, loaded])
+  }, [baseKey, stateKey, sig, loaded, token])
 
   const snooze = () => {
     try { localStorage.setItem(stateKey, `snooze:${Date.now() + SNOOZE_MS}`) } catch { /* private mode */ }

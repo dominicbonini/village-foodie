@@ -54,11 +54,15 @@ export class DemoEventError extends Error {
  * collection to max(start+10, now+10), so no order lands in an already-elapsed slot.
  *
  * MIDNIGHT CLAMP: a single truck_events row is one event_date and the slot engine assumes end > start on
- * that date, so the window must never cross 24:00. If start+3h would reach/pass midnight, end is clamped
+ * that date, so the window must never cross 24:00. If start+DEMO_WINDOW_HOURS would reach/pass midnight, end is clamped
  * to '23:59' (a shorter late-evening window). Guaranteed end > start: start is floored to ≤ 23:30, so
  * '23:59' is always after it.
  */
-export const DEMO_WINDOW_HOURS = 3
+/** 🔴 FOUR HOURS (19 September 2026, was 3). A demo created just before 16:00 produced 16:30–19:30, which
+ *  reads as a short evening rather than a service — and a shorter window is also a thinner board, because
+ *  the seeder scales its order count to the windows it can plan into. The START RULE IS UNCHANGED: the
+ *  wall clock in the venue's timezone, floored to the nearest half hour (:00 or :30). */
+export const DEMO_WINDOW_HOURS = 4
 
 export function demoEventWindow(now: Date, tz = 'Europe/London'): { date: string; start: string; end: string } {
   const parts = new Intl.DateTimeFormat('en-GB', {
@@ -73,8 +77,10 @@ export function demoEventWindow(now: Date, tz = 'Europe/London'): { date: string
   const startMins = h * 60 + (m < 30 ? 0 : 30)
   const start = toHHMM(startMins)
 
-  // Fixed 3h length, clamped so the window can't cross midnight (see header). start ≤ 23:30 → '23:59' is
-  // always after start, so end > start holds even in the clamped case.
+  // Fixed length, clamped so the window can't cross midnight (see header). start ≤ 23:30 → '23:59' is
+  // always after start, so end > start holds even in the clamped case. THE CLAMP IS THE SAME RULE AT FOUR
+  // hours as it was at three — only the raw end moved — so the shortest window it can produce is a start
+  // of 23:30 ending 23:59: 29 minutes. That is a real demo (two 15-minute batches) rather than an error.
   const rawEndMins = startMins + DEMO_WINDOW_HOURS * 60
   const end = rawEndMins >= 24 * 60 ? '23:59' : toHHMM(rawEndMins)
 

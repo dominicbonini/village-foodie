@@ -26,6 +26,7 @@ import { resolveIntervalsFor } from '@/lib/slot-interval'
 import { resolveBatchReservations } from '@/lib/features'
 import { admitForManual, writeReservationRecord, writeCookingReservation } from '@/lib/orders/cooking-reservation'
 import { generateCollectionTimes } from '@/lib/slot-generation'
+import { projectBackwardOccupancy, fitOrderBackward } from '@/lib/slot-availability'
 import { normaliseOrderLines, buildItemCatMap, type ProductionSlotUnits } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, type QtyByCat } from '@/lib/slot-capacity'
 import type { CatConfig } from '@/lib/prep-utils'
@@ -42,11 +43,9 @@ const FIRST_COLLECTION_OFFSET_MINS = 10
 /** 37, not 40. A round number reads as generated; 37 reads as what actually happened. Spread across the
  *  WHOLE window rather than clustered at the front. This is the target for a FULL 3h window — short
  *  windows scale down from it, see ORDERS_PER_SLOT. */
-const TARGET_ORDERS = 37
 
 /** Bookable slots in a full 3h window: first collection is start+10, the window ends at start+180, 5-min
  *  grid → (170 / 5) + 1 = 35. */
-const FULL_WINDOW_SLOTS = 35
 
 /**
  * 🔴 THE ORDER COUNT SCALES WITH THE WINDOW. It used to be a flat TARGET_ORDERS regardless of how much
@@ -64,11 +63,21 @@ const FULL_WINDOW_SLOTS = 35
  * slot-bound (it wants ~slots.length × 0.45 budgets for ~slots.length orders), so nothing is dropped,
  * and the stride stays above 1 so the taper survives. ~37 over 35 slots; ~7 over 7.
  */
-const ORDERS_PER_SLOT = TARGET_ORDERS / FULL_WINDOW_SLOTS   // ≈ 1.057
+// ⚠️ `ORDERS_PER_SLOT`, `TARGET_ORDERS` (37) AND `FULL_WINDOW_SLOTS` (35) STOOD HERE AND ARE GONE
+// (19 September 2026). Together they said "about 37 orders across a 35-slot three-hour service" — a count
+// of SLOTS, which is not a unit of cooking. The board's size is now counted in BATCH-WINDOWS and scales
+// with the event length, the grid and the batch; see the rule at `target`. The old numbers are recorded
+// here because they are the shape the FILL_PATTERN was tuned against, and nowhere else.
 
 /** Below this a board stops reading as a service at all. A window this short is already a poor demo;
  *  4 orders is the floor at which the capacity story is still legible. */
 const MIN_TARGET_ORDERS = 4
+
+/** 🔴 A CEILING ON THE WORK, NOT ON THE BOARD. Every seeded order is an insert plus a real engine
+ *  admission plus a reservation write, and a prospect is watching a spinner while it runs. At the widest
+ *  settings the rule below would ask for a few hundred; eighty is a busy four-hour service and about two
+ *  hundred round trips. Reached only by an extreme batch on a coarse grid. */
+const MAX_TARGET_ORDERS = 80
 
 /** ORDER SHAPES — how many MAINS and how many accompaniments each order carries.
  *
@@ -100,6 +109,18 @@ const ORDER_SHAPES: { mains: number; extras: number }[] = [
  *  visible headroom; the zeros are what leave gaps between filled slots. A budget never exceeds the batch,
  *  and orders are packed WITHIN it, so a breach is impossible by construction. */
 const FILL_PATTERN = [1.0, 0, 0.5, 0, 1.0, 0, 0.25, 0, 0.75, 0]
+
+
+/** FILL_PATTERN's own mean over its non-zero entries — the fraction of a batch an average planned window
+ *  carries. Derived, never written down twice: change the pattern and the order count follows it. */
+const AVG_FILL = FILL_PATTERN.filter(f => f > 0).reduce((a, f) => a + f, 0) / Math.max(1, FILL_PATTERN.filter(f => f > 0).length)
+
+/** ORDER_SHAPES' own mean number of COOKED items per order — how many orders it takes to fill a budget.
+ *  Derived for the same reason: a new shape in the list changes the count without a second edit. */
+const AVG_MAINS_PER_ORDER = Math.max(
+  0.1,
+  ORDER_SHAPES.reduce((a, sh) => a + sh.mains, 0) / Math.max(1, ORDER_SHAPES.length),
+)
 
 // ── 🔴 THE PLANNING GRID IS RESOLVED, NOT A CONSTANT (19 September 2026) ────────────────────────────
 // `const SLOT_INTERVAL_MINS = 5` stood here. It seated seeded orders on a 5-minute grid whatever the van
@@ -139,6 +160,9 @@ export interface SeededOrders {
   /** Total item lines across all orders — cooked + accompaniments. */
   totalItems: number
   slotsUsed: string[]
+  /** The collection time the reserved run leaves clear for an order of `2 × batch`, or null when the
+   *  window was too short to reserve one. Reported so a caller can say what the board demonstrates. */
+  twoBatchSlot?: string | null
   skippedNoMenu: boolean
   /**
    * 🔴 REPLACES `peakPerSlot`, WHICH WAS AN INSTRUMENT FAILURE.
@@ -172,7 +196,7 @@ export interface SeededOrders {
  *  exact class of bug the trucks-projection note in /api/dashboard records three instances of. */
 function emptyResult(over: Partial<SeededOrders> = {}): SeededOrders {
   return {
-    inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: false,
+    inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], twoBatchSlot: null, skippedNoMenu: false,
     peakCookedPerSlotPerCat: 0, peakBatch: 0, slotsAtCapacity: 0,
     breachPasses: 0, shedOrders: 0, unresolvedBreaches: [], warnings: [],
     ...over,
@@ -296,6 +320,41 @@ function buildUnitsInMemory(
 }
 
 /** Flatten a CapacityBreach to the shape the callers' warnings channel carries. */
+/**
+ * Ask the ENGINE whether an order of `2 × batch` would be admitted anywhere on a planned board.
+ *
+ * 🔴 THE ENGINE, NOT A RULE OF THUMB. Whether two batches fit is `fitOrderBackward`'s answer and nobody
+ * else's — the same call the customer page, the Add Order picker and the submit re-check all make. A
+ * second opinion here is how a seeded board comes to disagree with the picker drawn over it.
+ * Returns the earliest collection time that admits it, or null.
+ */
+function firstTwoBatchFit(
+  plannedIdx: { slot: string; allow: Record<string, number> }[],
+  catConfigs: Record<string, CatConfig>,
+  batchByCat: Record<string, number>,
+  kitchenCapacity: number | null,
+  eventStartMins: number,
+  capacityWindowMins: number,
+  slots: string[],
+): string | null {
+  const cooked = Object.keys(batchByCat)
+  if (!cooked.length) return null
+  const units: ProductionSlotUnits = {}
+  for (const p of plannedIdx) {
+    const bucket = units[p.slot] ?? (units[p.slot] = {})
+    for (const [cat, n] of Object.entries(p.allow)) if (batchByCat[cat]) bucket[cat] = (bucket[cat] ?? 0) + n
+  }
+  const back = projectBackwardOccupancy(units, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
+  // The heaviest cooked category is the one that binds, so the probe asks for two of ITS batches.
+  const cat = cooked.slice().sort((a, b) => (batchByCat[b] ?? 0) - (batchByCat[a] ?? 0))[0]
+  const want = { [cat]: (batchByCat[cat] ?? 1) * 2 }
+  for (const t of slots) {
+    const m = toMinsLocal(t)
+    if (fitOrderBackward(back, m, want, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, Number.NEGATIVE_INFINITY, units[t] || {}).fits) return t
+  }
+  return null
+}
+
 function toSeededBreach(b: CapacityBreach): SeededBreach {
   return { collection_time: b.collection_time, reason: b.reason, over_cats: b.over_cats, over_total: b.over_total }
 }
@@ -389,6 +448,17 @@ export async function seedDemoOrders(
     supabase.from('trucks').select('plan, feature_overrides, slot_duration_mins').eq('id', args.truckId).maybeSingle(),
   ])
   const vanId = (evRow as { van_id?: string | null } | null)?.van_id ?? null
+  // The van's ceiling is needed at PLANNING time now (the two-batch probe asks the engine, and the engine
+  // needs the same inputs it will be given later), not only by the post-condition. One read, reused.
+  let kitchenCapacityForPlan: number | null = null
+  let capacityWindowForPlan = 5
+  if (vanId) {
+    const { data: vanRow } = await supabase
+      .from('truck_vans').select('kitchen_capacity, capacity_window_mins').eq('id', vanId).maybeSingle()
+    kitchenCapacityForPlan = (vanRow as { kitchen_capacity?: number | null } | null)?.kitchen_capacity ?? null
+    capacityWindowForPlan = (vanRow as { capacity_window_mins?: number | null } | null)?.capacity_window_mins ?? 5
+  }
+  const eventStartMinsForPlan = toMinsLocal(args.startTime)
   const intervals = await resolveIntervalsFor(supabase, vanId, args.eventId)
   /** The CUSTOMER grid — the times a customer (and a seeded customer-style order) can be given. */
   const gridMins = intervals.customer
@@ -420,10 +490,27 @@ export async function seedDemoOrders(
   // twelve times and left nine empty: a board that read as a quiet afternoon, not a service. The count
   // now scales by the batch relative to the 4 it was tuned for, so LOAD relative to capacity is what stays
   // constant. At 4 a batch the factor is 1 and every existing demo seeds exactly as before.
-  const batchScale = Math.max(1, refBatch / Math.max(1, args.capacity))
+  // ── 🔴 THE BOARD'S SIZE IS THE KITCHEN'S, NOT A NUMBER (19 September 2026) ───────────────────────
+  // OBSERVED: 21 orders across a service, which reads as a quiet afternoon rather than the busy board a
+  // prospect is being shown. The old rule counted SLOTS and scaled by the batch
+  // (`slots.length × ORDERS_PER_SLOT × batchScale`, capped at 37) — but a slot is not a unit of cooking.
+  // What the board can hold is BATCH-WINDOWS × BATCH, and what fills them is orders of an average size.
+  //
+  // THE RULE: aim to fill the windows the seeder can plan into.
+  //   plannable windows  = ceil(slots ÷ span)            — one batch per batch-window (see `span` below)
+  //   items it can hold  = windows × batch × AVG_FILL    — AVG_FILL is FILL_PATTERN's own mean, so the
+  //                                                        board keeps its busy/quiet shape
+  //   orders to make them = items ÷ AVG_MAINS_PER_ORDER  — ORDER_SHAPES' own mean, so the sizes stay plausible
+  // Both averages are DERIVED FROM THE ARRAYS, not written down beside them, so a change to the pattern or
+  // the shapes moves the count with it and the two cannot drift apart.
+  // Scales with the event length (more slots), the grid (finer ⇒ more slots) and the batch — which is what
+  // "scaled to the event length and the chosen batch and grid rather than a fixed number" asks for.
+  const prepMinsForGap = Math.max(0, ...all.filter(l => l.cooked).map(l => Math.round(l.prepSecs / 60)))
+  const span = Math.max(1, Math.ceil(prepMinsForGap / gridMins))
+  const plannableWindows = Math.max(1, Math.ceil(slots.length / span))
   const target = args.count ?? Math.max(
     MIN_TARGET_ORDERS,
-    Math.min(TARGET_ORDERS, Math.round(slots.length * ORDERS_PER_SLOT * batchScale)),
+    Math.min(MAX_TARGET_ORDERS, Math.round(plannableWindows * AVG_FILL * refBatch / AVG_MAINS_PER_ORDER)),
   )
 
   // ── ORDER SHAPES → the COOKED bill ────────────────────────────────────────────────────────────────
@@ -490,7 +577,7 @@ export async function seedDemoOrders(
   const budgets: { n: number; f: number }[] = []
   let cookedLeft = totalCookedNeeded
   const nonZero = FILL_PATTERN.filter(f => f > 0)
-  for (let i = 0; cookedLeft > 0 && i < slots.length; i++) {
+  for (let i = 0; cookedLeft > 0 && i < plannableWindows; i++) {
     const f = nonZero[i % nonZero.length]
     const n = Math.min(Math.max(1, Math.round(refBatch * f)), refBatch, cookedLeft)
     budgets.push({ n, f })
@@ -511,16 +598,88 @@ export async function seedDemoOrders(
     return out
   }
 
-  const planned: { slot: string; allow: Record<string, number> }[] = []
-  const stride = budgets.length > 0 ? slots.length / budgets.length : 1
-  const taken = new Set<number>()
-  budgets.forEach((b, j) => {
-    let idx = Math.min(slots.length - 1, Math.round(j * stride))
-    while (taken.has(idx) && idx < slots.length - 1) idx++      // never double-book one slot
-    if (taken.has(idx)) return
-    taken.add(idx)
-    planned.push({ slot: slots[idx], allow: allowanceFor(b.f) })
-  })
+  // ── 🔴 THE TWO-BATCH GAP (19 September 2026) ──────────────────────────────────────────────────────
+  // THE RULE, in grid and batch rather than in times: a batch occupies `prep` minutes of oven, so an order
+  // of `2 × batch` needs `2 × prep` minutes clear before its collection time and nothing already cooking
+  // may overlap them. With `span = ceil(prep / grid)` grid steps to a batch, the seeder reserves a
+  // contiguous run of `3 × span + 1` slots and plans NOTHING into it. Call the slot `2 × span` into that
+  // run `T`:
+  //   • every earlier planned order collects at or before `T − 2×prep`, so its window has closed by T−2p;
+  //   • every later one collects at or after `T + span×grid ≥ T + prep`, so its window opens at or after T
+  //     (a planned slot never carries more than one batch — `allowanceFor` caps it at the batch — so no
+  //     later order reaches back further than one prep).
+  // `fitOrderBackward` therefore admits `2 × batch` at T, which is what lets the prospect place an order
+  // that needs two batches and watch it land. Without it the board's gaps were whatever the stride happened
+  // to leave, and on a coarse grid that was often nothing.
+  // ⚠️ SKIPPED when the window cannot spare the run (a short service, or a long cook on a fine grid); the
+  // board is then simply as full as it was before, and the harness asserts the gap only where it fits.
+  // ── 🔴 ONE BATCH PER BATCH-WINDOW, NOT ONE PER SLOT (19 September 2026) ──────────────────────────
+  // The budget is a per-slot fraction of the batch, which is right only while a batch fits inside one grid
+  // step. With a cook time LONGER than the grid — 10-minute burgers on a 5-minute grid — two adjacent
+  // planned slots share the same oven window, so two slots each budgeted the full batch put twice the
+  // batch on the grill. The post-condition then shed most of them and the engine refused the rest: at
+  // 5-minute times, a 10-minute cook and a batch of 2, the seeded board came out with 35 of 37 times
+  // EMPTY. So planning now steps by `span = ceil(prep / grid)` slots — one batch per batch-window — and
+  // the budgets are counted against the slots that are actually plannable.
+  // ⚠️ `span` IS 1 WHENEVER THE COOK TIME FITS THE GRID, which includes every demo built before today
+  // (5-minute times, 5-minute cook) and the 15/15 shape. Those plan exactly as they did.
+  const batchSlots: number[] = []
+  for (let i = 0; i < slots.length; i += span) batchSlots.push(i)
+
+  // ── 🔴 THE TWO-BATCH GAP ─────────────────────────────────────────────────────────────────────────
+  // THE RULE, in grid and batch rather than in times: a batch occupies `prep` minutes of oven, so an order
+  // of `2 × batch` needs `2 × prep` minutes clear before its collection time and nothing already cooking
+  // may overlap them. With `span = ceil(prep / grid)` grid steps to a batch, the seeder reserves a
+  // contiguous run of `3 × span + 1` slots and plans NOTHING into it. Call the slot `2 × span` into that
+  // run `T`:
+  //   • every earlier planned order collects at or before `T − 2×prep`, so its window has closed by T−2p;
+  //   • every later one collects at or after `T + span×grid ≥ T + prep`, so its window opens at or after T
+  //     (a planned slot never carries more than one batch — `allowanceFor` caps it at the batch — so no
+  //     later order reaches back further than one prep).
+  // `fitOrderBackward` therefore admits `2 × batch` at T, which is what lets the prospect place an order
+  // that needs two batches and watch it land.
+  //
+  // 🔴 RESERVED ONLY WHEN THE BOARD WOULD NOT OTHERWISE HAVE THE ROOM. Planning is run once with no run
+  // reserved and the ENGINE asked whether `2 × batch` fits anywhere; it usually does on a fine grid, where
+  // the stride already leaves whole batch-windows empty. Re-planning only when it does NOT is what keeps a
+  // demo built at the defaults byte-for-byte identical to one built before this existed — the run is a
+  // repair, not a redesign.
+  const holeLen = 3 * span + 1
+  const holeAt = (start: number) => (i: number) => start >= 0 && i >= start && i <= start + holeLen - 1
+
+  const planWith = (skip: (i: number) => boolean) => {
+    const out: { slot: string; allow: Record<string, number>; idx: number }[] = []
+    // Stride across the PLANNABLE slots only — one per batch-window, minus any reserved run. With span 1
+    // and no run this is every index and the arithmetic is the expression it has always been.
+    const openIdx = batchSlots.filter(i => !skip(i))
+    const stride = budgets.length > 0 ? openIdx.length / budgets.length : 1
+    const taken = new Set<number>()
+    budgets.forEach((b, j) => {
+      let k = Math.min(openIdx.length - 1, Math.round(j * stride))
+      while (k < openIdx.length - 1 && taken.has(openIdx[k])) k++   // never double-book one slot
+      const idx = openIdx[k]
+      if (idx === undefined || taken.has(idx)) return
+      taken.add(idx)
+      out.push({ slot: slots[idx], allow: allowanceFor(b.f), idx })
+    })
+    return out
+  }
+
+  const never = () => false
+  let plannedIdx = planWith(never)
+  let twoBatchSlot: string | null = null
+  if (prepMinsForGap > 0 && slots.length >= holeLen + 2) {
+    const already = firstTwoBatchFit(plannedIdx, catConfigs, batchByCat, kitchenCapacityForPlan, eventStartMinsForPlan, capacityWindowForPlan, slots)
+    if (already) twoBatchSlot = already
+    else {
+      // Placed just past the middle: the front-weighted FILL_PATTERN puts the busy times early, so the
+      // quiet stretch reads as a lull in a service rather than as a board that stops.
+      const start = Math.min(Math.max(0, Math.round(slots.length * 0.55)), slots.length - holeLen)
+      plannedIdx = planWith(holeAt(start))
+      twoBatchSlot = slots[start + 2 * span] ?? null
+    }
+  }
+  const planned: { slot: string; allow: Record<string, number> }[] = plannedIdx.map(p => ({ slot: p.slot, allow: p.allow }))
   planned.sort((a, b) => a.slot.localeCompare(b.slot))
 
   // ── Build the orders ───────────────────────────────────────────────────────────────────────────────
@@ -624,14 +783,8 @@ export async function seedDemoOrders(
     // switches the global concurrency ceiling OFF — but the demo dashboard's Settings tab can SET it
     // (update_van_settings has no demo gate), so a restarted demo can have a real ceiling. Assuming null
     // would make the post-condition blind to exactly the ceiling Dominic just configured.
-    let kitchenCapacity: number | null = null
-    let capacityWindowMins = 5
-    if (vanId) {
-      const { data: van } = await supabase
-        .from('truck_vans').select('kitchen_capacity, capacity_window_mins').eq('id', vanId).maybeSingle()
-      kitchenCapacity = (van as { kitchen_capacity?: number | null } | null)?.kitchen_capacity ?? null
-      capacityWindowMins = (van as { capacity_window_mins?: number | null } | null)?.capacity_window_mins ?? 5
-    }
+    const kitchenCapacity = kitchenCapacityForPlan
+    const capacityWindowMins = capacityWindowForPlan
 
     // The collection slots to examine. The DASHBOARD's list, built by the SAME generateCollectionTimes
     // with the truck's own interval + its 30-minute grace — UNIONED with the slots this seeder actually
@@ -872,6 +1025,7 @@ export async function seedDemoOrders(
     // Re-measured from the rows that SURVIVED the post-condition, not from `usedSlots` (which records
     // what the planner seated before anything was shed).
     slotsUsed: survivingSlots,
+    twoBatchSlot,
     skippedNoMenu: false,
     // 🔴 NOT the safety check — `unresolvedBreaches` is. This pair DESCRIBES the board and can fail:
     // peak > batch would mean the planner over-filled a slot, which the old `peakPerSlot` could not say.

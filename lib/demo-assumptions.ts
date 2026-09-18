@@ -49,6 +49,8 @@ export interface AssumptionResult {
 export function buildDemoAssumptions(
   categories: string[],
   items: Pick<ExtractedItem, 'category'>[],
+  /** ADMIN Create Demo only (lib/demo-kitchen). Absent ⇒ the constants above, i.e. today's demo. */
+  kitchen?: { prepSecs?: number | null; batchSize?: number | null } | null,
 ): AssumptionResult {
   const cats = categories.filter(Boolean)
   const prep: CategoryPrep = {}
@@ -86,12 +88,17 @@ export function buildDemoAssumptions(
     }
   }
 
+  // 🔴 THE MAINS NUMBERS, FROM THE ADMIN CONTROLS WHEN THEY WERE GIVEN. Which categories count as mains is
+  // unchanged — that inference is what the vocabulary above is for — only the two numbers applied to them
+  // move. Absent ⇒ MAIN_PREP_SECS / MAIN_BATCH_SIZE, so every existing caller is unaffected.
+  const mainPrepSecs = kitchen?.prepSecs ?? MAIN_PREP_SECS
+  const mainBatchSize = kitchen?.batchSize ?? MAIN_BATCH_SIZE
   const mainSet = new Set(mains)
   for (const c of cats) {
     prep[c] = mainSet.has(c)
       // Cooked categories are auto-counted by the engine (prep_secs > 0 forces counts_toward_capacity),
       // so counts_toward is left alone here — commit-menu derives it.
-      ? { prep_secs: MAIN_PREP_SECS, batch_size: MAIN_BATCH_SIZE }
+      ? { prep_secs: mainPrepSecs, batch_size: mainBatchSize }
       // Instant. counts_toward:false keeps sides/drinks out of the ceiling so the cooked items pace the
       // kitchen — which is what makes the traffic lights legible.
       : { prep_secs: 0, batch_size: 0, counts_toward: false }

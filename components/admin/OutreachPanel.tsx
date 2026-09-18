@@ -80,7 +80,12 @@ type Prospect = {
   /** The NEWEST live demo built for this prospect (/api/admin/outreach), or null when there is none —
    *  and null too when the demo_sessions migration is not applied yet (the route degrades rather than
    *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */
-  demo?: { publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number } | null
+  demo?: {
+    publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number
+    /** The truck the demo runs as. Present ⇒ it can be REBUILT over itself with new kitchen settings;
+     *  a demo cannot be un-created. Already returned by /api/admin/outreach — nothing was added there. */
+    truckId?: string | null
+  } | null
   logo_url: string | null; photo_url: string | null
   // 🔴 OPTION A — WHOSE LOGO THIS ACTUALLY IS. `logo_url` above is now the AUTHORITATIVE value the route
   // resolved (trucks.logo_storage_path for a linked prospect, discovery_trucks.logo_url otherwise), so the
@@ -1374,7 +1379,10 @@ export default function OutreachPanel() {
       {/* Layered ABOVE the prospect modal (inline zIndex 95, portaled), and only while that modal is open. */}
       {modalProspect && createDemoOpen && (
         <CreateDemoModal
-          prospect={{ id: modalProspect.id, discovery_truck_id: modalProspect.discovery_truck_id, name: modalProspect.name, logo_url: modalProspect.logo_url }}
+          prospect={{ id: modalProspect.id, discovery_truck_id: modalProspect.discovery_truck_id, name: modalProspect.name, logo_url: modalProspect.logo_url,
+            // Present only when this prospect already HAS a live demo, which is what puts the modal into
+            // rebuild mode. Read from the row the list route returned; never inferred from the link.
+            demoTruckId: modalProspect.demo?.truckId ?? null }}
           onClose={() => setCreateDemoForId(null)}
           onCreated={ref => {
             showToast(ref ? `Demo ready: /demo/${ref}` : 'Demo ready')
@@ -1532,7 +1540,19 @@ function ProspectMetaFacts({ p, hasDoNotContact, onPatch, onCreateDemo }: {
           /api/admin/provision-demo with the discovery id; name and logo are read server-side. */}
       <div className="ml-auto flex items-center gap-3 max-sm:ml-0 max-sm:w-full max-sm:flex-wrap max-sm:gap-y-2">
         {p.demo
-          ? <DemoLinkChip demo={p.demo} />
+          ? <>
+              <DemoLinkChip demo={p.demo} />
+              {/* 🔴 A DEMO CANNOT BE UN-CREATED, so the way to change its kitchen is to build it again
+                  over the same truck. Same link, same menu, new settings and a fresh board. Quiet
+                  styling: it sits beside the link an admin reads far more often than they rebuild. */}
+              {p.demo.truckId && (
+                <button type="button" onClick={onCreateDemo}
+                  title="Build this demo again with different collection times, cook time or batch size"
+                  className="text-xs font-semibold px-3 py-1 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50 whitespace-nowrap">
+                  Rebuild
+                </button>
+              )}
+            </>
           : <button type="button" onClick={onCreateDemo}
               className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
               Create demo

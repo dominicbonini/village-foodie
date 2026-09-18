@@ -23,6 +23,7 @@ import { provisionTruck, ProvisionError } from '@/lib/provision-truck'
 import { extractMenu, MenuExtractionError, type MenuExtraction } from '@/lib/menu-extract'
 import { commitMenu, type CommitMenuResult } from '@/lib/menu-commit'
 import { buildDemoAssumptions } from '@/lib/demo-assumptions'
+import type { DemoKitchen } from '@/lib/demo-kitchen'
 import { provisionDemoEvent, type DemoEvent } from '@/lib/provision-demo-event'
 import { seedDemoOrders } from '@/lib/seed-demo-orders'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
@@ -89,6 +90,12 @@ export interface ProvisionDemoInput {
   /** discovery_trucks.id. Written to demo_sessions.discovery_truck_id (NEVER to hatchgrab_truck_id),
    *  switches the session to the 30-day tier, and mints public_ref. */
   discoveryTruckId?: string | null
+  /** ── 🔴 THE ADMIN'S THREE KITCHEN NUMBERS (lib/demo-kitchen) ────────────────────────────────────
+   *  Collection times for the van, and cook time + batch size for whichever categories the assumptions
+   *  call mains. ABSENT ON THE LANDING-PAGE PATH — `/api/demo` never sends them — and absent means the
+   *  demo is built exactly as it was before this existed: no van write, no category write, the
+   *  assumptions' own constants. Only `/api/admin/provision-demo` supplies them. */
+  kitchen?: DemoKitchen | null
 }
 
 export class ProvisionDemoError extends Error {
@@ -171,6 +178,14 @@ export async function provisionDemo(
   let publicRef: string | null = null
   if (input.existingTruckId) {
     await touchDemoSession(supabase, truckId, now)
+    // 🔴 A REBUILD RETURNS THE LINK IT REBUILT. `createDemoSession` is what used to mint `publicRef`, and
+    // a re-provision does not call it — so this path returned null and the modal showed a result with no
+    // link, as though the demo had lost one. The ref is unchanged; it is simply read back.
+    try {
+      const { data: existing } = await supabase
+        .from('demo_sessions').select('public_ref').eq('truck_id', truckId).maybeSingle()
+      publicRef = (existing?.public_ref as string | null) ?? null
+    } catch { /* the link is still on the prospect row; a failed read must not fail the rebuild */ }
   } else if (input.discoveryTruckId) {
     try {
       const session = await createDemoSession(supabase, truckId, now, {
@@ -194,6 +209,18 @@ export async function provisionDemo(
   // same logo_storage_path (see the build report, Phase 0a), so setting it here cannot make them disagree.
   let logoStoragePath: string | null = null
   let logoNote: string | null = null
+  // ── 🔴 A REBUILD REPORTS THE LOGO THE TRUCK ALREADY HAS (19 September 2026) ──────────────────────
+  // OBSERVED: rebuilding Between Buns Royston's demo showed "This demo is unbranded — no logo was copied"
+  // over a demo that was displaying the truck's logo perfectly. The warning was the liar. The block below
+  // only runs for a NEW outreach demo, because a rebuild keeps the truck and its logo — so on that path
+  // `logoStoragePath` stayed null and the modal, which reads it, concluded the demo was unbranded.
+  // The copy is still not re-run (there is nothing to copy); the existing value is simply read back.
+  if (input.existingTruckId) {
+    const { data: row } = await supabase
+      .from('trucks').select('logo_storage_path').eq('id', truckId).maybeSingle()
+    logoStoragePath = (row as { logo_storage_path?: string | null } | null)?.logo_storage_path ?? null
+    if (!logoStoragePath) logoNote = 'This demo has no logo stored, so it is unbranded.'
+  }
   if (!input.existingTruckId && input.discoveryTruckId) {
     const logo = await copyDemoLogo(supabase, truckId, input.logoUrl ?? null, { now })
     logoStoragePath = logo.logoStoragePath
@@ -237,6 +264,11 @@ export async function provisionDemo(
   // ── 4. Live event + slot grid ─────────────────────────────────────────────────────────────────────
   // AFTER the menu: the slot grid doesn't depend on it, but the occupancy rebuild at the end of this step
   // reads category configs that only exist once the menu is committed.
+  // 🔴 THE ADMIN'S NUMBERS LAND HERE — after the menu exists, before the grid and the seeded board are
+  // built from it. `null` on the landing-page path, which therefore reaches provisionDemoEvent in exactly
+  // the state it always did.
+  if (input.kitchen) await applyDemoKitchen(supabase, truckId, vanId, input.kitchen, warnings)
+
   let event: DemoEvent
   try {
     event = await provisionDemoEvent(supabase, truckId, { now, replaceExisting: true })
@@ -281,6 +313,55 @@ export async function provisionDemo(
 }
 
 // ── Menu: extract → assume → commit, with the honest three-outcome handling ──────────────────────────
+/**
+ * Write the admin's three numbers onto the truck the demo will run as.
+ *
+ * 🔴 CALLED AFTER THE MENU AND BEFORE THE EVENT, which is the only ordering that works: the categories
+ * must hold their final prep and batch before `provisionDemoEvent` builds the grid and `seedDemoOrders`
+ * reads them, and the van must hold its final interval before the seeder resolves the grid from it.
+ *
+ * ⚠️ IDEMPOTENT, AND DELIBERATELY RE-APPLIED ON THE NEW-TRUCK PATH TOO. A fresh demo already has these
+ * numbers — they rode in through `buildDemoAssumptions` — so this rewrites them with the same values.
+ * That costs two statements and buys one guarantee: whichever path built the truck (fresh menu, or a
+ * REBUILD into an existing truck whose menu is kept), the settings end in the same state.
+ *
+ * ⚠️ WHICH CATEGORIES: the ones already cooking (`prep_secs > 0`). On a fresh truck those are exactly the
+ * mains the assumptions chose; on a rebuild they are the mains the previous build chose. The inference
+ * itself is never re-run here — changing which category is "mains" is a menu decision, not a settings one.
+ */
+async function applyDemoKitchen(
+  supabase: SupabaseClient,
+  truckId: string,
+  vanId: string | null,
+  kitchen: DemoKitchen,
+  warnings: string[],
+): Promise<void> {
+  if (vanId) {
+    // The operator override goes to NULL so the dashboard's "Use different times for orders I add" box
+    // shows UNTICKED — the demo's own times follow the customer's, which is what a prospect expects.
+    const { error } = await supabase
+      .from('truck_vans')
+      .update({ collection_interval_mins: kitchen.intervalMins, operator_collection_interval_mins: null })
+      .eq('id', vanId).eq('truck_id', truckId)
+    if (error) warnings.push(`Collection times could not be set (${error.message}) — the demo uses the default 5 minutes.`)
+  }
+  const { data: cats, error: readErr } = await supabase
+    .from('menu_categories').select('id, name, prep_secs').eq('truck_id', truckId)
+  if (readErr) { warnings.push(`Cook time and batch size could not be applied (${readErr.message}).`); return }
+  const cooked = (cats ?? []).filter(c => (Number((c as { prep_secs?: unknown }).prep_secs) || 0) > 0)
+  if (!cooked.length) {
+    warnings.push('No cooking category was found, so cook time and batch size were not applied.')
+    return
+  }
+  for (const c of cooked) {
+    const { error } = await supabase
+      .from('menu_categories')
+      .update({ prep_secs: kitchen.prepSecs, batch_size: kitchen.batchSize, counts_toward_capacity: true })
+      .eq('id', (c as { id: string }).id).eq('truck_id', truckId)
+    if (error) warnings.push(`Could not set cook time on "${(c as { name?: string }).name ?? 'a category'}" (${error.message}).`)
+  }
+}
+
 async function buildMenu(
   supabase: SupabaseClient,
   truckId: string,
@@ -301,7 +382,7 @@ async function buildMenu(
     }
 
     if (extraction && extraction.items.length > 0) {
-      const result = await commitExtraction(supabase, truck, extraction, warnings)
+      const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen)
       // OUTCOME 1: nothing landed → treat as an extraction failure so the caller can offer the honest
       // "we couldn't read that menu" + template choice (§11). NEVER silently substitute a stock menu.
       if (result.inserted === 0) {
@@ -337,7 +418,7 @@ async function buildMenu(
       })),
       existing_categories: [],
     }
-    const result = await commitExtraction(supabase, truck, extraction, warnings)
+    const result = await commitExtraction(supabase, truck, extraction, warnings, input.kitchen)
     if (result.inserted > 0) {
       // Persist the template extraction too (the return path re-provisions from it, so Pizza stays Pizza),
       // but tag it 'template' — a SAMPLE the visitor picked, NOT their own menu. Signup ignores this so a
@@ -396,8 +477,12 @@ async function commitExtraction(
   truck: { id: string },
   extraction: MenuExtraction,
   warnings: string[],
+  kitchen?: DemoKitchen | null,
 ): Promise<CommitMenuResult> {
-  const assumptions = buildDemoAssumptions(extraction.categories, extraction.items)
+  // The numbers ride IN the assumptions rather than being written over the categories afterwards, so the
+  // menu is committed once, with its final prep and batch, and there is no window in which a demo's
+  // categories hold 5/4 and something reads them.
+  const assumptions = buildDemoAssumptions(extraction.categories, extraction.items, kitchen)
   if (assumptions.usedFallback) warnings.push(`Category inference: ${assumptions.note}`)
 
   // ── INFERRED VARIANT GROUPS ARE REQUIRED + SINGLE-SELECT ──────────────────────────────────────────

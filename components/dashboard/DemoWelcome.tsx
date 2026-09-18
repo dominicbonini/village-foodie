@@ -40,6 +40,7 @@ import { CopyButton } from '@/components/dashboard/CopyButton'
 // when the QR is missing. The QR is untouched. The remaining no-link case is genuinely no URL at all.
 
 import { useEffect, useState } from 'react'
+import { demoWelcomeKey } from '@/lib/demo-board-build'
 
 export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null }: {
   token: string; orderUrl: string | null; isSample?: boolean
@@ -47,7 +48,9 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
    *  as its fullscreen QR. null (the default, and every landing-page demo) keeps the 'Your logo here' plate. */
   logoUrl?: string | null
 }) {
-  const storeKey = `hg_demo_welcome_${token}`
+  // The SHARED key (lib/demo-board-build): DemoLoopComplete clears it when it detects the board has been
+  // replaced, so a rebuilt demo introduces itself again instead of opening on a signup prompt.
+  const storeKey = demoWelcomeKey(token)
   const [open, setOpen] = useState(() => {
     if (typeof window === 'undefined') return false
     try { return localStorage.getItem(storeKey) !== 'seen' } catch { return true }
@@ -112,12 +115,17 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-6 space-y-4">
-          {isSample && (
-            <p className="text-sm text-slate-600 text-center">
-              This is a <strong>stand-in menu</strong> so you can see how it all works — upload your own menu
-              any time to make it yours.
-            </p>
-          )}
+          {/* ── 🔴 WHAT THE BOARD BEHIND THIS ACTUALLY IS (19 September 2026) ────────────────────
+              The introduction named the menu and said what to try, but never said that the orders already
+              on the board are EXAMPLES. A visitor who does not know that is looking at what appears to be
+              other people's live orders on their own truck, which is the one misreading this popup exists
+              to prevent. One sentence, in both variants, and it is the second thing they read. */}
+          <p className="text-sm text-slate-600 text-center">
+            {isSample
+              ? <>This is a <strong>stand-in menu</strong> so you can see how it all works — upload your own menu any time to make it yours.</>
+              : <>This is your own menu and branding, on a real board.</>}{' '}
+            The orders already on it are examples, so you can see a busy service. Nothing here is a real customer.
+          </p>
 
           {/* The two instructions. One action on the board they're looking at, one that closes the loop
               from a real phone. Nothing else competes with them. */}

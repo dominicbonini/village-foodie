@@ -16,7 +16,7 @@
 // path call). Nothing here touches the database. A clean HEAD worktree's seeder proves "5 minutes is
 // unchanged from today".
 const fs = require('fs'); const path = require('path'); const os = require('os')
-const { compile, headWorktree, REPO } = require('./_slot-interval-compile.cjs')
+const { compile, REPO } = require('./_slot-interval-compile.cjs')
 let fails = 0
 const check = (ok, label) => { console.log(`  ${ok ? '✓' : '🔴'} ${label}`); if (!ok) fails++ }
 const mins = t => { const [h, m] = String(t).slice(0, 5).split(':').map(Number); return h * 60 + m }
@@ -141,19 +141,25 @@ const summarise = db => db.orders.map(o => ({ slot: o.slot, burgers: o.items.fil
     check(worst <= 8 && sc.every(o => mins(o.slot) % 15 === 0), `with kitchen_capacity 8 the cap holds at every minute too: peak ${worst}, ${sc.length} orders`)
   }
 
-  console.log('\n── A VAN AT 5 MINUTES IS UNCHANGED FROM TODAY ───────────────────────────────────────────')
-  const head = headWorktree('sdg')
-  try {
-    const before = build(head.wt, 'sdgHead').req('lib/seed-demo-orders.js').seedDemoOrders
-    const dbH = dbFor(5, 5, { cats: CATS_TODAY }); await before(fakeSupabase(dbH), ARGS)
-    const dbN = dbFor(5, 5, { cats: CATS_TODAY }); const rN = await seedDemoOrders(fakeSupabase(dbN), ARGS)
-    const plan = db => summarise(db).map(o => `${o.slot} ${o.items}`).sort().join('|')
-    const same = plan(dbH) === plan(dbN)
-    check(same && dbN.orders.length > 0, `at today's settings (4 a batch, 5 minutes) the same ${dbN.orders.length} orders land at the same times with the same items as HEAD's seeder (HEAD: ${dbH.orders.length}; warnings: ${JSON.stringify(rN.warnings)})`)
-    if (!same) { console.log('     HEAD:', plan(dbH).split('|').join('\n           ')); console.log('     NEW: ', plan(dbN).split('|').join('\n           ')) }
+  console.log('\n── A VAN AT 5 MINUTES ───────────────────────────────────────────────────────────────────')
+  // 🔴 RESTATED 19 September 2026, AND THE HEAD COMPARISON IS GONE ON PURPOSE. This block compared the
+  // 5-minute board against HEAD's, byte for byte — the right check while the van-grid fix was the only
+  // change in flight, because a 5-minute van was the case that must not move. Two rounds have since
+  // changed the board DELIBERATELY for every demo: the event is four hours, and the order count is scaled
+  // to the batch-windows a service can hold. A HEAD comparison now asserts the absence of exactly the
+  // improvements that were asked for, and would fail forever on a correct tree.
+  // What this harness is FOR survives without it: that a van's own interval is the grid the seeder plans
+  // on. That is asserted directly below, and the fuller board's own guarantees — two red, two amber, two
+  // green, a two-batch gap, nothing over capacity — are asserted across 45 combinations in
+  // scripts/demo-seed-parameters.cjs, which is where the seeding rule lives.
+  {
+    const db5 = dbFor(5, 5, { cats: CATS_TODAY }); const r5 = await seedDemoOrders(fakeSupabase(db5), ARGS)
+    const s5 = summarise(db5)
     const cooks = o => o.items.some(i => ITEMS.find(x => x.name === i.name)?.category_id === 'c1')
-    check(dbH.orders.every(o => !o.cooking_reservation) && dbN.orders.filter(cooks).every(o => o.cooking_reservation), 'HEAD wrote no reservations; the fix writes one for every order that cooks')
-  } finally { head.remove() }
+    check(s5.length > 0 && s5.every(o => mins(o.slot) % 5 === 0), `a 5-minute van plans on 5-minute times: ${s5.length} orders, all on the grid`)
+    check(db5.orders.filter(cooks).every(o => o.cooking_reservation), 'every cooking order still carries a reservation')
+    check((r5.warnings || []).every(w => !/STILL OVER/.test(w)), `and the board is within capacity (${r5.warnings.length} warning(s))`)
+  }
 
   console.log(fails ? `\n🔴 ${fails} FAILED` : '\n✅ the seeder plans on the van\'s grid and every order is admitted by the engine')
   process.exit(fails ? 1 : 0)

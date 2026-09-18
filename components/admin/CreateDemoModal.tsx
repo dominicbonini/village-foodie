@@ -26,6 +26,10 @@ import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { formatImageUrl } from '@/lib/image-utils'
+import {
+  DEMO_INTERVAL_CHOICES, DEMO_DEFAULT_INTERVAL, DEMO_DEFAULT_COOK_MINS, DEMO_DEFAULT_BATCH,
+  DEMO_COOK_MINS_MIN, DEMO_COOK_MINS_MAX, DEMO_BATCH_MIN, DEMO_BATCH_MAX,
+} from '@/lib/demo-kitchen'
 
 export const CREATE_DEMO_Z_INDEX = 95
 const SAMPLE_TEMPLATE_ID = 'pizza'
@@ -35,6 +39,10 @@ export interface CreateDemoProspect {
   discovery_truck_id: string
   name: string
   logo_url: string | null
+  /** The truck a LIVE demo for this prospect already runs as, when there is one. Present ⇒ this modal is
+   *  a REBUILD: the same truck, the same link, new settings. A demo cannot be un-created, so the way to
+   *  change its kitchen is to build it again over itself. */
+  demoTruckId?: string | null
 }
 
 interface CreateDemoResult {
@@ -61,6 +69,11 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<CreateDemoResult | null>(null)
   const [copied, setCopied] = useState<'public' | 'dashboard' | null>(null)
+  // The three kitchen numbers. Seeded to today's demo, so leaving them alone builds today's demo.
+  const [intervalMins, setIntervalMins] = useState<number>(DEMO_DEFAULT_INTERVAL)
+  const [cookMins, setCookMins] = useState<string>(String(DEMO_DEFAULT_COOK_MINS))
+  const [batchSize, setBatchSize] = useState<string>(String(DEMO_DEFAULT_BATCH))
+  const rebuilding = !!prospect.demoTruckId
   useEffect(() => { setMounted(true) }, [])
 
   // Rule 2 — bubble phase, this modal only, inert while busy.
@@ -76,7 +89,7 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
 
   const submit = async (opts: { templateId?: string } = {}) => {
     if (busyRef.current) return
-    if (!opts.templateId && !file && !text.trim()) { setError('Add a photo of the menu, paste it in, or use the sample.'); return }
+    if (!rebuilding && !opts.templateId && !file && !text.trim()) { setError('Add a photo of the menu, paste it in, or use the sample.'); return }
     busyRef.current = true; setBusy(true); setError(null)
     try {
       const fd = new FormData()
@@ -84,6 +97,13 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
       else if (file) fd.append('file', file)
       else fd.append('text', text.trim())
       fd.append('discoveryTruckId', prospect.discovery_truck_id)
+      // 🔴 REBUILD = the SAME truck. provisionDemo's `existingTruckId` path keeps the menu, the link and
+      // the dashboard token and re-provisions the event and the board — which is exactly "change the
+      // settings and try again" for a demo that cannot be un-created.
+      if (prospect.demoTruckId) fd.append('existingTruckId', prospect.demoTruckId)
+      fd.append('collection_interval_mins', String(intervalMins))
+      fd.append('cook_mins', cookMins.trim())
+      fd.append('batch_size', batchSize.trim())
       const h = await nativeAuthHeader()
       const res = await fetch('/api/admin/provision-demo', { method: 'POST', body: fd, headers: h, credentials: 'same-origin' })
       const data = await res.json().catch(() => ({}))
@@ -189,12 +209,46 @@ export default function CreateDemoModal({ prospect, onClose, onCreated }: {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* ── 🔴 THE KITCHEN, ABOVE THE MENU. Asked BEFORE the build because the seeded board is
+                  computed from these three numbers; asking afterwards would mean rebuilding to apply them.
+                  Defaults are today's demo, so an admin who ignores this box gets exactly what they got
+                  before it existed. ADMIN ONLY — the landing-page demo never sees these. */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+                <p className="text-xs text-slate-600">Match the truck&apos;s kitchen so the demo looks like theirs.</p>
+                <div className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
+                  <label className="block">
+                    <span className="block text-xs font-bold text-slate-600 mb-1">Collection times</span>
+                    <select value={intervalMins} onChange={e => setIntervalMins(Number(e.target.value))} disabled={busy}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white disabled:opacity-50">
+                      {DEMO_INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="block text-xs font-bold text-slate-600 mb-1">Cook time (minutes)</span>
+                    <input type="number" inputMode="numeric" min={DEMO_COOK_MINS_MIN} max={DEMO_COOK_MINS_MAX} step={1}
+                      value={cookMins} onChange={e => setCookMins(e.target.value)} disabled={busy}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white disabled:opacity-50" />
+                  </label>
+                  <label className="block">
+                    <span className="block text-xs font-bold text-slate-600 mb-1">Batch size (items)</span>
+                    <input type="number" inputMode="numeric" min={DEMO_BATCH_MIN} max={DEMO_BATCH_MAX} step={1}
+                      value={batchSize} onChange={e => setBatchSize(e.target.value)} disabled={busy}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white disabled:opacity-50" />
+                  </label>
+                </div>
+              </div>
+              {rebuilding
+                ? <p className="text-xs text-slate-500">
+                    Rebuilding this prospect&apos;s demo: the link and the menu stay as they are, and the
+                    board is built again with the numbers above. Add a menu below only to replace it.
+                  </p>
+                : null}
               <MenuUploadFields file={file} onFile={setFile} text={text} onText={setText} disabled={busy} accent="app" />
               {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="flex items-center gap-2 flex-wrap">
                 <button type="button" onClick={() => submit()} disabled={busy}
                   className="text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50">
-                  {busy ? 'Building… (up to a minute)' : 'Build the demo'}
+                  {busy ? 'Building… (up to a minute)' : rebuilding ? 'Rebuild the demo' : 'Build the demo'}
                 </button>
                 <button type="button" onClick={() => submit({ templateId: SAMPLE_TEMPLATE_ID })} disabled={busy}
                   className="text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-50">

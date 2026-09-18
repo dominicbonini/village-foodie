@@ -25,6 +25,7 @@ import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { provisionDemo, ProvisionDemoError } from '@/lib/provision-demo'
 import { getDemoTemplate } from '@/lib/demo-templates'
+import { parseDemoKitchen } from '@/lib/demo-kitchen'
 
 // Same ceiling as /api/demo and for the same reason: the provision blocks for the whole extract + commit.
 export const maxDuration = 300
@@ -47,6 +48,9 @@ export async function POST(req: NextRequest) {
   let discoveryTruckId: string | null = null
   let nameOverride: string | null = null
   let templateId: string | null = null
+  // The admin's three kitchen numbers. Raw here; validated by parseDemoKitchen below, which is the SAME
+  // code scripts/demo-seed-parameters.cjs asserts the bounds against.
+  let rawInterval: unknown = null, rawCook: unknown = null, rawBatch: unknown = null
 
   const contentType = req.headers.get('content-type') || ''
   try {
@@ -59,6 +63,9 @@ export async function POST(req: NextRequest) {
       discoveryTruckId = str(form.get('discoveryTruckId'))
       nameOverride = str(form.get('name'))
       templateId = str(form.get('template'))
+      rawInterval = form.get('collection_interval_mins')
+      rawCook = form.get('cook_mins')
+      rawBatch = form.get('batch_size')
     } else {
       const body = await req.json()
       text = str(body.text)
@@ -66,10 +73,18 @@ export async function POST(req: NextRequest) {
       discoveryTruckId = str(body.discoveryTruckId)
       nameOverride = str(body.name)
       templateId = str(body.template)
+      rawInterval = body.collection_interval_mins
+      rawCook = body.cook_mins
+      rawBatch = body.batch_size
     }
   } catch {
     return NextResponse.json({ error: 'Could not read request body' }, { status: 400 })
   }
+
+  // 🔴 VALIDATED SERVER-SIDE, AND A BAD VALUE IS A 400 WITH ITS OWN SENTENCE — never a silent fallback to
+  // the default. An admin who typed 500 must be told, not handed a demo at 4 that looks like it worked.
+  const { kitchen, error: kitchenError } = parseDemoKitchen({ intervalMins: rawInterval, cookMins: rawCook, batchSize: rawBatch })
+  if (kitchenError) return NextResponse.json({ error: kitchenError }, { status: 400 })
 
   const template = getDemoTemplate(templateId)
   if (!file && !text && !existingTruckId && !template) {
@@ -97,7 +112,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await provisionDemo(supabase, {
-      file, text, template, existingTruckId,
+      file, text, template, existingTruckId, kitchen,
       ...(discoveryTruckId ? { discoveryTruckId, name, logoUrl } : {}),
     })
 
