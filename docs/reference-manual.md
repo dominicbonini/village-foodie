@@ -55,10 +55,22 @@ window the clamp can produce is `23:30–23:59`, and a board still seeds into it
 **🔴 THE "UNBRANDED" WARNING LIED ON EVERY REBUILD.** [OBSERVED] The logo block is guarded by
 `!input.existingTruckId`, so a rebuild — which keeps the truck — skipped it entirely and left
 `logoStoragePath` unset. The demo went on showing the logo copied at its first build while the modal claimed
-none had been. **The warning was the liar, and the fix is that a rebuild READS `trucks.logo_storage_path`
-BACK** so it reports what the truck actually has; a demo with no logo still says so. ⚠️ **`copyDemoLogo` is
-deliberately NOT re-run on a rebuild** — see the open items: changing a prospect's logo and rebuilding does
-**not** yet update the demo's logo.
+none had been. **The warning was the liar, and the first fix was that a rebuild READS `trucks.logo_storage_path`
+BACK** so it reports what the truck actually has; a demo with no logo still says so. **A rebuild now copies
+the CURRENT logo**, skipping the work only when the truck already holds exactly what the source would
+produce (`demoLogoUpToDate`), and removing the demo's logo when the prospect no longer has one. A
+re-provision with no `discoveryTruckId` still only reads, because it does not know the prospect's logo.
+⚠️ **A REFUSED URL LEAVES THE EXISTING BRAND ALONE** — we could not read the new logo, so we do not know it
+differs, and discarding a working brand on the strength of a URL we could not parse would be a guess. When
+the prospect's logo is REMOVED the demo's is cleared and `qr_code_style` goes back to `standard`, so the
+"Your logo here" plate returns rather than a branded composite rendering with an empty centre.
+
+⚠️ **THE `!existingTruckId` GUARD WAS PROTECTING SOMETHING REAL, AND `demoLogoUpToDate` IS THAT PROTECTION
+MADE PRECISE.** A `storage` source only re-points `logo_storage_path` at an object that already exists, so
+re-running it is free — but a `static` one reads `public/logos` and UPLOADS `<truckId>/<epoch-ms>-<file>`,
+whose name carries the upload's timestamp. Re-copying unconditionally would leave one orphaned object per
+rebuild, undetectable by name collision. `storage` is therefore compared by object path and `static` by the
+truck's prefix plus the file name the path ends with.
 
 **🔴 THE INTRODUCTION NEVER APPEARED, AND THE SIGN-UP PANEL TALKED OVER IT.** [OBSERVED] Two flags,
 `hg_demo_welcome_<token>` and `hg_demo_seen_orders_<token>`, were keyed on the dashboard token, which
@@ -88,7 +100,7 @@ is the comparison table's job, and `scripts/printing-copy.cjs` asserts the bulle
 
 | Item | State |
 |---|---|
-| **A rebuild does not re-copy the logo** | Change a prospect's logo and rebuild: the demo keeps the old one. `copyDemoLogo` is still `!existingTruckId`-guarded. Decide whether a rebuild should re-copy |
+| **Superseded logo objects are never swept** | A changed logo leaves the previous `static` upload in `truck-media`; nothing deletes it. Worth a sweep if template demos are rebuilt often |
 | Between Buns Royston's demo | Settings and board correct; expires 12 October. Only a Create Demo re-provision or `saveDemoEmail` extends that |
 | Wired printing | Built and gated; needs the truck's printer model and a hardware test. Landing / plan-features / store copy still on HOLD until both app stores update |
 | Discovery incident | Contact emails and phones for 132 rows still lost pending a pre-12:53 UTC backup; 19 inserted rows hidden, not deleted; GitHub `MATCH_FROM` / `SITES_FROM` unchecked |
@@ -25713,9 +25725,12 @@ path and carries a cooking reservation at the chosen batch and cook time.
 **The demo event runs four hours**, clamped to the end of the day (`DEMO_WINDOW_HOURS`, `demoEventWindow`).
 
 **A rebuild** keeps the truck, the slug and the dashboard token, deletes every order, seeds a new board from
-the current settings, and re-introduces itself to whoever opens it. ⚠️ **It does not re-copy the logo** — it
-reads the stored `logo_storage_path` back, so a logo changed on the prospect since the first build is not
-picked up. Open item.
+the current settings, re-introduces itself to whoever opens it, and **copies the prospect's CURRENT logo** —
+skipping the work only when the truck already holds exactly what the source would produce
+(`demoLogoUpToDate`). A logo **removed** from the prospect is removed from the demo, which also sets
+`qr_code_style` back to `standard` so the QR plate returns; a **refused** URL leaves the existing brand
+alone. A re-provision with no `discoveryTruckId` only READS the stored value, because without one there is
+no `logoUrl` and "no logo" would otherwise clear a perfectly good brand.
 
 **The link column.** `demo_sessions.discovery_truck_id` (uuid, FK `discovery_trucks`, `ON DELETE SET
 NULL`). 🔴 **NEVER `discovery_trucks.hatchgrab_truck_id`** — every reader of that column acts on the claim
@@ -26031,6 +26046,15 @@ properly before the next engine change** — either narrow its snapshot to the e
 **Every harness runs its BROKEN VARIANTS FIRST.** A harness that cannot fail proves nothing; each one
 compiles a patched copy of `lib/` with the defect reintroduced and asserts that it FAILS before asserting
 the real result. This is what caught the V13.5 signature parser (`split(':')` on `"13:45:0:pizza2"`).
+
+**A harness can PASS FOR THE WRONG REASON when the environment is missing a value it silently depends on.**
+`scripts/demo-rebuild-logo.cjs` asserts that a rebuilt demo copies the prospect's changed logo, and its two
+broken variants both reported "FAILED as required" on the first run — correctly, but for the wrong reason.
+`classifyDemoLogoSource` decides whether a URL is one of OURS from `ownStorageOrigins(process.env)`, and
+with no `NEXT_PUBLIC_SUPABASE_URL` set every absolute URL classified as **refused**, so the harness was
+exercising the refused branch and never reached the comparison it exists to test. It now sets a fixed fake
+project origin before the module is compiled. ⚠️ **A variant that fails is not proof the harness is
+pointing at the right thing** — check that the failure is the one you intended, not merely a failure.
 
 **Fixtures cannot catch a mount-time defect.** Three stale-list fixes passed their fixture harnesses while
 the bug was live in the browser: the failures were a dropped refetch, an abort classified as a network error,
