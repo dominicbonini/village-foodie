@@ -209,24 +209,44 @@ export async function provisionDemo(
   // same logo_storage_path (see the build report, Phase 0a), so setting it here cannot make them disagree.
   let logoStoragePath: string | null = null
   let logoNote: string | null = null
-  // ── 🔴 A REBUILD REPORTS THE LOGO THE TRUCK ALREADY HAS (19 September 2026) ──────────────────────
-  // OBSERVED: rebuilding Between Buns Royston's demo showed "This demo is unbranded — no logo was copied"
-  // over a demo that was displaying the truck's logo perfectly. The warning was the liar. The block below
-  // only runs for a NEW outreach demo, because a rebuild keeps the truck and its logo — so on that path
-  // `logoStoragePath` stayed null and the modal, which reads it, concluded the demo was unbranded.
-  // The copy is still not re-run (there is nothing to copy); the existing value is simply read back.
-  if (input.existingTruckId) {
+  // ── 🔴 A REBUILD COPIES THE CURRENT LOGO (19 September 2026) ────────────────────────────────────
+  // TWO DEFECTS, ONE GUARD. This block was `!input.existingTruckId` — "first run only" — which produced:
+  //   • a rebuild reporting "This demo is unbranded — no logo was copied" over a demo that was displaying
+  //     its logo perfectly, because `logoStoragePath` was never filled in on that path; and
+  //   • a prospect whose logo was ADDED or CHANGED after their first demo getting a rebuild still branded
+  //     with the old one, or with none.
+  // The guard's real purpose was narrower than it looked: a `static` source UPLOADS a fresh
+  // `<truckId>/<epoch>-<file>` object every time it runs, so re-copying unconditionally would leave one
+  // orphan per rebuild in `truck-media`. `demoLogoUpToDate` is that protection, kept and made precise —
+  // the work is skipped when the truck already holds exactly what the source would produce, and only then.
+  // ⚠️ `existing` IS WHAT PUTS copyDemoLogo IN REBUILD MODE. A first build passes none and behaves as it
+  // always has: copy, or record why not.
+  // 🔴 A COPY NEEDS TO KNOW THE PROSPECT'S CURRENT LOGO, AND ONLY `discoveryTruckId` CARRIES IT. Without
+  // one there is no `logoUrl`, which would classify as "no logo" — and on a rebuild that would CLEAR a
+  // perfectly good brand on the strength of a question nobody asked. So a re-provision with no discovery
+  // id reads the stored value back for the modal and touches nothing, which is what it did before today.
+  if (input.existingTruckId && !input.discoveryTruckId) {
     const { data: row } = await supabase
       .from('trucks').select('logo_storage_path').eq('id', truckId).maybeSingle()
     logoStoragePath = (row as { logo_storage_path?: string | null } | null)?.logo_storage_path ?? null
     if (!logoStoragePath) logoNote = 'This demo has no logo stored, so it is unbranded.'
-  }
-  if (!input.existingTruckId && input.discoveryTruckId) {
-    const logo = await copyDemoLogo(supabase, truckId, input.logoUrl ?? null, { now })
+  } else if (input.discoveryTruckId) {
+    let existing: string | null | undefined
+    if (input.existingTruckId) {
+      const { data: row } = await supabase
+        .from('trucks').select('logo_storage_path').eq('id', truckId).maybeSingle()
+      existing = (row as { logo_storage_path?: string | null } | null)?.logo_storage_path ?? null
+    }
+    const logo = await copyDemoLogo(supabase, truckId, input.logoUrl ?? null, { now, ...(existing !== undefined ? { existing } : {}) })
     logoStoragePath = logo.logoStoragePath
     if (logo.source.kind === 'refused') { warnings.push(`Logo not copied — ${logo.source.reason}`); logoNote = `The logo was refused: ${logo.source.reason}` }
     if (logo.error) { warnings.push(`Logo copy failed (non-fatal): ${logo.error}`); logoNote = `The logo could not be copied: ${logo.error}` }
-    if (logo.source.kind === 'none') logoNote = 'This prospect has no logo stored, so the demo is unbranded.'
+    // 🔴 THE NOTE NAMES WHICH "no logo" THIS IS. "The prospect has none" and "the prospect's was removed,
+    // so the demo's has been too" are different facts, and the second one is the admin's own doing.
+    if (logo.cleared) logoNote = 'This prospect no longer has a logo, so the demo\'s has been removed and it is unbranded.'
+    else if (logo.source.kind === 'none') logoNote = 'This prospect has no logo stored, so the demo is unbranded.'
+    // `branded` is written only when a logo is actually there — including the unchanged case, so a rebuild
+    // cannot leave a branded truck reading `standard`. The CLEARED case set it back inside copyDemoLogo.
     if (logoStoragePath) {
       const { error: qrErr } = await supabase.from('trucks').update({ qr_code_style: 'branded' }).eq('id', truckId)
       if (qrErr) warnings.push(`Could not set qr_code_style=branded (non-fatal): ${qrErr.message}`)

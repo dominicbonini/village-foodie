@@ -346,15 +346,22 @@ async function board(seedDemoOrders, E, opts) {
 
   console.log('\n── ITEM 1: THE LOGO WARNING ─────────────────────────────────────────────────────────────')
   {
-    // The modal raises "This demo is unbranded" on `!result.logoStoragePath`. What provisionDemo puts
-    // there on a REBUILD is what was wrong; the source of it is read here rather than re-implemented.
+    // 🔴 RESTATED 19 September 2026. This asserted the FIRST fix — that a rebuild READS the stored
+    // logo_storage_path back — and, with it, that `copyDemoLogo` is never re-run on a rebuild. That second
+    // assertion has been overtaken: reading it back stopped the warning lying, but it also meant a prospect
+    // whose logo changed after their first demo got a rebuild still branded with the old one. A rebuild now
+    // COPIES the current logo and skips the work only when it already matches. The behaviour is proven in
+    // scripts/demo-rebuild-logo.cjs against the real copier; what is asserted here is that provisionDemo
+    // still routes a rebuild INTO that copier, which is the wiring this file owns.
     const src = fs.readFileSync(path.join(REPO, 'lib/provision-demo.ts'), 'utf8')
-    const rebuildBlock = /if \(input\.existingTruckId\) \{[\s\S]{0,600}?logoStoragePath = \(row as \{ logo_storage_path\?: string \| null \} \| null\)\?\.logo_storage_path \?\? null/.test(src)
-    check(rebuildBlock, 'a rebuild reads the truck\'s own logo_storage_path back, so a demo that HAS a logo no longer reports itself unbranded')
-    const stillWarns = /if \(!logoStoragePath\) logoNote = 'This demo has no logo stored, so it is unbranded\.'/.test(src)
-    check(stillWarns, 'and a demo that genuinely has none still says so')
-    const copyUntouched = /if \(!input\.existingTruckId && input\.discoveryTruckId\) \{/.test(src)
-    check(copyUntouched, 'the copy itself is unchanged — a rebuild has nothing to copy, it reads what is already there')
+    check(/const logo = await copyDemoLogo\(supabase, truckId, input\.logoUrl \?\? null, \{ now, \.\.\.\(existing !== undefined \? \{ existing \} : \{\}\) \}\)/.test(src),
+      'a rebuild goes through copyDemoLogo with the truck\'s current logo_storage_path as `existing`')
+    check(!/if \(!input\.existingTruckId && input\.discoveryTruckId\) \{/.test(src),
+      'the "first run only" guard is gone — a rebuild is no longer excluded from the copy')
+    check(/if \(input\.existingTruckId && !input\.discoveryTruckId\) \{/.test(src),
+      '…but a re-provision with no discovery id still only READS, because it does not know the prospect\'s logo')
+    check(/if \(logo\.cleared\) logoNote = /.test(src) && /else if \(logo\.source\.kind === 'none'\) logoNote = /.test(src),
+      'and the note tells "the prospect has none" apart from "the prospect\'s was removed, so the demo\'s has been too"')
   }
 
   console.log('\n── SERVER-SIDE VALIDATION ───────────────────────────────────────────────────────────────')

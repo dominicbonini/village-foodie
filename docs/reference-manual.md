@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.5
+HatchGrab Engineering Reference Manual · V13.6
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.5**
+**Version 13.6**
 
 September 2026
 
@@ -26,11 +26,86 @@ version of the document they were holding.** ⚠️ **Grep before finishing:** `
 
 # Changelog
 
+## V13.6 — 19 September 2026 — CREATE DEMO ASKS FOR THE TRUCK'S KITCHEN NUMBERS AND SEEDS TO THEM; FOUR DEMO DEFECTS FIXED
+
+**Status:** committed and pushed to `origin/main` (`7346860`, `d7addb7`, `ff28aa6`, `231ee26`, 18–19
+September). Vercel deploys from git, so this is live unless that deploy failed. No migrations.
+
+**Create Demo now takes three numbers**, in the admin outreach prospect modal only: collection times
+(5/10/15/20/30), cook time in minutes (1–60) and batch size (1–50). They are validated server-side with
+their own error sentences, written to the demo's van (customer interval; operator override left NULL) and to
+its cooking category (`prep_secs`, `batch_size`), and the seeded board is planned from them. Defaults are
+today's values — grid 5, prep 300 s, batch 4, from `lib/demo-assumptions.ts` — and an admin demo built at the
+defaults seeds the same board as the landing-page demo. **The public landing-page demo does not go through
+this path and asks nothing.**
+
+**The seeder plans one batch per batch-window, not one per slot.** It steps by `span = ceil(prep / grid)`,
+so a cook time longer than the grid no longer empties the board — at 5-minute times with a 10-minute cook and
+a batch of 2 it had been producing 35 empty times out of 37 — and it sizes the board by batch-windows rather
+than the old fixed 37 orders. Every board, at every combination of the three settings, is guaranteed to
+contain at least two full, two part-full and two empty times, and one pair of back-to-back empty batches so a
+two-batch order can be placed. **The gap is proven by asking `fitOrderBackward` — the engine — rather than a
+rule of thumb**, and it is reserved only when the board does not already have the room, which is what keeps
+the default board identical to its predecessor. No seeded board arrives over capacity.
+
+**The demo event is four hours** (was three), clamped so it cannot run past the end of the day: `19:30` is
+the last creation time that gets a full four hours, and from `20:00` the end clamps to `23:59`. The shortest
+window the clamp can produce is `23:30–23:59`, and a board still seeds into it.
+
+**🔴 THE "UNBRANDED" WARNING LIED ON EVERY REBUILD.** [OBSERVED] The logo block is guarded by
+`!input.existingTruckId`, so a rebuild — which keeps the truck — skipped it entirely and left
+`logoStoragePath` unset. The demo went on showing the logo copied at its first build while the modal claimed
+none had been. **The warning was the liar, and the fix is that a rebuild READS `trucks.logo_storage_path`
+BACK** so it reports what the truck actually has; a demo with no logo still says so. ⚠️ **`copyDemoLogo` is
+deliberately NOT re-run on a rebuild** — see the open items: changing a prospect's logo and rebuilding does
+**not** yet update the demo's logo.
+
+**🔴 THE INTRODUCTION NEVER APPEARED, AND THE SIGN-UP PANEL TALKED OVER IT.** [OBSERVED] Two flags,
+`hg_demo_welcome_<token>` and `hg_demo_seen_orders_<token>`, were keyed on the dashboard token, which
+**survives a rebuild**. So a rebuilt demo (a) suppressed `DemoWelcome`, because the token had already been
+seen, and (b) fired `DemoLoopComplete` — "That's exactly how a real order lands" — because the new board's
+order keys matched nothing in the stored baseline, making every seeded order look like the prospect's own.
+The welcome was also read in a `useState` initialiser during first paint, so the self-heal built for exactly
+this arrived a network round trip too late and only ever helped the NEXT load. `lib/demo-board-build.ts` now
+owns both key names and the replacement test, the sign-up panel waits for an order actually added to a board
+the viewer already knew, and the welcome's seen-state lives in **`sessionStorage`**: the demo introduces
+itself on every fresh visit and stays dismissed within that tab. 🔴 **It is deliberately NOT recorded
+server-side** — a stamp on `demo_sessions` would let a reviewer's own check spend the prospect's first open.
+
+**The introduction's copy** (approved 19 September): **"Here's your demo"** — *"This is your own menu and
+branding, on a real board. The orders already on it are examples, so you can see a busy service."* The
+sample-truck variant reads "Here's a sample demo" and says the menu is a stand-in that can be replaced. Then
+"Two things to try": mark an order paid and collected, and scan the QR to order as a customer and watch it
+land. ⚠️ **The first bullet names the button by reading the same settings the card reads** — it said "Mark
+paid & done", which no demo has ever rendered — through `lib/order-completion-label.ts`, the one expression
+`OrderCard`'s two label sites now share.
+
+**Landing page.** The Pro card's bullet is now just "Kitchen ticket printing"; which printers it works with
+is the comparison table's job, and `scripts/printing-copy.cjs` asserts the bullet equals the table row's own
+`name` rather than a literal.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **A rebuild does not re-copy the logo** | Change a prospect's logo and rebuild: the demo keeps the old one. `copyDemoLogo` is still `!existingTruckId`-guarded. Decide whether a rebuild should re-copy |
+| Between Buns Royston's demo | Settings and board correct; expires 12 October. Only a Create Demo re-provision or `saveDemoEmail` extends that |
+| Wired printing | Built and gated; needs the truck's printer model and a hardware test. Landing / plan-features / store copy still on HOLD until both app stores update |
+| Discovery incident | Contact emails and phones for 132 rows still lost pending a pre-12:53 UTC backup; 19 inserted rows hidden, not deleted; GitHub `MATCH_FROM` / `SITES_FROM` unchecked |
+| The frozen rolling baseline | Patched three times rather than rebuilt; rebuild before the next engine change (§59) |
+| Plugin build files, stale worktrees | A `.gitignore` entry, and two `slot-head-dots-*` worktrees to remove |
+| PIN dashboards and wired printing | Two props on the dashboard page |
+| Off-list times skip the capacity check | Decided: leave as is |
+| The browser test for the stale Add Order list | Not automated — needs an operator session; run it headed after any dashboard-fetch or refresh-trigger change |
+
 ## V13.5 — 18 September 2026 — COLLECTION TIMES BECOME A PER-VAN, PER-AUDIENCE SETTING; BOTH CAPACITY CEILINGS BECOME PHYSICAL (PEAK, NOT SUM); ORDERS NOW RESERVE THEIR COOKING BATCHES; WIRED PRINTING BUILT; A STRAY SCRIPT OVERWROTE 132 DISCOVERY ROWS
 
-**Status:** built and tested on localhost against the live database, **NOT YET DEPLOYED** at the time of
-writing. Five migrations are already applied by hand (table at the end of this entry). Update this line once
-the commit is live.
+**Status: DEPLOYED 18 September 2026.** Pizzeria Gusto traded that evening on this code with no issues
+reported: the first live service for the peak ceilings, the cooking reservations (Gusto switched OFF), the
+clock-anchored grids and the Add Order display. The five migrations were applied by hand beforehand.
+
+⚠️ **The HOLD is unchanged.** The landing page, `lib/plan-features.ts` and the store listing still wait for
+the two app store updates — see the open items.
 
 **Collection times are now a setting, per van and per audience.** Manage → Settings carries a Collection
 times box above each van's Kitchen capacity box: "Customer Collection Times" (5/10/15/20/30, default 5) and,
@@ -25614,6 +25689,34 @@ is **not** used: it is rate-limited 5/hour/IP and cannot carry a discovery id. T
 lives in the prospect modal (`components/admin/OutreachPanel.tsx`), reuses `MenuUploadFields`, and
 deliberately does **not** navigate on success — it shows the link (see §52.9 for the stacking rules).
 
+**What a demo gets (V13.6).** Create Demo, in the admin outreach prospect modal, asks for three numbers
+before it builds:
+
+| Control | Values | Default |
+|---|---|---|
+| Collection times | 5 / 10 / 15 / 20 / 30 minutes | 5 |
+| Cook time | 1–60 minutes | 5 (300 s) |
+| Batch size | 1–50 | 4 |
+
+Validated server-side (`lib/demo-kitchen.ts` → `parseDemoKitchen`) as well as in the modal, each with its
+own sentence — a bad value is a 400, never a silent fall back to the default. Written to the demo van's
+`collection_interval_mins` (operator override NULL, so the box shows unticked) and to the cooking category's
+`prep_secs` and `batch_size`. Everything else about provisioning is unchanged, and **the landing-page demo
+does not go through this path**.
+
+**The seeded board** is planned one batch per batch-window (`span = ceil(prep / grid)`) and sized by the
+number of batch-windows in the event, not by a fixed order count. Every board contains full, part-full and
+empty times, and one pair of adjacent empty batches so a two-batch order can be placed; **the pair is
+confirmed by asking the engine, not assumed**. Every seeded order is admitted through the real manual-order
+path and carries a cooking reservation at the chosen batch and cook time.
+
+**The demo event runs four hours**, clamped to the end of the day (`DEMO_WINDOW_HOURS`, `demoEventWindow`).
+
+**A rebuild** keeps the truck, the slug and the dashboard token, deletes every order, seeds a new board from
+the current settings, and re-introduces itself to whoever opens it. ⚠️ **It does not re-copy the logo** — it
+reads the stored `logo_storage_path` back, so a logo changed on the prospect since the first build is not
+picked up. Open item.
+
 **The link column.** `demo_sessions.discovery_truck_id` (uuid, FK `discovery_trucks`, `ON DELETE SET
 NULL`). 🔴 **NEVER `discovery_trucks.hatchgrab_truck_id`** — every reader of that column acts on the claim
 *this discovery row IS an operator truck*, and a demo satisfies none of it. See the V13.1 changelog entry
@@ -25641,6 +25744,18 @@ name and logo with no demo marking — reachable **only for signed-in users**, b
 **Retention.** One month, implemented as **30 days**, written at creation. `expires_at` is **monotonic**:
 any writer may extend it, none may shorten it. ⚠️ It is computed by **application code before the
 insert**, not by a DB default — a retention tier is a code change.
+
+**Demo flags are BROWSER state, not session state (V13.6).** `hg_demo_welcome_<token>` lives in
+**`sessionStorage`** and `hg_demo_seen_orders_<token>` in **`localStorage`**, both keyed on the dashboard
+token — which survives a rebuild, and is why both once described a board that no longer existed. Anything
+that changes what the board holds must go through `lib/demo-board-build.ts`, which owns both names and the
+replacement test, or the prospect is shown the wrong panel. 🔴 **A reviewer opening a demo to check it
+leaves nothing behind for the prospect**, because the welcome's state dies with the tab — that is the
+requirement the store choice exists to satisfy, and it is why the state is not on `demo_sessions`.
+
+**Expiry is set at session creation and is monotonic.** `restartDemoService` does **not** extend it; a
+Create Demo re-provision (`touchDemoSession`) or `saveDemoEmail` does. A demo created on 12 September
+therefore expires 12 October however many times it is rebuilt.
 
 **Self-serve conversion.** When the prospect signs up from the demo, `/api/setup create_truck` writes
 `discovery_trucks.hatchgrab_truck_id = <the new real truck>` under the same `.is(null)` guard the admin

@@ -147,6 +147,35 @@ export interface CopyDemoLogoResult {
   source: DemoLogoSource
   /** Set when a recognised source could not be applied (disk read, upload, column write). */
   error?: string
+  /** REBUILD: the truck already held exactly what this source produces, so nothing was copied. */
+  unchanged?: boolean
+  /** REBUILD: the prospect has no logo any more, so the demo's was removed and it is unbranded again. */
+  cleared?: boolean
+}
+
+/**
+ * Does the truck ALREADY hold exactly what this source would produce?
+ *
+ * 🔴 WHY A PREDICATE AND NOT A RE-COPY EVERY TIME. A `storage` source is free to re-apply — it only points
+ * `logo_storage_path` at an object that already exists in our own bucket — but a `static` one READS
+ * public/logos and UPLOADS a fresh object named `<truckId>/<epoch-ms>-<file>`. Re-running that on every
+ * rebuild would leave one orphaned object per rebuild in `truck-media`, for a file that has not changed.
+ * That, not idempotency, is what the old `!existingTruckId` guard was protecting; this is the narrower
+ * version of it that a changed logo can get past.
+ *
+ * `storage` compares by the object path itself, which is exactly what would be written.
+ * `static` cannot compare by path — the path carries the upload's timestamp — so it compares by the
+ * truck's own prefix and the file name the path ends with, which together identify the same source file.
+ * `none` and `refused` are not comparisons; the caller decides what they mean.
+ */
+export function demoLogoUpToDate(source: DemoLogoSource, truckId: string, stored: string | null | undefined): boolean {
+  if (!stored) return false
+  if (source.kind === 'storage') return stored === source.objectPath
+  if (source.kind === 'static') {
+    const esc = (v: string) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return new RegExp(`^${esc(truckId)}/\\d+-${esc(source.file)}$`).test(stored)
+  }
+  return false
 }
 
 /**
@@ -157,10 +186,34 @@ export async function copyDemoLogo(
   supabase: SupabaseClient,
   truckId: string,
   logoUrl: string | null | undefined,
-  opts: { publicDir?: string; now?: Date } = {},
+  /** `existing`: the truck's CURRENT logo_storage_path. Passing it puts this in REBUILD mode — the copy is
+   *  skipped when it already matches, and a prospect who no longer has a logo has the demo's removed.
+   *  Omitting it is the first-build behaviour, unchanged. */
+  opts: { publicDir?: string; now?: Date; existing?: string | null } = {},
 ): Promise<CopyDemoLogoResult> {
   const source = classifyDemoLogoSource(logoUrl)
-  if (source.kind === 'none' || source.kind === 'refused') return { logoStoragePath: null, source }
+  const rebuilding = opts.existing !== undefined
+  const existing = opts.existing ?? null
+
+  if (source.kind === 'none') {
+    // 🔴 THE PROSPECT'S LOGO IS GONE, SO THE DEMO'S GOES TOO. Leaving it would brand a demo with a logo its
+    // prospect no longer uses, which is worse than an unbranded one: it is wrong rather than plain.
+    if (rebuilding && existing) {
+      const { error } = await supabase.from('trucks')
+        .update({ logo_storage_path: null, qr_code_style: 'standard' }).eq('id', truckId)
+      if (error) return { logoStoragePath: existing, source, error: `logo clear failed: ${error.message}` }
+      return { logoStoragePath: null, source, cleared: true }
+    }
+    return { logoStoragePath: null, source }
+  }
+  if (source.kind === 'refused') {
+    // ⚠️ A REFUSED SOURCE LEAVES WHAT IS THERE. We cannot read the new logo, so we do not know it differs —
+    // and throwing away a working brand on the strength of a URL we could not parse would be a guess.
+    return { logoStoragePath: rebuilding ? existing : null, source }
+  }
+  if (rebuilding && demoLogoUpToDate(source, truckId, existing)) {
+    return { logoStoragePath: existing, source, unchanged: true }
+  }
 
   let objectPath: string
   if (source.kind === 'storage') {
