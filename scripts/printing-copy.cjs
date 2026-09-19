@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 // scripts/printing-copy.cjs — the words: no "thermal" anywhere an operator or customer reads; every
-// marketing mention says "Bluetooth or wired"; Bluetooth-only sentences live ONLY in the Bluetooth branch;
-// the iOS Local Network string is exact and there is no NSBonjourServices.
+// marketing mention that NAMES a printer says "Bluetooth or wired"; Bluetooth-only sentences live ONLY in
+// the Bluetooth branch; the iOS Local Network string is exact and there is no NSBonjourServices.
+//
+// ⚠️ THE PRICING CARD NAMES THE FEATURE AND SAYS NOTHING ABOUT PRINTERS (19 September 2026). It read
+// "Kitchen ticket printing (Bluetooth or wired printer)" — the longest bullet in the list, for the least
+// useful reason, and a second copy of a detail the comparison table lower down the SAME page already
+// carries in the row's `detail` and footnote 5. Which printers it works with is a detail; the card lists
+// what you get. So the bullet is now byte-identical to the row's `name`, which is also what the landing
+// page's own "card and table must agree" rule asks for, and the "Bluetooth or wired" requirement applies
+// to the mentions that still name a printer.
 //   node scripts/printing-copy.cjs
 // 🔴 FAILURE MODE: an operator with a wired printer reading "Bluetooth is switched off", or a customer
 // reading "thermal printer" — a word this product has never asked them to know.
@@ -13,7 +21,10 @@ let fails = 0; const check = (ok, l) => { console.log(`  ${ok ? '✓' : '🔴'} 
 const FACING = ['components/printing/PrintingSettings.tsx', 'components/printing/PrinterTypeChoice.tsx', 'lib/printing/netTransport.ts', 'lib/printing/networkGuard.ts', 'lib/printing/netAddress.ts', 'lib/printing/usePrinting.ts', 'lib/plan-features.ts', 'app/landing/page.tsx', 'content/store-listing.md', 'app/api/printing/route.ts']
 console.log('── BROKEN VARIANT: MUST report FAILURE ──────────────────────────────────────────────────')
 {
-  const v1 = noComments(read('app/landing/page.tsx')).replace('Bluetooth or wired printer', 'thermal printer')
+  // Re-based 19 September 2026: this replaced "Bluetooth or wired printer" on the landing page, a phrase
+  // the pricing card no longer carries, so the replace became a no-op and the variant stopped proving
+  // anything. It now reinstates the word in the bullet that IS there.
+  const v1 = noComments(read('app/landing/page.tsx')).replace('Kitchen ticket printing', 'Kitchen thermal ticket printing')
   const hit = /thermal/i.test(v1)
   console.log(`  ${hit ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V1 "thermal" reinstated on the landing page is caught`)
   if (!hit) process.exit(1)
@@ -22,8 +33,16 @@ console.log('\n── no "thermal" in rendered/returned strings ─────�
 for (const f of FACING) { const s = f.endsWith('.md') ? read(f) : noComments(read(f)); const m = s.match(/.*thermal.*/i); check(!m, `${f}${m ? ' — ' + m[0].trim() : ''}`) }
 console.log('\n── marketing mentions say "Bluetooth or wired" ──────────────────────────────────────────')
 {
-  check(/Kitchen ticket printing \(Bluetooth or wired printer\)/.test(read('app/landing/page.tsx')), 'landing bullet')
   const pf = read('lib/plan-features.ts')
+  // 🔴 THE CARD NAMES THE FEATURE; THE TABLE CARRIES THE DETAIL. Asserted as AGREEMENT with the row's own
+  // `name` rather than as a literal, so the two cannot drift — which is exactly what the landing page's
+  // own comment warns about ("this bullet is hand-written and nothing checks it"). Now something does.
+  const rowName = (pf.match(/\{ name: '(Kitchen ticket printing)',/) || [])[1]
+  const landing = noComments(read('app/landing/page.tsx'))
+  check(!!rowName, `the comparison table still has a row named ${JSON.stringify(rowName ?? null)}`)
+  check(landing.includes(`<li>${rowName}</li>`), `the pricing card's bullet is that name exactly: "${rowName}"`)
+  check(!/Kitchen ticket printing \(/.test(landing),
+    'and carries no parenthetical — which printers it works with is the table\'s job, not the card\'s')
   check(/Print order tickets to a Bluetooth or wired printer in the kitchen\./.test(pf), 'plan-features row detail')
   check(/compatible Bluetooth or wired printer \(neither supplied\)/.test(pf), 'plan-features footnote')
   check(!/Bluetooth receipt printer/.test(read('content/store-listing.md')) && /Bluetooth or wired printer/.test(read('content/store-listing.md')), 'store listing')

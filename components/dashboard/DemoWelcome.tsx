@@ -41,9 +41,20 @@ import { CopyButton } from '@/components/dashboard/CopyButton'
 
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { demoWelcomeSeen, markDemoWelcomeSeen, subscribeDemoWelcome } from '@/lib/demo-board-build'
+import { completionLabel } from '@/lib/order-completion-label'
+import type { CompletionPresses } from '@/lib/payments/paid-step'
 
-export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null }: {
+export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null,
+  completionPresses = 'one', takesCash = false }: {
   token: string; orderUrl: string | null; isSample?: boolean
+  /** ── 🔴 THE BULLET NAMES THE BUTTON, SO IT READS THE SAME SETTINGS THE BUTTON DOES ───────────────
+   *  It said "Mark paid & done", which no demo has ever rendered: a demo truck is provisioned
+   *  `completionPresses: 'one'` and `takesCash: false` (lib/provision-truck), so its cards read
+   *  "Mark paid & collected". A hard-coded string would also go stale the moment a viewer changes the
+   *  setting in the demo's own Settings tab, which they can. Resolved by the page from
+   *  `resolvePaidStep(truck, activeEvent)` — the same call OrderCard makes — and passed down. */
+  completionPresses?: CompletionPresses
+  takesCash?: boolean
   /** BRANDED (outreach) demos only: the resolved logo URL, passed by the dashboard under the same predicate
    *  as its fullscreen QR. null (the default, and every landing-page demo) keeps the 'Your logo here' plate. */
   logoUrl?: string | null
@@ -63,6 +74,12 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
   )
   const [dismissed, setDismissed] = useState(false)
   const open = !seen && !dismissed
+  // The label on the card the bullet is pointing at. A seeded demo order is UNPAID and carries no held
+  // authorisation, so the first two branches never apply here and the setting decides. The cash split is
+  // resolved above the shared helper, exactly as OrderCard resolves it.
+  const completionButtonText = takesCash && completionPresses === 'one'
+    ? '💷 Cash & collected'
+    : completionLabel({ paid: false, heldAuthorisation: false, completionPresses, partPaid: false })
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [qrFailed, setQrFailed] = useState(false)
 
@@ -121,7 +138,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
               demo_sessions.extraction_source === 'template', served in /api/dashboard's `demo` block and
               passed down as isSample. It was previously the ?welcome=sample redirect param, which did not
               survive a reload — a stored column does. */}
-          <h3 className="font-black text-slate-900">{isSample ? 'Here’s a sample truck' : 'Here’s your menu'}</h3>
+          <h3 className="font-black text-slate-900">{isSample ? 'Here’s a sample demo' : 'Here’s your demo'}</h3>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-6 space-y-4">
@@ -132,9 +149,9 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
               to prevent. One sentence, in both variants, and it is the second thing they read. */}
           <p className="text-sm text-slate-600 text-center">
             {isSample
-              ? <>This is a <strong>stand-in menu</strong> so you can see how it all works — upload your own menu any time to make it yours.</>
+              ? <>This is a <strong>stand-in menu</strong> so you can see how it all works — upload your own any time to make it yours.</>
               : <>This is your own menu and branding, on a real board.</>}{' '}
-            The orders already on it are examples, so you can see a busy service. Nothing here is a real customer.
+            The orders already on it are examples, so you can see a busy service.
           </p>
 
           {/* The two instructions. One action on the board they're looking at, one that closes the loop
@@ -144,7 +161,7 @@ export function DemoWelcome({ token, orderUrl, isSample = false, logoUrl = null 
             <ul className="space-y-2">
               <li className="flex gap-2 text-sm text-slate-600">
                 <span className="text-slate-400 shrink-0" aria-hidden>·</span>
-                <span>Hit <strong className="text-slate-900">Mark paid &amp; done</strong> on an order</span>
+                <span>Hit <strong className="text-slate-900">{completionButtonText}</strong> on an order</span>
               </li>
               <li className="flex gap-2 text-sm text-slate-600">
                 <span className="text-slate-400 shrink-0" aria-hidden>·</span>

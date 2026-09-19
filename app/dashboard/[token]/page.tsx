@@ -3596,7 +3596,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           (20260728_demo_sessions_extraction_source.sql), so the fallback is gone. */}
       {/* logoUrl: the SAME predicate as handleShowQR's `showBrandedQr` — plan feature AND qr_code_style ===
           'branded' — so the welcome QR and the fullscreen QR cannot disagree. Unbranded demos pass null. */}
+      {/* completionPresses/takesCash: the SAME resolvePaidStep values the order cards use, so the
+          introduction's "Hit <label> on an order" bullet cannot name a button that is not on screen. */}
       {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}
+        completionPresses={effectiveCompletionPresses} takesCash={effectiveTakesCash}
         logoUrl={(demoBranded&&truck&&hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded')?(truck.logo||null):null}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses

@@ -579,7 +579,12 @@ export default function LandingPage() {
                     way this comment already warned about. THE BULLET IS NOT A KEY — nothing joins on it;
                     it is display copy that must simply agree with the row. Change both or neither. */}
                 <li>Schedule page on your own website</li>
-                <li>Kitchen ticket printing (Bluetooth or wired printer)</li>
+                {/* 🔴 NO "(Bluetooth or wired printer)" HERE — 19 September 2026. The card lists WHAT
+                    you get; which printers it works with is a detail, and the comparison table lower down
+                    this page already carries it in the row's own `detail` and footnote 5. Saying it twice
+                    made the card the longest bullet in the list for the least useful reason. The bullet is
+                    now byte-identical to the row's `name`, which is what the rule above asks for. */}
+                <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
                 <li>Digital loyalty stamp cards <span className="soon-inline">Coming soon</span></li>
               </ul>

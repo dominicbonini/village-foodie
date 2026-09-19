@@ -10,6 +10,7 @@ import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
 import { PaymentActionsModal, type RefundSubmit } from '@/components/dashboard/PaymentActionsModal'
 import { BTN_COLOURS } from '@/lib/ui-tokens'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { completionLabel } from '@/lib/order-completion-label'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -468,7 +469,9 @@ export function OrderCard({
       // "Order #12 collected", which is half of what just happened to a customer's money.
       // ⚠️ THE CASH/CARD PAIR ABOVE NEEDS NO FLAG: `collected_cash` / `collected_card` say it in their
       // own names, and the handler tests those directly.
-      return <Btn label="Mark paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key, { booksPayment: true })} />
+      // The CASH PAIR above is decided before this line; from here the label is the shared one.
+      return <Btn label={completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor) })}
+        colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key, { booksPayment: true })} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
     // (Ready, ✓ Confirm) and SLATE means completion (Done). Blue was tried here and was foreign to a
@@ -742,7 +745,10 @@ export function OrderCard({
           reads "Collected" here too, whatever the truck is configured to do. Keep these in step. */}
       {/* 🔴 heldAuthorisation FOLDED IN ALONGSIDE effectivePaid, exactly as in completionBtn. These two
           branches are documented as drifting if only one is changed — they are changed together. */}
-      {effectivePaid || heldAuthorisation ? 'Collected' : completionPresses === 'one' ? 'Mark paid & collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+      {/* 🔴 ONE EXPRESSION, IN lib/order-completion-label. This branch used to be written out here AND in
+          completionBtn, with a comment saying the two would drift; the demo introduction now names the
+          same button, which would have made a third copy. Same order, same strings. */}
+      {completionLabel({ paid: effectivePaid, heldAuthorisation, completionPresses, partPaid: effectivePartPaid, balanceLabel: money(balance.balanceMinor) })}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
