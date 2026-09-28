@@ -656,3 +656,70 @@ search for a cron entry, a `setInterval`, or a call site that sends without a re
 send is a `POST` carrying an idempotency key, made by a button press. Build 2 adds the reply poller and
 automatic retries, and will need its own decisions about both.
 
+---
+
+## 16. Commit and deploy evidence
+
+**Commit `7beed77`** — *"Send outreach emails from the mailbox over SMTP (manual only)"*, on `main`,
+pushed to `origin/main` (`f7eb674..7beed77`). Seventeen files: eleven new, six changed. No other work is
+in it.
+
+**Deployed and serving on production, confirmed 2026-09-28T21:25:58Z.** Vercel's CLI here is
+unauthenticated, so the deploy is proved by asking production what each path answers with:
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET https://www.hatchgrab.com/api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `POST https://www.hatchgrab.com/api/admin/outreach/mail-import` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET https://www.hatchgrab.com/api/admin/outreach/mail-diagnostics` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET https://www.hatchgrab.com/api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+🔴 **The last row is the control, and it is what makes the other three mean something.** A path that does
+not exist returns the rendered HTML 404 page. `{"error":"Unauthorised"}` as `application/json` is the
+route's **own** `verifyAdmin` refusal — code that can only be running if it deployed. `mail-import` did
+not exist before this commit at all, so its JSON refusal is specific to `7beed77`.
+
+⚠️ **The 404 on the refusal is deliberate, not a bug.** `verifyAdmin` answers 404 rather than 401 so an
+admin route does not confirm its own existence to an unauthenticated caller. See §"Admin gate" in the
+manual.
+
+Note `hatchgrab.com` 307-redirects to `www.hatchgrab.com`; the checks were made against the canonical
+host, because a redirect proves only that the edge answered.
+
+---
+
+## 17. Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed — ALL COMMITTED IN 7beed77:
+
+  new file:   supabase/migrations/20260928_outreach_messages.sql
+  new file:   lib/outreach-mail-message.ts
+  new file:   lib/outreach-mail-envelope.ts
+  new file:   lib/outreach-send-rules.ts
+  new file:   lib/outreach-mail-box.ts
+  new file:   lib/outreach-contact-log.ts
+  new file:   app/api/admin/outreach/mail-send/route.ts
+  new file:   app/api/admin/outreach/mail-import/route.ts
+  new file:   scripts/outreach-mail-send.cjs
+  new file:   docs/outreach-mail-send-report.md
+  modified:   lib/outreach-mail-config.ts
+  modified:   app/api/admin/outreach/mail-diagnostics/route.ts
+  modified:   app/api/admin/outreach/route.ts
+  modified:   components/admin/ComposeWindow.tsx
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   scripts/harnesses.json
+  modified:   scripts/outreach-stage-advance.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A` and
+`git add .` were not used. Two `slot-head-dots-*` worktrees from an earlier session remain listed as
+prunable — they are pre-existing and untouched here, and are already on the open-items list.
