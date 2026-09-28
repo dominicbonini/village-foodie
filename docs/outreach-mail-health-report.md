@@ -175,18 +175,41 @@ Both goldens untouched; no generator was run.
 
 ## Commit and deploy
 
-- **Commit:** `<hash>` — see the chat summary; the files are `package.json`, `package-lock.json`,
-  `lib/outreach-mail-config.ts`, `app/api/admin/outreach/mail-health/route.ts` and this report. Nothing
-  else was staged.
-- **Deploy:** confirmed Ready — see the chat summary for how.
+**Commit `23b1b12`** (`23b1b1265592e7d7987b70511c211d6b9f0ea20e`), pushed `1651a97..23b1b12  main -> main`.
+Exactly five files, nothing else staged:
+
+```
+A  app/api/admin/outreach/mail-health/route.ts
+A  docs/outreach-mail-health-report.md
+A  lib/outreach-mail-config.ts
+M  package-lock.json
+M  package.json
+```
+
+**Deploy: confirmed live.** The Vercel CLI on this machine is not authenticated (`vercel whoami` →
+"The specified token is not valid") and the repo has no `.vercel` project link, so the dashboard's Ready
+state could not be read directly. It was confirmed from production instead, which is stronger evidence
+than a dashboard badge because it proves **this commit's code is serving**:
+
+| request | before the deploy | after |
+|---|---|---|
+| `GET /api/admin/outreach/mail-health` | `404` · `text/html` · the Next 404 page | **`404` · `application/json` · `{"error":"Unauthorised"}`** |
+
+That JSON body is the route's own `verifyAdmin` refusal and **cannot be produced by a route that does not
+exist** — a missing path returns the HTML 404 page, as
+`GET /api/admin/outreach/no-such-route` still does on the same host, checked at the same moment for
+contrast. Both `hatchgrab.com` and `www.hatchgrab.com` answer with the JSON.
 
 ## The URL to open
 
 While signed in as admin in Safari:
 
 ```
-https://hatchgrab.com/api/admin/outreach/mail-health
+https://www.hatchgrab.com/api/admin/outreach/mail-health
 ```
+
+(The apex `https://hatchgrab.com/api/admin/outreach/mail-health` works too — `proxy.ts` sends operator
+routes to `www`.)
 
 It returns JSON. A non-admin — or a signed-out browser — gets `404 {"error":"Unauthorised"}`, which is the
 same refusal the outreach list route gives.
