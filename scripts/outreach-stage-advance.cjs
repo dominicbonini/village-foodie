@@ -140,16 +140,30 @@ for (const n of r.fails) console.log('  🔴 ' + n)
 
 // ── THE SOURCE MUST ACTUALLY CONTAIN THAT QUERY ─────────────────────────────────────────────────────
 // 🔴 WITHOUT THIS, THE MODEL ABOVE PROVES ONLY THAT THE MODEL IS CONSISTENT WITH ITSELF.
-console.log('\n── THE ROUTE SOURCE ────────────────────────────────────────────────────────────────────')
+// ── THE SOURCE OF THE WRITER ────────────────────────────────────────────────────────────────────────
+// 🔴 THIS BLOCK WAS RE-ANCHORED ON 28 SEPTEMBER 2026, AND IT IS SAID OUT LOUD RATHER THAN DONE QUIETLY.
+// It read `app/api/admin/outreach/route.ts`, because that route's `log_contact` action WAS the only
+// writer of an outreach rung. Sending an email now has to produce the same rung, so the block moved,
+// unchanged, into `lib/outreach-contact-log.ts#logOutreachContact` and both routes call it.
+// ⚠️ THE ASSERTIONS THEMSELVES ARE NOT WEAKENED BY THE MOVE — every one still names the same statement,
+// the same constants and the same `.eq('stage', DEFAULT_STAGE)` filter; only the file holding them
+// changed. And the route is STILL checked, for the one thing that stayed its job: handing `stage` and
+// `warning` back to the client.
+console.log('\n── THE SOURCE OF THE WRITER ────────────────────────────────────────────────────────────')
 const ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/route.ts'), 'utf8')
+const WRITER = fs.readFileSync(path.join(REPO, 'lib/outreach-contact-log.ts'), 'utf8')
 const srcChecks = [
-  ["guarded on direction === 'outbound'", /if \(direction === 'outbound'\)/.test(ROUTE)],
-  ['updates outreach_prospects', /\.from\('outreach_prospects'\)\s*\n\s*\.update\(\{ stage: CONTACTED_STAGE/.test(ROUTE)],
-  ['🔴 filtered on the CURRENT stage being DEFAULT_STAGE', /\.eq\('stage', DEFAULT_STAGE\)/.test(ROUTE)],
-  ['🔴 calls .select() so the row count is observable', /\.eq\('stage', DEFAULT_STAGE\)\s*\n\s*\.select\(/.test(ROUTE)],
-  ['sets updated_at like update_prospect does', /updated_at: new Date\(\)\.toISOString\(\)/.test(ROUTE)],
-  ['🔴 uses the CONSTANTS, not literals', /DEFAULT_STAGE/.test(ROUTE) && !/\.eq\('stage', 'not_contacted'\)/.test(ROUTE)],
-  ['returns stage and warning', /stage: resultStage, warning: stageWarning/.test(ROUTE)],
+  ["guarded on direction === 'outbound'", /if \(input\.direction === 'outbound'\)/.test(WRITER)],
+  ['updates outreach_prospects', /\.from\('outreach_prospects'\)\s*\n\s*\.update\(\{ stage: CONTACTED_STAGE/.test(WRITER)],
+  ['🔴 filtered on the CURRENT stage being DEFAULT_STAGE', /\.eq\('stage', DEFAULT_STAGE\)/.test(WRITER)],
+  ['🔴 calls .select() so the row count is observable', /\.eq\('stage', DEFAULT_STAGE\)\s*\n\s*\.select\(/.test(WRITER)],
+  ['sets updated_at like update_prospect does', /updated_at: new Date\(\)\.toISOString\(\)/.test(WRITER)],
+  ['🔴 uses the CONSTANTS, not literals', /DEFAULT_STAGE/.test(WRITER) && !/\.eq\('stage', 'not_contacted'\)/.test(WRITER)],
+  ['🔴 THE ROUTE HAS NO SECOND COPY of the stage move', !/\.update\(\{ stage:/.test(ROUTE)],
+  ['the route still returns stage and warning', /stage: logged\.stage, warning: logged\.warning/.test(ROUTE)],
+  ['🔴 the SEND route logs through the same writer, not its own insert',
+    /logOutreachContact\(/.test(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8'))
+    && !/from\('outreach_contacts'\)\s*\n?\s*\.insert/.test(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8'))],
 ]
 const srcFails = []
 for (const [n, okk] of srcChecks) { if (!okk) srcFails.push(n); console.log(`  ${okk ? '✓' : '🔴'} ${n}`) }

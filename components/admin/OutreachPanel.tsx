@@ -1076,6 +1076,7 @@ export default function OutreachPanel() {
                 {label}
               </button>
             ))}
+            <ImportPastEmails />
           </div>
         </div>
 
@@ -1370,7 +1371,7 @@ export default function OutreachPanel() {
               <Detail p={modalProspect} step={steps.get(modalProspect.id)} hasContactNames={hasContactNames}
                 hasLeadTypeFreeze={hasLeadTypeFreeze}
                 onPatch={patchProspect} onLog={logContact} templates={templates} snippets={snippets}
-                onDeleteContact={deleteContactRow} />
+                onDeleteContact={deleteContactRow} onReload={load} />
             </div>
           </div>
         </div>
@@ -1456,6 +1457,49 @@ export default function OutreachPanel() {
 // "looked, absent" (false) read apart at a glance. 🔴 CLICKING NEVER WRITES false: ticking writes true,
 // unticking writes null. false can arrive only from the data (this backfill never sets it); a click on a
 // false box promotes it to true, a second click clears it to null — it is never re-written as false here.
+/**
+ * "Import past emails" — reads the mailbox and records what is ALREADY there.
+ *
+ * 🔴 IT WRITES NOTHING BUT `outreach_messages`. No contact is logged, no stage is moved, no prospect or
+ * truck row is touched: the import's job is to give a chase something to reply TO, and to show which
+ * hand-sent emails the contact log never recorded. Deciding what those mismatches mean is a person's
+ * job, which is why they are REPORTED rather than reconciled.
+ * ⚠️ IT OPENS EVERY MAILBOX READ-ONLY (IMAP EXAMINE). Nothing is marked read and no flag changes, so
+ * running it cannot alter what Outlook shows.
+ */
+function ImportPastEmails() {
+  const [busy, setBusy] = useState(false)
+  const [result, setResult] = useState<string | null>(null)
+  const inFlight = useRef(false)          // the same synchronous guard as everywhere else
+  const run = async () => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusy(true); setResult(null)
+    try {
+      const r = await fetch('/api/admin/outreach/mail-import', { method: 'POST' })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.ok !== true) { setResult(String(j.refusal ?? 'The import could not run.')); return }
+      const m = (j.mismatches ?? {}) as { loggedButUnmatched?: number; repliesNotLogged?: number }
+      setResult(
+        `Read ${Number(j.walked ?? 0)} messages, matched ${Number(j.found ?? 0)}, recorded ${Number(j.inserted ?? 0)} new. ` +
+        `${Number(m.loggedButUnmatched ?? 0)} logged contacts have no email in the mailbox; ` +
+        `${Number(m.repliesNotLogged ?? 0)} replies are not in the contact log.`)
+    } catch {
+      setResult('The import did not finish — check the connection and run it again. It only ever adds, so running it twice is safe.')
+    } finally { inFlight.current = false; setBusy(false) }
+  }
+  return (
+    <>
+      <button type="button" onClick={() => void run()} disabled={busy}
+        title="Reads your mailbox read-only and records the outreach emails already in it, so a chase can reply to the right thread. Nothing is sent and no flag is changed."
+        className="text-sm rounded-lg px-3 py-1.5 border font-semibold bg-white border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+        {busy ? 'Importing…' : 'Import past emails'}
+      </button>
+      {result && <span className="text-[11px] text-slate-600 max-w-md">{result}</span>}
+    </>
+  )
+}
+
 function TriStateBox({ value, onSet, label }: {
   value: boolean | null
   onSet: (v: boolean | null) => void
@@ -2273,6 +2317,137 @@ function ContactPopout({ contact, onClose, onDelete }: {
     </div>, document.body)
 }
 
+interface MailMessage {
+  id: string; direction: string; status: string; is_test: boolean; source: string
+  subject: string | null; to_address: string | null; message_date: string | null
+  sent_copy: string; attempts: number; last_error: string | null; created_at: string
+}
+
+const MAIL_STATUS_LABEL: Record<string, string> = {
+  sending: 'Sending…', sent: 'Sent', failed: 'Failed', uncertain: 'May have been sent', received: 'Reply',
+}
+
+/**
+ * Every email this prospect has, from the mailbox and from this app, with the one action each needs.
+ *
+ * 🔴 THE THREE STATES THAT NEED A PERSON, AND WHY EACH GETS THE ACTION IT DOES:
+ *   failed     — the server refused it. Nothing reached anyone, so Retry is offered plainly.
+ *   uncertain  — the data went and nothing came back. Retry is offered ONLY behind a confirm that says
+ *                what to check, because the alternative is a prospect receiving a cold email twice.
+ *   sent, not logged — the email HAS gone and the contact log missed it. The fix is a log row, never a
+ *                second send, so the only button here is "log it".
+ */
+function ProspectMessages({ prospectId, nonce, onChanged }: {
+  prospectId: string
+  nonce: number
+  onChanged: () => void | Promise<void>
+}) {
+  const [rows, setRows] = useState<MailMessage[] | null>(null)
+  const [off, setOff] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [note, setNote] = useState<string | null>(null)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
+  const inFlight = useRef(false)
+
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      const r = await fetch(`/api/admin/outreach/mail-send?prospect_id=${encodeURIComponent(prospectId)}`).catch(() => null)
+      if (!r || !live) return
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!live) return
+      if (j.migrationApplied === false) { setOff(String(j.refusal ?? '')); setRows([]); return }
+      setRows(Array.isArray(j.messages) ? (j.messages as MailMessage[]) : [])
+    })()
+    return () => { live = false }
+  }, [prospectId, nonce])
+
+  const retry = async (row: MailMessage, confirmUncertain: boolean) => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusyId(row.id); setNote(null); setConfirmId(null)
+    try {
+      const r = await fetch('/api/admin/outreach/mail-send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'retry', message_row_id: row.id, confirm_uncertain: confirmUncertain }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.needsConfirm === true) { setConfirmId(row.id); setNote(String(j.refusal ?? '')); return }
+      setNote(j.ok === true ? 'Sent.' : String(j.refusal ?? j.message ?? 'That was not sent.'))
+      await onChanged()
+    } catch {
+      setNote('The connection dropped before the server answered. Check your Sent folder before trying again.')
+    } finally { inFlight.current = false; setBusyId(null) }
+  }
+
+  const logIt = async (row: MailMessage) => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusyId(row.id); setNote(null)
+    try {
+      const r = await fetch('/api/admin/outreach/mail-send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'log_only', message_row_id: row.id }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      setNote(j.ok === true ? 'Logged.' : String(j.refusal ?? 'That could not be logged.'))
+      await onChanged()
+    } catch { setNote('That could not be logged — try again.') }
+    finally { inFlight.current = false; setBusyId(null) }
+  }
+
+  if (off) return null
+  if (rows === null || rows.length === 0) return null
+  return (
+    <div className="flex flex-col flex-shrink-0">
+      <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5">Emails</span>
+      <div className="border border-slate-300 rounded-lg bg-white divide-y divide-slate-100 max-h-48 overflow-y-auto">
+        {rows.map(row => {
+          const notLogged = row.status === 'sent' && !row.is_test && (row.last_error ?? '').startsWith('sent, not logged')
+          return (
+            <div key={row.id} className="px-2 py-1.5 flex items-center gap-2 text-[12px]">
+              <span className={`font-bold ${row.status === 'failed' ? 'text-red-700'
+                : row.status === 'uncertain' ? 'text-amber-800'
+                : row.direction === 'inbound' ? 'text-sky-700' : 'text-emerald-700'}`}>
+                {row.direction === 'inbound' ? 'Reply' : MAIL_STATUS_LABEL[row.status] ?? row.status}
+              </span>
+              {row.is_test && <span className="text-[10px] font-bold uppercase text-slate-400">test</span>}
+              {row.source === 'mailbox_import' && (
+                <span className="text-[10px] font-bold uppercase text-slate-400" title="Found in your mailbox by Import past emails, not sent from here.">imported</span>
+              )}
+              <span className="flex-1 truncate text-slate-700" title={row.subject ?? ''}>{row.subject ?? '—'}</span>
+              <span className="text-slate-400 whitespace-nowrap">{fmtDate(row.message_date ?? row.created_at)}</span>
+              {row.sent_copy === 'absent' && row.status === 'sent' && !row.is_test && (
+                <span className="text-[10px] font-bold uppercase text-amber-700" title="The email was accepted by the server but no copy is in your Sent folder.">no sent copy</span>
+              )}
+              {notLogged && (
+                <button type="button" onClick={() => void logIt(row)} disabled={busyId === row.id}
+                  title="The email went but the contact log did not record it. This writes the missing rung — it does NOT send anything."
+                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+                  log it
+                </button>
+              )}
+              {(row.status === 'failed' || row.status === 'uncertain') && (
+                <button type="button" onClick={() => void retry(row, confirmId === row.id)} disabled={busyId === row.id}
+                  title={row.status === 'uncertain'
+                    ? 'This may already have been delivered. Check your Sent folder first — a retry could be the second copy the prospect receives.'
+                    : 'The server refused this one, so nothing reached the prospect. Sends it again with the same Message-ID.'}
+                  className={`text-[11px] font-bold px-2 py-0.5 rounded border disabled:opacity-40 ${
+                    confirmId === row.id
+                      ? 'border-red-400 text-white bg-red-600 hover:bg-red-700'
+                      : 'border-slate-300 text-slate-700 bg-white hover:bg-slate-50'}`}>
+                  {busyId === row.id ? '…' : confirmId === row.id ? 'Yes, send again' : 'Retry'}
+                </button>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      {note && <p className="mt-1 text-[11px] text-slate-600">{note}</p>}
+    </div>
+  )
+}
+
 function HistoryTable({ contacts, onDelete }: {
   contacts: Contact[]
   /** Rejects on failure. Passed through to the popout, which owns the confirmation. */
@@ -2368,7 +2543,7 @@ function HistoryTable({ contacts, onDelete }: {
   )
 }
 
-function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact }: {
+function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload }: {
   p: Prospect
   /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
   step?: Step
@@ -2383,6 +2558,8 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   templates: MessageTemplate[] | null
   /** The snippet library, passed through to the compose window. Display/pre-fill only. */
   snippets: Snippet[]
+  /** Re-reads the list and this modal — called after the server reports a send. */
+  onReload: () => void | Promise<void>
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -2400,6 +2577,8 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   const [kind, setKind] = useState<string>('1_first_contact')
   const [message, setMessage] = useState('')
   const [composeOpen, setComposeOpen] = useState(false)
+  /** Bumped after a send so the message list re-reads itself without reloading the whole panel. */
+  const [messagesNonce, setMessagesNonce] = useState(0)
   const today = toYMD(new Date())
   // ⚠️ A DEFAULT HERE IS CORRECT AND IS NOT THE THING THE MANUAL FORBIDS. This is when a contact
   // HAPPENED — a fact about the past, almost always today, and it writes only when Log is pressed. The
@@ -2665,6 +2844,13 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
           </div>
         </div>
 
+        {/* 🔴 THE CONTACT HISTORY AND THE EMAILS ARE DIFFERENT THINGS, AND THEY ARE SHOWN SEPARATELY.
+            The history is what a person recorded; this is what the mail server did. When they disagree —
+            an email sent but not logged, a rung logged with no email behind it — the answer is to show
+            both and let a person reconcile them, not to make one quietly rewrite the other. */}
+        <ProspectMessages prospectId={p.id} nonce={messagesNonce}
+          onChanged={async () => { setMessagesNonce(n => n + 1); await onReload() }} />
+
         {/* ── NOTES ───────────────────────────────────────────────────────────────────────────────── */}
         <label className="block flex-shrink-0">
           <span className={labelCls}>Notes</span>
@@ -2688,6 +2874,7 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
       {composeOpen && (
         <ComposeWindow
           truckName={p.name}
+          prospectId={p.id}
           toEmail={p.contact_email}
           offerable={offerable}
           suggestedId={suggestedId}
@@ -2699,6 +2886,7 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
           logFormKind={kind}
           snippets={snippets}
           onClose={() => setComposeOpen(false)}
+          onSent={async () => { setMessagesNonce(n => n + 1); await onReload() }}
           onLog={async (editedBody, ch, servesKind) => {
             // 🔴 `editedBody` IS THE TEXTAREA'S CURRENT VALUE, passed straight through to the writer.
             // It is never re-rendered from the template here — if the two diverge, what was edited is

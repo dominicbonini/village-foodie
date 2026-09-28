@@ -67,12 +67,26 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
   }
 }
 
+/** What the server says this message will be. Built by the route, never assembled in the browser. */
+interface Preview {
+  /** The recipient the ROUTE resolved. Null for a test — the test address is never sent to the browser. */
+  to: string | null
+  subject: string
+  html: string
+  threaded: boolean
+}
+
 export default function ComposeWindow({
-  truckName, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
-  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog,
+  truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
+  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent,
 }: {
   truckName: string
-  /** The prospect's address — the mailto recipient. Null when the row has none. */
+  /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
+   *  route reads the address off the truck row itself, so a stale address on screen cannot become the
+   *  envelope, and every refusal — do-not-contact, a linked HatchGrab truck — is applied server-side
+   *  where it cannot be skipped by a client that does not know about it. */
+  prospectId: string
+  /** The prospect's address, for display only. Null when the row has none. */
   toEmail: string | null
   /** Already gated: WhatsApp templates are present only when this prospect is confirmed. */
   offerable: MessageTemplate[]
@@ -102,6 +116,8 @@ export default function ComposeWindow({
   /** 🔴 THE SNIPPET LIBRARY, loaded once by the panel. A name with a non-blank value pre-fills its
    *  field; a blank one, or a name with no snippet, prompts exactly as before. */
   snippets?: Snippet[]
+  /** Fired after the server reports a real send, so the panel re-reads the list and the modal. */
+  onSent?: () => void | Promise<void>
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -175,7 +191,7 @@ export default function ComposeWindow({
   /** Which layer supplied each pre-filled value. Display only — see the badge. */
   const [fillSource, setFillSource] = useState<Record<string, 'snippet' | 'template' | null>>(seed.fillSource)
   // Which action is waiting on the unfilled-placeholder confirmation: null | 'send' | 'log'.
-  const [pending, setPending] = useState<null | 'send' | 'log'>(null)
+  const [pending, setPending] = useState<null | 'send' | 'test' | 'log'>(null)
   const [sendError, setSendError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [logging, setLogging] = useState(false)
@@ -190,6 +206,26 @@ export default function ComposeWindow({
    * synchronous turn — see `logNow`. Never reset on re-render, released in `logNow`'s `finally`.
    */
   const logInFlight = useRef(false)
+  /** 🔴 THE SAME GUARD FOR SENDING, and here it stops an EMAIL rather than a row. */
+  const sendInFlight = useRef(false)
+
+  // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
+  const [preview, setPreview] = useState<Preview | null>(null)
+  /** The exact text the preview on screen was built from. Anything else means the preview is stale. */
+  const [previewOf, setPreviewOf] = useState<string | null>(null)
+  const [previewing, setPreviewing] = useState(false)
+  const [capState, setCapState] = useState<{ sentToday: number; dailyCap: number } | null>(null)
+  const [migrationOff, setMigrationOff] = useState<string | null>(null)
+  const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
+  const [sending, setSending] = useState(false)
+  const [sentNote, setSentNote] = useState<string | null>(null)
+  /**
+   * 🔴 ONE KEY PER EXACT MESSAGE. The server refuses a second send carrying a key it has already seen
+   * and hands back the first one's verdict, so a double press — or a press after a reply that never
+   * arrived — cannot produce a second email. It is regenerated only when the text changes, because
+   * changed text is a different message and deserves to go.
+   */
+  const idemRef = useRef<{ forKey: string; value: string } | null>(null)
 
   useEffect(() => { setMounted(true) }, [])
   useEffect(() => { closeRef.current?.focus() }, [])
@@ -391,23 +427,136 @@ export default function ComposeWindow({
    *  twice and would put the opt-out line ABOVE Outlook's signature instead of last. */
   const fullText = finalBody
 
-  // ── mailto ─────────────────────────────────────────────────────────────────────────────────────
-  // 🔴 NEWLINES ARE CRLF, NOT LF. RFC 6068 specifies the mailto body as text/plain with CRLF line
-  // breaks; `%0A` alone is accepted by some clients and dropped by others, which is how a mailto quietly
-  // arrives as one paragraph. 🧪 Costs 6 encoded chars per newline instead of 3 — 14 newlines here, so
-  // +42 characters, measured.
-  // 🔴 AND THERE IS A LENGTH CEILING. 🧪 Measured on a real rendered example (Azahar, placeholders
-  // filled): raw 723 chars -> encoded URL 1163. The practical limit is the ~2083-character URL the
-  // Windows shell hands a protocol handler, which Outlook inherits; 2048 is the safe ceiling. At the
-  // measured x1.49 encode inflation that leaves room for ~1318 raw body characters. A LONGER hand-edited
-  // body would be silently TRUNCATED by the handler — the email opens, missing its last paragraph — so
-  // the length is checked before opening and Copy is offered instead. "It opened" is not evidence.
-  const MAILTO_URL_CEILING = 2000
-  const mailtoUrl = useMemo(() => {
-    if (!toEmail) return null
-    const crlf = fullText.replace(/\r?\n/g, '\r\n')
-    return `mailto:${encodeURIComponent(toEmail)}?subject=${encodeURIComponent(finalSubject)}&body=${encodeURIComponent(crlf)}`
-  }, [toEmail, finalSubject, fullText])
+  // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
+  // 🔴 THE mailto: PATH IS GONE, AND WITH IT EVERY REASON IT EXISTED. A mailto could report one thing
+  // only — that a compose window was requested — so it could not be logged, could not be threaded onto
+  // the last email, could not carry more than ~1300 characters, and depended on whichever account
+  // Outlook happened to default to. The route sends from the mailbox itself over SMTP, files a copy in
+  // Sent, and knows whether the server accepted it.
+  // ⚠️ WHAT HAS NOT CHANGED: Copy is the same plain-text copy, and Log is the same single writer. This
+  // window still sends NOTHING on its own — a send is a press of Send on a message already previewed.
+
+  /** The rung the server should log. A tagged template states its own; otherwise the log form's. */
+  const kindForSend = selected?.servesKind ?? logFormKind
+
+  // 🔴 THE PREVIEW IS BUILT BY THE SERVER, FROM THE SAME `buildMessage` THE SEND USES, and Send is
+  // refused while the text differs from the text that preview was built from. So the operator cannot
+  // send a message they have not read: what is on screen IS the message, signature, quote block and all.
+  const previewKey = useMemo(
+    () => JSON.stringify([finalSubject, fullText, kindForSend]), [finalSubject, fullText, kindForSend])
+  const previewStale = previewOf !== previewKey
+
+  const post = useCallback(async (payload: Record<string, unknown>) => {
+    const r = await fetch('/api/admin/outreach/mail-send', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prospect_id: prospectId, ...payload }),
+    })
+    return { status: r.status, json: (await r.json().catch(() => ({}))) as Record<string, unknown> }
+  }, [prospectId])
+
+  const loadPreview = useCallback(async (opts?: { test?: boolean }) => {
+    if (!isEmail) return null
+    setPreviewing(true); setSendError(null)
+    try {
+      const key = previewKey
+      const { json } = await post({
+        action: 'preview', subject: finalSubject, body: fullText, kind: kindForSend,
+        ...(opts?.test ? { is_test: true } : {}),
+      })
+      if (json.migrationApplied === false) { setMigrationOff(String(json.refusal ?? '')); return null }
+      if (typeof json.sentToday === 'number' && typeof json.dailyCap === 'number') {
+        setCapState({ sentToday: json.sentToday, dailyCap: json.dailyCap })
+      }
+      if (json.ok !== true) { setSendError(String(json.refusal ?? 'That could not be prepared.')); setPreview(null); setPreviewOf(null); return null }
+      const p: Preview = {
+        to: typeof json.to === 'string' ? json.to : null,
+        subject: String(json.subject ?? ''), html: String(json.html ?? ''),
+        threaded: json.threaded === true,
+      }
+      setPreview(p); setPreviewOf(key)
+      return p
+    } catch {
+      setSendError('The preview could not be built — check the connection and try again.')
+      return null
+    } finally { setPreviewing(false) }
+  }, [isEmail, post, previewKey, finalSubject, fullText, kindForSend])
+
+  // The counter on open, so "Sent today" is right before anything is typed.
+  useEffect(() => {
+    if (!isEmail) return
+    let live = true
+    void (async () => {
+      const r = await fetch('/api/admin/outreach/mail-send').catch(() => null)
+      if (!r || !live) return
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!live) return
+      if (j.migrationApplied === false) { setMigrationOff(String(j.refusal ?? '')); return }
+      if (typeof j.sentToday === 'number' && typeof j.dailyCap === 'number') {
+        setCapState({ sentToday: j.sentToday, dailyCap: j.dailyCap })
+      }
+    })()
+    return () => { live = false }
+  }, [isEmail])
+
+  /**
+   * The send itself.
+   * 🔴 THE REF IS CLAIMED BEFORE ANY `await`. `sending` is state and does not take effect until the next
+   * render, so two presses in one tick both read `false` and both proceed — the defect that logged two
+   * contacts 0.755s apart. Here the same defect would send two emails.
+   */
+  const sendNow = useCallback(async (test: boolean) => {
+    if (sendInFlight.current) return
+    if (refusal) { setSendError(refusal); return }
+    if (previewStale) { setSendError('Update the preview first — Send only sends a message you have read.'); return }
+    sendInFlight.current = true
+    setSending(true); setSendError(null); setConfirmSend(null)
+    try {
+      // One key per exact message, kept across presses of the same text.
+      if (!idemRef.current || idemRef.current.forKey !== `${previewKey}|${test}`) {
+        idemRef.current = { forKey: `${previewKey}|${test}`, value: crypto.randomUUID() }
+      }
+      const { json } = await post({
+        action: 'send', subject: finalSubject, body: fullText, kind: kindForSend,
+        is_test: test, idempotency_key: idemRef.current.value,
+      })
+      if (json.duplicate === true) {
+        setSendError(`This exact message was already submitted — it is recorded as “${String(json.status ?? 'unknown')}”. Use the message list on the prospect to retry it.`)
+        return
+      }
+      if (json.ok !== true) {
+        // 🔴 `uncertain` IS NOT A FAILURE AND MUST NOT READ LIKE ONE. Telling the operator it failed is
+        // what produces the second copy: they press Send again.
+        setSendError(String(json.refusal ?? json.message ?? 'That was not sent.'))
+        return
+      }
+      const copy = String(json.sent_copy ?? '')
+      setSentNote([
+        test ? 'Test sent to your own address.' : `Sent to ${preview?.to ?? toEmail ?? 'the prospect'}.`,
+        copy === 'absent' ? 'It is NOT in your Sent folder — check the mailbox.' : 'A copy is in your Sent folder.',
+        typeof json.logWarning === 'string' ? json.logWarning : '',
+      ].filter(Boolean).join(' '))
+      if (!test) {
+        setLogged(true)
+        await onSent?.()
+      }
+    } catch {
+      // 🔴 A DEAD BROWSER CONNECTION SAYS NOTHING ABOUT THE EMAIL. The route may well have sent it and
+      // logged it; the row is the truth, so the operator is sent to look rather than told it failed.
+      setSendError('The connection dropped before the server answered. It may have been sent — check the messages on this prospect before sending again.')
+    } finally {
+      sendInFlight.current = false
+      setSending(false)
+    }
+  }, [refusal, previewStale, previewKey, post, finalSubject, fullText, kindForSend, preview, toEmail, onSent])
+
+  // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
+  // It lived here from the first version of this window and carried two measured limits and a defect it
+  // could not fix: RFC 6068 CRLF bodies, a ~2000-character URL ceiling above which the Windows shell
+  // silently TRUNCATES the message Outlook opens, and — the reason it had to go — no way to know whether
+  // anything was ever sent. Everything it did is now done by the route: the account is the mailbox
+  // rather than whatever Outlook defaults to, length has no ceiling, the chase is threaded onto its
+  // parent, a copy lands in Sent, and the contact log is written from the server's own verdict.
+  // 🔎 docs/outreach-mail-send-report.md records the replacement.
 
   // 🔴 COPY IS PLAIN TEXT AGAIN, AND THAT IS A DECISION, NOT AN OVERSIGHT.
   // It briefly wrote text/html alongside text/plain so a paste into Outlook kept a bold signature name
@@ -425,32 +574,24 @@ export default function ComposeWindow({
     setCopied(true); setTimeout(() => setCopied(false), 1400)
   }
 
-  // 🔴 SEND OPENS OUTLOOK. IT DOES NOT LOG, AND IT NEVER WILL.
-  // Handing a mailto: to the OS tells us one thing: a compose window was requested. It cannot tell us
-  // the message was sent, edited, or abandoned. Logging on send would put a row in the contact history
-  // for an email that may never have left — and the history is the thing that stops a fourth email.
-  // ⚠️ STRUCTURAL, NOT A PROMISE: `onLog` is not referenced anywhere in this function. Grep it.
-  const sendNow = () => {
-    setPending(null); setSendError(null)
-    // 🔴 BEFORE the address and length checks: a malformed token is wrong whether or not the mailto
-    // would have opened, and the subject travels in the mailto rather than in `fullText`.
-    if (refusal) { setSendError(refusal); return }
-    if (!mailtoUrl) { setSendError('This prospect has no email address on the row.'); return }
-    if (mailtoUrl.length > MAILTO_URL_CEILING) {
-      // Refuse rather than truncate. A handler given an over-long URL still opens — with the end of the
-      // body missing — which looks like success.
-      setSendError(
-        `This message is too long for a mailto link (${mailtoUrl.length} characters encoded, ceiling ${MAILTO_URL_CEILING}). ` +
-        `Outlook would open with the end of the body cut off. Use “Copy + footer” and paste it instead.`)
-      return
-    }
-    window.location.href = mailtoUrl
-  }
-  const doSend = () => {
+  /**
+   * 🔴 SEND NOW LOGS, AND THAT IS THE OPPOSITE OF WHAT THIS FUNCTION USED TO SAY.
+   * The old note here read "SEND OPENS OUTLOOK. IT DOES NOT LOG, AND IT NEVER WILL", and it was right
+   * for a mailto: handing a URL to the OS proves only that a window was requested, so logging it would
+   * have put an approach in the history that may never have left. The route does not have that problem
+   * — it knows what the SMTP server answered — so the log is written by the SERVER, from the send's own
+   * verdict, and only when the status is `sent`.
+   * ⚠️ IT IS STILL THE SAME SINGLE WRITER: `lib/outreach-contact-log.ts#logOutreachContact`, which is
+   * what this window's Log button reaches through `onLog` too. There is no second write path.
+   * ⚠️ AND A TEST LOGS NOTHING — it goes to Dominic's own address, and a rung for it would corrupt the
+   * ladder that decides whether a prospect gets a fourth email.
+   */
+  const askSend = (test: boolean) => {
     if (!body.trim()) return
+    if (refusal) { setSendError(refusal); return }
     // 🔴 WARN, THEN ALLOW. Sending with a placeholder left in may be deliberate.
-    if (outstanding.length > 0) { setPending('send'); return }
-    sendNow()
+    if (outstanding.length > 0) { setPending(test ? 'test' : 'send'); return }
+    setConfirmSend(test ? 'test' : 'real')
   }
 
   const logNow = async () => {
@@ -797,27 +938,118 @@ export default function ComposeWindow({
                   {outstanding.length} placeholder{outstanding.length === 1 ? '' : 's'} still unfilled:
                 </span>{' '}
                 {outstanding.map(u => `[[${u}]]`).join(', ')}.{' '}
-                {pending === 'send'
-                  ? 'They will appear in the email exactly as shown.'
-                  : 'They will be stored in the contact log exactly as shown.'}
+                {pending === 'log'
+                  ? 'They will be stored in the contact log exactly as shown.'
+                  : 'They will appear in the email exactly as shown.'}
               </p>
               <div className="mt-2 flex justify-end gap-2">
                 <button onClick={() => setPending(null)}
                   className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
                   Go back
                 </button>
-                <button onClick={() => { if (pending === 'send') sendNow(); else void logNow() }}
+                <button onClick={() => {
+                  const was = pending; setPending(null)
+                  if (was === 'log') void logNow(); else setConfirmSend(was === 'test' ? 'test' : 'real')
+                }}
                   className="text-sm font-bold px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                  {pending === 'send' ? 'Send anyway' : 'Log anyway'}
+                  {pending === 'log' ? 'Log anyway' : 'Send anyway'}
                 </button>
               </div>
             </div>
           )}
 
-          <div className="flex items-center gap-2">
+          {/* ── THE PREVIEW: WHAT THE PROSPECT WILL SEE ─────────────────────────────────────────
+              🔴 RENDERED FROM THE SERVER'S OWN HTML, and Send is refused while it is stale. The
+              operator is never asked to approve a message assembled somewhere other than where it is
+              sent from — the signature, the spacing and the quoted parent below are the actual bytes. */}
+          {isEmail && !migrationOff && (
+            <div className="rounded-lg border border-slate-300 bg-white">
+              <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-1.5 flex-wrap">
+                <span className="text-[10px] uppercase tracking-wide font-bold text-slate-400">Preview</span>
+                {capState && (
+                  <span className={`text-[11px] font-semibold ${capState.sentToday >= capState.dailyCap ? 'text-red-700' : 'text-slate-500'}`}>
+                    Sent today: {capState.sentToday} / {capState.dailyCap}
+                  </span>
+                )}
+                {preview?.threaded && (
+                  <span className="text-[11px] font-semibold text-emerald-700">Replies to the last email</span>
+                )}
+                <button onClick={() => void loadPreview()} disabled={previewing || !body.trim()}
+                  className="ml-auto text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                  {previewing ? 'Building…' : preview ? 'Update preview' : 'Build preview'}
+                </button>
+              </div>
+              {preview ? (
+                <div className="px-3 py-2">
+                  <p className="text-[12px] text-slate-700">
+                    <span className="font-bold">To:</span> {preview.to ?? toEmail ?? '—'}
+                  </p>
+                  <p className="text-[12px] text-slate-700 mb-1.5">
+                    <span className="font-bold">Subject:</span> {preview.subject}
+                  </p>
+                  {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. Most of this HTML is ours, but
+                      a chase QUOTES A MESSAGE THAT CAME OUT OF THE MAILBOX — arbitrary sender-controlled
+                      markup. Injected into the admin page it would run with an authenticated admin
+                      session behind it. `sandbox=""` grants nothing: no scripts, no forms, no same-origin,
+                      no top-level navigation, which is exactly what a preview needs. */}
+                  <iframe title="Message preview" sandbox="" srcDoc={preview.html}
+                    className="w-full h-64 border border-slate-200 rounded bg-white" />
+                  {previewStale && (
+                    <p className="mt-1.5 text-[11px] font-semibold text-amber-800">
+                      You have edited the message since this preview. Update it before sending.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="px-3 py-2 text-[12px] text-slate-500">
+                  Build the preview to see exactly what will be sent, including your signature and the
+                  quoted earlier email.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* The migration has not been applied on this environment, so sending is simply off. */}
+          {migrationOff && (
+            <p className="text-[12px] text-slate-700 bg-slate-100 border border-slate-300 rounded-lg px-3 py-2">
+              {migrationOff} Copy and Log still work.
+            </p>
+          )}
+
+          {sentNote && (
+            <p className="text-[12px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+              {sentNote}
+            </p>
+          )}
+
+          {/* ── THE CONFIRM, WHICH NAMES THE RECIPIENT ───────────────────────────────────────────
+              🔴 THE ADDRESS IS IN THE CONFIRM SENTENCE. "Are you sure?" prevents nothing; the mistake
+              this catches is sending the right email to the wrong prospect, and only the address on
+              screen at the moment of pressing can catch that. */}
+          {confirmSend && (
+            <div className="rounded-lg border border-orange-300 bg-orange-50 px-3 py-2">
+              <p className="text-[13px] text-slate-800">
+                {confirmSend === 'test'
+                  ? 'Send a test copy of this message to your own address? Nothing is logged and it does not count towards today’s cap.'
+                  : <>Send this email to <span className="font-bold">{preview?.to ?? toEmail}</span>
+                      {' '}({truckName})? It goes from your mailbox now, and the contact is logged.</>}
+              </p>
+              <div className="mt-2 flex justify-end gap-2">
+                <button onClick={() => setConfirmSend(null)}
+                  className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
+                  Go back
+                </button>
+                <button onClick={() => void sendNow(confirmSend === 'test')} disabled={sending}
+                  className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  {sending ? 'Sending…' : confirmSend === 'test' ? 'Send test' : 'Send it'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[11px] text-slate-400">
-              {/* 🔴 (4) SAID ON THE SCREEN, NOT ONLY IN THE REPORT. */}
-              Send opens Outlook; it does not log. Logging stays a separate press.
+              Send goes from your mailbox and logs the contact. Copy and Log are unchanged.
             </span>
             <div className="ml-auto flex items-center gap-2">
               <button onClick={doCopy} disabled={!body.trim()}
@@ -826,21 +1058,26 @@ export default function ComposeWindow({
                 className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                 {copied ? 'Copied' : 'Copy'}
               </button>
-              {/* ⚠️ THE SENDING ACCOUNT IS NOT OURS TO CHOOSE, AND NO STRING HERE CAN CHANGE IT.
-                  A mailto: is handed to the OS and then to the default mail client, and the CLIENT picks
-                  the account: Outlook always composes from its DEFAULT account and ignores a `from=`
-                  parameter (RFC 6068 sanctions only to/cc/bcc/subject/body). Nor is there a web-compose
-                  deep link that could pin it — account pinning exists for Gmail (`authuser=`) and for
-                  Microsoft 365 tenants, and this mailbox is Namecheap-hosted. The account is therefore
-                  set once in Outlook, not here; the tooltip says so rather than leaving it a mystery. */}
-              {isEmail && (
-                <button onClick={doSend} disabled={!body.trim() || !toEmail}
-                  title={toEmail
-                    ? `Open a new message to ${toEmail} in your default mail client. It will send from Outlook's DEFAULT account — set that to dominic@hatchgrab.com in Outlook if it is not already.`
-                    : 'This prospect has no email address'}
-                  className="text-sm font-bold px-3 py-1.5 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  Email
-                </button>
+              {/* ⚠️ THE SENDING ACCOUNT IS NO LONGER A MYSTERY, AND NO LONGER OUTLOOK'S TO PICK. The old
+                  note here explained that a mailto: is handed to the OS and the CLIENT chooses the
+                  account — Outlook always composes from its default and ignores `from=`. The route
+                  authenticates as the mailbox itself, so the From address is fixed in
+                  `lib/outreach-mail-config.ts#OUTREACH_FROM_ADDRESS` and cannot be anything else. */}
+              {isEmail && !migrationOff && (
+                <>
+                  <button onClick={() => askSend(true)} disabled={!body.trim() || sending || previewStale}
+                    title={previewStale ? 'Update the preview first' : 'Sends this message to your own address. Nothing is logged and it does not count towards the cap.'}
+                    className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                    Send test to me
+                  </button>
+                  <button onClick={() => askSend(false)} disabled={!body.trim() || !toEmail || sending || previewStale}
+                    title={!toEmail ? 'This prospect has no email address'
+                      : previewStale ? 'Update the preview first — Send only sends a message you have read'
+                      : `Sends from your mailbox to ${toEmail} and logs the contact.`}
+                    className="text-sm font-bold px-3 py-1.5 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    {sending ? 'Sending…' : 'Send'}
+                  </button>
+                </>
               )}
               <button onClick={doLog} disabled={logging || logged || !body.trim()}
                 className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400">

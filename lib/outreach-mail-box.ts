@@ -1,0 +1,166 @@
+// lib/outreach-mail-box.ts — the IMAP operations the outreach routes share, and the guards that make
+// them safe to call.
+//
+// 🔴 EVERY MAILBOX IS OPENED READ-ONLY EXCEPT ONE CALL. `openReadOnly` issues EXAMINE, which the SERVER
+// then refuses to let set a flag. The single exception is `appendToSent`, which writes a COPY of a
+// message this app has just sent — it adds, it never modifies, and it is the only function here that is
+// not read-only. There is no move, no copy, no delete, no expunge and no flag call anywhere in this file.
+//
+// 🔴 AND EVERY WALK CHECKS THE COUNT FIRST. Archive and Spam are empty, and `fetch('1:*')` on an empty
+// mailbox throws "Command failed" — that is exactly what produced the two errors in the first
+// diagnostics run. An empty mailbox is not an error; it is a mailbox with nothing in it.
+import { ImapFlow } from 'imapflow'
+import {
+  OUTREACH_MAIL_HOST, OUTREACH_IMAP_PORT, OUTREACH_SENT_MAILBOX,
+} from '@/lib/outreach-mail-config'
+import { findPart } from '@/lib/outreach-mail-format'
+
+/** The subset of imapflow's body structure `findPart` walks. */
+type StructureLike = Parameters<typeof findPart>[0]
+
+/** Code + a capped message. The same shape as the other two routes; never a credential. */
+export function sanitiseMailError(err: unknown): string {
+  if (!err) return 'unknown error'
+  const e = err as { code?: unknown; responseCode?: unknown; message?: unknown }
+  const code = typeof e.code === 'string' ? e.code
+    : typeof e.responseCode === 'number' ? String(e.responseCode)
+    : null
+  const raw = typeof e.message === 'string' ? e.message : String(err)
+  return code ? `${code}: ${raw.slice(0, 200)}` : raw.slice(0, 200)
+}
+
+/** A connected client. The caller owns the logout. */
+export function makeImapClient(user: string, pass: string): ImapFlow {
+  return new ImapFlow({
+    host: OUTREACH_MAIL_HOST,
+    port: OUTREACH_IMAP_PORT,
+    secure: true,
+    auth: { user, pass },
+    // The default logger prints the protocol dialogue, AUTH line included. Never on.
+    logger: false,
+    emitLogs: false,
+    disableAutoIdle: true,
+    connectionTimeout: 15_000,
+    greetingTimeout: 15_000,
+    socketTimeout: 30_000,
+  })
+}
+
+/** How many messages a mailbox holds, without opening it. `null` when the server refuses to say. */
+export async function mailboxCount(client: ImapFlow, path: string): Promise<number | null> {
+  try {
+    const s = await client.status(path, { messages: true })
+    return s && typeof s.messages === 'number' ? s.messages : null
+  } catch { return null }
+}
+
+/**
+ * Run `fn` against a mailbox opened READ-ONLY, skipping the work entirely when it is empty.
+ *
+ * 🔴 THE COUNT CHECK IS THE POINT. `fetch('1:*')` against an empty mailbox throws "Command failed" — a
+ * real error shape for a perfectly ordinary state — and that is what put two errors in the first
+ * diagnostics run against empty Archive and Spam folders. Asking first costs one STATUS command.
+ * Returns `{ skipped: true }` for an empty or unreadable mailbox so a caller can say so rather than
+ * reporting a failure.
+ */
+export async function withReadOnlyMailbox<T>(
+  client: ImapFlow,
+  path: string,
+  fn: (count: number) => Promise<T>,
+): Promise<{ skipped: true; count: number } | { skipped: false; value: T; count: number }> {
+  const count = await mailboxCount(client, path)
+  if (count === null || count === 0) return { skipped: true, count: count ?? 0 }
+  const lock = await client.getMailboxLock(path, { readOnly: true })
+  try {
+    return { skipped: false, value: await fn(count), count }
+  } finally { lock.release() }
+}
+
+/**
+ * Is a copy of this Message-ID already in Sent?
+ *
+ * Namecheap files an authenticated submission itself, so the usual answer is yes and an APPEND would
+ * produce a DUPLICATE in Dominic's Sent folder. Asking first is what stops that. Read-only throughout.
+ */
+export async function findInSent(client: ImapFlow, messageId: string): Promise<{ uid: number; uidValidity: string } | null> {
+  const count = await mailboxCount(client, OUTREACH_SENT_MAILBOX)
+  if (!count) return null
+  const lock = await client.getMailboxLock(OUTREACH_SENT_MAILBOX, { readOnly: true })
+  try {
+    // SEARCH on the header — the one IMAP command that answers this without reading a body.
+    const hits = await client.search({ header: { 'message-id': messageId } }, { uid: true })
+    if (!hits || !Array.isArray(hits) || hits.length === 0) return null
+    const uid = hits[hits.length - 1]
+    const mb = client.mailbox
+    const uidValidity = mb && typeof mb === 'object' && 'uidValidity' in mb ? String(mb.uidValidity) : ''
+    return { uid: Number(uid), uidValidity }
+  } catch { return null } finally { lock.release() }
+}
+
+/**
+ * APPEND a copy of a message this app sent into Sent, marked `\Seen`.
+ *
+ * ⚠️ THE ONLY NON-READ-ONLY CALL IN THIS FILE, AND IT ONLY EVER ADDS. It writes a new message; it does
+ * not touch an existing one. It is called only after `findInSent` has said the server did not file a
+ * copy itself, and never for an inbound message.
+ * 🔴 A FAILURE HERE NEVER FAILS THE SEND. The mail has gone; the copy is a convenience. The caller
+ * records `sent_copy: 'absent'` and shows "not in Sent folder" on that message.
+ */
+export async function appendToSent(client: ImapFlow, raw: Buffer | string, date: Date): Promise<{ ok: true; uid: number | null } | { ok: false; error: string }> {
+  try {
+    const res = await client.append(OUTREACH_SENT_MAILBOX, raw, ['\\Seen'], date)
+    const uid = res && typeof res === 'object' && 'uid' in res ? Number((res as { uid?: unknown }).uid) : null
+    return { ok: true, uid: Number.isFinite(uid) ? uid : null }
+  } catch (err) {
+    return { ok: false, error: sanitiseMailError(err) }
+  }
+}
+
+/**
+ * The HTML (and plain) body of one message, by uid, READ-ONLY.
+ *
+ * 🔴 THIS IS WHAT LETS A CHASE QUOTE AN EMAIL THIS APP DID NOT SEND. The importer stores an Outlook
+ * message's headers but not its body — the body stays in the mailbox, where it already is. When a chase
+ * replies to one, the quote block needs that body, so it is read here: EXAMINE, and `fetch` emits
+ * `BODY.PEEK[…]`, so the message is not marked seen by being quoted.
+ */
+export async function fetchBodiesByUid(
+  client: ImapFlow,
+  path: string,
+  uid: number,
+): Promise<{ html: string | null; text: string | null }> {
+  const empty = { html: null, text: null }
+  const count = await mailboxCount(client, path)
+  if (!count) return empty
+  const lock = await client.getMailboxLock(path, { readOnly: true })
+  try {
+    const msg = await client.fetchOne(String(uid), { uid: true, bodyStructure: true }, { uid: true })
+    if (!msg || typeof msg !== 'object' || !('bodyStructure' in msg)) return empty
+    const struct = (msg as { bodyStructure?: unknown }).bodyStructure as StructureLike | undefined
+    if (!struct) return empty
+    const html = findPart(struct, 'text/html')
+    const text = findPart(struct, 'text/plain')
+    const parts = [html?.part, text?.part].filter((v): v is string => !!v)
+    if (!parts.length) return empty
+    const full = await client.fetchOne(String(uid), { uid: true, bodyParts: parts }, { uid: true })
+    const bp = (full && typeof full === 'object' && 'bodyParts' in full
+      ? (full as { bodyParts?: Map<string, Buffer> }).bodyParts
+      : undefined) ?? new Map<string, Buffer>()
+    const decode = (part: string | undefined, encoding: string | null, charset: string | null): string | null => {
+      if (!part) return null
+      const buf = bp.get(part.toLowerCase()) ?? bp.get(part)
+      if (!buf) return null
+      const enc = (encoding ?? '').toLowerCase()
+      const bytes = enc === 'base64' ? Buffer.from(buf.toString('ascii'), 'base64')
+        : enc === 'quoted-printable' ? Buffer.from(
+            buf.toString('binary').replace(/=\r?\n/g, '').replace(/=([0-9A-Fa-f]{2})/g, (_m, h) => String.fromCharCode(parseInt(h, 16))),
+            'binary')
+        : buf
+      try { return new TextDecoder((charset ?? 'utf-8').toLowerCase()).decode(bytes) } catch { return bytes.toString('utf8') }
+    }
+    return {
+      html: decode(html?.part, html?.encoding ?? null, html?.charset ?? null),
+      text: decode(text?.part, text?.encoding ?? null, text?.charset ?? null),
+    }
+  } catch { return empty } finally { lock.release() }
+}

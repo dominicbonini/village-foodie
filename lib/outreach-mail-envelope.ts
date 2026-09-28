@@ -1,0 +1,70 @@
+// lib/outreach-mail-envelope.ts — the exact nodemailer options an outreach send uses.
+//
+// 🔴 THIS EXISTS SO THE HARNESS CAN BUILD THE REAL MESSAGE. `scripts/outreach-mail-send.cjs` hands
+// `mailFor()` to a nodemailer `streamTransport`, which composes the RFC822 bytes without opening a
+// socket, and then reads the header block off those bytes. If the route built its own object inline, the
+// harness would be checking a lookalike and the thing that actually leaves the building would be unproven.
+import type Mail from 'nodemailer/lib/mailer'
+import type SMTPTransport from 'nodemailer/lib/smtp-transport'
+import {
+  OUTREACH_MAIL_HOST, OUTREACH_SMTP_SEND_PORT, OUTREACH_SMTP_EHLO_NAME,
+  OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME,
+} from '@/lib/outreach-mail-config'
+
+export interface SendableRow {
+  message_id: string
+  in_reply_to: string | null
+  references: string | null
+  subject: string | null
+  to_address: string | null
+  message_date: string | null
+  html_body: string | null
+  text_body: string | null
+}
+
+export function smtpTransportOptions(user: string, pass: string): SMTPTransport.Options {
+  return {
+    host: OUTREACH_MAIL_HOST,
+    port: OUTREACH_SMTP_SEND_PORT,
+    secure: true,
+    // ⚠️ THE EHLO NAME IS OUR DOMAIN, not the Vercel container's hostname. A greeting that does not match
+    // the sending domain is a spam signal, and the container's name changes on every deploy.
+    name: OUTREACH_SMTP_EHLO_NAME,
+    auth: { user, pass },
+    disableFileAccess: true,
+    disableUrlAccess: true,
+    logger: false,
+    debug: false,
+    connectionTimeout: 20_000,
+    greetingTimeout: 20_000,
+    socketTimeout: 30_000,
+  }
+}
+
+/**
+ * The message itself.
+ *
+ * 🔴 NOTHING IS ADDED THAT SAYS "GENERATED". The premise of the feature is that these are the same
+ * personal emails Dominic was sending by hand from Outlook, and a single machine header — an X-Mailer, a
+ * List-Unsubscribe, a campaign id — undoes that for every recipient and every spam filter that reads it.
+ * `lib/outreach-mail-message.ts#ALLOWED_HEADERS` is the list, and `scripts/outreach-mail-send.cjs` reads
+ * the composed bytes to prove the message carries nothing outside it.
+ * ⚠️ `xMailer: false` IS A GUARD, NOT A FIX. nodemailer 10 only stamps X-Mailer when it is ASKED to
+ * (`mailer/mail-message.js#setMailerHeader` returns early on a falsy `data.xMailer`), so today this
+ * changes nothing — it is here so that a default coming back, or a transport-level default being set
+ * somewhere else, cannot quietly sign Dominic's emails.
+ */
+export function mailFor(row: SendableRow): Mail.Options {
+  return {
+    from: OUTREACH_FROM_NAME ? { name: OUTREACH_FROM_NAME, address: OUTREACH_FROM_ADDRESS } : OUTREACH_FROM_ADDRESS,
+    to: row.to_address ?? '',
+    subject: row.subject ?? '',
+    messageId: row.message_id,
+    ...(row.in_reply_to ? { inReplyTo: row.in_reply_to } : {}),
+    ...(row.references ? { references: row.references } : {}),
+    html: row.html_body ?? '',
+    text: row.text_body ?? '',
+    date: row.message_date ? new Date(row.message_date) : new Date(),
+    xMailer: false,
+  }
+}

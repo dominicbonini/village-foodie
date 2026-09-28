@@ -29,6 +29,7 @@ import { createClient } from '@supabase/supabase-js'
 import { ImapFlow } from 'imapflow'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_MAIL_HOST, OUTREACH_IMAP_PORT } from '@/lib/outreach-mail-config'
+import { withReadOnlyMailbox } from '@/lib/outreach-mail-box'
 import {
   parseHeaderBlock, redactReceivedIps, mimeTreeFrom, attachmentsOf, findPart,
   skeletoniseHtml, skeletonisePlain, addressesOf, sameDay,
@@ -162,6 +163,8 @@ export async function GET(req: NextRequest) {
   const sent: SentMessage[] = []
   const replies: Record<keyof typeof REPLY_BOXES, ReplyMessage[]> = { inbox: [], archive: [], spam: [] }
   const capped: string[] = []
+  /** Reported rather than errored: an empty Archive or Spam is the normal state, not a fault. */
+  const emptyBoxes: string[] = []
   /** uid → body structure, kept for Part B so the samples need no second walk of the folder. */
   const sentStructure = new Map<number, Parameters<typeof mimeTreeFrom>[0]>()
   let connected = false
@@ -173,6 +176,9 @@ export async function GET(req: NextRequest) {
     // ── Sent: the format source, and the "who was written to" index ──────────────────────────────
     try {
       // 🔴 readOnly: true ⇒ IMAP EXAMINE. The server will not let this session set a flag.
+      // ⚠️ AND THE COUNT IS CHECKED FIRST — see `withReadOnlyMailbox`. `fetch('1:*')` on an EMPTY
+      // mailbox throws "Command failed", which is what produced this route's two errors on its first
+      // run against empty Archive and Spam folders. An empty mailbox is a state, not a failure.
       const lock = await client.getMailboxLock(SENT_BOX, { readOnly: true })
       try {
         let n = 0
@@ -202,8 +208,9 @@ export async function GET(req: NextRequest) {
     // ── The three places a reply can be ───────────────────────────────────────────────────────────
     for (const [key, path] of Object.entries(REPLY_BOXES) as [keyof typeof REPLY_BOXES, string][]) {
       try {
-        const lock = await client.getMailboxLock(path, { readOnly: true })
-        try {
+        // 🔴 THE SAME GUARD THE SENDING CODE USES. Archive and Spam are empty, and asking for their
+        // messages threw. `withReadOnlyMailbox` checks the count, opens read-only, and reports a skip.
+        const res = await withReadOnlyMailbox(client, path, async () => {
           let n = 0
           for await (const msg of client.fetch('1:*', { uid: true, envelope: true })) {
             if (n++ >= MAX_MESSAGES_PER_BOX) { capped.push(path); break }
@@ -216,7 +223,9 @@ export async function GET(req: NextRequest) {
               from: addressesOf(env?.from),
             })
           }
-        } finally { lock.release() }
+          return true
+        })
+        if (res.skipped) emptyBoxes.push(path)
       } catch (err) { fail(`mailbox:${path}`, err) }
     }
 
@@ -248,12 +257,16 @@ export async function GET(req: NextRequest) {
     // ── 5 · PART B — up to two format samples ────────────────────────────────────────────────────
     // 🔴 MATCHED BY ADDRESS AND DAY, NEVER BY LOG ORDER. `contacted_at` on a manually dated row is
     // midnight, so two rows on one day carry the same instant and their order says nothing.
-    const pick = (wanted: (kind: string | null) => boolean) => {
+    // `firstOnly` — 🔴 A FIRST CONTACT HAS NO PARENT. Matching on the log date alone picked chases
+    // logged on the same day as something else, and a chase is not a specimen of a first contact: it
+    // carries a quote block and a Re: subject, which is the opposite of what that sample is for.
+    const pick = (wanted: (kind: string | null) => boolean, firstOnly = false) => {
       let best: { uid: number; date: string | null } | null = null
       for (const p of prospects) {
         if (!p.email) continue
         const days = p.log.filter(l => wanted(l.kind)).map(l => l.contacted_at)
         for (const m of p.sent) {
+          if (firstOnly && m.inReplyTo) continue
           if (!days.some(d => sameDay(d, m.date))) continue
           if (!best || (m.date ?? '') > (best.date ?? '')) best = { uid: m.uid, date: m.date }
         }
@@ -261,7 +274,7 @@ export async function GET(req: NextRequest) {
       return best
     }
     const wanted = [
-      { label: '1_first_contact', hit: pick(k => k === '1_first_contact') },
+      { label: '1_first_contact', hit: pick(k => k === '1_first_contact', true) },
       { label: 'chase', hit: pick(k => !!k && CHASE_KINDS.has(k)) },
     ].filter(w => w.hit) as { label: string; hit: { uid: number; date: string | null } }[]
 
@@ -299,7 +312,18 @@ export async function GET(req: NextRequest) {
                 const cs = (charset ?? 'utf-8').toLowerCase()
                 try { return new TextDecoder(cs).decode(bytes) } catch { return bytes.toString('utf8') }
               }
-              const rawHeaders = (bp.get('header') ?? bp.get('HEADER'))?.toString('utf8') ?? ''
+              // 🔴 THE KEY IS NOT 'header'. imapflow keys `bodyParts` by the section it actually
+              // asked for, and for a whole-header fetch that is the empty string — so
+              // `bp.get('header')` missed every time and every sample came back `headers: []`. Every
+              // plausible spelling is tried, and then any single entry that LOOKS like a header block,
+              // so a future imapflow change cannot silently empty this again.
+              const looksLikeHeaders = (b: Buffer | undefined) =>
+                !!b && /^[A-Za-z-]+:/m.test(b.toString('utf8').slice(0, 400))
+              let headerBuf = bp.get('header') ?? bp.get('HEADER') ?? bp.get('') ?? bp.get('text')
+              if (!looksLikeHeaders(headerBuf)) {
+                for (const [, v] of bp) if (looksLikeHeaders(v)) { headerBuf = v; break }
+              }
+              const rawHeaders = headerBuf?.toString('utf8') ?? ''
               const headers: RawHeader[] = redactReceivedIps(parseHeaderBlock(rawHeaders))
               const htmlRaw = decode(html?.part, html?.encoding ?? null, html?.charset ?? null)
               const plainRaw = decode(plain?.part, plain?.encoding ?? null, plain?.charset ?? null)
@@ -328,6 +352,7 @@ export async function GET(req: NextRequest) {
       generatedAt: new Date().toISOString(),
       counts: { sent: sent.length, inbox: replies.inbox.length, archive: replies.archive.length, spam: replies.spam.length },
       cappedMailboxes: capped,
+      emptyMailboxes: emptyBoxes,
       prospects,
       samples,
       errors,
