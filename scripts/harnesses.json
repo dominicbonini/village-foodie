@@ -40,6 +40,7 @@
     "outreach-list-columns.cjs",
     "outreach-log-once.cjs",
     "outreach-logo-latch.cjs",
+    "outreach-mail-format.cjs",
     "outreach-stage-advance.cjs",
     "outreach-upload-refresh.cjs",
     "peak-ceiling-rule.cjs",
