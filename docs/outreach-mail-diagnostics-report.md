@@ -224,16 +224,28 @@ Both goldens untouched; no generator was run.
 
 ## Commit and deploy
 
-**Commit `<hash>`** — see below. Files: the four in the table at the top, plus this report.
+**Commit `080059b`**, pushed `95327c3..080059b  main -> main`. Exactly five files, nothing else staged:
+
+```
+app/api/admin/outreach/mail-diagnostics/route.ts
+docs/outreach-mail-diagnostics-report.md
+lib/outreach-mail-format.ts
+scripts/harnesses.json
+scripts/outreach-mail-format.cjs
+```
 
 **Deploy evidence** — the same test as last time, and stronger than a dashboard badge because it proves
 *this commit's code is serving*:
 
 | request | before | after |
 |---|---|---|
-| `GET /api/admin/outreach/mail-diagnostics` | `404` · `text/html` · the Next 404 page | `404` · `application/json` · `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-diagnostics` | `404` · `text/html` · the Next 404 page | **`404` · `application/json` · `{"error":"Unauthorised"}`** |
 
-That JSON body is the route's own `verifyAdmin` refusal and cannot come from a path that does not exist.
+Confirmed live **72 seconds after the push**. That JSON body is the route's own `verifyAdmin` refusal and
+cannot come from a path that does not exist — `GET /api/admin/outreach/no-such-route` on the same host,
+checked at the same moment, still returns the HTML 404 page. (The Vercel CLI on this machine is not
+authenticated and the repo has no `.vercel` link, so the dashboard state could not be read directly; this
+is the stronger evidence anyway, because it proves the code is serving rather than that a build finished.)
 
 ## The URL to open
 
