@@ -442,3 +442,74 @@ Remove `OUTREACH_PRIMARY_USER` and `OUTREACH_PRIMARY_PASSWORD` and redeploy. Eve
 hello@ doing all of it. Rows already stamped `dominic` keep opening from dominic@ — so leave the
 variables in place if any exist, or that history stops opening.
 
+---
+
+## 10 · Commit and deploy evidence
+
+**Commit `223a502`** — *"Two mailboxes: dominic@ becomes primary, hello@ becomes read-only history"*, on
+`main`, pushed to `origin/main` (`3a92f80..223a502`). Eleven files: four new, seven changed. No other
+work is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T17:57:16Z.**
+
+Proved by the build-fingerprint method. The set of `/_next/static/chunks/*.js` the home page references
+was captured **before** the push and then polled:
+
+```
+fingerprint before push: ea49c6b2750f1b6305b0a7d0f2d2f1cc
+poll 1: ea49c6b2750f1b6305b0a7d0f2d2f1cc
+poll 2: ea49c6b2750f1b6305b0a7d0f2d2f1cc
+poll 3: ea49c6b2750f1b6305b0a7d0f2d2f1cc
+poll 4: 9f129c9f796606a8a6e7d03cba9a4b05     ← DEPLOY LANDED
+```
+
+The route checks below were taken after it changed.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/mail-health` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-poll` | 405 | — | POST-only, so the path exists |
+| `GET /api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404, so a JSON refusal is
+each route's own `verifyAdmin` answering. ⚠️ The 404 is deliberate — an admin route does not confirm its
+own existence to an unauthenticated caller.
+
+⚠️ **The deployed code is currently in its FALLBACK state, and that is the intended outcome of this
+deploy.** Until `OUTREACH_PRIMARY_USER` / `OUTREACH_PRIMARY_PASSWORD` are added, hello@ does exactly
+what it did yesterday. The evidence above shows the build is serving; §9 is what switches it over, and
+the health check in step 2 is what confirms the switch.
+
+---
+
+## 11 · Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in 223a502:
+
+  new file:   lib/outreach-mail-accounts.ts
+  new file:   lib/outreach-poll-claims.ts
+  new file:   supabase/migrations/20260929_outreach_messages_account.sql
+  new file:   docs/outreach-mail-two-mailboxes-report.md
+  modified:   lib/outreach-mail-config.ts
+  modified:   lib/outreach-mail-poll.ts
+  modified:   lib/outreach-mail-deliver.ts
+  modified:   app/api/admin/outreach/mail-send/route.ts
+  modified:   app/api/admin/outreach/mail-import/route.ts
+  modified:   app/api/admin/outreach/mail-health/route.ts
+  modified:   scripts/outreach-mail-poll.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run** — the `account` column was Dominic's, applied by hand,
+and the migration file records it. Two `slot-head-dots-*` worktrees from an earlier session remain
+listed as prunable: pre-existing, untouched, and already on the open-items list.
