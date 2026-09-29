@@ -1,6 +1,6 @@
 # CRM part 1 — a Today screen and a per-truck timeline
 
-**29–30 September 2026 · commit `PENDING` · deploy `PENDING`**
+**29 September 2026 · commit `10d78dc` · deployed and serving on production at 23:53:23Z**
 
 The outreach page could tell you everything about a truck and nothing about your morning. There was no
 answer to "what do I do now" except 231 rows and a memory, and a prospect's own modal showed its
@@ -353,7 +353,43 @@ The `'outreach-attachments'` bucket exists and **is not used here** — it is fo
 
 ---
 
-## 7 · Test script — ZZ Test Prospect (Dominic) only
+## 7 · Commit and deploy evidence
+
+**Commit `10d78dc`** — *"A Today screen and a per-truck timeline: the outreach page becomes a daily
+workspace"*, on `main`, pushed to `origin/main` (`0b540d1..10d78dc`). Fifteen files: eight new (four
+`lib/` modules, two routes, the harness, the migration record), six changed, one report. No other work
+is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T23:53:23Z.**
+
+Build-fingerprint method — the set of `/_next/static/chunks/*.js` the home page references:
+
+```
+fingerprint at push:  d652182b9124945c7075889636bd4e25
+23:51:41Z poll 1:     d652182b9124945c7075889636bd4e25
+23:52:01Z poll 2:     d652182b9124945c7075889636bd4e25
+23:52:22Z poll 3:     d652182b9124945c7075889636bd4e25
+23:52:42Z poll 4:     d652182b9124945c7075889636bd4e25
+23:53:02Z poll 5:     d652182b9124945c7075889636bd4e25
+23:53:23Z poll 6:     f5a578703399b6ae832053751adbbfae     ← DEPLOY LANDED
+```
+
+🔴 **And this time two NEW routes prove it directly**, which the last three commits could not:
+
+| Request | Status | Body |
+|---|---|---|
+| `GET /api/admin/outreach/today` | 404 | `{"error":"Unauthorised"}` — the route exists and refused |
+| `GET /api/admin/outreach/timeline` | 404 | `{"error":"Unauthorised"}` — same |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | the app's **HTML** 404 page |
+
+⚠️ **The two 404s are not the same 404.** An admin route answers `{"error":"Unauthorised"}` as JSON —
+it does not confirm its own existence to an unauthenticated caller — while a path that does not exist
+returns the app's HTML page. The JSON body is therefore evidence the new code is deployed: before this
+commit, both of those paths returned the HTML.
+
+---
+
+## 8 · Test script — ZZ Test Prospect (Dominic) only
 
 `a5beca7f-3edb-4fa1-abc1-6b00e75d1e46`. Nothing below touches another prospect.
 
@@ -381,7 +417,7 @@ Reply received`, written by the poll through the single contact writer.
 
 ---
 
-## 8 · What was deliberately not done
+## 9 · What was deliberately not done
 
 - **Part 2 is not here.** No Reply-with-full-history, no attachments, and the private
   `outreach-attachments` bucket is untouched.
