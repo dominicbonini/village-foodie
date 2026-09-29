@@ -353,3 +353,68 @@ before this it was logged as a reply from the prospect.
 Open **What each folder did** first — if the run reported an error under `repair:…`, that is the
 mailbox refusing the read. Otherwise the contact row already has text, which is the intended end state.
 
+---
+
+## 10 · Commit and deploy evidence
+
+**Commit `3f19cc0`** — *"Three fixes to reply handling: the text, the repair, and replies to tests"*,
+on `main`, pushed to `origin/main` (`7aa0a4c..3f19cc0`). Six files, all pre-existing bar the report. No
+other work is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T20:54:00Z.**
+
+Proved by the build-fingerprint method. The set of `/_next/static/chunks/*.js` the home page references
+was captured **before** the push and then polled:
+
+```
+fingerprint before push: f3c330dbcc9c8cc9c8810804f1482f76
+poll 1: f3c330dbcc9c8cc9c8810804f1482f76
+poll 2: f3c330dbcc9c8cc9c8810804f1482f76
+poll 3: f3c330dbcc9c8cc9c8810804f1482f76
+poll 4: b484d4816bd28c3501d3f811ae3d6b4c     ← DEPLOY LANDED
+```
+
+The route checks below were taken after it changed.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/mail-poll` | 405 | — | POST-only, so the path exists |
+| `GET /api/cron/outreach-replies` | 401 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+⚠️ **As with the last commit, those three rows prove the site is up rather than that this fix is live**
+— no route was added or changed. The fingerprint change is what proves the build was replaced, and the
+first press of **Check for replies now** is what proves the fix works: **"1 reply text filled in"**, and
+a Contact history View that finally shows the words.
+
+⚠️ **The ten-minute cron may reach the new build before Dominic does**, and will do the repair itself.
+That is harmless — the repair only fills empty rows, so whichever runs first does it and the other
+finds nothing left to fill.
+
+---
+
+## 11 · Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in 3f19cc0:
+
+  new file:   docs/outreach-mail-reply-text-report.md
+  modified:   lib/outreach-mail-poll-rules.ts
+  modified:   lib/outreach-mail-poll.ts
+  modified:   app/api/admin/outreach/route.ts
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   scripts/outreach-mail-poll.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run and none is needed.** Two `slot-head-dots-*` worktrees
+from an earlier session remain listed as prunable: pre-existing, untouched, and already on the
+open-items list.
