@@ -32,6 +32,7 @@ type LogoScanRow = {
 import { resolveTruckLogo } from '@/lib/truck-logo'   // shared derivation — same as the live button
 import { isLeadType } from '@/lib/outreach-step'   // the ONLY validator for lead_type_at_first_contact
 import { logOutreachContact } from '@/lib/outreach-contact-log'   // the ONE writer of an outreach rung
+import { recordStageChange, STAGE_CAUSE } from '@/lib/outreach-events'
 import { scheduleNorm, scheduleKeys } from '@/lib/schedule-match'   // the SAME matcher the Schedule popup uses
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
@@ -680,10 +681,28 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // 🔴 THE STAGE BEFORE THE WRITE, READ ONLY WHEN A STAGE IS BEING WRITTEN. This is the third
+      // and last writer of `outreach_prospects.stage` — the other two are the conditional moves
+      // inside `logOutreachContact` — and all three now record what they did.
+      let priorStage: string | null = null
+      if ('stage' in patch) {
+        const { data: before } = await supabase
+          .from('outreach_prospects').select('stage').eq('id', id).maybeSingle()
+        priorStage = (before as { stage?: string | null } | null)?.stage ?? null
+      }
       if (Object.keys(patch).length > 0) {
         patch.updated_at = new Date().toISOString()
         const { error } = await supabase.from('outreach_prospects').update(patch).eq('id', id)
         if (error) throw error
+      }
+      // ⚠️ ONLY WHEN IT ACTUALLY CHANGED. Re-selecting the stage a prospect is already on is a
+      // no-op, and a timeline line saying "contacted → contacted" is worse than no line at all.
+      if ('stage' in patch && String(patch.stage) !== String(priorStage ?? '')) {
+        const ev = await recordStageChange(supabase, {
+          prospect_id: id, from_stage: priorStage, to_stage: String(patch.stage),
+          body: STAGE_CAUSE.byHand,
+        })
+        if (!ev.ok) return NextResponse.json({ ok: true, warning: 'Saved, but the stage change was not recorded in the timeline.' })
       }
       return NextResponse.json({ ok: true })
     }

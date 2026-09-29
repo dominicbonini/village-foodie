@@ -215,10 +215,17 @@ const hdrs = (raw, extra = {}) => ({
     const v = variant('v5', 'lib/outreach-contact-log.ts', src => src.replace(
       "      .in('stage', REPLY_MOVES_FROM as unknown as string[])", '      // unconditional'))
     const seen = []
+    // ⚠️ `maybeSingle` AND A TOLERANT `insert` WERE ADDED HERE (29 September 2026, CRM part 1) and
+    // nothing about what this variant proves changed. The writer now reads the prospect's CURRENT
+    // stage before the conditional move — for the timeline's `from_stage`, not for the decision —
+    // and inserts an `outreach_events` row after it. This mock answers both without recording them;
+    // the assertion is still only about the `.in(…)` filter on the update.
     const mock = { from: () => { const q = {
       insert() { return q }, update(v2) { seen.push(v2); return q }, eq: () => q,
       in(...a) { seen.push(['in', ...a]); return q }, select: () => q,
-      single: async () => ({ data: { id: 'c' }, error: null }), then: r => r({ data: [], error: null }),
+      single: async () => ({ data: { id: 'c' }, error: null }),
+      maybeSingle: async () => ({ data: { stage: 'contacted' }, error: null }),
+      then: r => r({ data: [], error: null }),
     }; return q } }
     await v.L.logOutreachContact(mock, { prospect_id: 'p', channel: 'email', direction: 'inbound', kind: 'reply', message: 'hi' })
     variantFails('V5', !seen.some(x => Array.isArray(x) && x[0] === 'in'),
@@ -707,6 +714,12 @@ const hdrs = (raw, extra = {}) => ({
           eq(c, v) { q._f[c] = v; return q },
           in(c, v) { q._f[c] = v; calls.push(['in', c, v]); return q },
           single: async () => ({ data: { id: 'c1' }, error: null }),
+          // ⚠️ ADDED 29 SEPTEMBER 2026 (CRM part 1), and it changes nothing this block asserts. The
+          // writer reads the current stage before the conditional move so the timeline can say what
+          // the prospect moved FROM; the move itself is still the filtered UPDATE below, and these
+          // assertions are about that UPDATE. The event insert lands on `outreach_events`, which the
+          // census two blocks down proves is the ONLY new table this path touches.
+          maybeSingle: async () => ({ data: { stage: 'contacted' }, error: null }),
           then: r => r({ data: table === 'outreach_prospects' ? moved : null, error: null }),
         }
         return q
@@ -1241,9 +1254,22 @@ const hdrs = (raw, extra = {}) => ({
       '🔴 an OPEN prospect modal re-reads its Emails list too — the page nonce reaches it')
     check(/refreshNonce=\{refreshNonce\} \/>/.test(UI), '…because the modal is given it')
     // Send, Log, Retry and Save to Sent already reload; this is what keeps them doing so.
-    const msgs = UI.slice(UI.indexOf('function ProspectMessages'), UI.indexOf('interface ViewedEmail'))
-    eq((msgs.match(/await onChanged\(\)/g) || []).length, 3,
-      'Retry, Save to Sent and Log each reload the list and the modal')
+    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (29 September 2026, CRM part 1).
+     * This slice read `function ProspectMessages` … `interface ViewedEmail`, and counted its three
+     * `await onChanged()` calls — Retry, Save to Sent and "log it". BOTH anchors are gone:
+     * `ProspectMessages` and the separate `EmailViewer` were replaced by one `Timeline` component,
+     * which absorbed all three actions and added four of its own (Mark done, Snooze, Mark as needing
+     * reply, Add note). The count is therefore no longer 3, and pretending otherwise by moving the
+     * anchor quietly would have turned a real behavioural change into a passing test. What this
+     * harness still owns is the RULE — every write refreshes the list and the modal — so it now
+     * asserts that shape, and `scripts/outreach-crm-today.cjs` owns the timeline's own contents. */
+    const msgs = UI.slice(UI.indexOf('function Timeline({'), UI.indexOf('const stageWord ='))
+    check(msgs.length > 0, 'the actions now live in `Timeline` (ProspectMessages is gone)')
+    check((msgs.match(/await onChanged\(\)/g) || []).length >= 1 && /await reload\(\)/.test(msgs),
+      'Retry, Save to Sent and Log still reload the list and the modal, through one `post` helper')
+    for (const a of ["action: 'retry'", "action: 'save_to_sent'", "action: 'log_only'"]) {
+      check(msgs.includes(a), `…and ${a} survived the move`)
+    }
     check(/onChanged=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),
       '…and "reload" means both the Emails list and the whole panel')
     check(/onSent=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),

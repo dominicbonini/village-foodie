@@ -695,7 +695,16 @@ const SIGNATURE =
           update(v) { calls.push(['update', table, v]); return q },
           select() { return q },
           eq(col, val) { q._filters[col] = val; return q },
+          // ⚠️ `.is()`, `.lt()` AND `maybeSingle` WERE ADDED HERE (30 September 2026, CRM part 1) and
+          // nothing this block asserts changed. The one writer now also (a) marks inbound messages
+          // that arrived BEFORE this contact as handled — `.eq(direction).is(handled_at, null)
+          // .lt(message_date, …)` on `outreach_messages` — and (b) reads the current stage before the
+          // inbound move so the timeline can name what the prospect moved FROM. Both are recorded in
+          // `calls`, so the assertions below still see exactly the writes they were written for.
+          is(col, val) { q._filters[col] = val; return q },
+          lt(col, val) { q._filters[col] = val; return q },
           single: async () => ({ data: { id: 'c1' }, error: null }),
+          maybeSingle: async () => ({ data: { stage: 'not_contacted' }, error: null }),
           then: undefined,
         }
         // `.select('id, stage')` on the prospect update resolves to the moved row.

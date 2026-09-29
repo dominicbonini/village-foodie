@@ -36,6 +36,7 @@
     "dot-overlap-labels.cjs",
     "ops-write-guard.cjs",
     "outreach-channel-for.cjs",
+    "outreach-crm-today.cjs",
     "outreach-dnc-pool.cjs",
     "outreach-list-columns.cjs",
     "outreach-log-once.cjs",

@@ -157,7 +157,16 @@ const srcChecks = [
   ['updates outreach_prospects', /\.from\('outreach_prospects'\)\s*\n\s*\.update\(\{ stage: CONTACTED_STAGE/.test(WRITER)],
   ['🔴 filtered on the CURRENT stage being DEFAULT_STAGE', /\.eq\('stage', DEFAULT_STAGE\)/.test(WRITER)],
   ['🔴 calls .select() so the row count is observable', /\.eq\('stage', DEFAULT_STAGE\)\s*\n\s*\.select\(/.test(WRITER)],
-  ['sets updated_at like update_prospect does', /updated_at: new Date\(\)\.toISOString\(\)/.test(WRITER)],
+  /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (29 September 2026, CRM part 1).
+   * This read `updated_at: new Date().toISOString()` literally. The writer now computes ONE `nowIso`
+   * at the top and uses it for the stage move, the "earlier replies are handled" sweep and the
+   * timeline event — deliberately, so those three cannot be recorded milliseconds apart and read as
+   * three separate moments in the history. The RULE is unchanged and is still what is asserted:
+   * the move stamps `updated_at`. The runtime check above ("updated_at is set on the move") proves
+   * the behaviour; this proves it is not stamped from a second, drifting clock. */
+  ['sets updated_at on the move', /update\(\{ stage: CONTACTED_STAGE, updated_at: nowIso \}\)/.test(WRITER)],
+  ['🔴 …from the ONE instant the whole write shares, not a fresh `new Date()` per statement',
+    /const nowIso = new Date\(\)\.toISOString\(\)/.test(WRITER)],
   ['🔴 uses the CONSTANTS, not literals', /DEFAULT_STAGE/.test(WRITER) && !/\.eq\('stage', 'not_contacted'\)/.test(WRITER)],
   ['🔴 THE ROUTE HAS NO SECOND COPY of the stage move', !/\.update\(\{ stage:/.test(ROUTE)],
   ['the route still returns stage and warning', /stage: logged\.stage, warning: logged\.warning/.test(ROUTE)],

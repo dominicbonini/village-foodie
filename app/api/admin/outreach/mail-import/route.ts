@@ -226,6 +226,13 @@ export async function POST(req: NextRequest) {
       // 🔴 WHAT THE EMAIL SAYS, WRITTEN DOWN. Absent only when this run did not read it — the poll's
       // backfill then fills it, 25 rows at a time.
       ...(f.bodies ? bodyColumns(f.bodies) : {}),
+      // 🔴 IMPORTED MAIL IS HISTORY, SO IT IS ALREADY HANDLED. Everything this route records is now
+      // strictly BEFORE the account's POLL_SINCE (see the guard in the walk), and the Today screen
+      // shows unhandled inbound mail. Left null, one import would drop months of old replies into
+      // the morning's work as if every one of them were waiting for an answer — which is exactly
+      // what the CRM migration's one-off backfill had to undo for the rows already in the table.
+      // ⚠️ OUTBOUND ROWS GET NOTHING: `handled_at` is a fact about an inbound message.
+      ...(f.direction === 'inbound' ? { handled_at: new Date().toISOString() } : {}),
     }))
     // In chunks: one oversized statement is the thing that fails on a big mailbox.
     for (let i = 0; i < payload.length; i += 200) {
