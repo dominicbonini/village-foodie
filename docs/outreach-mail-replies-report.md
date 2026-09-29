@@ -593,3 +593,89 @@ Turn on an out-of-office in Hotmail, reply to a sent message, press the button. 
 an **Auto-reply** row in Emails, and — deliberately — **no contact row and no stage change**. Turn the
 out-of-office back off.
 
+---
+
+## 12 · Commit and deploy evidence
+
+**Commit `0cd29a4`** — *"Build 2: pick up replies automatically, record Outlook-sent mail, tidy up
+sends"*, on `main`, pushed to `origin/main` (`bc7ab41..0cd29a4`). Fifteen files: seven new, eight
+changed. No other work is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T17:26:12Z.**
+
+Proved by the build-fingerprint method. The set of `/_next/static/chunks/*.js` the home page references
+was captured **before** the push and then polled:
+
+```
+fingerprint before push: b4d118e79e8ad05f78c348af1348f1df
+poll 1: b4d118e79e8ad05f78c348af1348f1df
+poll 2: b4d118e79e8ad05f78c348af1348f1df
+poll 3: 4de73d3cc77cc0d8c0d69fb5604b2a00     ← DEPLOY LANDED
+```
+
+The route checks below were taken after it changed.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `POST /api/admin/outreach/mail-poll` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-poll` | 405 | — | POST-only, so the path exists |
+| `GET /api/cron/outreach-replies` | **401** | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404, so a JSON refusal is
+each route's own gate answering.
+
+⚠️ **The cron route answers 401 and the admin routes answer 404, and that difference is deliberate.**
+An admin route must not confirm its own existence to an unauthenticated caller, so it returns 404. A
+cron route is not secret — Vercel has to call it — so it uses the ordinary 401 that every other cron
+route in this app uses.
+
+**The cron is registered.** `vercel.json`:
+```json
+{ "path": "/api/cron/outreach-replies", "schedule": "*/10 * * * *" }
+```
+and the harness asserts both the entry and its schedule, plus that the route runs the same
+`runReplyPoll` the button does.
+
+⚠️ **What this evidence does not show.** Everything the poll actually does is behind an admin session
+or a cron secret, so the behaviour is proved by the harness and the build. The test script above is how
+it is confirmed in use — **step 1 first**, because a first run deliberately does nothing, and that is
+the one result that looks like a failure and is not.
+
+---
+
+## 13 · Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in 0cd29a4:
+
+  new file:   lib/outreach-mail-poll-rules.ts
+  new file:   lib/outreach-mail-poll.ts
+  new file:   lib/outreach-mail-deliver.ts
+  new file:   app/api/cron/outreach-replies/route.ts
+  new file:   app/api/admin/outreach/mail-poll/route.ts
+  new file:   scripts/outreach-mail-poll.cjs
+  new file:   supabase/migrations/20260929_outreach_messages_poll_states.sql
+  new file:   docs/outreach-mail-replies-report.md
+  modified:   lib/outreach-contact-log.ts
+  modified:   app/api/admin/outreach/mail-send/route.ts
+  modified:   app/api/admin/outreach/route.ts
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   vercel.json
+  modified:   scripts/harnesses.json
+  modified:   scripts/outreach-mail-send.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run** — the constraint change was Dominic's, applied by
+hand, and the migration file records it. Two `slot-head-dots-*` worktrees from an earlier session
+remain listed as prunable: pre-existing, untouched, and already on the open-items list.
