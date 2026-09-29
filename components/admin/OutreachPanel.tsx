@@ -73,6 +73,9 @@ import {
 type Contact = {
   id: string; contacted_at: string; channel: string | null; direction: string | null
   kind: string | null; message: string | null
+  /** 🔴 The `outreach_messages` row this contact was logged FROM, when there is one. Set by the list
+   *  route from `outreach_messages.contact_id`; null for a call, a WhatsApp or a hand-logged contact. */
+  email_message_id?: string | null
   /** Insert time. The ONLY thing that separates two contacts logged on the same day — see HistoryTable. */
   created_at: string
 }
@@ -1487,6 +1490,7 @@ interface PollSummaryUI {
   repliesLogged: number; autoReplies: number; bounces: number; outlookSentRecorded: number
   retried: number; markedUncertain: number; copiesFiled: number
   ambiguous: number; unmatched: number
+  repliesToTest?: number; textsFilled?: number
   rescanned: string[]; baselined: string[]
   /** 🔴 One line per folder, so a run that found nothing can say why. Optional: an older deployment
    *  of the routes would not send it, and the panel must not blank out if it is missing. */
@@ -1540,8 +1544,17 @@ function CheckRepliesNow() {
                 {' '}<span className="font-bold">{result.outlookSentRecorded}</span> sent from Outlook recorded,
                 {' '}<span className="font-bold">{result.retried}</span> retried,
                 {' '}<span className="font-bold">{result.markedUncertain}</span> marked uncertain,
-                {' '}<span className="font-bold">{result.copiesFiled}</span> cop{result.copiesFiled === 1 ? 'y' : 'ies'} filed.
-                {' '}
+                {' '}<span className="font-bold">{result.copiesFiled}</span> cop{result.copiesFiled === 1 ? 'y' : 'ies'} filed
+                {/* Shown only when non-zero: a repair is an exceptional thing, not a running total. */}
+                {!!result.textsFilled && <>, <span className="font-bold">{result.textsFilled}</span> reply text{result.textsFilled === 1 ? '' : 's'} filled in</>}
+                .{' '}
+                {/* 🔴 A REPLY TO A TEST IS DOMINIC ANSWERING HIMSELF. Counted so a run that looks
+                    like it missed something can say it did not. */}
+                {!!result.repliesToTest && (
+                  <span className="text-slate-500">
+                    {result.repliesToTest} repl{result.repliesToTest === 1 ? 'y' : 'ies'} to a test send (ignored).{' '}
+                  </span>
+                )}
                 {/* ⚠️ AMBIGUOUS AND UNMATCHED ARE COUNTS AND NOTHING MORE. Unmatched mail is not
                     outreach — hello@ takes order and support mail too — and is never stored. */}
                 <span className="text-slate-400">
@@ -2402,6 +2415,56 @@ const INBOUND_BG = '#ecfdf5'
  *  view. A popout gets the full window width and leaves the table's geometry untouched.
  *  Escape closes THIS and nothing else: capture phase + stopPropagation beats the prospect modal's
  *  bubble-phase window listener regardless of registration order. Same rule as ScheduleEventsPopup. */
+/**
+ * One email, inline — the same `view` action and the same sandboxed frame the Emails list uses.
+ *
+ * 🔴 SHARED WITH `EmailViewer`, NOT A SECOND IMPLEMENTATION OF IT. Both ask the route for the row and
+ * both render the body in `sandbox=""`: the markup came out of a mailbox, so it is sender-controlled,
+ * and injected into the admin page it would run behind an authenticated admin session.
+ * ⚠️ FETCHED WHEN IT IS OPENED, not with the list. Most contact rows are never opened, and an IMAP
+ * read per row of history would be absurd.
+ */
+function EmailBody({ rowId }: { rowId: string }) {
+  const [data, setData] = useState<ViewedEmail | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      try {
+        const r = await fetch('/api/admin/outreach/mail-send', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'view', message_row_id: rowId }),
+        })
+        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+        if (!live) return
+        if (j.ok !== true) { setError(String(j.refusal ?? 'That email could not be opened.')); return }
+        setData(j as unknown as ViewedEmail)
+      } catch { if (live) setError('That email could not be opened — check the connection.') }
+    })()
+    return () => { live = false }
+  }, [rowId])
+
+  if (error) return <p className="text-[12px] text-red-800">{error}</p>
+  if (!data) return <p className="text-[12px] text-slate-500">Opening the email…</p>
+  return (
+    <>
+      <p className="text-[12px] text-slate-700"><span className="font-bold">From:</span> {data.from ?? '—'}</p>
+      <p className="text-[12px] text-slate-700"><span className="font-bold">Subject:</span> {data.subject ?? '—'}</p>
+      {data.attachments.length > 0 && (
+        <p className="text-[12px] text-slate-700 mt-0.5">
+          <span className="font-bold">Attachments:</span>{' '}
+          {data.attachments.map(a => a.filename ?? '(unnamed)').join(', ')}
+          <span className="text-slate-400"> — listed only, not downloaded</span>
+        </p>
+      )}
+      {data.html
+        ? <iframe title="Email body" sandbox="" srcDoc={data.html}
+            className="mt-2 w-full h-80 border border-slate-200 rounded bg-white" />
+        : <pre className="mt-2 text-[12px] whitespace-pre-wrap">{data.text ?? '(this email has no body)'}</pre>}
+    </>
+  )
+}
+
 function ContactPopout({ contact, onClose, onDelete }: {
   contact: Contact
   onClose: () => void
@@ -2452,6 +2515,20 @@ function ContactPopout({ contact, onClose, onDelete }: {
           {contact.message
             ? <p className="text-sm text-slate-800 whitespace-pre-wrap break-words">{contact.message}</p>
             : <p className="text-sm text-slate-400 italic">No message was recorded with this contact.</p>}
+
+          {/* 🔴 THE LOGGED TEXT IS A SUMMARY OF AN EMAIL; THE EMAIL IS THE RECORD. When this contact
+              was logged from one, the whole thing is here — headers, attachments and body — read
+              live and read-only, in the same sandboxed viewer the Emails list uses. That is the
+              difference between "No message was recorded" and being able to see what was actually
+              said, which is precisely what went wrong with the first logged reply. */}
+          {contact.email_message_id && (
+            <div className="mt-4 pt-3 border-t border-slate-200">
+              <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-1">
+                The email this was logged from
+              </span>
+              <EmailBody rowId={contact.email_message_id} />
+            </div>
+          )}
         </div>
 
         {/* 🔴 THE DELETE LIVES HERE, NOT ON THE TABLE ROW. The history table's five columns and their

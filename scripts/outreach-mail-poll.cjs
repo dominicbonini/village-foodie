@@ -325,6 +325,44 @@ const hdrs = (raw, extra = {}) => ({
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
 
+  {
+    // V15 — THE HTML FALLBACK GOES. This is the 29 September defect verbatim: Hotmail sends HTML-only
+    // replies, so a real reply produced no text and the contact row was logged empty — rendering as
+    // "No message was recorded with this contact" beside an email that plainly says otherwise.
+    const v = variant('v15', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
+      "  const h = htmlToText(String(html ?? ''))\n  return h", "  return ''"))
+    variantFails('V15', v.R.replyTextFrom(null, '<div>Thank you how do I sign up?</div>') === '',
+      'the HTML fallback removed: an HTML-only reply yields no text and is logged empty')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V16 — BLOCK ELEMENTS STOP BECOMING LINE BREAKS. Outlook's quote header is a run of
+    // `<div>From: …</div><div>Sent: …</div>`; without the breaks those run into one line and the
+    // quote stripper — whose patterns are anchored to line starts — can no longer find it, so the
+    // whole quoted original is logged as if the prospect had written it.
+    // ⚠️ THE PATCH EMPTIES THE TAG LIST RATHER THAN DELETING ONE OF THE TWO REPLACEMENTS. A first
+    // draft removed only the closing-tag rule and PASSED: the opening-tag rule still put a break
+    // before each div, so the lines survived. One change, one meaning — "block elements are no longer
+    // line breaks" — is what the variant has to say.
+    const v = variant('v16', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
+      /const BLOCK_TAGS = '[^']+'/, "const BLOCK_TAGS = 'nothing'"))
+    const html = '<div>Thank you how do I sign up?</div><div>________</div><div>From: Dominic</div><div>Sent: 29 September</div>'
+    const text = v.R.htmlToText(html)
+    variantFails('V16', !v.R.stripQuotedHistory(text).startsWith('Thank you how do I sign up?')
+      || v.R.stripQuotedHistory(text).includes('From: Dominic'),
+      "the block-element breaks removed: Outlook's quote header survives into the logged reply")
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V17 — AN EMPTY RESULT IS LOGGED AS ''. A blank contact row reads, months later, as "they replied
+    // and said nothing" — which is a different fact from "the text could not be read".
+    const v = variant('v17', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
+      '  if (!body) return NO_TEXT_PLACEHOLDER', '  // removed'))
+    variantFails('V17', v.R.stripQuotedHistory('') === '',
+      'the placeholder removed: a reply with no readable text is logged as an empty message')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+
   const { R, L, A, C } = build(REPO, 'ompReal')
   /**
    * 🔴 THE CENSUS READS CODE, NOT COMMENTS, AND THE FIRST VERSION DID NOT. This file's own header says
@@ -486,6 +524,128 @@ const hdrs = (raw, extra = {}) => ({
     eq(R.stripQuotedHistory('x'.repeat(5000)).length, R.REPLY_TEXT_CAP, `capped at ${R.REPLY_TEXT_CAP} characters`)
     check(R.stripQuotedHistory('x'.repeat(5000)).endsWith('…'), '…and says it was cut')
     eq(R.stripQuotedHistory('  plain reply  '), 'plain reply', 'a reply with no quote is itself, trimmed')
+  }
+
+  console.log('\n── THE REPLY TEXT: HTML-ONLY REPLIES, DECODING, AND THE QUOTE BLOCK ────────────────────')
+  {
+    // 🔴 THE 29 SEPTEMBER DEFECT, REPRODUCED. Hotmail sent this; the old code asked only for
+    // text/plain, found none, and logged an empty contact row.
+    const HOTMAIL = [
+      '<html><head><style>p{margin:0}</style></head><body>',
+      '<div dir="ltr">Thank you how do I sign up?</div>',
+      '<div id="appendonsend"></div>',
+      '<hr style="display:inline-block;width:98%">',
+      '<div id="divRplyFwdMsg" dir="ltr">',
+      '<font face="Calibri" color="#000000"><b>From:</b> Dominic Bonini &lt;dominic@hatchgrab.com&gt;<br>',
+      '<b>Sent:</b> 29 September 2026 20:45<br>',
+      '<b>To:</b> Dominic Bonini &lt;dominicbonini@hotmail.com&gt;<br>',
+      '<b>Subject:</b> Taking orders online</font><div>&nbsp;</div></div>',
+      '<div><div style="font-size:12pt">Hi Sam,</div><div>the whole original pitch</div></div>',
+      '</body></html>',
+    ].join('')
+    const text = R.replyTextFrom(null, HOTMAIL)
+    check(text.includes('Thank you how do I sign up?'), '🔴 an HTML-only reply yields its text')
+    check(!text.includes('<div'), '…with no markup left in it')
+    check(!text.includes('&lt;'), '…and entities decoded')
+    const logged = R.stripQuotedHistory(text)
+    eq(logged, 'Thank you how do I sign up?',
+      "🔴 …and the Outlook From:/Sent:/To:/Subject: block is stripped, leaving exactly the reply")
+    check(!logged.includes('the whole original pitch'), '…so the quoted original is not logged as theirs')
+
+    // ⚠️ THE PLAIN PART WINS WHEN IT HAS WORDS.
+    eq(R.replyTextFrom('Yes please.', '<div>ignored</div>'), 'Yes please.', 'a real text/plain part is preferred')
+    eq(R.replyTextFrom('   ', '<div>from the html</div>'), 'from the html',
+      '⚠️ …but a WHITESPACE-ONLY plain part is not "present" — that is the multipart/alternative case')
+    eq(R.replyTextFrom(null, null), '', 'neither part gives the empty string, which the caller turns into the placeholder')
+    eq(R.stripQuotedHistory(''), R.NO_TEXT_PLACEHOLDER, '🔴 …and nothing at all is NEVER logged as an empty message')
+    eq(R.NO_TEXT_PLACEHOLDER, '(no text — open the email to read it)', '…the placeholder says where to look')
+
+    // The other quote shapes still work on HTML-derived text.
+    eq(R.stripQuotedHistory(R.replyTextFrom(null, '<div>Sounds good.</div><div>On Fri, 11 Sep 2026 at 13:07, Dominic wrote:</div><div>the original</div>')),
+      'Sounds good.', 'the Gmail "On … wrote:" form is stripped from HTML too')
+    eq(R.stripQuotedHistory(R.replyTextFrom(null, '<p>Not for us.</p><p>-----Original Message-----</p><p>the original</p>')),
+      'Not for us.', 'and so is "-----Original Message-----"')
+  }
+
+  console.log('\n── HTML → TEXT ─────────────────────────────────────────────────────────────────────────')
+  {
+    eq(R.htmlToText('<div>a</div><div>b</div>'), 'a\nb', 'block elements become line breaks')
+    // ⚠️ Hotmail writes each line of a reply as its own div, so `</div><div>` sits between every pair.
+    eq(R.htmlToText('<div>a</div><div><br></div><div>b</div>'), 'a\n\nb',
+      '🔴 …one break between adjacent lines, TWO only where the author left a blank line')
+    eq(R.htmlToText('a<br>b'), 'a\nb', '…and so does <br>')
+    eq(R.htmlToText('<p>a</p>'), 'a', 'a single paragraph is just its text')
+    eq(R.htmlToText('<script>alert(1)</script>visible'), 'visible',
+      '🔴 a <script> is removed WITH its content — not just its tags')
+    eq(R.htmlToText('<style>p{color:red}</style>visible'), 'visible', '…and so is a <style>')
+    eq(R.htmlToText('<!-- hidden -->shown'), 'shown', 'comments go')
+    eq(R.htmlToText('&amp;lt; stays escaped once'), '&lt; stays escaped once',
+      '⚠️ `&amp;lt;` decodes ONCE, not twice')
+    eq(R.htmlToText('a&nbsp;&nbsp;b'), 'a b', 'non-breaking spaces collapse within a line')
+    eq(R.htmlToText('a\n\n\n\nb'), 'a\n\nb', '…and a run of blank lines collapses to one')
+    eq(R.htmlToText('&#8217;'), '\u2019', 'a numeric entity decodes')
+    eq(R.htmlToText('&#x2014;'), '—', '…and a hex one')
+    eq(R.htmlToText('&notarealentity;'), '&notarealentity;', 'an entity nobody knows is left alone, not blanked')
+    eq(R.htmlToText(''), '', 'empty in, empty out')
+  }
+
+  console.log('\n── A REPLY TO A TEST SEND IS IGNORED ───────────────────────────────────────────────────')
+  {
+    // 🔴 THE SECOND 29 SEPTEMBER DEFECT. Dominic replied to a TEST send; the thread matched, and the
+    // reply was logged as a real one — moving the prospect to `replied` on a conversation that never
+    // happened. A test goes to his own address, so it is him answering himself.
+    const POLL = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
+    check(/function isReplyToTestOnly/.test(POLL), 'the rule exists as its own function')
+    check(/if \(isReplyToTestOnly\(h, dir\)\) \{ summary\.repliesToTest\+\+; return \}/.test(POLL),
+      '🔴 …and it RETURNS — it does not fall through to the address match, which would log it anyway')
+    const beforeMatch = POLL.indexOf('isReplyToTestOnly(h, dir)')
+    const atMatch = POLL.indexOf('matchIncoming({ get: h.get')
+    check(beforeMatch > 0 && beforeMatch < atMatch, '…and it is tested BEFORE the match is attempted')
+    check(/if \(m\.is_test\) testMessageIds\.add\(m\.message_id\)/.test(POLL),
+      'the directory knows which of our Message-IDs are tests')
+    // "ONLY" in both directions.
+    const fn = POLL.slice(POLL.indexOf('function isReplyToTestOnly'), POLL.indexOf('function headersOf'))
+    check(/if \(!known\.length\) return false/.test(fn),
+      '⚠️ a message with NO thread ids is not a reply to a test — the address match decides, as before')
+    check(/return known\.every\(id => dir\.testMessageIds\.has\(id\)\)/.test(fn),
+      '🔴 …and a thread touching ANY real send is a real conversation, handled normally')
+  }
+
+  console.log('\n── REPAIRING REPLIES LOGGED WITHOUT THEIR TEXT ─────────────────────────────────────────')
+  {
+    const POLL = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
+    const fn = POLL.slice(POLL.indexOf('async function repairReplyTexts'), POLL.indexOf('async function housekeeping'))
+    // 🔴 IT ONLY EVER FILLS A GAP.
+    check(/\.or\('message\.is\.null,message\.eq\.'\)/.test(fn),
+      "🔴 the contact message is written ONLY where it is still empty")
+    check(/\.or\('text_body\.is\.null,text_body\.eq\.'\)/.test(fn),
+      '🔴 …and so is the message row\'s text_body')
+    check(/filter\(c => !\(c\.message \?\? ''\)\.trim\(\)\)/.test(fn),
+      'only rows whose contact message is null or blank are even considered')
+    check(/MAX_REPAIRS_PER_RUN/.test(fn) && /const MAX_REPAIRS_PER_RUN = 20/.test(POLL),
+      'at most 20 per run — each costs an IMAP fetch against a 60-second budget')
+    check(/withReadOnlyMailbox\(client, r\.mailbox!/.test(fn), '⚠️ read-only, like everything else here')
+    check(/credentialsFor\(accounts, account as MailAccount\)/.test(fn),
+      "each row is read from its OWN account — a hello@ row from hello@")
+    check(/summary\.textsFilled\+\+/.test(fn), 'and the run reports how many it filled in')
+    check(/await repairReplyTexts\(supabase, accounts, summary\)/.test(POLL), 'the poll runs it')
+    check(!/\.delete\(\)/.test(fn), 'it deletes nothing')
+  }
+
+  console.log('\n── CONTACT HISTORY OPENS THE EMAIL IT WAS LOGGED FROM ──────────────────────────────────')
+  {
+    const UI = fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')
+    const ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/route.ts'), 'utf8')
+    check(/c\.email_message_id = emailByContact\.get\(c\.id\) \?\? null/.test(ROUTE),
+      'the list route links each contact to its email row, from outreach_messages.contact_id')
+    check(/\.not\('contact_id', 'is', null\)/.test(ROUTE), '…in one bulk read')
+    check(/\{contact\.email_message_id && \(/.test(UI),
+      '🔴 a contact WITH a linked email shows it; one without keeps the view it had')
+    check(/<EmailBody rowId=\{contact\.email_message_id\} \/>/.test(UI), '…through the shared component')
+    const body = UI.slice(UI.indexOf('function EmailBody'), UI.indexOf('function ContactPopout'))
+    check(/action: 'view', message_row_id: rowId/.test(body), 'which uses the SAME read-only view action')
+    check(/sandbox=""/.test(body), '🔴 …and the SAME sandboxed frame — the markup is sender-controlled')
+    check(/contact\.message/.test(UI), 'the logged text is still shown, above it')
   }
 
   console.log('\n── THE STAGE: A REPLY MOVES contacted → replied, AND NOTHING ELSE ──────────────────────')
@@ -668,7 +828,16 @@ const hdrs = (raw, extra = {}) => ({
     check(/deliver\(supabase/.test(POLL), '…the only send is `deliver`, on a row that already exists')
     check(/shouldAutoRetry\(row, now\)/.test(POLL), '…and only when `shouldAutoRetry` says so')
     check(/logOutreachContact\(/.test(POLL), 'contacts are written through the one writer')
-    check(!/from\('outreach_contacts'\)/.test(POLL), '🔴 …and never inserted beside it')
+    // 🔴 RESTATED, NOT LOOSENED. It banned the NAME `outreach_contacts`, which was a fair proxy while
+    // the poll only ever wrote contacts through the one writer. The repair pass now READS that table
+    // (to find which logged replies are empty) and UPDATES a `message` on rows that already exist. It
+    // still never INSERTS one, which is what the assertion was always about, so that is what it now
+    // says — and it names the two operations that would make it a second ladder.
+    const contactRefs = POLL.match(/from\('outreach_contacts'\)[\s\S]{0,140}/g) ?? []
+    check(contactRefs.length > 0, 'the poll does touch outreach_contacts (the repair pass reads it)')
+    check(!contactRefs.some(r => /\.insert\(|\.upsert\(/.test(r)),
+      '🔴 …but never INSERTS a contact row — every rung still comes from logOutreachContact')
+    check(!contactRefs.some(r => /\.delete\(/.test(r)), '…and never deletes one')
     check(/dir\.skip\.has\(match\.prospectId\)/.test(POLL), 'a linked HatchGrab truck is skipped')
     check(/hatchgrab_truck_id/.test(POLL), '…identified by its linked truck id, as the send route does')
     // Auto-replies and bounces must not reach the contact log.

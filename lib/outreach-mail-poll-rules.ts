@@ -263,9 +263,88 @@ const QUOTE_MARKERS: RegExp[] = [
   /^-{2,}\s*Original Message\s*-{2,}\s*$/im,
   /^\s*_{10,}\s*$/m,                                  // Outlook's rule line above its header block
   /^\s*On .{0,200}\bwrote:\s*$/im,
-  /^\s*From:\s.+$/im,                                 // an Outlook quote header block
+  /^\s*From:\s*\S.*$/im,                              // an Outlook quote header block
   /^\s*Sent from my \w+/im,
 ]
+
+/**
+ * 🔴 WHAT TO LOG WHEN THERE IS GENUINELY NOTHING TO LOG.
+ * An empty contact message reads, months later, as "they replied and said nothing" — which is a
+ * different fact from "they replied and the text could not be extracted". The first is information;
+ * the second is a gap, and it should say so and say where to look.
+ */
+export const NO_TEXT_PLACEHOLDER = '(no text — open the email to read it)'
+
+// ── HTML → TEXT ─────────────────────────────────────────────────────────────────────────────────────
+/**
+ * 🔴 THIS IS THE FIX FOR AN EMPTY REPLY, AND THE CAUSE WAS ONE MISSING FALLBACK.
+ * `readText` asked for the `text/plain` part and returned `null` the moment there was not one:
+ *
+ *     const plain = findPart(struct, 'text/plain')
+ *     if (!plain) return null                      // ← Hotmail sends HTML-only, so: null
+ *
+ * Outlook.com sends HTML-only replies routinely. So `text_body` was null, `stripQuotedHistory(null ??
+ * '')` returned `''`, and the contact row was logged with an empty message — which the popout renders
+ * as "No message was recorded with this contact", while the same email opened from the Emails list
+ * (read live from the mailbox) shows the words plainly. The text was never missing; it was never read.
+ *
+ * ⚠️ BLOCK ELEMENTS BECOME LINE BREAKS BEFORE TAGS ARE REMOVED. Outlook's quote header is a run of
+ * `<div>From: …</div><div>Sent: …</div>`, and stripping tags first would run those four lines into one
+ * — which `QUOTE_MARKERS` could then not find, because its patterns are anchored to line starts. The
+ * order here is what lets the existing quote stripper keep working on HTML-derived text.
+ */
+const BLOCK_TAGS = 'address|article|aside|blockquote|div|dl|dd|dt|fieldset|figcaption|figure|footer|form|h[1-6]|header|hr|li|main|nav|ol|p|pre|section|table|tbody|td|tfoot|th|thead|tr|ul'
+
+export function htmlToText(html: string): string {
+  let s = String(html ?? '')
+  // Anything that is not prose at all, content included.
+  s = s.replace(/<(script|style|head|title)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '')
+  s = s.replace(/<!--[\s\S]*?-->/g, '')
+  s = s.replace(/<br\s*\/?>/gi, '\n')
+  // ⚠️ AN ADJACENT PAIR OF BOUNDARIES IS ONE BREAK, NOT TWO. Hotmail writes each line of a reply as
+  // its own `<div>`, so `</div><div>` appears between every pair of lines; replacing the closing and
+  // the opening tag separately would double-space the whole logged message.
+  s = s.replace(new RegExp(`</(${BLOCK_TAGS})\\s*>\\s*<(${BLOCK_TAGS})\\b[^>]*>`, 'gi'), '\n')
+  s = s.replace(new RegExp(`</(${BLOCK_TAGS})\\s*>`, 'gi'), '\n')
+  s = s.replace(new RegExp(`<(${BLOCK_TAGS})\\b[^>]*>`, 'gi'), '\n')
+  s = s.replace(/<[^>]+>/g, '')
+  s = decodeEntities(s)
+  // ⚠️ WHITESPACE IS COLLAPSED WITHIN A LINE, NEVER ACROSS LINES. Outlook indents its quote header
+  // with non-breaking spaces and wraps prose at arbitrary columns; collapsing across newlines would
+  // destroy exactly the line structure the quote stripper reads.
+  s = s.split('\n').map(l => l.replace(/[ \t\u00a0]+/g, ' ').trim()).join('\n')
+  return s.replace(/\n{3,}/g, '\n\n').trim()
+}
+
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', ndash: '–', mdash: '—',
+  lsquo: '\u2018', rsquo: '\u2019', ldquo: '\u201c', rdquo: '\u201d', hellip: '…', pound: '£', euro: '€',
+}
+
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&#x([0-9a-f]+);/gi, (_m, h) => safeCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_m, d) => safeCodePoint(Number(d)))
+    // 🔴 `&amp;` LAST, via the named table, so `&amp;lt;` decodes ONCE and not twice.
+    .replace(/&([a-z]+);/gi, (m, name: string) => NAMED_ENTITIES[name.toLowerCase()] ?? m)
+}
+function safeCodePoint(n: number): string {
+  if (!Number.isFinite(n) || n < 0 || n > 0x10ffff) return ''
+  try { return String.fromCodePoint(n) } catch { return '' }
+}
+
+/**
+ * The reply's text: the plain part when it has words, otherwise the HTML part converted.
+ * ⚠️ "NON-EMPTY AFTER DECODING" IS THE TEST, not "the part exists". A multipart/alternative can carry a
+ * `text/plain` part that is whitespace, or a single `&nbsp;`, precisely because the sender only ever
+ * meant the HTML to be read.
+ */
+export function replyTextFrom(plain: string | null | undefined, html: string | null | undefined): string {
+  const p = String(plain ?? '').trim()
+  if (p) return String(plain)
+  const h = htmlToText(String(html ?? ''))
+  return h
+}
 
 /**
  * The reply, with the quoted history cut off — best effort, and best effort is the honest word.
@@ -284,6 +363,10 @@ export function stripQuotedHistory(text: string, cap = REPLY_TEXT_CAP): string {
   }
   const head = src.slice(0, cut).trim()
   const body = head || src.trim()
+  // 🔴 NEVER AN EMPTY CONTACT MESSAGE. An empty one renders as "No message was recorded with this
+  // contact", which months later reads as "they said nothing" — a different fact from "the text could
+  // not be extracted". The placeholder says which, and says where to look.
+  if (!body) return NO_TEXT_PLACEHOLDER
   return body.length > cap ? `${body.slice(0, cap - 1)}…` : body
 }
 

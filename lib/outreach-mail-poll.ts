@@ -27,6 +27,7 @@ import { readFromName } from '@/lib/outreach-settings-read'
 import {
   planFetch, advanceWatermark, emptyWatermark, withinFirstLook, classifyIncoming, matchIncoming, matchOutgoing,
   bouncedOriginalId, stripQuotedHistory, isStuckSending, shouldAutoRetry, isOwnAddress,
+  replyTextFrom, messageIdsIn,
   type PollState, type IncomingHeaders,
 } from '@/lib/outreach-mail-poll-rules'
 import {
@@ -94,6 +95,10 @@ export interface PollSummary {
   copiesFiled: number
   ambiguous: number
   unmatched: number
+  /** 🔴 Replies to a TEST send — Dominic answering himself. Counted, never recorded. */
+  repliesToTest: number
+  /** Inbound rows whose contact message was empty and has now been filled in. See `repairReplyTexts`. */
+  textsFilled: number
   /** Mailboxes whose uidvalidity changed and were re-scanned. Reported, because it explains a spike. */
   rescanned: string[]
   /** Mailboxes given their first look, with the date it read from. */
@@ -106,6 +111,7 @@ export interface PollSummary {
 const emptySummary = (): PollSummary => ({
   ok: true, repliesLogged: 0, autoReplies: 0, bounces: 0, outlookSentRecorded: 0,
   retried: 0, markedUncertain: 0, copiesFiled: 0, ambiguous: 0, unmatched: 0,
+  repliesToTest: 0, textsFilled: 0,
   rescanned: [], baselined: [], folders: [], errors: [],
 })
 
@@ -129,6 +135,8 @@ interface Directory {
   byAddress: Map<string, string[]>
   /** Our own Message-IDs → prospect id. The certain match. */
   byMessageId: Map<string, string>
+  /** 🔴 Of those, the ones belonging to TEST sends. A reply to one is ignored — see `repliesToTest`. */
+  testMessageIds: Set<string>
   /** Prospects linked to a HatchGrab truck. 🔴 Never auto-logged — see `loadDirectory`. */
   skip: Set<string>
   /** Prospects that already have an inbound reply row. Gates Outlook-sent logging. */
@@ -152,14 +160,17 @@ async function loadDirectory(supabase: SupabaseClient): Promise<Directory> {
     byAddress.set(e, [...(byAddress.get(e) ?? []), row.id])
   }
   const byMessageId = new Map<string, string>()
+  const testMessageIds = new Set<string>()
   const hasReply = new Set<string>()
   const { data: mRows } = await supabase
-    .from('outreach_messages').select('message_id, prospect_id, direction, status')
-  for (const m of (mRows ?? []) as { message_id: string; prospect_id: string; direction: string; status: string }[]) {
+    .from('outreach_messages').select('message_id, prospect_id, direction, status, is_test')
+  for (const m of (mRows ?? []) as { message_id: string; prospect_id: string; direction: string; status: string; is_test: boolean }[]) {
     byMessageId.set(m.message_id, m.prospect_id)
+    // 🔴 A TEST SEND IS NOT CORRESPONDENCE. Its replies are Dominic answering himself.
+    if (m.is_test) testMessageIds.add(m.message_id)
     if (m.direction === 'inbound' && m.status === 'received') hasReply.add(m.prospect_id)
   }
-  return { byAddress, byMessageId, skip, hasReply }
+  return { byAddress, byMessageId, testMessageIds, skip, hasReply }
 }
 
 // ── READING ONE MESSAGE ─────────────────────────────────────────────────────────────────────────────
@@ -171,6 +182,23 @@ interface SeenMessage {
   from: string[]
   to: string[]
   date: string | null
+}
+
+/**
+ * Does this message's thread resolve to TEST sends and nothing else?
+ *
+ * 🔴 "ONLY" IS LOAD-BEARING IN BOTH DIRECTIONS. A thread that touches any real send is a real
+ * conversation and is handled normally — a prospect who was sent a test and later a real email has
+ * one thread, and a reply in it is a reply. A thread that touches nothing but tests is Dominic
+ * replying to himself, and recording it would put a `replied` stage on a conversation that never
+ * happened. ⚠️ A message with no thread ids at all is NOT a reply to a test: it has no thread, so
+ * this says no and the address match decides as before.
+ */
+function isReplyToTestOnly(h: Pick<IncomingHeaders, 'get'>, dir: Directory): boolean {
+  const ids = [...messageIdsIn(h.get('in-reply-to')), ...messageIdsIn(h.get('references'))]
+  const known = ids.filter(id => dir.byMessageId.has(id))
+  if (!known.length) return false
+  return known.every(id => dir.testMessageIds.has(id))
 }
 
 /** A header reader over the raw block, as the rules expect it. */
@@ -271,6 +299,17 @@ async function walkMailbox(
 }
 
 /** The text body of a message, read by uid, READ-ONLY. Only used for a matched reply. */
+/**
+ * The reply's text, READ-ONLY.
+ *
+ * 🔴 BOTH PARTS ARE ASKED FOR, AND THAT IS THE FIX. This used to request `text/plain` and return
+ * `null` the moment there was not one — `if (!plain) return null`. Outlook.com sends HTML-only
+ * replies routinely, so a real reply produced no text at all, `stripQuotedHistory('')` returned '',
+ * and the contact row was logged empty while the same email read live from the Emails list showed the
+ * words plainly. The text was never missing; it was never read.
+ * ⚠️ `decodePart` HANDLES THE CHARSET AND THE TRANSFER ENCODING — base64 and quoted-printable both —
+ * so "non-empty after decoding" is a question this can actually answer.
+ */
 async function readText(client: ImapFlow, path: string, uid: number): Promise<string | null> {
   try {
     const msg = await client.fetchOne(String(uid), { uid: true, bodyStructure: true }, { uid: true })
@@ -278,12 +317,17 @@ async function readText(client: ImapFlow, path: string, uid: number): Promise<st
     const struct = (msg as { bodyStructure?: unknown }).bodyStructure
     if (!struct) return null
     const plain = findPart(struct as Parameters<typeof findPart>[0], 'text/plain')
-    if (!plain) return null
-    const full = await client.fetchOne(String(uid), { uid: true, bodyParts: [plain.part] }, { uid: true })
+    const html = findPart(struct as Parameters<typeof findPart>[0], 'text/html')
+    const parts = [plain?.part, html?.part].filter((v): v is string => !!v)
+    if (!parts.length) return null
+    const full = await client.fetchOne(String(uid), { uid: true, bodyParts: parts }, { uid: true })
     const bp = (full && typeof full === 'object' && 'bodyParts' in full
       ? (full as { bodyParts?: Map<string, Buffer> }).bodyParts
       : undefined) ?? new Map<string, Buffer>()
-    return decodePart(bp, plain.part, plain.encoding ?? null, plain.charset ?? null)
+    const plainText = plain ? decodePart(bp, plain.part, plain.encoding ?? null, plain.charset ?? null) : null
+    const htmlText = html ? decodePart(bp, html.part, html.encoding ?? null, html.charset ?? null) : null
+    const text = replyTextFrom(plainText, htmlText)
+    return text || null
   } catch { return null }
 }
 
@@ -331,7 +375,9 @@ export async function runReplyPoll(supabase: SupabaseClient): Promise<PollSummar
       catch (err) { fail(`account:${creds.account}`, err) }
     }
 
-    // ── HOUSEKEEPING ──────────────────────────────────────────────────────────────────────────────
+    // ── REPAIR, THEN HOUSEKEEPING ─────────────────────────────────────────────────────────────────
+    try { await repairReplyTexts(supabase, accounts, summary) }
+    catch (err) { fail('repair', err) }
     try { await housekeeping(supabase, accounts, now, summary) }
     catch (err) { fail('housekeeping', err) }
   } catch (err) {
@@ -373,6 +419,13 @@ async function pollOneAccount(
           // 🔴 THREADING LOOKS ACROSS BOTH ACCOUNTS. `dir.byMessageId` is built from every row in the
           // table, so a reply arriving at dominic@ to an email sent from hello@ still matches its
           // thread — which is the common case for weeks after the switch.
+          // 🔴 A REPLY TO A TEST SEND IS IGNORED ENTIRELY, AND IT MUST NOT FALL THROUGH.
+          // A test goes to Dominic's own address; replying to it is him answering himself. One such
+          // reply was logged on 29 September as a real reply, moving the prospect to `replied` on a
+          // conversation that never happened. ⚠️ THE `return` IS THE POINT: without it the code would
+          // drop to the From-address match and log it anyway, because the reply genuinely does come
+          // from the prospect's own address.
+          if (isReplyToTestOnly(h, dir)) { summary.repliesToTest++; return }
           const match = matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress)
           if (match.kind === 'ambiguous') { summary.ambiguous++; return }
           if (match.kind === 'none') { summary.unmatched++; return }
@@ -557,6 +610,94 @@ async function handleOutlookSent(
   })
   if (logged.ok && logged.id) {
     await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', made.id)
+  }
+}
+
+// ── REPAIRING REPLIES THAT WERE LOGGED WITHOUT THEIR TEXT ──────────────────────────────────────────
+/** How many to repair per run. Each one costs an IMAP fetch, and the run has a 60-second budget. */
+const MAX_REPAIRS_PER_RUN = 20
+
+/**
+ * Fill in the text of replies that were logged empty.
+ *
+ * 🔴 THE ROWS THIS EXISTS FOR ARE ALREADY IN THE DATABASE. Between the poll going live and the
+ * HTML-fallback fix, every HTML-only reply was logged with an empty message — which the contact
+ * popout renders as "No message was recorded with this contact". The email itself was never lost; it
+ * is in the mailbox and the Emails list has always shown it. This reads it again and writes down what
+ * it says.
+ *
+ * ⚠️ IT ONLY EVER FILLS A GAP. Both writes are filtered on the column being null or empty, so a
+ * message Dominic has since edited, or one a later run already repaired, is never overwritten. That is
+ * also what makes it safe to run on every poll: once a row has text it stops matching.
+ */
+async function repairReplyTexts(
+  supabase: SupabaseClient, accounts: AccountSet, summary: PollSummary,
+): Promise<void> {
+  const { data } = await supabase
+    .from('outreach_messages')
+    .select('id, contact_id, account, mailbox, uid, text_body')
+    .eq('direction', 'inbound')
+    .not('contact_id', 'is', null)
+    .not('mailbox', 'is', null)
+    .not('uid', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(200)
+  const rows = (data ?? []) as {
+    id: string; contact_id: string; account: string | null
+    mailbox: string | null; uid: number | null; text_body: string | null
+  }[]
+  if (!rows.length) return
+
+  // Which of those contact rows actually have nothing in them. One query, not one per row.
+  const { data: contacts } = await supabase
+    .from('outreach_contacts').select('id, message').in('id', rows.map(r => r.contact_id))
+  const empty = new Set(
+    ((contacts ?? []) as { id: string; message: string | null }[])
+      .filter(c => !(c.message ?? '').trim())
+      .map(c => c.id),
+  )
+  const todo = rows.filter(r => empty.has(r.contact_id)).slice(0, MAX_REPAIRS_PER_RUN)
+  if (!todo.length) return
+
+  // Grouped by account so each mailbox is opened once, not once per row.
+  const byAccount = new Map<string, typeof todo>()
+  for (const r of todo) {
+    const a = accountOfRow(r)
+    byAccount.set(a, [...(byAccount.get(a) ?? []), r])
+  }
+
+  for (const [account, group] of byAccount) {
+    const creds = credentialsFor(accounts, account as MailAccount)
+    if (!creds) continue
+    const client = makeImapClient(creds.user, creds.pass)
+    try {
+      await client.connect()
+      for (const r of group) {
+        // 🔴 READ-ONLY, as everything here is: EXAMINE and a peek.
+        const res = await withReadOnlyMailbox(client, r.mailbox!, async () => readText(client, r.mailbox!, r.uid!))
+        const text = res.skipped ? null : res.value
+        const logged = stripQuotedHistory(text ?? '')
+        // ⚠️ `stripQuotedHistory` NEVER RETURNS EMPTY — it gives the placeholder — so a message that
+        // genuinely has no readable text stops being a blank row that reads as "they said nothing".
+        const { data: filled } = await supabase
+          .from('outreach_contacts')
+          .update({ message: logged })
+          .eq('id', r.contact_id)
+          .or('message.is.null,message.eq.')          // 🔴 only where it is still empty
+          .select('id')
+        if (text && !(r.text_body ?? '').trim()) {
+          await supabase.from('outreach_messages')
+            .update({ text_body: text, updated_at: new Date().toISOString() })
+            .eq('id', r.id)
+            .or('text_body.is.null,text_body.eq.')
+        }
+        if (filled && filled.length > 0) summary.textsFilled++
+      }
+    } catch (err) {
+      summary.errors.push({ step: `repair:${account}`, error: sanitiseMailError(err) })
+    } finally {
+      try { await client.logout() } catch { /* already gone */ }
+    }
   }
 }
 

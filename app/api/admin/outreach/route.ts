@@ -222,6 +222,22 @@ export async function GET(req: NextRequest) {
       if (data.length < 1000) break
     }
 
+    // 🔴 WHICH CONTACTS HAVE AN EMAIL BEHIND THEM. A contact row logged by the reply poll — or by a
+    // send — carries `outreach_messages.contact_id`, and that is what lets Contact history open the
+    // real email rather than only the text that was logged from it. One bulk read, keyed the way the
+    // link is stored; a missing table (before the migration) simply means no contact has one.
+    const emailByContact = new Map<string, string>()
+    try {
+      const { data: linked } = await supabase
+        .from('outreach_messages').select('id, contact_id').not('contact_id', 'is', null)
+      for (const m of (linked ?? []) as { id: string; contact_id: string }[]) {
+        emailByContact.set(m.contact_id, m.id)
+      }
+    } catch { /* the link is an enhancement; history must still load without it */ }
+    for (const arr of contactsByProspect.values()) {
+      for (const c of arr) c.email_message_id = emailByContact.get(c.id) ?? null
+    }
+
     const schedIdx = await buildScheduleIndex()
 
     // ── THE PROSPECT'S LIVE DEMO (migration 20260912_demo_sessions_outreach) ──────────────────────
