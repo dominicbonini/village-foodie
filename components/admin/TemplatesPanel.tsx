@@ -31,6 +31,8 @@ import {
 import {
   signatureBlockHtml, optOutHtml, parseSignature, parseOptOut, type SignatureLine,
 } from '@/lib/outreach-signature'
+import { fromDisplay, fromNameLooksLikeAddress } from '@/lib/outreach-doc'
+import { OUTREACH_FROM_ADDRESS } from '@/lib/outreach-mail-config'
 
 type Row = {
   id: string; slug: string; label: string; channel: 'email' | 'whatsapp'
@@ -1281,6 +1283,7 @@ export default function TemplatesPanel() {
 function SignaturePanel() {
   const [lines, setLines] = useState<SignatureLine[] | null>(null)
   const [optOut, setOptOut] = useState('')
+  const [fromName, setFromName] = useState('')
   const [loadError, setLoadError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [note, setNote] = useState<string | null>(null)
@@ -1299,6 +1302,7 @@ function SignaturePanel() {
       const oo = parseOptOut(j.optOut)
       setLines(sig?.lines ?? [])
       setOptOut(oo?.text ?? '')
+      setFromName(typeof j.fromName === 'string' ? j.fromName : '')
     })()
     return () => { live = false }
   }, [])
@@ -1312,7 +1316,7 @@ function SignaturePanel() {
     try {
       const r = await fetch('/api/admin/outreach/settings', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signature: { lines }, optOut: { text: optOut } }),
+        body: JSON.stringify({ signature: { lines }, optOut: { text: optOut }, fromName: { text: fromName } }),
       })
       const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
       if (j.ok !== true) { setNote(String(j.refusal ?? 'That could not be saved.')); return }
@@ -1320,6 +1324,7 @@ function SignaturePanel() {
       const sig = parseSignature(j.signature)
       const oo = parseOptOut(j.optOut)
       setLines(sig?.lines ?? []); setOptOut(oo?.text ?? '')
+      setFromName(typeof j.fromName === 'string' ? j.fromName : '')
       setDirty(false); setNote('Saved.')
     } catch {
       setNote('That could not be saved — check the connection and try again.')
@@ -1340,6 +1345,28 @@ function SignaturePanel() {
   return (
     <div className="grid gap-4 items-start" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
       <div className="rounded-xl border border-slate-200 bg-white p-4">
+        {/* ── THE SENDER NAME, AT THE TOP, BECAUSE IT IS THE FIRST THING A RECIPIENT SEES ──────────
+            🔴 Without it the From header is the bare address, and every prospect's inbox showed
+            "dominic@hatchgrab.com <dominic@hatchgrab.com>". */}
+        <label className="block mb-4">
+          <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5">Sender name</span>
+          <input type="text" value={fromName}
+            placeholder="Dominic Bonini"
+            onChange={e => { setFromName(e.target.value); setDirty(true); setNote(null) }}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm" />
+          <span className="block mt-1 text-[11px] text-slate-500">
+            How your name appears in the recipient&apos;s inbox. Leave it empty to send from the bare
+            address, as before.
+          </span>
+          {/* ⚠️ A WARNING, NEVER A REFUSAL. Some filters score a display name containing `@` as a
+              disguised address, but a name is a person's to choose. */}
+          {fromNameLooksLikeAddress(fromName) && (
+            <span className="block mt-1 text-[11px] font-semibold text-amber-800">
+              Spam filters can treat a name containing @ as a disguised address — a plain name is safer.
+            </span>
+          )}
+        </label>
+
         <p className="text-sm font-bold text-slate-800">Signature lines</p>
         <p className="text-[12px] text-slate-600 mt-1 mb-3">
           These are inserted wherever a template has <code className="font-mono">{'{{signature}}'}</code> on
@@ -1400,6 +1427,11 @@ function SignaturePanel() {
         <p className="text-[12px] text-slate-600 mt-1 mb-3">
           Exactly what an email carries where the two tokens sit — rendered by the same code that builds
           the message, so this cannot drift from what is sent.
+        </p>
+        {/* The From line as the recipient will read it, above the block it belongs to. */}
+        <p className="text-[12px] text-slate-700 mb-2">
+          <span className="font-bold">From:</span>{' '}
+          <span className="font-mono">{fromDisplay(fromName, OUTREACH_FROM_ADDRESS)}</span>
         </p>
         <div className="border border-slate-200 rounded-lg p-3 bg-white"
           dangerouslySetInnerHTML={{ __html: signatureBlockHtml({ lines }) + optOutHtml({ text: optOut }) }} />

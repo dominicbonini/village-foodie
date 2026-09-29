@@ -32,25 +32,26 @@ export interface OptOutSettings { text: string }
 /** The two keys in `outreach_settings` this feature owns. Nothing else in that table is touched. */
 export const SIGNATURE_KEY = 'signature'
 export const OPT_OUT_KEY = 'opt_out'
+/** 🔴 THE THIRD AND LAST KEY THIS FEATURE OWNS. The settings route writes these three and no others. */
+export const FROM_NAME_KEY = 'from_name'
 
-/**
- * 🔴 THE SEND-TIME TOKENS. They are NOT resolved by `lib/outreach-template-render.ts` when the compose
- * box is filled — they survive into the text box as literal `{{signature}}` and `{{opt_out}}` and are
- * expanded only when the message is built. Two reasons, and the second is the important one:
- *   • the box would otherwise show eleven lines of signature the operator cannot usefully edit, and
- *   • the signature would then be EDITABLE TEXT in the box, so an accidental edit — or a trimmed
- *     paragraph — would change the opt-out line, which is a legal line under PECR. A token cannot be
- *     half-deleted: it is there or it is not, and the window says which.
- */
-export const SEND_TIME_TOKENS = [SIGNATURE_KEY, OPT_OUT_KEY] as const
-export type SendTimeToken = (typeof SEND_TIME_TOKENS)[number]
-
-export function isSendTimeToken(name: string): name is SendTimeToken {
-  return (SEND_TIME_TOKENS as readonly string[]).includes(name)
-}
-
-/** A line of the body that is nothing but one of these tokens. Leading/trailing space is allowed. */
-const TOKEN_LINE_RE = /^\s*\{\{\s*(signature|opt_out)\s*\}\}\s*$/
+/* 🔴 THE SEND-TIME TOKEN MACHINERY WAS HERE AND IS GONE (29 September 2026, later the same day).
+ * `SEND_TIME_TOKENS`, `isSendTimeToken`, `sendTimeTokensIn`, `expandBody`, `expandToPlainText`,
+ * `missingSettingsFor`, `stripHtmlToText` and `sendWarnings` all existed because the compose box was a
+ * plain textarea: it could not show bold or 10pt, so `{{signature}}` and `{{opt_out}}` had to survive
+ * as literal tokens and be expanded by the SERVER at send time.
+ *
+ * The box is a rich editor now. The tokens are expanded the moment a template is chosen
+ * (`lib/outreach-doc.ts#docFromTemplateText`), the result is editable like any other part of the
+ * message, and the server expands nothing — it converts the document it is given. So this code had no
+ * caller left, and it was deleted rather than kept "in case": a second way to turn a body into email
+ * HTML is exactly the thing that drifts from the first one.
+ *
+ * ⚠️ WHAT STAYED, AND WHY: the parsers and the two renderers below. `parseSignature`, `parseOptOut`
+ * and `parseFromName` are how the settings rows are read by everything that reads them, and
+ * `signatureBlockHtml` / `optOutHtml` draw the Signature panel's preview. `lib/outreach-doc.ts` owns
+ * the email itself and produces byte-identical markup — the harness asserts that equality against the
+ * output verified in Dominic's inbox. */
 
 export function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -101,6 +102,17 @@ export function parseSignature(value: unknown): SignatureSettings | null {
   return { lines }
 }
 
+/**
+ * The sender's display name.
+ * ⚠️ AN EMPTY OR MISSING NAME IS `null`, NOT AN ERROR — the send falls back to the bare address, which
+ * is what it did before this setting existed. Only the SETTINGS ROUTE cares whether it was saveable.
+ */
+export function parseFromName(value: unknown): string | null {
+  const v = value as { text?: unknown } | null
+  if (!v || typeof v.text !== 'string') return null
+  return v.text.trim() || null
+}
+
 export function parseOptOut(value: unknown): OptOutSettings | null {
   const v = value as { text?: unknown } | null
   if (!v || typeof v.text !== 'string' || !v.text.trim()) return null
@@ -109,148 +121,12 @@ export function parseOptOut(value: unknown): OptOutSettings | null {
 
 // ── EXPANSION ───────────────────────────────────────────────────────────────────────────────────────
 
-/** Which send-time tokens a body actually uses, so a send only needs the rows it will read. */
-export function sendTimeTokensIn(body: string): SendTimeToken[] {
-  const out: SendTimeToken[] = []
-  for (const line of String(body ?? '').replace(/\r\n/g, '\n').split('\n')) {
-    const m = line.match(TOKEN_LINE_RE)
-    if (m && !out.includes(m[1] as SendTimeToken)) out.push(m[1] as SendTimeToken)
-  }
-  return out
-}
-
+/**
+ * The two parsed rows, as the settings reader hands them around.
+ * ⚠️ The SEND no longer takes this — it takes a document and a display name. This is what the compose
+ * window loads to fill the Insert buttons and to expand a template's tokens into the editor.
+ */
 export interface SendTimeValues {
   signature: SignatureSettings | null
   optOut: OptOutSettings | null
-}
-
-/**
- * Split a paragraph's lines into runs: prose, and token lines standing on their own.
- * 🔴 A TOKEN IS A BLOCK, NOT A WORD. `{{signature}}` in the middle of a sentence is not supported and
- * is left alone — it would have to be inlined into a `<div>` that already has a style, and a
- * nine-line signature inside a sentence is not a thing anyone means.
- */
-function runsOf(paragraph: string): ({ token: SendTimeToken } | { lines: string[] })[] {
-  const out: ({ token: SendTimeToken } | { lines: string[] })[] = []
-  let buf: string[] = []
-  const flush = () => { if (buf.length) { out.push({ lines: buf }); buf = [] } }
-  for (const line of paragraph.split('\n')) {
-    const m = line.match(TOKEN_LINE_RE)
-    if (m) { flush(); out.push({ token: m[1] as SendTimeToken }) } else buf.push(line)
-  }
-  flush()
-  return out
-}
-
-/**
- * 🔴 `<br>` TYPED IN A TEMPLATE IS A LINE BREAK, NOT FOUR CHARACTERS TO SHOW THE PROSPECT.
- * `escapeHtml` turned a typed `<br><br>` into a visible `&lt;br&gt;&lt;br&gt;`, and the text part
- * carried the tags verbatim — which is exactly what the last test send did. Everything else is still
- * escaped, so a truck called `Bill & Ben's <Truck>` cannot become markup.
- */
-const BR_RE = /<br\s*\/?>/gi
-function proseToHtml(lines: string[]): string {
-  return lines.map(l => escapeHtml(l).replace(/&lt;br\s*\/?&gt;/gi, '<br>')).join('<br>')
-}
-
-/**
- * The text/plain equivalent: NO HTML AT ALL.
- * `<br>` becomes a line break, any other tag-like span is dropped, and entities are decoded last.
- * ⚠️ DECODING IS LAST ON PURPOSE. Decoding first would turn a literal `&lt;b&gt;` — text a template
- * meant to SHOW — into a tag and then delete it.
- */
-export function stripHtmlToText(s: string): string {
-  return decodeEntities(
-    String(s ?? '')
-      .replace(BR_RE, '\n')
-      // A tag-like span only: `<` followed by a letter or `/`. `price < £5` is prose and survives.
-      .replace(/<\/?[a-zA-Z][^>]*>/g, ''),
-  )
-}
-function decodeEntities(s: string): string {
-  return s
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    // 🔴 `&amp;` LAST, or `&amp;lt;` would decode twice and produce a `<` the text never had.
-    .replace(/&amp;/g, '&')
-}
-
-/**
- * The body, expanded to the two parts.
- *
- * The paragraph model is unchanged: paragraphs split on a blank line, one empty styled div between
- * them, internal newlines as `<br>`. A token line is a block inside that model, so the spacing around
- * a signature is whatever the template's blank lines say it is — which is the point of placing it.
- */
-export function expandBody(body: string, values: SendTimeValues): { html: string; text: string } {
-  const src = String(body ?? '').replace(/\r\n/g, '\n')
-  const paragraphs = src.split(/\n{2,}/).map(p => p.replace(/[ \t]+$/gm, '')).filter(p => p.trim() !== '')
-  const htmlOut: string[] = []
-  const textOut: string[] = []
-  paragraphs.forEach((p, i) => {
-    if (i > 0) htmlOut.push(div(SIG_P_STYLE, '<br>'))
-    const hParts: string[] = []
-    const tParts: string[] = []
-    for (const run of runsOf(p)) {
-      if ('token' in run) {
-        if (run.token === SIGNATURE_KEY && values.signature) {
-          hParts.push(signatureBlockHtml(values.signature))
-          tParts.push(signatureBlockText(values.signature))
-        } else if (run.token === OPT_OUT_KEY && values.optOut) {
-          hParts.push(optOutHtml(values.optOut))
-          tParts.push(optOutText(values.optOut))
-        }
-        // A token whose settings row is missing expands to NOTHING here. The caller refuses the send
-        // before reaching this point — see `missingSettingsFor` — so this branch is unreachable in a
-        // send and exists only so a preview cannot throw.
-      } else {
-        const lines = run.lines.filter((l, idx, arr) => !(l.trim() === '' && (idx === 0 || idx === arr.length - 1)))
-        if (!lines.length) continue
-        hParts.push(div(SIG_P_STYLE, proseToHtml(lines)))
-        tParts.push(stripHtmlToText(lines.join('\n')))
-      }
-    }
-    htmlOut.push(hParts.join(''))
-    textOut.push(tParts.join('\n'))
-  })
-  return { html: htmlOut.join(''), text: textOut.join('\n\n') }
-}
-
-/** The same expansion as PLAIN TEXT ONLY — what Copy and the contact log get. */
-export function expandToPlainText(body: string, values: SendTimeValues): string {
-  return expandBody(body, values).text
-}
-
-/**
- * Which rows a body needs but has not got.
- * 🔴 A MISSING SETTINGS ROW IS A REFUSAL, NOT A BLANK. A template that says `{{opt_out}}` is asserting
- * that the email carries an opt-out line; sending it with the token silently expanding to nothing
- * would send an outreach email without one and record no sign of it.
- */
-export function missingSettingsFor(body: string, values: SendTimeValues): SendTimeToken[] {
-  return sendTimeTokensIn(body).filter(t =>
-    (t === SIGNATURE_KEY && !values.signature) || (t === OPT_OUT_KEY && !values.optOut))
-}
-
-// ── THE WARNINGS THE COMPOSE WINDOW SHOWS ───────────────────────────────────────────────────────────
-/** The four outreach rungs. An email on one of these is a cold approach and wants an opt-out line. */
-const LADDER_KINDS = new Set(['1_first_contact', '2_chase_1', '3_chase_2', '4_final_chase'])
-
-/**
- * ⚠️ WARNINGS, NOT REFUSALS, AND DELIBERATELY SO. Nothing in the codebase can know that a particular
- * message is an outreach approach rather than a reply to a question — `kind` is the operator's own
- * word for it. A refusal would be wrong for the second case and would train him to work around it.
- * A sentence under the buttons, repeated in the Send confirm, is the correct strength.
- */
-export function sendWarnings(body: string, kind: string | null): string[] {
-  const has = sendTimeTokensIn(body)
-  const out: string[] = []
-  if (!has.includes(SIGNATURE_KEY)) {
-    out.push('No {{signature}} in this message — it will go without your signature.')
-  }
-  if (kind && LADDER_KINDS.has(kind) && !has.includes(OPT_OUT_KEY)) {
-    out.push('This outreach email has no {{opt_out}} line.')
-  }
-  return out
 }

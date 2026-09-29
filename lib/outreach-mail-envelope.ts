@@ -14,6 +14,8 @@ import {
 
 export interface SendableRow {
   message_id: string
+  /** The sender's display name for this message, or null for the bare address. */
+  from_name?: string | null
   in_reply_to: string | null
   references: string | null
   subject: string | null
@@ -56,8 +58,16 @@ export function smtpTransportOptions(user: string, pass: string): SMTPTransport.
  * somewhere else, cannot quietly sign Dominic's emails.
  */
 export function mailFor(row: SendableRow): Mail.Options {
+  // 🔴 THE DISPLAY NAME IS DATA, AND nodemailer DOES THE QUOTING. A name containing a comma, a quote
+  // or a non-ASCII character each need different treatment in an RFC5322 header — `Bonini, Dominic`
+  // must be quoted or the comma reads as an address separator, and an accented name needs encoded-word
+  // form. Handing over `{ name, address }` lets the library that knows those rules apply them; building
+  // the string here would be a fourth reimplementation of a spec that is easy to get subtly wrong.
+  // ⚠️ AN EMPTY NAME FALLS BACK TO THE BARE ADDRESS — the behaviour that shipped before the setting
+  // existed. This never refuses.
+  const name = (row.from_name ?? OUTREACH_FROM_NAME ?? '').trim()
   return {
-    from: OUTREACH_FROM_NAME ? { name: OUTREACH_FROM_NAME, address: OUTREACH_FROM_ADDRESS } : OUTREACH_FROM_ADDRESS,
+    from: name ? { name, address: OUTREACH_FROM_ADDRESS } : OUTREACH_FROM_ADDRESS,
     to: row.to_address ?? '',
     subject: row.subject ?? '',
     messageId: row.message_id,

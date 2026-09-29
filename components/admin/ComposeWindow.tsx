@@ -19,9 +19,15 @@ import { createPortal } from 'react-dom'
 // so the compose window can render exactly what will be sent rather than a hand-kept copy of it.
 // 🔴 THE EXPANSION USED BY COPY AND LOG IS THE SENDER'S OWN. A `{{signature}}` must never reach the
 // clipboard or the contact log as four literal characters — the log is the record of what was sent.
+import { parseSignature, parseOptOut } from '@/lib/outreach-signature'
+// 🔴 THE DOCUMENT IS THE MESSAGE NOW. The box shows the email as it will arrive and the server turns
+// this same document into the two MIME parts — see lib/outreach-doc.ts for why it is a document and
+// not HTML on the wire.
 import {
-  expandToPlainText, sendWarnings, parseSignature, parseOptOut, type SendTimeValues,
-} from '@/lib/outreach-signature'
+  docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutWarning,
+  EMPTY_DOC, type EmailDoc, type DocLine,
+} from '@/lib/outreach-doc'
+import RichEmailEditor from '@/components/admin/RichEmailEditor'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -72,6 +78,16 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
       Object.keys(fills).map(k => [k, fillSourceOf(tpl, globals, k)]),
     ) as Record<string, 'snippet' | 'template' | null>,
   }
+}
+
+/**
+ * A short stable hash of a string — FNV-1a, hex. Used only to key the idempotency token to the exact
+ * message; it is not a security primitive and does not need to be one.
+ */
+function hashKey(s: string): string {
+  let h = 0x811c9dc5
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) }
+  return (h >>> 0).toString(16)
 }
 
 /** "11 Sep 2026, 13:07" — enough to recognise which email, in the timezone the mail is read in. */
@@ -244,7 +260,16 @@ export default function ComposeWindow({
    * table itself at send time, so a stale browser copy can never become the email. They are here
    * because Copy and Log-only have no server round trip and must still not emit a raw token.
    */
-  const [settings, setSettings] = useState<SendTimeValues>({ signature: null, optOut: null })
+  const [settings, setSettings] = useState<{ signatureLines: DocLine[]; optOut: string | null }>(
+    { signatureLines: [], optOut: null })
+  const [settingsLoaded, setSettingsLoaded] = useState(false)
+  /**
+   * 🔴 THE EMAIL, AS A DOCUMENT. For an email this — not `body` — is what is sent. `body` remains the
+   * plain-text pipeline the template, the fields and WhatsApp all run on, and the document is rebuilt
+   * from it until the operator types in the editor, at which point `edited` is true and the existing
+   * precedence rule ("your text wins") takes over, exactly as it always has for the textarea.
+   */
+  const [editedDoc, setEditedDoc] = useState<EmailDoc | null>(null)
   const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
   const [sending, setSending] = useState(false)
   const [sentNote, setSentNote] = useState<string | null>(null)
@@ -319,6 +344,7 @@ export default function ComposeWindow({
           .filter(([, v]) => !!v?.value)
           .map(([k, v]) => [k, v.updatedAt]))
       : {})
+    setEditedDoc(null)          // a different template replaces the message, box and all
     if (!id) { setSubject(''); setBody(''); return }
     const tpl = offerable.find(t => t.id === id)
     if (!tpl) return
@@ -366,7 +392,40 @@ export default function ComposeWindow({
 
   /** Placeholders still present in the LIVE message — what "Still to fill" counts and what the
    *  warnings name. Derived from the text on screen, so it stays true after hand edits. */
-  const outstanding = useMemo(() => unresolvedIn(`${subject}\n${body}`), [subject, body])
+  /**
+   * 🔴 THE GUARDS READ WHAT IS ON SCREEN, WHICH FOR AN EMAIL IS NOW THE DOCUMENT. `unresolvedIn`,
+   * `malformedTokensIn` and `isMustResolveToken` are the SAME functions as before — §58.2 records what
+   * happened the one time a guard was re-implemented next to the thing it guards — they are simply
+   * handed the document's text instead of the textarea's.
+   */
+  // ⚠️ Declared here rather than reusing `isEmail`, which is defined further down with the rest of the
+  // send-side derivations; moving that up would reorder a block the re-substitution effect depends on.
+  const isEmailChannel = selected?.channel === 'email'
+  // 🔴 THE FIELD VALUES ARE APPLIED HERE, ABOVE EVERYTHING THAT READS THE MESSAGE. These two used to
+  // be declared a hundred lines further down, next to the send; the document has to be derived before
+  // the guards run, and the document is derived from these, so they moved up rather than being
+  // computed twice under two names.
+  const finalSubject = applyFills(subject)
+  const finalBody = applyFills(body)
+  // ⚠️ THE DOCUMENT IS DERIVED HERE, ABOVE THE GUARDS, because the guards read it — they check what is
+  // on screen, and for an email what is on screen is the document.
+  /**
+   * 🔴 THE DOCUMENT IS DERIVED, NOT SYNCHRONISED. The first version of this was a `useEffect` that
+   * called `setDoc` whenever the template text changed — which is the `set-state-in-effect` pattern
+   * this repository already carries eleven of, and it would have made twelve. A `useMemo` is the same
+   * rule expressed as a derivation: while the operator has not touched the editor, the document IS the
+   * template render; the first keystroke in the box stores a document and that one wins from then on.
+   * ⚠️ IT WAITS FOR THE SETTINGS. Building before they arrive would put an empty signature in the box.
+   */
+  const templateDoc = useMemo(
+    () => (isEmailChannel && settingsLoaded ? docFromTemplateText(finalBody, settings) : EMPTY_DOC),
+    [isEmailChannel, settingsLoaded, finalBody, settings])
+  const doc = editedDoc ?? templateDoc
+
+  const guardText = useMemo(
+    () => (isEmailChannel ? `${subject}\n${docPlainText(doc)}` : `${subject}\n${body}`),
+    [isEmailChannel, subject, doc, body])
+  const outstanding = useMemo(() => unresolvedIn(guardText), [guardText])
 
   /** 🔴 `{{…}}` SPANS THE SUBSTITUTION CANNOT CONSUME — THE HARD STOP.
    *  Derived from `finalSubject`/`finalBody` below rather than the template source, for the same reason
@@ -426,7 +485,13 @@ export default function ComposeWindow({
       + `here. Untick "Do not contact" on the prospect if that flag is wrong.`
     : null
   /** Every hard stop. All three refuse the same three exits through the same error line. */
-  const refusal = dncNotice ?? malformedNotice ?? blockingNotice
+  /**
+   * 🔴 A LITERAL `{{signature}}` TYPED INTO THE BOX IS A REFUSAL. Nothing expands tokens at send time
+   * any more, so those thirteen characters would be emailed verbatim. The sentence names the button.
+   */
+  const literalNotice = useMemo(
+    () => (isEmailChannel ? literalTokenRefusal(doc) : null), [isEmailChannel, doc])
+  const refusal = dncNotice ?? malformedNotice ?? blockingNotice ?? literalNotice
 
   // 🔴 THE RE-SUBSTITUTION, AND THE ONE RULE THAT GOVERNS IT.
   // While `edited` is false the message IS the render with field values applied, so typing in a field
@@ -444,25 +509,32 @@ export default function ComposeWindow({
   const rerenderFromTemplate = useCallback(() => {
     setSubject(applyFills(sourceSubject))
     setBody(applyFills(sourceBody))
+    setEditedDoc(null)          // "discard my edits" includes the ones made in the editor
     setEdited(false); setConfirmRerender(false); setLogged(false)
   }, [applyFills, sourceSubject, sourceBody])
 
-  const isEmail = selected?.channel === 'email'
-  const finalSubject = applyFills(subject)
-  const finalBody = applyFills(body)
+  const isEmail = isEmailChannel
   /** 🔴 WHAT ACTUALLY LEAVES THIS WINDOW: the EDITED body with field values applied, AND NOTHING ELSE.
    *  It used to be `composeEmail(finalBody)` for email — body + signature + the mandatory opt-out line.
    *  All three of those now come from the Outlook signature, so appending anything here would send them
    *  twice and would put the opt-out line ABOVE Outlook's signature instead of last. */
   const fullText = finalBody
 
-  /** What Copy and Log emit: the same text, with both send-time tokens expanded. */
-  const plainForHumans = useMemo(() => expandToPlainText(fullText, settings), [fullText, settings])
 
-  /** ⚠️ WARNINGS, NOT REFUSALS. See `sendWarnings` for why that is the right strength. */
-  const warnings = useMemo(
-    () => (isEmail ? sendWarnings(fullText, selected?.servesKind ?? logFormKind) : []),
-    [isEmail, fullText, selected?.servesKind, logFormKind])
+  /** The message as plain text: from the DOCUMENT for an email, from the textarea for WhatsApp. */
+  const plainForHumans = useMemo(
+    () => (isEmail ? docToText(doc) : fullText), [isEmail, doc, fullText])
+
+  /**
+   * ⚠️ ONE WARNING NOW, AND IT IS A WARNING. The "no {{signature}}" warning is gone — he can SEE the
+   * signature in the box, so telling him it is missing would be telling him what he is looking at.
+   * The opt-out warning stays, because its absence is the thing that is easy not to notice.
+   */
+  const warnings = useMemo(() => {
+    if (!isEmail) return []
+    const w = optOutWarning(doc, selected?.servesKind ?? logFormKind, settings.optOut)
+    return w ? [w] : []
+  }, [isEmail, doc, selected?.servesKind, logFormKind, settings.optOut])
 
   // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
   // 🔴 THE mailto: PATH IS GONE, AND WITH IT EVERY REASON IT EXISTED. A mailto could report one thing
@@ -517,7 +589,8 @@ export default function ComposeWindow({
     return () => { live = false }
   }, [isEmail, prospectId, kindForSend])
 
-  // The signature rows, for Copy and Log. Never for the send.
+  // The signature rows — for the Insert buttons and for expanding a template's tokens into the box.
+  // ⚠️ NEVER FOR THE SEND. The server sends the DOCUMENT; it reads no settings at send time at all.
   useEffect(() => {
     let live = true
     void (async () => {
@@ -525,7 +598,13 @@ export default function ComposeWindow({
       if (!r || !live) return
       const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
       if (!live || j.ok !== true) return
-      setSettings({ signature: parseSignature(j.signature), optOut: parseOptOut(j.optOut) })
+      const sig = parseSignature(j.signature)
+      const oo = parseOptOut(j.optOut)
+      setSettings({
+        signatureLines: (sig?.lines ?? []).map(l => ({ text: l.text, bold: l.bold })),
+        optOut: oo?.text ?? null,
+      })
+      setSettingsLoaded(true)
     })()
     return () => { live = false }
   }, [])
@@ -556,15 +635,18 @@ export default function ComposeWindow({
     sendInFlight.current = true
     setSending(true); setSendError(null); setConfirmSend(null)
     try {
-      // 🔴 ONE KEY PER EXACT MESSAGE, and the key is still derived from the TEXT — that did not depend
-      // on the preview. A double press of the same message returns the first send's verdict; changed
-      // text is a different message and gets a new key.
-      const key = JSON.stringify([finalSubject, fullText, kindForSend, test])
+      // 🔴 ONE KEY PER EXACT MESSAGE. It is now a hash of the DOCUMENT plus the subject, the rung and
+      // whether it is a test — the document is the message, so two sends of the same document are the
+      // same send and the second returns the first's verdict. Changing a single character of
+      // formatting changes the document and therefore the key, which is right: it is a different email.
+      const key = hashKey(JSON.stringify([finalSubject, isEmail ? doc : fullText, kindForSend, test]))
       if (!idemRef.current || idemRef.current.forKey !== key) {
         idemRef.current = { forKey: key, value: crypto.randomUUID() }
       }
       const { json } = await post({
-        action: 'send', subject: finalSubject, body: fullText, kind: kindForSend,
+        action: 'send', subject: finalSubject, kind: kindForSend,
+        // The document for an email; the plain body for WhatsApp, which this route does not send.
+        ...(isEmail ? { document: doc } : { body: fullText }),
         is_test: test, idempotency_key: idemRef.current.value,
       })
       if (json.duplicate === true) {
@@ -597,7 +679,7 @@ export default function ComposeWindow({
       sendInFlight.current = false
       setSending(false)
     }
-  }, [refusal, post, finalSubject, fullText, kindForSend, toEmail, onSent])
+  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -896,18 +978,34 @@ export default function ComposeWindow({
             {/* 🔴 THE OLD LABEL SAID THE OPT-OUT "MUST BE IN YOUR OUTLOOK SIGNATURE". That stopped
                 being true when this window started sending: the email is built here, not in Outlook,
                 so Outlook's signature never touches it. Put `{{opt_out}}` in the template instead. */}
+            {/* 🔴 THE LABEL HAS BEEN WRONG TWICE AND IS NOW SIMPLY TRUE. It once said the opt-out
+                "must be in your Outlook signature" (Outlook never touches these emails); then that the
+                tokens "are filled in when it sends" (they are filled in when the template is chosen,
+                and the server expands nothing). What is in the box is what is sent. */}
             <span className={LABEL}>
-              Message — exactly what will be sent. Put {'{{signature}}'} and {'{{opt_out}}'} on their own
-              lines where you want them; they are filled in when it sends.
+              {isEmailChannel
+                ? 'Message — this is the email. Exactly what is here is sent, signature and all.'
+                : 'Message — exactly what will be sent.'}
             </span>
             {/* 🔴 SIZED WITH `rows`, NOT WITH A FONT CLASS. The unlayered !important rule in globals.css
                 forces `font-size: inherit` on every textarea on desktop, so `text-sm` here is INERT and
                 the box renders at 16px whatever class it carries. `rows` sets the visible line count and
                 is untouched by that rule, so it is the only reliable way to make this box tall enough to
                 read a whole email without scrolling it. */}
-            <textarea rows={18} className={`${FIELD} resize-y font-normal leading-relaxed`}
-              placeholder="Choose a template above, or write here."
-              value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }} />
+            {/* 🔴 THE EMAIL BOX IS THE EMAIL. WhatsApp keeps the textarea — there is no formatting in
+                a WhatsApp message and a rich editor would invite some. */}
+            {isEmailChannel ? (
+              <RichEmailEditor
+                value={doc}
+                onChange={d => { setEditedDoc(d); setEdited(true); setLogged(false) }}
+                signatureLines={settings.signatureLines}
+                optOut={settings.optOut}
+              />
+            ) : (
+              <textarea rows={18} className={`${FIELD} resize-y font-normal leading-relaxed`}
+                placeholder="Choose a template above, or write here."
+                value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }} />
+            )}
           </label>
 
           {/* ── THE ONE THING THE BOX CANNOT SHOW: that this is a reply ──────────────────────────
@@ -1115,7 +1213,7 @@ export default function ComposeWindow({
             <span className={`text-[11px] ${warnings.length ? 'text-amber-800 font-semibold' : 'text-slate-400'}`}>
               {warnings.length
                 ? warnings.join(' ')
-                : 'Send goes from your mailbox and logs the contact. Copy and Log are unchanged.'}
+                : 'Send test to me goes only to you and changes nothing. Send goes to the prospect, logs it and updates the stage.'}
             </span>
             <div className="ml-auto flex items-center gap-2">
               <button onClick={doCopy} disabled={!body.trim()}

@@ -12,7 +12,7 @@
 //
 // Pure: no network, no database, no nodemailer. `scripts/outreach-mail-send.cjs` proves every rule here.
 import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_TZ } from '@/lib/outreach-mail-config'
-import { expandBody, type SendTimeValues } from '@/lib/outreach-signature'
+import { docToHtml, docToText, type EmailDoc } from '@/lib/outreach-doc'
 
 /** The paragraph style, exactly as captured. Used for body paragraphs, spacers and the signature lines. */
 const P_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);'
@@ -64,6 +64,10 @@ const div = (style: string, inner: string) => `<div style="${style}">${inner}</d
  */
 export function quoteAddress(address: string, name?: string | null): string {
   const n = (name ?? '').trim()
+  // 🔴 WITH A DISPLAY NAME THIS IS `Name <address>`; without one it repeats the address on both sides,
+  // which is what the captured mail does and what recipients were actually seeing. The quote header on
+  // a reply must match the From header of the email above it in the thread, so both read the same
+  // `from_name` row.
   return `${n || address} <${address}>`
 }
 
@@ -162,13 +166,13 @@ export interface BuiltMessage {
 }
 
 export interface BuildInput {
-  /** The edited body, exactly as the compose window shows it. */
-  body: string
   /** The template's subject — used only when this is NOT a reply. */
   subject: string
   messageId: string
-  /** The signature and opt-out rows this body's tokens need. Read by the route, never by this module. */
-  settings: SendTimeValues
+  /** 🔴 THE MESSAGE ITSELF, as the compose box holds it. Nothing is appended to it. */
+  doc: EmailDoc
+  /** The sender's display name, or null for the bare address. Used in the quote header on a reply. */
+  fromName?: string | null
   /** Absent ⇒ a first contact: a new thread with the template's own subject. */
   parent?: {
     messageId: string
@@ -184,10 +188,12 @@ export interface BuildInput {
  * conversation in the prospect's inbox and the whole point of chasing in-thread is lost.
  */
 export function buildMessage(input: BuildInput): BuiltMessage {
-  // 🔴 THE BODY IS EXPANDED, NOT DECORATED. `expandBody` turns `{{signature}}` and `{{opt_out}}` lines
-  // into their blocks IN PLACE and leaves everything else exactly where the operator put it. Nothing
-  // is appended here — see the note where `signatureHtml()` used to be.
-  const { html: bodyH, text: bodyT } = expandBody(input.body, input.settings)
+  // 🔴 THE DOCUMENT IS THE MESSAGE. `docToHtml` generates the captured Outlook markup from it and
+  // `docToText` the plain part; NOTHING is appended. The only thing this function adds to what the
+  // operator wrote is the quoted parent on a reply, which is below and is visible in the box's Show
+  // toggle before it is sent.
+  const bodyH = docToHtml(input.doc)
+  const bodyT = docToText(input.doc)
   if (!input.parent) {
     return {
       subject: input.subject,

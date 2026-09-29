@@ -18,7 +18,7 @@ import nodemailer from 'nodemailer'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { malformedTokensIn, unresolvedIn, isMustResolveToken } from '@/lib/outreach-template-render'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
-import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
+import { OUTREACH_FROM_ADDRESS, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
 import { smtpTransportOptions, mailFor, composeRaw, rawMailFor } from '@/lib/outreach-mail-envelope'
 import {
   buildMessage, newMessageId, classifySendFailure, replySubject,
@@ -28,8 +28,8 @@ import {
   makeImapClient, findInSent, appendToSent, fetchBodiesByUid, fetchMessageForView, sanitiseMailError,
 } from '@/lib/outreach-mail-box'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
-import { readOutreachSettings } from '@/lib/outreach-settings-read'
-import { missingSettingsFor, expandToPlainText } from '@/lib/outreach-signature'
+import { readFromName } from '@/lib/outreach-settings-read'
+import { validateDoc, docPlainText, literalTokenRefusal } from '@/lib/outreach-doc'
 import { prospectRefusal, retryRefusal, startsNewThread } from '@/lib/outreach-send-rules'
 
 export const runtime = 'nodejs'
@@ -58,6 +58,8 @@ async function messagesTable() {
 /** One `outreach_messages` row, as this route reads it back. */
 interface Row {
   id: string; prospect_id: string; direction: string; status: string; is_test: boolean
+  /** Not a column — attached in-process so `mailFor` can put it on the From header. */
+  from_name?: string | null
   message_id: string; in_reply_to: string | null; references: string | null
   subject: string | null; to_address: string | null; message_date: string | null
   html_body: string | null; text_body: string | null; sent_copy: string; attempts: number
@@ -192,7 +194,7 @@ export async function POST(req: NextRequest) {
     if (!row) return refuse('That message is not in the log any more.')
     const stop = retryRefusal(row, body.confirm_uncertain === true)
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
-    const retried = await deliver(row, { mailUser, mailPass, isTest: row.is_test, testRecipient })
+    const retried = await deliver({ ...row, from_name: await readFromName(supabase) }, { mailUser, mailPass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
   }
 
@@ -226,7 +228,9 @@ export async function POST(req: NextRequest) {
     if (row.status !== 'sent') return refuse('Only a message the server accepted can be filed in Sent.')
     if (row.sent_copy !== 'absent') return refuse('That message already has a copy in Sent.')
     let raw: Buffer
-    try { raw = await composeRaw(row) } catch (err) { return refuse(`That message could not be rebuilt (${sanitiseMailError(err)}).`) }
+    // The same bytes the send produced, which means the same display name.
+    const rowWithName = { ...row, from_name: await readFromName(supabase) }
+    try { raw = await composeRaw(rowWithName) } catch (err) { return refuse(`That message could not be rebuilt (${sanitiseMailError(err)}).`) }
     const copy = await fileSentCopy(row, raw, row.message_date ? new Date(row.message_date) : new Date(), { mailUser, mailPass })
     await supabase.from('outreach_messages').update({
       sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
@@ -368,15 +372,30 @@ export async function POST(req: NextRequest) {
   const toAddress = (truck?.contact_email ?? '').trim()
 
   const subjectIn = String(body.subject ?? '').trim()
-  const bodyIn = String(body.body ?? '')
+
+  // ── THE DOCUMENT · validated against the schema, never passed through ───────────────────────────
+  // 🔴 THE BROWSER SENDS A DOCUMENT, NOT HTML, AND THE SERVER GENERATES EVERY BYTE OF MARKUP. See
+  // `lib/outreach-doc.ts`: HTML from a browser is an open set and "sanitise it" is a blocklist, which
+  // is the wrong shape of defence for something emailed to strangers under Dominic's own name.
+  // ⚠️ THE EDITOR ENFORCES THE SAME SCHEMA, AND THAT IS NOT WHY THIS IS SAFE. The document arrives
+  // over HTTP; this is the guard.
+  const parsed = validateDoc(body.document)
+  if (!parsed.ok) return refuse(`That message could not be sent — ${parsed.error}.`)
+  const docIn = parsed.doc
+  const bodyIn = docPlainText(docIn)
   if (!bodyIn.trim()) return refuse('There is no message body to send.')
+
+  // 🔴 A LITERAL TOKEN IS A REFUSAL. Nothing expands `{{signature}}` at send time any more, so it
+  // would be emailed as those thirteen characters.
+  const literal = literalTokenRefusal(docIn)
+  if (literal) return refuse(literal)
 
   // ── REFUSAL 4 · the §58 guards, IMPORTED, not re-implemented ─────────────────────────────────────
   // 🔴 `malformedTokensIn` KEYS OFF THE DELIMITERS, NOT THE TOKEN PATTERN — §58.2 records why: a guard
   // that shares the resolver's regex is blind to exactly the mistakes the resolver cannot consume, and
   // `{{truck name}}` shipped on an active template because three guards shared one pattern. A second
   // copy here would be a fourth reader of that same blind spot.
-  const whole = `${subjectIn}\n${bodyIn}`
+  const whole = `${subjectIn}\n${bodyIn}`   // `bodyIn` is the DOCUMENT's text — the guards are unchanged
   const malformed = malformedTokensIn(whole)
   if (malformed.length) return refuse(`The message still contains a malformed token: ${malformed.join(', ')}`)
   const mustResolve = unresolvedIn(whole).filter(isMustResolveToken)
@@ -387,18 +406,19 @@ export async function POST(req: NextRequest) {
   // why it went. Nothing counts sends now — least of all a test send, which never did count and, with
   // the cap gone, has nothing left that could refuse it on volume.
 
-  // ── REFUSAL · the signature settings a token needs ──────────────────────────────────────────────
-  // 🔴 A MISSING SETTINGS ROW STOPS THE SEND. `{{opt_out}}` in a template is an assertion that this
-  // email carries an opt-out line; expanding it to nothing would send a cold approach without one and
-  // leave no trace that it had happened.
-  const settingsRead = await readOutreachSettings(supabase)
-  if (settingsRead.error) {
-    return refuse(`Your signature settings could not be read (${settingsRead.error}), so nothing was sent.`)
-  }
-  const missingSettings = missingSettingsFor(bodyIn, settingsRead.values)
-  if (missingSettings.length) {
-    return refuse(`Your signature settings could not be read (no ${missingSettings.join(' or ')} row in outreach_settings), so nothing was sent.`)
-  }
+  // 🔴 THE SEND-TIME SIGNATURE EXPANSION WAS HERE AND IS GONE. It read `outreach_settings`, refused a
+  // send whose template named a row that was missing, and expanded `{{signature}}` / `{{opt_out}}`
+  // into the message. None of that is right any more: the signature is expanded into the EDITOR when
+  // the template is chosen, so it is visible and editable, and the server appends nothing at all.
+  // The one setting the send still reads is the sender's display name, below — and that one can never
+  // refuse, because its absence is the behaviour that shipped before it existed.
+
+  // ── THE SENDER'S DISPLAY NAME ───────────────────────────────────────────────────────────────────
+  // ⚠️ READ SERVER-SIDE, AND IT NEVER REFUSES. Recipients were seeing
+  // "dominic@hatchgrab.com <dominic@hatchgrab.com>" because there was no name to show. An absent or
+  // empty row falls back to the bare address — exactly what shipped before — so a settings problem
+  // costs a display name and never an email.
+  const fromName = await readFromName(supabase)
 
   // ── THREADING — a chase is a REPLY, or it is refused; a FIRST CONTACT never is ───────────────────
   const sendKind = typeof body.kind === 'string' ? body.kind : null
@@ -424,7 +444,9 @@ export async function POST(req: NextRequest) {
       messageId: parentRow.message_id,
       references: parentRow.references,
       quoted: {
-        fromAddress: OUTREACH_FROM_ADDRESS, fromName: OUTREACH_FROM_NAME,
+        // 🔴 THE SAME NAME THE From HEADER CARRIES, so the quote header on a reply matches the email
+        // it is quoting rather than showing a bare address under a named one.
+        fromAddress: OUTREACH_FROM_ADDRESS, fromName,
         toAddress: parentRow.to_address ?? toAddress, toName: null,
         subject: parentRow.subject ?? subjectIn,
         date: parentRow.message_date ? new Date(parentRow.message_date) : new Date(),
@@ -441,7 +463,7 @@ export async function POST(req: NextRequest) {
 
   // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ───────────────────────────────────────────────────
   const messageId = newMessageId()
-  const built = buildMessage({ body: bodyIn, subject: subjectIn, messageId, parent, settings: settingsRead.values })
+  const built = buildMessage({ doc: docIn, subject: subjectIn, messageId, parent, fromName })
   const recipient = isTest ? testRecipient! : toAddress
 
   // 🔴 `action: 'preview'` WAS HERE AND IS GONE (29 September 2026). It stopped at exactly this point
@@ -483,7 +505,9 @@ export async function POST(req: NextRequest) {
     return refuse(`The message could not be recorded, so nothing was sent — ${dbDetail(insErr)}`)
   }
 
-  const result = await deliver(insertedRow as Row, { mailUser, mailPass, isTest, testRecipient })
+  // ⚠️ `from_name` RIDES ON THE ROW OBJECT, NOT IN THE TABLE. It is a setting, not a property of the
+  // message, and storing a copy per row would mean a later retry used a stale name.
+  const result = await deliver({ ...(insertedRow as Row), from_name: fromName }, { mailUser, mailPass, isTest, testRecipient })
 
   // ── THE CONTACT LOG — the shared path, and only for a real send the server accepted ──────────────
   // ⚠️ A TEST LOGS NOTHING. It goes to Dominic, not a prospect; a rung for it would corrupt the ladder
@@ -501,9 +525,8 @@ export async function POST(req: NextRequest) {
     }
     const logged = await logOutreachContact(
       supabase,
-      // 🔴 THE LOG STORES WHAT WAS SENT, NOT WHAT WAS TYPED. `bodyIn` still contains `{{signature}}`;
-      // a history row holding a raw token is not a record of an email anyone received.
-      { prospect_id: prospectId, channel: 'email', direction: 'outbound', kind, message: expandToPlainText(bodyIn, settingsRead.values), contacted_at: null },
+      // 🔴 THE LOG STORES WHAT WAS SENT: the document's own plain text.
+      { prospect_id: prospectId, channel: 'email', direction: 'outbound', kind, message: bodyIn, contacted_at: null },
       { prospect: leadInput, hasLeadTypeFreeze: true },
     )
     if (!logged.ok) {

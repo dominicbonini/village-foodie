@@ -27,7 +27,7 @@ const eq = (got, want, label) => {
 const FILES = [
   'lib/outreach-mail-message.ts', 'lib/outreach-send-rules.ts', 'lib/outreach-mail-envelope.ts',
   'lib/outreach-messages-table.ts', 'lib/outreach-mail-format.ts', 'lib/outreach-signature.ts',
-  'lib/outreach-template-render.ts', 'lib/outreach-contact-log.ts',
+  'lib/outreach-template-render.ts', 'lib/outreach-contact-log.ts', 'lib/outreach-doc.ts',
 ]
 function build(root, tag) {
   const { out, req } = compile(root, FILES, tag)
@@ -45,6 +45,7 @@ function build(root, tag) {
     S: req('lib/outreach-signature.js'),
     R2: req('lib/outreach-template-render.js'),
     L: req('lib/outreach-contact-log.js'),
+    D: req('lib/outreach-doc.js'),
   }
 }
 
@@ -94,6 +95,40 @@ const OPT = { text: 'If you would rather not hear from me again, reply with "no 
 const SETTINGS = { signature: SIG, optOut: OPT }
 const P12 = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);'
 const P10 = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(0, 0, 0);'
+/** The signature as `lib/outreach-doc.ts` takes it. Same rows, the shape the editor uses. */
+const SIG_LINES = SIG.lines.map(l => ({ text: l.text, bold: l.bold }))
+const DOC_SETTINGS = { signatureLines: SIG_LINES, optOut: OPT.text }
+/** The template Dominic actually sends, tokens and all. */
+const TEMPLATE_TEXT = 'Hi Sam,\n\nI build ordering for food trucks.\n\nWorth a look?\n\n{{signature}}\n\n{{opt_out}}'
+
+/**
+ * 🔴 THE FROZEN OUTPUT OF THE PREVIOUS BUILD, written out in full.
+ * This is what the token-expansion sender produced for TEMPLATE_TEXT, and it is the markup Dominic
+ * verified in his own inbox on 29 September. The editor pipeline — template → document → HTML — must
+ * equal it byte for byte. ⚠️ IT IS A LITERAL, NOT A SECOND LIVE IMPLEMENTATION. Comparing two live
+ * code paths only proves they agree; both can drift together. A frozen string cannot drift.
+ */
+const GOLDEN_HTML =
+  `<div style="${P12}">Hi Sam,</div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P12}">I build ordering for food trucks.</div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P12}">Worth a look?</div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P12}">Kind regards,</div>` +
+  `<div style="${P12}">Dominic</div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P12}"><b>Dominic Bonini</b></div>` +
+  `<div style="${P12}">Founder, HatchGrab</div>` +
+  `<div style="${P12}">hatchgrab.com | villagefoodie.co.uk</div>` +
+  `<div style="${P12}">07941 042 253</div>` +
+  `<div style="${P12}"><br></div>` +
+  `<div style="${P10}">If you would rather not hear from me again, reply with &quot;no thanks&quot; and I will not contact you.</div>`
+const GOLDEN_TEXT =
+  'Hi Sam,\n\nI build ordering for food trucks.\n\nWorth a look?\n\nKind regards,\nDominic\n\n\n' +
+  'Dominic Bonini\nFounder, HatchGrab\nhatchgrab.com | villagefoodie.co.uk\n07941 042 253\n\n' +
+  'If you would rather not hear from me again, reply with "no thanks" and I will not contact you.'
 
 const ROW = built => ({
   message_id: built.messageId, in_reply_to: built.inReplyTo, references: built.references,
@@ -193,7 +228,7 @@ const SIGNATURE =
     const v = variant('v6', 'lib/outreach-mail-envelope.ts', src => src.replace(
       '    xMailer: false,', "    xMailer: 'HatchGrab outreach',\n    headers: { 'X-Outreach-Prospect': 'p-123' },"))
     const M = v.M
-    const built = M.buildMessage({ body: 'Hello.', subject: 'Taking orders online', messageId: '<v6@hatchgrab.com>', settings: SETTINGS })
+    const built = M.buildMessage({ doc: v.D.docFromTemplateText('Hello.', DOC_SETTINGS), subject: 'Taking orders online', messageId: '<v6@hatchgrab.com>' })
     const raw = await compose(v.E.mailFor(ROW(built)))
     const extra = M.disallowedHeaders(raw)
     variantFails('V6', extra.includes('x-mailer') && extra.includes('x-outreach-prospect'),
@@ -241,14 +276,15 @@ const SIGNATURE =
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
   {
-    // V10 — THE TEXT PART STOPS STRIPPING HTML. This is the defect verbatim: `text_body` on the last
-    // real send carried a literal `<br><br>`.
-    const v = variant('v10', 'lib/outreach-signature.ts', src => src.replace(
-      /export function stripHtmlToText\(s: string\): string \{[\s\S]*?\n\}/,
-      'export function stripHtmlToText(s: string): string {\n  return String(s ?? \'\')\n}'))
-    const { text } = v.S.expandBody('Hi Sam,<br><br>done.', SETTINGS)
-    variantFails('V10', text.includes('<br>'),
-      'the text/plain part carries `<br>` tags instead of line breaks')
+    // V10 — THE SCHEMA STOPS REFUSING AND STARTS IGNORING. A disallowed mark is dropped instead of
+    // stopping the send, which is the sanitiser-shaped mistake `validateDoc` exists to avoid: a
+    // blocklist that quietly lets through the first thing nobody thought of.
+    const v = variant('v10', 'lib/outreach-doc.ts', src => src.replace(
+      "            return { ok: false, error: `“${String(t)}” formatting is not allowed in an outreach email` }",
+      '            continue'))
+    const out = v.D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link' }] }] }] })
+    variantFails('V10', out.ok === true,
+      'a disallowed mark is silently dropped instead of refusing the send')
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
   {
@@ -262,21 +298,46 @@ const SIGNATURE =
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
   {
-    // V12 — THE SIGNATURE IS APPENDED AUTOMATICALLY AGAIN, so a message written deliberately without
-    // one gets one anyway — and `{{opt_out}}` placement stops meaning anything.
-    const v = variant('v12', 'lib/outreach-signature.ts', src => src.replace(
-      '  return { html: htmlOut.join(\'\'), text: textOut.join(\'\\n\\n\') }',
-      '  return { html: htmlOut.join(\'\') + signatureBlockHtml(values.signature ?? { lines: [] }), text: textOut.join(\'\\n\\n\') }'))
-    const { html } = v.S.expandBody('Hi Sam, no token here.', SETTINGS)
-    variantFails('V12', html.includes('Kind regards,'),
-      'an automatic append restored: a message with no {{signature}} gets one anyway')
+    // V12 — AN EMPTY PARAGRAPH STOPS PRODUCING ITS `<br>` DIV. An empty div collapses to nothing in
+    // most clients, so every blank line the operator typed — including the one above "Kind regards," —
+    // silently disappears on the way to the prospect.
+    const v = variant('v12', 'lib/outreach-doc.ts', src => src.replace(
+      '    if (!kids.length) return `<div style="${P_STYLE}"><br></div>`',
+      '    if (!kids.length) return `<div style="${P_STYLE}"></div>`'))
+    const html = v.D.docToHtml(v.D.docFromTemplateText(TEMPLATE_TEXT, DOC_SETTINGS))
+    variantFails('V12', html !== GOLDEN_HTML && html.includes('"></div>'),
+      'an empty paragraph renders as an empty div: every blank line vanishes in most clients')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V13 — THE SERVER APPENDS THE SIGNATURE AGAIN, so a message written deliberately without one
+    // gets one anyway and the whole "what is in the box is what is sent" rule is a lie.
+    const v = variant('v13', 'lib/outreach-mail-message.ts', src => src.replace(
+      '  const bodyH = docToHtml(input.doc)',
+      "  const bodyH = docToHtml(input.doc) + '<div>Kind regards,</div>'"))
+    const built = v.M.buildMessage({ doc: v.D.docFromTemplateText('Hi Sam.', DOC_SETTINGS), subject: 'S', messageId: '<v13@hatchgrab.com>' })
+    variantFails('V13', built.html.includes('Kind regards,'),
+      'the server appends to the document: the box stops being the email')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V14 — TEXT NODES STOP BEING ESCAPED. A prospect's own name could carry markup, and a pasted
+    // `<script>` would stop being four-and-a-bit words of text.
+    const v = variant('v14', 'lib/outreach-doc.ts', src => src.replace(
+      '      let html = escapeHtml(k.text)', '      let html = k.text'))
+    const html = v.D.docToHtml({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '<script>x</script>' }] }] })
+    variantFails('V14', html.includes('<script>'),
+      'text is no longer escaped: script-like text becomes a tag in the email')
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
 
-  const { M, R, E, T, F, S, R2, L } = build(REPO, 'omsReal')
+  const { M, R, E, T, F, S, R2, L, D } = build(REPO, 'omsReal')
   const SEND_ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8')
 
-  console.log('\n── THE SIGNATURE IS DATA, AND THE TOKEN PLACES IT ──────────────────────────────────────')
+  console.log('\n── THE SIGNATURE PANEL\'S OWN RENDERER ──────────────────────────────────────────────────')
+  // ⚠️ `lib/outreach-signature.ts` NO LONGER BUILDS EMAILS — `lib/outreach-doc.ts` does. What is left
+  // of it draws the Signature tab's preview, and these assertions cover that, plus the parsers every
+  // reader of the settings rows shares.
   {
     // 🔴 THE EXPECTED STRING IS WRITTEN OUT IN FULL, not assembled from the pieces the lib uses. A
     // check built from the lib's own constants would pass however they changed, which is no check.
@@ -304,108 +365,152 @@ const SIGNATURE =
     eq(S.parseOptOut({ text: '   ' }), null, 'a blank opt-out row is malformed — it is a legal sentence, not a field')
   }
 
-  console.log('\n── TOKEN EXPANSION, IN BOTH PARTS ───────────────────────────────────────────────────────')
+  console.log('\n── TEMPLATE → DOCUMENT → THE SAME BYTES AS THE VERIFIED BUILD ─────────────────────────')
   {
-    const body = 'Hi Sam,\n\nWorth a look?\n\n{{signature}}\n\n{{opt_out}}'
-    const { html, text } = S.expandBody(body, SETTINGS)
-    check(html.startsWith(`<div style="${P12}">Hi Sam,</div>`), 'the prose is still the captured paragraph div')
-    check(html.includes(`<div style="${P12}"><b>Dominic Bonini</b></div>`), 'the signature block is expanded in place')
-    check(html.includes(`<div style="${P10}">`), 'the opt-out is expanded at 10pt')
-    check(html.indexOf('Kind regards,') > html.indexOf('Worth a look?'), 'and it lands where the token was')
-    check(html.indexOf('rather not hear') > html.indexOf('07941 042 253'), 'the opt-out follows the signature, as the text says')
-    // 🔴 SPACING IS WHATEVER THE TEXT SAYS. A blank line before the token is a spacer div — which is
-    // the missing blank line between the last paragraph and "Kind regards," in the sent email.
-    const spacers = html.split(`<div style="${P12}"><br></div>`).length - 1
-    check(spacers >= 4, `blank lines become spacer divs (${spacers} of them here)`)
-    check(text.includes('Kind regards,\nDominic'), 'the text part carries the signature lines')
-    check(text.trim().endsWith('I will not contact you.'), 'and ends with the opt-out sentence')
-
-    // 🔴 NOTHING IS APPENDED WHEN THE TOKEN IS ABSENT. This is the whole change, so it is asserted
-    // directly rather than inferred from the presence of the token in the other test.
-    const bare = S.expandBody('Hi Sam,\n\nWorth a look?', SETTINGS)
-    check(!bare.html.includes('Kind regards,'), '🔴 no {{signature}} in the body ⇒ NO signature in the HTML')
-    check(!bare.text.includes('Kind regards,'), '…and none in the text either')
-    check(!bare.html.includes('rather not hear'), '…and no opt-out line appears from nowhere')
-
-    eq(S.sendTimeTokensIn(body).join(','), 'signature,opt_out', 'both tokens are found, in order')
-    eq(S.sendTimeTokensIn('a {{signature}} b').length, 0,
-      '⚠️ a token mid-sentence is NOT a block and is left alone')
-    eq(S.missingSettingsFor(body, { signature: null, optOut: OPT }).join(','), 'signature',
-      'a body needing a row that is not there is reported — the send refuses on this')
-    eq(S.missingSettingsFor('no tokens here', { signature: null, optOut: null }).length, 0,
-      '…and a body needing nothing needs nothing')
+    // 🔴 THE CONSISTENCY CHECK. The previous build expanded `{{signature}}` and `{{opt_out}}` on the
+    // SERVER at send time; this build expands them into the EDITOR when the template is chosen and the
+    // server converts the resulting document. The two must produce identical markup, because the old
+    // output is the one Dominic read in his inbox.
+    const doc = D.docFromTemplateText(TEMPLATE_TEXT, DOC_SETTINGS)
+    eq(D.docToHtml(doc), GOLDEN_HTML, '🔴 template → document → HTML is byte-identical to the verified build')
+    eq(D.docToText(doc), GOLDEN_TEXT, '…and so is the text part')
+    check(!D.docToText(doc).includes('<'), 'the text part contains no "<" at all')
+    check(!D.docToText(doc).includes('{{'), 'and no token survives into either part')
   }
 
-  console.log('\n── THE TOKENS SURVIVE THE COMPOSE RENDERER UNTOUCHED ────────────────────────────────────')
+  console.log('\n── THE DOCUMENT → THE CAPTURED MARKUP ───────────────────────────────────────────────────')
   {
-    // 🔴 THEY RESOLVE TO THEMSELVES in `resolvedValue`, so `substitute` writes them back unchanged and
-    // `unresolvedIn` never sees them. If they were merely unknown they would render as `[[signature]]`
-    // and be listed as "still to fill" — a field the operator cannot fill, on every single message.
-    const tpl = { id: 't', label: 'T', channel: 'email', subject: 'S', body: 'Hi{{contact_name_prefixed}},\n\n{{signature}}\n\n{{opt_out}}' }
-    const ctx = { truckName: 'T', contactName: null, contactFirstName: null, contactLastName: null,
-      website: null, orderUrl: null, nextEventDate: null, nextEventVenue: null, demoLink: null,
-      compareLink: null, leadType: null }
-    const out = R2.renderTemplate(tpl, ctx)
-    check(out.body.includes('{{signature}}'), '{{signature}} is still literally in the rendered box')
-    check(out.body.includes('{{opt_out}}'), '{{opt_out}} too')
-    check(!out.body.includes('[[signature]]'), '…not turned into an unresolved marker')
-    eq(out.unresolved.filter(u => u === 'signature' || u === 'opt_out').length, 0,
-      '🔴 neither counts as "still to fill" — they are deferred, not outstanding')
-    eq(R2.malformedTokensIn('{{signature}} {{opt_out}}').length, 0,
-      'the malformed-token guard recognises both as well formed')
-    check(R2.malformedTokensIn('{{Signature}}').length === 1,
-      '…and still catches a mistyped one, which would otherwise reach a prospect verbatim')
-    const ref = R2.resolvedTokenReference().map(t => t.name)
-    check(ref.includes('signature') && ref.includes('opt_out'),
-      'both appear in the Templates tab reference, derived from the code')
-    check(R2.resolvedTokenReference().filter(t => t.name === 'signature')[0].documented,
-      '…with a description, not marked undocumented')
+    const t = (text, marks) => (marks ? { type: 'text', text, marks: marks.map(m => ({ type: m })) } : { type: 'text', text })
+    const para = (...content) => ({ type: 'paragraph', content })
+    eq(D.docToHtml({ type: 'doc', content: [para(t('plain'))] }), `<div style="${P12}">plain</div>`,
+      'a paragraph is one 12pt div — never a <p>, never a margin')
+    // 🔴 THE "Dominic Bonini rendered smaller" BUG. An unstyled <div><b>…</b></div> inherits the
+    // client's default size; bold is a property of the text, not a reason to drop the style.
+    eq(D.docToHtml({ type: 'doc', content: [para(t('Dominic Bonini', ['bold']))] }),
+      `<div style="${P12}"><b>Dominic Bonini</b></div>`, '🔴 Bold is <b> INSIDE the 12pt div')
+    // An empty div collapses to nothing in most clients, so a typed blank line would silently vanish.
+    eq(D.docToHtml({ type: 'doc', content: [{ type: 'paragraph' }] }), `<div style="${P12}"><br></div>`,
+      '🔴 an empty paragraph is the styled div containing <br>, not an empty div')
+    eq(D.docToHtml({ type: 'doc', content: [para(t('a'), { type: 'hardBreak' }, t('b'))] }),
+      `<div style="${P12}">a<br>b</div>`, 'a hard break is <br> inside the paragraph')
+    eq(D.docToHtml({ type: 'doc', content: [para(t('small line', ['small']))] }),
+      `<div style="${P10}">small line</div>`,
+      '🔴 a paragraph that is ENTIRELY small becomes a 10pt DIV — what the captured opt-out line is')
+    eq(D.docToHtml({ type: 'doc', content: [para(t('big '), t('small', ['small']))] }),
+      `<div style="${P12}">big <span style="${P10}">small</span></div>`,
+      '…and small MIXED into a 12pt paragraph becomes a span')
+    eq(D.docToHtml({ type: 'doc', content: [para(t('a & b <c> "d"'))] }),
+      `<div style="${P12}">a &amp; b &lt;c&gt; &quot;d&quot;</div>`, 'all text is HTML-escaped')
+    eq(D.docToHtml({ type: 'doc', content: [para(t('x', ['bold', 'small']))] }),
+      `<div style="${P10}"><b>x</b></div>`, 'bold AND small together: a 10pt div with <b> inside')
+    eq(D.docToText({ type: 'doc', content: [para(t('a'), { type: 'hardBreak' }, t('b')), { type: 'paragraph' }, para(t('c'))] }),
+      'a\nb\n\nc', 'the text part comes from the document, so there is nothing to strip')
   }
 
-  console.log('\n── COPY AND LOG NEVER EMIT A RAW TOKEN ──────────────────────────────────────────────────')
+  console.log('\n── THE SCHEMA REFUSES; IT DOES NOT CLEAN ────────────────────────────────────────────────')
   {
-    // 🔴 THE CONTACT LOG IS THE RECORD OF WHAT WAS SENT. A row holding `{{signature}}` is not a record
-    // of an email anybody received, and it is the thing read months later to decide what to say next.
-    const out = S.expandToPlainText('Hi Sam,\n\n{{signature}}\n\n{{opt_out}}', SETTINGS)
-    check(!out.includes('{{'), 'no `{{` survives into the copied / logged text')
-    check(out.includes('Dominic Bonini'), 'the signature is there as plain text')
-    check(out.includes('rather not hear from me again'), 'and so is the opt-out sentence')
-    check(!/<[a-z]/i.test(out), 'and it is plain text — no tags at all')
+    const ok = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hi' }] }] })
+    eq(ok.ok, true, 'an allowed document validates')
+    // 🔴 REFUSE, NEVER STRIP. A sanitiser that silently drops a node is one nobody ever checks, and the
+    // first thing it gets wrong is emailed to a stranger under Dominic's name.
+    const link = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link', attrs: { href: 'http://x' } }] }] }] })
+    eq(link.ok, false, '🔴 a link mark is REFUSED')
+    check(link.error.includes('link'), '…and the refusal names it')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'image', attrs: { src: 'x' } }] }).ok, false, 'an image node is refused')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'heading', content: [] }] }).ok, false, 'a heading is refused')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'bulletList', content: [] }] }).ok, false, 'a list is refused')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'italic' }] }] }] }).ok,
+      false, 'even a harmless-looking italic is refused — the mark list is two long, on purpose')
+    eq(D.validateDoc(null).ok, false, 'no document at all is refused')
+    eq(D.validateDoc({ type: 'doc', content: [] }).ok, false, 'an empty document is refused')
+    // ⚠️ SCRIPT-LIKE TEXT IS TEXT. It cannot become markup, because the server ESCAPES every text node.
+    const scripty = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '<script>alert(1)</script>' }] }] })
+    eq(scripty.ok, true, 'text that looks like a script is still text, and validates')
+    check(D.docToHtml(scripty.doc).includes('&lt;script&gt;'), '…and comes out escaped, never as a tag')
+    // A stray attribute riding on a text node must not reach the HTML.
+    const extra = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', attrs: { onerror: 'boom' } }] }] })
+    eq(extra.ok, true, 'an unknown attribute does not fail validation…')
+    check(!JSON.stringify(extra.doc).includes('onerror'), '…because the node is REBUILT from the allowed fields only')
   }
 
-  console.log('\n── THE TEXT PART CARRIES NO HTML ────────────────────────────────────────────────────────')
+  console.log('\n── THE SERVER APPENDS NOTHING ───────────────────────────────────────────────────────────')
   {
-    // 🔴 THE DEFECT: `text_body` on the last real send contained a literal `<br><br>`. The old
-    // `bodyText` passed the body through untouched, so a `<br>` typed in a template arrived as four
-    // characters in the text/plain part — and as `&lt;br&gt;` in the HTML part, visible to the reader.
-    const body = 'Hi Sam,<br><br>Line two &amp; three.\n\n{{signature}}'
-    const { html, text } = S.expandBody(body, SETTINGS)
-    check(!text.includes('<'), '🔴 the text part contains no "<" at all')
-    check(text.includes('Hi Sam,\n\nLine two & three.'), '`<br><br>` became line breaks and `&amp;` decoded')
-    check(html.includes('Hi Sam,<br><br>Line two'), 'and the HTML part uses real <br> tags, not escaped ones')
-    check(!html.includes('&lt;br&gt;'), '…so the prospect never sees the characters "<br>"')
-    eq(S.stripHtmlToText('<p>a</p><b>b</b>'), 'ab', 'any other tag is dropped from the text part')
-    eq(S.stripHtmlToText('price &lt; 5'), 'price < 5', 'entities decode last, so an escaped < is not re-stripped')
-    eq(S.stripHtmlToText('a &amp;lt; b'), 'a &lt; b', '…and `&amp;lt;` decodes ONCE, not twice')
+    const doc = D.docFromTemplateText('Hi Sam,\n\nWorth a look?', DOC_SETTINGS)
+    const html = D.docToHtml(doc)
+    check(!html.includes('Kind regards,'), '🔴 a document with no signature produces no signature')
+    check(!html.includes('rather not hear'), '…and no opt-out line appears from nowhere')
+    const built = M.buildMessage({ doc, subject: 'S', messageId: '<x@hatchgrab.com>' })
+    eq(built.html, html, '🔴 buildMessage adds NOTHING to the document on a first contact')
+    // 🔴 A LITERAL TOKEN IS A REFUSAL. Nothing expands it any more, so it would be emailed verbatim.
+    const typed = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '{{signature}}' }] }] }
+    eq(D.literalTokenRefusal(typed),
+      'Your message still contains {{signature}} — use Insert signature instead.',
+      'a hand-typed {{signature}} is refused, and the sentence names the button')
+    eq(D.literalTokenRefusal({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '{{opt_out}}' }] }] }),
+      'Your message still contains {{opt_out}} — use Insert opt-out instead.', 'and so is {{opt_out}}')
+    eq(D.literalTokenRefusal(doc), null, 'an ordinary document is not refused')
+    const ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8')
+    check(!/expandBody|expandToPlainText|missingSettingsFor/.test(ROUTE),
+      '🔴 the send route names no expansion function at all')
+    check(/validateDoc\(body\.document\)/.test(ROUTE), 'it validates the document it is given')
+    check(/literalTokenRefusal\(docIn\)/.test(ROUTE), '…and refuses a literal token')
   }
 
-  console.log('\n── THE WARNINGS (warnings, not refusals) ────────────────────────────────────────────────')
+  console.log('\n── THE From HEADER, WITH AND WITHOUT A NAME ─────────────────────────────────────────────')
   {
-    eq(S.sendWarnings('{{signature}}\n\n{{opt_out}}', '1_first_contact').length, 0, 'both tokens present: no warning')
-    eq(S.sendWarnings('no tokens', '1_first_contact').length, 2, 'a first contact with neither: two warnings')
-    eq(S.sendWarnings('{{signature}}', '2_chase_1')[0], 'This outreach email has no {{opt_out}} line.',
-      'a chase with no opt-out is named')
-    eq(S.sendWarnings('{{signature}}', 'reply_handling').length, 0,
-      '⚠️ a NON-ladder kind is not warned about an opt-out — a reply to a question is not a cold approach')
-    eq(S.sendWarnings('{{opt_out}}', null)[0], 'No {{signature}} in this message — it will go without your signature.',
-      'a missing signature is warned about whatever the kind')
+    eq(D.fromDisplay(null, 'dominic@hatchgrab.com'), 'dominic@hatchgrab.com',
+      'no name: the bare address, exactly as before this setting existed')
+    eq(D.fromDisplay('   ', 'dominic@hatchgrab.com'), 'dominic@hatchgrab.com', 'a blank name is no name')
+    eq(D.fromDisplay('Dominic Bonini', 'dominic@hatchgrab.com'), 'Dominic Bonini <dominic@hatchgrab.com>',
+      'a name gives `Name <address>` — what the quote header on a reply shows')
+    check(D.fromNameLooksLikeAddress('dominic@hatchgrab.com'), 'a name containing @ is flagged…')
+    check(!D.fromNameLooksLikeAddress('Dominic Bonini'), '…and a plain one is not')
+    // 🔴 THE COMPOSED BYTES ARE WHAT MATTERS, and nodemailer does the quoting — a comma in a display
+    // name reads as an address separator unless the name is quoted, which is a spec detail worth
+    // delegating rather than reimplementing.
+    const doc = D.docFromTemplateText('Hi.', DOC_SETTINGS)
+    const built = M.buildMessage({ doc, subject: 'S', messageId: '<n@hatchgrab.com>' })
+    const bare = await compose(E.mailFor(ROW(built)))
+    eq(header(bare, 'From'), 'dominic@hatchgrab.com', 'with no name the From header is the bare address')
+    const named = await compose(E.mailFor({ ...ROW(built), from_name: 'Dominic Bonini' }))
+    eq(header(named, 'From'), 'Dominic Bonini <dominic@hatchgrab.com>', 'with a name it is `Name <address>`')
+    const comma = await compose(E.mailFor({ ...ROW(built), from_name: 'Bonini, Dominic' }))
+    check(/^"Bonini, Dominic" <dominic@hatchgrab\.com>$/.test(header(comma, 'From')),
+      '🔴 a name containing a comma is QUOTED, or the comma would read as a second recipient')
+    const accent = await compose(E.mailFor({ ...ROW(built), from_name: 'Dominic Bonìni' }))
+    check(/=\?UTF-8\?/.test(header(accent, 'From')) || header(accent, 'From').includes('Bonìni'),
+      'a non-ASCII name is encoded rather than emitted raw')
+    eq(M.disallowedHeaders(named).join(', ') || '(none)', '(none)',
+      'a display name adds no header outside the allow-list')
+  }
+
+  console.log('\n── THE OPT-OUT WARNING (a warning, and the only one left) ───────────────────────────────')
+  {
+    const withOpt = D.docFromTemplateText(TEMPLATE_TEXT, DOC_SETTINGS)
+    const without = D.docFromTemplateText('Hi Sam,\n\n{{signature}}', DOC_SETTINGS)
+    eq(D.optOutWarning(withOpt, '1_first_contact', OPT.text), null, 'the sentence is there: no warning')
+    eq(D.optOutWarning(without, '1_first_contact', OPT.text), 'This outreach email has no opt-out line.',
+      'a first contact without it is warned about')
+    eq(D.optOutWarning(without, '4_final_chase', OPT.text), 'This outreach email has no opt-out line.',
+      'so is a final chase')
+    eq(D.optOutWarning(without, 'reply_handling', OPT.text), null,
+      '⚠️ a NON-ladder kind is not warned — a reply to a question is not a cold approach')
+    eq(D.optOutWarning(without, null, OPT.text), null, 'nor is an unstated kind')
+    // 🔴 IT CHECKS THE SENTENCE, NOT A TOKEN. Typed out by hand counts, because what a recipient needs
+    // is the sentence and not the mechanism that put it there.
+    const typedOut = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: OPT.text }] }] }
+    eq(D.optOutWarning(typedOut, '1_first_contact', OPT.text), null,
+      'the sentence typed by hand counts — it is the sentence that matters, not how it got there')
+    const COMPOSE = fs.readFileSync(path.join(REPO, 'components/admin/ComposeWindow.tsx'), 'utf8')
+    check(!/No \{\{signature\}\} in this message/.test(COMPOSE),
+      'the "no signature" warning is gone — he can see the signature in the box now')
   }
 
   console.log('\n── A FIRST CONTACT ──────────────────────────────────────────────────────────────────────')
   {
     const built = M.buildMessage({
-      body: "Hi Sam,\n\nI build ordering for food trucks.\n\nWorth a look?",
-      subject: 'Taking orders online', messageId: '<first@hatchgrab.com>', settings: SETTINGS,
+      doc: D.docFromTemplateText("Hi Sam,\n\nI build ordering for food trucks.\n\nWorth a look?", DOC_SETTINGS),
+      subject: 'Taking orders online', messageId: '<first@hatchgrab.com>',
     })
     eq(built.subject, 'Taking orders online', 'a first contact keeps the template subject — no Re:')
     eq(built.inReplyTo, null, 'no In-Reply-To')
@@ -417,7 +522,7 @@ const SIGNATURE =
       'paragraphs are separated by an empty div of the same style, not a margin')
     // 🔴 ESCAPING IS STILL ESCAPING, with one deliberate hole: `<br>`. Everything else a truck name
     // could contain still cannot become markup.
-    eq(S.expandBody("Bill & Ben's <Truck>", SETTINGS).html,
+    eq(D.docToHtml(D.docFromTemplateText("Bill & Ben's <Truck>", DOC_SETTINGS)),
       `<div style="${P12}">Bill &amp; Ben's &lt;Truck&gt;</div>`,
       "a truck called `Bill & Ben's <Truck>` is escaped, not turned into markup")
   }
@@ -425,8 +530,8 @@ const SIGNATURE =
   console.log('\n── A CHASE IS A REPLY IN THREE PLACES AT ONCE ───────────────────────────────────────────')
   {
     const built = M.buildMessage({
-      body: 'Just following up.', subject: 'ignored on a reply', messageId: '<chase@hatchgrab.com>',
-      settings: SETTINGS,
+      doc: D.docFromTemplateText('Just following up.', DOC_SETTINGS),
+      subject: 'ignored on a reply', messageId: '<chase@hatchgrab.com>',
       parent: { messageId: '<parent@hatchgrab.com>', references: '<older@hatchgrab.com>', quoted: PARENT },
     })
     eq(built.subject, 'Re: Taking orders online', 'the subject is Re: + the parent subject')
@@ -455,8 +560,8 @@ const SIGNATURE =
   console.log('\n── THE COMPOSED BYTES: THE ALLOWED HEADER SET AND NOTHING ELSE ──────────────────────────')
   {
     const built = M.buildMessage({
-      body: 'Just following up.', subject: 'x', messageId: '<bytes@hatchgrab.com>',
-      settings: SETTINGS,
+      doc: D.docFromTemplateText('Just following up.', DOC_SETTINGS),
+      subject: 'x', messageId: '<bytes@hatchgrab.com>',
       parent: { messageId: '<parent@hatchgrab.com>', references: '<older@hatchgrab.com>', quoted: PARENT },
     })
     const raw = await compose(E.mailFor(ROW(built)))
@@ -622,8 +727,14 @@ const SIGNATURE =
       '🔴 the route never inserts, updates or deletes a contact row itself')
     check(!/from\('outreach_prospects'\)[\s\S]{0,120}\.update\(/.test(SEND_ROUTE),
       '…and never moves a stage itself, so a test send cannot move one')
-    check(/message: expandToPlainText\(bodyIn, settingsRead\.values\)/.test(SEND_ROUTE),
-      '🔴 the logged message is the EXPANDED text — a history row never holds a raw token')
+    // 🔴 RESTATED 29 September (later the same day), NOT SILENTLY RE-ANCHORED. It used to read
+    // `message: expandToPlainText(bodyIn, settingsRead.values)` — the send-time expansion. There is no
+    // expansion any more: `bodyIn` IS the document's own plain text, which is a stronger form of the
+    // same guarantee (a raw token cannot be in it, because a document holding one is refused outright).
+    check(/const bodyIn = docPlainText\(docIn\)/.test(SEND_ROUTE),
+      'the message text is the DOCUMENT\'s own text')
+    check(/message: bodyIn/.test(SEND_ROUTE),
+      '🔴 …and that is exactly what the contact log stores')
   }
 
   console.log('\n── THE SENT COPY: ONE SET OF BYTES, SEARCH TWICE, THEN APPEND ──────────────────────────')
