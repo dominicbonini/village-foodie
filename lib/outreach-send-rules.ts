@@ -7,70 +7,24 @@
 // one implementation, two callers, no second copy to drift.
 //
 // Pure: no network, no database, no clock of its own (every function that needs "now" is given it).
-import { OUTREACH_DAILY_SEND_CAP, OUTREACH_TZ } from '@/lib/outreach-mail-config'
-import { londonDay } from '@/lib/outreach-mail-message'
-
 /** A refusal is a sentence for the operator, plus whatever the UI needs to offer the way forward. */
 export interface SendRefusal { refusal: string; needsConfirm?: boolean }
 
-// ── THE DAILY CAP ───────────────────────────────────────────────────────────────────────────────────
-/**
- * 🔴 `sending` COUNTS. A row stuck at `sending` is one whose SMTP conversation has not come back, which
- * means it may well be on its way to a prospect. Counting only `sent` would let a run of hung sends slip
- * an unbounded number of emails past a cap whose whole job is to bound them.
- * `failed` does not count: the server said no, so nothing reached anyone.
- */
-export const CAP_COUNTED_STATUSES = ['sending', 'sent', 'uncertain'] as const
-
-/** The zone's offset from UTC at an instant, in ms. `+3_600_000` in British Summer Time. */
-function tzOffsetMs(at: Date, tz: string): number {
-  const p = new Intl.DateTimeFormat('en-CA', {
-    timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
-  }).formatToParts(at)
-  const g = (t: string) => Number(p.find(x => x.type === t)?.value ?? 0)
-  return Date.UTC(g('year'), g('month') - 1, g('day'), g('hour'), g('minute'), g('second')) - at.getTime()
-}
-
-/**
- * The UTC instant at which the CURRENT Europe/London day began — the lower bound of the cap's window.
- *
- * 🔴 NOT `${day}T00:00:00Z`. For seven months of the year London is an hour ahead of UTC, so UTC midnight
- * is 01:00 in London and an hour of that day's sends sit BELOW the bound and are never counted. The cap
- * would then admit thirty-one, thirty-two emails on a British Summer Time morning — silently, and only
- * ever in the direction of sending more.
- *
- * The offset is applied, then re-read at the corrected instant: one correction settles the clock-change
- * days too, because an offset change moves the instant by an hour and never by more.
- */
-export function londonDayStartUtc(now: Date, tz = OUTREACH_TZ): string {
-  const day = londonDay(now, tz)
-  const naive = Date.parse(`${day}T00:00:00Z`)
-  let inst = naive - tzOffsetMs(new Date(naive), tz)
-  inst = naive - tzOffsetMs(new Date(inst), tz)
-  return new Date(inst).toISOString()
-}
-
-/**
- * Does one row count against the cap? The predicate the database query is built from: same statuses, same
- * window, same direction, and `is_test` excluded.
- * ⚠️ A TEST IS NOT CAPPED. The cap protects prospects; a message to Dominic's own address reaches none of
- * them, and counting it would make the safety check punish the safest thing an operator can do.
- */
-export function countsTowardCap(
-  row: { direction: string; is_test: boolean; status: string; created_at: string },
-  now: Date,
-): boolean {
-  if (row.direction !== 'outbound') return false
-  if (row.is_test) return false
-  if (!(CAP_COUNTED_STATUSES as readonly string[]).includes(row.status)) return false
-  return row.created_at >= londonDayStartUtc(now)
-}
-
-export function capRefusal(sentToday: number, cap = OUTREACH_DAILY_SEND_CAP, tz = OUTREACH_TZ): SendRefusal | null {
-  if (sentToday < cap) return null
-  return { refusal: `${cap} outreach emails have already gone today. The cap resets at midnight (${tz}).` }
-}
+// ── 🔴 THE DAILY CAP IS GONE (29 September 2026), AND THIS NOTE IS WHY ──────────────────────────────
+// There was a cap of 30 non-test outbound emails per Europe/London day, with `CAP_COUNTED_STATUSES`,
+// `londonDayStartUtc`, `countsTowardCap` and `capRefusal` to enforce it. Dominic removed it: every email
+// goes out by hand, one press at a time, so a limit only ever gets in the way of the person it is meant
+// to protect him from being.
+//
+// ⚠️ IT ALSO MISFIRED IMMEDIATELY. On its first day live the cap counted by `created_at` with no filter
+// on `source`, so a single run of "Import past emails" — 37 rows recorded at once, every one of them an
+// email sent MONTHS ago from Outlook — read as 37 sends today and refused the next one. The refusal
+// even reached a TEST send, which the spec said the cap must never count.
+// A limit may come back with automation, and if it does it counts `source = 'system'` rows and skips
+// tests, because those are the two mistakes this one made.
+//
+// 🔴 NOTHING REPLACES IT. There is no send-count check anywhere in the send path now — the harness
+// asserts that, including for a test send with many non-test rows on the same day.
 
 // ── THE PROSPECT ────────────────────────────────────────────────────────────────────────────────────
 export interface ProspectForSend {

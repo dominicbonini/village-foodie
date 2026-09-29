@@ -54,6 +54,69 @@ export function parseHeaderBlock(raw: string): RawHeader[] {
   return out
 }
 
+/**
+ * THE RAW HEADER BLOCK OF A FETCHED MESSAGE.
+ *
+ * 🔴 THE HEADER BLOCK IS NOT IN `bodyParts`, AND IT NEVER WAS. This is the cause of `headers: []` in
+ * production, and of the 28 September "fix" that did not work. imapflow's response parser special-cases
+ * the header section — `dist/cjs/tools.js`:
+ *
+ *     let partKey = key.replace(/^(body|binary)\[|]$/gi, '')
+ *     partKey = partKey.replace(/\.fields.*$/g, '')
+ *     if (partKey === 'header') { map.headers = value; break }   // ← never reaches bodyParts
+ *
+ * So a `BODY[HEADER]` (or `BODY[HEADER.FIELDS (…)]`) response is assigned to `msg.headers` and is
+ * deliberately NOT added to the `bodyParts` map. The first attempt read `bp.get('header')`; the second
+ * added more spellings and then scanned every entry of `bp`. Both searched a map the value is never put
+ * in, which is why more spellings and a wider scan changed nothing. The request was always correct —
+ * `bodyParts: ['HEADER']` does emit `BODY.PEEK[HEADER]` (`dist/cjs/commands/fetch.js`) — only the read
+ * was wrong.
+ *
+ * ⚠️ THE `bodyParts` SCAN IS KEPT AS A FALLBACK, not as the primary. If a future imapflow stops
+ * special-casing the section, the value would appear in `bodyParts` instead and this still finds it.
+ */
+export function headerBlockOf(msg: unknown): string {
+  const m = (msg ?? {}) as { headers?: unknown; bodyParts?: Map<string, Buffer> }
+  const asText = (v: unknown): string | null =>
+    Buffer.isBuffer(v) ? v.toString('utf8') : typeof v === 'string' ? v : null
+  const direct = asText(m.headers)
+  if (direct && direct.trim()) return direct
+  const bp = m.bodyParts
+  if (bp && typeof bp.entries === 'function') {
+    for (const [, v] of bp) {
+      const t = asText(v)
+      // A header block starts with `Name:` on some line near the top. A decoded BODY part does not.
+      if (t && /^[A-Za-z][A-Za-z0-9-]*:/m.test(t.slice(0, 400))) return t
+    }
+  }
+  return ''
+}
+
+/**
+ * One header's value from a raw block, unfolded — or null when it is absent.
+ *
+ * 🔴 CONTINUATION LINES ARE THE WHOLE DIFFICULTY. `References` on a thread that has been round three
+ * times is folded across several lines, and a reader that stops at the first newline records one
+ * Message-ID out of four, which threads the next reply to the wrong place. The importer had a second
+ * bug of the same family: it collapsed whitespace with the regex literal `/\\s+/g`, which matches a
+ * literal backslash followed by `s` — not whitespace at all — so nothing was ever collapsed.
+ */
+export function headerValue(raw: string, name: string): string | null {
+  const wanted = name.toLowerCase()
+  const lines = raw.replace(/\r\n/g, '\n').split('\n')
+  const parts: string[] = []
+  let on = false
+  for (const line of lines) {
+    if (/^[ \t]/.test(line)) { if (on) parts.push(line.trim()); continue }
+    const i = line.indexOf(':')
+    on = i > 0 && line.slice(0, i).trim().toLowerCase() === wanted
+    if (on) parts.push(line.slice(i + 1).trim())
+    else if (!line.trim() && parts.length) break        // the blank line ends the header block
+  }
+  const v = parts.join(' ').replace(/\s+/g, ' ').trim()
+  return v || null
+}
+
 /** The nested body structure, flattened to the fields that describe a format. */
 export interface MimeNode {
   part: string | null

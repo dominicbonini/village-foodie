@@ -18,27 +18,28 @@ import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_IMPORT_MAILBOXES, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
 import { makeImapClient, withReadOnlyMailbox, sanitiseMailError } from '@/lib/outreach-mail-box'
-import { addressesOf } from '@/lib/outreach-mail-format'
+import { addressesOf, headerBlockOf, headerValue } from '@/lib/outreach-mail-format'
+import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
+import type {
+  MailImportResult, ImportWalked, ImportPerProspect, ImportMismatch,
+} from '@/lib/outreach-mail-import-result'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-const MIGRATION_OFF = 'Email sending is off until the outreach_messages migration is applied.'
-
-async function messagesTableReady(): Promise<boolean> {
-  try {
-    const { error } = await supabase.from('outreach_messages').select('id', { count: 'exact', head: true }).limit(1)
-    if (!error) return true
-    const code = (error as { code?: string }).code
-    return !(code === 'PGRST205' || code === '42P01' || /schema cache|does not exist/i.test(error.message ?? ''))
-  } catch { return false }
-}
+// 🔴 THE PROBE IS SHARED, NOT COPIED. This route had its own `head: true` version — the one that read a
+// missing table as present, because a HEAD response carries no error body — so the same wrong answer
+// was wrong in two files and one fix would have left the other broken.
 
 export async function POST(req: NextRequest) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
-  if (!(await messagesTableReady())) return NextResponse.json({ ok: false, migrationApplied: false, refusal: MIGRATION_OFF })
+  const probe = await messagesTableProbe(async () => {
+    const { error } = await supabase.from('outreach_messages').select('id').limit(1)
+    return { error }
+  })
+  if (!probe.ready) return NextResponse.json({ ok: false, migrationApplied: false, refusal: probe.refusal })
 
   const user = process.env.OUTREACH_MAIL_USER
   const pass = process.env.OUTREACH_MAIL_PASSWORD
@@ -78,7 +79,9 @@ export async function POST(req: NextRequest) {
     message_date: string | null; mailbox: string; uid: number; uidvalidity: string | null
   }
   const found: Found[] = []
-  const walked: { mailbox: string; count: number; skipped: boolean }[] = []
+  const walked: ImportWalked[] = []
+  /** Messages actually READ, across every folder. `walked[].count` is what each folder HOLDS. */
+  let read = 0
 
   const client = makeImapClient(user, pass)
   try {
@@ -95,6 +98,7 @@ export async function POST(req: NextRequest) {
           for await (const msg of client.fetch('1:*', {
             uid: true, envelope: true, headers: ['references', 'in-reply-to'],
           })) {
+            read++
             const env = msg.envelope
             const from = addressesOf(env?.from)
             const to = [...addressesOf(env?.to), ...addressesOf(env?.cc)]
@@ -106,11 +110,11 @@ export async function POST(req: NextRequest) {
             if (!hit) continue
             const messageId = env?.messageId
             if (!messageId) continue    // without one there is nothing to make it idempotent on
-            const raw = (msg.headers ?? Buffer.from('')).toString('utf8')
-            const grab = (name: string): string | null => {
-              const m = new RegExp(`^${name}:\\s*([\\s\\S]*?)(?=\\n\\S|$)`, 'im').exec(raw)
-              return m ? m[1].replace(/\\s+/g, ' ').trim() || null : null
-            }
+            // 🔴 `headerBlockOf`, NOT `msg.headers` BY HAND, AND NOT `bodyParts`. The shared helper
+            // records where imapflow actually puts a header response; the diagnostic route read the
+            // wrong map for a fortnight and reported `headers: []` the whole time.
+            const raw = headerBlockOf(msg)
+            const grab = (name: string) => headerValue(raw, name)
             rows.push({
               prospect_id: hit.id,
               direction: outMatch ? 'outbound' : 'inbound',
@@ -168,8 +172,47 @@ export async function POST(req: NextRequest) {
         .from('outreach_messages')
         .upsert(slice, { onConflict: 'message_id', ignoreDuplicates: true })
         .select('id')
-      if (error) fail('insert', error)
+      // 🔴 THE REASON TRAVELS WITH THE FAILURE, as it now does on the send. `fail('insert', error)`
+      // recorded only a sanitised IMAP-shaped string; a PostgREST error has a code and a message that
+      // name the table and the constraint, and without them a failed import is undiagnosable.
+      if (error) fail('insert', { code: (error as { code?: string }).code, message: dbDetail(error) })
       else inserted += (data ?? []).length
+    }
+  }
+
+  // ── BACKFILL — fill IN the thread headers that are missing, never OVER a value ──────────────────
+  // 🔴 WHY A BACKFILL AND NOT A RE-IMPORT. `ignoreDuplicates` makes a second walk a no-op, by design:
+  // it must not let the importer's thinner view overwrite a row this app wrote when it SENT a message.
+  // But the first import ran while `headerBlockOf` was broken, so it recorded 37 rows with `in_reply_to`
+  // and `"references"` NULL, and a no-op re-run can never repair them. This does.
+  //
+  // ⚠️ THREE CONDITIONS, AND EACH ONE IS A REFUSAL TO TOUCH SOMETHING:
+  //   • `source = 'mailbox_import'` — a row this app SENT is never edited here. Its headers are what it
+  //     actually put on the wire; the mailbox's copy is at best the same and at worst a rewrite.
+  //   • only where the column IS NULL — a stored value always wins, so this cannot rewrite a thread.
+  //   • only when the mailbox has something to put there — a null stays null rather than becoming ''.
+  // Re-running remains safe: once filled, the rows no longer match, so a second run updates 0.
+  let updated = 0
+  if (found.length) {
+    const byId = new Map(found.map(f => [f.message_id, f]))
+    const { data: gaps, error: gapErr } = await supabase
+      .from('outreach_messages')
+      .select('id, message_id, in_reply_to, "references"')
+      .eq('source', 'mailbox_import')
+      .in('message_id', Array.from(byId.keys()).slice(0, 1000))
+      .or('in_reply_to.is.null,references.is.null')
+    if (gapErr) fail('backfill-read', { code: (gapErr as { code?: string }).code, message: dbDetail(gapErr) })
+    for (const g of (gaps ?? []) as { id: string; message_id: string; in_reply_to: string | null; references: string | null }[]) {
+      const f = byId.get(g.message_id)
+      if (!f) continue
+      const patch: Record<string, string> = {}
+      if (g.in_reply_to == null && f.in_reply_to) patch.in_reply_to = f.in_reply_to
+      if (g.references == null && f.references) patch.references = f.references
+      if (!Object.keys(patch).length) continue
+      const { error: upErr } = await supabase.from('outreach_messages')
+        .update({ ...patch, updated_at: new Date().toISOString() }).eq('id', g.id)
+      if (upErr) fail('backfill-write', { code: (upErr as { code?: string }).code, message: dbDetail(upErr) })
+      else updated++
     }
   }
 
@@ -182,30 +225,42 @@ export async function POST(req: NextRequest) {
   }
   for (const [addr, hit] of byAddress) { void addr; const c = perProspect.get(hit.id); if (c) c.name = hit.name }
 
-  // (a) logged as emailed, but there is nothing to show for it.
-  const loggedButUnmatched = prospects
+  // (a) logged as emailed, but there is nothing to show for it. NAMED, not counted.
+  const loggedButUnmatched: ImportMismatch[] = prospects
     .filter(p => emailedOut.has(p.id))
     .map(p => {
       const email = (p.discovery_trucks?.contact_email ?? '').trim()
       const c = perProspect.get(p.id)
-      if (!email) return { prospect_id: p.id, name: p.discovery_trucks?.name ?? null, reason: 'no email address on the truck row' }
-      if (!c || c.outbound === 0) return { prospect_id: p.id, name: p.discovery_trucks?.name ?? null, reason: 'no matching message in Sent' }
+      const name = p.discovery_trucks?.name ?? null
+      if (!email) return { prospect_id: p.id, name, reason: 'no email address on the truck row' }
+      if (!c || c.outbound === 0) return { prospect_id: p.id, name, reason: 'no matching message in the mailbox' }
       return null
     })
-    .filter(Boolean)
+    .filter((m): m is ImportMismatch => m !== null)
+    .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
 
   // (b) a reply is sitting in the mailbox and the ladder does not know about it.
-  const repliesNotLogged = Array.from(perProspect.entries())
+  const repliesNotLogged: ImportMismatch[] = Array.from(perProspect.entries())
     .filter(([id, c]) => c.inbound > 0 && !loggedIn.has(id))
-    .map(([id, c]) => ({ prospect_id: id, name: c.name, replies: c.inbound }))
+    .map(([id, c]) => ({
+      prospect_id: id, name: c.name, replies: c.inbound,
+      reason: `${c.inbound} repl${c.inbound === 1 ? 'y' : 'ies'} in the mailbox, none logged`,
+    }))
+    .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
 
-  return NextResponse.json({
+  const perProspectOut: ImportPerProspect[] =
+    Array.from(perProspect.entries()).map(([id, c]) => ({ prospect_id: id, ...c }))
+
+  // 🔴 THE RETURN IS TYPED, and that is the fix for the NaNs. `MailImportResult` is the one declaration
+  // of these field names; the panel imports the same type and reads no name it has invented.
+  const result: MailImportResult = {
     ok: true, migrationApplied: true,
-    walked, found: found.length, inserted,
-    perProspect: Array.from(perProspect.entries()).map(([id, c]) => ({ prospect_id: id, ...c })),
+    read, walked, matched: found.length, recorded: inserted, updated,
+    perProspect: perProspectOut,
     // ⚠️ REPORTED, NOT REPAIRED. Both lists are questions for Dominic: only he knows whether a missing
     // Sent message means the email never went, went from another account, or was filed somewhere else.
     mismatches: { loggedButUnmatched, repliesNotLogged },
     errors,
-  })
+  }
+  return NextResponse.json(result)
 }

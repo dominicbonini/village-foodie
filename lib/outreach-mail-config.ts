@@ -54,10 +54,9 @@ export const OUTREACH_SMTP_EHLO_NAME = 'hatchgrab.com'
 export const OUTREACH_SENT_MAILBOX = 'Sent'
 export const OUTREACH_IMPORT_MAILBOXES = ['Sent', 'INBOX', 'Archive', 'Spam'] as const
 
-/** 🔴 THE DAILY CEILING ON REAL SENDS. Not a rate limit for the mail host's benefit — a guard against a
- *  loop or a mis-click turning a manual outreach tool into a bulk sender overnight. Counts NON-TEST
- *  outbound rows in the Europe/London calendar day. */
-export const OUTREACH_DAILY_SEND_CAP = 30
+/* 🔴 `OUTREACH_DAILY_SEND_CAP` WAS HERE AND IS GONE (29 September 2026). Removed at Dominic's
+ * instruction: every email is sent by hand, so a ceiling only obstructs. The reasoning, and the way it
+ * misfired against imported rows on its first day, is recorded in `lib/outreach-send-rules.ts`. */
 
 /** The zone every "today" in outreach is measured in. */
 export const OUTREACH_TZ = 'Europe/London'

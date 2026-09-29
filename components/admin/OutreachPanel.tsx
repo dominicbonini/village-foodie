@@ -31,6 +31,7 @@ import { safeHref } from '@/lib/safe-href'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
 import ComposeWindow from '@/components/admin/ComposeWindow'
+import type { MailImportResult, MailImportResponse } from '@/lib/outreach-mail-import-result'
 import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outreach "Create Demo" — stacked ABOVE the prospect modal
 // Only the two GATING helpers are needed here now; the picker, the renderer, the footer and the
 // copy action all live in ComposeWindow.
@@ -1465,29 +1466,35 @@ export default function OutreachPanel() {
  * hand-sent emails the contact log never recorded. Deciding what those mismatches mean is a person's
  * job, which is why they are REPORTED rather than reconciled.
  * ⚠️ IT OPENS EVERY MAILBOX READ-ONLY (IMAP EXAMINE). Nothing is marked read and no flag changes, so
- * running it cannot alter what Outlook shows.
+ * running it cannot alter what Outlook shows. The ONE thing it edits is a row it wrote itself: an
+ * imported row whose `in_reply_to` / `references` are null gets them filled in, never overwritten.
  */
 function ImportPastEmails() {
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState<string | null>(null)
+  const [result, setResult] = useState<MailImportResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [openList, setOpenList] = useState<null | 'unmatched' | 'replies'>(null)
   const inFlight = useRef(false)          // the same synchronous guard as everywhere else
   const run = async () => {
     if (inFlight.current) return
     inFlight.current = true
-    setBusy(true); setResult(null)
+    setBusy(true); setResult(null); setError(null); setOpenList(null)
     try {
       const r = await fetch('/api/admin/outreach/mail-import', { method: 'POST' })
-      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      if (j.ok !== true) { setResult(String(j.refusal ?? 'The import could not run.')); return }
-      const m = (j.mismatches ?? {}) as { loggedButUnmatched?: number; repliesNotLogged?: number }
-      setResult(
-        `Read ${Number(j.walked ?? 0)} messages, matched ${Number(j.found ?? 0)}, recorded ${Number(j.inserted ?? 0)} new. ` +
-        `${Number(m.loggedButUnmatched ?? 0)} logged contacts have no email in the mailbox; ` +
-        `${Number(m.repliesNotLogged ?? 0)} replies are not in the contact log.`)
+      // 🔴 TYPED, NOT `Record<string, unknown>`. The first version read `j.walked` as a number when the
+      // route returns an array, and both mismatch lists as numbers when the route returns rows — three
+      // NaNs on screen, and nothing in the type system to catch it because everything was `unknown`.
+      const j = (await r.json().catch(() => null)) as MailImportResponse | null
+      if (!j) { setError('The import did not return a readable answer.'); return }
+      if (j.ok !== true) { setError(j.refusal); return }
+      setResult(j)
     } catch {
-      setResult('The import did not finish — check the connection and run it again. It only ever adds, so running it twice is safe.')
+      setError('The import did not finish — check the connection and run it again. It only ever adds, so running it twice is safe.')
     } finally { inFlight.current = false; setBusy(false) }
   }
+  const list = openList === 'unmatched' ? result?.mismatches.loggedButUnmatched
+    : openList === 'replies' ? result?.mismatches.repliesNotLogged
+    : null
   return (
     <>
       <button type="button" onClick={() => void run()} disabled={busy}
@@ -1495,7 +1502,56 @@ function ImportPastEmails() {
         className="text-sm rounded-lg px-3 py-1.5 border font-semibold bg-white border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40">
         {busy ? 'Importing…' : 'Import past emails'}
       </button>
-      {result && <span className="text-[11px] text-slate-600 max-w-md">{result}</span>}
+      {error && <span className="text-[11px] text-red-700 max-w-md">{error}</span>}
+      {result && (
+        <div className="basis-full flex flex-col gap-1 mt-1">
+          <p className="text-[11px] text-slate-600">
+            Read <span className="font-bold">{result.read}</span>,
+            {' '}matched <span className="font-bold">{result.matched}</span>,
+            {' '}recorded <span className="font-bold">{result.recorded}</span> new
+            {/* 🔴 SHOWN SEPARATELY FROM "recorded". A re-run records 0 and may still UPDATE rows whose
+                thread headers were never captured — reporting them as one number would hide that. */}
+            {result.updated > 0 && <>, filled in the missing reply headers on <span className="font-bold">{result.updated}</span></>}
+            .
+            {' '}
+            {result.walked.filter(w => w.skipped).length > 0 && (
+              <span className="text-slate-400">
+                Empty: {result.walked.filter(w => w.skipped).map(w => w.mailbox).join(', ')}.
+              </span>
+            )}
+          </p>
+          {/* 🔴 NAMES, NOT COUNTS. "12 logged contacts have no email in the mailbox" is a number nobody
+              can act on; a truck name is a row Dominic can open. Both lists are questions for him —
+              nothing here reconciles them. */}
+          <p className="text-[11px] text-slate-600 flex flex-wrap items-center gap-x-3">
+            <button type="button" onClick={() => setOpenList(o => o === 'unmatched' ? null : 'unmatched')}
+              className="underline font-semibold text-slate-700 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400 rounded">
+              {result.mismatches.loggedButUnmatched.length} logged as emailed with no email found
+            </button>
+            <button type="button" onClick={() => setOpenList(o => o === 'replies' ? null : 'replies')}
+              className="underline font-semibold text-slate-700 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400 rounded">
+              {result.mismatches.repliesNotLogged.length} replies not in the contact log
+            </button>
+          </p>
+          {list && (
+            <div className="border border-slate-200 rounded-lg bg-white max-h-40 overflow-y-auto divide-y divide-slate-100">
+              {list.length === 0
+                ? <p className="px-2 py-1.5 text-[11px] text-slate-500">Nothing on this list.</p>
+                : list.map(m => (
+                  <p key={m.prospect_id} className="px-2 py-1 text-[11px] text-slate-700">
+                    <span className="font-semibold">{m.name ?? '(no truck name)'}</span>
+                    <span className="text-slate-500"> — {m.reason}</span>
+                  </p>
+                ))}
+            </div>
+          )}
+          {result.errors.length > 0 && (
+            <p className="text-[11px] text-red-700">
+              {result.errors.map(e => `${e.step}: ${e.error}`).join(' · ')}
+            </p>
+          )}
+        </div>
+      )}
     </>
   )
 }

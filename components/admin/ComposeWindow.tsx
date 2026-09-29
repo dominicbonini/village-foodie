@@ -15,6 +15,9 @@
 // writer the modal's own Log button uses, passed in as a prop.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+// 🔴 THE SIGNATURE COMES FROM THE MODULE THE SERVER APPENDS FROM. It is pure — no node, no network —
+// so the compose window can render exactly what will be sent rather than a hand-kept copy of it.
+import { signatureHtml } from '@/lib/outreach-mail-message'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -67,13 +70,29 @@ function seedFrom(id: string | null | undefined, offerable: MessageTemplate[], c
   }
 }
 
-/** What the server says this message will be. Built by the route, never assembled in the browser. */
-interface Preview {
-  /** The recipient the ROUTE resolved. Null for a test — the test address is never sent to the browser. */
-  to: string | null
+/** "11 Sep 2026, 13:07" — enough to recognise which email, in the timezone the mail is read in. */
+function fmtWhen(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).format(d)
+}
+
+/**
+ * The earlier email this one will reply to, as the SERVER sees it.
+ *
+ * 🔴 THE SERVER DECIDES WHETHER THIS IS A CHASE, not the browser. It is the same `threadParent` lookup
+ * the send itself uses — most recent non-test outbound message the server accepted — so the line that
+ * says "sends as a reply to …" cannot name a different email from the one actually quoted.
+ * ⚠️ NO BODY HERE. The quoted HTML is fetched only if Show is pressed, because it may need an IMAP
+ * read, and opening the compose window must not open a mailbox connection.
+ */
+interface Thread {
   subject: string
-  html: string
-  threaded: boolean
+  replySubject: string
+  date: string | null
 }
 
 export default function ComposeWindow({
@@ -210,12 +229,12 @@ export default function ComposeWindow({
   const sendInFlight = useRef(false)
 
   // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
-  const [preview, setPreview] = useState<Preview | null>(null)
-  /** The exact text the preview on screen was built from. Anything else means the preview is stale. */
-  const [previewOf, setPreviewOf] = useState<string | null>(null)
-  const [previewing, setPreviewing] = useState(false)
-  const [capState, setCapState] = useState<{ sentToday: number; dailyCap: number } | null>(null)
-  const [migrationOff, setMigrationOff] = useState<string | null>(null)
+  const [thread, setThread] = useState<Thread | null>(null)
+  /** The quoted parent, fetched only when Show is pressed. */
+  const [quoted, setQuoted] = useState<string | null>(null)
+  const [quotedOpen, setQuotedOpen] = useState(false)
+  const [quotedLoading, setQuotedLoading] = useState(false)
+  const [sendingOff, setSendingOff] = useState<string | null>(null)
   const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
   const [sending, setSending] = useState(false)
   const [sentNote, setSentNote] = useState<string | null>(null)
@@ -434,17 +453,23 @@ export default function ComposeWindow({
   // Outlook happened to default to. The route sends from the mailbox itself over SMTP, files a copy in
   // Sent, and knows whether the server accepted it.
   // ⚠️ WHAT HAS NOT CHANGED: Copy is the same plain-text copy, and Log is the same single writer. This
-  // window still sends NOTHING on its own — a send is a press of Send on a message already previewed.
+  // window still sends NOTHING on its own — a send is a press of Send, and Send asks first.
+
+  // 🔴 THE PREVIEW PANE AND ITS "BUILD PREVIEW" STEP ARE GONE (29 September 2026), AT DOMINIC'S
+  // INSTRUCTION. The pane rendered the server's own HTML under the box and Send stayed disabled until
+  // it matched the text — one press became two, and what it showed was the message he had just typed.
+  // ⚠️ WHAT IT WAS PROTECTING IS STILL PROTECTED, and by something stronger than a preview: the SERVER
+  // builds the final message from the text in the box, at send time, with every refusal already run.
+  // The browser never assembles a message, so there is no second implementation to diverge — which was
+  // the actual argument for the preview, and it survives the preview's removal.
+  // What is shown instead is what Dominic cannot see in his own textarea: the signature that gets
+  // appended, and the fact that a chase attaches to an earlier email.
 
   /** The rung the server should log. A tagged template states its own; otherwise the log form's. */
   const kindForSend = selected?.servesKind ?? logFormKind
 
-  // 🔴 THE PREVIEW IS BUILT BY THE SERVER, FROM THE SAME `buildMessage` THE SEND USES, and Send is
-  // refused while the text differs from the text that preview was built from. So the operator cannot
-  // send a message they have not read: what is on screen IS the message, signature, quote block and all.
-  const previewKey = useMemo(
-    () => JSON.stringify([finalSubject, fullText, kindForSend]), [finalSubject, fullText, kindForSend])
-  const previewStale = previewOf !== previewKey
+  /** 🔴 RENDERED FROM THE SAME PURE FUNCTION THE SERVER APPENDS. Not a copy of the markup — the module. */
+  const signature = useMemo(() => signatureHtml(), [])
 
   const post = useCallback(async (payload: Record<string, unknown>) => {
     const r = await fetch('/api/admin/outreach/mail-send', {
@@ -454,49 +479,35 @@ export default function ComposeWindow({
     return { status: r.status, json: (await r.json().catch(() => ({}))) as Record<string, unknown> }
   }, [prospectId])
 
-  const loadPreview = useCallback(async (opts?: { test?: boolean }) => {
-    if (!isEmail) return null
-    setPreviewing(true); setSendError(null)
-    try {
-      const key = previewKey
-      const { json } = await post({
-        action: 'preview', subject: finalSubject, body: fullText, kind: kindForSend,
-        ...(opts?.test ? { is_test: true } : {}),
-      })
-      if (json.migrationApplied === false) { setMigrationOff(String(json.refusal ?? '')); return null }
-      if (typeof json.sentToday === 'number' && typeof json.dailyCap === 'number') {
-        setCapState({ sentToday: json.sentToday, dailyCap: json.dailyCap })
-      }
-      if (json.ok !== true) { setSendError(String(json.refusal ?? 'That could not be prepared.')); setPreview(null); setPreviewOf(null); return null }
-      const p: Preview = {
-        to: typeof json.to === 'string' ? json.to : null,
-        subject: String(json.subject ?? ''), html: String(json.html ?? ''),
-        threaded: json.threaded === true,
-      }
-      setPreview(p); setPreviewOf(key)
-      return p
-    } catch {
-      setSendError('The preview could not be built — check the connection and try again.')
-      return null
-    } finally { setPreviewing(false) }
-  }, [isEmail, post, previewKey, finalSubject, fullText, kindForSend])
-
-  // The counter on open, so "Sent today" is right before anything is typed.
+  // On open: is this a chase, and is sending available at all? One GET, no mailbox connection.
   useEffect(() => {
     if (!isEmail) return
     let live = true
     void (async () => {
-      const r = await fetch('/api/admin/outreach/mail-send').catch(() => null)
+      const r = await fetch(`/api/admin/outreach/mail-send?prospect_id=${encodeURIComponent(prospectId)}`).catch(() => null)
       if (!r || !live) return
       const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
       if (!live) return
-      if (j.migrationApplied === false) { setMigrationOff(String(j.refusal ?? '')); return }
-      if (typeof j.sentToday === 'number' && typeof j.dailyCap === 'number') {
-        setCapState({ sentToday: j.sentToday, dailyCap: j.dailyCap })
-      }
+      if (j.ok !== true) { setSendingOff(String(j.refusal ?? 'Sending is unavailable.')); return }
+      const t = j.thread as Thread | null | undefined
+      setThread(t ?? null)
     })()
     return () => { live = false }
-  }, [isEmail])
+  }, [isEmail, prospectId])
+
+  /** The quoted parent, on demand. May need a read-only IMAP fetch, so it is never done on open. */
+  const showQuoted = useCallback(async () => {
+    setQuotedOpen(o => !o)
+    if (quoted || quotedLoading) return
+    setQuotedLoading(true)
+    try {
+      const { json } = await post({ action: 'quoted' })
+      if (json.ok === true && typeof json.html === 'string') setQuoted(json.html)
+      else setSendError(String(json.refusal ?? 'The earlier email could not be read.'))
+    } catch {
+      setSendError('The earlier email could not be read — check the connection.')
+    } finally { setQuotedLoading(false) }
+  }, [post, quoted, quotedLoading])
 
   /**
    * The send itself.
@@ -507,13 +518,15 @@ export default function ComposeWindow({
   const sendNow = useCallback(async (test: boolean) => {
     if (sendInFlight.current) return
     if (refusal) { setSendError(refusal); return }
-    if (previewStale) { setSendError('Update the preview first — Send only sends a message you have read.'); return }
     sendInFlight.current = true
     setSending(true); setSendError(null); setConfirmSend(null)
     try {
-      // One key per exact message, kept across presses of the same text.
-      if (!idemRef.current || idemRef.current.forKey !== `${previewKey}|${test}`) {
-        idemRef.current = { forKey: `${previewKey}|${test}`, value: crypto.randomUUID() }
+      // 🔴 ONE KEY PER EXACT MESSAGE, and the key is still derived from the TEXT — that did not depend
+      // on the preview. A double press of the same message returns the first send's verdict; changed
+      // text is a different message and gets a new key.
+      const key = JSON.stringify([finalSubject, fullText, kindForSend, test])
+      if (!idemRef.current || idemRef.current.forKey !== key) {
+        idemRef.current = { forKey: key, value: crypto.randomUUID() }
       }
       const { json } = await post({
         action: 'send', subject: finalSubject, body: fullText, kind: kindForSend,
@@ -526,12 +539,14 @@ export default function ComposeWindow({
       if (json.ok !== true) {
         // 🔴 `uncertain` IS NOT A FAILURE AND MUST NOT READ LIKE ONE. Telling the operator it failed is
         // what produces the second copy: they press Send again.
+        // ⚠️ AND THE REFUSAL IS SHOWN WHOLE. It now carries the database's own code where one applies,
+        // which is the difference between "could not be recorded" and a diagnosable screen.
         setSendError(String(json.refusal ?? json.message ?? 'That was not sent.'))
         return
       }
       const copy = String(json.sent_copy ?? '')
       setSentNote([
-        test ? 'Test sent to your own address.' : `Sent to ${preview?.to ?? toEmail ?? 'the prospect'}.`,
+        test ? 'Test sent to your own address.' : `Sent to ${toEmail ?? 'the prospect'}.`,
         copy === 'absent' ? 'It is NOT in your Sent folder — check the mailbox.' : 'A copy is in your Sent folder.',
         typeof json.logWarning === 'string' ? json.logWarning : '',
       ].filter(Boolean).join(' '))
@@ -547,7 +562,7 @@ export default function ComposeWindow({
       sendInFlight.current = false
       setSending(false)
     }
-  }, [refusal, previewStale, previewKey, post, finalSubject, fullText, kindForSend, preview, toEmail, onSent])
+  }, [refusal, post, finalSubject, fullText, kindForSend, toEmail, onSent])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -814,8 +829,24 @@ export default function ComposeWindow({
                   that omits the attribute. 🧪 Measured: without it this box renders at 14px while every
                   other field in the app renders at 16px, and it would zoom on focus on iOS, which is the
                   very thing that rule exists to prevent. */}
-              <input type="text" className={FIELD} value={subject}
-                onChange={e => { setSubject(e.target.value); setEdited(true); setLogged(false) }} />
+              {/* 🔴 A CHASE'S SUBJECT IS NOT AN EDITABLE FIELD, BECAUSE IT IS NOT A CHOICE. The
+                  server sets it to `Re: ` + the parent's subject and ignores whatever is typed here —
+                  it has to, or the reply's subject would disagree with its `In-Reply-To`, and a client
+                  that threads on the subject would show the chase as a new conversation. Leaving the
+                  box editable would let Dominic type something that is silently thrown away, so for a
+                  chase it shows what will ACTUALLY be sent, read-only. */}
+              {thread ? (
+                <>
+                  <input type="text" className={`${FIELD} bg-slate-50 text-slate-600`} value={thread.replySubject}
+                    readOnly aria-readonly="true" />
+                  <span className="block mt-0.5 text-[11px] text-slate-500">
+                    Set automatically, because this replies to an earlier email.
+                  </span>
+                </>
+              ) : (
+                <input type="text" className={FIELD} value={subject}
+                  onChange={e => { setSubject(e.target.value); setEdited(true); setLogged(false) }} />
+              )}
             </label>
           )}
 
@@ -958,61 +989,51 @@ export default function ComposeWindow({
             </div>
           )}
 
-          {/* ── THE PREVIEW: WHAT THE PROSPECT WILL SEE ─────────────────────────────────────────
-              🔴 RENDERED FROM THE SERVER'S OWN HTML, and Send is refused while it is stale. The
-              operator is never asked to approve a message assembled somewhere other than where it is
-              sent from — the signature, the spacing and the quoted parent below are the actual bytes. */}
-          {isEmail && !migrationOff && (
-            <div className="rounded-lg border border-slate-300 bg-white">
-              <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-1.5 flex-wrap">
-                <span className="text-[10px] uppercase tracking-wide font-bold text-slate-400">Preview</span>
-                {capState && (
-                  <span className={`text-[11px] font-semibold ${capState.sentToday >= capState.dailyCap ? 'text-red-700' : 'text-slate-500'}`}>
-                    Sent today: {capState.sentToday} / {capState.dailyCap}
-                  </span>
-                )}
-                {preview?.threaded && (
-                  <span className="text-[11px] font-semibold text-emerald-700">Replies to the last email</span>
-                )}
-                <button onClick={() => void loadPreview()} disabled={previewing || !body.trim()}
-                  className="ml-auto text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
-                  {previewing ? 'Building…' : preview ? 'Update preview' : 'Build preview'}
-                </button>
-              </div>
-              {preview ? (
-                <div className="px-3 py-2">
+          {/* ── WHAT GETS ADDED TO WHAT HE TYPED ────────────────────────────────────────────────
+              🔴 THIS IS NOT A PREVIEW OF THE MESSAGE. The message is in the box above and Dominic can
+              read it there; restating it was the duplication he asked to remove. What is shown here is
+              only what he CANNOT see in the textarea: the signature the server appends, and — for a
+              chase — that it attaches to an earlier email and quotes it. */}
+          {isEmail && !sendingOff && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+              <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-1">
+                Added below your message
+              </span>
+              {/* Read-only, and rendered from the module the server appends from — not a copy of it. */}
+              <div className="rounded border border-slate-200 bg-white px-2 py-1.5 text-[12px] select-none"
+                aria-label="Your signature, as it will be sent"
+                dangerouslySetInnerHTML={{ __html: signature }} />
+              {thread && (
+                <div className="mt-2">
                   <p className="text-[12px] text-slate-700">
-                    <span className="font-bold">To:</span> {preview.to ?? toEmail ?? '—'}
+                    Sends as a reply to “<span className="font-semibold">{thread.subject}</span>”
+                    {thread.date ? ` (${fmtWhen(thread.date)})` : ''}. The earlier email is quoted under
+                    your signature.
+                    <button type="button" onClick={() => void showQuoted()}
+                      className="ml-1.5 text-[12px] font-bold text-orange-700 underline hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded">
+                      {quotedLoading ? 'Loading…' : quotedOpen ? 'Hide' : 'Show'}
+                    </button>
                   </p>
-                  <p className="text-[12px] text-slate-700 mb-1.5">
-                    <span className="font-bold">Subject:</span> {preview.subject}
-                  </p>
-                  {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. Most of this HTML is ours, but
-                      a chase QUOTES A MESSAGE THAT CAME OUT OF THE MAILBOX — arbitrary sender-controlled
-                      markup. Injected into the admin page it would run with an authenticated admin
-                      session behind it. `sandbox=""` grants nothing: no scripts, no forms, no same-origin,
-                      no top-level navigation, which is exactly what a preview needs. */}
-                  <iframe title="Message preview" sandbox="" srcDoc={preview.html}
-                    className="w-full h-64 border border-slate-200 rounded bg-white" />
-                  {previewStale && (
-                    <p className="mt-1.5 text-[11px] font-semibold text-amber-800">
-                      You have edited the message since this preview. Update it before sending.
-                    </p>
+                  {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. THIS ONE IS THE REASON THE
+                      RULE EXISTS: the quoted email came out of the MAILBOX, so its markup is
+                      sender-controlled. Injected into the admin page it would run behind an
+                      authenticated admin session. `sandbox=""` grants nothing — no scripts, no forms,
+                      no same-origin, no top-level navigation.
+                      ⚠️ The signature above is OURS and is rendered inline; this is not. */}
+                  {quotedOpen && quoted && (
+                    <iframe title="The earlier email" sandbox="" srcDoc={quoted}
+                      className="mt-1.5 w-full h-56 border border-slate-200 rounded bg-white" />
                   )}
                 </div>
-              ) : (
-                <p className="px-3 py-2 text-[12px] text-slate-500">
-                  Build the preview to see exactly what will be sent, including your signature and the
-                  quoted earlier email.
-                </p>
               )}
             </div>
           )}
 
-          {/* The migration has not been applied on this environment, so sending is simply off. */}
-          {migrationOff && (
+          {/* Sending is unavailable on this environment — the reason comes from the server, with the
+              database's own code where there is one, so it is diagnosable rather than just "off". */}
+          {sendingOff && (
             <p className="text-[12px] text-slate-700 bg-slate-100 border border-slate-300 rounded-lg px-3 py-2">
-              {migrationOff} Copy and Log still work.
+              {sendingOff} Copy and Log still work.
             </p>
           )}
 
@@ -1031,7 +1052,7 @@ export default function ComposeWindow({
               <p className="text-[13px] text-slate-800">
                 {confirmSend === 'test'
                   ? 'Send a test copy of this message to your own address? Nothing is logged and it does not count towards today’s cap.'
-                  : <>Send this email to <span className="font-bold">{preview?.to ?? toEmail}</span>
+                  : <>Send this email to <span className="font-bold">{toEmail}</span>
                       {' '}({truckName})? It goes from your mailbox now, and the contact is logged.</>}
               </p>
               <div className="mt-2 flex justify-end gap-2">
@@ -1063,16 +1084,15 @@ export default function ComposeWindow({
                   account — Outlook always composes from its default and ignores `from=`. The route
                   authenticates as the mailbox itself, so the From address is fixed in
                   `lib/outreach-mail-config.ts#OUTREACH_FROM_ADDRESS` and cannot be anything else. */}
-              {isEmail && !migrationOff && (
+              {isEmail && !sendingOff && (
                 <>
-                  <button onClick={() => askSend(true)} disabled={!body.trim() || sending || previewStale}
-                    title={previewStale ? 'Update the preview first' : 'Sends this message to your own address. Nothing is logged and it does not count towards the cap.'}
+                  <button onClick={() => askSend(true)} disabled={!body.trim() || sending}
+                    title="Sends this message to your own address. Nothing is logged and no contact is recorded."
                     className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Send test to me
                   </button>
-                  <button onClick={() => askSend(false)} disabled={!body.trim() || !toEmail || sending || previewStale}
+                  <button onClick={() => askSend(false)} disabled={!body.trim() || !toEmail || sending}
                     title={!toEmail ? 'This prospect has no email address'
-                      : previewStale ? 'Update the preview first — Send only sends a message you have read'
                       : `Sends from your mailbox to ${toEmail} and logs the contact.`}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
                     {sending ? 'Sending…' : 'Send'}

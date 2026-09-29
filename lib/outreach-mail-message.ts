@@ -266,10 +266,7 @@ export function fromHeader(): string {
   return n ? `${n} <${OUTREACH_FROM_ADDRESS}>` : OUTREACH_FROM_ADDRESS
 }
 
-/** The Europe/London calendar day of an instant, as `YYYY-MM-DD` — what the daily cap counts within. */
-export function londonDay(d: Date, tz = OUTREACH_TZ): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
-}
+/* `londonDay` WAS HERE. It existed only to bound the daily cap's window, and the cap is gone. */
 
 // ── 🔴 DID IT FAIL, OR DO WE NOT KNOW? ──────────────────────────────────────────────────────────────
 // The most dangerous outcome of a send is not a failure — it is an UNKNOWN treated as a failure and then

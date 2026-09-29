@@ -18,16 +18,15 @@ import nodemailer from 'nodemailer'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { malformedTokensIn, unresolvedIn, isMustResolveToken } from '@/lib/outreach-template-render'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
-import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_DAILY_SEND_CAP } from '@/lib/outreach-mail-config'
+import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME } from '@/lib/outreach-mail-config'
 import { smtpTransportOptions, mailFor } from '@/lib/outreach-mail-envelope'
 import {
-  buildMessage, newMessageId, classifySendFailure,
+  buildMessage, newMessageId, classifySendFailure, replySubject,
   type QuotedMessage,
 } from '@/lib/outreach-mail-message'
 import { makeImapClient, findInSent, appendToSent, fetchBodiesByUid, sanitiseMailError } from '@/lib/outreach-mail-box'
-import {
-  CAP_COUNTED_STATUSES, londonDayStartUtc, capRefusal, prospectRefusal, retryRefusal,
-} from '@/lib/outreach-send-rules'
+import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
+import { prospectRefusal, retryRefusal } from '@/lib/outreach-send-rules'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -44,16 +43,15 @@ const refuse = (message: string, extra: Record<string, unknown> = {}) =>
  * (not in the schema cache) and 42P01 (no such table) both mean "not applied yet", and both must read as
  * a feature that is OFF rather than as an error page.
  */
-async function messagesTableReady(): Promise<boolean> {
-  try {
-    const { error } = await supabase.from('outreach_messages').select('id', { count: 'exact', head: true }).limit(1)
-    if (!error) return true
-    const code = (error as { code?: string }).code
-    return !(code === 'PGRST205' || code === '42P01' || /schema cache|does not exist/i.test(error.message ?? ''))
-  } catch { return false }
+/** The probe, bound to this route's client. The decision itself lives in `lib/outreach-messages-table`. */
+async function messagesTable() {
+  return messagesTableProbe(async () => {
+    const { error } = await supabase.from('outreach_messages').select('id').limit(1)
+    return { error }
+  })
 }
-const MIGRATION_OFF = 'Email sending is off until the outreach_messages migration is applied.'
 
+/** One `outreach_messages` row, as this route reads it back. */
 interface Row {
   id: string; prospect_id: string; direction: string; status: string; is_test: boolean
   message_id: string; in_reply_to: string | null; references: string | null
@@ -61,20 +59,63 @@ interface Row {
   html_body: string | null; text_body: string | null; sent_copy: string; attempts: number
 }
 
+interface ParentRow {
+  message_id: string; references: string | null; subject: string | null; to_address: string | null
+  message_date: string | null; html_body: string | null; text_body: string | null
+  mailbox: string | null; uid: number | null
+}
+
+/**
+ * The email a chase replies to: the most recent non-test outbound message the server accepted, or may
+ * have accepted.
+ * 🔴 ONE LOOKUP, THREE CALLERS — the send, the GET that tells the compose window it is writing a chase,
+ * and the `quoted` action that fetches the body for the Show toggle. Three copies of this ordering
+ * would eventually disagree about WHICH email a reply attaches to, and the operator would be told one
+ * thing on screen and send another.
+ */
+async function threadParent(prospectId: string): Promise<ParentRow | undefined> {
+  const { data } = await supabase
+    .from('outreach_messages')
+    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid')
+    .eq('prospect_id', prospectId).eq('direction', 'outbound').eq('is_test', false)
+    .in('status', ['sent', 'uncertain'])
+    .order('message_date', { ascending: false, nullsFirst: false })
+    .limit(1)
+  return (data ?? [])[0] as ParentRow | undefined
+}
+
+/**
+ * The parent's own body, for the quote block.
+ *
+ * 🔴 A SYSTEM-SENT PARENT STORED IT; AN IMPORTED ONE DID NOT. The importer records an Outlook message's
+ * headers and leaves the body in the mailbox, where it already is — so it is read back by uid,
+ * READ-ONLY (EXAMINE, and `fetch` emits `BODY.PEEK[…]`, so quoting an email does not mark it seen).
+ * ⚠️ ONE IMPLEMENTATION FOR BOTH CALLERS. The send needs this to build the quote; the compose window's
+ * Show toggle needs it to display the same thing. If they read it differently, the operator would be
+ * shown one email and quote another.
+ */
+async function parentBodies(
+  parent: ParentRow, mailUser: string, mailPass: string,
+): Promise<{ html: string | null; text: string | null }> {
+  if (parent.html_body) return { html: parent.html_body, text: parent.text_body }
+  if (!parent.mailbox || parent.uid == null) return { html: null, text: null }
+  const c = makeImapClient(mailUser, mailPass)
+  try {
+    await c.connect()
+    return await fetchBodiesByUid(c, parent.mailbox, parent.uid)
+  } catch { return { html: null, text: null } } finally {
+    try { await c.logout() } catch { /* already gone */ }
+  }
+}
+
 export async function GET(req: NextRequest) {
   // The counter and the per-prospect list the compose window and the modal read.
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
-  if (!(await messagesTableReady())) return NextResponse.json({ ok: false, migrationApplied: false, refusal: MIGRATION_OFF })
+  const probe = await messagesTable()
+  if (!probe.ready) return NextResponse.json({ ok: false, migrationApplied: false, refusal: probe.refusal })
   const prospectId = req.nextUrl.searchParams.get('prospect_id')
-  // 🔴 THE SAME WINDOW AND THE SAME STATUSES THE SEND USES — from `lib/outreach-send-rules`, so the number
-  // the compose window displays cannot disagree with the number the cap enforces.
-  const { count } = await supabase
-    .from('outreach_messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('direction', 'outbound').eq('is_test', false)
-    .in('status', CAP_COUNTED_STATUSES as unknown as string[])
-    .gte('created_at', londonDayStartUtc(new Date()))
   let messages: unknown[] = []
+  let thread: { subject: string; replySubject: string; date: string | null } | null = null
   if (prospectId) {
     const { data } = await supabase
       .from('outreach_messages')
@@ -82,11 +123,20 @@ export async function GET(req: NextRequest) {
       .eq('prospect_id', prospectId)
       .order('created_at', { ascending: false })
     messages = data ?? []
+    // 🔴 THE PARENT, FROM THE DATABASE ONLY. The compose window needs three things before a word is
+    // typed: whether this is a chase, what the subject will be, and what to say the reply attaches to.
+    // None of that needs the mailbox, so opening the window opens no IMAP connection — the quoted BODY
+    // is fetched only if Dominic presses Show.
+    const parent = await threadParent(prospectId)
+    if (parent) {
+      thread = {
+        subject: parent.subject ?? '',
+        replySubject: replySubject(parent.subject ?? ''),
+        date: parent.message_date,
+      }
+    }
   }
-  return NextResponse.json({
-    ok: true, migrationApplied: true,
-    sentToday: count ?? 0, dailyCap: OUTREACH_DAILY_SEND_CAP, messages,
-  })
+  return NextResponse.json({ ok: true, migrationApplied: true, messages, thread })
 }
 
 export async function POST(req: NextRequest) {
@@ -101,7 +151,8 @@ export async function POST(req: NextRequest) {
   const idempotencyKey = typeof body.idempotency_key === 'string' ? body.idempotency_key : null
 
   // ── REFUSAL 1a · the table ───────────────────────────────────────────────────────────────────────
-  if (!(await messagesTableReady())) return refuse(MIGRATION_OFF, { migrationApplied: false })
+  const probe = await messagesTable()
+  if (!probe.ready) return refuse(probe.refusal, { migrationApplied: false })
 
   // ── REFUSAL 1b · the credentials ─────────────────────────────────────────────────────────────────
   const mailUser = process.env.OUTREACH_MAIL_USER
@@ -121,6 +172,23 @@ export async function POST(req: NextRequest) {
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
     const retried = await deliver(row, { mailUser, mailPass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
+  }
+
+  // ── "QUOTED" — the earlier email's body, for the Show toggle in the compose window ─────────────
+  // 🔴 READ-ONLY, AND ONLY WHEN ASKED. Opening the compose window must not open an IMAP connection:
+  // most of the time Dominic does not press Show, and a connect on every open would make the window
+  // slow for a panel nobody looked at. Nothing is written and nothing is sent on this path.
+  if (action === 'quoted') {
+    if (!prospectId) return NextResponse.json({ error: 'prospect_id required' }, { status: 400 })
+    const parent = await threadParent(prospectId)
+    if (!parent) return refuse('There is no earlier email to quote.')
+    const bodies = await parentBodies(parent, mailUser, mailPass)
+    if (!bodies.html) {
+      return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
+    }
+    return NextResponse.json({
+      ok: true, html: bodies.html, subject: parent.subject, date: parent.message_date,
+    })
   }
 
   // ── "LOG IT" — the email HAS gone and the contact log missed it ─────────────────────────────────
@@ -173,8 +241,7 @@ export async function POST(req: NextRequest) {
   // ── REFUSAL 6 · the idempotency key was already used ─────────────────────────────────────────────
   // Checked BEFORE anything is built, so a double submit costs one select and returns the first send's
   // verdict rather than producing a second email.
-  const isPreview = action === 'preview'
-  if (idempotencyKey && !isPreview) {
+  if (idempotencyKey) {
     const { data: prior } = await supabase
       .from('outreach_messages').select('id, status, sent_copy, last_error').eq('idempotency_key', idempotencyKey).maybeSingle()
     if (prior) return NextResponse.json({ ok: true, duplicate: true, ...(prior as object) })
@@ -224,38 +291,13 @@ export async function POST(req: NextRequest) {
   const mustResolve = unresolvedIn(whole).filter(isMustResolveToken)
   if (mustResolve.length) return refuse(`The message needs a value that could not be resolved: ${mustResolve.join(', ')}`)
 
-  // ── REFUSAL 5 · the daily cap, in the Europe/London day ──────────────────────────────────────────
-  // ⚠️ TEST SENDS ARE NOT COUNTED. The cap protects prospects from a runaway; a message to Dominic's own
-  // address is not one, and counting it would make the safety check punish the safe thing to do.
-  let sentToday = 0
-  if (!isTest) {
-    const { count } = await supabase
-      .from('outreach_messages')
-      .select('id', { count: 'exact', head: true })
-      .eq('direction', 'outbound').eq('is_test', false)
-      .in('status', CAP_COUNTED_STATUSES as unknown as string[])
-      .gte('created_at', londonDayStartUtc(new Date()))
-    sentToday = count ?? 0
-    const capped = capRefusal(sentToday)
-    // ⚠️ A PREVIEW IS NOT STOPPED BY THE CAP — it is how the operator SEES they have hit it, with the
-    // message they were about to send still on screen. The refusal travels back as a refusal; nothing
-    // is built past it, and Send hits the same check again for real.
-    if (capped) return refuse(capped.refusal, { sentToday, dailyCap: OUTREACH_DAILY_SEND_CAP })
-  }
+  // 🔴 THERE IS NO SEND-COUNT CHECK HERE, AND THERE IS NOT ONE ANYWHERE ELSE IN THIS FILE. A daily cap
+  // of 30 stood between these two blocks until 29 September 2026; `lib/outreach-send-rules.ts` records
+  // why it went. Nothing counts sends now — least of all a test send, which never did count and, with
+  // the cap gone, has nothing left that could refuse it on volume.
 
   // ── THREADING — a chase is a REPLY, or it is refused ─────────────────────────────────────────────
-  const { data: priorOut } = await supabase
-    .from('outreach_messages')
-    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid')
-    .eq('prospect_id', prospectId).eq('direction', 'outbound').eq('is_test', false)
-    .in('status', ['sent', 'uncertain'])
-    .order('message_date', { ascending: false, nullsFirst: false })
-    .limit(1)
-  const parentRow = (priorOut ?? [])[0] as {
-    message_id: string; references: string | null; subject: string | null; to_address: string | null
-    message_date: string | null; html_body: string | null; text_body: string | null
-    mailbox: string | null; uid: number | null
-  } | undefined
+  const parentRow = await threadParent(prospectId)
 
   // Has this prospect been emailed before, according to the LADDER? If so a new thread would be wrong.
   const { count: emailedBefore } = await supabase
@@ -268,18 +310,7 @@ export async function POST(req: NextRequest) {
     // the importer records an Outlook message's headers and leaves the body in the mailbox, where it
     // already is. So it is read back from Sent by uid, READ-ONLY. Only when neither source has it is
     // the chase refused, because a reply quoting nothing is not the email Dominic thinks he is sending.
-    let quotedHtml = parentRow.html_body
-    let quotedText = parentRow.text_body
-    if (!quotedHtml && parentRow.mailbox && parentRow.uid != null) {
-      const c = makeImapClient(mailUser, mailPass)
-      try {
-        await c.connect()
-        const bodies = await fetchBodiesByUid(c, parentRow.mailbox, parentRow.uid)
-        quotedHtml = bodies.html; quotedText = bodies.text
-      } catch { /* fall through to the refusal below */ } finally {
-        try { await c.logout() } catch { /* already gone */ }
-      }
-    }
+    const { html: quotedHtml, text: quotedText } = await parentBodies(parentRow, mailUser, mailPass)
     if (!quotedHtml) {
       return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
     }
@@ -307,25 +338,12 @@ export async function POST(req: NextRequest) {
   const built = buildMessage({ body: bodyIn, subject: subjectIn, messageId, parent })
   const recipient = isTest ? testRecipient! : toAddress
 
-  // ── PREVIEW STOPS HERE ──────────────────────────────────────────────────────────────────────────
-  // 🔴 THE PREVIEW IS THE SAME PIPELINE, NOT A LOOKALIKE. Every refusal above has already run, and the
-  // HTML below came out of the same `buildMessage` call a send uses — same signature, same quote block,
-  // same subject. A preview rendered by a second implementation in the browser would eventually differ
-  // from what leaves the building, and the operator's whole basis for pressing Send is that what they
-  // read is what the prospect gets. Nothing is written and nothing is sent on this path.
-  // ⚠️ THE RECIPIENT IS RETURNED so the confirm can name it; the TEST address never is — `is_test`
-  // previews report only that a test would go to the configured address.
-  if (isPreview) {
-    return NextResponse.json({
-      ok: true, preview: true,
-      to: isTest ? null : recipient,
-      subject: built.subject,
-      html: built.html,
-      text: built.text,
-      threaded: !!built.inReplyTo,
-      sentToday, dailyCap: OUTREACH_DAILY_SEND_CAP,
-    })
-  }
+  // 🔴 `action: 'preview'` WAS HERE AND IS GONE (29 September 2026). It stopped at exactly this point
+  // and returned the built HTML for a preview pane under the compose box. Dominic asked for it to go:
+  // the pane restated the message he had just typed, and the "build the preview before you may send"
+  // step made a one-press job into two. What it was protecting is still protected — the server builds
+  // the final message HERE, from the text in the box, with every refusal above already run, so what is
+  // sent is what `buildMessage` makes of what he wrote either way.
   const { data: insertedRow, error: insErr } = await supabase.from('outreach_messages').insert({
     prospect_id: prospectId,
     direction: 'outbound',
@@ -351,7 +369,12 @@ export async function POST(req: NextRequest) {
         .from('outreach_messages').select('id, status, sent_copy, last_error').eq('idempotency_key', idempotencyKey ?? '').maybeSingle()
       if (prior) return NextResponse.json({ ok: true, duplicate: true, ...(prior as object) })
     }
-    return refuse('The message could not be recorded, so nothing was sent.')
+    // 🔴 THE REASON TRAVELS WITH THE REFUSAL. This sentence read "The message could not be recorded, so
+    // nothing was sent." and stopped there — which is what Dominic saw in production, with no way to
+    // tell a missing table from a permission problem from a bad column. The code and message are
+    // PostgREST's own; they name a table and a constraint, never a credential and never the test
+    // address, neither of which is in this insert's payload or in an error about it.
+    return refuse(`The message could not be recorded, so nothing was sent — ${dbDetail(insErr)}`)
   }
 
   const result = await deliver(insertedRow as Row, { mailUser, mailPass, isTest, testRecipient })

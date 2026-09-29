@@ -31,7 +31,7 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_MAIL_HOST, OUTREACH_IMAP_PORT } from '@/lib/outreach-mail-config'
 import { withReadOnlyMailbox } from '@/lib/outreach-mail-box'
 import {
-  parseHeaderBlock, redactReceivedIps, mimeTreeFrom, attachmentsOf, findPart,
+  parseHeaderBlock, redactReceivedIps, mimeTreeFrom, attachmentsOf, findPart, headerBlockOf,
   skeletoniseHtml, skeletonisePlain, addressesOf, sameDay,
   type RawHeader, type MimeNode,
 } from '@/lib/outreach-mail-format'
@@ -312,18 +312,13 @@ export async function GET(req: NextRequest) {
                 const cs = (charset ?? 'utf-8').toLowerCase()
                 try { return new TextDecoder(cs).decode(bytes) } catch { return bytes.toString('utf8') }
               }
-              // 🔴 THE KEY IS NOT 'header'. imapflow keys `bodyParts` by the section it actually
-              // asked for, and for a whole-header fetch that is the empty string — so
-              // `bp.get('header')` missed every time and every sample came back `headers: []`. Every
-              // plausible spelling is tried, and then any single entry that LOOKS like a header block,
-              // so a future imapflow change cannot silently empty this again.
-              const looksLikeHeaders = (b: Buffer | undefined) =>
-                !!b && /^[A-Za-z-]+:/m.test(b.toString('utf8').slice(0, 400))
-              let headerBuf = bp.get('header') ?? bp.get('HEADER') ?? bp.get('') ?? bp.get('text')
-              if (!looksLikeHeaders(headerBuf)) {
-                for (const [, v] of bp) if (looksLikeHeaders(v)) { headerBuf = v; break }
-              }
-              const rawHeaders = headerBuf?.toString('utf8') ?? ''
+              // 🔴 `headerBlockOf`, AND THE COMMENT THAT WAS HERE WAS WRONG. It said the key was
+              // the empty string and searched `bodyParts` harder. It is not in `bodyParts` AT ALL:
+              // imapflow assigns a `BODY[HEADER]` response to `msg.headers` and deliberately skips the
+              // map (`dist/cjs/tools.js`, `if (partKey === 'header')`). Two fixes searched the wrong
+              // object, which is why `headers: []` survived both. The helper reads the right one, and
+              // the importer now reads through the same helper.
+              const rawHeaders = headerBlockOf(msg)
               const headers: RawHeader[] = redactReceivedIps(parseHeaderBlock(rawHeaders))
               const htmlRaw = decode(html?.part, html?.encoding ?? null, html?.charset ?? null)
               const plainRaw = decode(plain?.part, plain?.encoding ?? null, plain?.charset ?? null)

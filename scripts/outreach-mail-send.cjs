@@ -24,13 +24,18 @@ const eq = (got, want, label) => {
   if (!ok) { console.log(`      want: ${JSON.stringify(want)}`); console.log(`      got:  ${JSON.stringify(got)}`); fails++ }
 }
 
-const FILES = ['lib/outreach-mail-message.ts', 'lib/outreach-send-rules.ts', 'lib/outreach-mail-envelope.ts']
+const FILES = [
+  'lib/outreach-mail-message.ts', 'lib/outreach-send-rules.ts', 'lib/outreach-mail-envelope.ts',
+  'lib/outreach-messages-table.ts', 'lib/outreach-mail-format.ts',
+]
 function build(root, tag) {
   const { req } = compile(root, FILES, tag)
   return {
     M: req('lib/outreach-mail-message.js'),
     R: req('lib/outreach-send-rules.js'),
     E: req('lib/outreach-mail-envelope.js'),
+    T: req('lib/outreach-messages-table.js'),
+    F: req('lib/outreach-mail-format.js'),
   }
 }
 
@@ -104,16 +109,17 @@ const SIGNATURE =
     if (!bad) process.exit(1)
   }
   {
-    // V1 — THE CAP'S DAY IS THE UTC DAY. In British Summer Time London midnight is 23:00Z the day before,
-    // so an email sent at 00:30 London falls BELOW a UTC-midnight bound and is never counted. The cap
-    // then admits thirty-one or more, and only ever in the direction of sending more.
-    const v = variant('v1', 'lib/outreach-send-rules.ts', src => src.replace(
-      /export function londonDayStartUtc\(now: Date, tz = OUTREACH_TZ\): string \{[\s\S]*?\n\}/,
-      'export function londonDayStartUtc(now: Date, tz = OUTREACH_TZ): string {\n  return `${londonDay(now, tz)}T00:00:00Z`\n}'))
-    const now = new Date('2026-09-28T10:00:00Z')            // a BST day
-    const earlyRow = { direction: 'outbound', is_test: false, status: 'sent', created_at: '2026-09-27T23:30:00.000Z' }
-    variantFails('V1', v.R.countsTowardCap(earlyRow, now) === false,
-      'cap window at UTC midnight: an email sent at 00:30 London is not counted')
+    // V1 — THE OLD TABLE PROBE, RESTORED. Its matcher was a whitelist of known failures with "present"
+    // as the DEFAULT, and a `head: true` select returns an error with an EMPTY code and message — so a
+    // MISSING TABLE read as present. That is what production did: the compose window offered Send and
+    // the send failed at the insert. Any error must mean not ready.
+    const v = variant('v1', 'lib/outreach-messages-table.ts', src => src.replace(
+      /  if \(code === 'PGRST205'[\s\S]*?\n  \}\n  \/\/ Anything else[\s\S]*?\n  return \{ ready: false[^\n]*\n/,
+      "  if (code === 'PGRST205' || code === '42P01' || /schema cache|does not exist/i.test(message)) {\n" +
+      "    return { ready: false, refusal: MIGRATION_OFF }\n  }\n  return { ready: true }\n"))
+    const empty = await v.T.messagesTableProbe(async () => ({ error: { code: '', message: '' } }))
+    variantFails('V1', empty.ready === true,
+      'the old whitelist matcher: an empty-bodied error reads as a table that is PRESENT')
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
   {
@@ -169,7 +175,32 @@ const SIGNATURE =
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
 
-  const { M, R, E } = build(REPO, 'omsReal')
+  {
+    // V7 — THE HEADER BLOCK READ OUT OF `bodyParts`, which is where the two failed fixes looked. That
+    // map never holds it: imapflow assigns a BODY[HEADER] response to `msg.headers`. This variant is
+    // the exact shape of the bug that put `headers: []` in production for a fortnight.
+    const v = variant('v7', 'lib/outreach-mail-format.ts', src => src.replace(
+      '  const direct = asText(m.headers)\n  if (direct && direct.trim()) return direct\n', ''))
+    const msg = { headers: Buffer.from('From: a@b.test\r\nSubject: x\r\n'), bodyParts: new Map() }
+    variantFails('V7', v.F.headerBlockOf(msg) === '',
+      '`msg.headers` ignored: the header block comes back empty, exactly as it did in production')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V8 — THE FOLDED-HEADER READER STOPS AT THE FIRST LINE. `References` on a thread that has been
+    // round three times is folded, and one Message-ID out of four threads the next reply to the wrong
+    // place. (The importer's own version had a worse variant of this: `/\\s+/g` as a REGEX LITERAL,
+    // which matches a backslash followed by `s` and collapses nothing at all.)
+    const v = variant('v8', 'lib/outreach-mail-format.ts', src => src.replace(
+      "    if (/^[ \\t]/.test(line)) { if (on) parts.push(line.trim()); continue }",
+      "    if (/^[ \\t]/.test(line)) continue"))
+    const raw = 'References: <a@x>\r\n <b@x>\r\n <c@x>\r\nSubject: y\r\n'
+    variantFails('V8', v.F.headerValue(raw, 'References') === '<a@x>',
+      'continuation lines dropped: a folded References keeps only its first Message-ID')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+
+  const { M, R, E, T, F } = build(REPO, 'omsReal')
 
   console.log('\n── THE SIGNATURE, BYTE FOR BYTE ─────────────────────────────────────────────────────────')
   // 🔴 THE EXPECTED STRING IS WRITTEN OUT IN FULL, not assembled from the same pieces the lib uses. A
@@ -253,26 +284,78 @@ const SIGNATURE =
       'no tracking pixel and no rewritten link anywhere in the bytes')
   }
 
-  console.log('\n── THE DAILY CAP COUNTS THE RIGHT ROWS, IN THE LONDON DAY ───────────────────────────────')
+  console.log('\n── THE TABLE PROBE: ANY ERROR MEANS NOT READY ──────────────────────────────────────────')
   {
-    const bst = new Date('2026-09-28T10:00:00Z')
-    eq(R.londonDayStartUtc(bst), '2026-09-27T23:00:00.000Z', 'in BST the London day starts at 23:00Z the day before')
-    eq(R.londonDayStartUtc(new Date('2026-12-05T10:00:00Z')), '2026-12-05T00:00:00.000Z', 'in GMT it starts at 00:00Z')
-    // 🔴 THE CLOCK-CHANGE WEEKEND. 25 October 2026 begins at 23:00Z on the 24th (still BST); the 26th
-    // begins at 00:00Z (GMT). One correction pass settles both.
-    eq(R.londonDayStartUtc(new Date('2026-10-25T10:00:00Z')), '2026-10-24T23:00:00.000Z', 'the clock-change day itself starts at 23:00Z')
-    eq(R.londonDayStartUtc(new Date('2026-10-26T10:00:00Z')), '2026-10-26T00:00:00.000Z', 'the day after the change starts at 00:00Z')
-    const row = o => ({ direction: 'outbound', is_test: false, status: 'sent', created_at: '2026-09-28T09:00:00.000Z', ...o })
-    check(R.countsTowardCap(row({ created_at: '2026-09-27T23:30:00.000Z' }), bst), '00:30 London counts — the hour UTC midnight would lose')
-    check(!R.countsTowardCap(row({ created_at: '2026-09-27T22:30:00.000Z' }), bst), '23:30 London YESTERDAY does not count')
-    check(!R.countsTowardCap(row({ is_test: true }), bst), 'a test send does not count')
-    check(!R.countsTowardCap(row({ direction: 'inbound' }), bst), 'an inbound reply does not count')
-    check(!R.countsTowardCap(row({ status: 'failed' }), bst), 'a failed send does not count — nothing reached anyone')
-    check(R.countsTowardCap(row({ status: 'uncertain' }), bst), 'an uncertain send DOES count — it may well have gone')
-    check(R.countsTowardCap(row({ status: 'sending' }), bst), 'a row stuck at `sending` DOES count')
-    eq(R.capRefusal(29), null, '29 today: the 30th is allowed')
-    eq(R.capRefusal(30) && R.capRefusal(30).refusal,
-      '30 outreach emails have already gone today. The cap resets at midnight (Europe/London).', '30 today: refused, with the reset named')
+    const probe = (error) => T.messagesTableProbe(async () => ({ error }))
+    eq((await probe(null)).ready, true, 'no error: the table is there')
+    // 🔴 THE BUG. A `head: true` select gives PostgREST nowhere to put its error document, so a missing
+    // table arrives as an error with an empty code AND an empty message.
+    const empty = await probe({ code: '', message: '' })
+    eq(empty.ready, false, '🔴 an error with an empty code and message reads as NOT ready')
+    check(/could not be read/.test(empty.refusal), '…and says so, rather than reporting a bare "off"')
+    const missing = await probe({ code: 'PGRST205', message: "Could not find the table 'public.outreach_messages' in the schema cache" })
+    eq(missing.refusal, T.MIGRATION_OFF, 'PGRST205 gives the migration sentence')
+    eq((await probe({ code: '42P01', message: 'relation "outreach_messages" does not exist' })).refusal,
+      T.MIGRATION_OFF, '42P01 gives the migration sentence')
+    const denied = await probe({ code: '42501', message: 'permission denied for table outreach_messages' })
+    check(denied.refusal.includes('42501') && denied.refusal.includes('permission denied'),
+      'a permission error carries its code AND its message to the screen')
+    check(!denied.refusal.includes(T.MIGRATION_OFF), '…and is NOT reported as a missing migration')
+    const thrown = await T.messagesTableProbe(async () => { throw new Error('socket hang up') })
+    eq(thrown.ready, false, 'a select that THROWS is not ready either')
+    eq(T.dbDetail({ code: '', message: '' }), 'the database returned no code or message',
+      '⚠️ an empty error never renders as an empty string — that is how the bug hid')
+  }
+
+  console.log('\n── THE HEADER BLOCK COMES OFF `msg.headers` ─────────────────────────────────────────────')
+  {
+    // 🔴 imapflow: `if (partKey === 'header') { map.headers = value; break }` — the header section is
+    // assigned to `headers` and never added to `bodyParts`.
+    const hdr = 'From: a@b.test\r\nSubject: x\r\nReferences: <a@x>\r\n <b@x>\r\n\r\n'
+    eq(F.headerBlockOf({ headers: Buffer.from(hdr), bodyParts: new Map() }), hdr,
+      'a Buffer on `msg.headers` is the header block')
+    eq(F.headerBlockOf({ headers: hdr }), hdr, 'a string works too')
+    eq(F.headerBlockOf({}), '', 'a message with neither gives the empty string, not a throw')
+    check(F.headerBlockOf({ bodyParts: new Map([['1', Buffer.from(hdr)]]) }) === hdr,
+      '⚠️ the bodyParts fallback still works, in case imapflow stops special-casing the section')
+    check(F.headerBlockOf({ bodyParts: new Map([['1', Buffer.from('just some body text')]]) }) === '',
+      '…and does not mistake a decoded BODY part for a header block')
+    eq(F.headerValue(hdr, 'Subject'), 'x', 'one header by name')
+    eq(F.headerValue(hdr, 'subject'), 'x', 'the name is case-insensitive, as RFC5322 says')
+    eq(F.headerValue(hdr, 'References'), '<a@x> <b@x>',
+      '🔴 a FOLDED References is unfolded whole — every Message-ID, not just the first')
+    eq(F.headerValue(hdr, 'In-Reply-To'), null, 'an absent header is null, not an empty string')
+    eq(F.headerValue('Subject: a\r\n\r\nSubject: not a header, this is the body\r\n', 'Subject'), 'a',
+      'the blank line ends the header block — a body line that looks like a header is not read')
+  }
+
+  console.log('\n── 🔴 THERE IS NO SEND-COUNT CHECK ANYWHERE ─────────────────────────────────────────────')
+  {
+    // The cap was removed on 29 September 2026. These assertions are what stops it coming back by
+    // accident, and what proves the specific thing that went wrong: a test send refused on volume.
+    check(!('capRefusal' in R), 'capRefusal is gone from the rules module')
+    check(!('countsTowardCap' in R), 'countsTowardCap is gone')
+    check(!('londonDayStartUtc' in R), 'londonDayStartUtc is gone')
+    check(!('CAP_COUNTED_STATUSES' in R), 'CAP_COUNTED_STATUSES is gone')
+    const ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8')
+    check(!/DAILY_SEND_CAP|capRefusal|countsTowardCap|londonDayStartUtc/.test(ROUTE),
+      '🔴 the send route names no cap symbol')
+    check(!/sentToday|dailyCap/.test(ROUTE), 'the route returns no send counter')
+    // 🔴 THE FAILURE THAT PROMPTED THIS: 37 rows recorded by ONE import run read as 37 sends today —
+    // the cap counted `created_at` with no filter on `source` — and refused the next message, a TEST,
+    // which no count was ever meant to touch. What kills that whole class of bug is that the send path
+    // now COUNTS NOTHING. `count: 'exact'` is how a counting query is written against this client, and
+    // the only one left in the file is the ladder lookup that decides whether a chase must thread.
+    const counts = ROUTE.match(/count: 'exact'/g) ?? []
+    eq(counts.length, 1, "exactly one `count: 'exact'` remains in the send route")
+    const around = ROUTE.slice(Math.max(0, ROUTE.indexOf("count: 'exact'") - 400), ROUTE.indexOf("count: 'exact'") + 200)
+    check(/outreach_contacts/.test(around) && !/outreach_messages/.test(around),
+      '…and it counts CONTACTS for the threading decision, not messages sent')
+    check(!/is_test/.test(around), '…so nothing a test send does can be counted by it')
+    const COMPOSE = fs.readFileSync(path.join(REPO, 'components/admin/ComposeWindow.tsx'), 'utf8')
+    check(!/Sent today|dailyCap|capState/.test(COMPOSE), 'the compose window shows no "Sent today" counter')
+    check(!/previewStale|loadPreview|Build preview/.test(COMPOSE),
+      '🔴 the preview machinery is gone with it — no stale-preview gate stands between Send and a send')
   }
 
   console.log('\n── THE REFUSALS ─────────────────────────────────────────────────────────────────────────')
