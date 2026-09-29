@@ -2403,6 +2403,7 @@ function ProspectMessages({ prospectId, nonce, onChanged }: {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [note, setNote] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [viewing, setViewing] = useState<string | null>(null)
   const inFlight = useRef(false)
 
   useEffect(() => {
@@ -2434,6 +2435,22 @@ function ProspectMessages({ prospectId, nonce, onChanged }: {
     } catch {
       setNote('The connection dropped before the server answered. Check your Sent folder before trying again.')
     } finally { inFlight.current = false; setBusyId(null) }
+  }
+
+  const saveToSent = async (row: MailMessage) => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusyId(row.id); setNote(null)
+    try {
+      const r = await fetch('/api/admin/outreach/mail-send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_to_sent', message_row_id: row.id }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      setNote(j.ok === true ? String(j.message ?? 'Saved to Sent.') : String(j.refusal ?? 'That could not be filed.'))
+      await onChanged()
+    } catch { setNote('That could not be filed — try again. It never sends anything.') }
+    finally { inFlight.current = false; setBusyId(null) }
   }
 
   const logIt = async (row: MailMessage) => {
@@ -2483,6 +2500,24 @@ function ProspectMessages({ prospectId, nonce, onChanged }: {
                   log it
                 </button>
               )}
+              {/* 🔴 ON EVERY ROW, WHATEVER ITS STATUS. "What did I actually send?" is the question
+                  this list could not answer, and it is the first one asked about a row that went
+                  wrong. It opens read-only: a stored body for a system send, a PEEK fetch for an
+                  imported or received one. */}
+              <button type="button" onClick={() => setViewing(row.id)}
+                title="Open this email — headers, attachments and body. Read-only; nothing is marked read."
+                className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+                View
+              </button>
+              {/* 🔴 ONLY WHERE THE COPY IS MISSING, AND IT NEVER SENDS. It re-composes the same bytes
+                  from the stored row and repeats the search-wait-search-append sequence. */}
+              {row.status === 'sent' && !row.is_test && row.sent_copy === 'absent' && (
+                <button type="button" onClick={() => void saveToSent(row)} disabled={busyId === row.id}
+                  title="Files a copy of this email in your Sent folder. It does NOT send anything."
+                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+                  {busyId === row.id ? '…' : 'Save to Sent'}
+                </button>
+              )}
               {(row.status === 'failed' || row.status === 'uncertain') && (
                 <button type="button" onClick={() => void retry(row, confirmId === row.id)} disabled={busyId === row.id}
                   title={row.status === 'uncertain'
@@ -2500,7 +2535,104 @@ function ProspectMessages({ prospectId, nonce, onChanged }: {
         })}
       </div>
       {note && <p className="mt-1 text-[11px] text-slate-600">{note}</p>}
+      {viewing && <EmailViewer rowId={viewing} onClose={() => setViewing(null)} />}
     </div>
+  )
+}
+
+interface ViewedEmail {
+  from: string | null; to: string | null; subject: string | null; date: string | null
+  direction: string; source: string
+  attachments: { filename: string | null; contentType: string; size: number | null }[]
+  html: string | null; text: string | null
+  from_mailbox: boolean; mailbox?: string
+}
+
+/**
+ * One whole email, read-only.
+ *
+ * 🔴 THE BODY IS IN A SANDBOXED IFRAME AND NOWHERE ELSE. Most of these came out of the MAILBOX, so the
+ * markup is sender-controlled; injected into the admin page it would run behind an authenticated admin
+ * session. `sandbox=""` grants nothing — no scripts, no forms, no same-origin, no top-level navigation.
+ * A text-only email is shown in a `<pre>`, which is inert by construction.
+ * ⚠️ ATTACHMENTS ARE NAMED, NEVER DOWNLOADED. The list comes from the body structure the server already
+ * sent; no attachment part is ever fetched.
+ */
+function EmailViewer({ rowId, onClose }: { rowId: string; onClose: () => void }) {
+  const [data, setData] = useState<ViewedEmail | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      try {
+        const r = await fetch('/api/admin/outreach/mail-send', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'view', message_row_id: rowId }),
+        })
+        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+        if (!live) return
+        // 🔴 A UID THAT NO LONGER MATCHES SAYS SO IN WORDS. Showing an empty frame would look like an
+        // empty email, which is the one thing it must not look like.
+        if (j.ok !== true) { setError(String(j.refusal ?? 'That email could not be opened.')); return }
+        setData(j as unknown as ViewedEmail)
+      } catch { if (live) setError('That email could not be opened — check the connection.') }
+    })()
+    return () => { live = false }
+  }, [rowId])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); onClose() } }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [onClose])
+
+  return createPortal(
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4" style={{ zIndex: 96 }}
+      onClick={onClose}>
+      <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
+        onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-2">
+          <span className="text-sm font-bold text-slate-800">Email</span>
+          {data?.from_mailbox && (
+            <span className="text-[10px] font-bold uppercase text-slate-400"
+              title="Read from your mailbox read-only. Nothing was marked read.">
+              from {data.mailbox}
+            </span>
+          )}
+          <button onClick={onClose} autoFocus
+            className="ml-auto text-sm font-semibold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50">
+            Close
+          </button>
+        </div>
+        {error && <p className="px-4 py-3 text-[13px] text-red-800">{error}</p>}
+        {!error && !data && <p className="px-4 py-3 text-[13px] text-slate-500">Opening…</p>}
+        {data && (
+          <>
+            <div className="px-4 py-2 text-[12px] text-slate-700 border-b border-slate-100">
+              <p><span className="font-bold">From:</span> {data.from ?? '—'}</p>
+              <p><span className="font-bold">To:</span> {data.to ?? '—'}</p>
+              <p><span className="font-bold">Date:</span> {data.date ? fmtDate(data.date) : '—'}</p>
+              <p><span className="font-bold">Subject:</span> {data.subject ?? '—'}</p>
+              {data.attachments.length > 0 && (
+                <p className="mt-1">
+                  <span className="font-bold">Attachments:</span>{' '}
+                  {data.attachments.map(a =>
+                    `${a.filename ?? '(unnamed)'}${a.size != null ? ` (${Math.round(a.size / 1024)} KB)` : ''}`,
+                  ).join(', ')}
+                  <span className="text-slate-400"> — listed only, not downloaded</span>
+                </p>
+              )}
+            </div>
+            <div className="flex-1 min-h-0 overflow-auto p-2">
+              {data.html
+                ? <iframe title="Email body" sandbox="" srcDoc={data.html} className="w-full h-[60vh] border border-slate-200 rounded bg-white" />
+                : <pre className="text-[12px] whitespace-pre-wrap p-2">{data.text ?? '(this email has no body)'}</pre>}
+            </div>
+          </>
+        )}
+      </div>
+    </div>,
+    document.body,
   )
 }
 

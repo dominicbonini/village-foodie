@@ -13,7 +13,7 @@ import { ImapFlow } from 'imapflow'
 import {
   OUTREACH_MAIL_HOST, OUTREACH_IMAP_PORT, OUTREACH_SENT_MAILBOX,
 } from '@/lib/outreach-mail-config'
-import { findPart } from '@/lib/outreach-mail-format'
+import { findPart, attachmentsOf } from '@/lib/outreach-mail-format'
 
 /** The subset of imapflow's body structure `findPart` walks. */
 type StructureLike = Parameters<typeof findPart>[0]
@@ -163,4 +163,83 @@ export async function fetchBodiesByUid(
       text: decode(text?.part, text?.encoding ?? null, text?.charset ?? null),
     }
   } catch { return empty } finally { lock.release() }
+}
+
+/**
+ * One whole message for the View panel: its bodies and the NAMES of its attachments.
+ *
+ * 🔴 READ-ONLY, AND NOTHING IS DOWNLOADED THAT IS NOT SHOWN. The mailbox is opened with EXAMINE and
+ * `fetch` emits `BODY.PEEK[…]`, so opening an email here does not mark it read in Outlook. Only the
+ * text/html and text/plain parts are named in the fetch, so an attachment never crosses the wire —
+ * the list of names and sizes comes from the BODYSTRUCTURE, which is metadata the server already sent.
+ *
+ * ⚠️ A uid IS MEANINGLESS WITHOUT ITS uidvalidity, AND THIS SAYS SO RATHER THAN SHOWING NOTHING. If
+ * the mailbox has been recreated (uidvalidity changed) or the message has been moved or deleted, the
+ * uid either points at a different message or at none. Both are reported in words — "showing nothing"
+ * would look like an empty email, which is the one thing it must not look like.
+ */
+export async function fetchMessageForView(
+  client: ImapFlow,
+  path: string,
+  uid: number,
+  storedUidValidity: number | null,
+): Promise<
+  | { ok: true; html: string | null; text: string | null; attachments: { filename: string | null; contentType: string; size: number | null }[] }
+  | { ok: false; error: string }
+> {
+  const count = await mailboxCount(client, path)
+  if (!count) return { ok: false, error: `The ${path} folder is empty, so that email is no longer there.` }
+  const lock = await client.getMailboxLock(path, { readOnly: true })
+  try {
+    const mb = client.mailbox
+    const live = mb && typeof mb === 'object' && 'uidValidity' in mb ? Number(mb.uidValidity) : null
+    if (storedUidValidity != null && live != null && String(live) !== String(storedUidValidity)) {
+      return { ok: false, error: `The ${path} folder has been rebuilt since this was recorded (uidvalidity changed), so the stored reference no longer points at this email. Run Import past emails to re-record it.` }
+    }
+    const msg = await client.fetchOne(String(uid), { uid: true, bodyStructure: true }, { uid: true })
+    if (!msg || typeof msg !== 'object' || !('bodyStructure' in msg)) {
+      return { ok: false, error: `That email is no longer at its recorded place in ${path} — it has been moved or deleted. Run Import past emails to find it again.` }
+    }
+    const struct = (msg as { bodyStructure?: unknown }).bodyStructure as StructureLike | undefined
+    if (!struct) return { ok: false, error: 'The mail server returned no structure for that email.' }
+    const attachments = attachmentsOf(struct)
+    const bodies = await fetchBodiesByUidLocked(client, uid, struct)
+    return { ok: true, html: bodies.html, text: bodies.text, attachments }
+  } catch (err) {
+    return { ok: false, error: sanitiseMailError(err) }
+  } finally { lock.release() }
+}
+
+/** The body read, with the mailbox ALREADY open. Shared with `fetchBodiesByUid`, which opens it. */
+async function fetchBodiesByUidLocked(
+  client: ImapFlow, uid: number, struct: StructureLike,
+): Promise<{ html: string | null; text: string | null }> {
+  const html = findPart(struct, 'text/html')
+  const text = findPart(struct, 'text/plain')
+  const parts = [html?.part, text?.part].filter((v): v is string => !!v)
+  if (!parts.length) return { html: null, text: null }
+  const full = await client.fetchOne(String(uid), { uid: true, bodyParts: parts }, { uid: true })
+  const bp = (full && typeof full === 'object' && 'bodyParts' in full
+    ? (full as { bodyParts?: Map<string, Buffer> }).bodyParts
+    : undefined) ?? new Map<string, Buffer>()
+  return {
+    html: decodePart(bp, html?.part, html?.encoding ?? null, html?.charset ?? null),
+    text: decodePart(bp, text?.part, text?.encoding ?? null, text?.charset ?? null),
+  }
+}
+
+/** base64 / quoted-printable / 7bit, then the declared charset. Shared by both readers. */
+export function decodePart(
+  bp: Map<string, Buffer>, part: string | undefined, encoding: string | null, charset: string | null,
+): string | null {
+  if (!part) return null
+  const buf = bp.get(part.toLowerCase()) ?? bp.get(part)
+  if (!buf) return null
+  const enc = (encoding ?? '').toLowerCase()
+  const bytes = enc === 'base64' ? Buffer.from(buf.toString('ascii'), 'base64')
+    : enc === 'quoted-printable' ? Buffer.from(
+        buf.toString('binary').replace(/=\r?\n/g, '').replace(/=([0-9A-Fa-f]{2})/g, (_m, h) => String.fromCharCode(parseInt(h, 16))),
+        'binary')
+    : buf
+  try { return new TextDecoder((charset ?? 'utf-8').toLowerCase()).decode(bytes) } catch { return bytes.toString('utf8') }
 }

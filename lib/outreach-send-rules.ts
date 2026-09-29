@@ -26,6 +26,23 @@ export interface SendRefusal { refusal: string; needsConfirm?: boolean }
 // 🔴 NOTHING REPLACES IT. There is no send-count check anywhere in the send path now — the harness
 // asserts that, including for a test send with many non-test rows on the same day.
 
+/**
+ * 🔴 A FIRST CONTACT IS NEVER A REPLY, AND THIS IS THE RULE THAT SAYS SO.
+ *
+ * ── THE DEFECT ─────────────────────────────────────────────────────────────────────────────────────
+ * A first contact to ZZ Test Prospect went out as **"Re: Test email to me again"**. Two things
+ * combined: the importer had matched Dominic's own September test emails to that prospect's address,
+ * so the prospect had "earlier outbound email" rows; and the thread rule was *"reply whenever any
+ * earlier outbound email exists"*, with no reference to what rung was being sent. A first approach to
+ * a business it has never heard from cannot be a reply to anything — not to a stray test, not to a
+ * real earlier email, not ever. The rung decides, and it decides FIRST.
+ */
+const FIRST_CONTACT_KIND = '1_first_contact'
+export function startsNewThread(kind: string | null): boolean {
+  return kind === FIRST_CONTACT_KIND
+}
+
+
 // ── THE PROSPECT ────────────────────────────────────────────────────────────────────────────────────
 export interface ProspectForSend {
   do_not_contact: boolean | null

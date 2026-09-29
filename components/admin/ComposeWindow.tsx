@@ -17,7 +17,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 // 🔴 THE SIGNATURE COMES FROM THE MODULE THE SERVER APPENDS FROM. It is pure — no node, no network —
 // so the compose window can render exactly what will be sent rather than a hand-kept copy of it.
-import { signatureHtml } from '@/lib/outreach-mail-message'
+// 🔴 THE EXPANSION USED BY COPY AND LOG IS THE SENDER'S OWN. A `{{signature}}` must never reach the
+// clipboard or the contact log as four literal characters — the log is the record of what was sent.
+import {
+  expandToPlainText, sendWarnings, parseSignature, parseOptOut, type SendTimeValues,
+} from '@/lib/outreach-signature'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -235,6 +239,12 @@ export default function ComposeWindow({
   const [quotedOpen, setQuotedOpen] = useState(false)
   const [quotedLoading, setQuotedLoading] = useState(false)
   const [sendingOff, setSendingOff] = useState<string | null>(null)
+  /**
+   * 🔴 THE SIGNATURE ROWS, FOR COPY AND LOG ONLY. The SEND does not use these — the server reads the
+   * table itself at send time, so a stale browser copy can never become the email. They are here
+   * because Copy and Log-only have no server round trip and must still not emit a raw token.
+   */
+  const [settings, setSettings] = useState<SendTimeValues>({ signature: null, optOut: null })
   const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
   const [sending, setSending] = useState(false)
   const [sentNote, setSentNote] = useState<string | null>(null)
@@ -446,6 +456,14 @@ export default function ComposeWindow({
    *  twice and would put the opt-out line ABOVE Outlook's signature instead of last. */
   const fullText = finalBody
 
+  /** What Copy and Log emit: the same text, with both send-time tokens expanded. */
+  const plainForHumans = useMemo(() => expandToPlainText(fullText, settings), [fullText, settings])
+
+  /** ⚠️ WARNINGS, NOT REFUSALS. See `sendWarnings` for why that is the right strength. */
+  const warnings = useMemo(
+    () => (isEmail ? sendWarnings(fullText, selected?.servesKind ?? logFormKind) : []),
+    [isEmail, fullText, selected?.servesKind, logFormKind])
+
   // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
   // 🔴 THE mailto: PATH IS GONE, AND WITH IT EVERY REASON IT EXISTED. A mailto could report one thing
   // only — that a compose window was requested — so it could not be logged, could not be threaded onto
@@ -468,8 +486,6 @@ export default function ComposeWindow({
   /** The rung the server should log. A tagged template states its own; otherwise the log form's. */
   const kindForSend = selected?.servesKind ?? logFormKind
 
-  /** 🔴 RENDERED FROM THE SAME PURE FUNCTION THE SERVER APPENDS. Not a copy of the markup — the module. */
-  const signature = useMemo(() => signatureHtml(), [])
 
   const post = useCallback(async (payload: Record<string, unknown>) => {
     const r = await fetch('/api/admin/outreach/mail-send', {
@@ -484,16 +500,35 @@ export default function ComposeWindow({
     if (!isEmail) return
     let live = true
     void (async () => {
-      const r = await fetch(`/api/admin/outreach/mail-send?prospect_id=${encodeURIComponent(prospectId)}`).catch(() => null)
+      // 🔴 THE RUNG TRAVELS WITH THE QUESTION. A first contact NEVER threads, and the window has to
+      // apply the same rule the send applies or it will promise a reply the send will not make — or,
+      // as happened, show nothing while the send quietly produced "Re: Test email to me again".
+      const q = new URLSearchParams({ prospect_id: prospectId })
+      if (kindForSend) q.set('kind', kindForSend)
+      const r = await fetch(`/api/admin/outreach/mail-send?${q.toString()}`).catch(() => null)
       if (!r || !live) return
       const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
       if (!live) return
       if (j.ok !== true) { setSendingOff(String(j.refusal ?? 'Sending is unavailable.')); return }
       const t = j.thread as Thread | null | undefined
       setThread(t ?? null)
+      setQuoted(null); setQuotedOpen(false)      // a different parent means a different quote
     })()
     return () => { live = false }
-  }, [isEmail, prospectId])
+  }, [isEmail, prospectId, kindForSend])
+
+  // The signature rows, for Copy and Log. Never for the send.
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      const r = await fetch('/api/admin/outreach/settings').catch(() => null)
+      if (!r || !live) return
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!live || j.ok !== true) return
+      setSettings({ signature: parseSignature(j.signature), optOut: parseOptOut(j.optOut) })
+    })()
+    return () => { live = false }
+  }, [])
 
   /** The quoted parent, on demand. May need a read-only IMAP fetch, so it is never done on open. */
   const showQuoted = useCallback(async () => {
@@ -585,7 +620,7 @@ export default function ComposeWindow({
   // there is no mailto. So it is guarded first.
   const doCopy = () => {
     if (refusal) { setSendError(refusal); return }
-    void navigator.clipboard?.writeText(fullText)
+    void navigator.clipboard?.writeText(plainForHumans)
     setCopied(true); setTimeout(() => setCopied(false), 1400)
   }
 
@@ -633,7 +668,7 @@ export default function ComposeWindow({
     // the one that matters.
     let ok = false
     try {
-      ok = await onLog(fullText, selected?.channel ?? 'email', selected?.servesKind ?? null)
+      ok = await onLog(plainForHumans, selected?.channel ?? 'email', selected?.servesKind ?? null)
     } finally {
       // 🔴 RELEASED IN `finally`. If `onLog` ever throws, a ref left true would disable logging for the
       // life of the window with no way back except closing it.
@@ -858,7 +893,13 @@ export default function ComposeWindow({
                 line on any exit: not the mailto path, not Copy, not the logged message text.
                 ⚠️ So the operator was being told, on the screen where they decide whether a message is
                 compliant, that a PECR line would be added that no code adds. */}
-            <span className={LABEL}>Message — exactly what will be sent. No opt-out line is added here: it must be in your Outlook signature.</span>
+            {/* 🔴 THE OLD LABEL SAID THE OPT-OUT "MUST BE IN YOUR OUTLOOK SIGNATURE". That stopped
+                being true when this window started sending: the email is built here, not in Outlook,
+                so Outlook's signature never touches it. Put `{{opt_out}}` in the template instead. */}
+            <span className={LABEL}>
+              Message — exactly what will be sent. Put {'{{signature}}'} and {'{{opt_out}}'} on their own
+              lines where you want them; they are filled in when it sends.
+            </span>
             {/* 🔴 SIZED WITH `rows`, NOT WITH A FONT CLASS. The unlayered !important rule in globals.css
                 forces `font-size: inherit` on every textarea on desktop, so `text-sm` here is INERT and
                 the box renders at 16px whatever class it carries. `rows` sets the visible line count and
@@ -868,6 +909,32 @@ export default function ComposeWindow({
               placeholder="Choose a template above, or write here."
               value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }} />
           </label>
+
+          {/* ── THE ONE THING THE BOX CANNOT SHOW: that this is a reply ──────────────────────────
+              🔴 IMMEDIATELY UNDER THE TEXT, because it describes what surrounds the text. A first
+              contact never gets this line — `thread` is null for `1_first_contact` by the rule in the
+              route, which is the same rule the send applies. */}
+          {isEmail && thread && (
+            <div>
+              <p className="text-[12px] text-slate-700">
+                Sends as a reply to “<span className="font-semibold">{thread.subject}</span>”
+                {thread.date ? ` (${fmtWhen(thread.date)})` : ''}. The earlier email is quoted under
+                your signature.
+                <button type="button" onClick={() => void showQuoted()}
+                  className="ml-1.5 text-[12px] font-bold text-orange-700 underline hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded">
+                  {quotedLoading ? 'Loading…' : quotedOpen ? 'Hide' : 'Show'}
+                </button>
+              </p>
+              {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. The quoted email came out of the
+                  MAILBOX, so its markup is sender-controlled; injected into the admin page it would
+                  run behind an authenticated admin session. `sandbox=""` grants nothing — no scripts,
+                  no forms, no same-origin, no top-level navigation. */}
+              {quotedOpen && quoted && (
+                <iframe title="The earlier email" sandbox="" srcDoc={quoted}
+                  className="mt-1.5 w-full h-56 border border-slate-200 rounded bg-white" />
+              )}
+            </div>
+          )}
 
           {/* Shrinks as fields are filled and disappears at zero — it counts `outstanding`, which is
               tokens MINUS those with a value, so it tracks the fields rather than the raw text. */}
@@ -989,45 +1056,13 @@ export default function ComposeWindow({
             </div>
           )}
 
-          {/* ── WHAT GETS ADDED TO WHAT HE TYPED ────────────────────────────────────────────────
-              🔴 THIS IS NOT A PREVIEW OF THE MESSAGE. The message is in the box above and Dominic can
-              read it there; restating it was the duplication he asked to remove. What is shown here is
-              only what he CANNOT see in the textarea: the signature the server appends, and — for a
-              chase — that it attaches to an earlier email and quotes it. */}
-          {isEmail && !sendingOff && (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-              <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-1">
-                Added below your message
-              </span>
-              {/* Read-only, and rendered from the module the server appends from — not a copy of it. */}
-              <div className="rounded border border-slate-200 bg-white px-2 py-1.5 text-[12px] select-none"
-                aria-label="Your signature, as it will be sent"
-                dangerouslySetInnerHTML={{ __html: signature }} />
-              {thread && (
-                <div className="mt-2">
-                  <p className="text-[12px] text-slate-700">
-                    Sends as a reply to “<span className="font-semibold">{thread.subject}</span>”
-                    {thread.date ? ` (${fmtWhen(thread.date)})` : ''}. The earlier email is quoted under
-                    your signature.
-                    <button type="button" onClick={() => void showQuoted()}
-                      className="ml-1.5 text-[12px] font-bold text-orange-700 underline hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded">
-                      {quotedLoading ? 'Loading…' : quotedOpen ? 'Hide' : 'Show'}
-                    </button>
-                  </p>
-                  {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. THIS ONE IS THE REASON THE
-                      RULE EXISTS: the quoted email came out of the MAILBOX, so its markup is
-                      sender-controlled. Injected into the admin page it would run behind an
-                      authenticated admin session. `sandbox=""` grants nothing — no scripts, no forms,
-                      no same-origin, no top-level navigation.
-                      ⚠️ The signature above is OURS and is rendered inline; this is not. */}
-                  {quotedOpen && quoted && (
-                    <iframe title="The earlier email" sandbox="" srcDoc={quoted}
-                      className="mt-1.5 w-full h-56 border border-slate-200 rounded bg-white" />
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          {/* 🔴 THE "ADDED BELOW YOUR MESSAGE" PANEL WAS HERE AND IS GONE (29 September 2026).
+              It showed a rendered signature under the box. It was removed for the same reason the
+              preview pane before it was: nothing is APPENDED any more, so there was nothing to
+              preview — the signature is placed by a `{{signature}}` token that is visible in the box
+              itself, and the Signature tab is where its lines are read and edited. What survives is
+              the one thing the box genuinely cannot show: that this message will be sent as a reply.
+              It now sits directly under the text box, where the reply it describes is being written. */}
 
           {/* Sending is unavailable on this environment — the reason comes from the server, with the
               database's own code where there is one, so it is diagnosable rather than just "off". */}
@@ -1055,6 +1090,11 @@ export default function ComposeWindow({
                   : <>Send this email to <span className="font-bold">{toEmail}</span>
                       {' '}({truckName})? It goes from your mailbox now, and the contact is logged.</>}
               </p>
+              {/* ⚠️ THE WARNING IS REPEATED HERE. The footnote is easy to read past; the confirm is the
+                  last moment at which "this has no opt-out line" can still change the answer. */}
+              {warnings.length > 0 && (
+                <p className="mt-1 text-[12px] font-bold text-amber-900">{warnings.join(' ')}</p>
+              )}
               <div className="mt-2 flex justify-end gap-2">
                 <button onClick={() => setConfirmSend(null)}
                   className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
@@ -1069,8 +1109,13 @@ export default function ComposeWindow({
           )}
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-slate-400">
-              Send goes from your mailbox and logs the contact. Copy and Log are unchanged.
+            {/* 🔴 THE WARNINGS LIVE IN THE FOOTNOTE, NOT IN A PANEL OF THEIR OWN. A panel would be a
+                fourth block competing with the message for attention, and these are not refusals —
+                they are two sentences that belong next to the button they are about. */}
+            <span className={`text-[11px] ${warnings.length ? 'text-amber-800 font-semibold' : 'text-slate-400'}`}>
+              {warnings.length
+                ? warnings.join(' ')
+                : 'Send goes from your mailbox and logs the contact. Copy and Log are unchanged.'}
             </span>
             <div className="ml-auto flex items-center gap-2">
               <button onClick={doCopy} disabled={!body.trim()}

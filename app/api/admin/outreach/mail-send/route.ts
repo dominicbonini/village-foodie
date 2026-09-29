@@ -18,15 +18,19 @@ import nodemailer from 'nodemailer'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { malformedTokensIn, unresolvedIn, isMustResolveToken } from '@/lib/outreach-template-render'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
-import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME } from '@/lib/outreach-mail-config'
-import { smtpTransportOptions, mailFor } from '@/lib/outreach-mail-envelope'
+import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
+import { smtpTransportOptions, mailFor, composeRaw, rawMailFor } from '@/lib/outreach-mail-envelope'
 import {
   buildMessage, newMessageId, classifySendFailure, replySubject,
   type QuotedMessage,
 } from '@/lib/outreach-mail-message'
-import { makeImapClient, findInSent, appendToSent, fetchBodiesByUid, sanitiseMailError } from '@/lib/outreach-mail-box'
+import {
+  makeImapClient, findInSent, appendToSent, fetchBodiesByUid, fetchMessageForView, sanitiseMailError,
+} from '@/lib/outreach-mail-box'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
-import { prospectRefusal, retryRefusal } from '@/lib/outreach-send-rules'
+import { readOutreachSettings } from '@/lib/outreach-settings-read'
+import { missingSettingsFor, expandToPlainText } from '@/lib/outreach-signature'
+import { prospectRefusal, retryRefusal, startsNewThread } from '@/lib/outreach-send-rules'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -59,15 +63,27 @@ interface Row {
   html_body: string | null; text_body: string | null; sent_copy: string; attempts: number
 }
 
+interface ViewRow {
+  id: string; direction: string; status: string; source: string
+  subject: string | null; from_address: string | null; to_address: string | null
+  message_date: string | null; mailbox: string | null; uid: number | null; uidvalidity: number | null
+  html_body: string | null; text_body: string | null
+}
+
 interface ParentRow {
   message_id: string; references: string | null; subject: string | null; to_address: string | null
   message_date: string | null; html_body: string | null; text_body: string | null
-  mailbox: string | null; uid: number | null
+  mailbox: string | null; uid: number | null; direction?: string | null
 }
 
 /**
- * The email a chase replies to: the most recent non-test outbound message the server accepted, or may
- * have accepted.
+ * The email a chase replies to: the most recent NON-TEST message to or from this prospect.
+ *
+ * 🔴 EITHER DIRECTION, AND THAT IS THE CHANGE. It used to be outbound only, which meant a chase sent
+ * after a prospect had replied threaded onto Dominic's own last email and quoted it — ignoring the
+ * reply sitting between them. A conversation is a conversation; the latest message in it is the one a
+ * reply attaches to, whoever sent it. `received` joins `sent` and `uncertain` for the same reason.
+ * ⚠️ TESTS ARE EXCLUDED. A test goes to Dominic's own address and is not part of the correspondence.
  * 🔴 ONE LOOKUP, THREE CALLERS — the send, the GET that tells the compose window it is writing a chase,
  * and the `quoted` action that fetches the body for the Show toggle. Three copies of this ordering
  * would eventually disagree about WHICH email a reply attaches to, and the operator would be told one
@@ -76,9 +92,9 @@ interface ParentRow {
 async function threadParent(prospectId: string): Promise<ParentRow | undefined> {
   const { data } = await supabase
     .from('outreach_messages')
-    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid')
-    .eq('prospect_id', prospectId).eq('direction', 'outbound').eq('is_test', false)
-    .in('status', ['sent', 'uncertain'])
+    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid, direction')
+    .eq('prospect_id', prospectId).eq('is_test', false)
+    .in('status', ['sent', 'uncertain', 'received'])
     .order('message_date', { ascending: false, nullsFirst: false })
     .limit(1)
   return (data ?? [])[0] as ParentRow | undefined
@@ -127,12 +143,18 @@ export async function GET(req: NextRequest) {
     // typed: whether this is a chase, what the subject will be, and what to say the reply attaches to.
     // None of that needs the mailbox, so opening the window opens no IMAP connection — the quoted BODY
     // is fetched only if Dominic presses Show.
-    const parent = await threadParent(prospectId)
-    if (parent) {
-      thread = {
-        subject: parent.subject ?? '',
-        replySubject: replySubject(parent.subject ?? ''),
-        date: parent.message_date,
+    // 🔴 THE WINDOW ASKS WITH THE RUNG IT IS ABOUT TO SEND, and gets the same answer the send will
+    // give. Without the `kind` the GET could only answer "there is an earlier email", which is the
+    // question that produced a first contact titled "Re: Test email to me again".
+    const kind = req.nextUrl.searchParams.get('kind')
+    if (!startsNewThread(kind)) {
+      const parent = await threadParent(prospectId)
+      if (parent) {
+        thread = {
+          subject: parent.subject ?? '',
+          replySubject: replySubject(parent.subject ?? ''),
+          date: parent.message_date,
+        }
       }
     }
   }
@@ -189,6 +211,75 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true, html: bodies.html, subject: parent.subject, date: parent.message_date,
     })
+  }
+
+  // ── "SAVE TO SENT" — repeat the filing sequence for a row whose copy is missing ────────────────
+  // 🔴 IT NEVER SENDS. The email has already gone; this is about Dominic's own Sent folder and
+  // nothing else. It re-composes the SAME bytes from the stored row — same Message-ID, same headers,
+  // same bodies — searches Sent twice as the send does, and appends only if the copy really is not
+  // there. Running it on a row whose copy arrived late finds it and records `server_filed`.
+  if (action === 'save_to_sent') {
+    const rowId = String(body.message_row_id ?? '')
+    const { data: existing } = await supabase.from('outreach_messages').select('*').eq('id', rowId).maybeSingle()
+    const row = existing as Row | null
+    if (!row) return refuse('That message is not in the log any more.')
+    if (row.status !== 'sent') return refuse('Only a message the server accepted can be filed in Sent.')
+    if (row.sent_copy !== 'absent') return refuse('That message already has a copy in Sent.')
+    let raw: Buffer
+    try { raw = await composeRaw(row) } catch (err) { return refuse(`That message could not be rebuilt (${sanitiseMailError(err)}).`) }
+    const copy = await fileSentCopy(row, raw, row.message_date ? new Date(row.message_date) : new Date(), { mailUser, mailPass })
+    await supabase.from('outreach_messages').update({
+      sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
+      last_error: copy.sentCopy === 'absent' ? `sent copy: ${copy.reason}` : null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', row.id)
+    if (copy.sentCopy === 'absent') return refuse(`Still not in Sent — ${copy.reason}`)
+    return NextResponse.json({
+      ok: true, sent_copy: copy.sentCopy,
+      message: copy.sentCopy === 'server_filed' ? 'It was already there — the server had filed it.' : 'Saved to your Sent folder.',
+    })
+  }
+
+  // ── "VIEW" — one whole email, read-only ────────────────────────────────────────────────────────
+  // 🔴 A SYSTEM-SENT ROW IS SERVED FROM THE DATABASE; AN IMPORTED OR RECEIVED ONE FROM THE MAILBOX.
+  // The importer deliberately stores no body — the message is already in the mailbox and copying it
+  // into Postgres would be a second, ageing copy of somebody else's words. So those are fetched by
+  // mailbox+uid, READ-ONLY: EXAMINE, and `fetch` emits `BODY.PEEK[…]`, so opening an email here does
+  // not mark it read in Outlook.
+  // ⚠️ ATTACHMENTS ARE NAMED, NEVER FETCHED. Only the body parts are asked for, so no attachment
+  // crosses the wire — the list comes from the body structure, which is metadata.
+  if (action === 'view') {
+    const rowId = String(body.message_row_id ?? '')
+    const { data: existing } = await supabase.from('outreach_messages')
+      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body')
+      .eq('id', rowId).maybeSingle()
+    const row = existing as ViewRow | null
+    if (!row) return refuse('That message is not in the log any more.')
+    const head = {
+      from: row.from_address, to: row.to_address, subject: row.subject,
+      date: row.message_date, direction: row.direction, source: row.source,
+    }
+    if (row.html_body || row.text_body) {
+      return NextResponse.json({
+        ok: true, ...head, attachments: [],
+        html: row.html_body, text: row.text_body, from_mailbox: false,
+      })
+    }
+    if (!row.mailbox || row.uid == null) {
+      return refuse('This email has no stored copy and no mailbox reference, so there is nothing to open. Run Import past emails.')
+    }
+    const c = makeImapClient(mailUser, mailPass)
+    try {
+      await c.connect()
+      const fetched = await fetchMessageForView(c, row.mailbox, row.uid, row.uidvalidity)
+      if (!fetched.ok) return refuse(fetched.error)
+      return NextResponse.json({
+        ok: true, ...head, attachments: fetched.attachments,
+        html: fetched.html, text: fetched.text, from_mailbox: true, mailbox: row.mailbox,
+      })
+    } catch (err) {
+      return refuse(`That email could not be read from the mailbox (${sanitiseMailError(err)}).`)
+    } finally { try { await c.logout() } catch { /* already gone */ } }
   }
 
   // ── "LOG IT" — the email HAS gone and the contact log missed it ─────────────────────────────────
@@ -296,8 +387,23 @@ export async function POST(req: NextRequest) {
   // why it went. Nothing counts sends now — least of all a test send, which never did count and, with
   // the cap gone, has nothing left that could refuse it on volume.
 
-  // ── THREADING — a chase is a REPLY, or it is refused ─────────────────────────────────────────────
-  const parentRow = await threadParent(prospectId)
+  // ── REFUSAL · the signature settings a token needs ──────────────────────────────────────────────
+  // 🔴 A MISSING SETTINGS ROW STOPS THE SEND. `{{opt_out}}` in a template is an assertion that this
+  // email carries an opt-out line; expanding it to nothing would send a cold approach without one and
+  // leave no trace that it had happened.
+  const settingsRead = await readOutreachSettings(supabase)
+  if (settingsRead.error) {
+    return refuse(`Your signature settings could not be read (${settingsRead.error}), so nothing was sent.`)
+  }
+  const missingSettings = missingSettingsFor(bodyIn, settingsRead.values)
+  if (missingSettings.length) {
+    return refuse(`Your signature settings could not be read (no ${missingSettings.join(' or ')} row in outreach_settings), so nothing was sent.`)
+  }
+
+  // ── THREADING — a chase is a REPLY, or it is refused; a FIRST CONTACT never is ───────────────────
+  const sendKind = typeof body.kind === 'string' ? body.kind : null
+  const firstContact = startsNewThread(sendKind)
+  const parentRow = firstContact ? undefined : await threadParent(prospectId)
 
   // Has this prospect been emailed before, according to the LADDER? If so a new thread would be wrong.
   const { count: emailedBefore } = await supabase
@@ -325,7 +431,7 @@ export async function POST(req: NextRequest) {
         html: quotedHtml, text: quotedText,
       },
     }
-  } else if ((emailedBefore ?? 0) > 0 && !isTest) {
+  } else if (!firstContact && (emailedBefore ?? 0) > 0 && !isTest) {
     // 🔴 NEVER SILENTLY START A NEW THREAD. The log says this prospect has been emailed; a fresh subject
     // would arrive as an unrelated first approach, which is exactly the thing chasing in-thread avoids.
     return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
@@ -335,7 +441,7 @@ export async function POST(req: NextRequest) {
 
   // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ───────────────────────────────────────────────────
   const messageId = newMessageId()
-  const built = buildMessage({ body: bodyIn, subject: subjectIn, messageId, parent })
+  const built = buildMessage({ body: bodyIn, subject: subjectIn, messageId, parent, settings: settingsRead.values })
   const recipient = isTest ? testRecipient! : toAddress
 
   // 🔴 `action: 'preview'` WAS HERE AND IS GONE (29 September 2026). It stopped at exactly this point
@@ -384,7 +490,7 @@ export async function POST(req: NextRequest) {
   // §57 derives the next step from.
   let logWarning: string | null = null
   if (!isTest && result.status === 'sent') {
-    const kind = typeof body.kind === 'string' ? body.kind : null
+    const kind = sendKind
     const leadInput = {
       hu_ordering: p.hu_ordering ?? null,
       hu_map: p.hu_map ?? null,
@@ -395,7 +501,9 @@ export async function POST(req: NextRequest) {
     }
     const logged = await logOutreachContact(
       supabase,
-      { prospect_id: prospectId, channel: 'email', direction: 'outbound', kind, message: bodyIn, contacted_at: null },
+      // 🔴 THE LOG STORES WHAT WAS SENT, NOT WHAT WAS TYPED. `bodyIn` still contains `{{signature}}`;
+      // a history row holding a raw token is not a record of an email anyone received.
+      { prospect_id: prospectId, channel: 'email', direction: 'outbound', kind, message: expandToPlainText(bodyIn, settingsRead.values), contacted_at: null },
       { prospect: leadInput, hasLeadTypeFreeze: true },
     )
     if (!logged.ok) {
@@ -412,6 +520,61 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ...result.payload, ...(logWarning ? { logWarning } : {}) })
 }
 
+/** How long to wait before asking Sent a second time. */
+const SENT_REFETCH_DELAY_MS = 3_000
+
+interface SentCopyResult {
+  sentCopy: 'server_filed' | 'appended' | 'absent'
+  mailbox: string | null
+  uid: number | null
+  uidvalidity: string | null
+  /** Why it is absent. Sanitised; never a credential. Empty when a copy was found or made. */
+  reason: string
+}
+
+/**
+ * Put a copy of a sent message in Sent — or say why there is not one.
+ *
+ * 🔴 THE SEQUENCE, AND WHY EACH STEP IS THERE:
+ *   1. SEARCH Sent for the Message-ID. Namecheap files an authenticated submission itself, so the
+ *      usual answer is yes and an APPEND would put a SECOND copy in Dominic's Sent folder.
+ *   2. ⚠️ IF ABSENT, WAIT ~3 SECONDS AND ASK AGAIN. Server-side filing is not synchronous with the
+ *      SMTP `250`; the first search can lose a race it was never going to win, and appending on that
+ *      answer is how a duplicate appears a moment later.
+ *   3. Still absent → APPEND the exact bytes that were sent, flagged `\Seen`.
+ *
+ * ⚠️ NEVER FATAL. The mail has gone; the copy is a convenience. Every failure is recorded as a reason
+ * rather than raised, and the message row keeps `status: 'sent'`.
+ */
+async function fileSentCopy(
+  row: Row, raw: Buffer, date: Date,
+  env: { mailUser: string; mailPass: string },
+): Promise<SentCopyResult> {
+  const miss = (reason: string): SentCopyResult =>
+    ({ sentCopy: 'absent', mailbox: null, uid: null, uidvalidity: null, reason })
+  const client = makeImapClient(env.mailUser, env.mailPass)
+  try {
+    await client.connect()
+    let found = await findInSent(client, row.message_id)
+    if (!found) {
+      await new Promise(r => setTimeout(r, SENT_REFETCH_DELAY_MS))
+      found = await findInSent(client, row.message_id)
+    }
+    if (found) {
+      return { sentCopy: 'server_filed', mailbox: OUTREACH_SENT_MAILBOX, uid: found.uid, uidvalidity: found.uidValidity || null, reason: '' }
+    }
+    const appended = await appendToSent(client, raw, date)
+    if (appended.ok) {
+      return { sentCopy: 'appended', mailbox: OUTREACH_SENT_MAILBOX, uid: appended.uid, uidvalidity: null, reason: '' }
+    }
+    return miss(`append refused — ${appended.error}`)
+  } catch (err) {
+    return miss(sanitiseMailError(err))
+  } finally {
+    try { await client.logout() } catch { /* already gone */ }
+  }
+}
+
 /** The SMTP send, the status write and the Sent copy. Shared by a first send and a retry. */
 interface DeliverResult {
   ok: boolean
@@ -426,14 +589,28 @@ async function deliver(
   // 🔴 BOTH FROM `lib/outreach-mail-envelope`, which is what the harness composes its bytes from.
   const transporter = nodemailer.createTransport(smtpTransportOptions(env.mailUser, env.mailPass))
   const mail = mailFor(row)
+  let raw: Buffer
+  try {
+    raw = await composeRaw(row)
+  } catch (err) {
+    // Composition happens before the socket, so nothing has been sent and `failed` is the honest word.
+    await supabase.from('outreach_messages')
+      .update({ status: 'failed', last_error: `compose: ${sanitiseMailError(err)}`, updated_at: new Date().toISOString() })
+      .eq('id', row.id)
+    return { ok: false, status: 'failed', payload: {
+      ok: false, id: row.id, status: 'failed',
+      error: sanitiseMailError(err), message: 'That message could not be built, so nothing was sent.',
+    } }
+  }
   await supabase.from('outreach_messages')
     .update({ status: 'sending', attempts: (row.attempts ?? 0) + 1, updated_at: new Date().toISOString() })
     .eq('id', row.id)
 
-  let raw: Buffer | null = null
   try {
-    const info = await transporter.sendMail(mail)
-    raw = (info as { message?: Buffer }).message ?? null
+    // 🔴 THE EXACT BYTES THAT WILL BE FILED ARE THE EXACT BYTES THAT GO. See `composeRaw` for the
+    // defect this replaces: the old code read `info.message` off the SMTP result, where that field
+    // does not exist, so `raw` was always null and no copy was ever appended.
+    await transporter.sendMail(rawMailFor(raw, row))
     await supabase.from('outreach_messages')
       .update({ status: 'sent', last_error: null, updated_at: new Date().toISOString() }).eq('id', row.id)
   } catch (err) {
@@ -451,26 +628,16 @@ async function deliver(
   }
   try { transporter.close() } catch { /* sent already */ }
 
-  // ── THE SENT COPY — found, or appended, and never fatal ──────────────────────────────────────────
-  let sentCopy: 'server_filed' | 'appended' | 'absent' = 'absent'
-  let mailbox: string | null = null, uid: number | null = null, uidvalidity: string | null = null
-  const client = makeImapClient(env.mailUser, env.mailPass)
-  try {
-    await client.connect()
-    const found = await findInSent(client, row.message_id)
-    if (found) {
-      // 🔴 THE SERVER FILED IT ITSELF. Appending now would put a SECOND copy in Dominic's Sent folder.
-      sentCopy = 'server_filed'; mailbox = 'Sent'; uid = found.uid; uidvalidity = found.uidValidity || null
-    } else if (raw) {
-      const appended = await appendToSent(client, raw, (mail.date as Date) ?? new Date())
-      if (appended.ok) { sentCopy = 'appended'; mailbox = 'Sent'; uid = appended.uid }
-    }
-  } catch { /* the mail has gone; the copy is a convenience */ } finally {
-    try { await client.logout() } catch { /* already gone */ }
-  }
-  await supabase.from('outreach_messages')
-    .update({ sent_copy: sentCopy, mailbox, uid, uidvalidity, updated_at: new Date().toISOString() })
-    .eq('id', row.id)
+  const copy = await fileSentCopy(row, raw, (mail.date as Date) ?? new Date(), env)
+  await supabase.from('outreach_messages').update({
+    sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
+    // 🔴 A MISSING COPY NOW SAYS WHY. `sent_copy: 'absent'` with `last_error: null` was the shape of
+    // the defect: nothing had even been attempted, so nothing had failed. An absent copy records its
+    // reason; a successful one clears the field rather than leaving a stale one behind.
+    ...(copy.sentCopy === 'absent' ? { last_error: `sent copy: ${copy.reason}` } : {}),
+    updated_at: new Date().toISOString(),
+  }).eq('id', row.id)
+  const sentCopy = copy.sentCopy
 
   return { ok: true, status: 'sent', payload: {
     ok: true, id: row.id, status: 'sent', sent_copy: sentCopy,

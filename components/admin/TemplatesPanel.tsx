@@ -28,6 +28,9 @@ import {
   resolvedTokenReference, conditionReference, suspectedMistypedTokens, malformedTokensIn,
   type MessageTemplate,
 } from '@/lib/outreach-template-render'
+import {
+  signatureBlockHtml, optOutHtml, parseSignature, parseOptOut, type SignatureLine,
+} from '@/lib/outreach-signature'
 
 type Row = {
   id: string; slug: string; label: string; channel: 'email' | 'whatsapp'
@@ -270,7 +273,7 @@ export default function TemplatesPanel() {
   const [snippetNote, setSnippetNote] = useState<string | null>(null)
   /** Which top-level view the tab is showing. Snippets is global, so it cannot live in the rail — the
    *  rail only renders with a template selected. See the report for the alternatives considered. */
-  const [view, setView] = useState<'templates' | 'snippets'>('templates')
+  const [view, setView] = useState<'templates' | 'snippets' | 'signature'>('templates')
 
   /** name → value, for the read-only display on the template editor and for the compose pre-fill. */
   const snippetValues = useMemo(() => snippetMapOf(snippets), [snippets])
@@ -695,7 +698,14 @@ export default function TemplatesPanel() {
             width), a collapsible strip above the grid (pushes the editor down permanently), and its own
             admin nav item (a whole tab for one table). */}
         <div className="flex items-center gap-2 mb-4">
-          {([['templates', 'Templates'], ['snippets', `Snippets${snippetUses.length ? ` (${snippetUses.length})` : ''}`]] as const)
+          {([
+            ['templates', 'Templates'],
+            ['snippets', `Snippets${snippetUses.length ? ` (${snippetUses.length})` : ''}`],
+            // 🔴 A THIRD VIEW, NOT A RAIL TAB, FOR THE SAME REASON SNIPPETS IS ONE: the signature is
+            // GLOBAL. It belongs to no template, so a tab inside the per-template rail would be
+            // unreachable with nothing selected — and every template that uses it says {{signature}}.
+            ['signature', 'Signature'],
+          ] as const)
             .map(([v, label]) => (
               <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
                 className={`text-sm rounded-lg px-3 py-1.5 border font-semibold ${view === v
@@ -737,7 +747,7 @@ export default function TemplatesPanel() {
           </div>
         )}
 
-        {view === 'snippets' ? <SnippetsLibrary
+        {view === 'signature' ? <SignaturePanel /> : view === 'snippets' ? <SnippetsLibrary
           uses={snippetUses} snippets={snippets} draft={snippetDraft} setDraft={setSnippetDraft}
           onSave={saveSnippet} enabled={hasSnippets} /> : (
         <div className="grid gap-4 items-start" style={{ gridTemplateColumns: '240px minmax(0, 1fr) minmax(0, 1fr)' }}>
@@ -1254,6 +1264,146 @@ export default function TemplatesPanel() {
       {toast && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg" style={{ zIndex: 60 }}>{toast}</div>
       )}
+    </div>
+  )
+}
+
+// ── THE SIGNATURE EDITOR ────────────────────────────────────────────────────────────────────────────
+/**
+ * The signature lines and the opt-out sentence, edited as DATA.
+ *
+ * 🔴 THE PREVIEW IS RENDERED BY THE FUNCTION THE SENDER USES — `signatureBlockHtml` and `optOutHtml`
+ * from `lib/outreach-signature.ts`, the same module `buildMessage` calls. A preview drawn by a second
+ * implementation would be the one thing worse than no preview: it would be believed.
+ * ⚠️ IT TOUCHES NOTHING ELSE. No template, no snippet — the route writes exactly two keys of
+ * `outreach_settings` and nothing in this panel can ask it for a third.
+ */
+function SignaturePanel() {
+  const [lines, setLines] = useState<SignatureLine[] | null>(null)
+  const [optOut, setOptOut] = useState('')
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [note, setNote] = useState<string | null>(null)
+  const [dirty, setDirty] = useState(false)
+  const inFlight = useRef(false)
+
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      const r = await fetch('/api/admin/outreach/settings').catch(() => null)
+      if (!r || !live) return
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!live) return
+      if (j.ok !== true) { setLoadError(String(j.refusal ?? 'The settings could not be read.')); return }
+      const sig = parseSignature(j.signature)
+      const oo = parseOptOut(j.optOut)
+      setLines(sig?.lines ?? [])
+      setOptOut(oo?.text ?? '')
+    })()
+    return () => { live = false }
+  }, [])
+
+  const edit = (fn: (l: SignatureLine[]) => SignatureLine[]) => {
+    setLines(cur => (cur ? fn(cur) : cur)); setDirty(true); setNote(null)
+  }
+  const save = async () => {
+    if (inFlight.current || !lines) return
+    inFlight.current = true; setSaving(true); setNote(null)
+    try {
+      const r = await fetch('/api/admin/outreach/settings', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signature: { lines }, optOut: { text: optOut } }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.ok !== true) { setNote(String(j.refusal ?? 'That could not be saved.')); return }
+      // 🔴 THE SCREEN SHOWS WHAT THE TABLE HOLDS, not what was posted. The route reads it back.
+      const sig = parseSignature(j.signature)
+      const oo = parseOptOut(j.optOut)
+      setLines(sig?.lines ?? []); setOptOut(oo?.text ?? '')
+      setDirty(false); setNote('Saved.')
+    } catch {
+      setNote('That could not be saved — check the connection and try again.')
+    } finally { inFlight.current = false; setSaving(false) }
+  }
+
+  if (loadError) {
+    return (
+      <div className="rounded-xl border border-red-300 bg-red-50 p-4">
+        <p className="text-sm font-bold text-red-900">Could not load the signature.</p>
+        <p className="text-sm text-red-800 mt-1">{loadError}</p>
+      </div>
+    )
+  }
+  if (!lines) return <p className="text-sm text-slate-500">Loading…</p>
+
+  const btn = 'text-xs font-semibold px-2 py-1 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-slate-400'
+  return (
+    <div className="grid gap-4 items-start" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <p className="text-sm font-bold text-slate-800">Signature lines</p>
+        <p className="text-[12px] text-slate-600 mt-1 mb-3">
+          These are inserted wherever a template has <code className="font-mono">{'{{signature}}'}</code> on
+          a line of its own. Leave an input empty for a blank line. Nothing is added automatically — a
+          template without the token sends without a signature.
+        </p>
+        <div className="flex flex-col gap-1.5">
+          {lines.map((l, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              <span className="w-5 text-right text-[11px] text-slate-400 tabular-nums">{i + 1}</span>
+              <input type="text" value={l.text}
+                placeholder="(blank line)"
+                onChange={e => edit(cur => cur.map((c, j) => j === i ? { ...c, text: e.target.value } : c))}
+                className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-sm" />
+              <label className="flex items-center gap-1 text-[11px] font-semibold text-slate-600 select-none">
+                <input type="checkbox" checked={l.bold}
+                  onChange={e => edit(cur => cur.map((c, j) => j === i ? { ...c, bold: e.target.checked } : c))} />
+                Bold
+              </label>
+              <button type="button" className={btn} disabled={i === 0} title="Move up"
+                onClick={() => edit(cur => { const n = [...cur]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; return n })}>↑</button>
+              <button type="button" className={btn} disabled={i === lines.length - 1} title="Move down"
+                onClick={() => edit(cur => { const n = [...cur]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; return n })}>↓</button>
+              <button type="button" className={btn} title="Remove this line"
+                onClick={() => edit(cur => cur.filter((_, j) => j !== i))}>✕</button>
+            </div>
+          ))}
+        </div>
+        <button type="button" onClick={() => edit(cur => [...cur, { text: '', bold: false }])}
+          className="mt-2 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+          Add a line
+        </button>
+
+        <label className="block mt-4">
+          <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5">Opt-out line</span>
+          <input type="text" value={optOut}
+            onChange={e => { setOptOut(e.target.value); setDirty(true); setNote(null) }}
+            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm" />
+          <span className="block mt-1 text-[11px] text-slate-500">
+            Inserted at <code className="font-mono">{'{{opt_out}}'}</code>, at 10pt. This is the sentence
+            that lets a prospect stop the emails, so it cannot be saved empty.
+          </span>
+        </label>
+
+        <div className="mt-4 flex items-center gap-3">
+          <button type="button" onClick={() => void save()} disabled={saving || !dirty}
+            className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
+            {saving ? 'Saving…' : 'Save'}
+          </button>
+          {note && <span className="text-[12px] text-slate-600">{note}</span>}
+          {dirty && !note && <span className="text-[12px] font-semibold text-amber-800">Unsaved changes</span>}
+        </div>
+      </div>
+
+      {/* 🔴 THE SAME RENDERER THE SENDER USES. Not a lookalike. */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <p className="text-sm font-bold text-slate-800">Preview</p>
+        <p className="text-[12px] text-slate-600 mt-1 mb-3">
+          Exactly what an email carries where the two tokens sit — rendered by the same code that builds
+          the message, so this cannot drift from what is sent.
+        </p>
+        <div className="border border-slate-200 rounded-lg p-3 bg-white"
+          dangerouslySetInnerHTML={{ __html: signatureBlockHtml({ lines }) + optOutHtml({ text: optOut }) }} />
+      </div>
     </div>
   )
 }

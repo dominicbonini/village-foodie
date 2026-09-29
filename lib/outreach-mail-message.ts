@@ -12,17 +12,20 @@
 //
 // Pure: no network, no database, no nodemailer. `scripts/outreach-mail-send.cjs` proves every rule here.
 import { OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME, OUTREACH_TZ } from '@/lib/outreach-mail-config'
+import { expandBody, type SendTimeValues } from '@/lib/outreach-signature'
 
 /** The paragraph style, exactly as captured. Used for body paragraphs, spacers and the signature lines. */
 const P_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);'
-/** The opt-out line sits at the browser's own 10pt equivalent, which is what Outlook emitted. */
-const OPTOUT_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(0, 0, 0);'
+/* The 10pt opt-out style moved to `lib/outreach-signature.ts#SIG_OPTOUT_STYLE` with the line it
+ * styles — the opt-out sentence is stored data now, and its style belongs beside its renderer. */
 /** The rule above a quoted message. Captured verbatim, `currentcolor` and all. */
 const QUOTE_RULE_STYLE = 'padding: 3pt 0in 0in; border-width: 1pt medium medium; border-style: solid none none; border-color: rgb(181, 196, 223) currentcolor currentcolor;'
 
-/** ⚠️ APPROVED WORDING. The reply route is the opt-out: no link, nothing to click, nothing to track. */
-export const OPTOUT_SENTENCE =
-  'If you would rather not hear from me again, reply with "no thanks" and I will not contact you.'
+/* `OPTOUT_SENTENCE` WAS HERE, AS A CONSTANT IN THIS FILE. It is a row in `outreach_settings` now,
+ * edited on the Templates tab's Signature panel and placed by `{{opt_out}}`. The wording is still
+ * approved wording and the reply route is still the opt-out — no link, nothing to click, nothing to
+ * track — but it is Dominic's to change without a deploy. The seed value in
+ * `supabase/migrations/20260929_outreach_settings.sql` is this sentence, word for word. */
 
 export function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -30,60 +33,29 @@ export function escapeHtml(s: string): string {
 
 const div = (style: string, inner: string) => `<div style="${style}">${inner}</div>`
 
-/**
- * The signature, as captured.
- *
- * 🔴 THE ORDER AND THE EMPTY DIVS ARE THE FORMAT. Outlook's spacing is not CSS margins — it is literal
- * empty divs, and two of them are `direction: ltr` wrappers around a bold `<br>`. Collapsing them into
- * one, or replacing them with a margin, changes the rendered gap in every client.
- * ⚠️ NO LINKS. `hatchgrab.com | villagefoodie.co.uk` is plain text in the captured mail, and an `<a>`
- * here would both look different and give a spam filter something to score.
- */
-export function signatureHtml(): string {
-  return [
-    div(P_STYLE, 'Kind regards,'),
-    div(P_STYLE, 'Dominic'),
-    '<div style="direction: ltr;"><b><br></b></div>',
-    '<div style="direction: ltr;"><b><br></b></div>',
-    '<div><b>Dominic Bonini</b></div>',
-    div(P_STYLE, 'Founder, HatchGrab'),
-    div(P_STYLE, 'hatchgrab.com | villagefoodie.co.uk'),
-    div(P_STYLE, '07941 042 253'),
-    div(P_STYLE, '<br>'),
-    div(P_STYLE, '<br>'),
-    div(OPTOUT_STYLE, escapeHtml(OPTOUT_SENTENCE)),
-  ].join('')
-}
+// ── 🔴 `signatureHtml()` AND `signatureText()` WERE HERE, AND THE AUTOMATIC APPEND WENT WITH THEM ──
+// Every message used to get the captured Outlook block appended to it, unconditionally, by
+// `buildMessage`. From 29 September 2026 the signature is DATA in `outreach_settings`, placed by a
+// `{{signature}}` token in the template, and the opt-out sentence is its own `{{opt_out}}` token.
+// 🔎 `lib/outreach-signature.ts` holds both the reasoning and the rendering.
+//
+// ⚠️ WHAT THIS COSTS, STATED PLAINLY: nothing appends a signature or an opt-out line any more. A
+// template without the tokens sends without them, and no code path refuses it — the compose window
+// warns, and the Send confirm repeats the warning. That is deliberate (an operator is allowed to mean
+// "send exactly this"), but it is a real loss of a guarantee and it is written down rather than
+// implied. The same note stands at the top of `lib/outreach-template-render.ts` about the footer that
+// preceded it.
+//
+// 🔴 ONE BUG DIED WITH THE OLD BLOCK. It emitted `<div><b>Dominic Bonini</b></div>` — a div with NO
+// font style — so that one line inherited the mail client's default size and arrived visibly smaller
+// than the rest. `signatureLineHtml` puts the `<b>` inside the 12pt div instead.
 
-/** The same signature as text, for the text/plain part. Blank lines where the empty divs are. */
-export function signatureText(): string {
-  return [
-    'Kind regards,', 'Dominic', '', '',
-    'Dominic Bonini', 'Founder, HatchGrab', 'hatchgrab.com | villagefoodie.co.uk', '07941 042 253',
-    '', '', OPTOUT_SENTENCE,
-  ].join('\n')
-}
-
-/**
- * The editable body → the captured paragraph divs.
- * A single `<br>` in the template is a line break INSIDE a paragraph; a blank line starts a new one, and
- * the gap between paragraphs is an empty div of the same style — Outlook's own shape, not a margin.
- * Substituted values are escaped: a truck called `Bill & Ben's` must not become markup.
- */
-export function bodyHtml(body: string): string {
-  const paragraphs = body.replace(/\r\n/g, '\n').split(/\n{2,}/).map(p => p.trim()).filter(Boolean)
-  const out: string[] = []
-  paragraphs.forEach((p, i) => {
-    if (i > 0) out.push(div(P_STYLE, '<br>'))
-    out.push(div(P_STYLE, escapeHtml(p).replace(/\n/g, '<br>')))
-  })
-  return out.join('')
-}
-
-/** The same content as text/plain: paragraphs separated by a blank line. */
-export function bodyText(body: string): string {
-  return body.replace(/\r\n/g, '\n').split(/\n{2,}/).map(p => p.trim()).filter(Boolean).join('\n\n')
-}
+/* `bodyHtml` AND `bodyText` WERE HERE. Both now live in `lib/outreach-signature.ts#expandBody`, which
+ * does the same paragraph work AND the token expansion in one pass — two functions that split the same
+ * body on the same blank lines would eventually disagree about where a signature sits.
+ * 🔴 `bodyText` ALSO CARRIED A DEFECT THAT REACHED A PROSPECT: it passed the body through untouched, so
+ * a `<br><br>` typed in a template arrived in the text/plain part as those eight literal characters.
+ * `stripHtmlToText` is the replacement, and the harness proves the text part contains no tag. */
 
 /**
  * `dominic@hatchgrab.com <dominic@hatchgrab.com>` when there is no display name — which is what Outlook
@@ -195,6 +167,8 @@ export interface BuildInput {
   /** The template's subject — used only when this is NOT a reply. */
   subject: string
   messageId: string
+  /** The signature and opt-out rows this body's tokens need. Read by the route, never by this module. */
+  settings: SendTimeValues
   /** Absent ⇒ a first contact: a new thread with the template's own subject. */
   parent?: {
     messageId: string
@@ -210,13 +184,15 @@ export interface BuildInput {
  * conversation in the prospect's inbox and the whole point of chasing in-thread is lost.
  */
 export function buildMessage(input: BuildInput): BuiltMessage {
-  const sig = signatureHtml()
-  const sigText = signatureText()
+  // 🔴 THE BODY IS EXPANDED, NOT DECORATED. `expandBody` turns `{{signature}}` and `{{opt_out}}` lines
+  // into their blocks IN PLACE and leaves everything else exactly where the operator put it. Nothing
+  // is appended here — see the note where `signatureHtml()` used to be.
+  const { html: bodyH, text: bodyT } = expandBody(input.body, input.settings)
   if (!input.parent) {
     return {
       subject: input.subject,
-      html: bodyHtml(input.body) + sig,
-      text: `${bodyText(input.body)}\n\n${sigText}\n`,
+      html: bodyH,
+      text: `${bodyT}\n`,
       messageId: input.messageId,
       inReplyTo: null,
       references: null,
@@ -227,8 +203,8 @@ export function buildMessage(input: BuildInput): BuiltMessage {
   const chain = [input.parent.references, input.parent.messageId].filter(Boolean).join(' ').trim()
   return {
     subject: replySubject(q.subject),
-    html: bodyHtml(input.body) + sig + referenceBlockHtml(q),
-    text: `${bodyText(input.body)}\n\n${sigText}\n${referenceBlockText(q)}\n`,
+    html: bodyH + referenceBlockHtml(q),
+    text: `${bodyT}\n${referenceBlockText(q)}\n`,
     messageId: input.messageId,
     inReplyTo: input.parent.messageId,
     references: chain || null,

@@ -189,6 +189,22 @@ function resolvedValue(token: string, ctx: TemplateContext): string | null {
     case 'next_event_day': return ctx.nextEventDate ? dayName(ctx.nextEventDate) : null
     case 'next_event_date': return ctx.nextEventDate ? longDate(ctx.nextEventDate) : null
     case 'next_event_venue': return (ctx.nextEventVenue ?? '').trim() || null
+    // ── 🔴 THE TWO SEND-TIME TOKENS, AND WHY THEY RESOLVE TO THEMSELVES ─────────────────────────
+    // `{{signature}}` and `{{opt_out}}` are filled from `outreach_settings` when the MESSAGE IS BUILT,
+    // not when the compose box is filled — see lib/outreach-signature.ts for why (a signature sitting
+    // in an editable box is a legal opt-out line one stray backspace from being wrong).
+    //
+    // Returning the token VERBATIM is what makes that work, and it is deliberately done HERE rather
+    // than by special-casing `substitute`, because three separate things key off these `case` labels:
+    //   • `substitute` replaces the token with itself, so it survives into the box untouched;
+    //   • `unresolvedIn` never sees it, so it is not listed as "still to fill" — it is not outstanding,
+    //     it is deferred;
+    //   • `resolvedTokenReference()` reads these labels out of this function's own source, so both
+    //     tokens appear in the Templates tab's reference automatically and cannot be forgotten there.
+    // ⚠️ A declared fallback is ignored, as it is for a must-resolve token: `{{signature|Dominic}}`
+    // returns non-null here, so `substitute` never reaches the fallback branch.
+    case 'signature': return '{{signature}}'
+    case 'opt_out': return '{{opt_out}}'
     default: return null
   }
 }
@@ -364,6 +380,8 @@ const TOKEN_DESCRIPTIONS: Record<string, string> = {
   next_event_day: 'Weekday of the next event AFTER today, e.g. "Friday".',
   next_event_date: 'Date of the next event after today, e.g. "18 September".',
   next_event_venue: 'Venue of the next event after today.',
+  signature: '🔴 Your signature block, from the Signature tab. Put it on a LINE OF ITS OWN. It is filled in when the email is SENT, so it stays as {{signature}} in the compose box — edit the lines on the Signature tab, not here. Nothing is added automatically any more: a message without this token goes out without a signature.',
+  opt_out: '🔴 The opt-out sentence, from the Signature tab, at 10pt. Put it on a LINE OF ITS OWN, last. Also filled in at send time. Every cold approach should carry it — the compose window warns when a first contact or a chase has not got it.',
 }
 const CONDITION_DESCRIPTIONS: Record<string, string> = {
   next_event: 'Keeps the line only when the truck has an event AFTER today, with a venue.',
