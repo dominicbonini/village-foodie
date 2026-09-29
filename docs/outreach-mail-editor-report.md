@@ -549,3 +549,81 @@ Type `{{signature}}` into the box by hand and press Send. It refuses with:
 
 Nothing expands tokens at send time any more, so those characters would otherwise have been emailed.
 
+---
+
+## 12 · Commit and deploy evidence
+
+**Commit `fc3fd69`** — *"The compose box is the email: a rich editor, and a sender name"*, on `main`,
+pushed to `origin/main` (`c8675f6..fc3fd69`). Fourteen files: three new, eleven changed (two of those
+being `package.json` and `package-lock.json` for the eight pinned TipTap packages). No other work is in
+it.
+
+**Deployed and serving on production, confirmed 2026-09-29T13:55:21Z.**
+
+Proved by the build-fingerprint method. The set of `/_next/static/chunks/*.js` the home page references
+was captured **before** the push and then polled:
+
+```
+fingerprint before push: 1bfbef9afadf1a6ee590980b9f9d96b1
+poll 1: 1bfbef9afadf1a6ee590980b9f9d96b1
+poll 2: 1bfbef9afadf1a6ee590980b9f9d96b1
+poll 3: 1bfbef9afadf1a6ee590980b9f9d96b1
+poll 4: 33f94a61509a5e4b07a7ab3da8438d9d     ← DEPLOY LANDED
+```
+
+🔴 **This is the signal that matters for this commit in particular.** Almost everything here is client
+code — the editor, the compose window, the Signature panel — which has no unauthenticated signal at
+all. A changed chunk set is the whole build being replaced, editor included. The route checks below
+were taken after it changed.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/settings` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404, so
+`{"error":"Unauthorised"}` as `application/json` is each route's own `verifyAdmin` refusal. ⚠️ The 404
+on the refusal is deliberate — an admin route does not confirm its own existence to an unauthenticated
+caller.
+
+⚠️ **What this evidence does not show.** The editor, the sender name and the document pipeline are all
+behind the admin session, so they are proved by the harness and the build. The test script above is how
+they are confirmed in use — steps 2 and 3 first.
+
+---
+
+## 13 · Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in fc3fd69:
+
+  new file:   lib/outreach-doc.ts
+  new file:   components/admin/RichEmailEditor.tsx
+  new file:   docs/outreach-mail-editor-report.md
+  modified:   package.json
+  modified:   package-lock.json
+  modified:   components/admin/ComposeWindow.tsx
+  modified:   components/admin/TemplatesPanel.tsx
+  modified:   app/api/admin/outreach/mail-send/route.ts
+  modified:   app/api/admin/outreach/settings/route.ts
+  modified:   lib/outreach-mail-message.ts
+  modified:   lib/outreach-mail-envelope.ts
+  modified:   lib/outreach-settings-read.ts
+  modified:   lib/outreach-signature.ts
+  modified:   scripts/outreach-mail-send.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run and none was needed** — `from_name` is a third row in
+the existing `outreach_settings` table, and **I did not write it**: Dominic sets it in the panel, which
+is step 1 of the test script. Two `slot-head-dots-*` worktrees from an earlier session remain listed as
+prunable: pre-existing, untouched, and already on the open-items list.
