@@ -17,7 +17,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ImapFlow } from 'imapflow'
 import { OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
 import {
-  makeImapClient, withReadOnlyMailbox, mailboxCount, decodePart, sanitiseMailError,
+  makeImapClient, withReadOnlyMailbox, mailboxStatus, decodePart, sanitiseMailError,
 } from '@/lib/outreach-mail-box'
 import { findPart, headerBlockOf, headerValue, addressesOf } from '@/lib/outreach-mail-format'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
@@ -25,7 +25,7 @@ import { deliver, fileSentCopy, type DeliverRow } from '@/lib/outreach-mail-deli
 import { composeRaw } from '@/lib/outreach-mail-envelope'
 import { readFromName } from '@/lib/outreach-settings-read'
 import {
-  planFetch, advanceWatermark, classifyIncoming, matchIncoming, matchOutgoing,
+  planFetch, advanceWatermark, emptyWatermark, withinFirstLook, classifyIncoming, matchIncoming, matchOutgoing,
   bouncedOriginalId, stripQuotedHistory, isStuckSending, shouldAutoRetry, isOwnAddress,
   type PollState, type IncomingHeaders,
 } from '@/lib/outreach-mail-poll-rules'
@@ -33,7 +33,7 @@ import {
   claimPollLock, releasePollLock, insertMessageOnce, claimRetry,
 } from '@/lib/outreach-poll-claims'
 import {
-  resolveAccounts, credentialsFor, accountOfRow,
+  resolveAccounts, credentialsFor, accountOfRow, pollSince,
   type MailAccount, type AccountCredentials, type AccountSet,
 } from '@/lib/outreach-mail-accounts'
 
@@ -49,10 +49,37 @@ export const POLL_MAILBOXES = [...INCOMING_MAILBOXES, OUTREACH_SENT_MAILBOX] as 
  */
 const STATE_KEY: Record<MailAccount, string> = {
   hello: 'mail_poll_state',
-  dominic: 'mail_poll_state_dominic',
+  // 🔴 `_v2` IS THE RECOVERY. `mail_poll_state_dominic` holds the watermarks the 29 September cron
+  // set by BASELINING — including the one on `dominic/INBOX` that was placed above a real reply and
+  // swallowed it permanently. Moving to a new key gives every dominic@ folder a fresh first look,
+  // which now reads by date from the mailbox's creation day and therefore picks that reply up.
+  // ⚠️ THE OLD KEY IS LEFT IN PLACE, UNUSED, AND DELIBERATELY NOT DELETED. It is the only record of
+  // what the broken run did; rewriting it would destroy the evidence, and deleting a row to fix a bug
+  // is how the next person loses the ability to tell what happened.
+  // ⚠️ hello@ KEEPS ITS EXISTING KEY. Its INBOX and Sent watermarks are correct — they were set by
+  // runs that actually read those folders — and a fresh first look there would re-read a week of mail
+  // for nothing. Its two EMPTY folders had no watermark at all, so they get one now regardless.
+  dominic: 'mail_poll_state_dominic_v2',
 }
 /** A hard ceiling per mailbox per run, so one enormous backlog cannot run past the function timeout. */
 const MAX_PER_MAILBOX = 200
+
+/**
+ * 🔴 ONE LINE PER FOLDER, SO "FOUND NOTHING" IS DIAGNOSABLE FROM THE SCREEN. On 29 September the
+ * button reported all zeros and Dominic had no way to tell whether the reply had not arrived, had not
+ * matched, or had been skipped by a watermark set a few minutes earlier by the cron. It was the third,
+ * and nothing on screen could have said so. This says so.
+ */
+export interface FolderReport {
+  folder: string
+  mode: 'first_look' | 'incremental' | 'rescan' | 'none' | 'empty'
+  /** Messages handed to the matcher this run — after the first-look date filter. */
+  examined: number
+  before: number | null
+  after: number | null
+  /** The first-look cut-off, when this run had one. */
+  since: string | null
+}
 
 export interface PollSummary {
   ok: boolean
@@ -69,15 +96,17 @@ export interface PollSummary {
   unmatched: number
   /** Mailboxes whose uidvalidity changed and were re-scanned. Reported, because it explains a spike. */
   rescanned: string[]
-  /** Mailboxes seen for the first time; their history was deliberately skipped. */
+  /** Mailboxes given their first look, with the date it read from. */
   baselined: string[]
+  /** Per folder: what was examined and how the watermark moved. See `FolderReport`. */
+  folders: FolderReport[]
   errors: { step: string; error: string }[]
 }
 
 const emptySummary = (): PollSummary => ({
   ok: true, repliesLogged: 0, autoReplies: 0, bounces: 0, outlookSentRecorded: 0,
   retried: 0, markedUncertain: 0, copiesFiled: 0, ambiguous: 0, unmatched: 0,
-  rescanned: [], baselined: [], errors: [],
+  rescanned: [], baselined: [], folders: [], errors: [],
 })
 
 // ── SETTINGS: the watermark and the lock ────────────────────────────────────────────────────────────
@@ -161,32 +190,49 @@ function headersOf(raw: string, subject: string | null, from: string | null): In
  */
 async function walkMailbox(
   client: ImapFlow, path: string, state: PollState, summary: PollSummary, label: string,
+  since: Date,
   onMessage: (m: SeenMessage) => Promise<void>,
 ): Promise<void> {
+  const before = state[path]
+  let examined = 0
+  let mode: FolderReport['mode'] = 'none'
+  // ⚠️ RECORDED WHERE IT IS DECIDED, not inferred from `mode` afterwards — TypeScript narrows `mode`
+  // past the closure that assigns it, and a comparison it believes is impossible is a comparison that
+  // silently stops being made.
+  let sinceUsed: string | null = null
+
   const res = await withReadOnlyMailbox(client, path, async () => {
     const mb = client.mailbox
     const uidvalidity = mb && typeof mb === 'object' && 'uidValidity' in mb ? String(mb.uidValidity) : '0'
     const highestUid = mb && typeof mb === 'object' && 'uidNext' in mb ? Math.max(0, Number(mb.uidNext) - 1) : 0
-    const plan = planFetch(state[path], { uidvalidity, highestUid })
-    if (plan.mode === 'baseline') {
-      // 🔴 NOTHING OLD IS PROCESSED, EVER. See `planFetch`.
-      state[path] = { uidvalidity, lastUid: plan.lastUid }
-      summary.baselined.push(label)
-      return
-    }
+    const plan = planFetch(state[path], { uidvalidity, highestUid }, since)
+    mode = plan.mode
     if (plan.mode === 'none') { state[path] = { uidvalidity, lastUid: highestUid }; return }
     if (plan.mode === 'rescan') summary.rescanned.push(label)
+    if (plan.mode === 'first_look') {
+      sinceUsed = since.toISOString()
+      summary.baselined.push(`${label} (since ${sinceUsed})`)
+    }
 
+    // 🔴 A FIRST LOOK SEARCHES BY DATE. `SINCE` is a day, in the server's own timezone, so it is a
+    // NARROWING and not the decision — `withinFirstLook` compares the exact internal date below.
     const query = plan.mode === 'rescan'
       ? { since: new Date(Date.now() - plan.sinceDays * 86_400_000) }
-      : `${plan.from}:*`
+      : plan.mode === 'first_look'
+        ? { since: plan.since }
+        : `${plan.from}:*`
+    const byUid = plan.mode === 'incremental'
     const seenUids: number[] = []
     let n = 0
     for await (const msg of client.fetch(query as never, {
-      uid: true, envelope: true, headers: true,
-    }, { uid: plan.mode !== 'rescan' })) {
+      uid: true, envelope: true, headers: true, internalDate: true,
+    }, { uid: byUid })) {
       if (n++ >= MAX_PER_MAILBOX) break
+      // ⚠️ THE WATERMARK ADVANCES OVER EVERY MESSAGE THE SEARCH RETURNED, including ones the date
+      // filter rejects. They have been looked at; re-reading them next run would be pure cost.
       seenUids.push(msg.uid)
+      if (plan.mode === 'first_look' && !withinFirstLook(msg.internalDate, plan.since)) continue
+      examined++
       const env = msg.envelope
       await onMessage({
         uid: msg.uid,
@@ -200,11 +246,28 @@ async function walkMailbox(
     }
     state[path] = advanceWatermark(state[path], { uidvalidity, highestUid }, seenUids)
   })
+
   if (res.skipped) {
-    // An empty mailbox is a state, not a failure — but its watermark still has to exist.
-    const c = await mailboxCount(client, path)
-    if (c === 0 && !state[path]) summary.baselined.push(label)
+    // 🔴 AN EMPTY FOLDER GETS A WATERMARK TOO, AND THAT IS THE SECOND HALF OF THE 29 SEPTEMBER BUG.
+    // `withReadOnlyMailbox` does not open an empty mailbox — correctly, because `fetch('1:*')` on one
+    // throws — so this callback never ran and no watermark was ever stored. hello/Spam and
+    // hello/Archive therefore reported "first look" on every run for hours, and the FIRST message to
+    // arrive in one of them would have been baselined away by the next run.
+    const st = await mailboxStatus(client, path)
+    mode = 'empty'
+    if (st && st.messages === 0 && !state[path]) {
+      state[path] = emptyWatermark(st.uidvalidity)
+    }
   }
+
+  summary.folders.push({
+    folder: label,
+    mode,
+    examined,
+    before: before ? before.lastUid : null,
+    after: state[path] ? state[path].lastUid : null,
+    since: sinceUsed,
+  })
 }
 
 /** The text body of a message, read by uid, READ-ONLY. Only used for a matched reply. */
@@ -291,6 +354,9 @@ async function pollOneAccount(
   const fail = (step: string, err: unknown) => { summary.errors.push({ step, error: sanitiseMailError(err) }) }
   const stateKey = STATE_KEY[creds.account]
   const state = ((await readSetting(supabase, stateKey)) ?? {}) as PollState
+  // 🔴 THE FIRST-LOOK CUT-OFF FOR THIS ACCOUNT. See `POLL_SINCE` for why it is a date and not the
+  // current top uid, and which real reply the old way lost.
+  const since = pollSince(creds.account)
   const label = (path: string) => `${creds.account}/${path}`
 
   const client = makeImapClient(creds.user, creds.pass)
@@ -300,7 +366,7 @@ async function pollOneAccount(
     // ── INCOMING ──────────────────────────────────────────────────────────────────────────────────
     for (const path of INCOMING_MAILBOXES) {
       try {
-        await walkMailbox(client, path, state, summary, label(path), async m => {
+        await walkMailbox(client, path, state, summary, label(path), since, async m => {
           if (!m.messageId) return                       // nothing to be idempotent on
           if (m.from.some(isOwnAddress)) return          // our own mail is not a reply to us
           const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
@@ -326,7 +392,7 @@ async function pollOneAccount(
 
     // ── OUTLOOK-SENT MAIL ─────────────────────────────────────────────────────────────────────────
     try {
-      await walkMailbox(client, OUTREACH_SENT_MAILBOX, state, summary, label(OUTREACH_SENT_MAILBOX), async m => {
+      await walkMailbox(client, OUTREACH_SENT_MAILBOX, state, summary, label(OUTREACH_SENT_MAILBOX), since, async m => {
         if (!m.messageId) return
         if (dir.byMessageId.has(m.messageId)) return     // a system send already has its row
         const match = matchOutgoing(m.to, dir.byAddress)

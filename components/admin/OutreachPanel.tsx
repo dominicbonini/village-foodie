@@ -1472,12 +1472,25 @@ export default function OutreachPanel() {
  * running it cannot alter what Outlook shows. The ONE thing it edits is a row it wrote itself: an
  * imported row whose `in_reply_to` / `references` are null gets them filled in, never overwritten.
  */
+interface FolderReportUI {
+  folder: string
+  mode: 'first_look' | 'incremental' | 'rescan' | 'none' | 'empty'
+  /** Messages handed to the matcher — after the first-look date filter. */
+  examined: number
+  before: number | null
+  after: number | null
+  since: string | null
+}
+
 interface PollSummaryUI {
   ok: boolean; skipped?: string
   repliesLogged: number; autoReplies: number; bounces: number; outlookSentRecorded: number
   retried: number; markedUncertain: number; copiesFiled: number
   ambiguous: number; unmatched: number
   rescanned: string[]; baselined: string[]
+  /** 🔴 One line per folder, so a run that found nothing can say why. Optional: an older deployment
+   *  of the routes would not send it, and the panel must not blank out if it is missing. */
+  folders?: FolderReportUI[]
   errors: { step: string; error: string }[]
 }
 
@@ -1542,6 +1555,32 @@ function CheckRepliesNow() {
                 )}
               </p>
             )}
+          {/* 🔴 PER FOLDER, BECAUSE "FOUND NOTHING" HAS TO BE DIAGNOSABLE. On 29 September this button
+              reported all zeros and there was no way to tell from the screen whether the reply had not
+              arrived, had not matched, or had been skipped by a watermark the cron had set a few
+              minutes earlier. It was the third. This says which. */}
+          {result.folders && result.folders.length > 0 && (
+            <details className="text-[11px] text-slate-600">
+              <summary className="cursor-pointer select-none text-slate-500 hover:text-slate-700">
+                What each folder did
+              </summary>
+              <div className="mt-1 border border-slate-200 rounded bg-white divide-y divide-slate-100">
+                {result.folders.map(f => (
+                  <p key={f.folder} className="px-2 py-1 flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-slate-700 w-40 shrink-0 truncate">{f.folder}</span>
+                    <span className={`font-semibold ${f.mode === 'first_look' ? 'text-amber-800' : 'text-slate-500'}`}>
+                      {f.mode === 'first_look' ? 'first look' : f.mode === 'empty' ? 'empty' : f.mode}
+                    </span>
+                    <span className="text-slate-500">
+                      examined <span className="font-bold text-slate-700">{f.examined}</span>
+                    </span>
+                    <span className="text-slate-400">uid {f.before ?? '—'} → {f.after ?? '—'}</span>
+                    {f.since && <span className="text-slate-400">from {fmtDate(f.since)}</span>}
+                  </p>
+                ))}
+              </div>
+            </details>
+          )}
           {result.errors.length > 0 && (
             <p className="text-[11px] text-red-700">{result.errors.map(e => `${e.step}: ${e.error}`).join(' · ')}</p>
           )}

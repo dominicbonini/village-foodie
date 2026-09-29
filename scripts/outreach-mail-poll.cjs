@@ -141,14 +141,37 @@ const hdrs = (raw, extra = {}) => ({
     if (!bad) process.exit(1)
   }
   {
-    // V1 — THE FIRST RUN WALKS THE WHOLE MAILBOX. Two years of replies logged at once, every contacted
-    // prospect jumped to `replied`, every sequence exited, on timestamps that are a lie.
+    // V1 — THE FIRST LOOK GOES BACK TO BASELINING AT THE CURRENT TOP UID. This is the 29 September
+    // defect verbatim: the cron baselined dominic/INBOX at a uid that already included Dominic's
+    // reply, so the reply sat below the watermark and was skipped permanently.
     const v = variant('v1', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
-      "  if (!stored) return { mode: 'baseline', lastUid: live.highestUid }",
-      "  if (!stored) return { mode: 'incremental', from: 1 }"))
-    const plan = v.R.planFetch(undefined, { uidvalidity: '1', highestUid: 9000 })
-    variantFails('V1', plan.mode === 'incremental' && plan.from === 1,
-      'the first run has no baseline: it reads the mailbox from uid 1 and logs all of it')
+      "  if (!stored) return { mode: 'first_look', since }",
+      "  if (!stored) return { mode: 'none' }"))
+    const plan = v.R.planFetch(undefined, { uidvalidity: '1', highestUid: 9000 }, new Date('2026-09-29T00:00:00Z'))
+    variantFails('V1', plan.mode !== 'first_look',
+      'a folder with no watermark is not given a first look: everything already in it is skipped for good')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V2b — THE DATE FILTER GOES. A first look then processes the whole mailbox, which is the concern
+    // the original baseline existed to address: two years of replies logged at once, every contacted
+    // prospect jumped to `replied` on a timestamp that is a lie.
+    const v = variant('v2b', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
+      '  return t >= since.getTime()', '  return true'))
+    const old2 = new Date('2024-01-01T00:00:00Z')
+    variantFails('V2b', v.R.withinFirstLook(old2, new Date('2026-09-29T00:00:00Z')) === true,
+      'the first look stops filtering by date: a 2024 email is processed as if it had just arrived')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V14 — AN EMPTY FOLDER GETS NO WATERMARK AGAIN. That is the second half of the same bug: hello's
+    // Spam and Archive reported "first look" on every run for hours, and the first message ever to
+    // arrive in one of them would have been swallowed by the next baseline.
+    const v = variant('v14', 'lib/outreach-mail-poll-rules.ts', src => src.replace(
+      "  return { uidvalidity: String(uidvalidity), lastUid: 0 }",
+      "  return undefined as unknown as PollWatermark"))
+    variantFails('V14', v.R.emptyWatermark('42') === undefined,
+      'an empty folder stores no watermark: its first message is baselined away')
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
   {
@@ -313,20 +336,59 @@ const hdrs = (raw, extra = {}) => ({
   const stripComments = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
   const POLL = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
 
-  console.log('\n── THE WATERMARK: THE FIRST RUN PROCESSES NOTHING ───────────────────────────────────────')
+  console.log('\n── THE FIRST LOOK READS BY DATE, NOT BY THE CURRENT TOP UID ─────────────────────────────')
   {
-    // 🔴 Recording history is the IMPORTER's job — it writes no contact rows. This only ever reports
-    // what has happened since it started watching.
-    const first = R.planFetch(undefined, { uidvalidity: '42', highestUid: 9000 })
-    eq(first, { mode: 'baseline', lastUid: 9000 }, '🔴 no stored watermark ⇒ baseline at the current top, nothing read')
-    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '42', highestUid: 9000 }),
+    const SINCE = new Date('2026-09-29T00:00:00+01:00')
+    // 🔴 THE 29 SEPTEMBER DEFECT. A folder with no watermark used to be baselined at whatever uid
+    // happened to be at the top; the cron did exactly that to dominic/INBOX between Dominic's send and
+    // his press of the button, at a uid that already included his reply.
+    eq(R.planFetch(undefined, { uidvalidity: '42', highestUid: 9000 }, SINCE),
+      { mode: 'first_look', since: SINCE }, '🔴 no stored watermark ⇒ a FIRST LOOK from the date, not a baseline')
+    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '42', highestUid: 9000 }, SINCE),
       { mode: 'none' }, 'nothing new ⇒ nothing fetched')
-    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '42', highestUid: 9003 }),
+    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '42', highestUid: 9003 }, SINCE),
       { mode: 'incremental', from: 9001 }, 'three new ⇒ from the one after the watermark')
-    // ⚠️ A REBUILT MAILBOX MAKES THE STORED uid MEANINGLESS, not the mail new.
-    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '43', highestUid: 12 }),
+    // ⚠️ A REBUILT MAILBOX MAKES THE STORED uid MEANINGLESS, not the mail new. Unchanged.
+    eq(R.planFetch({ uidvalidity: '42', lastUid: 9000 }, { uidvalidity: '43', highestUid: 12 }, SINCE),
       { mode: 'rescan', sinceDays: 7 }, '🔴 uidvalidity changed ⇒ re-read 7 days, not 9000 uids')
     eq(R.RESCAN_DAYS, 7, 'and the window is 7 days')
+    // ⚠️ A WATERMARK THAT EXISTS IS NEVER A FIRST LOOK, including `lastUid: 0`.
+    eq(R.planFetch({ uidvalidity: '42', lastUid: 0 }, { uidvalidity: '42', highestUid: 1 }, SINCE),
+      { mode: 'incremental', from: 1 },
+      '🔴 a folder that was EMPTY last run reads incrementally from uid 1 — it is not baselined away')
+  }
+
+  console.log('\n── WHICH MESSAGES A FIRST LOOK PROCESSES ────────────────────────────────────────────────')
+  {
+    const SINCE = new Date('2026-09-29T00:00:00+01:00')
+    check(R.withinFirstLook(new Date('2026-09-29T20:50:00Z'), SINCE),
+      "🔴 Dominic's 20:50 reply IS processed — the message the old code swallowed")
+    check(R.withinFirstLook('2026-09-29T00:00:00+01:00', SINCE), 'a message exactly at the instant is in')
+    check(!R.withinFirstLook(new Date('2026-09-28T22:00:00Z'), SINCE),
+      '…and one from the day before is NOT — history stays the importer\'s job')
+    check(!R.withinFirstLook(new Date('2024-06-01T09:00:00Z'), SINCE), 'nor is a 2024 email')
+    check(!R.withinFirstLook(null, SINCE), 'a message with no internal date is left alone rather than guessed at')
+    check(!R.withinFirstLook('not a date', SINCE), '…and so is an unreadable one')
+    // 🔴 THE POLL-SINCE INSTANTS THEMSELVES.
+    eq(A.POLL_SINCE.hello, '2026-09-29T17:26:00Z', 'hello reads from when the poll went live')
+    eq(A.POLL_SINCE.dominic, '2026-09-29T00:00:00+01:00', "dominic reads from the mailbox's creation day")
+    check(A.pollSince('dominic').getTime() < Date.parse('2026-09-29T20:45:00Z'),
+      '🔴 …which is before the primary switch, so the whole of that evening is in range')
+  }
+
+  console.log('\n── AN EMPTY FOLDER GETS A WATERMARK ─────────────────────────────────────────────────────')
+  {
+    // 🔴 THE SECOND HALF OF THE BUG. `withReadOnlyMailbox` does not open an empty mailbox, so the
+    // callback that stores the watermark never ran: hello/Spam and hello/Archive reported "first look"
+    // on every run for hours, and the first message to arrive in one would have been baselined away.
+    eq(R.emptyWatermark('4242'), { uidvalidity: '4242', lastUid: 0 },
+      '🔴 an empty folder stores lastUid 0 — "nothing seen yet", not "start from the top"')
+    eq(R.emptyWatermark(4242), { uidvalidity: '4242', lastUid: 0 }, 'the uidvalidity is stored as a string, as elsewhere')
+    // And the next message that arrives is then read incrementally, not skipped.
+    const after = R.planFetch(R.emptyWatermark('4242'), { uidvalidity: '4242', highestUid: 1 }, new Date())
+    eq(after, { mode: 'incremental', from: 1 }, '🔴 …so the FIRST message ever to arrive is processed')
+    eq(R.advanceWatermark(R.emptyWatermark('4242'), { uidvalidity: '4242', highestUid: 1 }, [1]),
+      { uidvalidity: '4242', lastUid: 1 }, '…and the watermark then moves past it')
   }
 
   console.log('\n── THE WATERMARK ADVANCES, AND NEVER GOES BACKWARDS ─────────────────────────────────────')
@@ -672,8 +734,12 @@ const hdrs = (raw, extra = {}) => ({
     check(/STATE_KEY\[creds\.account\]/.test(POLLSRC), '🔴 each account has its OWN watermarks…')
     check(/hello: 'mail_poll_state'/.test(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8')),
       "…and hello@ keeps the existing key, so the switch does not re-read its recent mail")
-    check(/dominic: 'mail_poll_state_dominic'/.test(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8')),
-      '…while dominic@ gets its own, and therefore its own first look')
+    // 🔴 RESTATED 29 September (the baseline fix), NOT SILENTLY RE-POINTED. This read
+    // `mail_poll_state_dominic`; that key holds the watermarks the broken cron set by baselining, one
+    // of which sat above a real reply. The recovery is a new key — see the recovery section below for
+    // why the old one is left in place rather than rewritten.
+    check(/dominic: 'mail_poll_state_dominic_v2'/.test(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8')),
+      '…while dominic@ has its own key, and therefore its own first look')
     check(/account: creds\.account/.test(IMPORT), 'the importer stamps each new row with the account it read from')
     check(/account,/.test(POLLSRC), '…and so does the poll')
 
@@ -690,6 +756,54 @@ const hdrs = (raw, extra = {}) => ({
     check(!/from\('outreach_messages'\)\.insert\(/.test(POLLSRC),
       '🔴 …and no handler inserts directly any more, which is what made the contact log racy')
     check(/claimRetry\(supabase, row\.id, now\)/.test(POLLSRC), 'the retry is claimed atomically')
+  }
+
+  console.log('\n── THE RECOVERY, AND WHAT IT DELIBERATELY LEAVES ALONE ─────────────────────────────────')
+  {
+    const POLLSRC = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
+    check(/dominic: 'mail_poll_state_dominic_v2'/.test(POLLSRC),
+      "🔴 dominic reads a NEW key, so its folders get the date-based first look and the swallowed reply")
+    check(/hello: 'mail_poll_state'/.test(POLLSRC),
+      "🔴 hello keeps its EXISTING key — its INBOX and Sent watermarks were set by runs that really read them")
+    check(!/mail_poll_state_dominic'/.test(POLLSRC.replace(/mail_poll_state_dominic_v2/g, '')),
+      '⚠️ the old dominic key is not read anywhere…')
+    const ALL = ['lib/outreach-mail-poll.ts', 'lib/outreach-mail-poll-rules.ts', 'lib/outreach-poll-claims.ts']
+      .map(f => fs.readFileSync(path.join(REPO, f), 'utf8')).join('\n')
+    check(!/delete\(\)/.test(ALL) && !/\.remove\(/.test(ALL),
+      '🔴 …and nothing deletes it: it is the only record of what the broken run did')
+
+    // 🔴 A MESSAGE THE IMPORTER ALREADY RECORDED IS NOT LOGGED AGAIN ON A FIRST LOOK. The first look
+    // deliberately re-reads mail the importer may have seen; the insert gate is what makes that safe.
+    const db = fakeDb()
+    const imported = { message_id: '<already@x>', prospect_id: 'p1', direction: 'inbound', status: 'received', source: 'mailbox_import', account: 'dominic' }
+    await C.insertMessageOnce(db, imported)
+    eq(db.contacts.length, 0, 'the importer writes no contact row, as it never has')
+    const again = await C.insertMessageOnce(db, { ...imported, source: 'poll' })
+    eq(again.created, false, '🔴 a first look re-reading it does NOT create a second row…')
+    eq(db.contacts.length, 0, '…and therefore logs no contact for it')
+  }
+
+  console.log('\n── THE SUMMARY EXPLAINS ITSELF ──────────────────────────────────────────────────────────')
+  {
+    const POLLSRC = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
+    // 🔴 THE POINT: on 29 September the button said all zeros and nothing on screen could say whether
+    // the reply had not arrived, had not matched, or had been skipped by a watermark.
+    check(/summary\.folders\.push\(\{/.test(POLLSRC), 'every folder reports what it did')
+    for (const field of ['folder:', 'mode:', 'examined:', 'before:', 'after:', 'since:']) {
+      check(POLLSRC.includes(field), `…including \`${field}\``)
+    }
+    check(/examined\+\+/.test(POLLSRC), 'the examined count is the messages actually handed to the matcher')
+    check(/before \? before\.lastUid : null/.test(POLLSRC), 'the watermark BEFORE is captured before the walk')
+    const UI = fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')
+    check(/What each folder did/.test(UI), 'and the panel shows it')
+    check(/result\.folders && result\.folders\.length > 0/.test(UI),
+      '⚠️ …guarded, so an older route that does not send it cannot blank the panel')
+
+    // The first look is still reported, and now says from when.
+    check(/summary\.baselined\.push\(`\$\{label\} \(since \$\{sinceUsed\}\)`\)/.test(POLLSRC),
+      'a first look names the date it read from')
+    check(/if \(plan\.mode === 'first_look'\)/.test(POLLSRC),
+      "🔴 …and only a genuine first look is reported as one — a folder with a watermark never is")
   }
 
   console.log('\n── THE CRON IS REGISTERED ───────────────────────────────────────────────────────────────')

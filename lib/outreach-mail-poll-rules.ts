@@ -22,8 +22,8 @@ export interface PollWatermark { uidvalidity: string; lastUid: number }
 export type PollState = Record<string, PollWatermark>
 
 export type PollPlan =
-  /** 🔴 THE FIRST RUN PROCESSES NOTHING. See `planFetch`. */
-  | { mode: 'baseline'; lastUid: number }
+  /** 🔴 THE FIRST LOOK READS BY DATE. See `planFetch` and `POLL_SINCE`. */
+  | { mode: 'first_look'; since: Date }
   /** Normal: everything above the watermark. */
   | { mode: 'incremental'; from: number }
   /** The mailbox was rebuilt, so uids mean something else now. */
@@ -37,11 +37,17 @@ export const RESCAN_DAYS = 7
 /**
  * What to fetch from one mailbox.
  *
- * 🔴 THE FIRST RUN SETS A WATERMARK AND PROCESSES NOTHING. A mailbox with two years of history in it
- * would otherwise be walked on the first poll and every old reply logged as if it had just arrived —
- * every contacted prospect jumping to `replied`, every sequence exited, on a timestamp that is a lie.
- * Recording history is the IMPORTER's job, which Dominic runs deliberately and which writes no contact
- * rows at all. This one only ever reports what has happened since it started watching.
+ * 🔴 THE FIRST LOOK READS BY DATE, NOT BY THE CURRENT TOP UID — AND THE OLD WAY LOST A REAL REPLY.
+ * A folder with no watermark used to be BASELINED: the watermark was set to whatever uid happened to
+ * be at the top and nothing was processed. On 29 September the ten-minute cron baselined
+ * `dominic/INBOX` in the gap between Dominic sending a test email and pressing the button, at a uid
+ * that INCLUDED the reply he had just had. The reply was below the watermark from that instant on and
+ * was skipped permanently. The top uid is a property of WHEN THE POLL RAN; a date is a property of the
+ * thing being protected against — history that belongs to the importer.
+ *
+ * ⚠️ THE ORIGINAL CONCERN IS STILL HONOURED. A mailbox with two years in it is still not walked: only
+ * messages at or after that account's `POLL_SINCE` are read, and anything older is left to the
+ * importer, which writes no contact rows at all.
  *
  * ⚠️ A uidvalidity CHANGE MEANS THE UIDS ARE MEANINGLESS, not that the mail is new. The server has
  * rebuilt the mailbox, so the stored `lastUid` now points at some unrelated message. Re-reading a week
@@ -51,11 +57,40 @@ export const RESCAN_DAYS = 7
 export function planFetch(
   stored: PollWatermark | undefined,
   live: { uidvalidity: string; highestUid: number },
+  since: Date,
 ): PollPlan {
-  if (!stored) return { mode: 'baseline', lastUid: live.highestUid }
+  if (!stored) return { mode: 'first_look', since }
   if (String(stored.uidvalidity) !== String(live.uidvalidity)) return { mode: 'rescan', sinceDays: RESCAN_DAYS }
   if (live.highestUid <= stored.lastUid) return { mode: 'none' }
   return { mode: 'incremental', from: stored.lastUid + 1 }
+}
+
+/**
+ * Is this message inside the first look's window?
+ * 🔴 FILTERED IN CODE, BECAUSE IMAP `SINCE` HAS DAY GRANULARITY. `SEARCH SINCE 29-Sep-2026` returns
+ * everything from midnight that day in the SERVER's timezone, which is both wider than the instant we
+ * mean and offset by an unknown amount. The search narrows the fetch; this decides.
+ * ⚠️ IT IS THE INTERNALDATE, not the Date header. A sender's clock can say anything; the internal date
+ * is when this server received the message, which is what "since the poll went live" means.
+ */
+export function withinFirstLook(internalDate: Date | string | null | undefined, since: Date): boolean {
+  if (!internalDate) return false
+  const t = internalDate instanceof Date ? internalDate.getTime() : Date.parse(String(internalDate))
+  if (Number.isNaN(t)) return false
+  return t >= since.getTime()
+}
+
+/**
+ * The watermark for a folder that holds NOTHING.
+ * 🔴 AN EMPTY FOLDER USED TO GET NO WATERMARK AT ALL, and that is the second half of the same defect.
+ * `withReadOnlyMailbox` skips an empty mailbox — correctly, because `fetch('1:*')` on one throws — so
+ * the callback that stores the watermark never ran. hello/Spam and hello/Archive therefore reported
+ * "first look" on every run for hours, and the FIRST message ever to arrive in one of them would have
+ * been swallowed by the next baseline. `lastUid: 0` means "nothing seen yet", so the next message is
+ * processed incrementally from uid 1.
+ */
+export function emptyWatermark(uidvalidity: string): PollWatermark {
+  return { uidvalidity: String(uidvalidity), lastUid: 0 }
 }
 
 /** The watermark after a run. ⚠️ NEVER GOES BACKWARDS — a short read must not re-process on the next run. */

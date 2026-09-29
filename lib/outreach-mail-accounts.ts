@@ -36,6 +36,42 @@ export function isMailAccount(v: unknown): v is MailAccount {
   return typeof v === 'string' && (MAIL_ACCOUNTS as readonly string[]).includes(v)
 }
 
+/**
+ * 🔴 HOW FAR BACK A FOLDER'S **FIRST LOOK** READS.
+ *
+ * ── THE DEFECT THIS REPLACES (29 September 2026, in production) ────────────────────────────────────
+ * A folder with no stored watermark used to be BASELINED: its watermark was set to the current top uid
+ * and nothing was processed. The reasoning was sound for a mailbox with two years of history — logging
+ * all of it at once would move every contacted prospect to `replied` on a timestamp that is a lie.
+ * But it has a hole, and the hole swallowed a real reply within hours:
+ *
+ *   Dominic sent a test email, replied to it from Hotmail, and pressed Check for replies now. The
+ *   ten-minute cron had already run in between and baselined `dominic/INBOX` — at a uid that INCLUDED
+ *   his reply. The reply was below the watermark from that moment on, so it was skipped permanently.
+ *   The button then reported all zeros and did not even list INBOX as a first look, because it had
+ *   already had one.
+ *
+ * 🔴 A DATE IS THE RIGHT BOUNDARY, NOT "WHATEVER IS AT THE TOP RIGHT NOW". The top uid is a property of
+ * when the poll happened to run; a date is a property of the thing being protected against. These two
+ * instants say "everything after this is ours to report, everything before it is the importer's":
+ *
+ *   hello    — 2026-09-29T17:26:00Z, when Build 2 (the poll) went live. Anything earlier is history
+ *              the importer records without writing a single contact row.
+ *   dominic  — 2026-09-29T00:00:00+01:00, the day the mailbox was created. Nothing in it predates the
+ *              outreach system, so the whole mailbox is fair game and there is no history to swallow.
+ *
+ * ⚠️ IT IS SAFE TO READ THE SAME MESSAGE TWICE. `message_id` is unique and the insert is the gate, so
+ * anything the importer or a previous run already recorded is skipped without being logged again.
+ */
+export const POLL_SINCE: Record<MailAccount, string> = {
+  hello: '2026-09-29T17:26:00Z',
+  dominic: '2026-09-29T00:00:00+01:00',
+}
+
+export function pollSince(account: MailAccount): Date {
+  return new Date(POLL_SINCE[account])
+}
+
 export interface AccountCredentials {
   account: MailAccount
   user: string

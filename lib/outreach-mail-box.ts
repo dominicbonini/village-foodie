@@ -55,6 +55,25 @@ export async function mailboxCount(client: ImapFlow, path: string): Promise<numb
 }
 
 /**
+ * A mailbox's count AND its uidvalidity, without opening it.
+ *
+ * 🔴 AN EMPTY FOLDER STILL NEEDS ITS uidvalidity. `withReadOnlyMailbox` deliberately does not open an
+ * empty mailbox, so the poll never learned the uidvalidity of one — and therefore could not store a
+ * watermark for it. That is why hello/Spam and hello/Archive reported "first look" on every run for
+ * hours, and why the first message ever to arrive in one of them would have been baselined away.
+ * STATUS answers both questions in the one command the count already costs.
+ */
+export async function mailboxStatus(
+  client: ImapFlow, path: string,
+): Promise<{ messages: number; uidvalidity: string } | null> {
+  try {
+    const s = await client.status(path, { messages: true, uidValidity: true })
+    if (!s || typeof s.messages !== 'number') return null
+    return { messages: s.messages, uidvalidity: String(s.uidValidity ?? '0') }
+  } catch { return null }
+}
+
+/**
  * Run `fn` against a mailbox opened READ-ONLY, skipping the work entirely when it is empty.
  *
  * 🔴 THE COUNT CHECK IS THE POINT. `fetch('1:*')` against an empty mailbox throws "Command failed" — a
