@@ -14,18 +14,20 @@
 // A failure at 4 or 5 never re-sends: the mail has gone, and the row says what is outstanding.
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import nodemailer from 'nodemailer'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { malformedTokensIn, unresolvedIn, isMustResolveToken } from '@/lib/outreach-template-render'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
-import { OUTREACH_FROM_ADDRESS, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
-import { smtpTransportOptions, mailFor, composeRaw, rawMailFor } from '@/lib/outreach-mail-envelope'
+import { OUTREACH_FROM_ADDRESS } from '@/lib/outreach-mail-config'
+import { composeRaw } from '@/lib/outreach-mail-envelope'
+// 🔴 THE SEND ITSELF MOVED OUT (29 September 2026) so the reply poll's automatic retry uses the same
+// code rather than a copy of it. This route still owns every refusal; it no longer owns the socket.
+import { deliver, fileSentCopy } from '@/lib/outreach-mail-deliver'
 import {
-  buildMessage, newMessageId, classifySendFailure, replySubject,
+  buildMessage, newMessageId, replySubject,
   type QuotedMessage,
 } from '@/lib/outreach-mail-message'
 import {
-  makeImapClient, findInSent, appendToSent, fetchBodiesByUid, fetchMessageForView, sanitiseMailError,
+  makeImapClient, fetchBodiesByUid, fetchMessageForView, sanitiseMailError,
 } from '@/lib/outreach-mail-box'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import { readFromName } from '@/lib/outreach-settings-read'
@@ -194,7 +196,7 @@ export async function POST(req: NextRequest) {
     if (!row) return refuse('That message is not in the log any more.')
     const stop = retryRefusal(row, body.confirm_uncertain === true)
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
-    const retried = await deliver({ ...row, from_name: await readFromName(supabase) }, { mailUser, mailPass, isTest: row.is_test, testRecipient })
+    const retried = await deliver(supabase, { ...row, from_name: await readFromName(supabase) }, { mailUser, mailPass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
   }
 
@@ -507,7 +509,7 @@ export async function POST(req: NextRequest) {
 
   // ⚠️ `from_name` RIDES ON THE ROW OBJECT, NOT IN THE TABLE. It is a setting, not a property of the
   // message, and storing a copy per row would mean a later retry used a stale name.
-  const result = await deliver({ ...(insertedRow as Row), from_name: fromName }, { mailUser, mailPass, isTest, testRecipient })
+  const result = await deliver(supabase, { ...(insertedRow as Row), from_name: fromName }, { mailUser, mailPass, isTest, testRecipient })
 
   // ── THE CONTACT LOG — the shared path, and only for a real send the server accepted ──────────────
   // ⚠️ A TEST LOGS NOTHING. It goes to Dominic, not a prospect; a rung for it would corrupt the ladder
@@ -541,130 +543,4 @@ export async function POST(req: NextRequest) {
     }
   }
   return NextResponse.json({ ...result.payload, ...(logWarning ? { logWarning } : {}) })
-}
-
-/** How long to wait before asking Sent a second time. */
-const SENT_REFETCH_DELAY_MS = 3_000
-
-interface SentCopyResult {
-  sentCopy: 'server_filed' | 'appended' | 'absent'
-  mailbox: string | null
-  uid: number | null
-  uidvalidity: string | null
-  /** Why it is absent. Sanitised; never a credential. Empty when a copy was found or made. */
-  reason: string
-}
-
-/**
- * Put a copy of a sent message in Sent — or say why there is not one.
- *
- * 🔴 THE SEQUENCE, AND WHY EACH STEP IS THERE:
- *   1. SEARCH Sent for the Message-ID. Namecheap files an authenticated submission itself, so the
- *      usual answer is yes and an APPEND would put a SECOND copy in Dominic's Sent folder.
- *   2. ⚠️ IF ABSENT, WAIT ~3 SECONDS AND ASK AGAIN. Server-side filing is not synchronous with the
- *      SMTP `250`; the first search can lose a race it was never going to win, and appending on that
- *      answer is how a duplicate appears a moment later.
- *   3. Still absent → APPEND the exact bytes that were sent, flagged `\Seen`.
- *
- * ⚠️ NEVER FATAL. The mail has gone; the copy is a convenience. Every failure is recorded as a reason
- * rather than raised, and the message row keeps `status: 'sent'`.
- */
-async function fileSentCopy(
-  row: Row, raw: Buffer, date: Date,
-  env: { mailUser: string; mailPass: string },
-): Promise<SentCopyResult> {
-  const miss = (reason: string): SentCopyResult =>
-    ({ sentCopy: 'absent', mailbox: null, uid: null, uidvalidity: null, reason })
-  const client = makeImapClient(env.mailUser, env.mailPass)
-  try {
-    await client.connect()
-    let found = await findInSent(client, row.message_id)
-    if (!found) {
-      await new Promise(r => setTimeout(r, SENT_REFETCH_DELAY_MS))
-      found = await findInSent(client, row.message_id)
-    }
-    if (found) {
-      return { sentCopy: 'server_filed', mailbox: OUTREACH_SENT_MAILBOX, uid: found.uid, uidvalidity: found.uidValidity || null, reason: '' }
-    }
-    const appended = await appendToSent(client, raw, date)
-    if (appended.ok) {
-      return { sentCopy: 'appended', mailbox: OUTREACH_SENT_MAILBOX, uid: appended.uid, uidvalidity: null, reason: '' }
-    }
-    return miss(`append refused — ${appended.error}`)
-  } catch (err) {
-    return miss(sanitiseMailError(err))
-  } finally {
-    try { await client.logout() } catch { /* already gone */ }
-  }
-}
-
-/** The SMTP send, the status write and the Sent copy. Shared by a first send and a retry. */
-interface DeliverResult {
-  ok: boolean
-  status: 'sent' | 'failed' | 'uncertain'
-  payload: Record<string, unknown>
-}
-
-async function deliver(
-  row: Row,
-  env: { mailUser: string; mailPass: string; isTest: boolean; testRecipient?: string },
-): Promise<DeliverResult> {
-  // 🔴 BOTH FROM `lib/outreach-mail-envelope`, which is what the harness composes its bytes from.
-  const transporter = nodemailer.createTransport(smtpTransportOptions(env.mailUser, env.mailPass))
-  const mail = mailFor(row)
-  let raw: Buffer
-  try {
-    raw = await composeRaw(row)
-  } catch (err) {
-    // Composition happens before the socket, so nothing has been sent and `failed` is the honest word.
-    await supabase.from('outreach_messages')
-      .update({ status: 'failed', last_error: `compose: ${sanitiseMailError(err)}`, updated_at: new Date().toISOString() })
-      .eq('id', row.id)
-    return { ok: false, status: 'failed', payload: {
-      ok: false, id: row.id, status: 'failed',
-      error: sanitiseMailError(err), message: 'That message could not be built, so nothing was sent.',
-    } }
-  }
-  await supabase.from('outreach_messages')
-    .update({ status: 'sending', attempts: (row.attempts ?? 0) + 1, updated_at: new Date().toISOString() })
-    .eq('id', row.id)
-
-  try {
-    // 🔴 THE EXACT BYTES THAT WILL BE FILED ARE THE EXACT BYTES THAT GO. See `composeRaw` for the
-    // defect this replaces: the old code read `info.message` off the SMTP result, where that field
-    // does not exist, so `raw` was always null and no copy was ever appended.
-    await transporter.sendMail(rawMailFor(raw, row))
-    await supabase.from('outreach_messages')
-      .update({ status: 'sent', last_error: null, updated_at: new Date().toISOString() }).eq('id', row.id)
-  } catch (err) {
-    const outcome = classifySendFailure(err)
-    await supabase.from('outreach_messages')
-      .update({ status: outcome, last_error: sanitiseMailError(err), updated_at: new Date().toISOString() }).eq('id', row.id)
-    try { transporter.close() } catch { /* the verdict is already decided */ }
-    return { ok: false, status: outcome, payload: {
-      ok: false, id: row.id, status: outcome,
-      error: sanitiseMailError(err),
-      message: outcome === 'uncertain'
-        ? 'May have been sent — check your Sent folder before retrying.'
-        : 'That was refused by the mail server.',
-    } }
-  }
-  try { transporter.close() } catch { /* sent already */ }
-
-  const copy = await fileSentCopy(row, raw, (mail.date as Date) ?? new Date(), env)
-  await supabase.from('outreach_messages').update({
-    sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
-    // 🔴 A MISSING COPY NOW SAYS WHY. `sent_copy: 'absent'` with `last_error: null` was the shape of
-    // the defect: nothing had even been attempted, so nothing had failed. An absent copy records its
-    // reason; a successful one clears the field rather than leaving a stale one behind.
-    ...(copy.sentCopy === 'absent' ? { last_error: `sent copy: ${copy.reason}` } : {}),
-    updated_at: new Date().toISOString(),
-  }).eq('id', row.id)
-  const sentCopy = copy.sentCopy
-
-  return { ok: true, status: 'sent', payload: {
-    ok: true, id: row.id, status: 'sent', sent_copy: sentCopy,
-    subject: row.subject, threaded: !!row.in_reply_to,
-    ...(sentCopy === 'absent' ? { note: 'Sent, but not in your Sent folder.' } : {}),
-  } }
 }

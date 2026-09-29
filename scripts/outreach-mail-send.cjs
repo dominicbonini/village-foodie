@@ -333,6 +333,8 @@ const SIGNATURE =
 
   const { M, R, E, T, F, S, R2, L, D } = build(REPO, 'omsReal')
   const SEND_ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8')
+  /** The send itself lives here since Build 2 — see the re-anchor note in the Sent-copy section. */
+  const DELIVER = fs.readFileSync(path.join(REPO, 'lib/outreach-mail-deliver.ts'), 'utf8')
 
   console.log('\n── THE SIGNATURE PANEL\'S OWN RENDERER ──────────────────────────────────────────────────')
   // ⚠️ `lib/outreach-signature.ts` NO LONGER BUILDS EMAILS — `lib/outreach-doc.ts` does. What is left
@@ -742,23 +744,33 @@ const SIGNATURE =
     // 🔴 THE DEFECT: `info.message` is populated by the STREAM transport only. Over SMTP it is
     // undefined, so `raw` was null, the append branch was skipped, and nothing recorded a reason —
     // `sent_copy: 'absent'`, `last_error: null`, which is the row Dominic found.
-    check(!/info as \{ message\?: Buffer \}/.test(SEND_ROUTE),
-      '🔴 the route no longer reads the composed bytes off the SMTP result')
-    check(/raw = await composeRaw\(row\)/.test(SEND_ROUTE), 'it composes them itself, once, before sending')
-    check(/sendMail\(rawMailFor\(raw, row\)\)/.test(SEND_ROUTE), '…sends exactly those bytes')
-    check(/appendToSent\(client, raw, date\)/.test(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8')),
+    check(!/info as \{ message\?: Buffer \}/.test(SEND_ROUTE + DELIVER),
+      '🔴 the composed bytes are no longer read off the SMTP result')
+    // 🔴 RE-ANCHORED 29 September (Build 2), AND SAID SO RATHER THAN DONE QUIETLY. `deliver` and
+    // `fileSentCopy` were private to the send route until the reply poll needed to retry a temporary
+    // failure; rather than copy them, they moved to `lib/outreach-mail-deliver.ts` and the route
+    // imports them. Not one assertion below is weakened — each still names the same statement in the
+    // same order — but they read the module that now holds it.
+    // ⚠️ AND ONE IS ADDED WHILE THE ANCHOR IS OPEN: the route must not have grown its own copy back.
+    check(/from '@\/lib\/outreach-mail-deliver'/.test(SEND_ROUTE),
+      'the route IMPORTS the send rather than defining it')
+    check(!/async function deliver\(|async function fileSentCopy\(/.test(SEND_ROUTE),
+      '🔴 …and has no second copy of either')
+    check(/raw = await composeRaw\(row\)/.test(DELIVER), 'it composes them itself, once, before sending')
+    check(/sendMail\(rawMailFor\(raw, row\)\)/.test(DELIVER), '…sends exactly those bytes')
+    check(/appendToSent\(client, raw, date\)/.test(DELIVER),
       '…and appends exactly those bytes, so the Sent copy is byte-identical')
-    check(/SENT_REFETCH_DELAY_MS = 3_000/.test(SEND_ROUTE), 'the second search waits ~3 seconds')
-    const seq = SEND_ROUTE.slice(SEND_ROUTE.indexOf('async function fileSentCopy'))
+    check(/SENT_REFETCH_DELAY_MS = 3_000/.test(DELIVER), 'the second search waits ~3 seconds')
+    const seq = DELIVER.slice(DELIVER.indexOf('export async function fileSentCopy'))
     const iFind1 = seq.indexOf('findInSent')
     const iWait = seq.indexOf('SENT_REFETCH_DELAY_MS')
     const iFind2 = seq.indexOf('findInSent', iWait)
     const iAppend = seq.indexOf('appendToSent')
     check(iFind1 > 0 && iWait > iFind1 && iFind2 > iWait && iAppend > iFind2,
       '🔴 the order is search → wait → search → append, so a late-filed copy is never duplicated')
-    check(/reason: `append refused/.test(SEND_ROUTE) || /append refused/.test(SEND_ROUTE),
+    check(/append refused/.test(DELIVER),
       'a refused append records WHY')
-    check(/last_error: `sent copy: \$\{copy\.reason\}`/.test(SEND_ROUTE),
+    check(/last_error: `sent copy: \$\{copy\.reason\}`/.test(DELIVER + SEND_ROUTE),
       "🔴 an absent copy now writes its reason to last_error — the old row had 'absent' and null")
     check(/action === 'save_to_sent'/.test(SEND_ROUTE), 'and "Save to Sent" repeats the sequence')
     const save = SEND_ROUTE.slice(SEND_ROUTE.indexOf("action === 'save_to_sent'"), SEND_ROUTE.indexOf("action === 'view'"))

@@ -101,6 +101,8 @@ type Prospect = {
   contact_name: string | null
   contact_first_name: string | null; contact_last_name: string | null
   do_not_contact: boolean | null; entity_type: string | null
+  /** 🔴 Derived by the list route: this prospect has an outbound email the mail system bounced. */
+  emailBounced?: boolean
   contact_email: string | null; phone: string | null; mobile: string | null
   website: string | null; schedule_url: string | null
   order_url: string | null; excluded: boolean
@@ -1077,6 +1079,7 @@ export default function OutreachPanel() {
                 {label}
               </button>
             ))}
+            <CheckRepliesNow />
             <ImportPastEmails />
           </div>
         </div>
@@ -1469,6 +1472,85 @@ export default function OutreachPanel() {
  * running it cannot alter what Outlook shows. The ONE thing it edits is a row it wrote itself: an
  * imported row whose `in_reply_to` / `references` are null gets them filled in, never overwritten.
  */
+interface PollSummaryUI {
+  ok: boolean; skipped?: string
+  repliesLogged: number; autoReplies: number; bounces: number; outlookSentRecorded: number
+  retried: number; markedUncertain: number; copiesFiled: number
+  ambiguous: number; unmatched: number
+  rescanned: string[]; baselined: string[]
+  errors: { step: string; error: string }[]
+}
+
+/**
+ * "Check for replies now" — the manual half of the reply poll.
+ *
+ * 🔴 IT RUNS THE SAME ROUTINE AS THE TEN-MINUTE CRON, and shares its lock, so pressing it during a
+ * scheduled run does nothing rather than logging every new reply twice.
+ * ⚠️ READ-ONLY IN THE MAILBOX. Every folder is opened with EXAMINE and every fetch is a peek, so a
+ * reply Dominic has not opened yet is still unread in Outlook afterwards.
+ */
+function CheckRepliesNow() {
+  const [busy, setBusy] = useState(false)
+  const [result, setResult] = useState<PollSummaryUI | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const inFlight = useRef(false)          // the same synchronous guard as everywhere else
+  const run = async () => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusy(true); setResult(null); setError(null)
+    try {
+      const r = await fetch('/api/admin/outreach/mail-poll', { method: 'POST' })
+      const j = (await r.json().catch(() => null)) as PollSummaryUI | null
+      if (!j) { setError('The check did not return a readable answer.'); return }
+      setResult(j)
+    } catch {
+      setError('The check did not finish — try again. It only ever reads the mailbox.')
+    } finally { inFlight.current = false; setBusy(false) }
+  }
+  return (
+    <>
+      <button type="button" onClick={() => void run()} disabled={busy}
+        title="Reads your mailbox read-only for replies, auto-replies and bounces, and records what it finds. Nothing is sent and nothing is marked read."
+        className="text-sm rounded-lg px-3 py-1.5 border font-semibold bg-white border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+        {busy ? 'Checking…' : 'Check for replies now'}
+      </button>
+      {error && <span className="text-[11px] text-red-700 max-w-md">{error}</span>}
+      {result && (
+        <div className="basis-full flex flex-col gap-1 mt-1">
+          {result.skipped
+            ? <p className="text-[11px] text-slate-600">{result.skipped}</p>
+            : (
+              <p className="text-[11px] text-slate-600">
+                <span className="font-bold">{result.repliesLogged}</span> repl{result.repliesLogged === 1 ? 'y' : 'ies'} logged,
+                {' '}<span className="font-bold">{result.autoReplies}</span> auto-repl{result.autoReplies === 1 ? 'y' : 'ies'},
+                {' '}<span className="font-bold">{result.bounces}</span> bounce{result.bounces === 1 ? '' : 's'},
+                {' '}<span className="font-bold">{result.outlookSentRecorded}</span> sent from Outlook recorded,
+                {' '}<span className="font-bold">{result.retried}</span> retried,
+                {' '}<span className="font-bold">{result.markedUncertain}</span> marked uncertain,
+                {' '}<span className="font-bold">{result.copiesFiled}</span> cop{result.copiesFiled === 1 ? 'y' : 'ies'} filed.
+                {' '}
+                {/* ⚠️ AMBIGUOUS AND UNMATCHED ARE COUNTS AND NOTHING MORE. Unmatched mail is not
+                    outreach — hello@ takes order and support mail too — and is never stored. */}
+                <span className="text-slate-400">
+                  {result.ambiguous} ambiguous, {result.unmatched} not outreach.
+                </span>
+                {result.baselined.length > 0 && (
+                  <span className="text-slate-400"> First look at {result.baselined.join(', ')} — older mail was left alone; use Import past emails for history.</span>
+                )}
+                {result.rescanned.length > 0 && (
+                  <span className="text-slate-400"> {result.rescanned.join(', ')} was rebuilt by the mail server, so the last 7 days were re-read.</span>
+                )}
+              </p>
+            )}
+          {result.errors.length > 0 && (
+            <p className="text-[11px] text-red-700">{result.errors.map(e => `${e.step}: ${e.error}`).join(' · ')}</p>
+          )}
+        </div>
+      )}
+    </>
+  )
+}
+
 function ImportPastEmails() {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<MailImportResult | null>(null)
@@ -1969,6 +2051,13 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
         {p.do_not_contact === true && (
           <span className="mr-1 align-middle text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-700" title="Do not contact">🚫 DNC</span>
         )}
+        {/* ⚠️ A STATUS MARKER, OUTSIDE THE BUTTON, for the same reason the DNC chip is: it is not part
+            of the control's name. A bounced address is why a prospect has gone quiet, and it has to be
+            visible without opening every row. */}
+        {p.emailBounced === true && (
+          <span className="mr-1 align-middle text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-700"
+            title="An email to this prospect bounced — check the address on the truck row.">Email bounced</span>
+        )}
         <button
           onClick={() => onOpen(p.id)}
           title={p.do_not_contact === true ? `Do not contact — ${p.name}` : `Open ${p.name}`}
@@ -2381,7 +2470,17 @@ interface MailMessage {
 
 const MAIL_STATUS_LABEL: Record<string, string> = {
   sending: 'Sending…', sent: 'Sent', failed: 'Failed', uncertain: 'May have been sent', received: 'Reply',
+  // ⚠️ THREE OF THESE ARE STATES A PERSON DID NOT CAUSE. `auto_reply` and `bounce` are inbound rows
+  // the poll recorded and deliberately did NOT log as contacts; `bounced` is an OUTBOUND row the mail
+  // system reported undeliverable, which is the one that needs the address looking at.
+  auto_reply: 'Auto-reply', bounce: 'Bounce', bounced: 'Bounced',
 }
+/** How each status reads: red is a problem, amber needs a decision, sky is them, green is us. */
+const mailStatusTone = (row: { status: string; direction: string }) =>
+  row.status === 'failed' || row.status === 'bounced' || row.status === 'bounce' ? 'text-red-700'
+    : row.status === 'uncertain' ? 'text-amber-800'
+    : row.status === 'auto_reply' ? 'text-slate-500'
+    : row.direction === 'inbound' ? 'text-sky-700' : 'text-emerald-700'
 
 /**
  * Every email this prospect has, from the mailbox and from this app, with the one action each needs.
@@ -2474,19 +2573,31 @@ function ProspectMessages({ prospectId, nonce, onChanged }: {
   return (
     <div className="flex flex-col flex-shrink-0">
       <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5">Emails</span>
+      {/* 🔴 THE SENTENCE NAMES THE FIX. "Bounced" on its own is a status; "check the address" is what
+          to do about it, and the address is on the truck row above. */}
+      {rows.some(r => r.status === 'bounced') && (
+        <p className="mb-1 text-[12px] font-bold text-red-800 bg-red-50 border border-red-200 rounded px-2 py-1">
+          Email bounced — check the address.
+        </p>
+      )}
       <div className="border border-slate-300 rounded-lg bg-white divide-y divide-slate-100 max-h-48 overflow-y-auto">
         {rows.map(row => {
           const notLogged = row.status === 'sent' && !row.is_test && (row.last_error ?? '').startsWith('sent, not logged')
           return (
             <div key={row.id} className="px-2 py-1.5 flex items-center gap-2 text-[12px]">
-              <span className={`font-bold ${row.status === 'failed' ? 'text-red-700'
-                : row.status === 'uncertain' ? 'text-amber-800'
-                : row.direction === 'inbound' ? 'text-sky-700' : 'text-emerald-700'}`}>
-                {row.direction === 'inbound' ? 'Reply' : MAIL_STATUS_LABEL[row.status] ?? row.status}
+              {/* 🔴 THE STATUS NAMES ITSELF. The old version said "Reply" for EVERY inbound row, so an
+                  auto-reply and a bounce both read as a reply from the prospect — the two things this
+                  build exists to tell apart. */}
+              <span className={`font-bold ${mailStatusTone(row)}`}>
+                {MAIL_STATUS_LABEL[row.status] ?? (row.direction === 'inbound' ? 'Reply' : row.status)}
               </span>
               {row.is_test && <span className="text-[10px] font-bold uppercase text-slate-400">test</span>}
               {row.source === 'mailbox_import' && (
                 <span className="text-[10px] font-bold uppercase text-slate-400" title="Found in your mailbox by Import past emails, not sent from here.">imported</span>
+              )}
+              {/* Mail Dominic sent by hand from Outlook, found in Sent by the reply check. */}
+              {row.source === 'poll' && row.direction === 'outbound' && (
+                <span className="text-[10px] font-bold uppercase text-slate-400" title="Sent from Outlook, not from this page. Recorded by the reply check.">from Outlook</span>
               )}
               <span className="flex-1 truncate text-slate-700" title={row.subject ?? ''}>{row.subject ?? '—'}</span>
               <span className="text-slate-400 whitespace-nowrap">{fmtDate(row.message_date ?? row.created_at)}</span>
@@ -3107,6 +3218,11 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
 
 
         <p className={`${sectionCls} flex-shrink-0`}>Log a contact</p>
+        {/* 🔴 SAID HERE BECAUSE THIS IS WHERE HE WOULD OTHERWISE DO IT BY HAND. Logging a reply that
+            the poll has already logged puts two inbound rows on one email, and §57 reads that ladder. */}
+        <p className="text-[11px] text-slate-500 flex-shrink-0 -mt-1 mb-1">
+          Email replies are logged automatically — only log calls, WhatsApp and anything sent outside this page.
+        </p>
         {/* (6) FOUR CONTROLS ON ONE ROW — they fit at this width (the modal is max-w-6xl, so a column is
             ~540px and each control gets ~130px). Date first: it is the one most often changed. */}
         <div className="grid grid-cols-4 gap-2 flex-shrink-0 max-sm:grid-cols-2">

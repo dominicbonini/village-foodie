@@ -17,6 +17,15 @@ import { shouldFreezeLeadType, leadTypeOf, type LeadTypeInput } from '@/lib/outr
 /** `not_contacted` → `contacted`, conditionally. The values the route already uses. */
 export const DEFAULT_STAGE = 'not_contacted'
 export const CONTACTED_STAGE = 'contacted'
+/** Where an INBOUND reply moves a prospect to. §57.1: this is also what exits its chase sequence. */
+export const REPLIED_STAGE = 'replied'
+/**
+ * 🔴 THE ONLY TWO STAGES A REPLY MAY MOVE FROM. A stage Dominic has set by hand — `not_interested`,
+ * `signed`, anything he has decided — is never overwritten by a machine reading his mailbox. The
+ * filter is `.in('stage', …)` INSIDE the statement, so the condition is the write and not a read
+ * followed by a hopeful update.
+ */
+export const REPLY_MOVES_FROM = [DEFAULT_STAGE, CONTACTED_STAGE] as const
 
 export interface LogContactInput {
   prospect_id: string
@@ -73,6 +82,21 @@ export async function logOutreachContact(
       .eq('stage', DEFAULT_STAGE)
       .select('id, stage')
     if (sErr) warning = 'Contact logged, but the stage could not be updated. Set it by hand if needed.'
+    else stage = moved && moved.length > 0 ? (moved[0] as { stage: string }).stage : null
+  } else if (input.direction === 'inbound') {
+    // 🔴 A REPLY MOVES THE PROSPECT TO `replied` — AND THE POLL WRITES IT THROUGH HERE, not beside it.
+    // Added 29 September 2026 for the reply poll. It is in this function rather than in the poll for
+    // the reason the whole file exists: a rung written anywhere else would be a second implementation
+    // of the ladder §57 derives from, and the two would eventually disagree about what a reply does.
+    // ⚠️ THE SAME CONDITIONAL SHAPE AS THE OUTBOUND MOVE, widened to two source stages. A prospect
+    // Dominic has marked `not_interested` stays `not_interested` however many emails they send.
+    const { data: moved, error: sErr } = await supabase
+      .from('outreach_prospects')
+      .update({ stage: REPLIED_STAGE, updated_at: new Date().toISOString() })
+      .eq('id', input.prospect_id)
+      .in('stage', REPLY_MOVES_FROM as unknown as string[])
+      .select('id, stage')
+    if (sErr) warning = 'Reply logged, but the stage could not be updated. Set it by hand if needed.'
     else stage = moved && moved.length > 0 ? (moved[0] as { stage: string }).stage : null
   }
 

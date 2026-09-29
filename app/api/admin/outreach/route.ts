@@ -304,6 +304,15 @@ export async function GET(req: NextRequest) {
     // ⚠️ async + Promise.all ONLY so the shared `resolveTruckLogo` can be awaited. It is declared async
     // but performs NO I/O (it builds a URL string), so this adds no round trips — it reuses the one
     // resolver instead of re-implementing its string format here, which is how the two would drift.
+    // Which prospects have an outbound email the mail system reported undeliverable. One query for the
+    // whole list; a missing table (the migration not yet applied) simply means nobody is flagged.
+    const bouncedProspects = new Set<string>()
+    try {
+      const { data: bounced } = await supabase
+        .from('outreach_messages').select('prospect_id').eq('direction', 'outbound').eq('status', 'bounced')
+      for (const b of (bounced ?? []) as { prospect_id: string }[]) bouncedProspects.add(b.prospect_id)
+    } catch { /* the flag is a convenience; the list must still load without it */ }
+
     const rows = await Promise.all((prospects ?? []).map(async (p: any) => {
       const truck = Array.isArray(p.truck) ? p.truck[0] : p.truck
       const sched = scheduleFor(schedIdx, truck?.name ?? null, truck?.aliases ?? null)
@@ -386,6 +395,10 @@ export async function GET(req: NextRequest) {
         // NEWEST live demo for this prospect, or null. `liveCount` > 1 means there are others and the
         // modal says so rather than silently picking one.
         demo: (p.discovery_truck_id && demoByDiscovery.get(p.discovery_truck_id)) || null,
+        // 🔴 "THE LAST EMAIL TO THIS PROSPECT BOUNCED." It belongs in the LIST and not only in the
+        // modal: a bad address is the reason a prospect goes quiet, and finding that out means opening
+        // every row one at a time. Derived, never stored on the prospect — the truth is the message row.
+        emailBounced: bouncedProspects.has(p.id),
       }
     }))
 
