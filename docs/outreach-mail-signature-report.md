@@ -610,3 +610,84 @@ same conversation.
 3. 🔴 **It never sends.** Check Outlook: the Sent folder gains a copy; the prospect gets nothing.
 4. If it still fails, the row's reason is now on screen — quote it to me.
 
+---
+
+## Commit and deploy evidence
+
+**Commit `fbaf1a9`** — *"Signature and opt-out as send-time tokens, a signature editor, email
+viewing"*, on `main`, pushed to `origin/main` (`78921b9..fbaf1a9`). Fifteen files: five new, ten
+changed. No other work is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T11:48:10Z.**
+
+The deployment was proved by the build-fingerprint method, as asked. The set of
+`/_next/static/chunks/*.js` the home page references was captured **before** the push and then polled:
+
+```
+fingerprint before push: 92f55e8fabf668dc66d492432526b17e
+poll 1: 92f55e8fabf668dc66d492432526b17e
+poll 2: 92f55e8fabf668dc66d492432526b17e
+poll 3: 92f55e8fabf668dc66d492432526b17e
+poll 4: 7720763cf625d8a97f4f589571a5d1cf     ← DEPLOY LANDED
+```
+
+🔴 **This is the signal that actually distinguishes the deploy**, and the route checks below were taken
+after it changed. `/api/admin/outreach/settings` is a genuinely new path this time, so its JSON refusal
+is itself specific to `fbaf1a9` — but the fingerprint is what proves the *whole* build replaced the old
+one, including the compose window and the Templates tab, which have no unauthenticated signal at all.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/settings` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `POST /api/admin/outreach/settings` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-import` | 405 | — | POST-only, so the path exists |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404, so
+`{"error":"Unauthorised"}` as `application/json` is each route's own `verifyAdmin` refusal.
+
+⚠️ **The 404 on the refusal is deliberate**, not a bug: an admin route does not confirm its own
+existence to an unauthenticated caller.
+
+⚠️ **What this evidence does not show.** Everything reachable without an admin session is identical
+before and after, so the behaviour — the tokens, the Signature panel, View, Save to Sent — is proved by
+the harness and the build, and confirmed in use by the test script above. Step 3 and step 4 are the two
+that matter most: a test send with both tokens, and a first contact that is **not** "Re:".
+
+---
+
+## Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in fbaf1a9:
+
+  new file:   lib/outreach-signature.ts
+  new file:   lib/outreach-settings-read.ts
+  new file:   app/api/admin/outreach/settings/route.ts
+  new file:   supabase/migrations/20260929_outreach_settings.sql
+  new file:   docs/outreach-mail-signature-report.md
+  modified:   lib/outreach-mail-message.ts
+  modified:   lib/outreach-mail-envelope.ts
+  modified:   lib/outreach-mail-box.ts
+  modified:   lib/outreach-send-rules.ts
+  modified:   lib/outreach-template-render.ts
+  modified:   app/api/admin/outreach/mail-send/route.ts
+  modified:   components/admin/ComposeWindow.tsx
+  modified:   components/admin/TemplatesPanel.tsx
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   scripts/outreach-mail-send.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run** — the migration file records a change Dominic applied
+by hand. Two `slot-head-dots-*` worktrees from an earlier session remain listed as prunable:
+pre-existing, untouched, and already on the open-items list.
