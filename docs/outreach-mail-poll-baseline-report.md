@@ -316,3 +316,73 @@ Open **What each folder did** and read `dominic/INBOX`:
   take effect, which would mean the deploy has not landed.
 - **none** — nothing new in the folder at all, so the reply is not where we think it is.
 
+---
+
+## 7 · Commit and deploy evidence
+
+**Commit `617144c`** — *"Fix the poll's first look: read by date, not by the current top uid"*, on
+`main`, pushed to `origin/main` (`24f9c10..617144c`). Seven files, all pre-existing. No other work is
+in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T20:24:12Z.**
+
+Proved by the build-fingerprint method. The set of `/_next/static/chunks/*.js` the home page references
+was captured **before** the push and then polled:
+
+```
+fingerprint before push: 42adda6d711367670afe9eedc5958d3f
+poll 1: 42adda6d711367670afe9eedc5958d3f
+poll 2: 42adda6d711367670afe9eedc5958d3f
+poll 3: 42adda6d711367670afe9eedc5958d3f
+poll 4: afad185570ad1056be6af430fe13d2c6     ← DEPLOY LANDED
+```
+
+The route checks below were taken after it changed.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/mail-poll` | 405 | — | POST-only, so the path exists |
+| `GET /api/cron/outreach-replies` | 401 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404.
+
+⚠️ **The routes are unchanged by this commit, so those three rows prove the site is up rather than that
+this fix is live.** The fingerprint change is what proves the build was replaced, and the first press
+of **Check for replies now** is what proves the fix works — §6 step 1, where `dominic/INBOX` must read
+**first look** in the per-folder panel. That panel is itself part of this commit, so its presence is
+also the visible confirmation that the new code is the code running.
+
+⚠️ **The ten-minute cron may reach the new build before Dominic does.** That is harmless and is the
+point of the design: the first look is by date, so whichever runs first — cron or button — processes
+the reply, and the other finds it already recorded and logs nothing.
+
+---
+
+## 8 · Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in 617144c:
+
+  new file:   docs/outreach-mail-poll-baseline-report.md
+  modified:   lib/outreach-mail-accounts.ts
+  modified:   lib/outreach-mail-poll-rules.ts
+  modified:   lib/outreach-mail-poll.ts
+  modified:   lib/outreach-mail-box.ts
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   scripts/outreach-mail-poll.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. **No SQL was run and none is needed** — the recovery is a new
+`outreach_settings` key the code writes for itself, and the old one is left untouched. Two
+`slot-head-dots-*` worktrees from an earlier session remain listed as prunable: pre-existing,
+untouched, and already on the open-items list.
