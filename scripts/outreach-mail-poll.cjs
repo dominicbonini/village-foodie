@@ -25,6 +25,7 @@ const eq = (got, want, label) => {
 const FILES = [
   'lib/outreach-mail-poll-rules.ts', 'lib/outreach-contact-log.ts',
   'lib/outreach-mail-accounts.ts', 'lib/outreach-poll-claims.ts',
+  'lib/outreach-mail-bodies.ts',
 ]
 function build(root, tag) {
   const { out, req } = compile(root, FILES, tag)
@@ -34,6 +35,7 @@ function build(root, tag) {
     L: req('lib/outreach-contact-log.js'),
     A: req('lib/outreach-mail-accounts.js'),
     C: req('lib/outreach-poll-claims.js'),
+    B: req('lib/outreach-mail-bodies.js'),
   }
 }
 
@@ -363,7 +365,50 @@ const hdrs = (raw, extra = {}) => ({
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
 
-  const { R, L, A, C } = build(REPO, 'ompReal')
+  {
+    // V18 — THE ADOPTION CLAIM LOSES ITS FILTER. Adoption ends in `logOutreachContact`, and
+    // `outreach_contacts` has no unique constraint to catch a second write: without `source =
+    // 'mailbox_import'` on the update, two overlapping runs both "claim" the same imported reply and
+    // the prospect gets two rungs for one email — the exact Build-2 defect, in a new place.
+    const v = variant('v18', 'lib/outreach-poll-claims.ts', src => src.replace(
+      "    .eq('source', 'mailbox_import')\n    .select('id')",
+      "    .select('id')"))
+    const db = fakeDb()
+    db.messages.set('<imported@x>', { id: 'm1', message_id: '<imported@x>', source: 'mailbox_import', contact_id: null })
+    const now = new Date()
+    const a = await v.C.claimAdoption(db, 'm1', now)
+    const b = await v.C.claimAdoption(db, 'm1', now)
+    variantFails('V18', a === true && b === true,
+      'the source filter removed: two runs both claim the same imported reply and it is logged twice')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V19 — THE HTML CAP GOES. One marketing email with its images inlined as data: URIs is tens of
+    // megabytes; stored whole it bloats the row, slows every query that touches it, and displays no
+    // better than its first megabyte. ⚠️ AND THE CUT MUST BE REPORTED: a viewer that quietly shows
+    // half an email reads as "nothing more was said".
+    const v = variant('v19', 'lib/outreach-mail-bodies.ts', src => src.replace(
+      '  if (s.length <= HTML_BODY_CAP) return { html: s, truncated: false }',
+      '  return { html: s, truncated: false }'))
+    const big = 'x'.repeat(2_000_000)
+    const capped = v.B.capHtml(big)
+    variantFails('V19', capped.html.length === 2_000_000 && capped.truncated === false,
+      'the cap removed: a two-megabyte body is stored whole and the viewer is told nothing was cut')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V20 — "HAS A STORED BODY" ACCEPTS AN EMPTY STRING. View would then render a blank frame for a
+    // row whose body was never read, instead of fetching it once from the mailbox and saving it —
+    // and an email that says nothing is indistinguishable from an email that was never read.
+    const v = variant('v20', 'lib/outreach-mail-bodies.ts', src => src.replace(
+      "  return !!(row.html_body ?? '').trim() || !!(row.text_body ?? '').trim()",
+      '  return row.html_body !== undefined || row.text_body !== undefined'))
+    variantFails('V20', v.B.hasStoredBody({ html_body: '', text_body: '   ' }) === true,
+      'the emptiness test removed: a row with two blank columns claims to have a stored body')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+
+  const { R, L, A, C, B } = build(REPO, 'ompReal')
   /**
    * 🔴 THE CENSUS READS CODE, NOT COMMENTS, AND THE FIRST VERSION DID NOT. This file's own header says
    * "there is no `messageFlagsAdd`, `messageMove`…" — so a census over the raw text found every banned
@@ -988,6 +1033,221 @@ const hdrs = (raw, extra = {}) => ({
     const btn = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-poll/route.ts'), 'utf8')
     check(/runReplyPoll\(supabase\)/.test(btn), '…and so does the button')
     check(/maxDuration = 60/.test(route) && /runtime = 'nodejs'/.test(route), 'nodejs runtime, 60s')
+  }
+
+  console.log('\n── THE IMPORTER IS HISTORY ONLY ─────────────────────────────────────────────────────────')
+  {
+    const IMPORT = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-import/route.ts'), 'utf8'))
+    /**
+     * 🔴 THE CENSUS IS A NAMED PREDICATE SO IT CAN BE SHOWN FAILING. A census over a file this
+     * harness cannot compile (the route imports next/server) proves nothing unless the same predicate
+     * is run against a source with the rule removed — otherwise "the text is present" is all it says.
+     */
+    const leavesNewMailAlone = src =>
+      /const since = pollSince\(creds\.account\)/.test(src)
+      && /if \(withinFirstLook\(msg\.internalDate, since\)\) \{ leftForPoll\+\+; continue \}/.test(src)
+    check(leavesNewMailAlone(IMPORT),
+      '🔴 the importer skips anything at or after POLL_SINCE and counts it as left for reply pickup')
+    const withoutGuard = IMPORT.replace(
+      /if \(withinFirstLook\(msg\.internalDate, since\)\) \{ leftForPoll\+\+; continue \}/, '')
+    check(!leavesNewMailAlone(withoutGuard),
+      '⚠️ …and the same census FAILS on a source with that line removed, so it is testing the rule')
+    check(/internalDate: true/.test(IMPORT), 'the fetch asks for the internal date the rule reads')
+    check(/leftForPoll,/.test(IMPORT) && /leftForPoll: number/.test(
+      fs.readFileSync(path.join(REPO, 'lib/outreach-mail-import-result.ts'), 'utf8')),
+      'and the count reaches the screen through the shared result type')
+
+    // 🔴 THE BOUNDARY ITSELF, ON THE REAL RULE AND THE REAL CONSTANT. 29 September 20:57Z is the
+    // reply the importer took; a 2025 email is the history it is supposed to take.
+    const since = A.pollSince('dominic')
+    check(R.withinFirstLook(new Date('2026-09-29T20:57:07Z'), since) === true,
+      '🔴 the reply that was stolen is at or after POLL_SINCE — the importer must leave it')
+    check(R.withinFirstLook(new Date('2025-06-01T09:00:00Z'), since) === false,
+      '…and a 2025 email is before it, so the importer still records history as it always did')
+    check(R.withinFirstLook(new Date(since.getTime() - 1), since) === false,
+      '…the boundary is inclusive at POLL_SINCE and exclusive one millisecond before it')
+  }
+
+  console.log('\n── ADOPTION: THE POLL TAKES OVER WHAT THE IMPORTER GRABBED ──────────────────────────────')
+  {
+    // 🔴 THE RACE, ON THE REAL CLAIM AND A TABLE THAT REALLY ENFORCES THE FILTER. Two runs a
+    // millisecond apart both see the same imported row in their list.
+    const db = fakeDb()
+    db.messages.set('<test2@hotmail>', {
+      id: 'm1', message_id: '<test2@hotmail>', source: 'mailbox_import', contact_id: null,
+      prospect_id: 'p1', direction: 'inbound',
+    })
+    const now = new Date()
+    const results = await Promise.all([C.claimAdoption(db, 'm1', now), C.claimAdoption(db, 'm1', now)])
+    eq(results.filter(Boolean).length, 1, '🔴 exactly ONE of two overlapping runs claims the row')
+    eq(db.messages.get('<test2@hotmail>').source, 'poll', '…and the row is no longer adoptable')
+    eq(await C.claimAdoption(db, 'm1', now), false, '…so a later run cannot take it either')
+    eq(db.contacts.length, 0, '⚠️ the claim itself logs nothing — logging is what the winner goes on to do')
+
+    const ADOPT = POLL.slice(POLL.indexOf('async function adoptImportedMessages'), POLL.indexOf('const MAX_REPAIRS_PER_RUN'))
+    check(/\.eq\('source', 'mailbox_import'\)/.test(ADOPT) && /\.is\('contact_id', null\)/.test(ADOPT),
+      'only imported rows with no contact row are considered')
+    check(/withinFirstLook\(new Date\(r\.message_date\), pollSince\(accountOfRow\(r\)\)\)/.test(ADOPT),
+      "🔴 …and only those at or after THAT ROW'S OWN account's POLL_SINCE — history is left alone")
+    check(/MAX_ADOPTIONS_PER_RUN/.test(ADOPT) && /const MAX_ADOPTIONS_PER_RUN = 20/.test(POLL),
+      'at most 20 per run, inside the route\'s 60-second budget')
+    check(/if \(!\(await claimAdoption\(supabase, r\.id, now\)\)\) continue/.test(ADOPT),
+      '🔴 the claim gates the work: losing it means doing nothing at all')
+    check(/credentialsFor\(accounts, account as MailAccount\)/.test(ADOPT),
+      "each row is re-read from its OWN account — a uid means nothing in another mailbox")
+    check(/withReadOnlyMailbox\(client, r\.mailbox!/.test(ADOPT),
+      '⚠️ read-only, like everything else here: EXAMINE and a peek')
+
+    // 🔴 THE FOUR OUTCOMES, IN THE ORDER THAT MATTERS.
+    const ONE = POLL.slice(POLL.indexOf('async function adoptOne'), POLL.indexOf('const MAX_REPAIRS_PER_RUN'))
+    const iTest = ONE.indexOf('isReplyToTestOnly')
+    const iClassify = ONE.indexOf('classifyIncoming')
+    const iLog = ONE.indexOf('logOutreachContact(supabase, {\n    prospect_id: prospectId')
+    check(iTest > -1 && iClassify > iTest, '🔴 a reply to a test send is tested BEFORE classification…')
+    check(/if \(isReplyToTestOnly\(h, dir\)\) \{ summary\.repliesToTest\+\+; return \}/.test(ONE),
+      '…and it RETURNS, so it cannot fall through to the address match as it did on 29 September')
+    check(iLog > iTest, '…and before anything is logged')
+    check(/if \(kind === 'auto_reply'\) \{ await patch\(\{ status: 'auto_reply' \}\); return \}/.test(ONE),
+      "🔴 an auto-reply is recorded as 'auto_reply' and RETURNS — no contact row, so §57.1 cannot exit the sequence")
+    check(/status: 'bounced'/.test(ONE) && /await patch\(\{ status: 'bounce', in_reply_to: originalId \}\)/.test(ONE),
+      'a bounce marks its ORIGINAL bounced and records itself, and logs nothing')
+    check(/if \(dir\.skip\.has\(prospectId\)\) return/.test(ONE),
+      'a linked HatchGrab truck is never auto-logged here either')
+    check(/message: stripQuotedHistory\(text \?\? ''\)/.test(ONE),
+      '🔴 a real reply is logged WITH ITS TEXT, quoted history stripped')
+    check(/const text = textOfBodies\(bodies\)/.test(ONE),
+      '…taken from the bodies this pass just read and stored')
+    check(/dir\.hasReply\.has\(prospectId\)/.test(ONE),
+      "⚠️ Outlook-sent mail keeps its existing rule: logged only once the prospect has replied")
+    check(/summary\.adopted\+\+/.test(POLL) && /adopted: number/.test(POLL),
+      'and the run says how many it took over')
+    check(/adopted from import/.test(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')),
+      '…in those words, on the button that ran it')
+  }
+
+  console.log('\n── ONE COMMAND AT A TIME: THE DEADLOCK THAT WOULD HAVE HUNG EVERY RUN ───────────────────')
+  {
+    /**
+     * 🔴 imapflow ALLOWS ONE COMMAND IN FLIGHT. `exec` queues, and the FETCH generator only lets the
+     * server send the next message after the consumer's `yield` returns. A handler that ran INSIDE
+     * the walk and issued its own fetch — a reply's body, a bounce's returned original — queued
+     * behind a FETCH that could not finish until that handler returned. Neither could proceed.
+     */
+    const walk = POLL.slice(POLL.indexOf('async function walkMailbox'), POLL.indexOf('async function readBodies'))
+    const loop = walk.slice(walk.indexOf('for await (const msg of client.fetch'), walk.indexOf('state[path] = advanceWatermark'))
+    const drainsFirst = src => !/onMessage\(/.test(src)
+    check(drainsFirst(loop), '🔴 no handler runs inside the fetch loop — it only collects')
+    check(!drainsFirst(loop + 'await onMessage(m)'),
+      '⚠️ …and the same census FAILS on a loop with a handler put back in')
+    check(/for \(const m of batch\) await onMessage\(m\)/.test(walk),
+      'the handlers run after the stream is drained, with the mailbox still open')
+
+    const IMPORT = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-import/route.ts'), 'utf8'))
+    const iLoopEnd = IMPORT.indexOf('for (const r of rows) {')
+    const importLoop = IMPORT.slice(IMPORT.indexOf('for await (const msg of client.fetch'), iLoopEnd)
+    check(!/structureOf\(|readWholeMessageLocked\(/.test(importLoop),
+      'the importer reads no body inside its fetch loop either…')
+    check(/structureOf\(client, r\.uid\)/.test(IMPORT.slice(iLoopEnd)),
+      '…it reads them after it, in the same open mailbox')
+  }
+
+  console.log('\n── THE BODIES ARE STORED, AND VIEW READS THEM ───────────────────────────────────────────')
+  {
+    eq(B.HTML_BODY_CAP, 1_000_000, 'the cap is one megabyte of HTML')
+    const small = B.capHtml('<p>hello</p>')
+    eq(small, { html: '<p>hello</p>', truncated: false }, 'a normal body is stored untouched')
+    const big = B.capHtml('y'.repeat(1_500_000))
+    eq(big.html.length, 1_000_000 + B.TRUNCATION_MARKER.length, '🔴 an oversized body is cut at the cap')
+    eq(big.truncated, true, '…and the cut is reported')
+    eq(B.isTruncated(big.html), true, '…and the stored value itself carries the fact, for a later read')
+    eq(B.isTruncated(small.html), false, '…while an untouched body says nothing')
+    eq(B.capHtml(null), { html: null, truncated: false }, 'no HTML is not a truncation')
+
+    eq(B.hasStoredBody({ html_body: null, text_body: 'hi' }), true, 'either body alone is enough to render')
+    eq(B.hasStoredBody({ html_body: '', text_body: '  ' }), false,
+      '🔴 two blank columns are NOT a stored body — that row is read live once and saved')
+    eq(B.parseAttachments(null), [], 'a row never looked at lists no attachments')
+    eq(B.parseAttachments([{ filename: 'menu.pdf', contentType: 'application/pdf', size: 8192 }]),
+      [{ filename: 'menu.pdf', contentType: 'application/pdf', size: 8192 }], 'and a stored list round-trips')
+
+    // ⚠️ THE ONE THING THAT MUST NEVER BE STORED.
+    const cols = B.bodyColumns({ html: '<p>x</p>', text: 'x', attachments: [{ filename: 'a.pdf', contentType: 'application/pdf', size: 3 }], truncated: false })
+    eq(Object.keys(cols).sort(), ['attachments', 'html_body', 'text_body'],
+      '🔴 three columns and no fourth: attachment CONTENT has nowhere to be written')
+    eq(JSON.stringify(cols.attachments), '[{"filename":"a.pdf","contentType":"application/pdf","size":3}]',
+      '…an attachment is a name, a type and a size, and nothing else')
+
+    const BOX = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-box.ts'), 'utf8'))
+    const reader = BOX.slice(BOX.indexOf('async function fetchBodiesByUidLocked'))
+    check(/findPart\(struct, 'text\/html'\)/.test(reader) && /findPart\(struct, 'text\/plain'\)/.test(reader),
+      '⚠️ only the two text parts are ever named in a fetch…')
+    check((reader.match(/bodyParts:/g) || []).length === 1 && /bodyParts: parts/.test(reader),
+      '…so no attachment part crosses the wire')
+
+    const SEND = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8'))
+    const view = SEND.slice(SEND.indexOf("if (action === 'view')"), SEND.indexOf("if (action === 'log_only')"))
+    check(/if \(hasStoredBody\(row\)\)/.test(view), '🔴 View serves a stored body without opening the mailbox')
+    check(/attachments: parseAttachments\(row\.attachments\)/.test(view),
+      "…with the REAL attachment list: the hard-coded `attachments: []` is gone")
+    check(!/attachments: \[\]/.test(view), '…and cannot come back without this failing')
+    check(/truncated: isTruncated\(row\.html_body\)/.test(view), '…and says so when the stored body was cut')
+    check(/from: row\.from_address, to: row\.to_address, subject: row\.subject/.test(view)
+      && /date: row\.message_date/.test(view),
+      'From, To, Date and Subject come from the stored columns')
+    const live = view.slice(view.indexOf('fetchMessageForView'))
+    check(/bodyColumns\(\{ html: capped\.html, text: fetched\.text, attachments: fetched\.attachments/.test(live),
+      '🔴 a live read SAVES what it fetched, so the next open costs a query')
+    check(/\.is\('html_body', null\)\s*\n\s*\.is\('text_body', null\)/.test(live),
+      '⚠️ …only where there is nothing to overwrite')
+    check(/sandbox=""/.test(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')),
+      '⚠️ and the body is still rendered in a sandboxed iframe — stored HTML is still somebody else\'s markup')
+
+    const fill = POLL.slice(POLL.indexOf('async function fillMissingBodies'), POLL.indexOf('interface HouseRow'))
+    check(/const MAX_BODY_FILLS_PER_RUN = 25/.test(POLL) && /limit\(MAX_BODY_FILLS_PER_RUN\)/.test(fill),
+      'the backfill fills at most 25 rows a run')
+    check(/\.is\('html_body', null\)/.test(fill) && /\.is\('text_body', null\)/.test(fill),
+      '🔴 …only rows that have NEITHER body…')
+    check(/\.is\('attachments', null\)/.test(fill),
+      '…and only ones never looked at, so a message with no text parts is not re-read forever')
+    check(/order\('message_date', \{ ascending: false \}\)/.test(fill), 'newest first — those are the ones opened')
+    check(/credentialsFor\(accounts, account as MailAccount\)/.test(fill), "each row from its own account")
+    check(/summary\.bodiesFilled\+\+/.test(fill), 'and the run says how many it filled')
+
+    // 🔴 EVERY PATH THAT RECORDS A MESSAGE WRITES ITS BODY DOWN, so the backfill above is for
+    // history and not for new mail. A path that recorded without storing would leave a row that
+    // View opens slowly for the next ten minutes and then quietly repairs — hard to see, and the
+    // sort of gap that lives for months.
+    for (const fn of ['handleReply', 'handleAutoReply', 'handleBounce', 'handleOutlookSent', 'adoptOne']) {
+      const body = POLL.slice(POLL.indexOf(`async function ${fn}(`), POLL.indexOf(`async function ${fn}(`) + 2200)
+      check(/readBodies\(client, m\.uid\)/.test(body) && /bodyColumns\(bodies\)/.test(body),
+        `${fn} stores what the email says`)
+    }
+    check(/bodyColumns\(bodies\)/.test(POLL.slice(POLL.indexOf('async function repairReplyTexts'))),
+      'and a repaired row gets its stored bodies too')
+  }
+
+  console.log('\n── THE PAGE REFRESHES ITSELF ────────────────────────────────────────────────────────────')
+  {
+    const UI = stripComments(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8'))
+    const refreshesAfterCheck = src => /<CheckRepliesNow onDone=\{load\} \/>/.test(src)
+    check(refreshesAfterCheck(UI), '🔴 "Check for replies now" reloads the list when it finishes')
+    check(!refreshesAfterCheck(UI.replace('<CheckRepliesNow onDone={load} />', '<CheckRepliesNow />')),
+      '⚠️ …and the census FAILS on the version without it')
+    check(/<ImportPastEmails onDone=\{load\} \/>/.test(UI), 'and so does "Import past emails"')
+    const checkFn = UI.slice(UI.indexOf('function CheckRepliesNow'), UI.indexOf('function ImportPastEmails'))
+    check(/setResult\(j\)\s*\n\s*await onDone\(\)/.test(checkFn),
+      '…after the answer is shown, not instead of showing it')
+    check(/nonce=\{messagesNonce \+ refreshNonce\}/.test(UI),
+      '🔴 an OPEN prospect modal re-reads its Emails list too — the page nonce reaches it')
+    check(/refreshNonce=\{refreshNonce\} \/>/.test(UI), '…because the modal is given it')
+    // Send, Log, Retry and Save to Sent already reload; this is what keeps them doing so.
+    const msgs = UI.slice(UI.indexOf('function ProspectMessages'), UI.indexOf('interface ViewedEmail'))
+    eq((msgs.match(/await onChanged\(\)/g) || []).length, 3,
+      'Retry, Save to Sent and Log each reload the list and the modal')
+    check(/onChanged=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),
+      '…and "reload" means both the Emails list and the whole panel')
+    check(/onSent=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),
+      'a Send does the same')
   }
 
   console.log(`\n${fails === 0 ? '✅ ALL CHECKS PASSED' : `🔴 ${fails} CHECK(S) FAILED`}`)

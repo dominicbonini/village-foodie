@@ -17,9 +17,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_IMPORT_MAILBOXES, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
-import { makeImapClient, withReadOnlyMailbox, sanitiseMailError } from '@/lib/outreach-mail-box'
+import {
+  makeImapClient, withReadOnlyMailbox, sanitiseMailError, structureOf, readWholeMessageLocked,
+} from '@/lib/outreach-mail-box'
+import { capHtml, bodyColumns, type StoredBodies } from '@/lib/outreach-mail-bodies'
 import { addressesOf, headerBlockOf, headerValue } from '@/lib/outreach-mail-format'
-import { resolveAccounts, type MailAccount } from '@/lib/outreach-mail-accounts'
+import { resolveAccounts, pollSince, type MailAccount } from '@/lib/outreach-mail-accounts'
+import { withinFirstLook } from '@/lib/outreach-mail-poll-rules'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import type {
   MailImportResult, ImportWalked, ImportPerProspect, ImportMismatch,
@@ -48,6 +52,8 @@ export async function POST(req: NextRequest) {
   if (!accounts.configured.length) return NextResponse.json({ ok: false, refusal: 'The mailbox credentials are not set on this environment.' })
 
   const errors: { step: string; error: string }[] = []
+  /** Messages the importer deliberately did not touch, because reply pickup owns them. */
+  let leftForPoll = 0
   const fail = (step: string, err: unknown) => { errors.push({ step, error: sanitiseMailError(err) }) }
 
   // ── WHO WE ARE LOOKING FOR ───────────────────────────────────────────────────────────────────────
@@ -80,13 +86,27 @@ export async function POST(req: NextRequest) {
     subject: string | null; from_address: string | null; to_address: string | null
     message_date: string | null; mailbox: string; uid: number; uidvalidity: string | null
     account: MailAccount
+    /** 🔴 STORED SO VIEW NEVER HAS TO OPEN THE MAILBOX AGAIN. `null` when this run did not read it. */
+    bodies: StoredBodies | null
   }
+  // 🔴 WHICH MESSAGES HAVE ALREADY BEEN LOOKED AT. `attachments` is an array once a message has been
+  // read — `[]` when it has no attachments — so a non-null value means "we have its body, do not read
+  // it again". Re-reading forty stored messages on every import would be pure cost.
+  const { data: seenRows } = await supabase
+    .from('outreach_messages').select('message_id').not('attachments', 'is', null).limit(5000)
+  const bodiesKnown = new Set(((seenRows ?? []) as { message_id: string }[]).map(r => r.message_id))
+  /** Per-run ceiling on body reads. The route's own budget is 60 seconds and a read is two round trips. */
+  const MAX_BODY_READS = 40
+  let bodyReads = 0
+
   const found: Found[] = []
   const walked: ImportWalked[] = []
   /** Messages actually READ, across every folder. `walked[].count` is what each folder HOLDS. */
   let read = 0
 
   for (const creds of accounts.configured) {
+  // 🔴 THE SAME BOUNDARY THE POLL'S FIRST LOOK USES, from the same constant.
+  const since = pollSince(creds.account)
   const client = makeImapClient(creds.user, creds.pass)
   try {
     await client.connect()
@@ -100,9 +120,20 @@ export async function POST(req: NextRequest) {
           // it reads no message text. References and In-Reply-To are NOT on the envelope, so the real
           // headers are the only honest source for a thread chain.
           for await (const msg of client.fetch('1:*', {
-            uid: true, envelope: true, headers: ['references', 'in-reply-to'],
+            uid: true, envelope: true, headers: ['references', 'in-reply-to'], internalDate: true,
           })) {
             read++
+            // 🔴 THE IMPORTER IS HISTORY ONLY, AND IT WAS STEALING NEW MAIL FROM THE POLL.
+            // On 29 September a Hotmail reply arrived at 20:57:07Z; the importer recorded it 27
+            // seconds later as `mailbox_import` with no contact row, the poll then advanced its
+            // watermark past it, found the `message_id` already recorded, skipped it — and the reply
+            // was never logged. Two things read the same mailbox and only one of them logs contacts,
+            // so the boundary between them has to be explicit. `POLL_SINCE` is that boundary, and it
+            // is the same constant the poll's first look uses: before it is history, at or after it
+            // belongs to reply pickup.
+            // ⚠️ THE RACE STILL EXISTS FOR ANYTHING ALREADY RECORDED — see the poll's adoption pass,
+            // which takes over the rows the importer grabbed before this rule existed.
+            if (withinFirstLook(msg.internalDate, since)) { leftForPoll++; continue }
             const env = msg.envelope
             const from = addressesOf(env?.from)
             const to = [...addressesOf(env?.to), ...addressesOf(env?.cc)]
@@ -133,7 +164,27 @@ export async function POST(req: NextRequest) {
               uid: msg.uid,
               uidvalidity: uidValidity,
               account: creds.account,
+              bodies: null,
             })
+          }
+          // 🔴 BODIES ARE READ AFTER THE WALK, NOT INSIDE IT. imapflow allows one command in flight and
+          // the FETCH generator only lets the server continue once the consumer's `yield` returns, so a
+          // body read issued inside the loop above would queue behind a FETCH that cannot finish until
+          // it returns — a deadlock, not a slow path. The mailbox is still open here and nothing is in
+          // flight.
+          // ⚠️ ATTACHMENT CONTENTS ARE NEVER FETCHED: only the two text parts are named, and the
+          // attachment list is metadata off the BODYSTRUCTURE the server already sent.
+          for (const r of rows) {
+            if (bodyReads >= MAX_BODY_READS) break
+            if (bodiesKnown.has(r.message_id)) continue
+            try {
+              const struct = await structureOf(client, r.uid)
+              if (!struct) continue
+              const whole = await readWholeMessageLocked(client, r.uid, struct)
+              const capped = capHtml(whole.html)
+              r.bodies = { html: capped.html, text: whole.text, attachments: whole.attachments, truncated: capped.truncated }
+              bodyReads++
+            } catch (err) { fail(`bodies:${creds.account}/${path}:${r.uid}`, err) }
           }
           return rows
         })
@@ -172,6 +223,9 @@ export async function POST(req: NextRequest) {
       // 🔴 THE ACCOUNT IT WAS READ FROM. Without it the uid above points at nothing.
       account: f.account,
       sent_copy: f.mailbox === OUTREACH_SENT_MAILBOX ? 'server_filed' : 'absent',
+      // 🔴 WHAT THE EMAIL SAYS, WRITTEN DOWN. Absent only when this run did not read it — the poll's
+      // backfill then fills it, 25 rows at a time.
+      ...(f.bodies ? bodyColumns(f.bodies) : {}),
     }))
     // In chunks: one oversized statement is the thing that fails on a big mailbox.
     for (let i = 0; i < payload.length; i += 200) {
@@ -263,7 +317,8 @@ export async function POST(req: NextRequest) {
   // of these field names; the panel imports the same type and reads no name it has invented.
   const result: MailImportResult = {
     ok: true, migrationApplied: true,
-    read, walked, matched: found.length, recorded: inserted, updated,
+    read, walked, matched: found.length, recorded: inserted, updated, leftForPoll,
+    bodiesStored: bodyReads,
     perProspect: perProspectOut,
     // ⚠️ REPORTED, NOT REPAIRED. Both lists are questions for Dominic: only he knows whether a missing
     // Sent message means the email never went, went from another account, or was filed somewhere else.

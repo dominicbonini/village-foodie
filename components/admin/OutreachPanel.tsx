@@ -1082,8 +1082,11 @@ export default function OutreachPanel() {
                 {label}
               </button>
             ))}
-            <CheckRepliesNow />
-            <ImportPastEmails />
+            {/* 🔴 BOTH RELOAD THE PAGE WHEN THEY FINISH. `load()` re-reads the prospects, their
+                contact history and the stage each one is on, and bumps `refreshNonce`, which is what
+                makes an OPEN prospect modal re-read its Emails list too. */}
+            <CheckRepliesNow onDone={load} />
+            <ImportPastEmails onDone={load} />
           </div>
         </div>
 
@@ -1378,7 +1381,7 @@ export default function OutreachPanel() {
               <Detail p={modalProspect} step={steps.get(modalProspect.id)} hasContactNames={hasContactNames}
                 hasLeadTypeFreeze={hasLeadTypeFreeze}
                 onPatch={patchProspect} onLog={logContact} templates={templates} snippets={snippets}
-                onDeleteContact={deleteContactRow} onReload={load} />
+                onDeleteContact={deleteContactRow} onReload={load} refreshNonce={refreshNonce} />
             </div>
           </div>
         </div>
@@ -1491,6 +1494,10 @@ interface PollSummaryUI {
   retried: number; markedUncertain: number; copiesFiled: number
   ambiguous: number; unmatched: number
   repliesToTest?: number; textsFilled?: number
+  /** Rows the importer had taken and the poll took over. Optional: an older route would not send it. */
+  adopted?: number
+  /** Rows given their stored bodies this run, so View opens them without the mailbox. */
+  bodiesFilled?: number
   rescanned: string[]; baselined: string[]
   /** 🔴 One line per folder, so a run that found nothing can say why. Optional: an older deployment
    *  of the routes would not send it, and the panel must not blank out if it is missing. */
@@ -1506,7 +1513,10 @@ interface PollSummaryUI {
  * ⚠️ READ-ONLY IN THE MAILBOX. Every folder is opened with EXAMINE and every fetch is a peek, so a
  * reply Dominic has not opened yet is still unread in Outlook afterwards.
  */
-function CheckRepliesNow() {
+function CheckRepliesNow({ onDone }: {
+  /** 🔴 Re-reads the list and any open modal. See the note where it is called. */
+  onDone: () => void | Promise<void>
+}) {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<PollSummaryUI | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -1520,6 +1530,11 @@ function CheckRepliesNow() {
       const j = (await r.json().catch(() => null)) as PollSummaryUI | null
       if (!j) { setError('The check did not return a readable answer.'); return }
       setResult(j)
+      // 🔴 THE PAGE REFRESHES ITSELF. The check logs contacts and moves stages, and until this line
+      // the screen went on showing what it had loaded before the check ran — Dominic pressed the
+      // button, was told "1 reply logged", and had to reload the page to see it. A button that
+      // changes the data owns showing the change.
+      await onDone()
     } catch {
       setError('The check did not finish — try again. It only ever reads the mailbox.')
     } finally { inFlight.current = false; setBusy(false) }
@@ -1547,6 +1562,10 @@ function CheckRepliesNow() {
                 {' '}<span className="font-bold">{result.copiesFiled}</span> cop{result.copiesFiled === 1 ? 'y' : 'ies'} filed
                 {/* Shown only when non-zero: a repair is an exceptional thing, not a running total. */}
                 {!!result.textsFilled && <>, <span className="font-bold">{result.textsFilled}</span> reply text{result.textsFilled === 1 ? '' : 's'} filled in</>}
+                {/* 🔴 MAIL THE IMPORTER HAD TAKEN, NOW HANDLED. Shown only when it happened, because
+                    it is a recovery and not a running total. */}
+                {!!result.adopted && <>, <span className="font-bold">{result.adopted}</span> adopted from import</>}
+                {!!result.bodiesFilled && <>, <span className="font-bold">{result.bodiesFilled}</span> email{result.bodiesFilled === 1 ? '' : 's'} stored for instant viewing</>}
                 .{' '}
                 {/* 🔴 A REPLY TO A TEST IS DOMINIC ANSWERING HIMSELF. Counted so a run that looks
                     like it missed something can say it did not. */}
@@ -1603,7 +1622,10 @@ function CheckRepliesNow() {
   )
 }
 
-function ImportPastEmails() {
+function ImportPastEmails({ onDone }: {
+  /** 🔴 The same refresh as the reply check: an import records rows the Emails list must show. */
+  onDone: () => void | Promise<void>
+}) {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<MailImportResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -1622,6 +1644,7 @@ function ImportPastEmails() {
       if (!j) { setError('The import did not return a readable answer.'); return }
       if (j.ok !== true) { setError(j.refusal); return }
       setResult(j)
+      await onDone()
     } catch {
       setError('The import did not finish — check the connection and run it again. It only ever adds, so running it twice is safe.')
     } finally { inFlight.current = false; setBusy(false) }
@@ -1646,7 +1669,14 @@ function ImportPastEmails() {
             {/* 🔴 SHOWN SEPARATELY FROM "recorded". A re-run records 0 and may still UPDATE rows whose
                 thread headers were never captured — reporting them as one number would hide that. */}
             {result.updated > 0 && <>, filled in the missing reply headers on <span className="font-bold">{result.updated}</span></>}
+            {result.bodiesStored > 0 && <>, stored <span className="font-bold">{result.bodiesStored}</span> for instant viewing</>}
             .
+            {/* 🔴 THE IMPORTER IS HISTORY ONLY. New mail is left where reply pickup can find it —
+                recording it here would take it out of the poll's reach, which is exactly how a real
+                reply went unlogged on 29 September. */}
+            {result.leftForPoll > 0 && (
+              <> <span className="font-bold">{result.leftForPoll}</span> left for reply pickup.</>
+            )}
             {' '}
             {result.walked.filter(w => w.skipped).length > 0 && (
               <span className="text-slate-400">
@@ -2457,6 +2487,11 @@ function EmailBody({ rowId }: { rowId: string }) {
           <span className="text-slate-400"> — listed only, not downloaded</span>
         </p>
       )}
+      {data.truncated && (
+        <p className="text-[12px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-2 py-1 mt-1">
+          This email was too long to store in full — what follows is the first part of it.
+        </p>
+      )}
       {data.html
         ? <iframe title="Email body" sandbox="" srcDoc={data.html}
             className="mt-2 w-full h-80 border border-slate-200 rounded bg-white" />
@@ -2773,6 +2808,9 @@ interface ViewedEmail {
   attachments: { filename: string | null; contentType: string; size: number | null }[]
   html: string | null; text: string | null
   from_mailbox: boolean; mailbox?: string
+  /** 🔴 The stored HTML was longer than the cap and was cut. SAID, never silent — a viewer that
+   *  quietly shows half an email reads as "nothing more was said". */
+  truncated?: boolean
 }
 
 /**
@@ -2850,6 +2888,11 @@ function EmailViewer({ rowId, onClose }: { rowId: string; onClose: () => void })
                 </p>
               )}
             </div>
+            {data.truncated && (
+              <p className="mx-4 mt-2 text-[12px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                This email was too long to store in full — what follows is the first part of it.
+              </p>
+            )}
             <div className="flex-1 min-h-0 overflow-auto p-2">
               {data.html
                 ? <iframe title="Email body" sandbox="" srcDoc={data.html} className="w-full h-[60vh] border border-slate-200 rounded bg-white" />
@@ -2958,7 +3001,7 @@ function HistoryTable({ contacts, onDelete }: {
   )
 }
 
-function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload }: {
+function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload, refreshNonce }: {
   p: Prospect
   /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
   step?: Step
@@ -2975,6 +3018,9 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   snippets: Snippet[]
   /** Re-reads the list and this modal — called after the server reports a send. */
   onReload: () => void | Promise<void>
+  /** 🔴 Bumped by every successful `load()`. It is how a check or an import run from the toolbar
+   *  above reaches an OPEN modal: the Emails list re-reads itself without the modal being closed. */
+  refreshNonce: number
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -3263,7 +3309,11 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
             The history is what a person recorded; this is what the mail server did. When they disagree —
             an email sent but not logged, a rung logged with no email behind it — the answer is to show
             both and let a person reconcile them, not to make one quietly rewrite the other. */}
-        <ProspectMessages prospectId={p.id} nonce={messagesNonce}
+        {/* ⚠️ THE TWO NONCES ARE ADDED, NOT CHOSEN BETWEEN. `messagesNonce` is this modal's own
+            ("I just sent something"); `refreshNonce` is the page's ("the list was re-read"). Both
+            only ever increase, so the sum changes whenever either does — and a check run from the
+            toolbar now updates the Emails list of the modal that is already open. */}
+        <ProspectMessages prospectId={p.id} nonce={messagesNonce + refreshNonce}
           onChanged={async () => { setMessagesNonce(n => n + 1); await onReload() }} />
 
         {/* ── NOTES ───────────────────────────────────────────────────────────────────────────────── */}

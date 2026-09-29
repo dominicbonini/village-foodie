@@ -16,7 +16,7 @@ import {
 import { findPart, attachmentsOf } from '@/lib/outreach-mail-format'
 
 /** The subset of imapflow's body structure `findPart` walks. */
-type StructureLike = Parameters<typeof findPart>[0]
+export type StructureLike = Parameters<typeof findPart>[0]
 
 /** Code + a capped message. The same shape as the other two routes; never a credential. */
 export function sanitiseMailError(err: unknown): string {
@@ -221,12 +221,36 @@ export async function fetchMessageForView(
     }
     const struct = (msg as { bodyStructure?: unknown }).bodyStructure as StructureLike | undefined
     if (!struct) return { ok: false, error: 'The mail server returned no structure for that email.' }
-    const attachments = attachmentsOf(struct)
-    const bodies = await fetchBodiesByUidLocked(client, uid, struct)
-    return { ok: true, html: bodies.html, text: bodies.text, attachments }
+    const whole = await readWholeMessageLocked(client, uid, struct)
+    return { ok: true, html: whole.html, text: whole.text, attachments: whole.attachments }
   } catch (err) {
     return { ok: false, error: sanitiseMailError(err) }
   } finally { lock.release() }
+}
+
+/**
+ * Bodies AND attachment names, with the mailbox ALREADY OPEN and the structure already in hand.
+ *
+ * 🔴 THE ONE READER BOTH CALLERS USE. View opens the mailbox itself; the poll is already inside an
+ * open mailbox when it meets a new message and cannot open a second lock on the same client without
+ * deadlocking on imapflow's queue. Before this they were two copies of the same fetch, which is how
+ * View came to return `attachments: []` for a stored row while the mailbox path returned real ones.
+ *
+ * ⚠️ NO ATTACHMENT PART IS EVER NAMED IN THE FETCH. Only text/plain and text/html are asked for; the
+ * attachment list is metadata off the BODYSTRUCTURE the server has already sent.
+ */
+export async function readWholeMessageLocked(
+  client: ImapFlow, uid: number, struct: StructureLike,
+): Promise<{ html: string | null; text: string | null; attachments: { filename: string | null; contentType: string; size: number | null }[] }> {
+  const bodies = await fetchBodiesByUidLocked(client, uid, struct)
+  return { ...bodies, attachments: attachmentsOf(struct) }
+}
+
+/** Reads the BODYSTRUCTURE of one message in an ALREADY-OPEN mailbox. `null` when it is not there. */
+export async function structureOf(client: ImapFlow, uid: number): Promise<StructureLike | null> {
+  const msg = await client.fetchOne(String(uid), { uid: true, bodyStructure: true }, { uid: true })
+  if (!msg || typeof msg !== 'object' || !('bodyStructure' in msg)) return null
+  return ((msg as { bodyStructure?: unknown }).bodyStructure as StructureLike | undefined) ?? null
 }
 
 /** The body read, with the mailbox ALREADY open. Shared with `fetchBodiesByUid`, which opens it. */

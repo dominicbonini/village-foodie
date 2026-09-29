@@ -29,6 +29,9 @@ import {
 import {
   makeImapClient, fetchBodiesByUid, fetchMessageForView, sanitiseMailError,
 } from '@/lib/outreach-mail-box'
+import {
+  hasStoredBody, parseAttachments, isTruncated, capHtml, bodyColumns,
+} from '@/lib/outreach-mail-bodies'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import { readFromName } from '@/lib/outreach-settings-read'
 import { validateDoc, docPlainText, literalTokenRefusal } from '@/lib/outreach-doc'
@@ -77,6 +80,8 @@ interface ViewRow {
   subject: string | null; from_address: string | null; to_address: string | null
   message_date: string | null; mailbox: string | null; uid: number | null; uidvalidity: number | null
   html_body: string | null; text_body: string | null; account?: string | null
+  /** 🔴 `null` means "never looked"; an array means "looked" — `[]` when there are none. */
+  attachments: unknown
 }
 
 interface ParentRow {
@@ -275,29 +280,41 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  // ── "VIEW" — one whole email, read-only ────────────────────────────────────────────────────────
-  // 🔴 A SYSTEM-SENT ROW IS SERVED FROM THE DATABASE; AN IMPORTED OR RECEIVED ONE FROM THE MAILBOX.
-  // The importer deliberately stores no body — the message is already in the mailbox and copying it
-  // into Postgres would be a second, ageing copy of somebody else's words. So those are fetched by
-  // mailbox+uid, READ-ONLY: EXAMINE, and `fetch` emits `BODY.PEEK[…]`, so opening an email here does
+  // ── "VIEW" — one whole email, from the database ────────────────────────────────────────────────
+  // 🔴 STORED BODIES FIRST, AND A LIVE READ IS NOW THE EXCEPTION THAT REPAIRS ITSELF. Every open used
+  // to connect to IMAP, log in, select a mailbox and download the message, which is why View took
+  // seconds; the mailbox is the source of truth for what ARRIVED and a poor one for "show me that
+  // again". The poll, the importer and adoption all write the bodies down now, so this reads Postgres.
+  // ⚠️ WHEN THERE IS NOTHING STORED IT IS READ LIVE **AND SAVED**. Otherwise the same row would be
+  // fetched again on every open forever — a slow path that never gets faster is a slow path.
+  // ⚠️ READ-ONLY EITHER WAY: EXAMINE, and `fetch` emits `BODY.PEEK[…]`, so opening an email here does
   // not mark it read in Outlook.
-  // ⚠️ ATTACHMENTS ARE NAMED, NEVER FETCHED. Only the body parts are asked for, so no attachment
-  // crosses the wire — the list comes from the body structure, which is metadata.
+  // ⚠️ ATTACHMENTS ARE NAMED, NEVER FETCHED, AND NEVER STORED AS CONTENT. Only the body parts are
+  // asked for; the list of names, types and sizes is metadata off the body structure.
+  // ⚠️ AND STORED HTML IS STILL SOMEBODY ELSE'S MARKUP. It is rendered in the same `sandbox=""`
+  // iframe it always was — coming out of our own database is not a claim about who wrote it.
   if (action === 'view') {
     const rowId = String(body.message_row_id ?? '')
     const { data: existing } = await supabase.from('outreach_messages')
-      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body, account')
+      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body, attachments, account')
       .eq('id', rowId).maybeSingle()
     const row = existing as ViewRow | null
     if (!row) return refuse('That message is not in the log any more.')
+    // 🔴 THE HEADER LINE COMES FROM THE STORED COLUMNS, on both paths. From, To, Date and Subject were
+    // recorded when the message was, and reading them from the mailbox to display them would be a
+    // round trip to learn what we already wrote down.
     const head = {
       from: row.from_address, to: row.to_address, subject: row.subject,
       date: row.message_date, direction: row.direction, source: row.source,
     }
-    if (row.html_body || row.text_body) {
+    if (hasStoredBody(row)) {
       return NextResponse.json({
-        ok: true, ...head, attachments: [],
+        ok: true, ...head,
+        // 🔴 THE REAL LIST, NOT `[]`. This hard-coded an empty array, so a stored message with three
+        // attachments said it had none — and the mailbox path beside it returned them properly.
+        attachments: parseAttachments(row.attachments),
         html: row.html_body, text: row.text_body, from_mailbox: false,
+        truncated: isTruncated(row.html_body),
       })
     }
     if (!row.mailbox || row.uid == null) {
@@ -312,9 +329,21 @@ export async function POST(req: NextRequest) {
       await c.connect()
       const fetched = await fetchMessageForView(c, row.mailbox, row.uid, row.uidvalidity)
       if (!fetched.ok) return refuse(fetched.error)
+      const capped = capHtml(fetched.html)
+      // 🔴 SAVE WHAT WAS JUST READ. The next open of this row costs a query. ⚠️ Only where there is
+      // nothing to overwrite: a stored body always wins over the mailbox's copy.
+      await supabase.from('outreach_messages')
+        .update({
+          ...bodyColumns({ html: capped.html, text: fetched.text, attachments: fetched.attachments, truncated: capped.truncated }),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', row.id)
+        .is('html_body', null)
+        .is('text_body', null)
       return NextResponse.json({
         ok: true, ...head, attachments: fetched.attachments,
-        html: fetched.html, text: fetched.text, from_mailbox: true, mailbox: row.mailbox,
+        html: capped.html, text: fetched.text, from_mailbox: true, mailbox: row.mailbox,
+        truncated: capped.truncated,
       })
     } catch (err) {
       return refuse(`That email could not be read from the mailbox (${sanitiseMailError(err)}).`)

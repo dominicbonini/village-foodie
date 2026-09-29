@@ -49,10 +49,22 @@ export interface MailImportResult {
   walked: ImportWalked[]
   /** Of those read, how many belonged to a prospect. */
   matched: number
+  /**
+   * 🔴 Messages at or after the account's `POLL_SINCE`, which the importer deliberately did NOT
+   * record. Reply pickup owns them: the importer writes no contact rows, so recording a new reply
+   * here would take it out of the poll's reach and it would never be logged. That is exactly what
+   * happened on 29 September.
+   */
+  leftForPoll: number
   /** New rows written. A re-run of an unchanged mailbox records 0, and that is success. */
   recorded: number
   /** Existing `mailbox_import` rows whose null thread headers were filled in. See the route. */
   updated: number
+  /**
+   * Messages whose body was read and stored this run, so View opens them from the database. Capped
+   * per run; the poll's backfill fills the rest, 25 at a time.
+   */
+  bodiesStored: number
   perProspect: ImportPerProspect[]
   mismatches: {
     /** Logged as emailed, with no matching message in the mailbox. */

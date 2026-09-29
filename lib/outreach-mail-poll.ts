@@ -18,8 +18,12 @@ import type { ImapFlow } from 'imapflow'
 import { OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
 import {
   makeImapClient, withReadOnlyMailbox, mailboxStatus, decodePart, sanitiseMailError,
+  structureOf, readWholeMessageLocked,
 } from '@/lib/outreach-mail-box'
 import { findPart, headerBlockOf, headerValue, addressesOf } from '@/lib/outreach-mail-format'
+import {
+  capHtml, bodyColumns, type StoredBodies,
+} from '@/lib/outreach-mail-bodies'
 import { logOutreachContact } from '@/lib/outreach-contact-log'
 import { deliver, fileSentCopy, type DeliverRow } from '@/lib/outreach-mail-deliver'
 import { composeRaw } from '@/lib/outreach-mail-envelope'
@@ -31,7 +35,7 @@ import {
   type PollState, type IncomingHeaders,
 } from '@/lib/outreach-mail-poll-rules'
 import {
-  claimPollLock, releasePollLock, insertMessageOnce, claimRetry,
+  claimPollLock, releasePollLock, insertMessageOnce, claimRetry, claimAdoption,
 } from '@/lib/outreach-poll-claims'
 import {
   resolveAccounts, credentialsFor, accountOfRow, pollSince,
@@ -99,6 +103,10 @@ export interface PollSummary {
   repliesToTest: number
   /** Inbound rows whose contact message was empty and has now been filled in. See `repairReplyTexts`. */
   textsFilled: number
+  /** Rows the importer had taken and this run took over and handled. See `adoptImportedMessages`. */
+  adopted: number
+  /** Rows given their stored bodies this run, so View no longer needs the mailbox for them. */
+  bodiesFilled: number
   /** Mailboxes whose uidvalidity changed and were re-scanned. Reported, because it explains a spike. */
   rescanned: string[]
   /** Mailboxes given their first look, with the date it read from. */
@@ -111,7 +119,7 @@ export interface PollSummary {
 const emptySummary = (): PollSummary => ({
   ok: true, repliesLogged: 0, autoReplies: 0, bounces: 0, outlookSentRecorded: 0,
   retried: 0, markedUncertain: 0, copiesFiled: 0, ambiguous: 0, unmatched: 0,
-  repliesToTest: 0, textsFilled: 0,
+  repliesToTest: 0, textsFilled: 0, adopted: 0, bodiesFilled: 0,
   rescanned: [], baselined: [], folders: [], errors: [],
 })
 
@@ -251,6 +259,14 @@ async function walkMailbox(
         : `${plan.from}:*`
     const byUid = plan.mode === 'incremental'
     const seenUids: number[] = []
+    // 🔴 DRAIN FIRST, HANDLE AFTERWARDS, AND THAT IS NOT A TIDY-UP — IT IS A DEADLOCK FIX.
+    // imapflow allows ONE command in flight: `exec` queues, and the FETCH generator only lets the
+    // server send the next message after the consumer's `yield` returns. A handler that ran INSIDE
+    // this loop and issued its own fetch — reading a reply's body, or a bounce's returned original —
+    // queued behind a FETCH that could not finish until the handler returned. Neither could proceed;
+    // the run hung until the connection deadline killed it. So the loop now does nothing but collect,
+    // and every handler runs below, with the mailbox still open and no fetch in flight.
+    const batch: SeenMessage[] = []
     let n = 0
     for await (const msg of client.fetch(query as never, {
       uid: true, envelope: true, headers: true, internalDate: true,
@@ -262,7 +278,7 @@ async function walkMailbox(
       if (plan.mode === 'first_look' && !withinFirstLook(msg.internalDate, plan.since)) continue
       examined++
       const env = msg.envelope
-      await onMessage({
+      batch.push({
         uid: msg.uid,
         messageId: env?.messageId ?? null,
         raw: headerBlockOf(msg),
@@ -272,7 +288,10 @@ async function walkMailbox(
         date: env?.date ? new Date(env.date).toISOString() : null,
       })
     }
+    // ⚠️ THE WATERMARK MOVES WHETHER OR NOT A HANDLER THROWS, for the same reason it moves over
+    // filtered messages: these have been read. A handler failure is reported, not re-read forever.
     state[path] = advanceWatermark(state[path], { uidvalidity, highestUid }, seenUids)
+    for (const m of batch) await onMessage(m)
   })
 
   if (res.skipped) {
@@ -298,37 +317,45 @@ async function walkMailbox(
   })
 }
 
-/** The text body of a message, read by uid, READ-ONLY. Only used for a matched reply. */
 /**
- * The reply's text, READ-ONLY.
+ * Everything the viewer will ever need from one message, read once, READ-ONLY.
  *
- * 🔴 BOTH PARTS ARE ASKED FOR, AND THAT IS THE FIX. This used to request `text/plain` and return
- * `null` the moment there was not one — `if (!plain) return null`. Outlook.com sends HTML-only
- * replies routinely, so a real reply produced no text at all, `stripQuotedHistory('')` returned '',
- * and the contact row was logged empty while the same email read live from the Emails list showed the
- * words plainly. The text was never missing; it was never read.
- * ⚠️ `decodePart` HANDLES THE CHARSET AND THE TRANSFER ENCODING — base64 and quoted-printable both —
- * so "non-empty after decoding" is a question this can actually answer.
+ * 🔴 STORED SO THAT OPENING IT LATER DOES NOT MEAN LOGGING IN. View took whole seconds because every
+ * open connected to IMAP and downloaded the message again. The mailbox is the source of truth for
+ * what arrived and a poor one for "show me that again": it needs a login, it can be slow, and a
+ * message that has since been moved cannot be shown at all. Read here, at the one moment the mailbox
+ * is already open and the message is certainly there, and written down with the row.
+ *
+ * 🔴 BOTH BODY PARTS ARE ASKED FOR, AND THAT IS THE EARLIER FIX PRESERVED. This once requested
+ * `text/plain` and returned `null` the moment there was not one; Outlook.com sends HTML-only replies
+ * routinely, so a real reply produced no text, and the contact row was logged empty while the same
+ * email read live from the Emails list showed the words plainly.
+ *
+ * ⚠️ ATTACHMENTS ARE NAMED, NEVER FETCHED. Only the two text parts are named in the fetch; the list
+ * of attachments comes off the BODYSTRUCTURE the server has already sent. No attachment content is
+ * downloaded here, or stored anywhere, ever.
+ * ⚠️ THE MAILBOX MUST ALREADY BE OPEN. Every caller is inside `walkMailbox` or `withReadOnlyMailbox`;
+ * taking a second lock on the same client would queue behind the first one and never return.
  */
-async function readText(client: ImapFlow, path: string, uid: number): Promise<string | null> {
+async function readBodies(client: ImapFlow, uid: number): Promise<StoredBodies | null> {
   try {
-    const msg = await client.fetchOne(String(uid), { uid: true, bodyStructure: true }, { uid: true })
-    if (!msg || typeof msg !== 'object' || !('bodyStructure' in msg)) return null
-    const struct = (msg as { bodyStructure?: unknown }).bodyStructure
+    const struct = await structureOf(client, uid)
     if (!struct) return null
-    const plain = findPart(struct as Parameters<typeof findPart>[0], 'text/plain')
-    const html = findPart(struct as Parameters<typeof findPart>[0], 'text/html')
-    const parts = [plain?.part, html?.part].filter((v): v is string => !!v)
-    if (!parts.length) return null
-    const full = await client.fetchOne(String(uid), { uid: true, bodyParts: parts }, { uid: true })
-    const bp = (full && typeof full === 'object' && 'bodyParts' in full
-      ? (full as { bodyParts?: Map<string, Buffer> }).bodyParts
-      : undefined) ?? new Map<string, Buffer>()
-    const plainText = plain ? decodePart(bp, plain.part, plain.encoding ?? null, plain.charset ?? null) : null
-    const htmlText = html ? decodePart(bp, html.part, html.encoding ?? null, html.charset ?? null) : null
-    const text = replyTextFrom(plainText, htmlText)
-    return text || null
+    const whole = await readWholeMessageLocked(client, uid, struct)
+    const capped = capHtml(whole.html)
+    return { html: capped.html, text: whole.text, attachments: whole.attachments, truncated: capped.truncated }
   } catch { return null }
+}
+
+/**
+ * The reply's TEXT, from bodies already read. The rule is unchanged — plain if there is plain, else
+ * the HTML flattened — and only the source of the parts has moved.
+ * ⚠️ `decodePart`, inside the reader, HANDLES THE CHARSET AND THE TRANSFER ENCODING — base64 and
+ * quoted-printable both — so "non-empty after decoding" is a question this can actually answer.
+ */
+function textOfBodies(b: StoredBodies | null): string | null {
+  if (!b) return null
+  return replyTextFrom(b.text, b.html) || null
 }
 
 /** The returned original inside a delivery report, for `bouncedOriginalId`. */
@@ -375,9 +402,16 @@ export async function runReplyPoll(supabase: SupabaseClient): Promise<PollSummar
       catch (err) { fail(`account:${creds.account}`, err) }
     }
 
-    // ── REPAIR, THEN HOUSEKEEPING ─────────────────────────────────────────────────────────────────
+    // ── ADOPT, REPAIR, THEN HOUSEKEEPING ─────────────────────────────────────────────────────────────────
+    // 🔴 AFTER THE WALK, NOT BEFORE IT. A message the walk is about to handle normally must not be
+    // adopted out from under it; by here every folder has been read and what is left is what the
+    // importer took.
+    try { await adoptImportedMessages(supabase, accounts, dir, now, summary) }
+    catch (err) { fail('adopt', err) }
     try { await repairReplyTexts(supabase, accounts, summary) }
     catch (err) { fail('repair', err) }
+    try { await fillMissingBodies(supabase, accounts, summary) }
+    catch (err) { fail('bodies', err) }
     try { await housekeeping(supabase, accounts, now, summary) }
     catch (err) { fail('housekeeping', err) }
   } catch (err) {
@@ -437,7 +471,7 @@ async function pollOneAccount(
 
           const kind = classifyIncoming(h)
           if (kind === 'bounce') { await handleBounce(supabase, client, dir, m, h, path, creds.account, summary); return }
-          if (kind === 'auto_reply') { await handleAutoReply(supabase, dir, m, path, creds.account, match.prospectId, summary); return }
+          if (kind === 'auto_reply') { await handleAutoReply(supabase, client, dir, m, path, creds.account, match.prospectId, summary); return }
           await handleReply(supabase, client, dir, m, path, creds.account, match.prospectId, summary)
         })
       } catch (err) { fail(`mailbox:${label(path)}`, err) }
@@ -452,7 +486,7 @@ async function pollOneAccount(
         if (match.kind === 'ambiguous') { summary.ambiguous++; return }
         if (match.kind === 'none') { summary.unmatched++; return }
         if (dir.skip.has(match.prospectId)) return
-        await handleOutlookSent(supabase, dir, m, creds.account, match.prospectId, summary)
+        await handleOutlookSent(supabase, client, dir, m, creds.account, match.prospectId, summary)
       })
     } catch (err) { fail(`mailbox:${label(OUTREACH_SENT_MAILBOX)}`, err) }
   } catch (err) {
@@ -493,10 +527,15 @@ const messageRow = (
  * The message row is still written, so the Emails list shows what arrived and View can open it.
  */
 async function handleAutoReply(
-  supabase: SupabaseClient, dir: Directory, m: SeenMessage, path: string, account: MailAccount,
-  prospectId: string, summary: PollSummary,
+  supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage, path: string,
+  account: MailAccount, prospectId: string, summary: PollSummary,
 ) {
-  const made = await insertMessageOnce(supabase, messageRow(m, path, account, prospectId, 'auto_reply', 'inbound'))
+  // ⚠️ AN AUTO-REPLY IS STILL AN EMAIL DOMINIC MAY OPEN, so its body is stored like any other's.
+  const bodies = await readBodies(client, m.uid)
+  const made = await insertMessageOnce(supabase, {
+    ...messageRow(m, path, account, prospectId, 'auto_reply', 'inbound'),
+    ...(bodies ? bodyColumns(bodies) : {}),
+  })
   if (!made.created) {
     if (made.error) summary.errors.push({ step: 'auto_reply', error: made.error })
     return
@@ -524,9 +563,11 @@ async function handleBounce(
       .update({ status: 'bounced', updated_at: new Date().toISOString() })
       .eq('message_id', originalId).eq('direction', 'outbound')
   }
+  const bodies = await readBodies(client, m.uid)
   const made = await insertMessageOnce(supabase, {
     ...messageRow(m, path, account, prospectId, 'bounce', 'inbound'),
     in_reply_to: originalId,
+    ...(bodies ? bodyColumns(bodies) : {}),
   })
   if (!made.created) {
     if (made.error) summary.errors.push({ step: 'bounce', error: made.error })
@@ -546,7 +587,10 @@ async function handleReply(
   supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage,
   path: string, account: MailAccount, prospectId: string, summary: PollSummary,
 ) {
-  const text = await readText(client, path, m.uid)
+  // 🔴 READ ONCE, STORE EVERYTHING. The bodies and the attachment list are written with the row, so
+  // View never has to open the mailbox for this message again.
+  const bodies = await readBodies(client, m.uid)
+  const text = textOfBodies(bodies)
   // 🔴 THE INSERT IS THE GATE, AND THIS IS THE FIX FOR THE BUILD-2 DEFECT. The old code checked an
   // IN-MEMORY map built at the start of the run, inserted, and then wrote the contact row whatever the
   // insert did. Two overlapping runs each built that map before either inserted, so both thought the
@@ -555,7 +599,7 @@ async function handleReply(
   // read that ladder. Now only the run whose own insert RETURNED a row goes on to log.
   const made = await insertMessageOnce(supabase, {
     ...messageRow(m, path, account, prospectId, 'received', 'inbound'),
-    text_body: text,
+    ...(bodies ? bodyColumns(bodies) : { text_body: text }),
   })
   if (!made.created) {
     // ⚠️ NOT AN ERROR WHEN THE ROW SIMPLY EXISTS. Another run recorded this reply a moment ago; it is
@@ -589,13 +633,16 @@ async function handleReply(
  * file the message is recorded and nothing is logged — the record is still useful, the inference is not.
  */
 async function handleOutlookSent(
-  supabase: SupabaseClient, dir: Directory, m: SeenMessage, account: MailAccount,
+  supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage, account: MailAccount,
   prospectId: string, summary: PollSummary,
 ) {
+  // ⚠️ WHAT DOMINIC WROTE FROM OUTLOOK IS STORED TOO — a chase quotes it, and View opens it.
+  const bodies = await readBodies(client, m.uid)
   // 🔴 THE SAME GATE AS A REPLY, for the same reason: this path logs a contact too.
   const made = await insertMessageOnce(supabase, {
     ...messageRow(m, OUTREACH_SENT_MAILBOX, account, prospectId, 'sent', 'outbound'),
     sent_copy: 'server_filed',
+    ...(bodies ? bodyColumns(bodies) : {}),
   })
   if (!made.created) {
     if (made.error) summary.errors.push({ step: 'outlook_sent', error: made.error })
@@ -611,6 +658,182 @@ async function handleOutlookSent(
   if (logged.ok && logged.id) {
     await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', made.id)
   }
+}
+
+// ── ADOPTING THE MAIL THE IMPORTER TOOK ────────────────────────────────────────────────────────────
+/** How many imported rows one run may take over. Each costs an IMAP read inside a 60-second budget. */
+const MAX_ADOPTIONS_PER_RUN = 20
+
+/** The columns adoption needs. Deliberately not `*`: `html_body` can be a megabyte. */
+interface ImportedRow {
+  id: string
+  prospect_id: string | null
+  direction: string | null
+  message_id: string | null
+  subject: string | null
+  from_address: string | null
+  to_address: string | null
+  message_date: string | null
+  mailbox: string | null
+  uid: number | null
+  account: string | null
+}
+
+/**
+ * Take over the new mail the importer recorded, and handle it as the poll would have.
+ *
+ * 🔴 THE ROWS THIS EXISTS FOR ARE ALREADY IN THE DATABASE, RECORDED AND UNLOGGED. On 29 September a
+ * real reply arrived at 20:57:07Z and "Import past emails" was pressed 27 seconds later. The importer
+ * wrote it as `mailbox_import` — it writes no contact rows, by design — and the poll then found the
+ * `message_id` already in `dir.byMessageId`, treated it as seen, and skipped it. The reply was in the
+ * Emails list and nowhere in the ladder. The importer no longer takes such mail (see its
+ * `withinFirstLook` guard), but that fixes only the next one; this recovers the ones already taken.
+ *
+ * 🔴 THE CLAIM COMES FIRST AND IT IS THE PROTECTION. Adoption ends in `logOutreachContact`, which has
+ * no unique constraint behind it, so two overlapping runs must not both reach it — `claimAdoption`
+ * flips `mailbox_import` → `poll` in one filtered statement and only the run whose update returns a
+ * row proceeds.
+ *
+ * ⚠️ ONLY MAIL AT OR AFTER THAT ACCOUNT'S `POLL_SINCE`. Everything before it is history: Dominic's
+ * old Outlook correspondence, imported precisely so the app knows it happened, and logging contacts
+ * for months of it would invent a ladder that was never climbed.
+ */
+async function adoptImportedMessages(
+  supabase: SupabaseClient, accounts: AccountSet, dir: Directory, now: Date, summary: PollSummary,
+): Promise<void> {
+  const { data } = await supabase
+    .from('outreach_messages')
+    .select('id, prospect_id, direction, message_id, subject, from_address, to_address, message_date, mailbox, uid, account')
+    .eq('source', 'mailbox_import')
+    .is('contact_id', null)
+    .not('mailbox', 'is', null)
+    .not('uid', 'is', null)
+    .order('message_date', { ascending: false })
+    .limit(200)
+  const rows = (data ?? []) as ImportedRow[]
+  // 🔴 THE BOUNDARY IS PER ACCOUNT, so it is applied here and not in the query: the two mailboxes
+  // have different `POLL_SINCE` values and one `gte` could only be wrong for one of them.
+  const due = rows
+    .filter(r => r.message_date && withinFirstLook(new Date(r.message_date), pollSince(accountOfRow(r))))
+    .slice(0, MAX_ADOPTIONS_PER_RUN)
+  if (!due.length) return
+
+  const byAccount = new Map<string, ImportedRow[]>()
+  for (const r of due) {
+    const a = accountOfRow(r)
+    byAccount.set(a, [...(byAccount.get(a) ?? []), r])
+  }
+
+  for (const [account, group] of byAccount) {
+    const creds = credentialsFor(accounts, account as MailAccount)
+    if (!creds) continue
+    const client = makeImapClient(creds.user, creds.pass)
+    try {
+      await client.connect()
+      for (const r of group) {
+        if (!r.prospect_id) continue
+        // 🔴 CLAIM, THEN READ. Losing the claim means another run owns it; there is nothing to do and
+        // nothing to say about it.
+        if (!(await claimAdoption(supabase, r.id, now))) continue
+        const res = await withReadOnlyMailbox(client, r.mailbox!, async () => adoptOne(supabase, client, dir, r, summary))
+        if (res.skipped) continue
+        summary.adopted++
+      }
+    } catch (err) {
+      summary.errors.push({ step: `adopt:${account}`, error: sanitiseMailError(err) })
+    } finally {
+      try { await client.logout() } catch { /* already gone */ }
+    }
+  }
+}
+
+/**
+ * One adopted message, inside its already-open mailbox.
+ *
+ * 🔴 THE SAME FOUR OUTCOMES AS A NEW MESSAGE, and they are the same functions' rules: a test-only
+ * thread is counted and never logged, an auto-reply is recorded and never logged, a bounce marks its
+ * original and never logs, and only a real reply reaches `logOutreachContact`.
+ * ⚠️ IT UPDATES WHERE THE HANDLERS INSERT, and that is the only difference. The row exists — the
+ * importer wrote it — so `insertMessageOnce` has nothing to gate here; `claimAdoption`, already past,
+ * is the gate instead.
+ */
+async function adoptOne(
+  supabase: SupabaseClient, client: ImapFlow, dir: Directory, r: ImportedRow, summary: PollSummary,
+): Promise<void> {
+  const prospectId = r.prospect_id!
+  const msg = await client.fetchOne(String(r.uid!), { uid: true, envelope: true, headers: true }, { uid: true })
+  if (!msg || typeof msg !== 'object') {
+    summary.errors.push({ step: 'adopt', error: `A recorded email is no longer at its place in ${r.mailbox}.` })
+    return
+  }
+  const env = (msg as { envelope?: { messageId?: string; subject?: string; from?: { address?: string | null }[]; to?: { address?: string | null }[]; cc?: { address?: string | null }[]; date?: Date } }).envelope
+  const m: SeenMessage = {
+    uid: r.uid!,
+    messageId: env?.messageId ?? r.message_id,
+    raw: headerBlockOf(msg),
+    subject: env?.subject ?? r.subject,
+    from: env?.from ? addressesOf(env.from) : (r.from_address ? [r.from_address] : []),
+    to: env?.to ? [...addressesOf(env.to), ...addressesOf(env.cc)] : (r.to_address ? [r.to_address] : []),
+    date: env?.date ? new Date(env.date).toISOString() : r.message_date,
+  }
+  // 🔴 READ ONCE, STORE EVERYTHING — the same read a live reply gets, so View never opens the mailbox
+  // for this message again.
+  const bodies = await readBodies(client, m.uid)
+  const stored = bodies ? bodyColumns(bodies) : {}
+  const patch = async (extra: Record<string, unknown>) => {
+    await supabase.from('outreach_messages')
+      .update({ ...stored, ...extra, updated_at: new Date().toISOString() })
+      .eq('id', r.id)
+  }
+
+  // ── OUTLOOK-SENT MAIL ────────────────────────────────────────────────────────────────────────────
+  // ⚠️ THE EXISTING RULE, UNCHANGED: logged only when the prospect has already replied, and then only
+  // as `reply`. Guessing that a hand-sent email was a chase would put a rung on the §57 ladder.
+  if (r.direction === 'outbound') {
+    await patch({})
+    if (dir.skip.has(prospectId) || !dir.hasReply.has(prospectId)) return
+    const logged = await logOutreachContact(supabase, {
+      prospect_id: prospectId, channel: 'email', direction: 'outbound', kind: 'reply',
+      message: m.subject ?? '', contacted_at: m.date,
+    })
+    if (logged.ok && logged.id) await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', r.id)
+    return
+  }
+
+  const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
+  await patch({})
+  if (dir.skip.has(prospectId)) return
+  // 🔴 A REPLY TO A TEST SEND IS IGNORED ENTIRELY, and the `return` is the point here too.
+  if (isReplyToTestOnly(h, dir)) { summary.repliesToTest++; return }
+
+  const kind = classifyIncoming(h)
+  if (kind === 'auto_reply') { await patch({ status: 'auto_reply' }); return }
+  if (kind === 'bounce') {
+    const returned = await readReturnedPart(client, m.uid)
+    const originalId = bouncedOriginalId(returned, h)
+    if (originalId) {
+      await supabase.from('outreach_messages')
+        .update({ status: 'bounced', updated_at: new Date().toISOString() })
+        .eq('message_id', originalId).eq('direction', 'outbound')
+    }
+    await patch({ status: 'bounce', in_reply_to: originalId })
+    return
+  }
+
+  const text = textOfBodies(bodies)
+  await patch({ status: 'received' })
+  const logged = await logOutreachContact(supabase, {
+    prospect_id: prospectId,
+    channel: 'email',
+    direction: 'inbound',
+    kind: 'reply',
+    message: stripQuotedHistory(text ?? ''),
+    contacted_at: m.date,
+  })
+  if (!logged.ok) { summary.errors.push({ step: 'adopt-log', error: logged.error ?? 'unknown' }); return }
+  if (logged.id) await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', r.id)
+  dir.hasReply.add(prospectId)
+  summary.repliesLogged++
 }
 
 // ── REPAIRING REPLIES THAT WERE LOGGED WITHOUT THEIR TEXT ──────────────────────────────────────────
@@ -674,8 +897,11 @@ async function repairReplyTexts(
       await client.connect()
       for (const r of group) {
         // 🔴 READ-ONLY, as everything here is: EXAMINE and a peek.
-        const res = await withReadOnlyMailbox(client, r.mailbox!, async () => readText(client, r.mailbox!, r.uid!))
-        const text = res.skipped ? null : res.value
+        // 🔴 THE SAME READ AS A LIVE REPLY, so a repaired row gets its stored bodies too and View
+        // stops going to the mailbox for it.
+        const res = await withReadOnlyMailbox(client, r.mailbox!, async () => readBodies(client, r.uid!))
+        const bodies = res.skipped ? null : res.value
+        const text = textOfBodies(bodies)
         const logged = stripQuotedHistory(text ?? '')
         // ⚠️ `stripQuotedHistory` NEVER RETURNS EMPTY — it gives the placeholder — so a message that
         // genuinely has no readable text stops being a blank row that reads as "they said nothing".
@@ -685,9 +911,9 @@ async function repairReplyTexts(
           .eq('id', r.contact_id)
           .or('message.is.null,message.eq.')          // 🔴 only where it is still empty
           .select('id')
-        if (text && !(r.text_body ?? '').trim()) {
+        if (bodies && !(r.text_body ?? '').trim()) {
           await supabase.from('outreach_messages')
-            .update({ text_body: text, updated_at: new Date().toISOString() })
+            .update({ ...bodyColumns(bodies), updated_at: new Date().toISOString() })
             .eq('id', r.id)
             .or('text_body.is.null,text_body.eq.')
         }
@@ -695,6 +921,73 @@ async function repairReplyTexts(
       }
     } catch (err) {
       summary.errors.push({ step: `repair:${account}`, error: sanitiseMailError(err) })
+    } finally {
+      try { await client.logout() } catch { /* already gone */ }
+    }
+  }
+}
+
+// ── FILLING IN THE BODIES OF EVERYTHING RECORDED BEFORE THEY WERE STORED ───────────────────────────
+/** How many rows one run gives a stored body. Each is one IMAP read inside a 60-second budget. */
+const MAX_BODY_FILLS_PER_RUN = 25
+
+/**
+ * Give stored bodies to rows recorded before anything stored them.
+ *
+ * 🔴 EVERY ROW THE IMPORTER HAS EVER WRITTEN HAS NO BODY. That was deliberate — "the message is
+ * already in the mailbox" — and it is exactly why View had to log in to show a three-line reply. This
+ * fills them in, newest first, because the newest are the ones Dominic opens.
+ *
+ * ⚠️ IT ONLY EVER FILLS A GAP, AND IT CANNOT THRASH. The filter is "no HTML, no text AND no
+ * attachment list": once a row has been looked at, `attachments` is an array — `[]` when the message
+ * genuinely has neither body part — so it stops matching and is never read again. Without that last
+ * condition a message with no text parts at all would be re-read on every run forever.
+ */
+async function fillMissingBodies(
+  supabase: SupabaseClient, accounts: AccountSet, summary: PollSummary,
+): Promise<void> {
+  const { data } = await supabase
+    .from('outreach_messages')
+    .select('id, account, mailbox, uid')
+    .is('html_body', null)
+    .is('text_body', null)
+    .is('attachments', null)
+    .not('mailbox', 'is', null)
+    .not('uid', 'is', null)
+    .order('message_date', { ascending: false })
+    .limit(MAX_BODY_FILLS_PER_RUN)
+  const rows = (data ?? []) as { id: string; account: string | null; mailbox: string | null; uid: number | null }[]
+  if (!rows.length) return
+
+  const byAccount = new Map<string, typeof rows>()
+  for (const r of rows) {
+    const a = accountOfRow(r)
+    byAccount.set(a, [...(byAccount.get(a) ?? []), r])
+  }
+
+  for (const [account, group] of byAccount) {
+    const creds = credentialsFor(accounts, account as MailAccount)
+    if (!creds) continue
+    const client = makeImapClient(creds.user, creds.pass)
+    try {
+      await client.connect()
+      for (const r of group) {
+        // 🔴 READ-ONLY, as everything here is: EXAMINE and a peek. Filling a body must not mark a
+        // prospect's email read in Dominic's Outlook.
+        const res = await withReadOnlyMailbox(client, r.mailbox!, async () => readBodies(client, r.uid!))
+        const bodies = res.skipped ? null : res.value
+        if (!bodies) continue
+        const { data: filled } = await supabase
+          .from('outreach_messages')
+          .update({ ...bodyColumns(bodies), updated_at: new Date().toISOString() })
+          .eq('id', r.id)
+          .is('html_body', null)
+          .is('text_body', null)     // 🔴 still only where there is nothing to overwrite
+          .select('id')
+        if (filled && filled.length > 0) summary.bodiesFilled++
+      }
+    } catch (err) {
+      summary.errors.push({ step: `bodies:${account}`, error: sanitiseMailError(err) })
     } finally {
       try { await client.logout() } catch { /* already gone */ }
     }

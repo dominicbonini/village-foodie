@@ -118,3 +118,26 @@ export async function claimRetry(
     .select('id')
   return !!data && data.length > 0
 }
+
+/**
+ * Claim an imported row so this run — and only this run — may log a contact for it.
+ *
+ * 🔴 `mailbox_import` → `poll` IN ONE STATEMENT, FILTERED ON `mailbox_import`. Adoption ends in
+ * `logOutreachContact`, and `outreach_contacts` has no unique constraint to catch a second write, so
+ * the claim IS the protection: two overlapping polls both see the same imported row in their list,
+ * both try to take it, and exactly one update returns a row. The other finds nothing and moves on.
+ * ⚠️ IT ALSO MAKES ADOPTION A ONE-WAY DOOR. Once the source says `poll` the row can never be picked
+ * up again, so a run that dies half way through leaves a row that is recorded but unlogged — the same
+ * state the importer left it in, and the reason `contact_id is null` is not the only filter.
+ */
+export async function claimAdoption(
+  supabase: SupabaseClient, rowId: string, now: Date,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from('outreach_messages')
+    .update({ source: 'poll', updated_at: now.toISOString() })
+    .eq('id', rowId)
+    .eq('source', 'mailbox_import')
+    .select('id')
+  return !!data && data.length > 0
+}
