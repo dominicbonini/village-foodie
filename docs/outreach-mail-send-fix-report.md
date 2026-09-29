@@ -500,3 +500,75 @@ migration is applied."* or *"Email sending is off: the messages table could not 
 **message**)."* — the second is new, and the code in brackets is the thing to quote at me. Copy and Log
 keep working in both cases.
 
+---
+
+## Commit and deploy evidence
+
+**Commit `b462d2e`** — *"Outreach sender fix-up: remove the cap, fix the probe, the headers and the
+NaNs"*, on `main`, pushed to `origin/main` (`275cf06..b462d2e`). Thirteen files: two new, eleven
+changed. No other work is in it.
+
+**Deployed and serving on production, confirmed 2026-09-29T01:20:41Z.**
+
+🔴 **This deploy could not be proved the way the last one was, and the difference is worth recording.**
+Last time `/api/admin/outreach/mail-import` was a brand-new path, so its JSON refusal was proof by
+itself: a path that does not exist returns the HTML 404 page. This commit added no new route — every
+change is *inside* routes that were already serving — so "the route answers" would have been just as
+true of the old code, and quoting it as evidence would have proved nothing.
+
+So the deployment itself was watched: the set of `/_next/static/chunks/*.js` the home page references
+is a build fingerprint, and it changed from `14a2334c…` to `f2b475ac…` while polling, which is the new
+build replacing the old one. The route checks below were taken **after** that change.
+
+| Request | Status | Content-Type | Body |
+|---|---|---|---|
+| `GET /api/admin/outreach/mail-send` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `POST /api/admin/outreach/mail-import` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/mail-diagnostics` | 404 | `application/json` | `{"error":"Unauthorised"}` |
+| `GET /api/admin/outreach/does-not-exist-check` | 404 | `text/html` | the app's HTML 404 page |
+
+The last row is the control: a non-existent path returns the rendered HTML 404, so
+`{"error":"Unauthorised"}` as `application/json` is each route's own `verifyAdmin` refusal.
+
+⚠️ **The 404 on the refusal is deliberate**, not a bug: an admin route does not confirm its own
+existence to an unauthenticated caller. And `GET` on `mail-import` answers **405** — it exports only
+`POST` — which is another way of seeing that the path is real.
+
+⚠️ **What this evidence does NOT show.** Everything reachable without an admin session is identical
+before and after, so the behaviour changes — the import summary, the compose window, the probe's new
+sentence — are proved by the harness and the build, not by these four requests. They are confirmed in
+use by step 1 and step 2 of the test script above, which is the first thing to run.
+
+---
+
+## Final state of the working tree
+
+```
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes committed in b462d2e:
+
+  new file:   lib/outreach-messages-table.ts
+  new file:   lib/outreach-mail-import-result.ts
+  new file:   docs/outreach-mail-send-fix-report.md
+  modified:   lib/outreach-mail-format.ts
+  modified:   lib/outreach-send-rules.ts
+  modified:   lib/outreach-mail-config.ts
+  modified:   lib/outreach-mail-message.ts
+  modified:   app/api/admin/outreach/mail-send/route.ts
+  modified:   app/api/admin/outreach/mail-import/route.ts
+  modified:   app/api/admin/outreach/mail-diagnostics/route.ts
+  modified:   components/admin/ComposeWindow.tsx
+  modified:   components/admin/OutreachPanel.tsx
+  modified:   scripts/outreach-mail-send.cjs
+
+Untracked files:
+  (none)
+
+nothing to commit, working tree clean
+```
+
+Nothing was staged, committed, stashed, reset or restored beyond this task's own files; `git add -A`
+and `git add .` were not used. No SQL was run. Two `slot-head-dots-*` worktrees from an earlier session
+remain listed as prunable — pre-existing, untouched, and already on the open-items list.
