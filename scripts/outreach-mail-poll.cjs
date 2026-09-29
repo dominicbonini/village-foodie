@@ -22,11 +22,96 @@ const eq = (got, want, label) => {
   if (!ok) { console.log(`      want: ${JSON.stringify(want)}`); console.log(`      got:  ${JSON.stringify(got)}`); fails++ }
 }
 
-const FILES = ['lib/outreach-mail-poll-rules.ts', 'lib/outreach-contact-log.ts']
+const FILES = [
+  'lib/outreach-mail-poll-rules.ts', 'lib/outreach-contact-log.ts',
+  'lib/outreach-mail-accounts.ts', 'lib/outreach-poll-claims.ts',
+]
 function build(root, tag) {
   const { out, req } = compile(root, FILES, tag)
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(out, 'node_modules')) } catch { /* already */ }
-  return { R: req('lib/outreach-mail-poll-rules.js'), L: req('lib/outreach-contact-log.js') }
+  return {
+    R: req('lib/outreach-mail-poll-rules.js'),
+    L: req('lib/outreach-contact-log.js'),
+    A: req('lib/outreach-mail-accounts.js'),
+    C: req('lib/outreach-poll-claims.js'),
+  }
+}
+
+/**
+ * A fake `outreach_messages` / `outreach_settings` pair with REAL uniqueness, so two simulated runs
+ * actually race. 🔴 THE POINT IS THAT THE TABLE DECIDES, NOT THE TEST: `upsert … ignoreDuplicates`
+ * returns rows only to the first caller for a given message_id, and a filtered `update` returns rows
+ * only to the caller whose filter still matched. That is exactly what the real client does.
+ */
+function fakeDb() {
+  const messages = new Map()          // message_id -> row
+  const settings = new Map()          // key -> { value, updated_at }
+  const contacts = []
+  const db = {
+    messages, settings, contacts,
+    from(table) {
+      const q = { _table: table, _filters: [], _payload: null, _op: null, _ignoreDup: false }
+      q.insert = v => { q._op = 'insert'; q._payload = v; return q }
+      q.upsert = (v, o) => { q._op = 'upsert'; q._payload = v; q._ignoreDup = !!(o && o.ignoreDuplicates); return q }
+      q.update = v => { q._op = 'update'; q._payload = v; return q }
+      q.eq = (c, v) => { q._filters.push(['eq', c, v]); return q }
+      q.lt = (c, v) => { q._filters.push(['lt', c, v]); return q }
+      q.in = (c, v) => { q._filters.push(['in', c, v]); return q }
+      q.select = () => q
+      q.single = async () => { const r = await run(q); return { data: (r.data || [])[0] ?? null, error: r.error } }
+      q.maybeSingle = q.single
+      q.then = (res, rej) => run(q).then(res, rej)
+      return q
+    },
+  }
+  const matches = (row, filters) => filters.every(([op, c, v]) =>
+    op === 'eq' ? row[c] === v
+      : op === 'lt' ? String(row[c] ?? '') < String(v)
+      : op === 'in' ? v.includes(row[c])
+      : true)
+  async function run(q) {
+    if (q._table === 'outreach_messages') {
+      if (q._op === 'upsert' || q._op === 'insert') {
+        const row = { id: `m${messages.size + 1}`, ...q._payload }
+        if (messages.has(row.message_id)) {
+          // 🔴 THE UNIQUE INDEX. `ignoreDuplicates` ⇒ no rows back; a plain insert ⇒ the 23505 error.
+          if (q._ignoreDup) return { data: [], error: null }
+          return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint' } }
+        }
+        messages.set(row.message_id, row)
+        return { data: [row], error: null }
+      }
+      if (q._op === 'update') {
+        const hit = [...messages.values()].filter(r => matches(r, q._filters))
+        for (const r of hit) Object.assign(r, q._payload)
+        return { data: hit, error: null }
+      }
+      return { data: [...messages.values()].filter(r => matches(r, q._filters)), error: null }
+    }
+    if (q._table === 'outreach_settings') {
+      const key = (q._filters.find(f => f[1] === 'key') || [])[2] ?? (q._payload || {}).key
+      if (q._op === 'insert') {
+        if (settings.has(q._payload.key)) return { data: null, error: { code: '23505', message: 'duplicate key' } }
+        settings.set(q._payload.key, { ...q._payload })
+        return { data: [{ key: q._payload.key }], error: null }
+      }
+      if (q._op === 'update') {
+        const cur = settings.get(key)
+        if (!cur || !matches(cur, q._filters)) return { data: [], error: null }
+        Object.assign(cur, q._payload)
+        return { data: [{ key }], error: null }
+      }
+      const cur = settings.get(key)
+      return { data: cur ? [cur] : [], error: null }
+    }
+    if (q._table === 'outreach_contacts') {
+      if (q._op === 'insert') { contacts.push(q._payload); return { data: [{ id: `c${contacts.length}` }], error: null } }
+      return { data: [], error: null }
+    }
+    if (q._table === 'outreach_prospects') return { data: [], error: null }
+    return { data: [], error: null }
+  }
+  return db
 }
 
 /** A header reader over a raw block, the shape the rules take. */
@@ -152,7 +237,72 @@ const hdrs = (raw, extra = {}) => ({
     fs.rmSync(v.tmp, { recursive: true, force: true })
   }
 
-  const { R, L } = build(REPO, 'ompReal')
+  {
+    // V9 — THE REPLY GATE GOES BACK TO THE IN-MEMORY CHECK. This is the Build-2 defect verbatim: two
+    // overlapping runs each built the "already recorded?" map before either inserted, so both thought
+    // the reply was new; the second insert failed on the unique message_id and the code logged the
+    // CONTACT anyway. One reply, two rungs, and §57 reads that ladder.
+    const v = variant('v9', 'lib/outreach-poll-claims.ts', src => src.replace(
+      '  if (!first?.id) return { created: false, error: null }   // somebody else won; nothing to do',
+      '  if (!first?.id) return { created: true, id: \'pretend\' }'))
+    const db = fakeDb()
+    const row = { message_id: '<r1@x>', prospect_id: 'p1', direction: 'inbound', status: 'received', account: 'dominic' }
+    const a = await v.C.insertMessageOnce(db, { ...row })
+    const b = await v.C.insertMessageOnce(db, { ...row })
+    variantFails('V9', a.created === true && b.created === true,
+      'the loser of the insert race is told it created the row: the reply is logged twice')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V10 — THE RETRY CLAIM STOPS FILTERING ON `failed`. Both runs then "claim" the same row and each
+    // re-sends the same email to the same prospect.
+    const v = variant('v10', 'lib/outreach-poll-claims.ts', src => src.replace(
+      "    .eq('status', 'failed')\n    .select('id')", "    .select('id')"))
+    const db = fakeDb()
+    await db.from('outreach_messages').upsert({ message_id: '<f1@x>', status: 'failed' }, { ignoreDuplicates: true }).select('id')
+    const id = [...db.messages.values()][0].id
+    const first = await v.C.claimRetry(db, id, new Date())
+    const second = await v.C.claimRetry(db, id, new Date())
+    variantFails('V10', first === true && second === true,
+      'the status filter removed: two runs both claim the same failed row and both re-send it')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V11 — THE LOCK GOES BACK TO READ-THEN-WRITE. Two runs a millisecond apart both read "free".
+    const v = variant('v11', 'lib/outreach-poll-claims.ts', src => src.replace(
+      "    .lt('updated_at', staleBefore)\n    .select('key')", "    .select('key')"))
+    const db = fakeDb()
+    const now = new Date()
+    const first = await v.C.claimPollLock(db, now)
+    const second = await v.C.claimPollLock(db, now)
+    variantFails('V11', first === true && second === true,
+      'the staleness filter removed: a second run takes a lock that is held right now')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V12 — THE FALLBACK BREAKS. With no primary configured the send path must still work through
+    // hello@; returning null instead would take outreach down the moment this deploys, before Dominic
+    // has added the new variables.
+    const v = variant('v12', 'lib/outreach-mail-accounts.ts', src => src.replace(
+      '    primary: dominic ?? hello,', '    primary: dominic,'))
+    const set = v.A.resolveAccounts({ OUTREACH_MAIL_USER: 'hello@hatchgrab.com', OUTREACH_MAIL_PASSWORD: 'x' })
+    variantFails('V12', v.A.accountForSend(set) === null,
+      'the hello@ fallback removed: with no primary configured, nothing can send at all')
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+  {
+    // V13 — A ROW IS READ FROM THE PRIMARY RATHER THAN ITS OWN ACCOUNT. `mailbox`+`uid` mean nothing
+    // outside the mailbox they came from: a September import would open nothing, or — worse — open a
+    // DIFFERENT message that happens to hold that uid in the new mailbox.
+    const v = variant('v13', 'lib/outreach-mail-accounts.ts', src => src.replace(
+      "  return isMailAccount(row?.account) ? row.account : LEGACY_ACCOUNT",
+      '  return PRIMARY_ACCOUNT'))
+    variantFails('V13', v.A.accountOfRow({ account: 'hello' }) === 'dominic',
+      "a stored row's account is ignored: an old hello@ email is opened against dominic@")
+    fs.rmSync(v.tmp, { recursive: true, force: true })
+  }
+
+  const { R, L, A, C } = build(REPO, 'ompReal')
   /**
    * 🔴 THE CENSUS READS CODE, NOT COMMENTS, AND THE FIRST VERSION DID NOT. This file's own header says
    * "there is no `messageFlagsAdd`, `messageMove`…" — so a census over the raw text found every banned
@@ -355,6 +505,91 @@ const hdrs = (raw, extra = {}) => ({
     eq(R.LOCK_STALE_MS, 120_000, 'the staleness window is 2 minutes')
   }
 
+  console.log('\n── TWO ACCOUNTS, AND THE FALLBACK THAT MAKES THE DEPLOY A NO-OP ────────────────────────')
+  {
+    const HELLO = { OUTREACH_MAIL_USER: 'hello@hatchgrab.com', OUTREACH_MAIL_PASSWORD: 'x' }
+    const BOTH = { ...HELLO, OUTREACH_PRIMARY_USER: 'dominic@hatchgrab.com', OUTREACH_PRIMARY_PASSWORD: 'y' }
+
+    // 🔴 THE FALLBACK IS THE DEFAULT. This deploy reaches production before Dominic adds the new
+    // variables; until he does, everything must behave exactly as it did in Build 2.
+    const legacyOnly = A.resolveAccounts(HELLO)
+    eq(legacyOnly.configured.map(c => c.account), ['hello'], 'with only the old vars, one account')
+    eq(A.accountForSend(legacyOnly).account, 'hello', '🔴 …and hello@ still does the sending')
+    eq(legacyOnly.primaryConfigured, false, '…the primary is not configured')
+    eq(A.legacyIsReadOnly(legacyOnly), false, '…so hello@ is NOT read-only yet — it is still the sender')
+
+    const both = A.resolveAccounts(BOTH)
+    eq(both.configured.map(c => c.account), ['hello', 'dominic'], 'with both, both are configured')
+    eq(A.accountForSend(both).account, 'dominic', '🔴 …and the PRIMARY sends')
+    eq(A.accountForSend(both).user, 'dominic@hatchgrab.com', '…logging in as dominic@')
+    eq(both.primaryConfigured, true, 'the primary is configured')
+    eq(A.legacyIsReadOnly(both), true, '🔴 …so hello@ is read-only from now on')
+
+    // ⚠️ HALF A CREDENTIAL IS NO CREDENTIAL. A username with no password would otherwise produce a
+    // login attempt that fails for a reason that says nothing.
+    eq(A.resolveAccounts({ ...HELLO, OUTREACH_PRIMARY_USER: 'dominic@hatchgrab.com' }).primaryConfigured, false,
+      'a primary username with no password is not configured')
+    eq(A.resolveAccounts({}).primary, null, 'neither configured ⇒ no primary, and callers refuse as before')
+
+    // Which mailbox a STORED ROW is read from.
+    eq(A.accountOfRow({ account: 'hello' }), 'hello', "a 'hello' row opens hello@")
+    eq(A.accountOfRow({ account: 'dominic' }), 'dominic', "a 'dominic' row opens dominic@")
+    eq(A.accountOfRow({}), 'hello', '⚠️ a row with no account is legacy — that is where those uids point')
+    eq(A.accountOfRow({ account: 'nonsense' }), 'hello', '…and so is a row with a value nobody recognises')
+    eq(A.credentialsFor(both, 'hello').user, 'hello@hatchgrab.com', 'credentials are looked up per account')
+    eq(A.credentialsFor(legacyOnly, 'dominic'), null, '…and are null for an account that is not set up')
+    eq(A.ACCOUNT_ENV.dominic.user, 'OUTREACH_PRIMARY_USER', 'the primary reads OUTREACH_PRIMARY_USER')
+    eq(A.ACCOUNT_ENV.hello.user, 'OUTREACH_MAIL_USER', '…and the legacy keeps the existing variable')
+  }
+
+  console.log('\n── 🔴 TWO CONCURRENT RUNS, ONE REPLY, ONE CONTACT ROW ───────────────────────────────────')
+  {
+    // 🔴 THE BUILD-2 DEFECT, SIMULATED. The fake table has a REAL unique index on message_id, so this
+    // is a genuine race: both runs try, and the table decides.
+    const db = fakeDb()
+    const row = () => ({ message_id: '<reply-1@prospect.test>', prospect_id: 'p1', direction: 'inbound', status: 'received', account: 'dominic' })
+    const [a, b] = await Promise.all([C.insertMessageOnce(db, row()), C.insertMessageOnce(db, row())])
+    const winners = [a, b].filter(r => r.created)
+    eq(winners.length, 1, '🔴 exactly ONE of two concurrent runs creates the message row')
+    eq([a, b].filter(r => !r.created && r.error === null).length, 1, '…and the loser is told so without an error')
+    // Only the winner logs. That is the whole fix: the contact row is gated on the insert.
+    for (const r of [a, b]) {
+      if (r.created) await L.logOutreachContact(db, { prospect_id: 'p1', channel: 'email', direction: 'inbound', kind: 'reply', message: 'yes' })
+    }
+    eq(db.contacts.length, 1, '🔴 …so exactly ONE contact row is written for the reply')
+    eq(db.messages.size, 1, 'and exactly one message row exists')
+
+    // A third run later — the message is already there — still logs nothing.
+    const later = await C.insertMessageOnce(db, row())
+    eq(later.created, false, 'a later run finds it already recorded')
+    eq(db.contacts.length, 1, '…and writes no second contact row')
+  }
+
+  console.log('\n── 🔴 TWO CONCURRENT RUNS, ONE FAILED ROW, ONE RETRY ────────────────────────────────────')
+  {
+    const db = fakeDb()
+    await db.from('outreach_messages').upsert({ message_id: '<f@x>', status: 'failed' }, { ignoreDuplicates: true }).select('id')
+    const id = [...db.messages.values()][0].id
+    const [a, b] = await Promise.all([C.claimRetry(db, id, new Date()), C.claimRetry(db, id, new Date())])
+    eq([a, b].filter(Boolean).length, 1, '🔴 exactly ONE run claims the retry — the other re-send never happens')
+    eq([...db.messages.values()][0].status, 'sending', "…and the row is left at `sending`, which is honest")
+    eq(await C.claimRetry(db, id, new Date()), false, 'a row that is no longer `failed` cannot be claimed again')
+  }
+
+  console.log('\n── 🔴 THE LOCK IS ONE STATEMENT, NOT A READ THEN A WRITE ────────────────────────────────')
+  {
+    const db = fakeDb()
+    const now = new Date()
+    const [a, b] = await Promise.all([C.claimPollLock(db, now), C.claimPollLock(db, now)])
+    eq([a, b].filter(Boolean).length, 1, '🔴 exactly ONE of two concurrent runs takes the lock')
+    eq(await C.claimPollLock(db, now), false, 'a third attempt while it is held gets nothing')
+    // ⚠️ AND IT EXPIRES, or a frozen container disables the feature for good.
+    const later = new Date(now.getTime() + C.LOCK_STALE_MS + 1000)
+    eq(await C.claimPollLock(db, later), true, '⚠️ …but a run that has gone quiet for 2 minutes is taken over')
+    await C.releasePollLock(db)
+    eq(await C.claimPollLock(db, new Date(later.getTime() + 1)), true, 'and a released lock is immediately available')
+  }
+
   console.log('\n── SOURCE CENSUS: THE POLL ONLY EVER READS ──────────────────────────────────────────────')
   {
     // 🔴 THIS IS THE ASSERTION THAT CANNOT BE MADE ANY OTHER WAY without a live mailbox. A single
@@ -390,6 +625,71 @@ const hdrs = (raw, extra = {}) => ({
       '🔴 Outlook-sent mail is logged only when the prospect has already replied')
     check(/kind: 'reply'/.test(outlookFn) && !/1_first_contact|2_chase_1/.test(outlookFn),
       "…and never as a ladder rung — the rungs are what THIS page sends")
+  }
+
+  console.log('\n── SOURCE CENSUS: WHICH ACCOUNT EACH PATH USES ─────────────────────────────────────────')
+  {
+    const SEND = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-send/route.ts'), 'utf8'))
+    const IMPORT = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-import/route.ts'), 'utf8'))
+    const HEALTH = stripComments(fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/mail-health/route.ts'), 'utf8'))
+    const DELIVER = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-deliver.ts'), 'utf8'))
+
+    // 🔴 THE SEND ASKS FOR THE PRIMARY AND CANNOT BE HANDED THE LEGACY ONE.
+    check(/accountForSend\(accounts\)/.test(SEND), 'the send resolves its account through `accountForSend`')
+    check(/account: sender\.account/.test(SEND), '🔴 …and the new row is stamped with that account')
+    check(!/process\.env\.OUTREACH_MAIL_USER/.test(SEND),
+      'the send route reads no credential from the environment directly any more')
+    check(!/process\.env\.OUTREACH_MAIL_USER/.test(stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))),
+      '…nor does the poll')
+    check(!/process\.env\.OUTREACH_MAIL_USER/.test(IMPORT), '…nor does the importer')
+
+    // 🔴 EVERY READ BY uid GOES THROUGH THE ROW'S OWN ACCOUNT.
+    for (const [what, re] of [
+      ['View', /const viewCreds = credentialsFor\(accounts, accountOfRow\(row\)\)/],
+      ['the chaser quote', /const creds = credentialsFor\(accounts, accountOfRow\(parent\)\)/],
+      ['a retry', /const rowCreds = credentialsFor\(accounts, accountOfRow\(row\)\)/],
+      ['Save to Sent', /const copyCreds = credentialsFor\(accounts, accountOfRow\(row\)\)/],
+    ]) check(re.test(SEND), `${what} opens the ROW'S account, not the primary`)
+    check(/credentialsFor\(accounts, accountOfRow\(row\)\)/.test(stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))),
+      'housekeeping does too')
+
+    // 🔴 THE LEGACY ACCOUNT HAS NO SEND PATH OF ITS OWN. Everything that can write to a mailbox —
+    // `sendMail` and `append` — lives in the deliver module, and its only callers hand it either the
+    // primary (a new send) or the row's own account (a retry / a late Sent copy of a message that
+    // account itself sent). There is no code path that picks `hello` for a NEW message.
+    check(!/sendMail\(/.test(SEND) && !/\bappend\(/.test(SEND),
+      'the send route itself neither sends nor appends — both live in the deliver module')
+    check(/sendMail\(/.test(DELIVER) && /appendToSent\(/.test(DELIVER), '…which is the one module that does')
+    check(!/'hello'/.test(DELIVER) && !/LEGACY_ACCOUNT/.test(DELIVER),
+      "🔴 …and it names no account at all, so it cannot prefer the legacy one")
+    check(!/accountForSend/.test(stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))),
+      'the poll never resolves a SEND account — its only send is a retry of an existing row')
+
+    // Both accounts are walked for reading.
+    const POLLSRC = stripComments(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8'))
+    check(/for \(const creds of accounts\.configured\)/.test(POLLSRC), 'the poll walks every configured account')
+    check(/for \(const creds of accounts\.configured\)/.test(IMPORT), '…and so does the importer')
+    check(/STATE_KEY\[creds\.account\]/.test(POLLSRC), '🔴 each account has its OWN watermarks…')
+    check(/hello: 'mail_poll_state'/.test(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8')),
+      "…and hello@ keeps the existing key, so the switch does not re-read its recent mail")
+    check(/dominic: 'mail_poll_state_dominic'/.test(fs.readFileSync(path.join(REPO, 'lib/outreach-mail-poll.ts'), 'utf8')),
+      '…while dominic@ gets its own, and therefore its own first look')
+    check(/account: creds\.account/.test(IMPORT), 'the importer stamps each new row with the account it read from')
+    check(/account,/.test(POLLSRC), '…and so does the poll')
+
+    // The health check reports each account.
+    check(/for \(const creds of accounts\.configured\)/.test(HEALTH), 'the health check tests every account')
+    check(/role: creds\.account === accounts\.primary\?\.account \? 'primary' : 'legacy'/.test(HEALTH),
+      '…labels which is primary')
+    check(!/sendMail\(/.test(HEALTH), '🔴 …and still never sends — it is a login check')
+
+    // 🔴 THE ATOMIC CLAIMS ARE USED, not just written.
+    check(/claimPollLock\(supabase, now\)/.test(POLLSRC), 'the poll takes the lock atomically')
+    check(!/takeLock\(/.test(POLLSRC), '…and the read-then-write version is gone')
+    check(/insertMessageOnce\(/.test(POLLSRC), 'every recorded message goes through the insert gate')
+    check(!/from\('outreach_messages'\)\.insert\(/.test(POLLSRC),
+      '🔴 …and no handler inserts directly any more, which is what made the contact log racy')
+    check(/claimRetry\(supabase, row\.id, now\)/.test(POLLSRC), 'the retry is claimed atomically')
   }
 
   console.log('\n── THE CRON IS REGISTERED ───────────────────────────────────────────────────────────────')

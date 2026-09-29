@@ -19,6 +19,7 @@ import { verifyAdmin } from '@/lib/auth/admin'
 import { OUTREACH_IMPORT_MAILBOXES, OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
 import { makeImapClient, withReadOnlyMailbox, sanitiseMailError } from '@/lib/outreach-mail-box'
 import { addressesOf, headerBlockOf, headerValue } from '@/lib/outreach-mail-format'
+import { resolveAccounts, type MailAccount } from '@/lib/outreach-mail-accounts'
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import type {
   MailImportResult, ImportWalked, ImportPerProspect, ImportMismatch,
@@ -41,9 +42,10 @@ export async function POST(req: NextRequest) {
   })
   if (!probe.ready) return NextResponse.json({ ok: false, migrationApplied: false, refusal: probe.refusal })
 
-  const user = process.env.OUTREACH_MAIL_USER
-  const pass = process.env.OUTREACH_MAIL_PASSWORD
-  if (!user || !pass) return NextResponse.json({ ok: false, refusal: 'The mailbox credentials are not set on this environment.' })
+  // 🔴 EVERY CONFIGURED ACCOUNT. History lives in hello@ and new mail arrives at dominic@; an import
+  // that walked only one of them would leave half the correspondence unrecorded.
+  const accounts = resolveAccounts()
+  if (!accounts.configured.length) return NextResponse.json({ ok: false, refusal: 'The mailbox credentials are not set on this environment.' })
 
   const errors: { step: string; error: string }[] = []
   const fail = (step: string, err: unknown) => { errors.push({ step, error: sanitiseMailError(err) }) }
@@ -77,13 +79,15 @@ export async function POST(req: NextRequest) {
     message_id: string; in_reply_to: string | null; references: string | null
     subject: string | null; from_address: string | null; to_address: string | null
     message_date: string | null; mailbox: string; uid: number; uidvalidity: string | null
+    account: MailAccount
   }
   const found: Found[] = []
   const walked: ImportWalked[] = []
   /** Messages actually READ, across every folder. `walked[].count` is what each folder HOLDS. */
   let read = 0
 
-  const client = makeImapClient(user, pass)
+  for (const creds of accounts.configured) {
+  const client = makeImapClient(creds.user, creds.pass)
   try {
     await client.connect()
     for (const path of OUTREACH_IMPORT_MAILBOXES) {
@@ -128,18 +132,20 @@ export async function POST(req: NextRequest) {
               mailbox: path,
               uid: msg.uid,
               uidvalidity: uidValidity,
+              account: creds.account,
             })
           }
           return rows
         })
-        walked.push({ mailbox: path, count: res.count, skipped: res.skipped })
+        walked.push({ mailbox: `${creds.account}/${path}`, count: res.count, skipped: res.skipped })
         if (!res.skipped) found.push(...res.value)
-      } catch (err) { fail(`mailbox:${path}`, err) }
+      } catch (err) { fail(`mailbox:${creds.account}/${path}`, err) }
     }
   } catch (err) {
-    fail('imap', err)
+    fail(`imap:${creds.account}`, err)
   } finally {
     try { await client.logout() } catch { /* already gone */ }
+  }
   }
 
   // ── WRITE — additive, one table, conflicts ignored ───────────────────────────────────────────────
@@ -163,6 +169,8 @@ export async function POST(req: NextRequest) {
       mailbox: f.mailbox,
       uid: f.uid,
       uidvalidity: f.uidvalidity ? Number(f.uidvalidity) : null,
+      // 🔴 THE ACCOUNT IT WAS READ FROM. Without it the uid above points at nothing.
+      account: f.account,
       sent_copy: f.mailbox === OUTREACH_SENT_MAILBOX ? 'server_filed' : 'absent',
     }))
     // In chunks: one oversized statement is the thing that fails on a big mailbox.

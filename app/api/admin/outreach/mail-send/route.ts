@@ -32,6 +32,9 @@ import {
 import { messagesTableProbe, dbDetail } from '@/lib/outreach-messages-table'
 import { readFromName } from '@/lib/outreach-settings-read'
 import { validateDoc, docPlainText, literalTokenRefusal } from '@/lib/outreach-doc'
+import {
+  resolveAccounts, accountForSend, credentialsFor, accountOfRow, type AccountSet,
+} from '@/lib/outreach-mail-accounts'
 import { prospectRefusal, retryRefusal, startsNewThread } from '@/lib/outreach-send-rules'
 
 export const runtime = 'nodejs'
@@ -60,6 +63,8 @@ async function messagesTable() {
 /** One `outreach_messages` row, as this route reads it back. */
 interface Row {
   id: string; prospect_id: string; direction: string; status: string; is_test: boolean
+  /** Which mailbox this message lives in. See lib/outreach-mail-accounts.ts. */
+  account?: string | null
   /** Not a column — attached in-process so `mailFor` can put it on the From header. */
   from_name?: string | null
   message_id: string; in_reply_to: string | null; references: string | null
@@ -71,13 +76,13 @@ interface ViewRow {
   id: string; direction: string; status: string; source: string
   subject: string | null; from_address: string | null; to_address: string | null
   message_date: string | null; mailbox: string | null; uid: number | null; uidvalidity: number | null
-  html_body: string | null; text_body: string | null
+  html_body: string | null; text_body: string | null; account?: string | null
 }
 
 interface ParentRow {
   message_id: string; references: string | null; subject: string | null; to_address: string | null
   message_date: string | null; html_body: string | null; text_body: string | null
-  mailbox: string | null; uid: number | null; direction?: string | null
+  mailbox: string | null; uid: number | null; direction?: string | null; account?: string | null
 }
 
 /**
@@ -96,7 +101,7 @@ interface ParentRow {
 async function threadParent(prospectId: string): Promise<ParentRow | undefined> {
   const { data } = await supabase
     .from('outreach_messages')
-    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid, direction')
+    .select('message_id, "references", subject, to_address, message_date, html_body, text_body, mailbox, uid, direction, account')
     .eq('prospect_id', prospectId).eq('is_test', false)
     .in('status', ['sent', 'uncertain', 'received'])
     .order('message_date', { ascending: false, nullsFirst: false })
@@ -115,11 +120,14 @@ async function threadParent(prospectId: string): Promise<ParentRow | undefined> 
  * shown one email and quote another.
  */
 async function parentBodies(
-  parent: ParentRow, mailUser: string, mailPass: string,
+  parent: ParentRow, accounts: AccountSet,
 ): Promise<{ html: string | null; text: string | null }> {
   if (parent.html_body) return { html: parent.html_body, text: parent.text_body }
   if (!parent.mailbox || parent.uid == null) return { html: null, text: null }
-  const c = makeImapClient(mailUser, mailPass)
+  // 🔴 THE ROW'S OWN ACCOUNT. `mailbox` + `uid` mean nothing outside the mailbox they were read from.
+  const creds = credentialsFor(accounts, accountOfRow(parent))
+  if (!creds) return { html: null, text: null }
+  const c = makeImapClient(creds.user, creds.pass)
   try {
     await c.connect()
     return await fetchBodiesByUid(c, parent.mailbox, parent.uid)
@@ -181,9 +189,15 @@ export async function POST(req: NextRequest) {
   if (!probe.ready) return refuse(probe.refusal, { migrationApplied: false })
 
   // ── REFUSAL 1b · the credentials ─────────────────────────────────────────────────────────────────
-  const mailUser = process.env.OUTREACH_MAIL_USER
-  const mailPass = process.env.OUTREACH_MAIL_PASSWORD
-  if (!mailUser || !mailPass) return refuse('The mailbox credentials are not set on this environment, so nothing can be sent.')
+  // 🔴 THE SEND ASKS FOR THE PRIMARY ACCOUNT AND CANNOT BE HANDED THE LEGACY ONE. `accountForSend`
+  // returns `dominic` when it is configured and `hello` otherwise — which is the fallback that makes
+  // this deploy a no-op until Dominic adds the variables. There is no parameter here through which a
+  // caller could name `hello` once `dominic` exists.
+  const accounts = resolveAccounts()
+  const sender = accountForSend(accounts)
+  if (!sender) return refuse('The mailbox credentials are not set on this environment, so nothing can be sent.')
+  const mailUser = sender.user
+  const mailPass = sender.pass
   // ⚠️ NEVER RETURNED, NEVER LOGGED. Only its presence is ever reported.
   const testRecipient = process.env.OUTREACH_TEST_RECIPIENT
   if (isTest && !testRecipient) return refuse('OUTREACH_TEST_RECIPIENT is not set on this environment, so a test cannot be sent.')
@@ -196,7 +210,13 @@ export async function POST(req: NextRequest) {
     if (!row) return refuse('That message is not in the log any more.')
     const stop = retryRefusal(row, body.confirm_uncertain === true)
     if (stop) return refuse(stop.refusal, stop.needsConfirm ? { needsConfirm: true } : {})
-    const retried = await deliver(supabase, { ...row, from_name: await readFromName(supabase) }, { mailUser, mailPass, isTest: row.is_test, testRecipient })
+    // 🔴 A RETRY USES THE ROW'S OWN ACCOUNT. The message was composed against one mailbox's thread and
+    // its Sent copy belongs beside the rest of that conversation; sending a legacy row's retry from the
+    // new mailbox would file the copy in the wrong Sent folder and orphan the thread.
+    const rowCreds = credentialsFor(accounts, accountOfRow(row))
+    if (!rowCreds) return refuse(`The credentials for the ${accountOfRow(row)} mailbox are not set on this environment.`)
+    const retried = await deliver(supabase, { ...row, from_name: await readFromName(supabase) },
+      { mailUser: rowCreds.user, mailPass: rowCreds.pass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
   }
 
@@ -208,7 +228,9 @@ export async function POST(req: NextRequest) {
     if (!prospectId) return NextResponse.json({ error: 'prospect_id required' }, { status: 400 })
     const parent = await threadParent(prospectId)
     if (!parent) return refuse('There is no earlier email to quote.')
-    const bodies = await parentBodies(parent, mailUser, mailPass)
+    // 🔴 THE QUOTE IS READ FROM THE PARENT'S OWN MAILBOX. A chase to a prospect whose history is in
+    // hello@ still quotes it correctly after the switch.
+    const bodies = await parentBodies(parent, accounts)
     if (!bodies.html) {
       return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
     }
@@ -233,7 +255,14 @@ export async function POST(req: NextRequest) {
     // The same bytes the send produced, which means the same display name.
     const rowWithName = { ...row, from_name: await readFromName(supabase) }
     try { raw = await composeRaw(rowWithName) } catch (err) { return refuse(`That message could not be rebuilt (${sanitiseMailError(err)}).`) }
-    const copy = await fileSentCopy(row, raw, row.message_date ? new Date(row.message_date) : new Date(), { mailUser, mailPass })
+    // 🔴 FILED IN THE ROW'S OWN ACCOUNT. A legacy message's copy belongs in hello@'s Sent folder,
+    // beside the thread it is part of — not in the new mailbox where nothing else of that conversation
+    // is. ⚠️ This is the one path on which the legacy account is still APPENDED to, and it is reachable
+    // only for a row that was SENT from it before the switch.
+    const copyCreds = credentialsFor(accounts, accountOfRow(row))
+    if (!copyCreds) return refuse(`The credentials for the ${accountOfRow(row)} mailbox are not set on this environment.`)
+    const copy = await fileSentCopy(rowWithName, raw, row.message_date ? new Date(row.message_date) : new Date(),
+      { mailUser: copyCreds.user, mailPass: copyCreds.pass })
     await supabase.from('outreach_messages').update({
       sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,
       last_error: copy.sentCopy === 'absent' ? `sent copy: ${copy.reason}` : null,
@@ -257,7 +286,7 @@ export async function POST(req: NextRequest) {
   if (action === 'view') {
     const rowId = String(body.message_row_id ?? '')
     const { data: existing } = await supabase.from('outreach_messages')
-      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body')
+      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body, account')
       .eq('id', rowId).maybeSingle()
     const row = existing as ViewRow | null
     if (!row) return refuse('That message is not in the log any more.')
@@ -274,7 +303,11 @@ export async function POST(req: NextRequest) {
     if (!row.mailbox || row.uid == null) {
       return refuse('This email has no stored copy and no mailbox reference, so there is nothing to open. Run Import past emails.')
     }
-    const c = makeImapClient(mailUser, mailPass)
+    // 🔴 VIEW OPENS THE ROW'S OWN ACCOUNT. An email imported from hello@ in September still opens
+    // after the switch, because it is read from hello@ — where its uid still means what it meant.
+    const viewCreds = credentialsFor(accounts, accountOfRow(row))
+    if (!viewCreds) return refuse(`The credentials for the ${accountOfRow(row)} mailbox are not set on this environment, so that email cannot be opened.`)
+    const c = makeImapClient(viewCreds.user, viewCreds.pass)
     try {
       await c.connect()
       const fetched = await fetchMessageForView(c, row.mailbox, row.uid, row.uidvalidity)
@@ -438,7 +471,7 @@ export async function POST(req: NextRequest) {
     // the importer records an Outlook message's headers and leaves the body in the mailbox, where it
     // already is. So it is read back from Sent by uid, READ-ONLY. Only when neither source has it is
     // the chase refused, because a reply quoting nothing is not the email Dominic thinks he is sending.
-    const { html: quotedHtml, text: quotedText } = await parentBodies(parentRow, mailUser, mailPass)
+    const { html: quotedHtml, text: quotedText } = await parentBodies(parentRow, accounts)
     if (!quotedHtml) {
       return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
     }
@@ -480,6 +513,9 @@ export async function POST(req: NextRequest) {
     status: 'sending',
     is_test: isTest,
     source: 'system',
+    // 🔴 EXPLICIT, BECAUSE THE COLUMN HAS NO DEFAULT. An insert that forgot it fails loudly rather than
+    // silently claiming the wrong mailbox — which is why the migration declines to give it one.
+    account: sender.account,
     message_id: messageId,
     in_reply_to: built.inReplyTo,
     references: built.references,

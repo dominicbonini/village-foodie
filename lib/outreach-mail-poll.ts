@@ -24,19 +24,33 @@ import { logOutreachContact } from '@/lib/outreach-contact-log'
 import { deliver, fileSentCopy, type DeliverRow } from '@/lib/outreach-mail-deliver'
 import { composeRaw } from '@/lib/outreach-mail-envelope'
 import { readFromName } from '@/lib/outreach-settings-read'
-import { dbDetail } from '@/lib/outreach-messages-table'
 import {
-  planFetch, advanceWatermark, lockIsHeld, classifyIncoming, matchIncoming, matchOutgoing,
+  planFetch, advanceWatermark, classifyIncoming, matchIncoming, matchOutgoing,
   bouncedOriginalId, stripQuotedHistory, isStuckSending, shouldAutoRetry, isOwnAddress,
   type PollState, type IncomingHeaders,
 } from '@/lib/outreach-mail-poll-rules'
+import {
+  claimPollLock, releasePollLock, insertMessageOnce, claimRetry,
+} from '@/lib/outreach-poll-claims'
+import {
+  resolveAccounts, credentialsFor, accountOfRow,
+  type MailAccount, type AccountCredentials, type AccountSet,
+} from '@/lib/outreach-mail-accounts'
 
 /** The mailboxes walked for incoming mail, and the one walked for Dominic's own Outlook-sent mail. */
 export const INCOMING_MAILBOXES = ['INBOX', 'Spam', 'Archive'] as const
 export const POLL_MAILBOXES = [...INCOMING_MAILBOXES, OUTREACH_SENT_MAILBOX] as const
 
-const STATE_KEY = 'mail_poll_state'
-const LOCK_KEY = 'mail_poll_lock'
+/**
+ * 🔴 ONE WATERMARK SET PER ACCOUNT, AND THE LEGACY KEY IS UNCHANGED. `hello`'s watermarks stay under
+ * `mail_poll_state`, exactly where Build 2 put them, so the switch does not make the poll re-read
+ * hello@'s recent mail as if it were new. `dominic` gets its own key and therefore its own first look,
+ * which baselines and processes nothing older — the same rule, applied to a mailbox that is new to us.
+ */
+const STATE_KEY: Record<MailAccount, string> = {
+  hello: 'mail_poll_state',
+  dominic: 'mail_poll_state_dominic',
+}
 /** A hard ceiling per mailbox per run, so one enormous backlog cannot run past the function timeout. */
 const MAX_PER_MAILBOX = 200
 
@@ -76,24 +90,9 @@ async function writeSetting(supabase: SupabaseClient, key: string, value: unknow
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
 }
 
-/**
- * 🔴 TAKE THE LOCK, OR DO NOTHING. The cron runs every ten minutes and the button can be pressed at
- * any moment; two runs reading the same new reply would each insert a message row — unique on
- * `message_id`, so the second fails — but the CONTACT LOG has no such constraint, and the reply would
- * be logged twice. One reply, two rungs, and a ladder that cannot be read.
- * ⚠️ IT EXPIRES. A container frozen mid-poll never releases its lock, and a lock only a healthy run
- * can clear is a lock that turns one bad invocation into a permanent outage of the feature.
- */
-async function takeLock(supabase: SupabaseClient, now: Date): Promise<boolean> {
-  const held = await readSetting(supabase, LOCK_KEY)
-  const takenAt = (held as { takenAt?: string } | null)?.takenAt ?? null
-  if (lockIsHeld(takenAt, now)) return false
-  await writeSetting(supabase, LOCK_KEY, { takenAt: now.toISOString() })
-  return true
-}
-async function releaseLock(supabase: SupabaseClient): Promise<void> {
-  try { await writeSetting(supabase, LOCK_KEY, { takenAt: null }) } catch { /* the stale check covers it */ }
-}
+/* 🔴 `takeLock` WAS HERE AND IT WAS NOT ATOMIC. It READ the lock, decided it was free, and THEN wrote
+ * it — so two runs a millisecond apart both read "free" and both proceeded. `claimPollLock` in
+ * `lib/outreach-poll-claims.ts` replaces it with statements that are themselves the test. */
 
 // ── WHO IS WHO ──────────────────────────────────────────────────────────────────────────────────────
 interface Directory {
@@ -161,7 +160,7 @@ function headersOf(raw: string, subject: string | null, from: string | null): In
  * empty mailbox throws "Command failed" — that is what produced the first diagnostics run's two errors.
  */
 async function walkMailbox(
-  client: ImapFlow, path: string, state: PollState, summary: PollSummary,
+  client: ImapFlow, path: string, state: PollState, summary: PollSummary, label: string,
   onMessage: (m: SeenMessage) => Promise<void>,
 ): Promise<void> {
   const res = await withReadOnlyMailbox(client, path, async () => {
@@ -172,11 +171,11 @@ async function walkMailbox(
     if (plan.mode === 'baseline') {
       // 🔴 NOTHING OLD IS PROCESSED, EVER. See `planFetch`.
       state[path] = { uidvalidity, lastUid: plan.lastUid }
-      summary.baselined.push(path)
+      summary.baselined.push(label)
       return
     }
     if (plan.mode === 'none') { state[path] = { uidvalidity, lastUid: highestUid }; return }
-    if (plan.mode === 'rescan') summary.rescanned.push(path)
+    if (plan.mode === 'rescan') summary.rescanned.push(label)
 
     const query = plan.mode === 'rescan'
       ? { since: new Date(Date.now() - plan.sinceDays * 86_400_000) }
@@ -204,7 +203,7 @@ async function walkMailbox(
   if (res.skipped) {
     // An empty mailbox is a state, not a failure — but its watermark still has to exist.
     const c = await mailboxCount(client, path)
-    if (c === 0 && !state[path]) summary.baselined.push(path)
+    if (c === 0 && !state[path]) summary.baselined.push(label)
   }
 }
 
@@ -248,85 +247,117 @@ export async function runReplyPoll(supabase: SupabaseClient): Promise<PollSummar
   const now = new Date()
   const fail = (step: string, err: unknown) => { summary.errors.push({ step, error: sanitiseMailError(err) }) }
 
-  const user = process.env.OUTREACH_MAIL_USER
-  const pass = process.env.OUTREACH_MAIL_PASSWORD
-  if (!user || !pass) return { ...summary, ok: false, skipped: 'The mailbox credentials are not set on this environment.' }
+  // 🔴 EVERY CONFIGURED ACCOUNT, LEGACY FIRST. With only `hello` set this is exactly Build 2's run;
+  // with both, hello@ is still WALKED — read-only — because replies to old threads still land there.
+  const accounts = resolveAccounts()
+  if (!accounts.configured.length) {
+    return { ...summary, ok: false, skipped: 'The mailbox credentials are not set on this environment.' }
+  }
 
-  if (!(await takeLock(supabase, now))) {
+  // 🔴 ATOMIC. `claimPollLock` is one statement that both tests and acts; the read-then-write version
+  // it replaces let two runs a millisecond apart both decide the lock was free.
+  if (!(await claimPollLock(supabase, now))) {
     return { ...summary, ok: true, skipped: 'Another check is already running — nothing was done.' }
   }
 
   try {
     const dir = await loadDirectory(supabase)
-    const state = ((await readSetting(supabase, STATE_KEY)) ?? {}) as PollState
 
-    const client = makeImapClient(user, pass)
-    try {
-      await client.connect()
-
-      // ── INCOMING ────────────────────────────────────────────────────────────────────────────────
-      for (const path of INCOMING_MAILBOXES) {
-        try {
-          await walkMailbox(client, path, state, summary, async m => {
-            if (!m.messageId) return                       // nothing to be idempotent on
-            if (m.from.some(isOwnAddress)) return          // our own mail is not a reply to us
-            const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
-            const match = matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress)
-            if (match.kind === 'ambiguous') { summary.ambiguous++; return }
-            if (match.kind === 'none') { summary.unmatched++; return }
-            if (dir.skip.has(match.prospectId)) return     // a linked HatchGrab truck: never auto-logged
-            // 🔴 IDEMPOTENT ON message_id. A message the importer already recorded is skipped here and
-            // never logged a second time; so is one this poll saw on a previous run.
-            if (dir.byMessageId.has(m.messageId)) return
-
-            const kind = classifyIncoming(h)
-            if (kind === 'bounce') { await handleBounce(supabase, client, dir, m, h, path, summary); return }
-            if (kind === 'auto_reply') { await handleAutoReply(supabase, dir, m, path, match.prospectId, summary); return }
-            await handleReply(supabase, client, dir, m, path, match.prospectId, summary)
-          })
-        } catch (err) { fail(`mailbox:${path}`, err) }
-      }
-
-      // ── OUTLOOK-SENT MAIL ───────────────────────────────────────────────────────────────────────
-      try {
-        await walkMailbox(client, OUTREACH_SENT_MAILBOX, state, summary, async m => {
-          if (!m.messageId) return
-          if (dir.byMessageId.has(m.messageId)) return     // a system send already has its row
-          const match = matchOutgoing(m.to, dir.byAddress)
-          if (match.kind === 'ambiguous') { summary.ambiguous++; return }
-          if (match.kind === 'none') { summary.unmatched++; return }
-          if (dir.skip.has(match.prospectId)) return
-          await handleOutlookSent(supabase, dir, m, match.prospectId, summary)
-        })
-      } catch (err) { fail(`mailbox:${OUTREACH_SENT_MAILBOX}`, err) }
-    } catch (err) {
-      fail('imap', err)
-    } finally {
-      // 🔴 ALWAYS. A leaked IMAP connection is a session the mail host counts against a small limit.
-      try { await client.logout() } catch { /* already gone */ }
+    for (const creds of accounts.configured) {
+      try { await pollOneAccount(supabase, creds, dir, summary) }
+      catch (err) { fail(`account:${creds.account}`, err) }
     }
 
-    await writeSetting(supabase, STATE_KEY, state)
-
     // ── HOUSEKEEPING ──────────────────────────────────────────────────────────────────────────────
-    try { await housekeeping(supabase, { mailUser: user, mailPass: pass }, now, summary) }
+    try { await housekeeping(supabase, accounts, now, summary) }
     catch (err) { fail('housekeeping', err) }
   } catch (err) {
     fail('poll', err)
     summary.ok = false
   } finally {
-    await releaseLock(supabase)
+    await releasePollLock(supabase)
   }
   return summary
 }
 
+/**
+ * One account: its own IMAP connection, its own watermarks, the same rules.
+ * ⚠️ THE MATCHING, CLASSIFYING, LINKED-TRUCK SKIP AND OWN-ADDRESS RULES ARE UNCHANGED and are shared
+ * between the accounts — a reply is a reply whichever mailbox it lands in.
+ */
+async function pollOneAccount(
+  supabase: SupabaseClient, creds: AccountCredentials, dir: Directory, summary: PollSummary,
+): Promise<void> {
+  const fail = (step: string, err: unknown) => { summary.errors.push({ step, error: sanitiseMailError(err) }) }
+  const stateKey = STATE_KEY[creds.account]
+  const state = ((await readSetting(supabase, stateKey)) ?? {}) as PollState
+  const label = (path: string) => `${creds.account}/${path}`
+
+  const client = makeImapClient(creds.user, creds.pass)
+  try {
+    await client.connect()
+
+    // ── INCOMING ──────────────────────────────────────────────────────────────────────────────────
+    for (const path of INCOMING_MAILBOXES) {
+      try {
+        await walkMailbox(client, path, state, summary, label(path), async m => {
+          if (!m.messageId) return                       // nothing to be idempotent on
+          if (m.from.some(isOwnAddress)) return          // our own mail is not a reply to us
+          const h = headersOf(m.raw, m.subject, m.from[0] ?? null)
+          // 🔴 THREADING LOOKS ACROSS BOTH ACCOUNTS. `dir.byMessageId` is built from every row in the
+          // table, so a reply arriving at dominic@ to an email sent from hello@ still matches its
+          // thread — which is the common case for weeks after the switch.
+          const match = matchIncoming({ get: h.get, fromAddress: h.fromAddress }, dir.byMessageId, dir.byAddress)
+          if (match.kind === 'ambiguous') { summary.ambiguous++; return }
+          if (match.kind === 'none') { summary.unmatched++; return }
+          if (dir.skip.has(match.prospectId)) return     // a linked HatchGrab truck: never auto-logged
+          // ⚠️ A CHEAP PRE-CHECK, NOT THE GUARD. It saves a round trip for the overwhelmingly common
+          // case of a message seen on an earlier run. The GUARD is the insert itself — see
+          // `insertMessageOnce`, and the note on the defect it fixes.
+          if (dir.byMessageId.has(m.messageId)) return
+
+          const kind = classifyIncoming(h)
+          if (kind === 'bounce') { await handleBounce(supabase, client, dir, m, h, path, creds.account, summary); return }
+          if (kind === 'auto_reply') { await handleAutoReply(supabase, dir, m, path, creds.account, match.prospectId, summary); return }
+          await handleReply(supabase, client, dir, m, path, creds.account, match.prospectId, summary)
+        })
+      } catch (err) { fail(`mailbox:${label(path)}`, err) }
+    }
+
+    // ── OUTLOOK-SENT MAIL ─────────────────────────────────────────────────────────────────────────
+    try {
+      await walkMailbox(client, OUTREACH_SENT_MAILBOX, state, summary, label(OUTREACH_SENT_MAILBOX), async m => {
+        if (!m.messageId) return
+        if (dir.byMessageId.has(m.messageId)) return     // a system send already has its row
+        const match = matchOutgoing(m.to, dir.byAddress)
+        if (match.kind === 'ambiguous') { summary.ambiguous++; return }
+        if (match.kind === 'none') { summary.unmatched++; return }
+        if (dir.skip.has(match.prospectId)) return
+        await handleOutlookSent(supabase, dir, m, creds.account, match.prospectId, summary)
+      })
+    } catch (err) { fail(`mailbox:${label(OUTREACH_SENT_MAILBOX)}`, err) }
+  } catch (err) {
+    fail(`imap:${creds.account}`, err)
+  } finally {
+    // 🔴 ALWAYS. A leaked IMAP connection is a session the mail host counts against a small limit.
+    try { await client.logout() } catch { /* already gone */ }
+  }
+
+  await writeSetting(supabase, stateKey, state)
+}
+
 // ── THE THREE INCOMING OUTCOMES ─────────────────────────────────────────────────────────────────────
-const messageRow = (m: SeenMessage, path: string, prospectId: string, status: string, direction: string) => ({
+const messageRow = (
+  m: SeenMessage, path: string, account: MailAccount, prospectId: string, status: string, direction: string,
+) => ({
   prospect_id: prospectId,
   direction,
   status,
   is_test: false,
   source: 'poll',
+  // 🔴 THE ACCOUNT IT WAS FOUND IN, EXPLICITLY. `mailbox` + `uid` are meaningless without it, and the
+  // column has no default precisely so that an insert cannot forget.
+  account,
   message_id: m.messageId!,
   in_reply_to: null as string | null,
   subject: m.subject,
@@ -343,10 +374,14 @@ const messageRow = (m: SeenMessage, path: string, prospectId: string, status: st
  * The message row is still written, so the Emails list shows what arrived and View can open it.
  */
 async function handleAutoReply(
-  supabase: SupabaseClient, dir: Directory, m: SeenMessage, path: string, prospectId: string, summary: PollSummary,
+  supabase: SupabaseClient, dir: Directory, m: SeenMessage, path: string, account: MailAccount,
+  prospectId: string, summary: PollSummary,
 ) {
-  const { error } = await supabase.from('outreach_messages').insert(messageRow(m, path, prospectId, 'auto_reply', 'inbound'))
-  if (error) { summary.errors.push({ step: 'auto_reply', error: dbDetail(error) }); return }
+  const made = await insertMessageOnce(supabase, messageRow(m, path, account, prospectId, 'auto_reply', 'inbound'))
+  if (!made.created) {
+    if (made.error) summary.errors.push({ step: 'auto_reply', error: made.error })
+    return
+  }
   dir.byMessageId.set(m.messageId!, prospectId)
   summary.autoReplies++
 }
@@ -358,7 +393,7 @@ async function handleAutoReply(
  */
 async function handleBounce(
   supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage,
-  h: IncomingHeaders, path: string, summary: PollSummary,
+  h: IncomingHeaders, path: string, account: MailAccount, summary: PollSummary,
 ) {
   const returned = await readReturnedPart(client, m.uid)
   const originalId = bouncedOriginalId(returned, h)
@@ -370,11 +405,14 @@ async function handleBounce(
       .update({ status: 'bounced', updated_at: new Date().toISOString() })
       .eq('message_id', originalId).eq('direction', 'outbound')
   }
-  const { error } = await supabase.from('outreach_messages').insert({
-    ...messageRow(m, path, prospectId, 'bounce', 'inbound'),
+  const made = await insertMessageOnce(supabase, {
+    ...messageRow(m, path, account, prospectId, 'bounce', 'inbound'),
     in_reply_to: originalId,
   })
-  if (error) { summary.errors.push({ step: 'bounce', error: dbDetail(error) }); return }
+  if (!made.created) {
+    if (made.error) summary.errors.push({ step: 'bounce', error: made.error })
+    return
+  }
   dir.byMessageId.set(m.messageId!, prospectId)
   summary.bounces++
 }
@@ -387,14 +425,25 @@ async function handleBounce(
  */
 async function handleReply(
   supabase: SupabaseClient, client: ImapFlow, dir: Directory, m: SeenMessage,
-  path: string, prospectId: string, summary: PollSummary,
+  path: string, account: MailAccount, prospectId: string, summary: PollSummary,
 ) {
   const text = await readText(client, path, m.uid)
-  const { data: inserted, error } = await supabase.from('outreach_messages').insert({
-    ...messageRow(m, path, prospectId, 'received', 'inbound'),
+  // 🔴 THE INSERT IS THE GATE, AND THIS IS THE FIX FOR THE BUILD-2 DEFECT. The old code checked an
+  // IN-MEMORY map built at the start of the run, inserted, and then wrote the contact row whatever the
+  // insert did. Two overlapping runs each built that map before either inserted, so both thought the
+  // reply was new; the second INSERT failed on the unique `message_id` — and the code logged the
+  // contact anyway. `outreach_contacts` has no such constraint, so one reply became two rungs and §57
+  // read that ladder. Now only the run whose own insert RETURNED a row goes on to log.
+  const made = await insertMessageOnce(supabase, {
+    ...messageRow(m, path, account, prospectId, 'received', 'inbound'),
     text_body: text,
-  }).select('id').single()
-  if (error) { summary.errors.push({ step: 'reply', error: dbDetail(error) }); return }
+  })
+  if (!made.created) {
+    // ⚠️ NOT AN ERROR WHEN THE ROW SIMPLY EXISTS. Another run recorded this reply a moment ago; it is
+    // logged, and logging it again is the exact thing being prevented.
+    if (made.error) summary.errors.push({ step: 'reply', error: made.error })
+    return
+  }
   dir.byMessageId.set(m.messageId!, prospectId)
   dir.hasReply.add(prospectId)
 
@@ -408,8 +457,7 @@ async function handleReply(
   })
   if (!logged.ok) { summary.errors.push({ step: 'reply-log', error: logged.error ?? 'unknown' }); return }
   if (logged.id) {
-    await supabase.from('outreach_messages')
-      .update({ contact_id: logged.id }).eq('id', (inserted as { id: string }).id)
+    await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', made.id)
   }
   summary.repliesLogged++
 }
@@ -422,13 +470,18 @@ async function handleReply(
  * file the message is recorded and nothing is logged — the record is still useful, the inference is not.
  */
 async function handleOutlookSent(
-  supabase: SupabaseClient, dir: Directory, m: SeenMessage, prospectId: string, summary: PollSummary,
+  supabase: SupabaseClient, dir: Directory, m: SeenMessage, account: MailAccount,
+  prospectId: string, summary: PollSummary,
 ) {
-  const { data: inserted, error } = await supabase.from('outreach_messages').insert({
-    ...messageRow(m, OUTREACH_SENT_MAILBOX, prospectId, 'sent', 'outbound'),
+  // 🔴 THE SAME GATE AS A REPLY, for the same reason: this path logs a contact too.
+  const made = await insertMessageOnce(supabase, {
+    ...messageRow(m, OUTREACH_SENT_MAILBOX, account, prospectId, 'sent', 'outbound'),
     sent_copy: 'server_filed',
-  }).select('id').single()
-  if (error) { summary.errors.push({ step: 'outlook_sent', error: dbDetail(error) }); return }
+  })
+  if (!made.created) {
+    if (made.error) summary.errors.push({ step: 'outlook_sent', error: made.error })
+    return
+  }
   dir.byMessageId.set(m.messageId!, prospectId)
   summary.outlookSentRecorded++
   if (!dir.hasReply.has(prospectId)) return
@@ -437,8 +490,7 @@ async function handleOutlookSent(
     message: m.subject ?? '', contacted_at: m.date,
   })
   if (logged.ok && logged.id) {
-    await supabase.from('outreach_messages')
-      .update({ contact_id: logged.id }).eq('id', (inserted as { id: string }).id)
+    await supabase.from('outreach_messages').update({ contact_id: logged.id }).eq('id', made.id)
   }
 }
 
@@ -453,11 +505,11 @@ interface HouseRow extends DeliverRow {
 }
 
 async function housekeeping(
-  supabase: SupabaseClient, env: { mailUser: string; mailPass: string }, now: Date, summary: PollSummary,
+  supabase: SupabaseClient, accounts: AccountSet, now: Date, summary: PollSummary,
 ) {
   const { data } = await supabase
     .from('outreach_messages')
-    .select('id, message_id, in_reply_to, "references", subject, to_address, message_date, html_body, text_body, attempts, status, is_test, last_error, created_at, updated_at, sent_copy')
+    .select('id, message_id, in_reply_to, "references", subject, to_address, message_date, html_body, text_body, attempts, status, is_test, last_error, created_at, updated_at, sent_copy, account')
     .eq('direction', 'outbound')
     .in('status', ['sending', 'failed', 'sent'])
     .order('created_at', { ascending: false })
@@ -478,8 +530,16 @@ async function housekeeping(
     }
     // 2 · a temporary failure, recent, under the attempt ceiling
     if (shouldAutoRetry(row, now)) {
+      // 🔴 CLAIM IT FIRST, ATOMICALLY. `failed` → `sending` in one statement filtered on `failed`:
+      // whoever's update returns a row owns the retry, and the loser's update matches nothing. Without
+      // this, two overlapping polls could each re-send the same email to the same prospect.
+      if (!(await claimRetry(supabase, row.id, now))) continue
+      // ⚠️ THE ROW'S OWN ACCOUNT, not the primary — a legacy message retries from the mailbox its
+      // thread lives in.
+      const creds = credentialsFor(accounts, accountOfRow(row))
+      if (!creds) { summary.errors.push({ step: 'retry', error: `no credentials for the ${accountOfRow(row)} mailbox` }); continue }
       const result = await deliver(supabase, { ...row, from_name: fromName }, {
-        mailUser: env.mailUser, mailPass: env.mailPass, isTest: row.is_test,
+        mailUser: creds.user, mailPass: creds.pass, isTest: row.is_test,
       })
       summary.retried++
       // ⚠️ LOGGED EXACTLY AS A MANUAL SEND WOULD BE, including the rule that a test never logs.
@@ -501,11 +561,14 @@ async function housekeeping(
     }
     // 3 · a sent message with no copy in Sent
     if (row.status === 'sent' && row.sent_copy === 'absent' && !row.is_test) {
+      const creds = credentialsFor(accounts, accountOfRow(row))
+      if (!creds) continue
       try {
         const raw = await composeRaw({ ...row, from_name: fromName })
         const copy = await fileSentCopy(
           { ...row, from_name: fromName }, raw,
-          row.message_date ? new Date(row.message_date) : new Date(), env,
+          row.message_date ? new Date(row.message_date) : new Date(),
+          { mailUser: creds.user, mailPass: creds.pass },
         )
         await supabase.from('outreach_messages').update({
           sent_copy: copy.sentCopy, mailbox: copy.mailbox, uid: copy.uid, uidvalidity: copy.uidvalidity,

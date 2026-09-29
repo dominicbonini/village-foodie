@@ -20,6 +20,9 @@ import { makeImapClient, findInSent, appendToSent, sanitiseMailError } from '@/l
 /** The columns a send needs off an `outreach_messages` row. */
 export interface DeliverRow {
   id: string
+  /** 🔴 WHICH MAILBOX THIS MESSAGE BELONGS TO. A retry and a Save-to-Sent use the ROW'S account, not
+   *  the primary — the copy has to go where the rest of that thread already is. */
+  account?: string | null
   message_id: string
   in_reply_to: string | null
   references: string | null

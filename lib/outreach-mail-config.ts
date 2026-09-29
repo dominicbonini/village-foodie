@@ -65,3 +65,12 @@ export const OUTREACH_TZ = 'Europe/London'
  *  worst case is 30s of checks against a 30s budget — the checks cannot outlive the handler and leave the
  *  platform to kill it mid-write. See §35: a route that blocks for tens of seconds declares its own. */
 export const OUTREACH_MAIL_CHECK_TIMEOUT_MS = 10_000
+
+// ── 🔴 TWO MAILBOXES, FROM 29 SEPTEMBER 2026 ───────────────────────────────────────────────────────
+// `dominic@hatchgrab.com` is now a mailbox in its own right rather than an alias on `hello@`, and
+// replies addressed to it arrive there. `lib/outreach-mail-accounts.ts` owns which account does what;
+// the comment above about `OUTREACH_MAIL_USER` being "the real mailbox" describes the LEGACY account
+// and remains true of it. Both accounts live on the same host and ports declared above.
+//
+// ⚠️ THE FROM ADDRESS ABOVE IS UNCHANGED AND IS THE POINT: it was an alias and is now a mailbox, so
+// what changed is who logs in, not who the mail is from. A recipient sees no difference at all.

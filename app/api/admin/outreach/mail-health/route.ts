@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import nodemailer, { type Transporter } from 'nodemailer'
 import { ImapFlow } from 'imapflow'
 import { verifyAdmin } from '@/lib/auth/admin'
+import { resolveAccounts, MAIL_ACCOUNTS, ACCOUNT_ENV } from '@/lib/outreach-mail-accounts'
 import {
   OUTREACH_MAIL_HOST,
   OUTREACH_SMTP_PORT_IMPLICIT_TLS,
@@ -193,31 +194,50 @@ export async function GET(req: NextRequest) {
   // unauthenticated caller that there is something here.
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
 
-  const user = process.env.OUTREACH_MAIL_USER
-  const password = process.env.OUTREACH_MAIL_PASSWORD
-  const envPresent = { user: !!user, password: !!password }
+  // 🔴 EVERY CONFIGURED ACCOUNT, LABELLED, AND WHICH ONE IS PRIMARY. Two mailboxes means two ways for
+  // this to be half-working: the primary's password wrong and nothing sends, or the legacy's wrong and
+  // every old email stops opening. A single combined verdict would hide whichever one is fine.
+  const accounts = resolveAccounts()
+  const envPresent = Object.fromEntries(MAIL_ACCOUNTS.map(a => [a, {
+    user: !!(process.env[ACCOUNT_ENV[a].user] ?? '').trim(),
+    password: !!process.env[ACCOUNT_ENV[a].pass],
+  }]))
 
   // ⚠️ BOOLEANS, AND NOTHING IS ATTEMPTED. Reporting the values — even the username — would put a
-  // credential in an admin's browser history for no diagnostic gain: "is it set" is the whole question at
-  // this stage, and a connection attempt with a missing half would fail for a reason that says nothing.
-  if (!user || !password) {
+  // credential in an admin's browser history for no diagnostic gain: "is it set" is the whole question
+  // at this stage, and a connection attempt with a missing half would fail for a reason that says
+  // nothing.
+  if (!accounts.configured.length) {
     return NextResponse.json({
       region: process.env.VERCEL_REGION ?? null,
+      primary: null,
+      primaryConfigured: false,
       envPresent,
+      accounts: [],
     })
   }
 
-  // IN SEQUENCE, not in parallel: three simultaneous logins from one IP is what a mail host's brute-force
-  // heuristics are built to notice, and the whole point of this route is to be allowed to log in.
-  const smtp465 = await checkSmtp(OUTREACH_SMTP_PORT_IMPLICIT_TLS, false, user, password)
-  const smtp587 = await checkSmtp(OUTREACH_SMTP_PORT_STARTTLS, true, user, password)
-  const imap = await checkImap(user, password)
+  // IN SEQUENCE, not in parallel — across accounts as well as within one. Six simultaneous logins from
+  // one IP is exactly what a mail host's brute-force heuristics are built to notice, and the whole
+  // point of this route is to be allowed to log in.
+  const results: unknown[] = []
+  for (const creds of accounts.configured) {
+    const smtp465 = await checkSmtp(OUTREACH_SMTP_PORT_IMPLICIT_TLS, false, creds.user, creds.pass)
+    const smtp587 = await checkSmtp(OUTREACH_SMTP_PORT_STARTTLS, true, creds.user, creds.pass)
+    const imap = await checkImap(creds.user, creds.pass)
+    results.push({
+      account: creds.account,
+      // ⚠️ THE ROLE, NOT THE ADDRESS. Which account it is, is a label; the address is a credential half.
+      role: creds.account === accounts.primary?.account ? 'primary' : 'legacy',
+      smtp465, smtp587, imap,
+    })
+  }
 
   return NextResponse.json({
     region: process.env.VERCEL_REGION ?? null,
+    primary: accounts.primary?.account ?? null,
+    primaryConfigured: accounts.primaryConfigured,
     envPresent,
-    smtp465,
-    smtp587,
-    imap,
+    accounts: results,
   })
 }
