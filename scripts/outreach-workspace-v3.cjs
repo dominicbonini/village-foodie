@@ -271,16 +271,24 @@ const contact = (over = {}) => ({
   console.log('\n── NOTES ARE ALWAYS THERE ───────────────────────────────────────────────────────────────')
   {
     const PAGE = read('components/admin/ProspectWorkspace.tsx')
-    check(/function AboutCard\(/.test(PAGE) && /About this truck/.test(PAGE),
-      '🔴 the standing notes are a labelled "About this truck" box…')
-    check(/<textarea rows=\{6\}/.test(PAGE), '…of six rows…')
+    /* 🔴 SIX CHECKS WERE REMOVED HERE ON 30 SEPTEMBER 2026 (v3 fixes), AND THEY ARE NAMED RATHER
+     * THAN QUIETLY DELETED, because what they asserted was a SHAPE that has been merged away:
+     *   • 'the standing notes are a labelled "About this truck" box…'
+     *   • '…of six rows…'
+     *   • '…with a confirmation after Save'
+     *   • 'and "Add a note" is always visible beneath it'   (`function AddNoteCard(`)
+     *   • '…writing through the existing note path'          (`prospect_id: prospectId`)
+     *   • '⚠️ …writing the SAME `notes` column — no new one'  (still true, moved)
+     * v3 split the left column into two boxes — one over the `notes` COLUMN, one over the timeline
+     * — and at the moment of writing "rang, he is at Boxpark on Fridays" the page asked which of
+     * them the sentence was for. There is one box now, and it writes a dated note.
+     * ⚠️ WHAT THOSE CHECKS PROTECTED IS RE-ASSERTED, AND HARDER, in
+     * `scripts/outreach-workspace-v3-fixes.cjs`: the note box floors at TEN rows and grows, the
+     * `notes` column survives in full as "Earlier notes", it is written in exactly ONE place on
+     * the page, and nothing copies it into a note. Only the two names are gone.
+     * ⚠️ THE TWO KEPT BELOW ARE THE ONES ABOUT THE ONE BOX, and they still hold. */
     check(/fieldSizing: 'content'/.test(PAGE), '…that grows with what is in it')
-    check(/onPatch\(\{ notes: text \|\| null \}\)/.test(PAGE),
-      '⚠️ …writing the SAME `notes` column — no new one')
-    check(/\{saved && <span[^>]*>saved<\/span>\}/.test(PAGE.replace(/\s+/g, ' ')) || /saved<\/span>/.test(PAGE),
-      '…with a confirmation after Save')
-    check(/function AddNoteCard\(/.test(PAGE), '🔴 and "Add a note" is always visible beneath it')
-    check(/action: 'add_note', prospect_id: prospectId/.test(PAGE),
+    check(/action: 'add_note', prospect_id: p\.id/.test(PAGE),
       '…writing through the existing note path, into the history')
     // 🔴 THE NOTE TAB IS GONE.
     const stripped = stripComments(PAGE)
@@ -301,10 +309,20 @@ const contact = (over = {}) => ({
     eq([W.COL_LEFT_WIDE_PX, W.COL_RIGHT_WIDE_PX], [420, 320], '…420 / 320 on a 1920 monitor')
     eq(W.WIDE_AT_PX, 1920, '…which is where the step is')
     eq([W.THREE_COL_AT_PX, W.TWO_COL_AT_PX], [1024, 768], '⚠️ the column COUNT breakpoints are unchanged')
+    /* 🔴 TWO CHECKS RESTATED HERE ON 30 SEPTEMBER 2026 (v3 fixes), with the reason:
+     *   • '🔴 fixed sides, fluid centre, from those constants' — it matched the TEMPLATE STRING
+     *     that the page built inline. The page no longer builds one: the whole decision is
+     *     `gridTemplateFor(width)` in the lib, because a template assembled beside a
+     *     `max-lg:grid-cols-1` class that could never beat it is how a phone was served a
+     *     380/1fr/280 grid for two builds without any check noticing.
+     *   • '…and the step is read from the window' — it pinned `window.innerWidth >= WIDE_AT_PX`.
+     *     The page still reads `window.innerWidth`; what it does with it moved into the function.
+     * ⚠️ BOTH ARE NOW ASSERTED AGAINST THE FUNCTION ITSELF, at seven widths, in
+     * `scripts/outreach-workspace-v3-fixes.cjs` — which is a stronger statement than either
+     * string was, and one a browser was then made to agree with. */
     const PAGE = read('components/admin/ProspectWorkspace.tsx')
-    check(/\$\{wide \? COL_LEFT_WIDE_PX : COL_LEFT_PX\}px minmax\(0, 1fr\) \$\{wide \? COL_RIGHT_WIDE_PX : COL_RIGHT_PX\}px/.test(PAGE),
-      '🔴 fixed sides, fluid centre, from those constants')
-    check(/window\.innerWidth >= WIDE_AT_PX/.test(PAGE), '…and the step is read from the window')
+    check(/gridTemplateFor\(vw\)/.test(PAGE), '🔴 fixed sides, fluid centre, from ONE function…')
+    check(/window\.innerWidth/.test(PAGE), '…and the width is still read from the window')
   }
 
   console.log('\n── THE QUEUE SAYS ITS OWN NAME ──────────────────────────────────────────────────────────')

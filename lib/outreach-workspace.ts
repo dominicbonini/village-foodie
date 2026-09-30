@@ -428,3 +428,35 @@ export const THREE_COL_AT_PX = 1024
 export const TWO_COL_AT_PX = 768
 /** ⚠️ Apple's own minimum, and the reason the phone layout has no small buttons. */
 export const TOUCH_TARGET_PX = 44
+
+/**
+ * The grid's tracks, from the window width.
+ *
+ * 🔴 IT IS A FUNCTION BECAUSE A CLASS CANNOT WIN AGAINST THE INLINE STYLE BESIDE IT. The page
+ * carried `className="grid gap-4 max-lg:grid-cols-1"` AND `style={{ gridTemplateColumns: … }}` on
+ * the same element. An inline declaration beats any selector-based rule that is not `!important`,
+ * and Tailwind does not emit `!important` — so `max-lg:grid-cols-1` NEVER APPLIED, at any width,
+ * from the day it was written. A phone was being handed a 380px / 1fr / 280px grid. The harness
+ * that asserted the class was in the file passed the whole time, which is why the width→tracks
+ * decision now lives in one testable function instead of in a class that may be silently dead.
+ * ⚠️ THE BREAKPOINTS ARE THE APPROVED ONES, UNCHANGED: three columns from 1024, two from 768, and
+ * the sides step up at 1920.
+ */
+export function gridTemplateFor(width: number): string {
+  // A phone is one column, and nothing on it is a fixed width.
+  if (width < TWO_COL_AT_PX) return 'minmax(0, 1fr)'
+  const wide = width >= WIDE_AT_PX
+  const left = `${wide ? COL_LEFT_WIDE_PX : COL_LEFT_PX}px`
+  // 🔴 768–1023: TWO columns, left and centre. The right column's cards are rendered at the top of
+  // the left one at this width, so a third track would be an empty one.
+  if (width < THREE_COL_AT_PX) return `${left} minmax(0, 1fr)`
+  return `${left} minmax(0, 1fr) ${wide ? COL_RIGHT_WIDE_PX : COL_RIGHT_PX}px`
+}
+
+/**
+ * 🔴 TEN ROWS, NOT THREE. The note box is where the day's work is written down, and a three-line
+ * box says "one line is what is expected here". Ten is about what a call is worth.
+ */
+export const NOTE_BOX_ROWS = 10
+/** How many saved notes stand under the box before "Show all". */
+export const NOTES_SHOWN = 5

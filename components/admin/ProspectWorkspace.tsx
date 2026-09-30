@@ -48,7 +48,7 @@ import {
   nextAction, isTypingTarget, SHORTCUTS, type NextAction,
   composerDefault, oneClickKind, ONE_CLICK_LOGS, FOLLOW_UP_CHOICES, FOLLOW_UP_LABEL,
   followUpDateForChoice, defaultFollowUpChoice, shortDate,
-  COL_LEFT_PX, COL_LEFT_WIDE_PX, COL_RIGHT_PX, COL_RIGHT_WIDE_PX, WIDE_AT_PX,
+  gridTemplateFor, NOTE_BOX_ROWS, NOTES_SHOWN,
   type FollowUpChoice,
 } from '@/lib/outreach-workspace'
 import { readQueue, queuePosition, neighbours, prospectPath, type QueueState } from '@/lib/outreach-queue'
@@ -385,16 +385,20 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
 
   // ── LAYOUT ──────────────────────────────────────────────────────────────────────────────────────
   // 🔴 ONE LAYOUT FOR A LAPTOP AND A MONITOR: fixed side columns, fluid centre. The only thing that
-  // changes above 1800px is that the side columns get 40px and 30px more, because at that width
+  // changes above 1920px is that the side columns get 40px and 30px more, because at that width
   // they can hold their content without wrapping and the email still gets every other pixel.
-  const [wide, setWide] = useState(false)
+  // 🔴 THE WHOLE TEMPLATE COMES FROM `gridTemplateFor`, NOT JUST THE WIDTHS. It used to be three
+  // tracks at every width, with `max-lg:grid-cols-1` meant to collapse them — a class that lost to
+  // the inline style beside it and therefore never did anything. One function, one decision, and a
+  // harness can ask it what a 390px phone gets without a browser.
+  const [vw, setVw] = useState(1440)
   useEffect(() => {
-    const onResize = () => setWide(window.innerWidth >= WIDE_AT_PX)
+    const onResize = () => setVw(window.innerWidth)
     onResize()
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
-  const columns = `${wide ? COL_LEFT_WIDE_PX : COL_LEFT_PX}px minmax(0, 1fr) ${wide ? COL_RIGHT_WIDE_PX : COL_RIGHT_PX}px`
+  const columns = gridTemplateFor(vw)
 
   /** The next prospect's name, for "Up next". ⚠️ Only when the list that named it is still loaded. */
   const nextName = nav.next ? (allProspects.find(x => x.id === nav.next)?.name ?? 'the next one') : null
@@ -606,16 +610,25 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           NO generated rule at all — the compose window painting under its own modal is this
           codebase's recorded example. An inline style cannot be missing from a stylesheet.
           ⚠️ 768–1023px: two columns, and the right column's cards move to the TOP of the left one,
-          because they are the actions and the left column is reference. */}
-      <div className="grid gap-4 max-lg:grid-cols-1" style={{ gridTemplateColumns: columns }}>
+          because they are the actions and the left column is reference.
+          🔴 EXACTLY THREE DIRECT CHILDREN — left, centre, right — AND `items-start`. There were
+          four: the Demo and Files cards were their own grid item with `gridColumn: 1`, and an
+          EXPLICITLY placed item moves the auto-placement cursor past it. The centre and right
+          columns were therefore auto-placed on row TWO, level with the Demo card, with the whole
+          top-right of the page empty. The phone order that item existed for is done below with
+          `max-md:contents` instead, which promotes the left column's cards to grid items ONLY
+          under 768px — where there is one track and ordering is the whole job. */}
+      <div className="grid gap-4 items-start" style={{ gridTemplateColumns: columns }}>
         {/* ── LEFT: READ FIRST ──────────────────────────────────────────────────────────────── */}
-        {/* ⚠️ THE ORDER FLIPS TWICE ON THE WAY DOWN, and each flip is the answer to a different
-            question. On a TABLET (768–1023) the centre comes first, because the work is the point
-            and the reference column is beside it on any real screen. On a PHONE the contact card
-            comes first, because the first thing done standing in a doorway is ring somebody — and
-            the three big buttons are on it. Tailwind emits `max-md` after `max-lg`, so the
-            narrower rule wins below 768 without either needing an `!important`. */}
-        <div className="flex flex-col gap-3 min-w-0 max-lg:order-2 max-md:order-1">
+        {/* ⚠️ NO `order` ABOVE 768px, AT ALL. The tablet flip (`max-lg:order-*`, which is active
+            from 0 to 1023 and therefore on a tablet too) is gone: at 768–1023 the two tracks sit
+            side by side in source order, so there is nothing left to reorder and no rule that can
+            fight the one below it.
+            🔴 `max-md:contents` IS THE PHONE ORDER. Under 768px this container stops generating a
+            box, its four cards become grid items of the single track, and each takes its own
+            `max-md:order-*` — contact, notes, [centre], demo/files. Above 768px it is an ordinary
+            flex column and NONE of its cards is a grid item, which is the rule item 1 asks for. */}
+        <div className="flex flex-col gap-3 min-w-0 max-md:contents">
           {/* ⚠️ ON A TABLET THE ACTION CARDS COME FIRST, at the top of this column. */}
           <div className="hidden max-lg:flex max-md:hidden flex-col gap-3">
             <ActionCards
@@ -625,32 +638,33 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               queueLabel={queue?.label ?? null} busy={oneClickBusy} undo={undoable} onUndo={undoOneClick} />
           </div>
 
-          <ContactCard p={p} step={step} flags={flags} editing={editing} setEditing={setEditing}
-            onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')} />
+          {/* ⚠️ THE WRAPPERS EXIST FOR THE PHONE. Above 768px they are three plain divs in a flex
+              column and cost nothing; below it they are the grid items being ordered. */}
+          <div className="max-md:order-1">
+            <ContactCard p={p} step={step} flags={flags} editing={editing} setEditing={setEditing}
+              onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')} />
+          </div>
 
-          {/* 🔴 TWO NOTE BOXES, AND THEY ARE DIFFERENT THINGS. "About this truck" is what is always
-              true — the one `notes` column, unchanged — and it is big because it is prose somebody
-              reads before every call. "Add a note" is what happened once, on a day, and goes to the
-              timeline. They sat as one tiny two-line field and a tab. */}
-          <AboutCard p={p} onPatch={patch} />
-          <AddNoteCard prospectId={p.id} onSaved={reloadAll} />
+          {/* 🔴 ONE NOTES AREA. It was two cards — "About this truck" over the `notes` column and
+              "Add a note" over the timeline — and the split asked a question nobody wants at the
+              moment of writing something down: which of these two boxes is this sentence for. One
+              box writes a dated note; the old column is kept, read-only until you click Edit, as
+              the last entry under the list. */}
+          <div className="max-md:order-2">
+            <NotesCard p={p} timeline={timeline} onPatch={patch} onSaved={reloadAll} />
+          </div>
 
-        </div>
-
-        {/* ⚠️ THE DEMO AND THE FILES ARE REFERENCE, AND ON A PHONE THEY GO LAST — under the
-            history, not between the contact card and the composer. So they are their own grid item,
-            placed EXPLICITLY in the left track's second row.
-            🔴 `gridColumn: 1` IS NOT OPTIONAL. Auto-placement would put this in the next free cell,
-            which is under the CENTRE column — `display: contents` has the same problem, because it
-            promotes the children to grid items that are then auto-placed one after another. Below
-            1024px the grid is a single column and this is simply the last block. */}
-        <div style={{ gridColumn: 1 }} className="flex flex-col gap-3 min-w-0 max-lg:order-3">
-          <DemoCard p={p} onReload={reloadAll} onInsert={insertDemoLink} />
-          <FilesCard timeline={timeline} prospectId={p.id} onOpen={id => { setExpandedId(id); document.getElementById(`tl-${id}`)?.scrollIntoView({ block: 'center' }) }} />
+          {/* ⚠️ THE DEMO AND THE FILES ARE REFERENCE, AND ON A PHONE THEY GO LAST — under the
+              history, not between the contact card and the composer. Above 768px they are simply
+              the bottom of the left column, in the left column's own container. */}
+          <div className="flex flex-col gap-3 min-w-0 max-md:order-4">
+            <DemoCard p={p} onReload={reloadAll} onInsert={insertDemoLink} />
+            <FilesCard timeline={timeline} prospectId={p.id} onOpen={id => { setExpandedId(id); document.getElementById(`tl-${id}`)?.scrollIntoView({ block: 'center' }) }} />
+          </div>
         </div>
 
         {/* ── CENTRE: WRITE, THEN READ ──────────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 min-w-0 max-lg:order-1 max-md:order-2">
+        <div className="flex flex-col gap-3 min-w-0 max-md:order-3">
           {/* 🔴 TABS, NOT A ROW OF BUTTONS THAT OPEN THINGS. Email is the default and is already
               open; the other three are the same surface aimed elsewhere. */}
           <div className="flex items-center gap-1 border-b border-slate-200">
@@ -926,94 +940,162 @@ function ActionCards({
 const ADD_NOTE_ID = 'hg-add-note'
 
 /**
- * "About this truck" — the standing facts, and the box they were crammed into.
+ * THE NOTES AREA — one box, and everything that has been written under it.
  *
- * 🔴 IT IS THE SAME `notes` COLUMN, and no new one was added. What changed is that it was a
- * three-row field labelled "Pinned notes" with a placeholder longer than most of its contents; it
- * is now six rows that grow, with a Save button and a confirmation, because this is the text
- * Dominic reads before picking up the phone.
- * ⚠️ SAVE IS EXPLICIT NOW, NOT ON BLUR. A blur-save in a box this size loses a paragraph to a
- * mis-click on another column, and gives no sign that anything was written.
+ * 🔴 IT WAS TWO CARDS AND THAT WAS THE BUG. "About this truck" edited the `notes` COLUMN; "Add a
+ * note" wrote a dated row to `outreach_events`. Both were headed by a grey label and a textarea,
+ * and at the moment of writing "rang, he is at Boxpark on Fridays" the page asked which. The
+ * answer it should never have asked for is: a note, dated, in the history — so that is what the
+ * box does, and it is the only box.
+ *
+ * ⚠️ NOTHING IS MIGRATED, COPIED OR CLEARED. The `notes` column is read exactly as before and
+ * written only by its own Edit/Save, through the same `update_prospect` patch — the outreach LIST
+ * reads that column too, and a build that "tidied" it into the timeline would blank a column
+ * another page shows. It appears as the LAST entry, labelled "Earlier notes", and when it is empty
+ * it does not appear at all.
+ *
+ * ⚠️ THE NOTES LIST IS A VIEW OVER THE TIMELINE ALREADY LOADED, not a second fetch and not a second
+ * store — the same relationship `FilesCard` has to it.
  */
-function AboutCard({ p, onPatch }: { p: Prospect; onPatch: (patch: Record<string, unknown>) => Promise<void> }) {
-  const [text, setText] = useState(p.notes ?? '')
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  // ⚠️ RE-SEEDED WHEN THE PROSPECT CHANGES. J/K moves to another truck without remounting this.
-  useEffect(() => { void Promise.resolve().then(() => { setText(p.notes ?? ''); setSaved(false) }) }, [p.id, p.notes])
-  const dirty = text !== (p.notes ?? '')
-  const save = async () => {
-    setSaving(true)
-    try {
-      await onPatch({ notes: text || null })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2500)
-    } finally { setSaving(false) }
-  }
-  return (
-    <div className={`${CARD} p-3 flex flex-col gap-2`}>
-      <div className="flex items-center gap-2">
-        <span className={LABEL_CLS}>About this truck</span>
-        {saved && <span className="ml-auto text-[11px] font-semibold text-emerald-700">saved</span>}
-      </div>
-      {/* 🔴 SIX ROWS THAT GROW. `field-sizing: content` does the growing where the browser supports
-          it; `rows` is the floor everywhere, so nothing depends on that support. */}
-      <textarea rows={6} className={`${FIELD_CLS} resize-y`} style={{ fieldSizing: 'content' } as React.CSSProperties}
-        placeholder="What is always true of this truck — who to ask for, when they answer, what they said last time."
-        value={text} onChange={e => setText(e.target.value)} />
-      <div className="flex items-center gap-2">
-        <button type="button" onClick={() => void save()} disabled={!dirty || saving}
-          className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 min-h-11`}>
-          {saving ? 'Saving…' : 'Save'}
-        </button>
-        {dirty && <span className="text-[11px] text-slate-400">unsaved</span>}
-      </div>
-    </div>
-  )
-}
-
-/**
- * "Add a note" — always there, and it writes to the timeline.
- * 🔴 IT WAS A TAB, which meant a note cost a tab change and, if an email was half-written, a
- * confirmation dialog about discarding it. A note is three lines and a Save; it should never
- * displace what is being written.
- * ⚠️ THE SAME `add_note` PATH AS BEFORE — one note writer, one `outreach_events` row.
- */
-function AddNoteCard({ prospectId, onSaved }: { prospectId: string; onSaved: () => Promise<void> }) {
+function NotesCard({ p, timeline, onPatch, onSaved }: {
+  p: Prospect
+  timeline: TimelinePayload | null
+  onPatch: (patch: Record<string, unknown>) => Promise<void>
+  onSaved: () => Promise<void>
+}) {
   const [body, setBody] = useState('')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const [showAll, setShowAll] = useState(false)
+
+  const notes = useMemo(() => (timeline?.events ?? [])
+    .filter(e => e.kind === 'note' && String(e.body ?? '').trim())
+    .sort((a, b) => String(b.created_at ?? '').localeCompare(String(a.created_at ?? ''))),
+    [timeline])
+  const shown = showAll ? notes : notes.slice(0, NOTES_SHOWN)
+
   const save = async () => {
     if (!body.trim()) return
     setBusy(true)
     try {
+      // ⚠️ THE SAME `add_note` PATH AS BEFORE — one note writer, one `outreach_events` row, and it
+      // is the row the history renders. Nothing here knows how to write a note twice.
       const h = await nativeAuthHeader()
       await fetch('/api/admin/outreach/timeline', {
         method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
         credentials: 'same-origin',
-        body: JSON.stringify({ action: 'add_note', prospect_id: prospectId, body }),
+        body: JSON.stringify({ action: 'add_note', prospect_id: p.id, body }),
       })
       setBody(''); setDone(true); setTimeout(() => setDone(false), 2500)
       await onSaved()
     } finally { setBusy(false) }
   }
+
   return (
     <div className={`${CARD} p-3 flex flex-col gap-2`}>
       <div className="flex items-center gap-2">
-        <span className={LABEL_CLS}>Add a note</span>
+        <span className={LABEL_CLS}>Notes</span>
         {done && <span className="ml-auto text-[11px] font-semibold text-emerald-700">added to the history</span>}
       </div>
-      <textarea id={ADD_NOTE_ID} rows={3} className={`${FIELD_CLS} resize-y`}
+
+      {/* 🔴 TEN ROWS, FULL WIDTH, AND IT GROWS. `field-sizing: content` does the growing where the
+          browser supports it; `rows` is the floor everywhere, so nothing depends on that support.
+          ⚠️ THE ID IS UNCHANGED (`hg-add-note`): the N shortcut and the phone bar's Note button
+          both scroll to and focus THIS element, and one id is why they cannot disagree. */}
+      <textarea id={ADD_NOTE_ID} rows={NOTE_BOX_ROWS} className={`${FIELD_CLS} w-full resize-y`}
         style={{ fieldSizing: 'content' } as React.CSSProperties}
-        placeholder="What happened just now, or what to do next…"
+        placeholder="Add a note…"
         value={body} onChange={e => setBody(e.target.value)} />
       <button type="button" onClick={() => void save()} disabled={busy || !body.trim()}
         className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-40 min-h-11 self-start`}>
         {busy ? 'Saving…' : 'Save note'}
       </button>
+
+      {/* 🔴 EVERY NOTE IN FULL, NEWEST FIRST. A note is already the short version of something; a
+          one-line truncation of it is the short version of the short version. */}
+      {shown.length > 0 && (
+        <ul className="flex flex-col gap-2 border-t border-slate-100 pt-2">
+          {shown.map(n => (
+            <li key={n.id} className="text-[13px]">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                {fmtDate(n.created_at) ?? ''}
+              </div>
+              <p className="whitespace-pre-wrap break-words text-slate-700">{n.body}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+      {notes.length > NOTES_SHOWN && (
+        <button type="button" onClick={() => setShowAll(v => !v)}
+          className="self-start text-[11px] font-semibold text-slate-500 hover:underline">
+          {showAll ? 'Show fewer' : `Show all ${notes.length}`}
+        </button>
+      )}
+
+      <EarlierNotes p={p} onPatch={onPatch} />
     </div>
   )
 }
+
+/**
+ * The `notes` COLUMN, kept.
+ * 🔴 IT IS NOT A NOTE AND IT IS NOT DELETED. It is what "About this truck" edited — standing prose,
+ * also shown by the outreach list — so it sits at the BOTTOM of the notes, labelled for what it is,
+ * and is read-only until Edit is clicked. Empty ⇒ nothing renders, because an empty box labelled
+ * "Earlier notes" is an invitation to write a note in the wrong place.
+ * ⚠️ IT WRITES THE SAME COLUMN THE SAME WAY — `onPatch({ notes })`, the page's one prospect patch.
+ */
+function EarlierNotes({ p, onPatch }: { p: Prospect; onPatch: (patch: Record<string, unknown>) => Promise<void> }) {
+  const [editing, setEditing] = useState(false)
+  const [text, setText] = useState(p.notes ?? '')
+  const [saving, setSaving] = useState(false)
+  // ⚠️ RE-SEEDED WHEN THE PROSPECT CHANGES. J/K moves to another truck without remounting this.
+  useEffect(() => { void Promise.resolve().then(() => { setText(p.notes ?? ''); setEditing(false) }) }, [p.id, p.notes])
+
+  const current = (p.notes ?? '').trim()
+  if (!current && !editing) return null
+
+  const save = async () => {
+    setSaving(true)
+    try { await onPatch({ notes: text || null }); setEditing(false) } finally { setSaving(false) }
+  }
+
+  return (
+    <div className="border-t border-slate-100 pt-2 flex flex-col gap-1">
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Earlier notes</span>
+        {!editing && (
+          <button type="button" onClick={() => setEditing(true)}
+            className="ml-auto text-[11px] font-semibold text-slate-500 hover:underline">✎ Edit</button>
+        )}
+      </div>
+      {editing ? (
+        <>
+          <textarea rows={6} className={`${FIELD_CLS} w-full resize-y`}
+            style={{ fieldSizing: 'content' } as React.CSSProperties}
+            value={text} onChange={e => setText(e.target.value)} />
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => void save()} disabled={saving}
+              className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 min-h-11`}>
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            <button type="button" onClick={() => { setText(p.notes ?? ''); setEditing(false) }}
+              className="text-[11px] font-semibold text-slate-500 hover:underline">Cancel</button>
+          </div>
+        </>
+      ) : (
+        <p className="whitespace-pre-wrap break-words text-[13px] text-slate-700">{p.notes}</p>
+      )}
+    </div>
+  )
+}
+
+/* 🔴 `AboutCard` AND `AddNoteCard` WERE HERE AND ARE GONE (v3 fixes, 30 September 2026). Between
+ * them they were two labels, two textareas and two Save buttons over the same act of writing
+ * something down. `NotesCard` above is the one box — ten rows, "Add a note…", the same `add_note`
+ * path — and `EarlierNotes` is the `notes` column those two split the page over, kept in full and
+ * labelled. Neither name should come back; if a second notes box is ever wanted, the question to
+ * answer first is which of the two a sentence goes in. */
 
 /** Actions that RESOLVE the current queue item, and therefore arm the "Done. Next" bar. */
 const RESOLVING = new Set(['mark_handled', 'snooze'])
@@ -1225,15 +1307,21 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
               : <span className="text-slate-400">no phone number</span>}
           </p>
 
-          {/* ── 🔴 REAL BUTTONS, NOT LINKS IN A SENTENCE ─────────────────────────────────────
-              Calling and messaging are the two things done from this card, and a link inside a line
-              of text is a 14px target. These are buttons, and on a phone they are the three large
-              ones the whole layout is arranged around.
+          {/* ── 🔴 THE THREE BIG BUTTONS ARE A PHONE CONTROL, AND ONLY A PHONE CONTROL ────────
+              They were on every screen, and on a laptop that made the card say everything twice:
+              the number already carries a Call button beside it, and this row put a second, larger
+              Call directly underneath it — two controls, one action, 4px apart. Above 768px the row
+              is gone and the compact button beside the number is the only way to ring; the 52px it
+              took back is why "About this truck" and "Add a note" now start above the fold.
+              ⚠️ WHATSAPP IS NOT REPLACED BY ANOTHER BUTTON. It has two homes already — the
+              composer's WhatsApp tab, and the "WhatsApp sent" one-click log — and a third would be
+              a third place to check. Nothing was deleted: on a phone this row is exactly what it
+              was, because a thumb in a doorway wants 44px targets and not a 13px line of text.
               ⚠️ WHATSAPP IS DISABLED, NOT HIDDEN, WHEN THE NUMBER IS NOT CONFIRMED — and the
               tooltip says why. Hiding it would read as "this truck has no WhatsApp"; the truth is
               "nobody has confirmed that this number is on WhatsApp", which is §52.3(a)'s
               distinction and is a thing Dominic can act on. */}
-          <div className="flex items-center gap-2 mt-1">
+          <div className="hidden max-md:flex items-center gap-2 mt-1">
             <CallButton phone={p.phone} e164={waPhone} />
             <a href={p.whatsapp_confirmed === true && waPhone ? `https://wa.me/${waPhone}` : undefined}
               target="_blank" rel="noreferrer"
@@ -1246,10 +1334,13 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
                 : 'border-slate-200 text-slate-300 pointer-events-none'}`}>
               WhatsApp
             </a>
-            {/* ⚠️ PHONE ONLY: on a laptop the composer is already open in the centre column, so a
-                button to reveal it would point at something already on screen. */}
+            {/* ⚠️ THE ROW ITSELF IS NOW THE PHONE GATE, so this button no longer carries its own.
+                It kept `hidden max-md:block` from when the row was on every screen; two gates for
+                one rule is a thing that later gets half-changed. The reason is unchanged: on a
+                laptop the composer is already open in the centre column, so a button to reveal it
+                would point at something already on screen. */}
             <button type="button" onClick={onEmail} disabled={!p.contact_email}
-              className="hidden max-md:block flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white disabled:opacity-40">
+              className="flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white disabled:opacity-40">
               Email
             </button>
           </div>
@@ -1377,9 +1468,9 @@ function CallButton({ phone, e164, compact }: { phone: string | null; e164?: str
   )
 }
 
-/* 🔴 `PinnedNotes` WAS HERE AND IS GONE (v3). It was a three-row blur-saved field with a
- * placeholder longer than its usual contents; `AboutCard` above is the same `notes` column with
- * six growing rows, an explicit Save and a confirmation. */
+/* 🔴 `PinnedNotes` WAS HERE AND IS GONE (v3), and `AboutCard`, which replaced it, is gone too
+ * (v3 fixes). The `notes` column those two edited is now `EarlierNotes`, at the bottom of the one
+ * Notes card — read-only until Edit, and absent when the column is empty. */
 
 // ── FILES ───────────────────────────────────────────────────────────────────────────────────────────
 /**
@@ -1632,9 +1723,10 @@ function QuickLog({ p, channel, kind, followUpDate, post, applyFollowUp, onDirty
   )
 }
 
-/* 🔴 `NoteBox` WAS HERE AND IS GONE (v3), with the Note tab it belonged to. `AddNoteCard` is the
- * same `add_note` call in the left column, always visible — writing a note no longer costs a tab
- * change or a "discard what you have typed?" on a half-written email. */
+/* 🔴 `NoteBox` WAS HERE AND IS GONE (v3), with the Note tab it belonged to, and so is
+ * `AddNoteCard`, which replaced it (v3 fixes). The same `add_note` call is `NotesCard`'s one box
+ * in the left column, always visible — writing a note has never since cost a tab change or a
+ * "discard what you have typed?" on a half-written email. */
 
 /** `?` — the list, from the one place the shortcuts are declared. */
 function ShortcutHelp({ onClose }: { onClose: () => void }) {

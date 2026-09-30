@@ -483,8 +483,18 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
     check(/Show test sends/.test(TL), 'the timeline has its test toggle')
     check(/needsAttention\(m, \{ now, linkedTruck \}\)/.test(TL), '…and says which inbound rows are waiting')
     check(/Mark as needing reply/.test(TL), '…with the undo for a mistake')
-    check(/Pinned notes/.test(PAGE), 'the standing notes field is still labelled Pinned notes')
-    check(/action: 'add_note'/.test(PAGE), 'and a note can be added from the page')
+    /* 🔴 RESTATED ON 30 SEPTEMBER 2026 (v3 fixes), WITH ITS HISTORY, BECAUSE IT WAS PASSING ON A
+     * COMMENT. It read `/Pinned notes/` against the RAW page. v3 renamed that field to "About this
+     * truck" and left a tombstone quoting the old label — so the check went on passing against a
+     * comment about the thing it was meant to find. v3-fixes then merged both boxes into one
+     * "Notes" card and rewrote the tombstone, which is when it finally failed.
+     * ⚠️ WHAT IT WAS FOR IS KEPT AND MADE EXACT: there is still a place on the page for the
+     * standing prose (the `notes` COLUMN this list also reads), and it is still written through
+     * the page's one prospect patch. The name has changed twice; the column has not. */
+    const PAGE_CODE = stripComments(PAGE)
+    check(/Earlier notes/.test(PAGE_CODE) && /onPatch\(\{ notes: text \|\| null \}\)/.test(PAGE_CODE),
+      'the standing `notes` column still has a field on the page, now labelled "Earlier notes"')
+    check(/action: 'add_note'/.test(PAGE_CODE), 'and a note can be added from the page')
     check(/migrationApplied === false/.test(TL), '…the timeline still says when the migration is missing')
     check(/Today cannot be built yet\./.test(UI) && /migrationApplied=\{todayData\?\.migrationApplied !== false\}/.test(UI),
       '🔴 …and Today says so rather than reporting an empty queue')

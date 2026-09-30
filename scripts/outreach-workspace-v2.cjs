@@ -346,12 +346,28 @@ const step = (over = {}) => ({
       '⚠️ and the column COUNT breakpoints are untouched: three from 1024, two from 768')
     eq(W.TOUCH_TARGET_PX, 44, "⚠️ and a touch target is Apple's own 44px")
 
-    const PAGE = read('components/admin/ProspectWorkspace.tsx')
-    check(/gridTemplateColumns: columns/.test(PAGE) && /minmax\(0, 1fr\)/.test(PAGE),
+    /* 🔴 THREE CHECKS WERE REMOVED HERE ON 30 SEPTEMBER 2026 (v3 fixes), AND THEY ARE NAMED
+     * RATHER THAN QUIETLY DELETED — one of them because IT WAS WRONG, not merely stale:
+     *   • 'below 1024px it is one grid column…' (`max-lg:grid-cols-1`). The class WAS in the file
+     *     and NEVER APPLIED: an inline `gridTemplateColumns` on the same element beats any
+     *     selector-based rule that is not `!important`, and Tailwind emits none. This check passed
+     *     for two builds while a phone was handed a 380px / 1fr / 280px grid. ⚠️ It also read the
+     *     RAW source, so after the class was deleted it went on passing against the comment that
+     *     records its deletion — the exact self-matching census this family has fixed twice.
+     *   • '…with the centre column FIRST and the reference column second' (`max-lg:order-*`). The
+     *     tablet flip is gone: at 768–1023 the two columns are side by side, so there is nothing
+     *     left to reorder, and an `order` rule that is live from 0 to 1023 is a rule that fights
+     *     the phone's own ordering below 768.
+     *   • 'fixed sides, fluid centre — an inline style…' — still the design, but `minmax(0, 1fr)`
+     *     now lives in `gridTemplateFor`, not in this file's page.
+     * ⚠️ ALL THREE RULES ARE RE-ASSERTED IN `scripts/outreach-workspace-v3-fixes.cjs`, against the
+     * function at seven widths and against a real browser at four — including that a phone gets
+     * ONE track, which is the thing the deleted check claimed to be proving. */
+    const PAGE = readStripped('components/admin/ProspectWorkspace.tsx')
+    check(/gridTemplateColumns: columns/.test(PAGE) && /gridTemplateFor\(vw\)/.test(PAGE),
       '🔴 fixed sides, fluid centre — an inline style, because an arbitrary Tailwind track value may have no generated rule')
-    check(/max-lg:grid-cols-1/.test(PAGE), 'below 1024px it is one grid column…')
-    check(/max-lg:order-1/.test(PAGE) && /max-lg:order-2/.test(PAGE),
-      '…with the centre column FIRST and the reference column second')
+    check(!/max-lg:grid-cols-1/.test(PAGE) && !/max-lg:order-/.test(PAGE),
+      '⚠️ …and no class is left trying to fight it')
     check(/hidden max-lg:flex max-md:hidden/.test(PAGE),
       "🔴 …and the right column's cards move to the top of the left one between 768 and 1023")
     check(/hidden max-md:flex fixed bottom-0/.test(PAGE), '🔴 the phone gets a sticky log bar…')
