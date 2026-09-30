@@ -34,6 +34,26 @@ import {
 } from '@/lib/outreach-template-render'
 import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
 import { snippetMapOf, type Snippet } from '@/lib/outreach-snippets'
+// ── 🔴 THE ATTACHMENT AND REPLY RULES LIVE IN lib/, NOT HERE ───────────────────────────────────────
+// "What may be attached", "how big is too big" and "who may a reply be addressed to" are decisions,
+// and the server applies every one of them again. These imports are so the WINDOW refuses the same
+// things the route refuses — a picker that accepts a 40 MB file and a route that rejects it is a
+// worse experience than one that says so before the upload.
+import {
+  ALLOWED_ATTACHMENT_EXTENSIONS, MAX_ATTACHMENT_BYTES, attachmentSetRefusal, uploadRefusal, mb,
+  type OutboundAttachment,
+} from '@/lib/outreach-attachments'
+import { replySubject } from '@/lib/outreach-mail-message'
+
+/** The message a reply answers. Everything the window needs to show before the server is asked. */
+export interface ReplyTarget {
+  /** The `outreach_messages` row id. The send route re-reads it and checks it belongs here. */
+  messageId: string
+  subject: string | null
+  /** Who wrote it. Becomes the To, and the route checks it against what it holds. */
+  fromAddress: string | null
+  date: string | null
+}
 
 const DEFAULT_STALE_DAYS = 60
 const defaultIsStale = (iso: string | null | undefined) => {
@@ -117,7 +137,7 @@ interface Thread {
 
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
-  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent,
+  whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -157,6 +177,15 @@ export default function ComposeWindow({
   snippets?: Snippet[]
   /** Fired after the server reports a real send, so the panel re-reads the list and the modal. */
   onSent?: () => void | Promise<void>
+  /**
+   * 🔴 REPLY MODE. Present ⇒ this window answers ONE specific message rather than composing the next
+   * rung: the subject, the recipient and the thread all come from it, the rung is `reply`, and the
+   * conversation is shown expanded below the editor instead of behind a Show toggle.
+   * ⚠️ THE SERVER RE-CHECKS EVERY ONE OF THOSE. This object decides what the window displays; the
+   * route reads the message row itself and refuses an id that is not this prospect's, a test send,
+   * or a recipient that is neither the truck's address nor one that has written to us.
+   */
+  replyTo?: ReplyTarget | null
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -250,10 +279,15 @@ export default function ComposeWindow({
 
   // ── THE SERVER SEND ─────────────────────────────────────────────────────────────────────────────
   const [thread, setThread] = useState<Thread | null>(null)
-  /** The quoted parent, fetched only when Show is pressed. */
+  /** The earlier conversation. 🔴 EXPANDED BY DEFAULT — see the note where it is rendered. */
   const [quoted, setQuoted] = useState<string | null>(null)
-  const [quotedOpen, setQuotedOpen] = useState(false)
+  const [quotedOpen, setQuotedOpen] = useState(true)
   const [quotedLoading, setQuotedLoading] = useState(false)
+  /** The files this email will carry. Metadata only — the bytes are already in the bucket. */
+  const [files, setFiles] = useState<OutboundAttachment[]>([])
+  const [fileBusy, setFileBusy] = useState<string | null>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [sendingOff, setSendingOff] = useState<string | null>(null)
   /**
    * 🔴 THE SIGNATURE ROWS, FOR COPY AND LOG ONLY. The SEND does not use these — the server reads the
@@ -555,8 +589,19 @@ export default function ComposeWindow({
   // What is shown instead is what Dominic cannot see in his own textarea: the signature that gets
   // appended, and the fact that a chase attaches to an earlier email.
 
-  /** The rung the server should log. A tagged template states its own; otherwise the log form's. */
-  const kindForSend = selected?.servesKind ?? logFormKind
+  /**
+   * The rung the server should log. A tagged template states its own; otherwise the log form's.
+   * 🔴 A REPLY OVERRIDES BOTH, AND THE SERVER DECIDES THE SAME THING INDEPENDENTLY. `reply` is not
+   * one of `CONTACT_KINDS`, so §57 counts no rung for it: answering somebody neither advances the
+   * chase sequence nor restarts it. It also means `optOutWarning` is silent here, because that
+   * warning is for ladder rungs — a reply to a person who just wrote to you does not carry an
+   * opt-out sentence.
+   */
+  const kindForSend = replyTo ? 'reply' : (selected?.servesKind ?? logFormKind)
+
+  /** Who a reply goes back to: the message's own From, which may be a different mailbox at the same
+   *  business from the one stored on the truck. ⚠️ Display only — the route re-derives and re-checks it. */
+  const toEmailForReply = replyTo?.fromAddress ?? null
 
 
   const post = useCallback(async (payload: Record<string, unknown>) => {
@@ -568,8 +613,11 @@ export default function ComposeWindow({
   }, [prospectId])
 
   // On open: is this a chase, and is sending available at all? One GET, no mailbox connection.
+  // ⚠️ REPLY MODE SKIPS IT ENTIRELY. The parent is not "the latest message in the thread" — it is the
+  // specific message the Reply button was pressed on, and asking the server which email a CHASE
+  // would attach to could name a different one (another reply may have arrived since).
   useEffect(() => {
-    if (!isEmail) return
+    if (!isEmail || replyTo) return
     let live = true
     void (async () => {
       // 🔴 THE RUNG TRAVELS WITH THE QUESTION. A first contact NEVER threads, and the window has to
@@ -587,7 +635,56 @@ export default function ComposeWindow({
       setQuoted(null); setQuotedOpen(false)      // a different parent means a different quote
     })()
     return () => { live = false }
-  }, [isEmail, prospectId, kindForSend])
+  }, [isEmail, prospectId, kindForSend, replyTo])
+
+  // ── REPLY MODE: THE CONVERSATION, FROM THE DATABASE, BEFORE A WORD IS TYPED ─────────────────────
+  // 🔴 EXPANDED BY DEFAULT AND FETCHED ON OPEN, which is the whole point of Part 2: Dominic could not
+  // see what he was answering while he answered it. It costs one query — the bodies were stored when
+  // the message was recorded — so there is nothing left to defer behind a toggle.
+  useEffect(() => {
+    if (!isEmail || !replyTo) return
+    let live = true
+    void (async () => {
+      // ⚠️ EVERY setState IS INSIDE THIS CALLBACK, including the two that could have sat in the
+      // effect body. The callback runs synchronously to its first `await`, so the "Loading…" state
+      // appears exactly as soon either way — and the effect body itself stays free of state writes.
+      setThread({ subject: replyTo.subject ?? '', replySubject: replySubject(replyTo.subject ?? ''), date: replyTo.date })
+      setQuotedLoading(true)
+      const { json } = await post({ action: 'view', message_row_id: replyTo.messageId }).catch(() => ({ json: {} as Record<string, unknown> }))
+      if (!live) return
+      if (json.ok === true && (typeof json.html === 'string' || typeof json.text === 'string')) {
+        // ⚠️ A TEXT-ONLY MESSAGE IS STILL SHOWN. Wrapping it in <pre> keeps its line breaks and keeps
+        // it inert; the iframe is sandboxed either way.
+        setQuoted(typeof json.html === 'string' && json.html
+          ? json.html
+          : `<pre style="white-space:pre-wrap;font-family:Aptos,Arial,sans-serif;font-size:12pt">${String(json.text ?? '')
+              .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`)
+      } else {
+        setQuoted(null)
+      }
+      setQuotedLoading(false)
+    })()
+    return () => { live = false }
+  }, [isEmail, replyTo, post])
+
+  // ── THE CHASE'S QUOTE, ALSO EXPANDED BY DEFAULT ────────────────────────────────────────────────
+  // 🔴 THE SAME CHANGE, FOR THE SAME REASON. It used to be fetched only when Show was pressed,
+  // because it could need a read-only IMAP fetch and most opens never looked. Bodies are stored now,
+  // so the common case is a query and the toggle was costing a click on every chase.
+  // ⚠️ THE FETCH IS STILL LAZY IN THE ONE CASE THAT IS SLOW: a parent whose body was never stored
+  // still goes to the mailbox, and that is the same one round trip it always was.
+  useEffect(() => {
+    if (!isEmail || replyTo || !thread || quoted || quotedLoading) return
+    let live = true
+    void (async () => {
+      setQuotedLoading(true)
+      const { json } = await post({ action: 'quoted' }).catch(() => ({ json: {} as Record<string, unknown> }))
+      if (!live) return
+      if (json.ok === true && typeof json.html === 'string') setQuoted(json.html)
+      setQuotedLoading(false)
+    })()
+    return () => { live = false }
+  }, [isEmail, replyTo, thread, quoted, quotedLoading, post])
 
   // The signature rows — for the Insert buttons and for expanding a template's tokens into the box.
   // ⚠️ NEVER FOR THE SEND. The server sends the DOCUMENT; it reads no settings at send time at all.
@@ -609,19 +706,83 @@ export default function ComposeWindow({
     return () => { live = false }
   }, [])
 
-  /** The quoted parent, on demand. May need a read-only IMAP fetch, so it is never done on open. */
-  const showQuoted = useCallback(async () => {
-    setQuotedOpen(o => !o)
-    if (quoted || quotedLoading) return
-    setQuotedLoading(true)
+  /* 🔴 `showQuoted` WAS HERE AND IS GONE (30 September 2026). It fetched the quoted parent only when
+   * Show was pressed, because the fetch could need a read-only IMAP round trip and most opens never
+   * looked. Bodies are stored now (see docs/outreach-mail-import-view-report.md), so the quote is
+   * fetched on open and the toggle only shows and hides what is already there — which is what makes
+   * "the conversation is visible while you write" true rather than one click away. */
+
+  // ── ATTACHMENTS ────────────────────────────────────────────────────────────────────────────────
+  // 🔴 THE FILE GOES STRAIGHT TO THE PRIVATE BUCKET, NOT THROUGH THIS APP'S API. The route issues a
+  // signed upload URL and the browser PUTs to it; what comes back here is a PATH. Nothing in this
+  // window ever holds the bytes for longer than the upload, and the send request carries paths.
+  const attachRefusal = useMemo(() => attachmentSetRefusal(files), [files])
+
+  const attachFiles = useCallback(async (picked: FileList | null) => {
+    if (!picked || !picked.length) return
+    setFileError(null)
+    for (const file of Array.from(picked)) {
+      // ⚠️ THE SAME PREDICATE THE ROUTE USES, so the refusal is immediate rather than arriving after
+      // a 9 MB upload. The route applies it again; this one is a courtesy, not the guard.
+      const stop = uploadRefusal({ filename: file.name, contentType: file.type, size: file.size })
+      if (stop) { setFileError(stop.refusal); continue }
+      const total = files.reduce((n, f) => n + f.size, 0) + file.size
+      if (total > MAX_ATTACHMENT_BYTES) {
+        setFileError(`${file.name} would take this email over ${mb(MAX_ATTACHMENT_BYTES)}.`)
+        continue
+      }
+      setFileBusy(file.name)
+      try {
+        const r = await fetch('/api/admin/outreach/attachments', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'signed_upload', prospect_id: prospectId,
+            filename: file.name, content_type: file.type, size: file.size,
+          }),
+        })
+        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+        if (j.ok !== true || typeof j.signedUrl !== 'string') {
+          setFileError(String(j.refusal ?? 'That file could not be prepared for upload.')); continue
+        }
+        // 🔴 PUT TO SUPABASE STORAGE, NOT TO US. A failure here is the upload failing, and it leaves
+        // nothing behind: the signed URL expires and the path is never recorded on a message.
+        const up = await fetch(j.signedUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file })
+        if (!up.ok) { setFileError(`${file.name} did not upload — try again.`); continue }
+        setFiles(list => [...list, j.attachment as OutboundAttachment])
+      } catch {
+        setFileError(`${file.name} did not upload — check the connection.`)
+      } finally { setFileBusy(null) }
+    }
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }, [files, prospectId])
+
+  /**
+   * The plans-and-features PDF, generated fresh and stored like any other attachment.
+   * 🔴 THE APP ALREADY MAKES THIS DOCUMENT — `lib/plans-pdf.ts`, the same generator behind Admin's own
+   * download button — so nothing is uploaded by hand and the copy attached is always current with the
+   * feature matrix. ⚠️ IT IS GENERATED NOW, NOT AT SEND TIME: a Chromium cold start inside the send's
+   * 60 seconds would be racing an SMTP conversation and an IMAP append, and a copy regenerated at
+   * RETRY time would be different bytes from the one the prospect already has.
+   */
+  const attachPlansPdf = useCallback(async () => {
+    setFileError(null); setFileBusy('plans')
     try {
-      const { json } = await post({ action: 'quoted' })
-      if (json.ok === true && typeof json.html === 'string') setQuoted(json.html)
-      else setSendError(String(json.refusal ?? 'The earlier email could not be read.'))
+      const r = await fetch('/api/admin/outreach/attachments', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'plans_pdf', prospect_id: prospectId }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.ok !== true) { setFileError(String(j.refusal ?? 'The plans PDF could not be attached.')); return }
+      setFiles(list => [...list, j.attachment as OutboundAttachment])
     } catch {
-      setSendError('The earlier email could not be read — check the connection.')
-    } finally { setQuotedLoading(false) }
-  }, [post, quoted, quotedLoading])
+      setFileError('The plans PDF could not be attached — check the connection.')
+    } finally { setFileBusy(null) }
+  }, [prospectId])
+
+  /** ⚠️ REMOVING A FILE FORGETS THE PATH; the object stays in the bucket, unreferenced and private. */
+  const removeFile = useCallback((path: string) => {
+    setFiles(list => list.filter(f => f.storagePath !== path))
+  }, [])
 
   /**
    * The send itself.
@@ -639,7 +800,14 @@ export default function ComposeWindow({
       // whether it is a test — the document is the message, so two sends of the same document are the
       // same send and the second returns the first's verdict. Changing a single character of
       // formatting changes the document and therefore the key, which is right: it is a different email.
-      const key = hashKey(JSON.stringify([finalSubject, isEmail ? doc : fullText, kindForSend, test]))
+      // 🔴 THE ATTACHMENT PATHS ARE PART OF THE KEY. Adding the plans PDF to a message already
+      // submitted makes it a DIFFERENT email, and without the paths the second send would be
+      // recognised as a duplicate of the first and silently return its verdict — the prospect would
+      // never get the document.
+      const key = hashKey(JSON.stringify([
+        finalSubject, isEmail ? doc : fullText, kindForSend, test,
+        files.map(f => f.storagePath), replyTo?.messageId ?? null,
+      ]))
       if (!idemRef.current || idemRef.current.forKey !== key) {
         idemRef.current = { forKey: key, value: crypto.randomUUID() }
       }
@@ -647,6 +815,11 @@ export default function ComposeWindow({
         action: 'send', subject: finalSubject, kind: kindForSend,
         // The document for an email; the plain body for WhatsApp, which this route does not send.
         ...(isEmail ? { document: doc } : { body: fullText }),
+        // ⚠️ PATHS AND METADATA ONLY. There is no field here through which bytes could travel, and
+        // the route drops any entry without a `storagePath` it recognises.
+        ...(files.length ? { attachments: files } : {}),
+        // 🔴 THE MESSAGE BEING ANSWERED, and the address it came from. The route checks both.
+        ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
         is_test: test, idempotency_key: idemRef.current.value,
       })
       if (json.duplicate === true) {
@@ -679,7 +852,7 @@ export default function ComposeWindow({
       sendInFlight.current = false
       setSending(false)
     }
-  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent])
+  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent, files, replyTo])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -1008,28 +1181,86 @@ export default function ComposeWindow({
             )}
           </label>
 
-          {/* ── THE ONE THING THE BOX CANNOT SHOW: that this is a reply ──────────────────────────
-              🔴 IMMEDIATELY UNDER THE TEXT, because it describes what surrounds the text. A first
-              contact never gets this line — `thread` is null for `1_first_contact` by the rule in the
-              route, which is the same rule the send applies. */}
+          {/* ── ATTACHMENTS ────────────────────────────────────────────────────────────────────
+              🔴 UNDER THE EDITOR AND ABOVE THE CONVERSATION, because it belongs to the message being
+              written rather than to the history being quoted. */}
+          {isEmail && (
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <input ref={fileInputRef} type="file" multiple className="hidden"
+                  accept={ALLOWED_ATTACHMENT_EXTENSIONS.join(',')}
+                  onChange={e => void attachFiles(e.target.files)} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={!!fileBusy}
+                  title="PDF, PNG, JPG, DOCX or XLSX. 10 MB in total for one email. The file uploads to private storage; the email is built from it on the server."
+                  className="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+                  {fileBusy && fileBusy !== 'plans' ? `Uploading ${fileBusy}…` : 'Attach file'}
+                </button>
+                {/* 🔴 THE APP GENERATES THIS DOCUMENT — the same one Admin downloads — so the copy
+                    attached is always current with the feature matrix, and its name carries the date
+                    it was generated. */}
+                <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
+                  title="Generates today's plans-and-features PDF from the live feature matrix and attaches it. The same document as Admin's download button."
+                  className="text-xs font-bold px-2 py-1 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40">
+                  {fileBusy === 'plans' ? 'Generating…' : 'Plans PDF'}
+                </button>
+                {files.length > 0 && (
+                  <span className="text-[11px] text-slate-500">
+                    {files.length} file{files.length === 1 ? '' : 's'} · {mb(files.reduce((n, f) => n + f.size, 0))} of {mb(MAX_ATTACHMENT_BYTES)}
+                  </span>
+                )}
+              </div>
+              {files.length > 0 && (
+                <ul className="flex flex-wrap gap-1">
+                  {files.map(f => (
+                    <li key={f.storagePath}
+                      className="flex items-center gap-1 text-[11px] border border-slate-200 rounded-lg px-2 py-0.5 bg-slate-50">
+                      <span className="font-semibold text-slate-700">{f.filename}</span>
+                      <span className="text-slate-400">{mb(f.size)}</span>
+                      <button type="button" onClick={() => removeFile(f.storagePath)}
+                        aria-label={`Remove ${f.filename}`}
+                        className="text-slate-400 hover:text-red-700 font-bold">×</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {(fileError || attachRefusal) && (
+                <p className="text-[11px] text-red-700">{fileError ?? attachRefusal?.refusal}</p>
+              )}
+            </div>
+          )}
+
+          {/* ── THE CONVERSATION THIS ANSWERS ───────────────────────────────────────────────────
+              🔴 DIRECTLY BELOW THE EDITOR AND EXPANDED, which is the change Part 2 exists for.
+              Answering an email with the email invisible meant opening the timeline in another
+              window, or replying from memory. The bodies are stored, so showing it costs a query.
+              ⚠️ IT IS STILL COLLAPSIBLE — a long thread would otherwise push Send off the screen.
+              🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. The quoted email came out of the
+              MAILBOX, so its markup is sender-controlled; injected into the admin page it would
+              run behind an authenticated admin session. `sandbox=""` grants nothing — no scripts,
+              no forms, no same-origin, no top-level navigation.
+              ⚠️ AND WHAT IS SENT IS SANITISED SEPARATELY, server-side: this iframe protects THIS
+              page, and `lib/outreach-quote-sanitise.ts` protects the recipient of the copy we
+              embed in the outgoing message. They are different problems. */}
           {isEmail && thread && (
             <div>
               <p className="text-[12px] text-slate-700">
-                Sends as a reply to “<span className="font-semibold">{thread.subject}</span>”
-                {thread.date ? ` (${fmtWhen(thread.date)})` : ''}. The earlier email is quoted under
-                your signature.
-                <button type="button" onClick={() => void showQuoted()}
+                {replyTo ? 'Replies to' : 'Sends as a reply to'} “<span className="font-semibold">{thread.subject}</span>”
+                {thread.date ? ` (${fmtWhen(thread.date)})` : ''}
+                {replyTo && toEmailForReply ? <> · to <span className="font-semibold">{toEmailForReply}</span></> : null}.
+                {' '}The conversation below is included under your signature.
+                <button type="button" onClick={() => setQuotedOpen(o => !o)}
                   className="ml-1.5 text-[12px] font-bold text-orange-700 underline hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded">
                   {quotedLoading ? 'Loading…' : quotedOpen ? 'Hide' : 'Show'}
                 </button>
               </p>
-              {/* 🔴 A SANDBOXED IFRAME, NOT `dangerouslySetInnerHTML`. The quoted email came out of the
-                  MAILBOX, so its markup is sender-controlled; injected into the admin page it would
-                  run behind an authenticated admin session. `sandbox=""` grants nothing — no scripts,
-                  no forms, no same-origin, no top-level navigation. */}
               {quotedOpen && quoted && (
-                <iframe title="The earlier email" sandbox="" srcDoc={quoted}
-                  className="mt-1.5 w-full h-56 border border-slate-200 rounded bg-white" />
+                <iframe title="The earlier conversation" sandbox="" srcDoc={quoted}
+                  className="mt-1.5 w-full h-72 border border-slate-200 rounded bg-white" />
+              )}
+              {quotedOpen && !quoted && !quotedLoading && (
+                <p className="mt-1 text-[11px] text-amber-800">
+                  The earlier email has no stored copy yet. Open it once in the timeline and it will be saved.
+                </p>
               )}
             </div>
           )}

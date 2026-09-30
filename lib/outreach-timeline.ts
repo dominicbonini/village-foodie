@@ -15,6 +15,8 @@ export interface TimelineMessage {
   is_test?: boolean | null
   source?: string | null
   subject?: string | null
+  /** 🔴 Who wrote it. A reply goes back to THIS address, not to the truck's stored one. */
+  from_address?: string | null
   message_date?: string | null
   created_at?: string | null
   handled_at?: string | null

@@ -13,7 +13,9 @@
 import nodemailer from 'nodemailer'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { OUTREACH_SENT_MAILBOX } from '@/lib/outreach-mail-config'
-import { smtpTransportOptions, mailFor, composeRaw, rawMailFor } from '@/lib/outreach-mail-envelope'
+import {
+  smtpTransportOptions, mailFor, composeRaw, rawMailFor, type SendableAttachment,
+} from '@/lib/outreach-mail-envelope'
 import { classifySendFailure } from '@/lib/outreach-mail-message'
 import { makeImapClient, findInSent, appendToSent, sanitiseMailError } from '@/lib/outreach-mail-box'
 
@@ -35,6 +37,9 @@ export interface DeliverRow {
   is_test?: boolean
   /** Attached in-process from `outreach_settings`, never a column. */
   from_name?: string | null
+  /** 🔴 THE FILES' BYTES, read from the private bucket by `loadAttachments` before this is called.
+   *  The `attachments` COLUMN holds paths; this field holds content, and only ever in memory. */
+  attachments?: SendableAttachment[] | null
 }
 
 /** How long to wait before asking Sent a second time. */

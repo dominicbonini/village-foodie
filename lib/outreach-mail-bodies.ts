@@ -27,6 +27,14 @@ export interface AttachmentMeta {
   filename: string | null
   contentType: string
   size: number | null
+  /**
+   * 🔴 ONLY EVER SET ON AN OUTBOUND ROW, and it is the difference between the two kinds of
+   * attachment this column holds. An INBOUND message's list is names read off a BODYSTRUCTURE — the
+   * files are in somebody else's email and were never downloaded, so there is nothing to point at.
+   * An OUTBOUND one names objects in our own private bucket, which is what lets a retry rebuild the
+   * message and an admin open what was sent.
+   */
+  storagePath?: string
 }
 
 /**
@@ -57,12 +65,16 @@ export function parseAttachments(value: unknown): AttachmentMeta[] {
   if (!Array.isArray(value)) return []
   const out: AttachmentMeta[] = []
   for (const raw of value) {
-    const a = raw as { filename?: unknown; contentType?: unknown; size?: unknown }
+    const a = raw as { filename?: unknown; contentType?: unknown; size?: unknown; storagePath?: unknown }
     if (!a || typeof a !== 'object') continue
     out.push({
       filename: typeof a.filename === 'string' ? a.filename : null,
       contentType: typeof a.contentType === 'string' ? a.contentType : 'application/octet-stream',
       size: typeof a.size === 'number' ? a.size : null,
+      // ⚠️ CARRIED THROUGH WHEN IT IS THERE AND NEVER INVENTED. Its absence is what tells the viewer
+      // an attachment is names-only.
+      ...(typeof (a as { storagePath?: unknown }).storagePath === 'string'
+        ? { storagePath: (a as { storagePath: string }).storagePath } : {}),
     })
   }
   return out

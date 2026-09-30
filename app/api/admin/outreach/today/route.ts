@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   // would read as "never handled" and put the whole history on screen as work.
   const { data: inbound, error: inErr } = await supabase
     .from('outreach_messages')
-    .select('id, prospect_id, status, is_test, direction, message_date, text_body, handled_at, snoozed_until')
+    .select('id, prospect_id, status, is_test, direction, subject, from_address, message_date, text_body, handled_at, snoozed_until')
     .eq('direction', 'inbound')
     .eq('status', 'received')
     .is('handled_at', null)
@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
   type MsgRow = {
     id: string; prospect_id: string; status: string; is_test: boolean | null; direction: string | null
     message_date: string | null; text_body?: string | null; subject?: string | null
+    from_address?: string | null
     last_error?: string | null; handled_at?: string | null; snoozed_until?: string | null
   }
   const inboundRows = (inbound ?? []) as MsgRow[]
@@ -97,6 +98,9 @@ export async function GET(req: NextRequest) {
       prospect_name: names.get(r.prospect_id) ?? null,
       snippet: replySnippet(r.text_body),
       message_date: r.message_date,
+      // 🔴 FOR THE REPLY BUTTON on this row: the subject it answers and the address it goes back to.
+      subject: r.subject ?? null,
+      from_address: r.from_address ?? null,
     }))
 
   const problems: ProblemEmail[] = problemsRaw

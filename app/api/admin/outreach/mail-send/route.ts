@@ -39,6 +39,14 @@ import {
   resolveAccounts, accountForSend, credentialsFor, accountOfRow, type AccountSet,
 } from '@/lib/outreach-mail-accounts'
 import { prospectRefusal, retryRefusal, startsNewThread } from '@/lib/outreach-send-rules'
+import {
+  parseOutboundAttachments, attachmentSetRefusal, type OutboundAttachment,
+} from '@/lib/outreach-attachments'
+import { loadAttachments } from '@/lib/outreach-attachment-store'
+import { sanitiseQuotedHtml } from '@/lib/outreach-quote-sanitise'
+import {
+  replyRecipientRefusal, replyParentRefusal, REPLY_KIND, type ReplyParent,
+} from '@/lib/outreach-reply-rules'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -73,10 +81,12 @@ interface Row {
   message_id: string; in_reply_to: string | null; references: string | null
   subject: string | null; to_address: string | null; message_date: string | null
   html_body: string | null; text_body: string | null; sent_copy: string; attempts: number
+  /** 🔴 PATHS, NOT BYTES. `parseOutboundAttachments` turns it into something the store can fetch. */
+  attachments?: unknown
 }
 
 interface ViewRow {
-  id: string; direction: string; status: string; source: string
+  id: string; prospect_id: string; direction: string; status: string; source: string
   subject: string | null; from_address: string | null; to_address: string | null
   message_date: string | null; mailbox: string | null; uid: number | null; uidvalidity: number | null
   html_body: string | null; text_body: string | null; account?: string | null
@@ -139,6 +149,24 @@ async function parentBodies(
   } catch { return { html: null, text: null } } finally {
     try { await c.logout() } catch { /* already gone */ }
   }
+}
+
+/**
+ * The bytes of a stored row, attachments and all.
+ *
+ * 🔴 RETRY AND SAVE-TO-SENT MUST PRODUCE THE MESSAGE THAT WAS SENT, NOT A MESSAGE LIKE IT. Both
+ * re-compose from the row; before attachments existed that was the stored Message-ID and the two
+ * bodies, and it was enough. Now the row also names files, and a re-composition that skipped them
+ * would file a copy in Sent with the attachments missing — a Sent folder that disagrees with what the
+ * prospect received, which is precisely the record Dominic goes to when something is disputed.
+ * ⚠️ IT REFUSES RATHER THAN DROPPING ONE. See `loadAttachments`.
+ */
+async function attachmentsForRow(row: { attachments?: unknown }): Promise<
+  { ok: true; attachments: { filename: string; contentType: string; content: Buffer }[] } | { ok: false; refusal: string }
+> {
+  const stored = parseOutboundAttachments(row.attachments)
+  if (!stored.length) return { ok: true, attachments: [] }
+  return loadAttachments(supabase, stored)
 }
 
 export async function GET(req: NextRequest) {
@@ -220,7 +248,12 @@ export async function POST(req: NextRequest) {
     // new mailbox would file the copy in the wrong Sent folder and orphan the thread.
     const rowCreds = credentialsFor(accounts, accountOfRow(row))
     if (!rowCreds) return refuse(`The credentials for the ${accountOfRow(row)} mailbox are not set on this environment.`)
-    const retried = await deliver(supabase, { ...row, from_name: await readFromName(supabase) },
+    // 🔴 THE SAME FILES, FROM THE SAME PATHS. A retry of a message that carried the plans PDF carries
+    // the plans PDF; the bytes come back out of the bucket, so the composed message is identical.
+    const retryFiles = await attachmentsForRow(row)
+    if (!retryFiles.ok) return refuse(retryFiles.refusal)
+    const retried = await deliver(supabase,
+      { ...row, from_name: await readFromName(supabase), attachments: retryFiles.attachments },
       { mailUser: rowCreds.user, mailPass: rowCreds.pass, isTest: row.is_test, testRecipient })
     return NextResponse.json(retried.payload)
   }
@@ -258,7 +291,11 @@ export async function POST(req: NextRequest) {
     if (row.sent_copy !== 'absent') return refuse('That message already has a copy in Sent.')
     let raw: Buffer
     // The same bytes the send produced, which means the same display name.
-    const rowWithName = { ...row, from_name: await readFromName(supabase) }
+    // 🔴 THE SAME BYTES MEANS THE SAME ATTACHMENTS TOO. Without this the filed copy would be the
+    // message minus its files, and the Sent folder would disagree with the prospect's inbox.
+    const copyFiles = await attachmentsForRow(row)
+    if (!copyFiles.ok) return refuse(copyFiles.refusal)
+    const rowWithName = { ...row, from_name: await readFromName(supabase), attachments: copyFiles.attachments }
     try { raw = await composeRaw(rowWithName) } catch (err) { return refuse(`That message could not be rebuilt (${sanitiseMailError(err)}).`) }
     // 🔴 FILED IN THE ROW'S OWN ACCOUNT. A legacy message's copy belongs in hello@'s Sent folder,
     // beside the thread it is part of — not in the new mailbox where nothing else of that conversation
@@ -296,7 +333,7 @@ export async function POST(req: NextRequest) {
   if (action === 'view') {
     const rowId = String(body.message_row_id ?? '')
     const { data: existing } = await supabase.from('outreach_messages')
-      .select('id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body, attachments, account')
+      .select('id, prospect_id, direction, status, source, subject, from_address, to_address, message_date, mailbox, uid, uidvalidity, html_body, text_body, attachments, account')
       .eq('id', rowId).maybeSingle()
     const row = existing as ViewRow | null
     if (!row) return refuse('That message is not in the log any more.')
@@ -306,6 +343,10 @@ export async function POST(req: NextRequest) {
     const head = {
       from: row.from_address, to: row.to_address, subject: row.subject,
       date: row.message_date, direction: row.direction, source: row.source,
+      // 🔴 THE VIEWER NEEDS IT TO ASK FOR A DOWNLOAD LINK, and the attachments route checks the path
+      // against it. ⚠️ An INBOUND row's attachments carry no `storagePath`, so no link is offered —
+      // those files were never downloaded and there is nothing to hand over.
+      prospect_id: row.prospect_id,
     }
     if (hasStoredBody(row)) {
       return NextResponse.json({
@@ -433,7 +474,36 @@ export async function POST(req: NextRequest) {
     hatchgrab_truck_id: truck?.hatchgrab_truck_id ?? null,
   })
   if (blocked) return refuse(blocked.refusal)
-  const toAddress = (truck?.contact_email ?? '').trim()
+  let toAddress = (truck?.contact_email ?? '').trim()
+
+  // ── A REPLY: WHICH MESSAGE, AND WHO IT GOES BACK TO ─────────────────────────────────────────────
+  // 🔴 THE ONLY PATH ON WHICH THE BROWSER INFLUENCES THE RECIPIENT, AND IT IS A CLOSED SET. Every
+  // other send addresses `discovery_trucks.contact_email`, read here, so a stale address on screen
+  // cannot become the envelope. A reply has to go back to whoever actually wrote — which may be a
+  // different mailbox at the same business — so the address is accepted only when it is the truck's
+  // own, or the From of a non-test inbound message ALREADY RECORDED for this prospect.
+  // 🔎 `lib/outreach-reply-rules.ts` holds both refusals and the harness stands on them.
+  const replyToId = typeof body.reply_to_message_id === 'string' ? body.reply_to_message_id : ''
+  let replyParent: ReplyParent | null = null
+  if (replyToId) {
+    const { data: rp } = await supabase.from('outreach_messages')
+      .select('id, prospect_id, is_test, direction, message_id, "references", subject, from_address, to_address, message_date, html_body, text_body')
+      .eq('id', replyToId).maybeSingle()
+    replyParent = (rp ?? null) as ReplyParent | null
+    const stop = replyParentRefusal(replyParent, prospectId)
+    if (stop) return refuse(stop.refusal)
+
+    // The address the window showed, checked against what the server holds.
+    const { data: inboundRows } = await supabase.from('outreach_messages')
+      .select('from_address').eq('prospect_id', prospectId).eq('direction', 'inbound').eq('is_test', false)
+    const known = ((inboundRows ?? []) as { from_address: string | null }[]).map(r => r.from_address)
+    const wanted = typeof body.to === 'string' && body.to.trim()
+      ? body.to.trim()
+      : (replyParent!.direction === 'inbound' ? (replyParent!.from_address ?? '') : (replyParent!.to_address ?? ''))
+    const bad = replyRecipientRefusal({ to: wanted, contactEmail: truck?.contact_email ?? null, knownInboundFroms: known })
+    if (bad) return refuse(bad.refusal)
+    toAddress = wanted.trim()
+  }
 
   const subjectIn = String(body.subject ?? '').trim()
 
@@ -485,9 +555,14 @@ export async function POST(req: NextRequest) {
   const fromName = await readFromName(supabase)
 
   // ── THREADING — a chase is a REPLY, or it is refused; a FIRST CONTACT never is ───────────────────
-  const sendKind = typeof body.kind === 'string' ? body.kind : null
-  const firstContact = startsNewThread(sendKind)
-  const parentRow = firstContact ? undefined : await threadParent(prospectId)
+  // 🔴 A REPLY IS `reply`, DECIDED HERE AND NOT BY THE BROWSER. `reply` is deliberately NOT one of
+  // `CONTACT_KINDS`, so §57 counts no rung for it and the chase sequence is neither advanced nor
+  // restarted by answering somebody. A client that sent `kind: '2_chase_1'` alongside a
+  // `reply_to_message_id` would otherwise put a rung on the ladder for a courtesy reply.
+  const sendKind = replyParent ? REPLY_KIND : (typeof body.kind === 'string' ? body.kind : null)
+  // ⚠️ AND A REPLY IS NEVER A FIRST CONTACT, whatever `startsNewThread` would say about its kind.
+  const firstContact = !replyParent && startsNewThread(sendKind)
+  const parentRow = replyParent ? undefined : (firstContact ? undefined : await threadParent(prospectId))
 
   // Has this prospect been emailed before, according to the LADDER? If so a new thread would be wrong.
   const { count: emailedBefore } = await supabase
@@ -495,7 +570,27 @@ export async function POST(req: NextRequest) {
     .eq('prospect_id', prospectId).eq('channel', 'email').eq('direction', 'outbound')
 
   let parent: { messageId: string; references: string | null; quoted: QuotedMessage } | null = null
-  if (parentRow) {
+  if (replyParent) {
+    // 🔴 THE REFERENCE BLOCK IS THE MESSAGE AS CAPTURED — their From, their Date, the To it was
+    // addressed to, their Subject — because that is what a recipient expects to see above their own
+    // words. Using our own From here (which is what the chase path does, correctly, since the chase
+    // quotes OUR last email) would show the prospect a quote header attributing their message to us.
+    const quotedHtml = sanitiseQuotedHtml(replyParent.html_body ?? '')
+    if (!quotedHtml.trim()) {
+      return refuse('That message has no stored body to quote, so the reply would arrive without the conversation. Open it once to fetch and store it, then reply.')
+    }
+    parent = {
+      messageId: replyParent.message_id!,
+      references: replyParent.references,
+      quoted: {
+        fromAddress: replyParent.from_address ?? toAddress, fromName: null,
+        toAddress: replyParent.to_address ?? OUTREACH_FROM_ADDRESS, toName: null,
+        subject: replyParent.subject ?? '',
+        date: replyParent.message_date ? new Date(replyParent.message_date) : new Date(),
+        html: quotedHtml, text: replyParent.text_body,
+      },
+    }
+  } else if (parentRow) {
     // 🔴 THE QUOTE IS THE PARENT'S OWN BODY. A system-sent parent stored it; an IMPORTED one did not —
     // the importer records an Outlook message's headers and leaves the body in the mailbox, where it
     // already is. So it is read back from Sent by uid, READ-ONLY. Only when neither source has it is
@@ -514,7 +609,11 @@ export async function POST(req: NextRequest) {
         toAddress: parentRow.to_address ?? toAddress, toName: null,
         subject: parentRow.subject ?? subjectIn,
         date: parentRow.message_date ? new Date(parentRow.message_date) : new Date(),
-        html: quotedHtml, text: quotedText,
+        // ⚠️ SANITISED HERE TOO, AND THAT IS A CHANGE TO THE CHASE PATH. A chase usually quotes our
+        // own last email, which is markup this app generated — but "usually" is not "always": once a
+        // prospect has replied, `threadParent` correctly returns THEIR message, and it has been
+        // embedding their raw HTML in an outgoing email since chases learned to thread onto a reply.
+        html: sanitiseQuotedHtml(quotedHtml), text: quotedText,
       },
     }
   } else if (!firstContact && (emailedBefore ?? 0) > 0 && !isTest) {
@@ -524,6 +623,19 @@ export async function POST(req: NextRequest) {
   }
 
   if (!parent && !subjectIn) return refuse('A first contact needs a subject.')
+
+  // ── THE ATTACHMENTS · PATHS IN, BYTES READ SERVER-SIDE ─────────────────────────────────────────
+  // 🔴 `parseOutboundAttachments` IS THE GUARD, NOT A PARSER. It keeps only entries that carry a
+  // `storagePath` and drops everything else, so a request containing base64 content, a data: URI or
+  // a URL yields an empty list rather than an attachment — there is no field on this path through
+  // which file bytes can reach the mail server.
+  const declaredAttachments: OutboundAttachment[] = parseOutboundAttachments(body.attachments)
+  const tooBig = attachmentSetRefusal(declaredAttachments)
+  if (tooBig) return refuse(tooBig.refusal)
+  // ⚠️ READ BEFORE THE ROW IS INSERTED. A missing file must refuse without leaving a `sending` row
+  // behind for the stuck-send sweep to turn into `uncertain`.
+  const loaded = await loadAttachments(supabase, declaredAttachments)
+  if (!loaded.ok) return refuse(loaded.refusal)
 
   // ── THE ROW GOES IN FIRST, WITH ITS Message-ID ───────────────────────────────────────────────────
   const messageId = newMessageId()
@@ -555,6 +667,10 @@ export async function POST(req: NextRequest) {
     html_body: built.html,
     text_body: built.text,
     attempts: 0,
+    // 🔴 PATHS AND METADATA, SO A RETRY CAN REBUILD THE SAME MESSAGE. Written as `[]` rather than
+    // left null when there are none, because null means "nobody has looked" for an INBOUND row and
+    // this row has been looked at exhaustively — we composed it.
+    attachments: declaredAttachments,
     ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
   }).select('*').single()
   if (insErr || !insertedRow) {
@@ -574,7 +690,11 @@ export async function POST(req: NextRequest) {
 
   // ⚠️ `from_name` RIDES ON THE ROW OBJECT, NOT IN THE TABLE. It is a setting, not a property of the
   // message, and storing a copy per row would mean a later retry used a stale name.
-  const result = await deliver(supabase, { ...(insertedRow as Row), from_name: fromName }, { mailUser, mailPass, isTest, testRecipient })
+  // ⚠️ THE BYTES RIDE ON THE ROW OBJECT, NOT IN THE TABLE — like `from_name`. The table holds the
+  // paths; these are what nodemailer turns into MIME parts.
+  const result = await deliver(supabase,
+    { ...(insertedRow as Row), attachments: loaded.attachments, from_name: fromName },
+    { mailUser, mailPass, isTest, testRecipient })
 
   // ── THE CONTACT LOG — the shared path, and only for a real send the server accepted ──────────────
   // ⚠️ A TEST LOGS NOTHING. It goes to Dominic, not a prospect; a rung for it would corrupt the ladder

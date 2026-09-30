@@ -30,7 +30,7 @@ import { nativeAuthHeader } from '@/lib/native/session'
 import { safeHref } from '@/lib/safe-href'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
-import ComposeWindow from '@/components/admin/ComposeWindow'
+import ComposeWindow, { type ReplyTarget } from '@/components/admin/ComposeWindow'
 import type { MailImportResult, MailImportResponse } from '@/lib/outreach-mail-import-result'
 import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outreach "Create Demo" — stacked ABOVE the prospect modal
 // Only the two GATING helpers are needed here now; the picker, the renderer, the footer and the
@@ -560,7 +560,9 @@ export default function OutreachPanel() {
   /** 🔴 "Today asked for the compose window on this truck." Declared here, beside the modal id it
    *  shadows, because every path that changes one must change the other. */
   const [composeForId, setComposeForId] = useState<string | null>(null)
-  const openModal = useCallback((id: string) => { setComposeForId(null); setModalId(id) }, [])
+  /** 🔴 "Today asked for a REPLY to this message on this truck." Cleared by the same rule. */
+  const [replyIntent, setReplyIntent] = useState<{ prospectId: string; target: ReplyTarget } | null>(null)
+  const openModal = useCallback((id: string) => { setComposeForId(null); setReplyIntent(null); setModalId(id) }, [])
   const openSchedule = useCallback((pr: Prospect) => setSchedFor(pr), [])
 
   const load = useCallback(async () => {
@@ -627,7 +629,7 @@ export default function OutreachPanel() {
   // not having two capture listeners.
   useEffect(() => {
     if (!modalId) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !createDemoOpenRef.current) { setComposeForId(null); setModalId(null) } }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !createDemoOpenRef.current) { setComposeForId(null); setReplyIntent(null); setModalId(null) } }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [modalId])
@@ -866,7 +868,7 @@ export default function OutreachPanel() {
   // truck"; carried to the next truck — or to the next time this one is opened from the table — it
   // would pop a compose window nobody asked for, pre-loaded with a template, on a prospect the
   // operator was only looking at.
-  const showProspect = (id: string | null) => { setComposeForId(null); setModalId(id) }
+  const showProspect = (id: string | null) => { setComposeForId(null); setReplyIntent(null); setModalId(id) }
   const gotoPrev = () => { if (canPrev) showProspect(visible[modalIndex - 1].id) }
   const gotoNext = () => { if (canNext) showProspect(visible[modalIndex + 1].id) }
 
@@ -1146,6 +1148,8 @@ export default function OutreachPanel() {
             // ⚠️ OPEN FIRST, THEN ARM: `openModal` clears the intent, so setting it first would be
             // undone by the very call that shows the modal.
             onCompose={id => { openModal(id); setComposeForId(id) }}
+            // ⚠️ OPEN FIRST, THEN ARM — `openModal` clears both intents, for the reason above.
+            onReply={(id, target) => { openModal(id); setReplyIntent({ prospectId: id, target }) }}
             onAction={load}
           />
         )}
@@ -1493,7 +1497,8 @@ export default function OutreachPanel() {
                 hasLeadTypeFreeze={hasLeadTypeFreeze}
                 onPatch={patchProspect} onLog={logContact} templates={templates} snippets={snippets}
                 onDeleteContact={deleteContactRow} onReload={load} refreshNonce={refreshNonce}
-                autoCompose={composeForId === modalProspect.id} />
+                autoCompose={composeForId === modalProspect.id}
+                autoReply={replyIntent?.prospectId === modalProspect.id ? replyIntent.target : null} />
             </div>
           </div>
         </div>
@@ -2506,6 +2511,65 @@ const INBOUND_BG = '#ecfdf5'
  * ⚠️ FETCHED WHEN IT IS OPENED, not with the list. Most contact rows are never opened, and an IMAP
  * read per row of history would be absurd.
  */
+/**
+ * The attachment line under a viewed email.
+ *
+ * 🔴 TWO KINDS OF ATTACHMENT, AND THEY BEHAVE DIFFERENTLY ON PURPOSE:
+ *   OURS (a `storagePath`) — a file we sent, sitting in our own private bucket. It opens through a
+ *   signed URL that lives five minutes, requested per click so nothing long-lived is ever rendered
+ *   into the page.
+ *   THEIRS (no path) — a name read off an inbound message's structure. The file was never
+ *   downloaded and never will be by this app; "listed only" is the whole truth about it.
+ * ⚠️ NO PUBLIC URL IS EVER PRODUCED. The bucket is private and the link is signed and short-lived.
+ */
+function AttachmentList({ attachments, prospectId }: {
+  attachments: { filename: string | null; contentType: string; size: number | null; storagePath?: string }[]
+  prospectId: string | null
+}) {
+  const [busy, setBusy] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const open = async (path: string) => {
+    if (!prospectId) return
+    setBusy(path); setError(null)
+    try {
+      const r = await fetch('/api/admin/outreach/attachments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'signed_download', path, prospect_id: prospectId }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.ok === true && typeof j.url === 'string') window.open(j.url, '_blank', 'noopener,noreferrer')
+      else setError(String(j.refusal ?? 'That file could not be opened.'))
+    } catch { setError('That file could not be opened — check the connection.') }
+    finally { setBusy(null) }
+  }
+
+  return (
+    <>
+      {attachments.map((a, i) => (
+        <span key={`${a.filename ?? 'file'}-${i}`}>
+          {i > 0 && ', '}
+          <span>{a.filename ?? '(unnamed)'}</span>
+          {a.size != null && <span className="text-slate-400"> ({Math.round(a.size / 1024)} KB)</span>}
+          {a.storagePath && prospectId && (
+            <button type="button" onClick={() => void open(a.storagePath!)} disabled={busy === a.storagePath}
+              title="Opens the file we sent, through a link that expires in five minutes."
+              className="ml-1 text-[11px] font-bold text-orange-700 underline hover:text-orange-800 disabled:opacity-40">
+              {busy === a.storagePath ? '…' : 'Download'}
+            </button>
+          )}
+        </span>
+      ))}
+      {!attachments.some(a => a.storagePath) && (
+        <span className="text-slate-400"> — listed only, not downloaded</span>
+      )}
+      {error && <span className="text-red-700"> {error}</span>}
+    </>
+  )
+}
+
 function EmailBody({ rowId }: { rowId: string }) {
   const [data, setData] = useState<ViewedEmail | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -2535,8 +2599,7 @@ function EmailBody({ rowId }: { rowId: string }) {
       {data.attachments.length > 0 && (
         <p className="text-[12px] text-slate-700 mt-0.5">
           <span className="font-bold">Attachments:</span>{' '}
-          {data.attachments.map(a => a.filename ?? '(unnamed)').join(', ')}
-          <span className="text-slate-400"> — listed only, not downloaded</span>
+          <AttachmentList attachments={data.attachments} prospectId={data.prospect_id ?? null} />
         </p>
       )}
       {data.truncated && (
@@ -2734,7 +2797,7 @@ function TodaySection({ title, hint, count, children }: {
  * ⚠️ AND `channelFor`, NOT `step.channel`: every stopped step carries `channel: null`, so reading the
  * step would file reachable trucks as unreachable. The map is built with `channelFor` upstream.
  */
-function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onAction }: {
+function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onReply, onAction }: {
   view: TodayView
   /** False until the first fetch answers — an empty screen and an unloaded one look identical. */
   loaded: boolean
@@ -2744,6 +2807,8 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onActi
   onOpen: (prospectId: string) => void
   /** Opens the prospect with its compose window already up, on the step's own template. */
   onCompose: (prospectId: string) => void
+  /** 🔴 Opens the prospect with the composer ANSWERING this message — see `ReplyTarget`. */
+  onReply: (prospectId: string, target: ReplyTarget) => void
   onAction: () => void | Promise<void>
 }) {
   const [busyId, setBusyId] = useState<string | null>(null)
@@ -2810,6 +2875,18 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onActi
               </div>
               <span className="text-[11px] text-slate-500 whitespace-nowrap pt-0.5">{fmtDate(r.message_date)}</span>
               <div className="flex flex-wrap items-center gap-1 justify-end">
+                {/* 🔴 REPLY IS THE FIRST BUTTON, because answering is the thing this row is asking
+                    for. It opens the prospect with the composer already up on THIS message, the
+                    conversation visible below the editor. Nothing is sent until Send is pressed. */}
+                <button type="button"
+                  onClick={() => onReply(r.prospect_id, {
+                    messageId: r.id, subject: r.subject ?? null,
+                    fromAddress: r.from_address ?? null, date: r.message_date,
+                  })}
+                  title="Answer this reply, with the conversation quoted underneath."
+                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
+                  Reply
+                </button>
                 <button type="button" onClick={() => onOpen(r.prospect_id)}
                   className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   Open
@@ -2947,11 +3024,13 @@ async function fetchTimeline(prospectId: string): Promise<TimelinePayload | null
 const FIELD_CLS = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm max-sm:text-base max-sm:py-2'
 const LABEL_CLS = 'block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5'
 
-function Timeline({ prospect, nonce, onChanged, onDeleteContact }: {
+function Timeline({ prospect, nonce, onChanged, onDeleteContact, onReply }: {
   prospect: Prospect
   nonce: number
   onChanged: () => void | Promise<void>
   onDeleteContact: (c: Contact) => Promise<void>
+  /** 🔴 Opens the compose window answering THIS message. See `ReplyTarget`. */
+  onReply: (target: ReplyTarget) => void
 }) {
   const [data, setData] = useState<TimelinePayload | null>(null)
   const [showTests, setShowTests] = useState(false)
@@ -3174,6 +3253,20 @@ function Timeline({ prospect, nonce, onChanged, onDeleteContact }: {
                   className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   {isOpen ? 'Hide' : 'Open'}
                 </button>
+                {/* 🔴 REPLY IS OFFERED ON A REAL INBOUND MESSAGE AND NOWHERE ELSE. A test send went to
+                    Dominic's own address, so there is nobody to answer; an auto-reply and a bounce
+                    are not people. The route refuses each of those again by id. */}
+                {inbound && !m.is_test && m.status === 'received' && (
+                  <button type="button"
+                    onClick={() => onReply({
+                      messageId: m.id, subject: m.subject ?? null,
+                      fromAddress: m.from_address ?? null, date: m.message_date ?? null,
+                    })}
+                    title="Answer this message, with the conversation quoted underneath. Nothing is sent until you press Send."
+                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
+                    Reply
+                  </button>
+                )}
                 {waiting && (
                   <>
                     <button type="button" onClick={() => void markDone(m.id)} disabled={busyId === m.id}
@@ -3259,7 +3352,12 @@ const stageWord = (v: string | null | undefined): string =>
 interface ViewedEmail {
   from: string | null; to: string | null; subject: string | null; date: string | null
   direction: string; source: string
-  attachments: { filename: string | null; contentType: string; size: number | null }[]
+  /** 🔴 `storagePath` is present on an OUTBOUND row only — those files are ours, in our own private
+   *  bucket, and can be opened. An inbound message's attachments are NAMES read off its structure;
+   *  the files were never downloaded, so there is nothing to link to and no link is offered. */
+  attachments: { filename: string | null; contentType: string; size: number | null; storagePath?: string }[]
+  /** Needed to ask for a signed download link; the route checks the path against it. */
+  prospect_id?: string
   html: string | null; text: string | null
   from_mailbox: boolean; mailbox?: string
   /** 🔴 The stored HTML was longer than the cap and was cut. SAID, never silent — a viewer that
@@ -3316,7 +3414,7 @@ function DemoLinkChip({ demo }: { demo: NonNullable<Prospect['demo']> }) {
  * `Timeline` replaces both; `ContactPopout` — where Delete lives — is unchanged and is opened from a
  * contact row there. The `MailMessage` type went with the list that owned it. */
 
-function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload, refreshNonce, autoCompose }: {
+function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload, refreshNonce, autoCompose, autoReply }: {
   p: Prospect
   /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
   step?: Step
@@ -3339,6 +3437,9 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   /** 🔴 Set when Today's Compose button opened this prospect: the window comes up already, on the
    *  step's own template. ⚠️ It opens a WINDOW; it sends nothing and writes nothing. */
   autoCompose?: boolean
+  /** 🔴 Set when Today's Reply button opened this prospect: the window comes up ANSWERING this
+   *  message, with the conversation below the editor. Same rule — it opens a window and nothing else. */
+  autoReply?: ReplyTarget | null
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -3357,7 +3458,14 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
   const [message, setMessage] = useState('')
   // 🔴 SEEDED FROM THE PROP, NOT SET BY AN EFFECT. An effect that opened the window after mount
   // would be a `set-state-in-effect`, and it would flash the modal without it for one frame.
-  const [composeOpen, setComposeOpen] = useState(autoCompose === true)
+  const [composeOpen, setComposeOpen] = useState(autoCompose === true || !!autoReply)
+  /**
+   * 🔴 WHICH MESSAGE THE COMPOSE WINDOW IS ANSWERING, or null for a chase/first contact. It is state
+   * on the MODAL rather than on the window, because pressing Reply has to both open the window and
+   * tell it what it is replying to — and closing the window must forget it, or the next Compose
+   * would silently answer an old email.
+   */
+  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(autoReply ?? null)
   /** Bumped after a send so the message list re-reads itself without reloading the whole panel. */
   const [messagesNonce, setMessagesNonce] = useState(0)
   const today = toYMD(new Date())
@@ -3621,7 +3729,8 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
             toolbar updates the timeline of the modal that is already open. */}
         <Timeline prospect={p} nonce={messagesNonce + refreshNonce}
           onChanged={async () => { setMessagesNonce(n => n + 1); await onReload() }}
-          onDeleteContact={c => onDeleteContact(p, c)} />
+          onDeleteContact={c => onDeleteContact(p, c)}
+          onReply={t => { setReplyTarget(t); setComposeOpen(true) }} />
 
         {/* ── PINNED NOTES ────────────────────────────────────────────────────────────────────────
             🔴 RENAMED, NOT REPLACED, AND THE TWO ARE DIFFERENT THINGS. This one column holds what is
@@ -3661,7 +3770,8 @@ function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, t
           templatesLoaded={templates !== null}
           logFormKind={kind}
           snippets={snippets}
-          onClose={() => setComposeOpen(false)}
+          replyTo={replyTarget}
+          onClose={() => { setComposeOpen(false); setReplyTarget(null) }}
           onSent={async () => { setMessagesNonce(n => n + 1); await onReload() }}
           onLog={async (editedBody, ch, servesKind) => {
             // 🔴 `editedBody` IS THE TEXTAREA'S CURRENT VALUE, passed straight through to the writer.

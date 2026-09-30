@@ -12,6 +12,17 @@ import {
   OUTREACH_FROM_ADDRESS, OUTREACH_FROM_NAME,
 } from '@/lib/outreach-mail-config'
 
+/**
+ * One attachment as nodemailer takes it.
+ * ⚠️ `content` IS BYTES THE SERVER READ FROM THE PRIVATE BUCKET — never anything a browser sent. See
+ * `lib/outreach-attachment-store.ts` for why that distinction is load-bearing for Retry.
+ */
+export interface SendableAttachment {
+  filename: string
+  contentType: string
+  content: Buffer
+}
+
 export interface SendableRow {
   message_id: string
   /** The sender's display name for this message, or null for the bare address. */
@@ -23,6 +34,8 @@ export interface SendableRow {
   message_date: string | null
   html_body: string | null
   text_body: string | null
+  /** 🔴 ATTACHED IN-PROCESS, NEVER A COLUMN — the column stores paths; these are the bytes. */
+  attachments?: SendableAttachment[] | null
 }
 
 export function smtpTransportOptions(user: string, pass: string): SMTPTransport.Options {
@@ -75,6 +88,17 @@ export function mailFor(row: SendableRow): Mail.Options {
     ...(row.references ? { references: row.references } : {}),
     html: row.html_body ?? '',
     text: row.text_body ?? '',
+    // 🔴 THIS IS WHAT MAKES THE MESSAGE multipart/mixed. nodemailer wraps the existing
+    // multipart/alternative (the html and text parts above) in a mixed container and adds one part
+    // per file, each with its own `Content-Type`, `Content-Disposition: attachment; filename=…` and
+    // base64 encoding. ⚠️ THE STRUCTURE IS THE LIBRARY'S, NOT OURS: hand-building MIME boundaries is
+    // the classic way to produce a message that renders as an attachment-less wall of base64 in one
+    // client and fine in another.
+    // ⚠️ AN EMPTY LIST IS OMITTED ENTIRELY, so a message with no attachments composes byte-for-byte
+    // as it did before this existed — which is what keeps every earlier harness assertion true.
+    ...(row.attachments && row.attachments.length
+      ? { attachments: row.attachments.map(a => ({ filename: a.filename, contentType: a.contentType, content: a.content })) }
+      : {}),
     date: row.message_date ? new Date(row.message_date) : new Date(),
     xMailer: false,
   }

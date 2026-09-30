@@ -19,6 +19,10 @@ export interface WaitingReply {
   /** Already trimmed to ~140 characters by `replySnippet`. */
   snippet: string
   message_date: string | null
+  /** 🔴 The two fields Reply needs: what it is about, and who to answer. Added for CRM part 2 — a
+   *  Reply button on this row has to open the composer on THIS message, not on the latest one. */
+  subject?: string | null
+  from_address?: string | null
 }
 
 export interface ProblemEmail {

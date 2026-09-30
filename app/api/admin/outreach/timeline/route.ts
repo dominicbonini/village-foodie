@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   // from `text_body`, which is the flattened text the poll already extracted.
   const { data: mRows, error: mErr } = await supabase
     .from('outreach_messages')
-    .select('id, direction, status, is_test, source, subject, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id')
+    .select('id, direction, status, is_test, source, subject, from_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id')
     .eq('prospect_id', prospectId)
     .order('created_at', { ascending: false })
     .limit(400)
@@ -55,6 +55,9 @@ export async function GET(req: NextRequest) {
     is_test: r.is_test ?? false,
     source: r.source ?? null,
     subject: r.subject ?? null,
+    // 🔴 THE REPLY BUTTON NEEDS IT: a reply is addressed to whoever wrote, which may be a different
+    // mailbox at the same business from the one stored on the truck.
+    from_address: r.from_address ?? null,
     message_date: r.message_date ?? null,
     created_at: r.created_at ?? null,
     handled_at: r.handled_at ?? null,

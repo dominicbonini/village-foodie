@@ -665,9 +665,19 @@ const SIGNATURE =
     check(!R.startsNewThread('2_chase_1'), 'a chase does not')
     check(!R.startsNewThread('3_chase_2') && !R.startsNewThread('4_final_chase'), 'nor do the later rungs')
     check(!R.startsNewThread(null), 'an unstated kind does not start a new thread — it threads, and the refusal covers it')
-    // The route must apply it BEFORE looking for a parent, or the lookup decides and the rule is decoration.
-    check(/const firstContact = startsNewThread\(sendKind\)/.test(SEND_ROUTE),
+    /* The route must apply it BEFORE looking for a parent, or the lookup decides and the rule is
+     * decoration.
+     * 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM part 2).
+     * This matched `const firstContact = startsNewThread(sendKind)` exactly. The line now reads
+     * `const firstContact = !replyParent && startsNewThread(sendKind)`, and the added clause is a
+     * REAL behavioural change worth restating rather than pattern-matching around: an explicit
+     * reply to a specific message is never a first contact, whatever its kind would otherwise say.
+     * The rule this check exists for — resolved into a variable, before any parent lookup — is
+     * unchanged and is what is asserted. */
+    check(/const firstContact = !replyParent && startsNewThread\(sendKind\)/.test(SEND_ROUTE),
       'the send resolves the rule into a variable before the parent lookup')
+    check(/const parentRow = replyParent \? undefined : \(firstContact \? undefined : await threadParent\(prospectId\)\)/.test(SEND_ROUTE),
+      '…and the parent lookup reads that variable rather than deciding for itself')
     check(/firstContact \? undefined : await threadParent\(prospectId\)/.test(SEND_ROUTE),
       '🔴 …and a first contact never even looks for a parent')
     check(/\.eq\('prospect_id', prospectId\)\.eq\('is_test', false\)/.test(SEND_ROUTE),
