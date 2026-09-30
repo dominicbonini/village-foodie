@@ -701,7 +701,12 @@ const hdrs = (raw, extra = {}) => ({
     check(/<EmailBody rowId=\{contact\.email_message_id\} \/>/.test(UI), '…through the shared component')
     const body = UI.slice(UI.indexOf('function EmailBody'), UI.indexOf('function ContactPopout'))
     check(/action: 'view', message_row_id: rowId/.test(body), 'which uses the SAME read-only view action')
-    check(/sandbox=""/.test(body), '🔴 …and the SAME sandboxed frame — the markup is sender-controlled')
+    /* 🔴 A STALE ANCHOR, RESTATED (30 September 2026, workspace v2). `EmailBody`'s frame was
+     * `sandbox=""`; it is `allow-same-origin` now, added solely so the frame can be measured and
+     * sized to the email. Scripts are still off — which is what makes same-origin inert — and
+     * `scripts/outreach-workspace-v2.cjs` owns the full argument and the forbidden-token test. */
+    check(/sandbox=\{EMAIL_FRAME_SANDBOX\}/.test(body) && !/allow-scripts/.test(body),
+      '🔴 …and the SAME framed viewer, with scripts still disabled — the markup is sender-controlled')
     check(/contact\.message/.test(UI), 'the logged text is still shown, above it')
   }
 

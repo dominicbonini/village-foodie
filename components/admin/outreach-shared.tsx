@@ -15,7 +15,7 @@
 // else only the list uses. This is the shared set, not a junk drawer.
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
 import type { TimelineMessage, TimelineContact, TimelineEvent } from '@/lib/outreach-timeline'
@@ -31,6 +31,8 @@ export interface TimelinePayload {
 }
 import { formatImageUrl } from '@/lib/image-utils'
 import { kindLabel, channelLabel, directionLabel, type OutreachStage } from '@/lib/outreach'
+import { splitQuotedHtml } from '@/lib/outreach-quote-split'
+import { EMAIL_FRAME_SANDBOX, FRAME_MIN_PX, FRAME_MAX_FRACTION, frameHeight } from '@/lib/outreach-workspace'
 import { safeHref } from '@/lib/safe-href'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 
@@ -420,15 +422,40 @@ export function AttachmentList({ attachments, prospectId }: {
   )
 }
 
-export function EmailBody({ rowId }: { rowId: string }) {
+/**
+ * One email, at full length.
+ *
+ * 🔴 THE FRAME IS SIZED TO ITS CONTENT, NOT TO A BOX. It was `h-80` — 320px — so a three-line reply
+ * wasted two thirds of it and a real email scrolled inside a letterbox while the page below sat
+ * empty. The frame now reports its own document height and is set to it, capped at 80% of the
+ * window (`frameHeight`), above which it scrolls internally rather than pushing the row it belongs
+ * to off the screen.
+ *
+ * 🔴 `sandbox="allow-same-origin"` AND THAT TOKEN ALONE. Measuring means reading
+ * `document.body.scrollHeight` inside the frame, which a frame with an opaque origin cannot expose.
+ * `allow-same-origin` gives it our origin back and nothing else: there is NO `allow-scripts`, so
+ * nothing in the document can run, and a document that cannot run code cannot use an origin. The
+ * two are only dangerous together — that pair lets a frame remove its own sandbox — which is why
+ * the value is a constant in `lib/outreach-workspace.ts` with a test standing on it.
+ * ⚠️ AND NO `allow-forms` OR `allow-popups`: a quoted email can carry a form, and an email we are
+ * only reading has no business submitting or opening anything.
+ *
+ * 🔴 THE NEW PART FIRST. `splitQuotedHtml` finds where the reply ends and the quoted thread begins,
+ * best-effort; no split point found means the whole email is shown, because hiding something a
+ * prospect wrote is the one failure worth avoiding here.
+ */
+export function EmailBody({ rowId, onOpenFull }: { rowId: string; onOpenFull?: (html: string, subject: string | null) => void }) {
   const [data, setData] = useState<ViewedEmail | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showQuoted, setShowQuoted] = useState(false)
   useEffect(() => {
     let live = true
     void (async () => {
       try {
+        const h = await nativeAuthHeader()
         const r = await fetch('/api/admin/outreach/mail-send', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
+          credentials: 'same-origin',
           body: JSON.stringify({ action: 'view', message_row_id: rowId }),
         })
         const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
@@ -440,8 +467,11 @@ export function EmailBody({ rowId }: { rowId: string }) {
     return () => { live = false }
   }, [rowId])
 
+  const split = useMemo(() => splitQuotedHtml(data?.html ?? ''), [data])
+
   if (error) return <p className="text-[12px] text-red-800">{error}</p>
   if (!data) return <p className="text-[12px] text-slate-500">Opening the email…</p>
+  const shown = split.quoted && !showQuoted ? split.main : (data.html ?? '')
   return (
     <>
       <p className="text-[12px] text-slate-700"><span className="font-bold">From:</span> {data.from ?? '—'}</p>
@@ -458,10 +488,68 @@ export function EmailBody({ rowId }: { rowId: string }) {
         </p>
       )}
       {data.html
-        ? <iframe title="Email body" sandbox="" srcDoc={data.html}
-            className="mt-2 w-full h-80 border border-slate-200 rounded bg-white" />
+        ? <>
+            <SizedEmailFrame html={shown} title="Email body" />
+            <div className="flex items-center gap-2 mt-1">
+              {split.quoted && (
+                <button type="button" onClick={() => setShowQuoted(v => !v)}
+                  className="text-[11px] font-bold text-slate-600 hover:underline">
+                  {showQuoted ? 'Hide quoted text' : 'Show quoted text'}
+                </button>
+              )}
+              {onOpenFull && (
+                <button type="button" onClick={() => onOpenFull(data.html ?? '', data.subject)}
+                  className="text-[11px] font-bold text-slate-600 hover:underline">⤢ Open full screen</button>
+              )}
+            </div>
+          </>
         : <pre className="mt-2 text-[12px] whitespace-pre-wrap">{data.text ?? '(this email has no body)'}</pre>}
     </>
+  )
+}
+
+/**
+ * A frame that measures itself.
+ * ⚠️ MEASURED ON LOAD AND ON RESIZE, and nowhere else: the document inside cannot run scripts, so it
+ * cannot change size on its own. A `ResizeObserver` on a document we know is static would be a
+ * listener that never fires.
+ */
+export function SizedEmailFrame({ html, title, maxFraction }: {
+  html: string
+  title: string
+  /** Defaults to 80% of the window. The full-screen view passes ~1 to fill it. */
+  maxFraction?: number
+}) {
+  const ref = useRef<HTMLIFrameElement>(null)
+  const [h, setH] = useState(FRAME_MIN_PX)
+
+  const measure = useCallback(() => {
+    const el = ref.current
+    const doc = el?.contentDocument
+    if (!doc || !doc.body) return
+    const content = Math.max(doc.body.scrollHeight, doc.documentElement?.scrollHeight ?? 0)
+    const vh = typeof window === 'undefined' ? 800 : window.innerHeight
+    setH(frameHeight(content + 16, maxFraction ? vh * (maxFraction / FRAME_MAX_FRACTION) : vh))
+  }, [maxFraction])
+
+  useEffect(() => {
+    const onResize = () => measure()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [measure])
+
+  return (
+    <iframe
+      ref={ref}
+      title={title}
+      // 🔴 ONE TOKEN, FROM THE CONSTANT. See `EMAIL_FRAME_SANDBOX`: same-origin WITHOUT scripts is
+      // what makes the document measurable and inert at the same time.
+      sandbox={EMAIL_FRAME_SANDBOX}
+      srcDoc={html}
+      onLoad={measure}
+      style={{ height: h }}
+      className="mt-2 w-full border border-slate-200 rounded bg-white"
+    />
   )
 }
 

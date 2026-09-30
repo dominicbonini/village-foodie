@@ -62,10 +62,19 @@ export interface RichEmailEditorProps {
   signatureLines: DocLine[]
   optOut: string | null
   disabled?: boolean
+  /**
+   * 🔴 THE ONLY CEILING, AND IT IS THE WINDOW'S. Passed as a CSS length ('75vh') so the editor
+   * grows with its content and starts scrolling only when it would otherwise push the Send buttons
+   * off the screen. Absent ⇒ no ceiling at all, which is what the expanded writing view wants.
+   */
+  maxHeight?: string
+  /** Opens the focused full-window writing view. Absent ⇒ no ⤢ button (it is already expanded). */
+  onExpand?: () => void
+  expanded?: boolean
 }
 
 export default function RichEmailEditor({
-  value, onChange, signatureLines, optOut, disabled,
+  value, onChange, signatureLines, optOut, disabled, maxHeight, onExpand, expanded,
 }: RichEmailEditorProps) {
   const extensions = useMemo(() => [
     Document, Paragraph, Text, HardBreak, Bold, Small,
@@ -83,7 +92,14 @@ export default function RichEmailEditor({
         // Styled to look like the sent email, so "what I see is what arrives" is literally true.
         // 🔴 THE SAME STYLE THE EMAIL USES, from the same constant, so "what I see is what arrives"
         // is literally true rather than approximately true.
-        style: `${P_STYLE} min-height: 22rem; outline: none;`,
+        // 🔴 A MINIMUM, NOT A HEIGHT, AND NO MAXIMUM AT ALL. It was `min-height: 22rem` with the
+        // surrounding box fixed, so a long email scrolled inside a 352px window while the page
+        // below it sat empty — you could not see the email you were sending. The box now grows
+        // with the text; the CAP lives on the wrapper (`maxHeight` below), so only an email past
+        // three quarters of the window height ever scrolls inside.
+        // ⚠️ ~8 LINES AT 12pt IS THE FLOOR: enough that an empty composer looks like somewhere to
+        // write, without reserving a screenful for a two-line reply.
+        style: `${P_STYLE} min-height: 11rem; outline: none;`,
         class: 'px-2 py-1.5',
         'aria-label': 'Message',
       },
@@ -106,7 +122,7 @@ export default function RichEmailEditor({
 
   useEffect(() => { editor?.setEditable(!disabled) }, [editor, disabled])
 
-  if (!editor) return <div className="border border-slate-200 rounded-lg h-[22rem]" />
+  if (!editor) return <div className="border border-slate-200 rounded-lg" style={{ minHeight: '11rem' }} />
 
   const tbtn = (active: boolean) =>
     `text-xs font-bold px-2 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-slate-400 ${
@@ -143,11 +159,22 @@ export default function RichEmailEditor({
           className={`${tbtn(false)} disabled:opacity-40`}>
           Insert opt-out
         </button>
-        <span className="ml-auto text-[11px] text-slate-400">
+        <span className="ml-auto text-[11px] text-slate-400 max-lg:hidden">
           This is the email. Exactly what is here is sent.
         </span>
+        {onExpand && (
+          // 🔴 A WRITING VIEW, NOT A PREVIEW. It opens the same editor and the same Send buttons at
+          // full window width with the conversation beside it — for the email that is long enough
+          // that a column is the wrong shape to write it in. Escape returns.
+          <button type="button" onClick={onExpand} title="Write full screen (Esc returns)"
+            className={`${tbtn(false)} ml-1`} aria-label="Expand the editor">⤢</button>
+        )}
       </div>
-      <EditorContent editor={editor} />
+      {/* ⚠️ THE SCROLLER IS THE WRAPPER, NOT THE EDITOR. ProseMirror needs its own box to grow into;
+          capping the editor itself would clip the caret out of view at the bottom of a long email. */}
+      <div style={maxHeight && !expanded ? { maxHeight, overflowY: 'auto' } : undefined}>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   )
 }

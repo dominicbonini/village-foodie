@@ -239,11 +239,22 @@ const fakeStore = () => {
   console.log('\n── IT DERIVES NOTHING OF ITS OWN ────────────────────────────────────────────────────────')
   {
     // 🔴 §57.1: `nextStep` is the one derivation. The page passes it IN.
+    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, workspace v2).
+     * This matched `followUpDateFor(` anywhere in the module and required it to be absent. The
+     * module now has `defaultFollowUpChoice`, which takes that function AS A PARAMETER — it is
+     * injected by the page precisely so this module cannot own a second copy of the interval rule.
+     * A name in a parameter list is the opposite of the thing the census was written to catch, so
+     * the census is now what it always meant: the module IMPORTS no derivation and CALLS none of
+     * its own. `nextStep` and `CONTACT_KINDS` remain absolutely forbidden. */
     const LIB = readStripped('lib/outreach-workspace.ts')
-    const derives = src => /\bnextStep\(|followUpDateFor\(|CONTACT_KINDS/.test(src)
+    const derives = src => /\bnextStep\(|CONTACT_KINDS/.test(src)
     check(!derives(LIB), '🔴 lib/outreach-workspace.ts computes no step of its own…')
     check(derives(LIB + '\nconst s = nextStep(p, c)'),
       '⚠️ …and the same census FAILS on a version that does, so it is testing the rule')
+    check(!/from '@\/lib\/outreach'/.test(LIB),
+      "🔴 …and it imports nothing from lib/outreach: `followUpDateFor` is HANDED IN, so there is no second interval table")
+    check(/followUpDateFor: \(kind: string, from: string\) => string \| null/.test(LIB),
+      '…as a parameter, which is what makes that true by construction')
     check(/needsAttention\(m, \{ now: opts\.now, linkedTruck: opts\.linkedTruck \}\)/.test(LIB)
       || /needsAttention\(/.test(LIB),
       '…and "is this waiting" is the SHARED predicate, not a second set of conditions')
@@ -407,8 +418,12 @@ const fakeStore = () => {
     for (const [k, what] of [['j', 'next'], ['k', 'previous'], ['e', 'email'], ['n', 'note'], ['c', 'call'], ['r', 'reply']]) {
       check(new RegExp(`k === '${k}'`).test(PAGE), `${k} is bound (${what})`)
     }
-    check(/title="Next in this queue \(J\)"/.test(PAGE) && /title="Compose an email \(E\)"/.test(PAGE),
-      '⚠️ and the shortcut is in the tooltip of the button it duplicates')
+    /* ⚠️ A STALE ANCHOR, RESTATED (workspace v2): the action bar's four buttons became the
+     * composer's four TABS, so "Compose an email (E)" is now "Write an email (E)" on a tab. The
+     * rule — every shortcut appears in the tooltip of the control it duplicates — is unchanged. */
+    check(/title="Next in this queue \(J\)"/.test(PAGE) && /Write an email \(E\)/.test(PAGE),
+      '⚠️ and the shortcut is in the tooltip of the control it duplicates')
+    check(/Log a call \(C\)/.test(PAGE) && /Add a note \(N\)/.test(PAGE), '…on each of them')
   }
 
   console.log('\n── WHAT THE PAGE KEEPS ──────────────────────────────────────────────────────────────────')
@@ -417,11 +432,25 @@ const fakeStore = () => {
     const TL = readStripped('components/admin/ProspectTimeline.tsx')
     const SHARED = readStripped('components/admin/outreach-shared.tsx')
     // 🔴 MAILBOX HTML, IN THE SANDBOXED IFRAME AND NOWHERE ELSE.
-    check(/sandbox=""/.test(SHARED), 'the one email viewer renders in `sandbox=""`')
+    /* 🔴 A STALE ANCHOR, AND A DELIBERATE CHANGE, RESTATED IN FULL (workspace v2). The viewer's
+     * frame was `sandbox=""` — every capability withheld. It is `allow-same-origin` now, and that
+     * ONE token was added for one reason: the frame has to be sized to the email inside it, and a
+     * frame with an opaque origin cannot expose `document.body.scrollHeight`. There is still no
+     * `allow-scripts`, so nothing in the document can RUN, and a document that cannot run code
+     * cannot use the origin it has been handed — the pair is what is dangerous, not the token.
+     * The census therefore asserts the stronger property: the forbidden tokens are absent. */
+    check(/sandbox=\{EMAIL_FRAME_SANDBOX\}/.test(SHARED), 'the one email viewer frames the body…')
+    check(!/allow-scripts|allow-forms|allow-popups/.test(SHARED),
+      '🔴 …with no allow-scripts, allow-forms or allow-popups anywhere in it')
     for (const [f, src] of [['the page', PAGE], ['the timeline', TL], ['the shared module', SHARED]]) {
       check(!/dangerouslySetInnerHTML/.test(src), `🔴 ${f} never injects HTML into the admin page`)
     }
-    check(/<EmailBody rowId=\{m\.id\} \/>/.test(TL), '…and the timeline opens an email through that viewer')
+    /* ⚠️ A STALE ANCHOR, RESTATED (workspace v2): `EmailBody` now also takes `onOpenFull`, so the
+     * row can hand the same email to a full-window view. The rule is unchanged — the timeline
+     * renders no markup of its own and opens everything through the one viewer. */
+    check(/<EmailBody rowId=\{m\.id\}/.test(TL), '…and the timeline opens an email through that viewer')
+    check(/onOpenFull=\{\(html, subject\) => setFullScreen\(\{ html, subject \}\)\}/.test(TL),
+      '…including the full-window one, which is the same frame with a larger cap')
     // 🔴 THE SINGLE CONTACT WRITER, THROUGH THE SAME ROUTE ACTION.
     check(/action: 'log_contact'/.test(PAGE), 'every log goes through `log_contact`…')
     check(!/outreach_contacts/.test(PAGE), '…and the page never touches the table itself')

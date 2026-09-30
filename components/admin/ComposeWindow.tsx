@@ -34,6 +34,7 @@ import {
 } from '@/lib/outreach-template-render'
 import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
 import { snippetMapOf, type Snippet } from '@/lib/outreach-snippets'
+import { SizedEmailFrame } from '@/components/admin/outreach-shared'
 // ── 🔴 THE ATTACHMENT AND REPLY RULES LIVE IN lib/, NOT HERE ───────────────────────────────────────
 // "What may be attached", "how big is too big" and "who may a reply be addressed to" are decisions,
 // and the server applies every one of them again. These imports are so the WINDOW refuses the same
@@ -138,7 +139,7 @@ interface Thread {
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
-  inline, onDirtyChange,
+  inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -196,6 +197,19 @@ export default function ComposeWindow({
   inline?: boolean
   /** Tells the host whether there is unsaved text, so switching panels can ask before discarding. */
   onDirtyChange?: (dirty: boolean) => void
+  /**
+   * 🔴 THE ONE FOLLOW-UP DATE, OWNED BY THE PAGE. The window does not choose it and does not hold a
+   * second picker; it puts the chosen date on the Send button so the consequence of pressing it is
+   * visible before it is pressed. The value still reaches the server the one way it always has —
+   * through `onLog`'s caller, which writes `next_action_at` in one place.
+   */
+  followUpDate?: string | null
+  /** "· follow up 3 Oct" — composed by the page from the same date. */
+  sendLabelSuffix?: string | null
+  /** The page's action bar owns Copy and Log-as-contact; the inline composer does not repeat them. */
+  hideCopyAndLog?: boolean
+  /** "To Stephen" rather than "To stephen@…" on the header line. Display only. */
+  contactName?: string | null
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -222,6 +236,9 @@ export default function ComposeWindow({
   const globalsSeed = useMemo(() => snippetMapOf(snippets ?? []), [snippets])
   const [seed] = useState(() => seedFrom(initialTemplateId, offerable, ctx, globalsSeed))
   const [templateId, setTemplateId] = useState(seed.id)
+  const [moreOpen, setMoreOpen] = useState(false)
+  /** 🔴 The focused writing view. Esc returns — see the key handler below. */
+  const [expanded, setExpanded] = useState(false)
   // 🔴 TWO LAYERS, ONE VISIBLE PANE.
   //   sourceSubject / sourceBody — the template's RENDER, still carrying [[placeholders]]. Never shown.
   //   subject / body            — the editable message, which is the render with field values applied.
@@ -613,6 +630,19 @@ export default function ComposeWindow({
    *  business from the one stored on the truck. ⚠️ Display only — the route re-derives and re-checks it. */
   const toEmailForReply = replyTo?.fromAddress ?? null
 
+  /**
+   * Which templates get a chip, and which go behind More.
+   * 🔴 THE STEP'S OWN TEMPLATE FIRST, THEN THE SUGGESTION, THEN THE REST — all three orderings come
+   * from values computed upstream (`templateForStep` for the first, `suggestTemplateId` for the
+   * second). This sorts; it does not decide.
+   */
+  const { primaryTemplates, moreTemplates } = useMemo(() => {
+    const rank = (t: MessageTemplate) =>
+      t.id === initialTemplateId ? 0 : t.id === suggestedId ? 1 : 2
+    const sorted = [...offerable].sort((a, b) => rank(a) - rank(b))
+    return { primaryTemplates: sorted.slice(0, 3), moreTemplates: sorted.slice(3) }
+  }, [offerable, initialTemplateId, suggestedId])
+
   // ⚠️ ONE SIGNAL, DERIVED FROM WHAT IS ALREADY TRACKED. `edited` is set by every keystroke in the
   // editor and cleared on a template change; the host only needs to know whether discarding would
   // lose something a person typed.
@@ -906,6 +936,18 @@ export default function ComposeWindow({
    * ⚠️ AND A TEST LOGS NOTHING — it goes to Dominic's own address, and a rung for it would corrupt the
    * ladder that decides whether a prospect gets a fourth email.
    */
+  // ⚠️ ESC LEAVES THE WRITING VIEW BEFORE IT REACHES ANYTHING ELSE. Registered in the capture phase
+  // so the page's own Esc (which closes a composer) does not fire underneath it.
+  useEffect(() => {
+    if (!expanded) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.stopPropagation(); e.preventDefault(); setExpanded(false)
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [expanded])
+
   const askSend = (test: boolean) => {
     if (!body.trim()) return
     if (refusal) { setSendError(refusal); return }
@@ -988,17 +1030,46 @@ export default function ComposeWindow({
         </div>
 
         <div className={inline ? 'px-5 py-4 space-y-3' : 'flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3'}>
-          <label className="block">
-            <span className={LABEL}>Template</span>
-            <select className={FIELD} value={templateId} onChange={e => applyTemplate(e.target.value)}>
-              <option value="">— none —</option>
-              {offerable.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.label}{t.id === suggestedId ? '  (suggested)' : ''}
-                </option>
-              ))}
-            </select>
-          </label>
+          {/* ── TEMPLATE CHIPS ─────────────────────────────────────────────────────────────────
+              🔴 A DROPDOWN HID THE CHOICE BEHIND A CLICK, and the choice is one of the two things
+              this box is for. The ones that FIT this prospect's step come first — `initialTemplateId`
+              is `templateForStep`'s answer and `suggestedId` is the heuristic's — and the rest are
+              behind More, so a long library does not become a wall of chips.
+              ⚠️ THE ORDER IS DERIVED FROM VALUES THAT ALREADY EXIST. Nothing here re-decides which
+              template suits a step; it sorts by the answers `templateForStep` and `suggestTemplateId`
+              already gave. */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className={`${LABEL} mb-0 mr-1`}>Template</span>
+            <button type="button" onClick={() => applyTemplate('')}
+              aria-pressed={templateId === ''}
+              className={chipCls(templateId === '')}>Blank</button>
+            {primaryTemplates.map(t => (
+              <button key={t.id} type="button" onClick={() => applyTemplate(t.id)}
+                aria-pressed={templateId === t.id} title={t.label}
+                className={chipCls(templateId === t.id)}>
+                {t.label}{t.id === suggestedId ? ' ·' : ''}
+              </button>
+            ))}
+            {moreTemplates.length > 0 && (
+              <div className="relative">
+                <button type="button" onClick={() => setMoreOpen(o => !o)}
+                  className={chipCls(moreTemplates.some(t => t.id === templateId))}>
+                  More ▾
+                </button>
+                {moreOpen && (
+                  <div className="absolute left-0 mt-1 z-20 w-64 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg p-1">
+                    {moreTemplates.map(t => (
+                      <button key={t.id} type="button"
+                        onClick={() => { applyTemplate(t.id); setMoreOpen(false) }}
+                        className="block w-full text-left text-[13px] px-2 py-1.5 rounded hover:bg-slate-50">
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           {/* 🔴 "COULD NOT READ THE TABLE" AND "THE TABLE HAS NONE" ARE DIFFERENT PROBLEMS AND MUST NOT
               LOOK THE SAME. There is no fallback to built-in copy: if templates cannot be loaded the
               window says so rather than quietly serving something stale from the bundle. */}
@@ -1103,7 +1174,40 @@ export default function ComposeWindow({
             </div>
           )}
 
+          {/* ── ONE LINE THAT SAYS WHERE THIS IS GOING ─────────────────────────────────────────
+              🔴 To, SUBJECT AND THE THREAD NOTE ON ONE ROW. They were three stacked labelled fields
+              taking a third of the box's height to carry, between them, one editable value. The
+              address is not editable here by design (the server reads it off the truck row, or off
+              the message being answered), so on a chase or a reply this whole row is a statement. */}
           {isEmail && (
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13px]">
+              <span className="text-slate-500">To</span>
+              <span className="font-semibold text-slate-800">
+                {contactName?.trim() || toEmailForReply || toEmail || 'no address'}
+              </span>
+              {(contactName?.trim() && (toEmailForReply || toEmail)) && (
+                <span className="text-slate-400">{toEmailForReply || toEmail}</span>
+              )}
+              {thread && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="text-slate-700 truncate max-w-[22rem]" title={thread.replySubject}>
+                    {thread.replySubject}
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    replies to {thread.date ? fmtWhen(thread.date) : 'the last email'}
+                  </span>
+                  <button type="button" onClick={() => setQuotedOpen(o => !o)}
+                    className="text-[12px] font-bold text-slate-600 underline hover:text-slate-800">
+                    {quotedOpen ? 'Hide conversation' : 'Show conversation'}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ⚠️ A FIRST CONTACT STILL TYPES ITS OWN SUBJECT — there is no thread to take one from. */}
+          {isEmail && !thread && (
             <label className="block">
               <span className={LABEL}>Subject</span>
               {/* 🔴 `type="text"` IS LOAD-BEARING, NOT DECORATION. The unlayered rule in globals.css
@@ -1117,18 +1221,12 @@ export default function ComposeWindow({
                   that threads on the subject would show the chase as a new conversation. Leaving the
                   box editable would let Dominic type something that is silently thrown away, so for a
                   chase it shows what will ACTUALLY be sent, read-only. */}
-              {thread ? (
-                <>
-                  <input type="text" className={`${FIELD} bg-slate-50 text-slate-600`} value={thread.replySubject}
-                    readOnly aria-readonly="true" />
-                  <span className="block mt-0.5 text-[11px] text-slate-500">
-                    Set automatically, because this replies to an earlier email.
-                  </span>
-                </>
-              ) : (
-                <input type="text" className={FIELD} value={subject}
-                  onChange={e => { setSubject(e.target.value); setEdited(true); setLogged(false) }} />
-              )}
+              {/* 🔴 A CHASE'S SUBJECT IS NOT A FIELD AT ALL NOW, because it never was a choice: the
+                  server sets it to `Re: ` + the parent's and ignores what is typed, or the reply's
+                  subject would disagree with its `In-Reply-To`. It is stated on the line above
+                  instead of shown as a disabled box pretending to be editable. */}
+              <input type="text" className={FIELD} value={subject}
+                onChange={e => { setSubject(e.target.value); setEdited(true); setLogged(false) }} />
             </label>
           )}
 
@@ -1165,6 +1263,12 @@ export default function ComposeWindow({
                 onChange={d => { setEditedDoc(d); setEdited(true); setLogged(false) }}
                 signatureLines={settings.signatureLines}
                 optOut={settings.optOut}
+                // 🔴 THE ONLY CEILING IS THE WINDOW'S. The box grows with the email and starts
+                // scrolling only past three quarters of the viewport, which is the point at which
+                // growing further would push Send off the screen.
+                maxHeight={expanded ? undefined : '75vh'}
+                expanded={expanded}
+                onExpand={expanded ? undefined : () => setExpanded(true)}
               />
             ) : (
               <textarea rows={18} className={`${FIELD} resize-y font-normal leading-relaxed`}
@@ -1233,23 +1337,16 @@ export default function ComposeWindow({
               ⚠️ AND WHAT IS SENT IS SANITISED SEPARATELY, server-side: this iframe protects THIS
               page, and `lib/outreach-quote-sanitise.ts` protects the recipient of the copy we
               embed in the outgoing message. They are different problems. */}
-          {isEmail && thread && (
+          {isEmail && thread && quotedOpen && (
             <div>
-              <p className="text-[12px] text-slate-700">
-                {replyTo ? 'Replies to' : 'Sends as a reply to'} “<span className="font-semibold">{thread.subject}</span>”
-                {thread.date ? ` (${fmtWhen(thread.date)})` : ''}
-                {replyTo && toEmailForReply ? <> · to <span className="font-semibold">{toEmailForReply}</span></> : null}.
-                {' '}The conversation below is included under your signature.
-                <button type="button" onClick={() => setQuotedOpen(o => !o)}
-                  className="ml-1.5 text-[12px] font-bold text-orange-700 underline hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded">
-                  {quotedLoading ? 'Loading…' : quotedOpen ? 'Hide' : 'Show'}
-                </button>
+              <p className="text-[11px] text-slate-500 mb-1">
+                Included under your signature when this sends.
+                {quotedLoading && ' Loading…'}
               </p>
-              {quotedOpen && quoted && (
-                <iframe title="The earlier conversation" sandbox="" srcDoc={quoted}
-                  className="mt-1.5 w-full h-72 border border-slate-200 rounded bg-white" />
-              )}
-              {quotedOpen && !quoted && !quotedLoading && (
+              {/* ⚠️ THE SAME SIZED FRAME THE HISTORY USES, for the same reason: a fixed 288px box on a
+                  four-email thread is a letterbox onto the thing you are answering. */}
+              {quoted && <SizedEmailFrame html={quoted} title="The earlier conversation" />}
+              {!quoted && !quotedLoading && (
                 <p className="mt-1 text-[11px] text-amber-800">
                   The earlier email has no stored copy yet. Open it once in the timeline and it will be saved.
                 </p>
@@ -1439,12 +1536,14 @@ export default function ComposeWindow({
                 : 'Send test to me goes only to you and changes nothing. Send goes to the prospect, logs it and updates the stage.'}
             </span>
             <div className="ml-auto flex items-center gap-2">
+              {!hideCopyAndLog && (
               <button onClick={doCopy} disabled={!body.trim()}
                 title="Copies the message body. Your Outlook signature supplies the sign-off, your details and the opt-out line."
 
                 className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                 {copied ? 'Copied' : 'Copy'}
               </button>
+              )}
               {/* ⚠️ THE SENDING ACCOUNT IS NO LONGER A MYSTERY, AND NO LONGER OUTLOOK'S TO PICK. The old
                   note here explained that a mailto: is handed to the OS and the CLIENT chooses the
                   account — Outlook always composes from its default and ignores `from=`. The route
@@ -1457,18 +1556,26 @@ export default function ComposeWindow({
                     className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Send test to me
                   </button>
+                  {/* 🔴 THE ONLY ORANGE CONTROL ON THE PAGE, AND IT SAYS WHAT WILL HAPPEN. The
+                      follow-up date comes from the page's single control, so "Send · follow up
+                      3 Oct" is the whole consequence of the press, visible before it. */}
                   <button onClick={() => askSend(false)} disabled={!body.trim() || !toEmail || sending}
                     title={!toEmail ? 'This prospect has no email address'
-                      : `Sends from your mailbox to ${toEmail} and logs the contact.`}
-                    className="text-sm font-bold px-3 py-1.5 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    {sending ? 'Sending…' : 'Send'}
+                      : `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
+                    className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    {sending ? 'Sending…' : `Send${sendLabelSuffix ?? ''}`}
                   </button>
                 </>
               )}
+              {/* ⚠️ NEUTRAL, NOT ORANGE, AND HIDDEN ON THE PROSPECT PAGE. It records an email sent
+                  from somewhere else; the page has a Log tab and four one-click buttons for that,
+                  and two ways to do one thing side by side is what this redesign is removing. */}
+              {!hideCopyAndLog && (
               <button onClick={doLog} disabled={logging || logged || !body.trim()}
-                className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                className="text-sm font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-slate-400">
                 {logging ? 'Logging…' : logged ? 'Logged ✓' : 'Log as outbound contact'}
               </button>
+              )}
             </div>
           </div>
         </div>
@@ -1479,6 +1586,27 @@ export default function ComposeWindow({
   // over, and a `position: fixed` panel inside a page would scroll independently of the timeline it
   // is answering. ⚠️ The height cap goes with it: the PAGE scrolls, so a panel that scrolled inside
   // a cap would put two scrollbars beside each other.
+  // 🔴 THE FOCUSED WRITING VIEW. The same panel, given the whole window — for the email that is
+  // long enough that a column is the wrong shape to write it in. It is the SAME component and the
+  // same state: pressing ⤢ does not copy a draft anywhere, it changes where the box is drawn.
+  // ⚠️ THE CONVERSATION SITS BESIDE IT HERE, not under it, because that is the width's whole point.
+  if (expanded) {
+    return createPortal(
+      <div style={{ zIndex: 90 }} className="fixed inset-0 bg-white flex flex-col">
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-200">
+          <span className="font-bold text-slate-800">Writing to {truckName}</span>
+          <span className="text-[11px] text-slate-400">Esc returns</span>
+          <button onClick={() => setExpanded(false)}
+            className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+            Done
+          </button>
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto">{panel}</div>
+      </div>,
+      document.body,
+    )
+  }
+
   if (inline) return panel
 
   // 🔴 THE z-index IS AN INLINE STYLE, NOT A `z-[85]` CLASS, AND THAT IS A BUG FIX WORTH KEEPING.
@@ -1503,4 +1631,12 @@ export default function ComposeWindow({
 
 // Same classes the modal's own fields use, so this window matches the form it replaces.
 const FIELD = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm'
+/**
+ * A template chip. 🔴 THE SELECTED ONE IS FILLED DARK, NOT ORANGE. Orange is reserved on this page
+ * for exactly two things — the Send button and the Next banner — so that "the orange one" is always
+ * the thing about to happen. A chip is a choice, not an action.
+ */
+const chipCls = (on: boolean) =>
+  `text-xs font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+    on ? 'bg-slate-800 border-slate-800 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`
 const LABEL = 'block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5'

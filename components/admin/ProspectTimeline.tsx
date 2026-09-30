@@ -20,9 +20,10 @@ import {
 } from '@/lib/outreach-workspace'
 import { TIMELINE_PREF_KEY } from '@/lib/outreach-queue'
 import {
-  EmailBody, ContactPopout, INBOUND_BG, fmtDate, stageWord,
+  EmailBody, ContactPopout, INBOUND_BG, fmtDate, stageWord, SizedEmailFrame,
   type Contact, type Prospect, type TimelinePayload,
 } from '@/components/admin/outreach-shared'
+import { createPortal } from 'react-dom'
 
 /** The tone each badge carries. 🔴 Amber is "you", red is "it broke", grey is "for information". */
 const BADGE_TONE: Record<RowBadge, string> = {
@@ -77,6 +78,8 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
   const [expandAll, setExpandAll] = useState(false)
   const [viewingContact, setViewingContact] = useState<Contact | null>(null)
   const [snoozeFor, setSnoozeFor] = useState<string | null>(null)
+  /** 🔴 One email, filling the window. For the thread that is longer than the page is tall. */
+  const [fullScreen, setFullScreen] = useState<{ html: string; subject: string | null } | null>(null)
 
   // ⚠️ REMEMBERED PER BROWSER, NOT PER PROSPECT. Which slice of the history somebody wants to read is
   // a habit, not a fact about one truck. localStorage, and a bad value reads as 'all'.
@@ -229,16 +232,22 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
               {/* 🔴 THE WHOLE ROW IS THE CONTROL. The Open button is gone: a row you can read is a row
                   you can click, and a button beside it was a second target for one intention. */}
               <button type="button" onClick={() => onExpand(open ? null : item.id)}
-                className="w-full text-left px-3 py-1.5 flex items-start gap-2 hover:bg-black/[0.03]">
+                className="w-full text-left px-3 py-1.5 max-md:py-2.5 max-md:min-h-11 flex items-start gap-2 hover:bg-black/[0.03]">
                 <span className={`w-5 text-center shrink-0 ${inbound ? 'text-emerald-700' : 'text-slate-400'}`} aria-hidden="true">
                   {rowIcon(item)}
                 </span>
-                <span className="w-20 shrink-0 text-slate-400 tabular-nums" title={timeOf(m.message_date ?? m.created_at)}>
+                <span className="w-20 shrink-0 text-slate-400 tabular-nums max-md:hidden" title={timeOf(m.message_date ?? m.created_at)}>
                   {fmtDate(m.message_date ?? m.created_at ?? null)}
                 </span>
-                <span className="flex-1 min-w-0 truncate">
+                {/* ⚠️ TWO LINES ON A PHONE: who and when on the first, what they said on the second.
+                    One truncated line at 375px shows about four words, which is not a row anybody
+                    can scan. */}
+                <span className="flex-1 min-w-0 truncate max-md:whitespace-normal">
                   <span className="font-semibold text-slate-800">{m.subject ?? '(no subject)'}</span>
-                  {firstLine && <span className="text-slate-500"> · {firstLine}</span>}
+                  <span className="hidden max-md:inline text-slate-400 text-[11px]">
+                    {' · '}{fmtDate(m.message_date ?? m.created_at ?? null)}
+                  </span>
+                  {firstLine && <span className="text-slate-500 max-md:block max-md:truncate"> · {firstLine}</span>}
                 </span>
                 {badges.map(b => (
                   <span key={b} className={`shrink-0 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${BADGE_TONE[b]}`}>
@@ -261,12 +270,15 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                   </p>
                   {/* 🔴 THE SANDBOXED IFRAME, from the stored body. Mailbox HTML renders in `sandbox=""`
                       and nowhere else on this page — see `EmailBody`, which is the one viewer. */}
-                  <EmailBody rowId={m.id} />
+                  <EmailBody rowId={m.id} onOpenFull={(html, subject) => setFullScreen({ html, subject })} />
                   <div className="flex flex-wrap items-center gap-1">
                     {inbound && !m.is_test && m.status === 'received' && (
                       <button type="button" onClick={() => actions.onReply(m)}
                         title="Answer this message, with the conversation quoted underneath (R)"
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
+                        // ⚠️ NEUTRAL, NOT ORANGE. Reply opens the composer; it does not send
+                        // anything. Orange on this page means "this is about to leave the
+                        // building", and it belongs to the Send button and the Next banner alone.
+                        className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-400 text-slate-800 bg-white hover:bg-slate-50">
                         Reply
                       </button>
                     )}
@@ -332,6 +344,26 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           )
         })}
       </div>
+
+      {/* ── ONE EMAIL, THE WHOLE WINDOW ──────────────────────────────────────────────────────
+          ⚠️ THE SAME FRAME AND THE SAME SANDBOX — only the cap changes. Escape and the backdrop
+          both close it, because nothing is being edited and there is nothing to lose. */}
+      {fullScreen && createPortal(
+        <div style={{ zIndex: 95 }} className="fixed inset-0 bg-white flex flex-col"
+          onKeyDown={e => { if (e.key === 'Escape') setFullScreen(null) }}>
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-200">
+            <span className="font-bold text-slate-800 truncate">{fullScreen.subject ?? 'Email'}</span>
+            <button onClick={() => setFullScreen(null)} autoFocus
+              className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+              Close
+            </button>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
+            <SizedEmailFrame html={fullScreen.html} title="Email, full screen" maxFraction={0.95} />
+          </div>
+        </div>,
+        document.body,
+      )}
 
       {viewingContact && (
         <ContactPopout contact={viewingContact} onClose={() => setViewingContact(null)}

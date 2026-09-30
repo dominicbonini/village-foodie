@@ -28,8 +28,8 @@ import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 import ProspectTimeline from '@/components/admin/ProspectTimeline'
 import {
   type Contact, type Prospect, type TimelinePayload,
-  STATUS_LABEL, fmtDate, confirmLogoWrite, linkLabel, linkCls, fetchTimeline,
-  ModalThumb, WhatsAppBox, DemoLinkChip, FIELD_CLS, LABEL_CLS,
+  STATUS_LABEL, fmtDate, confirmLogoWrite, linkLabel, fetchTimeline,
+  ModalThumb, WhatsAppBox, FIELD_CLS, LABEL_CLS,
 } from '@/components/admin/outreach-shared'
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
 import type { Snippet } from '@/lib/outreach-snippets'
@@ -46,15 +46,30 @@ import { getLocalDateInTz } from '@/lib/time-utils'
 import { parseAttachments } from '@/lib/outreach-mail-bodies'
 import {
   nextAction, isTypingTarget, SHORTCUTS, type NextAction,
+  composerDefault, oneClickKind, ONE_CLICK_LOGS, FOLLOW_UP_CHOICES, FOLLOW_UP_LABEL,
+  followUpDateForChoice, defaultFollowUpChoice, shortDate,
+  COL_LEFT_PX, COL_LEFT_WIDE_PX, COL_RIGHT_PX, COL_RIGHT_WIDE_PX, WIDE_AT_PX,
+  type FollowUpChoice,
 } from '@/lib/outreach-workspace'
 import { readQueue, queuePosition, neighbours, prospectPath, type QueueState } from '@/lib/outreach-queue'
 
 const stageLabel = (s: string) => STATUS_LABEL[s] ?? s.replace(/_/g, ' ')
 const CARD = 'border border-slate-200 rounded-xl bg-white'
-const BTN = 'text-sm font-bold px-3 py-1.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-orange-400'
+/**
+ * 🔴 ORANGE IS RESERVED, AND THIS CONSTANT IS WHERE THAT STARTS. Exactly two things on this page
+ * are orange or amber: the Send button and the Next banner. Everything else — Save, Add note, Log,
+ * Edit — is neutral, so "the coloured thing" always means "the thing about to leave the building".
+ * The focus ring is slate for the same reason.
+ */
+const BTN = 'text-sm font-bold px-3 py-1.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-slate-400'
 
-/** Which panel is open under the action bar. 🔴 One at a time — see `openPanel`. */
-type Panel = 'email' | 'call' | 'whatsapp' | 'note' | null
+/**
+ * Which tab the centre column is showing.
+ * 🔴 IT IS NEVER NULL ANY MORE. The previous page had four buttons and nothing open, so writing an
+ * email cost a click before the first keystroke — on a screen whose entire purpose is writing one.
+ * The composer is the default state; the other three are tabs beside it.
+ */
+type Panel = 'email' | 'call' | 'whatsapp' | 'note'
 
 export default function ProspectWorkspace({ prospectId }: { prospectId: string }) {
   const router = useRouter()
@@ -65,12 +80,14 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   // that has been in production since V12.1. A per-prospect endpoint would be a second assembly of
   // the same row and the two would drift; 231 rows is one query and a few hundred kilobytes.
   const [prospect, setProspect] = useState<Prospect | null>(null)
+  /** ⚠️ Kept only to name the NEXT prospect in the queue. Nothing else on this page reads it. */
+  const [allProspects, setAllProspects] = useState<Prospect[]>([])
   /** The list this page was opened from. Read from sessionStorage on mount — see that effect. */
   const [queue, setQueue] = useState<QueueState | null>(null)
   // ── 🔴 THE PANEL STATE IS DECLARED HERE, ABOVE EVERY EFFECT THAT TOUCHES IT. The mount effect
   // applies the URL's intent and `messageAction` arms the "Done" bar, and both run before the render
   // reaches the panel section — a `const` declared later would be in its temporal dead zone.
-  const [panel, setPanel] = useState<Panel>(null)
+  const [panel, setPanel] = useState<Panel>('email')
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null)
   const [dirty, setDirty] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -92,6 +109,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     if (res.status === 404 || res.status === 401) { setDenied(true); setLoading(false); return }
     const data = await res.json().catch(() => null) as { prospects?: Prospect[]; hasContactNames?: boolean; hasLeadTypeFreeze?: boolean; hasDoNotContact?: boolean } | null
     if (!data) { setLoading(false); return }
+    setAllProspects(data.prospects ?? [])
     setProspect((data.prospects ?? []).find(p => p.id === prospectId) ?? null)
     setFlags({ names: !!data.hasContactNames, leadFreeze: !!data.hasLeadTypeFreeze, dnc: !!data.hasDoNotContact })
     setLoading(false)
@@ -258,6 +276,122 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     })
   }, [prospect, timeline, step, channel])
 
+  // ── THE COMPOSER'S OPENING STATE ───────────────────────────────────────────────────────────────
+  // 🔴 FROM THE NEXT LINE, WHICH IS FROM `nextAction`, WHICH IS FROM THE EXISTING FUNCTIONS. The
+  // banner and the box are two renderings of ONE answer; deciding again here is how a page ends up
+  // telling you to reply while opening a chase template.
+  const everEmailed = useMemo(
+    () => (timeline?.messages ?? []).some(m => m.direction === 'outbound' && m.is_test !== true),
+    [timeline])
+  const composerMode = useMemo(() => composerDefault(focus, { everEmailed }), [focus, everEmailed])
+
+  // 🔴 ONE FOLLOW-UP CONTROL FOR THE WHOLE PAGE. Send, the four one-click logs and the Call/WhatsApp
+  // tabs all read this one value, and its default is whatever `followUpDateFor` would have written
+  // for the action being taken — that function, not a second table of intervals here.
+  const today = toYMD(new Date())
+  const oneClick = useMemo(
+    () => oneClickKind(step, (prospect?.contacts ?? []).some(c => c.direction === 'inbound')),
+    [step, prospect])
+  const followUpSeed = useMemo(
+    () => defaultFollowUpChoice(oneClick, today, followUpDateFor),
+    [oneClick, today])
+  const [followUp, setFollowUp] = useState<{ choice: FollowUpChoice; date: string | null } | null>(null)
+  const followUpNow = followUp ?? followUpSeed
+  const followUpDate = followUpNow.choice === 'none' ? null : followUpNow.date
+
+  // ── ONE-CLICK LOGGING, AND ITS UNDO ────────────────────────────────────────────────────────────
+  const [oneClickBusy, setOneClickBusy] = useState<string | null>(null)
+  /** The contact just written, for 8 seconds. 🔴 The Undo DELETES it, through the existing route. */
+  const [undoable, setUndoable] = useState<{ id: string; label: string } | null>(null)
+
+  /**
+   * Write the follow-up date, through the ONE path that writes it.
+   * ⚠️ `next_action_at` HAS ONE WRITER — `update_prospect` — and this is the page's one caller of it
+   * for that column. The DATE itself comes from the single follow-up control, whose default came
+   * from `followUpDateFor`; nothing here invents an interval.
+   */
+  const applyFollowUp = useCallback(async (kind: string) => {
+    const patchAfter: Record<string, unknown> = { next_action_at: followUpDate }
+    if (prospect && shouldFreezeLeadType(kind, prospect, flags.leadFreeze)) {
+      patchAfter.lead_type_at_first_contact = leadTypeOf(prospect)
+    }
+    await post({ action: 'update_prospect', id: prospectId, ...patchAfter })
+  }, [post, prospectId, followUpDate, prospect, flags.leadFreeze])
+
+  /**
+   * One button, one contact.
+   * 🔴 THE `kind` IS `oneClickKind`'s, NOT A DROPDOWN'S DEFAULT. That is the bug this replaces: the
+   * log form defaulted to the first rung whenever nobody touched it, so a call to a prospect who
+   * had already replied was recorded as a FIRST CONTACT — and §57 derives the next step from
+   * exactly that column.
+   */
+  const afterOneClick = useCallback(async (id: string) => {
+    const spec = ONE_CLICK_LOGS.find(l => l.id === id)
+    if (!spec || oneClickBusy) return
+    setOneClickBusy(id); setNote(null)
+    try {
+      const j = await post({
+        action: 'log_contact', prospect_id: prospectId,
+        channel: spec.channel, direction: 'outbound', kind: oneClick,
+        message: spec.message, contacted_at: today,
+      })
+      if (j.error) { setNote(String(j.error)); return }
+      await applyFollowUp(oneClick)
+      const contactId = typeof j.id === 'string' ? j.id : null
+      if (contactId) setUndoable({ id: contactId, label: spec.label })
+      await reloadAll()
+      setResolved(true)
+    } finally { setOneClickBusy(null) }
+  }, [oneClickBusy, post, prospectId, oneClick, today, applyFollowUp, reloadAll])
+
+  /** ⚠️ EIGHT SECONDS, THEN THE OFFER GOES — not the contact. Undo deletes; time only hides. */
+  useEffect(() => {
+    if (!undoable) return
+    const t = setTimeout(() => setUndoable(null), 8000)
+    return () => clearTimeout(t)
+  }, [undoable])
+
+  const undoOneClick = useCallback(async () => {
+    if (!undoable) return
+    // 🔴 THE EXISTING DELETE, BY THE ID THE WRITE RETURNED — so it removes exactly the row that was
+    // just added and never "the most recent one", which on a double-press would be the wrong one.
+    await post({ action: 'delete_contact', id: undoable.id, prospect_id: prospectId })
+    setUndoable(null)
+    await reloadAll()
+  }, [undoable, post, prospectId, reloadAll])
+
+  /** The demo link, inserted into the email being written. */
+  const insertDemoLink = useCallback(() => {
+    setPanel('email')
+    setNote('Paste the demo link into the email with ⌘V — it is on your clipboard.')
+  }, [])
+
+  // ── LAYOUT ──────────────────────────────────────────────────────────────────────────────────────
+  // 🔴 ONE LAYOUT FOR A LAPTOP AND A MONITOR: fixed side columns, fluid centre. The only thing that
+  // changes above 1800px is that the side columns get 40px and 30px more, because at that width
+  // they can hold their content without wrapping and the email still gets every other pixel.
+  const [wide, setWide] = useState(false)
+  useEffect(() => {
+    const onResize = () => setWide(window.innerWidth >= WIDE_AT_PX)
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  const columns = `${wide ? COL_LEFT_WIDE_PX : COL_LEFT_PX}px minmax(0, 1fr) ${wide ? COL_RIGHT_WIDE_PX : COL_RIGHT_PX}px`
+
+  /** The next prospect's name, for "Up next". ⚠️ Only when the list that named it is still loaded. */
+  const nextName = nav.next ? (allProspects.find(x => x.id === nav.next)?.name ?? 'the next one') : null
+
+  /** The template the composer opens on — `templateForStep`'s answer for the rung, or none. */
+  const offerable = useMemo(() => templatesFor(templates ?? [], prospect ?? ({} as Prospect)), [templates, prospect])
+  const composerTemplateId = useMemo(() => {
+    // ⚠️ A REPLY AND A THREAD MESSAGE HAVE NO RUNG, so they have no template: `templateForStep`
+    // would have nothing to resolve and the chips open on Blank, which is correct for both.
+    if (composerMode.mode === 'reply' || composerMode.mode === 'thread') return null
+    if (!step) return null
+    return templateForStep(step, offerable).slug
+  }, [composerMode, step, offerable])
+
   // ── PANELS ──────────────────────────────────────────────────────────────────────────────────────
   /**
    * 🔴 ONE PANEL AT A TIME, AND A TYPED DRAFT IS NEVER THROWN AWAY SILENTLY. The modal's failure was
@@ -269,7 +403,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   // Compiler declines to memoise — and a `useCallback` it cannot preserve is a lie about stability.
   // Nothing downstream is memoised on them; the keyboard effect re-subscribes, which is two calls.
   const openPanel = (next: Panel, target: ReplyTarget | null = null) => {
-    if (panel && panel !== next && dirty) {
+    // ⚠️ SWITCHING AWAY FROM A TYPED EMAIL ASKS FIRST. Reply into the SAME tab does not: it is the
+    // same surface being re-aimed, and the draft is replaced by the template that reply mode picks.
+    if (panel !== next && dirty) {
       if (!window.confirm('Discard what you have typed?')) return
     }
     setDirty(false)
@@ -277,9 +413,10 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     setPanel(next)
   }
 
+  /** Esc on a tab that is not Email returns to Email; on Email it clears the reply aim. */
   const closePanel = () => {
     if (dirty && !window.confirm('Discard what you have typed?')) return
-    setDirty(false); setReplyTarget(null); setPanel(null)
+    setDirty(false); setReplyTarget(null); setPanel('email')
   }
 
   const replyToMessage = (m: { id: string; subject?: string | null; from_address?: string | null; message_date?: string | null }) => {
@@ -306,7 +443,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
       if (isTypingTarget(e.target) || e.metaKey || e.ctrlKey || e.altKey) return
       const L = latest.current
       const k = e.key
-      if (k === 'Escape') { if (L.expandedId) setExpandedId(null); else if (L.panel) L.closePanel(); return }
+      if (k === 'Escape') { if (L.expandedId) setExpandedId(null); else L.closePanel(); return }
       if (k === '?') { setShowHelp(v => !v); return }
       if (k === 'j' || k === 'J') { L.goTo(L.nav.next); return }
       if (k === 'k' || k === 'K') { L.goTo(L.nav.prev); return }
@@ -344,10 +481,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
 
   const p = prospect
   const dnc = p.do_not_contact === true
-  const offerable = templatesFor(templates ?? [], p)
 
   return (
-    <div className="text-slate-900 max-w-[1500px] mx-auto px-4 py-3">
+    <div className="text-slate-900 px-4 py-3 max-md:px-2">
       {/* ── DO NOT CONTACT — ACROSS THE PAGE, NOT A TICKBOX IN A CORNER ──────────────────────────
           🔴 IT BLOCKS EVERY EXIT IN THE SEND PATH, so the page must not look ordinary while it is on.
           Undo is here because the flag is only ever set by hand and is only ever unset by hand —
@@ -360,73 +496,68 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
         </div>
       )}
 
-      {/* ── HEADER, LINE 1 ───────────────────────────────────────────────────────────────────── */}
+      {/* ── HEADER ───────────────────────────────────────────────────────────────────────────────
+          🔴 ONE STAGE CONTROL ON THE PAGE, AND IT IS THIS PILL. There were two — this and a select
+          in the contact card's edit mode — which is two places to change one value and two chances
+          to disagree about what it currently is. Same route, so a change still records a stage
+          change in the timeline. */}
       <div className="flex items-center gap-2 flex-wrap mb-2">
-        <button onClick={back} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50`}>← Back</button>
-        <h1 className="text-xl font-bold truncate min-w-0">{p.name}</h1>
-        {/* 🔴 THE SAME STAGE ROUTE AS EVER, so a change here still writes an `outreach_events` row
-            through `update_prospect` — the stage history did not become optional by moving. */}
-        <select value={p.stage} onChange={e => void patch({ stage: e.target.value })}
-          title="Changing the stage records a stage change in the timeline."
-          className="text-xs font-bold border border-slate-300 rounded-full px-2 py-1 bg-white">
-          {OUTREACH_STAGES.map(st => <option key={st} value={st}>{stageLabel(st)}</option>)}
-        </select>
+        <button onClick={back} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50 max-md:min-h-11`}>← Back</button>
+        <h1 className="text-xl font-bold truncate min-w-0 max-md:text-lg">{p.name}</h1>
+        <label className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-2 py-1 max-md:min-h-11">
+          <span className="text-[11px] uppercase tracking-wide font-bold text-slate-400">Stage</span>
+          <select value={p.stage} onChange={e => void patch({ stage: e.target.value })}
+            title="Changing the stage records a stage change in the timeline."
+            className="text-xs font-bold bg-transparent focus:outline-none">
+            {OUTREACH_STAGES.map(st => <option key={st} value={st}>{stageLabel(st)}</option>)}
+          </select>
+        </label>
+        {/* ⚠️ NEUTRAL LINKS, NOT BUTTONS. They leave the page; nothing here acts on the prospect. */}
         {safeHref(p.website) && (
-          <a href={safeHref(p.website)!} target="_blank" rel="noreferrer" className={linkCls} title={p.website ?? undefined}>
-            {linkLabel(p.website, 'Website')} ↗
-          </a>
+          <a href={safeHref(p.website)!} target="_blank" rel="noreferrer"
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 hover:underline max-md:hidden"
+            title={p.website ?? undefined}>{linkLabel(p.website, 'Website')} ↗</a>
         )}
         {safeHref(p.schedule_url) && (
-          <a href={safeHref(p.schedule_url)!} target="_blank" rel="noreferrer" className={linkCls} title={p.schedule_url ?? undefined}>
-            {linkLabel(p.schedule_url, 'Schedule')} ↗
-          </a>
+          <a href={safeHref(p.schedule_url)!} target="_blank" rel="noreferrer"
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 hover:underline max-md:hidden"
+            title={p.schedule_url ?? undefined}>{linkLabel(p.schedule_url, 'Schedule')} ↗</a>
         )}
         <div className="ml-auto flex items-center gap-1">
-          {/* ‹ › walk the queue the page was opened from — a Today section, or the filtered list. */}
+          {/* 🔴 THE QUEUE IS NAMED, not just counted: "Follow-ups due ‹ 1 of 5 ›" says which list you
+              are walking, which is the difference between knowing where you are and knowing only
+              how far along you are. */}
+          {pos && <span className="text-xs text-slate-500 mr-1 max-md:hidden">{queue?.label ?? 'the list'}</span>}
           <button onClick={() => goTo(nav.prev)} disabled={!nav.prev} aria-label="Previous (K)" title="Previous in this queue (K)"
-            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30">‹</button>
+            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">‹</button>
           <span className="text-xs text-slate-500 tabular-nums px-1">
             {pos ? `${pos.index} of ${pos.total}` : '—'}
           </span>
           <button onClick={() => goTo(nav.next)} disabled={!nav.next} aria-label="Next (J)" title="Next in this queue (J)"
-            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30">›</button>
+            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">›</button>
           <MoreMenu p={p} dncEnabled={flags.dnc} onPatch={patch} onRefresh={reloadAll} onHelp={() => setShowHelp(true)} />
         </div>
       </div>
 
-      {/* ── HEADER, LINE 2 · THE FOCUS LINE ──────────────────────────────────────────────────────
-          🔴 ONE NEXT THING, DERIVED, NEVER STORED. `nextAction` orders existing answers — the
-          needs-attention predicate, `nextStep`, `next_action_at` — and returns the first that
-          applies. Nothing here computes a step of its own. */}
+      {/* ── THE NEXT BANNER ──────────────────────────────────────────────────────────────────────
+          🔴 FULL WIDTH, AMBER, AND NO BUTTON. It had a button; the button is gone because the
+          composer directly below is ALREADY set up for exactly this action (`composerDefault` reads
+          the same answer), so the button would have been a second way to arrive where you already
+          are. ⚠️ Orange/amber appears in exactly two places on this page — here and the Send button
+          — so "the coloured thing" is always what is about to happen. */}
       {focus && (
-        <div className="mb-3 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2">
-          <span className="text-[10px] uppercase tracking-wide font-bold text-slate-400">Next</span>
-          <span className="text-sm font-semibold text-slate-800">
-            {focus.label}
-            {focus.kind === 'none' && focus.reason && <span className="font-normal text-slate-500"> · {focus.reason}</span>}
-          </span>
-          {focus.kind === 'reply' && (
-            <button onClick={() => {
-              const m = (timeline?.messages ?? []).find(x => x.id === focus.messageId)
-              if (m) replyToMessage(m)
-            }} title="Answer the waiting message (R)"
-              className={`${BTN} ml-auto border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100`}>
-              {focus.cta}
-            </button>
-          )}
-          {(focus.kind === 'chase' || focus.kind === 'follow_up') && (
-            <button onClick={() => openPanel('email')} title="Open the composer (E)"
-              className={`${BTN} ml-auto border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100`}>
-              {focus.cta}
-            </button>
-          )}
+        <div className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2">
+          <p className="text-sm">
+            <span className="text-[10px] uppercase tracking-wide font-bold text-amber-700 mr-2">Next</span>
+            <span className="font-bold text-amber-950">{bannerHeadline(focus)}</span>
+          </p>
+          <p className="text-[12px] text-amber-800 mt-0.5">{bannerDetail(focus, p, timeline)}</p>
         </div>
       )}
 
       {/* ── THE "DONE. NEXT" BAR ─────────────────────────────────────────────────────────────────
           🔴 IT NEVER NAVIGATES BY ITSELF. Close's Next-Lead pattern works because the result of what
-          you just did stays on screen until you choose to move: a page that jumped would hide the
-          confirmation, and a mis-click would be unrecoverable. Enter follows it; nothing else does. */}
+          you just did stays on screen until you choose to move. Enter follows it; nothing else. */}
       {resolved && (
         <div className="mb-3 flex items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2">
           <span className="text-sm font-bold text-emerald-900">Done.</span>
@@ -439,92 +570,107 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
         </div>
       )}
 
-      {/* ── TWO COLUMNS. 🔴 `fr`, INLINE, for the reason the modal recorded: an arbitrary Tailwind
-          value used by one file may have no generated rule, and the fallback would be 50/50 — the
-          split being corrected. Below `lg` they stack, action column first. */}
-      <div className="grid gap-4 max-lg:flex max-lg:flex-col" style={{ gridTemplateColumns: '30fr 70fr' }}>
+      {/* ── THREE COLUMNS ────────────────────────────────────────────────────────────────────────
+          🔴 THE SIDE COLUMNS ARE FIXED AND THE CENTRE TAKES THE REST. They hold cards and buttons
+          whose ideal width does not change with the window; the email does. So a 27" monitor is the
+          same layout as a laptop with a wider email, rather than a different page to learn — which
+          is what a fourth column or a re-flow at 1440px would have been.
+          ⚠️ THE TRACK WIDTHS ARE AN INLINE STYLE, not an arbitrary Tailwind class. `grid-cols-[300px_1fr_300px]`
+          is a value used by exactly one file, and an arbitrary utility that has not been scanned has
+          NO generated rule at all — the compose window painting under its own modal is this
+          codebase's recorded example. An inline style cannot be missing from a stylesheet.
+          ⚠️ 768–1023px: two columns, and the right column's cards move to the TOP of the left one,
+          because they are the actions and the left column is reference. */}
+      <div className="grid gap-4 max-lg:grid-cols-1" style={{ gridTemplateColumns: columns }}>
         {/* ── LEFT: READ FIRST ──────────────────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 max-lg:order-2">
+        <div className="flex flex-col gap-3 min-w-0 max-lg:order-2">
+          {/* ⚠️ ON A TABLET THE ACTION CARDS COME FIRST, at the top of this column. */}
+          <div className="hidden max-lg:flex max-md:hidden flex-col gap-3">
+            <ActionCards
+              p={p} step={step} oneClick={oneClick} followUp={followUpNow} today={today}
+              onSetFollowUp={setFollowUp} onLogged={afterOneClick}
+              dncEnabled={flags.dnc} onPatch={patch} nextName={nextName} onNext={() => goTo(nav.next)}
+              queueLabel={queue?.label ?? null} busy={oneClickBusy} undo={undoable} onUndo={undoOneClick} />
+          </div>
+
           <ContactCard p={p} step={step} flags={flags} editing={editing} setEditing={setEditing}
-            onPatch={patch} waPhone={waPhone} />
+            onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')} />
 
           <label className={`${CARD} p-3 block`}>
             <span className={LABEL_CLS}>Pinned notes</span>
             <PinnedNotes p={p} onPatch={patch} />
           </label>
 
-          <FilesCard timeline={timeline} prospectId={p.id} onOpen={id => { setExpandedId(id); document.getElementById(`tl-${id}`)?.scrollIntoView({ block: 'center' }) }} />
+          <DemoCard p={p} onReload={reloadAll} onInsert={insertDemoLink} />
 
-          {/* ⚠️ VISUALLY SECONDARY AND AT THE BOTTOM, unchanged in behaviour. A demo is built once and
-              read occasionally; it spent the modal's life competing with the contact details. */}
-          <DemoCard p={p} onReload={reloadAll} />
+          <FilesCard timeline={timeline} prospectId={p.id} onOpen={id => { setExpandedId(id); document.getElementById(`tl-${id}`)?.scrollIntoView({ block: 'center' }) }} />
         </div>
 
-        {/* ── RIGHT: ACT AND SCAN ───────────────────────────────────────────────────────────── */}
+        {/* ── CENTRE: WRITE, THEN READ ──────────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-3 min-w-0 max-lg:order-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <button onClick={() => openPanel('email')} title="Compose an email (E)"
-              className={`${BTN} border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100`}>Email</button>
-            <button onClick={() => openPanel('call')} title="Log a call you have already made (C)"
-              className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50`}>Log call</button>
-            <button onClick={() => openPanel('whatsapp')} title="Log a WhatsApp message you have already sent"
-              className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50`}>Log WhatsApp</button>
-            <button onClick={() => openPanel('note')} title="Add a note to the timeline (N)"
-              className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50`}>Note</button>
-            {note && <span className="text-[11px] text-slate-600">{note}</span>}
+          {/* 🔴 TABS, NOT A ROW OF BUTTONS THAT OPEN THINGS. Email is the default and is already
+              open; the other three are the same surface aimed elsewhere. */}
+          <div className="flex items-center gap-1 border-b border-slate-200">
+            {(['email', 'call', 'whatsapp', 'note'] as const).map(t => (
+              <button key={t} type="button" onClick={() => openPanel(t)} aria-pressed={panel === t}
+                title={t === 'email' ? 'Write an email (E)' : t === 'call' ? 'Log a call (C)' : t === 'note' ? 'Add a note (N)' : 'Log a WhatsApp message'}
+                className={`text-sm font-bold px-3 py-2 -mb-px border-b-2 max-md:min-h-11 ${panel === t
+                  ? 'border-slate-800 text-slate-900'
+                  : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                {t === 'email' ? 'Email' : t === 'call' ? 'Call' : t === 'whatsapp' ? 'WhatsApp' : 'Note'}
+              </button>
+            ))}
+            {note && <span className="ml-auto text-[11px] text-slate-600">{note}</span>}
           </div>
 
-          {/* 🔴 THE COMPOSE WINDOW, INLINE. Same component, same props, same guards — `inline` changes
-              where it paints and nothing else. It was a pop-up because it sat over a modal; over a
-              page there is nothing to sit on, and a floating panel would hide the conversation it
-              exists to answer. */}
           {panel === 'email' && (
             <ComposeWindow
               inline
               truckName={p.name}
               prospectId={p.id}
               toEmail={p.contact_email}
+              contactName={[p.contact_first_name, p.contact_last_name].filter(Boolean).join(' ') || null}
               offerable={offerable}
               suggestedId={suggestTemplateId(p)}
-              initialTemplateId={step ? templateForStep(step, offerable).slug : null}
+              // 🔴 THE TEMPLATE THE NEXT LINE IMPLIES. `composerDefault` said which mode this is;
+              // `templateForStep` — the one pre-selection rule — turns a rung into a template.
+              initialTemplateId={composerTemplateId}
               doNotContact={dnc}
               ctx={contextFromProspect(p)}
               whatsappConfirmed={p.whatsapp_confirmed === true}
               templatesLoaded={templates !== null}
-              logFormKind={step?.kind ?? defaultKindFor('outbound')}
+              logFormKind={oneClick}
               snippets={snippets}
               replyTo={replyTarget}
+              followUpDate={followUpDate}
+              sendLabelSuffix={followUpDate ? ` · follow up ${shortDate(followUpDate)}` : null}
+              hideCopyAndLog
               onDirtyChange={setDirty}
               onClose={closePanel}
               onSent={async () => { await reloadAll(); setResolved(true) }}
               onLog={async (editedBody, ch, servesKind) => {
-                const kind = servesKind ?? step?.kind ?? defaultKindFor('outbound')
+                const kind = servesKind ?? composerMode.templateKind ?? oneClick
                 const ok = await logContactThrough(post, p.id, {
-                  channel: ch, direction: 'outbound', kind, message: editedBody, contacted_at: toYMD(new Date()),
+                  channel: ch, direction: 'outbound', kind, message: editedBody, contacted_at: today,
                 })
-                if (ok) {
-                  // 🔴 THE FOLLOW-UP DATE AND THE LEAD-TYPE FREEZE, on the same conditions as before.
-                  const patchAfter: Record<string, unknown> = { next_action_at: followUpDateFor(kind, toYMD(new Date())) }
-                  if (shouldFreezeLeadType(kind, p, flags.leadFreeze)) patchAfter.lead_type_at_first_contact = leadTypeOf(p)
-                  await post({ action: 'update_prospect', id: p.id, ...patchAfter })
-                  await reloadAll()
-                }
+                if (ok) await applyFollowUp(kind)
                 return ok
               }}
             />
           )}
 
           {(panel === 'call' || panel === 'whatsapp') && (
-            <QuickLog p={p} channel={panel === 'call' ? 'phone' : 'whatsapp'} step={step}
+            <QuickLog p={p} channel={panel === 'call' ? 'phone' : 'whatsapp'} kind={oneClick}
+              followUpDate={followUpDate}
               onDirty={setDirty}
               onCancel={closePanel}
-              onLogged={async () => { setDirty(false); setPanel(null); await reloadAll(); setResolved(true) }}
-              post={post} leadFreeze={flags.leadFreeze} />
+              onLogged={async () => { setDirty(false); setPanel('email'); await reloadAll(); setResolved(true) }}
+              post={post} applyFollowUp={applyFollowUp} />
           )}
 
           {panel === 'note' && (
             <NoteBox prospectId={p.id} onDirty={setDirty} onCancel={closePanel}
-              onSaved={async () => { setDirty(false); setPanel(null); await reloadAll() }} />
+              onSaved={async () => { setDirty(false); setPanel('email'); await reloadAll() }} />
           )}
 
           <ProspectTimeline
@@ -540,10 +686,194 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
             }}
           />
         </div>
+
+        {/* ── RIGHT: ACT IN ONE CLICK ───────────────────────────────────────────────────────── */}
+        {/* ⚠️ HIDDEN BELOW 1024px — its cards are rendered at the top of the left column instead. */}
+        <div className="flex flex-col gap-3 min-w-0 max-lg:hidden">
+          <ActionCards
+            p={p} step={step} oneClick={oneClick} followUp={followUpNow} today={today}
+            onSetFollowUp={setFollowUp} onLogged={afterOneClick}
+            dncEnabled={flags.dnc} onPatch={patch} nextName={nextName} onNext={() => goTo(nav.next)}
+            queueLabel={queue?.label ?? null} busy={oneClickBusy} undo={undoable} onUndo={undoOneClick} />
+        </div>
       </div>
+
+      {/* ── THE PHONE'S LOG BAR ──────────────────────────────────────────────────────────────────
+          🔴 STICKY AT THE BOTTOM, WHERE A THUMB IS. The four one-click logs are the things done
+          standing up between calls; on a phone they are the only controls that must never require a
+          scroll. ⚠️ Every target is at least 44px, which is Apple's own minimum. */}
+      <div className="hidden max-md:flex fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white px-2 py-2 gap-1">
+        {ONE_CLICK_LOGS.map(l => (
+          <button key={l.id} type="button" disabled={!!oneClickBusy}
+            onClick={() => void afterOneClick(l.id)}
+            className="flex-1 min-h-11 text-[11px] font-bold rounded-lg border border-slate-300 text-slate-700 bg-white disabled:opacity-40">
+            {l.id === 'no_answer' ? 'No answer' : l.id === 'spoke' ? 'Spoke' : l.id === 'voicemail' ? 'Voicemail' : 'Note'}
+          </button>
+        ))}
+      </div>
+      <div className="hidden max-md:block h-16" aria-hidden="true" />
 
       {showHelp && <ShortcutHelp onClose={() => setShowHelp(false)} />}
     </div>
+  )
+}
+
+// ── THE NEXT BANNER'S WORDS ─────────────────────────────────────────────────────────────────────────
+/**
+ * 🔴 THE ACTION AND HOW LATE IT IS, IN BOLD; THE FACTS UNDER IT, SMALL. The line is read at a
+ * glance from three feet away, and "Follow up — 14 days overdue" is the part that decides whether
+ * this prospect is dealt with now. Everything that explains WHY — the due date, what the last email
+ * was — is supporting detail and is sized like it.
+ * ⚠️ BOTH READ THE SAME `NextAction`. Nothing here recomputes a state; it words one.
+ */
+function bannerHeadline(n: NextAction): string {
+  if (n.kind === 'reply') {
+    const days = n.waitingDays ?? 0
+    return days > 0
+      ? `Reply — waiting ${days} day${days === 1 ? '' : 's'}`
+      : 'Reply — waiting since today'
+  }
+  if (n.kind === 'chase') {
+    return n.daysOverdue > 0
+      ? `${n.label.split(' due')[0]} — ${n.daysOverdue} day${n.daysOverdue === 1 ? '' : 's'} overdue`
+      : `${n.label.split(' due')[0]} due today`
+  }
+  if (n.kind === 'follow_up') {
+    return n.daysOverdue > 0
+      ? `Follow up — ${n.daysOverdue} day${n.daysOverdue === 1 ? '' : 's'} overdue`
+      : 'Follow up — due today'
+  }
+  return 'No next step'
+}
+
+function bannerDetail(n: NextAction, p: Prospect, timeline: TimelinePayload | null): string {
+  const lastOut = (timeline?.messages ?? [])
+    .filter(m => m.direction === 'outbound' && m.is_test !== true)
+    .sort((a, b) => String(b.message_date ?? '').localeCompare(String(a.message_date ?? '')))[0]
+  const lastLine = lastOut
+    ? `last email was yours, ${shortDate(lastOut.message_date ?? lastOut.created_at ?? null)}`
+    : 'no email has been sent yet'
+  if (n.kind === 'reply') return `${n.label} · ${lastLine}`
+  if (n.kind === 'chase') return `${n.dueOn ? `was due ${shortDate(n.dueOn)}` : 'due now'} · ${lastLine}`
+  if (n.kind === 'follow_up') return `was due ${shortDate(n.due)} · ${lastLine}`
+  return n.reason ? `${n.reason} · ${lastLine}` : lastLine
+}
+
+// ── THE RIGHT COLUMN ────────────────────────────────────────────────────────────────────────────────
+/**
+ * Log in one click, set the follow-up once, and see who is next.
+ *
+ * 🔴 THE FOUR BUTTONS ARE THE WHOLE POINT OF THE COLUMN. Recording a call used to be: open a tab,
+ * check the date, check the direction, check the kind, type nothing, press Log — six decisions for
+ * an event with one fact in it. Each button here writes one contact immediately, with the kind
+ * `oneClickKind` derives and the date the follow-up control holds, and offers an Undo for eight
+ * seconds.
+ * ⚠️ THE SAME CARDS RENDER IN THE LEFT COLUMN BELOW 1024px. One component, two positions.
+ */
+function ActionCards({
+  p, step, oneClick, followUp, today, onSetFollowUp, onLogged, dncEnabled, onPatch,
+  nextName, onNext, queueLabel, busy, undo, onUndo,
+}: {
+  p: Prospect
+  step: Step | null
+  oneClick: string
+  followUp: { choice: FollowUpChoice; date: string | null }
+  today: string
+  onSetFollowUp: (v: { choice: FollowUpChoice; date: string | null }) => void
+  onLogged: (id: string) => Promise<void>
+  dncEnabled: boolean
+  onPatch: (patch: Record<string, unknown>) => Promise<void>
+  nextName: string | null
+  onNext: () => void
+  queueLabel: string | null
+  busy: string | null
+  undo: { id: string; label: string } | null
+  onUndo: () => Promise<void>
+}) {
+  const [pickOpen, setPickOpen] = useState(false)
+  return (
+    <>
+      <div className={`${CARD} p-3 flex flex-col gap-2`}>
+        <span className={LABEL_CLS}>Log in one click</span>
+        {ONE_CLICK_LOGS.map(l => (
+          <button key={l.id} type="button" disabled={!!busy}
+            onClick={() => void onLogged(l.id)}
+            title={`Writes one ${l.channel} contact now, dated today, as “${kindLabel(oneClick)}”.`}
+            className="w-full text-left text-sm font-semibold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+            {busy === l.id ? 'Logging…' : l.label}
+          </button>
+        ))}
+        {/* 🔴 THE UNDO IS THE SAFETY NET THAT MAKES ONE-CLICK ACCEPTABLE. Without it, a mis-click
+            writes a rung §57 reads and the only remedy is finding it in the timeline. */}
+        {undo && (
+          <p className="text-[12px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1">
+            Logged “{undo.label}” · <button onClick={() => void onUndo()} className="font-bold underline">Undo</button>
+          </p>
+        )}
+        <p className="text-[11px] text-slate-400">
+          Recorded as <span className="font-semibold">{kindLabel(oneClick)}</span>
+          {step?.state === 'due' || step?.state === 'scheduled' ? ' — the rung this prospect is on' : ' — they have replied, so this is not a rung'}
+        </p>
+      </div>
+
+      {/* ── THE ONE FOLLOW-UP CONTROL ───────────────────────────────────────────────────────────
+          🔴 ONE, FOR THE WHOLE PAGE. There were three — a date field with quick-set buttons in the
+          modal, the composer's own, and whatever a log form did — and three controls over one
+          column is three chances for the screen to disagree with the database. Send, the one-click
+          buttons and the Call/WhatsApp tabs all read THIS, and the value still reaches the server
+          through the one writer of `next_action_at`. */}
+      <div className={`${CARD} p-3 flex flex-col gap-2`}>
+        <span className={LABEL_CLS}>Next follow-up</span>
+        <div className="flex flex-wrap gap-1">
+          {FOLLOW_UP_CHOICES.map(c => {
+            const on = followUp.choice === c
+            const date = followUpDateForChoice(c, today)
+            return (
+              <button key={c} type="button"
+                onClick={() => {
+                  if (c === 'pick') { setPickOpen(true); return }
+                  setPickOpen(false)
+                  onSetFollowUp({ choice: c, date })
+                }}
+                title={date ? `Sets the follow-up to ${date}` : c === 'none' ? 'No follow-up date' : 'Choose a date'}
+                className={`text-xs font-semibold px-2.5 py-1.5 min-h-11 sm:min-h-0 rounded-full border ${on
+                  ? 'bg-slate-800 border-slate-800 text-white'
+                  : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}>
+                {FOLLOW_UP_LABEL[c]}{on && followUp.date ? ` · ${shortDate(followUp.date)}` : ''}
+              </button>
+            )
+          })}
+        </div>
+        {(pickOpen || followUp.choice === 'pick') && (
+          <input type="date" className={FIELD_CLS} value={followUp.date ?? ''} min={today}
+            onChange={e => onSetFollowUp({ choice: 'pick', date: e.target.value || null })} />
+        )}
+        <p className="text-[11px] text-slate-400">
+          {followUp.date
+            ? <>Applies to whatever you do next — Send, a one-click log, or the Call tab.</>
+            : <>Nothing will be scheduled.</>}
+        </p>
+      </div>
+
+      {nextName && (
+        <button type="button" onClick={onNext}
+          className={`${CARD} p-3 text-left hover:bg-slate-50 min-h-11`}>
+          <span className={LABEL_CLS}>Up next{queueLabel ? ` in ${queueLabel}` : ''}</span>
+          <span className="text-sm font-semibold text-slate-800">{nextName} <span className="text-slate-400 text-xs">J →</span></span>
+        </button>
+      )}
+
+      {/* ⚠️ THE SAME ACTION AS THE ⋯ MENU'S, and the banner still appears when it is on. It is here
+          as well because this is the column of things you do to a prospect, and "stop contacting
+          them" is one of them. */}
+      <label className={`${CARD} p-3 flex items-center gap-2 text-sm font-semibold min-h-11 cursor-pointer
+        ${p.do_not_contact === true ? 'text-red-700' : 'text-slate-600'} ${dncEnabled ? '' : 'opacity-60 cursor-not-allowed'}`}>
+        <input type="checkbox" checked={p.do_not_contact === true} disabled={!dncEnabled}
+          className="w-4 h-4 accent-red-600"
+          onChange={e => void onPatch({ do_not_contact: e.target.checked ? true : null })} />
+        Do not contact
+      </label>
+    </>
   )
 }
 
@@ -684,7 +1014,7 @@ function MoreMenu({ p, dncEnabled, onPatch, onRefresh, onHelp }: {
  * `update_prospect` action, the same `contact_email`/`phone`-live-on-the-truck split, the same
  * lead-type write-once rule, the same WhatsApp tri-state.
  */
-function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: {
+function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, onEmail }: {
   p: Prospect
   step: Step | null
   flags: { names: boolean; leadFreeze: boolean; dnc: boolean }
@@ -692,6 +1022,8 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: 
   setEditing: (v: boolean) => void
   onPatch: (patch: Record<string, unknown>) => Promise<void>
   waPhone: string | null
+  /** The phone layout's third big button; on a laptop the composer is already open beside this. */
+  onEmail: () => void
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -731,7 +1063,7 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: 
       <div className="flex items-center gap-2">
         <span className={LABEL_CLS}>Contact</span>
         {!editing && (
-          <button onClick={start} className="ml-auto text-xs font-bold text-orange-700 hover:underline">✎ Edit</button>
+          <button onClick={start} className="ml-auto text-xs font-bold text-slate-600 hover:underline">✎ Edit</button>
         )}
       </div>
 
@@ -743,20 +1075,46 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: 
               ? <span className="text-slate-700">{p.contact_email}</span>
               : <span className="text-slate-400">no email address</span>}
           </p>
-          <p className="flex items-center gap-2 flex-wrap">
+          {/* 🔴 THE NUMBER IS TEXT AND THE CALL IS A BUTTON BESIDE IT. It was a `tel:` link wrapped
+              round the number, which meant the number could not be selected without dialling and
+              the only way to call was to hit a line of 13px text. */}
+          <p className="flex items-center gap-2">
             {p.phone
               ? <>
-                  {/* ⚠️ THE STANDALONE "Call" AND "Email" BUTTONS ARE GONE, as asked. The number IS the
-                      tel: link and the address is simply text — the way to send an email is the Email
-                      button on the right, which logs what it sends. */}
-                  <a href={`tel:${p.phone}`} className="text-slate-700 hover:underline">☎ {p.phone}</a>
-                  {p.whatsapp_confirmed === true && waPhone && (
-                    <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer"
-                      className="text-xs font-bold text-emerald-700 hover:underline">WhatsApp ↗</a>
-                  )}
+                  <span className="text-slate-700 select-all">☎ {p.phone}</span>
+                  <CallButton phone={p.phone} compact />
                 </>
               : <span className="text-slate-400">no phone number</span>}
           </p>
+
+          {/* ── 🔴 REAL BUTTONS, NOT LINKS IN A SENTENCE ─────────────────────────────────────
+              Calling and messaging are the two things done from this card, and a link inside a line
+              of text is a 14px target. These are buttons, and on a phone they are the three large
+              ones the whole layout is arranged around.
+              ⚠️ WHATSAPP IS DISABLED, NOT HIDDEN, WHEN THE NUMBER IS NOT CONFIRMED — and the
+              tooltip says why. Hiding it would read as "this truck has no WhatsApp"; the truth is
+              "nobody has confirmed that this number is on WhatsApp", which is §52.3(a)'s
+              distinction and is a thing Dominic can act on. */}
+          <div className="flex items-center gap-2 mt-1">
+            <CallButton phone={p.phone} />
+            <a href={p.whatsapp_confirmed === true && waPhone ? `https://wa.me/${waPhone}` : undefined}
+              target="_blank" rel="noreferrer"
+              aria-disabled={!(p.whatsapp_confirmed === true && waPhone)}
+              title={p.whatsapp_confirmed === true
+                ? (waPhone ? 'Opens WhatsApp for this number' : 'No usable number on the truck row')
+                : 'This number has not been confirmed as being on WhatsApp — tick WA in Edit first'}
+              className={`flex-1 text-center text-sm font-bold px-3 py-2 min-h-11 rounded-lg border ${p.whatsapp_confirmed === true && waPhone
+                ? 'border-slate-300 text-slate-700 bg-white hover:bg-slate-50'
+                : 'border-slate-200 text-slate-300 pointer-events-none'}`}>
+              WhatsApp
+            </a>
+            {/* ⚠️ PHONE ONLY: on a laptop the composer is already open in the centre column, so a
+                button to reveal it would point at something already on screen. */}
+            <button type="button" onClick={onEmail} disabled={!p.contact_email}
+              className="hidden max-md:block flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white disabled:opacity-40">
+              Email
+            </button>
+          </div>
           <p className="text-slate-500">
             <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Lead</span>
             {LEAD_TYPE_LABELS[lead] ?? lead}
@@ -815,7 +1173,7 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: 
           </label>
           <div className="flex items-center gap-2">
             <button onClick={() => void save()} disabled={saving}
-              className={`${BTN} border-orange-600 bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50`}>
+              className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50 min-h-11`}>
               {saving ? 'Saving…' : 'Save'}
             </button>
             <button onClick={() => setEditing(false)} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50`}>
@@ -825,6 +1183,64 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone }: 
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * Call — a BUTTON, and what it does depends on whether the machine can make a call.
+ *
+ * 🔴 A `tel:` LINK IS THE WRONG CONTROL ON A LAPTOP, and this is the defect it caused: clicking one
+ * on a Mac hands the URL to a protocol handler (FaceTime, or a "choose an application" dialog),
+ * which takes focus off the browser — the window appears to minimise, and whatever was being
+ * written is behind something else. On a desktop there is no telephone, so the useful thing a Call
+ * button can do is put the number where it can be pasted into whatever actually dials.
+ * 🔴 ON A PHONE IT DIALS, because there `tel:` is exactly right and is what the button is for.
+ * ⚠️ THE TEST IS THE POINTER, NOT THE SCREEN WIDTH: a touch laptop is still a laptop with no SIM,
+ * and a narrow window on a desktop is still a desktop. `(pointer: coarse)` is the closest thing the
+ * platform offers to "this is a handset".
+ * ⚠️ AND IT IS READ AFTER MOUNT. `matchMedia` does not exist while Next renders on the server, and
+ * a value that appeared only on the client would be a hydration mismatch.
+ */
+function CallButton({ phone, compact }: { phone: string | null; compact?: boolean }) {
+  const [canDial, setCanDial] = useState(false)
+  const [copied, setCopied] = useState(false)
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      try { setCanDial(window.matchMedia('(pointer: coarse)').matches) } catch { /* assume a desktop */ }
+    })
+  }, [])
+
+  if (!phone) {
+    return (
+      <button type="button" disabled
+        className={compact
+          ? 'text-xs font-bold px-2 py-1 rounded-lg border border-slate-200 text-slate-300'
+          : 'flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-200 text-slate-300'}>
+        Call
+      </button>
+    )
+  }
+
+  const onClick = () => {
+    if (canDial) {
+      // 🔴 `location.href`, NOT `window.open`. A popup for a protocol handler is a blank tab left
+      // behind on every call; assigning the location hands off and leaves the page where it is.
+      window.location.href = `tel:${phone}`
+      return
+    }
+    void navigator.clipboard?.writeText(phone)
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+      .catch(() => { /* a clipboard the browser refuses is not worth a dialog */ })
+  }
+
+  return (
+    <button type="button" onClick={onClick}
+      title={canDial ? `Call ${phone}` : `Copy ${phone} — this machine cannot place calls, and opening a dialler would take you out of the page`}
+      className={compact
+        ? 'text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 whitespace-nowrap'
+        : 'flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50'}>
+      {copied ? 'Copied' : canDial ? 'Call' : 'Call · copy'}
+    </button>
   )
 }
 
@@ -894,7 +1310,7 @@ function FilesCard({ timeline, prospectId, onOpen }: {
             {f.size != null && <span className="text-slate-400 shrink-0">{Math.round(f.size / 1024)} KB</span>}
             {f.mine
               ? <button onClick={() => void download(f.storagePath!)} disabled={busy === f.storagePath}
-                  className="text-[11px] font-bold text-orange-700 hover:underline disabled:opacity-40 shrink-0">
+                  className="text-[11px] font-bold text-slate-600 hover:underline disabled:opacity-40 shrink-0">
                   {busy === f.storagePath ? '…' : 'Download'}
                 </button>
               : <span className="text-[10px] text-slate-400 shrink-0" title="An attachment on an email they sent. This app never downloads those.">listed only</span>}
@@ -905,25 +1321,61 @@ function FilesCard({ timeline, prospectId, onOpen }: {
   )
 }
 
-/** The demo tools. ⚠️ Behaviour unchanged; only its weight on the page is. */
-function DemoCard({ p, onReload }: { p: Prospect; onReload: () => Promise<void> }) {
+/**
+ * The demo, compactly.
+ * 🔴 BEHAVIOUR UNCHANGED, WEIGHT REDUCED. It is read occasionally and built once; on the modal it
+ * had the same prominence as the contact details. The path, then three text buttons.
+ * ⚠️ THE EXPIRY IS SHOWN ONLY WHEN IT MATTERS — inside seven days. A date that is three weeks away
+ * is a number nobody acts on, and a card of numbers nobody acts on is how a card stops being read.
+ */
+function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Promise<void>; onInsert: () => void }) {
   const [creating, setCreating] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const ref = p.demo?.publicRef ?? null
+  const path = ref ? `/demo/${ref}` : null
+  // ⚠️ THE CLOCK IS READ AFTER MOUNT, IN A MICROTASK. `Date.now()` in a render body makes the
+  // output depend on when React happened to call it (`react-hooks/purity`), and a synchronous
+  // setState in an effect body is the cascading-render pattern React warns about. This is neither,
+  // and the value only has to be right to the day.
+  const [expiresSoon, setExpiresSoon] = useState<number | null>(null)
+  const expiresAt = p.demo?.expiresAt ?? null
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      if (!expiresAt) { setExpiresSoon(null); return }
+      const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86_400_000)
+      setExpiresSoon(days <= 7 ? days : null)
+    })
+  }, [expiresAt])
+  const copy = async () => {
+    if (!path) return
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+      setCopied(true); setTimeout(() => setCopied(false), 2000)
+    } catch { /* a clipboard a browser refuses is not an error worth a dialog */ }
+  }
   return (
-    <div className={`${CARD} p-3 flex flex-col gap-2`}>
+    <div className={`${CARD} p-3 flex flex-col gap-1`}>
       <span className={LABEL_CLS}>Demo</span>
-      {p.demo
-        ? <div className="flex flex-wrap items-center gap-2">
-            <DemoLinkChip demo={p.demo} />
-            {p.demo.truckId && (
-              <button onClick={() => setCreating(true)}
-                title="Build this demo again with different collection times, cook time or batch size"
-                className="text-xs font-semibold px-2 py-1 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50">
-                Rebuild
-              </button>
+      {path
+        ? <>
+            <a href={path} target="_blank" rel="noreferrer"
+              className="text-[13px] font-mono text-slate-700 hover:underline truncate">{path}</a>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
+              <button onClick={() => void copy()} className="hover:underline">{copied ? 'Copied' : 'Copy'}</button>
+              <button onClick={() => { void copy(); onInsert() }} className="hover:underline">Insert in email</button>
+              {p.demo?.truckId && <button onClick={() => setCreating(true)} className="hover:underline">Rebuild</button>}
+            </div>
+            {expiresSoon != null && (
+              <p className="text-[11px] font-semibold text-amber-800">
+                Expires in {expiresSoon} day{expiresSoon === 1 ? '' : 's'}
+              </p>
             )}
-          </div>
+            {(p.demo?.liveCount ?? 0) > 1 && (
+              <p className="text-[11px] text-slate-400">newest of {p.demo?.liveCount}</p>
+            )}
+          </>
         : <button onClick={() => setCreating(true)}
-            className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600 self-start">
+            className="text-xs font-semibold px-3 py-2 min-h-11 sm:min-h-0 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 self-start">
             Create demo
           </button>}
       {creating && (
@@ -948,12 +1400,21 @@ function DemoCard({ p, onReload }: { p: Prospect; onReload: () => Promise<void> 
  * from whatever the dropdown was last left at. That mislabelling is recorded in §57.3 as a real
  * defect: a chaser logged as a first contact drove the queue wrong for weeks.
  */
-function QuickLog({ p, channel, step, post, leadFreeze, onDirty, onCancel, onLogged }: {
+function QuickLog({ p, channel, kind, followUpDate, post, applyFollowUp, onDirty, onCancel, onLogged }: {
   p: Prospect
   channel: 'phone' | 'whatsapp'
-  step: Step | null
+  /**
+   * 🔴 THE DERIVED KIND, PASSED IN, NOT A DROPDOWN DEFAULT. `oneClickKind` decides it once for the
+   * whole page — the rung this prospect is on, or `reply` once they have written back — and the
+   * tab and the one-click buttons therefore cannot record the same call as two different things.
+   * ⚠️ IT IS STILL CHANGEABLE HERE, because a person correcting a record knows something the
+   * derivation does not. What it is no longer is "whatever the box was last left at".
+   */
+  kind: string
+  /** From the page's single control. The tab does not have a follow-up picker of its own. */
+  followUpDate: string | null
   post: (b: Record<string, unknown>) => Promise<Record<string, unknown>>
-  leadFreeze: boolean
+  applyFollowUp: (kind: string) => Promise<void>
   onDirty: (v: boolean) => void
   onCancel: () => void
   onLogged: () => Promise<void>
@@ -962,7 +1423,7 @@ function QuickLog({ p, channel, step, post, leadFreeze, onDirty, onCancel, onLog
   const [full, setFull] = useState(false)
   const [when, setWhen] = useState(today)
   const [direction, setDirection] = useState('outbound')
-  const [kind, setKind] = useState(step?.kind ?? defaultKindFor('outbound'))
+  const [chosenKind, setKind] = useState(kind)
   const [ch, setCh] = useState<string>(channel)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
@@ -973,13 +1434,12 @@ function QuickLog({ p, channel, step, post, leadFreeze, onDirty, onCancel, onLog
     try {
       const j = await post({
         action: 'log_contact', prospect_id: p.id,
-        channel: ch, direction, kind, message, contacted_at: when,
+        channel: ch, direction, kind: chosenKind, message, contacted_at: when,
       })
       if (j.error) { setErr(String(j.error)); return }
-      // The follow-up date and the rung-1 freeze, on the same conditions as every other log path.
-      const patch: Record<string, unknown> = { next_action_at: followUpDateFor(kind, when) }
-      if (shouldFreezeLeadType(kind, p, leadFreeze)) patch.lead_type_at_first_contact = leadTypeOf(p)
-      await post({ action: 'update_prospect', id: p.id, ...patch })
+      // 🔴 THE SAME FOLLOW-UP THE REST OF THE PAGE USES, applied by the same function, which is the
+      // page's one caller of the one writer of `next_action_at`.
+      await applyFollowUp(chosenKind)
       await onLogged()
     } finally { setBusy(false) }
   }
@@ -992,12 +1452,13 @@ function QuickLog({ p, channel, step, post, leadFreeze, onDirty, onCancel, onLog
           {full ? 'Simple' : 'Log other…'}
         </button>
       </div>
-      <div className={`grid gap-2 ${full ? 'grid-cols-4' : 'grid-cols-2'}`}>
+      <div className={`grid gap-2 ${full ? 'grid-cols-4 max-md:grid-cols-2' : 'grid-cols-2'}`}>
         <label className="block min-w-0">
           <span className={LABEL_CLS}>When</span>
           {/* 🔴 CAPPED AT TODAY. A contact cannot have happened in the future, and a mistyped future
               date would sort to the top of the history and take "last contacted" with it. */}
-          <input type="date" className={FIELD_CLS} value={when} max={today} onChange={e => { setWhen(e.target.value); onDirty(true) }} />
+          <input type="date" className={FIELD_CLS} value={when} max={today}
+            onChange={e => { setWhen(e.target.value); onDirty(true) }} />
         </label>
         {full && (
           <label className="block min-w-0"><span className={LABEL_CLS}>Channel</span>
@@ -1007,33 +1468,38 @@ function QuickLog({ p, channel, step, post, leadFreeze, onDirty, onCancel, onLog
           </label>
         )}
         <label className="block min-w-0"><span className={LABEL_CLS}>Direction</span>
-          {/* 🔴 CHANGING DIRECTION CHANGES KIND: an inbound row can only be a reply, and a reply is not
-              a rung of the outbound ladder. The same pairing the modal enforced. */}
+          {/* 🔴 CHANGING DIRECTION CHANGES KIND: an inbound row can only be a reply, and a reply is
+              not a rung of the outbound ladder. The same pairing the modal enforced. */}
           <select className={FIELD_CLS} value={direction}
             onChange={e => {
               const d = e.target.value
               setDirection(d)
-              if (!kindsForDirection(d).includes(kind)) setKind(defaultKindFor(d))
+              if (!kindsForDirection(d).includes(chosenKind)) setKind(defaultKindFor(d))
             }}>
             {CONTACT_DIRECTIONS.map(d => <option key={d} value={d}>{directionLabel(d)}</option>)}
           </select>
         </label>
-        <label className="block min-w-0"><span className={LABEL_CLS}>Kind</span>
-          <select className={FIELD_CLS} value={kind} onChange={e => setKind(e.target.value)}>
-            {[...kindsForDirection(direction)].sort((a, b) => kindOrder(a) - kindOrder(b))
-              .map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
-          </select>
-        </label>
+        {full && (
+          <label className="block min-w-0"><span className={LABEL_CLS}>Kind</span>
+            <select className={FIELD_CLS} value={chosenKind} onChange={e => setKind(e.target.value)}>
+              {[...kindsForDirection(direction)].sort((a, b) => kindOrder(a) - kindOrder(b))
+                .map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
+            </select>
+          </label>
+        )}
       </div>
       <textarea rows={2} className={`${FIELD_CLS} resize-y`} placeholder="What was said (optional)"
         value={message} onChange={e => { setMessage(e.target.value); onDirty(true) }} />
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <button onClick={() => void submit()} disabled={busy}
-          className={`${BTN} border-orange-600 bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50`}>
+          className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 min-h-11`}>
           {busy ? 'Logging…' : 'Log'}
         </button>
-        <button onClick={onCancel} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50`}>Cancel</button>
-        <span className="text-[11px] text-slate-400">{channelLabel(ch)} · {kindLabel(kind)}</span>
+        <button onClick={onCancel} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50 min-h-11`}>Cancel</button>
+        <span className="text-[11px] text-slate-400">
+          {channelLabel(ch)} · {kindLabel(chosenKind)}
+          {followUpDate ? ` · follow up ${followUpDate}` : ' · no follow-up'}
+        </span>
         {err && <span className="text-[11px] text-red-700">{err}</span>}
       </div>
     </div>
@@ -1070,7 +1536,7 @@ function NoteBox({ prospectId, onDirty, onCancel, onSaved }: {
         value={body} onChange={e => { setBody(e.target.value); onDirty(true) }} />
       <div className="flex items-center gap-2">
         <button onClick={() => void save()} disabled={busy || !body.trim()}
-          className={`${BTN} border-orange-600 bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50`}>
+          className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50 min-h-11`}>
           {busy ? 'Saving…' : 'Add note'}
         </button>
         <button onClick={onCancel} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50`}>Cancel</button>

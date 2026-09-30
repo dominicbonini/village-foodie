@@ -1042,7 +1042,34 @@ export default function OutreachPanel() {
             so no virtualisation is needed (and paging is explicitly not reintroduced).
             item 4: `table-fixed` + an explicit <colgroup> — column widths come from the colgroup, NOT cell
             content, so they DO NOT reflow when rows reorder on sort. */}
-        <div className={tab === 'all' ? 'overflow-auto rounded-xl border border-slate-200 bg-white max-h-[calc(100vh-9rem)]' : 'hidden'}>
+        {/* ── 🔴 THE TABLE IS UNUSABLE ON A PHONE AND ALWAYS WAS. Its colgroup sums to 1321px, so at
+            375px it is a horizontal scroll through thirteen columns. Below `md` it is replaced by a
+            list of the three facts a phone is for: who, where they are, and what is next. The table
+            itself is untouched — same widths, same sort, same filters — it is simply not rendered
+            at a width it cannot work at. */}
+        {tab === 'all' && (
+          <div className="hidden max-md:block rounded-xl border border-slate-200 bg-white divide-y divide-slate-100 overflow-hidden">
+            {visible.map(p => {
+              const st = steps.get(p.id)
+              return (
+                <button key={p.id} type="button" onClick={() => openFromList(p.id)}
+                  className="w-full text-left px-3 py-2.5 min-h-11 flex flex-col gap-0.5 hover:bg-slate-50">
+                  <span className="font-semibold text-slate-900 truncate">{p.name}</span>
+                  <span className="text-[12px] text-slate-500">
+                    {stageLabel(p.stage)}
+                    {st && <span className="text-slate-400"> · {st.label}</span>}
+                  </span>
+                </button>
+              )
+            })}
+            {visible.length === 0 && (
+              <p className="px-3 py-6 text-center text-slate-400 text-sm">
+                {isFilterActive(filter) ? 'No trucks match these filters.' : 'No prospects.'}
+              </p>
+            )}
+          </div>
+        )}
+        <div className={tab === 'all' ? 'overflow-auto rounded-xl border border-slate-200 bg-white max-h-[calc(100vh-9rem)] max-md:hidden' : 'hidden'}>
           <table className="table-fixed text-sm w-full" style={{ minWidth: '1321px' }}>
             {/* 🔴 THE SUM OF THESE EQUALS `minWidth` EXACTLY (1321px), AND THAT IS THE POINT.
                 🧪 RE-DERIVED, NOT TRANSCRIBED:
@@ -1982,7 +2009,8 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
   }
 
   return (
-    <div className="max-w-4xl">
+    // ⚠️ ON A PHONE EACH SECTION IS A STACK OF CARDS, which is what the flex rows above collapse to.
+    <div className="max-w-4xl max-md:max-w-none">
       {/* ⚠️ "Nothing waiting" WITH SOMETHING SNOOZED is not an empty screen — the heading below says
           how many are put off, which is exactly the fact that would otherwise be invisible. */}
       {view.total === 0 && (
@@ -1994,7 +2022,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
         <TodaySection title="Replies waiting" count={view.replies.length}
           hint="Inbound emails that have not been answered or marked done. Oldest first — the one that has waited longest is the one to answer.">
           {view.replies.map(r => (
-            <div key={r.id} className="px-3 py-2 flex items-start gap-3" style={{ background: INBOUND_BG }}>
+            <div key={r.id} className="px-3 py-2 flex items-start gap-3 max-md:flex-col max-md:gap-2" style={{ background: INBOUND_BG }}>
               <div className="flex-1 min-w-0">
                 <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
                   className="font-bold text-slate-900 hover:underline text-sm text-left">
@@ -2003,29 +2031,32 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                 <p className="text-[12px] text-slate-700 mt-0.5 break-words">{r.snippet}</p>
               </div>
               <span className="text-[11px] text-slate-500 whitespace-nowrap pt-0.5">{fmtDate(r.message_date)}</span>
-              <div className="flex flex-wrap items-center gap-1 justify-end">
+              {/* ⚠️ ON A PHONE THE BUTTONS GET A ROW OF THEIR OWN and every one is at least 44px —
+                  three 20px targets crowded against a truncated name is not a control anybody can
+                  hit with a thumb. */}
+              <div className="flex flex-wrap items-center gap-1 justify-end max-md:w-full max-md:justify-start">
                 {/* 🔴 REPLY IS THE FIRST BUTTON, because answering is the thing this row is asking
                     for. It opens the prospect with the composer already up on THIS message, the
                     conversation visible below the editor. Nothing is sent until Send is pressed. */}
                 <button type="button"
                   onClick={() => onReply(r.prospect_id, r.id, repliesQueue)}
                   title="Answer this reply, with the conversation quoted underneath."
-                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
+                  className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
                   Reply
                 </button>
                 <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
-                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+                  className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   Open
                 </button>
                 <button type="button" onClick={() => void act({ action: 'mark_handled', message_id: r.id }, r.id)}
                   disabled={busyId === r.id}
                   title="Dealt with. It leaves this list; nothing is sent and nothing is logged."
-                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40">
+                  className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40">
                   Mark done
                 </button>
                 <button type="button" onClick={() => setSnoozeFor(snoozeFor === r.id ? null : r.id)}
                   title="Hide it until a chosen morning. It comes back on its own."
-                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+                  className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   Snooze
                 </button>
                 {snoozeFor === r.id && SNOOZE_OPTIONS.map(o => (
@@ -2046,7 +2077,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
         <TodaySection title="Chasers due" count={view.chasers.length}
           hint="Derived from the contact ladder by nextStep (§57): reachable prospects whose next rung is due today or overdue. Correct the contact log and this changes.">
           {view.chasers.map(c => (
-            <div key={c.prospect_id} className="px-3 py-2 flex items-center gap-3">
+            <div key={c.prospect_id} className="px-3 py-2 flex items-center gap-3 max-md:flex-wrap max-md:gap-y-1">
               <button type="button" onClick={() => onOpen(c.prospect_id, chasersQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {c.name ?? '(no truck name)'}
@@ -2063,7 +2094,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                   `templateForStep` inside the modal — the one pre-selection rule, not a second one. */}
               <button type="button" onClick={() => onCompose(c.prospect_id, chasersQueue)}
                 title="Opens the prospect and the compose window, with this step's template pre-selected. Nothing is sent until you press send."
-                className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
+                className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
                 Compose
               </button>
             </div>
@@ -2076,7 +2107,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
         <TodaySection title="Follow-ups due" count={view.followUps.length}
           hint="next_action_at is today or in the past. Prospects already listed under Replies waiting or Chasers due are not repeated here.">
           {view.followUps.map(f => (
-            <div key={f.prospect_id} className="px-3 py-2 flex items-center gap-3">
+            <div key={f.prospect_id} className="px-3 py-2 flex items-center gap-3 max-md:flex-wrap max-md:gap-y-1">
               <button type="button" onClick={() => onOpen(f.prospect_id, followUpsQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {f.name ?? '(no truck name)'}
@@ -2086,7 +2117,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                 {f.daysOverdue > 0 && <span className="text-amber-800 font-bold"> · {f.daysOverdue} day{f.daysOverdue === 1 ? '' : 's'} overdue</span>}
               </span>
               <button type="button" onClick={() => onOpen(f.prospect_id, followUpsQueue)}
-                className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+                className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                 Open
               </button>
             </div>
@@ -2100,7 +2131,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
         <TodaySection title="Emails needing a look" count={view.problems.length}
           hint="Outbound emails that failed, may have been sent, or bounced. Open the prospect to retry, file a copy, or fix the address.">
           {view.problems.map(e => (
-            <div key={e.id} className="px-3 py-2 flex items-center gap-3">
+            <div key={e.id} className="px-3 py-2 flex items-center gap-3 max-md:flex-wrap max-md:gap-y-1">
               <button type="button" onClick={() => onOpen(e.prospect_id, problemsQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {e.prospect_name ?? '(no truck name)'}
@@ -2111,7 +2142,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
               </span>
               <span className="text-[11px] text-slate-400 whitespace-nowrap">{fmtDate(e.message_date)}</span>
               <button type="button" onClick={() => onOpen(e.prospect_id, problemsQueue)}
-                className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+                className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                 Open
               </button>
             </div>
@@ -2147,7 +2178,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                   <button type="button" disabled={busyId === r.id}
                     onClick={() => void act({ action: 'needs_reply', message_id: r.id }, r.id)}
                     title="Bring this reply back to Replies waiting now."
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+                    className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
                     Unsnooze
                   </button>
                 </div>
