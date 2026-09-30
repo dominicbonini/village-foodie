@@ -21,9 +21,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { TimelineMessage, TimelineContact } from '@/lib/outreach-timeline'
+import { handTextIsRedundant, type TimelineMessage, type TimelineContact } from '@/lib/outreach-timeline'
 import { EmailBody } from '@/components/admin/outreach-shared'
 import { readingPanelWidth, stepEmailId, TWO_COL_AT_PX } from '@/lib/outreach-workspace'
+
+/** "18 Sep" — the marker line's date, short because it sits inside a sentence. */
+function fmtDay(iso: string | null | undefined): string {
+  const d = new Date(String(iso ?? ''))
+  if (Number.isNaN(d.getTime())) return 'an unknown date'
+  return new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short' }).format(d)
+}
 
 /** "11 Sep 2026, 13:07" — the same shape the compose window uses for a threaded date. */
 function fmtWhen(iso: string | null | undefined): string {
@@ -97,6 +104,18 @@ export default function EmailReadingPanel({
     }
   }, [phone])
 
+  /**
+   * The body as text, once it has loaded — what the hand-log comparison is made against.
+   * ⚠️ KEYED BY THE MESSAGE ID RATHER THAN RESET IN AN EFFECT. Stepping to another email must not
+   * compare it against the last one's words, and an effect that calls setState to clear them is the
+   * cascading-render pattern this repo lints against. A value that belongs to another message is
+   * simply not this message's value.
+   */
+  const [loaded, setLoaded] = useState<{ id: string; text: string | null } | null>(null)
+  const emailText = loaded?.id === message.id ? loaded.text : null
+  const [handOpenFor, setHandOpenFor] = useState<string | null>(null)
+  const showHand = handOpenFor === message.id
+
   const prev = useMemo(() => stepEmailId(ids, message.id, -1), [ids, message.id])
   const next = useMemo(() => stepEmailId(ids, message.id, 1), [ids, message.id])
 
@@ -162,18 +181,37 @@ export default function EmailReadingPanel({
 
       {/* ── THE EMAIL ───────────────────────────────────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-1.5">
-        {/* ⚠️ THE HAND-LOGGED SENTENCE, ABOVE THE BODY, exactly as the row carried it. It is usually
-            Dominic's own ("sent the plans") and it is the only place that sentence exists. */}
+        {/* ── 🔴 THE HAND LOG IS A MARKER, NOT A SECOND COPY OF THE EMAIL ──────────────────────
+            It was a grey block above the body carrying, in the Between Buns case, the ENTIRE email
+            as plain text — so the panel showed the same words twice, the worse copy first. A hand
+            log is usually the email pasted in; the default is now to say that it happened and stop.
+            ⚠️ WHEN IT ADDS SOMETHING, IT IS STILL REACHABLE — one click, collapsed, below the line
+            rather than above the email. `handTextIsRedundant` decides, and it answers FALSE while
+            the body is still loading, so the only failure it can make is one extra link. */}
         {handLogged && (
-          <p className="text-[12px] text-slate-500 border-l-2 border-slate-200 pl-2">
-            <span className="font-semibold">Logged by hand:</span>{' '}
-            {handLogged.message?.trim() || <span className="italic">no message was recorded</span>}
-          </p>
+          <div className="text-[11px] text-slate-500">
+            <span>Also logged by hand · {fmtDay(handLogged.contacted_at ?? handLogged.created_at)}</span>
+            {!handTextIsRedundant(handLogged.message, emailText) && (
+              <>
+                {' · '}
+                <button type="button" onClick={() => setHandOpenFor(showHand ? null : message.id)}
+                  className="font-semibold text-slate-600 underline hover:no-underline">
+                  {showHand ? 'Hide what was logged by hand' : 'Show what was logged by hand'}
+                </button>
+                {showHand && (
+                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-slate-50 border border-slate-200 px-2 py-1 text-slate-600">
+                    {handLogged.message?.trim() || 'no message was recorded'}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
         )}
         {/* 🔴 THE SAME VIEWER, KEYED BY ID so stepping to another email refetches rather than
             showing the last one's body while the new one loads. `hideMeta` because the panel header
             above already says who it is from and what it is about. */}
-        <EmailBody key={message.id} rowId={message.id} hideMeta onOpenFull={onOpenFull} />
+        <EmailBody key={message.id} rowId={message.id} hideMeta onOpenFull={onOpenFull}
+          onText={t => setLoaded({ id: message.id, text: t })} />
       </div>
 
       {/* ── WHAT CAN BE DONE WITH IT ────────────────────────────────────────────────────────── */}

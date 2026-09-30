@@ -1379,7 +1379,13 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
 
       {!editing ? (
         <div className="flex flex-col gap-1 text-[13px]">
-          <p className="font-semibold text-slate-800">{name || <span className="text-slate-400">no contact name</span>}</p>
+          {/* 🔴 THE NAME IS THE HEADLINE OF THIS CARD. It was 13px and semibold — the same weight as
+              the address under it — so the one thing you need before ringing somebody read as one
+              more field. 18px/800 and a little air under it, on every screen: a thumb in a doorway
+              wants it more than a laptop does, not less. */}
+          <p className="text-[18px] font-extrabold leading-tight text-slate-900 mb-1">
+            {name || <span className="text-[13px] font-semibold text-slate-400">no contact name</span>}
+          </p>
           <p className="break-words">
             {p.contact_email
               ? <span className="text-slate-700">{p.contact_email}</span>

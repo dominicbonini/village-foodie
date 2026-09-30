@@ -151,7 +151,15 @@ function runPanelSuite(rawTL, rawPanel, rawShared) {
     /<EmailBody key=\{message\.id\} rowId=\{message\.id\} hideMeta/.test(P))
   t('🔴 …and the panel renders no mailbox markup of its own',
     !/dangerouslySetInnerHTML/.test(P) && !/sandbox=/.test(P))
-  t('⚠️ the hand-logged sentence sits above the body', /Logged by hand:/.test(P))
+  /* 🔴 RESTATED (30 September 2026, v4 fixes), AND THE OLD CHECK WAS PINNING A BUG. It required
+   * "Logged by hand:" above the body. For the Between Buns email of 18 September that "sentence"
+   * was the ENTIRE EMAIL as plain text, printed above the formatted copy of itself — the panel
+   * showed the same words twice, the worse copy first. What it was protecting is kept and is
+   * asserted harder in `outreach-workspace-v4-fixes.cjs`: the fact that it was also logged by hand
+   * is ALWAYS said, and the text itself is one click away whenever it adds something the email does
+   * not. Nothing that was written down can be lost; it simply is not printed twice. */
+  t('⚠️ the hand log is marked, and its text is reachable when it differs',
+    /Also logged by hand · \{fmtDay\(/.test(P) && /Show what was logged by hand/.test(P))
   t('⚠️ the header carries direction, from, to, date and subject',
     /Received' : 'Sent'/.test(P) && /From<\/span>/.test(P) && /To<\/span>/.test(P) && /fmtWhen\(message\.message_date/.test(P))
   t('🔴 Reply closes the panel first, then calls the page\'s existing reply',

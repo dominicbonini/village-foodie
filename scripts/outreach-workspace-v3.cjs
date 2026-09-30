@@ -62,11 +62,16 @@ const contact = (over = {}) => ({
     if (!bad) process.exit(1)
   }
   {
-    // V1 — THE PAIRING STOPS REFUSING AMBIGUITY. Two emails and one hand log on one day: whichever
-    // email it picks, it HIDES a row, and the hidden one is the record somebody went looking for.
+    /* V1 — THE PAIRING STOPS REFUSING AMBIGUITY. Two emails and one hand log on one day: whichever
+     * email it picks, it HIDES a row, and the hidden one is the record somebody went looking for.
+     * ⚠️ RE-ANCHORED (30 September 2026, v4 fixes) AND THE REASON IS WORTH KEEPING: the day rule's
+     * line changed shape when the SECOND rule was added beside it — ambiguity now falls through to
+     * a comparison of the opening WORDS rather than straight to `continue`. The rule this variant
+     * breaks is the same one, and the fixtures below still carry no matching text, so the words
+     * rule cannot pair them either: what is asserted is still "ambiguity pairs nothing". */
     const v = variant('v1', 'lib/outreach-timeline.ts', src => src.replace(
-      '    if (ms.length !== 1 || cs.length !== 1) continue',
-      '    if (ms.length < 1 || cs.length !== 1) continue'))
+      '    if (ms.length === 1 && cs.length === 1) {',
+      '    if (ms.length >= 1 && cs.length === 1) {'))
     const out = v.T.pairHandLoggedEmails({
       messages: [msg(), msg({ id: 'm2', subject: 'Second one' })],
       contacts: [contact()],
@@ -179,11 +184,15 @@ const contact = (over = {}) => ({
     const TL = readStripped('components/admin/ProspectTimeline.tsx')
     check(/pairHandLoggedEmails\(\{/.test(TL), 'the timeline component asks for the pairing…')
     check(/also logged by hand/.test(TL), '…marks the row it produced…')
-    /* ⚠️ RESTATED (v4): the row does not open any more — an email opens in the reading panel, and
-     * the hand-logged sentence went with the body it belongs under. The rule is unchanged: hiding
-     * the contact row must never hide the sentence it carried. */
-    check(/Logged by hand:/.test(readStripped('components/admin/EmailReadingPanel.tsx')),
-      '…and shows the logged text above the body, in the reading panel')
+    /* ⚠️ RESTATED TWICE. (v4): the row does not open any more — an email opens in the reading panel,
+     * and the hand-logged sentence went with the body it belongs under. (v4 fixes): it is no longer
+     * printed above the body at all, because for the Between Buns email that "sentence" was the
+     * whole email as plain text and the panel showed it twice. THE RULE IS STILL THE SAME ONE:
+     * hiding the contact row must never hide what it carried. So the marker is always shown, and
+     * the text is one click away whenever it says something the email does not. */
+    check(/Also logged by hand/.test(readStripped('components/admin/EmailReadingPanel.tsx'))
+      && /Show what was logged by hand/.test(readStripped('components/admin/EmailReadingPanel.tsx')),
+      '…and the logged text is still reachable from the reading panel when it differs')
   }
 
   console.log('\n── A PREVIEW THAT SAYS SOMETHING ────────────────────────────────────────────────────────')

@@ -80,10 +80,20 @@ export interface RichEmailEditorProps {
   /** Opens the focused full-window writing view. Absent ⇒ no ⤢ button (it is already expanded). */
   onExpand?: () => void
   expanded?: boolean
+  /**
+   * 🔴 THE ATTACH CONTROLS, ON THE TOOLBAR — after a divider, before ⤢. They used to be rendered
+   * BELOW the editor with `-mt-8`, which pulled them back up INSIDE the box, over the last lines of
+   * the email and over the resize grip. A control that overlaps the text it belongs to is not
+   * placed, it is parked.
+   */
+  toolbarExtra?: React.ReactNode
+  /** The attachment chips, directly under the toolbar, inside the same box. */
+  underToolbar?: React.ReactNode
 }
 
 export default function RichEmailEditor({
   value, onChange, signatureLines, optOut, disabled, maxHeight, height, onHeightChange, onExpand, expanded,
+  toolbarExtra, underToolbar,
 }: RichEmailEditorProps) {
   const extensions = useMemo(() => [
     Document, Paragraph, Text, HardBreak, Bold, Small,
@@ -183,7 +193,15 @@ export default function RichEmailEditor({
           className={`${tbtn(false)} disabled:opacity-40`}>
           Insert opt-out
         </button>
-        <span className="ml-auto text-[11px] text-slate-400 max-lg:hidden">
+        {toolbarExtra && (
+          <>
+            <span className="w-px h-4 bg-slate-200 mx-1" />
+            {toolbarExtra}
+          </>
+        )}
+        {/* ⚠️ THE SENTENCE IS THE FIRST THING TO GO when the row is full: it is a reminder, and the
+            controls beside it are the work. */}
+        <span className="ml-auto text-[11px] text-slate-400 max-xl:hidden">
           This is the email. Exactly what is here is sent.
         </span>
         {onExpand && (
@@ -194,6 +212,11 @@ export default function RichEmailEditor({
             className={`${tbtn(false)} ml-1`} aria-label="Expand the editor">⤢</button>
         )}
       </div>
+      {/* 🔴 THE CHIPS SIT UNDER THE TOOLBAR, INSIDE THE BOX — between the controls that made them
+          and the text they belong to, and above the scroller so they never move with the email. */}
+      {underToolbar && (
+        <div className="border-b border-slate-200 px-2 py-1">{underToolbar}</div>
+      )}
       {/* ⚠️ THE SCROLLER IS THE WRAPPER, NOT THE EDITOR. ProseMirror needs its own box to grow into;
           capping the editor itself would clip the caret out of view at the bottom of a long email.
           🔴 `resize: vertical` NEEDS `overflow` TO BE SOMETHING OTHER THAN `visible` — that is the

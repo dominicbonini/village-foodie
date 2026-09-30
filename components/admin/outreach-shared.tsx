@@ -444,9 +444,12 @@ export function AttachmentList({ attachments, prospectId }: {
  * best-effort; no split point found means the whole email is shown, because hiding something a
  * prospect wrote is the one failure worth avoiding here.
  */
-export function EmailBody({ rowId, onOpenFull, hideMeta }: {
+export function EmailBody({ rowId, onOpenFull, hideMeta, onText }: {
   rowId: string
   onOpenFull?: (html: string, subject: string | null) => void
+  /** ⚠️ THE BODY AS TEXT, ONCE IT HAS LOADED — so a caller can compare it against something else
+   *  (the reading panel asks whether a hand-logged note is just a copy of this). Display only. */
+  onText?: (text: string | null) => void
   /** ⚠️ The reading panel's header already carries From and Subject; two copies of one fact is
    *  two places for it to be wrong. The attachments and the quoted toggle stay either way. */
   hideMeta?: boolean
@@ -474,6 +477,14 @@ export function EmailBody({ rowId, onOpenFull, hideMeta }: {
   }, [rowId])
 
   const split = useMemo(() => splitQuotedHtml(data?.html ?? ''), [data])
+  /* ⚠️ THROUGH A "LATEST REF", AND DECLARED BEFORE BOTH EFFECTS. The callback is an inline arrow in
+   * the caller, so a new identity on every render; depending on it directly would re-fire the
+   * report on every render of the parent. The ref is written in its own effect — never during
+   * render — which is the pattern this file already uses for the keyboard handler. */
+  const onTextRef = useRef(onText)
+  useEffect(() => { onTextRef.current = onText })
+  // ⚠️ REPORTED ONCE PER BODY, in an effect on the data — never during render and never in the fetch.
+  useEffect(() => { if (data) onTextRef.current?.(data.text ?? null) }, [data])
 
   if (error) return <p className="text-[12px] text-red-800">{error}</p>
   if (!data) return <p className="text-[12px] text-slate-500">Opening the email…</p>

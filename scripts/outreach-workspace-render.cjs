@@ -119,7 +119,7 @@ function layoutFixture(css, template, old4 = false) {
  * and control classes from the components — so the fixture cannot quietly disagree with the page it
  * claims to measure. The content is filler; the boxes are the real sizes.
  */
-function composerFixture(css, editorPx) {
+function composerFixture(css, editorPx, bodyLock = false) {
   const tabsRow = lift(PAGE, /<div className="(flex items-center gap-1 border-b border-slate-200)">/, 'tab strip')
   const tabBtn = lift(PAGE, /className=\{`(text-sm font-bold px-3 py-2 -mb-px border-b-2 max-md:min-h-11)/, 'tab button')
   const toLine = lift(CW, /<div className="(flex flex-wrap items-baseline gap-x-3 gap-y-1 text-\[13px\])">/, 'To line')
@@ -129,11 +129,14 @@ function composerFixture(css, editorPx) {
   const histRow = lift(TL, /className=\{`(w-full text-left px-3 py-1\.5 max-md:py-2\.5 max-md:min-h-11 flex items-start gap-2)/, 'history row')
   const chip = 'text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 bg-white'
   const sendBtn = 'text-sm font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white'
-  const rows = Array.from({ length: 12 }, (_, i) =>
+  // ⚠️ ENOUGH ROWS THAT THE PAGE MUST SCROLL. Twelve fitted on one screen, which would have made
+  // "the page scrolls" pass for the wrong reason.
+  const rows = Array.from({ length: 40 }, (_, i) =>
     `<button class="${histRow}" id="row${i}"><span class="w-5"></span><span class="w-20">16 Sep</span>` +
     `<span class="flex-1 min-w-0 truncate">Re: Ordering costs · When is a good time to speak?</span></button>`).join('')
 
   return `${HEAD(css)}
+${bodyLock ? '<style>body{overflow:hidden}</style>' : ''}
 <div style="max-width:1500px;margin:0 auto;padding:12px 16px">
   <div id="header" style="height:38px;margin-bottom:8px;background:#f1f5f9">Pig-Casso's · stage · queue</div>
   <div id="banner" style="height:26px;margin-bottom:8px;background:#fef3c7">Next — follow up</div>
@@ -276,6 +279,51 @@ async function measure() {
       })
       t(scrolls, '⚠️ a long email scrolls inside the editor rather than growing the page')
     }
+
+    // ── v4-FIXES ITEM 1: THE PAGE SCROLLS ───────────────────────────────────────────────────────
+    // 🔴 THE PROBE IS THE COMPUTED `overflow` ON `body`, NOT `window.scrollTo`, AND THAT IS A
+    // FINDING IN ITSELF: with `body { overflow: hidden }` both engines still honour a PROGRAMMATIC
+    // `scrollTo` — it moved to 2000px in the control — while a wheel or a trackpad does nothing.
+    // A check written the obvious way would have passed against the exact bug being fixed.
+    {
+      await eng.setViewport(1440, 800)
+      await eng.page.goto(write(`locked-${eng.name}.html`, composerFixture(css, editorPx, true)))
+      const locked = await eng.page.evaluate(() => {
+        window.scrollTo(0, 4000)
+        return {
+          overflow: getComputedStyle(document.body).overflow,
+          y: Math.round(window.scrollY),
+        }
+      })
+      t(locked.overflow === 'hidden',
+        `🔴 CONTROL: the locked page reads body overflow "${locked.overflow}" — the state the inline composer was leaving it in`)
+      lines.push(`  ⚠️ …and note scrollTo still moved it to ${locked.y}px: a scripted scroll is not what a trackpad does`)
+    }
+    {
+      await eng.page.goto(write(`scroll-${eng.name}.html`, composerFixture(css, editorPx)))
+      const r = await eng.page.evaluate(() => {
+        window.scrollTo(0, 100000)
+        return {
+          overflow: getComputedStyle(document.body).overflow,
+          htmlOverflow: getComputedStyle(document.documentElement).overflow,
+          y: Math.round(window.scrollY),
+          taller: document.documentElement.scrollHeight > window.innerHeight,
+          lastVisible: document.getElementById('row39').getBoundingClientRect().bottom <= window.innerHeight + 1,
+        }
+      })
+      t(r.overflow !== 'hidden' && r.htmlOverflow !== 'hidden',
+        `🔴 nothing locks the page: body "${r.overflow}", html "${r.htmlOverflow}"`)
+      t(r.taller && r.y > 0, `🔴 …the document is taller than the window and scrolls (scrollY ${r.y})`)
+      t(r.lastVisible, '🔴 …all the way to the last row of History')
+    }
+    // ── THE WHEEL OVER THE EDITOR ───────────────────────────────────────────────────────────────
+    // ⚠️ NOT MEASURED, AND SAID RATHER THAN FAKED. Neither headless engine delivered a synthesised
+    // wheel to the inner scroller in this fixture (`mouse.wheel` moved nothing at all, editor or
+    // page), so a "pass" here would mean the event never arrived. What CAN be asserted is the
+    // structure that makes chaining work, and that is in the harness: the editor is an
+    // `overflow-y: auto` box, nothing sets `overscroll-behavior`, and no wheel handler anywhere in
+    // the outreach components calls `preventDefault`. The behaviour itself is on the test list.
+    lines.push('  ⚠️ the wheel over the editor is NOT measured here — see the harness census and the test list')
 
     // ── v4 ITEM 2: TEN ROWS IS TEN ROWS ─────────────────────────────────────────────────────────
     {

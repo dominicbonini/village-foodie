@@ -189,12 +189,103 @@ export function pairHandLoggedEmails(input: {
 
   for (const [k, cs] of contactsByKey) {
     const ms = messagesByKey.get(k) ?? []
-    // 🔴 EXACTLY ONE EACH SIDE, OR NOTHING. See the header: a guess here hides a row.
-    if (ms.length !== 1 || cs.length !== 1) continue
-    pairs.set(ms[0].id, cs[0])
-    hidden.add(cs[0].id)
+    // 🔴 EXACTLY ONE EACH SIDE — the day is enough to be sure, and this is the common case.
+    if (ms.length === 1 && cs.length === 1) {
+      pairs.set(ms[0].id, cs[0])
+      hidden.add(cs[0].id)
+      continue
+    }
+    /* ── 🔴 THE SECOND RULE: THE SAME OPENING WORDS ────────────────────────────────────────────
+     * 🧪 Pig-Casso's, 15 September: TWO outbound emails and ONE hand-logged first contact. The day
+     * rule correctly refused to guess, so the same approach showed twice — once as the email and
+     * once as the log of it. The words are the evidence the day could not supply: a hand log is
+     * usually the first paragraph of the email pasted in, so the first 60 meaningful characters
+     * identify it.
+     * 🔴 AND IT IS STILL EXACTLY-ONE-OR-NOTHING. If two emails that day open with the same words,
+     * this pairs NOTHING — the same rule as before, for the same reason: a wrong pairing HIDES a
+     * record, which is worse than showing two. The count is of MATCHES, not of candidates.
+     * ⚠️ GREETINGS ARE SKIPPED ON BOTH SIDES, by the same `meaningfulText` the previews use, so
+     * "Hi George," against "Hi Stephen," never matches and never blocks a real match. */
+    for (const c of cs) {
+      const want = openingKey(c.message)
+      if (!want) continue
+      const matches = ms.filter(m => openingKey(m.preview ?? m.sent_copy ?? '') === want)
+      if (matches.length !== 1) continue
+      // ⚠️ AN EMAIL ALREADY PAIRED WITH ANOTHER LOG IS NOT PAIRED AGAIN.
+      if (pairs.has(matches[0].id)) continue
+      pairs.set(matches[0].id, c)
+      hidden.add(c.id)
+    }
   }
   return { pairs, hidden }
+}
+
+/**
+ * The first 60 characters that carry words, normalised — the key the second pairing rule compares.
+ *
+ * 🔴 WHAT IS NORMALISED AND WHY: case (one side was typed, the other pasted), every run of
+ * whitespace and every line break (a hand log loses the email's wrapping), and the six quote
+ * characters that a mail client and a keyboard disagree about (’ vs ', “ ” vs "). What is NOT
+ * normalised is the words themselves — this is a comparison, not a fuzzy match.
+ * ⚠️ SHORTER THAN 60 CHARACTERS IS STILL COMPARED, in full. A three-word log that matches a
+ * three-word email is a match; what it must never do is match a LONGER email that merely begins
+ * with those words, which is why the email is cut to the same length before comparing.
+ * ⚠️ AN EMPTY KEY NEVER MATCHES ANYTHING — `''` is returned for a log with no words in it, and the
+ * caller skips it rather than pairing every wordless row together.
+ */
+export const OPENING_CHARS = 60
+
+export function normaliseForMatch(text: string | null | undefined): string {
+  return String(text ?? '')
+    .replace(/[’‘`]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+/** The text with greeting-only lines removed — the same skip the previews make. */
+export function meaningfulText(text: string | null | undefined): string {
+  const lines = String(text ?? '').split(/\r?\n/)
+  const kept: string[] = []
+  let started = false
+  for (const line of lines) {
+    if (!started && isGreetingLine(line)) continue
+    if (line.trim()) started = true
+    kept.push(line)
+  }
+  return kept.join('\n').trim()
+}
+
+export function openingKey(text: string | null | undefined): string {
+  return normaliseForMatch(meaningfulText(text)).slice(0, OPENING_CHARS)
+}
+
+/**
+ * Is the hand-logged text just a copy of the email?
+ *
+ * 🧪 Between Buns Royston, 18 September: the reading panel showed a grey block headed "Logged by
+ * hand:" carrying the ENTIRE email as plain text, and then the formatted email underneath it. The
+ * same words twice, the plain copy first. The hand log is usually the email pasted in, so the
+ * default has to be: say it happened, do not print it again.
+ *
+ * 🔴 TRUE ⇒ SHOW NOTHING BUT THE MARKER. FALSE ⇒ SHOW A COLLAPSED LINK, never an expanded block.
+ * ⚠️ "I CANNOT TELL" IS FALSE, NOT TRUE. When the email's text has not loaded (or has none), this
+ * returns false, so the sentence somebody typed is still reachable behind one click. The failure to
+ * avoid is HIDING something that was written down, not showing one extra link.
+ */
+export const SAME_TEXT_CHARS = 200
+
+export function handTextIsRedundant(
+  handText: string | null | undefined, emailText: string | null | undefined,
+): boolean {
+  const hand = normaliseForMatch(meaningfulText(handText))
+  if (!hand) return true                       // nothing was written down; there is nothing to show
+  const email = normaliseForMatch(meaningfulText(emailText))
+  if (!email) return false                     // cannot tell — keep it reachable
+  if (email.includes(hand)) return true
+  const n = Math.min(SAME_TEXT_CHARS, hand.length, email.length)
+  return n > 0 && hand.slice(0, n) === email.slice(0, n)
 }
 
 // ── WHAT A ROW SAYS BEFORE IT IS OPENED ─────────────────────────────────────────────────────────────

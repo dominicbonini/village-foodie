@@ -414,13 +414,23 @@ export default function ComposeWindow({
     return () => window.removeEventListener('keydown', onKey, true)
   }, [onClose])
 
-  // Background scroll lock, restoring the previous value rather than resetting to '' so a caller that had
-  // already locked the body is not silently unlocked.
+  /* ── 🔴 THE SCROLL LOCK BELONGS TO A WINDOW, AND THIS HAS NOT BEEN ONE SINCE v2 ────────────────
+   * THIS WAS THE BUG THAT STOPPED THE PROSPECT PAGE SCROLLING AT ALL. The effect ran on mount and
+   * released only on unmount; the prospect page mounts this composer INLINE and never unmounts it,
+   * so `document.body { overflow: hidden }` was set the moment the page rendered and stayed set for
+   * ever. Nothing about the reading panel was involved — it was never opened. A modal's lock,
+   * inherited by something that is no longer a modal.
+   * ⚠️ IT IS STILL RIGHT FOR THE TWO THINGS THAT ARE OVER THE PAGE: the portalled window and the ⤢
+   * full-window writing view. Both cover the viewport, and a page scrolling underneath a cover is
+   * the thing this prevents.
+   * ⚠️ THE PREVIOUS VALUE IS RESTORED, not reset to '', so a caller that had already locked the body
+   * is not silently unlocked. */
   useEffect(() => {
+    if (inline && !expanded) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = prev }
-  }, [])
+  }, [inline, expanded])
 
   const selected = useMemo(() => offerable.find(t => t.id === templateId) ?? null, [offerable, templateId])
 
@@ -1364,7 +1374,18 @@ export default function ComposeWindow({
             {isEmailChannel ? (
               <RichEmailEditor
                 value={doc}
-                onChange={d => { setEditedDoc(d); setEdited(true); setLogged(false) }}
+                /* 🔴 AN EDIT IS A DIFFERENCE, NOT AN EVENT. This was `setEdited(true)` on every
+                   `onChange`, and the editor emits one while it normalises the document it was
+                   handed — so "You have edited this message" appeared on a page nobody had typed
+                   into, with Blank selected. Comparing the plain text against the template's own
+                   render answers the question the flag is actually asking: is what is on screen
+                   still what the template produced? */
+                onChange={d => {
+                  setEditedDoc(d)
+                  if (docPlainText(d).trim() !== docPlainText(templateDoc).trim()) {
+                    setEdited(true); setLogged(false)
+                  }
+                }}
                 signatureLines={settings.signatureLines}
                 optOut={settings.optOut}
                 // 🔴 A FIXED HEIGHT WITH ITS OWN SCROLLBAR, INLINE — dragged by the grip at its
@@ -1380,6 +1401,45 @@ export default function ComposeWindow({
                 maxHeight={inline || expanded ? undefined : '75vh'}
                 expanded={expanded}
                 onExpand={expanded ? undefined : () => setExpanded(true)}
+                toolbarExtra={isEmail ? (
+                  <>
+                    <input ref={fileInputRef} type="file" multiple className="hidden"
+                      accept={ALLOWED_ATTACHMENT_EXTENSIONS.join(',')}
+                      onChange={e => void attachFiles(e.target.files)} />
+                    <button type="button" onClick={() => fileInputRef.current?.click()} disabled={!!fileBusy}
+                      title="PDF, PNG, JPG, DOCX or XLSX. 10 MB in total for one email. The file uploads to private storage; the email is built from it on the server."
+                      className="text-xs font-bold px-2 py-1 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+                      {fileBusy && fileBusy !== 'plans' ? `Uploading ${fileBusy}…` : 'Attach file'}
+                    </button>
+                    {/* 🔴 THE APP GENERATES THIS DOCUMENT — the same one Admin downloads — so the copy
+                        attached is always current with the feature matrix, and its name carries the
+                        date it was generated. */}
+                    <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
+                      title="Generates today's plans-and-features PDF from the live feature matrix and attaches it. The same document as Admin's download button."
+                      className="text-xs font-bold px-2 py-1 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40">
+                      {fileBusy === 'plans' ? 'Generating…' : 'Plans PDF'}
+                    </button>
+                  </>
+                ) : undefined}
+                underToolbar={isEmail && files.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-1">
+                    <ul className="flex flex-wrap gap-1">
+                      {files.map(f => (
+                        <li key={f.storagePath}
+                          className="flex items-center gap-1 text-[11px] border border-slate-200 rounded-lg px-2 py-0.5 bg-slate-50">
+                          <span className="font-semibold text-slate-700">{f.filename}</span>
+                          <span className="text-slate-400">{mb(f.size)}</span>
+                          <button type="button" onClick={() => removeFile(f.storagePath)}
+                            aria-label={`Remove ${f.filename}`}
+                            className="text-slate-400 hover:text-red-700 font-bold">×</button>
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="text-[11px] text-slate-500">
+                      {files.length} file{files.length === 1 ? '' : 's'} · {mb(files.reduce((n, f) => n + f.size, 0))} of {mb(MAX_ATTACHMENT_BYTES)}
+                    </span>
+                  </div>
+                ) : undefined}
               />
             ) : (
               /* ⚠️ THE WHATSAPP BOX, AND ONLY THAT. It is reached when a WhatsApp template is
@@ -1392,55 +1452,16 @@ export default function ComposeWindow({
             )}
           </label>
 
-          {/* ── ATTACHMENTS ────────────────────────────────────────────────────────────────────
-              🔴 UNDER THE EDITOR AND ABOVE THE CONVERSATION, because it belongs to the message being
-              written rather than to the history being quoted. */}
-          {/* ⚠️ THE ATTACH CONTROLS SHARE THE CHIPS' ROW WHEN THERE IS WIDTH FOR THEM. They are the
-              same kind of control — a small choice about the email, not part of writing it — and two
-              near-empty rows cost 36px, which is another history row visible without scrolling. */}
-          {isEmail && (
-            <div className={inline ? 'flex flex-col gap-1 -mt-8 items-end max-lg:mt-0 max-lg:items-stretch' : 'flex flex-col gap-1'}>
-              <div className="flex flex-wrap items-center gap-2">
-                <input ref={fileInputRef} type="file" multiple className="hidden"
-                  accept={ALLOWED_ATTACHMENT_EXTENSIONS.join(',')}
-                  onChange={e => void attachFiles(e.target.files)} />
-                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={!!fileBusy}
-                  title="PDF, PNG, JPG, DOCX or XLSX. 10 MB in total for one email. The file uploads to private storage; the email is built from it on the server."
-                  className="text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
-                  {fileBusy && fileBusy !== 'plans' ? `Uploading ${fileBusy}…` : 'Attach file'}
-                </button>
-                {/* 🔴 THE APP GENERATES THIS DOCUMENT — the same one Admin downloads — so the copy
-                    attached is always current with the feature matrix, and its name carries the date
-                    it was generated. */}
-                <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
-                  title="Generates today's plans-and-features PDF from the live feature matrix and attaches it. The same document as Admin's download button."
-                  className="text-xs font-bold px-2 py-1 rounded-lg border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40">
-                  {fileBusy === 'plans' ? 'Generating…' : 'Plans PDF'}
-                </button>
-                {files.length > 0 && (
-                  <span className="text-[11px] text-slate-500">
-                    {files.length} file{files.length === 1 ? '' : 's'} · {mb(files.reduce((n, f) => n + f.size, 0))} of {mb(MAX_ATTACHMENT_BYTES)}
-                  </span>
-                )}
-              </div>
-              {files.length > 0 && (
-                <ul className="flex flex-wrap gap-1">
-                  {files.map(f => (
-                    <li key={f.storagePath}
-                      className="flex items-center gap-1 text-[11px] border border-slate-200 rounded-lg px-2 py-0.5 bg-slate-50">
-                      <span className="font-semibold text-slate-700">{f.filename}</span>
-                      <span className="text-slate-400">{mb(f.size)}</span>
-                      <button type="button" onClick={() => removeFile(f.storagePath)}
-                        aria-label={`Remove ${f.filename}`}
-                        className="text-slate-400 hover:text-red-700 font-bold">×</button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {(fileError || attachRefusal) && (
-                <p className="text-[11px] text-red-700">{fileError ?? attachRefusal?.refusal}</p>
-              )}
-            </div>
+          {/* ── 🔴 THE ATTACH CONTROLS MOVED ONTO THE TOOLBAR (v4 fixes) ───────────────────────
+              They were rendered here, below the editor, with `-mt-8` pulling them back up INSIDE the
+              box — over the last lines of the email and over the resize grip. The negative margin
+              was there to save 36px of page height; it bought that by putting two buttons on top of
+              the text. They are `toolbarExtra` and `underToolbar` on the editor now: the buttons on
+              the toolbar row after a divider and before ⤢, the chips directly under it, inside the
+              same border. Nothing overlaps anything, and the 36px is still saved.
+              ⚠️ WHAT IS LEFT HERE IS THE ERROR LINE, which belongs under the box it is about. */}
+          {isEmail && (fileError || attachRefusal) && (
+            <p className="text-[11px] text-red-700">{fileError ?? attachRefusal?.refusal}</p>
           )}
 
           {/* ── THE CONVERSATION THIS ANSWERS ───────────────────────────────────────────────────
@@ -1485,7 +1506,10 @@ export default function ComposeWindow({
               🔴 WITHOUT THIS NOTICE THE RULE IS INVISIBLE, and discovering it mid-edit is how work is
               lost. While it is absent, the fields drive the message. While it is showing, they do not.
               The way back is explicit and warns first — it never discards silently. */}
-          {edited && (
+          {/* ⚠️ AND IT NEEDS A TEMPLATE TO BE ABOUT. The notice explains that the placeholder FIELDS
+              no longer rewrite the message — with Blank there are no fields and no render, so there
+              is nothing for it to explain and it was pure noise. */}
+          {edited && !!templateId && (
             <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2">
               {!confirmRerender ? (
                 <div className="flex items-center gap-3">
