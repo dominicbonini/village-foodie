@@ -686,7 +686,12 @@ const hdrs = (raw, extra = {}) => ({
 
   console.log('\n── CONTACT HISTORY OPENS THE EMAIL IT WAS LOGGED FROM ──────────────────────────────────')
   {
-    const UI = fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')
+    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM
+     * workspace). `ContactPopout` and `EmailBody` were private functions in `OutreachPanel.tsx`
+     * because the prospect view was a modal inside it. They moved UNCHANGED to
+     * `components/admin/outreach-shared.tsx`, which both the list and the new prospect page import.
+     * Every rule below is the same rule, read from the file that now holds it. */
+    const UI = fs.readFileSync(path.join(REPO, 'components/admin/outreach-shared.tsx'), 'utf8')
     const ROUTE = fs.readFileSync(path.join(REPO, 'app/api/admin/outreach/route.ts'), 'utf8')
     check(/c\.email_message_id = emailByContact\.get\(c\.id\) \?\? null/.test(ROUTE),
       'the list route links each contact to its email row, from outreach_messages.contact_id')
@@ -1212,7 +1217,7 @@ const hdrs = (raw, extra = {}) => ({
       '🔴 a live read SAVES what it fetched, so the next open costs a query')
     check(/\.is\('html_body', null\)\s*\n\s*\.is\('text_body', null\)/.test(live),
       '⚠️ …only where there is nothing to overwrite')
-    check(/sandbox=""/.test(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')),
+    check(/sandbox=""/.test(fs.readFileSync(path.join(REPO, 'components/admin/outreach-shared.tsx'), 'utf8')),
       '⚠️ and the body is still rendered in a sandboxed iframe — stored HTML is still somebody else\'s markup')
 
     const fill = POLL.slice(POLL.indexOf('async function fillMissingBodies'), POLL.indexOf('interface HouseRow'))
@@ -1223,13 +1228,9 @@ const hdrs = (raw, extra = {}) => ({
     check(/\.is\('attachments', null\)/.test(fill),
       '…and only ones never looked at, so a message with no text parts is not re-read forever')
     check(/order\('message_date', \{ ascending: false \}\)/.test(fill), 'newest first — those are the ones opened')
-    check(/credentialsFor\(accounts, account as MailAccount\)/.test(fill), "each row from its own account")
+    check(/credentialsFor\(accounts, account as MailAccount\)/.test(fill), 'each row from its own account')
     check(/summary\.bodiesFilled\+\+/.test(fill), 'and the run says how many it filled')
 
-    // 🔴 EVERY PATH THAT RECORDS A MESSAGE WRITES ITS BODY DOWN, so the backfill above is for
-    // history and not for new mail. A path that recorded without storing would leave a row that
-    // View opens slowly for the next ten minutes and then quietly repairs — hard to see, and the
-    // sort of gap that lives for months.
     for (const fn of ['handleReply', 'handleAutoReply', 'handleBounce', 'handleOutlookSent', 'adoptOne']) {
       const body = POLL.slice(POLL.indexOf(`async function ${fn}(`), POLL.indexOf(`async function ${fn}(`) + 2200)
       check(/readBodies\(client, m\.uid\)/.test(body) && /bodyColumns\(bodies\)/.test(body),
@@ -1241,39 +1242,36 @@ const hdrs = (raw, extra = {}) => ({
 
   console.log('\n── THE PAGE REFRESHES ITSELF ────────────────────────────────────────────────────────────')
   {
+    /* 🔴 STALE ANCHORS, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM workspace).
+     * This block asserted that the prospect MODAL re-read itself after every action, by reading
+     * `OutreachPanel.tsx` for `<Timeline>`, `onChanged`, `messagesNonce + refreshNonce` and the
+     * three send actions. The modal is gone: the prospect is a page, its timeline is
+     * `ProspectTimeline.tsx`, and its refresh is one `reloadAll()` rather than a nonce handed down
+     * through props. The RULE is unchanged — every write on either surface re-reads what it changed
+     * — and both halves of it are asserted below, each against the file that now owns it. */
     const UI = stripComments(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8'))
+    const PAGE = stripComments(fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8'))
+    const TL = stripComments(fs.readFileSync(path.join(REPO, 'components/admin/ProspectTimeline.tsx'), 'utf8'))
+
     const refreshesAfterCheck = src => /<CheckRepliesNow onDone=\{load\} \/>/.test(src)
     check(refreshesAfterCheck(UI), '🔴 "Check for replies now" reloads the list when it finishes')
     check(!refreshesAfterCheck(UI.replace('<CheckRepliesNow onDone={load} />', '<CheckRepliesNow />')),
       '⚠️ …and the census FAILS on the version without it')
     check(/<ImportPastEmails onDone=\{load\} \/>/.test(UI), 'and so does "Import past emails"')
-    const checkFn = UI.slice(UI.indexOf('function CheckRepliesNow'), UI.indexOf('function ImportPastEmails'))
-    check(/setResult\(j\)\s*\n\s*await onDone\(\)/.test(checkFn),
-      '…after the answer is shown, not instead of showing it')
-    check(/nonce=\{messagesNonce \+ refreshNonce\}/.test(UI),
-      '🔴 an OPEN prospect modal re-reads its Emails list too — the page nonce reaches it')
-    check(/refreshNonce=\{refreshNonce\} \/>/.test(UI), '…because the modal is given it')
-    // Send, Log, Retry and Save to Sent already reload; this is what keeps them doing so.
-    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (29 September 2026, CRM part 1).
-     * This slice read `function ProspectMessages` … `interface ViewedEmail`, and counted its three
-     * `await onChanged()` calls — Retry, Save to Sent and "log it". BOTH anchors are gone:
-     * `ProspectMessages` and the separate `EmailViewer` were replaced by one `Timeline` component,
-     * which absorbed all three actions and added four of its own (Mark done, Snooze, Mark as needing
-     * reply, Add note). The count is therefore no longer 3, and pretending otherwise by moving the
-     * anchor quietly would have turned a real behavioural change into a passing test. What this
-     * harness still owns is the RULE — every write refreshes the list and the modal — so it now
-     * asserts that shape, and `scripts/outreach-crm-today.cjs` owns the timeline's own contents. */
-    const msgs = UI.slice(UI.indexOf('function Timeline({'), UI.indexOf('const stageWord ='))
-    check(msgs.length > 0, 'the actions now live in `Timeline` (ProspectMessages is gone)')
-    check((msgs.match(/await onChanged\(\)/g) || []).length >= 1 && /await reload\(\)/.test(msgs),
-      'Retry, Save to Sent and Log still reload the list and the modal, through one `post` helper')
-    for (const a of ["action: 'retry'", "action: 'save_to_sent'", "action: 'log_only'"]) {
-      check(msgs.includes(a), `…and ${a} survived the move`)
+    check(/setResult\(j\)\s*\n\s*await onDone\(\)/.test(UI), '…after the answer is shown, not instead of showing it')
+
+    // 🔴 THE PROSPECT PAGE: ONE FUNCTION REFRESHES BOTH HALVES, and every writer calls it.
+    check(/const reloadAll = useCallback\(async \(\) => \{ await Promise\.all\(\[load\(\), reloadTimeline\(\)\]\) \}/.test(PAGE),
+      '🔴 the page re-reads the prospect AND its timeline through one function')
+    for (const caller of ['patch', 'messageAction', 'deleteContact']) {
+      check(new RegExp(`${caller}[\\s\\S]{0,1400}?await reloadAll\\(\\)`).test(PAGE), `…called after ${caller}`)
     }
-    check(/onChanged=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),
-      '…and "reload" means both the Emails list and the whole panel')
-    check(/onSent=\{async \(\) => \{ setMessagesNonce\(n => n \+ 1\); await onReload\(\) \}\}/.test(UI),
-      'a Send does the same')
+    check(/onSent=\{async \(\) => \{ await reloadAll\(\); setResolved\(true\) \}\}/.test(PAGE), '…and after a send')
+    // The three send actions survived the move from the Emails list to the timeline.
+    for (const a of ["'retry'", "'save_to_sent'", "'log_only'"]) {
+      check(TL.includes(a), `…and the timeline kept ${a}`)
+    }
+    check(/onMessageAction: messageAction/.test(PAGE), '…all routed through the page\'s one writer')
   }
 
   console.log(`\n${fails === 0 ? '✅ ALL CHECKS PASSED' : `🔴 ${fails} CHECK(S) FAILED`}`)

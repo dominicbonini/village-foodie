@@ -468,17 +468,33 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     check(/sandbox=""/.test(UI), '⚠️ and it is still rendered in a sandboxed iframe')
     check(/reply_to_message_id: replyTo\.messageId/.test(UI), 'the send names the message being answered')
     check(/ALLOWED_ATTACHMENT_EXTENSIONS\.join\(','\)/.test(UI), 'the picker offers only the allowed types')
+    /* 🔴 STALE ANCHORS, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM workspace).
+     * These five read `components/admin/OutreachPanel.tsx`, because the prospect view was a modal
+     * inside it. It is a page now: the timeline is `ProspectTimeline.tsx`, the composer is opened by
+     * `ProspectWorkspace.tsx`, and the attachment list moved to `outreach-shared.tsx`. Every rule
+     * they assert is unchanged — Reply only on a real inbound message, a Download only for a file of
+     * ours, inbound attachments names-only — and each is re-asserted against the file that now owns
+     * it. One thing genuinely changed and is stated rather than papered over: Today's Reply now hands
+     * the page a MESSAGE ID in the URL instead of handing a modal a target object. */
     const PANEL = read('components/admin/OutreachPanel.tsx')
-    check(/onReply=\{t => \{ setReplyTarget\(t\); setComposeOpen\(true\) \}\}/.test(PANEL),
-      'the timeline’s Reply opens the composer on that message')
-    check(/onReply=\{\(id, target\) => \{ openModal\(id\); setReplyIntent\(\{ prospectId: id, target \}\) \}\}/.test(PANEL),
-      "…and so does Today's")
-    check(/inbound && !m\.is_test && m\.status === 'received'/.test(PANEL),
+    const TL = read('components/admin/ProspectTimeline.tsx')
+    const PAGE = read('components/admin/ProspectWorkspace.tsx')
+    const SHARED = read('components/admin/outreach-shared.tsx')
+    check(/onClick=\{\(\) => actions\.onReply\(m\)\}/.test(TL),
+      "the timeline's Reply opens the composer on that message")
+    check(/const replyToMessage = \(m: \{ id: string;/.test(PAGE) && /openPanel\('email', \{ messageId: m\.id/.test(PAGE),
+      '…in reply mode, naming the message being answered')
+    check(/onReply=\{\(id, messageId, queue\) => openProspect\(id, queue, \{ replyTo: messageId \}\)\}/.test(PANEL),
+      "…and so does Today's, by navigating to the page with that message named")
+    check(/const replyId = q\.get\('reply'\)/.test(PAGE), '…which the page reads once, on arrival')
+    check(/inbound && !m\.is_test && m\.status === 'received'/.test(TL),
       '🔴 Reply is offered on a real inbound message and nowhere else')
-    check(/a\.storagePath && prospectId/.test(PANEL),
+    check(/a\.storagePath && prospectId/.test(SHARED),
       '🔴 a Download link appears only where there is a file of ours to download…')
-    check(/listed only, not downloaded/.test(PANEL),
+    check(/listed only, not downloaded/.test(SHARED),
       "⚠️ …and an inbound message's attachments stay names-only")
+    check(/listed only/.test(PAGE),
+      "…which the page's Files card says in the same words")
   }
 
   console.log(`\n${fails === 0 ? '✅ ALL CHECKS PASSED' : `🔴 ${fails} CHECK(S) FAILED`}`)

@@ -453,39 +453,52 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
 
   console.log('\n── WHAT THE SCREEN DOES ─────────────────────────────────────────────────────────────────')
   {
+    /* 🔴 STALE ANCHORS, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM workspace).
+     * Everything this block asserted about the PROSPECT VIEW used to live in
+     * `components/admin/OutreachPanel.tsx`, because the prospect view was a modal inside it. It is a
+     * full page now — `components/admin/ProspectWorkspace.tsx` and `ProspectTimeline.tsx`, at
+     * `/admin/outreach/p/[prospectId]` — and the shared pieces (the sandboxed email viewer, the
+     * attachment list, the contact popout) moved to `outreach-shared.tsx`. The RULES are unchanged
+     * and are what is re-asserted here, each against the file that now owns it. What genuinely
+     * changed is recorded where it changed: the timeline's row no longer carries a status label,
+     * and its Open button is gone because the row itself is the control. */
     const UI = read('components/admin/OutreachPanel.tsx')
-    check(/const \[tab, setTab\] = useState<'today' \| 'all'>\('today'\)/.test(UI),
-      "🔴 Today is the DEFAULT tab, not a second page")
+    const PAGE = read('components/admin/ProspectWorkspace.tsx')
+    const TL = read('components/admin/ProspectTimeline.tsx')
+    const SHARED = read('components/admin/outreach-shared.tsx')
+
+    check(/useState<'today' \| 'all'>\(\(\) => \{/.test(UI),
+      "🔴 Today is still the DEFAULT tab — now via a lazy initialiser, so coming back from a prospect lands on the tab it was opened from")
+    check(/return r\?\.tab === 'all' \? 'all' : 'today'/.test(UI), '…restoring it from the return state')
     check(/Today\$\{todayView\.total \? ` \(\$\{todayView\.total\}\)` : ''\}/.test(UI),
-      '…and the tab carries the count')
-    check(/<TodayScreen/.test(UI) && /<Timeline prospect=\{p\}/.test(UI), 'both screens are mounted')
-    check(/sandbox=""/.test(UI), '⚠️ mailbox HTML still renders only in a sandboxed iframe')
-    check(/Show test sends/.test(UI), 'the timeline has its test toggle')
-    check(/Waiting for you/.test(UI), '…and says which inbound rows are waiting')
-    check(/Mark as needing reply/.test(UI), '…with the undo for a mistake')
-    check(/Pinned notes/.test(UI), 'the standing notes field is relabelled')
-    // 🔴 AN UNAPPLIED MIGRATION MUST NOT READ AS "NOTHING WAITING". The screen cannot know what is
-    // waiting when the columns are missing, and a queue that says "nice" while blind is worse than
-    // one that is down.
+      '…and the tab still carries the count')
+    check(/<TodayScreen/.test(UI), 'Today is still mounted by the list…')
+    check(/<ProspectTimeline/.test(PAGE), '…and the timeline by the prospect PAGE')
+    check(/sandbox=""/.test(SHARED), '⚠️ mailbox HTML still renders only in the shared sandboxed iframe')
+    // ⚠️ THE CENSUS READS CODE, NOT COMMENTS — the timeline's comment mentions `sandbox=""` while
+    // explaining that it does not render one itself, which is exactly the trap this harness family
+    // already records once.
+    check(!/sandbox=""/.test(stripComments(TL)) && /<EmailBody/.test(TL),
+      '…which the timeline opens rather than rendering markup of its own')
+    check(/Show test sends/.test(TL), 'the timeline has its test toggle')
+    check(/needsAttention\(m, \{ now, linkedTruck \}\)/.test(TL), '…and says which inbound rows are waiting')
+    check(/Mark as needing reply/.test(TL), '…with the undo for a mistake')
+    check(/Pinned notes/.test(PAGE), 'the standing notes field is still labelled Pinned notes')
+    check(/action: 'add_note'/.test(PAGE), 'and a note can be added from the page')
+    check(/migrationApplied === false/.test(TL), '…the timeline still says when the migration is missing')
     check(/Today cannot be built yet\./.test(UI) && /migrationApplied=\{todayData\?\.migrationApplied !== false\}/.test(UI),
-      '🔴 …and says so, rather than reporting an empty queue, when the migration is missing')
-    check(/data\.migrationApplied === false/.test(UI), '…the timeline says the same')
-    check(/action: 'add_note'/.test(UI), 'and a note can be added from the timeline')
+      '🔴 …and Today says so rather than reporting an empty queue')
     for (const s of ['Replies waiting', 'Chasers due', 'Follow-ups due', 'Emails needing a look']) {
       check(UI.includes(s), `Today has its "${s}" section`)
     }
-    // 🔴 THE ACTIONS THE EMAILS LIST CARRIED ARE STILL THERE, on the rows that need them.
-    for (const s of ["action: 'retry'", "action: 'save_to_sent'", "action: 'log_only'"]) {
-      check(UI.includes(s), `…and the timeline kept ${s}`)
+    // 🔴 THE THREE ACTIONS THE EMAILS LIST CARRIED ARE STILL ON THE ROWS THAT NEED THEM.
+    for (const a of ["'retry'", "'save_to_sent'", "'log_only'"]) {
+      check(TL.includes(a), `…and the timeline kept ${a}`)
     }
-    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN RE-POINTED (29 September 2026). The reply-text harness
-     * (scripts/outreach-mail-poll.cjs) sliced `function ProspectMessages` … `interface ViewedEmail`
-     * to count its three `await onChanged()` calls. Both of those anchors are GONE: `ProspectMessages`
-     * and the separate `EmailViewer` were replaced by `Timeline`. That slice has been restated there
-     * against `function Timeline`, and this is the check that the replacement kept the behaviour. */
-    const tl = UI.slice(UI.indexOf('function Timeline({'), UI.indexOf('/** A stage as a sentence reads it.'))
-    check(/await onChanged\(\)/.test(tl) && /await reload\(\)/.test(tl),
-      '🔴 every write in the timeline refreshes both the timeline and the page')
+    check(/const onSend = action === 'retry' \|\| action === 'save_to_sent' \|\| action === 'log_only'/.test(PAGE),
+      '…routed to the send route, as they always were')
+    check(/const reloadAll = useCallback\(async \(\) => \{ await Promise\.all\(\[load\(\), reloadTimeline\(\)\]\) \}/.test(PAGE),
+      '🔴 every write refreshes BOTH the prospect and its timeline, through one function')
   }
 
   console.log(`\n${fails === 0 ? '✅ ALL CHECKS PASSED' : `🔴 ${fails} CHECK(S) FAILED`}`)

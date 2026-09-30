@@ -14,7 +14,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { needsAttention, replySnippet } from '@/lib/outreach-attention'
-import { PROBLEM_STATUSES, type WaitingReply, type ProblemEmail } from '@/lib/outreach-today'
+import {
+  PROBLEM_STATUSES, type WaitingReply, type ProblemEmail, type SnoozedReply,
+} from '@/lib/outreach-today'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -27,6 +29,8 @@ export interface TodayResponse {
   migrationApplied: boolean
   waiting: WaitingReply[]
   problems: ProblemEmail[]
+  /** 🔴 Put off, not gone. The screen lists them under a collapsed heading. */
+  snoozed: SnoozedReply[]
 }
 
 export async function GET(req: NextRequest) {
@@ -48,7 +52,7 @@ export async function GET(req: NextRequest) {
     .limit(200)
   if (inErr) {
     return NextResponse.json({
-      ok: true, migrationApplied: false, waiting: [], problems: [],
+      ok: true, migrationApplied: false, waiting: [], problems: [], snoozed: [],
     } satisfies TodayResponse)
   }
 
@@ -103,6 +107,24 @@ export async function GET(req: NextRequest) {
       from_address: r.from_address ?? null,
     }))
 
+  // 🔴 THE ROWS THE PREDICATE HID, AND ONLY FOR THAT REASON. Everything else about them says
+  // "waiting" — received, not a test, not handled, not a customer — so the one thing separating these
+  // from the list above is a date in the future. Anything excluded for another reason is not snoozed
+  // and must not be listed as though it were.
+  const snoozed: SnoozedReply[] = inboundRows
+    .filter(r => !!r.snoozed_until && new Date(r.snoozed_until).getTime() > now.getTime())
+    .filter(r => r.is_test !== true && !linked.has(r.prospect_id))
+    .map(r => ({
+      id: r.id,
+      prospect_id: r.prospect_id,
+      prospect_name: names.get(r.prospect_id) ?? null,
+      snippet: replySnippet(r.text_body),
+      message_date: r.message_date,
+      subject: r.subject ?? null,
+      from_address: r.from_address ?? null,
+      snoozed_until: r.snoozed_until as string,
+    }))
+
   const problems: ProblemEmail[] = problemsRaw
     .filter(r => !linked.has(r.prospect_id))
     .map(r => ({
@@ -115,5 +137,5 @@ export async function GET(req: NextRequest) {
       last_error: r.last_error ?? null,
     }))
 
-  return NextResponse.json({ ok: true, migrationApplied: true, waiting, problems } satisfies TodayResponse)
+  return NextResponse.json({ ok: true, migrationApplied: true, waiting, problems, snoozed } satisfies TodayResponse)
 }

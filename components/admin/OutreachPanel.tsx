@@ -25,66 +25,60 @@
 // route, so neither the tables' missing CHECK constraints nor a second copy of the interval rule can drift.
 
 import { useEffect, useMemo, useState, useCallback, useRef, memo } from 'react'
-import { createPortal } from 'react-dom'   // the contact popout — same portal-to-<body> rule as ScheduleEventsPopup
+import { useRouter } from 'next/navigation'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { safeHref } from '@/lib/safe-href'
-import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'   // MOVED here too; the events table uses the same dialog
 import ScheduleEventsPopup from '@/components/admin/ScheduleEventsPopup'
-import ComposeWindow, { type ReplyTarget } from '@/components/admin/ComposeWindow'
 import type { MailImportResult, MailImportResponse } from '@/lib/outreach-mail-import-result'
-import CreateDemoModal from '@/components/admin/CreateDemoModal'   // the outreach "Create Demo" — stacked ABOVE the prospect modal
 // Only the two GATING helpers are needed here now; the picker, the renderer, the footer and the
 // copy action all live in ComposeWindow.
 // 🔴 TEMPLATES COME FROM THE DATABASE NOW. This module holds the MECHANISM only — no message copy.
-import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
-import type { Snippet } from '@/lib/outreach-snippets'
-import { formatImageUrl } from '@/lib/image-utils'   // shared resolver — the SAME one /api/discovery/events uses
+// ── 🔴 THE SHARED PIECES MOVED OUT (30 September 2026) ─────────────────────────────────────────────
+// The prospect view is a PAGE now, not a modal inside this file, and a page cannot import a private
+// function out of a component. Everything both surfaces render — the email viewer, the attachment
+// list, the contact popout, the thumbnails, the prospect types — lives in `outreach-shared.tsx`,
+// unchanged. What stayed here is what only the LIST uses.
+import {
+  type Prospect,
+  STATUS_LABEL, fmtDate, mediaSrc, confirmLogoWrite,
+  TriStateBox, WhatsAppBox, useThumbLatch, INBOUND_BG,
+} from '@/components/admin/outreach-shared'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to build the wa.me link
 // 🔴 THE DERIVED STEP. Pure, no I/O, no stored state — see lib/outreach-step.ts. Imported here rather
 // than reimplemented so the queue, the row label and the composer's pre-selection read ONE answer.
 import {
-  nextStep, templateForStep, needsAttention as stepNeedsAttention, LEAD_TYPE_LABELS, LEAD_TYPES,
-  leadTypeOf, isLeadType, shouldFreezeLeadType, channelFor, hasValue,
+  nextStep, needsAttention as stepNeedsAttention, LEAD_TYPE_LABELS,
+  channelFor, hasValue,
   type Step,
 } from '@/lib/outreach-step'
 // ── 🔴 THE CRM RULES LIVE IN lib/, NOT IN THIS FILE ────────────────────────────────────────────────
 // "Is this reply waiting for me", "when does a snooze come back", "what order does the timeline go
 // in" and "what is on the Today screen" are all decisions, and a decision written inside a component
 // cannot be tested without a browser. Each of these is pure and has a harness standing on it.
-import { needsAttention, SNOOZE_OPTIONS, SNOOZE_LABELS } from '@/lib/outreach-attention'
-import { buildTimeline, type TimelineMessage, type TimelineContact, type TimelineEvent } from '@/lib/outreach-timeline'
+import { SNOOZE_OPTIONS, SNOOZE_LABELS } from '@/lib/outreach-attention'
 import {
   buildToday, PROBLEM_LABEL,
-  type WaitingReply, type ProblemEmail, type TodayProspect, type TodayView,
+  type WaitingReply, type ProblemEmail, type TodayProspect, type TodayView, type SnoozedReply,
 } from '@/lib/outreach-today'
 import { getLocalDateInTz } from '@/lib/time-utils'
+// 🔴 THE QUEUE A PROSPECT PAGE IS OPENED FROM. A modal could walk `visible` directly; a route cannot,
+// so the list it came from is recorded on the way out. See that module's header.
+import { saveQueue, saveReturn, readReturn, prospectPath } from '@/lib/outreach-queue'
 
-/** What `/api/admin/outreach/timeline` returns. Typed here so the panel invents no field names —
- *  the lesson `lib/outreach-mail-import-result.ts` records at length. */
-interface TimelinePayload {
-  ok: boolean
-  migrationApplied: boolean
-  messages: TimelineMessage[]
-  contacts: TimelineContact[]
-  events: TimelineEvent[]
-}
 /** What `/api/admin/outreach/today` returns. */
 interface TodayPayload {
   ok: boolean
   migrationApplied: boolean
   waiting: WaitingReply[]
   problems: ProblemEmail[]
+  /** Snoozed replies — listed under their own collapsed heading, never counted as work. */
+  snoozed?: SnoozedReply[]
 }
 
 import {
-  OUTREACH_STAGES, CONTACT_CHANNELS, CONTACT_DIRECTIONS,
-  kindsForDirection, defaultKindFor, kindOrder,
-  contactDay,
-  kindLabel, channelLabel, directionLabel, followUpDateFor,
-  type OutreachStage,
+  OUTREACH_STAGES,
+  kindOrder,
   isOverdue,
   isHatchesUp,
-  toYMD,
   // ⚠️ `LEAD_LABELS` IMPORT REMOVED 16 September 2026 — its only reader here was the Contact cell's
   // tooltip. It is still exported from lib/outreach.ts for any future reader; nothing there changed.
   leadOf,
@@ -99,65 +93,6 @@ import {
   type OutreachFilterState,
 } from '@/lib/outreach-filter'
 
-type Contact = {
-  id: string; contacted_at: string; channel: string | null; direction: string | null
-  kind: string | null; message: string | null
-  /** 🔴 The `outreach_messages` row this contact was logged FROM, when there is one. Set by the list
-   *  route from `outreach_messages.contact_id`; null for a call, a WhatsApp or a hand-logged contact. */
-  email_message_id?: string | null
-  /** Insert time. The ONLY thing that separates two contacts logged on the same day — see HistoryTable. */
-  created_at: string
-}
-type Prospect = {
-  id: string; discovery_truck_id: string; name: string
-  /** The NEWEST live demo built for this prospect (/api/admin/outreach), or null when there is none —
-   *  and null too when the demo_sessions migration is not applied yet (the route degrades rather than
-   *  500ing the page). `liveCount` > 1 means older live demos exist behind this one. */
-  demo?: {
-    publicRef: string | null; expiresAt: string | null; createdAt: string | null; liveCount: number
-    /** The truck the demo runs as. Present ⇒ it can be REBUILT over itself with new kitchen settings;
-     *  a demo cannot be un-created. Already returned by /api/admin/outreach — nothing was added there. */
-    truckId?: string | null
-  } | null
-  logo_url: string | null; photo_url: string | null
-  // 🔴 OPTION A — WHOSE LOGO THIS ACTUALLY IS. `logo_url` above is now the AUTHORITATIVE value the route
-  // resolved (trucks.logo_storage_path for a linked prospect, discovery_trucks.logo_url otherwise), so the
-  // cell renders one candidate and never has to choose. These three say what a WRITE would touch.
-  logo_target?: 'truck' | 'demo' | 'prospect'
-  logo_truck_name?: string | null
-  /** True when a write would change a live truck's order page, confirmation email and QR poster. */
-  logo_needs_confirm?: boolean
-  /** 🔴 LEGACY AND UNREAD. Kept on the type because the route still returns it for one release — see
-   *  the note in app/api/admin/outreach/route.ts. The two fields below are what the form and the
-   *  template substitution use. */
-  contact_name: string | null
-  contact_first_name: string | null; contact_last_name: string | null
-  do_not_contact: boolean | null; entity_type: string | null
-  /** 🔴 Derived by the list route: this prospect has an outbound email the mail system bounced. */
-  emailBounced?: boolean
-  contact_email: string | null; phone: string | null; mobile: string | null
-  website: string | null; schedule_url: string | null
-  order_url: string | null; excluded: boolean
-  /** discovery_trucks.show_on_vf — NOT NULL DEFAULT true. Part of the lead-type derivation. */
-  show_on_vf: boolean
-  /** discovery_trucks.hatchgrab_truck_id — non-null ⇒ converted; the queue stops chasing. */
-  hatchgrab_truck_id: string | null
-  /** 🔴 outreach_prospects.lead_type_at_first_contact — the FROZEN lead type, or null.
-   *  Null (including while the migration is unapplied) ⇒ derive live. See effectiveLeadType. */
-  lead_type_at_first_contact: string | null
-  stage: OutreachStage; platform: string | null
-  // 🔴 TRI-STATE: true = yes, false = checked-and-absent, null = nobody checked. NULL ≠ false.
-  hu_map: boolean | null; hu_ordering: boolean | null
-  whatsapp_number: string | null; whatsapp_confirmed: boolean | null
-  next_action_at: string | null; notes: string | null
-  futureEventCount: number; lastEventDate: string | null
-  // 🔴 THE *NEXT* EVENT, not the last. Derived server-side in the same bulk read that builds
-  // futureEventCount — no extra query, and none per row. Used by the conditional template lines.
-  nextEventDate: string | null; nextEventVenue: string | null
-  outboundCount: number; lastContactedAt: string | null
-  whatsappHint: 'advertises' | 'mobile_not_advertised' | 'none'   // scraped, read-only — the live-button derivation
-  contacts: Contact[]
-}
 
 // ── SORTABLE COLUMNS ─────────────────────────────────────────────────────────────────────────────────
 // Each column exposes one comparable value (or null). 🔴 NULL ALWAYS SORTS LAST, in both directions — it
@@ -280,15 +215,6 @@ function compareBySort(a: Prospect, b: Prospect, s: SortState, hatchesUp: (v: st
   return s.dir === 'asc' ? cmp : -cmp
 }
 
-// item 2: DISPLAY labels for the stage. Stored values are unchanged; only not_interested reads
-// differently ("no sale"). contacted and replied stay distinct (not collapsed).
-const STATUS_LABEL: Record<string, string> = {
-  not_contacted: 'not contacted',
-  contacted: 'contacted',
-  replied: 'replied',
-  signed: 'signed',
-  not_interested: 'no sale',
-}
 const stageLabel = (s: string) => STATUS_LABEL[s] ?? s.replace(/_/g, ' ')
 
 // ── THE FILTER BAR'S CONTENTS AND ORDER, DECLARED ONCE ───────────────────────────────────────────────
@@ -409,48 +335,11 @@ const FILTER_CONTROLS: {
   // predicates run over, which is what makes it narrow the counts as well as the rows.
 ]
 
-const fmtDate = (d: string | null) => {
-  if (!d) return null
-  const dt = new Date(d.length <= 10 ? d + 'T00:00:00Z' : d)
-  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
-}
 
-// 🔴 RESOLUTION GOES THROUGH THE SHARED HELPER, NOT A LOCAL COPY. `logo_url` / `photo_url` hold TWO
-// shapes: an absolute `truck-media` URL (what an upload here writes) and a leading-slash `/logos/…` path
-// (a STATIC FILE in public/, shipped with the deploy — a running function cannot write one). Both are
-// valid <img src> values and `formatImageUrl` passes both through untouched.
-// ⚠️ THIS REPLACES A LOCAL `logoSrc` THAT DID THE SAME JOB SLIGHTLY DIFFERENTLY. App manual §51.7 records
-// a "reuse" that was really a fourth independent implementation; a second private copy of image
-// resolution in this file is the same mistake one size down, so the duplicate is gone.
-// ── MEDIA UPLOAD ──────────────────────────────────────────────────────────────────────────────────
-// 🔴 NO OPTIMISTIC UPDATE HERE, DELIBERATELY, and this is the opposite choice to patchProspect above.
-// patchProspect writes a value the client already knows; an upload's result is a URL only the SERVER
-// can produce, and the row must not show an image until the column actually holds one. Showing it
-// early would make a failed DB write look like a success — the precise failure this flow guards.
-// The row is patched ONLY from the URL the server returns, after it has written the column.
-// ⚠️ Throws on failure so the cell can render the message; the cell owns that display, not a toast,
-// because the failure belongs to one slot.
-// 🔴 THE GUSTO CONFIRMATION. Returns the truck name to echo back, or null to proceed, or false to
-// abandon. The SERVER demands the name too — this is the sentence a person reads, not the enforcement.
-function confirmLogoWrite(p: Prospect, verb: string): string | null | false {
-  if (!p.logo_needs_confirm) return null
-  const name = (p.logo_truck_name ?? p.name ?? 'this truck').trim()
-  const ok = window.confirm(
-    [
-      `${verb} the logo for ${name}?`,
-      '',
-      `${name} is a LIVE HatchGrab truck. This changes what its customers see:`,
-      'its order page, its order confirmation email and its QR poster.',
-      '',
-      'Press OK to continue.',
-    ].join('\n'))
-  return ok ? name : false
-}
 
-const mediaSrc = (u: string | null, folder: 'logos' | 'photos'): string | null =>
-  formatImageUrl(u, folder) || null
 
 export default function OutreachPanel() {
+  const router = useRouter()
   const [checking, setChecking] = useState(true)
   const [denied, setDenied] = useState(false)
   const [prospects, setProspects] = useState<Prospect[]>([])
@@ -462,12 +351,9 @@ export default function OutreachPanel() {
    */
   const [refreshNonce, setRefreshNonce] = useState(0)
   const [error, setError] = useState<string | null>(null)
-  // Whether each hand-applied column exists yet (probed by the route, not inferred from row values).
-  /** Whether BOTH name columns exist — one probe, because half a split is not usable. */
-  const [hasContactNames, setHasContactNames] = useState(false)
-  /** Whether 20260914_outreach_lead_type_freeze.sql has been applied. False ⇒ never write the column. */
-  const [hasLeadTypeFreeze, setHasLeadTypeFreeze] = useState(false)
-  const [hasDoNotContact, setHasDoNotContact] = useState(false)
+  /* 🔴 THE THREE MIGRATION PROBES MOVED TO THE PAGE with the fields they gate (the name split, the
+   * lead-type freeze, do-not-contact). The route still returns all three; this surface has nothing
+   * left that reads them, and holding a copy nobody reads is how a flag goes stale. */
   // item 1: client-side name filter over the already-loaded rows — no server round trip, no paging.
   // 🔴 ONE FILTER OBJECT, not nine useStates — so `visible` has one dependency and the Clear button is
   // one assignment. The free-text search lives inside it (it is a filter like any other).
@@ -497,29 +383,16 @@ export default function OutreachPanel() {
   }, [filter, restored])
   const setF = <K extends keyof OutreachFilterState>(k: K, v: OutreachFilterState[K]) =>
     setFilter(f => ({ ...f, [k]: v }))
-  // "Open" shows a MODAL for one prospect (by id, so optimistic edits stay live), not an inline expansion.
-  const [modalId, setModalId] = useState<string | null>(null)
-  // The "Create Demo" modal, stacked above the prospect modal. Keyed by the PROSPECT ID it was opened
-  // for, not a boolean: it is open only while `createDemoForId === modalId`, so any change of prospect
-  // (Close, ←/→, filter) drops it with no reset effect and no stale flag popping it open on the next
-  // prospect. The REF mirrors that predicate at commit for the Escape listener below, which must not
-  // close the prospect modal while this one is open (see CreateDemoModal's header, rule 2).
-  const [createDemoForId, setCreateDemoForId] = useState<string | null>(null)
-  const createDemoOpen = createDemoForId !== null && createDemoForId === modalId
-  const createDemoOpenRef = useRef(false)
-  useEffect(() => { createDemoOpenRef.current = createDemoOpen }, [createDemoOpen])
-  // The prospect whose schedule popup is open — state of its own, because the schedule popup and the
-  // prospect modal are independent surfaces and opening one must never imply the other.
-  // 🔴 LOADED FROM `outreach_templates`, NOT FROM CODE. `null` means "not loaded yet or unreachable" and
-  // is deliberately distinct from `[]`, which means "the table is there and has none" — the compose
-  // window says something different for each.
-  const [templates, setTemplates] = useState<MessageTemplate[] | null>(null)
-  /** 🔴 THE SNIPPET LIBRARY. Loaded once beside the templates and handed to the compose window, so a
-   *  value set on the Templates tab reaches every message without the window reading storage itself —
-   *  which is what the layer it replaces did, and why that layer only worked in one browser.
-   *  ⚠️ An empty array is the honest degrade: before the migration is applied the route answers 200
-   *  with `{ snippets: [], hasSnippets: false }`, and every field prompts exactly as it does today. */
-  const [snippets, setSnippets] = useState<Snippet[]>([])
+  /* 🔴 `modalId` AND THE WHOLE MODAL STATE WENT WITH THE MODAL (30 September 2026): the prospect
+   * opens at its own route now. What replaces it is one navigation and two writes to sessionStorage —
+   * the QUEUE the prospect was opened from, and where to scroll back to. See `lib/outreach-queue.ts`
+   * for why that is session state and not a query string.
+   * ⚠️ The Create-Demo modal, its `createDemoOpen` predicate and the Escape listener that had to
+   * decline while it was open all moved to the page as well; none of them has anything to gate here
+   * any more. */
+  /* 🔴 THE TEMPLATE AND SNIPPET FETCHES MOVED TO THE PAGE. Their only reader was the compose window,
+   * which opens there now — and loading 20 templates on a list nobody is going to compose from was
+   * work this surface did on every visit for the benefit of one click on another one. */
   const [schedFor, setSchedFor] = useState<Prospect | null>(null)
   // 🔴 (4) Prospect ids whose Schedule count is known to be out of date. See the popup's onEdited.
   const [staleCountIds, setStaleCountIds] = useState<Set<string>>(new Set())
@@ -559,10 +432,45 @@ export default function OutreachPanel() {
   }, [])
   /** 🔴 "Today asked for the compose window on this truck." Declared here, beside the modal id it
    *  shadows, because every path that changes one must change the other. */
-  const [composeForId, setComposeForId] = useState<string | null>(null)
-  /** 🔴 "Today asked for a REPLY to this message on this truck." Cleared by the same rule. */
-  const [replyIntent, setReplyIntent] = useState<{ prospectId: string; target: ReplyTarget } | null>(null)
-  const openModal = useCallback((id: string) => { setComposeForId(null); setReplyIntent(null); setModalId(id) }, [])
+  /**
+   * Open a prospect's page, recording the queue it was opened FROM.
+   *
+   * 🔴 THE QUEUE IS WRITTEN HERE AND NOWHERE ELSE, because here is the only place that knows what the
+   * operator was looking at: the filtered, sorted list, or one section of Today. The page reads it for
+   * ‹ ›, J/K, "3 of 12" and the "Done. Next" bar; without it the page would have to guess an order,
+   * and a guessed order in a work queue is worse than none.
+   * ⚠️ `intent` OPENS A COMPOSER, IT DOES NOT SEND ANYTHING. It travels in the URL because it is about
+   * this navigation rather than about the prospect.
+   */
+  const openProspect = useCallback((
+    id: string,
+    queue?: { label: string; ids: string[] },
+    intent?: { compose?: boolean; replyTo?: string },
+  ) => {
+    const store = typeof window === 'undefined' ? null : window.sessionStorage
+    saveQueue(store, {
+      label: queue?.label ?? 'the list',
+      ids: queue?.ids ?? [],
+      returnTo: '/admin?tab=outreach',
+    })
+    // ⚠️ THE SCROLL POSITION IS READ AT THE MOMENT OF LEAVING, not remembered as it changes: a scroll
+    // listener writing storage on every frame is a cost paid by everyone to help the few who come back.
+    saveReturn(store, { tab: tabRef.current, scrollY: typeof window === 'undefined' ? 0 : window.scrollY })
+    const q = new URLSearchParams()
+    if (intent?.compose) q.set('compose', '1')
+    if (intent?.replyTo) q.set('reply', intent.replyTo)
+    const qs = q.toString()
+    router.push(`${prospectPath(id)}${qs ? `?${qs}` : ''}`)
+  }, [router])
+  /** ⚠️ Read inside `openProspect` without making it a dependency — the callback must stay stable for
+   *  `Row`'s `memo`, and the tab is only ever read at the moment of navigating. */
+  const tabRef = useRef<'today' | 'all'>('today')
+  /** The ids currently on screen, for the queue. ⚠️ A REF for the same reason: `Row` is memoised on a
+   *  stable `onOpen`, and rebuilding that callback whenever a filter changes would re-render all 231. */
+  const visibleIdsRef = useRef<string[]>([])
+  const openFromList = useCallback((id: string) => {
+    openProspect(id, { label: 'the list', ids: visibleIdsRef.current })
+  }, [openProspect])
   const openSchedule = useCallback((pr: Prospect) => setSchedFor(pr), [])
 
   const load = useCallback(async () => {
@@ -573,9 +481,6 @@ export default function OutreachPanel() {
       if (!res.ok) { setError(`Could not load (${res.status})`); setChecking(false); return }
       const data = await res.json()
       setProspects(data.prospects || [])
-      setHasContactNames(!!data.hasContactNames)
-      setHasLeadTypeFreeze(!!data.hasLeadTypeFreeze)
-      setHasDoNotContact(!!data.hasDoNotContact)
       // 🔴 BUMPED ONLY ON A SUCCESSFUL READ, AND AFTER THE ROWS ARE SET. Every early return above leaves
       // it alone, so a 401, a 404, a non-ok status or a thrown fetch does NOT clear a thumbnail's broken
       // latch — there is no fresh data to justify a fresh attempt. That is what stops this becoming a
@@ -590,49 +495,30 @@ export default function OutreachPanel() {
 
   useEffect(() => { load() }, [load])
 
-  // One read, on mount. The compose window filters this list; it never fetches templates itself.
+  /**
+   * 🔴 BACK PUTS THE LIST WHERE IT WAS. A modal left the page underneath it untouched; a route change
+   * reloads this component at the top of the document, which on a 231-row table means hunting for the
+   * row you just came from.
+   * ⚠️ AFTER THE ROWS EXIST, NOT ON MOUNT. Scrolling to 4,000px before the table has rendered scrolls
+   * nothing at all, so this waits for `prospects` to arrive — the frame the rows are painted in.
+   * ⚠️ ONCE. `restoredScroll` makes it a one-shot: re-running it on a later load would yank the page
+   * back while somebody was reading it.
+   */
+  const restoredScroll = useRef(false)
   useEffect(() => {
-    let alive = true
-    ;(async () => {
-      try {
-        const h = await nativeAuthHeader()
-        const res = await fetch('/api/admin/outreach-templates', { headers: h, credentials: 'same-origin' })
-        if (!res.ok) { if (alive) setTemplates(null); return }
-        const data = await res.json()
-        const rows = (data.templates ?? []) as any[]
-        if (!alive) return
-        setTemplates(rows.map(r => ({
-          id: r.slug, label: r.label, channel: r.channel,
-          subject: r.subject ?? undefined, body: r.body,
-          sortOrder: r.sort_order, active: r.active,
-          servesKind: r.serves_kind ?? null, servesLeadType: r.serves_lead_type ?? null,
-          defaults: Object.fromEntries(Object.entries(r.placeholder_defaults ?? {})
-            .map(([k, v]: [string, any]) => [k, { value: v?.value ?? '', updatedAt: v?.updated_at ?? null }])),
-        })))
-      } catch { if (alive) setTemplates(null) }
-      // 🔴 A SEPARATE, NON-FATAL FETCH. The snippet library failing must never stop templates loading —
-      // it is a convenience over a tier that has always worked by prompting.
-      try {
-        const h2 = await nativeAuthHeader()
-        const r2 = await fetch('/api/admin/outreach-snippets', { headers: h2, credentials: 'same-origin' })
-        if (r2.ok && alive) { const d2 = await r2.json(); setSnippets(d2.snippets ?? []) }
-      } catch { /* the tier prompts, as it always has */ }
-    })()
-    return () => { alive = false }
-  }, [])
+    if (restoredScroll.current || checking || !prospects.length) return
+    restoredScroll.current = true
+    const r = readReturn(typeof window === 'undefined' ? null : window.sessionStorage)
+    if (r && r.scrollY > 0) window.scrollTo({ top: r.scrollY })
+  }, [checking, prospects.length])
 
-  // Escape closes the modal (the backdrop still does NOT — no outside-click close). Belt-and-braces with
-  // the always-visible Close button, since the modal can be tall.
+
   // 🔴 GATED while the Create Demo modal is open: both listeners are bubble-phase on window and BOTH fire
   // on one Escape; this one declines and the child closes itself. No capture phase, no stopPropagation,
   // no registration-order dependence — the C15 trap (two capture listeners on one node) is avoided by
   // not having two capture listeners.
-  useEffect(() => {
-    if (!modalId) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !createDemoOpenRef.current) { setComposeForId(null); setReplyIntent(null); setModalId(null) } }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [modalId])
+  /* 🔴 THE ESCAPE LISTENER WENT WITH THE MODAL. There is nothing on this surface for Escape to close
+   * any more — the prospect is a page, and Back is the browser's own. */
 
   // ── SORT ───────────────────────────────────────────────────────────────────────────────────────────
   // ALL rows are shown, always — no filter, no paging. `excluded` is NOT surfaced on this page at all
@@ -728,7 +614,18 @@ export default function OutreachPanel() {
   // The table answers "what do we know about this truck". Nothing answered "what do I do this
   // morning", so the answer was 231 rows and a memory. This tab is that answer, and it is the one
   // that opens.
-  const [tab, setTab] = useState<'today' | 'all'>('today')
+  /**
+   * 🔴 THE TAB IS RESTORED FROM THE RETURN STATE, ON THE FIRST RENDER, NOT IN AN EFFECT. Coming back
+   * from a prospect page must land on the tab it was opened from; an effect would paint Today for one
+   * frame and then swap, which reads as a flicker and loses the scroll restore's anchor.
+   * ⚠️ `useState(initialiser)` RUNS ONCE, and the guard is for the server render where there is no
+   * sessionStorage at all.
+   */
+  const [tab, setTab] = useState<'today' | 'all'>(() => {
+    if (typeof window === 'undefined') return 'today'
+    const r = readReturn(window.sessionStorage)
+    return r?.tab === 'all' ? 'all' : 'today'
+  })
   const [todayData, setTodayData] = useState<TodayPayload | null>(null)
 
   // 🔴 RE-READ WHENEVER THE PAGE IS. `refreshNonce` is bumped by every successful `load()`, which is
@@ -750,6 +647,7 @@ export default function OutreachPanel() {
   const todayView = useMemo(() => buildToday({
     waiting: todayData?.waiting ?? [],
     problems: todayData?.problems ?? [],
+    snoozed: todayData?.snoozed ?? [],
     prospects: pool
       .map((p): TodayProspect | null => {
         const st = steps.get(p.id)
@@ -835,8 +733,15 @@ export default function OutreachPanel() {
   // docs/outreach-list-columns-report.md and the implementation is in this file's history.
   // Which media slot is awaiting confirmation. Held HERE rather than in the thumbnail so the dialog can
   // render at the top of the tree, above the prospect modal, instead of inside a 44px box.
-  const [confirmKind, setConfirmKind] = useState<'logo' | 'photo' | null>(null)
+
   const visible = computedVisible
+  // 🔴 THE REF THE QUEUE IS BUILT FROM, kept in step with what is on screen by an EFFECT — writing a
+  // ref during render is what `react-hooks/refs` forbids, and it forbids it for a reason: a render
+  // that React throws away would still have written it. The effect runs after the rows are committed,
+  // which is before any click on one of them can happen.
+  const visibleIds = useMemo(() => visible.map(p => p.id), [visible])
+  useEffect(() => { visibleIdsRef.current = visibleIds }, [visibleIds])
+  useEffect(() => { tabRef.current = tab }, [tab])
 
   // Click a header: none → asc → desc → back to default. The active column + direction show at a glance
   // via the ▲/▼ marker rendered on that header.
@@ -847,30 +752,17 @@ export default function OutreachPanel() {
           : null)   // third click clears back to the default priority sort
   }
 
-  const modalProspect = modalId ? prospects.find(p => p.id === modalId) ?? null : null
+
 
   // ── PREV / NEXT ───────────────────────────────────────────────────────────────────────────────────
   // 🔴 BOUND TO `visible`, NOT `prospects`. `visible` IS the array the tbody maps over — the same
   // filtered set in the same sort order — so navigation walks exactly what is on screen. Deriving the
   // index from it each render (rather than storing a position) means the pair cannot drift out of step
   // when a filter changes or a column is re-sorted while the modal is open.
-  // ⚠️ `modalProspect` still resolves from `prospects`, deliberately: if an edit inside the modal makes
-  // the row fail the active filter, the modal stays open on the truck you are looking at rather than
-  // vanishing mid-edit. In that case findIndex returns -1 and BOTH arrows disable, which is the honest
-  // state — there is no "next" from a row that is no longer in the list.
-  // ⚠️ A pending confirmation must not survive the modal closing or prev/next moving to another truck —
-  // otherwise it would reopen naming the wrong one.
-  useEffect(() => { setConfirmKind(null) }, [modalId])
-  const modalIndex = modalId ? visible.findIndex(p => p.id === modalId) : -1
-  const canPrev = modalIndex > 0
-  const canNext = modalIndex >= 0 && modalIndex < visible.length - 1
-  // 🔴 EVERY MOVE CLEARS THE COMPOSE INTENT. `composeForId` says "Today asked for the window on THIS
-  // truck"; carried to the next truck — or to the next time this one is opened from the table — it
-  // would pop a compose window nobody asked for, pre-loaded with a template, on a prospect the
-  // operator was only looking at.
-  const showProspect = (id: string | null) => { setComposeForId(null); setReplyIntent(null); setModalId(id) }
-  const gotoPrev = () => { if (canPrev) showProspect(visible[modalIndex - 1].id) }
-  const gotoNext = () => { if (canNext) showProspect(visible[modalIndex + 1].id) }
+  /* 🔴 ‹ › MOVED TO THE PAGE, AND WITH THEM THE ONLY THING THIS BLOCK DID. It resolved the modal's
+   * position in `visible` so the arrows could step through it; the page gets the same list as a
+   * QUEUE (`lib/outreach-queue.ts`) written at the moment a row is opened, which is what lets the
+   * arrows keep working after a navigation that leaves this component behind entirely. */
 
   // ── MUTATIONS ────────────────────────────────────────────────────────────────────────────────────
   const patchProspect = useCallback(async (id: string, patch: Record<string, unknown>) => {
@@ -919,39 +811,6 @@ export default function OutreachPanel() {
     await load()
   }, [load])
 
-  // ── REMOVE A LOGO OR PHOTO ────────────────────────────────────────────────────────────────────────
-  // 🔴 NO OPTIMISTIC CLEAR, for the same reason uploadMedia has no optimistic set: the row must not show
-  // an empty slot until the column is actually empty, or a failed delete would look like a success and
-  // invite an upload that then hits the "slot already filled" refusal with no explanation.
-  // ⚠️ The server reports whether the FILE was removed as well as the column; when it deliberately left a
-  // file alone (a static /logos asset, or one inside an operator truck's folder) it says so, and that
-  // note is surfaced in the toast rather than swallowed.
-  const deleteMedia = useCallback(async (prospectId: string, kind: 'logo' | 'photo', confirmTruck?: string) => {
-    const h = await nativeAuthHeader()
-    const res = await fetch('/api/admin/outreach', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...h },
-      credentials: 'same-origin',
-      body: JSON.stringify({ action: 'delete_media', id: prospectId, column: kind, confirm_truck: confirmTruck ?? null }),
-    })
-    const data = await res.json().catch(() => ({} as any))
-    if (!res.ok) throw new Error(data?.error || `Remove failed (${res.status})`)
-    // 🔴 THIS ONE STAYS AN OPTIMISTIC CLEAR, AND THE REASON IS MEASURED, NOT ASSUMED (round 3).
-    // The upload path above now re-reads instead of merging, so the obvious move would be to do the same
-    // here. It is not needed, because null is exactly what a reload WOULD return in every case:
-    //   • demo-backed or linked prospect — the delete route clears `trucks.logo_storage_path`, and the
-    //     list route computes `logoTarget.truckId ? resolveTruckLogo(…, null) : …`. `resolveTruckLogo`
-    //     returns null for a null path and 🔴 ADDS NO FALLBACK to `discovery_trucks.logo_url` — its own
-    //     comment says so: "an operator who cleared their logo sees it cleared here too".
-    //   • unlinked prospect — the discovery column itself is cleared, so `truck?.logo_url ?? null` is null.
-    //   • photo — always `discovery_trucks.photo_url`, cleared, so null.
-    // ⚠️ SO THERE IS NO CASE WHERE A RELOAD WOULD RETURN A NON-NULL LOGO FOR A ROW JUST CLEARED, which is
-    // the condition that would have forced a load() here. Leaving it optimistic also keeps the delete
-    // feeling instant, and `deleteMedia` is called from a confirm dialog where a re-read would be visible.
-    setProspects(ps => ps.map(x => x.id === prospectId
-      ? ({ ...x, [kind === 'logo' ? 'logo_url' : 'photo_url']: null } as Prospect) : x))
-    showToast(data?.fileNote ? `${kind} cleared — ${data.fileNote}` : `${kind} removed`)
-  }, [showToast])
 
   // Undo of a just-logged contact — deletes THAT row by id (never "the latest"; see item 4).
   // 🔴 SIGNATURES OF WHAT THIS SESSION HAS ALREADY WRITTEN, as a backstop for the guard below.
@@ -959,135 +818,8 @@ export default function OutreachPanel() {
   // second click is possible — but a failed or slow refetch would leave the guard reading stale rows,
   // and a guard that silently stops guarding is the failure mode this whole task is about.
 
-  // ── 🔴 ONE DELETE PATH, TWO CALLERS — NOT TWO PATHS ────────────────────────────────────────────
-  // The toast's Undo (immediately after logging) and the per-row Delete in the contact popout both come
-  // through here and both hit the SAME `delete_contact` action. The only difference is the second
-  // argument: given a `prospectId`, the row is spliced out of local state and the derived values are
-  // recomputed in place; without it, the old Undo behaviour — refetch everything — is kept unchanged.
-  //
-  // 🔴 IT THROWS ON FAILURE, AND THAT IS LOAD-BEARING. `ConfirmDeleteDialog` catches, shows the message
-  // in place and STAYS OPEN. A version that swallowed the error would close the dialog and remove the
-  // row from the screen while the database still held it — indistinguishable from success until reload.
-  // 🔴 `deleted !== 1` IS TREATED AS FAILURE. The route now reports how many rows it removed; a delete
-  // that matched nothing answers 404, and nothing is spliced out of state.
-  const deleteContact = useCallback(async (contactId: string, prospectId?: string) => {
-    let res: Response
-    try {
-      const h = await nativeAuthHeader()
-      res = await fetch('/api/admin/outreach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...h },
-        credentials: 'same-origin',
-        body: JSON.stringify({ action: 'delete_contact', contact_id: contactId }),
-      })
-    } catch {
-      const msg = 'Could not reach the server. Nothing was deleted.'
-      showToast(msg); throw new Error(msg)
-    }
-    const data = await res.json().catch(() => ({} as { error?: string; deleted?: number }))
-    if (!res.ok || data?.deleted !== 1) {
-      const msg = data?.error || `Delete failed (${res.status}).`
-      showToast(msg); throw new Error(msg)
-    }
 
-    if (!prospectId) { showToast('Contact removed'); await load(); return }
 
-    // 🔴 THE DERIVED VALUES ARE RECOMPUTED HERE, FROM THE REMAINING ROWS — not left to disagree and not
-    // marked stale. `lastContactedAt` and `outboundCount` are pure functions of the contact list on the
-    // server (route.ts:177-178), so the exact new values are computable locally; `stale` is the right
-    // convention only for a value that CANNOT be recomputed without the server, which is why the
-    // Schedule count uses it and this does not.
-    // ⚠️ NOT `contacts[0]` — the server's array happens to be newest-first, and relying on that here
-    // would put a silent ordering assumption in a second place. The max is taken explicitly.
-    setProspects(ps => ps.map(x => {
-      if (x.id !== prospectId) return x
-      const contacts = x.contacts.filter(c => c.id !== contactId)
-      return {
-        ...x,
-        contacts,
-        outboundCount: contacts.filter(c => c.direction === 'outbound').length,
-        lastContactedAt: contacts.reduce<string | null>(
-          (best, c) => (!best || c.contacted_at > best ? c.contacted_at : best), null),
-      }
-    }))
-    showToast('Contact deleted')
-  }, [load, showToast])
-
-  // ── 🔴 DELETING A CONTACT ALSO UNDOES WHAT LOGGING IT WROTE ────────────────────────────────────
-  // Logging a contact does two things: it inserts the row AND it writes `next_action_at` from the
-  // stage's interval (persistFollowUpAfterLog). Deleting the row undid only the first, which left a
-  // follow-up date behind for a contact that no longer exists. 🧪 Bonnefirebox is exactly that case:
-  // one contact on 10 Sep at `1_first_contact` (+3) and `next_action_at = 2026-09-13`.
-  //
-  // 🔴 "THE PREVIOUS DATE" IS DERIVED, NOT REMEMBERED — THERE IS NO HISTORY OF next_action_at.
-  // The column holds one value and nothing records what it held before. So the revert is computed: the
-  // date the NEWEST REMAINING outbound contact implies, or null when none remains.
-  //
-  // 🔴 AND IT ONLY FIRES WHEN THE STORED DATE IS THE ONE THAT CONTACT WROTE. If `next_action_at` does
-  // not equal the date the deleted contact implies, it was set by hand (or by a quick-set button) after
-  // the log, and overwriting a date the operator chose would be a second bug wearing the first one's
-  // clothes. In that case it is left exactly as it is.
-  const deleteContactRow = useCallback(async (pr: Prospect, c: Contact) => {
-    const impliedByDeleted = followUpDateFor(c.kind ?? '', contactDay(c.contacted_at))
-
-    await deleteContact(c.id, pr.id)   // throws → nothing below runs
-
-    if (pr.next_action_at && pr.next_action_at === impliedByDeleted) {
-      const remaining = pr.contacts.filter(x => x.id !== c.id && x.direction === 'outbound')
-      const newest = remaining.reduce<Contact | null>(
-        (best, x) => (!best || x.contacted_at > best.contacted_at ? x : best), null)
-      const revertTo = newest ? followUpDateFor(newest.kind ?? '', contactDay(newest.contacted_at)) : null
-      if (revertTo !== pr.next_action_at) patchProspect(pr.id, { next_action_at: revertTo })
-    }
-  }, [deleteContact, patchProspect])
-
-  const logContact = useCallback(async (
-    p: Prospect,
-    fields: { channel: string; direction: string; kind: string; message: string; contacted_at: string },
-  ): Promise<boolean> => {
-    // ── 🔴 THERE IS NO DUPLICATE GUARD HERE, AND ITS ABSENCE IS DELIBERATE (12 September 2026) ─────
-    // A "you already logged that" rule was removed from this writer and from the form above it. Two
-    // contacts of the same kind, on the same channel, on the same day are ORDINARY in outreach — a
-    // reply out and a reply in, or two calls — and refusing the second one made the operator edit the
-    // date to record something that really happened. Logging is an append-only record of events, not a
-    // uniqueness constraint. ⚠️ Double-SUBMIT is still handled: `submitLog` returns early while
-    // `logging` is true and the button is disabled for that window.
-    // 🔴 LOGGING WRITES A CONTACT ROW AND NOTHING ELSE — no next_action_at is suggested, computed or sent.
-    // Every next-action date is set by hand via the date picker.
-    try {
-      const h = await nativeAuthHeader()
-      const res = await fetch('/api/admin/outreach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...h },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-          action: 'log_contact', prospect_id: p.id,
-          channel: fields.channel, direction: fields.direction, kind: fields.kind,
-          message: fields.message || null,
-          // ⚠️ Sent only when set. The route already accepts this key and defaults to now() without it,
-          // so this needed NO route change — `...(body.contacted_at ? {…} : {})` was already there.
-          ...(fields.contacted_at ? { contacted_at: fields.contacted_at } : {}),
-        }),
-      })
-      if (!res.ok) { showToast(`Log failed (${res.status})`); return false }
-      // 🔴 UNDO targets the id the route just returned — the specific row, not "the most recent".
-      // ⚠️ `warning` ARRIVES ON A SUCCESSFUL LOG. The route returns it when the contact was written but
-      // the not_contacted → contacted advance failed. The contact is real, so this must NOT be reported
-      // as a failure — but it must be SEEN, or the operator is left with a stage that silently disagrees
-      // with the history. `stage` is the resulting stage when this call moved it, and null otherwise
-      // (already past not_contacted, inbound, or the update failed) — never treat null as not_contacted.
-      const { id: newId, warning } = await res.json().catch(() => ({ id: null, warning: null }))
-      if (warning) showToast(String(warning))
-      showToast('Logged', newId
-        // 🔴 `.catch` IS REQUIRED NOW: deleteContact REJECTS on failure so the confirm dialog can show
-        // the reason. The toast has nowhere to show one, and an unhandled rejection helps nobody —
-        // the toast raised by deleteContact itself is what reports the failure on this path.
-        ? () => { void deleteContact(newId).catch(() => {}) }
-        : undefined)
-      await load()
-      return true
-    } catch { showToast('Log failed'); return false }
-  }, [load, showToast, deleteContact])
 
   // 🔴 IN-PANEL STATES, NOT FULL-SCREEN ONES. As a page these each painted a centred min-h-screen; inside
   // a tab that would push the admin header and tab bar off the top of a blank screen. They now occupy the
@@ -1144,12 +876,12 @@ export default function OutreachPanel() {
             view={todayView}
             loaded={todayData !== null}
             migrationApplied={todayData?.migrationApplied !== false}
-            onOpen={openModal}
-            // ⚠️ OPEN FIRST, THEN ARM: `openModal` clears the intent, so setting it first would be
-            // undone by the very call that shows the modal.
-            onCompose={id => { openModal(id); setComposeForId(id) }}
-            // ⚠️ OPEN FIRST, THEN ARM — `openModal` clears both intents, for the reason above.
-            onReply={(id, target) => { openModal(id); setReplyIntent({ prospectId: id, target }) }}
+            // 🔴 EACH SECTION IS ITS OWN QUEUE, and the label is what the end-of-queue line reads:
+            // "That's everything in Replies waiting." A single queue over all four sections would
+            // walk from a reply into an unrelated bounced email and call it the next one.
+            onOpen={(id, queue) => openProspect(id, queue)}
+            onCompose={(id, queue) => openProspect(id, queue, { compose: true })}
+            onReply={(id, messageId, queue) => openProspect(id, queue, { replyTo: messageId })}
             onAction={load}
           />
         )}
@@ -1381,7 +1113,7 @@ export default function OutreachPanel() {
             </thead>
             <tbody>
               {visible.map(p => (
-                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openModal} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} refreshNonce={refreshNonce} />
+                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openFromList} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} refreshNonce={refreshNonce} />
               ))}
               {visible.length === 0 && (
                 <tr><td colSpan={12} className="px-3 py-8 text-center text-slate-400">
@@ -1393,158 +1125,15 @@ export default function OutreachPanel() {
         </div>
       </div>
 
-      {/* item 6: the row-detail MODAL. Follows the project's shared-modal convention (RejectOrderModal,
-          EventCancelModal, …): conditionally mounted, backdrop `fixed inset-0 bg-black/50 z-50 flex …`
-          with NO onClick, so an OUTSIDE CLICK DOES NOT CLOSE it — dismissal is the explicit Close button
-          only. No in-component focus-trap or scroll-lock, matching those modals. */}
-      {modalProspect && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 max-sm:p-2">
-          {/* 🔴 THE MODAL ITSELF NO LONGER SCROLLS — `overflow-hidden`, and the ONLY scrollable region
-              inside it is contact history. History holds full email bodies and is unbounded; when it
-              shared the modal's scroll, reading an old email pushed the form off screen. Everything else
-              is sized to fit, so the fields stay put no matter how long the history is.
-              ⚠️ DESKTOP ONLY, as briefed — no sm: breakpoints, no mobile stacking. max-w-6xl (1152px)
-              carries two working columns on a laptop. Backdrop still has NO onClick: Close or Escape. */}
-          <div className="bg-white rounded-2xl w-full max-w-6xl flex flex-col max-h-[calc(100vh-2rem)] max-sm:max-h-[calc(100dvh-1rem)] overflow-hidden">
-
-            {/* ── (1) HEADER — ONE LINE ──────────────────────────────────────────────────────────── */}
-            <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0 max-sm:flex-wrap max-sm:gap-y-1 max-sm:px-4 max-sm:py-2">
-              <ModalThumb value={modalProspect.logo_url} folder="logos" label="logo"
-                onRequestDelete={() => setConfirmKind('logo')}
-                refreshNonce={refreshNonce} name={modalProspect.name} />
-              <ModalThumb value={modalProspect.photo_url} folder="photos" label="photo"
-                onRequestDelete={() => setConfirmKind('photo')}
-                refreshNonce={refreshNonce} name={modalProspect.name} />
-              <h3 className="text-lg font-semibold text-slate-900 truncate min-w-0 max-sm:w-full max-sm:order-first">{modalProspect.name}</h3>
-              {/* (4) The label says what the link OPENS. `safeHref` also rescues the one scheme-less value. */}
-              {safeHref(modalProspect.website) && (
-                <a href={safeHref(modalProspect.website)!} target="_blank" rel="noreferrer" className={linkCls}
-                  title={modalProspect.website ?? undefined}>{linkLabel(modalProspect.website, 'Website')} ↗</a>
-              )}
-              {safeHref(modalProspect.schedule_url) && (
-                <a href={safeHref(modalProspect.schedule_url)!} target="_blank" rel="noreferrer" className={linkCls}
-                  title={modalProspect.schedule_url ?? undefined}>{linkLabel(modalProspect.schedule_url, 'Schedule')} ↗</a>
-              )}
-              <div className="ml-auto flex items-center gap-1 flex-shrink-0">
-                {/* (8) walks the on-screen list; position shown so the end of the list is not a surprise */}
-                <button onClick={gotoPrev} disabled={!canPrev} aria-label="Previous truck"
-                  className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">←</button>
-                <span className="text-xs text-slate-400 tabular-nums px-1">
-                  {modalIndex >= 0 ? `${modalIndex + 1} / ${visible.length}` : 'filtered out'}
-                </span>
-                <button onClick={gotoNext} disabled={!canNext} aria-label="Next truck"
-                  className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed">→</button>
-                <button onClick={() => showProspect(null)}
-                  className="ml-2 text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50" aria-label="Close">✕ Close</button>
-              </div>
-            </div>
-
-            {/* ── (2) STATUS STRIP — ONE LINE ────────────────────────────────────────────────────────
-                🔴 THE STAGE SELECT MOVES HERE and nothing about it changes: same onChange, same
-                `patchProspect(id, { stage })`, same OUTREACH_STAGES, same stageLabel. Position only.
-                Three previously separate lines (stage, the upcoming/last-event line, last contacted)
-                collapse into this one. */}
-            <div className="flex items-center gap-5 px-5 py-2 bg-slate-50 border-b border-slate-100 flex-shrink-0 text-xs max-sm:flex-wrap max-sm:gap-x-4 max-sm:gap-y-1 max-sm:px-4 max-sm:py-1.5">
-              <label className="flex items-center gap-2">
-                <span className="uppercase tracking-wide font-bold text-slate-400">Stage</span>
-                <select value={modalProspect.stage} onChange={e => patchProspect(modalProspect.id, { stage: e.target.value })}
-                  className="text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white max-sm:text-base max-sm:py-1.5">
-                  {OUTREACH_STAGES.map(st => <option key={st} value={st}>{stageLabel(st)}</option>)}
-                </select>
-              </label>
-              {/* 🔴 `contents`, NOT a wrapper with layout. `display: contents` makes this div generate NO
-                  BOX, so its children participate in the strip's flex row exactly as they did when they
-                  were written here directly — the desktop row is unchanged, not merely similar.
-                  🧪 Compiled with the repo's own Tailwind: `.contents` is emitted with the base display
-                  utilities and `.max-sm\:hidden` inside `@media (width < 40rem)` AFTER all of them.
-                  Equal specificity, so ORDER decides and the `hidden` wins below 40rem — the whole group
-                  disappears there; STAGE above stays.
-                  ⚠️ THE ORDER IS THE CLAIM, NOT A LINE NUMBER. An earlier version of this comment cited
-                  absolute line numbers; those move with whatever classes the project happens to use, so
-                  they looked like facts about the build and were facts about a probe.
-                  Its phone counterpart is the `sm:hidden` block at the top of the scrolling body. */}
-              <div className="contents max-sm:hidden">
-                <ProspectMetaFacts p={modalProspect} hasDoNotContact={hasDoNotContact}
-                  onPatch={patchProspect} onCreateDemo={() => setCreateDemoForId(modalProspect.id)} />
-              </div>
-            </div>
-
-            {/* ── (3) TWO COLUMNS. `min-h-0` on the flex parent is what lets the history pane shrink and
-                scroll instead of pushing the modal taller — without it a long history would overflow. */}
-            {/* 🔴 THE SPLIT IS AN INLINE STYLE, NOT `grid-cols-[38fr_62fr]`. An arbitrary Tailwind value
-                used by exactly one file may have NO GENERATED RULE AT ALL — that is what left the compose
-                window painting under its own modal yesterday — and if this one went missing the columns
-                would fall back to `grid-cols-2`, i.e. the 50/50 split being corrected.
-                ⚠️ `fr`, NOT `%`: percentages resolve against the content box and would overflow by the
-                20px gap.
-                🔴 45/55, WAS 38/62. History moved to the left column and it needs width for four
-                columns; the right column lost its least interactive block and no longer needs 62%. */}
-            <div className="flex-1 min-h-0 grid gap-5 p-5 max-sm:flex max-sm:flex-col max-sm:overflow-y-auto max-sm:p-4" style={{ gridTemplateColumns: '45fr 55fr' }}>
-              {/* 🔴 THE PHONE COPY — INSIDE THE SCROLLER, SO IT SCROLLS AWAY. Same component, same props,
-                  same handlers as the strip copy above; exactly one of the two is ever displayed.
-                  ⚠️ IT DOES NOT DISTURB THE DESKTOP GRID. At >= 40rem `sm:hidden` makes this
-                  `display: none`, and an element with `display: none` generates no box and is therefore
-                  NOT a grid item — so the 45fr/55fr track assignment of the two real columns is
-                  untouched. Below `sm` the body is a flex COLUMN (the round-one `max-sm:flex` override),
-                  so this is simply the first stacked block.
-                  DOM order is the reading order: the prospect's facts, then their contact details, then
-                  the log form. No `order-*` anywhere. */}
-              <div className="sm:hidden flex flex-wrap items-center gap-x-4 gap-y-2 text-xs pb-1 border-b border-slate-100">
-                <ProspectMetaFacts p={modalProspect} hasDoNotContact={hasDoNotContact}
-                  onPatch={patchProspect} onCreateDemo={() => setCreateDemoForId(modalProspect.id)} />
-              </div>
-              <Detail p={modalProspect} step={steps.get(modalProspect.id)} hasContactNames={hasContactNames}
-                hasLeadTypeFreeze={hasLeadTypeFreeze}
-                onPatch={patchProspect} onLog={logContact} templates={templates} snippets={snippets}
-                onDeleteContact={deleteContactRow} onReload={load} refreshNonce={refreshNonce}
-                autoCompose={composeForId === modalProspect.id}
-                autoReply={replyIntent?.prospectId === modalProspect.id ? replyIntent.target : null} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Layered ABOVE the prospect modal (inline zIndex 95, portaled), and only while that modal is open. */}
-      {modalProspect && createDemoOpen && (
-        <CreateDemoModal
-          prospect={{ id: modalProspect.id, discovery_truck_id: modalProspect.discovery_truck_id, name: modalProspect.name, logo_url: modalProspect.logo_url,
-            // Present only when this prospect already HAS a live demo, which is what puts the modal into
-            // rebuild mode. Read from the row the list route returned; never inferred from the link.
-            demoTruckId: modalProspect.demo?.truckId ?? null }}
-          onClose={() => setCreateDemoForId(null)}
-          onCreated={ref => {
-            showToast(ref ? `Demo ready: /demo/${ref}` : 'Demo ready')
-            // Re-read so this prospect's row carries its new `demo` and the header swaps the Create
-            // button for the link — without it the admin would have to reload to see what they built.
-            load()
-          }}
-        />
-      )}
-
-      {/* Layered ABOVE the prospect modal, and only while that modal is open. */}
-      {modalProspect && confirmKind && (
-        <ConfirmDeleteDialog
-          title={`Delete the ${confirmKind} for ${modalProspect.name}?`}
-          confirmLabel={`Delete ${confirmKind}`}
-          onCancel={() => setConfirmKind(null)}
-          onConfirm={async () => {
-            // 🔴 A SECOND, NAMED CONFIRMATION FOR A LIVE TRUCK. The generic delete dialog says "remove this
-            // logo"; it cannot say WHOSE, and under Option A that is the only thing that matters here.
-            let confirmTruck: string | undefined
-            if (confirmKind === 'logo') {
-              const c = confirmLogoWrite(modalProspect, 'Remove')
-              if (c === false) { setConfirmKind(null); return }
-              confirmTruck = c ?? undefined
-            }
-            await deleteMedia(modalProspect.id, confirmKind, confirmTruck); setConfirmKind(null)
-          }}
-        >
-          {/* 🔴 THE STRICT SENTENCE, NO PER-ROW VARIATION. For a file this surface uploaded, the object is
-              removed from storage and there is no restore. Saying "usually recoverable" would be true for
-              some rows and false for exactly the ones where it matters. */}
-          <p className="text-sm text-slate-500 mt-2">This cannot be undone.</p>
-        </ConfirmDeleteDialog>
-      )}
+      {/* 🔴 THE PROSPECT MODAL WAS HERE AND IS GONE (30 September 2026). It is a full page now —
+          `app/admin/outreach/p/[prospectId]`, rendered by `components/admin/ProspectWorkspace.tsx`.
+          Opening a row navigates there and records the queue it came from; Back returns to this list
+          with its tab, filters and scroll position. The modal's own comments about backdrops, stacking
+          and the 45/55 split went with it: a page has no backdrop, nothing stacks above it, and it has
+          the width the modal never had, which was the complaint.
+          ⚠️ THE MEDIA THUMBNAILS AND THEIR DELETE, "Create demo" and "Do not contact" moved with it —
+          nothing the modal could do was dropped. `ScheduleEventsPopup` below stays, because it is
+          opened from a CELL in this table and not from the prospect view. */}
 
       {schedFor && (
         <ScheduleEventsPopup
@@ -1837,43 +1426,7 @@ function ImportPastEmails({ onDone }: {
   )
 }
 
-function TriStateBox({ value, onSet, label }: {
-  value: boolean | null
-  onSet: (v: boolean | null) => void
-  label: string
-}) {
-  const isTrue = value === true
-  const isFalse = value === false
-  const title = isTrue ? `${label}: yes` : isFalse ? `${label}: checked, absent (false)` : `${label}: not checked`
-  return (
-    <label className="inline-flex items-center gap-1.5 cursor-pointer" title={title}>
-      <input type="checkbox" checked={isTrue} className="w-4 h-4 accent-orange-600"
-        // ticked → true; unticked → null (NEVER false)
-        onChange={e => onSet(e.target.checked ? true : null)} />
-      {isFalse && <span className="text-[11px] font-semibold text-rose-600" title={`${label}: checked, absent`}>✗</span>}
-    </label>
-  )
-}
 
-// ── WHATSAPP BOX (step E, item 1) — MY confirmation, TWO states only ──────────────────────────────────
-// 🔴 WRITES outreach_prospects.whatsapp_confirmed ONLY — never a new field, never the scraped hint. The
-// former amber "?" suggested state is REMOVED (item 1): rows the scraper marked 'advertises' were set
-// true in a one-off backfill, so a scraped WhatsApp now shows as a plain tick. Two states:
-//   • ticked (whatsapp_confirmed === true) · empty (NULL, not confirmed).
-// Ticking → true. Unticking → null (the column is nullable). No false is ever written from here.
-function WhatsAppBox({ p, onPatch }: {
-  p: Prospect
-  onPatch: (id: string, patch: Record<string, unknown>) => void
-}) {
-  const confirmed = p.whatsapp_confirmed === true
-  return (
-    <label className="inline-flex items-center justify-center cursor-pointer"
-      title={confirmed ? 'WhatsApp confirmed' : 'WhatsApp: not confirmed'}>
-      <input type="checkbox" checked={confirmed} className="w-4 h-4 accent-orange-600"
-        onChange={e => onPatch(p.id, { whatsapp_confirmed: e.target.checked ? true : null })} />
-    </label>
-  )
-}
 
 // ── DO-NOT-CONTACT (item 5) — prominent toggle over the nullable do_not_contact column ───────────────
 // Checked → true; unchecked → NULL (never false), same rule as the other tri-state fields. Disabled with
@@ -1896,71 +1449,7 @@ function WhatsAppBox({ p, onPatch }: {
 //   • `DemoLinkChip` holds only its own `copied` flag. Two instances hold two independent flags; the
 //     hidden one is never set, because a `display:none` element cannot be clicked or focused.
 //   • Nothing here registers a document/window listener or an effect, so there is no double fire.
-function ProspectMetaFacts({ p, hasDoNotContact, onPatch, onCreateDemo }: {
-  p: Prospect
-  hasDoNotContact: boolean
-  onPatch: (id: string, patch: Record<string, unknown>) => void
-  onCreateDemo: () => void
-}) {
-  return (
-    <>
-      <span className="text-slate-500">
-        <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Upcoming</span>
-        <span className="font-semibold text-slate-700">{p.futureEventCount}</span>
-        {p.lastEventDate && <span className="text-slate-400"> · last {fmtDate(p.lastEventDate)}</span>}
-      </span>
-      <span className="text-slate-500">
-        <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Last contacted</span>
-        {fmtDate(p.lastContactedAt) ?? <span className="text-slate-400">never</span>}
-      </span>
-      {/* DEMO — the LINK when this prospect already has one, the CREATE button when it does not.
-          🔴 BOTH ARE INLINE IN THIS MODAL — NO SECOND OVERLAY, NO NEW KEY LISTENER. The link is the
-          state that is read most often and adding a layer to read it would be the modal-on-modal trap
-          for nothing. (The Create flow still opens CreateDemoModal, which already handles its own
-          stacking and Escape — see that file's header.)
-          /api/admin/provision-demo with the discovery id; name and logo are read server-side. */}
-      <div className="ml-auto flex items-center gap-3 max-sm:ml-0 max-sm:w-full max-sm:flex-wrap max-sm:gap-y-2">
-        {p.demo
-          ? <>
-              <DemoLinkChip demo={p.demo} />
-              {/* 🔴 A DEMO CANNOT BE UN-CREATED, so the way to change its kitchen is to build it again
-                  over the same truck. Same link, same menu, new settings and a fresh board. Quiet
-                  styling: it sits beside the link an admin reads far more often than they rebuild. */}
-              {p.demo.truckId && (
-                <button type="button" onClick={onCreateDemo}
-                  title="Build this demo again with different collection times, cook time or batch size"
-                  className="text-xs font-semibold px-3 py-1 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50 whitespace-nowrap">
-                  Rebuild
-                </button>
-              )}
-            </>
-          : <button type="button" onClick={onCreateDemo}
-              className="text-xs font-semibold px-3 py-1 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
-              Create demo
-            </button>}
-        <DoNotContactToggle p={p} enabled={hasDoNotContact} onPatch={onPatch} />
-      </div>
-    </>
-  )
-}
 
-function DoNotContactToggle({ p, enabled, onPatch }: {
-  p: Prospect
-  enabled: boolean
-  onPatch: (id: string, patch: Record<string, unknown>) => void
-}) {
-  const on = p.do_not_contact === true
-  return (
-    <label className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold cursor-pointer border
-      ${on ? 'bg-red-50 border-red-200 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-600'}
-      ${enabled ? '' : 'opacity-60 cursor-not-allowed'}`}
-      title={enabled ? undefined : 'Apply the do_not_contact migration to enable'}>
-      <input type="checkbox" checked={on} disabled={!enabled} className="w-4 h-4 accent-red-600"
-        onChange={e => onPatch(p.id, { do_not_contact: e.target.checked ? true : null })} />
-      🚫 Do not contact{on ? ' — set' : ''}
-    </label>
-  )
-}
 
 // ── One labelled filter dropdown ─────────────────────────────────────────────────────────────────────
 // Deliberately dumb: a label, a <select>, an onChange. It holds no state and knows nothing about which
@@ -2012,66 +1501,6 @@ function FilterChip({ label, value, onDismiss }: {
   )
 }
 
-// ── ONE MEDIA SLOT (logo or photo) ───────────────────────────────────────────────────────────────────
-// 🔴 THREE STATES, AND CONFLATING ANY TWO OF THEM IS THE BUG THIS COMPONENT EXISTS TO AVOID:
-//
-//   1. PRESENT  — a value that loads. A thumbnail. Not a drop target (replacing is out of scope).
-//   2. EMPTY    — the column is NULL. A dashed drop target reading "+". This is the ONLY droppable state.
-//   3. BROKEN   — a value is stored but does NOT load (a 404). 🔴 NOT a drop target, and visually
-//                 distinct from EMPTY: an amber ⚠ on a solid border, never a dashed "+".
-//
-// ⚠️ WHY 3 MUST NOT LOOK LIKE 2. A resolved image and a 404 both render as an empty box in a browser, so
-// a naive cell would show a broken value as an inviting empty slot — and dropping on it would look like
-// filling a gap while actually being a REPLACE, which is out of scope and which the server refuses (409).
-// The operator would see a rejection they could not explain. `Chai Stall`'s photo_url is a live instance:
-// a `/photos/…` path with no file behind it. It is NOT fixed here — out of scope, flagged separately.
-//
-// 🔴 BROKENNESS IS DETECTED, NOT ASSUMED. There is no way to know from the string whether it resolves, so
-// the <img> reports it via onError. State 3 is therefore reachable only after a real load failure.
-/**
- * 🔴 THE THUMBNAIL ERROR LATCH, IN ONE PLACE FOR BOTH THUMBS (round 3, 16 September 2026).
- *
- * ── THE DEFECT IT FIXES ─────────────────────────────────────────────────────────────────────────────
- * Both thumbs latched `broken` on `<img onError>` and reset it with `useEffect(…, [value])` — i.e. ONLY
- * when the URL string CHANGED. `load()` re-reads the list route, which for an unchanged row returns the
- * IDENTICAL string, so refreshing the data could never clear the latch. One transient image failure
- * therefore hid a logo until the page was RELOADED, which remounts the component. 🧪 Reproduced in
- * scripts/outreach-logo-latch.cjs, whose control proved the latch is the mechanism.
- *
- * ── WHAT IS DELIBERATELY KEPT ───────────────────────────────────────────────────────────────────────
- * 🔴 THE LATCH ITSELF. After a real failure the ⚠ marker still shows — never an inviting empty slot,
- * which is the behaviour the surrounding comments were written to protect. A value that fails AGAIN
- * after a refresh latches again, and shows ⚠ again.
- * 🔴 AT MOST ONE FRESH ATTEMPT PER REFRESH, so this cannot become a retry loop: `refreshNonce` only
- * changes when `load()` SUCCEEDS, and nothing here schedules a retry of its own.
- *
- * ⚠️ NO CACHE-BUSTER. The `src` is untouched — no query parameter is appended. Clearing the flag lets
- * React render the <img> again; whether the browser re-requests it is the browser's business.
- *
- * @param refreshNonce bumped by `load()` on success. Its VALUE is meaningless; only that it changes.
- */
-function useThumbLatch(input: {
-  value: string | null
-  src: string | null
-  refreshNonce: number
-  kind: string
-  name: string
-}): { broken: boolean; onError: () => void } {
-  const { value, src, refreshNonce, kind, name } = input
-  const [broken, setBroken] = useState(false)
-  // 🔴 `refreshNonce` IS THE SECOND DEPENDENCY AND IT IS THE ENTIRE FIX. `value` alone could not clear a
-  // latch for a row whose URL had not changed — which is every row a refresh returns.
-  useEffect(() => { setBroken(false) }, [value, refreshNonce])
-  const onError = useCallback(() => {
-    setBroken(true)
-    // 🔴 ONE LINE, SO THE ORIGINAL TRANSIENT FAILURE CAN BE SEEN IN SAFARI'S CONSOLE. Until now the
-    // failure left no trace at all: the symptom was reported as "the logo vanished", with nothing to say
-    // whether the request 404'd, timed out or was blocked. Prefix, kind, name, the exact src, and an ISO
-    // timestamp — and nothing else is logged anywhere in this path.
-    console.warn(`[outreach-thumb] ${kind} failed to load for ${name} — src=${src ?? ''} at ${new Date().toISOString()}`)
-  }, [kind, name, src])
-  return { broken, onError }
-}
 
 function MediaCell({ p, kind, onUpload, refreshNonce }: {
   p: Prospect
@@ -2181,7 +1610,7 @@ function MediaCell({ p, kind, onUpload, refreshNonce }: {
 }
 
 
-// ── One prospect row (opens the detail MODAL via onOpen) ─────────────────────────────────────────────
+// ── One prospect row (opens the prospect PAGE via onOpen) ─────────────────────────────────────────────
 // 🔴 React.memo (item 5): with stable onOpen/onPatch, a row re-renders only when its OWN `p` changes, so a
 // single-cell edit does not re-render all 231 rows. Truncation (`truncate`) plus the fixed <colgroup>
 // keeps every cell within its column width, so content never widens a column on sort (item 4).
@@ -2241,7 +1670,7 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
       <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="logo" onUpload={onUpload} refreshNonce={refreshNonce} /></div></td>
       <td className="px-2 py-2 text-center"><div className="flex items-center justify-center"><MediaCell p={p} kind="photo" onUpload={onUpload} refreshNonce={refreshNonce} /></div></td>
       {/* 🔴 (4) THE TRUCK NAME IS THE CONTROL. The dedicated "Open" column is gone and the name opens the
-          modal, using the SAME `onOpen(p.id)` handler the Open link used — nothing about opening changed.
+          page, using the SAME `onOpen(p.id)` handler the Open link used — nothing about opening changed.
           🔴 A REAL <button>, NOT AN onClick ON A DIV OR A SPAN: it is in the tab order, takes focus, and
           activates on Enter and Space for free. A div with a handler is none of those things.
           ⚠️ The DNC chip stays OUTSIDE the button — it is a status marker, not part of the control's
@@ -2387,81 +1816,8 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
 // 🔴 `safeHref` MOVED to lib/safe-href.ts on 12 September 2026 — byte-identical, imported above, and now
 // also guarding the four public sinks and the admin schedule link. Do not re-add a local copy here.
 
-/** The host-derived label. Falls back to `fallback` for anything that is not a known social host. */
-function linkLabel(raw: string | null | undefined, fallback: string): string {
-  const href = safeHref(raw)
-  if (!href) return fallback
-  let host = ''
-  try { host = new URL(href).hostname.replace(/^www\./, '').toLowerCase() } catch { return fallback }
-  if (host === 'facebook.com' || host.endsWith('.facebook.com') || host === 'fb.com') return 'Facebook'
-  if (host === 'instagram.com' || host.endsWith('.instagram.com')) return 'Instagram'
-  if (host === 'x.com' || host === 'twitter.com' || host.endsWith('.twitter.com')) return 'X'
-  return fallback
-}
 
-const linkCls = 'text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-orange-600 font-semibold whitespace-nowrap'
 
-// ── ONE HEADER THUMBNAIL — three states, clickable to full size ──────────────────────────────────────
-// 🔴 MISSING AND BROKEN ARE DIFFERENT THINGS AND LOOK DIFFERENT. A null column is an empty labelled box
-// ("no logo"); a value that 404s is an amber ⚠ that names the failure. `Chai Stall` proves the column can
-// hold a path with no file behind it, and rendering that as "empty" would say the data is missing when it
-// is actually wrong — a different problem with a different fix.
-// ⚠️ Detected, not assumed: nothing in the string says whether it resolves, so <img onError> decides.
-// ── THE DELETE CONFIRMATION ─────────────────────────────────────────────────────────────────────────
-// 🔴 MOVED, NOT COPIED. This dialog now lives in components/admin/ConfirmDeleteDialog.tsx so the events
-// table uses the SAME one rather than a second implementation. Behaviour here is unchanged: same focus,
-// same capture-phase Escape, same backdrop-cancels, same in-place error, same rendered markup. The only
-// difference is that the title/label/sentence now arrive as props instead of being derived from `kind`.
-function ModalThumb({ value, folder, label, onRequestDelete, refreshNonce, name }: {
-  value: string | null
-  folder: 'logos' | 'photos'
-  label: string
-  onRequestDelete: () => void
-  /** Bumped by load() on success. Only that it CHANGES matters — see useThumbLatch. */
-  refreshNonce: number
-  /** The prospect's name, for the [outreach-thumb] warning only. */
-  name: string
-}) {
-  const src = mediaSrc(value, folder)
-  // 🔴 THE SAME SHARED LATCH THE ROW THUMB USES — one implementation, not two copies that must agree.
-  const { broken, onError: onThumbError } = useThumbLatch({ value, src, refreshNonce, kind: label, name })
-  const box = 'w-11 h-11 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] text-center leading-tight'
-
-  // ⚠️ The badge now only ASKS. The confirmation, the busy state and the error all moved to the dialog,
-  // which is why this component no longer carries any of them.
-  const removeBadge = (
-    <button onClick={e => { e.preventDefault(); e.stopPropagation(); onRequestDelete() }}
-      title={`Remove this ${label}`} aria-label={`Remove this ${label}`}
-      className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white border border-slate-300 text-slate-500 hover:bg-red-50 hover:text-red-600 hover:border-red-400 text-[9px] leading-none flex items-center justify-center shadow-sm">✕</button>
-  )
-
-  if (src && !broken) {
-    return (
-      <span className="relative flex-shrink-0 inline-flex">
-        <a href={src} target="_blank" rel="noreferrer" title={`Open full-size ${label}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={src} alt={label} onError={onThumbError}
-            className={`${box} ${folder === 'logos' ? 'object-contain p-0.5' : 'object-cover'} border border-slate-200 bg-white hover:ring-2 hover:ring-orange-400`} />
-        </a>
-        {removeBadge}
-      </span>
-    )
-  }
-  if (src && broken) {
-    return (
-      <span className="relative flex-shrink-0 inline-flex">
-        <span className={`${box} border border-amber-300 bg-amber-50 text-amber-700 cursor-help`}
-          title={`${label}: stored value does not load — ${value}`}>⚠ broken</span>
-        {removeBadge}
-      </span>
-    )
-  }
-  // Empty: nothing to remove, so no badge. Filling it is done by dropping on the table cell.
-  return (
-    <span className={`${box} border border-dashed border-slate-300 bg-slate-50 text-slate-400`}
-      title={`No ${label} stored`}>no {label}</span>
-  )
-}
 
 // ── (3) ONE CONTACT-HISTORY ENTRY, COLLAPSED BY DEFAULT ──────────────────────────────────────────────
 // 🧪 All three stored bodies are real emails — 295, 584 and 801 characters, with 7, 13 and 15 line breaks.
@@ -2493,254 +1849,10 @@ function ModalThumb({ value, folder, label, onRequestDelete, refreshNonce, name 
 // comparison down a column; two bodies open at once pushes the rows apart and re-creates the wall of
 // prose being removed. The open row is held HERE, in the table, so opening a second closes the first.
 /* 🔴 `HDR_CELL` WENT WITH THE HISTORY TABLE that was the only thing sticky-heading. */
-const INBOUND_BG = '#ecfdf5'
 
-/** 🔴 THE FULL MESSAGE, IN A POPOUT — NOT EXPANDED IN PLACE.
- *  This replaces the click-to-expand accordion. The reason is the left column: it measures 491px at
- *  1440px and it SHRINKS, so an email body rendered inside a row turned the four-column table straight
- *  back into the wall of prose that the table was built to replace, and pushed every later row out of
- *  view. A popout gets the full window width and leaves the table's geometry untouched.
- *  Escape closes THIS and nothing else: capture phase + stopPropagation beats the prospect modal's
- *  bubble-phase window listener regardless of registration order. Same rule as ScheduleEventsPopup. */
-/**
- * One email, inline — the same `view` action and the same sandboxed frame the Emails list uses.
- *
- * 🔴 SHARED WITH `EmailViewer`, NOT A SECOND IMPLEMENTATION OF IT. Both ask the route for the row and
- * both render the body in `sandbox=""`: the markup came out of a mailbox, so it is sender-controlled,
- * and injected into the admin page it would run behind an authenticated admin session.
- * ⚠️ FETCHED WHEN IT IS OPENED, not with the list. Most contact rows are never opened, and an IMAP
- * read per row of history would be absurd.
- */
-/**
- * The attachment line under a viewed email.
- *
- * 🔴 TWO KINDS OF ATTACHMENT, AND THEY BEHAVE DIFFERENTLY ON PURPOSE:
- *   OURS (a `storagePath`) — a file we sent, sitting in our own private bucket. It opens through a
- *   signed URL that lives five minutes, requested per click so nothing long-lived is ever rendered
- *   into the page.
- *   THEIRS (no path) — a name read off an inbound message's structure. The file was never
- *   downloaded and never will be by this app; "listed only" is the whole truth about it.
- * ⚠️ NO PUBLIC URL IS EVER PRODUCED. The bucket is private and the link is signed and short-lived.
- */
-function AttachmentList({ attachments, prospectId }: {
-  attachments: { filename: string | null; contentType: string; size: number | null; storagePath?: string }[]
-  prospectId: string | null
-}) {
-  const [busy, setBusy] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
-  const open = async (path: string) => {
-    if (!prospectId) return
-    setBusy(path); setError(null)
-    try {
-      const r = await fetch('/api/admin/outreach/attachments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) },
-        credentials: 'same-origin',
-        body: JSON.stringify({ action: 'signed_download', path, prospect_id: prospectId }),
-      })
-      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      if (j.ok === true && typeof j.url === 'string') window.open(j.url, '_blank', 'noopener,noreferrer')
-      else setError(String(j.refusal ?? 'That file could not be opened.'))
-    } catch { setError('That file could not be opened — check the connection.') }
-    finally { setBusy(null) }
-  }
 
-  return (
-    <>
-      {attachments.map((a, i) => (
-        <span key={`${a.filename ?? 'file'}-${i}`}>
-          {i > 0 && ', '}
-          <span>{a.filename ?? '(unnamed)'}</span>
-          {a.size != null && <span className="text-slate-400"> ({Math.round(a.size / 1024)} KB)</span>}
-          {a.storagePath && prospectId && (
-            <button type="button" onClick={() => void open(a.storagePath!)} disabled={busy === a.storagePath}
-              title="Opens the file we sent, through a link that expires in five minutes."
-              className="ml-1 text-[11px] font-bold text-orange-700 underline hover:text-orange-800 disabled:opacity-40">
-              {busy === a.storagePath ? '…' : 'Download'}
-            </button>
-          )}
-        </span>
-      ))}
-      {!attachments.some(a => a.storagePath) && (
-        <span className="text-slate-400"> — listed only, not downloaded</span>
-      )}
-      {error && <span className="text-red-700"> {error}</span>}
-    </>
-  )
-}
 
-function EmailBody({ rowId }: { rowId: string }) {
-  const [data, setData] = useState<ViewedEmail | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  useEffect(() => {
-    let live = true
-    void (async () => {
-      try {
-        const r = await fetch('/api/admin/outreach/mail-send', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'view', message_row_id: rowId }),
-        })
-        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-        if (!live) return
-        if (j.ok !== true) { setError(String(j.refusal ?? 'That email could not be opened.')); return }
-        setData(j as unknown as ViewedEmail)
-      } catch { if (live) setError('That email could not be opened — check the connection.') }
-    })()
-    return () => { live = false }
-  }, [rowId])
-
-  if (error) return <p className="text-[12px] text-red-800">{error}</p>
-  if (!data) return <p className="text-[12px] text-slate-500">Opening the email…</p>
-  return (
-    <>
-      <p className="text-[12px] text-slate-700"><span className="font-bold">From:</span> {data.from ?? '—'}</p>
-      <p className="text-[12px] text-slate-700"><span className="font-bold">Subject:</span> {data.subject ?? '—'}</p>
-      {data.attachments.length > 0 && (
-        <p className="text-[12px] text-slate-700 mt-0.5">
-          <span className="font-bold">Attachments:</span>{' '}
-          <AttachmentList attachments={data.attachments} prospectId={data.prospect_id ?? null} />
-        </p>
-      )}
-      {data.truncated && (
-        <p className="text-[12px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-2 py-1 mt-1">
-          This email was too long to store in full — what follows is the first part of it.
-        </p>
-      )}
-      {data.html
-        ? <iframe title="Email body" sandbox="" srcDoc={data.html}
-            className="mt-2 w-full h-80 border border-slate-200 rounded bg-white" />
-        : <pre className="mt-2 text-[12px] whitespace-pre-wrap">{data.text ?? '(this email has no body)'}</pre>}
-    </>
-  )
-}
-
-function ContactPopout({ contact, onClose, onDelete }: {
-  contact: Contact
-  onClose: () => void
-  /** Rejects on failure — the confirm dialog shows the reason and stays open. */
-  onDelete: () => Promise<void>
-}) {
-  const [mounted, setMounted] = useState(false)
-  const [confirming, setConfirming] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      // 🔴 WHILE THE CONFIRMATION IS OPEN, ESCAPE IS NOT THIS WINDOW'S TO HANDLE. Both listeners are
-      // registered on `window` in the CAPTURE phase, and two capture listeners on the same target BOTH
-      // fire — `stopPropagation` does not stop a sibling on the same node, only `stopImmediatePropagation`
-      // would. Without this guard one Escape would close the dialog AND this popout underneath it.
-      // Guarding here rather than changing ConfirmDeleteDialog keeps a dialog shared with the media and
-      // event deletes untouched.
-      if (confirming) return
-      e.stopPropagation(); e.preventDefault(); onClose()
-    }
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [onClose, confirming])
-  if (!mounted) return null
-  const inbound = contact.direction === 'inbound'
-  return createPortal(
-    // 🔴 90, ABOVE THE COMPOSE WINDOW'S 85 — and inline, for the reason recorded on that file: an
-    // arbitrary z-index used by exactly one file may have no generated rule at all.
-    <div style={{ zIndex: 90 }} className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
-      onClick={onClose} role="presentation">
-      <div role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-200 flex-shrink-0">
-          <span className="text-sm font-semibold text-slate-900 tabular-nums">{fmtDate(contact.contacted_at)}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded"
-            style={{ background: inbound ? INBOUND_BG : '#f1f5f9', color: inbound ? '#065f46' : '#334155' }}>
-            {directionLabel(contact.direction)}
-          </span>
-          <span className="text-xs text-slate-500" title={contact.kind ?? undefined}>{kindLabel(contact.kind)}</span>
-          <span className="text-xs text-slate-400">{channelLabel(contact.channel)}</span>
-          <button onClick={onClose} autoFocus
-            className="ml-auto text-sm font-semibold px-3 py-1 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-orange-400">
-            Close
-          </button>
-        </div>
-        <div className="px-5 py-4 overflow-y-auto">
-          {contact.message
-            ? <p className="text-sm text-slate-800 whitespace-pre-wrap break-words">{contact.message}</p>
-            : <p className="text-sm text-slate-400 italic">No message was recorded with this contact.</p>}
-
-          {/* 🔴 THE LOGGED TEXT IS A SUMMARY OF AN EMAIL; THE EMAIL IS THE RECORD. When this contact
-              was logged from one, the whole thing is here — headers, attachments and body — read
-              live and read-only, in the same sandboxed viewer the Emails list uses. That is the
-              difference between "No message was recorded" and being able to see what was actually
-              said, which is precisely what went wrong with the first logged reply. */}
-          {contact.email_message_id && (
-            <div className="mt-4 pt-3 border-t border-slate-200">
-              <span className="block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-1">
-                The email this was logged from
-              </span>
-              <EmailBody rowId={contact.email_message_id} />
-            </div>
-          )}
-        </div>
-
-        {/* 🔴 THE DELETE LIVES HERE, NOT ON THE TABLE ROW. The history table's five columns and their
-            measured widths are settled; the last one is 46px and holds View, with no room for a second
-            affordance. This window already displays the four facts the confirmation has to name, so
-            opening the row IS the disambiguation step. */}
-        <div className="px-5 py-3 border-t border-slate-200 flex items-center gap-3 flex-shrink-0">
-          <span className="text-[11px] text-slate-500">Logged by mistake?</span>
-          <button onClick={() => setConfirming(true)}
-            className="ml-auto text-sm font-semibold px-3 py-1 rounded-lg border border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400">
-            Delete this contact
-          </button>
-        </div>
-
-        {/* 🔴 REUSED, NOT REBUILT — the SAME dialog the media and event deletes use. It already gives
-            Cancel-focused-on-open, Escape, backdrop-cancel, a busy lock and the server's own message
-            shown in place. A second confirmation would be the fourth-independent-copy mistake the
-            file's own header warns about.
-            🔴 RENDERED INSIDE THE POPOUT'S PANEL, not beside it: the panel stops click propagation, so
-            a click on the dialog's backdrop cancels the DIALOG without also reaching this window's
-            backdrop and closing it. Its `z-[70]` resolves inside this window's zIndex:90 stacking
-            context, so it paints above this content and above the modal underneath. */}
-        {confirming && (
-          <ConfirmDeleteDialog
-            title="Delete this contact?"
-            confirmLabel="Delete contact"
-            onCancel={() => setConfirming(false)}
-            onConfirm={onDelete}>
-            <div className="mt-2 text-sm text-slate-700 space-y-2">
-              <p>This row will be removed from the contact history:</p>
-              <ul className="text-[13px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 space-y-0.5">
-                <li><span className="text-slate-400">Date </span>{fmtDate(contact.contacted_at)}</li>
-                <li><span className="text-slate-400">Direction </span>{directionLabel(contact.direction)}</li>
-                <li><span className="text-slate-400">Stage </span>{kindLabel(contact.kind)}</li>
-                <li><span className="text-slate-400">Channel </span>{channelLabel(contact.channel)}</li>
-              </ul>
-              <p className="font-semibold text-red-800">This cannot be undone. There is no recovery.</p>
-              <p className="text-[13px] text-slate-500">
-                “Last contacted” is recalculated from the rows that remain. The follow-up date is cleared
-                or moved back to the one the previous contact implies — unless you set it by hand, in
-                which case it is left alone. The stage on the prospect is not changed.
-              </p>
-            </div>
-          </ConfirmDeleteDialog>
-        )}
-      </div>
-    </div>, document.body)
-}
-
-const MAIL_STATUS_LABEL: Record<string, string> = {
-  sending: 'Sending…', sent: 'Sent', failed: 'Failed', uncertain: 'May have been sent', received: 'Reply',
-  // ⚠️ THREE OF THESE ARE STATES A PERSON DID NOT CAUSE. `auto_reply` and `bounce` are inbound rows
-  // the poll recorded and deliberately did NOT log as contacts; `bounced` is an OUTBOUND row the mail
-  // system reported undeliverable, which is the one that needs the address looking at.
-  auto_reply: 'Auto-reply', bounce: 'Bounce', bounced: 'Bounced',
-}
-/** How each status reads: red is a problem, amber needs a decision, sky is them, green is us. */
-const mailStatusTone = (row: { status: string; direction: string }) =>
-  row.status === 'failed' || row.status === 'bounced' || row.status === 'bounce' ? 'text-red-700'
-    : row.status === 'uncertain' ? 'text-amber-800'
-    : row.status === 'auto_reply' ? 'text-slate-500'
-    : row.direction === 'inbound' ? 'text-sky-700' : 'text-emerald-700'
 
 /**
  * ONE CONVERSATION WITH ONE TRUCK: emails, calls, stage changes and notes, newest first.
@@ -2765,6 +1877,9 @@ const mailStatusTone = (row: { status: string; direction: string }) =>
  * ⚠️ AND TEST SENDS ARE HIDDEN. A test is Dominic emailing himself; it is not correspondence with this
  * truck. The toggle shows them without making them part of the story by default.
  */
+/** The list a Today section hands the page: its label, and the prospects in it, in order. */
+interface TodayQueue { label: string; ids: string[] }
+
 /** One section of the Today screen. ⚠️ AT MODULE SCOPE, not inside `TodayScreen`: a component
  *  declared inside another is a NEW component type on every render, so React unmounts and remounts
  *  its whole subtree — every list below would lose its state on each keystroke elsewhere. */
@@ -2804,17 +1919,26 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
   /** 🔴 False when the CRM columns are not applied. "Nothing waiting" would then be a LIE — the
    *  screen has no way to know what is waiting — so it says what is actually wrong instead. */
   migrationApplied: boolean
-  onOpen: (prospectId: string) => void
-  /** Opens the prospect with its compose window already up, on the step's own template. */
-  onCompose: (prospectId: string) => void
-  /** 🔴 Opens the prospect with the composer ANSWERING this message — see `ReplyTarget`. */
-  onReply: (prospectId: string, target: ReplyTarget) => void
+  /** 🔴 Opens the prospect's PAGE, carrying the section it came from as the queue. */
+  onOpen: (prospectId: string, queue: TodayQueue) => void
+  /** Opens the page with the composer already up, on the step's own template. */
+  onCompose: (prospectId: string, queue: TodayQueue) => void
+  /** 🔴 Opens the page with the composer ANSWERING this message. */
+  onReply: (prospectId: string, messageId: string, queue: TodayQueue) => void
   onAction: () => void | Promise<void>
 }) {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [snoozeFor, setSnoozeFor] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
+  const [snoozedOpen, setSnoozedOpen] = useState(false)
   const inFlight = useRef(false)
+
+  // 🔴 ONE QUEUE PER SECTION, in the order the section is displayed in. The page walks these with
+  // ‹ › and J/K, and names them at the end: "That's everything in Replies waiting."
+  const repliesQueue = { label: 'Replies waiting', ids: view.replies.map(r => r.prospect_id) }
+  const chasersQueue = { label: 'Chasers due', ids: view.chasers.map(c => c.prospect_id) }
+  const followUpsQueue = { label: 'Follow-ups due', ids: view.followUps.map(f => f.prospect_id) }
+  const problemsQueue = { label: 'Emails needing a look', ids: view.problems.map(e => e.prospect_id) }
 
   const act = async (body: Record<string, unknown>, id: string) => {
     if (inFlight.current) return
@@ -2848,7 +1972,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
       </div>
     )
   }
-  if (view.total === 0) {
+  if (view.total === 0 && view.snoozed.length === 0) {
     return (
       <div className="py-16 text-center">
         <p className="text-lg font-bold text-slate-800">Nothing waiting. Nice.</p>
@@ -2859,6 +1983,11 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
 
   return (
     <div className="max-w-4xl">
+      {/* ⚠️ "Nothing waiting" WITH SOMETHING SNOOZED is not an empty screen — the heading below says
+          how many are put off, which is exactly the fact that would otherwise be invisible. */}
+      {view.total === 0 && (
+        <p className="mb-4 text-lg font-bold text-slate-800">Nothing waiting. Nice.</p>
+      )}
       {/* (a) 🔴 REPLIES FIRST, OLDEST FIRST. Someone is waiting on an answer; nothing else on this
           screen has a person at the other end of it. */}
       {view.replies.length > 0 && (
@@ -2867,7 +1996,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
           {view.replies.map(r => (
             <div key={r.id} className="px-3 py-2 flex items-start gap-3" style={{ background: INBOUND_BG }}>
               <div className="flex-1 min-w-0">
-                <button type="button" onClick={() => onOpen(r.prospect_id)}
+                <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
                   className="font-bold text-slate-900 hover:underline text-sm text-left">
                   {r.prospect_name ?? '(no truck name)'}
                 </button>
@@ -2879,15 +2008,12 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                     for. It opens the prospect with the composer already up on THIS message, the
                     conversation visible below the editor. Nothing is sent until Send is pressed. */}
                 <button type="button"
-                  onClick={() => onReply(r.prospect_id, {
-                    messageId: r.id, subject: r.subject ?? null,
-                    fromAddress: r.from_address ?? null, date: r.message_date,
-                  })}
+                  onClick={() => onReply(r.prospect_id, r.id, repliesQueue)}
                   title="Answer this reply, with the conversation quoted underneath."
                   className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
                   Reply
                 </button>
-                <button type="button" onClick={() => onOpen(r.prospect_id)}
+                <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
                   className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                   Open
                 </button>
@@ -2921,7 +2047,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
           hint="Derived from the contact ladder by nextStep (§57): reachable prospects whose next rung is due today or overdue. Correct the contact log and this changes.">
           {view.chasers.map(c => (
             <div key={c.prospect_id} className="px-3 py-2 flex items-center gap-3">
-              <button type="button" onClick={() => onOpen(c.prospect_id)}
+              <button type="button" onClick={() => onOpen(c.prospect_id, chasersQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {c.name ?? '(no truck name)'}
               </button>
@@ -2935,7 +2061,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
               <span className="text-[10px] font-bold uppercase text-slate-400 w-16 text-right">{c.channel}</span>
               {/* 🔴 COMPOSE OPENS THE PROSPECT WITH THE WINDOW ALREADY UP, and the template comes from
                   `templateForStep` inside the modal — the one pre-selection rule, not a second one. */}
-              <button type="button" onClick={() => onCompose(c.prospect_id)}
+              <button type="button" onClick={() => onCompose(c.prospect_id, chasersQueue)}
                 title="Opens the prospect and the compose window, with this step's template pre-selected. Nothing is sent until you press send."
                 className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
                 Compose
@@ -2951,7 +2077,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
           hint="next_action_at is today or in the past. Prospects already listed under Replies waiting or Chasers due are not repeated here.">
           {view.followUps.map(f => (
             <div key={f.prospect_id} className="px-3 py-2 flex items-center gap-3">
-              <button type="button" onClick={() => onOpen(f.prospect_id)}
+              <button type="button" onClick={() => onOpen(f.prospect_id, followUpsQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {f.name ?? '(no truck name)'}
               </button>
@@ -2959,7 +2085,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                 {fmtDate(f.due)}
                 {f.daysOverdue > 0 && <span className="text-amber-800 font-bold"> · {f.daysOverdue} day{f.daysOverdue === 1 ? '' : 's'} overdue</span>}
               </span>
-              <button type="button" onClick={() => onOpen(f.prospect_id)}
+              <button type="button" onClick={() => onOpen(f.prospect_id, followUpsQueue)}
                 className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                 Open
               </button>
@@ -2975,7 +2101,7 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
           hint="Outbound emails that failed, may have been sent, or bounced. Open the prospect to retry, file a copy, or fix the address.">
           {view.problems.map(e => (
             <div key={e.id} className="px-3 py-2 flex items-center gap-3">
-              <button type="button" onClick={() => onOpen(e.prospect_id)}
+              <button type="button" onClick={() => onOpen(e.prospect_id, problemsQueue)}
                 className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
                 {e.prospect_name ?? '(no truck name)'}
               </button>
@@ -2984,13 +2110,51 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
                 {PROBLEM_LABEL[e.status] ?? e.status}
               </span>
               <span className="text-[11px] text-slate-400 whitespace-nowrap">{fmtDate(e.message_date)}</span>
-              <button type="button" onClick={() => onOpen(e.prospect_id)}
+              <button type="button" onClick={() => onOpen(e.prospect_id, problemsQueue)}
                 className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
                 Open
               </button>
             </div>
           ))}
         </TodaySection>
+      )}
+      {/* ── 🔴 SNOOZED — COLLAPSED, BUT THERE ────────────────────────────────────────────────
+          A snooze hides a reply from the four sections above, which is what it is for. It must not
+          hide it from the SCREEN: "put off until Tuesday" and "lost" look identical if nothing lists
+          them, and the first time Dominic discovers a snoozed reply he had forgotten, he stops
+          trusting the button. Collapsed because it is not today's work; counted in its own heading
+          rather than in the tab, for the same reason. */}
+      {view.snoozed.length > 0 && (
+        <section className="mb-4">
+          <button type="button" onClick={() => setSnoozedOpen(o => !o)}
+            className="text-xs font-bold uppercase tracking-wide text-slate-500 hover:text-slate-700">
+            {snoozedOpen ? '▾' : '▸'} Snoozed <span className="text-slate-400">({view.snoozed.length})</span>
+          </button>
+          {snoozedOpen && (
+            <div className="mt-1 border border-slate-200 rounded-xl bg-white divide-y divide-slate-100 overflow-hidden">
+              {view.snoozed.map(r => (
+                <div key={r.id} className="px-3 py-2 flex items-center gap-3">
+                  <button type="button" onClick={() => onOpen(r.prospect_id, { label: 'Snoozed', ids: view.snoozed.map(x => x.prospect_id) })}
+                    className="flex-1 min-w-0 text-left font-bold text-slate-900 hover:underline text-sm truncate">
+                    {r.prospect_name ?? '(no truck name)'}
+                  </button>
+                  <span className="flex-1 min-w-0 truncate text-[12px] text-slate-500">{r.snippet}</span>
+                  <span className="text-[11px] text-slate-500 whitespace-nowrap">
+                    back {fmtDate(r.snoozed_until)}
+                  </span>
+                  {/* ⚠️ UNSNOOZE IS "Mark as needing reply" — the SAME action the timeline offers, by
+                      the same route. It clears both columns, so the reply is back on the list now. */}
+                  <button type="button" disabled={busyId === r.id}
+                    onClick={() => void act({ action: 'needs_reply', message_id: r.id }, r.id)}
+                    title="Bring this reply back to Replies waiting now."
+                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+                    Unsnooze
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       )}
       {msg && <p className="text-[11px] text-slate-600">{msg}</p>}
     </div>
@@ -3010,898 +2174,8 @@ async function fetchToday(): Promise<TodayPayload | null> {
   const j = (await r.json().catch(() => null)) as TodayPayload | null
   return j && j.ok ? j : null
 }
-async function fetchTimeline(prospectId: string): Promise<TimelinePayload | null> {
-  const h = await nativeAuthHeader()
-  const r = await fetch(`/api/admin/outreach/timeline?prospect_id=${encodeURIComponent(prospectId)}`,
-    { headers: h, credentials: 'same-origin' }).catch(() => null)
-  if (!r) return null
-  const j = (await r.json().catch(() => null)) as TimelinePayload | null
-  return j && j.ok ? j : null
-}
-
-/** The modal's field and label classes, shared with the timeline. `max-sm:text-base` is 16px, which
- *  is what stops iOS zooming the page when a field takes focus — do not "tidy" it away. */
-const FIELD_CLS = 'w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm max-sm:text-base max-sm:py-2'
-const LABEL_CLS = 'block text-[10px] uppercase tracking-wide font-bold text-slate-400 mb-0.5'
-
-function Timeline({ prospect, nonce, onChanged, onDeleteContact, onReply }: {
-  prospect: Prospect
-  nonce: number
-  onChanged: () => void | Promise<void>
-  onDeleteContact: (c: Contact) => Promise<void>
-  /** 🔴 Opens the compose window answering THIS message. See `ReplyTarget`. */
-  onReply: (target: ReplyTarget) => void
-}) {
-  const [data, setData] = useState<TimelinePayload | null>(null)
-  const [showTests, setShowTests] = useState(false)
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const [note, setNote] = useState('')
-  const [busyId, setBusyId] = useState<string | null>(null)
-  const [confirmId, setConfirmId] = useState<string | null>(null)
-  const [snoozeFor, setSnoozeFor] = useState<string | null>(null)
-  const [viewingContact, setViewingContact] = useState<Contact | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
-  const inFlight = useRef(false)
-
-  /** Re-read after an action. The EFFECT below uses the same fetcher with an unmount guard. */
-  const reload = useCallback(async () => {
-    const j = await fetchTimeline(prospect.id)
-    if (j) setData(j)
-  }, [prospect.id])
-
-  useEffect(() => {
-    let live = true
-    void (async () => {
-      const j = await fetchTimeline(prospect.id)
-      if (live && j) setData(j)
-    })()
-    return () => { live = false }
-  }, [prospect.id, nonce])
-
-  // 🔴 THE PURE BUILDER, NOT A SECOND MERGE HERE. The de-duplication and the ordering are the same
-  // rules the harness stands on.
-  const items = useMemo(() => buildTimeline({
-    messages: data?.messages ?? [],
-    contacts: data?.contacts ?? [],
-    events: data?.events ?? [],
-    showTests,
-  }), [data, showTests])
-
-  const testCount = (data?.messages ?? []).filter(m => m.is_test === true).length
-
-  /** Every write here goes through one function, so every one of them refreshes the same things. */
-  const post = async (url: string, body: Record<string, unknown>, busy: string, done: string) => {
-    if (inFlight.current) return
-    inFlight.current = true
-    setBusyId(busy); setMsg(null); setSnoozeFor(null)
-    try {
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await nativeAuthHeader()) },
-        credentials: 'same-origin',
-        body: JSON.stringify(body),
-      })
-      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
-      if (j.needsConfirm === true) { setConfirmId(busy); setMsg(String(j.refusal ?? '')); return }
-      setMsg(j.ok === true ? String(j.message ?? done) : String(j.refusal ?? j.error ?? 'That did not work.'))
-      setConfirmId(null)
-      await reload()
-      await onChanged()
-    } catch {
-      setMsg('The connection dropped before the server answered.')
-    } finally { inFlight.current = false; setBusyId(null) }
-  }
-
-  const TL = '/api/admin/outreach/timeline'
-  const MS = '/api/admin/outreach/mail-send'
-  const markDone = (id: string) => post(TL, { action: 'mark_handled', message_id: id }, id, 'Marked done.')
-  const snooze = (id: string, option: string) => post(TL, { action: 'snooze', message_id: id, option }, id, 'Snoozed.')
-  const needsReply = (id: string) => post(TL, { action: 'needs_reply', message_id: id }, id, 'Back on the list.')
-  const saveNote = async () => {
-    if (!note.trim()) return
-    await post(TL, { action: 'add_note', prospect_id: prospect.id, body: note }, 'note', 'Note added.')
-    setNote('')
-  }
-  const retry = (id: string, confirmUncertain: boolean) =>
-    post(MS, { action: 'retry', message_row_id: id, confirm_uncertain: confirmUncertain }, id, 'Sent.')
-  const saveToSent = (id: string) => post(MS, { action: 'save_to_sent', message_row_id: id }, id, 'Saved to Sent.')
-  const logIt = (id: string) => post(MS, { action: 'log_only', message_row_id: id }, id, 'Logged.')
-
-  const now = new Date()
-  const bounced = (data?.messages ?? []).some(m => m.status === 'bounced')
-
-  return (
-    <div className="flex flex-col min-h-0 shrink">
-      <div className="flex items-center gap-2 mb-0.5">
-        <span className={LABEL_CLS}>Timeline</span>
-        {testCount > 0 && (
-          <label className="ml-auto flex items-center gap-1 text-[11px] text-slate-500 cursor-pointer"
-            title="A test send is Dominic emailing himself. It is not correspondence with this truck, so it is out of the story unless you ask for it.">
-            <input type="checkbox" checked={showTests} onChange={e => setShowTests(e.target.checked)} />
-            Show test sends ({testCount})
-          </label>
-        )}
-      </div>
-
-      {/* 🔴 THE NOTE BOX IS AT THE TOP, WHERE THE NEWEST ENTRY GOES. A note written about a call is
-          written straight after it, and it lands where the eye already is. */}
-      <div className="flex items-start gap-2 mb-1">
-        <textarea rows={2} value={note} onChange={e => setNote(e.target.value)}
-          placeholder="Add a note — what was said, what to do next…"
-          className={`${FIELD_CLS} resize-y flex-1`} />
-        <button type="button" onClick={() => void saveNote()} disabled={!note.trim() || busyId === 'note'}
-          className="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
-          {busyId === 'note' ? '…' : 'Add note'}
-        </button>
-      </div>
-
-      {/* 🔴 THE SENTENCE NAMES THE FIX. "Bounced" on its own is a status; "check the address" is what
-          to do about it, and the address is on the truck row above. */}
-      {bounced && (
-        <p className="mb-1 text-[12px] font-bold text-red-800 bg-red-50 border border-red-200 rounded px-2 py-1">
-          Email bounced — check the address.
-        </p>
-      )}
-
-      <div className="min-h-0 shrink overflow-y-auto border border-slate-300 rounded-lg bg-white divide-y divide-slate-100">
-        {data === null && <p className="px-2 py-2 text-[12px] text-slate-400">Loading…</p>}
-        {data !== null && data.migrationApplied === false && (
-          <p className="px-2 py-2 text-[12px] text-red-800">
-            The timeline needs `supabase/migrations/20260929_outreach_crm_today_timeline.sql` applying.
-          </p>
-        )}
-        {data !== null && data.migrationApplied !== false && items.length === 0 && (
-          <p className="px-2 py-2 text-[12px] text-slate-400">Nothing yet — no emails, contacts or notes.</p>
-        )}
-        {items.map(item => {
-          if (item.type === 'event') {
-            const e = item.event
-            // A stage change and a note read differently: one is a fact about the record, the other is
-            // something a person wrote.
-            return (
-              <div key={item.id} className="px-2 py-1.5 text-[12px] flex items-start gap-2">
-                <span className="text-[10px] font-bold uppercase text-slate-400 w-16 shrink-0 pt-0.5">
-                  {e.kind === 'note' ? 'Note' : 'Stage'}
-                </span>
-                <span className="flex-1 min-w-0">
-                  {e.kind === 'stage_change'
-                    ? <span className="text-slate-700">
-                        {stageWord(e.from_stage)} → <span className="font-bold">{stageWord(e.to_stage)}</span>
-                        {e.body && <span className="text-slate-400"> · {e.body}</span>}
-                      </span>
-                    : <span className="text-slate-800 whitespace-pre-wrap break-words">{e.body}</span>}
-                </span>
-                <span className="text-slate-400 whitespace-nowrap">{fmtDate(e.created_at)}</span>
-              </div>
-            )
-          }
-          if (item.type === 'contact') {
-            const c = item.contact as unknown as Contact
-            // 🔴 A CONTACT ROW THAT IS NOT AN EMAIL: a call, a WhatsApp, something logged by hand.
-            // Clicking opens the same popout the history table used, which is where Delete lives.
-            return (
-              <button key={item.id} type="button" onClick={() => setViewingContact(c)}
-                className="w-full text-left px-2 py-1.5 text-[12px] flex items-start gap-2 hover:bg-slate-50">
-                <span className={`text-[10px] font-bold uppercase w-16 shrink-0 pt-0.5 ${c.direction === 'inbound' ? 'text-sky-700' : 'text-emerald-700'}`}>
-                  {channelLabel(c.channel)}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="font-semibold text-slate-700">{kindLabel(c.kind)}</span>
-                  {c.message && <span className="text-slate-500"> · {c.message.replace(/\s+/g, ' ').slice(0, 120)}</span>}
-                </span>
-                <span className="text-slate-400 whitespace-nowrap">{fmtDate(c.contacted_at)}</span>
-              </button>
-            )
-          }
-          const m = item.message
-          const inbound = m.direction === 'inbound'
-          const waiting = needsAttention(m, { now, linkedTruck: !!prospect.hatchgrab_truck_id })
-          const notLogged = m.status === 'sent' && !m.is_test && (m.last_error ?? '').startsWith('sent, not logged')
-          const isOpen = expanded === m.id
-          return (
-            <div key={item.id}
-              // 🔴 IN AND OUT LOOK DIFFERENT AT A GLANCE, and the tint is INLINE for the reason the
-              // history table recorded: a colour class with no other user in this repo can fail to
-              // resolve, and the distinction would vanish silently.
-              style={inbound ? { background: INBOUND_BG } : undefined}
-              className="px-2 py-1.5 text-[12px]">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase text-slate-400 w-16 shrink-0">
-                  {inbound ? '← in' : 'out →'}
-                </span>
-                {/* 🔴 THE STATUS NAMES ITSELF. "Reply" for every inbound row would make an auto-reply
-                    and a bounce read as a reply from the prospect — the two things the poll exists to
-                    tell apart. */}
-                <span className={`font-bold ${mailStatusTone({ status: m.status ?? '', direction: m.direction ?? '' })}`}>
-                  {MAIL_STATUS_LABEL[m.status ?? ''] ?? (inbound ? 'Reply' : m.status)}
-                </span>
-                {m.is_test && <span className="text-[10px] font-bold uppercase text-slate-400">test</span>}
-                {m.source === 'mailbox_import' && (
-                  <span className="text-[10px] font-bold uppercase text-slate-400" title="Found in your mailbox by Import past emails, not sent from here.">imported</span>
-                )}
-                {m.source === 'poll' && m.direction === 'outbound' && (
-                  <span className="text-[10px] font-bold uppercase text-slate-400" title="Sent from Outlook, not from this page. Recorded by the reply check.">from Outlook</span>
-                )}
-                {waiting && (
-                  <span className="text-[10px] font-bold uppercase text-amber-800 bg-amber-100 border border-amber-300 rounded px-1">
-                    Waiting for you
-                  </span>
-                )}
-                <button type="button" onClick={() => setExpanded(isOpen ? null : m.id)}
-                  className="flex-1 min-w-0 text-left truncate text-slate-700 hover:underline"
-                  title={m.subject ?? ''}>
-                  {m.subject ?? '—'}
-                </button>
-                {!!m.attachment_count && (
-                  <span className="text-[10px] font-bold uppercase text-slate-400" title="Attachment names only — nothing was downloaded.">
-                    {m.attachment_count} file{m.attachment_count === 1 ? '' : 's'}
-                  </span>
-                )}
-                <span className="text-slate-400 whitespace-nowrap">{fmtDate(m.message_date ?? m.created_at ?? null)}</span>
-                {m.sent_copy === 'absent' && m.status === 'sent' && !m.is_test && (
-                  <span className="text-[10px] font-bold uppercase text-amber-700" title="The email was accepted by the server but no copy is in your Sent folder.">no sent copy</span>
-                )}
-              </div>
-
-              {/* The first two or three lines, so the list reads as a conversation rather than a log. */}
-              {!isOpen && !!(m.preview ?? '').trim() && (
-                <p className="mt-0.5 ml-[4.5rem] text-slate-600 whitespace-pre-line line-clamp-3">{m.preview}</p>
-              )}
-
-              <div className="mt-1 ml-[4.5rem] flex flex-wrap items-center gap-1">
-                <button type="button" onClick={() => setExpanded(isOpen ? null : m.id)}
-                  className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
-                  {isOpen ? 'Hide' : 'Open'}
-                </button>
-                {/* 🔴 REPLY IS OFFERED ON A REAL INBOUND MESSAGE AND NOWHERE ELSE. A test send went to
-                    Dominic's own address, so there is nobody to answer; an auto-reply and a bounce
-                    are not people. The route refuses each of those again by id. */}
-                {inbound && !m.is_test && m.status === 'received' && (
-                  <button type="button"
-                    onClick={() => onReply({
-                      messageId: m.id, subject: m.subject ?? null,
-                      fromAddress: m.from_address ?? null, date: m.message_date ?? null,
-                    })}
-                    title="Answer this message, with the conversation quoted underneath. Nothing is sent until you press Send."
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100">
-                    Reply
-                  </button>
-                )}
-                {waiting && (
-                  <>
-                    <button type="button" onClick={() => void markDone(m.id)} disabled={busyId === m.id}
-                      title="This reply has been dealt with. It leaves Today; nothing is sent and nothing is logged."
-                      className="text-[11px] font-bold px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40">
-                      Mark done
-                    </button>
-                    <button type="button" onClick={() => setSnoozeFor(snoozeFor === m.id ? null : m.id)}
-                      title="Hide it from Today until a chosen morning. It comes back on its own."
-                      className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
-                      Snooze
-                    </button>
-                    {snoozeFor === m.id && SNOOZE_OPTIONS.map(o => (
-                      <button key={o} type="button" onClick={() => void snooze(m.id, o)} disabled={busyId === m.id}
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-                        {SNOOZE_LABELS[o]}
-                      </button>
-                    ))}
-                  </>
-                )}
-                {/* 🔴 THE UNDO, AND IT IS OFFERED ON EXACTLY THE ROWS THAT ARE NOT WAITING. A reply
-                    marked done by mistake — or by an outbound contact that did not actually answer it —
-                    is put back with one click. */}
-                {inbound && m.status === 'received' && !m.is_test && !waiting && (
-                  <button type="button" onClick={() => void needsReply(m.id)} disabled={busyId === m.id}
-                    title={m.snoozed_until ? `Snoozed until ${fmtDate(m.snoozed_until)}. This brings it back now.` : 'Put this reply back on the Today list.'}
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40">
-                    Mark as needing reply
-                  </button>
-                )}
-                {notLogged && (
-                  <button type="button" onClick={() => void logIt(m.id)} disabled={busyId === m.id}
-                    title="The email went but the contact log did not record it. This writes the missing rung — it does NOT send anything."
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-                    log it
-                  </button>
-                )}
-                {m.status === 'sent' && !m.is_test && m.sent_copy === 'absent' && (
-                  <button type="button" onClick={() => void saveToSent(m.id)} disabled={busyId === m.id}
-                    title="Files a copy of this email in your Sent folder. It does NOT send anything."
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
-                    {busyId === m.id ? '…' : 'Save to Sent'}
-                  </button>
-                )}
-                {(m.status === 'failed' || m.status === 'uncertain') && (
-                  <button type="button" onClick={() => void retry(m.id, confirmId === m.id)} disabled={busyId === m.id}
-                    title={m.status === 'uncertain'
-                      ? 'This may already have been delivered. Check your Sent folder first — a retry could be the second copy the prospect receives.'
-                      : 'The server refused this one, so nothing reached the prospect. Sends it again with the same Message-ID.'}
-                    className={`text-[11px] font-bold px-2 py-0.5 rounded border disabled:opacity-40 ${
-                      confirmId === m.id
-                        ? 'border-red-400 text-white bg-red-600 hover:bg-red-700'
-                        : 'border-slate-300 text-slate-700 bg-white hover:bg-slate-50'}`}>
-                    {busyId === m.id ? '…' : confirmId === m.id ? 'Yes, send again' : 'Retry'}
-                  </button>
-                )}
-              </div>
-
-              {/* 🔴 EXPANDS IN PLACE, FROM THE STORED BODY, IN A SANDBOXED IFRAME. `EmailBody` is the
-                  same component the contact popout uses — one viewer, one `sandbox=""`. */}
-              {isOpen && (
-                <div className="mt-1 ml-[4.5rem] border-t border-slate-200 pt-1">
-                  <EmailBody rowId={m.id} />
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {msg && <p className="mt-1 text-[11px] text-slate-600">{msg}</p>}
-      {viewingContact && (
-        <ContactPopout contact={viewingContact} onClose={() => setViewingContact(null)}
-          onDelete={async () => { await onDeleteContact(viewingContact); setViewingContact(null); await reload() }} />
-      )}
-    </div>
-  )
-}
-
-/** A stage as a sentence reads it. Null is "no stage", which happens on the very first change. */
-const stageWord = (v: string | null | undefined): string =>
-  !v ? 'no stage' : String(v).replace(/_/g, ' ')
-
-interface ViewedEmail {
-  from: string | null; to: string | null; subject: string | null; date: string | null
-  direction: string; source: string
-  /** 🔴 `storagePath` is present on an OUTBOUND row only — those files are ours, in our own private
-   *  bucket, and can be opened. An inbound message's attachments are NAMES read off its structure;
-   *  the files were never downloaded, so there is nothing to link to and no link is offered. */
-  attachments: { filename: string | null; contentType: string; size: number | null; storagePath?: string }[]
-  /** Needed to ask for a signed download link; the route checks the path against it. */
-  prospect_id?: string
-  html: string | null; text: string | null
-  from_mailbox: boolean; mailbox?: string
-  /** 🔴 The stored HTML was longer than the cap and was cut. SAID, never silent — a viewer that
-   *  quietly shows half an email reads as "nothing more was said". */
-  truncated?: boolean
-}
-
-// ── THE DEMO LINK CHIP ────────────────────────────────────────────────────────────────────────────
-// Shown in the prospect modal's header when this prospect already has a live demo. Read-only: the URL
-// that was (or can be) sent, its expiry, and a Copy button matching CreateDemoModal's affordance.
-//
-// 🔴 NO PORTAL, NO OVERLAY, NO KEY LISTENER. It renders inside the prospect modal that is already open,
-// so there is no second layer to stack and nothing new for Escape to hit — which is the only way to be
-// certain Escape still closes exactly one thing (C15: two capture listeners on one node, where
-// stopPropagation stops nothing).
-//
-// The origin is read at CLICK time, not at render: the copied link must be absolute (it is pasted into
-// an email) and `window` is not available during SSR.
-function DemoLinkChip({ demo }: { demo: NonNullable<Prospect['demo']> }) {
-  const [copied, setCopied] = useState(false)
-  if (!demo.publicRef) {
-    // A live demo with no readable segment — provisioned before public_ref, or its mint failed. Say so
-    // rather than rendering a broken link.
-    return <span className="text-xs text-slate-400" title="This prospect has a live demo but no readable URL">demo · no link</span>
-  }
-  const path = `/demo/${demo.publicRef}`
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}${path}`)
-      setCopied(true); setTimeout(() => setCopied(false), 1500)
-    } catch { /* clipboard blocked — the path is on screen to copy by hand */ }
-  }
-  return (
-    <span className="flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-1">
-      <a href={path} target="_blank" rel="noreferrer"
-        className="text-xs font-mono text-orange-700 hover:underline max-w-[18rem] truncate" title={path}>{path}</a>
-      <button type="button" onClick={copy}
-        className="text-xs font-semibold px-2 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
-        {copied ? 'Copied' : 'Copy'}
-      </button>
-      {/* The expiry is the point of showing it: an outreach demo lives 30 days and a link sent three
-          weeks ago has a week left. fmtDate is the same formatter every other date on this page uses. */}
-      <span className="text-xs text-slate-400 whitespace-nowrap">
-        {demo.expiresAt ? `expires ${fmtDate(demo.expiresAt)}` : 'no expiry recorded'}
-        {demo.liveCount > 1 ? ` · newest of ${demo.liveCount}` : ''}
-      </span>
-    </span>
-  )
-}
-
 /* 🔴 `HistoryTable` WAS HERE AND IS GONE (29 September 2026), with `HISTORY_COLS` and the separate
  * `EmailViewer` popout. It rendered `outreach_contacts` as a four-column table while the Emails list
  * rendered `outreach_messages` underneath it, and an email that had been logged appeared in both.
  * `Timeline` replaces both; `ContactPopout` — where Delete lives — is unchanged and is opened from a
  * contact row there. The `MailMessage` type went with the list that owned it. */
-
-function Detail({ p, step, hasContactNames, hasLeadTypeFreeze, onPatch, onLog, templates, snippets, onDeleteContact, onReload, refreshNonce, autoCompose, autoReply }: {
-  p: Prospect
-  /** The derived next step — passed in, never recomputed here, so the modal and the row agree. */
-  step?: Step
-  hasContactNames: boolean
-  /** False until the freeze migration is applied; gates both the write and the control. */
-  hasLeadTypeFreeze: boolean
-  onPatch: (id: string, patch: Record<string, unknown>) => void
-  /** Deletes ONE contact row. Rejects on failure so the confirm dialog can show why and stay open. */
-  onDeleteContact: (pr: Prospect, c: Contact) => Promise<void>
-  onLog: (p: Prospect, f: { channel: string; direction: string; kind: string; message: string; contacted_at: string }) => Promise<boolean>
-  /** Loaded templates, or null when the table is unreachable. */
-  templates: MessageTemplate[] | null
-  /** The snippet library, passed through to the compose window. Display/pre-fill only. */
-  snippets: Snippet[]
-  /** Re-reads the list and this modal — called after the server reports a send. */
-  onReload: () => void | Promise<void>
-  /** 🔴 Bumped by every successful `load()`. It is how a check or an import run from the toolbar
-   *  above reaches an OPEN modal: the timeline re-reads itself without the modal being closed. */
-  refreshNonce: number
-  /** 🔴 Set when Today's Compose button opened this prospect: the window comes up already, on the
-   *  step's own template. ⚠️ It opens a WINDOW; it sends nothing and writes nothing. */
-  autoCompose?: boolean
-  /** 🔴 Set when Today's Reply button opened this prospect: the window comes up ANSWERING this
-   *  message, with the conversation below the editor. Same rule — it opens a window and nothing else. */
-  autoReply?: ReplyTarget | null
-}) {
-  const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
-  const [lastName, setLastName] = useState(p.contact_last_name ?? '')
-  const [email, setEmail] = useState(p.contact_email ?? '')
-  const [phone, setPhone] = useState(p.phone ?? '')
-  const [notes, setNotes] = useState(p.notes ?? '')
-  // 🔴 NO DEFAULT, EVER. Seeded from the STORED value and nothing else: if the column is null this is ''.
-  // The manual's standing rule is that no date is suggested or written automatically, and next_action_at
-  // drives the overdue flag — a date nobody chose becomes an overdue prospect indistinguishable from a
-  // real one across 231 rows. Showing a value that IS stored is not a suggestion; inventing one is.
-  const [nextAt, setNextAt] = useState(p.next_action_at ?? '')
-
-  const [channel, setChannel] = useState<string>('email')
-  const [direction, setDirection] = useState<string>('outbound')
-  const [kind, setKind] = useState<string>('1_first_contact')
-  const [message, setMessage] = useState('')
-  // 🔴 SEEDED FROM THE PROP, NOT SET BY AN EFFECT. An effect that opened the window after mount
-  // would be a `set-state-in-effect`, and it would flash the modal without it for one frame.
-  const [composeOpen, setComposeOpen] = useState(autoCompose === true || !!autoReply)
-  /**
-   * 🔴 WHICH MESSAGE THE COMPOSE WINDOW IS ANSWERING, or null for a chase/first contact. It is state
-   * on the MODAL rather than on the window, because pressing Reply has to both open the window and
-   * tell it what it is replying to — and closing the window must forget it, or the next Compose
-   * would silently answer an old email.
-   */
-  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(autoReply ?? null)
-  /** Bumped after a send so the message list re-reads itself without reloading the whole panel. */
-  const [messagesNonce, setMessagesNonce] = useState(0)
-  const today = toYMD(new Date())
-  // ⚠️ A DEFAULT HERE IS CORRECT AND IS NOT THE THING THE MANUAL FORBIDS. This is when a contact
-  // HAPPENED — a fact about the past, almost always today, and it writes only when Log is pressed. The
-  // forbidden default is on next_action_at, which is a future commitment driving a work queue.
-  const [contactedAt, setContactedAt] = useState(today)
-  const [logging, setLogging] = useState(false)
-
-  // 🔴 EVERY FIELD RESETS WHEN THE MODAL MOVES TO ANOTHER TRUCK. Without this, prev/next would carry the
-  // previous truck's typed-but-unsaved email into the next truck's form — the component is not remounted
-  // because only `p` changes.
-  useEffect(() => {
-    setFirstName(p.contact_first_name ?? ''); setLastName(p.contact_last_name ?? '')
-    setEmail(p.contact_email ?? ''); setPhone(p.phone ?? '')
-    setNotes(p.notes ?? ''); setNextAt(p.next_action_at ?? ''); setNextTouched(false)
-    setChannel('email'); setDirection('outbound'); setKind(defaultKindFor('outbound'))
-    setMessage(''); setContactedAt(today)
-    // 🔴 AN UNLOGGED PRE-FILL MUST NOT FOLLOW ME TO THE NEXT TRUCK. Same reset as every other
-    // field: prev/next changes `p` without remounting, so this effect is the only thing
-    // clearing a rendered-but-never-logged template.
-    setComposeOpen(false)
-  }, [p.id])   // eslint-disable-line react-hooks/exhaustive-deps
-
-  // 🔴 THE SHARED LITERALS, NOT A SECOND COPY. The timeline renders the same kind of field and the
-  // same kind of label; two copies of a class string drift the first time one of them is tuned.
-  const fieldCls = FIELD_CLS
-  const labelCls = LABEL_CLS
-  const sectionCls = 'text-xs font-bold uppercase text-slate-500'
-  const quickCls = 'text-xs px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 font-semibold text-slate-600'
-  const waPhone = phoneWhatsApp(p.phone, null).waPhone
-
-  // ── TEMPLATE DERIVATIONS ────────────────────────────────────────────────────────────────────────
-  // 🔴 WHATSAPP IS GATED ON `whatsapp_confirmed === true` — the SAME condition the live WhatsApp link
-  // already uses on this row, so the two cannot disagree. 🧪 30 of 231 rows qualify.
-  // ⚠️ Those 30 are a backfill that took the SCRAPED hint as confirmation: all 30 carry the hint
-  // 'advertises', and there are exactly 30 'advertises' trucks — a 1:1 match. So "confirmed" here means
-  // "the truck's own listing advertises WhatsApp", NOT that anyone verified it personally. The data is
-  // not changed by this feature; the gate simply reads it.
-  const offerable = useMemo(() => templatesFor(templates ?? [], p), [templates, p])
-  // A SUGGESTION ONLY — rendered as a "(suggested)" marker on the option. Never auto-selected.
-  const suggestedId = useMemo(() => suggestTemplateId(p), [p])
-  // The substitution context for THIS row, built once and handed to the compose window. Everything is
-  // nullable; the template mechanism decides what to fill, what to drop and what to leave visible.
-  // 🔴 THE SHARED MAPPING — the Templates tab's preview builds its context with this same function, so
-  // the two surfaces cannot render different emails for the same prospect.
-  const tplCtx = useMemo(() => contextFromProspect(p), [p])
-
-  // Quick-set: a button press IS the decision, so it writes — exactly like Clear already does. Nothing
-  // is written by opening the modal, only by pressing something.
-  const setNext = (days: number) => {
-    const d = new Date(); d.setDate(d.getDate() + days)
-    const ymd = toYMD(d)
-    setNextAt(ymd); setNextTouched(true); onPatch(p.id, { next_action_at: ymd })
-  }
-
-  // 🔴 WHY THE DATE IS SET IN TWO PLACES, AND WHAT STOPS THEM FIGHTING.
-  // (a) CHOOSING A STAGE fills the field immediately, so the date is VISIBLE before committing rather
-  //     than appearing after. This is an onChange handler, NOT an effect — opening the modal fires
-  //     nothing, so "the field is empty on open" is untouched.
-  // (b) LOGGING persists it, because a stage chosen and never logged is not a commitment to anything.
-  // 🔴 `nextTouched` is what stops (b) clobbering a hand-typed date. It is set by any manual edit — the
-  // date input, a quick-set button, Clear — and reset whenever a stage is chosen. On log: touched means
-  // "the operator decided", so their value is persisted verbatim, INCLUDING an empty one they cleared.
-  const [nextTouched, setNextTouched] = useState(false)
-
-  /** Local-only: fill the field from a stage. Never writes — see (a) above. */
-  const fillNextFromKind = (k: string) => {
-    setNextAt(followUpDateFor(k, contactedAt) ?? '')
-    setNextTouched(false)
-  }
-
-  /** 🔴 THE ONE PLACE THE FOLLOW-UP DATE IS PERSISTED ON LOG — called by BOTH logging paths.
-   *  It used to live only inside `submitLog`, so logging from the COMPOSE WINDOW — the path actually
-   *  used to send — wrote a contact row and no date at all. That was a real bug; both callers now go
-   *  through here. */
-  const persistFollowUpAfterLog = (k: string) => {
-    const due = nextTouched ? (nextAt || null) : followUpDateFor(k, contactedAt)
-    setNextAt(due ?? '')
-    setNextTouched(false)
-    const patch: Record<string, unknown> = { next_action_at: due }
-
-    // ── 🔴 FREEZE THE LEAD TYPE ON THE RUNG-1 LOG, AND ONLY THERE ──────────────────────────────────
-    // WHERE: this function is the ONE place both logging paths converge — the modal's own Log button
-    // (`submitLog`) and the compose window's log control both call it, and both only on a write that
-    // SUCCEEDED. Putting the freeze anywhere else would repeat the bug this function was created to fix,
-    // where the compose path logged a contact and set no follow-up date at all.
-    //
-    // 🔴 THREE CONDITIONS, ALL NECESSARY:
-    //   • `k === CONTACT_KINDS[0]` — the rung-1 log, not any log. A chase must not re-stamp the framing
-    //     the approach was written in; that is the whole point of freezing.
-    //   • `!isLeadType(p.lead_type_at_first_contact)` — WRITE ONCE. Re-logging a first contact later, or
-    //     logging it on a second channel, must not overwrite a value already set (by an earlier log or
-    //     by hand in the control below).
-    //   • `hasLeadTypeFreeze` — the column exists. Until the migration is applied this is false and the
-    //     write is skipped entirely, so the console behaves exactly as it did before.
-    //
-    // ⚠️ `leadTypeOf`, NOT `effectiveLeadType`. Every READER uses the effective value; this is the one
-    // WRITER, and it must capture what the prospect is RIGHT NOW. (With the column null they return the
-    // same thing — but the intent differs, and the next person reading this should see which is which.)
-    if (shouldFreezeLeadType(k, p, hasLeadTypeFreeze)) {
-      patch.lead_type_at_first_contact = leadTypeOf(p)
-    }
-    onPatch(p.id, patch)
-  }
-
-  // 🔴 LOGGING NOW SETS THE FOLLOW-UP DATE — A DELIBERATE REVERSAL OF THE MANUAL'S STANDING RULE.
-  // The rule ("no date is ever suggested or written automatically") was written against a date derived
-  // from the COUNT of outbound contacts, and both of its recorded failures were properties of counting:
-  // a double-click made a first approach look like a third, and a count cannot tell chasing silence from
-  // following up an engaged prospect. 🔴 A SELECTED STAGE HAS NEITHER PROBLEM — logging the same stage
-  // twice yields the SAME date rather than a compounding one, and engagement is recorded by an inbound
-  // row ending the ladder rather than inferred from a tally.
-  //
-  // 🔴 THE OTHER HALF OF THE RULE STANDS: THIS FIRES ON LOG, NEVER ON OPEN. `nextAt` is still seeded only
-  // from `p.next_action_at ?? ''`, so the field is empty when the column is null and stays empty until
-  // this function runs.
-  //
-  // ⚠️ THE DATE ALWAYS MATCHES THE STAGE JUST LOGGED, INCLUDING WHEN THAT MEANS CLEARING IT. One rule,
-  // no hidden state: +3 / +7 / none. An existing date is overwritten because the ladder's whole point is
-  // that the latest step governs — leaving a first-contact date in place after logging a chase would
-  // leave a past date driving the work queue. And `3_chase_2` CLEARS rather than leaving a stale date
-  // behind, because a finished sequence must not sit in the overdue queue for ever. Both are visible in
-  // the field immediately and can be overridden or cleared by hand afterwards.
-  // 🔴 THE REFUSAL IS VISIBLE BEFORE THE CLICK, NOT ONLY AFTER IT. Same pure function the writer uses,
-  // over the rows already loaded for this prospect — so the button and the guard cannot disagree.
-  const submitLog = async () => {
-    if (logging) return
-    setLogging(true)
-    try {
-      // 🔴 NOTHING ELSE HAPPENS IF THE WRITE WAS REFUSED. Clearing the textarea or moving the
-      // follow-up date after a refusal would show the user the shape of a successful log.
-      const ok = await onLog(p, { channel, direction, kind, message, contacted_at: contactedAt })
-      if (!ok) return
-      setMessage('')
-      persistFollowUpAfterLog(kind)
-    }
-    finally { setLogging(false) }
-  }
-
-  return (
-    <>
-      {/* ── LEFT COLUMN — the fields I edit ───────────────────────────────────────────────────────── */}
-      {/* 🔴 THE COLUMN NO LONGER SCROLLS — THE HISTORY TABLE INSIDE IT DOES.
-          It was `self-start max-h-full overflow-y-auto`: sized to its content, with a scrollbar as a
-          safety valve. Now that history lives here it must be the shrinkable child, so the column takes
-          the full height (`min-h-0`, no `self-start`) and every sibling is `flex-shrink-0`. All of the
-          shrinkage therefore lands on history, exactly as it did in the right column. */}
-      <div className="flex flex-col gap-3 min-h-0 pr-1 max-sm:shrink-0 max-sm:pr-0">
-        {/* 🔴 EMAIL FIRST, on its own line with its own button: addresses are long and pairing one with
-            anything else truncates it. Editable — writes discovery_trucks.contact_email on blur. */}
-        <label className="block flex-shrink-0">
-          <span className={labelCls}>Email</span>
-          <div className="flex items-center gap-1">
-            <input className={fieldCls} value={email} onChange={e => setEmail(e.target.value)}
-              onBlur={() => email !== (p.contact_email ?? '') && onPatch(p.id, { contact_email: email })} />
-            {p.contact_email && <a href={`mailto:${p.contact_email}`} className={linkCls}>Email</a>}
-          </div>
-        </label>
-
-        {/* (4) 🔴 THREE CELLS IN A TWO-COLUMN GRID — FIRST | LAST, THEN PHONE UNDER THEM.
-            The name split needs two boxes where there was one, and the obvious move — widening this row
-            to `grid-cols-3` — REPRODUCES THE ROUND-TWO DEFECT ON THE DESKTOP. Arithmetic, not a guess:
-            the panel is max-w-6xl (1152), the body has p-5 and gap-5, so the 45fr column is
-            (1152 - 40 - 20) x 0.45 = 491px, less `pr-1` = 487px. At `grid-cols-3` each track is
-            (487 - 16)/3 = 157px, and the PHONE cell holds an input plus the "WA" tick: an <input> has an
-            intrinsic min-content width of roughly 177px, a grid item's min-width computes to `auto`, so
-            that cell would refuse to shrink and would overlap its neighbour — which is exactly the
-            CONTACTED ON / CHANNEL overlap that round two diagnosed and fixed.
-            Keeping TWO columns and letting the third cell wrap to its own row leaves every track at
-            (487 - 8)/2 = 239px — the width the phone field has TODAY, unchanged.
-            ⚠️ BELOW `sm` the body is a flex COLUMN, so this column is the full panel width: at 390px
-            that is 390 - 16 (overlay p-2) - 32 (panel max-sm:p-4) = 342, i.e. tracks of (342 - 8)/2 =
-            167px — BELOW the ~177px intrinsic width above, so each cell needs `max-sm:min-w-0` or it
-            overflows its track by ~10px. That is round two's remedy applied to a row round two did not
-            touch, and the phone cell needed it already. */}
-        <div className="grid grid-cols-2 gap-2 flex-shrink-0">
-          <label className="block max-sm:min-w-0">
-            <span className={labelCls}>First name</span>
-            <input className={fieldCls} value={firstName} disabled={!hasContactNames}
-              placeholder={hasContactNames ? 'First name' : 'needs the name-split migration'}
-              onChange={e => setFirstName(e.target.value)}
-              onBlur={() => hasContactNames && firstName !== (p.contact_first_name ?? '') && onPatch(p.id, { contact_first_name: firstName })} />
-          </label>
-          <label className="block max-sm:min-w-0">
-            <span className={labelCls}>Last name</span>
-            <input className={fieldCls} value={lastName} disabled={!hasContactNames}
-              placeholder={hasContactNames ? 'Last name' : 'needs the name-split migration'}
-              onChange={e => setLastName(e.target.value)}
-              onBlur={() => hasContactNames && lastName !== (p.contact_last_name ?? '') && onPatch(p.id, { contact_last_name: lastName })} />
-          </label>
-          <label className="block max-sm:min-w-0">
-            <span className={labelCls}>Phone</span>
-            <div className="flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-1">
-              <input className={fieldCls} value={phone} onChange={e => setPhone(e.target.value)}
-                onBlur={() => phone !== (p.phone ?? '') && onPatch(p.id, { phone })} />
-              <span className="flex items-center gap-1 text-xs text-slate-500 whitespace-nowrap"><WhatsAppBox p={p} onPatch={onPatch} /> WA</span>
-            </div>
-          </label>
-          {/* ── 🔴 (5) THE FROZEN LEAD TYPE — VISIBLE, AND CORRECTABLE ──────────────────────────────
-              A wrong freeze is otherwise INVISIBLE AND PERMANENT: it would quietly pick the wrong
-              `?lead_*` line in every remaining message of the sequence, and nothing on any screen would
-              say why. So it is shown, and it can be changed.
-              🔴 A FOURTH CELL IN THE SAME TWO-COLUMN GRID, NOT A THIRD COLUMN. The arithmetic is the one
-              round two established and the name split re-used: the panel is max-w-6xl (1152), the body
-              has p-5 and gap-5, so the 45fr column is (1152 - 40 - 20) x 0.45 = 491px, less `pr-1` =
-              487px, and each track is (487 - 8)/2 = 239px — the width Phone already has. Going to
-              `grid-cols-3` would give (487 - 16)/3 = 157px, under the ~177px intrinsic width of an
-              <input>, and a grid item's min-width computes to `auto` — the CONTACTED ON / CHANNEL
-              overlap all over again. A fourth cell simply wraps to row two beside Phone.
-              ⚠️ BELOW `sm` the body is a flex COLUMN, so this column is the full panel width: at 390px
-              that is 390 - 16 (overlay p-2) - 32 (panel max-sm:p-4) = 342, i.e. tracks of
-              (342 - 8)/2 = 167px. A <select>'s min-content width is its longest option — "Hatches Up —
-              map only" is wider than 167px — so `max-sm:min-w-0` is REQUIRED here exactly as it is on
-              the three cells beside it, or this cell overflows its track.
-              🔴 `fieldCls` carries `max-sm:text-base` (16px), which is what stops iOS zooming on focus.
-              Rounds 1-3 are untouched: no cell was removed, no class was dropped, and the grid is still
-              `grid-cols-2`. */}
-          <label className="block max-sm:min-w-0">
-            <span className={labelCls}>Lead type {step?.leadTypeFrozen ? '(frozen)' : '(live)'}</span>
-            <select className={fieldCls} disabled={!hasLeadTypeFreeze}
-              value={isLeadType(p.lead_type_at_first_contact) ? p.lead_type_at_first_contact : ''}
-              title={hasLeadTypeFreeze
-                ? (step?.leadTypeFrozen
-                  ? 'Frozen when the first contact was logged. Every remaining rung reads this value.'
-                  : 'Not frozen yet — derived live from HU flags, visibility and upcoming events. It freezes when a first contact is logged.')
-                : 'Needs the 20260914_outreach_lead_type_freeze migration'}
-              onChange={e => onPatch(p.id, { lead_type_at_first_contact: e.target.value })}>
-              {/* 🔴 THE EMPTY OPTION IS "DERIVE LIVE", NOT "UNKNOWN", and choosing it CLEARS the column
-                  back to null — which is how a wrong freeze is undone rather than merely re-pointed. */}
-              {/* 🔴 SHOWS THE LIVE DERIVATION, NOT `step.leadType`. On a frozen row those differ —
-                  `step.leadType` IS the frozen value — and labelling this option with it would promise
-                  that clearing the freeze changes nothing, which is exactly backwards. */}
-              <option value="">— derive live ({LEAD_TYPE_LABELS[leadTypeOf(p)]}) —</option>
-              {LEAD_TYPES.map(lt => <option key={lt} value={lt}>{LEAD_TYPE_LABELS[lt]}</option>)}
-            </select>
-          </label>
-        </div>
-
-        {(p.phone || (p.whatsapp_confirmed === true && waPhone)) && (
-          <div className="flex flex-wrap gap-1 -mt-1 flex-shrink-0">
-            {p.phone && <a href={`tel:${p.phone}`} className={linkCls}>Call</a>}
-            {p.whatsapp_confirmed === true && waPhone && <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className={linkCls}>WhatsApp</a>}
-          </div>
-        )}
-
-        {/* ── 🔴 ONE TIMELINE, WHERE TWO LISTS USED TO BE ───────────────────────────────────────────
-            🔴 THIS REPLACES THE CONTACT-HISTORY TABLE AND THE EMAILS LIST, AND THE REPLACEMENT IS
-            RECORDED RATHER THAN MADE QUIETLY. The two were kept separate on the reasoning that "the
-            history is what a person recorded; the Emails list is what the mail server did", and that
-            when they disagree a person should reconcile them. That reasoning survives — nothing
-            rewrites anything — but it did not justify TWO LISTS: the same email appeared in both, and
-            the question actually asked of this panel ("what has happened with this truck?") could only
-            be answered by merging them by eye. `buildTimeline` merges them once, and an email linked to
-            a contact row is shown as the email.
-            ⚠️ THE LOG-A-CONTACT PANEL IS UNTOUCHED, on the right, and is still the only way a call or a
-            WhatsApp gets onto the ladder.
-            ⚠️ THE TWO NONCES ARE ADDED, NOT CHOSEN BETWEEN. `messagesNonce` is this modal's own
-            ("I just sent something"); `refreshNonce` is the page's ("the list was re-read"). Both only
-            ever increase, so the sum changes whenever either does — and a reply check run from the
-            toolbar updates the timeline of the modal that is already open. */}
-        <Timeline prospect={p} nonce={messagesNonce + refreshNonce}
-          onChanged={async () => { setMessagesNonce(n => n + 1); await onReload() }}
-          onDeleteContact={c => onDeleteContact(p, c)}
-          onReply={t => { setReplyTarget(t); setComposeOpen(true) }} />
-
-        {/* ── PINNED NOTES ────────────────────────────────────────────────────────────────────────
-            🔴 RENAMED, NOT REPLACED, AND THE TWO ARE DIFFERENT THINGS. This one column holds what is
-            always true of this truck — "only answers after 3pm", "wants a call not an email". A
-            timeline note is what happened once, on a day, and it stays where it happened. Calling both
-            of them "notes" is what made the standing facts scroll away under the diary. */}
-        <label className="block flex-shrink-0">
-          <span className={labelCls}>Pinned notes</span>
-          <textarea rows={3} className={`${fieldCls} resize-y`} value={notes}
-            onChange={e => setNotes(e.target.value)}
-            onBlur={() => notes !== (p.notes ?? '') && onPatch(p.id, { notes })} />
-        </label>
-      </div>
-
-      {/* ── RIGHT COLUMN — history, then log a contact, then follow up ────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 min-h-0 max-sm:shrink-0">
-        {/* 🔴 THE COMPOSE WINDOW — portalled to <body>, layered above this modal. It writes NOTHING until
-          its own log control is pressed, and its `onLog` is the SAME `log_contact` writer this modal's
-          Log button uses; there is no second write path. */}
-      {/* 🔴 PRE-SELECTION COMES FROM THE DERIVED STEP, NOT FROM `suggestedId`. `templateForStep`
-          resolves against the LOADED list, so a retired or renamed slug yields null and the picker
-          opens empty — the historical behaviour — rather than selecting the wrong row.
-          ⚠️ It is null whenever the step is 'unknown', because `nextStep` produces no rung there: a
-          history nobody can read must never pre-load a chase.
-          🔴 `doNotContact` is what finally makes that flag block something. See ComposeWindow. */}
-      {composeOpen && (
-        <ComposeWindow
-          truckName={p.name}
-          prospectId={p.id}
-          toEmail={p.contact_email}
-          offerable={offerable}
-          suggestedId={suggestedId}
-          initialTemplateId={step ? templateForStep(step, offerable).slug : null}
-          doNotContact={p.do_not_contact === true}
-          ctx={tplCtx}
-          whatsappConfirmed={p.whatsapp_confirmed === true}
-          templatesLoaded={templates !== null}
-          logFormKind={kind}
-          snippets={snippets}
-          replyTo={replyTarget}
-          onClose={() => { setComposeOpen(false); setReplyTarget(null) }}
-          onSent={async () => { setMessagesNonce(n => n + 1); await onReload() }}
-          onLog={async (editedBody, ch, servesKind) => {
-            // 🔴 `editedBody` IS THE TEXTAREA'S CURRENT VALUE, passed straight through to the writer.
-            // It is never re-rendered from the template here — if the two diverge, what was edited is
-            // what gets stored. `contacted_at` still comes from the log form.
-            //
-            // 🔴 BUT `kind` NO LONGER DOES, WHEN THE TEMPLATE HAS AN OPINION. This block used to read
-            // "respects what is already selected there rather than inventing its own", and that is
-            // exactly how a chaser sent to Pizza Mondo was logged as a FIRST CONTACT: the dropdown had
-            // not been touched, so the history recorded an approach that never happened — and the
-            // derived step, the follow-up interval and the whole queue read that history.
-            // A TAGGED template states its own rung and wins. An UNTAGGED one passes null and the
-            // dropdown governs, byte for byte as before — which is every template today.
-            const effectiveKind = servesKind ?? kind
-            const ok = await onLog(p, {
-              channel: ch, direction: 'outbound', kind: effectiveKind,
-              message: editedBody, contacted_at: contactedAt,
-            })
-            // 🔴 THE BUG THIS FIXES: this path logged a contact and set NO follow-up date, because the
-            // populate lived inside `submitLog` and the compose window does not call it. Logging from
-            // the compose window is the path actually used to send, so the feature never fired there.
-            // 🔴 AND IT RESPECTS A REFUSAL. `false` leaves the window un-logged, so the compose window
-            // does not mark a send that was never recorded; the reason arrives as the writer's toast.
-            // 🔴 THE SAME effective kind, or the follow-up date would be counted from a rung that
-            // was never logged — 3 days for a "first contact" that was actually a final chase.
-            if (ok) persistFollowUpAfterLog(effectiveKind)
-            return ok
-          }}
-        />
-      )}
-
-
-        <p className={`${sectionCls} flex-shrink-0`}>Log a contact</p>
-        {/* 🔴 SAID HERE BECAUSE THIS IS WHERE HE WOULD OTHERWISE DO IT BY HAND. Logging a reply that
-            the poll has already logged puts two inbound rows on one email, and §57 reads that ladder. */}
-        <p className="text-[11px] text-slate-500 flex-shrink-0 -mt-1 mb-1">
-          Email replies are logged automatically — only log calls, WhatsApp and anything sent outside this page.
-        </p>
-        {/* (6) FOUR CONTROLS ON ONE ROW — they fit at this width (the modal is max-w-6xl, so a column is
-            ~540px and each control gets ~130px). Date first: it is the one most often changed. */}
-        <div className="grid grid-cols-4 gap-2 flex-shrink-0 max-sm:grid-cols-2">
-          {/* 🔴 CAPPED AT TODAY. A contact cannot have happened in the future, and a mistyped future date
-              would sort to the top of history and take `last contacted` with it. Past dates are free. */}
-          {/* 🔴 LABELLED, AND THIS IS THE ACTUAL FIX FOR THE "next action shows today" REPORT. This input
-              defaults to today BY DESIGN (a contact almost always happened today) and was the only
-              UNLABELLED control in the modal — two bare date boxes, one showing today. `nextAt` never
-              held today; this did. Both now say which is which. */}
-          <label className="block max-sm:min-w-0">
-            <span className={labelCls}>Contacted on</span>
-            <input type="date" className={fieldCls} value={contactedAt} max={today}
-              onChange={e => setContactedAt(e.target.value)} title="When this contact happened (cannot be in the future)" />
-          </label>
-          <label className="block max-sm:min-w-0"><span className={labelCls}>Channel</span>
-            <select className={fieldCls} value={channel} onChange={e => setChannel(e.target.value)}>
-              {CONTACT_CHANNELS.map(c => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
-            </select>
-          </label>
-          <label className="block max-sm:min-w-0"><span className={labelCls}>Direction</span>
-            {/* 🔴 CHANGING DIRECTION CHANGES KIND, because the two are not independent: an inbound row
-                can only be a reply, and a reply is not a rung of the outbound ladder. Switching to
-                inbound selects Reply (and clears the follow-up date, since a reply ends the sequence);
-                switching back to outbound restores the first rung rather than leaving Reply selected
-                on an outbound row, which is exactly the mislabelled state the live Azahar rows are in. */}
-            <select className={fieldCls} value={direction}
-              onChange={e => {
-                const d = e.target.value
-                setDirection(d)
-                const k = kindsForDirection(d).includes(kind) ? kind : defaultKindFor(d)
-                if (k !== kind) { setKind(k); fillNextFromKind(k) }
-              }}>
-              {CONTACT_DIRECTIONS.map(d => <option key={d} value={d}>{directionLabel(d)}</option>)}
-            </select>
-          </label>
-          <label className="block max-sm:min-w-0"><span className={labelCls}>Kind</span>
-            {/* 🔴 CHOOSING A STAGE FILLS THE FOLLOW-UP DATE IMMEDIATELY (local only, not written). */}
-            <select className={fieldCls} value={kind}
-              onChange={e => { setKind(e.target.value); fillNextFromKind(e.target.value) }}>
-              {/* 🔴 SORTED BY kindOrder, NOT BY LABEL. The labels lost their numeric prefix, so
-                  alphabetical order would now read Chase 1, Chase 2, First contact. The order is the
-                  array position in CONTACT_KINDS, exported as kindOrder. */}
-              {[...kindsForDirection(direction)].sort((a, b) => kindOrder(a) - kindOrder(b))
-                .map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
-            </select>
-          </label>
-        </div>
-        {/* ── COMPOSE FROM TEMPLATE ────────────────────────────────────────────────────────────────
-            🔴 THE PICKER, THE SUBJECT PREVIEW, THE "STILL TO FILL" BANNER AND THE FOOTER PREVIEW ALL
-            MOVED OUT of this block into ComposeWindow. This block was too small to read an email in,
-            which was the whole complaint. What is left here is the log form itself.
-            🔴 THIS BUTTON OPENS A WINDOW. It writes nothing. */}
-        <button
-          onClick={() => setComposeOpen(true)}
-          className="w-full text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0">
-          Compose from template…
-        </button>
-
-        {/* ~8 rows at rest (was 2 — too small to paste an email into), still resizable. */}
-        <textarea className={`${fieldCls} resize-y flex-shrink-0`} rows={8} placeholder="Message body (optional)"
-          value={message} onChange={e => setMessage(e.target.value)} />
-
-        {/* ── FOLLOW UP ON — 🔴 MOVED ABOVE THE BUTTON (was directly under it). The order of the controls now
-            matches the order of the work: read the history, write the message, set the date, then commit.
-            A control that sits BELOW the button that commits is a control you find after committing.
-            ⚠️ Logging also writes this field — see submitLog — so what is shown here immediately after a
-            log is the date that stage implies, and it can be overridden or cleared right here.
-            🔴 THE FIELD IS EMPTY WHEN THE COLUMN IS NULL. `nextAt` is seeded from `p.next_action_at ?? ''`
-            and re-seeded from the same expression on every prev/next — there is no path that puts today
-            in it except pressing a button. 🧪 230 of 231 rows are null and render blank; Tikka Tonic
-            (2026-09-14) still renders its stored date. The write behaviour is UNCHANGED. */}
-        <div className="flex-shrink-0 border-t border-slate-100 pt-2">
-          <span className={labelCls}>Follow up on</span>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <input type="date" className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm max-sm:text-base max-sm:py-2" value={nextAt}
-              onChange={e => { setNextAt(e.target.value); setNextTouched(true) }}
-              onBlur={() => nextAt !== (p.next_action_at ?? '') && onPatch(p.id, { next_action_at: nextAt || null })} />
-            <button onClick={() => setNext(1)} className={quickCls}>Tomorrow</button>
-            <button onClick={() => setNext(3)} className={quickCls}>+3 days</button>
-            <button onClick={() => setNext(7)} className={quickCls}>+1 week</button>
-            <button onClick={() => { setNextAt(''); setNextTouched(true); onPatch(p.id, { next_action_at: null }) }}
-              className={quickCls}>Clear</button>
-          </div>
-        </div>
-
-        <button onClick={submitLog} disabled={logging}
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold py-1.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
-          {logging ? 'Logging…' : 'Log contact'}
-        </button>
-
-
-      </div>
-    </>
-  )
-}

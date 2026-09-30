@@ -63,11 +63,23 @@ export interface FollowUpDue {
   daysOverdue: number
 }
 
+/** A reply that has been put off, and when it comes back. */
+export interface SnoozedReply extends WaitingReply {
+  snoozed_until: string
+}
+
 export interface TodayView {
   replies: WaitingReply[]
   chasers: ChaserDue[]
   followUps: FollowUpDue[]
   problems: ProblemEmail[]
+  /**
+   * 🔴 SNOOZED REPLIES, LISTED SO NOTHING IS EVER INVISIBLE. A snooze hides a reply from the four
+   * sections above — that is its whole job — but "hidden until I decide otherwise" and "gone" are
+   * different things, and only one of them is safe. They are NOT counted in `total`: the tab's number
+   * is work waiting NOW, and a snoozed reply is by definition not.
+   */
+  snoozed: SnoozedReply[]
   /** Every row across the four sections — what the tab counts. */
   total: number
 }
@@ -82,6 +94,8 @@ export function daysBetween(from: string, to: string): number {
 
 export function buildToday(input: {
   waiting: readonly WaitingReply[]
+  /** Replies hidden until their snooze expires. Listed, never counted. */
+  snoozed?: readonly SnoozedReply[]
   prospects: readonly TodayProspect[]
   problems: readonly ProblemEmail[]
   /** 'YYYY-MM-DD' in Europe/London. Passed in so the answer does not depend on the device's clock. */
@@ -131,8 +145,12 @@ export function buildToday(input: {
     String(a.message_date ?? '') < String(b.message_date ?? '') ? 1
       : String(a.message_date ?? '') > String(b.message_date ?? '') ? -1 : 0)
 
+  // Soonest to return first: the next one to come back is the one worth seeing.
+  const snoozed = [...(input.snoozed ?? [])].sort((a, b) =>
+    a.snoozed_until < b.snoozed_until ? -1 : a.snoozed_until > b.snoozed_until ? 1 : 0)
+
   return {
-    replies, chasers, followUps, problems,
+    replies, chasers, followUps, problems, snoozed,
     total: replies.length + chasers.length + followUps.length + problems.length,
   }
 }

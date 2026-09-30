@@ -129,7 +129,15 @@ async function runSuite(make) {
     ['🔴 the ref is released in a finally', /\} finally \{[\s\S]{0,200}?logInFlight\.current = false/.test(SRC)],
     ['🔴 onClose() is called on success', /if \(ok\) \{[\s\S]{0,900}?onClose\(\)/.test(SRC)],
     ['the button is disabled while logging', /disabled=\{logging \|\| logged \|\| !body\.trim\(\)\}/.test(SRC)],
-    ['🔴 nothing is merged by hand — the panel re-reads via load()', /logContact[\s\S]*?await load\(\)/.test(fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8'))],
+    /* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM
+     * workspace). This read `logContact … await load()` in `OutreachPanel.tsx`, where the prospect
+     * modal's log form lived. The prospect view is a page now and its log paths are in
+     * `ProspectWorkspace.tsx`; the LIST no longer logs anything at all. The rule is unchanged — a
+     * log is never merged into local state by hand, the surface re-reads — and it is asserted
+     * against the file that now does the logging. */
+    ['🔴 nothing is merged by hand — the page re-reads after every log',
+      /action: 'log_contact'/.test(fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8'))
+      && /await reloadAll\(\)/.test(fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8'))],
   ]
   const sf = []
   for (const [n, okk] of checks) { if (!okk) sf.push(n); console.log(`  ${okk ? '✓' : '🔴'} ${n}`) }

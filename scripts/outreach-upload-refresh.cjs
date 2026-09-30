@@ -57,13 +57,20 @@ function runSuite(src) {
   t('failures still throw rather than silently reloading', /if \(!res\.ok\) throw new Error/.test(body))
 
   // 🔴 THE DELETE PATH IS DELIBERATELY *NOT* CHANGED — see the reason recorded at that call site.
-  // ⚠️ RAW, NOT STRIPPED: two of these three deliberately assert that a REASON IS WRITTEN DOWN, which
-  // lives in a comment. The executable assertion above it uses the stripped body.
-  const del = src.slice(src.indexOf('const deleteMedia = useCallback('))
-  t('the DELETE path still clears optimistically (decision recorded in the code)',
-    /\[kind === 'logo' \? 'logo_url' : 'photo_url'\]: null/.test(del))
-  t('…and its reason is written down, not just done', /ADDS NO FALLBACK to `discovery_trucks\.logo_url`/.test(del))
-  t('the delete toast is kept', /showToast\(data\?\.fileNote/.test(del))
+  /* 🔴 STALE ANCHORS, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM workspace).
+   * `deleteMedia` lived in `OutreachPanel.tsx` because the only way to delete a logo was the prospect
+   * MODAL. The prospect is a page now and the delete moved with it, into the ⋯ menu of
+   * `ProspectWorkspace.tsx` — and one thing genuinely CHANGED, which is why these are restated
+   * rather than re-pointed: the page RE-READS instead of clearing the slot optimistically. The old
+   * comment justified the optimistic clear by the cost of re-reading 231 rows; this page holds one
+   * row, so the slot can show what the column actually says. The two rules worth keeping are
+   * asserted below: the server's file note reaches a person, and the delete never guesses. */
+  const page = fs.readFileSync(path.join(REPO, 'components/admin/ProspectWorkspace.tsx'), 'utf8')
+  const del = page.slice(page.indexOf('const removeMedia = async ('))
+  t('the DELETE path re-reads rather than clearing the slot optimistically',
+    /if \(r\.ok\) await onRefresh\(\)/.test(del) && !/logo_url'\]: null/.test(del))
+  t('…and its reason is written down, not just done', /RE-READ RATHER THAN CLEAR OPTIMISTICALLY/.test(del))
+  t("the server's file note still reaches a person", /j\.fileNote \?\? j\.note/.test(del))
   return { ok, fails }
 }
 

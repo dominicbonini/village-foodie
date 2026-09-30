@@ -138,6 +138,7 @@ interface Thread {
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
+  inline, onDirtyChange,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -186,6 +187,15 @@ export default function ComposeWindow({
    * or a recipient that is neither the truck's address nor one that has written to us.
    */
   replyTo?: ReplyTarget | null
+  /**
+   * 🔴 RENDER IN PLACE INSTEAD OF OVER THE PAGE. The prospect workspace puts this above the timeline
+   * it is answering; a floating panel would cover the conversation it exists to reply to. NOTHING
+   * ELSE CHANGES — the same fields, the same guards, the same refusals, the same send.
+   * ⚠️ Omitted ⇒ the portalled window, byte for byte as before, for any caller that still wants one.
+   */
+  inline?: boolean
+  /** Tells the host whether there is unsaved text, so switching panels can ask before discarding. */
+  onDirtyChange?: (dirty: boolean) => void
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -603,6 +613,11 @@ export default function ComposeWindow({
    *  business from the one stored on the truck. ⚠️ Display only — the route re-derives and re-checks it. */
   const toEmailForReply = replyTo?.fromAddress ?? null
 
+  // ⚠️ ONE SIGNAL, DERIVED FROM WHAT IS ALREADY TRACKED. `edited` is set by every keystroke in the
+  // editor and cleared on a template change; the host only needs to know whether discarding would
+  // lose something a person typed.
+  useEffect(() => { onDirtyChange?.(edited && !logged) }, [edited, logged, onDirtyChange])
+
 
   const post = useCallback(async (payload: Record<string, unknown>) => {
     const r = await fetch('/api/admin/outreach/mail-send', {
@@ -954,36 +969,13 @@ export default function ComposeWindow({
   }
 
   if (!mounted) return null
-  return createPortal(
-    // 🔴 THE z-index IS AN INLINE STYLE, NOT A `z-[85]` CLASS, AND THAT IS THE BUG FIX.
-    // It shipped as `className="… z-[85] …"` and the window painted BEHIND the prospect modal. The cause
-    // was NOT a stacking context — it was measured: `z-[85]` is an ARBITRARY Tailwind utility that no
-    // other file in the repository uses, so the rule `.z-\[85\]` exists only once the JIT has scanned
-    // this file. Until it did, the element resolved to `z-index: auto`, and a `position: fixed` element
-    // with `auto` paints at the same level as `0` — underneath the modal's `z-50`. Everything else
-    // (`fixed`, `inset-0`, `max-w-4xl`) is used by pre-existing files, so the window was still laid out
-    // full-viewport and centred; only the paint order was wrong, which is exactly what was observed.
-    // 🧪 Proven both ways in a real browser with this component: with the rule the compose panel paints
-    // on top; with ONLY that rule deleted, `elementFromPoint` at the centre returns the modal's grid.
-    // 🔴 RAISING THE NUMBER WOULD HAVE MADE IT WORSE — `z-[9999]` is another brand-new arbitrary value
-    // with the same dependency on a scan having happened. An inline style is not a stylesheet rule, so
-    // it cannot be absent from one. The VALUE is unchanged at 85; only its delivery changed.
-    <div style={{ zIndex: 85 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
-      role="presentation">
-      {/* 🔴 THE BACKDROP NO LONGER CLOSES THIS WINDOW, AND THE HANDLER IS REMOVED RATHER THAN GUARDED.
-          It used to be `onClick={onClose}` with `stopPropagation` on the dialog, so any click that
-          missed the panel — including a click that STARTED inside the textarea and ended outside it
-          while selecting text — threw the draft away with no warning and no undo.
-          ⚠️ A guarded version ("close only when clean") was rejected: a backdrop that sometimes closes
-          and sometimes does not is a control nobody can predict, and the window has a Close button two
-          inches away. Escape keeps the clean/dirty distinction because it has an accessibility role to
-          play; a backdrop click has none.
-          🔴 `stopPropagation` ON THE DIALOG IS GONE TOO — it existed only to stop clicks inside the
-          panel reaching the backdrop handler that no longer exists. Leaving it would be a guard against
-          nothing, and the next reader would have to work out what it was for. */}
-      <div role="dialog" aria-modal="true" aria-labelledby="compose-title"
-        className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden">
+  // 🔴 THE PANEL ITSELF, IDENTICAL IN BOTH MODES. Only the wrapper differs: a card in the page, or
+  // the same card centred over a backdrop.
+  const panel = (
+      <div role="dialog" aria-modal={!inline} aria-labelledby="compose-title"
+        className={inline
+          ? 'bg-white rounded-xl border border-slate-200 w-full flex flex-col overflow-hidden'
+          : 'bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden'}>
 
         <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
           <h4 id="compose-title" className="text-base font-semibold text-slate-900 truncate">
@@ -995,7 +987,7 @@ export default function ComposeWindow({
           </button>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3">
+        <div className={inline ? 'px-5 py-4 space-y-3' : 'flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3'}>
           <label className="block">
             <span className={LABEL}>Template</span>
             <select className={FIELD} value={templateId} onChange={e => applyTemplate(e.target.value)}>
@@ -1481,6 +1473,29 @@ export default function ComposeWindow({
           </div>
         </div>
       </div>
+  )
+
+  // 🔴 INLINE IS THE CARD ON ITS OWN. No backdrop, no portal, no z-index — there is nothing to sit
+  // over, and a `position: fixed` panel inside a page would scroll independently of the timeline it
+  // is answering. ⚠️ The height cap goes with it: the PAGE scrolls, so a panel that scrolled inside
+  // a cap would put two scrollbars beside each other.
+  if (inline) return panel
+
+  // 🔴 THE z-index IS AN INLINE STYLE, NOT A `z-[85]` CLASS, AND THAT IS A BUG FIX WORTH KEEPING.
+  // It shipped as `className="… z-[85] …"` and the window painted BEHIND the prospect modal. The
+  // cause was NOT a stacking context — it was measured: `z-[85]` is an ARBITRARY Tailwind utility
+  // that no other file in the repository uses, so the rule exists only once the JIT has scanned this
+  // file. Until it did, the element resolved to `z-index: auto`, and a `position: fixed` element
+  // with `auto` paints at the same level as `0` — underneath the modal's `z-50`. An inline style is
+  // not a stylesheet rule, so it cannot be absent from one.
+  // ⚠️ THE MODAL THIS SAT OVER IS GONE (the prospect view is a page), so this branch has no caller
+  // in the app today. It is kept because the component's contract is "a compose window", and a
+  // future caller that wants one over something should get the fixed version that was proven.
+  return createPortal(
+    <div style={{ zIndex: 85 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
+      role="presentation">
+      {panel}
     </div>,
     document.body,
   )

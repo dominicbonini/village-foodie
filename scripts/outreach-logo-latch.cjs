@@ -15,7 +15,16 @@
 const fs = require('fs')
 const path = require('path')
 const REPO = path.resolve(__dirname, '..')
+/* 🔴 A STALE ANCHOR, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, CRM workspace).
+ * `useThumbLatch`, `ModalThumb` and `MediaCell` all lived in `components/admin/OutreachPanel.tsx`
+ * because the prospect view was a modal inside it. The prospect view is a PAGE now, so the shared
+ * pieces — the hook and the header thumbnail — moved to `components/admin/outreach-shared.tsx`
+ * UNCHANGED, and `MediaCell` (the table's own cell) stayed behind. Nothing about the latch changed:
+ * the rule is still one reset on `[value, refreshNonce]`, in one hook, read by both thumbs. The
+ * census therefore reads BOTH files, and says which fact it expects to find in which. */
 const SRC = fs.readFileSync(path.join(REPO, 'components/admin/OutreachPanel.tsx'), 'utf8')
+const SHARED = fs.readFileSync(path.join(REPO, 'components/admin/outreach-shared.tsx'), 'utf8')
+const BOTH = SRC + '\n' + SHARED
 
 /** The thumb, as implemented: `broken` resets only on a CHANGE of `value`. */
 function makeThumb(resetsOn = 'value') {
@@ -106,16 +115,20 @@ for (const n of r.fails) console.log('  🔴 ' + n)
 
 console.log('\n── THE SOURCE: both thumbs read the nonce, through ONE shared hook ──────────────────────')
 const checks = [
-  ['🔴 the shared hook resets on [value, refreshNonce]', /useEffect\(\(\) => \{ setBroken\(false\) \}, \[value, refreshNonce\]\)/.test(SRC)],
-  ['there is ONE latch implementation, not two', (SRC.match(/const \[broken, setBroken\] = useState\(false\)/g) || []).length === 1],
-  ['MediaCell uses the shared hook', /const \{ broken, onError: onThumbError \} = useThumbLatch\(\{\s*\n?\s*value, src, refreshNonce, kind, name: p\.name,/.test(SRC)],
-  ['ModalThumb uses the shared hook', /const \{ broken, onError: onThumbError \} = useThumbLatch\(\{ value, src, refreshNonce, kind: label, name \}\)/.test(SRC)],
-  ['both <img> elements call the hook\'s onError', (SRC.match(/onError=\{onThumbError\}/g) || []).length === 2],
+  ['🔴 the shared hook resets on [value, refreshNonce]', /useEffect\(\(\) => \{ setBroken\(false\) \}, \[value, refreshNonce\]\)/.test(SHARED)],
+  ['⚠️ …and it is declared ONCE, in the shared module both surfaces import',
+    (BOTH.match(/function useThumbLatch\(/g) || []).length === 1],
+  // ⚠️ ACROSS BOTH FILES NOW: the hook is in the shared module and `MediaCell` is in the panel, so
+  // "one implementation" is a fact about the pair rather than about either file.
+  ['there is ONE latch implementation, not two', (BOTH.match(/const \[broken, setBroken\] = useState\(false\)/g) || []).length === 1],
+  ['MediaCell uses the shared hook', /const \{ broken, onError: onThumbError \} = useThumbLatch\(\{\s*\n?\s*value, src, refreshNonce, kind, name: p\.name,/.test(BOTH)],
+  ['ModalThumb uses the shared hook', /const \{ broken, onError: onThumbError \} = useThumbLatch\(\{ value, src, refreshNonce, kind: label, name \}\)/.test(BOTH)],
+  ['both <img> elements call the hook\'s onError', (BOTH.match(/onError=\{onThumbError\}/g) || []).length === 2],
   ['🔴 load() bumps the nonce, and only after a successful read', /setRefreshNonce\(x => x \+ 1\)/.test(SRC)
      && SRC.indexOf('setProspects(data.prospects || [])') < SRC.indexOf('setRefreshNonce(x => x + 1)')],
-  ['the nonce reaches the row through a prop (Row is memo-wrapped)', /refreshNonce=\{refreshNonce\}/.test(SRC)],
+  ['the nonce reaches the row through a prop (Row is memo-wrapped)', /refreshNonce=\{refreshNonce\}/.test(BOTH)],
   ['🔴 the onError warning carries the prefix, kind, name, src and an ISO timestamp',
-    /console\.warn\(`\[outreach-thumb\] \$\{kind\} failed to load for \$\{name\} — src=\$\{src \?\? ''\} at \$\{new Date\(\)\.toISOString\(\)\}`\)/.test(SRC)],
+    /console\.warn\(`\[outreach-thumb\] \$\{kind\} failed to load for \$\{name\} — src=\$\{src \?\? ''\} at \$\{new Date\(\)\.toISOString\(\)\}`\)/.test(BOTH)],
   ['🔴 NO cache-buster was added to the src', !/\?t=|&t=|cacheBust|Date\.now\(\)\}`/.test(SRC.slice(SRC.indexOf('function useThumbLatch'), SRC.indexOf('function MediaCell')))],
 ]
 const sf = []

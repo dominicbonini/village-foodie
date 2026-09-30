@@ -47,6 +47,7 @@
     "outreach-reply-attach.cjs",
     "outreach-stage-advance.cjs",
     "outreach-upload-refresh.cjs",
+    "outreach-workspace.cjs",
     "peak-ceiling-rule.cjs",
     "peak-load-rule.cjs",
     "printing-copy.cjs",
