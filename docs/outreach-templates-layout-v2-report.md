@@ -223,12 +223,80 @@ const full = tpl.channel === 'email' && sendSettings
 
 ---
 
-## 9 · The harness
+## 9 · The values box drawn across the message — raised mid-build
 
-`scripts/outreach-templates-layout.cjs` — **83 checks, 13 broken variants, all failing as
+### The symptom
+
+At the bottom of the message box, the **"Values this message fills in"** block and the red
+**"Half of a conditional pair"** warning were painted **on top of** the textarea.
+
+### Diagnosis
+
+A flex item's default **`flex-shrink: 1`**. When the editor column ran out of room, every block in
+it was squeezed — and **a squeezed block does not squeeze what is inside it**. The `rows={15}`
+textarea kept its 404px, spilled out of the wrapper that had been shrunk around it, and the blocks
+below, being later siblings, were painted over the spill. Nothing was absolutely positioned; there
+was no z-index anywhere near it.
+
+**It could not be fixed leaf by leaf, and the first attempt proved that.** Putting `shrink-0` on
+every block changed nothing measurable, because the write section was **two wrappers deep** and
+both were `flex-1 min-h-0`:
+
+```
+column  (h-full, overflow-y-auto)
+└─ write block      flex-1 min-h-0      ← absorbs the shortfall
+   └─ space-y-3     flex-1 min-h-0      ← absorbs it again
+      └─ label (block) → textarea rows=15, 404px, spills out of both
+```
+
+An ancestor that may shrink below its own content will take the shortfall and let the content
+overflow, whatever its children say about shrinking.
+
+### The fix
+
+**One flex column, one item that gives.**
+
+- Both wrappers are gone. The divider they carried is its own line (`shrink-0 border-t`).
+- Every block with a size of its own is `shrink-0`.
+- The **message** is the single flexible item: `flex-1` with a **`min-h-[7rem]` floor**. Below that
+  it stops shrinking, the column overflows, and the scroller does what it is for — rather than the
+  writing box being squeezed towards nothing while the column goes on "fitting".
+- **`resize-y` is gone.** Dragging set an inline height the column then fought, which is the same
+  overlap by another route, and a box that already fills the pane has nothing to be dragged into.
+- **Save moved OUT of the scroller.** It was the last item inside it on `mt-auto` — fine until the
+  editor actually scrolls, at which point the button scrolls away with it. It is pinned under the
+  scroller now, on screen at every height.
+
+### Measured, both engines, on the real shell fixture
+
+The fixture's centre pane is **the editor's own blocks** now, not one filler div — an overlap
+cannot happen to a filler, which is exactly why the earlier fixture passed while the real page was
+wrong.
+
+| | Chromium | WebKit |
+|---|---|---|
+| 1440×800 — 8 blocks in order, no overlap | ✓ | ✓ |
+| 1440×800 — message ends where the values box begins | 583 ≤ 595 | 583 ≤ 595 |
+| 1440×800 — Save on screen, below the scroller | 715–755 | 715–755 |
+| 2560×1400 — same three | ✓, 1183 ≤ 1195, 1315–1355 | identical |
+| **1440×800 CONTROL — the pre-fix shape** | **REPRODUCED: the values box lands 134px up inside the message** | **REPRODUCED, 134px** |
+| 1440×600 short window — message keeps its floor | 112px | 112px |
+| 1440×600 — the **pane** scrolls, the page does not | ✓ | ✓ |
+| 1440×600 — nothing overlaps, Save still on screen | ✓, 515–555 | ✓, 515–555 |
+
+The control is the point: a no-overlap check that has not been shown catching an overlap is not a
+check.
+
+---
+
+## 10 · The harness
+
+`scripts/outreach-templates-layout.cjs` — **86 checks, 16 broken variants, all failing as
 required.** New in v2: V8 (the second tab row returns), V9 (`usedIn(draft.id)` again), V10 (an
-orange Save), V12 (the preview stops at `m.body`), V13 (`{{signature}}` stops being placed at all).
-V7 was re-anchored to the measured height, because the constant it used to break no longer exists.
+orange Save), V12 (the preview stops at `m.body`), V13 (`{{signature}}` stops being placed at all),
+V14 (the message loses its floor), V15 (Save goes back inside the scroller on `mt-auto`), V16 (the
+two shrinkable wrappers come back). V7 was re-anchored to the measured height, because the constant
+it used to break no longer exists.
 
 The signature checks run the **compiled `lib/outreach-doc.ts`**, not a regex over the panel: the
 signature lines appear, the opt-out sentence appears, neither token is left standing, the blank
@@ -242,25 +310,32 @@ token, and the resolver still defers both.
 | `…full height below the switcher, and each pane scrolls on its own`, pinning `height: 'calc(100vh - 12rem)'` | **That constant is the bug of item 4.** A check that pins it would require the defect. Its second half counted two panes carrying one class string; v2 gave two of the three panes a different shape for good reasons, so counting one string would now pass on **one** scrolling pane out of three | pins the **measured** height on the panes' own style, and names **each of the three panes at the shape it actually has**. The measurement itself is checked in the v2 block, which owns it |
 | `…and the older tags are still SHOWN, read-only` | Item 5 **deleted** that line — it was one of the three prose lines the chips replace, describing tags that stopped deciding anything when the sequence grid took over. Requiring it *and* forbidding it would be a contradiction | the requirement is **inverted**: the older-tags line went with the rest of the prose. The v2 block checks the same absence from the other side, with the two lines that went with it |
 
-A third check — the braces hint — **failed for real** and was a genuine gap: the hint had been
+Three more were restated after the overlap fix, for the same reason and in the same way: the
+pane-scroll check now names the centre pane's **inner** scroller (the pane itself no longer
+scrolls — its body does, so that Save can sit outside it), Save's check pins `shrink-0 … pt-2` and
+**forbids `mt-auto`** rather than requiring it, and the editor column's class string lost its
+`overflow-y-auto` to the scroller inside it.
+
+A third v1 check — the braces hint — **failed for real** and was a genuine gap: the hint had been
 deleted with the "Write it" paragraph and not put back. It is item 3's explicit requirement, and
 §3 above is where it now lives.
 
 ---
 
-## 10 · Verification
+## 11 · Verification
 
 | | |
 |---|---|
 | `npx tsc --noEmit` | clean |
 | `npx next build` | compiled successfully, 96 static pages |
-| `node scripts/outreach-templates-layout.cjs` | **83 passed**, 13 variants failing as required |
+| `node scripts/outreach-templates-layout.cjs` | **86 passed**, 16 variants failing as required |
 | `node scripts/outreach-templates-render.cjs` | **both views measure correct** — Chromium + WebKit |
 | `node scripts/outreach-workspace-render.cjs` | the layout measures correct — the prospect page still scrolls |
 | `node scripts/run-harnesses.cjs` | **73 run · 73 passed · 0 failed** |
 | goldens | `batch-rolling-golden.json` `8bdae817748ad334…`, `batch-reservation-golden-on.json` `e3f0a88099fd797c…` — **unchanged** |
 | eslint, changed files vs a worktree of HEAD | **13 errors / 2 warnings, both trees** — identical. Two warnings appeared mid-build (`kindLabel` and `match` left unused by the deleted prose) and were fixed by deleting the dead code, not by silencing them |
-| deploy | production serves `/_next/static/chunks/33aa84943363e635.js` **byte-identical** to the local build of `c0ea398` (sha256 `1608ba41ad0c6a91…`): it contains "Signature and opt-out from Settings" and no "Older tags on this row" |
+| eslint, `TemplatesPanel.tsx` after the overlap fix | 3 errors, **0 warnings** — the file's pre-existing baseline |
+| deploy | production serves `/_next/static/chunks/0b8db04b9bbcbbe0.js` **byte-identical** to the local build of `11229e3` (sha256 `fb42b50d609c5814…`), at 23:11:04Z |
 
 **Nothing was written.** No `outreach_templates` row was created, edited, seeded or deactivated —
 the only writer is still the editor's own Save, and the harness re-proves it by walking `app`,
@@ -270,7 +345,7 @@ run, no email was sent, no database change was made, and every sequence guard an
 
 ---
 
-## 11 · What to test
+## 12 · What to test
 
 1. **The gap.** Open **Templates**. The switcher sits just under the tab strip, in both views.
 2. **One tab row.** There is no second row. **Snippets (2)** and **Signature** are at the foot of
@@ -279,7 +354,10 @@ run, no email was sent, no database change was made, and every sequence guard an
    line under the Message label.
 4. **The scroll, in Safari on the 16″ MBP and on the 27″ monitor.** The page itself does not
    scroll in either view. **Save** is visible without scrolling, with a long message in the box.
-   Drag the message box taller by its resize handle and the page still does not scroll.
+   The message box no longer has a drag handle — it fills the space it is given.
+   **The overlap:** nothing is drawn across the bottom of the message. Make the window short (drag
+   it down to about half the screen): the editor scrolls inside its own pane, the message keeps a
+   usable height, and **Save stays put at the bottom of the pane**.
 5. **The panes.** The template list scrolls on its own; the message box scrolls on its own; the
    preview scrolls on its own with the picker fixed at the top and the Dropped/Signature line at
    the bottom.
