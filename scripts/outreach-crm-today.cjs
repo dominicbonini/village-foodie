@@ -506,9 +506,18 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
       check(UI.includes(s), `Today has its "${s}" section`)
     }
     // 🔴 THE THREE ACTIONS THE EMAILS LIST CARRIED ARE STILL ON THE ROWS THAT NEED THEM.
-    for (const a of ["'retry'", "'save_to_sent'", "'log_only'"]) {
+    /* 🔴 RESTATED (30 September 2026): `'log_only'` IS NO LONGER A STRING IN THE TIMELINE, and that
+     * is the point of the change rather than a regression. The row's "log it" button — the repair
+     * for an email the server sent while the log write failed — became "Record as Chase 1", which
+     * covers the much commoner case of an email typed in OUTLOOK and carries the step's follow-up
+     * with it. The ACTION is unchanged and so is the writer: the page posts `log_only` to the send
+     * route, which calls `logOutreachContact` and links the contact to that message. What moved is
+     * which component names it. */
+    for (const a of ["'retry'", "'save_to_sent'"]) {
       check(TL.includes(a), `…and the timeline kept ${a}`)
     }
+    check(/action: 'log_only', message_row_id: messageId, kind/.test(PAGE),
+      "…and `log_only` is still posted, by the page's \"Record as <step>\"")
     check(/const onSend = action === 'retry' \|\| action === 'save_to_sent' \|\| action === 'log_only'/.test(PAGE),
       '…routed to the send route, as they always were')
     check(/const reloadAll = useCallback\(async \(\) => \{ await Promise\.all\(\[load\(\), reloadTimeline\(\)\]\) \}/.test(PAGE),

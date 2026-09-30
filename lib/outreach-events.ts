@@ -93,3 +93,65 @@ export async function recordSendOverride(
     .insert({ prospect_id: prospectId, kind: 'note', body })
   return { ok: !error, error: error ? error.message : null }
 }
+
+/**
+ * Edit a note.
+ *
+ * 🔴 ONLY A NOTE, AND THE `kind` IS CHECKED IN THE STATEMENT, NOT BEFORE IT. `.eq('kind', 'note')`
+ * means a stage change cannot be edited even by an id that names one — there is no window between
+ * reading the row and writing it in which the answer could change, and no second code path that
+ * forgets the rule. A stage change is a record of something that happened; editing it would make
+ * the timeline a story rather than a history.
+ * ⚠️ AN EMPTY NOTE IS REFUSED, exactly as `addNote` refuses one: the way to remove a note is to
+ * delete it, which asks first.
+ * ⚠️ `updated_at` IS WRITTEN ONLY WHERE THE COLUMN EXISTS. Its migration is applied by hand; until
+ * it is, the edit still lands and simply carries no "edited" mark. The caller passes the flag.
+ */
+export async function editNote(
+  supabase: SupabaseClient, id: string, body: string, hasUpdatedAt: boolean,
+): Promise<{ ok: boolean; updated: number; error: string | null }> {
+  const text = String(body ?? '').trim()
+  if (!text) return { ok: false, updated: 0, error: 'A note needs some words in it.' }
+  const patch: Record<string, unknown> = { body: text }
+  if (hasUpdatedAt) patch.updated_at = new Date().toISOString()
+  // 🔴 `.select('id')` SO "IT CHANGED NOTHING" IS OBSERVABLE. PostgREST reports no error when a
+  // filter matches zero rows — the same trap `delete_contact` records at length.
+  const { data, error } = await supabase.from('outreach_events')
+    .update(patch).eq('id', id).eq('kind', 'note').select('id')
+  if (error) return { ok: false, updated: 0, error: error.message }
+  return { ok: (data?.length ?? 0) > 0, updated: data?.length ?? 0, error: null }
+}
+
+/**
+ * Delete a note, and hand back what was removed so an Undo can put it back exactly.
+ * 🔴 `.eq('kind', 'note')` AGAIN, IN THE STATEMENT. A stage change cannot be deleted by any id.
+ */
+export async function deleteNote(
+  supabase: SupabaseClient, id: string,
+): Promise<{ ok: boolean; deleted: number; row: { body: string | null; created_at: string } | null; error: string | null }> {
+  const { data, error } = await supabase.from('outreach_events')
+    .delete().eq('id', id).eq('kind', 'note').select('body, created_at')
+  if (error) return { ok: false, deleted: 0, row: null, error: error.message }
+  const rows = (data ?? []) as { body: string | null; created_at: string }[]
+  return { ok: rows.length > 0, deleted: rows.length, row: rows[0] ?? null, error: null }
+}
+
+/**
+ * Put a deleted note back, with the day it was written.
+ *
+ * 🔴 THE ORIGINAL `created_at` IS RESTORED, AND THAT IS THE WHOLE POINT OF UNDO. A note re-added
+ * with today's date would move in the history and stop explaining the day it was about — it would
+ * be a new note that happens to have the same words. ⚠️ THE ID IS NEW, and that is the one thing
+ * Undo cannot restore; nothing references a note's id, so nothing can notice.
+ */
+export async function restoreNote(
+  supabase: SupabaseClient, prospectId: string, body: string, createdAt: string | null,
+): Promise<{ ok: boolean; id: string | null; error: string | null }> {
+  const text = String(body ?? '').trim()
+  if (!text) return { ok: false, id: null, error: 'There was nothing to put back.' }
+  const row: Record<string, unknown> = { prospect_id: prospectId, kind: 'note', body: text }
+  if (createdAt && !Number.isNaN(new Date(createdAt).getTime())) row.created_at = createdAt
+  const { data, error } = await supabase.from('outreach_events').insert(row).select('id').single()
+  if (error) return { ok: false, id: null, error: error.message }
+  return { ok: true, id: (data as { id?: string } | null)?.id ?? null, error: null }
+}

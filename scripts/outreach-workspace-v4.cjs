@@ -164,8 +164,13 @@ function runPanelSuite(rawTL, rawPanel, rawShared) {
     /Received' : 'Sent'/.test(P) && /From<\/span>/.test(P) && /To<\/span>/.test(P) && /fmtWhen\(message\.message_date/.test(P))
   t('🔴 Reply closes the panel first, then calls the page\'s existing reply',
     /onClick=\{\(\) => \{ onClose\(\); actions\.onReply\(m\) \}\}/.test(TL))
-  t('⚠️ …and only for a received, non-test message',
-    /inbound && !m\.is_test && m\.status === 'received' && \(/.test(TL))
+  /* 🔴 RESTATED (30 September 2026, reply-to-any): Reply is offered on a SENT email too, which is
+   * the whole of that build's item 1 — following up on my own email with it quoted underneath, the
+   * way Outlook does it. WHAT THE CHECK WAS PROTECTING IS UNCHANGED and is asserted here: a TEST
+   * send is never replyable, because it went to Dominic's own address and there is nobody at the
+   * other end of it. */
+  t('⚠️ …never for a test send, and only for a message that actually went or arrived',
+    /!m\.is_test && \(m\.status === 'received' \|\| m\.status === 'sent'\)/.test(TL))
   t('⚠️ a phone gets a sheet with a Back button', /\{phone \? '← Back' : '×'\}/.test(P))
   t('🔴 the attachments come from the viewer, with their download links',
     /<AttachmentList attachments=\{data\.attachments\}/.test(stripComments(rawShared)))

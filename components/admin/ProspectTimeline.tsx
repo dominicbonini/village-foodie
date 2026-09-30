@@ -21,9 +21,11 @@ import {
   isTimelineFilter, type TimelineFilter, type RowBadge,
 } from '@/lib/outreach-workspace'
 import { TIMELINE_PREF_KEY } from '@/lib/outreach-queue'
+import { CONTACT_KINDS } from '@/lib/outreach'
+import { STEP_LABELS } from '@/lib/outreach-sequence'
 import EmailReadingPanel from '@/components/admin/EmailReadingPanel'
 import {
-  ContactPopout, INBOUND_BG, fmtDate, stageWord, SizedEmailFrame,
+  ContactPopout, INBOUND_BG, NoteRow, fmtDate, stageWord, SizedEmailFrame,
   type Contact, type Prospect, type TimelinePayload,
 } from '@/components/admin/outreach-shared'
 import { createPortal } from 'react-dom'
@@ -64,6 +66,12 @@ export interface TimelineActions {
   /** Mark done / Snooze / Mark as needing reply / Retry / Save to Sent / log it — all POSTs. */
   onMessageAction: (action: string, messageId: string, extra?: Record<string, unknown>) => Promise<void>
   onDeleteContact: (c: Contact) => Promise<void>
+  /** 🔴 "Record as Chase 1" — an Outlook-sent email, given the step it was. One click, never automatic. */
+  onRecordStep: (messageId: string, kind: string) => Promise<void>
+  /** The page's own `nextStep` answer. Null ⇒ the ladder cannot say, so the panel offers a picker. */
+  currentStepKind: string | null
+  /** Re-read after a note was edited, deleted or put back. The page's one reload. */
+  onNotesChanged: () => Promise<void>
   busyId: string | null
 }
 
@@ -198,12 +206,16 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                   {fmtDate(e.created_at)}
                 </span>
                 <span className="flex-1 min-w-0">
+                  {/* 🔴 A STAGE CHANGE IS A RECORD OF SOMETHING THAT HAPPENED and carries no
+                      controls at all; a NOTE is something somebody wrote and can be corrected or
+                      removed. The same component as the Notes card uses — one set of rules, one
+                      confirmation, one Undo — rather than a second copy of them here. */}
                   {e.kind === 'stage_change'
                     ? <span className="text-slate-600">
                         Stage {stageWord(e.from_stage)} → <span className="font-bold text-slate-800">{stageWord(e.to_stage)}</span>
                         {e.body && <span className="text-slate-400"> · {e.body}</span>}
                       </span>
-                    : <span className="text-slate-800 whitespace-pre-wrap break-words">{e.body}</span>}
+                    : <ul className="list-none"><NoteRow note={e} prospectId={prospect.id} onChanged={actions.onNotesChanged} /></ul>}
                 </span>
               </div>
             )
@@ -327,7 +339,8 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           prospectEmail={prospect.contact_email ?? null}
           onOpenFull={(html, subject) => setFullScreen({ html, subject })}
           footer={<EmailActions m={openEmail} actions={actions} now={now} linkedTruck={linkedTruck}
-            snoozeFor={snoozeFor} setSnoozeFor={setSnoozeFor} onClose={() => onExpand(null)} />}
+            snoozeFor={snoozeFor} setSnoozeFor={setSnoozeFor} onClose={() => onExpand(null)}
+            stepKind={actions.currentStepKind} />}
         />
       )}
 
@@ -368,7 +381,7 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
  * ⚠️ REPLY CLOSES THE PANEL FIRST, then calls the page's existing `onReply`. The composer is at the
  * top of the centre column, so leaving a panel over it would hide the thing the click just filled in.
  */
-function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, onClose }: {
+function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, onClose, stepKind }: {
   m: TimelineMessage
   actions: TimelineActions
   now: Date
@@ -376,19 +389,29 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
   snoozeFor: string | null
   setSnoozeFor: (id: string | null) => void
   onClose: () => void
+  stepKind: string | null
 }) {
   const inbound = m.direction === 'inbound'
   const waiting = needsAttention(m, { now, linkedTruck })
-  const notLogged = m.status === 'sent' && !m.is_test && (m.last_error ?? '').startsWith('sent, not logged')
+  /** 🔴 OUTBOUND, REAL, ACCEPTED, AND NO RUNG RECORDED FOR IT. `contact_id` is the link. */
+  const unrecorded = !inbound && !m.is_test && m.status === 'sent' && !m.contact_id
   return (
     <>
-      {inbound && !m.is_test && m.status === 'received' && (
+      {/* 🔴 REPLY ON A SENT EMAIL TOO (v5). It existed only on received mail, so following up on my
+          own email — with the prospect seeing it underneath, the way Outlook does it — meant leaving
+          this page and using Outlook. The same handler, the same reply mode; what changes is which
+          message it threads onto and, through the server, what the send is LOGGED as: answering
+          somebody is a `reply`, following up on myself is the step the ladder is on.
+          ⚠️ A TEST SEND IS STILL NOT REPLYABLE — it went to my own address. */}
+      {!m.is_test && (m.status === 'received' || m.status === 'sent') && (
         <button type="button" onClick={() => { onClose(); actions.onReply(m) }}
-          title="Answer this message, with the conversation quoted underneath (R)"
+          title={inbound
+            ? 'Answer this message, with the conversation quoted underneath (R)'
+            : 'Follow up on this email, with it quoted underneath — it threads onto the same conversation'}
           // ⚠️ NEUTRAL, NOT ORANGE. Reply opens the composer; it does not send anything. Orange on
           // this page means "this is about to leave the building".
           className="text-sm font-bold px-3 py-1.5 max-md:min-h-11 rounded-lg border border-slate-400 text-slate-800 bg-white hover:bg-slate-50">
-          Reply
+          {inbound ? 'Reply' : 'Follow up on this'}
         </button>
       )}
       {waiting && (
@@ -420,13 +443,38 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
           Mark as needing reply
         </button>
       )}
-      {notLogged && (
-        <button type="button" disabled={actions.busyId === m.id}
-          onClick={() => void actions.onMessageAction('log_only', m.id)}
-          title="The email went but the contact log did not record it. This writes the missing rung — it does NOT send anything."
-          className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-          log it
-        </button>
+      {/* ── 🔴 AN EMAIL SENT FROM OUTLOOK, GIVEN ITS STEP ────────────────────────────────────
+          An email typed in Outlook reaches the mailbox and is imported, but it carries NO step: the
+          poll logs it as a contact only when the prospect has already replied, and then only as
+          `reply` (the sequence report's §0c). So the ladder does not move and the duplicate guard
+          can only ask. This is the one click that says which step it was.
+          ⚠️ IT REPLACES "log it", WHICH WAS THE SAME WRITE FOR A NARROWER CASE — a send the server
+          accepted while the log write failed. Same route action, same single contact writer, same
+          link to this message so it can never be counted twice; what is new is that it is offered
+          for ANY unrecorded outbound email and that it names the step.
+          🔴 NEVER AUTOMATIC, AND NEVER FOR A TEST SEND. */}
+      {unrecorded && (
+        stepKind ? (
+          <button type="button" disabled={actions.busyId === m.id}
+            onClick={() => void actions.onRecordStep(m.id, stepKind)}
+            title="Records this email as that step, sets the follow-up it would have set, and links it to this message so it is never counted twice. It does NOT send anything."
+            className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+            Record as {STEP_LABELS[stepKind as keyof typeof STEP_LABELS] ?? stepKind}
+          </button>
+        ) : (
+          // ⚠️ THE LADDER CANNOT SAY WHICH STEP THIS WAS — it is stopped, or the history is
+          // unreadable — so it asks instead of guessing.
+          <>
+            <span className="text-[11px] text-slate-500">Record as</span>
+            {CONTACT_KINDS.map(k => (
+              <button key={k} type="button" disabled={actions.busyId === m.id}
+                onClick={() => void actions.onRecordStep(m.id, k)}
+                className="text-[11px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+                {STEP_LABELS[k]}
+              </button>
+            ))}
+          </>
+        )
       )}
       {m.status === 'sent' && !m.is_test && m.sent_copy === 'absent' && (
         <button type="button" disabled={actions.busyId === m.id}

@@ -45,10 +45,14 @@ import {
 import { loadAttachments } from '@/lib/outreach-attachment-store'
 import { sanitiseQuotedHtml } from '@/lib/outreach-quote-sanitise'
 import {
-  replyRecipientRefusal, replyParentRefusal, REPLY_KIND, type ReplyParent,
+  // ⚠️ `REPLY_KIND` IS NO LONGER IMPORTED HERE. The decision moved into `loggedKindFor`, which owns
+  // the word and the rule together; importing the constant to not use it would read as though this
+  // file still made the choice.
+  replyRecipientRefusal, replyParentRefusal, replyRecipientFor, type ReplyParent,
 } from '@/lib/outreach-reply-rules'
 import { nextStep, type StepContact } from '@/lib/outreach-step'
-import { evaluateGuards, type Guard, type PriorSend } from '@/lib/outreach-sequence'
+import { CONTACT_KINDS } from '@/lib/outreach'
+import { evaluateGuards, loggedKindFor, type Guard, type PriorSend } from '@/lib/outreach-sequence'
 import { recordSendOverride } from '@/lib/outreach-events'
 
 export const runtime = 'nodejs'
@@ -406,6 +410,16 @@ export async function POST(req: NextRequest) {
     if (row.status !== 'sent') return refuse('Only a message the server accepted can be logged.')
     if (row.is_test) return refuse('A test send is not a contact, so it is never logged.')
     if (row.contact_id) return refuse('That message is already logged.')
+    /* 🔴 THE STEP IS VALIDATED HERE, BECAUSE THIS IS NOW A BUTTON AND NOT ONLY A REPAIR. "Record as
+     * Chase 1" writes a rung for an email sent from Outlook (the sequence report's §0c: those
+     * arrive with no step at all). An unrecognised value would write a contact row `nextStep` cannot
+     * read, and one blind row makes the WHOLE ladder report "can't tell" — the D1 rule. `null` is
+     * still allowed, because that is what the original repair path wrote and it is a fact, not a
+     * guess. */
+    const recordKind = typeof body.kind === 'string' ? body.kind : null
+    if (recordKind !== null && !(CONTACT_KINDS as readonly string[]).includes(recordKind)) {
+      return refuse(`"${recordKind}" is not a step, so it was not recorded.`)
+    }
     const { data: lp } = await supabase
       .from('outreach_prospects')
       .select('id, lead_type_at_first_contact, hu_ordering, hu_map, discovery_trucks(show_on_vf, excluded)')
@@ -418,7 +432,7 @@ export async function POST(req: NextRequest) {
       supabase,
       {
         prospect_id: row.prospect_id, channel: 'email', direction: 'outbound',
-        kind: typeof body.kind === 'string' ? body.kind : null,
+        kind: recordKind,
         message: row.text_body ?? '', contacted_at: row.message_date,
       },
       {
@@ -486,6 +500,9 @@ export async function POST(req: NextRequest) {
   // different mailbox at the same business — so the address is accepted only when it is the truck's
   // own, or the From of a non-test inbound message ALREADY RECORDED for this prospect.
   // 🔎 `lib/outreach-reply-rules.ts` holds both refusals and the harness stands on them.
+  /* ⚠️ THE TICKBOX, AND IT ONLY EVER TAKES THE QUOTE AWAY. The threading headers are set either
+   * way — see `buildMessage`. Absent ⇒ true, which is what every earlier client sends. */
+  const includeQuote = body.include_quote !== false
   const replyToId = typeof body.reply_to_message_id === 'string' ? body.reply_to_message_id : ''
   let replyParent: ReplyParent | null = null
   if (replyToId) {
@@ -500,9 +517,10 @@ export async function POST(req: NextRequest) {
     const { data: inboundRows } = await supabase.from('outreach_messages')
       .select('from_address').eq('prospect_id', prospectId).eq('direction', 'inbound').eq('is_test', false)
     const known = ((inboundRows ?? []) as { from_address: string | null }[]).map(r => r.from_address)
+    // ⚠️ THE SAME RULE THE PAGE USES, from one place — see `replyRecipientFor`.
     const wanted = typeof body.to === 'string' && body.to.trim()
       ? body.to.trim()
-      : (replyParent!.direction === 'inbound' ? (replyParent!.from_address ?? '') : (replyParent!.to_address ?? ''))
+      : (replyRecipientFor(replyParent) ?? '')
     const bad = replyRecipientRefusal({ to: wanted, contactEmail: truck?.contact_email ?? null, knownInboundFroms: known })
     if (bad) return refuse(bad.refusal)
     toAddress = wanted.trim()
@@ -558,6 +576,15 @@ export async function POST(req: NextRequest) {
   const fromName = await readFromName(supabase)
   /** Set by the guard block below from the server's own `nextStep`; null ⇒ fall back to the client's. */
   let derivedKind: string | null = null
+  /**
+   * 🔴 HAS THIS PROSPECT WRITTEN BACK? It is the difference between a conversation and a sequence,
+   * and it decides two things: whether a reply is logged as `reply` or as the rung it really is, and
+   * whether the sequence guards apply at all.
+   * ⚠️ REPLYING TO MY OWN EMAIL IS NOT A CONVERSATION. Following up on a chase by answering the copy
+   * in my Sent folder is still a chase — it is the step the ladder is on, it carries that step's
+   * follow-up, and every guard applies to it. Only an INBOUND message makes it a reply.
+   */
+  let inConversation = false
 
   // ── THREADING — a chase is a REPLY, or it is refused; a FIRST CONTACT never is ───────────────────
   // 🔴 A REPLY IS `reply`, DECIDED HERE AND NOT BY THE BROWSER. `reply` is deliberately NOT one of
@@ -601,6 +628,8 @@ export async function POST(req: NextRequest) {
       lead_type_at_first_contact: p.lead_type_at_first_contact,
     }, contacts, new Date())
 
+    // 🔴 AN INBOUND CONTACT OR THE LADDER'S OWN `replied` STOP — either is enough.
+    inConversation = contacts.some(c => c.direction === 'inbound') || step.stopReason === 'replied'
     const priors: PriorSend[] = [
       ...contacts.filter(c => c.direction !== 'inbound').map(c => ({
         kind: c.kind ?? null, at: c.contacted_at ?? c.created_at ?? null, via: 'log' as const,
@@ -654,7 +683,10 @@ export async function POST(req: NextRequest) {
     }
 
     firedGuards = evaluateGuards({
-      isReply: !!replyParent, step, priors, lastEmailAt,
+      // ⚠️ THE CONVERSATION EXEMPTION IS ABOUT WHO WROTE LAST, NOT ABOUT WHICH BUTTON WAS PRESSED.
+      // It used to be `!!replyParent`, so replying to my OWN email would skip every guard — which is
+      // exactly the path this build opens up, and would have been a way to send chase 1 twice.
+      isReply: inConversation, step, priors, lastEmailAt,
       address: truck?.contact_email ?? null, others, now: new Date(),
     })
     const blocking = firedGuards.filter(g => !overrides.includes(g.id))
@@ -676,10 +708,18 @@ export async function POST(req: NextRequest) {
     // 🔴 3h · THE LOGGED KIND IS THE STEP THIS SEND WAS MADE FOR, NOT THE TEMPLATE'S TAG. It used to
     // be `selected?.servesKind ?? logFormKind` from the browser, so choosing a template tagged
     // "chase 1" for a first contact logged a chase-1 rung and skipped a step of the ladder.
-    if (!replyParent && step.kind) derivedKind = step.kind
+    // ⚠️ ALSO WHEN REPLYING TO MY OWN EMAIL: the rung is what the ladder says, not `reply`.
+    if (step.kind && (!replyParent || !inConversation)) derivedKind = step.kind
   }
 
-  const sendKind = replyParent ? REPLY_KIND : (derivedKind ?? (typeof body.kind === 'string' ? body.kind : null))
+  /* 🔴 A REPLY TO SOMEBODY WHO WROTE TO US IS `reply`; EVERYTHING ELSE IS A RUNG. `reply` is
+   * deliberately not one of `CONTACT_KINDS`, so answering somebody neither advances the chase
+   * sequence nor restarts it — but following up on my own email is not answering anybody, and
+   * logging it as `reply` would leave the ladder where it was and let the same chase go twice. */
+  const sendKind = loggedKindFor({
+    hasParent: !!replyParent, inConversation, stepKind: derivedKind,
+    clientKind: typeof body.kind === 'string' ? body.kind : null,
+  })
   // ⚠️ AND A REPLY IS NEVER A FIRST CONTACT, whatever `startsNewThread` would say about its kind.
   const firstContact = !replyParent && startsNewThread(sendKind)
   const parentRow = replyParent ? undefined : (firstContact ? undefined : await threadParent(prospectId))
@@ -689,7 +729,7 @@ export async function POST(req: NextRequest) {
     .from('outreach_contacts').select('id', { count: 'exact', head: true })
     .eq('prospect_id', prospectId).eq('channel', 'email').eq('direction', 'outbound')
 
-  let parent: { messageId: string; references: string | null; quoted: QuotedMessage } | null = null
+  let parent: { messageId: string; references: string | null; quoted: QuotedMessage; quote?: boolean } | null = null
   if (replyParent) {
     // 🔴 THE REFERENCE BLOCK IS THE MESSAGE AS CAPTURED — their From, their Date, the To it was
     // addressed to, their Subject — because that is what a recipient expects to see above their own
@@ -702,6 +742,7 @@ export async function POST(req: NextRequest) {
     parent = {
       messageId: replyParent.message_id!,
       references: replyParent.references,
+      quote: includeQuote,
       quoted: {
         fromAddress: replyParent.from_address ?? toAddress, fromName: null,
         toAddress: replyParent.to_address ?? OUTREACH_FROM_ADDRESS, toName: null,
@@ -716,12 +757,16 @@ export async function POST(req: NextRequest) {
     // already is. So it is read back from Sent by uid, READ-ONLY. Only when neither source has it is
     // the chase refused, because a reply quoting nothing is not the email Dominic thinks he is sending.
     const { html: quotedHtml, text: quotedText } = await parentBodies(parentRow, accounts)
-    if (!quotedHtml) {
+    // ⚠️ AND IT ONLY REFUSES WHEN THE QUOTE IS WANTED. With "Include previous email" unticked there
+    // is nothing to quote, so a parent whose body was never stored is no longer a reason to refuse a
+    // chase — the threading headers come from the row, which is already in hand.
+    if (!quotedHtml && includeQuote) {
       return refuse("I can't find the earlier email to reply to — run Import past emails, or check this truck's email address.")
     }
     parent = {
       messageId: parentRow.message_id,
       references: parentRow.references,
+      quote: includeQuote,
       quoted: {
         // 🔴 THE SAME NAME THE From HEADER CARRIES, so the quote header on a reply matches the email
         // it is quoting rather than showing a bare address under a named one.

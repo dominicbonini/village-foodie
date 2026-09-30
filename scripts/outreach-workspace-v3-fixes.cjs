@@ -119,8 +119,14 @@ function runPageSuite(rawPage) {
       /id=\{ADD_NOTE_ID\}/.test(notes))
     t('🔴 the saved notes stand under it, newest first…',
       /e\.kind === 'note'/.test(notes) && /localeCompare/.test(notes))
-    t('…each in full, with no truncation',
-      /whitespace-pre-wrap/.test(notes) && !/line-clamp|truncate/.test(notes))
+    /* ⚠️ RE-ANCHORED (30 September 2026, notes edit/delete): the note's markup is `NoteRow`'s now —
+     * one component for the Notes card and the history row, so one set of edit/delete rules. The
+     * rule is the same and is checked where it lives. */
+    t('…each in full, with no truncation', (() => {
+      const shared = stripComments(read('components/admin/outreach-shared.tsx'))
+      const row = shared.slice(shared.indexOf('export function NoteRow('))
+      return /whitespace-pre-wrap/.test(row) && !/line-clamp|truncate/.test(row) && !/truncate/.test(notes)
+    })())
     t('…NOTES_SHOWN of them, then "Show all"',
       /notes\.slice\(0, NOTES_SHOWN\)/.test(notes) && /Show all \$\{notes\.length\}/.test(notes))
     t('⚠️ …it is a VIEW over the timeline already loaded, not a second fetch',
@@ -222,9 +228,14 @@ const SRC = read(PAGE_FILE)
       s => s.replace('await onPatch({ notes: text || null })', 'await onPatch({ notes: null })')],
     ['V4 🔴 "Earlier notes" renders an empty box when the column is empty',
       s => s.replace('if (!current && !editing) return null', 'if (false) return null')],
+    /* ⚠️ RE-ANCHORED (30 September 2026, notes edit/delete): the note's own markup moved into
+     * `NoteRow` in outreach-shared.tsx, so that this ONE component serves the Notes card and the
+     * history row and both obey the same edit/delete rules. The variant patches the page's list
+     * item instead, which is what the page still owns. The rule is unchanged: a note is shown in
+     * full, never truncated. */
     ['V5 the saved notes are truncated to one line each',
-      s => s.replace('<p className="whitespace-pre-wrap break-words text-slate-700">{n.body}</p>',
-        '<p className="truncate text-slate-700">{n.body}</p>')],
+      s => s.replace('<NoteRow key={n.id} note={n} prospectId={p.id} onChanged={onSaved} />',
+        '<li className="truncate">{n.body}</li>')],
     ['V6 the large Call and WhatsApp buttons are back on every screen',
       s => s.replace('className="hidden max-md:flex items-center gap-2 mt-1"', 'className="flex items-center gap-2 mt-1"')],
     ['V7 🔴 the row is hidden EVERYWHERE — the iPhone loses its three thumb targets',

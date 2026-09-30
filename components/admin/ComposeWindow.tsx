@@ -144,6 +144,7 @@ export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
   inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName, stepKind, sequenceNote,
+  inConversation,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -223,6 +224,12 @@ export default function ComposeWindow({
   stepKind?: string | null
   /** One line under the chips: which box the pre-selection came from, or why there was none. */
   sequenceNote?: string | null
+  /**
+   * 🔴 HAS THE PROSPECT WRITTEN BACK? Replying to MY OWN email is not a conversation — it is the
+   * step the ladder is on, and it is logged and guarded as that step. Only an inbound message makes
+   * a send a `reply`. ⚠️ The SERVER decides this again from the rows; this is what the button says.
+   */
+  inConversation?: boolean
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -321,7 +328,13 @@ export default function ComposeWindow({
   const [thread, setThread] = useState<Thread | null>(null)
   /** The earlier conversation. 🔴 EXPANDED BY DEFAULT — see the note where it is rendered. */
   const [quoted, setQuoted] = useState<string | null>(null)
-  const [quotedOpen, setQuotedOpen] = useState(true)
+  /* 🔴 COLLAPSED BY DEFAULT (v5). It opened expanded, which pushed the Send row and the history off
+   * the screen on every chase — and what it shows is an email already sent, which is reference, not
+   * the thing being written. ⚠️ IT IS STILL EXACTLY WHAT IS SENT: the block below is rendered from
+   * the SAME stored body the server quotes. */
+  const [quotedOpen, setQuotedOpen] = useState(false)
+  /** "Include previous email" — on by default, and it never affects the threading headers. */
+  const [includeQuote, setIncludeQuote] = useState(true)
   const [quotedLoading, setQuotedLoading] = useState(false)
   /** The files this email will carry. Metadata only — the bytes are already in the bucket. */
   const [files, setFiles] = useState<OutboundAttachment[]>([])
@@ -704,7 +717,10 @@ export default function ComposeWindow({
   // chosen decided which rung was recorded: picking the chase-1 template for a first contact logged
   // a chase-1 rung, and the ladder skipped a step for ever after. The step comes from the page's one
   // `nextStep`, and the server re-derives it and overrules this if they differ.
-  const kindForSend = replyTo ? 'reply' : (stepKind ?? logFormKind)
+  // 🔴 A REPLY TO SOMEBODY WHO WROTE IS `reply`; FOLLOWING UP ON MY OWN EMAIL IS THE STEP. The
+  // server re-derives both and overrules this; what it changes here is what the button says it will
+  // do, which must not say "Send reply" about something that logs as Chase 1.
+  const kindForSend = (replyTo && inConversation) ? 'reply' : (stepKind ?? logFormKind)
 
   /** Who a reply goes back to: the message's own From, which may be a different mailbox at the same
    *  business from the one stored on the truck. ⚠️ Display only — the route re-derives and re-checks it. */
@@ -946,6 +962,8 @@ export default function ComposeWindow({
         // 🔴 THE MESSAGE BEING ANSWERED, and the address it came from. The route checks both.
         ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
         is_test: test, idempotency_key: idemRef.current.value,
+        // ⚠️ THE TICKBOX TRAVELS WITH THE SEND. Absent ⇒ true, which is what the server assumes.
+        include_quote: includeQuote,
         // ⚠️ THE OVERRIDES TRAVEL WITH THE SEND, and they are the ids of guards the operator has
         // just been shown and has answered. An empty array is the ordinary case.
         ...(override.length ? { override } : {}),
@@ -989,7 +1007,7 @@ export default function ComposeWindow({
       sendInFlight.current = false
       setSending(false)
     }
-  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent, files, replyTo])
+  }, [refusal, post, finalSubject, fullText, doc, isEmail, kindForSend, toEmail, onSent, files, replyTo, includeQuote])
 
   // ── THE mailto: PATH, AND WHY IT IS NOT HERE ANY MORE ───────────────────────────────────────────
   // It lived here from the first version of this window and carried two measured limits and a defect it
@@ -1304,6 +1322,14 @@ export default function ComposeWindow({
               )}
               {thread && (
                 <>
+                  {/* 🔴 THE TICKBOX TAKES THE QUOTE AWAY, NOT THE THREADING. Unticked, the prospect
+                      reads only what I wrote; the email still carries In-Reply-To and References, so
+                      it lands in the same conversation in their mailbox rather than as a new one. */}
+                  <label className="inline-flex items-center gap-1 text-[12px] text-slate-600">
+                    <input type="checkbox" checked={includeQuote}
+                      onChange={e => setIncludeQuote(e.target.checked)} />
+                    Include previous email
+                  </label>
                   <span className="text-slate-300">·</span>
                   <span className="text-slate-700 truncate max-w-[22rem]" title={thread.replySubject}>
                     {thread.replySubject}
@@ -1313,7 +1339,7 @@ export default function ComposeWindow({
                   </span>
                   <button type="button" onClick={() => setQuotedOpen(o => !o)}
                     className="text-[12px] font-bold text-slate-600 underline hover:text-slate-800">
-                    {quotedOpen ? 'Hide conversation' : 'Show conversation'}
+                    {quotedOpen ? 'Previous email ▾' : 'Previous email ▸'}
                   </button>
                 </>
               )}
@@ -1476,10 +1502,16 @@ export default function ComposeWindow({
               ⚠️ AND WHAT IS SENT IS SANITISED SEPARATELY, server-side: this iframe protects THIS
               page, and `lib/outreach-quote-sanitise.ts` protects the recipient of the copy we
               embed in the outgoing message. They are different problems. */}
+          {/* ⚠️ AND IT IS NOT IN THE BOX I TYPE IN — see the note in the report. The editor holds the
+              DOCUMENT and nothing else; the quoted parent is appended by the server, from the stored
+              body, at the moment the message is built. It cannot be edited into, deleted by a stray
+              ⌘A, or half-quoted. */}
           {isEmail && thread && quotedOpen && (
             <div>
               <p className="text-[11px] text-slate-500 mb-1">
-                Included under your signature when this sends.
+                {includeQuote
+                  ? 'Included under your signature when this sends.'
+                  : 'Not included — “Include previous email” is unticked. The email still threads onto it.'}
                 {quotedLoading && ' Loading…'}
               </p>
               {/* ⚠️ THE SAME SIZED FRAME THE HISTORY USES, for the same reason: a fixed 288px box on a

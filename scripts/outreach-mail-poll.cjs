@@ -1273,9 +1273,18 @@ const hdrs = (raw, extra = {}) => ({
     }
     check(/onSent=\{async \(\) => \{ await reloadAll\(\); setResolved\(true\) \}\}/.test(PAGE), '…and after a send')
     // The three send actions survived the move from the Emails list to the timeline.
-    for (const a of ["'retry'", "'save_to_sent'", "'log_only'"]) {
+    /* 🔴 RESTATED (30 September 2026): `'log_only'` IS NO LONGER A STRING IN THE TIMELINE, and that
+     * is the point of the change rather than a regression. The row's "log it" button — the repair
+     * for an email the server sent while the log write failed — became "Record as Chase 1", which
+     * covers the much commoner case of an email typed in OUTLOOK and carries the step's follow-up
+     * with it. The ACTION is unchanged and so is the writer: the page posts `log_only` to the send
+     * route, which calls `logOutreachContact` and links the contact to that message. What moved is
+     * which component names it. */
+    for (const a of ["'retry'", "'save_to_sent'"]) {
       check(TL.includes(a), `…and the timeline kept ${a}`)
     }
+    check(/action: 'log_only', message_row_id: messageId, kind/.test(PAGE),
+      "…and `log_only` is still posted, by the page's \"Record as <step>\"")
     check(/onMessageAction: messageAction/.test(PAGE), '…all routed through the page\'s one writer')
   }
 

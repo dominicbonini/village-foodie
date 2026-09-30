@@ -263,10 +263,16 @@ function runCensus() {
   t('🔴 …and `templateForStep` is no longer called anywhere in the app',
     !/templateForStep\(/.test(PAGE) && !/templateForStep\(/.test(stripComments(read('components/admin/TemplatesPanel.tsx')))
     && !/templateForStep\(/.test(CW))
+    /* 🔴 RESTATED (30 September 2026, reply-to-any): the rule gained one condition and is otherwise
+     * the same. `reply` is for ANSWERING SOMEBODY; following up on MY OWN email — which this build
+     * makes possible from the reading panel — is not answering anybody, it is the step the ladder is
+     * on. So the test is now "has the prospect written back", not "is there a parent message". Both
+     * halves still live in one place each: `loggedKindFor` in the lib, called by the route, and the
+     * same expression in the composer for what the BUTTON says. */
   t('🔴 the composer logs the STEP, not the template\'s tag',
-    /const kindForSend = replyTo \? 'reply' : \(stepKind \?\? logFormKind\)/.test(CW))
+    /const kindForSend = \(replyTo && inConversation\) \? 'reply' : \(stepKind \?\? logFormKind\)/.test(CW))
   t('🔴 …and the SERVER re-derives it and overrules the client',
-    /if \(!replyParent && step\.kind\) derivedKind = step\.kind/.test(SEND))
+    /if \(step\.kind && \(!replyParent \|\| !inConversation\)\) derivedKind = step\.kind/.test(SEND))
   t('🔴 the guards run in the send route, for every path', /evaluateGuards\(\{/.test(SEND))
   t('🔴 …and a blocked send writes NOTHING and sends nothing',
     /return NextResponse\.json\(\{\s*ok: false, needsConfirm: true/.test(SEND))

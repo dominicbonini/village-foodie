@@ -17,6 +17,9 @@ export interface TimelineMessage {
   subject?: string | null
   /** 🔴 Who wrote it. A reply goes back to THIS address, not to the truck's stored one. */
   from_address?: string | null
+  /** 🔴 Who it went to. Following up on MY OWN email goes back to THIS address — `from_address` on
+   *  an outbound row is our own mailbox, and replying to that would email ourselves. */
+  to_address?: string | null
   message_date?: string | null
   created_at?: string | null
   handled_at?: string | null
@@ -28,6 +31,9 @@ export interface TimelineMessage {
   attempts?: number | null
   has_body?: boolean
   attachment_count?: number
+  /** 🔴 NON-NULL ⇒ this email is already a rung on the ladder. Null on an outbound row means nothing
+   *  recorded a step for it — the Outlook-sent case the sequence report's §0c describes. */
+  contact_id?: string | null
 }
 
 export interface TimelineContact {
@@ -49,6 +55,9 @@ export interface TimelineEvent {
   to_stage?: string | null
   body?: string | null
   created_at: string
+  /** 🔴 Present and later than `created_at` ⇒ this note has been edited, and when. Absent until the
+   *  column's migration is applied, in which case an edit simply carries no mark. */
+  updated_at?: string | null
 }
 
 export type TimelineItem =

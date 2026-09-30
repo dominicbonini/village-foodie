@@ -29,7 +29,7 @@ import ProspectTimeline from '@/components/admin/ProspectTimeline'
 import {
   type Contact, type Prospect, type TimelinePayload,
   STATUS_LABEL, fmtDate, confirmLogoWrite, linkLabel, fetchTimeline,
-  ModalThumb, WhatsAppBox, GrowingTextarea, FIELD_CLS, LABEL_CLS,
+  ModalThumb, WhatsAppBox, GrowingTextarea, NoteRow, FIELD_CLS, LABEL_CLS,
 } from '@/components/admin/outreach-shared'
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
 import {
@@ -45,6 +45,7 @@ import {
   kindOrder, kindLabel, channelLabel, directionLabel, followUpDateFor, contactDay, toYMD,
 } from '@/lib/outreach'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { replyRecipientFor } from '@/lib/outreach-reply-rules'
 import { PAGE_HEADER_ID } from '@/components/admin/EmailReadingPanel'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { parseAttachments } from '@/lib/outreach-mail-bodies'
@@ -520,8 +521,46 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     setDirty(false); setReplyTarget(null); setPanel('email')
   }
 
-  const replyToMessage = (m: { id: string; subject?: string | null; from_address?: string | null; message_date?: string | null }) => {
-    openPanel('email', { messageId: m.id, subject: m.subject ?? null, fromAddress: m.from_address ?? null, date: m.message_date ?? null })
+  /**
+   * "Record as Chase 1" — an email sent from Outlook, given the step it was.
+   *
+   * 🔴 NEVER AUTOMATIC, AND IT IS ONE CLICK PER EMAIL. The poll cannot know which step a hand-sent
+   * email was (the sequence report's §0c), and guessing would either skip a rung or invent one. This
+   * is Dominic saying which it was.
+   * 🔴 IT GOES THROUGH THE ONE CONTACT WRITER AND THE ONE FOLLOW-UP WRITER. `log_only` is the
+   * existing route action that calls `logOutreachContact` and links the contact to THIS message —
+   * which is what stops it being counted twice — and `applyFollowUp` is the page's single writer of
+   * `next_action_at`, so a recorded Outlook send schedules exactly what a system send of that step
+   * would have.
+   */
+  const recordAsStep = useCallback(async (messageId: string, kind: string) => {
+    setBusyId(messageId); setNote(null)
+    try {
+      const h = await nativeAuthHeader()
+      const r = await fetch('/api/admin/outreach/mail-send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'log_only', message_row_id: messageId, kind }),
+      })
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (j.ok !== true) { setNote(String(j.refusal ?? j.error ?? 'That was not recorded.')); return }
+      await applyFollowUp(kind)
+      setNote(`Recorded as ${STEP_LABELS[kind as keyof typeof STEP_LABELS] ?? kind}.`)
+      await reloadAll()
+    } catch { setNote('The connection dropped before the server answered.') }
+    finally { setBusyId(null) }
+  }, [applyFollowUp, reloadAll])
+
+  const replyToMessage = (m: {
+    id: string; subject?: string | null; from_address?: string | null; to_address?: string | null
+    direction?: string | null; message_date?: string | null
+  }) => {
+    // 🔴 WHO IT GOES BACK TO DEPENDS ON WHICH WAY IT WENT. Answering their email goes to whoever
+    // wrote it; following up on MY OWN goes to whoever I sent it to. `from_address` on an outbound
+    // row is our own mailbox, so using it either way would address the follow-up to ourselves — and
+    // the server would refuse it, which is the right refusal for the wrong reason.
+    const back = replyRecipientFor(m)
+    openPanel('email', { messageId: m.id, subject: m.subject ?? null, fromAddress: back, date: m.message_date ?? null })
   }
 
   // ── KEYBOARD ────────────────────────────────────────────────────────────────────────────────────
@@ -772,7 +811,10 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               contactName={[p.contact_first_name, p.contact_last_name].filter(Boolean).join(' ') || null}
               offerable={offerable}
               suggestedId={suggestTemplateId(p)}
-              stepKind={composerMode.mode === 'reply' ? 'reply' : (step?.kind ?? null)}
+              stepKind={step?.kind ?? null}
+              // 🔴 THE PROSPECT HAS WRITTEN BACK. `nextStep` already stops the ladder on the first
+              // inbound contact, so this is that same one answer — not a second count of the history.
+              inConversation={step?.stopReason === 'replied'}
               sequenceNote={sequenceNote}
               // 🔴 THE TEMPLATE THE NEXT LINE IMPLIES. `composerDefault` said which mode this is;
               // `templateForStep` — the one pre-selection rule — turns a rung into a template.
@@ -818,6 +860,10 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
             actions={{
               onReply: replyToMessage,
               onMessageAction: messageAction,
+              onRecordStep: recordAsStep,
+              onNotesChanged: reloadAll,
+              // ⚠️ THE PAGE'S ONE `nextStep` ANSWER, HANDED DOWN — the panel does not derive a second.
+              currentStepKind: step?.kind ?? null,
               onDeleteContact: deleteContact,
               busyId,
             }}
@@ -1103,12 +1149,7 @@ function NotesCard({ p, timeline, onPatch, onSaved }: {
       {shown.length > 0 && (
         <ul className="flex flex-col gap-2 border-t border-slate-100 pt-2">
           {shown.map(n => (
-            <li key={n.id} className="text-[13px]">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-                {fmtDate(n.created_at) ?? ''}
-              </div>
-              <p className="whitespace-pre-wrap break-words text-slate-700">{n.body}</p>
-            </li>
+            <NoteRow key={n.id} note={n} prospectId={p.id} onChanged={onSaved} />
           ))}
         </ul>
       )}

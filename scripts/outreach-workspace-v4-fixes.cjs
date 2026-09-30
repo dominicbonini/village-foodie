@@ -212,8 +212,14 @@ function runCensus(srcOver = {}) {
   t('🔴 still one nextStep call on the page', (PAGE.match(/nextStep\(/g) || []).length === 1)
   t('🔴 still one contact writer', /action: 'log_contact'/.test(PAGE) && !/outreach_contacts/.test(PAGE))
   t('🔴 the sequence guards are still the composer\'s', /json\.needsConfirm === true/.test(CW))
+    /* 🔴 RESTATED (30 September 2026, reply-to-any): the rule gained one condition and is otherwise
+     * the same. `reply` is for ANSWERING SOMEBODY; following up on MY OWN email — which this build
+     * makes possible from the reading panel — is not answering anybody, it is the step the ladder is
+     * on. So the test is now "has the prospect written back", not "is there a parent message". Both
+     * halves still live in one place each: `loggedKindFor` in the lib, called by the route, and the
+     * same expression in the composer for what the BUTTON says. */
   t('🔴 …and the step, not the template tag, is still what is logged',
-    /const kindForSend = replyTo \? 'reply' : \(stepKind \?\? logFormKind\)/.test(CW))
+    /const kindForSend = \(replyTo && inConversation\) \? 'reply' : \(stepKind \?\? logFormKind\)/.test(CW))
   return { ok, bad }
 }
 

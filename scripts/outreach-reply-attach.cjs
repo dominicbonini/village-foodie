@@ -290,12 +290,18 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     check(!!D.optOutWarning(doc, '1_first_contact', 'Reply STOP to opt out.'),
       '⚠️ …while a first contact without one still does, unchanged')
     const SEND = readStripped('app/api/admin/outreach/mail-send/route.ts')
-    check(/const sendKind = replyParent \? REPLY_KIND : /.test(SEND),
+    /* 🔴 RESTATED (30 September 2026, reply-to-any). The rule gained one condition: `reply` is for
+     * ANSWERING SOMEBODY, and following up on MY OWN email is not answering anybody — it is the step
+     * the ladder is on, and logging it as `reply` would leave the ladder where it was and let the
+     * same chase go out twice. WHAT THIS CHECK PROTECTED IS UNCHANGED and is asserted below: the
+     * decision is the SERVER's, from `loggedKindFor`, and a client that sends `2_chase_1` with an
+     * INBOUND reply id still cannot make it a rung. */
+    check(/const sendKind = loggedKindFor\(\{/.test(SEND),
       '🔴 the SERVER decides the kind on a reply — a client cannot send `2_chase_1` with a reply id')
     check(/const firstContact = !replyParent && startsNewThread\(sendKind\)/.test(SEND),
       '…and a reply is never treated as a first contact')
     const UI = readStripped('components/admin/ComposeWindow.tsx')
-    check(/const kindForSend = replyTo \? 'reply' :/.test(UI), '…and the window agrees with it')
+    check(/const kindForSend = \(replyTo && inConversation\) \? 'reply' :/.test(UI), '…and the window agrees with it')
   }
 
   console.log('\n── THE COMPOSED BYTES, WITH FILES ───────────────────────────────────────────────────────')
@@ -461,8 +467,15 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
   console.log('\n── WHAT THE SCREEN DOES ─────────────────────────────────────────────────────────────────')
   {
     const UI = read('components/admin/ComposeWindow.tsx')
-    check(/const \[quotedOpen, setQuotedOpen\] = useState\(true\)/.test(UI),
-      '🔴 the earlier conversation is EXPANDED by default…')
+    /* 🔴 RESTATED (30 September 2026, reply-to-any) — AND THE DECISION IS REVERSED, at Dominic's
+     * instruction. It opened expanded because Part 2 existed to make the thing being answered
+     * visible while answering it. With the composer now a fixed-height box and every chaser quoting
+     * its parent by default, an expanded quote pushed the Send row and the history off the screen on
+     * every chase. It is a collapsed "Previous email ▸" block, one click from open, and it is still
+     * exactly what will be sent — the same stored body the server quotes. */
+    check(/const \[quotedOpen, setQuotedOpen\] = useState\(false\)/.test(UI)
+      && /Previous email ▸/.test(UI),
+      '🔴 the earlier conversation is one click away, and says what it is…')
     check(/if \(!isEmail \|\| replyTo\) return/.test(UI) && /action: 'quoted'/.test(UI),
       '…on a chase as well as a reply')
     check(/sandbox=""/.test(UI), '⚠️ and it is still rendered in a sandboxed iframe')
@@ -486,13 +499,24 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
      * the modal had; only the button's address changed. */
     check(/onClick=\{\(\) => \{ onClose\(\); actions\.onReply\(m\) \}\}/.test(TL),
       "the timeline's Reply opens the composer on that message")
-    check(/const replyToMessage = \(m: \{ id: string;/.test(PAGE) && /openPanel\('email', \{ messageId: m\.id/.test(PAGE),
+    /* ⚠️ RE-ANCHORED (30 September 2026): the handler's parameter list grew — it now takes the
+     * message's direction and `to_address` too, because following up on my own email goes back to
+     * whoever I SENT it to, not to the mailbox it came from (which is ours). The rule is the same
+     * and the second half of it is unchanged. */
+    check(/const replyToMessage = \(m: \{/.test(PAGE) && /openPanel\('email', \{ messageId: m\.id/.test(PAGE),
       '…in reply mode, naming the message being answered')
+    check(/const back = replyRecipientFor\(m\)/.test(PAGE),
+      '🔴 …and back to the right address, by the one rule')
     check(/onReply=\{\(id, messageId, queue\) => openProspect\(id, queue, \{ replyTo: messageId \}\)\}/.test(PANEL),
       "…and so does Today's, by navigating to the page with that message named")
     check(/const replyId = q\.get\('reply'\)/.test(PAGE), '…which the page reads once, on arrival')
-    check(/inbound && !m\.is_test && m\.status === 'received'/.test(TL),
-      '🔴 Reply is offered on a real inbound message and nowhere else')
+    /* 🔴 RESTATED (30 September 2026, reply-to-any): Reply is offered on a SENT email too — that is
+     * the whole of that build's item 1, and it is why Dominic had been using Outlook. WHAT THIS
+     * CHECK PROTECTED IS KEPT AND IS ASSERTED HERE: a TEST send is never replyable (it went to his
+     * own address, and there is nobody at the other end), and neither is a message that never went
+     * or arrived. `scripts/outreach-reply-any-notes.cjs` owns the rest of the rule. */
+    check(/!m\.is_test && \(m\.status === 'received' \|\| m\.status === 'sent'\)/.test(TL),
+      '🔴 Reply is offered on a real message, never on a test send')
     check(/a\.storagePath && prospectId/.test(SHARED),
       '🔴 a Download link appears only where there is a file of ours to download…')
     check(/listed only, not downloaded/.test(SHARED),

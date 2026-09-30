@@ -82,5 +82,28 @@ export function replyParentRefusal(
   return null
 }
 
+/**
+ * Who a reply goes back to.
+ *
+ * 🔴 IT DEPENDS ON WHICH WAY THE PARENT WENT, AND GETTING IT WRONG EMAILS OURSELVES. Answering their
+ * email goes to whoever wrote it (`from_address`); following up on MY OWN goes to whoever I sent it
+ * to (`to_address`) — `from_address` on an outbound row is our own mailbox. The route already made
+ * this choice inline; it is a function so the page can make the same one and a harness can hold
+ * them to it.
+ * ⚠️ IT IS STILL CHECKED AFTERWARDS. `replyRecipientRefusal` decides whether the address is
+ * allowed at all; this only decides which of the row's two addresses is the candidate.
+ */
+export function replyRecipientFor(
+  parent: {
+    direction?: string | null
+    from_address?: string | null
+    to_address?: string | null
+  } | null | undefined,
+): string | null {
+  if (!parent) return null
+  const back = parent.direction === 'inbound' ? parent.from_address : parent.to_address
+  return (back ?? '').trim() || null
+}
+
 /** The kind a reply is logged as. 🔴 NEVER A LADDER RUNG — see the note at the call site. */
 export const REPLY_KIND = 'reply'

@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { isSnoozeOption, snoozeUntil } from '@/lib/outreach-attention'
-import { addNote } from '@/lib/outreach-events'
+import { addNote, editNote, deleteNote, restoreNote } from '@/lib/outreach-events'
 import { previewOf, type TimelineMessage, type TimelineContact, type TimelineEvent } from '@/lib/outreach-timeline'
 
 export const runtime = 'nodejs'
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   // from `text_body`, which is the flattened text the poll already extracted.
   const { data: mRows, error: mErr } = await supabase
     .from('outreach_messages')
-    .select('id, direction, status, is_test, source, subject, from_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id')
+    .select('id, direction, status, is_test, source, subject, from_address, to_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id')
     .eq('prospect_id', prospectId)
     .order('created_at', { ascending: false })
     .limit(400)
@@ -85,16 +85,24 @@ export async function GET(req: NextRequest) {
     ...c, email_message_id: messageOfContact.get(c.id) ?? null,
   }))
 
+  /* ⚠️ `updated_at` IS SELECTED ONLY WHERE IT EXISTS. It carries the "edited" mark and its migration
+   * is applied by hand; selecting a column that is not there fails the WHOLE read, which would take
+   * the timeline down to add a label. Same posture as the template tags and the sequence grid. */
+  const eventCols = (await eventsHaveUpdatedAt())
+    ? 'id, kind, from_stage, to_stage, body, created_at, updated_at'
+    : 'id, kind, from_stage, to_stage, body, created_at'
   const { data: eRows } = await supabase
     .from('outreach_events')
-    .select('id, kind, from_stage, to_stage, body, created_at')
+    .select(eventCols)
     .eq('prospect_id', prospectId)
     .order('created_at', { ascending: false })
     .limit(400)
 
   return NextResponse.json({
     ok: true, migrationApplied: true,
-    messages, contacts, events: (eRows ?? []) as TimelineEvent[],
+    // ⚠️ THROUGH `unknown`: the column list is chosen at runtime by the probe above, so PostgREST's
+    // generated types cannot narrow it — the shape is asserted by `TimelineEvent` and nowhere else.
+    messages, contacts, events: (eRows ?? []) as unknown as TimelineEvent[],
   } satisfies TimelineResponse)
 }
 
@@ -144,5 +152,56 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, id: res.id, message: 'Note added.' })
   }
 
+  /* ── 🔴 A NOTE CAN BE CHANGED AND REMOVED; NOTHING ELSE IN THIS TABLE CAN ────────────────────
+   * The rule is enforced in the STATEMENT (`.eq('kind', 'note')`), not by reading the row first and
+   * deciding — there is no window in which the answer could change and no second path that forgets.
+   * A stage change is a record of something that happened, and the timeline is a history. */
+  if (action === 'edit_note') {
+    const id = String(body.event_id ?? '')
+    if (!id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+    const res = await editNote(supabase, id, String(body.body ?? ''), await eventsHaveUpdatedAt())
+    if (res.error) return NextResponse.json({ ok: false, refusal: res.error })
+    if (!res.ok) {
+      return NextResponse.json(
+        { ok: false, refusal: 'That is not a note, or it is no longer there — nothing was changed.' })
+    }
+    return NextResponse.json({ ok: true, message: 'Note saved.' })
+  }
+
+  if (action === 'delete_note') {
+    const id = String(body.event_id ?? '')
+    if (!id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+    const res = await deleteNote(supabase, id)
+    if (res.error) return NextResponse.json({ ok: false, refusal: res.error })
+    if (!res.ok) {
+      return NextResponse.json(
+        { ok: false, refusal: 'That is not a note, or it has already been deleted.' })
+    }
+    // ⚠️ THE ROW TRAVELS BACK so the client can offer an Undo that restores the words AND the day.
+    return NextResponse.json({ ok: true, deleted: res.deleted, removed: res.row, message: 'Note deleted.' })
+  }
+
+  if (action === 'restore_note') {
+    const prospectId = String(body.prospect_id ?? '')
+    if (!prospectId) return NextResponse.json({ error: 'prospect_id required' }, { status: 400 })
+    const res = await restoreNote(supabase, prospectId, String(body.body ?? ''), typeof body.created_at === 'string' ? body.created_at : null)
+    if (!res.ok) return NextResponse.json({ ok: false, refusal: res.error ?? 'That note could not be put back.' })
+    return NextResponse.json({ ok: true, id: res.id, message: 'Note put back.' })
+  }
+
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+}
+
+/**
+ * 🔴 A CAPABILITY PROBE, BECAUSE THE MIGRATION IS APPLIED BY HAND. `outreach_events.updated_at` is
+ * what carries the "edited" mark; until it exists an edit still lands and simply is not marked.
+ * Making the write depend on the column being there is the difference between a missing label and a
+ * 500 on the one button. ⚠️ A stale PostgREST cache answers exactly like a missing column, which is
+ * why the code is logged.
+ */
+const eventsHaveUpdatedAt = async (): Promise<boolean> => {
+  const { error } = await supabase.from('outreach_events').select('updated_at').limit(1)
+  if (!error) return true
+  console.warn('[admin/outreach/timeline] outreach_events.updated_at unavailable:', error.code, error.message)
+  return false
 }

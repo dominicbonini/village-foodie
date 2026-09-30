@@ -850,3 +850,131 @@ export function GrowingTextarea(
     />
   )
 }
+
+/**
+ * One saved note — and the only two things in the timeline that can be changed.
+ *
+ * 🔴 THE RULES ARE THE ONES THIS CODEBASE ALREADY HAD, PLUS THE TWO IT DID NOT. A contact row can be
+ * deleted (the ⋯ popout's Delete, behind `ConfirmDeleteDialog`, by explicit id, with the route
+ * reporting how many rows it actually removed); nothing in the outreach panel could ever be EDITED.
+ * So: delete keeps that shape and asks first, and edit-in-place and the 8-second Undo are new,
+ * exactly as the brief specifies them.
+ * ⚠️ ONLY A NOTE. A stage change is a record of something that happened and the timeline is a
+ * history; the route enforces that in the statement, not here.
+ */
+export function NoteRow({ note, prospectId, onChanged }: {
+  note: TimelineEvent
+  prospectId: string
+  onChanged: () => Promise<void>
+}) {
+  const [editing, setEditing] = useState(false)
+  const [text, setText] = useState(note.body ?? '')
+  const [busy, setBusy] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  /** The just-deleted note, for as long as Undo is on offer. */
+  const [undo, setUndo] = useState<null | { body: string; created_at: string }>(null)
+
+  const post = async (payload: Record<string, unknown>) => {
+    const h = await nativeAuthHeader()
+    const r = await fetch('/api/admin/outreach/timeline', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
+      credentials: 'same-origin', body: JSON.stringify(payload),
+    })
+    return (await r.json().catch(() => ({}))) as Record<string, unknown>
+  }
+
+  const save = async () => {
+    setBusy(true)
+    try {
+      const j = await post({ action: 'edit_note', event_id: note.id, body: text })
+      if (j.ok === true) { setEditing(false); await onChanged() }
+    } finally { setBusy(false) }
+  }
+
+  const remove = async () => {
+    setBusy(true)
+    try {
+      const j = await post({ action: 'delete_note', event_id: note.id })
+      setConfirming(false)
+      if (j.ok !== true) return
+      const removed = j.removed as { body?: string | null; created_at?: string } | null
+      // 🔴 EIGHT SECONDS, AND THE WORDS AND THE DAY BOTH COME BACK. The row the server removed
+      // travels back with the answer, so Undo restores what was written and WHEN — a note put back
+      // with today's date would move in the history and stop explaining the day it was about.
+      setUndo({ body: removed?.body ?? note.body ?? '', created_at: removed?.created_at ?? note.created_at })
+      window.setTimeout(() => setUndo(null), 8000)
+      await onChanged()
+    } finally { setBusy(false) }
+  }
+
+  const putBack = async () => {
+    if (!undo) return
+    setBusy(true)
+    try {
+      await post({ action: 'restore_note', prospect_id: prospectId, body: undo.body, created_at: undo.created_at })
+      setUndo(null)
+      await onChanged()
+    } finally { setBusy(false) }
+  }
+
+  if (undo) {
+    return (
+      <li className="text-[13px] flex items-baseline gap-2">
+        <span className="text-slate-400 italic">Note deleted.</span>
+        <button type="button" onClick={() => void putBack()} disabled={busy}
+          className="text-[11px] font-bold text-slate-600 underline hover:no-underline disabled:opacity-40">Undo</button>
+      </li>
+    )
+  }
+
+  const edited = !!note.updated_at && note.updated_at !== note.created_at
+
+  return (
+    <li className="text-[13px] group">
+      <div className="flex items-baseline gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          {fmtDate(note.created_at) ?? ''}
+        </span>
+        {edited && (
+          <span className="text-[11px] text-slate-400" title={new Date(note.updated_at!).toLocaleString('en-GB')}>
+            edited {fmtDate(note.updated_at ?? null)}
+          </span>
+        )}
+        {!editing && (
+          <span className="ml-auto flex items-center gap-2">
+            <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(true) }}
+              className="text-[11px] font-semibold text-slate-500 hover:underline">Edit</button>
+            <button type="button" onClick={() => setConfirming(true)}
+              className="text-[11px] font-semibold text-slate-500 hover:underline">Delete</button>
+          </span>
+        )}
+      </div>
+      {editing ? (
+        <div className="flex flex-col gap-1">
+          <GrowingTextarea rows={3} className={`${FIELD_CLS} w-full resize-y`}
+            value={text} onChange={e => setText(e.target.value)} />
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => void save()} disabled={busy || !text.trim()}
+              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800 text-white disabled:opacity-40">
+              {busy ? 'Saving…' : 'Save'}
+            </button>
+            <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(false) }}
+              className="text-[11px] font-semibold text-slate-500 hover:underline">Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <p className="whitespace-pre-wrap break-words text-slate-700">{note.body}</p>
+      )}
+      {confirming && (
+        <ConfirmDeleteDialog
+          title="Delete this note?"
+          confirmLabel="Delete note"
+          onCancel={() => setConfirming(false)}
+          onConfirm={remove}>
+          <p className="text-sm text-slate-600 whitespace-pre-wrap break-words">{note.body}</p>
+        </ConfirmDeleteDialog>
+      )}
+    </li>
+  )
+}
+

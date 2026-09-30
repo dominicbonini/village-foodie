@@ -347,3 +347,24 @@ export function sendButtonLabel(input: { isReply: boolean; step: string | null }
   if (input.step && isSlotStep(input.step)) return `Send · ${STEP_LABELS[input.step as LadderKind]}`
   return 'Send'
 }
+
+/**
+ * What a send is LOGGED as.
+ *
+ * 🔴 `reply` IS FOR ANSWERING SOMEBODY, NOT FOR QUOTING SOMETHING. Replying to an email the prospect
+ * sent is a conversation and is not a rung — it neither advances the chase sequence nor restarts it.
+ * Following up on MY OWN email is not answering anybody: it is the step the ladder is on, it must
+ * carry that step's follow-up, and every guard must apply to it. The two look identical in the
+ * composer (both quote a parent and both thread) and they are completely different records.
+ * ⚠️ THE CLIENT'S VALUE IS THE LAST RESORT, for the case the server could not derive a step at all
+ * (a stopped or unreadable ladder). It is never preferred over the server's own.
+ */
+export function loggedKindFor(input: {
+  hasParent: boolean
+  inConversation: boolean
+  stepKind: string | null
+  clientKind?: string | null
+}): string | null {
+  if (input.hasParent && input.inConversation) return 'reply'
+  return input.stepKind ?? input.clientKind ?? null
+}

@@ -178,6 +178,8 @@ export interface BuildInput {
     messageId: string
     references: string | null
     quoted: QuotedMessage
+    /** ⚠️ `false` ⇒ thread onto it but do not quote it. Absent ⇒ quote, which is the default. */
+    quote?: boolean
   } | null
 }
 
@@ -207,10 +209,16 @@ export function buildMessage(input: BuildInput): BuiltMessage {
   const q = input.parent.quoted
   // The chain is the parent's own chain plus the parent. Space-separated, as the header stores it.
   const chain = [input.parent.references, input.parent.messageId].filter(Boolean).join(' ').trim()
+  /* 🔴 THREADING AND QUOTING ARE TWO DECISIONS, AND ONLY ONE OF THEM IS THE OPERATOR'S. Unticking
+   * "Include previous email" removes the quoted block from what the prospect reads; it does NOT
+   * remove `In-Reply-To` / `References`, because those are what keep the chase in the same
+   * conversation in their mailbox. A chaser that starts a new thread is a chaser they read as an
+   * unrelated email. ⚠️ The subject stays `Re: …` for the same reason. */
+  const withQuote = input.parent.quote !== false
   return {
     subject: replySubject(q.subject),
-    html: bodyH + referenceBlockHtml(q),
-    text: `${bodyT}\n${referenceBlockText(q)}\n`,
+    html: bodyH + (withQuote ? referenceBlockHtml(q) : ''),
+    text: withQuote ? `${bodyT}\n${referenceBlockText(q)}\n` : `${bodyT}\n`,
     messageId: input.messageId,
     inReplyTo: input.parent.messageId,
     references: chain || null,
