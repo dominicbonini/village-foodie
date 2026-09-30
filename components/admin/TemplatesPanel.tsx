@@ -23,8 +23,9 @@ import {
 // OutreachPanel already builds it exactly this way. A second derivation here would be a second answer.
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import SequenceGrid from '@/components/admin/SequenceGrid'
+import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
 import {
-  ANY_LEAD, STEP_LABELS, chooseTemplate, indexSlots, type SequenceSlot, type SlotTemplate,
+  ANY_LEAD, STEP_LABELS, chooseTemplate, indexSlots, slotKey, type SequenceSlot, type SlotTemplate,
 } from '@/lib/outreach-sequence'
 import { snippetIndex, snippetMapOf, isUnset, type Snippet, type SnippetUse } from '@/lib/outreach-snippets'
 import {
@@ -84,13 +85,11 @@ type Prospect = {
   hatchgrab_truck_id?: string | null
 }
 
-// The rail's two tabs. 🔴 Preview is the default: it is the only way to see the conditional branch
-// before sending, and the brief requires it reachable in one action — so it is reachable in zero.
-const RAIL_TABS = [
-  { key: 'preview' as const, label: 'Preview' },
-  { key: 'tokens' as const, label: 'Tokens' },
-]
-type RailTab = typeof RAIL_TABS[number]['key']
+/* 🔴 `RAIL_TABS` WAS HERE AND IS GONE (the two-view layout). The right-hand rail had two tabs,
+ * Preview and Tokens, and the Tokens one was a pane full of buttons that inserted text at the
+ * cursor — which belongs beside the cursor, not in a pane competing with the preview for width. The
+ * right pane is the preview and nothing else; the tokens are the editor toolbar's "Insert token ▾",
+ * reading the same `resolvedTokenReference()`. */
 
 
 // ── 🔴 THE SNIPPETS LIBRARY ─────────────────────────────────────────────────────────────────────────
@@ -260,11 +259,11 @@ export default function TemplatesPanel() {
   // before sending, and whether a real prospect has an upcoming event changes day to day. This forces
   // the no-event branch regardless of who is selected.
   const [forceNoEvent, setForceNoEvent] = useState(false)
-  const [rail, setRail] = useState<RailTab>('preview')
   const [draft, setDraft] = useState<Partial<Row>>({})
-  /** Whether 20260915_outreach_template_tags.sql is applied AND PostgREST has reloaded. Reported by
-   *  the route as a capability flag, exactly like hasContactNames on the outreach route. */
-  const [hasTemplateTags, setHasTemplateTags] = useState(false)
+  /* 🔴 `hasTemplateTags` WAS HERE AND IS GONE. It disabled the two tag dropdowns and explained why;
+   * those dropdowns were removed when the sequence grid took over choosing a template, so the flag
+   * drove nothing. The ROUTE still reports it — it is a capability of the table, not of this screen
+   * — and nothing on this screen needs it any more. */
   // 🔴 THE SNIPPET LIBRARY — the single place a `[[name]]` value is set, replacing BOTH of the panels
   // that used to do this job: the per-template "Placeholder defaults" row (one value, one edit per
   // template that mentioned it) and the localStorage "Global defaults" box added on 15 September (one
@@ -276,7 +275,61 @@ export default function TemplatesPanel() {
   const [snippetNote, setSnippetNote] = useState<string | null>(null)
   /** Which top-level view the tab is showing. Snippets is global, so it cannot live in the rail — the
    *  rail only renders with a template selected. See the report for the alternatives considered. */
-  const [view, setView] = useState<'templates' | 'snippets' | 'signature'>('templates')
+  /**
+   * 🔴 TWO VIEWS, AND THE TAB REMEMBERS WHICH. "Sequence" is the decision — who gets which words and
+   * when — and "Templates" is the writing. They were one column of stacked panels, so reading the
+   * grid meant scrolling past the editor and editing meant scrolling past the grid.
+   * ⚠️ Snippets and Signature are NOT in the switch. They are global libraries, reached from the
+   * Templates view's left pane, and putting four things in a two-way switch would have made the
+   * switch a menu.
+   */
+  const [view, setView] = useState<'sequence' | 'templates' | 'snippets' | 'signature'>('templates')
+  useEffect(() => {
+    // ⚠️ IN A MICROTASK, AFTER MOUNT. Reading storage during render differs between the server and
+    // the client; a bad value reads as 'templates'.
+    void Promise.resolve().then(() => {
+      try {
+        const saved = window.localStorage.getItem(TEMPLATES_VIEW_KEY)
+        if (saved === 'sequence' || saved === 'templates') setView(saved)
+      } catch { /* storage disabled: the default stands */ }
+    })
+  }, [])
+  const chooseView = (v: 'sequence' | 'templates') => {
+    setView(v)
+    try { window.localStorage.setItem(TEMPLATES_VIEW_KEY, v) } catch { /* nothing to remember, no crash */ }
+  }
+  /**
+   * A "Used in" chip → the Sequence view, with that box outlined.
+   * 🔴 THE CHIP IS A LABEL AND THE GRID WANTS A KEY, so this turns one back into the other through
+   * the SAME `slotKey` the grid indexes by — it looks the box up in the slots rather than parsing
+   * the words back, because the words are Dominic's own names for the truck types and are not a key.
+   */
+  const openBox = (chipLabel: string) => {
+    const hit = slots.find(sl => usedIn(sl.template_id).includes(chipLabel) && sl.template_id === selId)
+    if (hit) setHighlightBox(slotKey(hit.channel, hit.step, hit.lead_type))
+    chooseView('sequence')
+  }
+
+  /** A box the Sequence view should outline, set by a "Used in" chip. */
+  const [highlightBox, setHighlightBox] = useState<string | null>(null)
+  /** The left pane's search, and the channel a "+ Write a new one" arrived with. */
+  const [listSearch, setListSearch] = useState('')
+  const [retiredOpen, setRetiredOpen] = useState(false)
+
+  /**
+   * The list, sorted and searched.
+   * 🔴 THE SAME COMPARATOR `move` USES — `sort_order` then `slug`. Sorting on `sort_order` alone
+   * left ties to `Array.sort`'s stability, which is the order the API happened to return, so the
+   * list and the reorder arrows could disagree about which row sits where.
+   * ⚠️ THE SEARCH READS THE NAME AND THE SLUG, because half of these are known by their slug.
+   */
+  const listRows = useMemo(() => {
+    const q = listSearch.trim().toLowerCase()
+    return [...rows]
+      .filter(r => !q || r.label.toLowerCase().includes(q) || r.slug.toLowerCase().includes(q))
+      .sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug))
+  }, [rows, listSearch])
+
 
   /** name → value, for the read-only display on the template editor and for the compose pre-fill. */
   const snippetValues = useMemo(() => snippetMapOf(snippets), [snippets])
@@ -318,7 +371,14 @@ export default function TemplatesPanel() {
    * the row. ⚠️ The DEFAULT column says "All trucks" rather than naming four types, because that is
    * what the box means.
    */
-  const usedIn = useCallback((templateUuid: string): string[] => {
+  /* ⚠️ PLAIN FUNCTIONS AND PLAIN DERIVATIONS FROM HERE TO `match`, NOT `useMemo`/`useCallback`.
+   * The React Compiler declines to preserve memoisation that closes over `slots` — it cannot prove
+   * the array is not mutated later — and a `useMemo` it has skipped is a lie about stability that
+   * reads as an optimisation. What these actually cost: `usedIn` walks ~5 slots, `slotTemplates`
+   * maps ~10 rows, and `match` walks the prospect list once (🧪 231 rows) with a Map lookup each.
+   * That is tens of microseconds per render of this editor, which is a price worth paying to keep
+   * every hook in this file honest. */
+  const usedIn = (templateUuid: string): string[] => {
     const out: string[] = []
     for (const s of slots) {
       if (s.template_id !== templateUuid) continue
@@ -328,7 +388,7 @@ export default function TemplatesPanel() {
       out.push(`${s.channel === 'email' ? '' : 'WhatsApp · '}${STEP_LABELS[s.step as keyof typeof STEP_LABELS] ?? s.step} · ${where}`)
     }
     return out.sort()
-  }, [slots, leadLabels])
+  }
 
   const steps = useMemo(() => {
     const m = new Map<string, Step>()
@@ -372,7 +432,6 @@ export default function TemplatesPanel() {
           setSnippetDraft(Object.fromEntries((ds.snippets ?? []).map((x: Snippet) => [x.name, x.value ?? ''])))
         }
       } catch { /* the tier prompts, as it always has */ }
-      setHasTemplateTags(!!data.hasTemplateTags)
     } catch (e: any) { setLoadError({ message: e?.message || 'Could not load templates', needsMigration: false }) }
     setLoading(false)
   }, [])
@@ -420,22 +479,26 @@ export default function TemplatesPanel() {
    * ⚠️ IT WALKS THE PROSPECT LIST ONCE PER SELECTION, not per keystroke: `steps` is memoised on the
    * prospects alone and this is keyed on the selected row and the grid.
    */
-  const match = useMemo(() => {
-    if (!selected) return null
-    const boxes = slots.filter(x => x.template_id === selected.id)
-    if (boxes.length === 0) return { kind: 'untagged' as const, n: 0 }
+  /* ⚠️ THE TWO CHEAP DERIVATIONS ARE THEIR OWN MEMOS. The count below walks the prospect list, and
+   * building the template list and the slot index inside it made one memo the React Compiler
+   * declined to preserve — which is a `useMemo` that does not memoise, on the one derivation here
+   * that is actually expensive. Split, it keeps its memo. */
+  const slotIndex = indexSlots(slots)
+  const slotTemplates: SlotTemplate[] = rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active }))
+  const selectedId = selected?.id ?? null
+  const match = ((): null | { kind: 'untagged' | 'noprospects' | 'counted'; n: number } => {
+    if (!selectedId) return null
+    if (!slots.some(x => x.template_id === selectedId)) return { kind: 'untagged' as const, n: 0 }
     if (prospects.length === 0) return { kind: 'noprospects' as const, n: 0 }
-    const index = indexSlots(slots)
-    const tpl: SlotTemplate[] = rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active }))
     let n = 0
     for (const p of prospects) {
       const step = steps.get(p.id)
       if (!step || step.state !== 'due' || !step.kind || !step.channel) continue
-      const chosen = chooseTemplate({ slots: index, templates: tpl, channel: step.channel, step: step.kind, leadType: step.leadType })
-      if (chosen.uuid && chosen.uuid === selected.id) n++
+      const chosen = chooseTemplate({ slots: slotIndex, templates: slotTemplates, channel: step.channel, step: step.kind, leadType: step.leadType })
+      if (chosen.uuid && chosen.uuid === selectedId) n++
     }
     return { kind: 'counted' as const, n }
-  }, [selected, prospects, steps, slots, rows])
+  })()
 
   // ── 🔴 THE UNSAVED-DRAFT GUARD ──────────────────────────────────────────────────────────────────
   // `draft` is reset by the effect on [selected], so clicking another template in the list USED TO
@@ -564,7 +627,12 @@ export default function TemplatesPanel() {
   // detail (the stable key the compose picker resolves against), so it is DERIVED rather than typed.
   // ⚠️ DERIVED WITH `createSlug` FROM lib/utils — the slug function this repo already has. Writing a
   // second one here would be the same mistake as a sixth truck-name normaliser.
-  const createTemplate = async () => {
+  /**
+   * ⚠️ THE CHANNEL IS A PARAMETER NOW, because "+ Write a new one for this box" arrives from a grid
+   * cell that already knows which channel it is. It still creates nothing until the name is given —
+   * the prompt is the same one — and the row it then creates is the same row.
+   */
+  const createTemplate = async (channel: 'email' | 'whatsapp' = 'email') => {
     const name = window.prompt('Name for the new template:')?.trim()
     if (!name) return
     const base = createSlug(name)
@@ -575,7 +643,7 @@ export default function TemplatesPanel() {
     const taken = new Set(rows.map(r => r.slug))
     let slug = base
     for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`
-    const out = await post({ action: 'create_template', slug, label: name, channel: 'email', body: 'Hi,\n\n' })
+    const out = await post({ action: 'create_template', slug, label: name, channel, body: 'Hi,\n\n' })
     if (out?.template) {
       setRows(rs => [...rs, out.template]); setSelId(out.template.id)
       // 🔴 AND SWITCH TO THE VIEW THAT CAN SHOW IT. The New template button sits ABOVE the view switch,
@@ -672,10 +740,10 @@ export default function TemplatesPanel() {
   const condNames = useMemo(() => condRef.map(c => c.name), [condRef])
   const condPairs = useMemo(
     () => condNames.filter(c => !c.startsWith('no_') && condNames.includes(`no_${c}`)), [condNames])
-  const condSingles = useMemo(() => {
-    const paired = new Set(condPairs.flatMap(c => [c, `no_${c}`]))
-    return condNames.filter(c => !paired.has(c))
-  }, [condNames, condPairs])
+  /* 🔴 `condSingles` WAS HERE AND IS GONE. It listed the conditions with no negative half, for a
+   * row of buttons in the Tokens rail. The rail went; a single-sided condition is still insertable
+   * by hand and `halfPairs` below still calls out a half-written one, which is the failure that
+   * actually matters. */
 
   /** 🔴 HALF-WRITTEN CONDITIONALS. One half without the other has no visible failure mode — the branch
    *  simply never fires — so it is called out in the editor. */
@@ -693,22 +761,33 @@ export default function TemplatesPanel() {
   return (
     <div className="text-slate-900">
       <div className="max-w-[1800px] mx-auto">
-        <div className="flex items-baseline justify-between gap-4 mb-3">
-          <p className="text-sm text-slate-500">
-            {loading ? 'Loading…' : <><span className="font-semibold text-slate-700">{rows.length}</span> templates</>}
+        {/* ── 🔴 TWO VIEWS, AND ONE LINE SAYING WHAT EACH IS FOR ───────────────────────────────
+            The tab stacked the grid, two standing panels and a three-pane editor in one column, so
+            every question meant scrolling past the answer to a different one. These are the two
+            things this tab is: deciding who gets which words, and writing them. */}
+        <div className="flex items-center gap-3 flex-wrap mb-3">
+          <div className="inline-flex rounded-lg border border-slate-300 overflow-hidden">
+            {([['sequence', 'Sequence'], ['templates', 'Templates']] as const).map(([v, label]) => (
+              <button key={v} type="button" onClick={() => chooseView(v)} aria-pressed={view === v}
+                className={`text-sm font-semibold px-3 py-1.5 ${view === v
+                  ? 'bg-slate-800 text-white'
+                  : 'bg-white text-slate-700 hover:bg-slate-50'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[12px] text-slate-500">
+            {view === 'sequence'
+              ? 'Which template each kind of truck gets, at each step of the sequence.'
+              : 'The words themselves — write them here and the sequence decides who gets them.'}
           </p>
-          <button onClick={createTemplate}
-            className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
-            New template
-          </button>
+          {loading && <span className="text-[12px] text-slate-400">Loading…</span>}
         </div>
 
-        {/* ── 🔴 THE SEQUENCE, ABOVE THE TEMPLATES, BECAUSE IT IS THE THING BEING DECIDED ────────
-            The list below is a library of words; this is which words go to whom and when. It was the
-            other way round — a list of templates, each carrying two dropdowns about when it might be
-            used — and that shape cannot answer "what does an HU-map truck get for chase 2", which is
-            the only question this tab exists for. */}
-        <div className="mb-4">
+        {/* ── 🔴 THE SEQUENCE IS ITS OWN VIEW NOW ──────────────────────────────────────────────
+            It answers "what does an HU-map truck get for chase 2" — which is the only question this
+            tab exists for — and it answers it without the editor underneath it. */}
+        {view === 'sequence' && (
           <SequenceGrid
             templates={rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active })) as SlotTemplate[]}
             slots={slots}
@@ -733,8 +812,11 @@ export default function TemplatesPanel() {
               finally { setGridBusy(false) }
             }}
             onOpenProspect={id => { window.location.href = `/admin/outreach/p/${id}` }}
+            highlight={highlightBox}
+            onOpenTemplate={uuid => { setHighlightBox(null); requestSelect(uuid); chooseView('templates') }}
+            onNewTemplate={channel => { chooseView('templates'); void createTemplate(channel) }}
           />
-        </div>
+        )}
 
         {/* 🔴 "NOT SET UP" AND "SET UP BUT EMPTY" MUST NOT LOOK THE SAME. */}
         {loadError && (
@@ -832,42 +914,84 @@ export default function TemplatesPanel() {
 
         {view === 'signature' ? <SignaturePanel /> : view === 'snippets' ? <SnippetsLibrary
           uses={snippetUses} snippets={snippets} draft={snippetDraft} setDraft={setSnippetDraft}
-          onSave={saveSnippet} enabled={hasSnippets} /> : (
-        <div className="grid gap-4 items-start" style={{ gridTemplateColumns: '240px minmax(0, 1fr) minmax(0, 1fr)' }}>
+          onSave={saveSnippet} enabled={hasSnippets} /> : view === 'sequence' ? null : (
+        /* ── 🔴 THREE PANES, EACH SCROLLING ON ITS OWN ─────────────────────────────────────────
+           The page used to scroll as one, so reading the preview scrolled the list and the editor
+           away — and with a tall message box the list ran out long before the editor did. Each pane
+           now owns its own scrollbar and the page itself does not move.
+           ⚠️ `height: calc(100vh - 12rem)` IS AN INLINE STYLE, and deliberately: an arbitrary
+           Tailwind height used by one file may have no generated rule, which is this codebase's
+           recorded failure (the compose window painting behind its own modal). 12rem is the admin
+           chrome above it — the tab strip, the view switch and the page padding.
+           ⚠️ IT SETS NO `overflow` ON `body`. The v4-fixes bug was a scroll lock left on the whole
+           page by a composer that had stopped being a modal; nothing here touches the document. */
+        <div className="grid gap-4 max-md:grid-cols-1 max-md:h-auto"
+          style={{ gridTemplateColumns: '270px minmax(0, 1fr) minmax(0, 30%)', height: 'calc(100vh - 12rem)' }}>
 
-          {/* ── LIST — ONE LINE PER ROW ──────────────────────────────────────────────────────────── */}
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-            {/* 🔴 THE SAME COMPARATOR `move` USES. Sorting on `sort_order` alone left ties to Array.sort
-                stability — the order the API happened to return — so the list and the arrows could disagree
-                about which row sits where. Declared here, declared there, identical. */}
-            {[...rows].sort((a, b) => a.sort_order - b.sort_order || a.slug.localeCompare(b.slug)).map((r, i, arr) => {
-              const isSel = selId === r.id
-              return (
-                <div key={r.id}
-                  className={`group flex items-center gap-1.5 px-2.5 py-1.5 border-b border-slate-100 last:border-b-0 cursor-pointer ${isSel ? 'bg-orange-50' : 'hover:bg-slate-50'}`}
-                  onClick={() => requestSelect(r.id)}>
-                  <span className={`text-sm truncate flex-1 min-w-0 ${r.active ? (isSel ? 'font-semibold text-slate-900' : 'text-slate-800') : 'text-slate-400 line-through'}`}>
-                    {r.label}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase px-1 py-0.5 rounded bg-slate-100 text-slate-500 flex-shrink-0">
-                    {r.channel === 'whatsapp' ? 'wa' : 'em'}
-                  </span>
-                  {/* 🔴 THE CONTROLS COST NO WIDTH WHEN IDLE. They are laid out only on hover or when the
-                      row is selected; otherwise they are `hidden`, so the label gets the full row. */}
-                  <span className={`flex items-center gap-0.5 flex-shrink-0 ${isSel ? 'flex' : 'hidden group-hover:flex'}`}>
-                    <button onClick={e => { e.stopPropagation(); void move(r, -1) }} disabled={i === 0}
-                      title="Move up" className="text-[11px] leading-none px-1 py-0.5 rounded border border-slate-200 bg-white disabled:opacity-30 hover:bg-slate-50">↑</button>
-                    <button onClick={e => { e.stopPropagation(); void move(r, 1) }} disabled={i === arr.length - 1}
-                      title="Move down" className="text-[11px] leading-none px-1 py-0.5 rounded border border-slate-200 bg-white disabled:opacity-30 hover:bg-slate-50">↓</button>
-                    <button onClick={e => { e.stopPropagation(); void toggleActive(r) }}
-                      title={r.active ? 'Retire (kept, hidden from the compose picker)' : 'Restore'}
-                      className={`text-[11px] leading-none px-1 py-0.5 rounded border bg-white ${r.active ? 'border-slate-200 text-slate-500 hover:bg-slate-50' : 'border-emerald-300 text-emerald-700'}`}>
-                      {r.active ? '⦸' : '↺'}
-                    </button>
-                  </span>
+          {/* ── LEFT: THE LIBRARY ────────────────────────────────────────────────────────────────
+              🔴 GROUPED BY CHANNEL AND LABELLED BY WHERE EACH ONE IS USED. It was one flat list of
+              names with an `em`/`wa` chip, which answered neither "which of these go by email" nor
+              the question this tab exists for — "is this one actually in the sequence". Retired rows
+              were in the same list, struck through, taking a line each.
+              ⚠️ THE REORDER ARROWS AND RETIRE STAY, on the row, on hover — `sort_order` is what the
+              compose picker orders by and retiring is how a template leaves it without being
+              deleted. Nothing was dropped. */}
+          <div className="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+            <div className="p-2 flex flex-col gap-2 border-b border-slate-100">
+              <button onClick={() => void createTemplate()}
+                className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                + New template
+              </button>
+              <input type="search" value={listSearch} onChange={e => setListSearch(e.target.value)}
+                placeholder="Search templates…"
+                className="text-sm border border-slate-200 rounded-lg px-2 py-1" />
+            </div>
+
+            {/* ⚠️ THIS PANE SCROLLS, NOT THE PAGE. */}
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              {(['email', 'whatsapp'] as const).map(ch => {
+                const group = listRows.filter(r => r.active && r.channel === ch)
+                if (group.length === 0) return null
+                return (
+                  <div key={ch}>
+                    <p className="px-2.5 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                      {ch === 'email' ? 'Email' : 'WhatsApp'}
+                    </p>
+                    {group.map((r, i, arr) => (
+                      <ListRow key={r.id} r={r} i={i} arr={arr} selId={selId}
+                        usedIn={usedIn(r.id ?? '')} onSelect={requestSelect} onMove={move} onToggle={toggleActive} />
+                    ))}
+                  </div>
+                )
+              })}
+              {/* 🔴 RETIRED ROWS ARE COLLAPSED, NOT STRUCK THROUGH IN THE MIDDLE OF THE LIST. They are
+                  kept for the history that references them and are otherwise not what anybody is
+                  looking for. */}
+              {listRows.some(r => !r.active) && (
+                <div className="border-t border-slate-100 mt-1">
+                  <button type="button" onClick={() => setRetiredOpen(v => !v)}
+                    className="w-full text-left px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-400 hover:text-slate-600">
+                    {retiredOpen ? '▾' : '▸'} Retired ({listRows.filter(r => !r.active).length})
+                  </button>
+                  {retiredOpen && listRows.filter(r => !r.active).map((r, i, arr) => (
+                    <ListRow key={r.id} r={r} i={i} arr={arr} selId={selId}
+                      usedIn={usedIn(r.id ?? '')} onSelect={requestSelect} onMove={move} onToggle={toggleActive} />
+                  ))}
                 </div>
-              )
-            })}
+              )}
+            </div>
+
+            {/* ⚠️ THE TWO GLOBAL LIBRARIES, AT THE BOTTOM. They are not templates and never were, so
+                they are links out of this view rather than a third and fourth item in a two-way
+                switch. Their screens are exactly the ones that already existed. */}
+            <div className="border-t border-slate-100 p-2 flex items-center gap-3">
+              <button type="button" onClick={() => setView('snippets')}
+                className="text-[12px] font-semibold text-slate-600 hover:underline">
+                Snippets{snippetUses.length ? ` (${snippetUses.length})` : ''}
+              </button>
+              <button type="button" onClick={() => setView('signature')}
+                className="text-[12px] font-semibold text-slate-600 hover:underline">Signature</button>
+            </div>
           </div>
 
           {/* ── EDITOR ───────────────────────────────────────────────────────────────────────────── */}
@@ -908,113 +1032,42 @@ export default function TemplatesPanel() {
                   </div>
                 </div>
 
-                {/* ══ 2 · WHEN TO USE IT ════════════════════════════════════════════════════════════
-                    🔴 THE EXPLANATIONS USED TO BE `title=` TOOLTIPS AND THEY MAY AS WELL NOT HAVE
-                    EXISTED. A tooltip needs a hover and a wait, never appears on a touch screen, and is
-                    invisible to someone who does not already know it is there — which is everyone who
-                    needed it. The same sentences are now on the page. */}
+                {/* ── 🔴 "WHEN TO USE IT" IS GONE FROM THE EDITOR ─────────────────────────────────
+                    It was a headed section carrying a channel picker, two READ-ONLY tag fields and a
+                    match count — a block about WHERE this template is used, on the screen for WRITING
+                    it. The sequence view decides where; this one says so in a line of chips and gets
+                    out of the way. The channel moved up beside the name, because it is part of what
+                    the template IS.
+                    ⚠️ NOTHING WAS DROPPED: the chips are the same `usedIn` derivation, the match
+                    count moved under them in a sentence, and the tag columns are still shown — read
+                    only, greyed, where they belong, under the chips. */}
                 <div className="pt-3 border-t border-slate-100">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">2</span>
-                    <h3 className="text-sm font-bold text-slate-900">When to use it</h3>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className={LABEL}>Used in</span>
+                    {usedIn(draft.id ?? '').length === 0
+                      ? <span className="text-[12px] text-slate-500">Not in the sequence — pick it by hand in the composer</span>
+                      : usedIn(draft.id ?? '').map((u: string) => (
+                        // 🔴 A CHIP IS A LINK. Clicking one opens the Sequence view with that box
+                        // outlined — the two views are two halves of one decision.
+                        <button key={u} type="button" onClick={() => openBox(u)}
+                          title="Show this box in the sequence"
+                          className="text-[11px] font-semibold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                          {u}
+                        </button>
+                      ))}
                   </div>
-                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
-                    When a truck is due to be contacted, Village Foodie works out which stage they are at
-                    and what kind of truck they are. <b>If that matches the three settings below, this
-                    template is the one it opens for you.</b> Leave them alone and this template is only
-                    ever chosen by hand.
-                  </p>
-
-                  <div className="ml-7 flex items-end gap-3 flex-wrap">
-                    <label className="block w-40 flex-shrink-0"><span className={LABEL}>Send by</span>
-                      <select className={FIELD} value={draft.channel ?? 'email'}
-                        onChange={e => setDraft(d => ({ ...d, channel: e.target.value as 'email' | 'whatsapp' }))}>
-                        <option value="email">Email</option>
-                        <option value="whatsapp">WhatsApp</option>
-                      </select>
-                    </label>
-
-                    {/* ── 🔴 "AT WHICH STAGE" AND "FOR WHICH TRUCKS" ARE READ-ONLY NOW ──────────
-                        They were two dropdowns that WROTE `serves_kind` and `serves_lead_type`, and
-                        those columns chose the template. The sequence grid at the top of this tab
-                        does that now, one box at a time, and two mechanisms for one decision is
-                        exactly what it replaced.
-                        ⚠️ THE COLUMNS ARE KEPT AND SHOWN, NOT DELETED. They are Dominic's own tags on
-                        rows he tagged by hand and they are history worth reading; nothing writes them
-                        from this screen any more, and nothing READS them to choose a template.
-                        🔴 "USED IN" IS DERIVED FROM THE GRID, not from the tags — so what it says is
-                        where this template will actually be sent from. */}
-                    <div className="block flex-1 min-w-[16rem]">
-                      <span className={LABEL}>Used in</span>
-                      <div className="flex flex-wrap items-center gap-1 pt-1">
-                        {usedIn(draft.id ?? '').length === 0
-                          ? <span className="text-[12px] text-slate-500">Not in the sequence — pick it by hand</span>
-                          : usedIn(draft.id ?? '').map((u: string) => (
-                            <span key={u} className="text-[11px] font-semibold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700">{u}</span>
-                          ))}
-                      </div>
-                      {(draft.serves_kind || draft.serves_lead_type) && (
-                        <p className="text-[11px] text-slate-400 mt-1">
-                          Older tags on this row, no longer used to choose:{' '}
-                          {[draft.serves_kind ? kindLabel(draft.serves_kind) : null,
-                            draft.serves_lead_type ? LEAD_TYPE_PLAIN[draft.serves_lead_type as keyof typeof LEAD_TYPE_PLAIN] : null]
-                            .filter(Boolean).join(' · ')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ── 🔴 THE MATCH COUNT — the rule, made concrete ─────────────────────────────────
-                      Three dropdowns describe a rule; this says who it actually catches, from the live
-                      prospect list, using the same two functions the outreach list and the compose
-                      window use. It is the difference between "I think this is right" and "this picks
-                      up 105 trucks". ⚠️ It costs one walk of the prospect list when a dropdown changes
-                      and NOTHING when typing — the memo above is keyed on the three rule fields only. */}
-                  <div className="ml-7 mt-2">
-                    {match?.kind === 'untagged' && (
-                      <p className="text-[12px] text-slate-500">
-                        Not in the sequence — pick it by hand in the composer.
-                      </p>
-                    )}
-                    {match?.kind === 'noprospects' && (
-                      <p className="text-[12px] text-slate-400">
-                        Counting needs the prospect list — it has not loaded, so this is not a zero.
-                      </p>
-                    )}
-                    {match?.kind === 'counted' && (
-                      <p className={`text-[12px] ${match.n === 0 ? 'text-amber-800' : 'text-slate-700'}`}>
-                        {match.n === 0 ? (
-                          <>
-                            <b>No trucks are due at its boxes right now.</b> Nothing is broken — it means
-                            nobody has reached that step yet. It will pick up trucks as they become due.
-                          </>
-                        ) : (
-                          <>
-                            The sequence sends this to <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
-                            {' '}<span className="text-slate-500">
-                              A truck with its own column takes that template instead of the default.
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* ⚠️ THE DISABLED STATE NAMES BOTH CAUSES, BECAUSE THEY LOOK IDENTICAL FROM HERE.
-                      The probe is a `select` on the two columns: a column that does not exist and a
-                      PostgREST schema cache that has not reloaded fail it in exactly the same way, and
-                      the old message named only the first. 🧪 Dominic has confirmed the columns EXIST,
-                      so if this is on screen it is the cache — which is why the reload is named first. */}
-                  {!hasTemplateTags && (
-                    <div className="ml-7 mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2">
-                      <p className="text-[12px] font-bold text-amber-900">These two are switched off right now.</p>
-                      <p className="text-[12px] text-amber-800 mt-0.5">
-                        Either PostgREST has not reloaded its schema — run{' '}
-                        <code className="font-mono">notify pgrst, &apos;reload schema&apos;;</code> — or
-                        <code className="font-mono"> 20260915_outreach_template_tags.sql</code> has not been
-                        applied. The reload is the likelier of the two and costs nothing to try.
-                      </p>
-                    </div>
+                  {match?.kind === 'counted' && match.n > 0 && (
+                    <p className="text-[12px] text-slate-500 mt-1">
+                      The sequence sends this to <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
+                    </p>
+                  )}
+                  {(draft.serves_kind || draft.serves_lead_type) && (
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Older tags on this row, no longer used to choose:{' '}
+                      {[draft.serves_kind ? kindLabel(draft.serves_kind) : null,
+                        draft.serves_lead_type ? LEAD_TYPE_PLAIN[draft.serves_lead_type as keyof typeof LEAD_TYPE_PLAIN] : null]
+                        .filter(Boolean).join(' · ')}
+                    </p>
                   )}
                 </div>
 
@@ -1056,8 +1109,31 @@ export default function TemplatesPanel() {
                       </label>
                     )}
 
-                    <label className="block">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className={LABEL}>Message</span>
+                      {/* ── 🔴 INSERT TOKEN ▾ — THE RESOLVER'S OWN VOCABULARY ────────────────────
+                          `resolvedTokenReference()` reads the labels off the resolver's switch, so
+                          this list cannot drift from what actually substitutes: a token the resolver
+                          does not know is not in the menu, and one it knows appears the day it is
+                          written. A second hand-kept list is exactly how `{{truck name}}` shipped on
+                          an active template.
+                          ⚠️ IT INSERTS TEXT AND GUARDS NOTHING. The malformed-token check
+                          (`malformedTokensIn`) still reads the finished body — this writes the same
+                          characters a person would type and is checked the same way.
+                          ⚠️ IT REPLACES THE "Tokens" RAIL, which was a third pane competing with the
+                          preview for the width beside the editor. */}
+                      <TokenMenu tokens={tokenRef} disabled={!lastFocus}
+                        hint={lastFocus ? `Inserts at your cursor in the ${lastFocus}.` : 'Click into the subject or body first.'}
+                        onInsert={syntax => insertAtCaret(syntax)} />
+                      {/* ⚠️ THE CONDITIONAL PAIRS KEEP THEIR OWN CONTROL — one click writes BOTH
+                          halves, and a missing half fails silently, which is the whole reason they
+                          were never left to be typed. */}
+                      {condPairs.length > 0 && (
+                        <CondMenu pairs={condPairs} disabled={!lastFocus}
+                          onInsert={c => insertAtCaret(`?${c}: \n?no_${c}: `, { ownLines: true })} />
+                      )}
+                    </div>
+                    <label className="block">
                       {/* 🔴 15 ROWS = 404px, MEASURED, AND THE 16TH ROW WAS CUT DELIBERATELY. At 16 rows
                           (430px) the Save button's bottom lands at 899px with the admin chrome above it
                           — a ONE-PIXEL margin on a 1440x900 laptop. 15 rows puts it at 873px with real
@@ -1179,28 +1255,19 @@ export default function TemplatesPanel() {
           </div>
 
           {/* ── RAIL ─────────────────────────────────────────────────────────────────────────────── */}
-          {/* 🔴 WHY A RAIL WITH A TAB STRIP, AND NOT THE ALTERNATIVES.
-              • Collapsible panels below the editor — rejected: that IS the current layout's fault. The
-                preview would sit under a 430px textarea, so seeing the conditional branch means
-                scrolling, and the brief requires it in one action.
-              • Tabs that REPLACE the editor — rejected: the preview's whole job is showing the effect of
-                an edit, and hiding the body to look at the result makes comparing them impossible.
-              • A rail beside the editor — chosen: both are on screen at once, switching Preview↔Tokens
-                is one click, and the editor never moves. The cost is 360px of width, which a desktop-only
-                page at max-w-[1800px] has to spare. */}
+          {/* ── RIGHT: THE LIVE PREVIEW, AND ONLY THAT ────────────────────────────────────────────
+              🔴 THE "Tokens" TAB IS GONE FROM HERE. It was a second pane competing with the preview
+              for the width beside the editor, and everything in it was a button that inserted text
+              at the cursor — which belongs beside the cursor. It is the toolbar's "Insert token ▾"
+              and "Insert condition ▾" now, reading the same `resolvedTokenReference()`.
+              ⚠️ THE PANE SCROLLS ON ITS OWN, like the other two. */}
           {selected && (
-            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-              <div className="flex border-b border-slate-200 bg-slate-50">
-                {RAIL_TABS.map(t => (
-                  <button key={t.key} onClick={() => setRail(t.key)}
-                    className={`flex-1 text-xs font-bold uppercase tracking-wide px-3 py-2 ${rail === t.key ? 'bg-white text-slate-800 border-b-2 border-orange-500' : 'text-slate-500 hover:text-slate-700'}`}>
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-
-              {rail === 'preview' && (
-                <div className="p-3 space-y-2">
+            <div className="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+              <p className="px-3 py-2 border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-600">
+                Preview
+              </p>
+              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="p-3 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <input type="text" className="text-sm border border-slate-200 rounded-lg px-2 py-1 flex-1 min-w-0"
                       placeholder="Search trucks…" value={search} onChange={e => setSearch(e.target.value)} />
@@ -1259,83 +1326,7 @@ export default function TemplatesPanel() {
                     </>
                   )}
                 </div>
-              )}
-
-              {rail === 'tokens' && (
-                <div className="p-3 space-y-3">
-                  {/* 🔴 THE PALETTE IS DISABLED UNTIL A FIELD HAS BEEN FOCUSED, and says why. Inserting
-                      into a guessed field is how text lands somewhere nobody watched. */}
-                  <p className={`text-[11px] rounded px-2 py-1 ${lastFocus ? 'text-slate-500' : 'text-amber-800 bg-amber-50 border border-amber-200'}`}>
-                    {lastFocus
-                      ? `Clicking inserts at your cursor in the ${lastFocus}.`
-                      : 'Click into the subject or body first — then these insert at your cursor.'}
-                  </p>
-
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600 mb-1">Values from the row</p>
-                    <div className="flex flex-wrap gap-1">
-                      {tokenRef.map(t => (
-                        <button key={t.name} onClick={() => insertAtCaret(t.syntax)} disabled={!lastFocus}
-                          title={t.description}
-                          className="text-[11px] font-mono px-1.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-orange-50 hover:border-orange-300 disabled:opacity-40">
-                          {t.syntax}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600 mb-1">Conditional clause pairs</p>
-                    {/* 🔴 ONE CLICK INSERTS BOTH LINES. Two lines that must both exist, where a missing
-                        half fails silently, is the most error-prone thing to type by hand. */}
-                    <div className="flex flex-col gap-1">
-                      {condPairs.map(c => (
-                        <button key={c}
-                          onClick={() => insertAtCaret(`?${c}: 
-?no_${c}: `, { ownLines: true })}
-                          disabled={!lastFocus}
-                          title={`Inserts both halves: ?${c}: and ?no_${c}: — one renders, the other is dropped, so the sentence always exists.`}
-                          className="text-[11px] font-mono text-left px-1.5 py-1 rounded border border-orange-300 bg-orange-50 text-orange-900 hover:bg-orange-100 disabled:opacity-40">
-                          {`?${c}: / ?no_${c}:`} <span className="font-sans not-italic">(both lines)</span>
-                        </button>
-                      ))}
-                      {condPairs.length === 0 && <p className="text-[11px] text-slate-400">No condition has a matching negative half.</p>}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600 mb-1">Single conditions</p>
-                    {/* ⚠️ These have NO `no_` counterpart in the code, so they are offered singly. A
-                        `?no_website:` line would hit conditionMet's default and be dropped every time. */}
-                    <div className="flex flex-wrap gap-1">
-                      {condSingles.map(c => (
-                        <button key={c} onClick={() => insertAtCaret(`?${c}: `, { ownLines: true })} disabled={!lastFocus}
-                          className="text-[11px] font-mono px-1.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-orange-50 hover:border-orange-300 disabled:opacity-40">
-                          {`?${c}:`}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600 mb-1">Fill-in placeholder</p>
-                    <button onClick={() => insertAtCaret('[[name]]')} disabled={!lastFocus}
-                      className="text-[11px] font-mono px-1.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-orange-50 hover:border-orange-300 disabled:opacity-40">
-                      [[name]]
-                    </button>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Stays visible until filled in the compose window, and is never guessed. An unknown
-                      <code className="font-mono"> {'{{token}}'}</code> also becomes one, so a typo shows up
-                      rather than printing literally.
-                    </p>
-                  </div>
-
-                  {/* 🔴 NOTHING IS APPENDED ANY MORE. This block named the two things the mechanism
-                      added to every email — the signature and the mandatory opt-out line. Both moved to
-                      the Outlook signature, so a note here saying "every email also gets this" would be
-                      describing behaviour that no longer exists. The preview above is the whole message. */}
-                </div>
-              )}
+              </div>
             </div>
           )}
         </div>)}
@@ -1513,6 +1504,130 @@ function SignaturePanel() {
         <div className="border border-slate-200 rounded-lg p-3 bg-white"
           dangerouslySetInnerHTML={{ __html: signatureBlockHtml({ lines }) + optOutHtml({ text: optOut }) }} />
       </div>
+    </div>
+  )
+}
+
+/**
+ * One row of the template list.
+ *
+ * 🔴 IT SAYS WHERE THE TEMPLATE IS USED, which is the question the list could not answer before: a
+ * name and an `em`/`wa` chip told you it existed. "Used in 2 boxes · default" is the difference
+ * between a template the sequence will send and one nobody has put anywhere.
+ * ⚠️ THE REORDER AND RETIRE CONTROLS ARE UNCHANGED, and still cost no width until the row is
+ * hovered or selected.
+ */
+function ListRow({ r, i, arr, selId, usedIn, onSelect, onMove, onToggle }: {
+  r: Row
+  i: number
+  arr: Row[]
+  selId: string | null
+  usedIn: string[]
+  onSelect: (id: string) => void
+  onMove: (r: Row, dir: -1 | 1) => Promise<void> | void
+  onToggle: (r: Row) => Promise<void> | void
+}) {
+  const isSel = selId === r.id
+  const inDefault = usedIn.some(u => u.endsWith('All trucks'))
+  return (
+    <div
+      className={`group px-2.5 py-1.5 border-b border-slate-100 last:border-b-0 cursor-pointer ${isSel ? 'bg-orange-50' : 'hover:bg-slate-50'}`}
+      onClick={() => r.id && onSelect(r.id)}>
+      <div className="flex items-center gap-1.5">
+        <span className={`text-sm truncate flex-1 min-w-0 ${r.active ? (isSel ? 'font-semibold text-slate-900' : 'text-slate-800') : 'text-slate-400'}`}>
+          {r.label}
+        </span>
+        <span className={`flex items-center gap-0.5 flex-shrink-0 ${isSel ? 'flex' : 'hidden group-hover:flex'}`}>
+          <button onClick={e => { e.stopPropagation(); void onMove(r, -1) }} disabled={i === 0}
+            title="Move up" className="text-[11px] leading-none px-1 py-0.5 rounded border border-slate-200 bg-white disabled:opacity-30 hover:bg-slate-50">↑</button>
+          <button onClick={e => { e.stopPropagation(); void onMove(r, 1) }} disabled={i === arr.length - 1}
+            title="Move down" className="text-[11px] leading-none px-1 py-0.5 rounded border border-slate-200 bg-white disabled:opacity-30 hover:bg-slate-50">↓</button>
+          <button onClick={e => { e.stopPropagation(); void onToggle(r) }}
+            title={r.active ? 'Retire (kept, hidden from the compose picker)' : 'Restore'}
+            className={`text-[11px] leading-none px-1 py-0.5 rounded border bg-white ${r.active ? 'border-slate-200 text-slate-500 hover:bg-slate-50' : 'border-emerald-300 text-emerald-700'}`}>
+            {r.active ? '⦸' : '↺'}
+          </button>
+        </span>
+      </div>
+      <p className={`text-[11px] ${usedIn.length ? 'text-slate-500' : 'text-slate-400'}`}>
+        {usedIn.length
+          ? `Used in ${usedIn.length} box${usedIn.length === 1 ? '' : 'es'}${inDefault ? ' · default' : ''}`
+          : 'Not in sequence'}
+      </p>
+    </div>
+  )
+}
+
+/**
+ * "Insert token ▾" — every token the RESOLVER understands, with what each one fills in.
+ *
+ * 🔴 THE LIST IS `resolvedTokenReference()`, WHICH READS THE RESOLVER'S OWN SWITCH. There is no
+ * array of token names in this file and there must never be one: a second copy agrees on the day it
+ * is written and then quietly offers a token that expands to nothing, or hides one that works.
+ * ⚠️ IT IS DISABLED UNTIL A FIELD HAS BEEN FOCUSED, and says why — inserting into a guessed field is
+ * how text lands somewhere nobody watched.
+ */
+function TokenMenu({ tokens, disabled, hint, onInsert }: {
+  tokens: readonly { syntax: string; name: string; description: string }[]
+  disabled: boolean
+  hint: string
+  onInsert: (syntax: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen(o => !o)} disabled={disabled} title={hint}
+        aria-expanded={open}
+        className="text-[11px] font-bold px-2 py-1 rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+        Insert token ▾
+      </button>
+      {open && !disabled && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} role="presentation" />
+          <div className="absolute z-30 mt-1 w-80 max-h-80 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg p-1">
+            <p className="px-2 py-1 text-[11px] text-slate-500">{hint}</p>
+            {tokens.map(t => (
+              <button key={t.name} type="button"
+                onClick={() => { onInsert(t.syntax); setOpen(false) }}
+                className="w-full text-left px-2 py-1 rounded hover:bg-slate-100">
+                <span className="block text-[11px] font-mono text-slate-800">{t.syntax}</span>
+                <span className="block text-[11px] text-slate-500">{t.description}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+/** The conditional pairs, on the same row. ⚠️ One click writes BOTH halves — see the call site. */
+function CondMenu({ pairs, disabled, onInsert }: {
+  pairs: readonly string[]
+  disabled: boolean
+  onInsert: (name: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen(o => !o)} disabled={disabled} aria-expanded={open}
+        className="text-[11px] font-bold px-2 py-1 rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40">
+        Insert condition ▾
+      </button>
+      {open && !disabled && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} role="presentation" />
+          <div className="absolute z-30 mt-1 w-72 rounded-lg border border-slate-300 bg-white shadow-lg p-1">
+            {pairs.map(c => (
+              <button key={c} type="button" onClick={() => { onInsert(c); setOpen(false) }}
+                className="w-full text-left px-2 py-1 rounded hover:bg-slate-100">
+                <span className="block text-[11px] font-mono text-slate-800">{`?${c}: / ?no_${c}:`}</span>
+                <span className="block text-[11px] text-slate-500">Both halves — one renders, the other is dropped.</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

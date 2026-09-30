@@ -368,3 +368,26 @@ export function loggedKindFor(input: {
   if (input.hasParent && input.inConversation) return 'reply'
   return input.stepKind ?? input.clientKind ?? null
 }
+
+/**
+ * "day 0", "+3 days" — when each step happens, under its column heading.
+ *
+ * 🔴 DERIVED FROM `FOLLOW_UP_DAYS`, NEVER A SECOND TABLE. The interval stored against a step is the
+ * one that leads to the NEXT one: first contact carries 3, which is when chase 1 becomes due. So a
+ * column's offset is the interval of the step BEFORE it, and the first column is day 0 by
+ * definition. Writing the four numbers out again here is how a grid ends up promising a cadence the
+ * queue does not run.
+ * ⚠️ A STEP WITH NO INTERVAL BEFORE IT SHOWS NOTHING rather than "+null days" — `4_final_chase`
+ * carries null because the sequence ends there, and that null belongs to the step after it, which
+ * does not exist.
+ */
+export function stepOffsetLabel(
+  step: LadderKind,
+  followUpDays: Partial<Record<LadderKind, number | null>>,
+): string {
+  const i = CONTACT_KINDS.indexOf(step)
+  if (i <= 0) return 'day 0'
+  const before = CONTACT_KINDS[i - 1]
+  const days = followUpDays[before]
+  return typeof days === 'number' ? `+${days} days` : ''
+}

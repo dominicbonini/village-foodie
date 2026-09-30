@@ -22,6 +22,8 @@ export const QUEUE_KEY = 'hg.outreach.queue.v1'
 export const RETURN_KEY = 'hg.outreach.return.v1'
 /** ⚠️ localStorage, not session: which timeline chip is selected is a preference, not working state. */
 export const TIMELINE_PREF_KEY = 'hg.outreach.timelineFilter.v1'
+/** Which of the Templates tab's two views was open last. ⚠️ Per browser, like the filter above. */
+export const TEMPLATES_VIEW_KEY = 'hg.outreach.templatesView.v1'
 
 export interface QueueState {
   /** What the queue IS, in the words the end-of-queue message uses: "Replies waiting", "the list". */
