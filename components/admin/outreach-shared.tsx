@@ -346,7 +346,10 @@ export function ModalThumb({ value, folder, label, onRequestDelete, refreshNonce
   )
 }
 
-export const INBOUND_BG = '#ecfdf5'
+/* 🔴 `INBOUND_BG` WAS HERE AND IS GONE. A green row background said "this one came in" — a colour
+ * doing the work of a word, which a greyscale print, a colour-blind reader and a phone in sunlight
+ * all lose. Every surface says it with `RowLabelCell` now: an icon, and the word "Received" as a
+ * pill in bold dark text. */
 
 /** 🔴 THE FULL MESSAGE, IN A POPOUT — NOT EXPANDED IN PLACE.
  *  This replaces the click-to-expand accordion. The reason is the left column: it measures 491px at
@@ -600,7 +603,6 @@ export function ContactPopout({ contact, onClose, onDelete }: {
     return () => window.removeEventListener('keydown', onKey, true)
   }, [onClose, confirming])
   if (!mounted) return null
-  const inbound = contact.direction === 'inbound'
   return createPortal(
     // 🔴 90, ABOVE THE COMPOSE WINDOW'S 85 — and inline, for the reason recorded on that file: an
     // arbitrary z-index used by exactly one file may have no generated rule at all.
@@ -610,8 +612,9 @@ export function ContactPopout({ contact, onClose, onDelete }: {
         className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-200 flex-shrink-0">
           <span className="text-sm font-semibold text-slate-900 tabular-nums">{fmtDate(contact.contacted_at)}</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded"
-            style={{ background: inbound ? INBOUND_BG : '#f1f5f9', color: inbound ? '#065f46' : '#334155' }}>
+          {/* 🔴 THE SAME PILL THE HISTORY USES, AND NO GREEN. This chip was the last place a
+              direction was said in colour; it is bold dark text on grey now, like every other row. */}
+          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-900">
             {directionLabel(contact.direction)}
           </span>
           <span className="text-xs text-slate-500" title={contact.kind ?? undefined}>{kindLabel(contact.kind)}</span>

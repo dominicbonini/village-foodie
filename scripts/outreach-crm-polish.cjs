@@ -84,6 +84,34 @@ function runLibSuite({ W, T, D }) {
   t('⚠️ …and a row with no kind at all says "Contact" rather than nothing',
     T.contactRowLabel({ channel: 'email', kind: null }) === 'Contact')
 
+  // ── ONE LABEL FOR EVERY ROW ──────────────────────────────────────────────────────────────────
+  const email = (over = {}) => ({ type: 'email', at: '', id: 'm', message: { id: 'm', direction: 'outbound', ...over } })
+  const contactItem = (over = {}) => ({ type: 'contact', at: '', id: 'c', contact: { id: 'c', channel: 'phone', direction: 'outbound', ...over } })
+  const eventItem = (kind) => ({ type: 'event', at: '', id: 'e', event: { id: 'e', kind, created_at: '' } })
+  const L = T.rowLabel
+  t('🔴 an email I sent — envelope, "Sent", plain',
+    JSON.stringify(L(email())) === JSON.stringify({ icon: 'envelope', word: 'Sent', pill: false }))
+  t('🔴 an email they sent — envelope, "Received", and it is the ONLY pill',
+    JSON.stringify(L(email({ direction: 'inbound' }))) === JSON.stringify({ icon: 'envelope', word: 'Received', pill: true }))
+  t('🔴 a call — phone, "Call"', JSON.stringify(L(contactItem())) === JSON.stringify({ icon: 'phone', word: 'Call', pill: false }))
+  t('🔴 …even when it is stored as `reply`', L(contactItem({ kind: 'reply' })).word === 'Call')
+  t('🔴 a WhatsApp — chat, "WhatsApp"', JSON.stringify(L(contactItem({ channel: 'whatsapp' }))) === JSON.stringify({ icon: 'chat', word: 'WhatsApp', pill: false }))
+  t('🔴 a note — pencil, "Note"', JSON.stringify(L(eventItem('note'))) === JSON.stringify({ icon: 'pencil', word: 'Note', pill: false }))
+  t('🔴 a stage change — arrows, "Stage"', JSON.stringify(L(eventItem('stage_change'))) === JSON.stringify({ icon: 'arrows', word: 'Stage', pill: false }))
+  t('⚠️ a hand-logged EMAIL contact reads as the email it was',
+    L(contactItem({ channel: 'email' })).word === 'Sent'
+    && L(contactItem({ channel: 'email', direction: 'inbound' })).pill === true)
+  t('⚠️ an unrecognised channel is still a contact, and says so',
+    JSON.stringify(L(contactItem({ channel: 'carrier pigeon', kind: null }))) === JSON.stringify({ icon: 'chat', word: 'Contact', pill: false }))
+  t('🔴 every entry type is covered — no row can fall through to nothing',
+    ['email', 'contact', 'event'].every(k => {
+      const it = k === 'email' ? email() : k === 'contact' ? contactItem() : eventItem('note')
+      const r = L(it)
+      return !!r && typeof r.word === 'string' && r.word.length > 0 && typeof r.icon === 'string'
+    }))
+  t('⚠️ the panel and Today use the same two words, from the same module',
+    T.messageRowLabel('inbound').word === 'Received' && T.messageRowLabel('outbound').word === 'Sent')
+
   // ── 2 · A NOTE IS ONE ROW ────────────────────────────────────────────────────────────────────
   t('🔴 runs of blank lines collapse to one break',
     T.tidyNoteText('a\n\n\n\nb') === 'a\nb' && T.tidyNoteText('a\r\n\r\nb') === 'a\nb')
@@ -172,6 +200,34 @@ function runCensus(over = {}) {
   t('🔴 the link mark is defined with an href attribute and rendered as an anchor',
     /const Link = Mark\.create\(\{/.test(ED) && /return \['a', mergeAttributes\(HTMLAttributes\), 0\]/.test(ED))
 
+  // ── THE LABELS, ON EVERY SURFACE ─────────────────────────────────────────────────────────────
+  const PANEL_SRC = stripComments(read('components/admin/EmailReadingPanel.tsx'))
+  const LIST = stripComments(read('components/admin/OutreachPanel.tsx'))
+  const ICONS = stripComments(read('components/admin/outreach-icons.tsx'))
+  /* 🔴 THE WHOLE GLYPH VOCABULARY, NOT JUST THE ARROWS. The history drew its icons with `↗ ↙ ☎ ✎`
+   * and a `·`; a row that reaches for one of its own again would reach for one of these, so all of
+   * them are banned from the markup at once. ⚠️ `→` is NOT in the list: the stage row reads
+   * "Stage contacted → replied", where the arrow is a word, not an icon. */
+  t('🔴 no glyph icons anywhere in the history, the panel or Today',
+    !/[\u2197\u2199\u260e\u270e\u2709]/.test(TL + PANEL_SRC + LIST))
+  t('🔴 …and `rowIcon` is gone, so a row has nowhere to reach for one of its own', !/function rowIcon/.test(TL))
+  t('🔴 the green row background is gone from every surface',
+    !/INBOUND_BG/.test(TL + PANEL_SRC + LIST + SHARED))
+  t('🔴 every history row renders through the ONE function',
+    (TL.match(/<RowLabelCell label=\{rowLabel\(item\)\} \/>/g) || []).length === 3)
+  t('🔴 …the reading panel through the same one',
+    /<RowLabelCell label=\{messageRowLabel\(message\.direction\)\} \/>/.test(PANEL_SRC))
+  t("🔴 …and Today's replies list too", /<RowLabelCell label=\{messageRowLabel\('inbound'\)\}/.test(LIST))
+  t('⚠️ the icons are one size and one stroke, in the style this app already uses',
+    /width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"/.test(ICONS)
+    && (ICONS.match(/strokeWidth="2"/g) || []).length === 1)
+  t('🔴 …and there are exactly five paths, no emoji and no unicode arrows',
+    (ICONS.match(/^  [a-z]+: '/gm) || []).length === 5 && !/[\u260e\u270e\u2197\u2199]/.test(ICONS))
+  t('🔴 the label column is a fixed width, in one place', /w-\[5\.5rem\] shrink-0/.test(ICONS))
+  t('⚠️ "Received" is a pill in bold dark text, not a colour',
+    /font-bold uppercase tracking-wide text-slate-900 bg-slate-100/.test(ICONS) && !/emerald/.test(ICONS))
+  t('⚠️ a row waiting for a reply keeps its own indicator', /rowBadges\(m, \{ now, linkedTruck, showTests \}\)/.test(TL))
+
   // ── WHAT NONE OF THIS MAY TOUCH ──────────────────────────────────────────────────────────────
   t('🔴 still one nextStep call on the page', (PAGE.match(/nextStep\(/g) || []).length === 1)
   t('🔴 still one contact writer', /action: 'log_contact'/.test(PAGE) && !/outreach_contacts/.test(PAGE))
@@ -230,6 +286,12 @@ function runCensus(over = {}) {
       { CW: CW_SRC.replace(/\s*if \(next\) \{\n\s*window\.setTimeout\(\n\s*\(\) => document\.getElementById\(QUOTE_BLOCK_ID\)\?\.scrollIntoView\(\{ block: 'nearest', behavior: 'smooth' \}\),\n\s*0\)\n\s*\}/, '') }],
     ['V10 🔴 "Insert in email" goes back to asking for a paste',
       { PAGE: PAGE_SRC.replace('const ok = composerApi.current?.insertLink(url) ?? false', 'const ok = false') }],
+    ['V11 🔴 the arrows are back on the email rows',
+      { TL: TL_SRC.replace('<RowLabelCell label={rowLabel(item)} />',
+        '<span>{"\u2197"}</span>') }],
+    ['V12 🔴 one row type draws its own icon outside the function',
+      { TL: TL_SRC.replace('<ul className="list-none"><NoteRow note={e}',
+        '<ul className="list-none"><span>{"\u270e"}</span><NoteRow note={e}') }],
   ]) {
     const r = runCensus(over)
     const caught = r.bad.length > 0

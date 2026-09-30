@@ -167,8 +167,13 @@ function runPanelSuite(rawTL, rawPanel, rawShared) {
    * reachable — "Note logged with this email ▸", closed, in the reading panel. */
   t('⚠️ the hand log is not marked, and its text is reachable when it differs',
     !/Also logged by hand/i.test(P) && /Note logged with this email ▸/.test(P))
+  /* ⚠️ RESTATED (30 September 2026, direction labels): the header's direction was a green
+   * "RECEIVED" of its own; it is the same icon-and-word cell the history row uses now, from
+   * `messageRowLabel`. The rule is unchanged — the header says which way it went, who it was
+   * between, when and what about — and it is stronger for the two screens agreeing. */
   t('⚠️ the header carries direction, from, to, date and subject',
-    /Received' : 'Sent'/.test(P) && /From<\/span>/.test(P) && /To<\/span>/.test(P) && /fmtWhen\(message\.message_date/.test(P))
+    /<RowLabelCell label=\{messageRowLabel\(message\.direction\)\} \/>/.test(P)
+    && /From<\/span>/.test(P) && /To<\/span>/.test(P) && /fmtWhen\(message\.message_date/.test(P))
   t('🔴 Reply closes the panel first, then calls the page\'s existing reply',
     /onClick=\{\(\) => \{ onClose\(\); actions\.onReply\(m\) \}\}/.test(TL))
   /* 🔴 RESTATED (30 September 2026, reply-to-any): Reply is offered on a SENT email too, which is

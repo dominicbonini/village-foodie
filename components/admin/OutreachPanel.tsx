@@ -40,9 +40,11 @@ import type { MailImportResult, MailImportResponse } from '@/lib/outreach-mail-i
 import {
   type Prospect,
   STATUS_LABEL, fmtDate, mediaSrc, confirmLogoWrite,
-  TriStateBox, WhatsAppBox, useThumbLatch, INBOUND_BG,
+  TriStateBox, WhatsAppBox, useThumbLatch,
 } from '@/components/admin/outreach-shared'
-import { phoneWhatsApp } from '@/lib/whatsapp-hint'   // pure — used only to build the wa.me link
+import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { messageRowLabel } from '@/lib/outreach-timeline'
+import { RowLabelCell } from '@/components/admin/outreach-icons'   // pure — used only to build the wa.me link
 // 🔴 THE DERIVED STEP. Pure, no I/O, no stored state — see lib/outreach-step.ts. Imported here rather
 // than reimplemented so the queue, the row label and the composer's pre-selection read ONE answer.
 import {
@@ -2047,7 +2049,11 @@ function TodayScreen({ view, loaded, migrationApplied, onOpen, onCompose, onRepl
         <TodaySection title="Replies waiting" count={view.replies.length}
           hint="Inbound emails that have not been answered or marked done. Oldest first — the one that has waited longest is the one to answer.">
           {view.replies.map(r => (
-            <div key={r.id} className="px-3 py-2 flex items-start gap-3 max-md:flex-col max-md:gap-2" style={{ background: INBOUND_BG }}>
+            // 🔴 THE SAME LABEL AS THE HISTORY, AND NO GREEN ROW. Today said "this came in" with a
+            // background colour and the prospect page said it with an arrow; both now say it with
+            // the icon and the word, from the one function.
+            <div key={r.id} className="px-3 py-2 flex items-start gap-3 max-md:flex-col max-md:gap-2">
+              <RowLabelCell label={messageRowLabel('inbound')} className="pt-0.5 max-md:pt-0" />
               <div className="flex-1 min-w-0">
                 <button type="button" onClick={() => onOpen(r.prospect_id, repliesQueue)}
                   className="font-bold text-slate-900 hover:underline text-sm text-left">

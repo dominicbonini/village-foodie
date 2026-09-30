@@ -21,7 +21,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { handTextIsRedundant, type TimelineMessage, type TimelineContact } from '@/lib/outreach-timeline'
+import { handTextIsRedundant, messageRowLabel, type TimelineMessage, type TimelineContact } from '@/lib/outreach-timeline'
+import { RowLabelCell } from '@/components/admin/outreach-icons'
 import { EmailBody } from '@/components/admin/outreach-shared'
 import { readingPanelWidth, stepEmailId, TWO_COL_AT_PX } from '@/lib/outreach-workspace'
 
@@ -146,9 +147,10 @@ export default function EmailReadingPanel({
       {/* ── HEADER: WHICH EMAIL THIS IS, AND HOW TO LEAVE IT ────────────────────────────────── */}
       <div className="shrink-0 border-b border-slate-200 px-4 py-2 flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-bold uppercase tracking-wide ${inbound ? 'text-emerald-700' : 'text-slate-500'}`}>
-            {inbound ? 'Received' : 'Sent'}
-          </span>
+          {/* 🔴 THE SAME ICON AND THE SAME WORD AS THE ROW IT WAS OPENED FROM, from the same
+              function. It was a green "RECEIVED" here and a `↙` there — two vocabularies for one
+              fact, on two screens you move between with one click. */}
+          <RowLabelCell label={messageRowLabel(message.direction)} />
           <span className="text-[11px] text-slate-500">{fmtWhen(message.message_date ?? message.created_at)}</span>
           <div className="ml-auto flex items-center gap-1">
             <button type="button" disabled={!prev} onClick={() => prev && onOpen(prev)}

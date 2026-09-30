@@ -383,3 +383,70 @@ export function tidyNoteText(text: string | null | undefined): string {
 export function noteFirstLine(text: string | null | undefined): string {
   return tidyNoteText(text).split('\n')[0] ?? ''
 }
+
+// ── ONE LABEL FOR EVERY ROW ─────────────────────────────────────────────────────────────────────────
+/**
+ * 🔴 EVERY HISTORY ROW SAYS WHAT IT IS, IN THE SAME SHAPE: an icon for the channel and a WORD for
+ * what happened, in a fixed column so the rows line up.
+ *
+ * WHAT THIS REPLACES: emails carried `↗` and `↙` — two unicode arrows that mean "sent" and
+ * "received" only once somebody has told you so — and a received email carried a GREEN ROW
+ * BACKGROUND, which is a colour doing the work of a word. Calls and notes had their own characters
+ * (`☎`, `✎`, `·`), chosen one at a time. Six kinds of row, four vocabularies.
+ *
+ * ⚠️ THE ICON IS A NAME, NOT A COMPONENT. This module is pure and is compiled by a harness with no
+ * React in it; `components/admin/outreach-icons.tsx` turns the name into the one SVG. That is also
+ * what stops a row inventing its own icon: there is nowhere to put one.
+ * ⚠️ DISPLAY ONLY. Nothing here is stored, and nothing reads it back.
+ */
+export type RowIconName = 'envelope' | 'phone' | 'chat' | 'pencil' | 'arrows'
+
+export interface RowLabel {
+  icon: RowIconName
+  word: string
+  /**
+   * 🔴 "Received" IS THE ONE THING WORTH SPOTTING IN A COLUMN OF ROWS — somebody is waiting. It is a
+   * small pill in bold dark text rather than a colour, so it survives a greyscale print, a colour
+   *-blind reader and a phone in sunlight. Every other word is plain grey.
+   */
+  pill: boolean
+}
+
+export function rowLabel(item: TimelineItem): RowLabel {
+  if (item.type === 'event') {
+    return item.event.kind === 'stage_change'
+      ? { icon: 'arrows', word: 'Stage', pill: false }
+      : { icon: 'pencil', word: 'Note', pill: false }
+  }
+  if (item.type === 'email') {
+    return item.message.direction === 'inbound'
+      ? { icon: 'envelope', word: 'Received', pill: true }
+      : { icon: 'envelope', word: 'Sent', pill: false }
+  }
+  // A logged contact: the CHANNEL decides the icon, and `contactRowLabel` the word — the same
+  // function the row's own text uses, so a call cannot be an envelope saying "Call".
+  const channel = String(item.contact.channel ?? '').toLowerCase()
+  const inbound = String(item.contact.direction ?? '').toLowerCase() === 'inbound'
+  if (channel === 'phone' || channel === 'call') return { icon: 'phone', word: 'Call', pill: false }
+  if (channel === 'whatsapp') return { icon: 'chat', word: 'WhatsApp', pill: false }
+  if (channel === 'email') {
+    return inbound
+      ? { icon: 'envelope', word: 'Received', pill: true }
+      : { icon: 'envelope', word: 'Sent', pill: false }
+  }
+  // ⚠️ AN UNRECOGNISED CHANNEL IS STILL A CONTACT, and it says so rather than borrowing an icon that
+  // would claim it was something it is not.
+  return { icon: 'chat', word: contactRowLabel(item.contact), pill: false }
+}
+
+/**
+ * The same two words for a message outside the timeline — the reading panel's header, Today's lists.
+ * ⚠️ NOT `directionLabel`: `lib/outreach.ts` already exports one of those, and it returns a plain
+ * string for a contact row. Two functions with one name, one returning an object, is how a file ends
+ * up importing the wrong one and rendering `[object Object]`.
+ */
+export function messageRowLabel(direction: string | null | undefined): RowLabel {
+  return String(direction ?? '').toLowerCase() === 'inbound'
+    ? { icon: 'envelope', word: 'Received', pill: true }
+    : { icon: 'envelope', word: 'Sent', pill: false }
+}

@@ -21,12 +21,13 @@ import {
   isTimelineFilter, type TimelineFilter, type RowBadge,
 } from '@/lib/outreach-workspace'
 import { TIMELINE_PREF_KEY } from '@/lib/outreach-queue'
-import { contactRowLabel } from '@/lib/outreach-timeline'
+import { contactRowLabel, rowLabel } from '@/lib/outreach-timeline'
+import { RowLabelCell } from '@/components/admin/outreach-icons'
 import { CONTACT_KINDS } from '@/lib/outreach'
 import { STEP_LABELS } from '@/lib/outreach-sequence'
 import EmailReadingPanel from '@/components/admin/EmailReadingPanel'
 import {
-  ContactPopout, INBOUND_BG, NoteRow, fmtDate, stageWord, SizedEmailFrame,
+  ContactPopout, NoteRow, fmtDate, stageWord, SizedEmailFrame,
   type Contact, type Prospect, type TimelinePayload,
 } from '@/components/admin/outreach-shared'
 import { createPortal } from 'react-dom'
@@ -41,17 +42,11 @@ const BADGE_TONE: Record<RowBadge, string> = {
   test: 'bg-slate-100 border-slate-300 text-slate-500',
 }
 
-/** The icon column. One glyph, so direction reads before anything else on the line. */
-function rowIcon(item: { type: string; message?: TimelineMessage; contact?: { channel?: string | null; direction?: string | null }; event?: { kind: string } }): string {
-  if (item.type === 'email') return item.message?.direction === 'inbound' ? '↙' : '↗'
-  if (item.type === 'contact') {
-    const ch = (item.contact?.channel ?? '').toLowerCase()
-    if (ch.includes('whatsapp')) return 'WA'
-    if (ch.includes('phone') || ch.includes('call')) return '☎'
-    return item.contact?.direction === 'inbound' ? '↙' : '↗'
-  }
-  return item.event?.kind === 'note' ? '✎' : '·'
-}
+/* 🔴 `rowIcon` WAS HERE AND IS GONE. It returned `↗ ↙ ☎ ✎ · WA` — six unicode characters chosen one
+ * at a time, two of which (the arrows) mean nothing until somebody explains them, all of which
+ * render at whatever size and weight the platform's font decides. Every row now gets an icon AND A
+ * WORD from `rowLabel` in lib/outreach-timeline.ts, drawn by `RowLabelCell`. There is deliberately
+ * no local function left for a row to reach for. */
 
 /** "14:07" — shown on hover, because the date is enough at a glance and the time rarely is. */
 const timeOf = (iso: string | null | undefined): string => {
@@ -202,7 +197,7 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
             const e = item.event
             return (
               <div key={item.id} className="px-3 py-1.5 flex items-start gap-2 text-[12px]">
-                <span className="w-5 text-center text-slate-400 shrink-0" aria-hidden="true">{rowIcon(item)}</span>
+                <RowLabelCell label={rowLabel(item)} />
                 <span className="w-20 shrink-0 text-slate-400 tabular-nums" title={timeOf(e.created_at)}>
                   {fmtDate(e.created_at)}
                 </span>
@@ -233,9 +228,7 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
               <div key={item.id} className="text-[12px]">
                 <button type="button" onClick={() => onExpand(open ? null : item.id)}
                   className="w-full text-left px-3 py-1.5 flex items-start gap-2 hover:bg-slate-50">
-                  <span className={`w-5 text-center shrink-0 ${c.direction === 'inbound' ? 'text-emerald-700' : 'text-slate-400'}`} aria-hidden="true">
-                    {rowIcon(item)}
-                  </span>
+                  <RowLabelCell label={rowLabel(item)} />
                   <span className="w-20 shrink-0 text-slate-400 tabular-nums" title={timeOf(c.created_at)}>
                     {fmtDate(c.contacted_at)}
                   </span>
@@ -275,14 +268,16 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           // ⚠️ `expandAll` NO LONGER TOUCHES EMAIL ROWS, because "expand all" cannot mean "open
           // fourteen panels". It still expands every contact row, which is what it is now for.
           const m = item.message
-          const inbound = m.direction === 'inbound'
           const open = expandedId === item.id
           const badges = rowBadges(m, { now, linkedTruck, showTests })
           // 🔴 THE FIRST LINE THAT SAYS SOMETHING. "Hi Stephen," told the reader only that this is
           // an email, which the row already said.
           const firstLine = meaningfulPreview(m.preview, m.subject)
+          // 🔴 NO GREEN ROW BACKGROUND. A colour was doing the work of a word — "this one came in".
+          // The word is in the label column now, as a pill, which a greyscale print and a
+          // colour-blind reader both keep.
           return (
-            <div key={item.id} className="text-[12px]" style={inbound ? { background: INBOUND_BG } : undefined}>
+            <div key={item.id} className="text-[12px]">
               {/* 🔴 THE WHOLE ROW IS THE CONTROL. The Open button is gone: a row you can read is a row
                   you can click, and a button beside it was a second target for one intention.
                   ⚠️ THE `tl-<id>` ID IS ON THE BUTTON, and it is load-bearing twice over: the Files
@@ -292,9 +287,7 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                 aria-expanded={open}
                 className={`w-full text-left px-3 py-1.5 max-md:py-2.5 max-md:min-h-11 flex items-start gap-2 hover:bg-black/[0.03] ${
                   open ? 'ring-2 ring-inset ring-slate-400 bg-black/[0.04]' : ''}`}>
-                <span className={`w-5 text-center shrink-0 ${inbound ? 'text-emerald-700' : 'text-slate-400'}`} aria-hidden="true">
-                  {rowIcon(item)}
-                </span>
+                <RowLabelCell label={rowLabel(item)} />
                 <span className="w-20 shrink-0 text-slate-400 tabular-nums max-md:hidden" title={timeOf(m.message_date ?? m.created_at)}>
                   {fmtDate(m.message_date ?? m.created_at ?? null)}
                 </span>
