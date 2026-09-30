@@ -1346,7 +1346,11 @@ export default function AdminPage() {
           for a 231-row fetch on every visit — the cost is that switching away and back refetches.
           The panel was app/admin/outreach/page.tsx until this change; that route now redirects here. */}
       {adminTab === 'templates' && (
-        <div className="w-full max-w-[1800px] mx-auto px-4 py-6">
+        // ⚠️ `pt-3`, NOT `py-6`, FOR THIS TAB ALONE. Its first control is a view switcher that belongs
+        // under the tab strip, and 24px of padding under 24px of the strip's own read as a gap. Every
+        // other tab starts with a heading or a card, where the air is right — so this is one branch's
+        // padding, not a change to the shell.
+        <div className="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
           <TemplatesPanel />
         </div>
       )}

@@ -89,24 +89,99 @@ function sequenceFixture(css) {
 // ── THE TEMPLATES VIEW ──────────────────────────────────────────────────────────────────────────────
 function templatesFixture(css) {
   const cols = lift(TAB, /gridTemplateColumns: '(270px minmax\(0, 1fr\) minmax\(0, 30%\))'/, 'pane widths')
-  const height = lift(TAB, /height: '(calc\(100vh - 12rem\))'/, 'pane height')
+  /* ⚠️ RESTATED: the height is no longer a constant in the source to lift — it is measured from the
+   * panes' own top edge at runtime, which is the fix for item 4. This fixture applies the same rule
+   * (the script tag below) instead of copying a number that no longer exists. */
+  const gutter = Number(lift(TAB, /const BOTTOM_GUTTER_PX = (\d+)/, 'bottom gutter'))
   const tall = n => `<div style="height:${n}px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:8px;margin:4px">filler</div>`
   return `${HEAD(css)}
 <div style="max-width:1800px;margin:0 auto;padding:12px 16px">
   <div id="switcher" style="height:34px;margin-bottom:12px;background:#f1f5f9">Sequence | Templates</div>
-  <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}; height: ${height}">
+  <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
     <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
       <div style="height:70px;border-bottom:1px solid #f1f5f9">+ New template / search</div>
       <div id="leftScroll" class="flex-1 min-h-0 overflow-y-auto">${tall(1600)}</div>
       <div style="height:36px;border-top:1px solid #f1f5f9">Snippets · Signature</div>
     </div>
-    <div id="centre" class="min-w-0 overflow-y-auto">${tall(1800)}</div>
+    <div id="centre" class="min-w-0 min-h-0 overflow-y-auto">${tall(1800)}</div>
     <div id="right" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
       <p style="height:33px;border-bottom:1px solid #e2e8f0">Preview</p>
       <div id="rightScroll" class="flex-1 min-h-0 overflow-y-auto">${tall(1500)}</div>
     </div>
   </div>
-</div></body></html>`
+</div>
+<script>
+  // 🔴 NOT \`var top\`. At global scope that is \`window.top\` — the top frame, and READ-ONLY, so the
+  // assignment fails silently, the value stays a Window, and the height becomes the invalid
+  // 'calc(100vh - [object Window]16px)' which the browser drops. The fixture then measured a page
+  // with no height rule at all and reported the very failure it exists to catch.
+  var el = document.getElementById('panes')
+  var paneTop = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY))
+  var pad = Math.round(parseFloat(getComputedStyle(el.parentElement).paddingBottom || '0') || 0)
+  el.style.height = 'calc(100vh - ' + (paneTop + pad + ${gutter}) + 'px)'
+</script>
+</body></html>`
+}
+
+/**
+ * 🔴 THE REAL PAGE STRUCTURE, NOT JUST THE PANEL. The last report measured the three panes in a
+ * fixture with nothing above them, where `calc(100vh - 12rem)` happened to be right — and in the
+ * admin shell it was not, so the page scrolled in production and the left list moved with it. This
+ * fixture puts back what is actually above the panel: the sticky admin header (51px — the tab bar
+ * is positioned at `top-[51px]`, which is where that number comes from), the sticky tab strip, and
+ * the shell's own `px-4 pt-3 pb-6` container.
+ * ⚠️ AND IT SETS THE HEIGHT THE WAY THE COMPONENT DOES — by measuring the panes' own top edge —
+ * rather than by repeating a constant. If the mechanism is wrong, this fails.
+ */
+function shellFixture(css) {
+  const cols = lift(TAB, /gridTemplateColumns: '(270px minmax\(0, 1fr\) minmax\(0, 30%\))'/, 'pane widths')
+  const gutter = Number(lift(TAB, /const BOTTOM_GUTTER_PX = (\d+)/, 'bottom gutter'))
+  const tall = n => `<div style="height:${n}px;background:#eef2f7;border:1px solid #cbd5e1;border-radius:8px;margin:4px">filler</div>`
+  return `${HEAD(css)}
+<header id="appheader" style="position:sticky;top:0;z-index:50;height:51px;background:#0f172a"></header>
+<div id="tabbar" style="position:sticky;top:51px;z-index:40;height:41px;background:#0f172a;border-bottom:1px solid #334155"></div>
+<div class="w-full max-w-[1800px] mx-auto px-4 pt-3 pb-6">
+  <div id="switcher" class="flex items-center gap-3 flex-wrap mb-2" style="height:34px">Sequence | Templates</div>
+  <div id="panes" class="grid gap-4" style="grid-template-columns: ${cols}">
+    <div id="left" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+      <div style="height:70px;border-bottom:1px solid #f1f5f9">+ New template / search</div>
+      <div id="leftScroll" class="flex-1 min-h-0 overflow-y-auto">${tall(1600)}</div>
+      <div style="height:36px;border-top:1px solid #f1f5f9">Snippets · Signature</div>
+    </div>
+    <div class="min-w-0 min-h-0">
+      <div id="centre" class="rounded-xl border border-slate-200 bg-white p-4 h-full flex flex-col overflow-y-auto">
+        <div style="height:60px">Template name</div>
+        <div style="height:40px">Subject</div>
+        <!-- the small grey braces hint, which v2 item 3 keeps under the Message label -->
+        <div id="bracesHint" class="text-[11px] text-slate-500" style="height:15px">{{double braces}} / [[square brackets]]</div>
+        <div id="message" class="flex-1 min-h-0">${tall(2400)}</div>
+        <div id="save" class="flex justify-end mt-auto pt-2"><button class="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white">Save template</button></div>
+      </div>
+    </div>
+    <div id="right" class="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
+      <p style="height:33px;border-bottom:1px solid #e2e8f0">Preview</p>
+      <div class="flex-1 min-h-0 flex flex-col">
+        <div class="p-3 space-y-2 flex-1 min-h-0 flex flex-col">
+          <div style="height:90px">Search trucks… / picker / simulate</div>
+          <pre id="previewBody" class="flex-1 min-h-0 overflow-y-auto" style="margin:0">${'a long email\n'.repeat(120)}</pre>
+          <div id="previewFooter" style="height:24px">Dropped · Footer appended</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // ⚠️ THE COMPONENT'S OWN RULE, run here: measure the panes' top and take the rest of the window.
+  // 🔴 NOT \`var top\`. At global scope that is \`window.top\` — the top frame, and READ-ONLY, so the
+  // assignment fails silently, the value stays a Window, and the height becomes the invalid
+  // 'calc(100vh - [object Window]16px)' which the browser drops. The fixture then measured a page
+  // with no height rule at all and reported the very failure it exists to catch.
+  var el = document.getElementById('panes')
+  var paneTop = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY))
+  var pad = Math.round(parseFloat(getComputedStyle(el.parentElement).paddingBottom || '0') || 0)
+  el.style.height = 'calc(100vh - ' + (paneTop + pad + ${gutter}) + 'px)'
+</script>
+</body></html>`
 }
 
 const rects = () => {
@@ -193,10 +268,30 @@ async function measure() {
       t(scrolls.every(s => s.scrolls), `🔴 each pane scrolls on its own (${scrolls.map(s => s.id).join(', ')})`)
       t(r.__doc.scrollHeight <= r.__doc.innerHeight + 1, '🔴 …and the PAGE itself does not')
     }
+    // ── THE REAL PAGE STRUCTURE: THE ACCEPTANCE ─────────────────────────────────────────────────
+    for (const [w, h] of [[1440, 800], [2560, 1400]]) {
+      await eng.setViewport(w, h)
+      await eng.page.goto(write(`shell-${w}-${eng.name}.html`, shellFixture(css)))
+      const r = await eng.page.evaluate(rects)
+      lines.push(`  ${w}×${h} in the admin shell: panes top ${r.panes.top}, height ${r.panes.height}, doc ${r.__doc.scrollHeight} vs window ${r.__doc.innerHeight}`)
+      t(r.__doc.scrollHeight === r.__doc.innerHeight,
+        `🔴 THE ACCEPTANCE: the document is exactly the window (${r.__doc.scrollHeight} = ${r.__doc.innerHeight}) — the page does not scroll`)
+      t(r.save.bottom <= h && r.save.top >= 0, `🔴 …and Save is on screen (${r.save.top}–${r.save.bottom})`)
+      t(r.previewFooter.bottom <= h, `🔴 …and so is the preview footer (ends ${r.previewFooter.bottom})`)
+      const inner = await eng.page.evaluate(() => ['leftScroll', 'centre', 'previewBody'].map(id => {
+        const el = document.getElementById(id)
+        return { id, scrolls: el.scrollHeight > el.clientHeight + 1 }
+      }))
+      t(inner.every(x => x.scrolls), `🔴 …while each pane scrolls inside itself (${inner.map(x => x.id).join(', ')})`)
+      t(r.switcher.top - r.tabbar.bottom <= 16,
+        `⚠️ the switcher sits under the tab strip, not 80px below it (${r.switcher.top - r.tabbar.bottom}px)`)
+    }
+
     await eng.close()
   }
 
   const ran = list.filter(e => !e.skip).map(e => e.name)
+
   lines.push(`engines: ${ran.join(' + ') || 'none'}`)
   if (!ran.length) { lines.push('🔴 NO ENGINE RAN — nothing above was measured'); fails++ }
   return { lines, fails, ran }

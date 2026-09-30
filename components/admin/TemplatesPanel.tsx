@@ -13,7 +13,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { createSlug } from '@/lib/utils'
-import { kindLabel } from '@/lib/outreach'
 import {
   nextStep, type LeadType, type Step,
 } from '@/lib/outreach-step'
@@ -24,8 +23,11 @@ import {
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import SequenceGrid from '@/components/admin/SequenceGrid'
 import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
+
+/** The air under the three panes, ON TOP of whatever padding the shell already has below them. */
+const BOTTOM_GUTTER_PX = 4
 import {
-  ANY_LEAD, STEP_LABELS, chooseTemplate, indexSlots, slotKey, type SequenceSlot, type SlotTemplate,
+  ANY_LEAD, STEP_LABELS, slotKey, type SequenceSlot, type SlotTemplate,
 } from '@/lib/outreach-sequence'
 import { snippetIndex, snippetMapOf, isUnset, type Snippet, type SnippetUse } from '@/lib/outreach-snippets'
 import {
@@ -310,6 +312,49 @@ export default function TemplatesPanel() {
     chooseView('sequence')
   }
 
+  /**
+   * 🔴 THE PANES' HEIGHT IS MEASURED, NOT GUESSED, AND THE GUESS IS WHY THE PAGE SCROLLED.
+   * It was `calc(100vh - 12rem)`: 192px of assumed chrome above this element. The real chrome in the
+   * admin shell is the header, the tab strip, the shell's padding, the view switcher and — until
+   * this build — a second tab row, which came to MORE than 192px. So the panes were taller than the
+   * space left for them, the document grew past the window, and the whole page scrolled, taking the
+   * left list with it. The fixture measured in the last report did not reproduce it because a
+   * fixture has no admin shell above it: 12rem happened to be right there.
+   * ⚠️ IT IS READ FROM THE ELEMENT'S OWN TOP EDGE, so it cannot go stale when anything above it
+   * changes height — the unsaved-changes bar appearing, the switcher wrapping on a narrow window.
+   * `BOTTOM_GUTTER` keeps the panes off the very edge of the glass.
+   */
+  const panesRef = useRef<HTMLDivElement | null>(null)
+  const [panesHeight, setPanesHeight] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    if (view !== 'templates') return
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const el = panesRef.current
+      if (!el) return
+      const top = Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY))
+      /* 🔴 AND WHAT IS BELOW IS MEASURED TOO. The admin shell wraps this tab in `pb-6`, which sits
+       * UNDER the panes: taking only the top left the document 24px taller than the window, and a
+       * document one pixel taller than the window is a page that scrolls. Reading the container's
+       * own computed padding means this survives that padding changing. */
+      const pad = Math.round(parseFloat(
+        window.getComputedStyle(el.parentElement ?? el).paddingBottom || '0') || 0)
+      setPanesHeight(`calc(100vh - ${top + pad + BOTTOM_GUTTER_PX}px)`)
+    }
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(measure) }
+    schedule()
+    window.addEventListener('resize', schedule)
+    // ⚠️ THE BAR ABOVE CAN APPEAR AND DISAPPEAR, which moves this element without a resize event.
+    const ro = new ResizeObserver(schedule)
+    if (panesRef.current?.parentElement) ro.observe(panesRef.current.parentElement)
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', schedule)
+      ro.disconnect()
+    }
+  }, [view])
+
   /** A box the Sequence view should outline, set by a "Used in" chip. */
   const [highlightBox, setHighlightBox] = useState<string | null>(null)
   /** The left pane's search, and the channel a "+ Write a new one" arrived with. */
@@ -346,19 +391,14 @@ export default function TemplatesPanel() {
     [rows])
 
 
-  // ── 🔴 THE MATCH COUNT — "how many prospects would this actually pick up?" ───────────────────────
-  // A rule you cannot count is a rule you cannot check. These two memos turn the three dropdowns in
-  // section 2 into a number against the live list.
+  // ── 🔴 WHERE EVERY TRUCK STANDS, DERIVED FROM THE REAL FUNCTION ─────────────────────────────────
+  // `steps` below asks `nextStep` — the same call the outreach list makes — which rung each prospect
+  // is on. It is what the Sequence view's "n due" pills count, and it is the reason a pill cannot
+  // disagree with the list: there is no second copy of the rule here to drift.
   //
-  // 🔴 IT DRIVES THE REAL FUNCTIONS. `nextStep` derives the rung, the channel and the lead type exactly
-  // as the outreach list does; `templateForStep` is THE matcher the compose window's pre-selection
-  // uses. Nothing here re-implements either. A second copy would agree on the day it was written and
-  // drift afterwards, and the drift would surface as a count that quietly disagreed with what the
-  // composer actually opened.
-  //
-  // ⚠️ COST. `steps` is keyed on `prospects` ALONE, so it is computed once per load — not per keystroke.
-  // The count is keyed on the three rule fields only, so typing in Label, Subject or Body recomputes
-  // NOTHING. Changing a dropdown walks the prospect list once.
+  // ⚠️ COST. It is keyed on `prospects` ALONE, so it is computed once per load — typing in the editor
+  // recomputes nothing. ⚠️ IT USED TO FEED A SECOND READER, the "sends this to N trucks" line in the
+  // editor, which walked all 231 prospects per render; v2 item 5 replaced that line with the chips.
   /** The grid, and the two things the tab derives from it. */
   const [slots, setSlots] = useState<SequenceSlot[]>([])
   const [hasSequence, setHasSequence] = useState(false)
@@ -371,13 +411,14 @@ export default function TemplatesPanel() {
    * the row. ⚠️ The DEFAULT column says "All trucks" rather than naming four types, because that is
    * what the box means.
    */
-  /* ⚠️ PLAIN FUNCTIONS AND PLAIN DERIVATIONS FROM HERE TO `match`, NOT `useMemo`/`useCallback`.
+  /* ⚠️ PLAIN FUNCTIONS AND PLAIN DERIVATIONS FROM HERE DOWN, NOT `useMemo`/`useCallback`.
    * The React Compiler declines to preserve memoisation that closes over `slots` — it cannot prove
    * the array is not mutated later — and a `useMemo` it has skipped is a lie about stability that
-   * reads as an optimisation. What these actually cost: `usedIn` walks ~5 slots, `slotTemplates`
-   * maps ~10 rows, and `match` walks the prospect list once (🧪 231 rows) with a Map lookup each.
-   * That is tens of microseconds per render of this editor, which is a price worth paying to keep
-   * every hook in this file honest. */
+   * reads as an optimisation. What these actually cost: `usedIn` walks ~5 slots and `slotTemplates`
+   * maps ~10 rows, per render of this editor. That is microseconds, and a price worth paying to
+   * keep every hook in this file honest.
+   * 🔴 THE ONE EXPENSIVE DERIVATION HERE WAS `match`, which walked 231 prospects; v2 item 5 deleted
+   * both it and the sentence it fed, so the question does not arise any more. */
   const usedIn = (templateUuid: string): string[] => {
     const out: string[] = []
     for (const s of slots) {
@@ -483,22 +524,20 @@ export default function TemplatesPanel() {
    * building the template list and the slot index inside it made one memo the React Compiler
    * declined to preserve — which is a `useMemo` that does not memoise, on the one derivation here
    * that is actually expensive. Split, it keeps its memo. */
-  const slotIndex = indexSlots(slots)
+  /* ⚠️ ONE LIST OF TEMPLATES FOR THE GRID, BUILT HERE. The Sequence view used to map `rows` into
+   * this shape inline in the JSX, which was a second copy of the same four fields; `match` built
+   * the first. `match` is gone, so the copy that survives is the one the grid is handed. */
   const slotTemplates: SlotTemplate[] = rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active }))
   const selectedId = selected?.id ?? null
-  const match = ((): null | { kind: 'untagged' | 'noprospects' | 'counted'; n: number } => {
-    if (!selectedId) return null
-    if (!slots.some(x => x.template_id === selectedId)) return { kind: 'untagged' as const, n: 0 }
-    if (prospects.length === 0) return { kind: 'noprospects' as const, n: 0 }
-    let n = 0
-    for (const p of prospects) {
-      const step = steps.get(p.id)
-      if (!step || step.state !== 'due' || !step.kind || !step.channel) continue
-      const chosen = chooseTemplate({ slots: slotIndex, templates: slotTemplates, channel: step.channel, step: step.kind, leadType: step.leadType })
-      if (chosen.uuid && chosen.uuid === selectedId) n++
-    }
-    return { kind: 'counted' as const, n }
-  })()
+  /* 🔴 THE EDITOR AND THE LIST ASK THE SAME FUNCTION THE SAME QUESTION, with the same id. They did
+   * not: the editor passed `draft.id`, which the draft never carries. One name, used by both. */
+  const usedInChips = selectedId ? usedIn(selectedId) : []
+  /* ── 🔴 THE MATCH COUNT IS GONE, NOT COMMENTED OUT (v2 item 5) ─────────────────────────────────
+   * It walked every prospect to write "The sequence sends this to N trucks", one of the three
+   * prose lines the chips replace. Left in place it would have walked 231 prospects on every
+   * keystroke in the editor to compute a number nothing renders — dead work that lint sees as an
+   * unused variable and a reader sees as a feature that is still here. The count it produced is
+   * the Sequence view's job now: a chip opens the box, and the box carries its own due pill. */
 
   // ── 🔴 THE UNSAVED-DRAFT GUARD ──────────────────────────────────────────────────────────────────
   // `draft` is reset by the effect on [selected], so clicking another template in the list USED TO
@@ -765,7 +804,9 @@ export default function TemplatesPanel() {
             The tab stacked the grid, two standing panels and a three-pane editor in one column, so
             every question meant scrolling past the answer to a different one. These are the two
             things this tab is: deciding who gets which words, and writing them. */}
-        <div className="flex items-center gap-3 flex-wrap mb-3">
+        {/* ⚠️ `mb-2`, AND THE SHELL'S TOP PADDING IS `pt-3` FOR THIS TAB — together with the tab row
+            above, that was about 80px of nothing between the admin header and the first control. */}
+        <div className="flex items-center gap-3 flex-wrap mb-2">
           <div className="inline-flex rounded-lg border border-slate-300 overflow-hidden">
             {([['sequence', 'Sequence'], ['templates', 'Templates']] as const).map(([v, label]) => (
               <button key={v} type="button" onClick={() => chooseView(v)} aria-pressed={view === v}
@@ -789,7 +830,7 @@ export default function TemplatesPanel() {
             tab exists for — and it answers it without the editor underneath it. */}
         {view === 'sequence' && (
           <SequenceGrid
-            templates={rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active })) as SlotTemplate[]}
+            templates={slotTemplates}
             slots={slots}
             leadLabels={leadLabels}
             prospects={prospects}
@@ -848,41 +889,14 @@ export default function TemplatesPanel() {
           </div>
         )}
 
-        {/* ── 🔴 MASTER — DETAIL — RAIL ─────────────────────────────────────────────────────────────
-            THE GRID IS AN INLINE STYLE, NOT `grid-cols-[…]`. An arbitrary Tailwind value used by only
-            one file has no generated rule until the JIT has scanned that file, and this file is new —
-            that is precisely what left the compose window painting at `z-index: auto` behind the modal
-            today. If this class went missing the three panes would stack into one column, which is the
-            exact layout being fixed. An inline style cannot be absent from a stylesheet. */}
-        {/* ── 🔴 A TOP-LEVEL VIEW SWITCH, NOT A THIRD RAIL TAB ──────────────────────────────────────
-            The rail (Preview / Tokens) renders only inside `{selected && …}`, so a Snippets tab there
-            would be unreachable with no template selected — and the library is GLOBAL: its whole point
-            is that it is not about one template. A switch here is always reachable, leaves the
-            master–detail–rail grid untouched, and keeps the two views from competing for width.
-            ⚠️ Alternatives weighed and rejected: a fourth grid column (squeezes the editor at every
-            width), a collapsible strip above the grid (pushes the editor down permanently), and its own
-            admin nav item (a whole tab for one table). */}
-        <div className="flex items-center gap-2 mb-4">
-          {([
-            ['templates', 'Templates'],
-            ['snippets', `Snippets${snippetUses.length ? ` (${snippetUses.length})` : ''}`],
-            // 🔴 A THIRD VIEW, NOT A RAIL TAB, FOR THE SAME REASON SNIPPETS IS ONE: the signature is
-            // GLOBAL. It belongs to no template, so a tab inside the per-template rail would be
-            // unreachable with nothing selected — and every template that uses it says {{signature}}.
-            ['signature', 'Signature'],
-          ] as const)
-            .map(([v, label]) => (
-              <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
-                className={`text-sm rounded-lg px-3 py-1.5 border font-semibold ${view === v
-                  ? 'bg-slate-800 border-slate-800 text-white'
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}>
-                {label}
-              </button>
-            ))}
-          {view === 'snippets' && snippetNote && (
-            <span className="text-xs text-slate-600">{snippetNote}</span>
-          )}
-        </div>
+        {/* 🔴 THE SECOND TAB ROW WAS HERE AND IS GONE. Under the Sequence|Templates switcher sat a
+            row reading "Templates | Snippets (2) | Signature" — so the word Templates appeared twice,
+            two rows apart, meaning two different things. The switcher is the only view control now;
+            Snippets and Signature are the two links at the bottom of the left pane, which already
+            carried them, and the Snippets count went with the link. */}
+        {view === 'snippets' && snippetNote && (
+          <p className="text-xs text-slate-600 mb-2">{snippetNote}</p>
+        )}
 
         {/* ── 🔴 THE UNSAVED-CHANGES BAR ────────────────────────────────────────────────────────────
             What happens if Dominic clicks another template with an edit outstanding: NOTHING happens
@@ -925,8 +939,8 @@ export default function TemplatesPanel() {
            chrome above it — the tab strip, the view switch and the page padding.
            ⚠️ IT SETS NO `overflow` ON `body`. The v4-fixes bug was a scroll lock left on the whole
            page by a composer that had stopped being a modal; nothing here touches the document. */
-        <div className="grid gap-4 max-md:grid-cols-1 max-md:h-auto"
-          style={{ gridTemplateColumns: '270px minmax(0, 1fr) minmax(0, 30%)', height: 'calc(100vh - 12rem)' }}>
+        <div ref={panesRef} className="grid gap-4 max-md:grid-cols-1 max-md:h-auto"
+          style={{ gridTemplateColumns: '270px minmax(0, 1fr) minmax(0, 30%)', height: panesHeight }}>
 
           {/* ── LEFT: THE LIBRARY ────────────────────────────────────────────────────────────────
               🔴 GROUPED BY CHANNEL AND LABELLED BY WHERE EACH ONE IS USED. It was one flat list of
@@ -938,8 +952,11 @@ export default function TemplatesPanel() {
               deleted. Nothing was dropped. */}
           <div className="rounded-xl border border-slate-200 bg-white flex flex-col min-h-0 overflow-hidden">
             <div className="p-2 flex flex-col gap-2 border-b border-slate-100">
+              {/* 🔴 DARK, NOT ORANGE. Orange on these screens means one thing — something is about
+                  to leave the building — and that belongs to Send and the Next banner. Creating a
+                  template and saving one send nothing. */}
               <button onClick={() => void createTemplate()}
-                className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                className="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">
                 + New template
               </button>
               <input type="search" value={listSearch} onChange={e => setListSearch(e.target.value)}
@@ -995,30 +1012,24 @@ export default function TemplatesPanel() {
           </div>
 
           {/* ── EDITOR ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="min-w-0">
+          {/* ⚠️ `min-h-0` ON THE PANE ITSELF, or a flex child with its own scroller grows the grid row
+              instead of scrolling — the default `min-height: auto` on a grid item is the classic
+              reason a "scrolling pane" silently becomes a taller page. */}
+          <div className="min-w-0 min-h-0">
             {!selected && !loading && rows.length > 0 && (
               <p className="text-sm text-slate-500">Pick a template on the left.</p>
             )}
             {selected && (
-              <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
-                {/* ══ 1 · NAME IT ═══════════════════════════════════════════════════════════════════
-                    🔴 THE THREE SECTIONS ARE THE EDITOR, NOT A WIZARD. Dominic spends most of his time
-                    editing templates that already exist, and a stepper only ever runs once — it would
-                    have left the common case exactly as it was. These are headed groups on one screen:
-                    identical markup for a new row and a ten-month-old one, every field reachable at all
-                    times, no "next" to press and no state to be half-way through.
-                    ⚠️ The order is the order the fields were already in. What was missing was the
-                    headings, and one visible sentence each saying what the group is for. */}
+              // ⚠️ THE EDITOR IS A COLUMN THAT FILLS THE PANE: the message grows into the space that
+              // is left and Save sits under it, on screen, without the pane scrolling to reach it.
+              <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 h-full flex flex-col overflow-y-auto">
+                {/* 🔴 THE NUMBERED HEADINGS ARE GONE — "1 Name it", "3 Write it", AND NO 2. There were
+                    three of them when the middle one explained a section of controls; that section
+                    went when the sequence grid took over deciding where a template is used, and what
+                    was left was a numbered list that skipped a number. Three labelled fields need no
+                    steps and no paragraphs above them: "Template name", "Subject", "Message". */}
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">1</span>
-                    <h3 className="text-sm font-bold text-slate-900">Name it</h3>
-                  </div>
-                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
-                    This name is for you — it appears in your template list and the compose picker.
-                    <b> Nobody you contact ever sees it.</b>
-                  </p>
-                  <div className="ml-7 flex items-end gap-3">
+                  <div className="flex items-end gap-3">
                     <label className="block flex-1 min-w-0"><span className={LABEL}>Template name</span>
                       <input type="text" className={FIELD} value={draft.label ?? ''}
                         onChange={e => setDraft(d => ({ ...d, label: e.target.value }))} />
@@ -1041,49 +1052,37 @@ export default function TemplatesPanel() {
                     ⚠️ NOTHING WAS DROPPED: the chips are the same `usedIn` derivation, the match
                     count moved under them in a sentence, and the tag columns are still shown — read
                     only, greyed, where they belong, under the chips. */}
-                <div className="pt-3 border-t border-slate-100">
-                  <div className="flex flex-wrap items-center gap-1.5">
+                {/* ── 🔴 "Used in" IS A ROW OF CHIPS, AND ONLY WHEN THERE ARE ANY ────────────────
+                    🔴 AND IT WAS READING THE WRONG ID, ALWAYS. It asked `usedIn(draft.id ?? '')`, and
+                    `draft` is seeded with the EDITABLE fields only — label, channel, subject, body,
+                    sort_order, active and the two tags — deliberately, because the id is not one of
+                    them. So the argument was `''` for every template ever selected, no slot matched,
+                    and the editor said "Not in the sequence" about rows the left list correctly
+                    showed as used. The LIST was right; this was wrong, for every row. It reads
+                    `selectedId` now — the same uuid the list passes into the same function.
+                    ⚠️ AND IT SAYS NOTHING WHEN THERE IS NOTHING TO SAY. "Not in the sequence — pick
+                    it by hand", the match-count sentence and the older-tags line were three lines of
+                    prose above the field somebody came here to type in; the left list already says
+                    "Not in sequence" beside the name. */}
+                {usedInChips.length > 0 && (
+                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
                     <span className={LABEL}>Used in</span>
-                    {usedIn(draft.id ?? '').length === 0
-                      ? <span className="text-[12px] text-slate-500">Not in the sequence — pick it by hand in the composer</span>
-                      : usedIn(draft.id ?? '').map((u: string) => (
-                        // 🔴 A CHIP IS A LINK. Clicking one opens the Sequence view with that box
-                        // outlined — the two views are two halves of one decision.
-                        <button key={u} type="button" onClick={() => openBox(u)}
-                          title="Show this box in the sequence"
-                          className="text-[11px] font-semibold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
-                          {u}
-                        </button>
-                      ))}
+                    {usedInChips.map((u: string) => (
+                      // 🔴 A CHIP IS A LINK. Clicking one opens the Sequence view with that box
+                      // outlined — the two views are two halves of one decision.
+                      <button key={u} type="button" onClick={() => openBox(u)}
+                        title="Show this box in the sequence"
+                        className="text-[11px] font-semibold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                        {u} ↗
+                      </button>
+                    ))}
                   </div>
-                  {match?.kind === 'counted' && match.n > 0 && (
-                    <p className="text-[12px] text-slate-500 mt-1">
-                      The sequence sends this to <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
-                    </p>
-                  )}
-                  {(draft.serves_kind || draft.serves_lead_type) && (
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      Older tags on this row, no longer used to choose:{' '}
-                      {[draft.serves_kind ? kindLabel(draft.serves_kind) : null,
-                        draft.serves_lead_type ? LEAD_TYPE_PLAIN[draft.serves_lead_type as keyof typeof LEAD_TYPE_PLAIN] : null]
-                        .filter(Boolean).join(' · ')}
-                    </p>
-                  )}
-                </div>
+                )}
 
-                {/* ══ 3 · WRITE IT ══════════════════════════════════════════════════════════════════ */}
-                <div className="pt-3 border-t border-slate-100">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-800 text-white text-[11px] font-bold grid place-items-center">3</span>
-                    <h3 className="text-sm font-bold text-slate-900">Write it</h3>
-                  </div>
-                  <p className="text-[12px] text-slate-500 mb-2 ml-7">
-                    This is what actually gets sent. <code className="font-mono">{'{{double braces}}'}</code> fill
-                    themselves in; <code className="font-mono">[[square brackets]]</code> are values you set
-                    once in Snippets or are asked for per truck.
-                  </p>
-
-                  <div className="ml-7 space-y-3">
+                {/* ⚠️ THE ONE SENTENCE WORTH KEEPING FROM "Write it" MOVED UNDER THE MESSAGE LABEL,
+                    where the two kinds of bracket are actually typed. */}
+                <div className="pt-3 border-t border-slate-100 flex-1 min-h-0 flex flex-col">
+                  <div className="space-y-3 flex-1 min-h-0 flex flex-col">
                     {/* 🔴 THE SUBJECT IS HIDDEN, NOT CLEARED — and the warning says what saving will do.
                         Switching to WhatsApp used to make a typed subject vanish with no warning, and
                         the ROUTE (not this form) is what discards it: `update_template` sets
@@ -1133,6 +1132,17 @@ export default function TemplatesPanel() {
                           onInsert={c => insertAtCaret(`?${c}: \n?no_${c}: `, { ownLines: true })} />
                       )}
                     </div>
+                    {/* ── 🔴 (v2 item 3) THE ONE LINE THAT SURVIVED THE NUMBERED HEADINGS ───────────
+                        The "3 Write it" paragraph went with the rest of the tutorial prose, but this
+                        sentence is not tutorial: it is the ONLY place the two bracket shapes are told
+                        apart. {{double braces}} resolve at send; [[square brackets]] are asked for.
+                        Deleting it is how someone types [[truck name]] and wonders why it never fills.
+                        ⚠️ IT SITS UNDER THE LABEL, NOT IN A TOOLTIP — the brief asks for a small grey
+                        line, and `scripts/outreach-templates-layout.cjs` checks it is still here. */}
+                    <p className="text-[11px] text-slate-500 -mt-1">
+                      {'{{double braces}}'} fill themselves in; {'[[square brackets]]'} are values you
+                      set once in Snippets, or are asked for per truck.
+                    </p>
                     <label className="block">
                       {/* 🔴 15 ROWS = 404px, MEASURED, AND THE 16TH ROW WAS CUT DELIBERATELY. At 16 rows
                           (430px) the Save button's bottom lands at 899px with the admin chrome above it
@@ -1244,9 +1254,11 @@ export default function TemplatesPanel() {
                   </p>
                 )}
 
-                <div className="flex justify-end">
+                {/* ⚠️ `mt-auto`: Save sits at the BOTTOM of the pane and is always on screen — the
+                    editor above it is what scrolls, not the button that commits it. */}
+                <div className="flex justify-end mt-auto pt-2">
                   <button onClick={saveDraft}
-                    className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    className="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Save template
                   </button>
                 </div>
@@ -1266,8 +1278,12 @@ export default function TemplatesPanel() {
               <p className="px-3 py-2 border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-600">
                 Preview
               </p>
-              <div className="flex-1 min-h-0 overflow-y-auto">
-              <div className="p-3 space-y-2">
+              {/* ⚠️ A FLEX COLUMN, NOT A SCROLLER. The pane's scrolling moved INTO the rendered
+                  email below, so the picker at the top and the "Dropped / Footer" line at the bottom
+                  stay put while the email itself scrolls — which is what makes the footer one of the
+                  two things the acceptance requires to be on screen. */}
+              <div className="flex-1 min-h-0 flex flex-col">
+              <div className="p-3 space-y-2 flex-1 min-h-0 flex flex-col">
                   <div className="flex flex-wrap items-center gap-2">
                     <input type="text" className="text-sm border border-slate-200 rounded-lg px-2 py-1 flex-1 min-w-0"
                       placeholder="Search trucks…" value={search} onChange={e => setSearch(e.target.value)} />
@@ -1304,8 +1320,11 @@ export default function TemplatesPanel() {
                           ⚠️ `text-base` is a core utility with 25 other users in the repo, so
                           unlike an arbitrary value it cannot be missing a generated rule.
                           `leading-relaxed` gives 26px here exactly as it does on the body. */}
-                      <pre className="text-base leading-relaxed text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-2 whitespace-pre-wrap font-sans overflow-y-auto"
-                        style={{ maxHeight: 340 }}>{preview.full}</pre>
+                      {/* 🔴 IT FILLS THE PANE. A fixed 340px box left empty space under a short email
+                          and a letterbox onto a long one, in a pane that already knows how tall it
+                          is. `flex-1 min-h-0` takes the height that is left after the picker above
+                          and the footer below, and scrolls inside when the email is longer. */}
+                      <pre className="flex-1 min-h-0 text-base leading-relaxed text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-2 whitespace-pre-wrap font-sans overflow-y-auto">{preview.full}</pre>
                       <div className="flex flex-wrap gap-1.5">
                         {preview.unresolved.length > 0 && (
                           <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
@@ -1481,7 +1500,7 @@ function SignaturePanel() {
 
         <div className="mt-4 flex items-center gap-3">
           <button type="button" onClick={() => void save()} disabled={saving || !dirty}
-            className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
+            className="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
             {saving ? 'Saving…' : 'Save'}
           </button>
           {note && <span className="text-[12px] text-slate-600">{note}</span>}

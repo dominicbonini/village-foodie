@@ -121,9 +121,24 @@ function runCensus(over = {}) {
 
   // ── 3 · THE TEMPLATES VIEW ───────────────────────────────────────────────────────────────────
   t('🔴 three panes, at the asked-for widths', /gridTemplateColumns: '270px minmax\(0, 1fr\) minmax\(0, 30%\)'/.test(TAB))
+  /* ── 🔴 RESTATED (v2 item 4), NOT SILENTLY RE-POINTED ────────────────────────────────────────
+   * THIS CHECK USED TO PIN `height: 'calc(100vh - 12rem)'`, and that constant is the very bug
+   * v2 item 4 was raised about: 12rem was a GUESS at the admin chrome, the real shell is taller,
+   * and so the page scrolled in production Safari while this check sat green. The constant is
+   * gone on purpose. The half of this check that is still true — the panes fill the viewport
+   * below the switcher and each scrolls on its own — is restated here against the MEASURED
+   * height; the measurement itself is checked in the v2 block below, which owns it now.
+   * ⚠️ THE SECOND HALF IS RESTATED TOO, AND NOT LOOSENED. It used to count two panes carrying
+   * the one class string `flex-1 min-h-0 overflow-y-auto`. v2 gave two of the three panes a
+   * different shape for good reasons — the editor is a full-height column so Save can be pinned
+   * to its bottom with `mt-auto`, and the preview body is the flex child that takes what is left
+   * — so counting one string would now pass on ONE scrolling pane out of three. Each pane is
+   * therefore named here, at the shape it actually has. */
   t('🔴 …full height below the switcher, and each pane scrolls on its own',
-    /height: 'calc\(100vh - 12rem\)'/.test(TAB)
-    && (TAB.match(/flex-1 min-h-0 overflow-y-auto/g) || []).length >= 2)
+    /style=\{\{ gridTemplateColumns: '270px minmax\(0, 1fr\) minmax\(0, 30%\)', height: panesHeight \}\}/.test(TAB)
+    && /<div className="flex-1 min-h-0 overflow-y-auto">/.test(TAB)
+    && /bg-white p-4 space-y-3 h-full flex flex-col overflow-y-auto/.test(TAB)
+    && /<pre className="flex-1 min-h-0 text-base[^"]*overflow-y-auto"/.test(TAB))
   t('🔴 …and NOTHING here locks the page — the v4-fixes bug is not reintroduced',
     !/document\.body\.style/.test(TAB) && !/documentElement\.style/.test(TAB))
   t('🔴 the left pane has New template, a search, and the two libraries at the bottom',
@@ -135,7 +150,15 @@ function runCensus(over = {}) {
   t('⚠️ the reorder and retire controls survived the move', /title="Move up"/.test(TAB) && /Retire \(kept/.test(TAB))
   t('🔴 the editor no longer carries the "When to use it" controls',
     !/When to use it/.test(TAB) && !/At which stage/.test(TAB) && !/For which trucks/.test(TAB))
-  t('⚠️ …and the older tags are still SHOWN, read-only', /Older tags on this row, no longer used to choose/.test(TAB))
+  /* ── 🔴 RESTATED (v2 item 5), NOT SILENTLY RE-POINTED ────────────────────────────────────────
+   * THIS CHECK USED TO REQUIRE the read-only line "Older tags on this row, no longer used to
+   * choose". v2 item 5 deleted it: it was one of the three "Used in" prose lines the mockup
+   * replaces with chips, and it described tags that stopped deciding anything when the sequence
+   * grid took over. Requiring it and forbidding it would be a contradiction, so the requirement
+   * is INVERTED here rather than left pointing at dead text — and the v2 block below checks the
+   * same absence from the other side, together with the two prose lines that went with it. */
+  t('⚠️ …and the older-tags line went WITH the rest of the prose, not left behind',
+    !/Older tags on this row, no longer used to choose/.test(TAB))
 
   // ── THE INSERT TOKEN MENU ────────────────────────────────────────────────────────────────────
   t('🔴 the menu reads the RESOLVER\'s vocabulary', /<TokenMenu tokens=\{tokenRef\}/.test(TAB)
@@ -157,6 +180,47 @@ function runCensus(over = {}) {
     !/RAIL_TABS/.test(TAB) && !/rail === 'tokens'/.test(TAB) && /Preview<\/p>/.test(TAB))
   t('⚠️ the preview still names the prospect it renders against, and what did not fill',
     /pick a prospect/.test(TAB) && /Unresolved:/.test(TAB))
+
+  // ── v2 · THE MOCKUP, TIGHTENED ───────────────────────────────────────────────────────────────
+  t('🔴 there is no SECOND tab row — "Templates" appeared twice, two rows apart',
+    !/\['templates', 'Templates'\],/.test(TAB) && !/\['signature', 'Signature'\],/.test(TAB))
+  t('⚠️ …and Snippets keeps its count, on the left pane\'s link',
+    /Snippets\{snippetUses\.length \? ` \(\$\{snippetUses\.length\}\)` : ''\}/.test(TAB))
+  t('🔴 the numbered headings are gone, and so are their paragraphs',
+    !/Name it<\/h3>/.test(TAB) && !/Write it<\/h3>/.test(TAB)
+    && !/This name is for you/.test(TAB) && !/This is what actually gets sent/.test(TAB))
+  t('⚠️ the fields are labelled plainly, and the slug is still beside the name',
+    /<span className=\{LABEL\}>Template name<\/span>/.test(TAB) && /\{selected\.slug\}/.test(TAB))
+  t('⚠️ …and the braces hint survives, under the Message label',
+    /double braces/.test(TAB) && /square brackets/.test(TAB))
+  t('🔴 the three "Used in" prose lines are gone from the editor',
+    !/Not in the sequence — pick it by hand/.test(TAB)
+    && !/The sequence sends this to/.test(TAB)
+    && !/Older tags on this row/.test(TAB))
+  t('🔴 …and the chips render ONLY when the template is in a box', /\{usedInChips\.length > 0 && \(/.test(TAB))
+  t('🔴 THE LIST AND THE EDITOR ASK THE SAME FUNCTION WITH THE SAME ID', (() => {
+    // 🔴 THE BUG: the editor asked `usedIn(draft.id)`, and `draft` is seeded with the EDITABLE
+    // fields only — the id is not one of them — so it was always `usedIn('')` and every template
+    // read "Not in the sequence" while the list correctly said "Used in n boxes".
+    const listCall = /usedIn=\{usedIn\(r\.id \?\? ''\)\}/.test(TAB)
+    const editorCall = /const usedInChips = selectedId \? usedIn\(selectedId\) : \[\]/.test(TAB)
+    return listCall && editorCall && !/usedIn\(draft\.id/.test(TAB)
+  })())
+  t('⚠️ …and `draft` still carries no id, which is why it could never have been the right input',
+    !/setDraft\(\{ id:/.test(TAB))
+  t('🔴 the panes\' height is MEASURED from their own top, not a constant',
+    /el\.getBoundingClientRect\(\)\.top \+ window\.scrollY/.test(TAB)
+    && /height: panesHeight/.test(TAB) && !/calc\(100vh - 12rem\)/.test(TAB))
+  t('🔴 …including the padding BELOW them, which is what made the page 24px too tall',
+    /window\.getComputedStyle\(el\.parentElement \?\? el\)\.paddingBottom/.test(TAB))
+  t('⚠️ …and it re-measures when anything above changes height', /new ResizeObserver\(schedule\)/.test(TAB))
+  t('🔴 Save sits at the bottom of the pane, always on screen', /flex justify-end mt-auto pt-2/.test(TAB))
+  t('🔴 the preview body fills the pane and scrolls inside',
+    /<pre className="flex-1 min-h-0 text-base/.test(TAB) && !/maxHeight: 340/.test(TAB))
+  t('🔴 NOTHING in this tab is orange any more — orange is Send and the Next banner',
+    !/bg-orange-600/.test(TAB))
+  t('⚠️ …and the two buttons that were are dark',
+    (TAB.match(/rounded-lg bg-slate-900 text-white/g) || []).length >= 2)
 
   // ── 4 · THE PHONE ────────────────────────────────────────────────────────────────────────────
   t('⚠️ the grid scrolls sideways in its own box, with the row labels pinned',
@@ -216,8 +280,20 @@ function runCensus(over = {}) {
         '<select onChange={e => onChoose(e.target.value)} /><button type="button" onClick={onOpen}'), 'V5') }],
     ['V6 🔴 the truck-types panel comes back as a standing block',
       { GRID: changed(GRID_SRC, GRID_SRC.replace('const CARD = ', 'const PANEL_TITLE = "Truck types"\nconst CARD = '), 'V6') }],
+    /* ⚠️ RE-ANCHORED (v2): the height is no longer a constant in the source — it is measured from
+     * the panes' own top edge, because the constant was the bug. The variant now breaks the
+     * measurement itself, which is the same failure one level down. */
     ['V7 🔴 the Templates view scrolls as one page again',
-      { TAB: changed(TAB_SRC, TAB_SRC.replace("height: 'calc(100vh - 12rem)'", "minHeight: '10rem'"), 'V7') }],
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('height: panesHeight', "minHeight: '10rem'"), 'V7') }],
+    ['V8 🔴 the second tab row comes back, and "Templates" appears twice',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace("const BOTTOM_GUTTER_PX = 4",
+        "const OLD_TABS = [['templates', 'Templates'],\n  ['signature', 'Signature'],\n]\nconst BOTTOM_GUTTER_PX = 4"), 'V8') }],
+    ['V9 🔴 the editor asks `usedIn(draft.id)` again — the list and the editor disagree',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('const usedInChips = selectedId ? usedIn(selectedId) : []',
+        "const usedInChips = usedIn(draft.id ?? '')"), 'V9') }],
+    ['V10 🔴 Save goes back to orange',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">\n                    Save template',
+        'rounded-lg bg-orange-600 text-white">\n                    Save template'), 'V10') }],
   ]) {
     const r = runCensus(over)
     const caught = r.bad.length > 0
@@ -241,7 +317,7 @@ function runCensus(over = {}) {
     const libs = libVariant('v8', s => s.replace('  const days = followUpDays[before]', '  const days = 5'))
     const r = runLibSuite(libs)
     const caught = r.bad.length > 0
-    console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V8 🔴 the column headings invent their own cadence`)
+    console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V11 🔴 the column headings invent their own cadence`)
     for (const f of r.bad) console.log(`        caught: ${f}`)
     if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
   }
