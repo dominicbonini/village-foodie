@@ -409,11 +409,21 @@ export const sandboxIsSafe = (value: string): boolean =>
  * every extra pixel goes to the email. A fourth column on a wide screen would be a different page to
  * learn at a different desk.
  */
-export const COL_LEFT_PX = 300
-export const COL_LEFT_WIDE_PX = 340
-export const COL_RIGHT_PX = 300
-export const COL_RIGHT_WIDE_PX = 330
-export const WIDE_AT_PX = 1800
+/**
+ * 🔴 THE LEFT COLUMN IS THE WIDE ONE, and that is a correction. It was 300px, the same as the right,
+ * and it holds prose — "About this truck", a note being written, an address — where the right holds
+ * buttons. 380px is about 55 characters at 13px, which is a readable line; 300px was 43 and wrapped
+ * every address.
+ * ⚠️ 1280 IS WHERE THE WIDTHS STEP, NOT WHERE THE COLUMNS DO. Three columns still start at 1024
+ * (`THREE_COL_AT_PX`), and between 1024 and 1279 they take the narrow pair — that band is a small
+ * laptop and giving the sides 700px of a 1024px window would leave 320px for the email.
+ */
+export const COL_LEFT_PX = 380
+export const COL_LEFT_WIDE_PX = 420
+export const COL_RIGHT_PX = 280
+export const COL_RIGHT_WIDE_PX = 320
+/** ⚠️ 1920, not 1800: it is the width of the monitor this is for, and a round number to reason about. */
+export const WIDE_AT_PX = 1920
 export const THREE_COL_AT_PX = 1024
 export const TWO_COL_AT_PX = 768
 /** ⚠️ Apple's own minimum, and the reason the phone layout has no small buttons. */

@@ -284,14 +284,23 @@ const step = (over = {}) => ({
     check(!/className="[^"]*\bh-80\b/.test(SHARED), '🔴 and the fixed 320px box is gone')
 
     // 🔴 THE EDITOR GROWS. No fixed height anywhere in its styles.
+    /* 🔴 STALE ANCHORS, RESTATED RATHER THAN SILENTLY RE-POINTED (30 September 2026, v3). Two
+     * numbers changed and both are corrections to this build, not drift:
+     *   • the floor went 11rem → 8.5rem (~8 lines → ~6). An EMPTY box was still taking most of the
+     *     space below the header on a 1440x800 screen and pushing History off the bottom.
+     *   • the ceiling is gone INLINE. `75vh` was still a box you could lose the bottom of, and its
+     *     scrollbar fought the page's. The floating window keeps the cap, because it is
+     *     `position: fixed` and something has to scroll.
+     * The RULE both checks exist for is unchanged and is what is re-asserted: a minimum, no fixed
+     * height, and no inner scrollbar on the surface Dominic actually writes in. */
     const ED = readStripped('components/admin/RichEmailEditor.tsx')
-    check(/min-height: 11rem/.test(ED), 'the editor has a MINIMUM…')
+    check(/min-height: 8\.5rem/.test(ED), 'the editor has a MINIMUM…')
     check(!/(?<!min-)height: 22rem|h-\[22rem\]/.test(ED), '🔴 …and no fixed height at all')
     check(/maxHeight && !expanded \? \{ maxHeight, overflowY: 'auto' \}/.test(ED),
       '…the only ceiling is the one the page passes')
     const CW = readStripped('components/admin/ComposeWindow.tsx')
-    check(/maxHeight=\{expanded \? undefined : '75vh'\}/.test(CW),
-      "🔴 …which is 75% of the WINDOW, so an ordinary email never scrolls inside the box")
+    check(CW.includes("maxHeight={inline || expanded ? undefined : '75vh'}"),
+      '🔴 …and INLINE there is none at all, so no email ever scrolls inside the box')
     check(/onExpand=\{expanded \? undefined : \(\) => setExpanded\(true\)\}/.test(CW), 'and ⤢ opens the writing view')
     check(/if \(expanded\) \{\s*\n\s*return createPortal\(/.test(CW), '…which is the same panel, full window')
     check(/e\.key !== 'Escape'/.test(CW) && /setExpanded\(false\)/.test(CW), '…and Esc returns')
@@ -326,9 +335,15 @@ const step = (over = {}) => ({
 
   console.log('\n── THE LAYOUT ───────────────────────────────────────────────────────────────────────────')
   {
-    eq([W.COL_LEFT_PX, W.COL_RIGHT_PX], [300, 300], 'the side columns are ~300px…')
-    eq([W.COL_LEFT_WIDE_PX, W.COL_RIGHT_WIDE_PX], [340, 330], '…340/330 past 1800px, and no wider')
-    eq([W.THREE_COL_AT_PX, W.TWO_COL_AT_PX], [1024, 768], 'three columns from 1024, two from 768')
+    /* 🔴 STALE ANCHORS, RESTATED (v3): the columns were 300/300 and are 380/280, stepping at 1920
+     * rather than 1800. The left column holds PROSE — an address, a paragraph about the truck, a
+     * note being written — and 300px wrapped every email address; the right holds buttons and did
+     * not need the same. The rule this block asserts is unchanged: fixed sides, fluid centre, one
+     * layout for a laptop and a monitor. */
+    eq([W.COL_LEFT_PX, W.COL_RIGHT_PX], [380, 280], 'the side columns are fixed, and the prose one is wider…')
+    eq([W.COL_LEFT_WIDE_PX, W.COL_RIGHT_WIDE_PX], [420, 320], '…420/320 past 1920px, and no wider')
+    eq([W.THREE_COL_AT_PX, W.TWO_COL_AT_PX], [1024, 768],
+      '⚠️ and the column COUNT breakpoints are untouched: three from 1024, two from 768')
     eq(W.TOUCH_TARGET_PX, 44, "⚠️ and a touch target is Apple's own 44px")
 
     const PAGE = read('components/admin/ProspectWorkspace.tsx')
@@ -378,17 +393,21 @@ const step = (over = {}) => ({
 
   console.log('\n── THE CALL BUTTON ──────────────────────────────────────────────────────────────────────')
   {
-    // 🔴 A `tel:` LINK ON A LAPTOP HANDS OFF TO A PROTOCOL HANDLER and takes focus off the page —
-    // reported as "it minimises the screen". The control is a BUTTON, and what it does depends on
-    // whether the machine can actually place a call.
+    /* 🔴 THREE CHECKS WERE REMOVED HERE ON 30 SEPTEMBER 2026 (v3), AND THEY ARE NAMED RATHER THAN
+     * QUIETLY DELETED, because what they asserted was a DECISION that has been reversed:
+     *   • "it asks whether this is a handset — the pointer, not the window width"
+     *   • "…dials on a phone…"  (which pinned `location.href = 'tel:…'`)
+     *   • "…and on a desktop COPIES the number instead of yanking focus into FaceTime"
+     * v2 refused to place the call on a laptop because `tel:` hands off to a protocol handler and
+     * takes focus off the page. That was right about the symptom and wrong about the remedy: a Mac
+     * hands `tel:` to FaceTime, which rings through the iPhone on the same Apple ID — which is the
+     * thing the button is for. Dominic asked for it to call, everywhere.
+     * ⚠️ WHAT SURVIVES IS THE PART THAT WAS ALWAYS RIGHT: it is a BUTTON, not a link wrapped round
+     * the number, and the number stays selectable text. `scripts/outreach-workspace-v3.cjs` owns
+     * the new behaviour in full — one path, every device, and no navigation. */
     const PAGE = readStripped('components/admin/ProspectWorkspace.tsx')
     check(/function CallButton\(/.test(PAGE), 'Call is a component, not a link in a sentence')
-    check(!/href=\{p\.phone \? `tel:/.test(PAGE), '🔴 …and there is no `tel:` anchor left on the page')
-    check(/window\.matchMedia\('\(pointer: coarse\)'\)/.test(PAGE),
-      '🔴 it asks whether this is a handset — the pointer, not the window width')
-    check(/window\.location\.href = `tel:\$\{phone\}`/.test(PAGE), '…dials on a phone…')
-    check(/navigator\.clipboard\?\.writeText\(phone\)/.test(PAGE),
-      '🔴 …and on a desktop COPIES the number instead of yanking focus into FaceTime')
+    check(!/href=\{p\.phone \? `tel:/.test(PAGE), '🔴 …and there is no `tel:` anchor in the markup')
     check(/select-all/.test(PAGE), '⚠️ and the number itself is selectable text, not a link')
   }
 

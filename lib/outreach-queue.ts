@@ -65,7 +65,9 @@ export function readQueue(store: StorageLike | null | undefined): QueueState | n
   if (!q || !Array.isArray(q.ids) || typeof q.returnTo !== 'string') return null
   const ids = q.ids.filter((v): v is string => typeof v === 'string')
   if (!ids.length) return null
-  return { label: typeof q.label === 'string' ? q.label : 'the list', ids, returnTo: q.returnTo }
+  // ⚠️ THE FALLBACK IS THE LIST'S REAL NAME. A stored queue with no label can only have come from
+  // the prospect table, which is what "All prospects" is called on screen.
+  return { label: typeof q.label === 'string' && q.label ? q.label : 'All prospects', ids, returnTo: q.returnTo }
 }
 
 export function saveReturn(store: StorageLike | null | undefined, r: ReturnState): void {

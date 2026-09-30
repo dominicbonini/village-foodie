@@ -1014,22 +1014,32 @@ export default function ComposeWindow({
   // 🔴 THE PANEL ITSELF, IDENTICAL IN BOTH MODES. Only the wrapper differs: a card in the page, or
   // the same card centred over a backdrop.
   const panel = (
-      <div role="dialog" aria-modal={!inline} aria-labelledby="compose-title"
+      <div role={inline ? undefined : 'dialog'} aria-modal={inline ? undefined : true}
+        aria-labelledby={inline ? undefined : 'compose-title'}
+        aria-label={inline ? `Email ${truckName}` : undefined}
         className={inline
-          ? 'bg-white rounded-xl border border-slate-200 w-full flex flex-col overflow-hidden'
+          // 🔴 NO BOX AND NO CHROME WHEN INLINE. It shipped as a bordered card with a
+          // "Compose — <name>" heading and a Close button, INSIDE a page that already names the
+          // prospect in its own header and has tabs to leave with. Three nested frames and two
+          // redundant labels — and between them they pushed History off a 1440x800 screen.
+          ? 'w-full flex flex-col'
           : 'bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden'}>
 
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
-          <h4 id="compose-title" className="text-base font-semibold text-slate-900 truncate">
-            Compose — {truckName}
-          </h4>
-          <button ref={closeRef} onClick={onClose}
-            className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0">
-            Close
-          </button>
-        </div>
+        {!inline && (
+          <div className="flex items-center gap-3 px-5 py-3 border-b border-slate-100 flex-shrink-0">
+            <h4 id="compose-title" className="text-base font-semibold text-slate-900 truncate">
+              Compose — {truckName}
+            </h4>
+            <button ref={closeRef} onClick={onClose}
+              className="ml-auto text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 flex-shrink-0">
+              Close
+            </button>
+          </div>
+        )}
 
-        <div className={inline ? 'px-5 py-4 space-y-3' : 'flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3'}>
+        {/* ⚠️ TIGHTER GAPS INLINE. `space-y-3` between eight blocks is 84px of nothing, and 84px is
+            three history rows. */}
+        <div className={inline ? 'space-y-2' : 'flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-3'}>
           {/* ── TEMPLATE CHIPS ─────────────────────────────────────────────────────────────────
               🔴 A DROPDOWN HID THE CHOICE BEHIND A CLICK, and the choice is one of the two things
               this box is for. The ones that FIT this prospect's step come first — `initialTemplateId`
@@ -1263,10 +1273,13 @@ export default function ComposeWindow({
                 onChange={d => { setEditedDoc(d); setEdited(true); setLogged(false) }}
                 signatureLines={settings.signatureLines}
                 optOut={settings.optOut}
-                // 🔴 THE ONLY CEILING IS THE WINDOW'S. The box grows with the email and starts
-                // scrolling only past three quarters of the viewport, which is the point at which
-                // growing further would push Send off the screen.
-                maxHeight={expanded ? undefined : '75vh'}
+                // 🔴 NO CEILING AT ALL INLINE, AND NO INNER SCROLLBAR. The box grows line by line
+                // and the PAGE scrolls — which is what makes a long email readable while it is
+                // being written. A 75vh cap was still a box you could lose the bottom of, and its
+                // scrollbar fought the page's.
+                // ⚠️ THE FLOATING WINDOW KEEPS THE CAP: it is `position: fixed` and cannot grow
+                // past the viewport, so something has to scroll and it has to be the panel.
+                maxHeight={inline || expanded ? undefined : '75vh'}
                 expanded={expanded}
                 onExpand={expanded ? undefined : () => setExpanded(true)}
               />
@@ -1280,8 +1293,11 @@ export default function ComposeWindow({
           {/* ── ATTACHMENTS ────────────────────────────────────────────────────────────────────
               🔴 UNDER THE EDITOR AND ABOVE THE CONVERSATION, because it belongs to the message being
               written rather than to the history being quoted. */}
+          {/* ⚠️ THE ATTACH CONTROLS SHARE THE CHIPS' ROW WHEN THERE IS WIDTH FOR THEM. They are the
+              same kind of control — a small choice about the email, not part of writing it — and two
+              near-empty rows cost 36px, which is another history row visible without scrolling. */}
           {isEmail && (
-            <div className="flex flex-col gap-1">
+            <div className={inline ? 'flex flex-col gap-1 -mt-8 items-end max-lg:mt-0 max-lg:items-stretch' : 'flex flex-col gap-1'}>
               <div className="flex flex-wrap items-center gap-2">
                 <input ref={fileInputRef} type="file" multiple className="hidden"
                   accept={ALLOWED_ATTACHMENT_EXTENSIONS.join(',')}

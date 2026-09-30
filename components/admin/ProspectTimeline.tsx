@@ -12,7 +12,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { buildTimeline, type TimelineMessage } from '@/lib/outreach-timeline'
+import {
+  buildTimeline, pairHandLoggedEmails, meaningfulPreview, type TimelineMessage,
+} from '@/lib/outreach-timeline'
 import { SNOOZE_OPTIONS, SNOOZE_LABELS, needsAttention } from '@/lib/outreach-attention'
 import {
   rowBadges, BADGE_LABEL, matchesTimelineQuery, TIMELINE_FILTERS, TIMELINE_FILTER_LABEL,
@@ -99,12 +101,20 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
     try { window.localStorage.setItem(TIMELINE_PREF_KEY, f) } catch { /* nothing to remember, no crash */ }
   }
 
+  // 🔴 ONE ROW PER EVENT. An email sent from Outlook and then logged by hand is one thing that
+  // happened and two honest records of it; `pairHandLoggedEmails` pairs them for display and
+  // refuses whenever the pairing would be a guess. Nothing is deleted.
+  const pairing = useMemo(() => pairHandLoggedEmails({
+    messages: data?.messages ?? [], contacts: data?.contacts ?? [],
+  }), [data])
+
   const items = useMemo(() => buildTimeline({
     messages: data?.messages ?? [],
     contacts: data?.contacts ?? [],
     events: data?.events ?? [],
     showTests,
-  }), [data, showTests])
+    pairing,
+  }), [data, showTests, pairing])
 
   const shown = useMemo(
     () => items.filter(i => matchesTimelineQuery(i, filter, query)),
@@ -226,7 +236,10 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           const badges = rowBadges(m, { now, linkedTruck, showTests })
           const waiting = needsAttention(m, { now, linkedTruck })
           const notLogged = m.status === 'sent' && !m.is_test && (m.last_error ?? '').startsWith('sent, not logged')
-          const firstLine = (m.preview ?? '').split('\n').find(l => l.trim()) ?? ''
+          // 🔴 THE FIRST LINE THAT SAYS SOMETHING. "Hi Stephen," told the reader only that this is
+          // an email, which the row already said.
+          const firstLine = meaningfulPreview(m.preview, m.subject)
+          const handLogged = pairing.pairs.get(m.id) ?? null
           return (
             <div key={item.id} className="text-[12px]" style={inbound ? { background: INBOUND_BG } : undefined}>
               {/* 🔴 THE WHOLE ROW IS THE CONTROL. The Open button is gone: a row you can read is a row
@@ -249,6 +262,13 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                   </span>
                   {firstLine && <span className="text-slate-500 max-md:block max-md:truncate"> · {firstLine}</span>}
                 </span>
+                {/* ⚠️ A QUIET MARKER, NOT A BADGE. It explains why there is one row where the
+                    contact log has two entries; it is not something to act on. */}
+                {handLogged && (
+                  <span className="shrink-0 text-[10px] uppercase text-slate-400" title="You also logged this by hand. Both records are kept; they are shown as one row.">
+                    also logged by hand
+                  </span>
+                )}
                 {badges.map(b => (
                   <span key={b} className={`shrink-0 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${BADGE_TONE[b]}`}>
                     {BADGE_LABEL[b]}
@@ -268,6 +288,15 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                     {m.sent_copy === 'absent' && m.status === 'sent' && !m.is_test && ' · no copy in Sent'}
                     {!!m.attachment_count && ` · ${m.attachment_count} attachment${m.attachment_count === 1 ? '' : 's'}`}
                   </p>
+                  {/* ⚠️ THE HAND-LOGGED TEXT, UNDER THE EMAIL IT BELONGS TO. It is usually a
+                      sentence of Dominic's own ("sent the plans") and it is the only place that
+                      sentence exists — hiding the contact row must not hide what it said. */}
+                  {handLogged && (
+                    <p className="text-[11px] text-slate-500 border-l-2 border-slate-200 pl-2">
+                      <span className="font-semibold">Logged by hand:</span>{' '}
+                      {handLogged.message?.trim() || <span className="italic">no message was recorded</span>}
+                    </p>
+                  )}
                   {/* 🔴 THE SANDBOXED IFRAME, from the stored body. Mailbox HTML renders in `sandbox=""`
                       and nowhere else on this page — see `EmailBody`, which is the one viewer. */}
                   <EmailBody rowId={m.id} onOpenFull={(html, subject) => setFullScreen({ html, subject })} />

@@ -356,7 +356,12 @@ const fakeStore = () => {
     check(/readReturn\(window\.sessionStorage\)/.test(PANEL), '…and the tab')
     const PAGE = readStripped('components/admin/ProspectWorkspace.tsx')
     check(/neighbours\(queue\.ids, prospectId\)/.test(PAGE), '‹ › walk the queue the page was opened from')
-    check(/\{pos \? `\$\{pos\.index\} of \$\{pos\.total\}` : '—'\}/.test(PAGE), '…and the header says "3 of 12"')
+    /* 🔴 A STALE ANCHOR, RESTATED (v3). The counter used to render "—" with two dead arrows when
+     * the page had no queue; it is now not rendered at all, because a one-of-one counter on a page
+     * opened by URL is furniture. The rule — the header says where you are in the queue — holds
+     * whenever there IS a queue, which is what is asserted now. */
+    check(/\{pos\.index\} of \{pos\.total\}/.test(PAGE), '…and the header says "3 of 12"')
+    check(/\{pos && \(/.test(PAGE), '⚠️ …only when there is a queue to be somewhere in')
   }
 
   console.log('\n── WORKING THROUGH A QUEUE ──────────────────────────────────────────────────────────────')
@@ -423,7 +428,12 @@ const fakeStore = () => {
      * rule — every shortcut appears in the tooltip of the control it duplicates — is unchanged. */
     check(/title="Next in this queue \(J\)"/.test(PAGE) && /Write an email \(E\)/.test(PAGE),
       '⚠️ and the shortcut is in the tooltip of the control it duplicates')
-    check(/Log a call \(C\)/.test(PAGE) && /Add a note \(N\)/.test(PAGE), '…on each of them')
+    /* ⚠️ A STALE ANCHOR, RESTATED (v3): the Note TAB is gone — a note is a box in the left column
+     * now, always visible, so `N` focuses it rather than opening a tab. The rule is unchanged and
+     * the remaining tabs still carry their shortcuts. */
+    check(/Log a call \(C\)/.test(PAGE), '…on each of them')
+    check(!/Add a note \(N\)/.test(PAGE) && /focusNoteBox/.test(PAGE),
+      '🔴 …and N now focuses the always-visible note box instead of opening a tab')
   }
 
   console.log('\n── WHAT THE PAGE KEEPS ──────────────────────────────────────────────────────────────────')

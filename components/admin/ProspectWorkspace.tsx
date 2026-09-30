@@ -69,7 +69,10 @@ const BTN = 'text-sm font-bold px-3 py-1.5 rounded-lg border focus:outline-none 
  * email cost a click before the first keystroke — on a screen whose entire purpose is writing one.
  * The composer is the default state; the other three are tabs beside it.
  */
-type Panel = 'email' | 'call' | 'whatsapp' | 'note'
+/* 🔴 THE NOTE TAB IS GONE (v3). A note is not a channel, and putting it beside Email / Call /
+ * WhatsApp made writing one cost a tab change and a lost composer draft. It is a box in the left
+ * column now, always visible, next to the standing notes it belongs with. */
+type Panel = 'email' | 'call' | 'whatsapp'
 
 export default function ProspectWorkspace({ prospectId }: { prospectId: string }) {
   const router = useRouter()
@@ -360,6 +363,20 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     await reloadAll()
   }, [undoable, post, prospectId, reloadAll])
 
+  /**
+   * 🔴 THE NOTE BOX IS A PLACE ON THE PAGE, NOT A MODE. `N` and the phone's sticky "Note" button
+   * both scroll to it and put the caret in it, which is what "add a note" means when the box is
+   * always there. ⚠️ BY ID, not by a ref passed three levels down: the box is rendered by a card
+   * in another column, and threading a ref through two components to focus a textarea is more
+   * moving parts than the thing it does.
+   */
+  const focusNoteBox = useCallback(() => {
+    const el = document.getElementById(ADD_NOTE_ID) as HTMLTextAreaElement | null
+    if (!el) return
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el.focus()
+  }, [])
+
   /** The demo link, inserted into the email being written. */
   const insertDemoLink = useCallback(() => {
     setPanel('email')
@@ -430,9 +447,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
    * elsewhere on the page; two of those handlers cannot be memoised at all (they branch on a
    * `window.confirm`). The ref is written in an effect, never during render.
    */
-  const latest = useRef({ panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage })
+  const latest = useRef({ panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox })
   useEffect(() => {
-    latest.current = { panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage }
+    latest.current = { panel, expandedId, nav, resolved, focus, timeline, goTo, openPanel, closePanel, replyToMessage, focusNoteBox }
   })
 
   useEffect(() => {
@@ -448,7 +465,8 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
       if (k === 'j' || k === 'J') { L.goTo(L.nav.next); return }
       if (k === 'k' || k === 'K') { L.goTo(L.nav.prev); return }
       if (k === 'e' || k === 'E') { e.preventDefault(); L.openPanel('email'); return }
-      if (k === 'n' || k === 'N') { e.preventDefault(); L.openPanel('note'); return }
+      // 🔴 N FOCUSES THE NOTE BOX RATHER THAN OPENING A TAB — the box is always there now.
+      if (k === 'n' || k === 'N') { e.preventDefault(); L.focusNoteBox(); return }
       if (k === 'c' || k === 'C') { e.preventDefault(); L.openPanel('call'); return }
       if (k === 'r' || k === 'R') {
         // ⚠️ R DOES NOTHING WHEN NOTHING IS WAITING, deliberately: it answers the message the Next
@@ -527,14 +545,20 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           {/* 🔴 THE QUEUE IS NAMED, not just counted: "Follow-ups due ‹ 1 of 5 ›" says which list you
               are walking, which is the difference between knowing where you are and knowing only
               how far along you are. */}
-          {pos && <span className="text-xs text-slate-500 mr-1 max-md:hidden">{queue?.label ?? 'the list'}</span>}
-          <button onClick={() => goTo(nav.prev)} disabled={!nav.prev} aria-label="Previous (K)" title="Previous in this queue (K)"
-            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">‹</button>
-          <span className="text-xs text-slate-500 tabular-nums px-1">
-            {pos ? `${pos.index} of ${pos.total}` : '—'}
-          </span>
-          <button onClick={() => goTo(nav.next)} disabled={!nav.next} aria-label="Next (J)" title="Next in this queue (J)"
-            className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">›</button>
+          {/* 🔴 THE QUEUE IS NAMED, AND WHEN THERE IS NO QUEUE THE CONTROL IS NOT THERE AT ALL.
+              It read "the list 1 of 1", which is two wrong things at once: "the list" is not the
+              name of anything Dominic can see, and a one-of-one counter with two dead arrows is
+              furniture. A page opened by URL has no queue and now shows nothing here. */}
+          {pos && (
+            <>
+              <span className="text-xs text-slate-500 mr-1 max-md:hidden">{queue?.label}</span>
+              <button onClick={() => goTo(nav.prev)} disabled={!nav.prev} aria-label="Previous (K)" title="Previous in this queue (K)"
+                className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">‹</button>
+              <span className="text-xs text-slate-500 tabular-nums px-1">{pos.index} of {pos.total}</span>
+              <button onClick={() => goTo(nav.next)} disabled={!nav.next} aria-label="Next (J)" title="Next in this queue (J)"
+                className="text-sm font-semibold px-2 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-30 max-md:min-h-11 max-md:min-w-11">›</button>
+            </>
+          )}
           <MoreMenu p={p} dncEnabled={flags.dnc} onPatch={patch} onRefresh={reloadAll} onHelp={() => setShowHelp(true)} />
         </div>
       </div>
@@ -545,13 +569,15 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           the same answer), so the button would have been a second way to arrive where you already
           are. ⚠️ Orange/amber appears in exactly two places on this page — here and the Send button
           — so "the coloured thing" is always what is about to happen. */}
+      {/* ⚠️ ONE LINE ON A LAPTOP, TWO ON A PHONE. The headline and the supporting facts stacked
+          cost 72px of an 800px viewport — more than two history rows — for text that fits across at
+          1440px. Below `md` they wrap, because there the width is the scarce thing. */}
       {focus && (
-        <div className="mb-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2">
-          <p className="text-sm">
-            <span className="text-[10px] uppercase tracking-wide font-bold text-amber-700 mr-2">Next</span>
-            <span className="font-bold text-amber-950">{bannerHeadline(focus)}</span>
-          </p>
-          <p className="text-[12px] text-amber-800 mt-0.5">{bannerDetail(focus, p, timeline)}</p>
+        <div className="mb-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-1.5
+          flex flex-wrap items-baseline gap-x-2">
+          <span className="text-[10px] uppercase tracking-wide font-bold text-amber-700">Next</span>
+          <span className="text-sm font-bold text-amber-950">{bannerHeadline(focus)}</span>
+          <span className="text-[12px] text-amber-800">{bannerDetail(focus, p, timeline)}</span>
         </div>
       )}
 
@@ -563,7 +589,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           <span className="text-sm font-bold text-emerald-900">Done.</span>
           {nav.next
             ? <button onClick={() => goTo(nav.next)} className={`${BTN} border-emerald-300 text-emerald-900 bg-white hover:bg-emerald-100`}>
-                Next: {queue?.label ?? 'the list'} →<span className="ml-2 text-[10px] font-normal opacity-70">Enter</span>
+                Next: {queue?.label ?? 'All prospects'} →<span className="ml-2 text-[10px] font-normal opacity-70">Enter</span>
               </button>
             : <span className="text-sm text-emerald-900">That&rsquo;s everything in {queue?.label ?? 'this list'}.</span>}
           <button onClick={() => setResolved(false)} className="ml-auto text-xs font-semibold text-emerald-900 underline">Dismiss</button>
@@ -583,7 +609,13 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           because they are the actions and the left column is reference. */}
       <div className="grid gap-4 max-lg:grid-cols-1" style={{ gridTemplateColumns: columns }}>
         {/* ── LEFT: READ FIRST ──────────────────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 min-w-0 max-lg:order-2">
+        {/* ⚠️ THE ORDER FLIPS TWICE ON THE WAY DOWN, and each flip is the answer to a different
+            question. On a TABLET (768–1023) the centre comes first, because the work is the point
+            and the reference column is beside it on any real screen. On a PHONE the contact card
+            comes first, because the first thing done standing in a doorway is ring somebody — and
+            the three big buttons are on it. Tailwind emits `max-md` after `max-lg`, so the
+            narrower rule wins below 768 without either needing an `!important`. */}
+        <div className="flex flex-col gap-3 min-w-0 max-lg:order-2 max-md:order-1">
           {/* ⚠️ ON A TABLET THE ACTION CARDS COME FIRST, at the top of this column. */}
           <div className="hidden max-lg:flex max-md:hidden flex-col gap-3">
             <ActionCards
@@ -596,28 +628,39 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           <ContactCard p={p} step={step} flags={flags} editing={editing} setEditing={setEditing}
             onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')} />
 
-          <label className={`${CARD} p-3 block`}>
-            <span className={LABEL_CLS}>Pinned notes</span>
-            <PinnedNotes p={p} onPatch={patch} />
-          </label>
+          {/* 🔴 TWO NOTE BOXES, AND THEY ARE DIFFERENT THINGS. "About this truck" is what is always
+              true — the one `notes` column, unchanged — and it is big because it is prose somebody
+              reads before every call. "Add a note" is what happened once, on a day, and goes to the
+              timeline. They sat as one tiny two-line field and a tab. */}
+          <AboutCard p={p} onPatch={patch} />
+          <AddNoteCard prospectId={p.id} onSaved={reloadAll} />
 
+        </div>
+
+        {/* ⚠️ THE DEMO AND THE FILES ARE REFERENCE, AND ON A PHONE THEY GO LAST — under the
+            history, not between the contact card and the composer. So they are their own grid item,
+            placed EXPLICITLY in the left track's second row.
+            🔴 `gridColumn: 1` IS NOT OPTIONAL. Auto-placement would put this in the next free cell,
+            which is under the CENTRE column — `display: contents` has the same problem, because it
+            promotes the children to grid items that are then auto-placed one after another. Below
+            1024px the grid is a single column and this is simply the last block. */}
+        <div style={{ gridColumn: 1 }} className="flex flex-col gap-3 min-w-0 max-lg:order-3">
           <DemoCard p={p} onReload={reloadAll} onInsert={insertDemoLink} />
-
           <FilesCard timeline={timeline} prospectId={p.id} onOpen={id => { setExpandedId(id); document.getElementById(`tl-${id}`)?.scrollIntoView({ block: 'center' }) }} />
         </div>
 
         {/* ── CENTRE: WRITE, THEN READ ──────────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 min-w-0 max-lg:order-1">
+        <div className="flex flex-col gap-3 min-w-0 max-lg:order-1 max-md:order-2">
           {/* 🔴 TABS, NOT A ROW OF BUTTONS THAT OPEN THINGS. Email is the default and is already
               open; the other three are the same surface aimed elsewhere. */}
           <div className="flex items-center gap-1 border-b border-slate-200">
-            {(['email', 'call', 'whatsapp', 'note'] as const).map(t => (
+            {(['email', 'call', 'whatsapp'] as const).map(t => (
               <button key={t} type="button" onClick={() => openPanel(t)} aria-pressed={panel === t}
-                title={t === 'email' ? 'Write an email (E)' : t === 'call' ? 'Log a call (C)' : t === 'note' ? 'Add a note (N)' : 'Log a WhatsApp message'}
+                title={t === 'email' ? 'Write an email (E)' : t === 'call' ? 'Log a call (C)' : 'Log a WhatsApp message'}
                 className={`text-sm font-bold px-3 py-2 -mb-px border-b-2 max-md:min-h-11 ${panel === t
                   ? 'border-slate-800 text-slate-900'
                   : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
-                {t === 'email' ? 'Email' : t === 'call' ? 'Call' : t === 'whatsapp' ? 'WhatsApp' : 'Note'}
+                {t === 'email' ? 'Email' : t === 'call' ? 'Call' : 'WhatsApp'}
               </button>
             ))}
             {note && <span className="ml-auto text-[11px] text-slate-600">{note}</span>}
@@ -668,11 +711,6 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               post={post} applyFollowUp={applyFollowUp} />
           )}
 
-          {panel === 'note' && (
-            <NoteBox prospectId={p.id} onDirty={setDirty} onCancel={closePanel}
-              onSaved={async () => { setDirty(false); setPanel('email'); await reloadAll() }} />
-          )}
-
           <ProspectTimeline
             prospect={p}
             data={timeline}
@@ -703,13 +741,20 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           standing up between calls; on a phone they are the only controls that must never require a
           scroll. ⚠️ Every target is at least 44px, which is Apple's own minimum. */}
       <div className="hidden max-md:flex fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white px-2 py-2 gap-1">
-        {ONE_CLICK_LOGS.map(l => (
+        {ONE_CLICK_LOGS.slice(0, 3).map(l => (
           <button key={l.id} type="button" disabled={!!oneClickBusy}
             onClick={() => void afterOneClick(l.id)}
             className="flex-1 min-h-11 text-[11px] font-bold rounded-lg border border-slate-300 text-slate-700 bg-white disabled:opacity-40">
-            {l.id === 'no_answer' ? 'No answer' : l.id === 'spoke' ? 'Spoke' : l.id === 'voicemail' ? 'Voicemail' : 'Note'}
+            {l.id === 'no_answer' ? 'No answer' : l.id === 'spoke' ? 'Spoke' : 'Voicemail'}
           </button>
         ))}
+        {/* ⚠️ "Note" HERE IS NOT A FOURTH ONE-CLICK LOG. It scrolls to the Add-a-note box and focuses
+            it — a note is words somebody writes, and a button that logged a blank one would be a
+            button that records nothing. */}
+        <button type="button" onClick={focusNoteBox}
+          className="flex-1 min-h-11 text-[11px] font-bold rounded-lg border border-slate-300 text-slate-700 bg-white">
+          Note
+        </button>
       </div>
       <div className="hidden max-md:block h-16" aria-hidden="true" />
 
@@ -874,6 +919,99 @@ function ActionCards({
         Do not contact
       </label>
     </>
+  )
+}
+
+/** The Add-a-note textarea's id. 🔴 One definition: the shortcut, the phone bar and the box agree. */
+const ADD_NOTE_ID = 'hg-add-note'
+
+/**
+ * "About this truck" — the standing facts, and the box they were crammed into.
+ *
+ * 🔴 IT IS THE SAME `notes` COLUMN, and no new one was added. What changed is that it was a
+ * three-row field labelled "Pinned notes" with a placeholder longer than most of its contents; it
+ * is now six rows that grow, with a Save button and a confirmation, because this is the text
+ * Dominic reads before picking up the phone.
+ * ⚠️ SAVE IS EXPLICIT NOW, NOT ON BLUR. A blur-save in a box this size loses a paragraph to a
+ * mis-click on another column, and gives no sign that anything was written.
+ */
+function AboutCard({ p, onPatch }: { p: Prospect; onPatch: (patch: Record<string, unknown>) => Promise<void> }) {
+  const [text, setText] = useState(p.notes ?? '')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  // ⚠️ RE-SEEDED WHEN THE PROSPECT CHANGES. J/K moves to another truck without remounting this.
+  useEffect(() => { void Promise.resolve().then(() => { setText(p.notes ?? ''); setSaved(false) }) }, [p.id, p.notes])
+  const dirty = text !== (p.notes ?? '')
+  const save = async () => {
+    setSaving(true)
+    try {
+      await onPatch({ notes: text || null })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } finally { setSaving(false) }
+  }
+  return (
+    <div className={`${CARD} p-3 flex flex-col gap-2`}>
+      <div className="flex items-center gap-2">
+        <span className={LABEL_CLS}>About this truck</span>
+        {saved && <span className="ml-auto text-[11px] font-semibold text-emerald-700">saved</span>}
+      </div>
+      {/* 🔴 SIX ROWS THAT GROW. `field-sizing: content` does the growing where the browser supports
+          it; `rows` is the floor everywhere, so nothing depends on that support. */}
+      <textarea rows={6} className={`${FIELD_CLS} resize-y`} style={{ fieldSizing: 'content' } as React.CSSProperties}
+        placeholder="What is always true of this truck — who to ask for, when they answer, what they said last time."
+        value={text} onChange={e => setText(e.target.value)} />
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={() => void save()} disabled={!dirty || saving}
+          className={`${BTN} border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 min-h-11`}>
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        {dirty && <span className="text-[11px] text-slate-400">unsaved</span>}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * "Add a note" — always there, and it writes to the timeline.
+ * 🔴 IT WAS A TAB, which meant a note cost a tab change and, if an email was half-written, a
+ * confirmation dialog about discarding it. A note is three lines and a Save; it should never
+ * displace what is being written.
+ * ⚠️ THE SAME `add_note` PATH AS BEFORE — one note writer, one `outreach_events` row.
+ */
+function AddNoteCard({ prospectId, onSaved }: { prospectId: string; onSaved: () => Promise<void> }) {
+  const [body, setBody] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [done, setDone] = useState(false)
+  const save = async () => {
+    if (!body.trim()) return
+    setBusy(true)
+    try {
+      const h = await nativeAuthHeader()
+      await fetch('/api/admin/outreach/timeline', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'add_note', prospect_id: prospectId, body }),
+      })
+      setBody(''); setDone(true); setTimeout(() => setDone(false), 2500)
+      await onSaved()
+    } finally { setBusy(false) }
+  }
+  return (
+    <div className={`${CARD} p-3 flex flex-col gap-2`}>
+      <div className="flex items-center gap-2">
+        <span className={LABEL_CLS}>Add a note</span>
+        {done && <span className="ml-auto text-[11px] font-semibold text-emerald-700">added to the history</span>}
+      </div>
+      <textarea id={ADD_NOTE_ID} rows={3} className={`${FIELD_CLS} resize-y`}
+        style={{ fieldSizing: 'content' } as React.CSSProperties}
+        placeholder="What happened just now, or what to do next…"
+        value={body} onChange={e => setBody(e.target.value)} />
+      <button type="button" onClick={() => void save()} disabled={busy || !body.trim()}
+        className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-40 min-h-11 self-start`}>
+        {busy ? 'Saving…' : 'Save note'}
+      </button>
+    </div>
   )
 }
 
@@ -1082,7 +1220,7 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
             {p.phone
               ? <>
                   <span className="text-slate-700 select-all">☎ {p.phone}</span>
-                  <CallButton phone={p.phone} compact />
+                  <CallButton phone={p.phone} e164={waPhone} compact />
                 </>
               : <span className="text-slate-400">no phone number</span>}
           </p>
@@ -1096,7 +1234,7 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
               "nobody has confirmed that this number is on WhatsApp", which is §52.3(a)'s
               distinction and is a thing Dominic can act on. */}
           <div className="flex items-center gap-2 mt-1">
-            <CallButton phone={p.phone} />
+            <CallButton phone={p.phone} e164={waPhone} />
             <a href={p.whatsapp_confirmed === true && waPhone ? `https://wa.me/${waPhone}` : undefined}
               target="_blank" rel="noreferrer"
               aria-disabled={!(p.whatsapp_confirmed === true && waPhone)}
@@ -1187,29 +1325,24 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
 }
 
 /**
- * Call — a BUTTON, and what it does depends on whether the machine can make a call.
+ * Call — a button that PLACES THE CALL, on every device.
  *
- * 🔴 A `tel:` LINK IS THE WRONG CONTROL ON A LAPTOP, and this is the defect it caused: clicking one
- * on a Mac hands the URL to a protocol handler (FaceTime, or a "choose an application" dialog),
- * which takes focus off the browser — the window appears to minimise, and whatever was being
- * written is behind something else. On a desktop there is no telephone, so the useful thing a Call
- * button can do is put the number where it can be pasted into whatever actually dials.
- * 🔴 ON A PHONE IT DIALS, because there `tel:` is exactly right and is what the button is for.
- * ⚠️ THE TEST IS THE POINTER, NOT THE SCREEN WIDTH: a touch laptop is still a laptop with no SIM,
- * and a narrow window on a desktop is still a desktop. `(pointer: coarse)` is the closest thing the
- * platform offers to "this is a handset".
- * ⚠️ AND IT IS READ AFTER MOUNT. `matchMedia` does not exist while Next renders on the server, and
- * a value that appeared only on the client would be a hydration mismatch.
+ * 🔴 IT COPIED THE NUMBER ON A DESKTOP AND THAT WAS WRONG. The reasoning was that `tel:` on a Mac
+ * hands off to a protocol handler and takes focus off the page; the answer to that is not to
+ * refuse to call. A Mac hands `tel:` to FaceTime, which rings through the iPhone on the same Apple
+ * ID — which is exactly the thing Dominic wants the button to do.
+ * 🔴 A PROGRAMMATIC ANCHOR CLICK, NOT `location.href` AND NOT `window.open`.
+ *   • `window.open` leaves a blank tab behind on every call.
+ *   • `location.href = 'tel:…'` is a NAVIGATION: the browser begins unloading this page before the
+ *     handler takes it, and a half-written email is exactly what must not be at risk.
+ *   • A detached `<a href="tel:…">` with no `target`, clicked and removed, hands the URL to the OS
+ *     and leaves the document alone. It is the same thing a user clicking a link does, minus the
+ *     link.
+ * ⚠️ NOTHING BRANCHES ON POINTER TYPE any more. One behaviour, every device.
+ * ⚠️ E.164 WHERE WE HAVE IT. `phoneWhatsApp` already normalises a UK number for wa.me; the same
+ * digits are what a dialler wants, and `tel:` with spaces in it is refused by some handlers.
  */
-function CallButton({ phone, compact }: { phone: string | null; compact?: boolean }) {
-  const [canDial, setCanDial] = useState(false)
-  const [copied, setCopied] = useState(false)
-  useEffect(() => {
-    void Promise.resolve().then(() => {
-      try { setCanDial(window.matchMedia('(pointer: coarse)').matches) } catch { /* assume a desktop */ }
-    })
-  }, [])
-
+function CallButton({ phone, e164, compact }: { phone: string | null; e164?: string | null; compact?: boolean }) {
   if (!phone) {
     return (
       <button type="button" disabled
@@ -1220,40 +1353,33 @@ function CallButton({ phone, compact }: { phone: string | null; compact?: boolea
       </button>
     )
   }
-
-  const onClick = () => {
-    if (canDial) {
-      // 🔴 `location.href`, NOT `window.open`. A popup for a protocol handler is a blank tab left
-      // behind on every call; assigning the location hands off and leaves the page where it is.
-      window.location.href = `tel:${phone}`
-      return
-    }
-    void navigator.clipboard?.writeText(phone)
-      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
-      .catch(() => { /* a clipboard the browser refuses is not worth a dialog */ })
+  const dial = () => {
+    // ⚠️ `phoneWhatsApp` RETURNS BARE INTERNATIONAL DIGITS (wa.me wants no `+`), and a dialler
+    // wants the `+` — without it "447700900123" is dialled as a UK national number and fails.
+    // Falling back to the stored text keeps whatever Dominic typed, minus formatting.
+    const number = e164 ? `+${e164.replace(/\D/g, '')}` : phone.replace(/[^\d+]/g, '')
+    const a = document.createElement('a')
+    a.href = `tel:${number}`
+    // ⚠️ NO `target`. A target of `_blank` is what produces the blank tab; without one the browser
+    // hands a non-http scheme to the OS and does not navigate.
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
   }
-
   return (
-    <button type="button" onClick={onClick}
-      title={canDial ? `Call ${phone}` : `Copy ${phone} — this machine cannot place calls, and opening a dialler would take you out of the page`}
+    <button type="button" onClick={dial} title={`Call ${phone}`}
       className={compact
         ? 'text-xs font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 whitespace-nowrap'
         : 'flex-1 text-sm font-bold px-3 py-2 min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50'}>
-      {copied ? 'Copied' : canDial ? 'Call' : 'Call · copy'}
+      Call
     </button>
   )
 }
 
-/** The prospect's standing notes. ⚠️ SAVES ON BLUR, exactly as the modal's field did. */
-function PinnedNotes({ p, onPatch }: { p: Prospect; onPatch: (patch: Record<string, unknown>) => Promise<void> }) {
-  const [notes, setNotes] = useState(p.notes ?? '')
-  return (
-    <textarea rows={3} className={`${FIELD_CLS} resize-y`} value={notes}
-      placeholder="Always true of this truck — “only answers after 3pm”."
-      onChange={e => setNotes(e.target.value)}
-      onBlur={() => { if (notes !== (p.notes ?? '')) void onPatch({ notes: notes || null }) }} />
-  )
-}
+/* 🔴 `PinnedNotes` WAS HERE AND IS GONE (v3). It was a three-row blur-saved field with a
+ * placeholder longer than its usual contents; `AboutCard` above is the same `notes` column with
+ * six growing rows, an explicit Save and a confirmation. */
 
 // ── FILES ───────────────────────────────────────────────────────────────────────────────────────────
 /**
@@ -1506,44 +1632,9 @@ function QuickLog({ p, channel, kind, followUpDate, post, applyFollowUp, onDirty
   )
 }
 
-/** A note. 🔴 The existing `outreach_events` note — inert, and never a rung on the ladder. */
-function NoteBox({ prospectId, onDirty, onCancel, onSaved }: {
-  prospectId: string
-  onDirty: (v: boolean) => void
-  onCancel: () => void
-  onSaved: () => Promise<void>
-}) {
-  const [body, setBody] = useState('')
-  const [busy, setBusy] = useState(false)
-  const save = async () => {
-    if (!body.trim()) return
-    setBusy(true)
-    try {
-      const h = await nativeAuthHeader()
-      await fetch('/api/admin/outreach/timeline', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
-        credentials: 'same-origin',
-        body: JSON.stringify({ action: 'add_note', prospect_id: prospectId, body }),
-      })
-      await onSaved()
-    } finally { setBusy(false) }
-  }
-  return (
-    <div className={`${CARD} p-3 flex flex-col gap-2`}>
-      <span className={LABEL_CLS}>Note</span>
-      <textarea rows={3} autoFocus className={`${FIELD_CLS} resize-y`}
-        placeholder="What happened, or what to do next…"
-        value={body} onChange={e => { setBody(e.target.value); onDirty(true) }} />
-      <div className="flex items-center gap-2">
-        <button onClick={() => void save()} disabled={busy || !body.trim()}
-          className={`${BTN} border-slate-800 bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50 min-h-11`}>
-          {busy ? 'Saving…' : 'Add note'}
-        </button>
-        <button onClick={onCancel} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50`}>Cancel</button>
-      </div>
-    </div>
-  )
-}
+/* 🔴 `NoteBox` WAS HERE AND IS GONE (v3), with the Note tab it belonged to. `AddNoteCard` is the
+ * same `add_note` call in the left column, always visible — writing a note no longer costs a tab
+ * change or a "discard what you have typed?" on a half-written email. */
 
 /** `?` — the list, from the one place the shortcuts are declared. */
 function ShortcutHelp({ onClose }: { onClose: () => void }) {

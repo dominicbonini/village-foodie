@@ -449,7 +449,9 @@ export default function OutreachPanel() {
   ) => {
     const store = typeof window === 'undefined' ? null : window.sessionStorage
     saveQueue(store, {
-      label: queue?.label ?? 'the list',
+      // 🔴 THE NAME OF THE THING ON SCREEN, not a description of it. "the list 1 of 1" told Dominic
+      // nothing; "All prospects 4 of 60" says which list he is walking.
+      label: queue?.label ?? 'All prospects',
       ids: queue?.ids ?? [],
       returnTo: '/admin?tab=outreach',
     })
@@ -469,7 +471,7 @@ export default function OutreachPanel() {
    *  stable `onOpen`, and rebuilding that callback whenever a filter changes would re-render all 231. */
   const visibleIdsRef = useRef<string[]>([])
   const openFromList = useCallback((id: string) => {
-    openProspect(id, { label: 'the list', ids: visibleIdsRef.current })
+    openProspect(id, { label: 'All prospects', ids: visibleIdsRef.current })
   }, [openProspect])
   const openSchedule = useCallback((pr: Prospect) => setSchedFor(pr), [])
 

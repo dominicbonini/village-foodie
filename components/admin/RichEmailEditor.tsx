@@ -79,6 +79,9 @@ export default function RichEmailEditor({
   const extensions = useMemo(() => [
     Document, Paragraph, Text, HardBreak, Bold, Small,
   ], [])
+  /** 🔴 A SHORT PROMPT, NOT AN INSTRUCTION MANUAL. Rendered as an overlay rather than as content,
+   *  so it can never be mistaken for text and can never be sent. */
+  const showPlaceholder = !docHasText(value)
 
   const editor = useEditor({
     extensions,
@@ -97,9 +100,11 @@ export default function RichEmailEditor({
         // below it sat empty — you could not see the email you were sending. The box now grows
         // with the text; the CAP lives on the wrapper (`maxHeight` below), so only an email past
         // three quarters of the window height ever scrolls inside.
-        // ⚠️ ~8 LINES AT 12pt IS THE FLOOR: enough that an empty composer looks like somewhere to
-        // write, without reserving a screenful for a two-line reply.
-        style: `${P_STYLE} min-height: 11rem; outline: none;`,
+        // ⚠️ ~6 LINES AT 12pt IS THE FLOOR — 8.5rem. It was 22rem (about sixteen lines), which on a
+        // 1440x800 screen is most of the space below the header: an EMPTY box was pushing the
+        // history Dominic needs to read off the bottom of the page. Six lines still reads as
+        // "somewhere to write" and leaves the conversation on screen.
+        style: `${P_STYLE} min-height: 8.5rem; outline: none;`,
         class: 'px-2 py-1.5',
         'aria-label': 'Message',
       },
@@ -122,7 +127,7 @@ export default function RichEmailEditor({
 
   useEffect(() => { editor?.setEditable(!disabled) }, [editor, disabled])
 
-  if (!editor) return <div className="border border-slate-200 rounded-lg" style={{ minHeight: '11rem' }} />
+  if (!editor) return <div className="border border-slate-200 rounded-lg" style={{ minHeight: '8.5rem' }} />
 
   const tbtn = (active: boolean) =>
     `text-xs font-bold px-2 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-slate-400 ${
@@ -172,9 +177,27 @@ export default function RichEmailEditor({
       </div>
       {/* ⚠️ THE SCROLLER IS THE WRAPPER, NOT THE EDITOR. ProseMirror needs its own box to grow into;
           capping the editor itself would clip the caret out of view at the bottom of a long email. */}
-      <div style={maxHeight && !expanded ? { maxHeight, overflowY: 'auto' } : undefined}>
+      <div className="relative" style={maxHeight && !expanded ? { maxHeight, overflowY: 'auto' } : undefined}>
+        {showPlaceholder && (
+          <span aria-hidden="true"
+            className="pointer-events-none absolute left-2 top-1.5 text-slate-400"
+            style={{ fontFamily: 'Aptos, Arial, Helvetica, sans-serif', fontSize: '12pt' }}>
+            Write here, or pick a template
+          </span>
+        )}
         <EditorContent editor={editor} />
       </div>
     </div>
   )
+}
+
+/** Is there a character in this document? ⚠️ Cheap and shallow — it only decides a placeholder. */
+function docHasText(doc: EmailDoc): boolean {
+  const walk = (n: unknown): boolean => {
+    const node = n as { text?: unknown; content?: unknown[] } | null
+    if (!node || typeof node !== 'object') return false
+    if (typeof node.text === 'string' && node.text.trim()) return true
+    return Array.isArray(node.content) && node.content.some(walk)
+  }
+  return walk(doc)
 }
