@@ -1,6 +1,6 @@
 # The Templates tab — two views: Sequence and Templates
 
-**30 September 2026 · commit pending in §7 · measured in Chromium and WebKit**
+**30 September 2026 · commit `6ab8d18` · deployed and serving on production at 21:22:01Z**
 
 Layout and presentation only. No behaviour of the sequence, the guards or the editor's saving
 changed; the one functional addition is the **Insert token ▾** menu, which the brief asks for.
@@ -203,6 +203,8 @@ why, which cost a minute earlier today.
 | `node scripts/outreach-templates-render.cjs` | **both views correct in Chromium and WebKit** |
 | `node scripts/run-harnesses.cjs` | **73 run · 73 passed · 0 failed** |
 | goldens | `8bdae817…` and `e3f0a880…` ✅ unchanged |
+
+Fingerprint `96998ac5…` at push → `cc8a28eb…` at **21:22:01Z**.
 
 No SQL, no database change, no `outreach_templates` row created, edited, seeded or deactivated, no
 email sent. One send path, one contact writer, one follow-up writer, one `nextStep` per page, every
