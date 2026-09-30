@@ -119,6 +119,12 @@ function runLibSuite({ W, T, D }) {
     T.tidyNoteText('a\nb\nc') === 'a\nb\nc')
   t('⚠️ trailing spaces go, leading text stays', T.tidyNoteText('  a   \n  b') === 'a   \n  b'.replace(/[ \t]+$/gm, ''))
   t('🔴 the collapsed row shows the FIRST line', T.noteFirstLine('rang him\nhe asked for the plans') === 'rang him')
+  t('🔴 a note with a second line has more to show', T.noteHasMore('rang him\nand again') === true)
+  t('🔴 …and so does a long single line, because the column will cut it',
+    T.noteHasMore('x'.repeat(T.NOTE_ONE_LINE_CHARS + 1)) === true)
+  t('⚠️ a short one-line note does NOT — a control that does nothing is worse than none',
+    T.noteHasMore('rang him') === false && T.noteHasMore('') === false && T.noteHasMore(null) === false)
+  t('⚠️ …and blank lines alone never make one "longer"', T.noteHasMore('rang him\n\n\n') === false)
   t('⚠️ …and nothing at all is an empty string, never "undefined"', T.noteFirstLine(null) === '')
 
   // ── 6 · THE LINK MARK IS AN ALLOW-LIST ───────────────────────────────────────────────────────
@@ -167,7 +173,23 @@ function runCensus(over = {}) {
   // ── 2 · ONE ROW PER NOTE ─────────────────────────────────────────────────────────────────────
   t('🔴 a note in the history is one row that opens',
     /open=\{expandAll \|\| expandedId === item\.id\}/.test(TL) && /onToggle=\{\(\) => onExpand/.test(TL))
-  t('…truncated to its first line while closed', /truncate text-slate-700/.test(SHARED) && /noteFirstLine\(note\.body\)/.test(SHARED))
+  /* ⚠️ RE-ANCHORED: the collapsed row is its own return now — the date-and-word header it used to
+   * share with the Notes card was duplicating the history row's own icon, word and date, which put
+   * the text on a second line and printed the date twice. */
+  t('…truncated to its first line while closed, and the row carries nothing else',
+    /open \? 'whitespace-pre-wrap break-words' : 'truncate'/.test(SHARED)
+    && /open \? tidyNoteText\(note\.body\) : noteFirstLine\(note\.body\)/.test(SHARED))
+  /* ⚠️ THE SLICE IS BETWEEN TWO PIECES OF CODE, NOT TWO COMMENTS. `SHARED` is stripped before this
+   * census, so a boundary written as a comment is not there to find — the first attempt sliced on
+   * one and silently measured the whole file. */
+  t('🔴 …and the collapsed row prints NO date of its own: the history row already has one', (() => {
+    const from = SHARED.indexOf('if (collapsible) {')
+    const to = SHARED.indexOf('<li className="text-[13px] group">', from)
+    return from > 0 && to > from && !/fmtDate\(note\.created_at\)/.test(SHARED.slice(from, to))
+  })())
+  t('🔴 a note with more to show says so, with a control that turns',
+    /noteHasMore\(note\.body\) && \(/.test(SHARED) && /aria-expanded=\{!!open\}/.test(SHARED)
+    && /<RowIcon name="chevron"/.test(SHARED))
   t('🔴 …and the full text never carries the blank lines', /tidyNoteText\(note\.body\)/.test(SHARED))
   t('⚠️ the Notes card still shows every note in full — it IS the notes', /const collapsible = !!onToggle/.test(SHARED))
 
@@ -221,8 +243,14 @@ function runCensus(over = {}) {
   t('⚠️ the icons are one size and one stroke, in the style this app already uses',
     /width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"/.test(ICONS)
     && (ICONS.match(/strokeWidth="2"/g) || []).length === 1)
-  t('🔴 …and there are exactly five paths, no emoji and no unicode arrows',
-    (ICONS.match(/^  [a-z]+: '/gm) || []).length === 5 && !/[\u260e\u270e\u2197\u2199]/.test(ICONS))
+  /* ⚠️ SIX PATHS NOW, AND THE SIXTH IS NOT A ROW ICON. `chevron` is the "there is more of this"
+   * control on a collapsed note; the type (`IconName = RowIconName | 'chevron'`) is what stops a row
+   * ever being labelled with it. */
+  t('🔴 …and there are exactly six paths, no emoji and no unicode arrows',
+    (ICONS.match(/^  [a-z]+: '/gm) || []).length === 6 && !/[\u260e\u270e\u2197\u2199]/.test(ICONS))
+  t('🔴 …and the chevron can never become a row label',
+    /export type IconName = RowIconName \| 'chevron'/.test(ICONS)
+    && /'envelope' \| 'phone' \| 'chat' \| 'pencil' \| 'arrows'/.test(stripComments(read('lib/outreach-timeline.ts'))))
   t('🔴 the label column is a fixed width, in one place', /w-\[5\.5rem\] shrink-0/.test(ICONS))
   t('⚠️ "Received" is a pill in bold dark text, not a colour',
     /font-bold uppercase tracking-wide text-slate-900 bg-slate-100/.test(ICONS) && !/emerald/.test(ICONS))
@@ -273,6 +301,15 @@ function runCensus(over = {}) {
   const PAGE_SRC = read('components/admin/ProspectWorkspace.tsx')
   const CW_SRC = read('components/admin/ComposeWindow.tsx')
   const TL_SRC = read('components/admin/ProspectTimeline.tsx')
+  /* 🔴 A CENSUS VARIANT THAT DID NOT APPLY IS A VARIANT THAT PROVES NOTHING, and it looks exactly
+   * like a passing one. `String.replace` returns the SAME STRING when it finds nothing, so a patch
+   * whose anchor has drifted silently runs the census over correct source — which then passes, and
+   * the harness reports "THE HARNESS PROVES NOTHING" without saying why. Every mutation below is
+   * checked for having changed something first. This cost a real minute today. */
+  const mutated = (src, out, label) => {
+    if (out === src) { console.log(`🔴 ${label}: THE PATCH DID NOT APPLY — its anchor has drifted`); process.exit(1) }
+    return out
+  }
   for (const [label, over] of [
     ['V6 🔴 a chip saves nothing — it only pre-sets the next log',
       { PAGE: PAGE_SRC.replace('void onSetFollowUp(c, date)', 'setLocalOnly({ choice: c, date })') }],
@@ -290,9 +327,15 @@ function runCensus(over = {}) {
       { TL: TL_SRC.replace('<RowLabelCell label={rowLabel(item)} />',
         '<span>{"\u2197"}</span>') }],
     ['V12 🔴 one row type draws its own icon outside the function',
-      { TL: TL_SRC.replace('<ul className="list-none"><NoteRow note={e}',
-        '<ul className="list-none"><span>{"\u270e"}</span><NoteRow note={e}') }],
+      { TL: TL_SRC.replace('<NoteRow note={e} prospectId={prospect.id}',
+        '<span>{"\u270e"}</span><NoteRow note={e} prospectId={prospect.id}') }],
   ]) {
+    // ⚠️ EVERY OVERRIDE IS CHECKED AGAINST THE FILE IT REPLACES, so a drifted anchor is a loud
+    // failure rather than a quiet pass.
+    for (const [key, src] of Object.entries(over)) {
+      const original = { PAGE: PAGE_SRC, CW: CW_SRC, TL: TL_SRC }[key]
+      if (original !== undefined) mutated(original, src, label)
+    }
     const r = runCensus(over)
     const caught = r.bad.length > 0
     console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  ${label}`)

@@ -384,6 +384,25 @@ export function noteFirstLine(text: string | null | undefined): string {
   return tidyNoteText(text).split('\n')[0] ?? ''
 }
 
+/**
+ * Is there more of this note than the collapsed row shows?
+ *
+ * 🔴 A ROW THAT CAN BE OPENED MUST LOOK LIKE ONE, and a row that cannot must not pretend. Two ways
+ * there is more: further LINES, which is certain, or a first line long enough that the column will
+ * cut it, which is a judgement — the browser decides where a `truncate` actually bites and this
+ * cannot ask it. `NOTE_ONE_LINE_CHARS` is deliberately generous: showing the chevron on a note that
+ * happened to fit costs one click that does nothing, while hiding it on a note that was cut costs
+ * the words.
+ */
+export const NOTE_ONE_LINE_CHARS = 70
+
+export function noteHasMore(text: string | null | undefined): boolean {
+  const tidy = tidyNoteText(text)
+  if (!tidy) return false
+  const first = tidy.split('\n')[0] ?? ''
+  return tidy !== first || first.length > NOTE_ONE_LINE_CHARS
+}
+
 // ── ONE LABEL FOR EVERY ROW ─────────────────────────────────────────────────────────────────────────
 /**
  * 🔴 EVERY HISTORY ROW SAYS WHAT IT IS, IN THE SAME SHAPE: an icon for the channel and a WORD for

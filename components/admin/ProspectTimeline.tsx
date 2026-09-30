@@ -211,10 +211,17 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                         Stage {stageWord(e.from_stage)} → <span className="font-bold text-slate-800">{stageWord(e.to_stage)}</span>
                         {e.body && <span className="text-slate-400"> · {e.body}</span>}
                       </span>
-                    : <ul className="list-none"><NoteRow note={e} prospectId={prospect.id}
-                        onChanged={actions.onNotesChanged}
-                        open={expandAll || expandedId === item.id}
-                        onToggle={() => onExpand(expandedId === item.id ? null : item.id)} /></ul>}
+                    : (
+                      // ⚠️ `flex` ON THE LIST, so the note's single line and its two controls share
+                      // the row rather than stacking. The `<ul>` is here only because `NoteRow`
+                      // renders an `<li>` — it carries no list styling of its own.
+                      <ul className="list-none flex min-w-0">
+                        <NoteRow note={e} prospectId={prospect.id}
+                          onChanged={actions.onNotesChanged}
+                          open={expandAll || expandedId === item.id}
+                          onToggle={() => onExpand(expandedId === item.id ? null : item.id)} />
+                      </ul>
+                    )}
                 </span>
               </div>
             )

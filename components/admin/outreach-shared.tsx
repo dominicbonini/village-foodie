@@ -18,7 +18,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
-import { tidyNoteText, noteFirstLine } from '@/lib/outreach-timeline'
+import { tidyNoteText, noteFirstLine, noteHasMore } from '@/lib/outreach-timeline'
+import { RowIcon } from '@/components/admin/outreach-icons'
 import type { TimelineMessage, TimelineContact, TimelineEvent } from '@/lib/outreach-timeline'
 
 /** What `/api/admin/outreach/timeline` returns. Typed here so no caller invents a field name —
@@ -942,62 +943,106 @@ export function NoteRow({ note, prospectId, onChanged, open, onToggle }: {
   /** 🔴 THE HISTORY COLLAPSES A NOTE; THE NOTES CARD NEVER DOES. `onToggle` is what says which. */
   const collapsible = !!onToggle
 
+  const dialog = confirming && (
+    <ConfirmDeleteDialog
+      title="Delete this note?"
+      confirmLabel="Delete note"
+      onCancel={() => setConfirming(false)}
+      onConfirm={remove}>
+      <p className="text-sm text-slate-600 whitespace-pre-wrap break-words">{note.body}</p>
+    </ConfirmDeleteDialog>
+  )
+
+  /* ── 🔴 THE EDITOR IS THE SAME IN BOTH PLACES ────────────────────────────────────────────────
+   * Editing is the one state that cannot be one line: it is a box, a Save and a Cancel. */
+  const editor = (
+    <div className="flex flex-col gap-1 w-full">
+      <GrowingTextarea rows={3} className={`${FIELD_CLS} w-full resize-y`}
+        value={text} onChange={e => setText(e.target.value)} />
+      <div className="flex items-center gap-2">
+        <button type="button" onClick={() => void save()} disabled={busy || !text.trim()}
+          className="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800 text-white disabled:opacity-40">
+          {busy ? 'Saving…' : 'Save'}
+        </button>
+        <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(false) }}
+          className="text-[11px] font-semibold text-slate-500 hover:underline">Cancel</button>
+      </div>
+    </div>
+  )
+
+  const actions = !editing && (
+    // ⚠️ `shrink-0`, AND ON THE SAME LINE AS THE TEXT. In the history the text is what may be
+    // truncated; the two controls must never be what gets cut off.
+    <span className="shrink-0 flex items-center gap-2">
+      <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(true) }}
+        className="text-[11px] font-semibold text-slate-500 hover:underline">Edit</button>
+      <button type="button" onClick={() => setConfirming(true)}
+        className="text-[11px] font-semibold text-slate-500 hover:underline">Delete</button>
+    </span>
+  )
+
+  /* ── 🔴 IN THE HISTORY: ONE LINE, AND NO DATE OF ITS OWN ─────────────────────────────────────
+   * The row around this already carries the icon, the word "Note" and the date — this component was
+   * printing its own header as well, so every note showed the date TWICE and dropped its text onto
+   * a second line. In the history it renders exactly one thing: the text.
+   * ⚠️ `min-w-0` ON THE BUTTON IS WHAT MAKES `truncate` WORK inside a flex row; without it the text
+   * sets the row's width and pushes Edit/Delete off the end instead of being cut.
+   */
+  if (collapsible) {
+    return (
+      <li className="flex items-baseline gap-2 min-w-0 w-full">
+        {editing ? editor : (
+          <>
+            <button type="button" onClick={onToggle}
+              title={open ? 'Close' : tidyNoteText(note.body)}
+              className={`flex-1 min-w-0 text-left text-slate-700 hover:text-slate-900 ${
+                open ? 'whitespace-pre-wrap break-words' : 'truncate'}`}>
+              {open ? tidyNoteText(note.body) : noteFirstLine(note.body)}
+            </button>
+            {edited && (
+              <span className="shrink-0 text-[11px] text-slate-400"
+                title={`Edited ${new Date(note.updated_at!).toLocaleString('en-GB')}`}>edited</span>
+            )}
+            {/* 🔴 A NOTE THAT HAS MORE TO SHOW SAYS SO, WITH A CONTROL. A truncated line looks
+                exactly like a short one — the row was clickable and nothing on it said so. The
+                chevron appears only when there IS more (`noteHasMore`) and turns when it opens, so
+                it is never an invitation to a click that does nothing. */}
+            {noteHasMore(note.body) && (
+              <button type="button" onClick={onToggle}
+                aria-expanded={!!open}
+                aria-label={open ? 'Show less of this note' : 'Show the whole note'}
+                title={open ? 'Show less' : 'Show the whole note'}
+                className="shrink-0 flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 hover:text-slate-800">
+                {open ? 'Less' : 'More'}
+                <RowIcon name="chevron" className={open ? '-rotate-90 transition-transform' : 'rotate-90 transition-transform'} />
+              </button>
+            )}
+            {actions}
+          </>
+        )}
+        {dialog}
+      </li>
+    )
+  }
+
+  /* ── THE NOTES CARD: THE DATE IS THE HEADING, because that list has no columns of its own. ──── */
   return (
     <li className="text-[13px] group">
       <div className="flex items-baseline gap-2">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
           {fmtDate(note.created_at) ?? ''}
         </span>
-        {collapsible && <span className="text-[11px] font-semibold text-slate-500">Note</span>}
         {edited && (
           <span className="text-[11px] text-slate-400" title={new Date(note.updated_at!).toLocaleString('en-GB')}>
             edited {fmtDate(note.updated_at ?? null)}
           </span>
         )}
-        {!editing && (
-          <span className="ml-auto flex items-center gap-2">
-            <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(true) }}
-              className="text-[11px] font-semibold text-slate-500 hover:underline">Edit</button>
-            <button type="button" onClick={() => setConfirming(true)}
-              className="text-[11px] font-semibold text-slate-500 hover:underline">Delete</button>
-          </span>
-        )}
+        {actions}
       </div>
-      {editing ? (
-        <div className="flex flex-col gap-1">
-          <GrowingTextarea rows={3} className={`${FIELD_CLS} w-full resize-y`}
-            value={text} onChange={e => setText(e.target.value)} />
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => void save()} disabled={busy || !text.trim()}
-              className="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800 text-white disabled:opacity-40">
-              {busy ? 'Saving…' : 'Save'}
-            </button>
-            <button type="button" onClick={() => { setText(note.body ?? ''); setEditing(false) }}
-              className="text-[11px] font-semibold text-slate-500 hover:underline">Cancel</button>
-          </div>
-        </div>
-      ) : collapsible && !open ? (
-        // ⚠️ ONE LINE, TRUNCATED BY CSS — `noteFirstLine` decides which line, the browser decides
-        // where it ends. Clicking the row opens it in place.
-        <button type="button" onClick={onToggle}
-          className="block w-full text-left truncate text-slate-700 hover:text-slate-900">
-          {noteFirstLine(note.body)}
-        </button>
-      ) : (
-        <p onClick={collapsible ? onToggle : undefined}
-          className={`whitespace-pre-wrap break-words text-slate-700${collapsible ? ' cursor-pointer' : ''}`}>
-          {tidyNoteText(note.body)}
-        </p>
+      {editing ? editor : (
+        <p className="whitespace-pre-wrap break-words text-slate-700">{tidyNoteText(note.body)}</p>
       )}
-      {confirming && (
-        <ConfirmDeleteDialog
-          title="Delete this note?"
-          confirmLabel="Delete note"
-          onCancel={() => setConfirming(false)}
-          onConfirm={remove}>
-          <p className="text-sm text-slate-600 whitespace-pre-wrap break-words">{note.body}</p>
-        </ConfirmDeleteDialog>
-      )}
+      {dialog}
     </li>
   )
 }

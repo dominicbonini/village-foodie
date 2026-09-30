@@ -127,11 +127,16 @@ function runPageSuite(rawPage) {
      * history stopped being a list. THE RULE THIS PROTECTS IS THE NOTES CARD'S, and it is unchanged:
      * in the Notes card every note is shown IN FULL, because that list IS the notes. The truncation
      * lives behind `collapsible`, which only the history passes. */
+    /* ⚠️ RE-ANCHORED AGAIN (30 September 2026): the collapsed row became its own return, because
+     * the shared header was printing the date the history row already showed and pushing the text
+     * onto a second line. The RULE is the one that has not changed since v3: in the NOTES CARD every
+     * note is shown in full. */
     t('…each in full in the Notes card, truncated only where the history collapses one', (() => {
       const shared = stripComments(read('components/admin/outreach-shared.tsx'))
       const row = shared.slice(shared.indexOf('export function NoteRow('))
-      return /whitespace-pre-wrap/.test(row)
-        && /collapsible && !open/.test(row)
+      const card = row.slice(row.indexOf('<li className="text-[13px] group">'))
+      return /whitespace-pre-wrap break-words text-slate-700/.test(card)
+        && !/truncate/.test(card)
         && /const collapsible = !!onToggle/.test(row)
         && !/truncate/.test(notes)
     })())

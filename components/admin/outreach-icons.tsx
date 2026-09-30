@@ -13,7 +13,11 @@
 
 import type { RowIconName, RowLabel } from '@/lib/outreach-timeline'
 
-const PATHS: Record<RowIconName, string> = {
+/** ⚠️ EVERY ICON THIS APP DRAWS IN THE HISTORY, which is the five ROW icons plus the chevron. A row
+ *  can only ever be labelled with a `RowIconName`; `chevron` is not one and cannot become one. */
+export type IconName = RowIconName | 'chevron'
+
+const PATHS: Record<IconName, string> = {
   // An envelope.
   envelope: 'M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
   // A handset.
@@ -24,10 +28,13 @@ const PATHS: Record<RowIconName, string> = {
   pencil: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4 9.5-9.5z',
   // Two arrows, for a stage moving from one word to another.
   arrows: 'M4 7h13m0 0l-3-3m3 3l-3 3M20 17H7m0 0l3-3m-3 3l3 3',
+  // 🔴 A CHEVRON, FOR "there is more of this". It is not a row icon — no row is ever labelled with
+  // it — but it belongs in this file so there is still exactly one place icons are drawn.
+  chevron: 'M9 6l6 6-6 6',
 }
 
 /** One icon, at the one size. ⚠️ `aria-hidden`: the WORD beside it is what a reader needs. */
-export function RowIcon({ name, className = '' }: { name: RowIconName; className?: string }) {
+export function RowIcon({ name, className = '' }: { name: IconName; className?: string }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
