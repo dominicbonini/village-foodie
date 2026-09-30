@@ -223,9 +223,21 @@ const fakeStore = () => {
     // 🔴 (3) THE DATE HE WROTE DOWN HIMSELF.
     const f = W.nextAction({ ...base, messages: [], step: step({ state: 'stopped', stopReason: 'replied' }), channel: 'email', nextActionAt: '2026-09-16' })
     eq(f.kind, 'follow_up', 'a due follow-up comes third')
-    eq(f.label, 'Follow up due 16 Sept · 14 days overdue', '…also with its lateness')
-    eq(W.nextAction({ ...base, messages: [], step: null, channel: null, nextActionAt: '2026-10-20' }).kind,
-      'none', '…and a FUTURE follow-up date is not due')
+    /* ⚠️ RESTATED (30 September 2026, polish): the wording gained the WEEKDAY and lost the word
+     * "due", because this line is now the answer to "what happens next" on a prospect who has
+     * replied and has no rung — where "Follow up due 16 Sept" read as a system message and
+     * "Follow up — Wed 16 Sept" reads as a date. The lateness is unchanged and is still the point. */
+    eq(f.label, 'Follow up — Wed 16 Sept · 14 days overdue', '…also with its lateness')
+    /* 🔴 RESTATED (30 September 2026, polish) — AND THE ANSWER IS DELIBERATELY REVERSED. A stored
+     * date in the future used to fall through to "No next step", so a follow-up chosen for next week
+     * was invisible until the morning it fell due; on a prospect who has REPLIED that meant the page
+     * denied the existence of the date just set on it. It is not work for TODAY and it still never
+     * outranks a waiting reply or a due chase — the two checks above pin that order — but it is the
+     * answer to the question the banner asks. */
+    const future = W.nextAction({ ...base, messages: [], step: null, channel: null, nextActionAt: '2026-10-20' })
+    eq([future.kind, future.label], ['follow_up', 'Follow up — Tue 20 Oct'],
+      '…and a FUTURE follow-up date is shown as what happens next, without being "due"')
+    eq(future.daysOverdue, 0, '…with nothing overdue about it')
 
     // 🔴 (4) NOTHING — AND WHY.
     for (const [reason, word] of [['sequence_complete', 'Sequence finished'], ['replied', 'Replied'], ['do_not_contact', 'Do not contact']]) {

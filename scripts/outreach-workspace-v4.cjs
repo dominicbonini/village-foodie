@@ -158,8 +158,15 @@ function runPanelSuite(rawTL, rawPanel, rawShared) {
    * asserted harder in `outreach-workspace-v4-fixes.cjs`: the fact that it was also logged by hand
    * is ALWAYS said, and the text itself is one click away whenever it adds something the email does
    * not. Nothing that was written down can be lost; it simply is not printed twice. */
-  t('⚠️ the hand log is marked, and its text is reachable when it differs',
-    /Also logged by hand · \{fmtDay\(/.test(P) && /Show what was logged by hand/.test(P))
+  /* 🔴 RESTATED (30 September 2026, polish) — THE MARKER ITSELF IS GONE, AT DOMINIC'S INSTRUCTION.
+   * "also logged by hand" on the row, and "Also logged by hand · 18 Sep" in the panel, announced a
+   * de-duplication nobody had asked about: the pairing is display-only and its entire point is that
+   * one thing that happened is ONE ROW, so naming the mechanism made the mechanism the subject.
+   * WHAT MUST NOT BE LOST IS STILL CHECKED, here and in `outreach-crm-polish.cjs`: the PAIRING is
+   * unchanged, and a note logged alongside an email that says something the email does not is still
+   * reachable — "Note logged with this email ▸", closed, in the reading panel. */
+  t('⚠️ the hand log is not marked, and its text is reachable when it differs',
+    !/Also logged by hand/i.test(P) && /Note logged with this email ▸/.test(P))
   t('⚠️ the header carries direction, from, to, date and subject',
     /Received' : 'Sent'/.test(P) && /From<\/span>/.test(P) && /To<\/span>/.test(P) && /fmtWhen\(message\.message_date/.test(P))
   t('🔴 Reply closes the panel first, then calls the page\'s existing reply',

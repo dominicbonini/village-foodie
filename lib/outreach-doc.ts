@@ -27,13 +27,28 @@ export const P_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-s
 export const SMALL_STYLE = 'font-family: Aptos, Arial, Helvetica, sans-serif; font-size: 13.333333px; color: rgb(0, 0, 0);'
 
 // ── THE SCHEMA ──────────────────────────────────────────────────────────────────────────────────────
-/** The only two marks. `bold` renders `<b>`; `small` renders 10pt. */
-export type DocMark = 'bold' | 'small'
-export const ALLOWED_MARKS: readonly DocMark[] = ['bold', 'small']
+/**
+ * The only three marks. `bold` renders `<b>`; `small` renders 10pt; `link` renders `<a href>`.
+ *
+ * 🔴 `link` IS THE ONE MARK THAT CARRIES A VALUE, AND THE VALUE IS THE DANGEROUS PART. A mark with
+ * an `href` is a hole in an allow-list unless the href itself is one, so `LINK_RE` below is the
+ * whole of the permission: `https://` and nothing else — no `javascript:`, no `data:`, no `http:`,
+ * no protocol-relative `//`. An href that does not match is REFUSED, not stripped, exactly as every
+ * other schema violation is: a sanitiser that quietly drops the bad half and sends the rest is one
+ * nobody ever checks.
+ * ⚠️ IT EXISTS BECAUSE THE DEMO LINK HAD TO BE CLICKABLE. "Insert in email" put nothing in the
+ * email at all; a bare URL as text would have depended on the recipient's mail client to linkify it.
+ */
+export type DocMark = 'bold' | 'small' | 'link'
+export const ALLOWED_MARKS: readonly DocMark[] = ['bold', 'small', 'link']
+/** 🔴 THE ONLY hrefs THAT MAY LEAVE THIS APP. https, a host, and no quotes or angle brackets. */
+export const LINK_RE = /^https:\/\/[a-z0-9.-]+(?::\d+)?(?:\/[^\s"'<>]*)?$/i
 /** The only three node types. `doc` holds paragraphs; a paragraph holds text and hard breaks. */
 export const ALLOWED_NODES = ['doc', 'paragraph', 'text', 'hardBreak'] as const
 
-export interface DocText { type: 'text'; text: string; marks?: { type: DocMark }[] }
+/** ⚠️ ONLY THE `link` MARK CARRIES `href`, and only an `https://` one. */
+export interface DocMarkValue { type: DocMark; href?: string }
+export interface DocText { type: 'text'; text: string; marks?: DocMarkValue[] }
 export interface DocBreak { type: 'hardBreak' }
 export type DocInline = DocText | DocBreak
 /** ⚠️ `content` ABSENT IS AN EMPTY PARAGRAPH, which is a blank line — not a missing value. */
@@ -75,13 +90,24 @@ export function validateDoc(value: unknown): DocValidation {
         return { ok: false, error: `a “${String(n.type)}” is not allowed in an outreach email` }
       }
       if (typeof n.text !== 'string') return { ok: false, error: 'a text node has no text' }
-      const marks: { type: DocMark }[] = []
+      const marks: DocMarkValue[] = []
       if (n.marks !== undefined) {
         if (!Array.isArray(n.marks)) return { ok: false, error: 'a text node has unreadable formatting' }
         for (const m of n.marks) {
           const t = (m as { type?: unknown }).type
           if (typeof t !== 'string' || !(ALLOWED_MARKS as readonly string[]).includes(t)) {
             return { ok: false, error: `“${String(t)}” formatting is not allowed in an outreach email` }
+          }
+          if (t === 'link') {
+            // 🔴 THE href IS CHECKED HERE AND NOWHERE ELSE, AND IT REFUSES. TipTap puts it in
+            // `attrs.href`; a mark that arrives with anything else, or with a URL outside `LINK_RE`,
+            // stops the send with a sentence naming the link.
+            const href = String((m as { attrs?: { href?: unknown } }).attrs?.href ?? (m as { href?: unknown }).href ?? '')
+            if (!LINK_RE.test(href)) {
+              return { ok: false, error: `“${href || 'that link'}” is not an https link, so nothing was sent` }
+            }
+            if (!marks.some(x => x.type === 'link')) marks.push({ type: 'link', href })
+            continue
           }
           if (!marks.some(x => x.type === t)) marks.push({ type: t as DocMark })
         }
@@ -129,6 +155,10 @@ export function docToHtml(doc: EmailDoc): string {
       let html = escapeHtml(k.text)
       if (hasMark(k, 'small') && !allSmall) html = `<span style="${SMALL_STYLE}">${html}</span>`
       if (hasMark(k, 'bold')) html = `<b>${html}</b>`
+      // ⚠️ THE href IS ESCAPED AND WAS ALREADY VALIDATED. `validateDoc` refuses anything that is not
+      // an https URL, so by here the only question left is quoting it into the attribute.
+      const link = k.marks?.find(m => m.type === 'link')?.href
+      if (link) html = `<a href="${escapeHtml(link)}">${html}</a>`
       return html
     }).join('')
     return `<div style="${allSmall ? SMALL_STYLE : P_STYLE}">${inner}</div>`

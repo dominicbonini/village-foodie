@@ -183,15 +183,22 @@ const contact = (over = {}) => ({
 
     const TL = readStripped('components/admin/ProspectTimeline.tsx')
     check(/pairHandLoggedEmails\(\{/.test(TL), 'the timeline component asks for the pairing…')
-    check(/also logged by hand/.test(TL), '…marks the row it produced…')
+/* 🔴 RESTATED (30 September 2026, polish) — THE MARKER ITSELF IS GONE, AT DOMINIC'S INSTRUCTION.
+ * "also logged by hand" on the row, and "Also logged by hand · 18 Sep" in the panel, announced a
+ * de-duplication nobody had asked about: the pairing is display-only and its entire point is that
+ * one thing that happened is ONE ROW, so naming the mechanism made the mechanism the subject.
+ * WHAT MUST NOT BE LOST IS STILL CHECKED, here and in `outreach-crm-polish.cjs`: the PAIRING is
+ * unchanged, and a note logged alongside an email that says something the email does not is still
+ * reachable — "Note logged with this email ▸", closed, in the reading panel. */
+    check(/pairing,/.test(TL) && !/also logged by hand/i.test(TL),
+      '…pairs the row it produced, and no longer labels it…')
     /* ⚠️ RESTATED TWICE. (v4): the row does not open any more — an email opens in the reading panel,
      * and the hand-logged sentence went with the body it belongs under. (v4 fixes): it is no longer
      * printed above the body at all, because for the Between Buns email that "sentence" was the
      * whole email as plain text and the panel showed it twice. THE RULE IS STILL THE SAME ONE:
      * hiding the contact row must never hide what it carried. So the marker is always shown, and
      * the text is one click away whenever it says something the email does not. */
-    check(/Also logged by hand/.test(readStripped('components/admin/EmailReadingPanel.tsx'))
-      && /Show what was logged by hand/.test(readStripped('components/admin/EmailReadingPanel.tsx')),
+    check(/Note logged with this email ▸/.test(readStripped('components/admin/EmailReadingPanel.tsx')),
       '…and the logged text is still reachable from the reading panel when it differs')
   }
 

@@ -41,6 +41,21 @@ export function shortDate(iso: string | null | undefined): string {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/London' }).format(d)
 }
 
+/**
+ * "Tue 7 Oct" — the weekday and the date, for the two places a follow-up DATE is the whole message:
+ * the Next banner and the confirmation after choosing one.
+ * 🔴 THE WEEKDAY IS THE USEFUL HALF. "7 Oct" is a fact to look up; "Tue 7 Oct" is a day you can
+ * decide about. Everything else on these screens stays `shortDate` — a row in a list does not need
+ * a weekday and a column of them is noise.
+ */
+export function dayAndDate(iso: string | null | undefined): string {
+  const d = iso ? new Date(iso) : null
+  if (!d || Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/London',
+  }).format(d)
+}
+
 /** The London calendar date of an instant, as 'YYYY-MM-DD'. ⚠️ The same zone every other date on
  *  these screens is printed in, so "waiting 2 days" agrees with the dates beside it. */
 export function ymdOf(iso: string | null | undefined): string {
@@ -129,15 +144,31 @@ export function nextAction(input: {
     }
   }
 
-  // (3) THE DATE HE WROTE DOWN HIMSELF.
+  // (3) THE DATE HE WROTE DOWN HIMSELF, AND IT IS DUE.
   if (input.nextActionAt && input.nextActionAt <= input.today) {
     const late = daysLate(input.nextActionAt, input.today)
     return {
       kind: 'follow_up',
       due: input.nextActionAt,
-      label: `Follow up due ${shortDate(input.nextActionAt)}${late > 0 ? ` · ${late} day${late === 1 ? '' : 's'} overdue` : ''}`,
+      label: `Follow up — ${dayAndDate(input.nextActionAt)}${late > 0 ? ` · ${late} day${late === 1 ? '' : 's'} overdue` : ''}`,
       cta: 'Follow up →',
       daysOverdue: late,
+    }
+  }
+
+  /* (3b) 🔴 THE DATE HE WROTE DOWN, STILL IN THE FUTURE — AND IT IS NOT "NO NEXT STEP".
+   * A stored follow-up used to be invisible until the day it fell due: before that the banner said
+   * "No next step", which on a prospect who had REPLIED (and therefore has no rung) meant the page
+   * denied the existence of the date he had just set. It is not work for today, so it never outranks
+   * a waiting reply or a due chase — it sits after both — but it is the answer to "what happens
+   * next", which is the question the banner asks. */
+  if (input.nextActionAt) {
+    return {
+      kind: 'follow_up',
+      due: input.nextActionAt,
+      label: `Follow up — ${dayAndDate(input.nextActionAt)}`,
+      cta: 'Follow up →',
+      daysOverdue: 0,
     }
   }
 
@@ -354,6 +385,27 @@ export function followUpDateForChoice(choice: FollowUpChoice, today: string): st
  * store another.
  * ⚠️ NO MATCH ⇒ `pick`, holding the exact date, rather than a chip that silently rounds it.
  */
+/**
+ * The chips' state for a date that is ALREADY STORED on the prospect.
+ *
+ * 🔴 THE STORED VALUE WINS OVER THE SUGGESTION, and its absence was the bug: the chips were seeded
+ * only from `defaultFollowUpChoice` — the interval the NEXT action would set — so a date chosen and
+ * saved came back as whatever the ladder would have suggested, which for a prospect who has replied
+ * is nothing at all. "None", over a date in the database.
+ * ⚠️ IT STILL NAMES THE CHIP WHERE ONE MATCHES, so a date one week out reads as "+1 week" rather
+ * than as an anonymous "Pick".
+ */
+export function storedFollowUpChoice(
+  nextActionAt: string | null | undefined, today: string,
+): { choice: FollowUpChoice; date: string | null } | null {
+  const date = (nextActionAt ?? '').slice(0, 10)
+  if (!date) return null
+  for (const c of ['tomorrow', '3_days', '1_week'] as const) {
+    if (followUpDateForChoice(c, today) === date) return { choice: c, date }
+  }
+  return { choice: 'pick', date }
+}
+
 export function defaultFollowUpChoice(
   kind: string | null,
   today: string,

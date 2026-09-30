@@ -332,3 +332,54 @@ export function meaningfulPreview(
   }
   return String(subject ?? '').trim()
 }
+
+// ── WHAT A ROW SAYS IT IS ───────────────────────────────────────────────────────────────────────────
+/**
+ * The words on a contact row.
+ *
+ * 🔴 A CALL WAS BEING LABELLED "reply". After a prospect has replied, `oneClickKind` logs every
+ * one-click contact as `reply` — correctly, because `reply` is not a rung and a call back must not
+ * advance the chase ladder. But the row printed that stored kind, so "Spoke to Libby" appeared as
+ * "reply · Spoke to Libby". The KIND is a fact about the ladder; the LABEL is a fact about what
+ * happened, and they are not the same sentence.
+ * ⚠️ DISPLAY ONLY. Nothing here is stored, and `nextStep` still reads the kind it always read.
+ * ⚠️ "reply" SURVIVES FOR EMAIL, because for an email it is exactly the right word.
+ */
+export function contactRowLabel(c: {
+  channel?: string | null
+  kind?: string | null
+  direction?: string | null
+}): string {
+  const channel = String(c.channel ?? '').toLowerCase()
+  const kind = String(c.kind ?? '')
+  if (channel === 'phone' || channel === 'call') return 'Call'
+  if (channel === 'whatsapp') return 'WhatsApp'
+  if (channel === 'sms' || channel === 'text') return 'Text'
+  // ⚠️ AN EMAIL, OR A CHANNEL NOBODY RECOGNISES: the rung is the most honest thing left to say, in
+  // the vocabulary the rest of the page uses. A blank kind reads as "contact" rather than as blank.
+  if (!kind) return 'Contact'
+  return kind.replace(/^\d_/, '').replace(/_/g, ' ')
+}
+
+/**
+ * A note's text, for a ONE-LINE row and for the expanded view.
+ *
+ * 🔴 A NOTE WAS TAKING SIX ROWS OF HISTORY. It rendered `whitespace-pre-wrap` inline, so a note with
+ * line breaks became a tall block with the blank lines between paragraphs still in it, and the
+ * history stopped being a list. Runs of empty lines collapse to ONE break; the line breaks Dominic
+ * typed are kept, the gaps are not.
+ * ⚠️ IT NEVER JOINS LINES. "Collapse the blank lines" is not "make it one paragraph" — the breaks
+ * are how a note is read.
+ */
+export function tidyNoteText(text: string | null | undefined): string {
+  return String(text ?? '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+$/gm, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim()
+}
+
+/** The first line of a note, for the collapsed row. ⚠️ Truncation is the CSS's job, not this one's. */
+export function noteFirstLine(text: string | null | undefined): string {
+  return tidyNoteText(text).split('\n')[0] ?? ''
+}

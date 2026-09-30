@@ -282,7 +282,10 @@ const SIGNATURE =
     const v = variant('v10', 'lib/outreach-doc.ts', src => src.replace(
       "            return { ok: false, error: `“${String(t)}” formatting is not allowed in an outreach email` }",
       '            continue'))
-    const out = v.D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link' }] }] }] })
+    /* ⚠️ RE-ANCHORED (30 September 2026, polish): `link` IS a mark now — a validated one, https
+     * only — so it can no longer stand for "a mark nobody allowed". `strike` can, and the rule this
+     * proves is unchanged: an unknown mark REFUSES the send rather than being quietly dropped. */
+    const out = v.D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'strike' }] }] }] })
     variantFails('V10', out.ok === true,
       'a disallowed mark is silently dropped instead of refusing the send')
     fs.rmSync(v.tmp, { recursive: true, force: true })

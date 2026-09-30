@@ -21,6 +21,7 @@ import {
   isTimelineFilter, type TimelineFilter, type RowBadge,
 } from '@/lib/outreach-workspace'
 import { TIMELINE_PREF_KEY } from '@/lib/outreach-queue'
+import { contactRowLabel } from '@/lib/outreach-timeline'
 import { CONTACT_KINDS } from '@/lib/outreach'
 import { STEP_LABELS } from '@/lib/outreach-sequence'
 import EmailReadingPanel from '@/components/admin/EmailReadingPanel'
@@ -215,7 +216,10 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                         Stage {stageWord(e.from_stage)} → <span className="font-bold text-slate-800">{stageWord(e.to_stage)}</span>
                         {e.body && <span className="text-slate-400"> · {e.body}</span>}
                       </span>
-                    : <ul className="list-none"><NoteRow note={e} prospectId={prospect.id} onChanged={actions.onNotesChanged} /></ul>}
+                    : <ul className="list-none"><NoteRow note={e} prospectId={prospect.id}
+                        onChanged={actions.onNotesChanged}
+                        open={expandAll || expandedId === item.id}
+                        onToggle={() => onExpand(expandedId === item.id ? null : item.id)} /></ul>}
                 </span>
               </div>
             )
@@ -236,7 +240,11 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                     {fmtDate(c.contacted_at)}
                   </span>
                   <span className="flex-1 min-w-0 truncate">
-                    <span className="font-semibold text-slate-700">{c.kind ? c.kind.replace(/^\d_/, '').replace(/_/g, ' ') : 'contact'}</span>
+                    {/* 🔴 WHAT HAPPENED, NOT WHICH RUNG WAS STORED. After a prospect replies every
+                        one-click log is stored as `reply` — correctly, because `reply` is not a rung
+                        — and the row printed that, so a phone call read "reply · Spoke to Libby".
+                        `contactRowLabel` says "Call"; the stored kind is untouched. */}
+                    <span className="font-semibold text-slate-700">{contactRowLabel(c)}</span>
                     {c.message && <span className="text-slate-500"> · {c.message.replace(/\s+/g, ' ')}</span>}
                   </span>
                 </button>
@@ -273,7 +281,6 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           // 🔴 THE FIRST LINE THAT SAYS SOMETHING. "Hi Stephen," told the reader only that this is
           // an email, which the row already said.
           const firstLine = meaningfulPreview(m.preview, m.subject)
-          const handLogged = pairing.pairs.get(m.id) ?? null
           return (
             <div key={item.id} className="text-[12px]" style={inbound ? { background: INBOUND_BG } : undefined}>
               {/* 🔴 THE WHOLE ROW IS THE CONTROL. The Open button is gone: a row you can read is a row
@@ -301,13 +308,11 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                   </span>
                   {firstLine && <span className="text-slate-500 max-md:block max-md:truncate"> · {firstLine}</span>}
                 </span>
-                {/* ⚠️ A QUIET MARKER, NOT A BADGE. It explains why there is one row where the
-                    contact log has two entries; it is not something to act on. */}
-                {handLogged && (
-                  <span className="shrink-0 text-[10px] uppercase text-slate-400" title="You also logged this by hand. Both records are kept; they are shown as one row.">
-                    also logged by hand
-                  </span>
-                )}
+                {/* 🔴 THE "also logged by hand" MARKER IS GONE (polish). It explained a de-duplication
+                    nobody had asked about — the pairing is display-only and its whole point is that
+                    one thing that happened is one row. Saying so on the row made the mechanism the
+                    subject. The PAIRING is unchanged; only the label went, and the logged text is
+                    still reachable in the reading panel when it says something the email does not. */}
                 {badges.map(b => (
                   <span key={b} className={`shrink-0 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${BADGE_TONE[b]}`}>
                     {BADGE_LABEL[b]}

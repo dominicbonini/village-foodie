@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { safeHref } from '@/lib/safe-href'
 import ComposeWindow, { type ReplyTarget } from '@/components/admin/ComposeWindow'
+import type { EditorApi } from '@/components/admin/RichEmailEditor'
 import CreateDemoModal from '@/components/admin/CreateDemoModal'
 import ConfirmDeleteDialog from '@/components/admin/ConfirmDeleteDialog'
 import ProspectTimeline from '@/components/admin/ProspectTimeline'
@@ -52,7 +53,7 @@ import { parseAttachments } from '@/lib/outreach-mail-bodies'
 import {
   nextAction, isTypingTarget, SHORTCUTS, type NextAction,
   composerDefault, oneClickKind, ONE_CLICK_LOGS, FOLLOW_UP_CHOICES, FOLLOW_UP_LABEL,
-  followUpDateForChoice, defaultFollowUpChoice, shortDate,
+  followUpDateForChoice, defaultFollowUpChoice, storedFollowUpChoice, shortDate, dayAndDate,
   gridTemplateFor, NOTE_BOX_ROWS, NOTES_SHOWN,
   type FollowUpChoice,
 } from '@/lib/outreach-workspace'
@@ -317,12 +318,19 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   const oneClick = useMemo(
     () => oneClickKind(step, (prospect?.contacts ?? []).some(c => c.direction === 'inbound')),
     [step, prospect])
+  /* 🔴 THE STORED DATE FIRST, THE SUGGESTION SECOND. The chips were seeded ONLY from
+   * `defaultFollowUpChoice` — the interval the next action would set — so a date already saved on
+   * the prospect was never shown, and on a prospect who has replied (no rung, so no suggestion) it
+   * read "None" over a real date in the database. */
   const followUpSeed = useMemo(
-    () => defaultFollowUpChoice(oneClick, today, followUpDateFor),
-    [oneClick, today])
+    () => storedFollowUpChoice(prospect?.next_action_at ?? null, today)
+      ?? defaultFollowUpChoice(oneClick, today, followUpDateFor),
+    [prospect?.next_action_at, oneClick, today])
   const [followUp, setFollowUp] = useState<{ choice: FollowUpChoice; date: string | null } | null>(null)
   const followUpNow = followUp ?? followUpSeed
   const followUpDate = followUpNow.choice === 'none' ? null : followUpNow.date
+  /** The date this control held before the last change, for the Undo beside the confirmation. */
+  const [followUpUndo, setFollowUpUndo] = useState<null | { was: string | null; label: string }>(null)
 
   // ── ONE-CLICK LOGGING, AND ITS UNDO ────────────────────────────────────────────────────────────
   const [oneClickBusy, setOneClickBusy] = useState<string | null>(null)
@@ -335,13 +343,56 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
    * for that column. The DATE itself comes from the single follow-up control, whose default came
    * from `followUpDateFor`; nothing here invents an interval.
    */
-  const applyFollowUp = useCallback(async (kind: string) => {
-    const patchAfter: Record<string, unknown> = { next_action_at: followUpDate }
-    if (prospect && shouldFreezeLeadType(kind, prospect, flags.leadFreeze)) {
+  /**
+   * 🔴 THE ONE WRITER OF `next_action_at`, NOW WITH TWO CALLERS AND STILL ONE STATEMENT.
+   *   • after a log or a send — `applyFollowUp(kind)`, which also freezes the lead type at rung 1;
+   *   • from the chips — `applyFollowUp(null, date)`, which writes the date and nothing else.
+   * ⚠️ `kind === null` MEANS "NOBODY WAS CONTACTED". The freeze belongs to a first contact actually
+   * being logged; a date chosen on its own must never stamp the framing of a sequence.
+   * ⚠️ `dateOverride === undefined` MEANS "USE THE CONTROL'S VALUE" — `null` is a real value there
+   * and clears the date, so the two cannot be the same signal.
+   */
+  const applyFollowUp = useCallback(async (kind: string | null, dateOverride?: string | null) => {
+    const date = dateOverride === undefined ? followUpDate : dateOverride
+    const patchAfter: Record<string, unknown> = { next_action_at: date }
+    if (kind && prospect && shouldFreezeLeadType(kind, prospect, flags.leadFreeze)) {
       patchAfter.lead_type_at_first_contact = leadTypeOf(prospect)
     }
     await post({ action: 'update_prospect', id: prospectId, ...patchAfter })
   }, [post, prospectId, followUpDate, prospect, flags.leadFreeze])
+
+  /**
+   * A chip, or a picked date, SAVED — which is what it always looked as though it did.
+   * 🔴 IT WENT NOWHERE BEFORE. The control only pre-set the date the NEXT log or send would write,
+   * so choosing one and then doing nothing else saved nothing at all, and a reload showed "None".
+   * ⚠️ THE UNDO RESTORES THE VALUE THAT WAS THERE, not the previous chip — the stored date is the
+   * thing being changed, so it is the thing that comes back.
+   */
+  // ⚠️ A PLAIN FUNCTION, NOT `useCallback`. The React Compiler declines to memoise this one, and a
+  // `useCallback` it cannot preserve is a lie about stability — the same call this file has already
+  // had to make twice. Nothing downstream is memoised on it.
+  const chooseFollowUp = async (choice: FollowUpChoice, date: string | null) => {
+    const was = prospect?.next_action_at ? String(prospect.next_action_at).slice(0, 10) : null
+    setFollowUp({ choice, date })
+    // ⚠️ "Pick" WITH NO DATE YET IS NOT A CHOICE — it opens the date field and waits for one.
+    if (choice === 'pick' && !date) return
+    const next = choice === 'none' ? null : date
+    await applyFollowUp(null, next)
+    setFollowUpUndo({
+      was,
+      label: next ? `Follow-up set for ${dayAndDate(next)}` : 'Follow-up cleared',
+    })
+    window.setTimeout(() => setFollowUpUndo(null), 8000)
+    await reloadAll()
+  }
+
+  const undoFollowUp = async () => {
+    const was = followUpUndo?.was ?? null
+    setFollowUpUndo(null)
+    setFollowUp(was ? (storedFollowUpChoice(was, today) ?? { choice: 'pick', date: was }) : { choice: 'none', date: null })
+    await applyFollowUp(null, was)
+    await reloadAll()
+  }
 
   /**
    * One button, one contact.
@@ -399,10 +450,28 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
     el.focus()
   }, [])
 
-  /** The demo link, inserted into the email being written. */
-  const insertDemoLink = useCallback(() => {
+  /**
+   * The demo link, INSERTED into the email being written.
+   *
+   * 🔴 IT NEVER INSERTED ANYTHING. This function switched to the Email tab and printed "Paste the
+   * demo link with ⌘V — it is on your clipboard", which put the whole job on the operator and only
+   * worked at all because the button called Copy first. On Nomadough it therefore "did nothing":
+   * the note is easy to miss, and nothing had been inserted.
+   * ⚠️ IT GOES THROUGH THE EDITOR'S OWN HANDLE, so the link lands at the caret and the document is
+   * the editor's the whole time — there is no second copy of the message for this to write into.
+   * ⚠️ IT IS A REAL LINK. The document schema grew a validated `link` mark for it (https only,
+   * refused otherwise, server-side); a bare URL as text would have depended on the recipient's mail
+   * client to make it clickable.
+   */
+  const composerApi = useRef<EditorApi | null>(null)
+  const insertDemoLink = useCallback((url: string) => {
     setPanel('email')
-    setNote('Paste the demo link into the email with ⌘V — it is on your clipboard.')
+    // ⚠️ AFTER THE TAB HAS RENDERED. Switching panels mounts the editor; asking it to insert in the
+    // same tick would ask a component that does not exist yet.
+    window.setTimeout(() => {
+      const ok = composerApi.current?.insertLink(url) ?? false
+      setNote(ok ? 'Demo link inserted.' : 'The email box is not open yet — open the Email tab and try again.')
+    }, 0)
   }, [])
 
   // ── LAYOUT ──────────────────────────────────────────────────────────────────────────────────────
@@ -754,7 +823,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           <div className="hidden max-lg:flex max-md:hidden flex-col gap-3">
             <ActionCards
               p={p} step={step} oneClick={oneClick} followUp={followUpNow} today={today}
-              onSetFollowUp={setFollowUp} onLogged={afterOneClick}
+              onSetFollowUp={chooseFollowUp} onUndoFollowUp={undoFollowUp} followUpUndo={followUpUndo} onLogged={afterOneClick}
               dncEnabled={flags.dnc} onPatch={patch} nextName={nextName} onNext={() => goTo(nav.next)}
               queueLabel={queue?.label ?? null} busy={oneClickBusy} undo={undoable} onUndo={undoOneClick} />
           </div>
@@ -811,6 +880,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               contactName={[p.contact_first_name, p.contact_last_name].filter(Boolean).join(' ') || null}
               offerable={offerable}
               suggestedId={suggestTemplateId(p)}
+              apiRef={composerApi}
               stepKind={step?.kind ?? null}
               // 🔴 THE PROSPECT HAS WRITTEN BACK. `nextStep` already stops the ladder on the first
               // inbound contact, so this is that same one answer — not a second count of the history.
@@ -875,7 +945,7 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
         <div className="flex flex-col gap-3 min-w-0 max-lg:hidden">
           <ActionCards
             p={p} step={step} oneClick={oneClick} followUp={followUpNow} today={today}
-            onSetFollowUp={setFollowUp} onLogged={afterOneClick}
+            onSetFollowUp={chooseFollowUp} onUndoFollowUp={undoFollowUp} followUpUndo={followUpUndo} onLogged={afterOneClick}
             dncEnabled={flags.dnc} onPatch={patch} nextName={nextName} onNext={() => goTo(nav.next)}
             queueLabel={queue?.label ?? null} busy={oneClickBusy} undo={undoable} onUndo={undoOneClick} />
         </div>
@@ -961,7 +1031,7 @@ function bannerDetail(n: NextAction, p: Prospect, timeline: TimelinePayload | nu
  * ⚠️ THE SAME CARDS RENDER IN THE LEFT COLUMN BELOW 1024px. One component, two positions.
  */
 function ActionCards({
-  p, step, oneClick, followUp, today, onSetFollowUp, onLogged, dncEnabled, onPatch,
+  p, step, oneClick, followUp, today, onSetFollowUp, onUndoFollowUp, followUpUndo: followUpUndoNote, onLogged, dncEnabled, onPatch,
   nextName, onNext, queueLabel, busy, undo, onUndo,
 }: {
   p: Prospect
@@ -969,7 +1039,12 @@ function ActionCards({
   oneClick: string
   followUp: { choice: FollowUpChoice; date: string | null }
   today: string
-  onSetFollowUp: (v: { choice: FollowUpChoice; date: string | null }) => void
+  /** 🔴 SAVES IT, through the page's one follow-up writer. It used to only set local state. */
+  onSetFollowUp: (choice: FollowUpChoice, date: string | null) => Promise<void>
+  /** The receipt after a save, and the way back. ⚠️ NOT `undo`: that name belongs to the one-click
+   *  log's undo, which is a different thing this card also renders. */
+  followUpUndo: { was: string | null; label: string } | null
+  onUndoFollowUp: () => Promise<void>
   onLogged: (id: string) => Promise<void>
   dncEnabled: boolean
   onPatch: (patch: Record<string, unknown>) => Promise<void>
@@ -1021,11 +1096,11 @@ function ActionCards({
             return (
               <button key={c} type="button"
                 onClick={() => {
-                  if (c === 'pick') { setPickOpen(true); return }
+                  if (c === 'pick') { setPickOpen(true); void onSetFollowUp('pick', followUp.date); return }
                   setPickOpen(false)
-                  onSetFollowUp({ choice: c, date })
+                  void onSetFollowUp(c, date)
                 }}
-                title={date ? `Sets the follow-up to ${date}` : c === 'none' ? 'No follow-up date' : 'Choose a date'}
+                title={date ? `Saves the follow-up as ${date}` : c === 'none' ? 'Clears the follow-up date' : 'Choose a date'}
                 className={`text-xs font-semibold px-2.5 py-1.5 min-h-11 sm:min-h-0 rounded-full border ${on
                   ? 'bg-slate-800 border-slate-800 text-white'
                   : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}>
@@ -1036,13 +1111,25 @@ function ActionCards({
         </div>
         {(pickOpen || followUp.choice === 'pick') && (
           <input type="date" className={FIELD_CLS} value={followUp.date ?? ''} min={today}
-            onChange={e => onSetFollowUp({ choice: 'pick', date: e.target.value || null })} />
+            onChange={e => void onSetFollowUp('pick', e.target.value || null)} />
         )}
-        <p className="text-[11px] text-slate-400">
-          {followUp.date
-            ? <>Applies to whatever you do next — Send, a one-click log, or the Call tab.</>
-            : <>Nothing will be scheduled.</>}
-        </p>
+        {/* 🔴 IT SAYS WHAT IT DID, NOT WHAT IT MIGHT DO. The line used to read "Applies to whatever
+            you do next", which was true and was the bug: choosing a date and then doing nothing else
+            saved nothing, and a reload showed None. The date is written the moment it is chosen, and
+            this is the receipt — with an Undo, because an accidental chip should cost one click. */}
+        {followUpUndoNote ? (
+          <p className="text-[11px] text-emerald-800 flex items-center gap-2">
+            {followUpUndoNote.label}
+            <button type="button" onClick={() => void onUndoFollowUp()}
+              className="font-bold underline hover:no-underline">Undo</button>
+          </p>
+        ) : (
+          <p className="text-[11px] text-slate-400">
+            {followUp.date
+              ? <>Saved. A send or a log will set it again from this date.</>
+              : <>Nothing is scheduled.</>}
+          </p>
+        )}
       </div>
 
       {nextName && (
@@ -1699,7 +1786,7 @@ function FilesCard({ timeline, prospectId, onOpen }: {
  * ⚠️ THE EXPIRY IS SHOWN ONLY WHEN IT MATTERS — inside seven days. A date that is three weeks away
  * is a number nobody acts on, and a card of numbers nobody acts on is how a card stops being read.
  */
-function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Promise<void>; onInsert: () => void }) {
+function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Promise<void>; onInsert: (url: string) => void }) {
   const [creating, setCreating] = useState(false)
   const [copied, setCopied] = useState(false)
   const ref = p.demo?.publicRef ?? null
@@ -1717,10 +1804,12 @@ function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Prom
       setExpiresSoon(days <= 7 ? days : null)
     })
   }, [expiresAt])
+  /** 🔴 THE FULL URL, IN ONE PLACE. Copy, Insert and the harness all read this one value. */
+  const fullUrl = path ? `${typeof window === 'undefined' ? 'https://www.hatchgrab.com' : window.location.origin}${path}` : null
   const copy = async () => {
-    if (!path) return
+    if (!fullUrl) return
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+      await navigator.clipboard.writeText(fullUrl)
       setCopied(true); setTimeout(() => setCopied(false), 2000)
     } catch { /* a clipboard a browser refuses is not an error worth a dialog */ }
   }
@@ -1733,7 +1822,10 @@ function DemoCard({ p, onReload, onInsert }: { p: Prospect; onReload: () => Prom
               className="text-[13px] font-mono text-slate-700 hover:underline truncate">{path}</a>
             <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600">
               <button onClick={() => void copy()} className="hover:underline">{copied ? 'Copied' : 'Copy'}</button>
-              <button onClick={() => { void copy(); onInsert() }} className="hover:underline">Insert in email</button>
+              {/* ⚠️ IT NO LONGER COPIES FIRST. Copying was how the old "insert" worked at all — it put
+                  the URL on the clipboard and asked for a paste. The insert is real now, and a silent
+                  clipboard write on an unrelated click loses whatever was copied a moment ago. */}
+              <button onClick={() => fullUrl && onInsert(fullUrl)} className="hover:underline">Insert in email</button>
               {p.demo?.truckId && <button onClick={() => setCreating(true)} className="hover:underline">Rebuild</button>}
             </div>
             {expiresSoon != null && (

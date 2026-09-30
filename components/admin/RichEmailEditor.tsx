@@ -54,6 +54,35 @@ const Small = Mark.create({
   },
 })
 
+/**
+ * The link mark — the only mark that carries a value.
+ *
+ * 🔴 IT IS DEFINED HERE RATHER THAN INSTALLED. `@tiptap/extension-link` brings autolinking, click
+ * handling and a paste rule; what this editor needs is a mark that survives a round trip through
+ * `EmailDoc` and renders `<a href>`. The href is validated by `validateDoc` on the way out (https
+ * only), so this side is deliberately the dumb half.
+ * ⚠️ `inclusive: false` — typing after a link does not extend it, which is what makes "insert the
+ * demo link and carry on typing" behave the way a person expects.
+ */
+const Link = Mark.create({
+  name: 'link',
+  inclusive: false,
+  addAttributes() {
+    return { href: { default: null } }
+  },
+  parseHTML() { return [{ tag: 'a[href]' }] },
+  renderHTML({ HTMLAttributes }) { return ['a', mergeAttributes(HTMLAttributes), 0] },
+})
+
+/** What a caller can ask the editor to do. Kept to the one thing anybody needs to. */
+export interface EditorApi {
+  /**
+   * Put a clickable link at the caret, or at the end of the text when the editor has never been
+   * focused. Returns false only when there is no editor yet.
+   */
+  insertLink: (url: string, text?: string) => boolean
+}
+
 export interface RichEmailEditorProps {
   /** The document to show. Replacing it (a new template) resets the editor. */
   value: EmailDoc
@@ -89,14 +118,22 @@ export interface RichEmailEditorProps {
   toolbarExtra?: React.ReactNode
   /** The attachment chips, directly under the toolbar, inside the same box. */
   underToolbar?: React.ReactNode
+  /**
+   * 🔴 THE IMPERATIVE HANDLE, FOR "Insert in email". The Demo card is three components away from
+   * this editor and the thing it wants is an edit at the caret — which is state this component owns
+   * and nothing else can compute. A ref is the honest shape for that; the alternative was passing a
+   * "pending insert" down and clearing it afterwards, which is a second source of truth for the
+   * document.
+   */
+  apiRef?: React.MutableRefObject<EditorApi | null>
 }
 
 export default function RichEmailEditor({
   value, onChange, signatureLines, optOut, disabled, maxHeight, height, onHeightChange, onExpand, expanded,
-  toolbarExtra, underToolbar,
+  toolbarExtra, underToolbar, apiRef,
 }: RichEmailEditorProps) {
   const extensions = useMemo(() => [
-    Document, Paragraph, Text, HardBreak, Bold, Small,
+    Document, Paragraph, Text, HardBreak, Bold, Small, Link,
   ], [])
   /** 🔴 A SHORT PROMPT, NOT AN INSTRUCTION MANUAL. Rendered as an overlay rather than as content,
    *  so it can never be mistaken for text and can never be sent. */
@@ -155,6 +192,27 @@ export default function RichEmailEditor({
   }, [editor, value])
 
   useEffect(() => { editor?.setEditable(!disabled) }, [editor, disabled])
+
+  /* 🔴 THE HANDLE IS PUBLISHED IN AN EFFECT, NOT DURING RENDER, and it is torn down with the
+   * component so a stale editor can never be written into. ⚠️ `focus()` FIRST: without a selection
+   * ProseMirror has nowhere to put the text, which is the difference between "inserted at the
+   * cursor" and "did nothing at all". */
+  useEffect(() => {
+    if (!apiRef) return
+    apiRef.current = {
+      insertLink: (url: string, text?: string) => {
+        if (!editor) return false
+        const label = text ?? url
+        const chain = editor.chain().focus()
+        // ⚠️ AT THE END WHEN NOTHING IS SELECTED AND THE EDITOR HAS NEVER BEEN FOCUSED. `focus()`
+        // restores the last selection if there was one; `'end'` is only the fallback.
+        if (editor.state.selection.empty && !editor.isFocused) chain.focus('end')
+        chain.insertContent([{ type: 'text', text: label, marks: [{ type: 'link', attrs: { href: url } }] }]).run()
+        return true
+      },
+    }
+    return () => { if (apiRef) apiRef.current = null }
+  }, [editor, apiRef])
 
   if (!editor) return <div className="border border-slate-200 rounded-lg" style={{ minHeight: '8.5rem' }} />
 

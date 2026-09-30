@@ -25,13 +25,6 @@ import { handTextIsRedundant, type TimelineMessage, type TimelineContact } from 
 import { EmailBody } from '@/components/admin/outreach-shared'
 import { readingPanelWidth, stepEmailId, TWO_COL_AT_PX } from '@/lib/outreach-workspace'
 
-/** "18 Sep" — the marker line's date, short because it sits inside a sentence. */
-function fmtDay(iso: string | null | undefined): string {
-  const d = new Date(String(iso ?? ''))
-  if (Number.isNaN(d.getTime())) return 'an unknown date'
-  return new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', day: 'numeric', month: 'short' }).format(d)
-}
-
 /** "11 Sep 2026, 13:07" — the same shape the compose window uses for a threaded date. */
 function fmtWhen(iso: string | null | undefined): string {
   if (!iso) return '—'
@@ -188,22 +181,22 @@ export default function EmailReadingPanel({
             ⚠️ WHEN IT ADDS SOMETHING, IT IS STILL REACHABLE — one click, collapsed, below the line
             rather than above the email. `handTextIsRedundant` decides, and it answers FALSE while
             the body is still loading, so the only failure it can make is one extra link. */}
-        {handLogged && (
+        {/* 🔴 "Also logged by hand · 18 Sep" IS GONE (polish). It announced a de-duplication nobody
+            had asked about: the pairing is display-only and its whole point is that one thing that
+            happened is one row, so naming the mechanism made the mechanism the subject. WHAT
+            SURVIVES IS THE ONLY PART THAT CARRIES INFORMATION — a note logged ALONGSIDE the email
+            that says something the email does not, behind one click, closed. When the note is just
+            the email pasted in (`handTextIsRedundant`), nothing is shown at all. */}
+        {handLogged && !handTextIsRedundant(handLogged.message, emailText) && (
           <div className="text-[11px] text-slate-500">
-            <span>Also logged by hand · {fmtDay(handLogged.contacted_at ?? handLogged.created_at)}</span>
-            {!handTextIsRedundant(handLogged.message, emailText) && (
-              <>
-                {' · '}
-                <button type="button" onClick={() => setHandOpenFor(showHand ? null : message.id)}
-                  className="font-semibold text-slate-600 underline hover:no-underline">
-                  {showHand ? 'Hide what was logged by hand' : 'Show what was logged by hand'}
-                </button>
-                {showHand && (
-                  <p className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-slate-50 border border-slate-200 px-2 py-1 text-slate-600">
-                    {handLogged.message?.trim() || 'no message was recorded'}
-                  </p>
-                )}
-              </>
+            <button type="button" onClick={() => setHandOpenFor(showHand ? null : message.id)}
+              className="font-semibold text-slate-600 underline hover:no-underline">
+              {showHand ? 'Note logged with this email ▾' : 'Note logged with this email ▸'}
+            </button>
+            {showHand && (
+              <p className="mt-1 whitespace-pre-wrap break-words rounded-lg bg-slate-50 border border-slate-200 px-2 py-1 text-slate-600">
+                {handLogged.message?.trim() || 'no message was recorded'}
+              </p>
             )}
           </div>
         )}

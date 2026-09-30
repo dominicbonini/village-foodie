@@ -123,7 +123,7 @@ function runCensus(over = {}) {
   // ⚠️ THE COMMENT THAT EXPLAINED THE `false` IS STRIPPED BEFORE THIS CENSUS, so the assertion is on
   // the declaration and the label, not on the prose between them.
   t('⚠️ and it opens collapsed, labelled for what it is',
-    /const \[quotedOpen, setQuotedOpen\] = useState\(false\)/.test(CW) && /Previous email ▸/.test(CW))
+    /const \[quotedOpen, setQuotedOpen\] = useState\(false\)/.test(CW) && /'Previous email'/.test(CW))
 
   // ── 2 · RECORD AN OUTLOOK SEND ───────────────────────────────────────────────────────────────
   t('🔴 an unrecorded outbound email offers its step', /Record as \{STEP_LABELS\[stepKind/.test(TL))

@@ -122,10 +122,18 @@ function runPageSuite(rawPage) {
     /* ⚠️ RE-ANCHORED (30 September 2026, notes edit/delete): the note's markup is `NoteRow`'s now —
      * one component for the Notes card and the history row, so one set of edit/delete rules. The
      * rule is the same and is checked where it lives. */
-    t('…each in full, with no truncation', (() => {
+    /* ⚠️ RESTATED AGAIN (30 September 2026, polish): a note in the HISTORY is now one row, truncated
+     * to its first line until it is clicked — a multi-line note was rendering as a tall block and the
+     * history stopped being a list. THE RULE THIS PROTECTS IS THE NOTES CARD'S, and it is unchanged:
+     * in the Notes card every note is shown IN FULL, because that list IS the notes. The truncation
+     * lives behind `collapsible`, which only the history passes. */
+    t('…each in full in the Notes card, truncated only where the history collapses one', (() => {
       const shared = stripComments(read('components/admin/outreach-shared.tsx'))
       const row = shared.slice(shared.indexOf('export function NoteRow('))
-      return /whitespace-pre-wrap/.test(row) && !/line-clamp|truncate/.test(row) && !/truncate/.test(notes)
+      return /whitespace-pre-wrap/.test(row)
+        && /collapsible && !open/.test(row)
+        && /const collapsible = !!onToggle/.test(row)
+        && !/truncate/.test(notes)
     })())
     t('…NOTES_SHOWN of them, then "Show all"',
       /notes\.slice\(0, NOTES_SHOWN\)/.test(notes) && /Show all \$\{notes\.length\}/.test(notes))

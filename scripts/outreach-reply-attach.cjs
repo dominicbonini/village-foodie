@@ -474,8 +474,8 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
      * every chase. It is a collapsed "Previous email ▸" block, one click from open, and it is still
      * exactly what will be sent — the same stored body the server quotes. */
     check(/const \[quotedOpen, setQuotedOpen\] = useState\(false\)/.test(UI)
-      && /Previous email ▸/.test(UI),
-      '🔴 the earlier conversation is one click away, and says what it is…')
+      && /'Previous email'/.test(UI) && /Previous email \(not included\)/.test(UI),
+      '🔴 the earlier conversation is one click away, and says whether it will be sent…')
     check(/if \(!isEmail \|\| replyTo\) return/.test(UI) && /action: 'quoted'/.test(UI),
       '…on a chase as well as a reply')
     check(/sandbox=""/.test(UI), '⚠️ and it is still rendered in a sandboxed iframe')

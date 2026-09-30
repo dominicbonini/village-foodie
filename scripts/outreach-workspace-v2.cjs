@@ -262,8 +262,17 @@ const step = (over = {}) => ({
      * ⚠️ A THIRD WOULD FAIL THIS. */
     const writes = (PAGE.match(/next_action_at: /g) || []).length
     eq(writes, 2, '🔴 exactly two assignments of `next_action_at`, and both are accounted for')
-    check(/const applyFollowUp = useCallback\(async \(kind: string\) => \{[\s\S]{0,400}?next_action_at: followUpDate/.test(PAGE),
+    /* ⚠️ RESTATED (30 September 2026, polish): `applyFollowUp` gained a second caller and an
+     * optional date. The chips now SAVE the date the moment one is chosen — they used only to
+     * pre-set what the next log or send would write, so a date chosen and nothing else done saved
+     * nothing and came back as "None". THE RULE IS UNCHANGED: one function writes `next_action_at`,
+     * and it is still this one. The `kind` is nullable because a date chosen on its own contacts
+     * nobody and must not freeze the lead type. */
+    check(/const applyFollowUp = useCallback\(async \(kind: string \| null, dateOverride\?: string \| null\)/.test(PAGE)
+      && /const date = dateOverride === undefined \? followUpDate : dateOverride/.test(PAGE),
       '🔴 …the chosen date is written ONLY by `applyFollowUp`, from the one control')
+    check(/void onSetFollowUp\(c, date\)/.test(PAGE) && /await applyFollowUp\(null, next\)/.test(PAGE),
+      '🔴 …and a chip goes through it rather than writing for itself')
     check(/if \(revertTo !== pr\.next_action_at\) await post\(\{ action: 'update_prospect', id: pr\.id, next_action_at: revertTo \}\)/.test(PAGE),
       '⚠️ …and the other is the delete-contact revert, which undoes a date rather than choosing one')
     for (const caller of ['afterOneClick', 'onLog', 'applyFollowUp={applyFollowUp}']) {

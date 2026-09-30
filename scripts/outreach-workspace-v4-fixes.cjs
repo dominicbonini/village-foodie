@@ -195,16 +195,16 @@ function runCensus(srcOver = {}) {
   // ── 6 · THE PANEL SHOWS THE EMAIL ONCE ───────────────────────────────────────────────────────
   t('🔴 the hand-logged text is never a block above the body',
     !/<span className="font-semibold">Logged by hand:<\/span>/.test(PANEL))
-  t('🔴 the marker is a small line under the header', /Also logged by hand · \{fmtDay\(/.test(PANEL))
+  t('🔴 the marker is gone entirely (polish)', !/Also logged by hand/i.test(PANEL))
   t('🔴 …and the text is shown only when it ADDS something, behind one click',
     /!handTextIsRedundant\(handLogged\.message, emailText\)/.test(PANEL)
-    && /Show what was logged by hand/.test(PANEL))
+    && /Note logged with this email ▸/.test(PANEL))
   t('🔴 …collapsed by default', /const showHand = handOpenFor === message\.id/.test(PANEL)
     && /useState<string \| null>\(null\)/.test(PANEL))
   t('⚠️ the comparison is made against the body this viewer loaded, keyed to this message',
     /onText=\{t => setLoaded\(\{ id: message\.id, text: t \}\)\}/.test(PANEL)
     && /loaded\?\.id === message\.id \? loaded\.text : null/.test(PANEL))
-  t('⚠️ the history ROW keeps its marker', /also logged by hand/.test(TL))
+  t('⚠️ the history ROW no longer carries one either', !/also logged by hand/i.test(TL))
   t('🔴 EMAIL_FRAME_SANDBOX is untouched and the panel still renders no markup of its own',
     !/dangerouslySetInnerHTML/.test(PANEL) && !/sandbox=/.test(PANEL))
 
@@ -263,9 +263,13 @@ function runCensus(srcOver = {}) {
         .replace("{isEmail && (fileError || attachRefusal) && (", "{isEmail && (\n<div className='-mt-8'>Attach file</div>) && (") }],
     ['V6 the edited banner is shown for Blank again',
       { CW: CW_SRC.replace('{edited && !!templateId && (', '{edited && (') }],
+    /* ⚠️ RE-ANCHORED (30 September 2026, polish): the line this patched is gone — the marker was
+     * removed and only the collapsed "Note logged with this email ▸" survives. The variant now puts
+     * the plain-text block back above the body, which is the failure itself rather than a step
+     * towards it. */
     ['V7 🔴 the hand-logged text is a block above the email again',
-      { PANEL: PANEL_SRC.replace('<span>Also logged by hand · {fmtDay(',
-        '<span className="font-semibold">Logged by hand:</span>{fmtDay(') }],
+      { PANEL: PANEL_SRC.replace('{handLogged && !handTextIsRedundant(handLogged.message, emailText) && (',
+        '{handLogged && (<p><span className="font-semibold">Logged by hand:</span>{handLogged.message}</p>) && false && (') }],
   ]
   for (const [label, over] of censusVariants) {
     const r = runCensus(over)

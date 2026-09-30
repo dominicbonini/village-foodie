@@ -27,7 +27,7 @@ import {
   docFromTemplateText, docToText, docPlainText, literalTokenRefusal, optOutWarning,
   EMPTY_DOC, type EmailDoc, type DocLine,
 } from '@/lib/outreach-doc'
-import RichEmailEditor from '@/components/admin/RichEmailEditor'
+import RichEmailEditor, { type EditorApi } from '@/components/admin/RichEmailEditor'
 import {
   renderTemplate, unresolvedIn, malformedTokensIn, isMustResolveToken, applyPlaceholderFills, defaultFillsOf, fillSourceOf,
   type MessageTemplate, type TemplateContext,
@@ -51,6 +51,9 @@ import {
 } from '@/lib/outreach-workspace'
 
 /** The message a reply answers. Everything the window needs to show before the server is asked. */
+/** The quoted-parent block's id — the toggle scrolls to it. */
+export const QUOTE_BLOCK_ID = 'hg-previous-email'
+
 export interface ReplyTarget {
   /** The `outreach_messages` row id. The send route re-reads it and checks it belongs here. */
   messageId: string
@@ -144,7 +147,7 @@ export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
   inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName, stepKind, sequenceNote,
-  inConversation,
+  inConversation, apiRef,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -230,6 +233,9 @@ export default function ComposeWindow({
    * a send a `reply`. ⚠️ The SERVER decides this again from the rows; this is what the button says.
    */
   inConversation?: boolean
+  /** 🔴 PASSED STRAIGHT THROUGH TO THE EDITOR, for "Insert in email". This window holds no document
+   *  of its own to write into — the editor does — so it forwards the handle rather than proxying it. */
+  apiRef?: React.MutableRefObject<EditorApi | null>
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -1337,9 +1343,23 @@ export default function ComposeWindow({
                   <span className="text-[11px] text-slate-400">
                     replies to {thread.date ? fmtWhen(thread.date) : 'the last email'}
                   </span>
-                  <button type="button" onClick={() => setQuotedOpen(o => !o)}
+                  {/* 🔴 IT OPENS THE BLOCK AND SCROLLS TO IT. Clicking used to set a flag and
+                      nothing appeared to happen: the block renders BELOW a fixed-height editor, so on
+                      a laptop it opened off the bottom of the screen. Nothing was broken; nothing was
+                      visible either. ⚠️ AND THE LABEL SAYS WHETHER IT WILL BE SENT, because with the
+                      tickbox off this is reference rather than part of the email. */}
+                  <button type="button"
+                    onClick={() => {
+                      const next = !quotedOpen
+                      setQuotedOpen(next)
+                      if (next) {
+                        window.setTimeout(
+                          () => document.getElementById(QUOTE_BLOCK_ID)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }),
+                          0)
+                      }
+                    }}
                     className="text-[12px] font-bold text-slate-600 underline hover:text-slate-800">
-                    {quotedOpen ? 'Previous email ▾' : 'Previous email ▸'}
+                    {includeQuote ? 'Previous email' : 'Previous email (not included)'}{quotedOpen ? ' ▾' : ' ▸'}
                   </button>
                 </>
               )}
@@ -1427,6 +1447,7 @@ export default function ComposeWindow({
                 maxHeight={inline || expanded ? undefined : '75vh'}
                 expanded={expanded}
                 onExpand={expanded ? undefined : () => setExpanded(true)}
+                apiRef={apiRef}
                 toolbarExtra={isEmail ? (
                   <>
                     <input ref={fileInputRef} type="file" multiple className="hidden"
@@ -1442,7 +1463,10 @@ export default function ComposeWindow({
                         date it was generated. */}
                     <button type="button" onClick={() => void attachPlansPdf()} disabled={!!fileBusy}
                       title="Generates today's plans-and-features PDF from the live feature matrix and attaches it. The same document as Admin's download button."
-                      className="text-xs font-bold px-2 py-1 rounded border border-orange-300 text-orange-800 bg-orange-50 hover:bg-orange-100 disabled:opacity-40">
+                      // 🔴 PLAIN WHITE, LIKE EVERY OTHER TOOLBAR BUTTON. It was tinted orange, which
+                      // on this page means one thing: something is about to leave the building. That
+                      // belongs to Send and the Next banner, and nothing else.
+                      className="text-xs font-bold px-2 py-1 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
                       {fileBusy === 'plans' ? 'Generating…' : 'Plans PDF'}
                     </button>
                   </>
@@ -1506,8 +1530,12 @@ export default function ComposeWindow({
               DOCUMENT and nothing else; the quoted parent is appended by the server, from the stored
               body, at the moment the message is built. It cannot be edited into, deleted by a stray
               ⌘A, or half-quoted. */}
-          {isEmail && thread && quotedOpen && (
-            <div>
+          {/* ⚠️ `thread && quotedOpen`, NOT `isEmail && …`. The toggle that opens this lives in the
+              To line, which renders whatever the channel is; gating the block on `isEmail` as well
+              meant that with a WhatsApp template selected the link was there and the block could
+              never appear. One condition, in one place. */}
+          {thread && quotedOpen && (
+            <div id={QUOTE_BLOCK_ID}>
               <p className="text-[11px] text-slate-500 mb-1">
                 {includeQuote
                   ? 'Included under your signature when this sends.'

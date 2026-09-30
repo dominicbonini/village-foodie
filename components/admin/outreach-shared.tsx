@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { nativeAuthHeader } from '@/lib/native/session'
+import { tidyNoteText, noteFirstLine } from '@/lib/outreach-timeline'
 import type { TimelineMessage, TimelineContact, TimelineEvent } from '@/lib/outreach-timeline'
 
 /** What `/api/admin/outreach/timeline` returns. Typed here so no caller invents a field name —
@@ -862,10 +863,17 @@ export function GrowingTextarea(
  * ⚠️ ONLY A NOTE. A stage change is a record of something that happened and the timeline is a
  * history; the route enforces that in the statement, not here.
  */
-export function NoteRow({ note, prospectId, onChanged }: {
+export function NoteRow({ note, prospectId, onChanged, open, onToggle }: {
   note: TimelineEvent
   prospectId: string
   onChanged: () => Promise<void>
+  /**
+   * 🔴 ONE ROW IN THE HISTORY, LIKE EVERY OTHER ENTRY. A multi-line note rendered as a tall block
+   * with its blank lines still in it, and the history stopped being a list. Absent (the Notes card)
+   * ⇒ the note is always shown in full, because that list IS the notes.
+   */
+  open?: boolean
+  onToggle?: () => void
 }) {
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(note.body ?? '')
@@ -928,6 +936,8 @@ export function NoteRow({ note, prospectId, onChanged }: {
   }
 
   const edited = !!note.updated_at && note.updated_at !== note.created_at
+  /** 🔴 THE HISTORY COLLAPSES A NOTE; THE NOTES CARD NEVER DOES. `onToggle` is what says which. */
+  const collapsible = !!onToggle
 
   return (
     <li className="text-[13px] group">
@@ -935,6 +945,7 @@ export function NoteRow({ note, prospectId, onChanged }: {
         <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
           {fmtDate(note.created_at) ?? ''}
         </span>
+        {collapsible && <span className="text-[11px] font-semibold text-slate-500">Note</span>}
         {edited && (
           <span className="text-[11px] text-slate-400" title={new Date(note.updated_at!).toLocaleString('en-GB')}>
             edited {fmtDate(note.updated_at ?? null)}
@@ -962,8 +973,18 @@ export function NoteRow({ note, prospectId, onChanged }: {
               className="text-[11px] font-semibold text-slate-500 hover:underline">Cancel</button>
           </div>
         </div>
+      ) : collapsible && !open ? (
+        // ⚠️ ONE LINE, TRUNCATED BY CSS — `noteFirstLine` decides which line, the browser decides
+        // where it ends. Clicking the row opens it in place.
+        <button type="button" onClick={onToggle}
+          className="block w-full text-left truncate text-slate-700 hover:text-slate-900">
+          {noteFirstLine(note.body)}
+        </button>
       ) : (
-        <p className="whitespace-pre-wrap break-words text-slate-700">{note.body}</p>
+        <p onClick={collapsible ? onToggle : undefined}
+          className={`whitespace-pre-wrap break-words text-slate-700${collapsible ? ' cursor-pointer' : ''}`}>
+          {tidyNoteText(note.body)}
+        </p>
       )}
       {confirming && (
         <ConfirmDeleteDialog
