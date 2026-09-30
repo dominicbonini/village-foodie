@@ -13,15 +13,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { createSlug } from '@/lib/utils'
-import { CONTACT_KINDS, kindLabel } from '@/lib/outreach'
+import { kindLabel } from '@/lib/outreach'
 import {
-  LEAD_TYPES, nextStep, templateForStep, type LeadType, type Step,
+  nextStep, type LeadType, type Step,
 } from '@/lib/outreach-step'
 // ⚠️ SHARED WITH A CUSTOMER PATH — `components/EventListCard.tsx` (the live call/message button) imports
 // this same module. It is READ here and NOTHING ELSE; lib/whatsapp-hint.ts carries no change from this
 // task. It is imported for one reason: `nextStep` needs `waPhone` to decide a prospect's channel, and
 // OutreachPanel already builds it exactly this way. A second derivation here would be a second answer.
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import SequenceGrid from '@/components/admin/SequenceGrid'
+import {
+  ANY_LEAD, STEP_LABELS, chooseTemplate, indexSlots, type SequenceSlot, type SlotTemplate,
+} from '@/lib/outreach-sequence'
 import { snippetIndex, snippetMapOf, isUnset, type Snippet, type SnippetUse } from '@/lib/outreach-snippets'
 import {
   contextFromProspect, renderWithFills, unresolvedIn, defaultFillsOf,
@@ -196,14 +200,11 @@ function SnippetsLibrary({ uses, snippets, draft, setDraft, onSave, enabled }: {
   )
 }
 
-// 🔴 A SENTINEL ID, AND IT IS LOAD-BEARING. `templateForStep` falls back to the hardcoded
-// `STEP_TEMPLATE` slug map when no tagged template matches, and then returns THAT slug — so probing
-// with the template's own slug would count a FALLBACK hit as a TAG match, and a template whose slug
-// happened to be `chaser_email` would read as matching everything. `@` cannot appear in a slug (the
-// route validates `^[a-z0-9_-]{3,60}$`) and appears in no STEP_TEMPLATE entry, so the fallback branch
-// can only ever return `slug_absent` — making `slug === PROBE_ID` true if and only if the TAG branch
-// matched. 🧪 The mutation test for this is the "probe id equals a real slug" control in the report.
-const PROBE_ID = '@@match-probe@@'
+/* 🔴 `PROBE_ID` WAS HERE AND IS GONE (30 September 2026, the sequence grid). It was a sentinel slug
+ * fed to `templateForStep` so the match count could tell a TAG hit from the hardcoded `STEP_TEMPLATE`
+ * fallback — a distinction that existed only because two mechanisms chose a template. There is one
+ * now: the count asks `chooseTemplate` which box a due prospect resolves to and compares the uuid,
+ * so there is no fallback branch to be confused with and nothing to probe. */
 
 // 🔴 PLAIN WORDING FOR THE FOUR LEAD TYPES — A LABEL MAP, NOT A RENAME.
 // The KEYS are `LeadType`, so this map is checked against the real union at compile time and cannot
@@ -305,6 +306,30 @@ export default function TemplatesPanel() {
   // ⚠️ COST. `steps` is keyed on `prospects` ALONE, so it is computed once per load — not per keystroke.
   // The count is keyed on the three rule fields only, so typing in Label, Subject or Body recomputes
   // NOTHING. Changing a dropdown walks the prospect list once.
+  /** The grid, and the two things the tab derives from it. */
+  const [slots, setSlots] = useState<SequenceSlot[]>([])
+  const [hasSequence, setHasSequence] = useState(false)
+  const [leadLabels, setLeadLabels] = useState<Record<string, string> | null>(null)
+  const [gridBusy, setGridBusy] = useState(false)
+
+  /**
+   * 🔴 "USED IN", DERIVED FROM THE GRID AND NOT FROM THE ROW'S OWN TAGS. A chip here means this
+   * template is in that box and will be sent from it; the tags say only what somebody once wrote on
+   * the row. ⚠️ The DEFAULT column says "All trucks" rather than naming four types, because that is
+   * what the box means.
+   */
+  const usedIn = useCallback((templateUuid: string): string[] => {
+    const out: string[] = []
+    for (const s of slots) {
+      if (s.template_id !== templateUuid) continue
+      const where = s.lead_type === ANY_LEAD
+        ? 'All trucks'
+        : (leadLabels?.[s.lead_type] ?? LEAD_TYPE_PLAIN[s.lead_type as keyof typeof LEAD_TYPE_PLAIN] ?? s.lead_type)
+      out.push(`${s.channel === 'email' ? '' : 'WhatsApp · '}${STEP_LABELS[s.step as keyof typeof STEP_LABELS] ?? s.step} · ${where}`)
+    }
+    return out.sort()
+  }, [slots, leadLabels])
+
   const steps = useMemo(() => {
     const m = new Map<string, Step>()
     for (const p of prospects) {
@@ -332,6 +357,9 @@ export default function TemplatesPanel() {
         setLoading(false); return
       }
       setRows(data.templates || [])
+      setSlots((data.slots || []) as SequenceSlot[])
+      setHasSequence(!!data.hasSequence)
+      setLeadLabels((data.leadTypeLabels ?? null) as Record<string, string> | null)
       // 🔴 THE LIBRARY, FETCHED BESIDE THE TEMPLATES AND NEVER FATAL. Before the migration is applied
       // the route answers 200 with `hasSnippets: false`, so the tab keeps working and every field
       // simply prompts — which is what the `[[…]]` tier has always done.
@@ -348,6 +376,23 @@ export default function TemplatesPanel() {
     } catch (e: any) { setLoadError({ message: e?.message || 'Could not load templates', needsMigration: false }) }
     setLoading(false)
   }, [])
+
+  /**
+   * Every grid write, through one function. 🔴 IT RE-READS RATHER THAN PATCHING STATE: a box is one
+   * row in one table and the answer to "what is in it now" is the server's, not a merge of what this
+   * tab believed a moment ago.
+   */
+  const postGrid = useCallback(async (body: Record<string, unknown>) => {
+    const h = await nativeAuthHeader()
+    const res = await fetch('/api/admin/outreach-templates', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...h },
+      credentials: 'same-origin', body: JSON.stringify(body),
+    })
+    const j = await res.json().catch(() => ({}))
+    if (!res.ok || j?.error) { setToast(String(j?.error ?? 'That did not save.')); setTimeout(() => setToast(null), 2500); return }
+    await load()
+  }, [load])
+
 
   // ⚠️ A READ-ONLY REUSE of the EXISTING outreach route, declared as such: it already returns every field
   // the substitution needs (name, contact_first_name, contact_last_name, website, order_url,
@@ -367,28 +412,31 @@ export default function TemplatesPanel() {
 
   const selected = useMemo(() => rows.find(r => r.id === selId) ?? null, [rows, selId])
 
+  /**
+   * 🔴 THE MATCH COUNT, FROM THE GRID INSTEAD OF FROM THE TAGS. It used to probe `templateForStep`
+   * with the two dropdowns' values — the mechanism that has been replaced — and would now count a
+   * rule nothing applies. What it answers is the same question: how many contactable trucks are due
+   * at a box this template sits in. Zero is not an error and says so.
+   * ⚠️ IT WALKS THE PROSPECT LIST ONCE PER SELECTION, not per keystroke: `steps` is memoised on the
+   * prospects alone and this is keyed on the selected row and the grid.
+   */
   const match = useMemo(() => {
     if (!selected) return null
-    // 🔴 NULL RUNG IS NOT "ANY". `templateForStep` tests `servesKind === step.kind`, so a null rung
-    // never tag-matches anything — the template falls through to the hardcoded map instead. Reporting
-    // "0 prospects" there would be true but misleading, so this reports a DIFFERENT state.
-    if (!draft.serves_kind) return { kind: 'untagged' as const, n: 0 }
+    const boxes = slots.filter(x => x.template_id === selected.id)
+    if (boxes.length === 0) return { kind: 'untagged' as const, n: 0 }
     if (prospects.length === 0) return { kind: 'noprospects' as const, n: 0 }
-    const probe = [{
-      id: PROBE_ID,
-      channel: draft.channel ?? 'email',
-      sortOrder: 0,
-      servesKind: draft.serves_kind ?? null,
-      servesLeadType: draft.serves_lead_type ?? null,
-    }]
+    const index = indexSlots(slots)
+    const tpl: SlotTemplate[] = rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active }))
     let n = 0
     for (const p of prospects) {
       const step = steps.get(p.id)
-      if (!step) continue
-      if (templateForStep(step, probe).slug === PROBE_ID) n++
+      if (!step || step.state !== 'due' || !step.kind || !step.channel) continue
+      const chosen = chooseTemplate({ slots: index, templates: tpl, channel: step.channel, step: step.kind, leadType: step.leadType })
+      if (chosen.uuid && chosen.uuid === selected.id) n++
     }
     return { kind: 'counted' as const, n }
-  }, [selected, prospects, steps, draft.channel, draft.serves_kind, draft.serves_lead_type])
+  }, [selected, prospects, steps, slots, rows])
+
   // ── 🔴 THE UNSAVED-DRAFT GUARD ──────────────────────────────────────────────────────────────────
   // `draft` is reset by the effect on [selected], so clicking another template in the list USED TO
   // destroy every unsaved edit with no warning and no undo. That is the worse of the two silent losses
@@ -655,6 +703,39 @@ export default function TemplatesPanel() {
           </button>
         </div>
 
+        {/* ── 🔴 THE SEQUENCE, ABOVE THE TEMPLATES, BECAUSE IT IS THE THING BEING DECIDED ────────
+            The list below is a library of words; this is which words go to whom and when. It was the
+            other way round — a list of templates, each carrying two dropdowns about when it might be
+            used — and that shape cannot answer "what does an HU-map truck get for chase 2", which is
+            the only question this tab exists for. */}
+        <div className="mb-4">
+          <SequenceGrid
+            templates={rows.map(r => ({ uuid: r.id ?? '', slug: r.slug, label: r.label, channel: r.channel, active: r.active })) as SlotTemplate[]}
+            slots={slots}
+            leadLabels={leadLabels}
+            prospects={prospects}
+            steps={steps}
+            hasSequence={hasSequence}
+            busy={gridBusy}
+            onSetSlot={async (channel, step, leadType, templateId) => {
+              setGridBusy(true)
+              try { await postGrid({ action: 'set_slot', channel, step, lead_type: leadType, template_id: templateId }) }
+              finally { setGridBusy(false) }
+            }}
+            onClearSlot={async (channel, step, leadType) => {
+              setGridBusy(true)
+              try { await postGrid({ action: 'clear_slot', channel, step, lead_type: leadType }) }
+              finally { setGridBusy(false) }
+            }}
+            onRename={async (leadType, label) => {
+              setGridBusy(true)
+              try { await postGrid({ action: 'rename_lead_type', lead_type: leadType, label }) }
+              finally { setGridBusy(false) }
+            }}
+            onOpenProspect={id => { window.location.href = `/admin/outreach/p/${id}` }}
+          />
+        </div>
+
         {/* 🔴 "NOT SET UP" AND "SET UP BUT EMPTY" MUST NOT LOOK THE SAME. */}
         {loadError && (
           <div className={`mb-4 rounded-xl border p-4 ${loadError.needsMigration ? 'border-amber-300 bg-amber-50' : 'border-red-300 bg-red-50'}`}>
@@ -853,36 +934,34 @@ export default function TemplatesPanel() {
                       </select>
                     </label>
 
-                    {/* 🔴 LABELS ONLY. `CONTACT_KINDS` supplies the VALUES and they are written to the
-                        database unchanged; `kindLabel` supplies the words, and it already spells them
-                        the way Dominic does — "First contact", "Chase 1", "Chase 2", "Final chase".
-                        Nothing here renames a column, a constant or a stored string. */}
-                    <label className="block w-52 flex-shrink-0">
-                      <span className={LABEL}>At which stage</span>
-                      <select className={FIELD} disabled={!hasTemplateTags}
-                        value={draft.serves_kind ?? ''}
-                        onChange={e => setDraft(d => ({ ...d, serves_kind: e.target.value || null }))}>
-                        {/* 🔴 NULL IS NOT "ANY STAGE". `templateForStep` tests `servesKind === step.kind`,
-                            so an untagged template is never picked automatically at all — it falls
-                            through to the built-in map. The option has to say that, or it reads as a
-                            wildcard and the operator waits for a match that cannot come. */}
-                        <option value="">Never picked automatically</option>
-                        {CONTACT_KINDS.map(k => <option key={k} value={k}>{kindLabel(k)}</option>)}
-                      </select>
-                    </label>
-
-                    <label className="block w-64 flex-shrink-0">
-                      <span className={LABEL}>For which trucks</span>
-                      <select className={FIELD} disabled={!hasTemplateTags}
-                        value={draft.serves_lead_type ?? ''}
-                        onChange={e => setDraft(d => ({ ...d, serves_lead_type: e.target.value || null }))}>
-                        {/* Here null REALLY IS "any" — `servesLeadType == null || === step.leadType`. */}
-                        <option value="">Any truck</option>
-                        {LEAD_TYPES.map(lt => (
-                          <option key={lt} value={lt}>{LEAD_TYPE_PLAIN[lt]}</option>
-                        ))}
-                      </select>
-                    </label>
+                    {/* ── 🔴 "AT WHICH STAGE" AND "FOR WHICH TRUCKS" ARE READ-ONLY NOW ──────────
+                        They were two dropdowns that WROTE `serves_kind` and `serves_lead_type`, and
+                        those columns chose the template. The sequence grid at the top of this tab
+                        does that now, one box at a time, and two mechanisms for one decision is
+                        exactly what it replaced.
+                        ⚠️ THE COLUMNS ARE KEPT AND SHOWN, NOT DELETED. They are Dominic's own tags on
+                        rows he tagged by hand and they are history worth reading; nothing writes them
+                        from this screen any more, and nothing READS them to choose a template.
+                        🔴 "USED IN" IS DERIVED FROM THE GRID, not from the tags — so what it says is
+                        where this template will actually be sent from. */}
+                    <div className="block flex-1 min-w-[16rem]">
+                      <span className={LABEL}>Used in</span>
+                      <div className="flex flex-wrap items-center gap-1 pt-1">
+                        {usedIn(draft.id ?? '').length === 0
+                          ? <span className="text-[12px] text-slate-500">Not in the sequence — pick it by hand</span>
+                          : usedIn(draft.id ?? '').map((u: string) => (
+                            <span key={u} className="text-[11px] font-semibold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700">{u}</span>
+                          ))}
+                      </div>
+                      {(draft.serves_kind || draft.serves_lead_type) && (
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          Older tags on this row, no longer used to choose:{' '}
+                          {[draft.serves_kind ? kindLabel(draft.serves_kind) : null,
+                            draft.serves_lead_type ? LEAD_TYPE_PLAIN[draft.serves_lead_type as keyof typeof LEAD_TYPE_PLAIN] : null]
+                            .filter(Boolean).join(' · ')}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   {/* ── 🔴 THE MATCH COUNT — the rule, made concrete ─────────────────────────────────
@@ -894,7 +973,7 @@ export default function TemplatesPanel() {
                   <div className="ml-7 mt-2">
                     {match?.kind === 'untagged' && (
                       <p className="text-[12px] text-slate-500">
-                        Not picked automatically. You can still choose it by hand in the compose window.
+                        Not in the sequence — pick it by hand in the composer.
                       </p>
                     )}
                     {match?.kind === 'noprospects' && (
@@ -906,16 +985,14 @@ export default function TemplatesPanel() {
                       <p className={`text-[12px] ${match.n === 0 ? 'text-amber-800' : 'text-slate-700'}`}>
                         {match.n === 0 ? (
                           <>
-                            <b>No trucks match this right now.</b> Nothing is broken — it means nobody is
-                            currently due at this stage with this description. It will pick up trucks as
-                            they become due.
+                            <b>No trucks are due at its boxes right now.</b> Nothing is broken — it means
+                            nobody has reached that step yet. It will pick up trucks as they become due.
                           </>
                         ) : (
                           <>
-                            Matches <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
+                            The sequence sends this to <b>{match.n}</b> truck{match.n === 1 ? '' : 's'} due now.
                             {' '}<span className="text-slate-500">
-                              Another template tagged the same way and sitting higher in the list would
-                              be chosen instead.
+                              A truck with its own column takes that template instead of the default.
                             </span>
                           </>
                         )}

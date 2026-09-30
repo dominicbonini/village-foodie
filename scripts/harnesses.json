@@ -45,6 +45,7 @@
     "outreach-mail-poll.cjs",
     "outreach-mail-send.cjs",
     "outreach-reply-attach.cjs",
+    "outreach-sequence.cjs",
     "outreach-stage-advance.cjs",
     "outreach-upload-refresh.cjs",
     "outreach-workspace-v2.cjs",

@@ -344,6 +344,26 @@ export default function OutreachPanel() {
   const [denied, setDenied] = useState(false)
   const [prospects, setProspects] = useState<Prospect[]>([])
   /**
+   * 🔴 DOMINIC'S OWN NAMES FOR THE FOUR TRUCK TYPES, so a rename on the Templates tab shows HERE too.
+   * The brief says a renamed label is used everywhere a type is shown, and the list is one of those
+   * places — one tooltip, but a tooltip that would otherwise say "On Village Foodie" after he had
+   * renamed it to something else.
+   * ⚠️ ITS OWN SMALL FETCH, AND A FAILURE IS SILENT: the code's own names are the fallback, and a
+   * label that could not load must never stop the list rendering.
+   */
+  const [leadLabels, setLeadLabels] = useState<Record<string, string> | null>(null)
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      const h = await nativeAuthHeader()
+      const r = await fetch('/api/admin/outreach-templates', { headers: h, credentials: 'same-origin' }).catch(() => null)
+      if (!live || !r || !r.ok) return
+      const d = await r.json().catch(() => ({}))
+      setLeadLabels((d.leadTypeLabels ?? null) as Record<string, string> | null)
+    })()
+    return () => { live = false }
+  }, [])
+  /**
    * 🔴 THE REFRESH NONCE. Incremented by `load()` on success and passed to both thumbnails, whose shared
    * `useThumbLatch` clears its `broken` flag when it changes. Its VALUE means nothing; only that it
    * changes. It exists because `load()` returns an IDENTICAL `logo_url` string for an unchanged row, so
@@ -1142,7 +1162,7 @@ export default function OutreachPanel() {
             </thead>
             <tbody>
               {visible.map(p => (
-                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openFromList} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} refreshNonce={refreshNonce} />
+                <Row key={p.id} p={p} step={steps.get(p.id)} onOpen={openFromList} onOpenSchedule={openSchedule} onPatch={patchProspect} onUpload={uploadMedia} isCountStale={staleCountIds.has(p.id)} refreshNonce={refreshNonce} leadLabels={leadLabels} />
               ))}
               {visible.length === 0 && (
                 <tr><td colSpan={12} className="px-3 py-8 text-center text-slate-400">
@@ -1643,7 +1663,7 @@ function MediaCell({ p, kind, onUpload, refreshNonce }: {
 // 🔴 React.memo (item 5): with stable onOpen/onPatch, a row re-renders only when its OWN `p` changes, so a
 // single-cell edit does not re-render all 231 rows. Truncation (`truncate`) plus the fixed <colgroup>
 // keeps every cell within its column width, so content never widens a column on sort (item 4).
-const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUpload, isCountStale, refreshNonce }: {
+const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUpload, isCountStale, refreshNonce, leadLabels }: {
   p: Prospect
   /** The derived next step for this row. Passed IN rather than computed here so every consumer of it —
    *  the queue filter, this cell and the composer — reads the identical object. */
@@ -1656,6 +1676,9 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
   /** 🔴 PASSED THROUGH TO BOTH MEDIA CELLS. `Row` is `memo`-wrapped, so this must be a prop rather than
    *  read from a context — a context read would not re-render a memoised row when the nonce changed. */
   refreshNonce: number
+  /** ⚠️ Dominic's own names for the four truck types; null ⇒ the code's own. A prop, not a context,
+   *  for the same reason `refreshNonce` is one: this row is memoised. */
+  leadLabels: Record<string, string> | null
 }) {
   const overdue = isOverdue(p.next_action_at)
   // 🔴 `contactChannel`, `lead` AND `contactTitle` WENT WITH THE CONTACT CELL (16 September 2026).
@@ -1816,7 +1839,7 @@ const Row = memo(function Row({ p, step, onOpen, onOpenSchedule, onPatch, onUplo
           unreadable, never as "first contact", or the queue would tell the operator to introduce himself
           to someone he has already chased. The amber ⚠ is the same marker the history table uses for the
           same reason. */}
-      <td className="px-3 py-2 truncate text-center" title={step ? `${step.label}${step.dueOn ? ` · due ${fmtDate(step.dueOn)}` : ''} · ${LEAD_TYPE_LABELS[step.leadType]}` : undefined}>
+      <td className="px-3 py-2 truncate text-center" title={step ? `${step.label}${step.dueOn ? ` · due ${fmtDate(step.dueOn)}` : ''} · ${leadLabels?.[step.leadType] ?? LEAD_TYPE_LABELS[step.leadType]}` : undefined}>
         {!step ? <span className="text-slate-300">—</span>
           : step.state === 'unknown'
             ? <span className="text-amber-700 font-semibold">⚠ Can&rsquo;t tell</span>

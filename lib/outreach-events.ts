@@ -68,3 +68,28 @@ export async function addNote(
   if (error) return { ok: false, id: null, error: error.message }
   return { ok: true, id: (data as { id?: string } | null)?.id ?? null, error: null }
 }
+
+/**
+ * A send that went out with a guard waved through.
+ *
+ * 🔴 IT IS A `note`, NOT A NEW EVENT KIND, AND THAT IS A DELIBERATE CHOICE NOT TO MIGRATE. The
+ * table's `kind` carries `check (kind in ('stage_change','note'))`; a third value would be a
+ * migration for a row whose whole job is to be READ BY A HUMAN in the history. It is written with a
+ * fixed prefix so it is greppable and so the timeline's filter treats it as what it is — something
+ * Dominic did on purpose, recorded in words.
+ * ⚠️ IT NEVER FAILS THE SEND. Like every other writer here, a missing history line is worth strictly
+ * less than the thing it follows.
+ */
+export const OVERRIDE_PREFIX = 'Sent anyway:'
+
+export async function recordSendOverride(
+  supabase: SupabaseClient,
+  prospectId: string,
+  guards: readonly { id: string; message: string }[],
+): Promise<{ ok: boolean; error: string | null }> {
+  if (guards.length === 0) return { ok: true, error: null }
+  const body = `${OVERRIDE_PREFIX} ${guards.map(g => `[${g.id}] ${g.message}`).join(' ')}`
+  const { error } = await supabase.from('outreach_events')
+    .insert({ prospect_id: prospectId, kind: 'note', body })
+  return { ok: !error, error: error ? error.message : null }
+}

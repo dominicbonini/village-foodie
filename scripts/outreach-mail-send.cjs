@@ -740,10 +740,17 @@ const SIGNATURE =
     // ⚠️ THE ROUTE DOES NAME `outreach_contacts` ONCE — a `count` for the threading decision. What it
     // must never do is WRITE one, so the assertion is about the write, not the name. (A first draft
     // banned the name outright and failed on that count, which is a read.)
+    /* ⚠️ RESTATED (30 September 2026, the sequence guards): the route now names `outreach_contacts`
+     * TWICE, and both are reads. The second is the guard block's — it reads this prospect's contact
+     * rows to re-derive the step with `nextStep`, because "has chase 1 already gone" cannot be
+     * answered from the request. The RULE is unchanged and is what the next two checks assert: every
+     * reference is a SELECT, and nothing here writes a contact row except through
+     * `logOutreachContact`. The old count of one is restated rather than re-pointed because a count
+     * that only ever goes up is a check that will fail on the next honest read. */
     const contactRefs = SEND_ROUTE.match(/from\('outreach_contacts'\)[\s\S]{0,80}/g) ?? []
-    eq(contactRefs.length, 1, 'the route touches outreach_contacts exactly once')
-    check(/\.select\('id', \{ count: 'exact', head: true \}\)/.test(contactRefs[0]),
-      '…and it is a COUNT for the threading decision, not a write')
+    eq(contactRefs.length, 2, 'the route touches outreach_contacts exactly twice, and both are reads')
+    check(contactRefs.every(r => /\.select\(/.test(r)),
+      '…a COUNT for the threading decision and a read for the step guards, not a write')
     check(!contactRefs.some(r => /\.insert\(|\.upsert\(|\.update\(|\.delete\(/.test(r)),
       '🔴 the route never inserts, updates or deletes a contact row itself')
     check(!/from\('outreach_prospects'\)[\s\S]{0,120}\.update\(/.test(SEND_ROUTE),

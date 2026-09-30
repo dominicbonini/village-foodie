@@ -45,6 +45,7 @@ import {
   type OutboundAttachment,
 } from '@/lib/outreach-attachments'
 import { replySubject } from '@/lib/outreach-mail-message'
+import { sendButtonLabel } from '@/lib/outreach-sequence'
 import {
   COMPOSE_BOX_HEIGHT_KEY, COMPOSE_DEFAULT_PX, clampComposeHeight, validComposeHeight,
 } from '@/lib/outreach-workspace'
@@ -142,7 +143,7 @@ interface Thread {
 export default function ComposeWindow({
   truckName, prospectId, toEmail, offerable, suggestedId, initialTemplateId, doNotContact, ctx,
   whatsappConfirmed, templatesLoaded, logFormKind, snippets, onClose, onLog, onSent, replyTo,
-  inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName,
+  inline, onDirtyChange, followUpDate, sendLabelSuffix, hideCopyAndLog, contactName, stepKind, sequenceNote,
 }: {
   truckName: string
   /** 🔴 THE PROSPECT THE SERVER SENDS TO. The browser never names a recipient: it sends this id and the
@@ -213,6 +214,15 @@ export default function ComposeWindow({
   hideCopyAndLog?: boolean
   /** "To Stephen" rather than "To stephen@…" on the header line. Display only. */
   contactName?: string | null
+  /**
+   * 🔴 THE STEP THIS SEND IS FOR, FROM THE PAGE'S ONE `nextStep`. It decides the logged rung and the
+   * Send button's words. It used to be the selected TEMPLATE's `serves_kind` tag, so opening a
+   * template tagged "chase 1" for a first contact logged a chase-1 rung and skipped a step.
+   * ⚠️ The SERVER re-derives it and its answer wins; this is what the button says it will do.
+   */
+  stepKind?: string | null
+  /** One line under the chips: which box the pre-selection came from, or why there was none. */
+  sequenceNote?: string | null
 }) {
   // ── 🔴 PRE-SELECTION, AND WHY IT DOES NOT BREAK THE RULE IT LOOKS LIKE IT BREAKS ─────────────────
   // This line used to read `useState('')  // '' = none chosen; NEVER auto-selected`, and that rule was
@@ -361,6 +371,8 @@ export default function ComposeWindow({
    */
   const [editedDoc, setEditedDoc] = useState<EmailDoc | null>(null)
   const [confirmSend, setConfirmSend] = useState<null | 'real' | 'test'>(null)
+  /** The server's guards, as returned, and which send they answered. Null ⇒ none are outstanding. */
+  const [guards, setGuards] = useState<null | { list: { id: string; kind: string; message: string }[]; test: boolean }>(null)
   const [sending, setSending] = useState(false)
   const [sentNote, setSentNote] = useState<string | null>(null)
   /**
@@ -678,7 +690,11 @@ export default function ComposeWindow({
    * warning is for ladder rungs — a reply to a person who just wrote to you does not carry an
    * opt-out sentence.
    */
-  const kindForSend = replyTo ? 'reply' : (selected?.servesKind ?? logFormKind)
+  // 🔴 THE STEP, NOT THE TEMPLATE'S TAG (3h). `selected?.servesKind ?? logFormKind` meant the WORDS
+  // chosen decided which rung was recorded: picking the chase-1 template for a first contact logged
+  // a chase-1 rung, and the ladder skipped a step for ever after. The step comes from the page's one
+  // `nextStep`, and the server re-derives it and overrules this if they differ.
+  const kindForSend = replyTo ? 'reply' : (stepKind ?? logFormKind)
 
   /** Who a reply goes back to: the message's own From, which may be a different mailbox at the same
    *  business from the one stored on the truck. ⚠️ Display only — the route re-derives and re-checks it. */
@@ -889,7 +905,7 @@ export default function ComposeWindow({
    * render, so two presses in one tick both read `false` and both proceed — the defect that logged two
    * contacts 0.755s apart. Here the same defect would send two emails.
    */
-  const sendNow = useCallback(async (test: boolean) => {
+  const sendNow = useCallback(async (test: boolean, override: string[] = []) => {
     if (sendInFlight.current) return
     if (refusal) { setSendError(refusal); return }
     sendInFlight.current = true
@@ -920,7 +936,19 @@ export default function ComposeWindow({
         // 🔴 THE MESSAGE BEING ANSWERED, and the address it came from. The route checks both.
         ...(replyTo ? { reply_to_message_id: replyTo.messageId, to: replyTo.fromAddress ?? '' } : {}),
         is_test: test, idempotency_key: idemRef.current.value,
+        // ⚠️ THE OVERRIDES TRAVEL WITH THE SEND, and they are the ids of guards the operator has
+        // just been shown and has answered. An empty array is the ordinary case.
+        ...(override.length ? { override } : {}),
       })
+      // ── 🔴 THE SERVER'S GUARDS. A refusal that can be answered, not a dead end ─────────────────
+      // The route returns `needsConfirm` with the sentences and the ids; nothing has been sent and
+      // nothing written. Pressing "Send anyway" re-submits the SAME message with `override: [ids]`,
+      // which the server records as a note in the history before it sends.
+      if (json.needsConfirm === true) {
+        const gs = (Array.isArray(json.guards) ? json.guards : []) as { id: string; kind: string; message: string }[]
+        setGuards({ list: gs, test })
+        return
+      }
       if (json.duplicate === true) {
         setSendError(`This exact message was already submitted — it is recorded as “${String(json.status ?? 'unknown')}”. Use the message list on the prospect to retry it.`)
         return
@@ -1236,6 +1264,14 @@ export default function ComposeWindow({
                 </p>
               )}
             </div>
+          )}
+
+          {/* ── 🔴 WHICH BOX THE PRE-SELECTION CAME FROM, OR WHY THERE WAS NONE ──────────────────
+              One line, under the chips, because "why is this template open" and "why is nothing open"
+              are the same question and the answer is one sentence either way. Every other template
+              stays one click away on the chips above — this is an explanation, not a restriction. */}
+          {sequenceNote && (
+            <p className="text-[11px] text-slate-500">{sequenceNote}</p>
           )}
 
           {/* ── ONE LINE THAT SAYS WHERE THIS IS GOING ─────────────────────────────────────────
@@ -1582,6 +1618,34 @@ export default function ComposeWindow({
               🔴 THE ADDRESS IS IN THE CONFIRM SENTENCE. "Are you sure?" prevents nothing; the mistake
               this catches is sending the right email to the wrong prospect, and only the address on
               screen at the moment of pressing can catch that. */}
+          {/* ── 🔴 THE SERVER'S GUARDS ───────────────────────────────────────────────────────────
+              Nothing has been sent and nothing has been written: the route answered with the reasons
+              and stopped. "Send anyway" re-submits the identical message with those ids overridden,
+              and the server writes a line in this prospect's history saying so before it sends.
+              ⚠️ A REFUSAL AND A QUESTION LOOK DIFFERENT. `refuse` is the step having already gone —
+              red, and the button says "Send it twice anyway". `confirm` is early, shared or past the
+              final chase — amber, and the button says "Send anyway". */}
+          {guards && (
+            <div className={`rounded-lg border px-3 py-2 ${guards.list.some(g => g.kind === 'refuse')
+              ? 'border-red-300 bg-red-50' : 'border-amber-300 bg-amber-50'}`}>
+              {guards.list.map(g => (
+                <p key={g.id + g.message} className="text-[13px] text-slate-900">{g.message}</p>
+              ))}
+              <div className="mt-2 flex justify-end gap-2">
+                <button onClick={() => setGuards(null)}
+                  className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-white">
+                  Don&rsquo;t send
+                </button>
+                <button
+                  onClick={() => { const g = guards; setGuards(null); void sendNow(g.test, g.list.map(x => x.id)) }}
+                  disabled={sending}
+                  className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50">
+                  {guards.list.some(g => g.kind === 'refuse') ? 'Send it twice anyway' : 'Send anyway'}
+                </button>
+              </div>
+            </div>
+          )}
+
           {confirmSend && (
             <div className="rounded-lg border border-orange-300 bg-orange-50 px-3 py-2">
               <p className="text-[13px] text-slate-800">
@@ -1650,7 +1714,7 @@ export default function ComposeWindow({
                     title={sendBlock
                       ?? `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    {sending ? 'Sending…' : `Send${sendLabelSuffix ?? ''}`}
+                    {sending ? 'Sending…' : `${sendButtonLabel({ isReply: !!replyTo, step: stepKind ?? null })}${sendLabelSuffix ?? ''}`}
                   </button>
                 </>
               )}

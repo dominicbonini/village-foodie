@@ -32,7 +32,7 @@ type LogoScanRow = {
 import { resolveTruckLogo } from '@/lib/truck-logo'   // shared derivation — same as the live button
 import { isLeadType } from '@/lib/outreach-step'   // the ONLY validator for lead_type_at_first_contact
 import { logOutreachContact } from '@/lib/outreach-contact-log'   // the ONE writer of an outreach rung
-import { recordStageChange, STAGE_CAUSE } from '@/lib/outreach-events'
+import { recordStageChange, addNote, STAGE_CAUSE } from '@/lib/outreach-events'
 import { scheduleNorm, scheduleKeys } from '@/lib/schedule-match'   // the SAME matcher the Schedule popup uses
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
@@ -703,6 +703,12 @@ export async function POST(req: NextRequest) {
           body: STAGE_CAUSE.byHand,
         })
         if (!ev.ok) return NextResponse.json({ ok: true, warning: 'Saved, but the stage change was not recorded in the timeline.' })
+      }
+      // 🔴 A FROZEN TRUCK TYPE MOVED BY HAND IS RECORDED, because it changes which template every
+      // remaining step of the sequence gets. `__note` is the client saying what it just did in
+      // words; it is never a column, and it is written through the one note writer.
+      if (typeof body.__note === 'string' && body.__note.trim()) {
+        await addNote(supabase, id, body.__note.trim().slice(0, 300))
       }
       return NextResponse.json({ ok: true })
     }

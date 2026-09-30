@@ -264,8 +264,16 @@ const fakeStore = () => {
       '🔴 the page calls `nextStep` EXACTLY ONCE — the header, the composer and the log form read that one answer')
     check(/channelFor\(\{ \.\.\.prospect, waPhone \}\)/.test(PAGE),
       '⚠️ and contactability is `channelFor`, never `step.channel` (§57.2)')
-    check(/templateForStep\(step, offerable\)\.slug/.test(PAGE),
-      'the composer still pre-selects through `templateForStep` — one pre-selection rule')
+    /* 🔴 RESTATED (30 September 2026, the sequence grid), NOT SILENTLY RE-POINTED. It pinned
+     * `templateForStep(step, offerable).slug` — the rule that read the template rows' own
+     * `serves_kind` / `serves_lead_type` tags and fell back to the hardcoded `STEP_TEMPLATE` slug
+     * map. THE RULE IT PROTECTED IS UNCHANGED AND IS STILL ONE RULE: a rung plus a truck type turns
+     * into exactly one template, in one function. The function is `chooseForStep`, and what it reads
+     * is the sequence grid — one row per box, with a unique constraint — instead of three
+     * mechanisms that could disagree. `templateForStep` itself is now called by nothing. */
+    check(/chooseForStep\(\{ slots, templates: slotTemplates, step \}\)/.test(PAGE)
+      && !/templateForStep\(/.test(PAGE),
+      'the composer still pre-selects through ONE rule — now `chooseForStep`, over the sequence grid')
     check(/const lead = step\?\.leadType \?\? leadTypeOf\(p\)/.test(PAGE),
       "🔴 …and the card shows the STEP's lead type, so it cannot disagree with the email that gets sent")
   }

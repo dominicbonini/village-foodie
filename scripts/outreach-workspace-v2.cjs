@@ -176,8 +176,16 @@ const step = (over = {}) => ({
     const PAGE = readStripped('components/admin/ProspectWorkspace.tsx')
     check(/composerDefault\(focus, \{ everEmailed \}\)/.test(PAGE),
       '…and the page feeds it the SAME `focus` the banner renders')
-    check(/templateForStep\(step, offerable\)\.slug/.test(PAGE),
-      '…with `templateForStep` still the one rule that turns a rung into a template')
+    /* 🔴 RESTATED (30 September 2026, the sequence grid), NOT SILENTLY RE-POINTED. It pinned
+     * `templateForStep(step, offerable).slug` — the rule that read the template rows' own
+     * `serves_kind` / `serves_lead_type` tags and fell back to the hardcoded `STEP_TEMPLATE` slug
+     * map. THE RULE IT PROTECTED IS UNCHANGED AND IS STILL ONE RULE: a rung plus a truck type turns
+     * into exactly one template, in one function. The function is `chooseForStep`, and what it reads
+     * is the sequence grid — one row per box, with a unique constraint — instead of three
+     * mechanisms that could disagree. `templateForStep` itself is now called by nothing. */
+    check(/chooseForStep\(\{ slots, templates: slotTemplates, step \}\)/.test(PAGE)
+      && !/templateForStep\(/.test(PAGE),
+      '…with `chooseForStep` still the one rule that turns a rung into a template')
   }
 
   console.log('\n── ONE CLICK WRITES ONE CONTACT, WITH THE RIGHT KIND ────────────────────────────────────')

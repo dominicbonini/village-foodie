@@ -47,6 +47,9 @@ import { sanitiseQuotedHtml } from '@/lib/outreach-quote-sanitise'
 import {
   replyRecipientRefusal, replyParentRefusal, REPLY_KIND, type ReplyParent,
 } from '@/lib/outreach-reply-rules'
+import { nextStep, type StepContact } from '@/lib/outreach-step'
+import { evaluateGuards, type Guard, type PriorSend } from '@/lib/outreach-sequence'
+import { recordSendOverride } from '@/lib/outreach-events'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -553,13 +556,130 @@ export async function POST(req: NextRequest) {
   // empty row falls back to the bare address — exactly what shipped before — so a settings problem
   // costs a display name and never an email.
   const fromName = await readFromName(supabase)
+  /** Set by the guard block below from the server's own `nextStep`; null ⇒ fall back to the client's. */
+  let derivedKind: string | null = null
 
   // ── THREADING — a chase is a REPLY, or it is refused; a FIRST CONTACT never is ───────────────────
   // 🔴 A REPLY IS `reply`, DECIDED HERE AND NOT BY THE BROWSER. `reply` is deliberately NOT one of
   // `CONTACT_KINDS`, so §57 counts no rung for it and the chase sequence is neither advanced nor
   // restarted by answering somebody. A client that sent `kind: '2_chase_1'` alongside a
   // `reply_to_message_id` would otherwise put a rung on the ladder for a courtesy reply.
-  const sendKind = replyParent ? REPLY_KIND : (typeof body.kind === 'string' ? body.kind : null)
+  // ── 🔴 THE SEND-TIME GUARDS. IN THE SERVER, SO EVERY PATH GETS THEM ─────────────────────────────
+  // The composer may show the same answers early; the DECISION is here. A second tab, an older
+  // client, a repeated fetch or a curl all hit this wall. The step is RE-DERIVED from the prospect's
+  // own rows — `nextStep`, the one derivation — rather than trusted from the request, so a client
+  // that says "first contact" about a truck already chased twice does not get to.
+  // ⚠️ A TEST SEND BYPASSES EVERY GUARD AND COUNTS TOWARDS NOTHING (3f): it goes to Dominic.
+  const overrides: string[] = Array.isArray(body.override)
+    ? (body.override as unknown[]).filter((x): x is string => typeof x === 'string') : []
+  let firedGuards: Guard[] = []
+  if (!isTest) {
+    const { data: cRows } = await supabase
+      .from('outreach_contacts').select('contacted_at, created_at, direction, kind, channel')
+      .eq('prospect_id', prospectId)
+    const contacts = (cRows ?? []) as (StepContact & { created_at?: string | null })[]
+    // 🔴 THE MAILBOX AS WELL AS THE LADDER. An email sent from Outlook reaches the contact log only
+    // when the prospect has already replied, and then only as `reply` — so a chase typed by hand
+    // leaves a message row and no rung (report §0c). `contact_id` is the join: a message this system
+    // sent already has one, and counting it again would double every rung.
+    const { data: mRows } = await supabase
+      .from('outreach_messages')
+      .select('id, direction, is_test, contact_id, message_date, created_at, status')
+      .eq('prospect_id', prospectId).eq('direction', 'outbound')
+    const messages = (mRows ?? []) as {
+      id: string; is_test: boolean | null; contact_id: string | null
+      message_date: string | null; created_at: string | null; status: string | null
+    }[]
+
+    const step = nextStep({
+      do_not_contact: p.do_not_contact, stage: p.stage,
+      hatchgrab_truck_id: truck?.hatchgrab_truck_id ?? null,
+      contact_email: truck?.contact_email ?? null,
+      hu_ordering: p.hu_ordering, hu_map: p.hu_map,
+      show_on_vf: truck?.show_on_vf ?? null, excluded: truck?.excluded ?? null,
+      futureEventCount: null,
+      lead_type_at_first_contact: p.lead_type_at_first_contact,
+    }, contacts, new Date())
+
+    const priors: PriorSend[] = [
+      ...contacts.filter(c => c.direction !== 'inbound').map(c => ({
+        kind: c.kind ?? null, at: c.contacted_at ?? c.created_at ?? null, via: 'log' as const,
+      })),
+      ...messages.filter(m => !m.contact_id && m.status !== 'failed').map(m => ({
+        kind: null, at: m.message_date ?? m.created_at ?? null, via: 'mailbox' as const,
+        isTest: m.is_test === true,
+      })),
+    ]
+    const lastEmailAt = messages
+      .filter(m => m.is_test !== true)
+      .map(m => m.message_date ?? m.created_at)
+      .filter((x): x is string => !!x).sort().reverse()[0] ?? null
+
+    // ── 3d · THE SAME ADDRESS ON ANOTHER PROSPECT ─────────────────────────────────────────────────
+    // ⚠️ THREE SMALL QUERIES RATHER THAN A JOIN, because the address lives on `discovery_trucks` and
+    // PostgREST cannot filter a parent by an embedded column without `!inner` and a second read.
+    const others: { prospectName: string; address: string; lastOutboundAt: string | null }[] = []
+    const addr = (truck?.contact_email ?? '').trim()
+    if (addr) {
+      // ⚠️ ESCAPED: `%` and `_` are wildcards in `ilike`, and an address may contain an underscore.
+      const pattern = addr.replace(/[\\%_]/g, c => `\\${c}`)
+      const { data: tRows } = await supabase
+        .from('discovery_trucks').select('id, name, contact_email').ilike('contact_email', pattern)
+      const trucks = (tRows ?? []) as { id: string; name: string | null; contact_email: string | null }[]
+      const otherTruckIds = trucks.map(t => t.id)
+      if (otherTruckIds.length > 1) {
+        const { data: opRows } = await supabase
+          .from('outreach_prospects').select('id, discovery_truck_id')
+          .in('discovery_truck_id', otherTruckIds).neq('id', prospectId)
+        const otherProspects = (opRows ?? []) as { id: string; discovery_truck_id: string }[]
+        if (otherProspects.length > 0) {
+          const { data: omRows } = await supabase
+            .from('outreach_messages').select('prospect_id, message_date, created_at')
+            .in('prospect_id', otherProspects.map(o => o.id))
+            .eq('direction', 'outbound').eq('is_test', false)
+          const om = (omRows ?? []) as { prospect_id: string; message_date: string | null; created_at: string | null }[]
+          for (const o of otherProspects) {
+            const last = om.filter(m => m.prospect_id === o.id)
+              .map(m => m.message_date ?? m.created_at).filter((x): x is string => !!x)
+              .sort().reverse()[0] ?? null
+            const t = trucks.find(x => x.id === o.discovery_truck_id)
+            others.push({
+              prospectName: t?.name ?? 'another prospect',
+              address: t?.contact_email ?? addr,
+              lastOutboundAt: last,
+            })
+          }
+        }
+      }
+    }
+
+    firedGuards = evaluateGuards({
+      isReply: !!replyParent, step, priors, lastEmailAt,
+      address: truck?.contact_email ?? null, others, now: new Date(),
+    })
+    const blocking = firedGuards.filter(g => !overrides.includes(g.id))
+    if (blocking.length > 0) {
+      // 🔴 NOTHING IS SENT AND NOTHING IS WRITTEN. The client shows the sentences and, if Dominic
+      // means it, re-submits with `override: [ids]` — a deliberate second act, recorded below.
+      return NextResponse.json({
+        ok: false, needsConfirm: true,
+        refusal: blocking.map(g => g.message).join(' '),
+        guards: blocking.map(g => ({ id: g.id, kind: g.kind, message: g.message })),
+      }, { status: 200 })
+    }
+    // ⚠️ THE OVERRIDE IS RECORDED BEFORE THE SEND, not after: if the send then fails, the fact that a
+    // guard was waved through is still the thing worth having in the history.
+    const waved = firedGuards.filter(g => overrides.includes(g.id))
+    if (waved.length > 0) {
+      await recordSendOverride(supabase, prospectId, waved.map(g => ({ id: g.id, message: g.message })))
+    }
+    // 🔴 3h · THE LOGGED KIND IS THE STEP THIS SEND WAS MADE FOR, NOT THE TEMPLATE'S TAG. It used to
+    // be `selected?.servesKind ?? logFormKind` from the browser, so choosing a template tagged
+    // "chase 1" for a first contact logged a chase-1 rung and skipped a step of the ladder.
+    if (!replyParent && step.kind) derivedKind = step.kind
+  }
+
+  const sendKind = replyParent ? REPLY_KIND : (derivedKind ?? (typeof body.kind === 'string' ? body.kind : null))
   // ⚠️ AND A REPLY IS NEVER A FIRST CONTACT, whatever `startsNewThread` would say about its kind.
   const firstContact = !replyParent && startsNewThread(sendKind)
   const parentRow = replyParent ? undefined : (firstContact ? undefined : await threadParent(prospectId))

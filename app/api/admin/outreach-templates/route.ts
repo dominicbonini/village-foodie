@@ -18,7 +18,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { CONTACT_KINDS } from '@/lib/outreach'
-import { isLeadType } from '@/lib/outreach-step'
+import { isLeadType, LEAD_TYPES, LEAD_TYPE_LABELS } from '@/lib/outreach-step'
+import { isSlotChannel, isSlotStep, isSlotLeadType } from '@/lib/outreach-sequence'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
@@ -48,6 +49,41 @@ const EDITABLE = ['label', 'channel', 'subject', 'body', 'sort_order', 'active',
 type EditableCol = typeof EDITABLE[number]
 const isEditable = (k: string): k is EditableCol => (EDITABLE as readonly string[]).includes(k)
 
+// ── THE SEQUENCE GRID ─────────────────────────────────────────────────────────────────────────────
+// 🔴 THE SAME CAPABILITY-PROBE POSTURE AS THE TAG COLUMNS, for the same reason: this migration is
+// applied by hand too, and a hard select would turn the Templates tab from working into a 500 while
+// it is pending. Absent ⇒ `hasSequence: false`, the grid says so, and every box is read-only.
+// ⚠️ A STALE PostgREST SCHEMA CACHE ANSWERS EXACTLY LIKE A MISSING TABLE (PGRST205). The code is
+// logged so the two can be told apart — that distinction cost a day once.
+const SLOT_SELECT = 'channel, step, lead_type, template_id, updated_at'
+const sequenceTableExists = async (): Promise<boolean> => {
+  const { error } = await supabase.from('outreach_sequence_slots').select('channel').limit(1)
+  if (!error) return true
+  console.warn('[admin/outreach-templates] sequence slots unavailable:', error.code, error.message)
+  return false
+}
+
+/** 🔴 THE TRUCK-TYPE NAMES LIVE IN `outreach_settings`, NOT IN A NEW TABLE. Four short strings keyed
+ *  by a type the code owns is exactly what that key/value table is for (0e), and a table would mean
+ *  a migration, a route and a join for four labels. The four TYPES stay in code (`LEAD_TYPES`);
+ *  only their display names are data, and an unknown key is ignored on the way out. */
+const LEAD_LABEL_KEY = 'lead_type_labels'
+const readLeadLabels = async (): Promise<Record<string, string>> => {
+  const out: Record<string, string> = { ...LEAD_TYPE_LABELS }
+  const { data, error } = await supabase
+    .from('outreach_settings').select('value').eq('key', LEAD_LABEL_KEY).maybeSingle()
+  if (error || !data) return out
+  const v = (data as { value?: unknown }).value
+  if (v && typeof v === 'object') {
+    for (const [k, label] of Object.entries(v as Record<string, unknown>)) {
+      if (!isLeadType(k)) continue                       // the four types are code's, not data's
+      const t = String(label ?? '').trim()
+      if (t) out[k] = t.slice(0, 40)
+    }
+  }
+  return out
+}
+
 export async function GET(req: NextRequest) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ error: 'Unauthorised' }, { status: 404 })
   try {
@@ -57,9 +93,14 @@ export async function GET(req: NextRequest) {
       .from('outreach_templates').select(sel)
       .order('sort_order', { ascending: true }).order('slug', { ascending: true })
     if (error) throw error
+    const hasSequence = await sequenceTableExists()
+    const slots = hasSequence
+      ? ((await supabase.from('outreach_sequence_slots').select(SLOT_SELECT)).data ?? [])
+      : []
+    const leadTypeLabels = await readLeadLabels()
     // 🔴 THE FLAG IS REPORTED so the tab can DISABLE the two tag controls with a reason, rather than
     // offering a dropdown whose save would 500. Same contract as hasContactNames / hasLeadTypeFreeze.
-    return NextResponse.json({ templates: data ?? [], hasTemplateTags })
+    return NextResponse.json({ templates: data ?? [], hasTemplateTags, hasSequence, slots, leadTypeLabels })
   } catch (e: any) {
     // 🔴 THE TWO FAILURES MUST NOT LOOK THE SAME ON SCREEN, so the code is passed through rather than
     // flattened. PGRST205 = the table is missing OR PostgREST has not reloaded its schema cache after the
@@ -179,6 +220,72 @@ export async function POST(req: NextRequest) {
         .eq('id', id).select(sel).single()
       if (error) throw error
       return NextResponse.json({ ok: true, template: data })
+    }
+
+    // ── THE SEQUENCE GRID ───────────────────────────────────────────────────────────────────────────
+    // 🔴 SET AND CLEAR, AND NOTHING ELSE. There is no "move", no "copy row": a box holds one template
+    // or nothing, and both of those are one statement. ⚠️ NEITHER ACTION TOUCHES `outreach_templates`.
+    if (body?.action === 'set_slot' || body?.action === 'clear_slot') {
+      if (!(await sequenceTableExists())) {
+        return NextResponse.json(
+          { error: 'The sequence grid needs migration 20260930_outreach_sequence_slots.sql (and a PostgREST schema reload)' },
+          { status: 400 })
+      }
+      const channel = String(body.channel ?? '')
+      const step = String(body.step ?? '')
+      const leadType = String(body.lead_type ?? '')
+      if (!isSlotChannel(channel)) return NextResponse.json({ error: 'Invalid channel' }, { status: 400 })
+      if (!isSlotStep(step)) return NextResponse.json({ error: 'Invalid step' }, { status: 400 })
+      if (!isSlotLeadType(leadType)) return NextResponse.json({ error: 'Invalid lead type' }, { status: 400 })
+
+      if (body.action === 'clear_slot') {
+        const { error } = await supabase.from('outreach_sequence_slots').delete()
+          .eq('channel', channel).eq('step', step).eq('lead_type', leadType)
+        if (error) throw error
+        return NextResponse.json({ ok: true, cleared: true })
+      }
+
+      const templateId = String(body.template_id ?? '')
+      if (!templateId) return NextResponse.json({ error: 'template_id required' }, { status: 400 })
+      // 🔴 THE CHANNEL RULE IS CHECKED HERE **AND** IN THE DATABASE. The composite foreign key
+      // (template_id, channel) makes a cross-channel slot impossible whatever this route believes;
+      // this check exists so the answer is a sentence rather than a constraint violation.
+      // ⚠️ AN INACTIVE TEMPLATE IS ALLOWED INTO A BOX ON PURPOSE — retiring a template that is in the
+      // sequence must not silently rewrite the sequence. The grid paints that box red and says so,
+      // and `chooseTemplate` resolves it to NOTHING rather than sending it.
+      const { data: tpl, error: tErr } = await supabase
+        .from('outreach_templates').select('id, channel, active').eq('id', templateId).maybeSingle()
+      if (tErr) throw tErr
+      if (!tpl) return NextResponse.json({ error: 'No such template' }, { status: 404 })
+      if ((tpl as { channel: string }).channel !== channel) {
+        return NextResponse.json({ error: `That is a ${(tpl as { channel: string }).channel} template; this box is ${channel}` }, { status: 400 })
+      }
+      const { error } = await supabase.from('outreach_sequence_slots')
+        .upsert({ channel, step, lead_type: leadType, template_id: templateId, updated_at: new Date().toISOString() },
+          { onConflict: 'channel,step,lead_type' })
+      if (error) throw error
+      return NextResponse.json({ ok: true })
+    }
+
+    // ── THE TRUCK-TYPE NAMES ────────────────────────────────────────────────────────────────────────
+    // 🔴 NAMES ONLY. The four types are `LEAD_TYPES` in code and cannot be added to, removed or
+    // re-ordered from here; this writes a label for a type that already exists, or nothing.
+    if (body?.action === 'rename_lead_type') {
+      const type = String(body.lead_type ?? '')
+      if (!isLeadType(type)) return NextResponse.json({ error: 'Invalid lead type' }, { status: 400 })
+      const label = String(body.label ?? '').trim().slice(0, 40)
+      const current = await readLeadLabels()
+      const next: Record<string, string> = {}
+      for (const t of LEAD_TYPES) {
+        const v = t === type ? label : current[t]
+        // ⚠️ AN EMPTY NAME IS A RESET, NOT A BLANK LABEL: the row simply stops carrying that key and
+        // the code's own name shows again.
+        if (v && v !== LEAD_TYPE_LABELS[t]) next[t] = v
+      }
+      const { error } = await supabase.from('outreach_settings')
+        .upsert({ key: LEAD_LABEL_KEY, value: next, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+      if (error) throw error
+      return NextResponse.json({ ok: true, leadTypeLabels: await readLeadLabels() })
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

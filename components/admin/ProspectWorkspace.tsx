@@ -32,9 +32,12 @@ import {
   ModalThumb, WhatsAppBox, GrowingTextarea, FIELD_CLS, LABEL_CLS,
 } from '@/components/admin/outreach-shared'
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
+import {
+  chooseForStep, indexSlots, STEP_LABELS, type SequenceSlot, type SlotTemplate,
+} from '@/lib/outreach-sequence'
 import type { Snippet } from '@/lib/outreach-snippets'
 import {
-  nextStep, templateForStep, channelFor, leadTypeOf, isLeadType, shouldFreezeLeadType,
+  nextStep, channelFor, leadTypeOf, isLeadType, shouldFreezeLeadType,
   LEAD_TYPE_LABELS, LEAD_TYPES, type Step,
 } from '@/lib/outreach-step'
 import {
@@ -102,6 +105,14 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   const [loading, setLoading] = useState(true)
   const [denied, setDenied] = useState(false)
   const [templates, setTemplates] = useState<MessageTemplate[] | null>(null)
+  /** The sequence grid, indexed by box, and the templates it points at BY UUID. */
+  const [slots, setSlots] = useState<ReadonlyMap<string, SequenceSlot>>(new Map())
+  const [slotTemplates, setSlotTemplates] = useState<SlotTemplate[]>([])
+  /** Dominic's own names for the four truck types, or null while they load. */
+  const [leadLabels, setLeadLabels] = useState<Record<string, string> | null>(null)
+  /** 🔴 FALSE UNTIL THE MIGRATION IS APPLIED. The composer then pre-selects NOTHING and says why —
+   *  rather than falling back to the mechanism this replaced, which would keep two of them alive. */
+  const [hasSequence, setHasSequence] = useState(true)
   const [snippets, setSnippets] = useState<Snippet[]>([])
   const [timeline, setTimeline] = useState<TimelinePayload | null>(null)
   const [note, setNote] = useState<string | null>(null)
@@ -165,7 +176,16 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
       if (!live) return
       if (!r || !r.ok) { setTemplates(null) } else {
         const d = await r.json().catch(() => ({ templates: [] }))
-        type Raw = { slug: string; label: string; channel: MessageTemplate['channel']; subject?: string | null; body: string; sort_order: number; active: boolean; serves_kind?: string | null; serves_lead_type?: string | null; placeholder_defaults?: Record<string, { value?: string; updated_at?: string | null }> }
+        type Raw = { id: string; slug: string; label: string; channel: MessageTemplate['channel']; subject?: string | null; body: string; sort_order: number; active: boolean; serves_kind?: string | null; serves_lead_type?: string | null; placeholder_defaults?: Record<string, { value?: string; updated_at?: string | null }> }
+        // 🔴 THE GRID COMES WITH THE TEMPLATES, IN ONE REQUEST. Two fetches would mean a window in
+        // which the composer has templates and no sequence, and would pre-select nothing for a
+        // moment on every load — which reads as "no template for this step".
+        setSlots(indexSlots(((d.slots ?? []) as SequenceSlot[])))
+        setSlotTemplates(((d.templates ?? []) as Raw[]).map(t => ({
+          uuid: t.id, slug: t.slug, label: t.label, channel: t.channel, active: t.active,
+        })))
+        setLeadLabels((d.leadTypeLabels ?? null) as Record<string, string> | null)
+        setHasSequence(d.hasSequence !== false)
         setTemplates(((d.templates ?? []) as Raw[]).map(t => ({
           id: t.slug, label: t.label, channel: t.channel,
           subject: t.subject ?? undefined, body: t.body,
@@ -401,18 +421,77 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
   }, [])
   const columns = gridTemplateFor(vw)
 
+  /**
+   * "Use current type" — 🔴 THE ONLY THING IN THE CODEBASE THAT REWRITES A FROZEN LEAD TYPE, and it
+   * happens on a click and nowhere else. `shouldFreezeLeadType` is write-once precisely so a later
+   * rung cannot re-stamp the framing an approach was written in; this is the operator saying "the
+   * truck genuinely changed". It goes through the page's ONE prospect patch, and the route records
+   * a stage-change-style note, so the history says when the framing moved and who moved it.
+   */
+  const useCurrentType = useCallback(async () => {
+    if (!prospect) return
+    const live = leadTypeOf(prospect)
+    await patch({ lead_type_at_first_contact: live, __note: `Truck type set to ${LEAD_TYPE_LABELS[live]} by hand` })
+  }, [prospect, patch])
+
   /** The next prospect's name, for "Up next". ⚠️ Only when the list that named it is still loaded. */
   const nextName = nav.next ? (allProspects.find(x => x.id === nav.next)?.name ?? 'the next one') : null
 
-  /** The template the composer opens on — `templateForStep`'s answer for the rung, or none. */
+  /**
+   * The template the composer opens on — THE SEQUENCE GRID'S ANSWER for this step and this truck
+   * type, or none.
+   * 🔴 `chooseForStep`, NOT `templateForStep`. The old function read the template rows' own
+   * `serves_kind` / `serves_lead_type` tags and fell back to a hardcoded slug map; the grid is one
+   * table with one row per box. The tags are still on the rows and are still shown on the Templates
+   * tab, read-only — nothing reads them to CHOOSE any more.
+   */
   const offerable = useMemo(() => templatesFor(templates ?? [], prospect ?? ({} as Prospect)), [templates, prospect])
-  const composerTemplateId = useMemo(() => {
-    // ⚠️ A REPLY AND A THREAD MESSAGE HAVE NO RUNG, so they have no template: `templateForStep`
-    // would have nothing to resolve and the chips open on Blank, which is correct for both.
+  const chosen = useMemo(() => {
+    // ⚠️ A REPLY AND A THREAD MESSAGE HAVE NO RUNG, so they have no box: the chips open on Blank,
+    // which is correct for both.
     if (composerMode.mode === 'reply' || composerMode.mode === 'thread') return null
     if (!step) return null
-    return templateForStep(step, offerable).slug
-  }, [composerMode, step, offerable])
+    return chooseForStep({ slots, templates: slotTemplates, step })
+  }, [composerMode, step, slots, slotTemplates])
+  const composerTemplateId = chosen?.slug ?? null
+
+  /**
+   * The one line under the chips. It says which box the template came from, or why there is none —
+   * in the operator's own words for the truck type, because those are the words on the grid.
+   * ⚠️ IT NEVER SAYS "no template" WHEN THERE IS ONE FOR ANOTHER REASON: every miss has its own
+   * sentence, so "nothing is set up" and "the box points at a retired template" cannot be confused.
+   */
+  const typeName = (t: string | null | undefined): string =>
+    (t && leadLabels?.[t]) || (t && LEAD_TYPE_LABELS[t as keyof typeof LEAD_TYPE_LABELS]) || 'an unknown type'
+  const sequenceNote = useMemo(() => {
+    if (!chosen || !step) return null
+    if (!hasSequence) {
+      return 'The sequence grid is not set up yet — apply 20260930_outreach_sequence_slots.sql. Nothing is pre-selected until then.'
+    }
+    const stepName = step.kind ? STEP_LABELS[step.kind] : null
+    switch (chosen.miss) {
+      case null:
+        return `Suggested · ${typeName(step.leadType)} · ${stepName}`
+          + (chosen.inherited ? ' — from the default column' : '')
+      case 'empty':
+        return `No template for ${typeName(step.leadType)} · ${stepName} — pick one or write it.`
+      case 'inactive':
+        return `The template for ${typeName(step.leadType)} · ${stepName} (${chosen.label}) has been retired — pick one or write it.`
+      case 'wrong_channel':
+        return `The box for ${typeName(step.leadType)} · ${stepName} holds a template of the other channel — pick one or write it.`
+      case 'unknown_type':
+        return 'This truck’s type could not be read, so no template was suggested.'
+      case 'no_channel':
+        return 'There is no address or number to send to, so no template was suggested.'
+      case 'no_step':
+        return step.state === 'stopped'
+          ? `No step to send: ${step.label.toLowerCase()}. Pick a template or write it.`
+          : 'No step to send, so no template was suggested.'
+      default:
+        return null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chosen, step, leadLabels, hasSequence])
 
   // ── PANELS ──────────────────────────────────────────────────────────────────────────────────────
   /**
@@ -645,7 +724,8 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               column and cost nothing; below it they are the grid items being ordered. */}
           <div className="max-md:order-1">
             <ContactCard p={p} step={step} flags={flags} editing={editing} setEditing={setEditing}
-              onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')} />
+              onPatch={patch} waPhone={waPhone} onEmail={() => openPanel('email')}
+              leadLabels={leadLabels} onUseCurrentType={useCurrentType} />
           </div>
 
           {/* 🔴 ONE NOTES AREA. It was two cards — "About this truck" over the `notes` column and
@@ -692,6 +772,8 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
               contactName={[p.contact_first_name, p.contact_last_name].filter(Boolean).join(' ') || null}
               offerable={offerable}
               suggestedId={suggestTemplateId(p)}
+              stepKind={composerMode.mode === 'reply' ? 'reply' : (step?.kind ?? null)}
+              sequenceNote={sequenceNote}
               // 🔴 THE TEMPLATE THE NEXT LINE IMPLIES. `composerDefault` said which mode this is;
               // `templateForStep` — the one pre-selection rule — turns a rung into a template.
               initialTemplateId={composerTemplateId}
@@ -1238,7 +1320,7 @@ function MoreMenu({ p, dncEnabled, onPatch, onRefresh, onHelp }: {
  * `update_prospect` action, the same `contact_email`/`phone`-live-on-the-truck split, the same
  * lead-type write-once rule, the same WhatsApp tri-state.
  */
-function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, onEmail }: {
+function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, onEmail, leadLabels, onUseCurrentType }: {
   p: Prospect
   step: Step | null
   flags: { names: boolean; leadFreeze: boolean; dnc: boolean }
@@ -1248,6 +1330,10 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
   waPhone: string | null
   /** The phone layout's third big button; on a laptop the composer is already open beside this. */
   onEmail: () => void
+  /** Dominic's own names for the four truck types. Null while they load ⇒ the code's own names. */
+  leadLabels: Record<string, string> | null
+  /** The one click that rewrites a frozen type. */
+  onUseCurrentType: () => Promise<void>
 }) {
   const [firstName, setFirstName] = useState(p.contact_first_name ?? '')
   const [lastName, setLastName] = useState(p.contact_last_name ?? '')
@@ -1350,9 +1436,26 @@ function ContactCard({ p, step, flags, editing, setEditing, onPatch, waPhone, on
           </div>
           <p className="text-slate-500">
             <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Lead</span>
-            {LEAD_TYPE_LABELS[lead] ?? lead}
+            {/* ⚠️ DOMINIC'S OWN NAME FOR THE TYPE, from the Templates tab, falling back to the code's.
+                The four TYPES are code (`LEAD_TYPES`); only the words are data. */}
+            {leadLabels?.[lead] ?? LEAD_TYPE_LABELS[lead] ?? lead}
             {step?.leadTypeFrozen && <span className="text-slate-400"> (frozen)</span>}
           </p>
+          {/* ── 🔴 THE TYPE CHANGED SINCE THE FIRST EMAIL ────────────────────────────────────────
+              The sequence keeps the framing it started with — that is what the freeze is for and it
+              stays the default. This says so out loud when today's data disagrees, because "I told
+              them I could not find them listed" and "they are listed now" is a thing to know before
+              the next chase. ⚠️ ONLY A CLICK WRITES: `lead_type_at_first_contact` is write-once by
+              design, and nothing here rewrites it on its own. */}
+          {step?.leadTypeFrozen && leadTypeOf(p) !== lead && (
+            <p className="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">
+              Recorded as <span className="font-semibold">{leadLabels?.[lead] ?? LEAD_TYPE_LABELS[lead]}</span> at
+              first contact, now <span className="font-semibold">{leadLabels?.[leadTypeOf(p)] ?? LEAD_TYPE_LABELS[leadTypeOf(p)]}</span>.
+              {' '}The sequence follows the first one.
+              <button type="button" onClick={() => void onUseCurrentType()}
+                className="ml-1 font-bold underline hover:no-underline">Use current type</button>
+            </p>
+          )}
           <p className="text-slate-500">
             <span className="uppercase tracking-wide font-bold text-slate-400 mr-1.5">Last contacted</span>
             {fmtDate(p.lastContactedAt) ?? <span className="text-slate-400">never</span>}
