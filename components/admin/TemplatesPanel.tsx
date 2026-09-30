@@ -23,9 +23,7 @@ import {
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import SequenceGrid from '@/components/admin/SequenceGrid'
 import { TEMPLATES_VIEW_KEY } from '@/lib/outreach-queue'
-
-/** The air under the three panes, ON TOP of whatever padding the shell already has below them. */
-const BOTTOM_GUTTER_PX = 4
+import { docFromTemplateText, docPlainText, type DocLine } from '@/lib/outreach-doc'
 import {
   ANY_LEAD, STEP_LABELS, slotKey, type SequenceSlot, type SlotTemplate,
 } from '@/lib/outreach-sequence'
@@ -38,6 +36,9 @@ import {
 import {
   signatureBlockHtml, optOutHtml, parseSignature, parseOptOut, type SignatureLine,
 } from '@/lib/outreach-signature'
+
+/** The air under the three panes, ON TOP of whatever padding the shell already has below them. */
+const BOTTOM_GUTTER_PX = 4
 import { fromDisplay, fromNameLooksLikeAddress } from '@/lib/outreach-doc'
 import { OUTREACH_FROM_ADDRESS } from '@/lib/outreach-mail-config'
 
@@ -257,6 +258,8 @@ export default function TemplatesPanel() {
   const [toast, setToast] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [previewId, setPreviewId] = useState<string | null>(null)
+  /** 🔴 THE SEND-TIME SETTINGS, READ FOR THE PREVIEW. `null` means "not read yet" — see the effect. */
+  const [sendSettings, setSendSettings] = useState<{ signatureLines: DocLine[]; optOut: string | null } | null>(null)
   // 🔴 THE EXPLICIT BRANCH TOGGLE. The conditional clause is the one thing you cannot otherwise see
   // before sending, and whether a real prospect has an upcoming event changes day to day. This forces
   // the no-event branch regardless of who is selected.
@@ -508,6 +511,33 @@ export default function TemplatesPanel() {
     } catch { /* the preview degrades to "pick a prospect"; the editor still works */ }
   }, [])
 
+  /* ── 🔴 THE SIGNATURE AND THE OPT-OUT LINE, FOR THE PREVIEW ONLY ───────────────────────────────
+   * The preview showed `{{signature}}` and `{{opt_out}}` as those literal characters, because
+   * `renderWithFills` returns both tokens VERBATIM by design — they are deferred, not unresolved
+   * (see lib/outreach-template-render.ts). The compose window then expands them the moment the
+   * template is chosen, with `docFromTemplateText`. So the preview was showing a message nobody
+   * ever sends, and hiding the two lines most worth reading before sending: the sign-off and the
+   * PECR opt-out sentence.
+   * ⚠️ THE SAME ROUTE AND THE SAME PARSERS THE COMPOSE WINDOW USES — read-only, and it writes
+   * nothing. `null` until it answers, so a slow settings read shows the body without a half-built
+   * signature rather than an empty one. */
+  useEffect(() => {
+    let live = true
+    void (async () => {
+      const r = await fetch('/api/admin/outreach/settings').catch(() => null)
+      if (!r || !live) return
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>
+      if (!live || j.ok !== true) return
+      const sig = parseSignature(j.signature)
+      const oo = parseOptOut(j.optOut)
+      setSendSettings({
+        signatureLines: (sig?.lines ?? []).map(l => ({ text: l.text, bold: l.bold })),
+        optOut: oo?.text ?? null,
+      })
+    })()
+    return () => { live = false }
+  }, [])
+
   useEffect(() => { void load(); void loadProspects() }, [load, loadProspects])
 
   const selected = useMemo(() => rows.find(r => r.id === selId) ?? null, [rows, selId])
@@ -712,12 +742,22 @@ export default function TemplatesPanel() {
     const ctx = forceNoEvent ? { ...base, nextEventDate: null, nextEventVenue: null } : base
     const fills = defaultFillsOf(tpl)          // the template's own defaults, as the compose window pre-fills
     const m = renderWithFills(tpl, ctx, fills)
-    // 🔴 THE PREVIEW IS THE WHOLE MESSAGE, because nothing is appended to it any more. It used to be
-    // `composeEmail(m.body)` for email, which added the signature and the mandatory opt-out line; both
-    // now come from the Outlook signature, so showing them here would show a message that is never sent.
-    const full = m.body
-    return { ...m, full, isEmail: tpl.channel === 'email' }
-  }, [selected, draft, previewProspect, forceNoEvent])
+    /* 🔴 THE PREVIEW IS THE WHOLE MESSAGE, AND FOR AN EMAIL THAT INCLUDES THE SIGNATURE AND THE
+     * OPT-OUT LINE. `renderWithFills` leaves `{{signature}}` and `{{opt_out}}` standing — they are
+     * filled from `outreach_settings`, not from the prospect — so a preview that stopped there
+     * printed two tokens where the two most-read lines of the email go.
+     * ⚠️ IT IS THE COMPOSE WINDOW'S OWN CALL, NOT A SECOND EXPANSION. `docFromTemplateText` is what
+     * builds the document the operator edits and the server converts; `docPlainText` is how the
+     * guards read that document back. A preview drawn by a second implementation would agree on
+     * the day it was written and drift afterwards — and be believed while it drifted.
+     * ⚠️ EMAIL ONLY, and only once the settings have arrived: WhatsApp has no document and no
+     * signature, and a null `sendSettings` means the read has not answered yet. Both fall back to
+     * the body as rendered, which is what this pane showed before. */
+    const full = tpl.channel === 'email' && sendSettings
+      ? docPlainText(docFromTemplateText(m.body, sendSettings))
+      : m.body
+    return { ...m, full, isEmail: tpl.channel === 'email', expanded: tpl.channel === 'email' && !!sendSettings }
+  }, [selected, draft, previewProspect, forceNoEvent, sendSettings])
 
   const tokenRef = useMemo(() => resolvedTokenReference(), [])
   const condRef = useMemo(() => conditionReference(), [])
@@ -1336,9 +1376,13 @@ export default function TemplatesPanel() {
                             Dropped: {preview.droppedConditions.join(', ')}
                           </span>
                         )}
+                        {/* ⚠️ THIS CHIP SAID "Footer appended above", WHICH HAD NOT BEEN TRUE SINCE
+                            the signature stopped being appended automatically (29 September). It now
+                            says what the pane is actually doing: the two send-time tokens have been
+                            expanded from the Signature screen's rows, exactly as the composer will. */}
                         {preview.isEmail && (
                           <span className="text-[11px] text-slate-500 bg-slate-50 border border-dashed border-slate-300 rounded px-1.5 py-0.5">
-                            Footer appended above
+                            {preview.expanded ? 'Signature and opt-out from Settings' : 'Reading the signature…'}
                           </span>
                         )}
                       </div>

@@ -19,14 +19,18 @@ let fails = 0
 const stripComments = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 
-const FILES = ['lib/outreach-sequence.ts', 'lib/outreach-template-render.ts']
+const FILES = ['lib/outreach-sequence.ts', 'lib/outreach-template-render.ts', 'lib/outreach-doc.ts']
 function buildLib(root, tag) {
   const { out, req } = compile(root, FILES, tag)
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(out, 'node_modules')) } catch { /* already */ }
-  return { S: req('lib/outreach-sequence.js'), R: req('lib/outreach-template-render.js') }
+  return {
+    S: req('lib/outreach-sequence.js'),
+    R: req('lib/outreach-template-render.js'),
+    D: req('lib/outreach-doc.js'),
+  }
 }
 
-function runLibSuite({ S, R }) {
+function runLibSuite({ S, R, D }) {
   const ok = [], bad = []
   const t = (n, c) => (c ? ok : bad).push(n)
   const DAYS = { '1_first_contact': 3, '2_chase_1': 7, '3_chase_2': 14, '4_final_chase': null }
@@ -48,6 +52,38 @@ function runLibSuite({ S, R }) {
   t('⚠️ every entry has the syntax a person types and a line saying what it fills in',
     tokens.every(x => /^\{\{[a-z0-9_]+\}\}$/.test(x.syntax) && typeof x.description === 'string' && x.description.length > 0))
   t('⚠️ …including the ones the brief names', ['truck_name', 'demo_link'].every(n => tokens.some(x => x.name === n)))
+
+  /* ── 🔴 THE PREVIEW SHOWS THE SIGNATURE AND THE OPT-OUT, BECAUSE THE EMAIL WILL ────────────────
+   * REPORTED: the preview printed the characters `{{signature}}` and `{{opt_out}}`.
+   * WHY: `renderWithFills` returns both tokens VERBATIM — they are deferred, not unresolved — and
+   * the preview stopped there, while the compose window goes on to call `docFromTemplateText`,
+   * which is where they are replaced by the rows from the Signature screen. The preview was one
+   * call short of the message.
+   * ⚠️ THIS RUNS THE REAL FUNCTIONS, not a regex over the panel. The panel is checked separately
+   * for making these two calls; this checks that the two calls actually produce the lines. */
+  const SIG = { signatureLines: [{ text: 'Kind regards,' }, { text: '' }, { text: 'Dominic Bonini', bold: true }],
+    optOut: 'Reply STOP and I will not contact you again.' }
+  const BODY = 'Hi Sam.\n\nWould you like a demo?\n\n{{signature}}\n{{opt_out}}'
+  const shown = D.docPlainText(D.docFromTemplateText(BODY, SIG))
+  t('🔴 the preview text carries the signature lines', shown.includes('Kind regards,') && shown.includes('Dominic Bonini'))
+  t('🔴 …and the opt-out sentence', shown.includes(SIG.optOut))
+  t('🔴 …and neither token is left standing in it',
+    !/\{\{\s*signature\s*\}\}/.test(shown) && !/\{\{\s*opt_out\s*\}\}/.test(shown))
+  t('⚠️ …with the blank line inside the signature kept, not collapsed',
+    shown.includes('Kind regards,\n\nDominic Bonini'))
+  /* ⚠️ AN ABSENT OPT-OUT ROW EXPANDS TO NOTHING, and the preview must show that rather than the
+   * token: "nothing here" is the true state of a settings row nobody has written, and it is what
+   * the composer will put in the box. */
+  const noOpt = D.docPlainText(D.docFromTemplateText(BODY, { ...SIG, optOut: null }))
+  t('⚠️ an unset opt-out row shows nothing, not the token', !/opt_out/.test(noOpt))
+  /* 🔴 THE RESOLVER STILL DEFERS THEM, which is what makes the two-call sequence right: if
+   * `renderWithFills` ever "resolved" them itself there would be two expansions to keep in step. */
+  t('🔴 the resolver still returns both tokens verbatim, and calls neither unresolved', (() => {
+    const m = R.renderWithFills({ channel: 'email', subject: 'S', body: BODY },
+      R.contextFromProspect({ id: 'p', name: 'Sam', contact_first_name: null, contact_last_name: null }), {})
+    return /\{\{signature\}\}/.test(m.body) && /\{\{opt_out\}\}/.test(m.body)
+      && !m.unresolved.includes('signature') && !m.unresolved.includes('opt_out')
+  })())
   return { ok, bad }
 }
 
@@ -217,6 +253,23 @@ function runCensus(over = {}) {
   t('🔴 Save sits at the bottom of the pane, always on screen', /flex justify-end mt-auto pt-2/.test(TAB))
   t('🔴 the preview body fills the pane and scrolls inside',
     /<pre className="flex-1 min-h-0 text-base/.test(TAB) && !/maxHeight: 340/.test(TAB))
+  /* ── 🔴 THE PREVIEW IS ONE CALL LONGER THAN IT WAS ────────────────────────────────────────────
+   * It ended at `renderWithFills`, which leaves the two send-time tokens standing, so the pane
+   * printed `{{signature}}` and `{{opt_out}}` where the sign-off and the PECR line go. */
+  t('🔴 the preview expands the signature and the opt-out through the COMPOSER\'s own call',
+    /docPlainText\(docFromTemplateText\(m\.body, sendSettings\)\)/.test(TAB))
+  /* ⚠️ THE PREVIEW ONLY READS. The one POST to this route is the Signature screen's Save, and it
+   * stays below `function SignaturePanel`; the two bare GETs are that screen's load and this one. */
+  t('⚠️ …reading the same settings route, with the same two parsers, and writing nothing', (() => {
+    const gets = (TAB.match(/fetch\('\/api\/admin\/outreach\/settings'\)/g) || []).length
+    const posts = (TAB.match(/fetch\('\/api\/admin\/outreach\/settings', \{/g) || []).length
+    const beforePanel = TAB.split('function SignaturePanel')[0]
+    return gets === 2 && posts === 1 && !beforePanel.includes("outreach/settings', {")
+      && /parseSignature\(j\.signature\)/.test(TAB) && /parseOptOut\(j\.optOut\)/.test(TAB)
+  })())
+  t('⚠️ …email only, and only once those settings have arrived',
+    /tpl\.channel === 'email' && sendSettings/.test(TAB))
+  t('🔴 …and there is STILL no substitution written in this file', !/\.replace\(\/\\\{\\\{/.test(TAB))
   t('🔴 NOTHING in this tab is orange any more — orange is Send and the Next banner',
     !/bg-orange-600/.test(TAB))
   t('⚠️ …and the two buttons that were are dark',
@@ -291,6 +344,10 @@ function runCensus(over = {}) {
     ['V9 🔴 the editor asks `usedIn(draft.id)` again — the list and the editor disagree',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('const usedInChips = selectedId ? usedIn(selectedId) : []',
         "const usedInChips = usedIn(draft.id ?? '')"), 'V9') }],
+    ['V12 🔴 the preview stops at the render again — {{signature}} and {{opt_out}} are printed as text',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace(`    const full = tpl.channel === 'email' && sendSettings
+      ? docPlainText(docFromTemplateText(m.body, sendSettings))
+      : m.body`, '    const full = m.body'), 'V12') }],
     ['V10 🔴 Save goes back to orange',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">\n                    Save template',
         'rounded-lg bg-orange-600 text-white">\n                    Save template'), 'V10') }],
@@ -302,11 +359,11 @@ function runCensus(over = {}) {
     if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
   }
 
-  const libVariant = (tag, patch) => {
+  const libVariant = (tag, patch, file = 'lib/outreach-sequence.ts') => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `tl-${tag}-`))
     fs.cpSync(path.join(REPO, 'lib'), path.join(tmp, 'lib'), { recursive: true })
     try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(tmp, 'node_modules')) } catch {}
-    const f = path.join(tmp, 'lib/outreach-sequence.ts')
+    const f = path.join(tmp, file)
     const src = fs.readFileSync(f, 'utf8')
     const out = patch(src)
     if (out === src) { console.log(`🔴 ${tag}: the patch did not apply`); process.exit(1) }
@@ -318,6 +375,19 @@ function runCensus(over = {}) {
     const r = runLibSuite(libs)
     const caught = r.bad.length > 0
     console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V11 🔴 the column headings invent their own cadence`)
+    for (const f of r.bad) console.log(`        caught: ${f}`)
+    if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
+  }
+
+  {
+    /* V13 — THE SIGNATURE STOPS BEING PLACED. `{{signature}}` on its own line falls through to the
+     * prose branch, so the token is emailed as thirteen characters — and the preview, which now
+     * runs this same function, would show it. This is the failure the checks above exist for. */
+    const libs = libVariant('v13', s2 => s2.replace('      if (SIG_LINE_RE.test(line)) {', '      if (false) {'),
+      'lib/outreach-doc.ts')
+    const r = runLibSuite(libs)
+    const caught = r.bad.length > 0
+    console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V13 🔴 {{signature}} stops being expanded — the token would be emailed verbatim`)
     for (const f of r.bad) console.log(`        caught: ${f}`)
     if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
   }
