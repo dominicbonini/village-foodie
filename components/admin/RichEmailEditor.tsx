@@ -16,7 +16,7 @@
 // Pinned exactly: @tiptap/core, @tiptap/pm, @tiptap/react, and the four extensions, all 3.31.3.
 // Only the extensions named below are loaded — there is no StarterKit, so there is no list, heading,
 // link, image, code block, blockquote or horizontal rule to disable and later forget to disable.
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { Mark, mergeAttributes } from '@tiptap/core'
 import Document from '@tiptap/extension-document'
@@ -68,13 +68,22 @@ export interface RichEmailEditorProps {
    * off the screen. Absent ⇒ no ceiling at all, which is what the expanded writing view wants.
    */
   maxHeight?: string
+  /**
+   * 🔴 A FIXED HEIGHT IN CSS PIXELS, WITH THE EDITOR'S OWN SCROLLBAR — and a drag grip at its
+   * bottom right. Present ⇒ the box is exactly this tall whatever is in it. Absent ⇒ the old
+   * behaviour (grow with the content, `maxHeight` as the only ceiling), which the full-window
+   * writing view still wants.
+   */
+  height?: number
+  /** Fired once, when the grip is released and the height actually changed. */
+  onHeightChange?: (px: number) => void
   /** Opens the focused full-window writing view. Absent ⇒ no ⤢ button (it is already expanded). */
   onExpand?: () => void
   expanded?: boolean
 }
 
 export default function RichEmailEditor({
-  value, onChange, signatureLines, optOut, disabled, maxHeight, onExpand, expanded,
+  value, onChange, signatureLines, optOut, disabled, maxHeight, height, onHeightChange, onExpand, expanded,
 }: RichEmailEditorProps) {
   const extensions = useMemo(() => [
     Document, Paragraph, Text, HardBreak, Bold, Small,
@@ -82,6 +91,16 @@ export default function RichEmailEditor({
   /** 🔴 A SHORT PROMPT, NOT AN INSTRUCTION MANUAL. Rendered as an overlay rather than as content,
    *  so it can never be mistaken for text and can never be sent. */
   const showPlaceholder = !docHasText(value)
+  const boxRef = useRef<HTMLDivElement | null>(null)
+  const dragFrom = useRef<number | null>(null)
+  /* ⚠️ THE DRAGGED HEIGHT IS THE BROWSER'S, AND THE PARENT'S IS THE TRUTH. After a drag the
+   * element carries an inline `height` the browser wrote; when the parent then sends a different
+   * height back — clamped, or restored from storage — that inline value would win silently. Clearing
+   * it hands control back to the style prop. */
+  useEffect(() => {
+    const el = boxRef.current
+    if (el && height != null) el.style.height = ''
+  }, [height])
 
   const editor = useEditor({
     extensions,
@@ -176,8 +195,32 @@ export default function RichEmailEditor({
         )}
       </div>
       {/* ⚠️ THE SCROLLER IS THE WRAPPER, NOT THE EDITOR. ProseMirror needs its own box to grow into;
-          capping the editor itself would clip the caret out of view at the bottom of a long email. */}
-      <div className="relative" style={maxHeight && !expanded ? { maxHeight, overflowY: 'auto' } : undefined}>
+          capping the editor itself would clip the caret out of view at the bottom of a long email.
+          🔴 `resize: vertical` NEEDS `overflow` TO BE SOMETHING OTHER THAN `visible` — that is the
+          CSS rule, in every engine — which is why the grip and the scrollbar arrive together and
+          why this is the element that carries both.
+          ⚠️ THE DRAG IS READ ON `pointerup`, NOT FROM A ResizeObserver. The observer fires while
+          the window is resized and on first layout too, so it would write a height nobody chose;
+          the grip's drag takes implicit pointer capture, so the release lands on this element. */}
+      <div ref={boxRef} className="relative"
+        /* ⚠️ A FIXED BOX IS TALLER THAN ITS TEXT, and the empty part of it is not the editor: the
+           ProseMirror element stops after the last line. Clicking the white space below it would
+           otherwise do nothing at all, which reads as a dead box. */
+        onMouseDown={e => {
+          if (height == null || !editor) return
+          const pm = boxRef.current?.querySelector('.ProseMirror')
+          if (pm && !pm.contains(e.target as Node)) { e.preventDefault(); editor.commands.focus('end') }
+        }}
+        onPointerDown={e => { dragFrom.current = e.currentTarget.offsetHeight }}
+        onPointerUp={e => {
+          const from = dragFrom.current
+          dragFrom.current = null
+          const now = e.currentTarget.offsetHeight
+          if (from != null && now !== from) onHeightChange?.(now)
+        }}
+        style={height != null
+          ? { height, overflowY: 'auto', resize: 'vertical' }
+          : (maxHeight && !expanded ? { maxHeight, overflowY: 'auto' } : undefined)}>
         {showPlaceholder && (
           <span aria-hidden="true"
             className="pointer-events-none absolute left-2 top-1.5 text-slate-400"

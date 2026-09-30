@@ -444,7 +444,13 @@ export function AttachmentList({ attachments, prospectId }: {
  * best-effort; no split point found means the whole email is shown, because hiding something a
  * prospect wrote is the one failure worth avoiding here.
  */
-export function EmailBody({ rowId, onOpenFull }: { rowId: string; onOpenFull?: (html: string, subject: string | null) => void }) {
+export function EmailBody({ rowId, onOpenFull, hideMeta }: {
+  rowId: string
+  onOpenFull?: (html: string, subject: string | null) => void
+  /** ⚠️ The reading panel's header already carries From and Subject; two copies of one fact is
+   *  two places for it to be wrong. The attachments and the quoted toggle stay either way. */
+  hideMeta?: boolean
+}) {
   const [data, setData] = useState<ViewedEmail | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showQuoted, setShowQuoted] = useState(false)
@@ -474,8 +480,12 @@ export function EmailBody({ rowId, onOpenFull }: { rowId: string; onOpenFull?: (
   const shown = split.quoted && !showQuoted ? split.main : (data.html ?? '')
   return (
     <>
-      <p className="text-[12px] text-slate-700"><span className="font-bold">From:</span> {data.from ?? '—'}</p>
-      <p className="text-[12px] text-slate-700"><span className="font-bold">Subject:</span> {data.subject ?? '—'}</p>
+      {!hideMeta && (
+        <>
+          <p className="text-[12px] text-slate-700"><span className="font-bold">From:</span> {data.from ?? '—'}</p>
+          <p className="text-[12px] text-slate-700"><span className="font-bold">Subject:</span> {data.subject ?? '—'}</p>
+        </>
+      )}
       {data.attachments.length > 0 && (
         <p className="text-[12px] text-slate-700 mt-0.5">
           <span className="font-bold">Attachments:</span>{' '}
@@ -765,5 +775,67 @@ export function DemoLinkChip({ demo }: { demo: NonNullable<Prospect['demo']> }) 
         {demo.liveCount > 1 ? ` · newest of ${demo.liveCount}` : ''}
       </span>
     </span>
+  )
+}
+
+// ── A TEXTAREA THAT IS REALLY THE HEIGHT IT SAYS ────────────────────────────────────────────────────
+/**
+ * 🔴 `field-sizing: content` COLLAPSED EVERY BOX ON THIS PAGE TO ONE LINE, and the comment beside it
+ * said the opposite: "`rows` is the floor everywhere, so nothing depends on that support." It is not
+ * a floor. Where `field-sizing: content` IS supported — Safari 26, and Chrome since 123 — it REPLACES
+ * `rows` and sizes the box to its contents, so an EMPTY ten-row note box renders as a single line.
+ * The property was added to make a box grow; it also made it shrink, and the shrink is what shipped.
+ *
+ * 🔴 SO THE GROWING IS DONE HERE, IN FIVE LINES OF JS, AND `rows` IS LEFT TO MEAN WHAT IT MEANS.
+ * The floor is measured from the element's own computed line-height and padding rather than guessed,
+ * so it holds at 16px on a phone and at 14px on a laptop — the `!important` font-size rule in
+ * globals.css changes that number under us.
+ * ⚠️ IT GROWS AND IT SHRINKS BACK, but never below `rows`. A dragged height (`resize-y`) is the
+ * operator's and is left alone: once the element carries an inline height from a drag, this stops
+ * touching it.
+ */
+export function GrowingTextarea(
+  { rows = 3, onChange, ...rest }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { rows?: number },
+) {
+  const ref = useRef<HTMLTextAreaElement | null>(null)
+  const dragged = useRef(false)
+  const value = rest.value
+
+  const grow = useCallback(() => {
+    const el = ref.current
+    if (!el || dragged.current) return
+    const cs = window.getComputedStyle(el)
+    const line = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.4 || 20
+    const extra = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+      + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
+    const floor = Math.round(line * rows + extra)
+    // ⚠️ `auto` FIRST, OR `scrollHeight` ONLY EVER GROWS: it is measured against the height already
+    // set, so without the reset the box ratchets upward and never comes back.
+    el.style.height = 'auto'
+    el.style.height = `${Math.max(floor, el.scrollHeight)}px`
+  }, [rows])
+
+  // Re-measure when the value changes from outside (a template, a reset, another prospect).
+  useEffect(() => { grow() }, [grow, value])
+
+  /* ⚠️ A DRAG ON THE GRIP WINS FROM THEN ON. Without this the next keystroke would call `grow()`
+     and overwrite the height the operator just chose. Pointer capture during a grip drag means the
+     release lands on this element even if the pointer has left it. */
+  const dragFrom = useRef<number | null>(null)
+
+  return (
+    <textarea
+      {...rest}
+      ref={ref}
+      rows={rows}
+      onPointerDown={e => { dragFrom.current = e.currentTarget.offsetHeight; rest.onPointerDown?.(e) }}
+      onPointerUp={e => {
+        const from = dragFrom.current
+        dragFrom.current = null
+        if (from != null && e.currentTarget.offsetHeight !== from) dragged.current = true
+        rest.onPointerUp?.(e)
+      }}
+      onChange={e => { onChange?.(e); grow() }}
+    />
   )
 }

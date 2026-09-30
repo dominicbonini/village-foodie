@@ -454,6 +454,107 @@ export function gridTemplateFor(width: number): string {
 }
 
 /**
+ * THE EMAIL BOX'S HEIGHT — fixed, dragged, and remembered per browser.
+ *
+ * 🔴 IT IS A HEIGHT NOW, NOT A FLOOR. v3 made the inline editor grow with its content and uncapped
+ * it, so the page scrolled; with a long email that pushes the Send button and the whole history
+ * below the fold, and the history is what the page is for. The box is a fixed height with its own
+ * scrollbar, and the size is the operator's to choose.
+ *
+ * 🔴 VALIDATED, NEVER TRUSTED, THEN CLAMPED. localStorage is user-editable, survives deploys and is
+ * shared with every other tab; a stored "999999" would put Send off the bottom of every screen and
+ * "abc" would produce `height: NaNpx`. Junk is refused (⇒ the default), and a real number is
+ * clamped into the band — clamped rather than refused, because a height saved on a 27" monitor is
+ * a real choice that should become "as tall as this laptop allows", not "forget it".
+ * ⚠️ PER BROWSER, NOT PER PROSPECT AND NOT IN THE DATABASE: the laptop and the monitor want
+ * different heights, and one row in a table cannot hold both.
+ */
+export const COMPOSE_BOX_HEIGHT_KEY = 'hg.outreach.composeHeight.v1'
+/** A line of the editor at 12pt with its line-height — the unit the operator actually sees. */
+export const COMPOSE_LINE_PX = 24
+/** ⚠️ The editor's own vertical padding (`py-1.5` twice), so "12 lines" means twelve visible lines. */
+export const COMPOSE_BOX_PADDING_PX = 12
+export const COMPOSE_DEFAULT_LINES = 12
+export const COMPOSE_MIN_LINES = 6
+/** 🔴 The ceiling is a FRACTION OF THE WINDOW, not a constant: 80% leaves the Send row on screen. */
+export const COMPOSE_MAX_FRACTION = 0.8
+
+export const composeHeightForLines = (lines: number): number =>
+  Math.round(lines * COMPOSE_LINE_PX + COMPOSE_BOX_PADDING_PX)
+
+/** The height the box opens at when nothing is remembered. */
+export const COMPOSE_DEFAULT_PX = composeHeightForLines(COMPOSE_DEFAULT_LINES)   // 300
+
+/**
+ * The band, for a given window height. ⚠️ A SHORT WINDOW STILL GETS SIX LINES: on a 400px-tall
+ * window 80% is 320px and the floor is 156px, so the floor wins and the page scrolls — which is
+ * better than a box too small to write in.
+ */
+export function composeHeightBounds(windowHeight: number): { min: number; max: number } {
+  const min = composeHeightForLines(COMPOSE_MIN_LINES)
+  const max = Math.max(min, Math.round(windowHeight * COMPOSE_MAX_FRACTION))
+  return { min, max }
+}
+
+export function clampComposeHeight(px: number, windowHeight: number): number {
+  const { min, max } = composeHeightBounds(windowHeight)
+  return Math.min(max, Math.max(min, Math.round(px)))
+}
+
+/**
+ * What a stored value is allowed to become. `null` ⇒ nothing usable was stored, so the caller uses
+ * the default; anything else is a real height, clamped into this window's band.
+ */
+export function validComposeHeight(raw: string | null | undefined, windowHeight: number): number | null {
+  if (raw == null) return null
+  const t = String(raw).trim()
+  if (!t) return null
+  const n = Number(t)
+  // ⚠️ `Number`, not `parseInt`: "300px" is something this never wrote, and reading it as 300 would
+  // mean a value from somewhere else silently drove the layout.
+  if (!Number.isFinite(n) || n <= 0) return null
+  return clampComposeHeight(n, windowHeight)
+}
+
+// ── THE READING PANEL ───────────────────────────────────────────────────────────────────────────────
+/**
+ * 🔴 AN EMAIL IS NOT A ROW, AND EXPANDING ONE INSIDE THE LIST PUT IT WHERE THERE WAS NO ROOM. The
+ * history sits at the bottom of the centre column, so an email opened in place began a few lines
+ * above the fold and was read through a slot. The panel comes in from the right at full height,
+ * over the right column and part of the centre, and leaves the left column — who this is and what
+ * is known about them — where it was.
+ * ⚠️ 55% OR 960px, WHICHEVER IS SMALLER. A 2560px monitor does not want a 1400px-wide email: the
+ * line length stops being readable long before that, and 960 is about 95 characters at 12pt.
+ */
+export const READING_PANEL_FRACTION = 0.55
+export const READING_PANEL_MAX_PX = 960
+
+export function readingPanelWidth(viewportWidth: number): number {
+  // 🔴 A PHONE GETS THE WHOLE SCREEN. Below the two-column breakpoint the panel is a sheet, not a
+  // panel: 55% of 390px is 214px, which is not a width anything can be read at.
+  if (viewportWidth < TWO_COL_AT_PX) return viewportWidth
+  return Math.min(READING_PANEL_MAX_PX, Math.round(viewportWidth * READING_PANEL_FRACTION))
+}
+
+/**
+ * The email before or after this one, IN THE ORDER THEY ARE ON SCREEN — which is newest first. So
+ * `-1` is the row above (the newer email) and `+1` is the row below (the older one), and ↑/↓ mean
+ * exactly what they point at.
+ * 🔴 IT CLAMPS, IT DOES NOT WRAP. Stepping off the end of a conversation and landing back at the
+ * top is how you read the same email twice believing it is a new one; `null` ⇒ the arrow is
+ * disabled. ⚠️ An id that is not in the list (a filter changed under the panel) also yields `null`
+ * rather than silently jumping to the first.
+ */
+export function stepEmailId(ids: readonly string[], current: string | null, dir: 1 | -1): string | null {
+  if (!current) return null
+  const i = ids.indexOf(current)
+  if (i < 0) return null
+  const next = i + dir
+  if (next < 0 || next >= ids.length) return null
+  return ids[next]
+}
+
+/**
  * 🔴 TEN ROWS, NOT THREE. The note box is where the day's work is written down, and a three-line
  * box says "one line is what is expected here". Ten is about what a call is worth.
  */

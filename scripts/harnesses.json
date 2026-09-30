@@ -50,6 +50,7 @@
     "outreach-workspace-v2.cjs",
     "outreach-workspace-v3-fixes.cjs",
     "outreach-workspace-v3.cjs",
+    "outreach-workspace-v4.cjs",
     "outreach-workspace.cjs",
     "peak-ceiling-rule.cjs",
     "peak-load-rule.cjs",

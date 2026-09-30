@@ -21,8 +21,9 @@ import {
   isTimelineFilter, type TimelineFilter, type RowBadge,
 } from '@/lib/outreach-workspace'
 import { TIMELINE_PREF_KEY } from '@/lib/outreach-queue'
+import EmailReadingPanel from '@/components/admin/EmailReadingPanel'
 import {
-  EmailBody, ContactPopout, INBOUND_BG, fmtDate, stageWord, SizedEmailFrame,
+  ContactPopout, INBOUND_BG, fmtDate, stageWord, SizedEmailFrame,
   type Contact, type Prospect, type TimelinePayload,
 } from '@/components/admin/outreach-shared'
 import { createPortal } from 'react-dom'
@@ -120,6 +121,17 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
     () => items.filter(i => matchesTimelineQuery(i, filter, query)),
     [items, filter, query])
 
+  /* 🔴 THE EMAILS ON SCREEN, IN THE ORDER THEY ARE ON SCREEN — newest first. ‹ › and ↑/↓ step
+     through THIS list, not through every email on the prospect, so a filter or a search narrows
+     what the arrows walk as well as what the list shows. ⚠️ If the open email is filtered out from
+     under the panel, `stepEmailId` returns null for both arrows rather than jumping somewhere. */
+  const emailIds = useMemo(() => shown.filter(i => i.type === 'email').map(i => i.id), [shown])
+  const openEmail = useMemo(() => {
+    if (!expandedId) return null
+    const hit = shown.find(i => i.type === 'email' && i.id === expandedId)
+    return hit && hit.type === 'email' ? hit.message : null
+  }, [shown, expandedId])
+
   const testCount = (data?.messages ?? []).filter(m => m.is_test === true).length
   const now = new Date()
   const linkedTruck = !!prospect.hatchgrab_truck_id
@@ -142,9 +154,14 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           placeholder="Search this history…"
           title="Matches the subject and the stored text of what is already loaded. It is not a mailbox search."
           className="w-48 border border-slate-200 rounded-lg px-2 py-1 text-xs bg-white" />
+        {/* ⚠️ IT SAYS WHAT IT NOW DOES. It used to expand every row including the emails; an email
+            opens in the reading panel now, and "expand all" cannot mean fourteen panels. What it
+            expands is the calls, WhatsApps and hand-logged contacts — the short rows — so that is
+            what the button is called. */}
         <button type="button" onClick={() => { setExpandAll(v => !v); onExpand(null) }}
+          title="Shows what was recorded with every call, WhatsApp and hand-logged contact. Emails open in the reading panel."
           className="text-[11px] font-semibold px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
-          {expandAll ? 'Collapse all' : 'Expand all'}
+          {expandAll ? 'Collapse contacts' : 'Expand contacts'}
         </button>
         {testCount > 0 && (
           <label className="ml-auto flex items-center gap-1 text-[11px] text-slate-500 cursor-pointer"
@@ -230,12 +247,17 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           }
 
           // ── AN EMAIL ────────────────────────────────────────────────────────────────────────
+          // 🔴 AN EMAIL OPENS IN THE READING PANEL, NOT IN THE LIST. The history is the LAST block
+          // of the centre column, so an email expanded in place started a few lines above the fold
+          // and was read through a slot. The row still carries the same id and the same click; what
+          // changed is where the email is drawn. Notes, calls and stage changes are short and still
+          // open where they are — there is nothing about them that needs a panel.
+          // ⚠️ `expandAll` NO LONGER TOUCHES EMAIL ROWS, because "expand all" cannot mean "open
+          // fourteen panels". It still expands every contact row, which is what it is now for.
           const m = item.message
           const inbound = m.direction === 'inbound'
-          const open = expandAll || expandedId === item.id
+          const open = expandedId === item.id
           const badges = rowBadges(m, { now, linkedTruck, showTests })
-          const waiting = needsAttention(m, { now, linkedTruck })
-          const notLogged = m.status === 'sent' && !m.is_test && (m.last_error ?? '').startsWith('sent, not logged')
           // 🔴 THE FIRST LINE THAT SAYS SOMETHING. "Hi Stephen," told the reader only that this is
           // an email, which the row already said.
           const firstLine = meaningfulPreview(m.preview, m.subject)
@@ -243,9 +265,14 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           return (
             <div key={item.id} className="text-[12px]" style={inbound ? { background: INBOUND_BG } : undefined}>
               {/* 🔴 THE WHOLE ROW IS THE CONTROL. The Open button is gone: a row you can read is a row
-                  you can click, and a button beside it was a second target for one intention. */}
-              <button type="button" onClick={() => onExpand(open ? null : item.id)}
-                className="w-full text-left px-3 py-1.5 max-md:py-2.5 max-md:min-h-11 flex items-start gap-2 hover:bg-black/[0.03]">
+                  you can click, and a button beside it was a second target for one intention.
+                  ⚠️ THE `tl-<id>` ID IS ON THE BUTTON, and it is load-bearing twice over: the Files
+                  card scrolls to it, and the panel returns focus to it on close. It was named in
+                  both places and existed in neither — `getElementById` was returning null. */}
+              <button type="button" id={`tl-${item.id}`} onClick={() => onExpand(open ? null : item.id)}
+                aria-expanded={open}
+                className={`w-full text-left px-3 py-1.5 max-md:py-2.5 max-md:min-h-11 flex items-start gap-2 hover:bg-black/[0.03] ${
+                  open ? 'ring-2 ring-inset ring-slate-400 bg-black/[0.04]' : ''}`}>
                 <span className={`w-5 text-center shrink-0 ${inbound ? 'text-emerald-700' : 'text-slate-400'}`} aria-hidden="true">
                   {rowIcon(item)}
                 </span>
@@ -276,103 +303,33 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
                 ))}
               </button>
 
-              {open && (
-                <div className="px-3 pb-2 pl-10 flex flex-col gap-1.5">
-                  {/* ⚠️ THE PROVENANCE MOVED HERE FROM THE ROW. "imported", "from Outlook", the account
-                      and the attachment count are facts you want when you are looking AT an email and
-                      noise on a line you are scanning past. */}
-                  <p className="text-[11px] text-slate-500">
-                    {inbound ? 'Received' : 'Sent'}
-                    {m.source === 'mailbox_import' && ' · imported'}
-                    {m.source === 'poll' && m.direction === 'outbound' && ' · from Outlook'}
-                    {m.sent_copy === 'absent' && m.status === 'sent' && !m.is_test && ' · no copy in Sent'}
-                    {!!m.attachment_count && ` · ${m.attachment_count} attachment${m.attachment_count === 1 ? '' : 's'}`}
-                  </p>
-                  {/* ⚠️ THE HAND-LOGGED TEXT, UNDER THE EMAIL IT BELONGS TO. It is usually a
-                      sentence of Dominic's own ("sent the plans") and it is the only place that
-                      sentence exists — hiding the contact row must not hide what it said. */}
-                  {handLogged && (
-                    <p className="text-[11px] text-slate-500 border-l-2 border-slate-200 pl-2">
-                      <span className="font-semibold">Logged by hand:</span>{' '}
-                      {handLogged.message?.trim() || <span className="italic">no message was recorded</span>}
-                    </p>
-                  )}
-                  {/* 🔴 THE SANDBOXED IFRAME, from the stored body. Mailbox HTML renders in `sandbox=""`
-                      and nowhere else on this page — see `EmailBody`, which is the one viewer. */}
-                  <EmailBody rowId={m.id} onOpenFull={(html, subject) => setFullScreen({ html, subject })} />
-                  <div className="flex flex-wrap items-center gap-1">
-                    {inbound && !m.is_test && m.status === 'received' && (
-                      <button type="button" onClick={() => actions.onReply(m)}
-                        title="Answer this message, with the conversation quoted underneath (R)"
-                        // ⚠️ NEUTRAL, NOT ORANGE. Reply opens the composer; it does not send
-                        // anything. Orange on this page means "this is about to leave the
-                        // building", and it belongs to the Send button and the Next banner alone.
-                        className="text-[11px] font-bold px-2 py-0.5 max-md:px-3 max-md:py-2 max-md:min-h-11 rounded border border-slate-400 text-slate-800 bg-white hover:bg-slate-50">
-                        Reply
-                      </button>
-                    )}
-                    {waiting && (
-                      <>
-                        <button type="button" disabled={actions.busyId === m.id}
-                          onClick={() => void actions.onMessageAction('mark_handled', m.id)}
-                          title="Dealt with. It leaves Today; nothing is sent and nothing is logged."
-                          className="text-[11px] font-bold px-2 py-0.5 rounded border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40">
-                          Mark done
-                        </button>
-                        <button type="button" onClick={() => setSnoozeFor(snoozeFor === m.id ? null : m.id)}
-                          className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
-                          Snooze
-                        </button>
-                        {snoozeFor === m.id && SNOOZE_OPTIONS.map(o => (
-                          <button key={o} type="button" disabled={actions.busyId === m.id}
-                            onClick={() => { setSnoozeFor(null); void actions.onMessageAction('snooze', m.id, { option: o }) }}
-                            className="text-[11px] font-bold px-2 py-0.5 rounded border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-                            {SNOOZE_LABELS[o]}
-                          </button>
-                        ))}
-                      </>
-                    )}
-                    {inbound && m.status === 'received' && !m.is_test && !waiting && (
-                      <button type="button" disabled={actions.busyId === m.id}
-                        onClick={() => void actions.onMessageAction('needs_reply', m.id)}
-                        title={m.snoozed_until ? `Snoozed until ${fmtDate(m.snoozed_until)}. This brings it back now.` : 'Put this reply back on the Today list.'}
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40">
-                        Mark as needing reply
-                      </button>
-                    )}
-                    {notLogged && (
-                      <button type="button" disabled={actions.busyId === m.id}
-                        onClick={() => void actions.onMessageAction('log_only', m.id)}
-                        title="The email went but the contact log did not record it. This writes the missing rung — it does NOT send anything."
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-                        log it
-                      </button>
-                    )}
-                    {m.status === 'sent' && !m.is_test && m.sent_copy === 'absent' && (
-                      <button type="button" disabled={actions.busyId === m.id}
-                        onClick={() => void actions.onMessageAction('save_to_sent', m.id)}
-                        title="Files a copy of this email in your Sent folder. It does NOT send anything."
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
-                        Save to Sent
-                      </button>
-                    )}
-                    {(m.status === 'failed' || m.status === 'uncertain') && (
-                      <button type="button" disabled={actions.busyId === m.id}
-                        onClick={() => void actions.onMessageAction('retry', m.id, { confirm_uncertain: m.status === 'uncertain' })}
-                        title={m.status === 'uncertain'
-                          ? 'This may already have been delivered. Check your Sent folder first — a retry could be the second copy the prospect receives.'
-                          : 'The server refused this one, so nothing reached the prospect. Sends it again with the same Message-ID.'}
-                        className="text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
-                        {m.status === 'uncertain' ? 'Retry anyway' : 'Retry'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
+              {/* 🔴 NOTHING EXPANDS UNDER AN EMAIL ROW ANY MORE. The body, the provenance, the
+                  hand-logged sentence and every button moved into the panel — together, because a
+                  55vw panel covers most of the history and a control left behind it would be half
+                  hidden. The row itself is the open/close control and carries the ring. */}
             </div>
           )
         })}
       </div>
+
+      {/* ── THE READING PANEL ────────────────────────────────────────────────────────────────
+          🔴 ONE ID, TWO BEHAVIOURS, AND THE ID IS THE PAGE'S. `expandedId` already meant "the open
+          row"; when it names an EMAIL the panel opens, when it names a contact that row expands in
+          place. So Escape (the page's), the Files card's "open this attachment's email" and the
+          panel all drive the same value and cannot disagree about what is open. */}
+      {openEmail && (
+        <EmailReadingPanel
+          message={openEmail}
+          ids={emailIds}
+          onOpen={onExpand}
+          onClose={() => onExpand(null)}
+          handLogged={pairing.pairs.get(openEmail.id) ?? null}
+          prospectEmail={prospect.contact_email ?? null}
+          onOpenFull={(html, subject) => setFullScreen({ html, subject })}
+          footer={<EmailActions m={openEmail} actions={actions} now={now} linkedTruck={linkedTruck}
+            snoozeFor={snoozeFor} setSnoozeFor={setSnoozeFor} onClose={() => onExpand(null)} />}
+        />
+      )}
 
       {/* ── ONE EMAIL, THE WHOLE WINDOW ──────────────────────────────────────────────────────
           ⚠️ THE SAME FRAME AND THE SAME SANDBOX — only the cap changes. Escape and the backdrop
@@ -399,5 +356,103 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           onDelete={async () => { await actions.onDeleteContact(viewingContact); setViewingContact(null) }} />
       )}
     </div>
+  )
+}
+
+// ── WHAT CAN BE DONE WITH AN EMAIL ──────────────────────────────────────────────────────────────────
+/**
+ * 🔴 THE SAME BUTTONS, THE SAME HANDLERS, IN THE PANEL'S FOOTER. Every one of these was declared
+ * inline under the open row and is unchanged here — same conditions, same POST actions, same
+ * titles. They moved together and for one reason: the reading panel covers most of the history, so
+ * a control left on the row would have been half behind it.
+ * ⚠️ REPLY CLOSES THE PANEL FIRST, then calls the page's existing `onReply`. The composer is at the
+ * top of the centre column, so leaving a panel over it would hide the thing the click just filled in.
+ */
+function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, onClose }: {
+  m: TimelineMessage
+  actions: TimelineActions
+  now: Date
+  linkedTruck: boolean
+  snoozeFor: string | null
+  setSnoozeFor: (id: string | null) => void
+  onClose: () => void
+}) {
+  const inbound = m.direction === 'inbound'
+  const waiting = needsAttention(m, { now, linkedTruck })
+  const notLogged = m.status === 'sent' && !m.is_test && (m.last_error ?? '').startsWith('sent, not logged')
+  return (
+    <>
+      {inbound && !m.is_test && m.status === 'received' && (
+        <button type="button" onClick={() => { onClose(); actions.onReply(m) }}
+          title="Answer this message, with the conversation quoted underneath (R)"
+          // ⚠️ NEUTRAL, NOT ORANGE. Reply opens the composer; it does not send anything. Orange on
+          // this page means "this is about to leave the building".
+          className="text-sm font-bold px-3 py-1.5 max-md:min-h-11 rounded-lg border border-slate-400 text-slate-800 bg-white hover:bg-slate-50">
+          Reply
+        </button>
+      )}
+      {waiting && (
+        <>
+          <button type="button" disabled={actions.busyId === m.id}
+            onClick={() => void actions.onMessageAction('mark_handled', m.id)}
+            title="Dealt with. It leaves Today; nothing is sent and nothing is logged."
+            className="text-[12px] font-bold px-2 py-1 max-md:min-h-11 rounded-lg border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-40">
+            Mark done
+          </button>
+          <button type="button" onClick={() => setSnoozeFor(snoozeFor === m.id ? null : m.id)}
+            className="text-[12px] font-bold px-2 py-1 max-md:min-h-11 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50">
+            Snooze
+          </button>
+          {snoozeFor === m.id && SNOOZE_OPTIONS.map(o => (
+            <button key={o} type="button" disabled={actions.busyId === m.id}
+              onClick={() => { setSnoozeFor(null); void actions.onMessageAction('snooze', m.id, { option: o }) }}
+              className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+              {SNOOZE_LABELS[o]}
+            </button>
+          ))}
+        </>
+      )}
+      {inbound && m.status === 'received' && !m.is_test && !waiting && (
+        <button type="button" disabled={actions.busyId === m.id}
+          onClick={() => void actions.onMessageAction('needs_reply', m.id)}
+          title={m.snoozed_until ? `Snoozed until ${fmtDate(m.snoozed_until)}. This brings it back now.` : 'Put this reply back on the Today list.'}
+          className="text-[12px] font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40">
+          Mark as needing reply
+        </button>
+      )}
+      {notLogged && (
+        <button type="button" disabled={actions.busyId === m.id}
+          onClick={() => void actions.onMessageAction('log_only', m.id)}
+          title="The email went but the contact log did not record it. This writes the missing rung — it does NOT send anything."
+          className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+          log it
+        </button>
+      )}
+      {m.status === 'sent' && !m.is_test && m.sent_copy === 'absent' && (
+        <button type="button" disabled={actions.busyId === m.id}
+          onClick={() => void actions.onMessageAction('save_to_sent', m.id)}
+          title="Files a copy of this email in your Sent folder. It does NOT send anything."
+          className="text-[12px] font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+          Save to Sent
+        </button>
+      )}
+      {(m.status === 'failed' || m.status === 'uncertain') && (
+        <button type="button" disabled={actions.busyId === m.id}
+          onClick={() => void actions.onMessageAction('retry', m.id, { confirm_uncertain: m.status === 'uncertain' })}
+          title={m.status === 'uncertain'
+            ? 'This may already have been delivered. Check your Sent folder first — a retry could be the second copy the prospect receives.'
+            : 'The server refused this one, so nothing reached the prospect. Sends it again with the same Message-ID.'}
+          className="text-[12px] font-bold px-2 py-1 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40">
+          {m.status === 'uncertain' ? 'Retry anyway' : 'Retry'}
+        </button>
+      )}
+      {/* ⚠️ THE PROVENANCE, WHERE THE ROW USED TO CARRY IT. "imported", "from Outlook", "no copy in
+          Sent" — facts you want while looking AT an email and noise on a line you are scanning past. */}
+      <span className="ml-auto text-[11px] text-slate-400">
+        {m.source === 'mailbox_import' && 'imported'}
+        {m.source === 'poll' && m.direction === 'outbound' && 'from Outlook'}
+        {m.sent_copy === 'absent' && m.status === 'sent' && !m.is_test && ' · no copy in Sent'}
+      </span>
+    </>
   )
 }

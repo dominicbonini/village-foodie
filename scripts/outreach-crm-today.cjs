@@ -478,8 +478,12 @@ const reply = (over = {}) => ({ status: 'received', is_test: false, direction: '
     // ⚠️ THE CENSUS READS CODE, NOT COMMENTS — the timeline's comment mentions `sandbox=""` while
     // explaining that it does not render one itself, which is exactly the trap this harness family
     // already records once.
-    check(!/sandbox=""/.test(stripComments(TL)) && /<EmailBody/.test(TL),
-      '…which the timeline opens rather than rendering markup of its own')
+    /* ⚠️ RESTATED (v4): the timeline no longer mounts `EmailBody` itself — an email opens in the
+     * reading panel, which mounts it. The rule this protects is unchanged and is now checked
+     * across both files: neither renders mailbox markup of its own. */
+    const PANEL = fs.readFileSync(path.join(REPO, 'components/admin/EmailReadingPanel.tsx'), 'utf8')
+    check(!/sandbox=""/.test(stripComments(TL)) && !/sandbox=""/.test(stripComments(PANEL)) && /<EmailBody/.test(PANEL),
+      '…which the reading panel opens rather than rendering markup of its own')
     check(/Show test sends/.test(TL), 'the timeline has its test toggle')
     check(/needsAttention\(m, \{ now, linkedTruck \}\)/.test(TL), '…and says which inbound rows are waiting')
     check(/Mark as needing reply/.test(TL), '…with the undo for a mistake')

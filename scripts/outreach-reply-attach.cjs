@@ -480,7 +480,11 @@ const DOC_SETTINGS = { signatureLines: [{ text: 'Kind regards,' }, { text: 'Domi
     const TL = read('components/admin/ProspectTimeline.tsx')
     const PAGE = read('components/admin/ProspectWorkspace.tsx')
     const SHARED = read('components/admin/outreach-shared.tsx')
-    check(/onClick=\{\(\) => actions\.onReply\(m\)\}/.test(TL),
+    /* ⚠️ RESTATED (v4, 30 September 2026): Reply is no longer a button under an expanded row — an
+     * email opens in the reading panel and Reply is in its footer, where it CLOSES the panel first
+     * so the composer it just filled in is on screen. Same handler, same target, same `onReply`
+     * the modal had; only the button's address changed. */
+    check(/onClick=\{\(\) => \{ onClose\(\); actions\.onReply\(m\) \}\}/.test(TL),
       "the timeline's Reply opens the composer on that message")
     check(/const replyToMessage = \(m: \{ id: string;/.test(PAGE) && /openPanel\('email', \{ messageId: m\.id/.test(PAGE),
       '…in reply mode, naming the message being answered')

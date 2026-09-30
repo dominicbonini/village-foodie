@@ -455,10 +455,17 @@ const fakeStore = () => {
     for (const [f, src] of [['the page', PAGE], ['the timeline', TL], ['the shared module', SHARED]]) {
       check(!/dangerouslySetInnerHTML/.test(src), `🔴 ${f} never injects HTML into the admin page`)
     }
-    /* ⚠️ A STALE ANCHOR, RESTATED (workspace v2): `EmailBody` now also takes `onOpenFull`, so the
-     * row can hand the same email to a full-window view. The rule is unchanged — the timeline
-     * renders no markup of its own and opens everything through the one viewer. */
-    check(/<EmailBody rowId=\{m\.id\}/.test(TL), '…and the timeline opens an email through that viewer')
+    /* ⚠️ A STALE ANCHOR, RESTATED TWICE NOW. (v2): `EmailBody` gained `onOpenFull`, so the row
+     * could hand the same email to a full-window view. (v4, 30 September 2026): an email no longer
+     * opens IN the row at all — it opens in the reading panel, so the `<EmailBody rowId={m.id}>`
+     * this matched has moved to `EmailReadingPanel.tsx`. THE RULE IS UNCHANGED and is what is
+     * checked here: mailbox HTML is rendered by ONE viewer, and the timeline and the panel both go
+     * through it rather than emitting markup of their own. */
+    const PANEL = read('components/admin/EmailReadingPanel.tsx')
+    check(/<EmailBody key=\{message\.id\} rowId=\{message\.id\}/.test(PANEL),
+      '…and the reading panel opens an email through that viewer')
+    check(!/dangerouslySetInnerHTML/.test(PANEL) && !/sandbox=/.test(stripComments(PANEL)),
+      '…and renders no mailbox markup of its own')
     check(/onOpenFull=\{\(html, subject\) => setFullScreen\(\{ html, subject \}\)\}/.test(TL),
       '…including the full-window one, which is the same frame with a larger cap')
     // 🔴 THE SINGLE CONTACT WRITER, THROUGH THE SAME ROUTE ACTION.

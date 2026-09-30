@@ -29,7 +29,7 @@ import ProspectTimeline from '@/components/admin/ProspectTimeline'
 import {
   type Contact, type Prospect, type TimelinePayload,
   STATUS_LABEL, fmtDate, confirmLogoWrite, linkLabel, fetchTimeline,
-  ModalThumb, WhatsAppBox, FIELD_CLS, LABEL_CLS,
+  ModalThumb, WhatsAppBox, GrowingTextarea, FIELD_CLS, LABEL_CLS,
 } from '@/components/admin/outreach-shared'
 import { templatesFor, suggestTemplateId, contextFromProspect, type MessageTemplate } from '@/lib/outreach-template-render'
 import type { Snippet } from '@/lib/outreach-snippets'
@@ -42,6 +42,7 @@ import {
   kindOrder, kindLabel, channelLabel, directionLabel, followUpDateFor, contactDay, toYMD,
 } from '@/lib/outreach'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
+import { PAGE_HEADER_ID } from '@/components/admin/EmailReadingPanel'
 import { getLocalDateInTz } from '@/lib/time-utils'
 import { parseAttachments } from '@/lib/outreach-mail-bodies'
 import {
@@ -523,7 +524,9 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
           in the contact card's edit mode — which is two places to change one value and two chances
           to disagree about what it currently is. Same route, so a change still records a stage
           change in the timeline. */}
-      <div className="flex items-center gap-2 flex-wrap mb-2">
+      {/* ⚠️ THE ID IS READ BY THE READING PANEL, which starts at this row's bottom edge so it never
+          covers Back, the stage pill or the queue counter while they are on screen. */}
+      <div id={PAGE_HEADER_ID} className="flex items-center gap-2 flex-wrap mb-2">
         <button onClick={back} className={`${BTN} border-slate-200 text-slate-700 hover:bg-slate-50 max-md:min-h-11`}>← Back</button>
         <h1 className="text-xl font-bold truncate min-w-0 max-md:text-lg">{p.name}</h1>
         <label className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white px-2 py-1 max-md:min-h-11">
@@ -998,12 +1001,14 @@ function NotesCard({ p, timeline, onPatch, onSaved }: {
         {done && <span className="ml-auto text-[11px] font-semibold text-emerald-700">added to the history</span>}
       </div>
 
-      {/* 🔴 TEN ROWS, FULL WIDTH, AND IT GROWS. `field-sizing: content` does the growing where the
-          browser supports it; `rows` is the floor everywhere, so nothing depends on that support.
+      {/* 🔴 TEN ROWS, FULL WIDTH, AND IT GROWS — BUT NOT THROUGH `field-sizing`. That property was
+          here to do the growing and the comment claimed `rows` was still "the floor everywhere".
+          It is not: where `field-sizing: content` is supported (Safari 26, Chrome 123+) it REPLACES
+          `rows`, so this ten-row box rendered as ONE LINE in Safari. `GrowingTextarea` does the
+          growing in JS and leaves `rows` meaning what it means.
           ⚠️ THE ID IS UNCHANGED (`hg-add-note`): the N shortcut and the phone bar's Note button
           both scroll to and focus THIS element, and one id is why they cannot disagree. */}
-      <textarea id={ADD_NOTE_ID} rows={NOTE_BOX_ROWS} className={`${FIELD_CLS} w-full resize-y`}
-        style={{ fieldSizing: 'content' } as React.CSSProperties}
+      <GrowingTextarea id={ADD_NOTE_ID} rows={NOTE_BOX_ROWS} className={`${FIELD_CLS} w-full resize-y`}
         placeholder="Add a note…"
         value={body} onChange={e => setBody(e.target.value)} />
       <button type="button" onClick={() => void save()} disabled={busy || !body.trim()}
@@ -1071,8 +1076,7 @@ function EarlierNotes({ p, onPatch }: { p: Prospect; onPatch: (patch: Record<str
       </div>
       {editing ? (
         <>
-          <textarea rows={6} className={`${FIELD_CLS} w-full resize-y`}
-            style={{ fieldSizing: 'content' } as React.CSSProperties}
+          <GrowingTextarea rows={6} className={`${FIELD_CLS} w-full resize-y`}
             value={text} onChange={e => setText(e.target.value)} />
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => void save()} disabled={saving}
@@ -1705,7 +1709,9 @@ function QuickLog({ p, channel, kind, followUpDate, post, applyFollowUp, onDirty
           </label>
         )}
       </div>
-      <textarea rows={2} className={`${FIELD_CLS} resize-y`} placeholder="What was said (optional)"
+      {/* ⚠️ THE SAME COMPONENT, for the same reason: two rows that grow, and two rows that are
+          really two rows in every browser. */}
+      <GrowingTextarea rows={2} className={`${FIELD_CLS} resize-y`} placeholder="What was said (optional)"
         value={message} onChange={e => { setMessage(e.target.value); onDirty(true) }} />
       <div className="flex items-center gap-2 flex-wrap">
         <button onClick={() => void submit()} disabled={busy}

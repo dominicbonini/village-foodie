@@ -34,7 +34,7 @@ import {
 } from '@/lib/outreach-template-render'
 import { kindLabel } from '@/lib/outreach'   // one vocabulary, one labeller
 import { snippetMapOf, type Snippet } from '@/lib/outreach-snippets'
-import { SizedEmailFrame } from '@/components/admin/outreach-shared'
+import { SizedEmailFrame, GrowingTextarea } from '@/components/admin/outreach-shared'
 // ── 🔴 THE ATTACHMENT AND REPLY RULES LIVE IN lib/, NOT HERE ───────────────────────────────────────
 // "What may be attached", "how big is too big" and "who may a reply be addressed to" are decisions,
 // and the server applies every one of them again. These imports are so the WINDOW refuses the same
@@ -45,6 +45,9 @@ import {
   type OutboundAttachment,
 } from '@/lib/outreach-attachments'
 import { replySubject } from '@/lib/outreach-mail-message'
+import {
+  COMPOSE_BOX_HEIGHT_KEY, COMPOSE_DEFAULT_PX, clampComposeHeight, validComposeHeight,
+} from '@/lib/outreach-workspace'
 
 /** The message a reply answers. Everything the window needs to show before the server is asked. */
 export interface ReplyTarget {
@@ -315,6 +318,32 @@ export default function ComposeWindow({
   const [fileBusy, setFileBusy] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  /* ── THE EMAIL BOX'S REMEMBERED HEIGHT ──────────────────────────────────────────────────────
+     🔴 READ ONCE, IN AN EFFECT, AND CLAMPED TO THIS WINDOW. Reading localStorage during render is
+     a hydration mismatch — the server has no storage — so the box paints at the default and takes
+     the remembered height on mount. ⚠️ A height saved on a 27" monitor is clamped to 80% of
+     whatever window is open now rather than being thrown away: it is still a real choice.
+     ⚠️ ONLY A DRAG WRITES. The value goes back to storage when the grip is released and the height
+     actually changed — never on a click, a keystroke or a window resize. Persisting on every
+     ResizeObserver callback would freeze whatever the default happened to be on the first visit and
+     make the default impossible to change afterwards without clearing everybody's storage. */
+  const [boxHeight, setBoxHeight] = useState(COMPOSE_DEFAULT_PX)
+  useEffect(() => {
+    // ⚠️ IN A MICROTASK, AFTER MOUNT — the same shape the timeline's stored filter uses. Reading
+    // storage during render is a hydration mismatch; setting state synchronously in an effect body
+    // is the cascading-render pattern this repo lints against.
+    void Promise.resolve().then(() => {
+      let px: number | null = null
+      try { px = validComposeHeight(window.localStorage.getItem(COMPOSE_BOX_HEIGHT_KEY), window.innerHeight) } catch { /* private mode */ }
+      if (px) setBoxHeight(px)
+    })
+  }, [])
+  const rememberHeight = useCallback((px: number) => {
+    const clamped = clampComposeHeight(px, typeof window === 'undefined' ? 800 : window.innerHeight)
+    setBoxHeight(clamped)
+    try { window.localStorage.setItem(COMPOSE_BOX_HEIGHT_KEY, String(clamped)) } catch { /* nothing to remember, no crash */ }
+  }, [])
   const [sendingOff, setSendingOff] = useState<string | null>(null)
   /**
    * 🔴 THE SIGNATURE ROWS, FOR COPY AND LOG ONLY. The SEND does not use these — the server reads the
@@ -461,7 +490,16 @@ export default function ComposeWindow({
    */
   // ⚠️ Declared here rather than reusing `isEmail`, which is defined further down with the rest of the
   // send-side derivations; moving that up would reorder a block the re-substitution effect depends on.
-  const isEmailChannel = selected?.channel === 'email'
+  /* 🔴 THE CHANNEL IS THE WINDOW'S, NOT THE SELECTED TEMPLATE'S — AND THAT ONE `?.` WAS THE WHOLE
+   * OF THE "the Email tab looks like the old composer" BUG. It read `selected?.channel === 'email'`,
+   * so with **Blank** chosen — no template selected — it was FALSE, and every block behind `isEmail`
+   * vanished: the To line, the subject, the attachments, the Send row, and the rich editor itself,
+   * which fell back to the plain WhatsApp textarea with its old placeholder and its `rows={18}`.
+   * Nothing was stale and nothing was unset: the composer was rendering its NON-EMAIL branch on the
+   * Email tab, and it had done since the day reply-mode landed.
+   * ⚠️ THE ONLY CALLER IS THE PROSPECT PAGE'S EMAIL TAB, so the fallback is `email`. A selected
+   * WhatsApp template still takes the textarea — that branch is unchanged and is what it is for. */
+  const isEmailChannel = (selected?.channel ?? 'email') === 'email'
   // 🔴 THE FIELD VALUES ARE APPLIED HERE, ABOVE EVERYTHING THAT READS THE MESSAGE. These two used to
   // be declared a hundred lines further down, next to the send; the document has to be derived before
   // the guards run, and the document is derived from these, so they moved up rather than being
@@ -585,6 +623,22 @@ export default function ComposeWindow({
   /** The message as plain text: from the DOCUMENT for an email, from the textarea for WhatsApp. */
   const plainForHumans = useMemo(
     () => (isEmail ? docToText(doc) : fullText), [isEmail, doc, fullText])
+  /**
+   * 🔴 WHY SEND IS OFF, IN ONE PLACE AND IN PRIORITY ORDER — and each is a SENTENCE, because it is
+   * shown on hover to somebody wondering what is missing. Neither button is ever hidden: an absent
+   * control says nothing at all, and the whole of item 0 was blocks that vanished.
+   * ⚠️ `hasText` READS THE DOCUMENT FOR AN EMAIL, not the template body. `body` holds the template
+   * render, so a hand-typed blank email leaves it empty for ever; guarding on `body` would have
+   * disabled Send permanently the moment this row started rendering for blank emails.
+   */
+  const hasText = plainForHumans.trim().length > 0
+  const testBlock: string | null =
+    sendingOff ? sendingOff
+    : !isEmail ? 'This is a WhatsApp message — log it from the WhatsApp tab'
+    : !hasText ? 'Write something, or pick a template, first'
+    : null
+  const sendBlock: string | null =
+    testBlock ?? (!toEmail ? 'This prospect has no email address' : null)
 
   /**
    * ⚠️ ONE WARNING NOW, AND IT IS A WARNING. The "no {{signature}}" warning is gone — he can SEE the
@@ -1189,7 +1243,11 @@ export default function ComposeWindow({
               taking a third of the box's height to carry, between them, one editable value. The
               address is not editable here by design (the server reads it off the truck row, or off
               the message being answered), so on a chase or a reply this whole row is a statement. */}
-          {isEmail && (
+          {/* 🔴 ALWAYS, EVEN WITH NO TEMPLATE AND NO THREAD. This row was behind `isEmail`, which
+              was false for a blank email (see the note on `isEmailChannel`), so the one line that
+              says where the email is going disappeared exactly when nothing else on screen said
+              either. Where there is no address it says so, in place, rather than by being absent. */}
+          {(
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13px]">
               <span className="text-slate-500">To</span>
               <span className="font-semibold text-slate-800">
@@ -1273,6 +1331,10 @@ export default function ComposeWindow({
                 onChange={d => { setEditedDoc(d); setEdited(true); setLogged(false) }}
                 signatureLines={settings.signatureLines}
                 optOut={settings.optOut}
+                // 🔴 A FIXED HEIGHT WITH ITS OWN SCROLLBAR, INLINE — dragged by the grip at its
+                // bottom right and remembered per browser. See the note on the state above.
+                height={inline && !expanded ? boxHeight : undefined}
+                onHeightChange={inline && !expanded ? rememberHeight : undefined}
                 // 🔴 NO CEILING AT ALL INLINE, AND NO INNER SCROLLBAR. The box grows line by line
                 // and the PAGE scrolls — which is what makes a long email readable while it is
                 // being written. A 75vh cap was still a box you could lose the bottom of, and its
@@ -1284,7 +1346,11 @@ export default function ComposeWindow({
                 onExpand={expanded ? undefined : () => setExpanded(true)}
               />
             ) : (
-              <textarea rows={18} className={`${FIELD} resize-y font-normal leading-relaxed`}
+              /* ⚠️ THE WHATSAPP BOX, AND ONLY THAT. It is reached when a WhatsApp template is
+                 selected; an email — including Blank — takes the editor above. Eight rows inline
+                 rather than eighteen, because a WhatsApp message is short and eighteen rows of
+                 white is the history pushed off the page. */
+              <GrowingTextarea rows={inline ? 8 : 18} className={`${FIELD} resize-y font-normal leading-relaxed`}
                 placeholder="Choose a template above, or write here."
                 value={body} onChange={e => { setBody(e.target.value); setEdited(true); setLogged(false) }} />
             )}
@@ -1565,19 +1631,24 @@ export default function ComposeWindow({
                   account — Outlook always composes from its default and ignores `from=`. The route
                   authenticates as the mailbox itself, so the From address is fixed in
                   `lib/outreach-mail-config.ts#OUTREACH_FROM_ADDRESS` and cannot be anything else. */}
-              {isEmail && !sendingOff && (
+              {/* 🔴 THE SEND ROW IS ALWAYS HERE, AND SAYS WHY IT CANNOT SEND. It used to be behind
+                  `isEmail && !sendingOff` — so on a blank email there were no send buttons at all,
+                  only the sentence under the box explaining what they would do. A disabled button
+                  with its reason on hover tells you what is missing; an absent one tells you
+                  nothing. `sendBlock` is the one reason, in priority order, shared by both. */}
+              {(
                 <>
-                  <button onClick={() => askSend(true)} disabled={!body.trim() || sending}
-                    title="Sends this message to your own address. Nothing is logged and no contact is recorded."
+                  <button onClick={() => askSend(true)} disabled={!!testBlock || sending}
+                    title={testBlock ?? 'Sends this message to your own address. Nothing is logged and no contact is recorded.'}
                     className="text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Send test to me
                   </button>
                   {/* 🔴 THE ONLY ORANGE CONTROL ON THE PAGE, AND IT SAYS WHAT WILL HAPPEN. The
                       follow-up date comes from the page's single control, so "Send · follow up
                       3 Oct" is the whole consequence of the press, visible before it. */}
-                  <button onClick={() => askSend(false)} disabled={!body.trim() || !toEmail || sending}
-                    title={!toEmail ? 'This prospect has no email address'
-                      : `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
+                  <button onClick={() => askSend(false)} disabled={!!sendBlock || sending}
+                    title={sendBlock
+                      ?? `Sends from your mailbox to ${toEmail} and logs the contact.${followUpDate ? ` Follow-up set for ${followUpDate}.` : ''}`}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-orange-400">
                     {sending ? 'Sending…' : `Send${sendLabelSuffix ?? ''}`}
                   </button>

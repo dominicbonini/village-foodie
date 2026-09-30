@@ -105,8 +105,11 @@ function runPageSuite(rawPage) {
   t('🔴 there is one Notes card', !!notes)
   if (notes) {
     t('…titled "Notes"', /<span className=\{LABEL_CLS\}>Notes<\/span>/.test(notes))
+    /* 🔴 RESTATED (v4): the floor is still `NOTE_BOX_ROWS`, but the growing is no longer
+     * `field-sizing: content` — that property REPLACED `rows` where it is supported and rendered
+     * this ten-row box as one line in Safari. `GrowingTextarea` does it in JS. */
     t('🔴 the box floors at NOTE_BOX_ROWS rows and grows',
-      /rows=\{NOTE_BOX_ROWS\}/.test(notes) && /fieldSizing: 'content'/.test(notes))
+      /<GrowingTextarea id=\{ADD_NOTE_ID\} rows=\{NOTE_BOX_ROWS\}/.test(notes) && !/fieldSizing/.test(notes))
     t('…full column width', /w-full resize-y/.test(notes))
     t('…with the placeholder "Add a note…"', /placeholder="Add a note…"/.test(notes))
     t('…and a Save note button', /'Save note'/.test(notes))

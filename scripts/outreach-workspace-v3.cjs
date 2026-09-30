@@ -179,7 +179,11 @@ const contact = (over = {}) => ({
     const TL = readStripped('components/admin/ProspectTimeline.tsx')
     check(/pairHandLoggedEmails\(\{/.test(TL), 'the timeline component asks for the pairing…')
     check(/also logged by hand/.test(TL), '…marks the row it produced…')
-    check(/Logged by hand:/.test(TL), '…and shows the logged text when the row is opened')
+    /* ⚠️ RESTATED (v4): the row does not open any more — an email opens in the reading panel, and
+     * the hand-logged sentence went with the body it belongs under. The rule is unchanged: hiding
+     * the contact row must never hide the sentence it carried. */
+    check(/Logged by hand:/.test(readStripped('components/admin/EmailReadingPanel.tsx')),
+      '…and shows the logged text above the body, in the reading panel')
   }
 
   console.log('\n── A PREVIEW THAT SAYS SOMETHING ────────────────────────────────────────────────────────')
@@ -287,7 +291,14 @@ const contact = (over = {}) => ({
      * `notes` column survives in full as "Earlier notes", it is written in exactly ONE place on
      * the page, and nothing copies it into a note. Only the two names are gone.
      * ⚠️ THE TWO KEPT BELOW ARE THE ONES ABOUT THE ONE BOX, and they still hold. */
-    check(/fieldSizing: 'content'/.test(PAGE), '…that grows with what is in it')
+    /* 🔴 RESTATED (v4), AND THE OLD CHECK WAS ASSERTING THE BUG. It required
+     * `fieldSizing: 'content'` on the page and called it "…that grows with what is in it". The
+     * property does grow a box — and it also SHRINKS one, replacing `rows` entirely, so the
+     * ten-row note box rendered as a single line in Safari and in Chrome. The growing is done in
+     * JS now, by `GrowingTextarea`, and `rows` is left meaning what it means. */
+    check(!/fieldSizing/.test(PAGE), '🔴 no box on the page depends on `field-sizing` any more…')
+    check(/<GrowingTextarea /.test(PAGE) && !/<textarea /.test(PAGE),
+      '…and every one of them grows through the one component')
     check(/action: 'add_note', prospect_id: p\.id/.test(PAGE),
       '…writing through the existing note path, into the history')
     // 🔴 THE NOTE TAB IS GONE.
