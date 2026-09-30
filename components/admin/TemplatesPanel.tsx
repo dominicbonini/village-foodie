@@ -1062,13 +1062,32 @@ export default function TemplatesPanel() {
             {selected && (
               // ⚠️ THE EDITOR IS A COLUMN THAT FILLS THE PANE: the message grows into the space that
               // is left and Save sits under it, on screen, without the pane scrolling to reach it.
-              <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3 h-full flex flex-col overflow-y-auto">
+              /* ── 🔴 THE OVERLAP, AND WHY IT IS A ONE-LEVEL FLEX COLUMN NOW ──────────────────
+               * REPORTED: the "Values this message fills in" box and the conditional warning were
+               * drawn ACROSS the bottom of the message box.
+               * WHY: a flex item's default `flex-shrink: 1`. When the column ran out of room every
+               * block was squeezed — and a squeezed block does not squeeze what is inside it. The
+               * `rows={15}` textarea kept its 404px, spilled out of the wrapper that had been
+               * shrunk around it, and the blocks below — later siblings, so painted on top —
+               * landed over it. Nothing was absolutely positioned; it was flex-shrink all along.
+               * 🔴 AND IT COULD NOT BE FIXED BLOCK BY BLOCK, because it was NESTED. The write
+               * section was two wrappers deep, each `flex-1 min-h-0`, and any ancestor that may
+               * shrink below its content will absorb the shortfall and let the content spill.
+               * `shrink-0` on the leaves does nothing while an ancestor is still shrinking. So the
+               * two wrappers are gone: the editor is ONE flex column, every block in it refuses to
+               * shrink, and the MESSAGE is the single item that gives — down to a floor, after
+               * which the column overflows and the scroller does its job.
+               * 🔴 SAVE IS OUTSIDE THE SCROLLER. It used to be the last item inside it, pushed down
+               * by `mt-auto`, so the moment the editor did scroll the button scrolled away with it.
+               * Pinned here it is on screen at every height, which is what item 4 asked for. */
+              <div className="rounded-xl border border-slate-200 bg-white p-4 h-full min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0 overflow-y-auto space-y-3 flex flex-col">
                 {/* 🔴 THE NUMBERED HEADINGS ARE GONE — "1 Name it", "3 Write it", AND NO 2. There were
                     three of them when the middle one explained a section of controls; that section
                     went when the sequence grid took over deciding where a template is used, and what
                     was left was a numbered list that skipped a number. Three labelled fields need no
                     steps and no paragraphs above them: "Template name", "Subject", "Message". */}
-                <div>
+                <div className="shrink-0">
                   <div className="flex items-end gap-3">
                     <label className="block flex-1 min-w-0"><span className={LABEL}>Template name</span>
                       <input type="text" className={FIELD} value={draft.label ?? ''}
@@ -1105,7 +1124,7 @@ export default function TemplatesPanel() {
                     prose above the field somebody came here to type in; the left list already says
                     "Not in sequence" beside the name. */}
                 {usedInChips.length > 0 && (
-                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+                  <div className="shrink-0 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
                     <span className={LABEL}>Used in</span>
                     {usedInChips.map((u: string) => (
                       // 🔴 A CHIP IS A LINK. Clicking one opens the Sequence view with that box
@@ -1121,8 +1140,9 @@ export default function TemplatesPanel() {
 
                 {/* ⚠️ THE ONE SENTENCE WORTH KEEPING FROM "Write it" MOVED UNDER THE MESSAGE LABEL,
                     where the two kinds of bracket are actually typed. */}
-                <div className="pt-3 border-t border-slate-100 flex-1 min-h-0 flex flex-col">
-                  <div className="space-y-3 flex-1 min-h-0 flex flex-col">
+                {/* ⚠️ THE DIVIDER IS ITS OWN LINE, not a wrapper's border, because the wrapper it
+                    belonged to was one of the two that had to go. */}
+                <div className="shrink-0 border-t border-slate-100" />
                     {/* 🔴 THE SUBJECT IS HIDDEN, NOT CLEARED — and the warning says what saving will do.
                         Switching to WhatsApp used to make a typed subject vanish with no warning, and
                         the ROUTE (not this form) is what discards it: `update_template` sets
@@ -1131,7 +1151,7 @@ export default function TemplatesPanel() {
                         keeps it, switching back to Email brings it straight back, and if he saves as
                         WhatsApp he does it having been told. */}
                     {draft.channel === 'whatsapp' && (draft.subject ?? '').trim() !== '' && (
-                      <div className="rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2">
+                      <div className="shrink-0 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2">
                         <p className="text-[12px] font-bold text-amber-900">WhatsApp messages have no subject line.</p>
                         <p className="text-[12px] text-amber-800 mt-0.5">
                           Your subject — “{draft.subject}” — is still here and comes back if you switch to
@@ -1141,14 +1161,14 @@ export default function TemplatesPanel() {
                     )}
 
                     {draft.channel !== 'whatsapp' && (
-                      <label className="block"><span className={LABEL}>Subject</span>
+                      <label className="block shrink-0"><span className={LABEL}>Subject</span>
                         <input type="text" ref={subjectRef} className={FIELD} value={draft.subject ?? ''}
                           onFocus={() => setLastFocus('subject')}
                           onChange={e => setDraft(d => ({ ...d, subject: e.target.value }))} />
                       </label>
                     )}
 
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="shrink-0 flex items-center gap-2 flex-wrap">
                       <span className={LABEL}>Message</span>
                       {/* ── 🔴 INSERT TOKEN ▾ — THE RESOLVER'S OWN VOCABULARY ────────────────────
                           `resolvedTokenReference()` reads the labels off the resolver's switch, so
@@ -1179,25 +1199,34 @@ export default function TemplatesPanel() {
                         Deleting it is how someone types [[truck name]] and wonders why it never fills.
                         ⚠️ IT SITS UNDER THE LABEL, NOT IN A TOOLTIP — the brief asks for a small grey
                         line, and `scripts/outreach-templates-layout.cjs` checks it is still here. */}
-                    <p className="text-[11px] text-slate-500 -mt-1">
+                    <p className="shrink-0 text-[11px] text-slate-500 -mt-1">
                       {'{{double braces}}'} fill themselves in; {'[[square brackets]]'} are values you
                       set once in Snippets, or are asked for per truck.
                     </p>
-                    <label className="block">
-                      {/* 🔴 15 ROWS = 404px, MEASURED, AND THE 16TH ROW WAS CUT DELIBERATELY. At 16 rows
-                          (430px) the Save button's bottom lands at 899px with the admin chrome above it
-                          — a ONE-PIXEL margin on a 1440x900 laptop. 15 rows puts it at 873px with real
-                          margin, and the box is `resize-y` so it can be dragged taller.
-                          🔴 SIZED WITH `rows`, NOT A CLASS: `text-sm` is INERT on a textarea here — the
-                          unlayered rule in globals.css forces `font-size: inherit`, so only `rows` can
-                          set the height. */}
-                      <textarea ref={bodyRef} rows={15} className={`${FIELD} resize-y leading-relaxed font-normal`}
+                    <label className="flex-1 min-h-[7rem] flex flex-col">
+                      {/* 🔴 THE MESSAGE FILLS WHAT IS LEFT, AND IS THE ONLY THING THAT SHRINKS. It was
+                          a fixed `rows={15}` (404px, measured against a 1440x900 laptop) inside a
+                          column that is now the measured height of the pane — so on a shorter window
+                          the column had to take 404px out of somewhere, took it out of every block at
+                          once, and the boxes below ended up drawn across the textarea.
+                          🔴 `rows` IS STILL 15 AND STILL MATTERS: it is the flex BASIS, so it is the
+                          height the box has when the column has no height of its own — the phone
+                          layout, where the three panes stack and the page scrolls.
+                          🔴 SIZED WITH `rows`, NOT A CLASS: `text-sm` is INERT on a textarea here —
+                          the unlayered rule in globals.css forces `font-size: inherit`.
+                          ⚠️ `resize-y` IS GONE, DELIBERATELY. Dragging set an inline height that the
+                          flex column then fought, which is the same overlap by another route; a box
+                          that already fills the pane has nothing to be dragged taller into.
+                          🔴 `min-h-[7rem]` IS THE FLOOR, AND IT IS WHAT MAKES THE PANE SCROLL INSTEAD
+                          OF COLLAPSING. With `min-h-0` the message would be squeezed towards nothing
+                          on a short window — a writing box with no room to write in — and the column
+                          would keep "fitting". At seven rems it stops shrinking, the column overflows,
+                          and `overflow-y-auto` on the pane does what it is for. */}
+                      <textarea ref={bodyRef} rows={15} className={`${FIELD} flex-1 min-h-0 resize-none leading-relaxed font-normal`}
                         value={draft.body ?? ''}
                         onFocus={() => setLastFocus('body')}
                         onChange={e => setDraft(d => ({ ...d, body: e.target.value }))} />
-                    </label>
-                  </div>
-                </div>
+                </label>
 
                 {/* ── 🔴 (S4 / item 6) THE SNIPPET LINE — UNDER THE MESSAGE, AND READ-ONLY ──────────
                     Moved here from the top of the pane. It was the first thing on screen, which put
@@ -1207,7 +1236,7 @@ export default function TemplatesPanel() {
                     is exactly what made one value four edits: the same `[[my rate]]` had its own box on
                     every template that mentioned it. One place to edit, one place to look — an editable
                     field here would recreate the problem on the screen that replaced it. */}
-                <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
+                <div className="shrink-0 rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
                   <div className="flex items-baseline gap-2 mb-1.5">
                     <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
                       Values this message fills in
@@ -1255,7 +1284,7 @@ export default function TemplatesPanel() {
                 {/* 🔴 (5) A HALF-WRITTEN CONDITIONAL HAS NO VISIBLE FAILURE MODE — the branch just never
                     fires. This is the only warning that can catch it before an email goes out. */}
                 {halfPairs.length > 0 && (
-                  <p className="text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">
+                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">
                     <span className="font-bold">Half of a conditional pair:</span>{' '}
                     {halfPairs.map(x => x.pos ? `?${x.c}: without ?no_${x.c}:` : `?no_${x.c}: without ?${x.c}:`).join('; ')}.
                     {' '}Whichever half is missing, that branch never renders — the sentence simply
@@ -1267,7 +1296,7 @@ export default function TemplatesPanel() {
                     prospect simply has no live demo. It is prospect-specific, so it moves as the preview
                     prospect changes — which is exactly what makes it informative here. */}
                 {(preview?.blocking.length ?? 0) > 0 && (
-                  <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
                     <span className="font-bold">Cannot be sent to {previewProspect?.name}:</span>{' '}
                     {preview!.blocking.map(b => `{{${b}}}`).join(', ')}{' '}
                     — there is no live demo link for this prospect, and this token has no fallback on
@@ -1276,7 +1305,7 @@ export default function TemplatesPanel() {
                   </p>
                 )}
                 {malformed.length > 0 && (
-                  <p className="text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
                     <span className="font-bold">Unreadable token{malformed.length > 1 ? 's' : ''}:</span>{' '}
                     <code className="font-mono">{malformed.join('  ')}</code>{' '}
                     — the renderer cannot read {malformed.length > 1 ? 'these' : 'this'} and would leave the
@@ -1286,7 +1315,7 @@ export default function TemplatesPanel() {
                   </p>
                 )}
                 {mistyped.length > 0 && (
-                  <p className="text-[12px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-2">
+                  <p className="shrink-0 text-[12px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-2">
                     <span className="font-bold">Possible mistyped token{mistyped.length > 1 ? 's' : ''}:</span>{' '}
                     {mistyped.map(m => `[${m}]`).join(', ')} — single brackets are ordinary text and print
                     literally. Use <code className="font-mono">{'{{token}}'}</code> or{' '}
@@ -1294,9 +1323,10 @@ export default function TemplatesPanel() {
                   </p>
                 )}
 
-                {/* ⚠️ `mt-auto`: Save sits at the BOTTOM of the pane and is always on screen — the
-                    editor above it is what scrolls, not the button that commits it. */}
-                <div className="flex justify-end mt-auto pt-2">
+                </div>
+                {/* ⚠️ SAVE SITS AT THE BOTTOM OF THE PANE AND IS ALWAYS ON SCREEN — it is OUTSIDE the
+                    scroller above, so the editor scrolling is not the button leaving. */}
+                <div className="shrink-0 flex justify-end pt-2">
                   <button onClick={saveDraft}
                     className="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">
                     Save template

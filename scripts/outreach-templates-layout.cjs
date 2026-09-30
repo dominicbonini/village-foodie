@@ -165,15 +165,16 @@ function runCensus(over = {}) {
    * below the switcher and each scrolls on its own — is restated here against the MEASURED
    * height; the measurement itself is checked in the v2 block below, which owns it now.
    * ⚠️ THE SECOND HALF IS RESTATED TOO, AND NOT LOOSENED. It used to count two panes carrying
-   * the one class string `flex-1 min-h-0 overflow-y-auto`. v2 gave two of the three panes a
-   * different shape for good reasons — the editor is a full-height column so Save can be pinned
-   * to its bottom with `mt-auto`, and the preview body is the flex child that takes what is left
-   * — so counting one string would now pass on ONE scrolling pane out of three. Each pane is
-   * therefore named here, at the shape it actually has. */
+   * the one class string `flex-1 min-h-0 overflow-y-auto`. Each pane has its own shape now — and
+   * RESTATED AGAIN (30 September, the overlap fix): the centre pane's scroller is no longer the
+   * pane itself. The editor is a column whose BODY scrolls and whose Save row is pinned outside
+   * that scroller, because a Save button inside it scrolled away the moment the editor did. So
+   * the centre entry names the inner scroller. Each of the three is named at its real shape. */
   t('🔴 …full height below the switcher, and each pane scrolls on its own',
     /style=\{\{ gridTemplateColumns: '270px minmax\(0, 1fr\) minmax\(0, 30%\)', height: panesHeight \}\}/.test(TAB)
     && /<div className="flex-1 min-h-0 overflow-y-auto">/.test(TAB)
-    && /bg-white p-4 space-y-3 h-full flex flex-col overflow-y-auto/.test(TAB)
+    && /bg-white p-4 h-full min-h-0 flex flex-col/.test(TAB)
+    && /<div className="flex-1 min-h-0 overflow-y-auto space-y-3 flex flex-col">/.test(TAB)
     && /<pre className="flex-1 min-h-0 text-base[^"]*overflow-y-auto"/.test(TAB))
   t('🔴 …and NOTHING here locks the page — the v4-fixes bug is not reintroduced',
     !/document\.body\.style/.test(TAB) && !/documentElement\.style/.test(TAB))
@@ -250,7 +251,25 @@ function runCensus(over = {}) {
   t('🔴 …including the padding BELOW them, which is what made the page 24px too tall',
     /window\.getComputedStyle\(el\.parentElement \?\? el\)\.paddingBottom/.test(TAB))
   t('⚠️ …and it re-measures when anything above changes height', /new ResizeObserver\(schedule\)/.test(TAB))
-  t('🔴 Save sits at the bottom of the pane, always on screen', /flex justify-end mt-auto pt-2/.test(TAB))
+  /* ── 🔴 RESTATED (30 September, the overlap fix) ──────────────────────────────────────────────
+   * This pinned `mt-auto`, which put Save at the bottom of the editor's own scrolling column —
+   * true while the column never scrolled, and false the moment it did. Save is OUTSIDE the
+   * scroller now, so what must hold is that it is a non-shrinking row after it, and that no
+   * `mt-auto` has crept back to suggest it is still the last thing inside. */
+  t('🔴 Save sits at the bottom of the pane, always on screen',
+    /<div className="shrink-0 flex justify-end pt-2">/.test(TAB) && !/mt-auto/.test(TAB))
+  /* ── 🔴 THE OVERLAP: ONE COLUMN, ONE THING THAT GIVES ─────────────────────────────────────────
+   * The two `flex-1 min-h-0` wrappers around the write section are what made `shrink-0` on the
+   * leaves useless: an ancestor that may shrink below its content absorbs the shortfall and lets
+   * the content spill over whatever follows. They are gone, and the floor on the message is what
+   * turns "squeeze the writing box to nothing" into "scroll the editor". */
+  t('🔴 the write section is no longer two shrinkable wrappers deep',
+    !/pt-3 border-t border-slate-100 flex-1/.test(TAB) && !/space-y-3 flex-1 min-h-0 flex flex-col/.test(TAB))
+  t('🔴 …the message is the one item that gives, and it has a floor',
+    /<label className="flex-1 min-h-\[7rem\] flex flex-col">/.test(TAB)
+    && /\$\{FIELD\} flex-1 min-h-0 resize-none/.test(TAB))
+  t('⚠️ …and every other block in the editor refuses to shrink',
+    (TAB.match(/className="shrink-0|className=\{`shrink-0|className="block shrink-0/g) || []).length >= 8)
   t('🔴 the preview body fills the pane and scrolls inside',
     /<pre className="flex-1 min-h-0 text-base/.test(TAB) && !/maxHeight: 340/.test(TAB))
   /* ── 🔴 THE PREVIEW IS ONE CALL LONGER THAN IT WAS ────────────────────────────────────────────
@@ -348,6 +367,15 @@ function runCensus(over = {}) {
       { TAB: changed(TAB_SRC, TAB_SRC.replace(`    const full = tpl.channel === 'email' && sendSettings
       ? docPlainText(docFromTemplateText(m.body, sendSettings))
       : m.body`, '    const full = m.body'), 'V12') }],
+    ['V14 🔴 the message loses its floor — the writing box is squeezed towards nothing',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('<label className="flex-1 min-h-[7rem] flex flex-col">',
+        '<label className="flex-1 min-h-0 flex flex-col">'), 'V14') }],
+    ['V15 🔴 Save goes back inside the scroller on mt-auto — it scrolls away with the editor',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('<div className="shrink-0 flex justify-end pt-2">',
+        '<div className="shrink-0 flex justify-end mt-auto pt-2">'), 'V15') }],
+    ['V16 🔴 the write section goes back to two shrinkable wrappers — the overlap returns',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('<div className="shrink-0 border-t border-slate-100" />',
+        '<div className="pt-3 border-t border-slate-100 flex-1 min-h-0 flex flex-col">'), 'V16') }],
     ['V10 🔴 Save goes back to orange',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">\n                    Save template',
         'rounded-lg bg-orange-600 text-white">\n                    Save template'), 'V10') }],
