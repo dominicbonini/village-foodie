@@ -117,6 +117,62 @@ function gbp(n: number, dp = 0): string {
   return `${sign}£${group(int)}${frac ? '.' + frac : ''}`
 }
 
+// ── 🔴 MONEY TO THE PENNY, EXCEPT UNDER A POUND ───────────────────────────────────────────────────
+// `gbp(x, 2)` renders "£0.80", which on a per-trading-day figure reads as a price list rather than as
+// pocket change — and the whole point of the per-day framing is that the number is small enough to be
+// recognised instantly. Under £1 it becomes whole pence ("80p").
+// ⚠️ IT DELEGATES TO `gbp` FOR EVERYTHING ELSE, so grouping, the sign and the 2dp all stay in one
+// place. This adds a case to the formatter; it does not become a second formatter.
+// ⚠️ ROUNDED, NOT TRUNCATED, and rounded on the PENCE: 0.8019… × 100 = 80.19… → "80p". Truncating
+// would render 0.999 as "99p" when the next line up says "£1.00".
+function money(n: number): string {
+  const safe = Number.isFinite(n) ? n : 0
+  if (Math.abs(safe) < 1) return `${Math.round(Math.abs(safe) * 100)}p`
+  return gbp(safe, 2)
+}
+
+// ── 🔴 A MONTHLY FIGURE AS A TRADING DAY, ON THE CALENDAR AND NOT ON A ROUND NUMBER ───────────────
+// `monthly / 4 / days` is the obvious form and it is wrong: a month is not four weeks. Over a year it
+// understates the per-day figure by about 8.3% (52/48), which on this page is an error in OUR favour —
+// the number we are asking an operator to judge us on would be too small.
+// ⚠️ × 12 ÷ 52 FIRST, THEN ÷ days. The monthly amount becomes a WEEKLY amount against the real number
+// of weeks in a year, and only then is it divided by the days the van is actually out.
+function perTradingDay(monthly: number, days: number): number {
+  const d = Math.max(1, Math.min(7, Math.round(days)))
+  return (monthly * 12) / 52 / d
+}
+
+// ── 🔴 THE HERO FIGURE IS SIZED FROM ITS RENDERED STRING, AND NOW THREE FIGURES SHARE THE RULE ─────
+// This was two inline lines computing `heroDigits`/`heroSize` for the saving figure. The per-trading-day
+// headlines need exactly the same treatment — "£2.24" and "80p" are short, a fleet figure is not — and a
+// second copy of the thresholds would drift the first time one moved.
+// ⚠️ IT TAKES THE STRING, NOT THE NUMBER. The point is how wide the thing on screen is, so "80p" (3) and
+// "£1,234.56" (9) are measured as rendered rather than inferred from magnitude. A fixed Tailwind size
+// cannot do this; it is the one inline style on this page that must survive any conversion.
+function heroSizeFor(rendered: string): number {
+  return rendered.length > 7 ? 60 : rendered.length > 5 ? 76 : 92
+}
+
+// ── 🔴 A MONTHLY FIGURE AS A WEEK, FOR THE PATH WITH NO DAYS TO DIVIDE BY ─────────────────────────
+// The "Yes" path no longer asks how many days a week they trade (it had nothing to use the answer for
+// once that result was reframed), so its difference is shown PER WEEK instead of per trading day.
+// ⚠️ IT IS `perTradingDay` WITH THE DAYS STEP LEFT OUT — × 12 ÷ 52 and stop. Same calendar reasoning:
+// `monthly / 4` would understate the weekly figure by ~8.3%, in our favour.
+function perWeek(monthly: number): number {
+  return (monthly * 12) / 52
+}
+
+// 🔴 UK high-street coffee is ~£3.50+; keep the claim true.
+const COFFEE_MAX_PER_DAY = 3.0
+
+/** "And your first month is on us." / "…first N months are on us." Nothing at zero. */
+function freeMonthsLine(n: number): string | null {
+  if (n < 1) return null
+  return n === 1
+    ? 'And your first month is on us.'
+    : `And your first ${n} months are on us.`
+}
+
 // ── 🔴 "DOES IT RENDER AS ZERO?" ASKED OF THE FORMATTER, NOT OF THE NUMBER ─────────────────────────
 // A saving of £0.004 is > 0, so the old test claimed a saving and then printed "£0" — "Start free and
 // save £0 →". The obvious fix is a threshold like `>= 1`, and it is the wrong one: it hard-codes the
@@ -180,6 +236,20 @@ function anchor(v: number): string | null {
 // these two CTAs their own `open` state, invisible to the <DemoModal /> mounted under the first one, and
 // the buttons would simply do nothing when clicked. No error, no warning — a dead CTA.
 export default function CostComparison() {
+  // ── 🔴 THE FIRST QUESTION, AND IT HAS NO DEFAULT ─────────────────────────────────────────────────
+  // The page assumed every visitor already pays another provider, so a truck with no system at all was
+  // asked what it pays per order and then shown a "saving" against a number it had invented for itself.
+  // 🔴 `null` IS NOT "YES". Three states, not two — the same reasoning as `planOverride` below: a
+  // boolean cannot tell "has not answered" from "answered no", and everything downstream renders a
+  // DIFFERENT PAGE for those two. Defaulting it either way would put a figure on screen computed from
+  // an assumption the operator never made.
+  const [hasSystem, setHasSystem] = useState<'yes' | 'no' | null>(null)
+  const noSystem = hasSystem === 'no'
+  // ── 🔴 TRADING DAYS, DEFAULT 4 ───────────────────────────────────────────────────────────────────
+  // Every per-day figure on the page divides by this. 4 is the brief's default; it is a NUMBER and not a
+  // nullable, because unlike `hasSystem` there is no page-changing decision riding on it — a default
+  // here is an estimate the operator adjusts, not an assumption about their business model.
+  const [days, setDays] = useState(4)
   const [trucks, setTrucks] = useState(1)
   const [staff, setStaff] = useState<1 | 2 | null>(null)
   // ── 🔴 THE OVERRIDE IS `null`-ABLE ON PURPOSE, AND `null` IS NOT "PRO". ──────────────────────────
@@ -230,6 +300,18 @@ export default function CostComparison() {
   const free = Math.min(12, Math.max(0, freeMonths))
   const fleet = Math.max(1, trucks || 1)
 
+  /* ── 🔴 THE CARD NUMBERS ARE COMPUTED, BECAUSE THE TWO PATHS HAVE DIFFERENT LENGTHS ─────────────
+   * The "No" path hides "What do you pay per order now?" entirely, so hard-coded numbers would read
+   * 1, 2, 3, 4, 6, 7 — a gap that looks like a missing question and invites the operator to go looking
+   * for it. These are the only place a step number is written, and `n={STEP.x}` at each call site.
+   * ⚠️ THE FIRST FOUR ARE THE SAME ON BOTH PATHS, so they are literals; only the tail moves. */
+  const STEP = {
+    system: 1, trucks: 2, people: 3, orders: 4,
+    fee: 5,     // Yes path only — hidden entirely on No
+    days: 5,    // No path only — hidden entirely on Yes (1 October 2026)
+    free: 6,    // both paths, and the last question on each
+  }
+
   const m = useMemo(() => {
     const orders = gmv / AOV
     // ── 🔴 THE ONLY LINES THE TOGGLE TOUCHES, AND THEY ARE BOTH ON THEIR SIDE. ─────────────────
@@ -262,7 +344,20 @@ export default function CostComparison() {
       // built from them — but they are no longer RETURNED: the effective-rate line was their only
       // consumer. Returning a value nothing reads is how a deleted feature leaves a trail that looks
       // load-bearing to the next person.
+      // ── 🔴 `theirsMonth` AND `oursMonth` ARE RETURNED AGAIN, AND THEY HAVE READERS ────────────
+      // The note that stood here said they were computed but deliberately NOT returned, because the
+      // effective-rate line was their only consumer and "returning a value nothing reads is how a
+      // deleted feature leaves a trail that looks load-bearing". That was right at the time. Both the
+      // per-trading-day framings read them now — monthly is the unit this page frames everything in —
+      // so they are returned, with readers.
       orders, theirPct, overPerTruck, excess, fleetGmv,
+      theirsMonth, oursMonth,
+      /** 🔴 OUR MONTHLY COST FOR ONE VAN — plan + overage, before the fleet multiplier. Every per-day
+       *  headline is PER VAN, so this is the figure they divide, never `oursMonth`. */
+      oursPerTruck: plan + overPerTruck,
+      /** 🔴 STRIPE'S ESTIMATE, PER VAN. Derived from CARD_FEES only, and NEVER added to our total:
+       *  card processing is paid to Stripe and is excluded from both sides of every comparison here. */
+      cardPerTruck: (gmv * CARD_PCT) / 100 + (orders * CARD_PENCE) / 100,
       theirsYear, oursY1, oursY2,
       saveY1: theirsYear - oursY1,
       pctY1: theirsYear > 0 ? ((theirsYear - oursY1) / theirsYear) * 100 : 0,
@@ -283,11 +378,19 @@ export default function CostComparison() {
   // "extra" either, so it says neither.
   // ⚠️ NO CLAIM IS INVENTED FOR THE ZERO CASE: "About the same" describes the arithmetic and stops.
   const heroVerb = good ? 'You save' : rendersAsZero(m.saveY1) ? 'About the same' : "You'd pay extra"
+  /* ── 🔴 THE THIRD CASE, NAMED, BECAUSE IT NOW RENDERS A DIFFERENT CARD ──────────────────────────
+   * `good` splits "saves" from "does not save"; `rendersAsZero` splits "about the same" out of the
+   * second. What is left is the one case item 6 reframes: we genuinely cost more.
+   * ⚠️ `heroVerb`'s "You'd pay extra" IS NOW UNREACHABLE ON SCREEN — the dearer branch does not render
+   * it. It is kept because `rendersAsZero` still needs the middle case and deleting the third arm would
+   * leave a ternary whose fallback silently labelled a dearer result "About the same". */
+  const dearer = !good && !rendersAsZero(m.saveY1)
+  /** What HatchGrab costs ABOVE the current provider, per van per month. Positive only when `dearer`. */
+  const extraPerTruck = m.oursPerTruck - m.theirsMonth / fleet
   // 🔴 KEEP DYNAMIC. The hero figure is sized from the RENDERED STRING's length so a fleet total does
   // not wrap to two lines. A fixed Tailwind size cannot do this — it is the one inline style that must
   // survive conversion.
-  const heroDigits = gbp(Math.abs(m.saveY1)).length
-  const heroSize = heroDigits > 7 ? 60 : heroDigits > 5 ? 76 : 92
+  const heroSize = heroSizeFor(gbp(Math.abs(m.saveY1)))
 
   return (
     <div className="min-h-screen px-5 py-10 md:py-14" style={{ backgroundColor: '#FAF8F5', color: INK }}>
@@ -314,13 +417,56 @@ export default function CostComparison() {
           <span style={{ color: ORANGE }}>ordering costs</span>
         </h1>
         {/* ⚠️ "Takes about a minute", NOT "Four quick questions". Being wrong about a count on a page
-            about arithmetic undermines the arithmetic, and the count is arguable. */}
+            about arithmetic undermines the arithmetic, and the count is arguable — and it is now arguable
+            in two directions, because the two paths ask a different number of questions.
+            🔴 IT NO LONGER PROMISES A SAVING. It read "…you'll see what a year on HatchGrab would save
+            you", which is a claim the page cannot keep for a truck with no system to save against — and
+            could not keep even on the Yes path when we come out dearer. It now says what the page DOES
+            on each path and promises the outcome of neither. */}
         <p className="mt-4 max-w-lg text-base leading-relaxed text-slate-600">
-          Takes about a minute, and you&apos;ll see what a year on HatchGrab would save you.
+          Takes about a minute. Already using a system? We&apos;ll compare it. Not yet? We&apos;ll show
+          you exactly what it costs.
         </p>
 
         <div className="mt-8 space-y-4">
-          <Card n="1" title="How many trucks do you run?">
+          {/* ── 🔴 THE QUESTION THE PAGE USED TO ANSWER FOR ITSELF ──────────────────────────────────
+              Everything below used to assume a current provider. A truck with no online ordering was
+              asked "What do you pay per order now?", had no answer, and was shown a saving against the
+              prefilled 4.5% — a figure WE put there. That is the page inventing the comparison it then
+              wins, which is the one thing it cannot do and still be believed.
+              ⚠️ NO DEFAULT, AND THE BUTTONS ARE THE *STAFF* QUESTION'S BUTTONS, CLASS FOR CLASS —
+              `px-4 py-4 text-base font-bold`. 🔴 THEY WERE `px-3 py-3 text-sm font-black sm:text-base`
+              AND THAT WAS WRONG (corrected 1 October 2026, operator spotted it): `font-black` is 900
+              against the 700 every other WORDED option on this page uses, so these two read as a heavier
+              class of control than "One" / "Two or more" directly below them. The numeric buttons —
+              trucks, and trading days — keep `font-black` because a single digit at 700 looks unset
+              beside them; it is the WORDED options that have to agree with each other.
+              ⚠️ SO THE RULE IS: worded options match the staff buttons, digits match the truck buttons.
+              ⚠️ `flex-wrap` AND `min-w-0 flex-1` FOR THE SAME REASON QUESTION 2 HAS THEM: at 375px two
+              labels this long on one row need to be allowed to wrap rather than overflow the card. */}
+          <Card n={STEP.system} title="Do you take online orders now?">
+            {/* ── ⚠️ STACKED BELOW 640px, SIDE BY SIDE ABOVE IT — THE CTA PAIR'S OWN PATTERN ──────────
+                🔴 A CONSEQUENCE OF MATCHING THE STAFF BUTTONS' TEXT SIZE, MEASURED NOT GUESSED. At
+                `text-base` in a shared row these are 143px wide at 375px, and "Yes, with another system"
+                wraps to THREE lines — a 108px-tall button against the 60px one below it. Full width each
+                on a phone puts both on one line (305px wide at 1440, 343px at 375) and leaves the text
+                formatting identical, which is the thing that had to match.
+                ⚠️ `flex-col sm:flex-row` IS COPIED FROM THE CTA PAIR in this same file, which stacks for
+                exactly this reason — two long labels that will not share a 375px row. */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+              {([['yes', 'Yes, with another system'], ['no', 'No, not yet']] as const).map(([v, label]) => (
+                <button key={v} onClick={() => setHasSystem(v)}
+                  className="min-w-0 flex-1 rounded-xl border-2 px-4 py-4 text-base font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                  style={hasSystem === v
+                    ? { backgroundColor: ORANGE, borderColor: ORANGE, color: '#fff' }
+                    : { borderColor: '#E2E8F0', backgroundColor: '#fff', color: SLATE }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </Card>
+
+          <Card n={STEP.trucks} title="How many trucks do you run?" disabled={!hasSystem}>
             {/* ⚠️ `flex-wrap` + `gap-2 sm:gap-3`: at 375px three buttons and the 4+ box on one row leaves
                 each button under 70px. Wrapping is what stops it overflowing. */}
             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -351,7 +497,8 @@ export default function CostComparison() {
 
           {/* ⚠️ THE TITLE FOLLOWS QUESTION 1. "each van" was wrong for a one-truck operator, who has one
               van and is being asked about "each" of it. `fleet` is already the clamped truck count. */}
-          <Card n="2" title={fleet > 1 ? 'How many people work across your vans?' : 'How many people work the van?'}>
+          <Card n={STEP.people} title={fleet > 1 ? 'How many people work across your vans?' : 'How many people work the van?'}
+            disabled={!hasSystem}>
             {/* 🔴 ANSWERING QUESTION 2 CLEARS THE OVERRIDE (the `setPlanOverride(null)` below). Without
                 it, an operator who switched to Pro and then changed their answer to "Two or more" would
                 be shown "Your choice: Pro" with every figure computed on Pro — a stale decision presented
@@ -427,7 +574,16 @@ export default function CostComparison() {
             )}
           </Card>
 
-          <Card n="3" title="Online orders per month, per truck" disabled={!staff}>
+          {/* ── 🔴 THE SAME SLIDER, TWO QUESTIONS ───────────────────────────────────────────────────
+              On the Yes path this asks what they DO take online; on the No path what they THINK they
+              would. 🔴 THE INPUT, RANGE, STEP AND "~N orders" ARE DELIBERATELY IDENTICAL — the quantity
+              is the same quantity and every figure downstream reads it the same way. Only the words
+              change, because only the certainty does. */}
+          <Card n={STEP.orders}
+            title={noSystem
+              ? "How much do you think you'd take online, per month, per truck?"
+              : 'Online orders per month, per truck'}
+            disabled={!hasSystem || !staff}>
             {/* ── 🔴 THE CAPTION HAS TO EXCLUDE THE WINDOW, AND THIS IS AN HONESTY FIX. ──────────────
                 It read "One truck · about {N} orders", which named the SCOPE but never said what kind
                 of money. Most trucks take the majority of theirs on the card machine at the serving
@@ -466,8 +622,14 @@ export default function CostComparison() {
               <span className="text-sm tabular-nums text-slate-400">~{Math.round(m.orders)} orders</span>
               <span className="text-3xl font-black tabular-nums">{gbp(gmv)}</span>
             </div>
+            {/* ⚠️ BOTH WORDINGS DO THE SAME JOB — they keep WINDOW takings out of the figure, which is
+                the honesty fix the long note above describes. The No-path version has to do it while
+                asking for a guess, so it names the two kinds of order a truck would expect online
+                rather than only saying what to exclude. */}
             <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              Only orders placed through your ordering page — not cash or card at the window.
+              {noSystem
+                ? 'A rough guess is fine — pre-orders and queue-skippers, not cash or card at the window.'
+                : 'Only orders placed through your ordering page — not cash or card at the window.'}
             </p>
             <input type="range" min={0} max={12000} step={500} value={gmv}
               onChange={e => setGmv(numOr(e.target.value, 0))} className="hg-range mt-3"
@@ -490,7 +652,16 @@ export default function CostComparison() {
             )}
           </Card>
 
-          <Card n="4" title="What do you pay per order now?" disabled={!staff}>
+          {/* ── 🔴 HIDDEN ENTIRELY ON THE "No" PATH, NOT DISABLED ───────────────────────────────────
+              A truck with no system has nothing to type here, and a greyed-out card still reads as a
+              question they have failed to answer. 🔴 THE TOGGLE AND BOTH SENTENCES GO WITH IT — they
+              describe a rate that does not exist on this path, and leaving either behind would put a
+              competitor's fee model on a page that has just been told there is no competitor.
+              ⚠️ THE STATE IS NOT RESET. `feePctRaw`/`feePence`/`feeMode` keep their values while the
+              card is hidden, so switching back to "Yes" restores what was typed rather than silently
+              clearing it. Nothing on the No path READS them — see the results branch. */}
+          {!noSystem && (
+          <Card n={STEP.fee} title="What do you pay per order now?" disabled={!hasSystem || !staff}>
             {/* ⚠️ `min-w-0` on both halves is what stops these overflowing at 375px: without it a flex
                 child refuses to shrink below its content width and the row pushes past the card. */}
             <div className="flex gap-2 sm:gap-3">
@@ -589,6 +760,45 @@ export default function CostComparison() {
               </p>
             )}
           </Card>
+          )}
+
+          {/* ── 🔴 TRADING DAYS — THE DIVISOR EVERY PER-DAY FIGURE ON THIS PAGE USES ──────────────────
+              Its POSITION differs by path and that is deliberate: on the Yes path it follows the fee
+              question, on the No path it follows the orders question, so on both it is the last thing
+              asked before the offer. Months free stays last on both.
+              ⚠️ SEVEN BUTTONS IN ONE ROW, NOT A SLIDER OR A SELECT. Seven is few enough to show, and a
+              single tap beats dragging for a value an operator knows exactly.
+              ⚠️ `flex-wrap` IS STILL ON IT. Seven buttons at 375px are ~38px each, which fits — but the
+              row must be allowed to wrap rather than overflow if the gap or the font ever changes.
+              ⚠️ NO `min-w-0 flex-1` BOX BESIDE THEM: unlike question 2 there is no "8+" case to type.
+              A week has seven days. */}
+          {/* ── 🔴 HIDDEN ENTIRELY ON THE "Yes" PATH (1 October 2026, operator decision) ─────────────
+              It was asked on both paths and the Yes path no longer has anything to divide by days: that
+              result is framed PER WEEK now (item 2), so the answer would have been collected and never
+              used — a question that costs a tap and changes nothing on screen.
+              ⚠️ HIDDEN, NOT DISABLED, for the same reason the fee question is on the other path: a
+              greyed-out card reads as a question they have failed to answer.
+              ⚠️ THE STATE IS NOT RESET, matching the fee question exactly — `days` keeps its value while
+              the card is hidden, so switching back to "No" restores what was chosen rather than silently
+              returning it to 4. Nothing on the Yes path reads it. */}
+          {noSystem && (
+          <Card n={STEP.days} title="How many days a week do you trade?" disabled={!hasSystem || !staff}>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {[1, 2, 3, 4, 5, 6, 7].map(n => (
+                <button key={n} onClick={() => setDays(n)}
+                  className="min-w-0 flex-1 rounded-xl border-2 py-3 text-base font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                  style={days === n
+                    ? { backgroundColor: ORANGE, borderColor: ORANGE, color: '#fff' }
+                    : { borderColor: '#E2E8F0', backgroundColor: '#fff', color: SLATE }}>
+                  {n}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+              Events, markets, pitches — any day the van&apos;s out.
+            </p>
+          </Card>
+          )}
 
           {/* ── ⚠️ ITS OWN QUESTION, NOT A FOOTER ON QUESTION 4 (23 August 2026). ────────────────────
               It sat inside "What do you pay per order now?", which asks about the operator's CURRENT
@@ -599,7 +809,7 @@ export default function CostComparison() {
               and the longest of the five — but card 3 ("Online orders per month, per truck") already
               breaks the plain-question pattern, so the set was never uniform, and rewording this to match
               cards 1/2/4 would have cost the offer framing that is the point of the change. */}
-          <Card n="5" title="Your introductory offer — how many months free?" disabled={!staff}>
+          <Card n={STEP.free} title="Your introductory offer — how many months free?" disabled={!hasSystem || !staff}>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center rounded-lg border px-2" style={{ borderColor: '#CBD5E1' }}>
                 <input type="number" step={1} min={0} max={12} inputMode="numeric" value={freeMonthsRaw}
@@ -636,7 +846,9 @@ export default function CostComparison() {
             ⚠️ `html:has(.hg-landing) { scroll-behavior: smooth }` in landing.css does NOT reach this
             page — the calculator is deliberately outside that scope — so the behaviour is passed
             explicitly here, and reduced-motion is honoured by hand rather than inherited. */}
-        {staff && (
+        {/* ⚠️ GATED ON `hasSystem` AS WELL AS `staff` NOW, for the reason the note above gives: the
+            results block below is, so without it this would scroll to an element that does not exist. */}
+        {hasSystem && staff && (
           <p className="mt-6 text-center">
             <button type="button"
               onClick={() => {
@@ -646,13 +858,110 @@ export default function CostComparison() {
                 el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
               }}
               className="text-sm font-semibold text-slate-500 underline underline-offset-4 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
-              See your saving ↓
+              {/* 🔴 IT MUST NOT SAY "saving" ON THE No PATH. There is nothing to save against, and a
+                  link promising one would be the page making the claim its own result refuses to. */}
+              {noSystem ? 'See what it costs ↓' : 'See your saving ↓'}
             </button>
           </p>
         )}
 
-        {staff && (
+        {hasSystem && staff && (
           <div id="cost-results" className="mt-6 scroll-mt-4 space-y-4">
+            {noSystem ? (
+            /* ── 🔴 THE "No, not yet" RESULT — A PRICE, NOT A COMPARISON ─────────────────────────────
+               There is nothing to compare against, so every element of the saving card would be a claim
+               the page cannot support: no "You save", no percentage, no anchor, no year-one/year-two
+               schedule. What this operator is deciding is whether the thing is worth its price, and the
+               per-trading-day figure is that price in the unit they already think in.
+               🔴 AND NEVER A PER-ORDER FIGURE ON THIS PATH. We charge a plan plus a percentage over an
+               allowance; dividing that by an order count would invent a per-order rate we do not charge,
+               on the one path where the operator has no per-order number of their own to check it
+               against. ⚠️ `m.orders` is still used for the CARD-PROCESSING estimate below, which is
+               Stripe's genuine per-order fee and is labelled as theirs. */
+            <>
+              <div className="overflow-hidden rounded-2xl border-2 bg-white shadow-lg" style={{ borderColor: ORANGE }}>
+                <div className="px-6 py-9 text-center">
+                  <p className="text-lg font-semibold" style={{ color: INK }}>
+                    Online ordering, pre-orders and your kitchen screen for
+                  </p>
+                  {/* 🔴 PER VAN, ALWAYS. `m.oursPerTruck` is one van's plan + overage; `m.oursMonth` is
+                      the fleet. A fleet figure here would read as the price of the product. */}
+                  <p className="mt-1 font-black tabular-nums"
+                    style={{ color: ORANGE, fontSize: heroSizeFor(money(perTradingDay(m.oursPerTruck, days))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                    {money(perTradingDay(m.oursPerTruck, days))}
+                  </p>
+                  <p className="mt-2 text-xl font-bold text-slate-700">a trading day</p>
+                  <p className="mt-3 text-sm text-slate-500">
+                    Based on {days} day{days === 1 ? '' : 's'} a week · {money(m.oursPerTruck)} a month
+                    {fleet > 1 && ' per van'}
+                  </p>
+                  <div className="mx-auto mt-5 max-w-xs border-t pt-5" style={{ borderColor: '#F1F5F9' }}>
+                    {/* 🔴 THE COFFEE LINE IS CONDITIONAL AND HAS NO SUBSTITUTE. Above the threshold
+                        nothing is rendered in its place — a weaker comparison ("less than a pint") would
+                        be a second claim to defend, and an empty slot says nothing untrue. */}
+                    {perTradingDay(m.oursPerTruck, days) < COFFEE_MAX_PER_DAY && (
+                      <p className="text-base font-semibold" style={{ color: INK }}>Less than a coffee.</p>
+                    )}
+                    {freeMonthsLine(free) && (
+                      <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(free)}</p>
+                    )}
+                  </div>
+                </div>
+                {/* ⚠️ THE CTA PAIR AND THE CREAM STRIP ARE THE SAME TWO CONTROLS AS THE SAVING CARD'S.
+                    🔴 NO AMOUNT IN THE PRIMARY LABEL on this path — the saving card's version carries the
+                    saving, and there is no saving here to carry. */}
+                <div className="flex flex-col gap-2 p-4 sm:flex-row sm:gap-3">
+                  <DemoCta className={`${CTA_PRIMARY} flex-1 px-6 py-4 text-lg`}>Upload my menu →</DemoCta>
+                  <a href="/contact?topic=Cost%20Comparison" className={`${CTA_SECONDARY} flex-1 px-6 py-4 text-lg`}>
+                    Ask us a question
+                  </a>
+                </div>
+                <p className="px-6 py-3 text-center text-xs text-slate-500" style={{ backgroundColor: CREAM }}>
+                  No card needed to set up
+                </p>
+              </div>
+
+              <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
+                <p className="text-xs font-black uppercase tracking-wider text-slate-500">Your month, broken down</p>
+                <div className="mt-4 space-y-2">
+                  <BRow label={`${planName} plan`} amount={gbp(plan, 2)} />
+                  {m.excess > 0 ? (
+                    <BRow label={`${OVERAGE}% on the ${gbp(m.excess)} above the ${tier.allowanceLabel} included`}
+                      amount={gbp(m.overPerTruck, 2)} />
+                  ) : (
+                    <BRow label={`Online orders inside the ${tier.allowanceLabel} included`} amount={gbp(0, 2)} />
+                  )}
+                  <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
+                  <BRow label="HatchGrab each month" amount={money(m.oursPerTruck)} bold orange />
+                  {free >= 1 && (
+                    <BRow small label={free === 1 ? 'Month 1' : `Months 1–${free}`} amount="£0 — on us" />
+                  )}
+                  {fleet > 1 && (
+                    <BRow small label={`Across ${fleet} vans`} amount={`${money(m.oursMonth)} a month`} />
+                  )}
+                </div>
+                {/* ── 🔴 STRIPE'S FEE, NAMED AS STRIPE'S, AND NOT IN OUR TOTAL ──────────────────────
+                    It sits in its own inset BELOW the rule precisely so it cannot be read as part of the
+                    HatchGrab line above it. 🔴 DERIVED FROM `CARD_FEES` ONLY — these are Stripe's rates,
+                    we do not set them, and the "~" is the hedge lib/plan-features.ts requires on them.
+                    ⚠️ THE SECOND SENTENCE IS THE POINT OF SHOWING IT AT ALL: an operator comparing this
+                    against "nothing" needs to know the fee is not new money, it is the money they already
+                    pay at the window. */}
+                <div className="mt-4 rounded-xl px-4 py-3" style={{ backgroundColor: '#F8FAFC' }}>
+                  <div className="flex items-baseline justify-between gap-3 text-xs">
+                    <span className="text-slate-500">
+                      Card processing — Stripe&apos;s {CARD_PCT}% + {CARD_PENCE}p per order, paid to
+                      Stripe. You&apos;d pay much the same on a card machine at the window.
+                    </span>
+                    <span className="shrink-0 tabular-nums text-slate-500">
+                      ~{money(fleet > 1 ? m.cardPerTruck * fleet : m.cardPerTruck)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
+            ) : (
+            <>
             <div className="overflow-hidden rounded-2xl border-2 bg-white shadow-lg" style={{ borderColor: ORANGE }}>
               <div className="px-6 py-9 text-center">
                 {/* ── 🔴 THE BEFORE/AFTER, AND IT IS THE ANCHOR THE FIGURE NEEDS TO MEAN ANYTHING. ────────
@@ -755,9 +1064,18 @@ export default function CostComparison() {
                           read as a second figure.
                           🔴 NO GRID AND NO WIDTH CLASS ENTERED THIS BLOCK, and the two amounts still do
                           not share a left edge — that cannot be bought without one. See the report. */}
+                      {/* ⚠️ MONTHLY ON THE DEARER PATH, YEARLY OTHERWISE, AND THE QUALIFIER FOLLOWS THE
+                          FIGURE. That card's whole frame is now a month and a trading day; a yearly pair
+                          inside it would be the one place on the card still arguing in years, and a
+                          reader comparing the box to the sub-line above would be comparing two units.
+                          🔴 STILL READ FROM THE MEMO, NEVER RECOMPUTED — `theirsMonth`/`oursMonth` are
+                          the fields the monthly framing uses throughout, so the box cannot disagree with
+                          the sub-line. ⚠️ FLEET TOTALS ON BOTH, as before: the "across N trucks" note
+                          below is what scopes them, and the headline is the only PER-VAN figure here. */}
                       <span className="text-slate-500">Right now you pay</span>
                       <span className="font-semibold tabular-nums text-slate-800">
-                        {gbp(m.theirsYear)}<span className="font-normal text-slate-500"> a year</span>
+                        {dearer ? gbp(m.theirsMonth, 2) : gbp(m.theirsYear)}
+                        <span className="font-normal text-slate-500">{dearer ? ' a month' : ' a year'}</span>
                       </span>
                     </div>
                     {/* ⚠️ `mt-1`, NOT a fractional step — the two rows are ONE PAIR, not two paragraphs.
@@ -780,7 +1098,11 @@ export default function CostComparison() {
                           block already carries that figure with its own saving directly beneath it. The
                           panel's job is one comparison, not a schedule. */}
                       <span className="font-bold tabular-nums text-slate-800">
-                        {gbp(m.oursY1)}<span className="font-normal text-slate-500"> in year one</span>
+                        {dearer ? gbp(m.oursMonth, 2) : gbp(m.oursY1)}
+                        {/* ⚠️ "a month", NOT "in year one", ON THE DEARER PATH. `oursY1` has the free
+                            months inside it, which is exactly why it needs that qualifier; a MONTHLY
+                            figure does not, and the free months are stated on their own line below. */}
+                        <span className="font-normal text-slate-500">{dearer ? ' a month' : ' in year one'}</span>
                       </span>
                     </div>
                     {/* ⚠️ THE AMOUNTS NO LONGER SHARE A RIGHT EDGE, AND THAT WAS THE INSTRUCTED TRADE: the
@@ -794,8 +1116,17 @@ export default function CostComparison() {
                         it is the SCOPE of the two above it, and widening the gap between them is what keeps
                         that relationship legible. Raising it too would have made three sizes read as three
                         facts. */}
+                    {/* ⚠️ "vans", NOT "trucks" (1 October 2026, operator decision). It is the only place
+                        in the results that still said "trucks", against "Across N vans" in both breakdown
+                        cards — one object named two ways on one screen. 🔴 IT IS INSIDE THE SAVING CARD,
+                        so it is a sanctioned change to the card case (d) pins; case (d) is a SINGLE van,
+                        so this line does not render there and that diff stays empty.
+                        ⚠️ THIS COMMENT SITS ABOVE THE GUARD, NOT INSIDE IT. Placed directly after
+                        `{fleet > 1 && (` it is an EXPRESSION, not a child, and fails the build — the same
+                        trap the staff question's own comment records a few hundred lines above. I made it
+                        here first and tsc caught it. */}
                     {fleet > 1 && (
-                      <p className="mt-2 text-right text-xs text-slate-400">across {fleet} trucks</p>
+                      <p className="mt-2 text-right text-xs text-slate-400">across {fleet} vans</p>
                     )}
                   </div>
                 </div>
@@ -806,17 +1137,70 @@ export default function CostComparison() {
                     the same size as the percentage line below, with `mt-1` under it, so the verb and the
                     number read as one unit rather than as a caption and a number.
                     ⚠️ DO NOT SHRINK IT BACK. Its legibility is the fix, not its styling. */}
-                <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>{heroVerb}</p>
-                <p className="mt-1 font-black tabular-nums"
-                  style={{ color: good ? ORANGE : SLATE, fontSize: heroSize, lineHeight: 0.92, letterSpacing: '-0.03em' }}>
-                  {gbp(Math.abs(m.saveY1))}
-                </p>
-                {/* ⚠️ "in your first year" IS LOAD-BEARING. Without a timeframe the figure can be read as
-                    monthly or as a lifetime total, and both misreadings flatter us. */}
-                <p className="mt-4 text-lg font-semibold text-slate-500">
-                  <span className="tabular-nums">{Math.abs(m.pctY1).toFixed(0)}%</span>{' '}
-                  {good ? 'less' : 'more'} in your first year
-                </p>
+                {/* ── 🔴 WHEN WE COST MORE, THE CARD STOPS ARGUING ABOUT THE YEAR ─────────────────────
+                    It read "You'd pay extra / £168 / 19% more in your first year". Three things were
+                    wrong with that as a way to lose: the biggest number on screen was the one against us,
+                    a percentage of a yearly total is the least relatable form the difference has, and
+                    "extra" frames the product as a surcharge on what they already do rather than as a
+                    different thing with more in it.
+                    🔴 THE DIFFERENCE IS THE SAME ARITHMETIC, IN A UNIT THAT CAN BE JUDGED. 80p a trading
+                    day is a number an operator can decide about; £168 a year is one they can only flinch
+                    at. ⚠️ NOTHING IS HIDDEN — the monthly difference is on the sub-line and both monthly
+                    totals are in the grey box above, so the yearly figure is a multiplication away.
+                    ⚠️ SLATE, NOT ORANGE. Orange is for a figure in the operator's favour; it would be
+                    the page cheering a cost. The saving case is untouched and keeps its orange. */}
+                {dearer ? (
+                  <>
+                    <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>
+                      Everything HatchGrab does, for
+                    </p>
+                    <p className="mt-1 font-black tabular-nums"
+                      style={{ color: SLATE, fontSize: heroSizeFor(money(perWeek(extraPerTruck))), lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                      {money(perWeek(extraPerTruck))}
+                    </p>
+                    {/* 🔴 "a week", NOT "a trading day" (1 October 2026). The trading-days question is
+                        gone from this path, so there is no divisor to make a per-DAY claim with — and
+                        inventing one from a default of 4 would put a figure on screen computed from an
+                        answer the operator was never asked for. */}
+                    <p className="mt-2 text-xl font-bold text-slate-700">more a week</p>
+                    {/* ⚠️ NO "Based on N days" CLAUSE HERE — there is no N on this path. The sub-line is
+                        the monthly difference alone, and the per-van wording moves INTO it rather than
+                        being appended, so it reads as one phrase at any fleet size. */}
+                    <p className="mt-3 text-sm text-slate-500">
+                      {fleet > 1
+                        ? `${money(extraPerTruck)} more per van a month than now`
+                        : `${money(extraPerTruck)} a month more than now`}
+                    </p>
+                    <div className="mx-auto mt-5 max-w-xs border-t pt-5" style={{ borderColor: '#F1F5F9' }}>
+                      {/* 🔴 THE SAME `COFFEE_MAX_PER_DAY` THRESHOLD, APPLIED TO THE FIGURE ACTUALLY SHOWN
+                          — which on THIS path is WEEKLY, not daily. So the line appears only when the
+                          whole weekly difference is under £3.00, which is a stricter test than the No
+                          path's and leaves the claim true either way: £3 buys a coffee whatever period
+                          the figure covers. ⚠️ THE CONSTANT IS DELIBERATELY NOT RENAMED — it is the
+                          price of a coffee, not a statement about which period it is compared against. */}
+                      {perWeek(extraPerTruck) < COFFEE_MAX_PER_DAY && (
+                        <p className="text-base font-semibold" style={{ color: INK }}>Less than a coffee.</p>
+                      )}
+                      {freeMonthsLine(free) && (
+                        <p className="mt-2 text-sm text-slate-500">{freeMonthsLine(free)}</p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-5 text-lg font-semibold" style={{ color: INK }}>{heroVerb}</p>
+                    <p className="mt-1 font-black tabular-nums"
+                      style={{ color: good ? ORANGE : SLATE, fontSize: heroSize, lineHeight: 0.92, letterSpacing: '-0.03em' }}>
+                      {gbp(Math.abs(m.saveY1))}
+                    </p>
+                    {/* ⚠️ "in your first year" IS LOAD-BEARING. Without a timeframe the figure can be read
+                        as monthly or as a lifetime total, and both misreadings flatter us. */}
+                    <p className="mt-4 text-lg font-semibold text-slate-500">
+                      <span className="tabular-nums">{Math.abs(m.pctY1).toFixed(0)}%</span>{' '}
+                      {good ? 'less' : 'more'} in your first year
+                    </p>
+                  </>
+                )}
                 {anch && (
                   <p className="mx-auto mt-5 max-w-xs border-t pt-5 text-base text-slate-500" style={{ borderColor: '#F1F5F9' }}>
                     That&apos;s {anch}.
@@ -880,6 +1264,38 @@ export default function CostComparison() {
               </p>
             </div>
 
+            {/* ── 🔴 THE YEAR SCHEDULE IS REPLACED WHEN WE COST MORE, NOT KEPT ALONGSIDE ────────────
+                `YearLine` renders "Extra £168 (19% more)" twice — the exact two figures item 6 removes
+                from the card above, in a larger size, immediately below it. Reframing the hero and
+                leaving this would have moved the claim rather than changed it.
+                ⚠️ WHAT REPLACES IT IS THE SAME BREAKDOWN THE "No" PATH SHOWS, plus one line naming the
+                provider's own monthly fee — so the comparison is still on the page, as two totals a
+                reader can subtract, rather than as a verdict we have drawn for them. */}
+            {dearer ? (
+            <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
+              <p className="text-xs font-black uppercase tracking-wider text-slate-500">Your month on HatchGrab</p>
+              <div className="mt-4 space-y-2">
+                <BRow label={`${planName} plan`} amount={gbp(plan, 2)} />
+                {m.excess > 0 ? (
+                  <BRow label={`${OVERAGE}% on the ${gbp(m.excess)} above the ${tier.allowanceLabel} included`}
+                    amount={gbp(m.overPerTruck, 2)} />
+                ) : (
+                  <BRow label={`Online orders inside the ${tier.allowanceLabel} included`} amount={gbp(0, 2)} />
+                )}
+                <div className="h-px" style={{ backgroundColor: '#E2E8F0' }} />
+                <BRow label="HatchGrab each month" amount={money(m.oursPerTruck)} bold orange />
+                {/* 🔴 THEIR OWN FEE, AT THE RATE THE COMPARISON ACTUALLY USED. `m.theirPct` is the
+                    PLATFORM rate with card processing taken out of it (or left out, in 'ontop' mode) —
+                    the same quantity both sides are compared on. Printing the typed 4.5% here would
+                    name a rate the arithmetic above does not use. */}
+                <BRow small label={`Your current provider's own fee (${m.theirPct.toFixed(2).replace(/\.?0+$/, '')}%)`}
+                  amount={`${money(m.theirsMonth / fleet)} a month`} />
+                {fleet > 1 && (
+                  <BRow small label={`Across ${fleet} vans`} amount={`${money(m.oursMonth)} a month`} />
+                )}
+              </div>
+            </div>
+            ) : (
             <div className="rounded-2xl border bg-white p-5 shadow-sm md:p-6" style={{ borderColor: '#E2E8F0' }}>
               <YearLine label="Year one" theirs={m.theirsYear} ours={m.oursY1} save={m.saveY1} pct={m.pctY1} />
               <div className="my-5 h-px" style={{ backgroundColor: '#F1F5F9' }} />
@@ -917,6 +1333,9 @@ export default function CostComparison() {
                   editable price on a page that computes a saving is a page that can be made to say
                   anything. The `proPrice`/`maxPrice`/`open` state went with them. */}
             </div>
+            )}
+            </>
+            )}
           </div>
         )}
 
@@ -930,6 +1349,18 @@ export default function CostComparison() {
             figure that DOES include card processing, directly above a comparison that does not. Without
             the conditional clause a reader can reasonably assume the 4.5% they were just shown is the
             number being compared. That clause is the only change here. */}
+        {/* 🔴 THE "No" PATH NEEDS ITS OWN SMALL PRINT, because every clause of the other one is about a
+            comparison it does not make: "excluded from both sides" names two sides, "question 4" is a
+            question it does not ask, and "your current provider's rates" is a provider it does not have.
+            ⚠️ WHAT IT KEEPS is the only two things that are still true on this path — the average-order
+            assumption the order COUNT is derived from, and that card processing is payable to Stripe
+            whichever way they take the money. */}
+        {noSystem ? (
+          <p className="mt-5 text-xs leading-relaxed text-slate-500">
+            Estimates based on the figures you enter, assuming an average order of {gbp(AOV)}. Card
+            processing applies whichever provider you use. Check before deciding.
+          </p>
+        ) : (
         <p className="mt-5 text-xs leading-relaxed text-slate-500">
           Estimates based on the figures you enter, assuming an average order of {gbp(AOV)}. Card
           processing of {CARD_PCT}% + {CARD_PENCE}p per order applies whichever provider you use, so
@@ -937,6 +1368,7 @@ export default function CostComparison() {
           {feeMode === 'ontop' && ' The all-in figure in question 4 includes it — the comparison does not, on either side.'}
           {' '}Check your current provider&apos;s rates before deciding.
         </p>
+        )}
 
         {/* ⚠️ THE SECOND CTA, for anyone who scrolled past the first. Same ACTION as the primary — it
             opens the same one <DemoModal /> mounted in ../page.tsx — and deliberately the plainer label:
@@ -1017,8 +1449,38 @@ function YearLine({ label, theirs, ours, save, pct }: {
   )
 }
 
+/**
+ * One label/amount line in a breakdown card.
+ *
+ * 🔴 ONE COMPONENT FOR BOTH BREAKDOWNS — the "No" path's "Your month, broken down" and the Yes path's
+ * "Your month on HatchGrab" share every row shape, and two copies would drift the first time a weight
+ * or a gap moved.
+ * ⚠️ A FLEX ROW WITH `justify-between`, NOT A GRID. The long note on the hero panel records two grid
+ * attempts in this file that both collapsed to one column per cell; a flex row cannot lose its line.
+ * ⚠️ `shrink-0` ON THE AMOUNT and no width on the label: the amount keeps its place at the right edge
+ * and the label wraps instead, which is what keeps a long over-allowance label inside a 375px card.
+ */
+function BRow({ label, amount, bold, small, orange }: {
+  label: string; amount: string; bold?: boolean; small?: boolean; orange?: boolean
+}) {
+  return (
+    <div className={`flex items-baseline justify-between gap-3 ${small ? 'text-xs' : 'text-sm'}`}>
+      <span className={small ? 'text-slate-500' : bold ? 'font-bold' : 'text-slate-600'}
+        style={bold ? { color: INK } : undefined}>
+        {label}
+      </span>
+      <span className={`shrink-0 tabular-nums ${bold ? 'font-bold' : small ? 'text-slate-500' : 'font-semibold text-slate-800'}`}
+        style={orange ? { color: ORANGE } : undefined}>
+        {amount}
+      </span>
+    </div>
+  )
+}
+
 function Card({ n, title, children, disabled }: {
-  n: string; title: string; children: React.ReactNode; disabled?: boolean
+  /** ⚠️ A NUMBER NOW, NOT A STRING. The step numbers are COMPUTED (`STEP` above) because the two paths
+   *  have different lengths, and a string prop would have meant `String(STEP.days)` at every call site. */
+  n: number; title: string; children: React.ReactNode; disabled?: boolean
 }) {
   return (
     <div className="rounded-2xl border bg-white p-5 shadow-sm transition md:p-6"
