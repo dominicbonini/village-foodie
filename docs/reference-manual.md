@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.6
+HatchGrab Engineering Reference Manual · V13.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.6**
+**Version 13.7**
 
 September 2026
 
@@ -25,6 +25,172 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.7 — 28–30 September 2026 — OUTREACH EMAIL MOVES INTO THE ADMIN: SENT FROM DOMINIC'S OWN MAILBOX, REPLIES PICKED UP OVER IMAP, A FULL-PAGE CRM FOR EACH PROSPECT, AND A ONE-TEMPLATE-PER-BOX SEQUENCE THAT REFUSES TO SEND THE SAME STEP TWICE
+
+**Status:** everything below is committed, pushed and **deployed**. Every migration listed has been
+**applied by hand in Supabase** (the files carry an `APPLIED BY HAND` header where Dominic ran them before
+the file existed). Harness sweep at close: **73 run · 73 passed**; goldens unchanged.
+
+**Covers:** new **§60** (sending and receiving outreach email through our own mailbox), **§61** (the
+outreach CRM — Today, the prospect page, the history), **§62** (the sequence grid, the send-time guards and
+the Templates tab); corrections in place to **§52**, **§57** and **§58**.
+
+**What exists now, in one paragraph.** Outreach email is written, sent, threaded, filed in Sent and read
+back entirely inside `/admin`. It goes out over SMTP from `dominic@hatchgrab.com` at Namecheap Private
+Email — **not Brevo, not any ESP** — so it is byte-for-byte a normal email from a person: no tracking pixel,
+no link wrapping, no list-unsubscribe header, no third-party `Received` hops. Replies are picked up every 10
+minutes over IMAP, read-only. Each prospect has a full-page workspace at `/admin/outreach/p/[prospectId]`
+with a composer, a unified history and one-click logging. Which template a truck gets at each step is a
+grid — one template per box, enforced by a unique constraint — and the send route re-derives the step on
+the server and refuses to send a step that has already gone. **Sending is manual**: nothing composes or
+sends without Dominic pressing Send on a message he has read.
+
+### The decisions (Dominic's, recorded so they are not re-litigated)
+
+| Decision | Recorded |
+|---|---|
+| Outreach goes from his **own mailbox over SMTP/IMAP**, never an ESP; transactional mail stays on Brevo | 28 Sep |
+| **Manual sending only** for now (20–30 a day at most); automation is a later phase | 28 Sep |
+| **No daily send cap** — removed as unnecessary while every send is manual | 29 Sep |
+| **`do_not_contact` is never set automatically** — not by a "no thanks" reply, not by a bounce | 28 Sep |
+| The **opt-out sentence lives in the templates** (`{{opt_out}}`), not in the signature — a reply to an engaged prospect carries the signature but not the opt-out | 29 Sep |
+| Keep **"Kind regards"** in the signature | 29 Sep |
+| `dominic@` became its own mailbox (29 Sep) and is **primary**; `hello@` is **read-only history** | 29 Sep |
+| The CRM uses the **same three-column layout on the 16" MBP and the 27" monitor** — no separate wide layout, minimal empty space, most actions visible, emails visible near full length | 30 Sep |
+| **Every UI change is shown as a mockup first**, before a build prompt | 30 Sep |
+| The Call button **places the call** (`tel:`), on every device — no copy-to-clipboard fallback | 30 Sep |
+| A template is assigned per **box** (step × truck type), one per box; chasers can differ by type | 30 Sep |
+| The "also logged by hand" marker is **removed**, not kept: the de-duplication is not something the reader asked about | 30 Sep |
+| Standing: **every `outreach_templates` row change needs Dominic's explicit sign-off**; **never test against a live trading truck** — the only test prospect is `ZZ Test Prospect (Dominic)` | standing |
+
+### The builds, in order
+
+⚠️ **Each build commit is followed in `git log` by its own "Record the … report" commit.** Only the build
+commit is given here; the report commit is the next one on that date.
+
+| Date | Build | Commit |
+|---|---|---|
+| 28 Sep | Mailbox health check (SMTP 465/587, IMAP 993, folder list) | `23b1b12` |
+| 28 Sep | Read-only mailbox diagnostic | `080059b` |
+| 28 Sep | Build 1 — sending (raw compose, send, append to Sent; `outreach_messages`) | `7beed77` |
+| 29 Sep | Five production defects; cap removed; one-step compose | `b462d2e` |
+| 29 Sep | `{{signature}}` / `{{opt_out}}` tokens, signature editor, View, Sent copy fix | `fbaf1a9` |
+| 29 Sep | WYSIWYG editor (TipTap 3.31.3) and sender name | `fc3fd69` |
+| 29 Sep | Build 2 — reply pickup (cron every 10 min), Outlook-sent recording | `0cd29a4` |
+| 29 Sep | Two mailboxes (dominic@ primary, hello@ legacy) | `223a502` |
+| 29 Sep | The first look that swallowed a reply — date-based first look | `617144c` |
+| 29 Sep | HTML-only replies, test-thread replies, quoted history | `3f19cc0` |
+| 29 Sep | Importer stops stealing new mail; stored bodies; imapflow deadlock | `510a332` |
+| 30 Sep | CRM part 1 — Today, the timeline, notes, stage events | `10d78dc` |
+| 30 Sep | CRM part 2 — reply with the conversation, attachments, Plans PDF | `3ad9958` |
+| 30 Sep | The prospect page (full-page workspace) | `f246d74` |
+| 30 Sep | Workspace v2 (three columns, always-open composer, phone layout) | `3b36b6d` |
+| 30 Sep | Workspace v3 (composer chrome removed, notes, widths, real Call) | `7bef71f` |
+| 30 Sep | v3 fixes (grid placement bug, one Notes card, contact card) | `303a260` |
+| 30 Sep | v4 (reading panel, fixed-height editor, Safari `field-sizing`) | `569594a` |
+| 30 Sep | The sequence grid and the send-time guards | `c61f9e6` |
+| 30 Sep | v4 fixes (page scroll, attach buttons, edited banner, pairing by words, reading-panel duplicate, contact name) | `21d0cae` |
+| 30 Sep | Reply to any email, Record Outlook send as a step, note edit/delete | `e796e07` |
+| 30 Sep | Polish (follow-up chips, one-row notes, labels, Plans PDF colour, Previous email, demo insert, call labels) | `67f7c6e` |
+| 30 Sep | One icon + one word on every history row | `e42cfef` |
+| 30 Sep | A note is one line, with a control that says there is more | `101346b` |
+| 30 Sep | Templates tab — Sequence and Templates views | `6ab8d18` |
+| 30 Sep | Templates view tightened to the mockup; preview signature | `307b1bd`, `c0ea398` |
+
+### Migrations (all applied)
+
+| File | What it does |
+|---|---|
+| `20260928_outreach_messages.sql` | One row per outreach email, sent or received |
+| `20260929_outreach_settings.sql` | Key/value settings: signature, opt-out, sender name, poll state, type labels |
+| `20260929_outreach_messages_poll_states.sql` | Widens `status` / `source` checks for received mail, auto-replies, bounces and poll rows |
+| `20260929_outreach_messages_account.sql` | `account` — which mailbox a row belongs to |
+| `20260929_outreach_crm_today_timeline.sql` | `outreach_events` (stage changes, notes); `handled_at`, `snoozed_until` on messages |
+| `20260929_outreach_messages_attachments.sql` | `attachments jsonb`; the private `outreach-attachments` bucket |
+| `20260930_outreach_sequence_slots.sql` | The sequence grid; `unique (id, channel)` on `outreach_templates` so the grid's FK can check channel |
+| `20260930_outreach_events_updated_at.sql` | `updated_at` on `outreach_events` — the "edited" mark on a note |
+
+### The failure classes this work found (sweep status in each)
+
+1. 🔴 **A MEASUREMENT TAKEN WHERE THE THING UNDER TEST IS ABSENT PROVES NOTHING.** [OBSERVED ×4]
+   - Workspace v3's "History visible at 1440×800" was **arithmetic over class names**. It measured a
+     composer that was not on screen: the Email tab was rendering its WhatsApp branch.
+   - v3-fixes measured the layout in **Chromium only**. `field-sizing: content` replaces `rows`, so the
+     "ten-row" Notes box was **one line in Safari**, the browser Dominic uses.
+   - The Templates view's `calc(100vh - 12rem)` was checked on a fixture **with no admin shell above it**.
+     The real page carries 146px of chrome plus 24px of padding, so it scrolled by 22px.
+   - A v2 check asserted `max-lg:grid-cols-1` was *in the file* while an inline `gridTemplateColumns`
+     had made it inert since the day it was written.
+
+   **Rule:** a layout claim is proven only by rendering the real structure (shell included) in **WebKit
+   as well as Chromium**. `scripts/outreach-workspace-render.cjs` and
+   `scripts/outreach-templates-render.cjs` now do this for the two outreach screens; they are excluded
+   from the sweep (they need a build and local browsers) and are run by hand.
+   **Sweep status: OPEN** — no other admin screen has a render harness.
+
+2. 🔴 **A SOURCE CENSUS CAN PASS AGAINST A COMMENT ABOUT THE THING IT CHECKS.** [OBSERVED]
+   - `outreach-crm-today.cjs` "the standing notes field is still labelled Pinned notes" passed after the
+     field was renamed, because a **tombstone comment** quoted the old label.
+   - A v3 check went on passing against the comment recording its own deletion.
+
+   **Rule:** census checks read **comment-stripped** source. **Sweep status: OPEN** — the outreach
+   harnesses were fixed as found; the rest of the 73 were not swept.
+
+3. **AN INLINE STYLE BEATS EVERY CLASS.** A second instance of the §52 lesson (`max-lg:grid-cols-1`
+   inert behind `style={{ gridTemplateColumns }}`, so a phone was served three desktop columns). The
+   grid tracks now come from one function, `gridTemplateFor(width)`. **Sweep status: OPEN.**
+
+4. **TWO READERS OF ONE MAILBOX MUST NOT BOTH CLAIM NEW MAIL.** The history importer recorded a reply 27
+   seconds before the poll saw it. The poll's insert gate then treated it as already handled, and no
+   contact row was ever written. The importer is now **history-only**, and the poll **adopts**
+   `mailbox_import` rows at or after `POLL_SINCE` (§60.5). **CLOSED — one member, fixed.**
+
+5. **A CAPABILITY PROBE THAT CANNOT SEE ABSENCE REPORTS PRESENCE.** A `head: true` select returns an empty
+   error body for a missing table. The probe therefore said `outreach_messages` existed when the
+   migration had not run, and every send failed at "could not be recorded". Probes now distinguish
+   PGRST204 / 42703 / 42P01 (the §52 lesson, extended). **CLOSED for the outreach routes; OPEN
+   elsewhere.**
+
+6. **AN OPTIONAL THAT GATES A WHOLE BRANCH.** `isEmailChannel = selected?.channel === 'email'` was
+   `false` with no template selected, so Blank rendered the WhatsApp textarea on the Email tab, with no
+   To line and no Send button. A second instance: the editor's "Used in" asked `usedIn(draft.id)`, and
+   `draft` never carries an id, so every template read "Not in the sequence". **CLOSED — both fixed and
+   harnessed.**
+
+7. **A MIGRATION THAT "SUCCEEDED" BUT LEFT NO TABLE.** It happened again on 28 September
+   (`outreach_messages`). The §35 rule — check `information_schema`, and read the verification select
+   rather than the "Success" banner — held. ⚠️ **The Supabase SQL editor shows only the LAST
+   statement's result.** When a migration ends with a "missing rows" check, a correct run and an
+   unexecuted one both display "no rows". Run the positive verification select **separately**.
+
+8. **A MODAL'S SCROLL LOCK INHERITED BY SOMETHING THAT IS NO LONGER A MODAL.** [OBSERVED]
+   `ComposeWindow` set `document.body.style.overflow = 'hidden'` on mount and released it on unmount —
+   correct for a window over the page, fatal for a composer the prospect page mounts **inline and
+   permanently**. The page could not be scrolled on any prospect, in any browser, with nothing open;
+   v4's fixed-height editor is what made it matter, because the history stopped arriving on screen by
+   itself. The lock is now gated to the two cases that really are over the page.
+   🔴 **The obvious check would have passed against the bug:** `window.scrollTo` moves the page even
+   with `body { overflow: hidden }`, in both engines, while a trackpad does nothing. The probe is the
+   **computed `overflow`** on `body` and `html`, with the locked page kept as a control.
+   **CLOSED for the outreach screens; OPEN elsewhere.**
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Stale stages** | Prospects with inbound replies from before the single stage writer existed still read `contacted` (e.g. Nomadough). Cursor produced a read-only list query and an UPDATE (polish report §8). **Not reviewed, not run.** |
+| **Unwritten templates** | Chase 2 and Final chase have no template for any truck type; first contact for **Not listed** (the largest group) has none. The WhatsApp grid is empty. |
+| **Conditional-line wording** | The red "half of a conditional pair" warning is to become a grey note naming the trucks that will not see the line. Prompt written; **not yet built**. |
+| **Follow-up after a reply** | A prospect who has replied is off the chaser ladder; there is no grid row for "follow-up after a reply", so the composer suggests nothing. Possible later row. |
+| **Shared-address guard** | Built; **untested live** — testing it needs a second test prospect. Kerief / Kerief Catering Ltd share `kerief.catering@hotmail.com`. |
+| **Elder Street Food** | Recorded as `hu_ordering` at first contact, now flagged map-only; "Use current type" on its page if the first flag was wrong. |
+| **Received-email appearance** | Not yet checked: mail-tester.com score, Gmail "Show original" SPF/DKIM/DMARC, iPhone Mail and Outlook in light and dark. |
+| **Missing addresses** | Buffalo Joe's, Guerrilla Kitchen, Pizza Mondo need an email before Import past emails can match them; Tikka Tonic's 3 Sep reply is unlogged. |
+| **Sending from Outlook** | Still possible, but an Outlook send carries no step: record it with **Record as ‹step›** or the duplicate-step guard can only ask, not refuse. |
+| **Calls on the Mac** | `tel:` hands the call to FaceTime → iPhone. With **Stage Manager** on, FaceTime's window moves Safari to the side strip; a web page cannot prevent it. Turn Stage Manager off or group FaceTime with Safari. |
+| **Test tooling** | `playwright` is a devDependency (for WebKit), with its browser in `~/Library/Caches/ms-playwright` (~78 MB). Dev-only. |
+| **Superseded columns** | `outreach_templates.serves_kind` / `serves_lead_type` are read by **nothing that chooses a template** (§62.1) — the route still exposes and validates them and the editor round-trips them on Save, but no chooser reads them and the editor no longer displays them. `templateForStep` has **no caller**, and `STEP_TEMPLATE` is read only by `templateForStep`. Kept deliberately; candidates for removal after a release. |
 
 ## V13.6 — 19 September 2026 — CREATE DEMO ASKS FOR THE TRUCK'S KITCHEN NUMBERS AND SEEDS TO THEM; FOUR DEMO DEFECTS FIXED
 
@@ -25177,6 +25343,14 @@ hardcoded slug maps (`STEP_TEMPLATE`, `suggestTemplateId`), and `templateForStep
 named `slug_absent` miss for a slug it cannot find. **There is still no delete function** — but the
 reason recorded for that was never true, and it is why the question kept being closed early.
 
+🔴 **CORRECTED V13.7 — THE OPT-OUT FOOTER ROW OF THAT TABLE NO LONGER DESCRIBES THE CODE.** Nothing is
+appended to the body any more: `OPT_OUT_FOOTER` and `composeEmail` were deleted. The opt-out sentence is
+the `{{opt_out}}` token and the signature is `{{signature}}`, both from `outreach_settings`. They are
+expanded into the editor document when a template loads (§60.3), so what is on screen is what is sent, and
+`literalTokenRefusal` stops a document that still carries either token verbatim. The opt-out is in the
+**templates**, not the signature, on purpose: a reply to an engaged prospect carries the signature
+without it.
+
 ## 52.3 🔴 Two data facts that change how the outreach programme should be read
 
 **(a) The WhatsApp gate approves exactly the set a scraper guessed at.** 🧪 Re-derived 9 September:
@@ -25836,6 +26010,10 @@ contact" for a prospect with four unrecognised contacts is the exact failure the
 prevent. `templateForStep` returns a **reason** (`no_step` / `no_channel` / `slug_absent`), not a bare
 null, so "nothing was pre-selected" and "the template this step wants has been retired" read differently.
 
+**V13.7.** `templateForStep` no longer chooses a template — `chooseForStep` over `outreach_sequence_slots`
+does (§62.1), and `templateForStep` has no caller left. `nextStep` remains the one derivation of the step,
+and the **send route** now re-derives it and logs the step, not the template's tag (§62.3).
+
 ## 57.2 The contactable gate
 
 🧪 **Only 76 of 231 prospects are contactable**, and the queue was counting 224 as due. 61 have an
@@ -25860,6 +26038,10 @@ than rendering a raw column value. Two further data facts fell out: an inbound r
 `first_contact` when it was a reply, and **two contacts 0.755 seconds apart** show `logNow` can
 double-submit.
 
+**SUPERSEDED V13.7 — "Auto-logging on send is NOT built" above.** A system send logs its contact
+automatically, through `logOutreachContact`, linked to the message. An Outlook send is recorded as a
+message, and becomes a rung only through **Record as ‹step›** (§62.5).
+
 ## 57.4 Lead type, and why it is frozen
 
 🧪 `hu_ordering` **17** · `hu_map` **105** · `on_vf` **25** · `not_listed` **84**.
@@ -25878,6 +26060,10 @@ unrecognised stored value also falls back rather than propagating; nothing rewri
 `hu_ordering` / `hu_map` / `isOnVillageFoodieMap`. A user-added type would have **no derivation**, so no
 prospect could ever carry it and a template tagged with it would silently match nobody. What needed
 fixing was not the list — it was that the explanation lived in an invisible `title=` tooltip.
+
+**V13.7.** The types can be **renamed**, but not added (`lead_type_labels` in `outreach_settings`).
+**Use current type** on the prospect page is the one writer that can change a frozen value, on a click,
+with a note (§62.6).
 
 ## 57.5 🔴 `whatsapp_number` is dead
 
@@ -25977,6 +26163,13 @@ copy — a second matcher would agree on the day it was written and drift afterw
 🔴 **`serves_kind` NOW DRIVES THE LOGGED `kind`.** The Pizza Mondo defect was a chaser logged as a first
 contact because the call site took the compose form's dropdown value; `effectiveKind = servesKind ?? kind`.
 
+**SUPERSEDED V13.7.** `serves_kind` and `serves_lead_type` are read by nothing that chooses a template —
+the route still exposes and validates them and the editor round-trips them on Save, so stored values
+survive, but no chooser reads them and the editor no longer displays them. Which template goes where is
+the sequence grid (§62.1), and the logged kind is the step derived on the server (§62.3). The editor no
+longer has "At which stage / For which trucks"; it shows read-only **Used in** chips. The 1-2-3 headings
+were removed on 30 September; the fields are now labelled Template name / Subject / Message.
+
 ⚠️ **Null on the two tags is not symmetrical.** `templateForStep` tests `servesKind === step.kind`, so a
 **null rung means the template is never picked automatically at all** — it falls through to the
 hardcoded map. A null lead type genuinely means "any". Labelling both "— any —" was the more misleading
@@ -26004,6 +26197,9 @@ renumber put all 7 templates on a 10–70 ladder, touching only the 2 rows that 
   its own wrapper; the shell wrapper closes earlier. The editor column gets **568–748px**, not the 424px
   an earlier report calculated by assuming the shell cap applied. The list rail is a **fixed 240px track
   at every viewport width** — widening the window gives every extra pixel to the editor and preview.
+
+**V13.7.** The Templates tab is now two views (§62.7). The list rail is **270px**, and the three panes'
+height is **measured** from their own top edge rather than fixed.
 
 ---
 
@@ -26069,5 +26265,371 @@ Create such resources in an effect, and prove it against the real component rath
 `scripts/add-order-refresh-inputs.cjs` now mounts under `React.StrictMode` for exactly this reason.
 
 ---
+
+# 60. Outreach email — sending and receiving through our own mailbox (V13.7 — 28–30 September 2026)
+
+**V13.7.** Outreach email is sent and read inside `/admin`, from Dominic's own Private Email mailbox, and is
+indistinguishable from mail he typed in Outlook.
+
+## 60.1 Why not an ESP
+
+Brevo (and any ESP) adds its own `Received` hops, a `List-Unsubscribe` header, link rewriting and usually a
+tracking pixel. To a food-truck owner reading on a phone, that is a marketing email. We send over SMTP
+directly from the mailbox, so the message is exactly what a mail client would produce. **Transactional mail
+(order confirmations, account mail) stays on Brevo** and is untouched by anything here.
+
+## 60.2 Accounts and configuration
+
+| Account | Role | Credentials (Vercel env) |
+|---|---|---|
+| `dominic@hatchgrab.com` | **Primary** — sends, files its Sent copy, is polled | `OUTREACH_PRIMARY_USER` / `OUTREACH_PRIMARY_PASSWORD` |
+| `hello@hatchgrab.com` | **Legacy** — read-only history; still polled for replies to old threads | `OUTREACH_MAIL_USER` / `OUTREACH_MAIL_PASSWORD` |
+
+- Host `mail.privateemail.com` is a constant (`lib/outreach-mail-config.ts`): SMTP **465** (implicit TLS),
+  IMAP **993**. 587 (STARTTLS) is checked by the health check and is the fallback if 465 is ever blocked,
+  but nothing chooses between them at runtime.
+- Passwords are **app-specific passwords** (Namecheap: Private Email → Settings → Launch Security Center →
+  App passwords), never the mailbox login.
+- **`lib/outreach-mail-accounts.ts` is the one place that decides which account is used.** If the primary
+  is unset it falls back to `hello@`. Reading a message by uid always uses the row's **own** `account`.
+- `OUTREACH_TEST_RECIPIENT` is where "Send test to me" goes. With it unset, a test is refused.
+- `CRON_SECRET` gates the reply cron.
+- The sender name is the `from_name` row in `outreach_settings`, set in the admin panel.
+
+## 60.3 The send path
+
+- **Compose the raw message ONCE** with nodemailer's `streamTransport` (`buffer: true`), **send those
+  exact bytes** as `raw` over SMTP, then **IMAP APPEND the same bytes to Sent**.
+  - 🔴 Namecheap does **not** file an SMTP send in Sent by itself.
+  - `info.message` exists only on `streamTransport`, which is why the first build's Sent copy was empty.
+  - The append runs search → wait 3 s → search first, so a copy is never filed twice. "Save to Sent"
+    retries it by hand.
+- **Statuses:** `sending`, `sent`, `failed`, `uncertain` (the socket closed after DATA and we cannot know).
+  Received mail adds `received`, `auto_reply`, `bounce`, and `bounced` on the original.
+  **Sources:** `system`, `mailbox_import`, `poll`.
+- **One click, one email.** `outreach_messages.idempotency_key` is unique. The composer keys each message by
+  its content (subject, document, step, attachment paths, reply target), and the server claims the key
+  **before** building anything. A repeat returns the first result.
+- **Threading.**
+  - A **first contact always starts a new thread**. Early on, one went out as "Re:" because the rule
+    ignored the kind.
+  - Chasers and replies set `In-Reply-To` / `References` from the stored `message_id` and use
+    `Re: <subject>`, with repeated prefixes stripped.
+  - "Include previous email" (default on) appends the quoted parent **on the server**, from its stored
+    body, in an Outlook-style block. Unticking it drops the quote but **never the threading**.
+- **The editor is the email (WYSIWYG).**
+  - TipTap 3.31.3 on ProseMirror, exact-pinned, with a document schema of paragraph / text / hardBreak and
+    marks bold / small — and, since the demo-link build, `link`, whose href is itself an allow-list
+    (`LINK_RE`, `https` only; `javascript:`, `data:`, `http:` and protocol-relative `//` are **refused,
+    not stripped**). The document is validated on the server.
+  - `docToHtml` renders Outlook-style `<div>`s at 12pt Aptos; "small" is 13.333333px.
+  - The `text/plain` part carries no HTML.
+  - `{{signature}}` and `{{opt_out}}` are **expanded into the document when a template loads**, through
+    `docFromTemplateText`, so what is on screen is what is sent. Nothing is appended automatically, and
+    `literalTokenRefusal` stops a document that still contains either token verbatim.
+- **Refusals** (`lib/outreach-send-rules.ts`): no address; a linked (live operator) truck; a test with no
+  test recipient; plus every sequence guard (§62.4).
+- A **test send** goes to `OUTREACH_TEST_RECIPIENT`, logs no contact, moves no stage, and is never counted
+  by any guard.
+
+## 60.4 Attachments and the Plans PDF
+
+- **Private bucket `outreach-attachments`.** The browser uploads straight to storage through a signed
+  upload URL whose path the server composed.
+- The send route takes **storage paths, never bytes**, and reads the bytes from the bucket itself.
+- Limits: 10 MB **in total** (`MAX_ATTACHMENT_BYTES`), with a type, extension and size allow-list checked
+  in the window **and** in the route. Downloads are five-minute signed URLs (`DOWNLOAD_TTL_SECONDS = 300`).
+  **Nothing makes the bucket public.**
+- The **Plans PDF** is generated by `lib/plans-pdf.ts`, the same module the landing page's features-PDF
+  route uses: one source for both.
+- Messages are `multipart/mixed` when anything is attached.
+
+## 60.5 Reply pickup (the poll)
+
+- **One routine, two triggers.** `runReplyPoll` is the whole job. `app/api/cron/outreach-replies`
+  (`vercel.json`, every 10 minutes, `CRON_SECRET`) and the "Check for replies now" route are only an auth
+  gate each.
+- **Read-only, always:** `EXAMINE` and `BODY.PEEK[…]` on every path. No flag is set, nothing is moved,
+  copied or expunged.
+- 🔴 **imapflow allows one command in flight.** Drain the fetch stream **before** calling handlers that
+  issue their own commands, or the run deadlocks (found 29 Sep). `msg.headers` holds `BODY[HEADER]`;
+  `bodyParts` does not.
+- **The first look is by date, not by uid.**
+  - Per account, `POLL_SINCE` (`hello` 2026-09-29T17:26:00Z, `dominic` 2026-09-29T00:00:00+01:00). Anything
+    at or after it is processed by `INTERNALDATE`, and anything older is left to the importer.
+  - 🔴 The original first look **baselined at the highest uid and processed nothing**. When the mailbox
+    switched, that swallowed a real reply.
+  - An empty folder still gets a watermark (`lastUid 0`). A `uidvalidity` change triggers a 7-day rescan.
+- **An atomic lock** stops two runs overlapping. **The insert gate** (upsert, ignore duplicates, then
+  select) comes **before** any logging, so a reply is logged exactly once. A failed claim can retry
+  (`failed` → `sending`).
+- **Classification,** in this order: bounce > auto-reply > reply. Replies to **test-only** threads are
+  ignored.
+- **Quoted history** is stripped from the stored text. **HTML-only replies** (routine from Hotmail/Outlook)
+  fall back to HTML → text; before that fix, `text_body` was null and the timeline showed nothing.
+- **Bodies are stored** on the row, so opening an email is instant and never opens an IMAP session.
+- **The importer is history-only** (§V13.7 class 4). The poll **adopts** `mailbox_import` rows at or after
+  `POLL_SINCE`.
+- An email Dominic sends **from Outlook** is found in Sent and recorded. If the prospect has replied it is
+  logged as `reply`; otherwise it carries **no step** (§62.5).
+
+## 60.6 The tables (all RLS on, `service_role` only, `anon` / `authenticated` revoked)
+
+| Table | Holds |
+|---|---|
+| `outreach_messages` | One row per email: direction, account, `message_id` / threading, subject, `text_body` / `html_body`, status, source, attachments, `idempotency_key`, `contact_id` (the contact row it wrote, so nothing is counted twice), `handled_at`, `snoozed_until` |
+| `outreach_settings` | `key text primary key, value jsonb`: `signature` (JSON lines), `opt_out`, `from_name`, `mail_poll_state`, `lead_type_labels` |
+| `outreach_events` | `kind in ('stage_change','note')`, the text, `created_at`, `updated_at` (set only when a note is edited) |
+| `outreach_sequence_slots` | §62.1 |
+
+---
+
+# 61. The outreach CRM — Today, the prospect page and the history (V13.7 — 29–30 September 2026)
+
+## 61.1 Today (the default tab of Outreach)
+
+| Section | Contents | Order |
+|---|---|---|
+| **Replies waiting** | Inbound emails not handled or snoozed | Oldest first |
+| **Chasers due** | Contactable prospects whose derived step is due or overdue | Most overdue first |
+| **Follow-ups due** | `next_action_at` today or earlier, not already listed | Most overdue first |
+| **Emails needing a look** | Outbound `failed` / `uncertain` / `bounced` | Newest first |
+
+Mark done sets `handled_at`. Snooze sets `snoozed_until` and leaves `handled_at` null: "not now" is not
+"done".
+
+## 61.2 The prospect page — `/admin/outreach/p/[prospectId]`
+
+- **Three columns, the same on the 16" MBP and the 27" monitor.** The tracks come from one function,
+  `gridTemplateFor(width)`:
+  - 1024–1919px: `380px 1fr 280px`;
+  - ≥1920px: `420px 1fr 320px`;
+  - 768–1023px: two columns;
+  - below 768px: one column, where the left column's cards interleave through `max-md:contents`.
+- 🔴 **The grid has exactly three direct children.** An explicitly placed fourth item (v3's Demo/Files
+  card) moved the auto-placement cursor and dropped the centre and right columns 668px down.
+- **Header:** Back, name, Stage control, Website / Schedule, and "‹ n of m ›" with the queue's real name
+  (hidden when there is no queue).
+- **NEXT banner:** the derived next action; the only orange besides Send.
+- **Left column:**
+  - **Contact card:** name at 18px/800; email; phone as selectable text with a **Call** button beside it.
+    Call is a detached `<a href="tel:+E164">` that is created, clicked and removed — not
+    `location.href` (that navigates away from a draft) and not `window.open` (it leaves a blank tab).
+    Lead / Last contacted / Schedule underneath. The three large Call / WhatsApp / Email buttons appear
+    **on the phone only**.
+  - **Notes card:** a 10-row box that grows (`GrowingTextarea`; see the field-sizing lesson), the saved
+    notes in full, newest first, then **"Earlier notes"**, which is the prospect's `notes` column,
+    editable in place. Nothing was migrated or copied from that column.
+  - **Demo and Files.** **Insert in email** sends the full `https://…/demo/<slug>` URL to the editor's
+    imperative handle (`insertLink`) and inserts it at the caret as a real link. It used to switch tab
+    and ask for a paste.
+- **Centre column:**
+  - **Tabs:** Email / Call / WhatsApp.
+  - **The composer:**
+    - no window chrome; To line, template chips, toolbar (B · Small · Insert signature · Insert opt-out
+      · Attach file · Plans PDF — the attach buttons on the toolbar row, the chips directly under it
+      inside the same border, never over the text);
+    - an editor of **fixed height** (default 12 lines, `COMPOSE_DEFAULT_LINES`) with its own scrollbar.
+      The drag grip's height is remembered **per browser** (`hg.outreach.composeHeight.v1`), clamped
+      between 6 lines and 80% of the window;
+    - ⤢ opens a full-window writing view;
+    - the Send row always renders, and says why it is disabled;
+    - 🔴 **the composer locks page scrolling only when it really is over the page** — the portalled
+      window and ⤢ — never when it is mounted inline (§V13.7 class 8);
+    - the "You have edited this message" banner is a **difference** against the template's own render,
+      and requires a template: never with Blank, never on an untouched one.
+  - **Below the composer:** the history.
+- **Right column:** Log in one click (Called — no answer / spoke, Left voicemail, WhatsApp sent, with an
+  8-second Undo), Next follow-up chips, and Do not contact.
+- **Reading panel:**
+  - clicking an **email** row opens a panel from the right, `min(55vw, 960px)`, full height, with ‹ ›
+    and ↑/↓ stepping (no wrap), Esc to close, and focus returned to the row;
+  - footer actions include **Reply** (received) / **Follow up on this** (sent) and **Record as ‹step›**;
+  - on a phone it is a full-screen sheet;
+  - a half-written draft survives opening, stepping and closing it.
+
+## 61.3 The history
+
+- One list, newest first, merging emails, contacts that are not emails, stage changes and notes.
+- **Every row starts with one icon and one word**, from one function, `rowLabel`: envelope · Sent /
+  **Received** (the only pill), phone · Call, bubble · WhatsApp, pencil · Note, arrows · Stage. No glyphs,
+  and no green row background: a colour was doing the work of a word.
+- **A call is labelled Call** even when it is stored as `reply` after the prospect replied.
+  `oneClickKind` logs a one-click contact as `reply` on purpose — `reply` is not a rung, and a call back
+  must not advance the chase ladder — and `contactRowLabel` then says what actually happened: **Call**,
+  **WhatsApp**, **Text**, keeping the rung wording for email, where "reply" is the right word.
+  🔴 **Display only: the stored kind is unchanged and `nextStep` reads exactly what it always read.**
+- **Previews skip greeting lines** (`meaningfulPreview`) and fall back to the subject.
+- **Hand-logged emails pair with the imported copy**, display only:
+  - same London day, same direction, email channel, not linked, and **exactly one** of each; otherwise
+    nothing is paired;
+  - in the ambiguous case, a second rule pairs on the **opening words**: both sides normalised (case,
+    runs of whitespace, line breaks, and the quote characters a keyboard and a mail client disagree
+    about), greeting lines skipped on both sides by the same rule the previews use, and the first **60**
+    meaningful characters compared. 🔴 It pairs only when **exactly one** email matches — two emails
+    opening with the same words pair nothing, because a wrong pairing hides a record;
+  - nothing is deleted or rewritten.
+- **No "also logged by hand" marker is shown.** v4 fixes replaced the duplicated plain-text block with a
+  one-line marker; the polish build then removed the marker itself, at Dominic's instruction, as a
+  de-duplication nobody had asked about. What survives is the only part that carries information: when
+  the hand-logged note says something the email does not, the reading panel shows
+  **"Note logged with this email ▸"**, closed. When it is the email pasted in, nothing is shown.
+  `handTextIsRedundant` decides, and 🔴 **"I cannot tell" is FALSE, not true** — while the body is still
+  loading, the note is shown rather than hidden.
+- **Notes are one row** — icon · date · **Note** · the first line, truncated, with Edit and Delete on the
+  right — expanding **in place**. `tidyNoteText` collapses runs of empty lines to one break and keeps
+  every line break that was typed. A **More / Less** chevron appears **only when there is more to show**
+  (`noteHasMore`), so a row that is already complete does not offer to expand. ⚠️ The Notes card in the
+  left column still shows every note **in full** — that list *is* the notes.
+- Notes can be **edited** (marked "edited") and **deleted** (confirm, then an 8-second Undo that restores
+  the original date).
+  🔴 **Stage changes and system events can never be edited or deleted** — the statement itself carries
+  `.eq('kind', 'note')`.
+
+## 61.4 Stage and follow-up
+
+- **One contact writer, `logOutreachContact`.** It moves `not_contacted` → `contacted` on a real send and
+  `contacted` → `replied` on an inbound contact, records a `stage_change` event, and marks earlier inbound
+  handled.
+- **One follow-up writer, `applyFollowUp`** — now with an optional explicit date and a **nullable kind**,
+  because a date chosen on its own contacts nobody and must never freeze the lead type. Two callers, one
+  statement.
+  - 🔴 **A Next follow-up chip used to write nothing.** It set local state that `applyFollowUp` read
+    *after a log or a send*; choosing a date and doing nothing else never reached the database. A chip
+    saves immediately now, with "Follow-up set for …" and an 8-second Undo; **None** clears it the same
+    way.
+  - The chips are seeded from the **stored value first** (`storedFollowUpChoice`), not from the interval
+    the next action would suggest — which on a prospect who had replied rendered "None" over a real date.
+  - The NEXT banner shows a stored follow-up including a **future** one and including on a prospect who
+    has replied, and it sits **after** a waiting reply and a due chase, never before them.
+- `do_not_contact` moves **only on a click**.
+- ⚠️ Replies recorded **before** the writer existed never moved the stage (§V13.7 open items).
+
+---
+
+# 62. The sequence grid, the send-time guards and the Templates tab (V13.7 — 30 September 2026)
+
+## 62.1 One template per box
+
+- `outreach_sequence_slots(channel, step, lead_type, template_id, updated_at)`:
+  - `step` is one of the four `CONTACT_KINDS`;
+  - `lead_type` is one of the four types **or `'any'`**, the default column;
+  - `unique (channel, step, lead_type)` makes **two templates in one box impossible**;
+  - `foreign key (template_id, channel) references outreach_templates (id, channel)` makes the database
+    refuse a template of the wrong channel. That FK needed `unique (id, channel)` on
+    `outreach_templates`: the only change to that table, and it touched no row.
+- "Same as default" / "No template" = **no row**.
+- **Seeded** (email) from Dominic's tags:
+
+  | Step | Lead type | Template |
+  |---|---|---|
+  | First contact | `hu_ordering` | `hu_rate_email` |
+  | First contact | `hu_map` | `hatches-up-map-only` |
+  | First contact | `on_vf` | `general_email` |
+  | Chase 1 | `any` | `chaser_email` |
+  | Chase 1 | `hu_ordering` | `chase-1` |
+
+**The choice rule** (`chooseForStep`, over `chooseTemplate`), the only pre-selection anywhere:
+1. the truck type's own box;
+2. otherwise the default box;
+3. otherwise **nothing**, with a sentence saying so.
+
+The truck type is `effectiveLeadType` (frozen at first contact, else live). Inactive and wrong-channel
+templates are never picked.
+
+🔴 **Superseded, not deleted:**
+- `templateForStep` no longer chooses and has **no caller**; `STEP_TEMPLATE` is read only by it.
+- `suggestTemplateId` is **still called** — the prospect page passes it to the picker as `suggestedId`,
+  which orders the list and labels an option. It has never pre-selected and does not now.
+- `serves_kind` and `serves_lead_type` are read by **nothing that chooses**: the templates route still
+  exposes and validates them and the editor round-trips them on Save, so a stored value survives, but no
+  chooser reads them and the editor stopped displaying them on 30 September.
+- Keeping any of them alive as a fallback is how three competing choosers came to exist.
+
+## 62.2 Why Pig-Casso's opened on Blank (the diagnosis that started this)
+
+A prospect who has **replied** is stopped on the ladder, so `nextStep` returns no step, while the NEXT banner
+comes from `nextAction`, which does cover follow-ups. One line said "follow up" and the box below said there
+was nothing to send. The composer now says so in words: *"No step to send: replied — …"*.
+
+## 62.3 The logged kind is the step, decided on the server
+
+- Previously the logged rung was whatever the **template** was tagged. Picking a chase-1 template for a
+  truck due its first contact logged a chase-1 rung, and the ladder skipped a step for ever.
+- Now the **server re-derives the step** with `nextStep` and logs that (`loggedKindFor`):
+  - answering someone who wrote back is `reply`;
+  - following up on **our own** email is the **step**, with every guard applied;
+  - `reply` is deliberately not a rung.
+- The exemption from the guards is decided from the rows ("has the prospect written?"), never from which
+  button was pressed.
+
+## 62.4 The send-time guards (in `app/api/admin/outreach/mail-send/route.ts`)
+
+| | Guard | Behaviour |
+|---|---|---|
+| a | Each step goes once (`guardAlreadySent`) | **Refuses**, naming the day, counting contact rows **and** message rows (joined on `contact_id`). An unrecorded Outlook email **asks** instead (`guardUnattributed`, 62.5) |
+| b | Not before it is due (`guardNotDue`) | **Asks** ("Chase 2 isn't due until …") |
+| c | One click, one email | The idempotency key (60.3) |
+| d | Shared address (`guardSharedAddress`) | **Asks** when the address (case-insensitive) belongs to another prospect emailed in the last 14 days (`SHARED_ADDRESS_DAYS`) |
+| e | After the final chase (`guardAfterFinal`) | **Asks** |
+| f | Replies | a, b and e do not apply; c and d do. Test sends bypass everything and count for nothing |
+| g | The button (`sendButtonLabel`) | Names the step: "Send · Chase 1" / "Send reply" |
+| h | The logged kind (`loggedKindFor`) | The step (62.3) |
+
+- `evaluateGuards` runs them; a blocked send writes nothing and sends nothing.
+- **"Send anyway"** resubmits with an override list, and the server writes a `note` event beginning
+  `Sent anyway:` (`OVERRIDE_PREFIX`) **before** sending. The note is a `note` rather than a new event
+  kind, to avoid a migration.
+
+## 62.5 Outlook sends carry no step
+
+- An email typed in Outlook is found in Sent and recorded, but the ladder does not learn which step it was.
+- **Record as ‹step›** in the reading panel logs it, through the existing `log_only` action, the one
+  contact writer and `applyFollowUp`, linked to the message.
+- It is refused for a message already logged, a test send, or any kind that is not a step.
+- It is **never automatic**. Guessing the step would either block a legitimate send or wave through a
+  second chase.
+
+## 62.6 Truck types and the frozen type
+
+- The four types stay in **code** (`leadTypeOf`).
+- Dominic can **rename** them (the `lead_type_labels` row in `outreach_settings`), and the name is used
+  everywhere.
+- Where `lead_type_at_first_contact` differs from today's type, the page says so, and **Use current type**
+  rewrites it on a click, with a note. It is the only writer of a frozen type.
+
+## 62.7 The Templates tab — two views
+
+- **Sequence** | **Templates**, remembered per browser (`hg.outreach.templatesView.v1`,
+  `TEMPLATES_VIEW_KEY`).
+- **Sequence view:**
+  - columns are the four steps, with day offsets derived from `FOLLOW_UP_DAYS` (`stepOffsetLabel`,
+    never a second table); rows are the default plus the four types, with live counts;
+  - cells are **labels**, not dropdowns: the template name + ↗; "↳ inherited" on a dashed box; red only
+    for a gap that matters; grey "None" for an empty default nobody depends on;
+  - clicking a cell opens a picker in place (saves with Undo);
+  - due pills appear only above 0; an ⓘ per type row gives the definition, count and Rename; one amber
+    line flags changed types.
+- **Templates view:** three panes (270px / 1fr / 30%).
+  - The height is **measured from the panes' own top edge** and from the padding below them
+    (`ResizeObserver`), never a guessed `calc`, so the page never scrolls and Save is always visible.
+  - The **"Used in"** chips come from the same function as the list (the `draft.id` bug, §V13.7 class 6).
+  - **Insert token ▾** and **Insert condition ▾** read the resolver's own vocabulary
+    (`resolvedTokenReference()`, `conditionReference()`); a hard-coded list is banned by the harness.
+  - The preview expands `{{signature}}` / `{{opt_out}}` through `docFromTemplateText`, the composer's own
+    call.
+  - The fields are **Template name / Subject / Message** — the 1-2-3 headings and their paragraphs were
+    removed on 30 September, keeping one grey line under the Message label about `{{double braces}}` and
+    `[[square brackets]]`.
+  - "+ New template" and Save are dark: orange means "this sends".
+- The **only writer of `outreach_templates`** is the editor's Save; a repo-wide census proves it.
+
+## 62.8 Conditional lines (as they stand)
+
+- A line starting `?next_event:` appears only for trucks with an upcoming event; `?no_next_event:` only
+  for trucks without one.
+- **A one-sided condition is often intentional**, e.g. mentioning the next pitch only when there is one.
+- The editor currently shows it as a red "half of a conditional pair" error. A build to make it a grey note
+  naming the trucks that will not see the line is **written, not built** (open items).
 
 *End of manual. The version is stated once, in the header — deliberately not repeated here.*
