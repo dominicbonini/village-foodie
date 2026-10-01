@@ -194,7 +194,38 @@ stay together and nothing crosses the viewport edge. The 76px rows are `heroSize
 
 ---
 
-## 7 · Deploy
+## 7 · Deploy — pushed, live, and verified on production
 
-See the commit and the production check in the chat reply — this section is written before the push and the
-numbers above are all local.
+Committed as **`e03301f`** and pushed to `main` (`6447120..e03301f`) **only after the suite was green**,
+which is what item 7 gates the deploy on. Five files: the component, the harness, the harness list, and the
+two reports.
+
+### 🧪 Verified against `https://www.hatchgrab.com/compare` after the deploy finished
+
+Not by reading the HTML — **by clicking the live page in a real browser, in both engines**, because the
+behaviour item 7 asks about only exists after hydration:
+
+| | Chromium | WebKit |
+|---|---|---|
+| **"No, not yet" button present** | ✅ | ✅ |
+| choose **"Yes, with another system"** → trading-days question | **absent** ✅ | **absent** ✅ |
+| choose **"No, not yet"** → trading-days question | **PRESENT** ✅ | **PRESENT** ✅ |
+
+And the live card numbering, read off the rendered badges, 1–6 with no gaps on either path:
+
+| | Yes path | No path |
+|---|---|---|
+| 1 | Do you take online orders now? | Do you take online orders now? |
+| 2 | How many trucks do you run? | How many trucks do you run? |
+| 3 | How many people work the van? | How many people work the van? |
+| 4 | Online orders per month, per truck | How much do you think you'd take online, per month, per truck? |
+| 5 | **What do you pay per order now?** | **How many days a week do you trade?** |
+| 6 | Your introductory offer — how many months free? | Your introductory offer — how many months free? |
+
+The new intro is serving: *"Takes about a minute. Already using a system? We'll compare it. Not yet? We'll
+show you exactly what it costs."*
+
+⚠️ **One incidental note from the local testing, not a code change:** while cleaning up a dev server I had
+started on port 3001, a `pkill` pattern also matched the one running on 3000. No data was involved. And for
+anyone testing locally: the URL must be **`http://hatchgrab.localhost:3000/compare`** — the live gate is
+`host.includes('hatchgrab')`, so plain `localhost:3000/compare` returns a 404.
