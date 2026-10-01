@@ -59,7 +59,10 @@ no-op is tested against a failure it can actually catch.
 
 ---
 
-## 2 · 🔴 What is live: the step-logging fix is NOT deployed, and ships in this push
+## 2 · What was live before this push: the step-logging fix was NOT deployed
+
+> **Resolved by this push.** Everything below describes the state *before* `91ca45d`, which is what item 2
+> of the brief asked me to establish. §4 confirms the fix is now on production.
 
 | | |
 |---|---|
@@ -71,9 +74,9 @@ So the fix for the Chase-1-logged-as-a-second-first-contact bug — the phantom 
 whose discarded error emptied the ladder — **has never been on main and has never deployed**. It goes out
 in this same push, as instructed.
 
-⚠️ **Which means the bug is live in production until this push lands.** Every non-test send is still
-deriving its step from an empty contact list. That is the most urgent thing in this push, and it is a
-larger change than item 1.
+⚠️ **Which meant the bug was live in production until this push landed.** Every non-test send was
+deriving its step from an empty contact list. That was the most urgent thing in this push, and it is a
+larger change than item 1. It is now deployed — see §4.
 
 Also riding along, all previously uncommitted: the editor toolbar build, the `/compare` follow-up's
 harness registration, and the two reports.
@@ -117,12 +120,40 @@ number that under-reports what was checked is its own small lie.
 
 ## 4 · Deploy, and what I could and could not verify
 
-See the chat reply for the commit and the production check.
+Committed `91ca45d` and pushed `06b3c0e..91ca45d`. Local `main` and `origin/main` are the same commit and
+the tree is clean.
 
-🔴 **I cannot verify the Sequence headers on production.** `https://www.hatchgrab.com/admin` answers HTTP
-200 but renders behind authentication — fetching it returns no sequence markup at all, and I have no admin
-session in this environment. **The headers and the composer toolbar need checking by hand.** What to look
-for:
+### ✅ The deploy has landed — proved by bytes, not by a page
+
+The admin UI is behind authentication, so I verified the deploy through the public static bundle instead.
+Production serves the chunks my local build of `91ca45d` produced, **byte for byte**:
+
+| chunk | local md5 | production md5 | contains |
+| --- | --- | --- | --- |
+| `d8af0325aa8b535a.js` | `aecda720467f075dc206c50fee6a7df3` | `aecda720467f075dc206c50fee6a7df3` | `noListIndent`, `Shift-Tab` |
+| `2b4e63991d1528e8.js` | `10e1580506a4865b5d82bbb0b529dc6c` | `10e1580506a4865b5d82bbb0b529dc6c` | the offset-label builder |
+| `e7013dc0b2ccab34.js` | `a5a50d63e1da187efd21c2c7da3381de` | `a5a50d63e1da187efd21c2c7da3381de` | the offset-label builder |
+
+⚠️ **The control matters.** The two label chunks are coincidentally the same size (57,837 B), which on its
+own looks exactly like a server handing back one fallback body for any chunk path. They have *different*
+md5s, each matching its own local file, and a hash that cannot exist
+(`/_next/static/chunks/0000000000000000.js`) returns **404**, not a body. So the match is real content, not
+a catch-all.
+
+In the served bundle: the builder is minified to `` `${o} days after ${s[a].toLowerCase()}` ``, the string
+`day 0` is present, and so are all four `STEP_LABELS` — `First contact`, `Chase 1`, `Chase 2`,
+**`Final chase`** (the fourth rung is *Final chase*, not "Chase 3"; its heading is the brief's
+`14 days after chase 2`).
+
+**What this proves and what it does not.** It proves the new code — both the Tab no-op and the step-logging
+commit — is the code production is now running. It does **not** prove the headers *render*: the words and
+the function that assembles them are shipped, but I never saw the assembled output.
+
+### 🔴 What still needs your eyes
+
+`https://www.hatchgrab.com/admin` answers HTTP 200 and returns a 15,810-byte client-rendered shell with no
+sequence markup in it, and I have no admin session here. **The Sequence headers and the composer toolbar
+need checking by hand.** What to look for:
 
 1. **Templates → Sequence**, the four column headings: **`day 0`** · **`3 days after first contact`** ·
    **`7 days after chase 1`** · **`14 days after chase 2`**.
@@ -131,7 +162,6 @@ for:
 3. **Inside a bulleted list, press Tab** — nothing happens, and the caret stays in the box.
 4. **Select a word and press B in Chrome** — it bolds. (Before this work, that click did nothing in
    Chrome.)
-
 ---
 
 ## 5 · Kept unchanged
