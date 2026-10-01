@@ -183,6 +183,19 @@ export default function EmailReadingPanel({
             ⚠️ WHEN IT ADDS SOMETHING, IT IS STILL REACHABLE — one click, collapsed, below the line
             rather than above the email. `handTextIsRedundant` decides, and it answers FALSE while
             the body is still loading, so the only failure it can make is one extra link. */}
+        {/* ── 🔴 A SEND THAT WAVED A GUARD THROUGH, ON THE EMAIL IT IS ABOUT ─────────────────
+            This used to be a `note` in the history reading "Sent anyway: [already_sent] …". It is a
+            fact about ONE EMAIL, and as a note it sat in the timeline as though a person had typed
+            it — editable and deletable like prose, and saying nothing about which email it meant.
+            🔴 THE STORED SENTENCES, NOT RE-DERIVED ONES: a guard's wording can change, and what
+            belongs in a record of a decision is the words the decision was made on.
+            ⚠️ ONE GREY LINE, IN THE PANEL ONLY. Nothing in the history list — a warning waved
+            through is context for the email, not an event in the conversation. */}
+        {(message.guard_override?.length ?? 0) > 0 && (
+          <p className="text-[11px] text-slate-500">
+            Sent after a warning: {message.guard_override!.map(g => g.message).join(' ')}
+          </p>
+        )}
         {/* 🔴 "Also logged by hand · 18 Sep" IS GONE (polish). It announced a de-duplication nobody
             had asked about: the pairing is display-only and its whole point is that one thing that
             happened is one row, so naming the mechanism made the mechanism the subject. WHAT

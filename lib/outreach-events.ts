@@ -69,30 +69,24 @@ export async function addNote(
   return { ok: true, id: (data as { id?: string } | null)?.id ?? null, error: null }
 }
 
-/**
- * A send that went out with a guard waved through.
+/* ── 🔴 `recordSendOverride` AND `OVERRIDE_PREFIX` ARE GONE (1 October 2026) ─────────────────────────
+ * A send that waved a guard through used to insert a `note` reading
+ * `Sent anyway: [already_sent] An email went to this prospect 15 Sept 2026 …`.
  *
- * 🔴 IT IS A `note`, NOT A NEW EVENT KIND, AND THAT IS A DELIBERATE CHOICE NOT TO MIGRATE. The
- * table's `kind` carries `check (kind in ('stage_change','note'))`; a third value would be a
- * migration for a row whose whole job is to be READ BY A HUMAN in the history. It is written with a
- * fixed prefix so it is greppable and so the timeline's filter treats it as what it is — something
- * Dominic did on purpose, recorded in words.
- * ⚠️ IT NEVER FAILS THE SEND. Like every other writer here, a missing history line is worth strictly
- * less than the thing it follows.
- */
-export const OVERRIDE_PREFIX = 'Sent anyway:'
-
-export async function recordSendOverride(
-  supabase: SupabaseClient,
-  prospectId: string,
-  guards: readonly { id: string; message: string }[],
-): Promise<{ ok: boolean; error: string | null }> {
-  if (guards.length === 0) return { ok: true, error: null }
-  const body = `${OVERRIDE_PREFIX} ${guards.map(g => `[${g.id}] ${g.message}`).join(' ')}`
-  const { error } = await supabase.from('outreach_events')
-    .insert({ prospect_id: prospectId, kind: 'note', body })
-  return { ok: !error, error: error ? error.message : null }
-}
+ * WHY IT WENT. It is a fact about ONE EMAIL, and a note is the wrong shape for it three ways: it sits in
+ * the timeline as though a person typed it; `NoteRow` offers Edit and Delete on it, so a record of a
+ * decision could be rewritten like prose; and it says nothing about WHICH email it refers to beyond
+ * sharing a day with it. It now travels on the sent message's own row — `outreach_messages.guard_override`
+ * — and is shown only in that email's reading panel, as one grey line.
+ *
+ * 🔴 THE EXISTING NOTES ARE DATA AND ARE NOT TOUCHED. Nothing migrates, rewrites or deletes them; they
+ * stay in `outreach_events` reading exactly as they do today, and Dominic removes them himself with the
+ * note Delete button. ⚠️ So the prefix is no longer a constant anywhere, and that is correct: nothing
+ * writes it and nothing keys off it. A reader meeting one of those notes in the history is meeting a row
+ * written before this change, which is what its date says.
+ * ⚠️ NOTHING ELSE ABOUT THE TABLE CHANGED. `kind` still carries `check (kind in ('stage_change','note'))`
+ * — avoiding a migration for that check was the original reason the override was a note at all, and the
+ * column it moved to belongs to a different table. */
 
 /**
  * Edit a note.

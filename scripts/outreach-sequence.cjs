@@ -276,7 +276,25 @@ function runCensus() {
   t('🔴 the guards run in the send route, for every path', /evaluateGuards\(\{/.test(SEND))
   t('🔴 …and a blocked send writes NOTHING and sends nothing',
     /return NextResponse\.json\(\{\s*ok: false, needsConfirm: true/.test(SEND))
-  t('🔴 an override is recorded in the history before the send', /await recordSendOverride\(supabase, prospectId/.test(SEND))
+  /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ────────────────────────────────────
+   * This required `await recordSendOverride(supabase, prospectId` — a waved guard written into the
+   * history as a `note` reading "Sent anyway: [already_sent] …", BEFORE the send, so that a send which
+   * then failed still left the override behind. Both halves of that have deliberately changed:
+   *   • NOT A NOTE. It is a fact about ONE EMAIL, and a note sits in the timeline as though a person
+   *     typed it — `NoteRow` offers Edit and Delete on it — while naming no email. It lives on the sent
+   *     message's own row now (`outreach_messages.guard_override`) and shows in that email's panel.
+   *   • NOT BEFORE THE SEND. The row is inserted after every refusal has run, so a send that never
+   *     reaches the insert records no override. That is the one property given up, and it costs
+   *     nothing: with no message row there is no email for the override to be about, whereas a note
+   *     about an email that does not exist is a history line pointing at nothing.
+   * 🔴 WHAT THIS CHECK PROTECTED — that waving a guard through is RECORDED and not merely obeyed — is
+   * asserted here against the new location, plus the probe that keeps the send working before the
+   * migration is applied. ⚠️ Existing "Sent anyway:" notes are untouched data. */
+  t('🔴 a waved guard is still recorded — on the message row, never as a note',
+    /guard_override: wavedGuards\.map\(g => \(\{ id: g\.id, message: g\.message \}\)\)/.test(SEND)
+    && !/recordSendOverride/.test(SEND))
+  t('⚠️ …behind a probe, so an unapplied migration costs the line and never the send',
+    /const canStoreOverride = wavedGuards\.length > 0 && await messagesHaveGuardOverride\(\)/.test(SEND))
   t('⚠️ a TEST send skips every guard', /if \(!isTest\) \{/.test(SEND))
   t('🔴 one contact writer and one nextStep call in the route',
     (SEND.match(/logOutreachContact\(/g) || []).length === 2 && (SEND.match(/nextStep\(/g) || []).length === 1)

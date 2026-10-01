@@ -25796,7 +25796,25 @@ village, so a row whose venue *text* changed is inserted fresh and the old row i
 🔴 **UNVERIFIED UNTIL A SCRAPE RUNS. A prompt change cannot be tested without running the model, and it
 has not been run.** The claim is only that the wording matches the control's.
 
+⚠️ **PARTLY ANSWERED 1 OCTOBER 2026.** A scheduled run has now happened and 🧪 **no row in it echoed a
+venue name through this cause** — the one row reported was a real place, not an invention (§54.4). That is
+one run and one row, so it is **not** evidence the wording holds generally, and the green-run caveat still
+applies in full. 🔎 Both rules are unchanged and a harness now pins them.
+
 ## 54.4 The mirror assertion
+
+🔴 **SUPERSEDED 1 OCTOBER 2026 — THIS ASSERTION STOPPED THE DAILY SCRAPE ON A CORRECT ROW, AND WHAT FOLLOWS
+DESCRIBES THE PRE-FIX VERSION.** 🧪 It failed the run with `1 Pass A row(s) have a village that is just the
+venue name again`, naming `"Holbrook" [Holbrook]` — and Holbrook is a real Suffolk village **and an approved
+venue in this system**, `('Holbrook', 'Holbrook', 'IP9 2')`, imported 9 September 2026. 🔴 **The premise
+below is incomplete:** `village === venue_name` has two causes — the model echoing a venue name it had no
+village for (the bug), and a source naming the location **only by its settlement** (correct data). 🧪 7 of
+the 10 `name == village` venues in the September import are real places. The assertion now requires
+**corroboration** from an approved venue record before reporting a row, still with **no threshold**, and
+`scripts/scraper-invented-village.cjs` is a registered harness so the proof re-runs.
+**This is pipeline territory: the current account is `docs/scraper-reference-manual.md` §25 (V2.2), and
+that is the one to read.** What remains below is the V13.0 record of how it was first built.
+
 
 🔎 `assertNoInventedVillages` (`scripts/geo-validate.js`), beside `assertInboundOk` and
 `assertNoWriteFailures` — the file whose exit code the workflow reads. Wired to `newRowsToAdd`, **the rows

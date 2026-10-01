@@ -1,6 +1,6 @@
-HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V2.1
+HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · V2.2
 
-**Version 2.1 · 14 September 2026**
+**Version 2.2 · 1 October 2026**
 
 *This documents the discovery pipeline: a separate codebase path, a separate runtime and a separate deploy path from the Next.js app. It exists because this pipeline had never been documented, and that cost three months of silent venue-creation failure — nobody could tell "few trucks scraped" from "few venues created" from "nothing ran", because none of it was written down and every failure exits 0.*
 
@@ -11,6 +11,61 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 ---
 
 # CHANGELOG
+
+## V2.2 — 1 October 2026 — THE INVENTED-VILLAGE ASSERTION STOPPED THE DAILY SCRAPE ON A CORRECT ROW, AND ITS 12-CASE PROOF HAD NEVER RE-RUN SINCE THE DAY IT WAS WRITTEN
+
+⚠️ **This entry supersedes §25 where they disagree; §25 is rewritten rather than appended to.** V2.0's
+account of §24 (the extraction prompts) and §26 (the matcher tie-break) stands unchanged and is **not**
+repeated here. 🔎 **The prompts were never at fault in this incident** — 🧪 both VILLAGE rules still carry
+`use "" (an empty string) — do NOT repeat the venue name and do NOT guess`, and the harness now pins that.
+
+**Covers: §25, rewritten.** 🧪 The run failed with `1 Pass A row(s) have a village that is just the venue
+name again`, naming **`"Holbrook" [Holbrook]`** — and that row was **correct**. 🔎 Holbrook is a real
+Suffolk village **and an approved venue in this system**, `('Holbrook', 'Holbrook', 'IP9 2')`, imported
+9 September 2026. The error message sent the reader to the extraction prompts, where there was nothing to
+find.
+
+### 🔴 THE PREMISE WAS INCOMPLETE, AND THAT IS THE DEFECT — NOT THE COMPARISON
+
+`village === venue_name` has **two** causes: the model **echoing** a venue name it had no village for (the
+bug), and a source that names the location **only by its settlement**, so both fields honestly hold it
+(correct data). 🧪 **Of the 10 `name == village` venues in the September import, 7 are real places** —
+Holbrook, Brandon, St Neots, Dunstable, Great Waldingfield, Salen, Lochbuie. Three are the bug shape:
+`Chilfest`, `Todd In The Hole Festival`, `G's Family Day`.
+
+🔴 **A test that cannot separate those fires on correct data about as often as on wrong data, and then gets
+switched off — after which the real behaviour returns silently.** V2.0 recorded the inference *"the
+assertion fires ⇒ the behaviour is back"*. **That inference was unsound and this was the counter-example.**
+
+### THE FIX — EVIDENCE FROM OUR OWN APPROVED RECORDS, NOT A LOOSER COMPARISON
+
+🔎 A row is exempt only when something **other than this extraction** says the village is a place: the
+village recorded on the **existing venue it matched**, or a village recorded on venues whose **own name is
+different**. 🔴 **That second exclusion is what keeps it non-circular** — a self-named row cannot vouch for
+itself. ⚠️ **It fails closed:** no evidence supplied ⇒ V2.0's strict behaviour, which is why all 12 original
+cases still hold. 🔎 **No threshold was introduced and none is wanted**; the test is still `> 0`.
+
+🧪 **Replayed against the real 255 venue rows:** Holbrook, Brandon and St Neots pass; an echoed village **on
+an existing venue recorded elsewhere** still throws — the case a narrower "exempt anything that matched a
+venue" fix would have missed; a brand-new `Chilfest [Chilfest]` still throws; and replaying the **entire
+approved import** as scraped rows reports nothing.
+
+### 🔴 AND THE REASON A PREMISE ERROR SURVIVED THREE WEEKS: THE PROOF WAS IN A REPORT
+
+V2.0's 12 cases were written up and **never re-run by anything**. 🔎 They are now
+`scripts/scraper-invented-village.cjs`, **registered in `scripts/harnesses.json`** (73 → 74) — 🧪 **27
+checks, 6 broken variants all caught, and the full sweep at 74 run · 74 passed · 0 failed.**
+
+### 🔴 WHAT IS STILL OPEN
+
+- **The fix trusts the `venues` table**, so a **repeat** event at the three non-place venues above is now
+  exempt. ⚠️ **No SQL was run and none is proposed** — they are named so the decision is Dominic's.
+- 🔴 **The scraper was NOT run.** It writes to the Sheet and the database. The evidence is the real
+  assertion called with real venue rows, **not a live scrape**.
+- ⚠️ A **new** settlement-named venue that no other venue corroborates will still stop the run **once**,
+  name the row, and point at the missing venue record rather than at the prompts.
+
+---
 
 ## V2.1 — 14 September 2026 — THE DATABASE HAS HAD A PRUNER SINCE 11 SEPTEMBER, THIS MANUAL NEVER MENTIONED IT, AND IT HAD DEADLOCKED ITSELF WITHIN FIVE DAYS OF GOING LIVE
 
@@ -444,6 +499,8 @@ HatchGrab / Village Foodie — Scraper & Discovery Pipeline Reference Manual · 
 - 🔴 **A SWEEP SCOPED NARROWER THAN THE RISK MEASURES THE SCOPE, NOT THE RISK.** A grep restricted to `.ts` hid the venue creator, which is a `.js` file, for a full round — and an existing report had already found it and was not read first.
 - 🔴 **EVERY SILENT FAILURE IN THIS PIPELINE PRESENTS AS SUCCESS.** A dead credential becomes "0 sites, exit 0". A rotated secret is logged as a success row. A rejected upsert writes nothing and returns green. **Three months of venue failure, three days of one truck, and 51 trucks of unknown status all share one cause: nothing was watching.**
 - 🔴 **PROOFS THAT REPORT GREEN WHILE PROVING NOTHING ARE THE RECURRING FAILURE.** A harness running a pre-edit copy. A loop breaking before the case it existed for. A `throw` inside the catch it was meant to escape. A guard anchoring on itself. **Each was caught by inspecting the test, never by reading its result. State what a proof's failure mode would look like if it were proving nothing, before quoting it.**
+- 🔴 **[NEW V2.2] A PROOF THAT LIVES IN A REPORT IS NOT A PROOF — IT IS A RECORD THAT ONE ONCE PASSED.** `assertNoInventedVillages` shipped with 12 cases and a live-table check, written up in `docs/prompt-and-assertion-report.md` and **re-run by nothing**. Three weeks later it stopped the daily scrape. ⚠️ **The 12 cases would not have caught it anyway**, which is the sharper half of the lesson: they tested the comparison, and the error was in the **premise** — `village === venue_name` was assumed to have one cause when it has two. **A test can only protect the claim it encodes; ask what the claim would look like if it were the wrong claim.** §25.1
+- 🔴 **[NEW V2.2] AN ASSERTION THAT FIRES ON CORRECT DATA IS A FUTURE SILENT FAILURE, NOT A STRICT GUARD.** A red run every morning on a correct row gets the guard switched off, and the behaviour it existed for then returns unseen. 🧪 7 of the 10 `name == village` venues in the September import are real places. **Before adding a no-threshold assertion, enumerate the legitimate shapes that satisfy it — if any exist, the assertion is not yet specified.** §25.2
 - ⚠️ **THE OPERATOR'S ACCOUNT OF THE SYSTEM BEAT THE TOOLING TWICE** — venue creation was automatic, and unusual venue names are real pitches. **Where a claim from the operator and a grep disagree, the grep is the thing to widen.**
 
 ---
@@ -2383,36 +2440,132 @@ so an empty village also stops new junk venues being minted on a place descripti
 rows** could have their village nulled on re-emission; **421 are publicly unaffected** because the feed
 falls back to the venue's own village, and **one** would go empty on screen.
 
+⚠️ **PARTLY ANSWERED V2.2.** 🧪 A scheduled run has now happened (1 October 2026) and **no row in it echoed a venue name through cause 1** — the single row reported was a real place (§25.1). That is one run and one row: it is **not** evidence the wording holds generally, and the green-run caveat (§25.4) still applies in full.
+
 🔴 **UNVERIFIED UNTIL A SCRAPE RUNS.** A prompt change cannot be tested without running the model and it
 has not been run. The claim is only that the wording matches the control's.
 
 ---
 
-# 25. 🔴 `assertNoInventedVillages` — THE RUN FAILS IF THE BEHAVIOUR RETURNS (V2.0)
+# 25. 🔴 `assertNoInventedVillages` — THE RUN FAILS IF THE BEHAVIOUR RETURNS (V2.0, REWRITTEN V2.2)
 
 🔎 `scripts/geo-validate.js`, beside `assertInboundOk` and `assertNoWriteFailures` — **the only file whose
-exit code the workflow reads**. Called from the end of Pass A with `newRowsToAdd`, the rows the run just
-wrote, and compared **normalised** (lowercased, non-alphanumerics stripped) so a difference of punctuation
-or case cannot let one through.
+exit code the workflow reads**. Called from the end of Pass A with the rows the run just wrote, compared
+**normalised** (lowercased, non-alphanumerics stripped) so a difference of punctuation or case cannot let
+one through.
 
 - **It sees only this run's rows.** An assertion over the table would throw on the historical **76** every
   night and be switched off within a week.
 - **No threshold.** Those 76 will not repair themselves; a **new** one is the signal, so the test is `> 0`.
+  🔴 **Still true after V2.2** — the fix below narrows *what counts as one*, never how many are tolerated.
 - ⚠️ **An empty village is not a match, and the length check is load-bearing.** `norm('')` is `''` on both
   sides, so a naive equality test would flag every honestly-blank row — the exact rows §24 is meant to
   produce — and make the fix a permanently red run.
 
-🧪 **Proved both ways:** 12 cases, the script exiting 0 only if every one matches — fires on exact, case-
-and punctuation-differing matches and on one bad row hidden among 99 clean; passes on empty, null,
-undefined, substring and empty-input cases. Against the live table it **fires on all 76 real bad rows,
-passes on all 857 clean rows and on the 28 already-empty ones**. The harness itself was first pointed at a
-never-throwing variant and reported failure, which is the only thing that distinguishes a working test
-from a blind one.
+## 25.1 🔴 IT FIRED ON 1 OCTOBER 2026, AND IT WAS WRONG (V2.2)
 
-🔴 **THE GREEN-RUN CAVEAT.** Green means **no new row had a village equal to its venue name**. It does
-**not** mean the model declined honestly — inventing a *different* wrong village is also green. The
-**ratio assertion** (this run's empty-village share against a 14-day baseline) is **deliberately
-unbuilt**: it needs a post-change run to calibrate, and a guessed threshold fires on noise.
+🧪 The run failed with `1 Pass A row(s) have a village that is just the venue name again`, naming
+**`"Holbrook" [Holbrook]`**. **Nothing was wrong with that row.**
+
+🔎 **Holbrook is a real village in Suffolk and an approved venue in this system** —
+`('Holbrook', 'Holbrook', 'IP9 2')`, imported 9 September 2026 in
+`docs/sql/migration-step-3-20260909/02-import.sql:200`, and listed in that migration's own report as group
+B (*postcode present but unresolvable*). The scrape found an event at a **human-reviewed venue whose name
+is simply the place it sits in**, and the assertion called it an invention.
+
+🔴 **THE PREMISE WAS INCOMPLETE, NOT THE IMPLEMENTATION.** `village === venue_name` has **two** causes and
+V2.0's diagnosis had only one in view:
+
+| | cause | is it the bug? |
+|---|---|---|
+| 1 | a real venue name (`Church View Campsite`) with the village field **echoing** it, because the source carried no village and the prompt gave the model no way to say so | 🔴 **yes** — what §24 and this assertion exist for |
+| 2 | the source names the location **only by its settlement**, so both fields honestly hold it | ⚠️ **no** — correct data |
+
+🧪 **Counted over the 255 venue rows of the September import: 10 have `name == village`, and 7 of them are
+real places** — Holbrook, Brandon, St Neots, Dunstable, Great Waldingfield, Salen, Lochbuie. The other
+three are the bug shape: `Chilfest`, `Todd In The Hole Festival`, `G's Family Day`.
+
+🔴 **WHY THIS MATTERED MORE THAN ONE RED RUN.** A test that cannot separate those two fires on correct data
+about as often as on wrong data, and the first thing that happens then is that somebody switches it off —
+after which cause 1 returns **silently**. The V2.0 entry below predicted "the assertion fires ⇒ the
+behaviour is back". **That inference was unsound, and this is the counter-example.**
+
+## 25.2 THE FIX — CORROBORATION FROM OUR OWN APPROVED RECORDS (V2.2)
+
+🔎 `assertNoInventedVillages(rows, label, settlementVillages)`. A row still has to have
+`village === venue_name` to be considered at all; it is **exempt only when something other than this
+extraction says the village is a place**:
+
+- 🔎 **`venueVillage`** — the village recorded on the **existing venue the row matched**. Holbrook's venue
+  row says its village is Holbrook, so the extraction **agrees with an approved record** rather than
+  inventing against one. ⚠️ `Church View Campsite` matched to a venue recorded in `Shepreth` does **not**
+  agree, so the invented shape is still caught **on an existing venue** — which the narrower fix of
+  "exempt anything that matched a venue" would have missed.
+- 🔎 **`settlementVillages`** — villages recorded on venues whose **own name is different**. 🔴 **That
+  exclusion is what makes it non-circular:** a self-named row cannot vouch for itself, so a lone
+  `Chilfest [Chilfest]` proves nothing about "Chilfest" being a place, while several venues sitting in
+  Debenham do prove it about Debenham. Without the exclusion the set would exempt every shape the
+  assertion is for.
+
+⚠️ **IT FAILS CLOSED.** No corroboration supplied ⇒ V2.0's behaviour exactly. That is why **all 12 original
+cases still hold unchanged**; the only way to be exempt is to hand over a reason.
+
+🔎 **The wiring.** `villageAudit` — one entry per row, pushed at the **same site** as `newRowsToAdd` —
+carries `venueVillage`. 🔴 **It is deliberately NOT a tenth element of `newRowsToAdd`:** that array is the
+Sheet payload, columns A–I and positional, so a tenth field would append a **stray column to the
+spreadsheet**. `settlementVillages` is built from **`venueMatchRows`** — the set the matcher itself used,
+already floor-guarded by the `MATCH_MIN_RATIO` checks (§17), so a truncated or empty read fails the run
+earlier and **cannot quietly widen this exemption**.
+
+⚠️ **The matcher is untouched.** `resolveVenueFrom` still returns a **name** and still decides the match on
+its own; the audit looks that name back up in the set the matcher was given. Changing its return value
+would have altered the Sheet-vs-DB control's byte-for-byte comparison for no gain here.
+
+🧪 **Replayed against the real 255 venue rows of the September import** (245 settlement villages after the
+self-named exclusion): Holbrook, Brandon and St Neots **pass**; an echoed village on an existing venue
+recorded elsewhere **throws**; a brand-new `Chilfest [Chilfest]` **throws**; and replaying **every row of
+the approved import as though it were scraped reports nothing**.
+
+🔎 **The failure message now says what a non-report means** — *"A venue genuinely named after its own
+village is NOT reported: this lists only rows that no approved venue record corroborates"* — so a reader
+who sees a real place named is told the venue record is missing or disagrees, rather than sent to the
+prompts.
+
+## 25.3 🔴 THE RESIDUAL GAP, AND THE 12-CASE PROOF THAT NOTHING RE-RAN (V2.2)
+
+🔴 **THE FIX TRUSTS THE `venues` TABLE.** 🧪 3 of those 10 rows are not places, so a **repeat** event at
+`Chilfest`, `Todd In The Hole Festival` or `G's Family Day` is now **exempt**. The invention already
+happened on those rows, cleaning them is a data task, and blocking every night's scrape on them is not a
+way to get it done. **A brand-new one still throws, because nothing corroborates it.** ⚠️ **No SQL was
+run and none is proposed here** — the three rows are named so the decision is Dominic's.
+
+🔴 **V2.0'S 12-CASE PROOF LIVED IN A REPORT AND NOTHING RE-RAN IT.** That is why a premise error survived
+three weeks to stop a cron. 🔎 It is now
+**`scripts/scraper-invented-village.cjs`, registered in `scripts/harnesses.json`** (73 → 74 harnesses) —
+🧪 **27 checks and 6 broken variants, all caught**; the full sweep reports **74 run · 74 passed · 0
+failed**. It carries the original 12 cases verbatim, the Holbrook row, the echo-on-an-existing-venue case,
+the non-circularity of the settlement set, and source checks that `villageAudit` is pushed exactly once per
+`newRowsToAdd` push and that the two §24 prompt rules still permit `""`.
+
+> ⚠️ **ONE VARIANT IN THAT HARNESS WAS AIMED AT THE WRONG LAYER FIRST, AND IT IS WRITTEN INTO THE FILE.**
+> It tried to prove non-circularity by handing the assertion a polluted settlement set — but **every row
+> the assertion examines has `village === venue_name` by definition**, so a self-vouching entry is
+> indistinguishable from a genuine one *at that layer*. The assertion cannot verify how the set was built;
+> the exclusion lives in the scraper's builder and is pinned **there**. Keeping the original variant would
+> have meant a permanently red harness or deleting the settlement route to make a mis-aimed test pass.
+
+🔴 **STILL UNVERIFIED: THE SCRAPER WAS NOT RUN.** It writes to the Sheet and the database. The evidence
+above is the real assertion called with real venue rows, not a live scrape. ⚠️ **The next scheduled run is
+the first test against live extraction** — and a new settlement-named venue that no other venue
+corroborates will still stop the run once, name the row, and point at the missing venue record.
+
+## 25.4 THE GREEN-RUN CAVEAT (V2.0, UNCHANGED)
+
+🔴 Green means **no new row had a village equal to its venue name**. It does **not** mean the model
+declined honestly — inventing a *different* wrong village is also green. The **ratio assertion** (this
+run's empty-village share against a 14-day baseline) is **deliberately unbuilt**: it needs a post-change
+run to calibrate, and a guessed threshold fires on noise. ⚠️ **V2.2 does not change this**, and the
+corroboration does not help with it: a plausible wrong village was never caught here in the first place.
 
 ---
 
@@ -2449,7 +2602,7 @@ refusal to acceptance.**
 - 🔴 **[NEW V1.3] THE 10 SILENT `manual` TRUCKS.** They **never fetch a page at all**, so none of the three explained causes applies. **UNEXPLAINED.** ⚠️ Do not let §on the four causes read as closed.
 - ⚠️ **[NEW V1.3] TWO VENUE-PAGE SITES WERE NEVER FETCHED** — `Nethergate Brewery` and `The White Horse`. **So "Saffron Walden is the only multi-pitch venue page" is NOT established**, and `:920` (~~`:906`~~) affects all 7 venue sites regardless. §12.
 - 🔴 **[NEW V1.3] WHETHER THE 8 SEPTEMBER DEPLOY REACHED PRODUCTION.** 🧪 The commits exist and `HEAD` = `origin/main` = `6fe8634`. **I did not query Vercel and read no build record.** §15.
-- 🔴 **[NEW V1.3] WHETHER THE 06:00 CRON GOES RED TOMORROW.** The red-on-failure changes are deployed and **have never run on a schedule**. §15.
+- ✅ **[RESOLVED V2.2 — IT DOES, AND IT DID.]** ~~🔴 **[NEW V1.3] WHETHER THE 06:00 CRON GOES RED TOMORROW.**~~ 🧪 On **1 October 2026** a scheduled run exited **1** and the Actions job went **red**, with the offending row named in the log and the throw traced `assertNoInventedVillages` (`geo-validate.js:530`) → `main` (`run-scraper.js:2517`) → `Process completed with exit code 1`. **The red-on-failure machinery works end to end on a schedule** — the throw, the non-zero exit and the job status. ⚠️ **What it went red ABOUT was a false positive** (§25.1), so this resolves the *mechanism*, not the assertion's judgement. §15, §25.
 - 🔴 **[NEW V1.5] THE RIGHT `excluded` PREDICATE FOR MATCHING.** `.eq('excluded', false)` is wrong — 🧪 it resolves 41 disagreements and breaks 14, including all three graduated shadows. Something nearer `excluded AND hatchgrab_truck_id IS NULL AND no URL AND no events` is indicated. **Nothing proposed. OPEN.** §18.2
 - 🔴 **[NEW V1.5] THE 93 SHEET-ONLY VENUES AND 97 DB-ONLY TRUCKS.** Until they are reconciled `MATCH_FROM=db` creates 93 venues on a green run. **A data problem, not a code one. OPEN.** §17.5
 - 🔴 **[NEW V1.5] THE THREE GENUINE MATCHING DEFECTS** — `Between Buns`/`Between Buns Royston`, `Test Kitchen`, and 🔴 `Pimp My FIsh`/`Pimp My Fish` (one truck stored twice, both active). **No flag fixes these.** §18.3

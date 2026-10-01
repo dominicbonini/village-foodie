@@ -34,6 +34,33 @@ export interface TimelineMessage {
   /** 🔴 NON-NULL ⇒ this email is already a rung on the ladder. Null on an outbound row means nothing
    *  recorded a step for it — the Outlook-sent case the sequence report's §0c describes. */
   contact_id?: string | null
+  /** 🔴 THE GUARDS THIS SEND WAVED THROUGH, with the sentences that were on screen when it was waved.
+   *  Null on a clean send AND on every row written before the column existed — the panel shows the line
+   *  only when there is something in it, so the two cases read identically and that is correct.
+   *  ⚠️ IT REPLACED A `note` IN THE HISTORY. See the note at the head of lib/outreach-events.ts. */
+  guard_override?: GuardOverride[] | null
+}
+
+/** One waved guard, as stored. ⚠️ THE SENTENCE IS STORED, NOT RE-DERIVED: a guard's wording can change,
+ *  and a record of a decision has to keep the words the decision was made on. */
+export interface GuardOverride { id: string; message: string }
+
+/**
+ * Read a stored `guard_override` back, refusing anything that is not the shape above.
+ * 🔴 IT IS A `jsonb` COLUMN, so the only guarantee is that it is JSON. A malformed value must become
+ * null — one grey line missing — rather than reaching the panel and throwing inside a render.
+ */
+export function parseGuardOverride(raw: unknown): GuardOverride[] | null {
+  if (!Array.isArray(raw)) return null
+  const out: GuardOverride[] = []
+  for (const x of raw) {
+    if (!x || typeof x !== 'object') continue
+    const o = x as Record<string, unknown>
+    const id = typeof o.id === 'string' ? o.id.trim() : ''
+    const message = typeof o.message === 'string' ? o.message.trim() : ''
+    if (id && message) out.push({ id, message })
+  }
+  return out.length > 0 ? out : null
 }
 
 export interface TimelineContact {
@@ -227,6 +254,84 @@ export function pairHandLoggedEmails(input: {
     }
   }
   return { pairs, hidden }
+}
+
+// ── 🔴 ONE RULE FOR "IS THIS EMAIL ALREADY A RECORDED STEP" ───────────────────────────────────────
+//
+// THE INCIDENT (Guerrilla Kitchen, 1 October 2026). A first contact was sent from Outlook on 15
+// September and logged by hand — an `outreach_contacts` row with no linked message. Import past emails
+// later stored that same email as an `outreach_messages` row with `contact_id` null. The HISTORY got it
+// right: `pairHandLoggedEmails` pairs the two and shows **one** row. Nothing else knew:
+//   • `guardUnattributed` warned "An email went to this prospect 15 Sept … that is not recorded as a
+//     step — it was sent from Outlook", on an email that was recorded as a step;
+//   • the reading panel offered "Record as Chase 1" to record it a second time, and after the chase
+//     went out it offered "Record as Chase 2" — because the button read the prospect's CURRENT step
+//     rather than anything about the email in front of it.
+//
+// 🔴 THREE READERS, THREE ANSWERS, ONE QUESTION. That is the defect. This is the single answer, and
+// `buildTimeline`, the guards and the reading panel all read it.
+//
+// AN OUTBOUND, NON-TEST EMAIL COUNTS AS RECORDED WHEN EITHER:
+//   • `contact_id` is set — this system sent it and logged it; or
+//   • it PAIRS with a hand-logged outbound email contact whose `kind` is one of `CONTACT_KINDS`.
+// 🔴 PAIRING IS `pairHandLoggedEmails` ITSELF, PASSED IN — not a second implementation of the same
+// idea with the same name. Same London day and direction with exactly one of each, or the
+// opening-words rule when the day is ambiguous, and **ambiguity pairs nothing**. A looser rule here
+// than the history's would silence a guard about an email the history still shows as unaccounted for.
+//
+// ⚠️ A `kind` OUTSIDE `CONTACT_KINDS` IS NOT A RECORDED STEP. `reply` is the case that matters: it
+// sits outside the ladder on purpose (see `REPLY_KIND`), so an email logged as a reply has not had a
+// rung recorded for it and must still be offered one. Treating it as recorded would strand the ladder.
+// ⚠️ DISPLAY AND GUARD LOGIC ONLY. Nothing here writes, links or deletes a row; both records stay as
+// they are, because both are true — one is what the mail server did, the other what a person recorded.
+/** What a message is recorded as, and how we know. */
+export interface RecordedStep {
+  /** The `CONTACT_KINDS` rung this email is recorded as. */
+  kind: string
+  /** `linked` = a contact row points at this message. `paired` = a hand-logged contact matched it. */
+  how: 'linked' | 'paired'
+  /** The hand-logged contact, when `how` is `paired` — what "(logged by hand, 15 Sep)" is drawn from. */
+  contact: TimelineContact | null
+}
+
+/**
+ * message id → what it is recorded as. Absent from the map ⇒ not recorded.
+ *
+ * ⚠️ IT TAKES THE PAIRING RATHER THAN COMPUTING ONE. Every caller already builds it for the history,
+ * and a function that quietly re-derived it could disagree with the rows on screen.
+ */
+export function recordedStepsFor(input: {
+  messages: readonly TimelineMessage[]
+  contacts: readonly TimelineContact[]
+  pairing: HandLogPairing
+  /** The rungs of the ladder. Passed in so this module does not import the outreach vocabulary. */
+  ladderKinds: readonly string[]
+}): Map<string, RecordedStep> {
+  const out = new Map<string, RecordedStep>()
+  const isRung = (k: string | null | undefined) => !!k && input.ladderKinds.includes(String(k))
+  const byId = new Map(input.contacts.map(c => [c.id, c] as const))
+
+  for (const m of input.messages) {
+    if (m.is_test === true) continue
+    if (String(m.direction ?? '').toLowerCase() !== 'outbound') continue
+
+    // ① LINKED — this system sent it and wrote the rung.
+    if (m.contact_id) {
+      const c = byId.get(m.contact_id)
+      // ⚠️ THE CONTACT MAY NOT HAVE BEEN READ. `contact_id` alone proves a rung was written; without
+      // the row we cannot name it, and naming it wrongly is worse than leaving the panel quiet.
+      if (!c) continue
+      if (isRung(c.kind)) out.set(m.id, { kind: String(c.kind), how: 'linked', contact: c })
+      continue
+    }
+
+    // ② PAIRED — somebody sent it from Outlook and logged it by hand.
+    const c = input.pairing.pairs.get(m.id)
+    if (!c) continue
+    if (String(c.direction ?? '').toLowerCase() === 'inbound') continue
+    if (isRung(c.kind)) out.set(m.id, { kind: String(c.kind), how: 'paired', contact: c })
+  }
+  return out
 }
 
 /**

@@ -126,10 +126,32 @@ function runCensus(over = {}) {
     /const \[quotedOpen, setQuotedOpen\] = useState\(false\)/.test(CW) && /'Previous email'/.test(CW))
 
   // ── 2 · RECORD AN OUTLOOK SEND ───────────────────────────────────────────────────────────────
-  t('🔴 an unrecorded outbound email offers its step', /Record as \{STEP_LABELS\[stepKind/.test(TL))
-  t('⚠️ …and a picker when the ladder cannot say which', /CONTACT_KINDS\.map\(k => \(/.test(TL))
-  t('🔴 "unrecorded" is the CONTACT LINK, not a guess',
-    /const unrecorded = !inbound && !m\.is_test && m\.status === 'sent' && !m\.contact_id/.test(TL))
+  /* ── 🔴 THREE CHECKS RESTATED IN PLACE (1 October 2026) — NOT SILENTLY RE-POINTED ──────────────
+   * All three FAILED FOR REAL on this build, and each was asserting the thing that had just been
+   * found wrong. They are kept here, next to each other, with what they used to require:
+   *
+   * ① `an unrecorded outbound email offers its step` pinned `Record as {STEP_LABELS[stepKind`.
+   *    🔴 THAT PATTERN WAS THE DEFECT. `stepKind` is the PROSPECT'S CURRENT STEP, so the same email
+   *    was offered as "Record as Chase 1" before a chase went out and "Record as Chase 2" after it —
+   *    the button never read the email in front of it. A check that requires it would require the bug.
+   * ② `…and a picker when the ladder cannot say which` pinned the four-button fallback, which
+   *    appeared ONLY when the ladder could not name a step. The list is now always the four steps,
+   *    so there is nothing left to fall back TO and the branch is gone.
+   * ③ `"unrecorded" is the CONTACT LINK, not a guess` pinned
+   *    `!m.contact_id` as the whole test. 🔴 THAT IS THE GUERRILLA KITCHEN BUG EXACTLY: the 15
+   *    September email has no `contact_id`, and it is still a recorded first contact, because it
+   *    pairs with a hand-logged one. The link is still NECESSARY and is still asserted below — what
+   *    changed is that it is no longer SUFFICIENT.
+   * ⚠️ WHAT ALL THREE PROTECTED SURVIVES: the offer is never automatic, never for a test send, never
+   *    for an inbound row, and never for an email already recorded. Each is pinned below. */
+  t('🔴 the offer is a LIST of the four steps, not the prospect\'s current step',
+    /<RecordAsMenu busy=/.test(TL) && /function RecordAsMenu/.test(TL)
+    && /Record as ▾/.test(TL)
+    && !/Record as \{STEP_LABELS\[stepKind/.test(TL))
+  t('⚠️ …and the ladder\'s own answer is marked "suggested", not pressed on his behalf',
+    /suggested=\{stepKind\}/.test(TL) && /k === suggested && <span[^>]*>suggested</.test(TL))
+  t('🔴 "unrecorded" is the CONTACT LINK **AND** THE SHARED RULE — the link alone was the bug',
+    /const unrecorded = !inbound && !m\.is_test && m\.status === 'sent' && !m\.contact_id && !recorded/.test(TL))
   t('🔴 recording goes through the one contact writer and the one follow-up writer',
     /action: 'log_only', message_row_id: messageId, kind/.test(PAGE) && /await applyFollowUp\(kind\)/.test(PAGE))
   t('🔴 …and the route refuses a message that is already logged — it can never be counted twice',
@@ -167,7 +189,18 @@ function runCensus(over = {}) {
   t('🔴 still one nextStep call in the route', (SEND.match(/nextStep\(/g) || []).length === 1)
   t('🔴 still two logOutreachContact calls, and both are the one writer',
     (SEND.match(/logOutreachContact\(/g) || []).length === 2)
-  t('🔴 the sequence guards still run', /evaluateGuards\(\{/.test(SEND) && /recordSendOverride/.test(SEND))
+  /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ────────────────────────────────────
+   * This required `recordSendOverride` in the send route. That function is GONE: a waved guard used
+   * to be written into the history as a `note` reading "Sent anyway: [already_sent] …", and a note is
+   * the wrong shape for a fact about one email — it sits in the timeline as though a person typed it,
+   * `NoteRow` offers Edit and Delete on it, and it names no email. The override lives on the sent
+   * message's own row now. 🔴 WHAT THIS CHECK PROTECTED — that the guards still RUN and that waving
+   * one through is still RECORDED SOMEWHERE — is asserted in both halves below, against the new
+   * location. ⚠️ Existing "Sent anyway:" notes are untouched data; nothing migrates or deletes them. */
+  t('🔴 the sequence guards still run', /evaluateGuards\(\{/.test(SEND))
+  t('🔴 …and a waved guard is still recorded — on the message row, never as a note',
+    /guard_override: wavedGuards\.map\(g => \(\{ id: g\.id, message: g\.message \}\)\)/.test(SEND)
+    && !/recordSendOverride/.test(SEND) && !/'Sent anyway/.test(SEND))
   t('🔴 EMAIL_FRAME_SANDBOX is unchanged',
     /sandbox=\{EMAIL_FRAME_SANDBOX\}/.test(SHARED) && !/allow-scripts/.test(SHARED))
   return { ok, bad }

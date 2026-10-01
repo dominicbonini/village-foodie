@@ -13,7 +13,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
-  buildTimeline, pairHandLoggedEmails, meaningfulPreview, type TimelineMessage,
+  buildTimeline, pairHandLoggedEmails, recordedStepsFor, meaningfulPreview,
+  type TimelineMessage, type RecordedStep,
 } from '@/lib/outreach-timeline'
 import { SNOOZE_OPTIONS, SNOOZE_LABELS, needsAttention } from '@/lib/outreach-attention'
 import {
@@ -112,6 +113,31 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
   const pairing = useMemo(() => pairHandLoggedEmails({
     messages: data?.messages ?? [], contacts: data?.contacts ?? [],
   }), [data])
+
+  /* ── 🔴 ONE RULE FOR "IS THIS EMAIL ALREADY A RECORDED STEP" ──────────────────────────────────────
+   * The same `recordedStepsFor` the guards use, over the same pairing the history above is built from.
+   * It is what stops the panel offering "Record as Chase 1" for an email that already IS first contact,
+   * and it is why that offer no longer depends on the prospect's current step. */
+  const recordedSteps = useMemo(() => recordedStepsFor({
+    messages: data?.messages ?? [], contacts: data?.contacts ?? [],
+    pairing, ladderKinds: CONTACT_KINDS,
+  }), [data, pairing])
+
+  /** Which rungs this prospect already has, and on what day — for greying out the list. */
+  const recordedByKind = useMemo(() => {
+    const m = new Map<string, string | null>()
+    for (const c of data?.contacts ?? []) {
+      if (String(c.direction ?? '').toLowerCase() === 'inbound') continue
+      if (!c.kind || !CONTACT_KINDS.includes(c.kind as never)) continue
+      const at = c.contacted_at ?? c.created_at ?? null
+      // ⚠️ THE EARLIEST DATE WINS, so "recorded 15 Sep" names when the step happened rather than the
+      // most recent duplicate of it.
+      const prev = m.get(c.kind)
+      if (prev === undefined || (at && prev && at < prev)) m.set(c.kind, at)
+      else if (prev === undefined) m.set(c.kind, at)
+    }
+    return m
+  }, [data])
 
   const items = useMemo(() => buildTimeline({
     messages: data?.messages ?? [],
@@ -345,7 +371,9 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
           onOpenFull={(html, subject) => setFullScreen({ html, subject })}
           footer={<EmailActions m={openEmail} actions={actions} now={now} linkedTruck={linkedTruck}
             snoozeFor={snoozeFor} setSnoozeFor={setSnoozeFor} onClose={() => onExpand(null)}
-            stepKind={actions.currentStepKind} />}
+            stepKind={actions.currentStepKind}
+            recorded={recordedSteps.get(openEmail.id) ?? null}
+            recordedByKind={recordedByKind} />}
         />
       )}
 
@@ -386,7 +414,83 @@ export default function ProspectTimeline({ prospect, data, actions, expandedId, 
  * ⚠️ REPLY CLOSES THE PANEL FIRST, then calls the page's existing `onReply`. The composer is at the
  * top of the centre column, so leaving a panel over it would hide the thing the click just filled in.
  */
-function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, onClose, stepKind }: {
+/**
+ * "Record as ▾" — the four rungs, with what is true of each one.
+ *
+ * 🔴 WHY A LIST AND NOT A BUTTON. The single "Record as <step>" button used the PROSPECT'S CURRENT STEP,
+ * so the same email was offered as Chase 1 before a chase went out and as Chase 2 after it. The email
+ * does not change when the ladder moves. What step an Outlook-sent email WAS is a fact only Dominic
+ * knows, so the list asks him and marks the ladder's answer as a suggestion.
+ *
+ * 🔴 A RECORDED STEP IS DISABLED, NOT HIDDEN, and it carries the day it happened. Hiding it would leave
+ * a list whose length changes as the ladder fills and no way to see that first contact is already done;
+ * greying it out answers "why can't I pick that" on the spot.
+ * ⚠️ SKIPPING ASKS FIRST. Recording this as Chase 2 while Chase 1 is unrecorded is legitimate — a chase
+ * may genuinely have gone unlogged — but it is also exactly what a mis-click looks like, and the ladder
+ * derives every later date from the rungs it can see.
+ * ⚠️ IT WRITES NOTHING ITSELF. `onChoose` is the page's `recordAsStep`, which is `log_only` → the one
+ * contact writer → `applyFollowUp`, unchanged.
+ */
+function RecordAsMenu({ busy, suggested, recordedByKind, onChoose }: {
+  busy: boolean
+  /** The ladder's own next step, marked "suggested". Null when the ladder cannot say. */
+  suggested: string | null
+  recordedByKind: ReadonlyMap<string, string | null>
+  onChoose: (kind: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  /** The first rung with nothing recorded against it — what "skips an earlier step" is measured from. */
+  const firstUnrecorded = CONTACT_KINDS.find(k => !recordedByKind.has(k)) ?? null
+
+  const choose = (k: string) => {
+    setOpen(false)
+    // 🔴 THE SKIP QUESTION NAMES THE STEP BEING SKIPPED, not "an earlier step" — the whole point is to
+    // let Dominic see which one he believes is missing before the ladder is told it is.
+    if (firstUnrecorded && firstUnrecorded !== k && CONTACT_KINDS.indexOf(k as never) > CONTACT_KINDS.indexOf(firstUnrecorded as never)) {
+      const ok = window.confirm(
+        `${STEP_LABELS[firstUnrecorded as keyof typeof STEP_LABELS]} isn't recorded yet — record this as `
+        + `${STEP_LABELS[k as keyof typeof STEP_LABELS]} anyway?`)
+      if (!ok) return
+    }
+    onChoose(k)
+  }
+
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen(o => !o)} disabled={busy} aria-expanded={open}
+        title="Records this email as a step you choose, sets the follow-up that step would have set, and links it to this message so it is never counted twice. It does NOT send anything."
+        className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
+        Record as ▾
+      </button>
+      {open && !busy && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} role="presentation" />
+          <div className="absolute z-30 right-0 bottom-full mb-1 w-72 rounded-lg border border-slate-300 bg-white shadow-lg p-1">
+            <p className="px-2 py-1 text-[11px] text-slate-500">Which step was this email?</p>
+            {CONTACT_KINDS.map(k => {
+              const at = recordedByKind.get(k)
+              const already = recordedByKind.has(k)
+              return (
+                <button key={k} type="button" disabled={already} onClick={() => choose(k)}
+                  title={already ? 'That step is already recorded for this prospect.' : undefined}
+                  className={`w-full text-left px-2 py-1 rounded flex items-baseline gap-2 ${already
+                    ? 'text-slate-400 cursor-not-allowed'
+                    : 'text-slate-800 hover:bg-slate-100'}`}>
+                  <span className="font-semibold">{STEP_LABELS[k]}</span>
+                  {already && <span className="text-[11px]">recorded {fmtDate(at ?? null)}</span>}
+                  {!already && k === suggested && <span className="text-[11px] text-slate-500">suggested</span>}
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, onClose, stepKind,
+  recorded, recordedByKind }: {
   m: TimelineMessage
   actions: TimelineActions
   now: Date
@@ -394,12 +498,24 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
   snoozeFor: string | null
   setSnoozeFor: (id: string | null) => void
   onClose: () => void
+  /** The ladder's own answer for this prospect — the SUGGESTED step, no longer the whole decision. */
   stepKind: string | null
+  /** What this email is already recorded as, from the one rule. Non-null ⇒ no button at all. */
+  recorded: RecordedStep | null
+  /** kind → the day it was recorded, for greying out a step that has already gone. */
+  recordedByKind: ReadonlyMap<string, string | null>
 }) {
   const inbound = m.direction === 'inbound'
   const waiting = needsAttention(m, { now, linkedTruck })
   /** 🔴 OUTBOUND, REAL, ACCEPTED, AND NO RUNG RECORDED FOR IT. `contact_id` is the link. */
-  const unrecorded = !inbound && !m.is_test && m.status === 'sent' && !m.contact_id
+  /* ── 🔴 "UNRECORDED" NOW MEANS THE ONE RULE SAYS SO, NOT "contact_id IS NULL" ─────────────────────
+   * `!m.contact_id` was the whole test, and it is exactly what offered "Record as Chase 1" for
+   * Guerrilla Kitchen's 15 September email: that email has no `contact_id` — nothing links it — but it
+   * PAIRS with a hand-logged first contact, so the step was recorded and recording it again would put a
+   * second rung on the ladder for one email. `recorded` is the shared answer; the three refusals the
+   * report promised are unchanged and still here: already linked (now via `recorded`), a test send, and
+   * an inbound row. A `kind` outside `CONTACT_KINDS` is refused by `recordedStepsFor` itself. */
+  const unrecorded = !inbound && !m.is_test && m.status === 'sent' && !m.contact_id && !recorded
   return (
     <>
       {/* 🔴 REPLY ON A SENT EMAIL TOO (v5). It existed only on received mail, so following up on my
@@ -458,28 +574,30 @@ function EmailActions({ m, actions, now, linkedTruck, snoozeFor, setSnoozeFor, o
           link to this message so it can never be counted twice; what is new is that it is offered
           for ANY unrecorded outbound email and that it names the step.
           🔴 NEVER AUTOMATIC, AND NEVER FOR A TEST SEND. */}
+      {/* ── 🔴 ALREADY A RECORDED STEP: SAY SO, OFFER NOTHING ──────────────────────────────────
+          The panel used to offer "Record as <current step>" here whatever this email was, so
+          Guerrilla Kitchen's 15 September first contact was offered as Chase 1 before the chase went
+          out and as Chase 2 afterwards — the button was reading the PROSPECT, never the email. */}
+      {recorded && (
+        <span className="text-[11px] text-slate-500">
+          Recorded as {STEP_LABELS[recorded.kind as keyof typeof STEP_LABELS] ?? recorded.kind}
+          {/* ⚠️ "(logged by hand, 15 Sep)" ONLY WHEN IT WAS MATCHED BY PAIRING. A linked row needs no
+              explanation — this app wrote it. A paired one is two honest records of one event, and the
+              date is the hand-logged contact's own, which is the day Dominic said it happened. */}
+          {recorded.how === 'paired'
+            && ` (logged by hand, ${fmtDate(recorded.contact?.contacted_at ?? recorded.contact?.created_at ?? null)})`}
+        </span>
+      )}
+      {/* ── 🔴 "Record as ▾" — A LIST, NOT A GUESS ─────────────────────────────────────────────
+          One button, four steps, each labelled with what is true of it: a step already recorded is
+          greyed out with the day it happened, and the ladder's own answer is marked "suggested"
+          rather than being pressed on Dominic's behalf. ⚠️ THE FOUR-BUTTON FALLBACK IS GONE — it
+          appeared only when the ladder could not name a step, which is the same list this always
+          shows, so there is nothing left for it to fall back to. */}
       {unrecorded && (
-        stepKind ? (
-          <button type="button" disabled={actions.busyId === m.id}
-            onClick={() => void actions.onRecordStep(m.id, stepKind)}
-            title="Records this email as that step, sets the follow-up it would have set, and links it to this message so it is never counted twice. It does NOT send anything."
-            className="text-[12px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-            Record as {STEP_LABELS[stepKind as keyof typeof STEP_LABELS] ?? stepKind}
-          </button>
-        ) : (
-          // ⚠️ THE LADDER CANNOT SAY WHICH STEP THIS WAS — it is stopped, or the history is
-          // unreadable — so it asks instead of guessing.
-          <>
-            <span className="text-[11px] text-slate-500">Record as</span>
-            {CONTACT_KINDS.map(k => (
-              <button key={k} type="button" disabled={actions.busyId === m.id}
-                onClick={() => void actions.onRecordStep(m.id, k)}
-                className="text-[11px] font-bold px-2 py-1 rounded-lg border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 disabled:opacity-40">
-                {STEP_LABELS[k]}
-              </button>
-            ))}
-          </>
-        )
+        <RecordAsMenu busy={actions.busyId === m.id} suggested={stepKind}
+          recordedByKind={recordedByKind}
+          onChoose={k => void actions.onRecordStep(m.id, k)} />
       )}
       {m.status === 'sent' && !m.is_test && m.sent_copy === 'absent' && (
         <button type="button" disabled={actions.busyId === m.id}

@@ -15,7 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 import { verifyAdmin } from '@/lib/auth/admin'
 import { isSnoozeOption, snoozeUntil } from '@/lib/outreach-attention'
 import { addNote, editNote, deleteNote, restoreNote } from '@/lib/outreach-events'
-import { previewOf, type TimelineMessage, type TimelineContact, type TimelineEvent } from '@/lib/outreach-timeline'
+import { previewOf, parseGuardOverride, type TimelineMessage, type TimelineContact, type TimelineEvent } from '@/lib/outreach-timeline'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -40,15 +40,23 @@ export async function GET(req: NextRequest) {
   // from `text_body`, which is the flattened text the poll already extracted.
   const { data: mRows, error: mErr } = await supabase
     .from('outreach_messages')
-    .select('id, direction, status, is_test, source, subject, from_address, to_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id')
+    /* ⚠️ `guard_override` IS SELECTED ONLY WHERE IT EXISTS, for the reason `updated_at` is below:
+     * its migration is applied by hand, and naming a column that is not there fails the WHOLE read —
+     * which here would answer `migrationApplied: false` and blank the entire CRM to add one grey line. */
+    .select(MESSAGE_COLS + (await messagesHaveGuardOverride() ? ', guard_override' : ''))
     .eq('prospect_id', prospectId)
     .order('created_at', { ascending: false })
     .limit(400)
   // A missing CRM column is the one error worth naming: everything else here predates this build.
   if (mErr) return NextResponse.json({ ok: true, migrationApplied: false, messages: [], contacts: [], events: [] } satisfies TimelineResponse)
 
-  type Raw = TimelineMessage & { text_body?: string | null; attachments?: unknown; contact_id?: string | null }
-  const messages: TimelineMessage[] = ((mRows ?? []) as Raw[]).map(r => ({
+  /* ⚠️ THE CASTS BELOW GO THROUGH `unknown`, for the same reason the events read does: the column list
+   * is chosen at RUNTIME by the `guard_override` probe, so PostgREST's generated types cannot narrow it.
+   * The shape is asserted by `Raw` and nowhere else. */
+  type Raw = TimelineMessage & {
+    text_body?: string | null; attachments?: unknown; contact_id?: string | null; guard_override?: unknown
+  }
+  const messages: TimelineMessage[] = ((mRows ?? []) as unknown as Raw[]).map(r => ({
     id: r.id,
     direction: r.direction,
     status: r.status,
@@ -67,13 +75,18 @@ export async function GET(req: NextRequest) {
     attempts: r.attempts ?? null,
     preview: previewOf(r.text_body),
     attachment_count: Array.isArray(r.attachments) ? r.attachments.length : 0,
+    /* 🔴 THE GUARDS THIS SEND WAVED THROUGH, in the words that were on screen when it was waved. Null
+     * on every row that went out cleanly AND on every row written before the column existed; the panel
+     * shows the line only when there is something in it, so the two read the same and neither claims
+     * the other happened. ⚠️ `parseGuardOverride` is what stops a malformed value reaching the panel. */
+    guard_override: parseGuardOverride(r.guard_override),
   }))
 
   // 🔴 `contact_id` IS THE LINK THAT DE-DUPLICATES. It lives on the message; the timeline reads it off
   // the CONTACT (as `email_message_id`), which is the direction the panel's existing type already
   // uses, so this inverts the map here rather than teaching the builder a second shape.
   const messageOfContact = new Map<string, string>()
-  for (const r of (mRows ?? []) as Raw[]) if (r.contact_id) messageOfContact.set(r.contact_id, r.id)
+  for (const r of (mRows ?? []) as unknown as Raw[]) if (r.contact_id) messageOfContact.set(r.contact_id, r.id)
 
   const { data: cRows } = await supabase
     .from('outreach_contacts')
@@ -199,6 +212,20 @@ export async function POST(req: NextRequest) {
  * 500 on the one button. ⚠️ A stale PostgREST cache answers exactly like a missing column, which is
  * why the code is logged.
  */
+/** The columns this route has always read. Split out so the optional one is visibly optional. */
+const MESSAGE_COLS = 'id, direction, status, is_test, source, subject, from_address, to_address, message_date, created_at, sent_copy, attempts, last_error, text_body, attachments, handled_at, snoozed_until, contact_id'
+
+/**
+ * 🔴 DOES `outreach_messages.guard_override` EXIST? Applied by hand, same as `updated_at` below.
+ * ⚠️ A stale PostgREST cache answers exactly like a missing column, which is why the code is logged.
+ */
+const messagesHaveGuardOverride = async (): Promise<boolean> => {
+  const { error } = await supabase.from('outreach_messages').select('guard_override').limit(1)
+  if (!error) return true
+  console.warn('[admin/outreach/timeline] outreach_messages.guard_override unavailable:', error.code, error.message)
+  return false
+}
+
 const eventsHaveUpdatedAt = async (): Promise<boolean> => {
   const { error } = await supabase.from('outreach_events').select('updated_at').limit(1)
   if (!error) return true

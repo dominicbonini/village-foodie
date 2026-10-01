@@ -53,7 +53,14 @@ import {
 import { nextStep, type StepContact } from '@/lib/outreach-step'
 import { CONTACT_KINDS } from '@/lib/outreach'
 import { evaluateGuards, loggedKindFor, type Guard, type PriorSend } from '@/lib/outreach-sequence'
-import { recordSendOverride } from '@/lib/outreach-events'
+// 🔴 `recordSendOverride` IS NO LONGER IMPORTED, AND THE FUNCTION IS GONE. A waved guard used to be
+// written into the history as a `note` reading "Sent anyway: [already_sent] …". It is a fact about ONE
+// EMAIL, and as a note it sat in the timeline as though somebody had typed it, where it could be edited
+// and deleted like a human note while describing something a human did not write. It lives on the sent
+// message's own row now (`guard_override`) and is shown only in that email's reading panel.
+// ⚠️ EXISTING "Sent anyway:" NOTES ARE UNTOUCHED — they are data, and Dominic removes them himself with
+// the note Delete button.
+import { pairHandLoggedEmails, recordedStepsFor } from '@/lib/outreach-timeline'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -70,6 +77,21 @@ const refuse = (message: string, extra: Record<string, unknown> = {}) =>
  * (not in the schema cache) and 42P01 (no such table) both mean "not applied yet", and both must read as
  * a feature that is OFF rather than as an error page.
  */
+/**
+ * 🔴 DOES `outreach_messages.guard_override` EXIST? Its migration is applied by hand, like
+ * `outreach_events.updated_at`, so the send must find out rather than assume. Until the column is
+ * there an overridden send goes out exactly as it does today and records nothing — the alternative is
+ * a 500 on the one button that means "I know, send it anyway".
+ * ⚠️ A STALE PostgREST CACHE ANSWERS IDENTICALLY TO A MISSING COLUMN, which is why the code is logged:
+ * a reload is a different fix from a migration, and the log is the only thing that tells them apart.
+ */
+const messagesHaveGuardOverride = async (): Promise<boolean> => {
+  const { error } = await supabase.from('outreach_messages').select('guard_override').limit(1)
+  if (!error) return true
+  console.warn('[admin/outreach/mail-send] outreach_messages.guard_override unavailable:', error.code, error.message)
+  return false
+}
+
 /** The probe, bound to this route's client. The decision itself lives in `lib/outreach-messages-table`. */
 async function messagesTable() {
   return messagesTableProbe(async () => {
@@ -601,21 +623,34 @@ export async function POST(req: NextRequest) {
     ? (body.override as unknown[]).filter((x): x is string => typeof x === 'string') : []
   let firedGuards: Guard[] = []
   if (!isTest) {
+    // 🔴 `id`, `email_message_id` AND `message` ARE READ FOR THE PAIRING, not for `nextStep`. The
+    // guards have to answer the same "is this email already a recorded step" question the history
+    // answers, and `pairHandLoggedEmails` needs the link column, the row id and the logged words.
+    // ⚠️ WIDENED 1 OCTOBER 2026 — the narrower select is why `guardUnattributed` warned about
+    // Guerrilla Kitchen's 15 September email: the server could not see the hand-logged contact that
+    // email pairs with, so it could only call it unattributed.
     const { data: cRows } = await supabase
-      .from('outreach_contacts').select('contacted_at, created_at, direction, kind, channel')
+      .from('outreach_contacts')
+      .select('id, contacted_at, created_at, direction, kind, channel, message, email_message_id')
       .eq('prospect_id', prospectId)
-    const contacts = (cRows ?? []) as (StepContact & { created_at?: string | null })[]
+    const contacts = (cRows ?? []) as (StepContact & {
+      id: string; created_at?: string | null; message?: string | null; email_message_id?: string | null
+    })[]
     // 🔴 THE MAILBOX AS WELL AS THE LADDER. An email sent from Outlook reaches the contact log only
     // when the prospect has already replied, and then only as `reply` — so a chase typed by hand
     // leaves a message row and no rung (report §0c). `contact_id` is the join: a message this system
     // sent already has one, and counting it again would double every rung.
+    // ⚠️ `preview` AND `sent_copy` ARE FOR THE PAIRING'S SECOND RULE — the opening words, used when a
+    // day carries more than one email. `direction` is selected rather than assumed because
+    // `pairHandLoggedEmails` keys on it.
     const { data: mRows } = await supabase
       .from('outreach_messages')
-      .select('id, direction, is_test, contact_id, message_date, created_at, status')
+      .select('id, direction, is_test, contact_id, message_date, created_at, status, preview, sent_copy')
       .eq('prospect_id', prospectId).eq('direction', 'outbound')
     const messages = (mRows ?? []) as {
-      id: string; is_test: boolean | null; contact_id: string | null
+      id: string; direction: string | null; is_test: boolean | null; contact_id: string | null
       message_date: string | null; created_at: string | null; status: string | null
+      preview?: string | null; sent_copy?: string | null
     }[]
 
     const step = nextStep({
@@ -630,12 +665,34 @@ export async function POST(req: NextRequest) {
 
     // 🔴 AN INBOUND CONTACT OR THE LADDER'S OWN `replied` STOP — either is enough.
     inConversation = contacts.some(c => c.direction === 'inbound') || step.stopReason === 'replied'
+    /* ── 🔴 THE SAME RULE THE HISTORY AND THE READING PANEL USE ────────────────────────────────────
+     * `recordedStepsFor` over `pairHandLoggedEmails` — the history's own pairing function, not a
+     * second one with the same intent. This is the one question ("is this email already a recorded
+     * step") answered once, so the guard, the row on screen and the Record button cannot disagree.
+     * See the long note in lib/outreach-timeline.ts for the incident that made three answers one. */
+    const recordedSteps = recordedStepsFor({
+      messages, contacts, ladderKinds: CONTACT_KINDS,
+      pairing: pairHandLoggedEmails({ messages, contacts }),
+    })
     const priors: PriorSend[] = [
       ...contacts.filter(c => c.direction !== 'inbound').map(c => ({
         kind: c.kind ?? null, at: c.contacted_at ?? c.created_at ?? null, via: 'log' as const,
       })),
+      /* ── 🔴 A PAIRED EMAIL CARRIES THE RUNG IT WAS RECORDED AS, NOT `null` ────────────────────
+       * `kind: null` is precisely what makes a prior "unattributed", so handing the recorded kind
+       * over is the whole fix and it needed no change to either guard:
+       *   • `guardUnattributed` selects on `p.kind == null`, so a recorded email is no longer loose
+       *     and the Guerrilla Kitchen warning cannot fire;
+       *   • `guardAlreadySent` selects on `p.kind === step`, so it counts the email as the step it
+       *     was recorded as — which is what the brief asks for, from the same one line.
+       * ⚠️ THE HAND-LOGGED CONTACT IS ALSO IN `priors` ABOVE, carrying the same rung. Two priors for
+       * one event is harmless here — every guard asks "did this step go", never "how many times" —
+       * and dropping either would mean choosing which of two true records to believe.
+       * ⚠️ A LINKED MESSAGE IS STILL EXCLUDED ENTIRELY by `!m.contact_id`: its contact row is already
+       * in `priors`, and counting the message too would double a rung this system wrote itself. */
       ...messages.filter(m => !m.contact_id && m.status !== 'failed').map(m => ({
-        kind: null, at: m.message_date ?? m.created_at ?? null, via: 'mailbox' as const,
+        kind: recordedSteps.get(m.id)?.kind ?? null,
+        at: m.message_date ?? m.created_at ?? null, via: 'mailbox' as const,
         isTest: m.is_test === true,
       })),
     ]
@@ -699,12 +756,15 @@ export async function POST(req: NextRequest) {
         guards: blocking.map(g => ({ id: g.id, kind: g.kind, message: g.message })),
       }, { status: 200 })
     }
-    // ⚠️ THE OVERRIDE IS RECORDED BEFORE THE SEND, not after: if the send then fails, the fact that a
-    // guard was waved through is still the thing worth having in the history.
-    const waved = firedGuards.filter(g => overrides.includes(g.id))
-    if (waved.length > 0) {
-      await recordSendOverride(supabase, prospectId, waved.map(g => ({ id: g.id, message: g.message })))
-    }
+    /* ── 🔴 THE OVERRIDE IS NO LONGER WRITTEN HERE ─────────────────────────────────────────────────
+     * It was `recordSendOverride(...)` at this point — before the send, so that a send which then
+     * failed still left the waved guard in the history. That property is deliberately given up, and
+     * this is the one trade in this change worth naming: the override now travels on the message row
+     * (`guard_override`), and the row is inserted a few hundred lines below, so **a send that never
+     * reaches the insert records no override**. Nothing is lost by it — with no message row there is no
+     * email for the override to be about, and the refusal is already returned to the browser — whereas
+     * a note about an email that does not exist is a line in the history pointing at nothing.
+     * ⚠️ `firedGuards` and `overrides` are both declared OUTSIDE this block for exactly that reason. */
     // 🔴 3h · THE LOGGED KIND IS THE STEP THIS SEND WAS MADE FOR, NOT THE TEMPLATE'S TAG. It used to
     // be `selected?.servesKind ?? logFormKind` from the browser, so choosing a template tagged
     // "chase 1" for a first contact logged a chase-1 rung and skipped a step of the ladder.
@@ -813,6 +873,18 @@ export async function POST(req: NextRequest) {
   // step made a one-press job into two. What it was protecting is still protected — the server builds
   // the final message HERE, from the text in the box, with every refusal above already run, so what is
   // sent is what `buildMessage` makes of what he wrote either way.
+  /* ── 🔴 THE WAVED GUARDS, ON THE EMAIL THEY ARE ABOUT ──────────────────────────────────────────
+   * `guard_override` holds the guard ids and the exact sentences that were shown, so the reading panel
+   * can say "Sent after a warning: <the sentence>" in the words Dominic actually read rather than a
+   * re-rendered approximation of them. ⚠️ THE SENTENCES ARE STORED, NOT RE-DERIVED: a guard's wording
+   * can change, and a record of a decision has to keep the words the decision was made on.
+   * ⚠️ A CAPABILITY PROBE, BECAUSE THE MIGRATION IS APPLIED BY HAND — the same pattern as
+   * `outreach_events.updated_at`. Until the column exists the send works exactly as it does today and
+   * simply records nothing; the alternative is a 500 on every overridden send.
+   * ⚠️ EMPTY ⇒ THE KEY IS OMITTED ENTIRELY rather than written as `[]`, so "no warning was waved" and
+   * "this row predates the column" are both null and neither claims the other happened. */
+  const wavedGuards = firedGuards.filter(g => overrides.includes(g.id))
+  const canStoreOverride = wavedGuards.length > 0 && await messagesHaveGuardOverride()
   const { data: insertedRow, error: insErr } = await supabase.from('outreach_messages').insert({
     prospect_id: prospectId,
     direction: 'outbound',
@@ -837,6 +909,9 @@ export async function POST(req: NextRequest) {
     // this row has been looked at exhaustively — we composed it.
     attachments: declaredAttachments,
     ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
+    ...(canStoreOverride
+      ? { guard_override: wavedGuards.map(g => ({ id: g.id, message: g.message })) }
+      : {}),
   }).select('*').single()
   if (insErr || !insertedRow) {
     // A unique violation here IS the double-submit guard doing its job.
