@@ -429,6 +429,61 @@ function fakeDb(opts = {}) {
     gitClean('lib/outreach-workspace.ts')
     && /EMAIL_FRAME_SANDBOX\s*=\s*'allow-same-origin'/.test(read('lib/outreach-workspace.ts')))
 
+  /* ══════════════════ 13b. WHO MAY READ discovery_trucks FOR AN ANONYMOUS VISITOR ══════════════════ */
+  console.log('── 13b. The anonymous readers of discovery_trucks ──────────────────────────────────────')
+
+  // 🔴 WHY THIS GUARD EXISTS. A truck created by this path is hidden by `show_on_vf` and `show_on_hg`
+  // being false, and that only works if EVERY anonymous reader honours those two columns. Today exactly
+  // one does the reading — api/discovery/events — and every public page reaches it through
+  // hooks/useVillageData.ts. A NEW public reader added later (a search endpoint, a sitemap entry, an
+  // autocomplete) would silently publish hidden trucks. So the set of non-admin files that query the
+  // table is pinned, and a newcomer fails here until someone has checked its filter.
+  const walk = (dir, out = []) => {
+    for (const e of fs.readdirSync(path.join(REPO, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`
+      if (e.isDirectory()) { if (e.name !== 'node_modules') walk(rel, out) }
+      else if (/\.tsx?$/.test(e.name)) out.push(rel)
+    }
+    return out
+  }
+  const queriers = []
+  for (const f of [...walk('app'), ...walk('lib'), ...walk('hooks'), ...walk('components')]) {
+    if (f.includes('/admin')) continue
+    const src = fs.readFileSync(path.join(REPO, f), 'utf8')
+    // A real query, not a mention in a comment.
+    if (/from\('discovery_trucks'\)|discovery_trucks!/.test(src)) queriers.push(f)
+  }
+  // 🔎 FOUR FILES, MEASURED not assumed: `lib/delete-truck.ts` and `lib/provision-demo.ts` name the table
+  // only in comments, so they are not on this list — the test is about QUERIES.
+  const EXPECTED = [
+    'app/api/discovery/events/route.ts',   // the ONE anonymous reader — gated four times over, below
+    'app/api/inbound-schedule/route.ts',   // secret-gated producer, not a visitor surface
+    'lib/discovery-gate.ts',               // the one writer into discovery_events; resolves truck ids
+    'lib/self-serve-discovery-link.ts',    // the setup link + the shadow exclude
+  ].sort()
+  const found = queriers.sort()
+  t('🔴 no NEW non-admin file queries discovery_trucks',
+    JSON.stringify(found) === JSON.stringify(EXPECTED) || (() => {
+      console.log(`      expected ${JSON.stringify(EXPECTED)}`)
+      console.log(`      found    ${JSON.stringify(found)}`)
+      return false
+    })())
+
+  // The four read sites inside the one anonymous route, each gated. Pinned as source text.
+  const DISC = read('app/api/discovery/events/route.ts')
+  t('the host picks the column — show_on_hg on HatchGrab, show_on_vf otherwise',
+    /const showCol = isHG \? 'show_on_hg' : 'show_on_vf'/.test(DISC))
+  t('🔴 the trucks list requires !excluded AND the host column === true',
+    /!t\.excluded &&\s*\n\s*t\[showCol\] === true/.test(DISC))
+  t('🔴 the events query filters on the host column', /\.eq\(showCol, true\)/.test(DISC))
+  t('🔴 a hidden truck drops its own events', /if \(!truck\[showCol\]\) return null/.test(DISC))
+  t('🔴 an excluded truck drops its own events', /if \(truck\.excluded\) return null/.test(DISC))
+  t('🔴 the operator read-through honours both too',
+    /if \(truck\.excluded\) return false/.test(DISC) && /if \(!truck\[showCol\]\) return false/.test(DISC))
+  t('every public page reads that route and no table of its own',
+    /fetch\(`\/api\/discovery\/events\?t=/.test(read('hooks/useVillageData.ts')))
+  t('the sitemap enumerates no truck pages', !/discovery_trucks/.test(read('app/sitemap.ts')))
+
   /* ══════════════════ 14. BROKEN VARIANTS ══════════════════ */
   console.log('── 14. BROKEN VARIANTS: each MUST be caught ────────────────────────────────────────────')
 
