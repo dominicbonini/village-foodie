@@ -1052,6 +1052,13 @@ const modelHeavy = genAI.getGenerativeModel({
 // Accumulators for the discovery (Pass A) outputs — declared OUTSIDE the gate so the trailing
 // append-to-Sheets blocks can still read them (they self-skip when empty, e.g. in hatchgrab mode).
 const newRowsToAdd = [];
+// 🔴 THE VILLAGE AUDIT, PARALLEL TO `newRowsToAdd` AND DELIBERATELY NOT PART OF IT. `newRowsToAdd` is the
+// Sheet payload — columns A..I, positional — so a tenth element would append a stray column to the
+// spreadsheet. This carries the one extra fact `assertNoInventedVillages` needs that the row itself
+// cannot express: the village recorded on the EXISTING venue this row matched, which is what separates
+// "the model echoed the venue name" from "this venue really is named after its village".
+// ⚠️ ONE PUSH PER PUSH TO `newRowsToAdd`, at the same site, so the two cannot drift in length.
+const villageAudit = [];
 const newVenuesDetected = new Map();
 const newTrucksDetected = new Map();
 // 🔴 DECLARED HERE, OUTSIDE THE GATE, FOR THE SAME REASON THE THREE MAPS ABOVE ARE: Pass A is split
@@ -1567,6 +1574,27 @@ for (const [index, site] of sitesToScrape.entries()) {
                   eventSource,                                      // Col H: Event Source
                   finalAiNotes                                      // Col I: AI Notes
               ]);
+              // 🔴 WHAT THE APPROVED RECORD SAYS THIS VENUE'S VILLAGE IS — the evidence that tells a
+              // settlement-named venue from an echoed one. Null when the venue is new, and null is the
+              // strict case: nothing corroborates a brand-new `Chilfest [Chilfest]`, so it still throws.
+              // ⚠️ EVERY matching row is collected, not the first: two venues can share a name in
+              // different villages, and any one of them agreeing is enough to make the row honest.
+              // ⚠️ READ-ONLY, AND THE MATCHER IS UNTOUCHED. `resolveVenueFrom` still returns a name and
+              // still decides the match on its own; this looks the name back up in the set the matcher
+              // was given. Changing what the matcher returns would alter the control's byte-for-byte
+              // comparison between the Sheet and DB sources for no gain here.
+              const matchedVillages = confirmedVenue
+                ? venueMatchRows
+                    .filter(v => v[0] && normalizeName(v[0]) === normalizeName(confirmedVenue))
+                    .map(v => String(v[1] ?? '').trim())
+                    .filter(Boolean)
+                : [];
+              villageAudit.push({
+                  venue_name: finalVenue,
+                  village: extractedVillage,
+                  venueVillage: matchedVillages.find(v => normalizeName(v) === normalizeName(extractedVillage))
+                    ?? matchedVillages[0] ?? null,
+              });
               
               // Push to array so we don't duplicate it within this run
               existingEvents.push({ date: cleanDate, truck: cleanTruckKey, venue: cleanVenueKey });
@@ -2509,12 +2537,27 @@ if (newVenuesDetected.size > 0) {
 // green. Asserted here, after the appends, so one failed batch does not abort the others first.
 assertNoWriteFailures('Pass A database', dbWriteFailures);
 
-// 🔴 AND A VILLAGE THAT IS JUST THE VENUE NAME AGAIN FAILS THE RUN. `newRowsToAdd` is exactly what this
-// run wrote — r[4] is the venue, r[5] the village — so the assertion sees this run's rows and not the 76
-// historical ones. An empty village is NOT a match; that is the outcome the prompt change wants.
+// 🔴 AND A VILLAGE THAT IS JUST THE VENUE NAME AGAIN FAILS THE RUN — UNLESS AN APPROVED RECORD SAYS THE
+// VILLAGE IS A REAL PLACE. `villageAudit` is one entry per row this run wrote, pushed at the same site as
+// `newRowsToAdd`, carrying the village recorded on the existing venue each row matched. An empty village
+// is NOT a match; that is the outcome the prompt change wants.
+//
+// 🔴 WHY THE CORROBORATION IS HERE AT ALL (1 October 2026). This assertion stopped the daily scrape on
+// `"Holbrook" [Holbrook]` — a correct row. Holbrook is a Suffolk village AND an approved venue in this
+// system (`'Holbrook', 'Holbrook', 'IP9 2'`, imported 9 September). `village === venue_name` has two
+// causes and only one of them is the bug; see the long note on `assertNoInventedVillages`.
+//
+// ⚠️ THE SETTLEMENT SET EXCLUDES SELF-NAMED VENUES, which is what keeps it from vouching for the very
+// shape it is meant to catch: a lone `Chilfest [Chilfest]` row cannot make "Chilfest" a place, while
+// several venues recorded in Debenham do make "Debenham" one.
+// ⚠️ IT READS `venueMatchRows` — the set the matcher itself used, already floor-guarded above, so an
+// empty or truncated read fails the run earlier and cannot quietly widen this exemption.
 // ⚠️ AFTER assertNoWriteFailures on purpose: a failed write is the more urgent report of the two, and
 // throwing here first would hide it.
-assertNoInventedVillages(newRowsToAdd.map(r => ({ venue_name: r[4], village: r[5] })), 'Pass A');
+const settlementVillages = venueMatchRows
+  .filter(v => v[1] && normalizeName(v[1]) !== normalizeName(v[0] || ''))
+  .map(v => v[1]);
+assertNoInventedVillages(villageAudit, 'Pass A', settlementVillages);
 
 } // end if (RUN_DISCOVERY) — Pass A discovery appends
 }

@@ -395,6 +395,70 @@ const CONDITION_DESCRIPTIONS: Record<string, string> = {
   lead_not_listed: `Lead type 4 — ${LEAD_TYPE_LABELS.not_listed}. The fallback: not Hatches Up, and not showing on the map.`,
 }
 
+// ── 🔴 THE SAME CONDITIONS, IN THE WORDS THE EDITOR SHOWS AN OPERATOR ─────────────────────────────
+//
+// `CONDITION_DESCRIPTIONS` above is written for somebody reading a reference: it says "keeps the line
+// only when the truck has an event AFTER today, with a venue" — accurate, and the vocabulary of the
+// mechanism rather than of the job. The Templates editor needs the same facts as a sentence that can be
+// read in passing, under a message box, by someone writing copy and not thinking about resolvers.
+//
+// 🔴 IT IS A DESCRIPTION TABLE, NOT A SECOND LIST OF CONDITIONS, and the difference is load-bearing.
+// The NAMES still come from `caseLabelsOf(conditionMet)` — the switch's own case labels — so a condition
+// added to the resolver appears in the editor the day it is written, exactly as before. What this adds is
+// WORDING for names that are already derived. A condition with no entry here still appears, with the
+// fallback below, which is the behaviour `CONDITION_DESCRIPTIONS` already has.
+//
+// THE THREE PHRASINGS, AND WHY THREE AND NOT ONE:
+//   • `only`    — the Insert-condition menu, read before the marker exists:  "Only if they have an
+//                 upcoming event".
+//   • `shownTo` — a note under the message, naming the audience of a line that is already written:
+//                 "“I run villagefoodie…” only appears for TRUCKS WITH AN UPCOMING EVENT."
+//   • `axis`    — present ONLY on the positive half of a pair. When both halves are written there is no
+//                 audience to name, because every truck sees one line or the other; what the operator
+//                 needs is the QUESTION being asked. Absent on `no_*` halves on purpose: `no_next_event`
+//                 never leads a pair, so an axis there would be a sentence nothing can render.
+// One phrasing bent to all three jobs reads wrong in at least two of them, and the wrong one is always
+// the note — the one thing on this screen that is read by accident rather than on purpose.
+type ConditionWords = { only: string; shownTo: string; axis?: string }
+const CONDITION_PLAIN: Record<string, ConditionWords> = {
+  next_event: {
+    only: 'Only if they have an upcoming event',
+    shownTo: 'trucks with an upcoming event',
+    axis: 'whether the truck has an upcoming event',
+  },
+  no_next_event: {
+    only: 'Only if they have no upcoming event',
+    shownTo: 'trucks with no upcoming event',
+  },
+  website: { only: 'Only if we have their website', shownTo: 'trucks whose website we hold' },
+  order_url: { only: 'Only if we have their ordering page', shownTo: 'trucks whose ordering page we hold' },
+  contact_name: { only: 'Only if we have their name', shownTo: 'trucks whose contact name we hold' },
+  // ⚠️ THE FOUR LEAD LINES ARE WORDED FROM `LEAD_TYPE_LABELS`, not from a second set of names for the
+  // same four types. The labels are the operator's own words for them and are shown on the grid.
+  lead_hu_ordering: {
+    only: `Only if their type is “${LEAD_TYPE_LABELS.hu_ordering}”`,
+    shownTo: `trucks of type “${LEAD_TYPE_LABELS.hu_ordering}”`,
+  },
+  lead_hu_map: {
+    only: `Only if their type is “${LEAD_TYPE_LABELS.hu_map}”`,
+    shownTo: `trucks of type “${LEAD_TYPE_LABELS.hu_map}”`,
+  },
+  lead_on_vf: {
+    only: `Only if their type is “${LEAD_TYPE_LABELS.on_vf}”`,
+    shownTo: `trucks of type “${LEAD_TYPE_LABELS.on_vf}”`,
+  },
+  lead_not_listed: {
+    only: `Only if their type is “${LEAD_TYPE_LABELS.not_listed}”`,
+    shownTo: `trucks of type “${LEAD_TYPE_LABELS.not_listed}”`,
+  },
+}
+
+/** 🔴 A CONDITION NOBODY HAS WORDED YET STILL APPEARS, AND STILL WORKS. The marker is the truthful
+ *  fallback: it names the thing exactly, and it is what the operator would have typed anyway. */
+function wordsFor(name: string): ConditionWords {
+  return CONDITION_PLAIN[name] ?? { only: `Only if ?${name}:`, shownTo: `trucks matching ?${name}:` }
+}
+
 export type TokenRefEntry = { syntax: string; name: string; description: string; documented: boolean }
 
 /** Every `{{token}}` the substitution understands, read from `resolvedValue`. */
@@ -406,13 +470,237 @@ export function resolvedTokenReference(): TokenRefEntry[] {
   }))
 }
 
+/** A condition, with both the reference wording and the plain wording the editor shows. */
+export type ConditionRefEntry = TokenRefEntry & ConditionWords
+
 /** Every `?condition:` the substitution understands, read from `conditionMet`. */
-export function conditionReference(): TokenRefEntry[] {
+export function conditionReference(): ConditionRefEntry[] {
   return caseLabelsOf(conditionMet).map(name => ({
     syntax: `?${name}: `, name,
     description: CONDITION_DESCRIPTIONS[name] ?? '(no description written yet — it still works)',
     documented: name in CONDITION_DESCRIPTIONS,
+    ...wordsFor(name),
   }))
+}
+
+/**
+ * Does `cond` hold for `ctx`? 🔴 THE RESOLVER'S OWN `conditionMet`, EXPORTED — NOT A COPY OF IT.
+ *
+ * The Templates editor counts how many trucks a conditional line will reach, and the only honest way to
+ * count is to ask the function that will actually decide it at send time. A second predicate in the panel
+ * would agree on the day it was written and then quietly disagree — and it would disagree in the worst
+ * possible place, in a number the operator is reading in order to trust the line.
+ *
+ * ⚠️ A WRAPPER, SO `conditionMet` STAYS PRIVATE AND INTACT. `conditionReference` reads that function's
+ * SOURCE through `caseLabelsOf(conditionMet)`; exporting the declaration itself risks a bundler rewriting
+ * the text `caseLabelsOf` parses. One delegating call costs nothing and keeps both readers safe.
+ * ⚠️ An unknown `cond` returns false, which is `conditionMet`'s own documented behaviour: the line drops.
+ */
+export function conditionHolds(cond: string, ctx: TemplateContext): boolean {
+  return conditionMet(cond, ctx)
+}
+
+/** One `?condition:` line found in a template body. */
+export type ConditionalLine = {
+  /** The condition name as written, e.g. `next_event`. */
+  cond: string
+  /** False when `conditionMet` has no branch for it — the line would be dropped for EVERY truck. */
+  known: boolean
+  /** The line with its marker removed: the words the operator would recognise it by. */
+  text: string
+  /** 0-based line number in the body, so two lines sharing a condition stay distinguishable. */
+  line: number
+}
+
+/**
+ * Every conditional line in `body`, read with the renderer's OWN line rule.
+ *
+ * 🔴 `COND_LINE_RE` AND `split('\n')`, THE SAME TWO THINGS `renderTemplate` USES, so what the editor
+ * calls a conditional line and what the renderer treats as one cannot drift. The editor imports this
+ * rather than carrying a regex: a marker the editor recognised and the renderer did not would be
+ * explained on screen and then emailed verbatim.
+ */
+export function conditionalLinesIn(body: string): ConditionalLine[] {
+  const known = new Set(caseLabelsOf(conditionMet))
+  const out: ConditionalLine[] = []
+  body.split('\n').forEach((line, i) => {
+    const m = line.match(COND_LINE_RE)
+    if (!m) return
+    out.push({ cond: m[1], known: known.has(m[1]), text: line.replace(COND_LINE_RE, '').trim(), line: i })
+  })
+  return out
+}
+
+/**
+ * 🔴 CONDITION MARKERS THAT ARE NOT AT THE START OF THEIR LINE — a real mistake, with a real consequence.
+ *
+ * `COND_LINE_RE` is anchored, so `…and ?next_event: they are at the green` is not a condition at all: the
+ * renderer sees ordinary prose, substitutes the tokens in it, and **the characters `?next_event:` are
+ * emailed to the prospect**. That is the same class of failure as a malformed `{{truck name}}` — text the
+ * operator believed was a directive arriving as literal punctuation — and it is invisible to every other
+ * guard here, which all read `{{…}}` or `[[…]]`.
+ *
+ * ⚠️ IT REPORTS ONLY MARKERS WHOSE NAME IS A CONDITION THE RESOLVER KNOWS, and that restraint is the
+ * point. `?next_event:` mid-line is unambiguously a misplaced directive. A bare `?something:` in prose is
+ * not, and a red error on a sentence that is simply a question would be exactly the false alarm this
+ * screen is being rebuilt to remove. A mistyped name at the START of a line is reported separately, by
+ * `known` on `conditionalLinesIn`.
+ */
+export function misplacedConditionMarkers(body: string): string[] {
+  const known = caseLabelsOf(conditionMet)
+  const out: string[] = []
+  for (const line of body.split('\n')) {
+    // The marker at offset 0 is the legitimate one; EVERY occurrence after it is misplaced — scanned
+    // rather than `indexOf`-ed once, so a line that opens with a valid marker and repeats it later is
+    // still reported for the repeat.
+    for (const name of known) {
+      const needle = `?${name}:`
+      for (let at = line.indexOf(needle); at !== -1; at = line.indexOf(needle, at + 1)) {
+        if (at > 0 && !out.includes(name)) out.push(name)
+      }
+    }
+  }
+  return out
+}
+
+// ── 🔴 THE EDITOR'S NOTES, BUILT HERE AND NOT IN THE COMPONENT ────────────────────────────────────
+//
+// These two functions produce the exact sentences the Templates editor shows under the message box and
+// under the preview. They live beside `CONDITION_PLAIN` and `conditionMet`, in this module, for three
+// reasons, and the third is the one that matters:
+//   • the wording and the conditions it describes stay in one file, so a condition added to the switch
+//     cannot acquire a note that contradicts it;
+//   • the component keeps no copy of the line rule — it already had none for substitution, and this is
+//     the same discipline applied to the same text;
+//   • 🔴 THEY ARE PURE, SO THE HARNESS CAN ASSERT THE SENTENCES THEMSELVES. "A one-sided condition
+//     produces a grey note and no red" is a claim about produced TEXT. Checked with a regex over the
+//     component it would be a claim about markup that happens to be nearby; checked by calling this it
+//     is the claim itself. The previous red warning was never wrong about its markup either.
+
+/** One note the editor renders. `key` is stable per line, for React. */
+export type ConditionNote = { key: string; text: string }
+
+/** What the editor knows about the trucks a template reaches. Supplied by the caller: this module has
+ *  no idea what a prospect is, and must not learn. */
+export type ConditionAudience = {
+  /** Contactable trucks this template goes to. 🔴 NULL means "not loaded" — the note then states who the
+   *  line is for and says nothing about how many, because "0 of 0" is a wrong answer stated confidently. */
+  total: number | null
+  /** True when the template sits in no sequence box, so `total` is every contactable truck. */
+  inNoBox: boolean
+  /** How many of `total` each condition keeps, by condition name. Missing ⇒ 0. */
+  keeping: Readonly<Record<string, number>>
+}
+
+/**
+ * 🔴 NAME A CONDITIONAL LINE BY ITS OPENING WORDS, because that is how the operator finds it again.
+ *
+ * The condition NAME is the wrong handle: a template with two `?next_event:` lines would get two notes
+ * that read identically, and `next_event` is the vocabulary of the mechanism rather than of the copy.
+ * ⚠️ TOKENS ARE LEFT EXACTLY AS TYPED — `{{truck_name}}` stays `{{truck_name}}`. Expanding them would
+ * need a prospect, and the note would then change with whichever one the preview is pointed at, for a
+ * sentence that is about the TEMPLATE.
+ * ⚠️ A MARKER ON AN EMPTY LINE has no words to quote and falls back to naming the marker.
+ */
+function quoteOpening(text: string, cond: string, words = 5): string {
+  const parts = text.split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return `The empty ?${cond}: line`
+  return `\u201c${parts.slice(0, words).join(' ')}${parts.length > words ? '\u2026' : ''}\u201d`
+}
+
+/** The conditions that have a `no_` counterpart in the switch — read from the switch, never listed. */
+function pairedConditions(): string[] {
+  const names = caseLabelsOf(conditionMet)
+  return names.filter(c => !c.startsWith('no_') && names.includes(`no_${c}`))
+}
+
+/**
+ * 🔴 ONE PLAIN-ENGLISH NOTE PER CONDITIONAL LINE. THIS REPLACED A RED "Half of a conditional pair".
+ *
+ * That error fired whenever `?C:` was written without `?no_C:`, on the reasoning that a branch which
+ * never fires fails silently. The reasoning was sound and the conclusion was wrong: a one-sided
+ * condition is normally DELIBERATE. "Hatches Up - map only" names the truck's next pitch when there is
+ * one and says nothing when there is not — that is the copy as written, not a half-finished pair. So the
+ * editor accused the operator of a mistake on every view of a correct template, and a red box that is
+ * usually wrong is worse than none: it teaches the eye to skip red, and the next red thing on that
+ * screen is a malformed token heading for a real food business.
+ *
+ * ⚠️ IT MAKES NO CLAIM AND CARRIES NO VERDICT. It states who reads the line and how many that is today.
+ * ⚠️ A PAIR GETS ONE NOTE, NOT TWO. With both halves written every truck reads one line or the other, so
+ * naming an audience for either half misleads in both directions; what is true is that the wording
+ * changes. Both halves are consumed by that one note.
+ * ⚠️ AN UNKNOWN CONDITION GETS NO NOTE. It is a real error and is reported in red by the caller, from
+ * `known` on `conditionalLinesIn` — a grey note about who would read a line that can never render would
+ * be the mirror image of the mistake this function exists to undo.
+ */
+export function conditionNotes(body: string, audience: ConditionAudience): ConditionNote[] {
+  const words = new Map(conditionReference().map(c => [c.name, c] as const))
+  const lines = conditionalLinesIn(body).filter(l => l.known)
+  const present = new Set(lines.map(l => l.cond))
+  const paired = new Set<string>()
+  const notes: ConditionNote[] = []
+
+  // The pairs first, so their halves are claimed before the per-line pass runs.
+  for (const c of pairedConditions()) {
+    if (!present.has(c) || !present.has(`no_${c}`)) continue
+    paired.add(c); paired.add(`no_${c}`)
+    const axis = words.get(c)?.axis
+    notes.push({
+      key: `pair:${c}`,
+      text: `This part changes depending on ${axis ?? `?${c}:`}.`,
+    })
+  }
+
+  for (const l of lines) {
+    if (paired.has(l.cond)) continue
+    const shownTo = words.get(l.cond)?.shownTo ?? `trucks matching ?${l.cond}:`
+    let text = `${quoteOpening(l.text, l.cond)} only appears for ${shownTo}.`
+    if (audience.total !== null) {
+      const total = audience.total
+      const met = audience.keeping[l.cond] ?? 0
+      const rest = total - met
+      const where = audience.inNoBox
+        ? ' — this template is in no sequence box, so that is across every contactable truck'
+        : ' this template goes to'
+      /* ⚠️ A ZERO DENOMINATOR GETS ITS OWN SENTENCE, not "0 of the 0 trucks this template goes
+       * to". It happens for real — a template parked in a WhatsApp box while no contactable truck is
+       * reachable on WhatsApp. The arithmetic is right and the sentence is nonsense, and a nonsense
+       * sentence under a correct template is the same failure as the red box this replaced. */
+      text += total === 0
+        ? ' No contactable truck is in this template’s boxes at the moment, so nothing reads it either way.'
+        : ` Right now that's ${met} of the ${total} truck${total === 1 ? '' : 's'}${where}`
+          + (rest > 0 ? ` — the other ${rest} won't see this line.` : ' — every one of them sees it.')
+    }
+    notes.push({ key: `line:${l.line}:${l.cond}`, text })
+  }
+  return notes
+}
+
+/**
+ * 🔴 WHAT THE PREVIEW HID FOR ONE TRUCK, IN WORDS. THIS REPLACED `Dropped: next_event`.
+ *
+ * Three things wrong with those two words: "dropped" is the renderer's verb for what it did rather than
+ * the operator's for what happened; `next_event` is a case label; and neither says WHICH line went,
+ * which is the only thing that lets the message be checked for reading correctly without it.
+ *
+ * ⚠️ IT IS HANDED `renderTemplate`'s OWN `droppedConditions` AND ONLY LOOKS UP THE WORDING. It re-decides
+ * nothing, so "Simulate no upcoming event" keeps working exactly as it did: the checkbox changes the
+ * context, the renderer drops a different line, and this names whatever the renderer reports.
+ * ⚠️ `droppedConditions` HAS ONE ENTRY PER DISTINCT CONDITION, not per line, so two lines sharing a
+ * condition are reported as a count rather than one line standing in for both.
+ */
+export function hiddenLineNotes(body: string, droppedConditions: readonly string[]): ConditionNote[] {
+  const words = new Map(conditionReference().map(c => [c.name, c] as const))
+  const lines = conditionalLinesIn(body)
+  return droppedConditions.map(c => {
+    const hits = lines.filter(x => x.cond === c)
+    const shownTo = words.get(c)?.shownTo ?? `trucks matching ?${c}:`
+    const which = hits.length === 1 ? quoteOpening(hits[0].text, c)
+      : hits.length > 1 ? `${hits.length} lines`
+      : `the ?${c}: line`
+    const verb = hits.length > 1 ? 'they only show' : 'it only shows'
+    return { key: c, text: `Hidden for this truck: ${which} — ${verb} for ${shownTo}.` }
+  })
 }
 
 // 🔴 A MISTYPED TOKEN MUST NOT REACH AN EMAIL AS PROSE.

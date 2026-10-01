@@ -182,7 +182,7 @@ function shellFixture(css, { broken = false } = {}) {
           </div>
         </div>
         <div id="valuesBox" class="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5" style="height:64px">Values this message fills in</div>
-        <div id="warnBox" class="text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2" style="height:44px">Half of a conditional pair</div>
+        <div id="notesBox" class="text-[11px] leading-snug text-slate-500" style="height:44px">Two grey notes about the conditional lines</div>
         <div id="save" class="flex justify-end mt-auto pt-2"><button class="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white">Save template</button></div>
       </div>` : `<div id="centre" class="flex-1 min-h-0 overflow-y-auto space-y-3 flex flex-col">
         <div id="nameBlock" class="${fixed}" style="height:60px">Template name</div>
@@ -195,7 +195,7 @@ function shellFixture(css, { broken = false } = {}) {
           <textarea id="body" rows="15" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 flex-1 min-h-0 resize-none">${'a line of the email\n'.repeat(40)}</textarea>
         </label>
         <div id="valuesBox" class="${fixed} rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5" style="height:64px">Values this message fills in</div>
-        <div id="warnBox" class="${fixed} text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2" style="height:44px">Half of a conditional pair</div>
+        <div id="notesBox" class="${fixed} text-[11px] leading-snug text-slate-500" style="height:44px">Two grey notes about the conditional lines</div>
       </div>
       <div id="save" class="shrink-0 flex justify-end pt-2"><button class="text-sm font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white">Save template</button></div>`}
       </div>
@@ -335,11 +335,17 @@ async function measure() {
       t(r.switcher.top - r.tabbar.bottom <= 16,
         `⚠️ the switcher sits under the tab strip, not 80px below it (${r.switcher.top - r.tabbar.bottom}px)`)
       /* ── 🔴 NOTHING IN THE EDITOR IS DRAWN ON TOP OF ANYTHING ELSE ─────────────────────────
+       * ⚠️ RENAMED `warnBox` → `notesBox` (1 October). The last block in this column WAS the red
+       * "Half of a conditional pair" warning; it is the grey per-line notes now, and a fixture
+       * still calling it a warning would read as evidence that the red box survives. 🔴 THE
+       * GEOMETRY IS UNCHANGED: the block's height is pinned at 44px in the markup and the
+       * assertions index it by id, never by its text or its colour — which is why this is a
+       * rename and not a re-measurement. Both engines were re-run to prove exactly that.
        * The reported symptom: the "values" box and the conditional warning printed across the
        * bottom of the message box. In a flex column that is one thing — a block that was
        * shrunk while its own content was not — so it is measured as one thing: every block
        * starts at or below the bottom of the block before it. */
-      const stack = ['nameBlock', 'writeBlock', 'subjectBlock', 'msgLabel', 'bracesHint', 'message', 'valuesBox', 'warnBox']
+      const stack = ['nameBlock', 'writeBlock', 'subjectBlock', 'msgLabel', 'bracesHint', 'message', 'valuesBox', 'notesBox']
       const bad = stack.slice(1).filter((id, i) => r[id].top < r[stack[i]].bottom - 1)
       t(bad.length === 0, `🔴 no block overlaps the one above it (${bad.length ? 'OVERLAPPING: ' + bad.join(', ') : stack.length + ' blocks, in order'})`)
       t(r.save.top >= r.centre.bottom - 1, `🔴 …and Save is BELOW the scroller, not inside it (${r.save.top} ≥ ${r.centre.bottom})`)
@@ -379,7 +385,7 @@ async function measure() {
       /* ⚠️ `save` IS NOT IN THIS STACK, and that is the point of moving it: it is pinned below
        * the scroller, so at a height where the editor scrolls it is nowhere near the last block
        * inside it. Its own two checks follow. */
-      const stack = ['nameBlock', 'writeBlock', 'subjectBlock', 'msgLabel', 'bracesHint', 'message', 'valuesBox', 'warnBox']
+      const stack = ['nameBlock', 'writeBlock', 'subjectBlock', 'msgLabel', 'bracesHint', 'message', 'valuesBox', 'notesBox']
       const bad = stack.slice(1).filter((id, i) => r[id].top < r[stack[i]].bottom - 1)
       t(bad.length === 0, `🔴 …and nothing overlaps at this height either (${bad.length ? 'OVERLAPPING: ' + bad.join(', ') : 'in order'})`)
       t(r.save.bottom <= 600 && r.save.top >= r.centre.bottom - 1,

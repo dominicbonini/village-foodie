@@ -84,6 +84,132 @@ function runLibSuite({ S, R, D }) {
     return /\{\{signature\}\}/.test(m.body) && /\{\{opt_out\}\}/.test(m.body)
       && !m.unresolved.includes('signature') && !m.unresolved.includes('opt_out')
   })())
+
+  /* ── 🔴 THE CONDITION NOTES, CALLED RATHER THAN GREPPED ─────────────────────────────────────────
+   * REPLACED: a red "Half of a conditional pair" on every one-sided condition. The claim being
+   * checked here is about produced TEXT — "a one-sided condition produces a grey note and no red" —
+   * so it is checked by calling the function that produces it. A regex over the panel would be a
+   * claim about markup that happens to sit nearby, and the red warning was never wrong about its
+   * markup either: it was wrong about what it meant. */
+  const AUD = { total: 105, inNoBox: false, keeping: { next_event: 12, website: 105, contact_name: 3 } }
+  const ONE_SIDED = 'Hi there.\n?next_event: I run villagefoodie.co.uk and you are at {{next_event_venue}}.\nBye.'
+
+  const oneSided = R.conditionNotes(ONE_SIDED, AUD)
+  t('🔴 a ONE-SIDED condition produces exactly one note, and it is not an error',
+    oneSided.length === 1 && !/half|pair|missing|error|wrong/i.test(oneSided[0].text))
+  t('🔴 …naming the line by its OPENING WORDS, not by the condition name',
+    oneSided[0].text.startsWith('\u201cI run villagefoodie.co.uk and you\u2026\u201d')
+    && !oneSided[0].text.includes('?next_event:'))
+  t('🔴 …and saying in plain English who sees it',
+    oneSided[0].text.includes('only appears for trucks with an upcoming event'))
+  t('🔴 …with the count, from the numbers it was handed',
+    oneSided[0].text.includes("12 of the 105 trucks this template goes to")
+    && oneSided[0].text.includes("the other 93 won't see this line"))
+  /* ⚠️ THE COUNT IS OMITTED, NOT GUESSED, BEFORE THE PROSPECT LIST ARRIVES. The fetch is allowed to
+   * fail silently, and "0 of 0 trucks" is a wrong answer stated confidently. */
+  t('⚠️ …and NO count at all when there is nothing to count from', (() => {
+    const n = R.conditionNotes(ONE_SIDED, { total: null, inNoBox: false, keeping: {} })
+    return n.length === 1 && n[0].text.includes('only appears for') && !/\d/.test(n[0].text.replace(/villagefoodie\.co\.uk/g, ''))
+  })())
+  /* ⚠️ THE TWO ENDS OF THE COUNT. A sentence that is arithmetically right and reads as nonsense under
+   * a correct template is the same failure as the red box this replaced, so both ends are pinned. */
+  t('⚠️ …a ZERO denominator gets its own sentence, not "0 of the 0 trucks"', (() => {
+    const n = R.conditionNotes(ONE_SIDED, { total: 0, inNoBox: false, keeping: {} })
+    return n.length === 1 && /No contactable truck is in this template/.test(n[0].text)
+      && !/0 of the 0/.test(n[0].text)
+  })())
+  t('⚠️ …and a line every truck sees says that, not "the other 0 won\'t see it"', (() => {
+    const n = R.conditionNotes(ONE_SIDED, { total: 105, inNoBox: false, keeping: { next_event: 105 } })
+    return /every one of them sees it/.test(n[0].text) && !/the other 0/.test(n[0].text)
+  })())
+  t('🔴 a template in NO BOX counts across every contactable truck, and SAYS so', (() => {
+    const n = R.conditionNotes(ONE_SIDED, { ...AUD, inNoBox: true })
+    return n[0].text.includes('in no sequence box')
+      && n[0].text.includes('across every contactable truck')
+  })())
+
+  const pair = R.conditionNotes('?next_event: you are out on {{next_event_day}}\n?no_next_event: when you are next out', AUD)
+  t('🔴 a PAIR produces ONE note saying the wording changes — not one note per half',
+    pair.length === 1 && pair[0].text === 'This part changes depending on whether the truck has an upcoming event.')
+  t('⚠️ …and a pair plus an unrelated single still gets one note each', (() => {
+    const n = R.conditionNotes('?next_event: a\n?no_next_event: b\n?website: see {{website}}', AUD)
+    return n.length === 2 && n.some(x => /changes depending on/.test(x.text))
+      && n.some(x => /only appears for trucks whose website we hold/.test(x.text))
+  })())
+
+  /* 🔴 RED IS KEPT FOR WHAT IS ACTUALLY BROKEN, AND THE TWO CASES ARE DERIVED, NOT LISTED. */
+  t('🔴 an UNKNOWN condition name is reported as unknown — the line can never render',
+    R.conditionalLinesIn('?next_evnt: oops').every(l => l.known === false)
+    && R.conditionalLinesIn('?next_event: fine').every(l => l.known === true))
+  t('🔴 …and gets NO grey note, because a note about who reads it would be a lie',
+    R.conditionNotes('?next_evnt: oops', AUD).length === 0)
+  t('🔴 a marker NOT at the start of a line is reported — those characters would be emailed',
+    R.misplacedConditionMarkers('and ?next_event: they are out').includes('next_event')
+    && R.misplacedConditionMarkers('?next_event: they are out').length === 0)
+  t('⚠️ …and ordinary prose with a question mark is NOT reported', (() => {
+    const quiet = R.misplacedConditionMarkers('Fancy a demo? Here is the link: {{demo_link}}')
+    return quiet.length === 0
+  })())
+  t('⚠️ …including a line that opens with a valid marker and REPEATS it later',
+    R.misplacedConditionMarkers('?next_event: out on X, ?next_event: again').includes('next_event'))
+
+  /* 🔴 THE COUNTS ARE THE RESOLVER'S OWN DECISION. `conditionHolds` must agree with what
+   * `renderTemplate` actually does to the line, or the number under the box describes nothing. */
+  const withEvent = R.contextFromProspect({ id: 'a', name: 'A', contact_first_name: null, contact_last_name: null,
+    website: null, order_url: null, nextEventDate: '2026-12-01', nextEventVenue: 'The Green',
+    hu_ordering: null, hu_map: null })
+  const without = R.contextFromProspect({ id: 'b', name: 'B', contact_first_name: null, contact_last_name: null,
+    website: null, order_url: null, nextEventDate: null, nextEventVenue: null, hu_ordering: null, hu_map: null })
+  t('🔴 `conditionHolds` IS the renderer\'s own check, and agrees with what it drops', (() => {
+    const tpl = { channel: 'email', subject: null, body: '?next_event: at {{next_event_venue}}' }
+    const kept = R.renderTemplate(tpl, withEvent)
+    const gone = R.renderTemplate(tpl, without)
+    return R.conditionHolds('next_event', withEvent) === true
+      && R.conditionHolds('no_next_event', withEvent) === false
+      && R.conditionHolds('next_event', without) === false
+      && kept.droppedConditions.length === 0 && gone.droppedConditions.includes('next_event')
+  })())
+  t('⚠️ …and an unknown condition holds for nobody, as `conditionMet` documents',
+    R.conditionHolds('next_evnt', withEvent) === false)
+
+  /* ── 🔴 THE MENU'S WORDING COMES FROM THE RESOLVER, ON THE SAME ENTRY AS THE NAME ──────────── */
+  const conds = R.conditionReference()
+  t('🔴 every condition the resolver knows carries plain wording for the menu',
+    conds.length >= 9 && conds.every(c => typeof c.only === 'string' && /^Only if /.test(c.only))
+    && conds.every(c => typeof c.shownTo === 'string' && c.shownTo.length > 0))
+  t('🔴 …in the words the brief asked for', (() => {
+    const by = Object.fromEntries(conds.map(c => [c.name, c.only]))
+    return by.next_event === 'Only if they have an upcoming event'
+      && by.no_next_event === 'Only if they have no upcoming event'
+      && by.website === 'Only if we have their website'
+      && by.contact_name === 'Only if we have their name'
+  })())
+  t('⚠️ …and the four lead conditions are worded from LEAD_TYPE_LABELS, not a second set of names',
+    conds.filter(c => c.name.startsWith('lead_')).length === 4
+    && conds.find(c => c.name === 'lead_hu_map').only.includes('Hatches Up \u2014 map only'))
+  t('⚠️ only the POSITIVE half of a pair carries the pair wording — `no_` never leads one',
+    conds.find(c => c.name === 'next_event').axis === 'whether the truck has an upcoming event'
+    && conds.find(c => c.name === 'no_next_event').axis === undefined)
+
+  /* ── 🔴 THE PREVIEW FOOTER, IN WORDS INSTEAD OF `Dropped: next_event` ──────────────────────── */
+  const hidden = R.hiddenLineNotes(ONE_SIDED, ['next_event'])
+  t('🔴 the preview footer names the LINE and why it is hidden, in plain words',
+    hidden.length === 1
+    && hidden[0].text.startsWith('Hidden for this truck: \u201cI run villagefoodie.co.uk and you\u2026\u201d')
+    && hidden[0].text.includes('it only shows for trucks with an upcoming event'))
+  t('🔴 …and the words "Dropped" and the bare condition name are gone from it',
+    !/Dropped/.test(hidden[0].text) && !/next_event/.test(hidden[0].text))
+  t('⚠️ two lines sharing one condition are counted, not represented by one of them', (() => {
+    const n = R.hiddenLineNotes('?next_event: first line\n?next_event: second line', ['next_event'])
+    return n.length === 1 && n[0].text.includes('2 lines') && n[0].text.includes('they only show')
+  })())
+  t('⚠️ …and it reads the RENDERER\'s report, so "Simulate no upcoming event" still drives it', (() => {
+    const tpl = { channel: 'email', subject: null, body: ONE_SIDED }
+    const forced = R.renderTemplate(tpl, { ...withEvent, nextEventDate: null, nextEventVenue: null })
+    return R.hiddenLineNotes(ONE_SIDED, forced.droppedConditions).length === 1
+      && R.hiddenLineNotes(ONE_SIDED, R.renderTemplate(tpl, withEvent).droppedConditions).length === 0
+  })())
+
   return { ok, bad }
 }
 
@@ -210,8 +336,81 @@ function runCensus(over = {}) {
     /onInsert=\{syntax => insertAtCaret\(syntax\)\}/.test(TAB) && /function TokenMenu/.test(TAB))
   t('⚠️ …and is disabled until a field has been focused, with the reason',
     /disabled=\{!lastFocus\}/.test(TAB) && /Click into the subject or body first/.test(TAB))
-  t('⚠️ the conditional PAIRS keep their own control — one click writes both halves',
-    /function CondMenu/.test(TAB) && /ownLines: true/.test(TAB))
+  /* ── 🔴 RESTATED (1 October, the conditions task) — NOT SILENTLY RE-POINTED ───────────────────
+   * THIS CHECK USED TO READ "the conditional PAIRS keep their own control — one click writes both
+   * halves", and it still PASSED after the menu was rewritten, because both things it actually
+   * tested (`function CondMenu`, `ownLines: true`) are still true. Its CLAIM is not: the menu no
+   * longer offers pairs and no longer writes two lines per click.
+   * 🔴 THE CLAIM WAS ALSO THE PREMISE THIS TASK OVERTURNS. "One click writes both halves" existed
+   * because a half-written pair was treated as a mistake — the same belief behind the red warning
+   * that is now gone. And it had a cost that was never written down: SEVEN of today's nine conditions
+   * were unreachable from that menu — `?website:`, `?contact_name:`, `?order_url:` and the four
+   * `?lead_*` lines have no negative half even in principle, so a pairs-only menu could not offer
+   * them at all. Only `next_event` / `no_next_event` were, and they came as one both-halves insert.
+   * ⚠️ WHAT SURVIVES INTACT IS `ownLines`, and it matters more than before: a marker is recognised
+   * only as the first thing on its line, and a mid-line one is now red (`misplacedConditionMarkers`).
+   * So the check is restated as "every condition, one marker, still forced onto its own line". */
+  t('🔴 the condition menu offers EVERY condition, one marker per click, on its own line',
+    /function CondMenu/.test(TAB) && /ownLines: true/.test(TAB)
+    && /<CondMenu conds=\{condRef\}/.test(TAB)
+    && /onInsert=\{c => insertAtCaret\(`\?\$\{c\}: `, \{ ownLines: true \}\)\}/.test(TAB)
+    && !/<CondMenu pairs=/.test(TAB))
+
+  // ── 🔴 THE CONDITION NOTES: GREY FOR A CHOICE, RED FOR A MISTAKE ──────────────────────────────
+  /* The wording itself is asserted in the lib suite, by calling `conditionNotes` and
+   * `hiddenLineNotes`. What is checked HERE is the wiring: that the panel renders those two, in
+   * grey, that the red warning is gone, and that it composes no sentence of its own. */
+  t('🔴 the red "Half of a conditional pair" warning is GONE, and so is the derivation behind it',
+    !/Half of a conditional/.test(TAB) && !/halfPairs/.test(TAB))
+  t('🔴 …replaced by grey notes, one per conditional line, with no heading and no error styling',
+    /\{condNotes\.map\(n => \(/.test(TAB)
+    && /<p key=\{n\.key\} className="text-\[11px\] leading-snug text-slate-500">\{n\.text\}<\/p>/.test(TAB))
+  t('🔴 …and the SENTENCES come from the resolver module, not composed in the panel',
+    /const condNotes = conditionNotes\(draft\.body \?\? '', \{/.test(TAB)
+    && /const droppedNotes = hiddenLineNotes\(draft\.body \?\? '', preview\?\.droppedConditions \?\? \[\]\)/.test(TAB)
+    && !/only appears for/.test(TAB) && !/changes depending on/.test(TAB))
+  t('🔴 RED survives for the two things that ARE broken, and each says how to fix it',
+    /\{unknownConds\.length > 0 && \(/.test(TAB) && /\{misplaced\.length > 0 && \(/.test(TAB)
+    && /Use one from .Insert condition/.test(TAB)
+    && /Move it to the start of its own line/.test(TAB))
+  t('⚠️ …both read the resolver\'s own derivations, not a regex in the panel',
+    /conditionalLinesIn\(draft\.body \?\? ''\)/.test(TAB)
+    && /misplacedConditionMarkers\(draft\.body \?\? ''\)/.test(TAB)
+    && !/\^\\\\\?/.test(TAB))
+  t('⚠️ …and the existing malformed and must-resolve reds are untouched',
+    /Unreadable token/.test(TAB) && /Cannot be sent to/.test(TAB))
+
+  // ── 🔴 THE COUNTS COME FROM THE GRID'S OWN DERIVATIONS ───────────────────────────────────────
+  t('🔴 contactable is `channelFor` — the predicate that gates the work queue, not a copy',
+    /channelFor\(\{ \.\.\.p, waPhone: phoneWhatsApp\(p\.phone \?\? null, null\)\.waPhone \}\)/.test(TAB)
+    && /\.filter\(x => x\.ch !== null\)/.test(TAB))
+  t('🔴 …a truck\'s type is `effectiveLeadType` — the grid\'s own call, frozen value first',
+    /b\.lead_type === effectiveLeadType\(x\.p\)/.test(TAB)
+    && /b\.lead_type === ANY_LEAD/.test(TAB))
+  t('🔴 …the context is the PREVIEW\'s own builder, so count and preview cannot disagree',
+    /ctx: contextFromProspect\(p\)/.test(TAB))
+  t('🔴 …and whether a line keeps a truck is `conditionHolds`, the resolver\'s own `conditionMet`',
+    /conditionHolds\(l\.cond, x\.ctx\)/.test(TAB))
+  t('⚠️ the audience is the template\'s own boxes, and every contactable truck when it is in none',
+    /slots\.filter\(s => s\.template_id === selectedId\)/.test(TAB)
+    && /audienceBoxes\.length === 0/.test(TAB))
+  /* ⚠️ THE COST GUARD. v2 deleted a derivation that walked all 231 prospects on every keystroke to
+   * produce a number nothing rendered. This one must not become that: the 231 context builds are
+   * memoised on the PROSPECT LIST ALONE, and nothing keyed on the body may hold them. */
+  t('🔴 the expensive half is memoised on the prospect list alone — not on the body, not on the grid',
+    /const reachable = useMemo\(\s*\(\) => prospects/.test(TAB)
+    && /\n    \[prospects\]\)/.test(TAB))
+  t('⚠️ …and the slots-dependent half is a PLAIN derivation, as this file requires below `usedIn`',
+    /const audienceBoxes = selectedId \? slots\.filter/.test(TAB)
+    && !/useMemo\(\(\) => \{\s*const boxes = selectedId/.test(TAB))
+
+  // ── 🔴 THE PREVIEW FOOTER SAYS WHAT WAS HIDDEN, IN WORDS ─────────────────────────────────────
+  t('🔴 the `Dropped: next_event` chip is gone, and the footer renders the plain notes',
+    !/Dropped: \{preview\.droppedConditions/.test(TAB)
+    && /\{droppedNotes\.map\(d => \(/.test(TAB))
+  t('⚠️ …and "Simulate no upcoming event" still drives it, unchanged',
+    /Simulate no upcoming event/.test(TAB) && /checked=\{forceNoEvent\}/.test(TAB)
+    && /forceNoEvent \? \{ \.\.\.base, nextEventDate: null, nextEventVenue: null \} : base/.test(TAB))
   t('🔴 the malformed-token guard is untouched', /malformedTokensIn/.test(TAB))
   t('🔴 the Tokens RAIL is gone, and the right pane is the preview',
     !/RAIL_TABS/.test(TAB) && !/rail === 'tokens'/.test(TAB) && /Preview<\/p>/.test(TAB))
@@ -379,6 +578,40 @@ function runCensus(over = {}) {
     ['V10 🔴 Save goes back to orange',
       { TAB: changed(TAB_SRC, TAB_SRC.replace('rounded-lg bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400">\n                    Save template',
         'rounded-lg bg-orange-600 text-white">\n                    Save template'), 'V10') }],
+    /* ── 🔴 THE 1 OCTOBER VARIANTS — THE WHOLE POINT OF THIS TASK, PUT BACK ──────────────────────
+     * V17 is the one that matters most: the brief names it ("broken variants must fail: the red
+     * half-pair error comes back"). A checklist that says "red is gone" without ever having been
+     * shown catching red is not a check. */
+    ['V17 🔴 the red "Half of a conditional pair" error comes back on a one-sided condition',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace(
+        '<p key={n.key} className="text-[11px] leading-snug text-slate-500">{n.text}</p>',
+        '<p key={n.key} className="text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">'
+        + '<span className="font-bold">Half of a conditional pair:</span>{n.text}</p>'), 'V17') }],
+    ['V18 🔴 the condition menu goes back to a hand-kept list instead of the resolver\'s own',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('<CondMenu conds={condRef}',
+        "<CondMenu conds={[{ syntax: '?next_event: ', name: 'next_event', description: 'd', documented: true,"
+        + " only: 'Only if they have an upcoming event', shownTo: 'trucks with an upcoming event' }]}"), 'V18') }],
+    ['V19 🔴 "contactable" is re-implemented in the panel instead of asking `channelFor`',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace(
+        'channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone })',
+        "(p.contact_email ? 'email' : null)"), 'V19') }],
+    ['V20 🔴 the count stops asking the resolver and tests the date itself',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('conditionHolds(l.cond, x.ctx)', '!!x.ctx.nextEventDate'), 'V20') }],
+    /* ⚠️ `leadTypeOf` IS THE PLAUSIBLE WRONG ANSWER, not a nonsense one: it is the live derivation,
+     * and using it would count a truck mid-sequence under today's type rather than the one its
+     * sequence was framed in — the exact drift `effectiveLeadType` exists to prevent. */
+    ['V21 🔴 the audience counts by `leadTypeOf`, ignoring the type frozen at first contact',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('b.lead_type === effectiveLeadType(x.p)',
+        'b.lead_type === leadTypeOf(x.p)'), 'V21') }],
+    ['V22 🔴 the preview footer goes back to `Dropped: next_event`',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace('{droppedNotes.map(d => (',
+        "{preview.droppedConditions.length > 0 && (<span>Dropped: {preview.droppedConditions.join(', ')}</span>)}\n"
+        + '                        {false && droppedNotes.map(d => ('), 'V22') }],
+    ['V23 🔴 the note wording is composed in the panel again, beside the resolver\'s copy',
+      { TAB: changed(TAB_SRC, TAB_SRC.replace("  const condNotes = conditionNotes(draft.body ?? '', {",
+        "  const condNotes = condLines.map(l => ({ key: l.cond,\n"
+        + "    text: `that line only appears for some trucks` }))\n"
+        + "  const unusedNotes = conditionNotes(draft.body ?? '', {"), 'V23') }],
   ]) {
     const r = runCensus(over)
     const caught = r.bad.length > 0
@@ -416,6 +649,37 @@ function runCensus(over = {}) {
     const r = runLibSuite(libs)
     const caught = r.bad.length > 0
     console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V13 🔴 {{signature}} stops being expanded — the token would be emailed verbatim`)
+    for (const f of r.bad) console.log(`        caught: ${f}`)
+    if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
+  }
+
+  {
+    /* V24 — THE PAIR RULE BREAKS, AND A WRITTEN PAIR GETS TWO NOTES INSTEAD OF ONE. With both halves
+     * written, every truck reads one line or the other, so a per-half note would name an audience for
+     * each — "12 of 105 see this" above "93 of 105 see this" — which is true of each line and
+     * misleading about the pair. This is the regression the "ONE note" check exists to catch, so it is
+     * shown catching it. */
+    const libs = libVariant('v24', s2 => s2.replace(
+      "  return names.filter(c => !c.startsWith('no_') && names.includes(`no_${c}`))", '  return []'),
+      'lib/outreach-template-render.ts')
+    const r = runLibSuite(libs)
+    const caught = r.bad.length > 0
+    console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V24 🔴 a written pair gets a note per half instead of one note`)
+    for (const f of r.bad) console.log(`        caught: ${f}`)
+    if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
+  }
+
+  {
+    /* V25 — THE PLAIN WORDING IS DROPPED AND THE MENU FALLS BACK TO THE MARKER. The menu would still
+     * list every condition and still read the resolver — and every entry would say "Only if
+     * ?next_event:", which is the reference vocabulary this task exists to replace. A check on the
+     * LIST without a check on the WORDS would sit green through that. */
+    const libs = libVariant('v25', s2 => s2.replace('const CONDITION_PLAIN: Record<string, ConditionWords> = {',
+      'const CONDITION_PLAIN: Record<string, ConditionWords> = {} as Record<string, ConditionWords>\nconst UNUSED_PLAIN = {'),
+      'lib/outreach-template-render.ts')
+    const r = runLibSuite(libs)
+    const caught = r.bad.length > 0
+    console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  V25 🔴 the plain wording is gone — every condition reads "Only if ?next_event:"`)
     for (const f of r.bad) console.log(`        caught: ${f}`)
     if (!caught) { console.log('\n🔴 A BROKEN VARIANT PASSED.'); process.exit(1) }
   }

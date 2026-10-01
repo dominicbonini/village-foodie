@@ -14,7 +14,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { createSlug } from '@/lib/utils'
 import {
-  nextStep, type LeadType, type Step,
+  // 🔴 `channelFor` IS THE DEFINITION OF "CONTACTABLE" AND `effectiveLeadType` THE DEFINITION OF A
+  // TRUCK'S TYPE — both reused, neither rewritten. The audience count under the message box has to
+  // agree with the grid's own counts and with the list's reachability ticks, and the only way it can is
+  // by asking the same two functions. See `audience`.
+  nextStep, channelFor, effectiveLeadType, type LeadType, type Step,
 } from '@/lib/outreach-step'
 // ⚠️ SHARED WITH A CUSTOMER PATH — `components/EventListCard.tsx` (the live call/message button) imports
 // this same module. It is READ here and NOTHING ELSE; lib/whatsapp-hint.ts carries no change from this
@@ -31,7 +35,11 @@ import { snippetIndex, snippetMapOf, isUnset, type Snippet, type SnippetUse } fr
 import {
   contextFromProspect, renderWithFills, unresolvedIn, defaultFillsOf,
   resolvedTokenReference, conditionReference, suspectedMistypedTokens, malformedTokensIn,
-  type MessageTemplate,
+  // 🔴 THE CONDITION MACHINERY, ALL FOUR FROM THE RESOLVER. `conditionHolds` is its own `conditionMet`,
+  // `conditionalLinesIn` its own line rule, `misplacedConditionMarkers` the anchored-marker lint. This
+  // file carries no regex and no predicate of its own for any of it — see the notes on each export.
+  conditionHolds, conditionalLinesIn, misplacedConditionMarkers, conditionNotes, hiddenLineNotes,
+  type MessageTemplate, type ConditionRefEntry,
 } from '@/lib/outreach-template-render'
 import {
   signatureBlockHtml, optOutHtml, parseSignature, parseOptOut, type SignatureLine,
@@ -816,24 +824,156 @@ export default function TemplatesPanel() {
   // would MANUFACTURE the exact failure this feature exists to prevent. So a pair is offered only when
   // both `C` and `no_C` are present in the derived list. 🧪 Today that yields one pair (next_event) and
   // three singles (order_url, website, contact_name) — read from the code, not written here.
-  const condNames = useMemo(() => condRef.map(c => c.name), [condRef])
-  const condPairs = useMemo(
-    () => condNames.filter(c => !c.startsWith('no_') && condNames.includes(`no_${c}`)), [condNames])
+  /* 🔴 `condNames` AND `condPairs` ARE GONE FROM HERE. The pair rule — a condition with a `no_`
+   * counterpart in the switch — moved into `conditionNotes`, which is the only thing that still needed
+   * it once the Insert-condition menu stopped offering pairs and started offering every condition. Two
+   * copies of "which conditions have a negative half" is exactly the drift this module keeps warning
+   * about, and the panel's copy was the one with no test able to reach it. */
   /* 🔴 `condSingles` WAS HERE AND IS GONE. It listed the conditions with no negative half, for a
    * row of buttons in the Tokens rail. The rail went; a single-sided condition is still insertable
    * by hand and `halfPairs` below still calls out a half-written one, which is the failure that
    * actually matters. */
 
-  /** 🔴 HALF-WRITTEN CONDITIONALS. One half without the other has no visible failure mode — the branch
-   *  simply never fires — so it is called out in the editor. */
-  const halfPairs = useMemo(() => {
-    const b = draft.body ?? ''
-    const has = (c: string) => new RegExp(`^\\?${c}:`, 'm').test(b)
-    return condPairs
-      .map(c => ({ c, pos: has(c), neg: has(`no_${c}`) }))
-      .filter(x => x.pos !== x.neg)
-  }, [draft.body, condPairs])
+  /* ── 🔴 `halfPairs` IS GONE, AND THAT IS THE WHOLE POINT OF THIS CHANGE ─────────────────────────
+   * It derived every condition written on one side only and painted it RED: "Half of a conditional
+   * pair: ?next_event: without ?no_next_event:". The reasoning was that a branch which never fires
+   * fails silently, which is true — and the conclusion drawn from it was wrong, because a one-sided
+   * condition is USUALLY DELIBERATE. "Hatches Up - map only" mentions the truck's next pitch when
+   * there is one and says nothing when there is not; that is the copy as written, not a half-finished
+   * pair. The warning accused the operator of a mistake on every single view of a correct template,
+   * and a red box that is usually wrong is worse than no box at all: it teaches the eye to skip red,
+   * and the next red thing on this screen is `{{truck name}}` reaching a real food business.
+   * 🔴 WHAT REPLACED IT IS NOT A SOFTER VERSION OF THE SAME CLAIM. It makes no claim at all: it states
+   * who sees the line and how many that is today. The operator can read that and decide. Red is kept
+   * for the three things that are broken however the copy was intended — see `unknownConds`,
+   * `misplaced`, and the malformed/must-resolve guards that were already here. */
 
+  // ── 🔴 WHO THIS TEMPLATE ACTUALLY GOES TO ────────────────────────────────────────────────────────
+  //
+  // "Trucks this template goes to" = the CONTACTABLE prospects in the sequence boxes this template
+  // fills. Both halves of that are existing definitions and both are reused rather than restated:
+  //
+  //   • CONTACTABLE is `channelFor`. 🧪 It is the predicate behind the operator's own 76/155 split and
+  //     it gates the work queue; OutreachPanel calls it for the list's reachability ticks. A truck we
+  //     hold no address and no usable WhatsApp number for is not in anybody's audience.
+  //     ⚠️ `channelFor`, NOT `step.channel` — the same trap OutreachPanel documents: `nextStep` returns
+  //     `channel: null` for every STOPPED step, so reading the step would file a reachable truck under
+  //     "cannot be reached" and undercount the audience by exactly the do-not-contact rows.
+  //   • A TRUCK'S TYPE is `effectiveLeadType` — the grid's own call, frozen-value-first, so a truck
+  //     mid-sequence is counted under the type its sequence started in rather than today's derivation.
+  //
+  // A box is (channel, step, lead type). A truck is in it when the channel we would reach it on is the
+  // box's channel and the box's row is either its type or the "All trucks" default.
+  // ⚠️ STEP IS DELIBERATELY NOT PART OF THIS, and it is the one place this differs from the grid's
+  // pills. The grid answers "who is waiting at this box NOW", which is a work queue and changes every
+  // morning. The note under a message box answers "who will ever read this sentence", which is an
+  // AUDIENCE: a truck on rung 1 today reaches rung 3 next week and reads the chase then. Counting only
+  // today's due rows would print a number that shrinks as the work gets done, under copy that did not
+  // change — and the operator would reasonably read that as the line reaching fewer trucks.
+  // ⚠️ COST: keyed on the prospects, the grid and the SELECTED ROW — never on the body. Typing in the
+  // message box recomputes nothing here. This is the derivation v2 deleted for walking 231 prospects on
+  // every keystroke, brought back on a key that cannot do that.
+  /** 🔴 THE EXPENSIVE HALF, AND THE ONLY PART THAT IS MEMOISED: one `contextFromProspect` and one
+   *  `channelFor` per prospect, keyed on the prospect list ALONE so it survives every keystroke and
+   *  every change to the grid. ⚠️ It closes over nothing else on purpose — see the note below. */
+  const reachable = useMemo(
+    () => prospects
+      .map(p => ({
+        p,
+        // 🔴 THE PREVIEW'S OWN CONTEXT BUILDER, so the count and the rendered preview cannot disagree
+        // about a truck. It is also where `effectiveLeadType` reaches the `?lead_*` conditions.
+        ctx: contextFromProspect(p),
+        // ⚠️ `waPhone` BUILT EXACTLY AS `steps` BUILDS IT, from the shared `phoneWhatsApp`.
+        ch: channelFor({ ...p, waPhone: phoneWhatsApp(p.phone ?? null, null).waPhone }),
+      }))
+      .filter(x => x.ch !== null),
+    [prospects])
+
+  /* ⚠️ PLAIN DERIVATIONS FROM HERE TO THE NOTES, NOT `useMemo` — FOR THE REASON THIS FILE ALREADY
+   * DOCUMENTS ABOVE `usedIn`. Anything keyed on `slots` is memoisation the React Compiler declines to
+   * preserve, because it cannot prove the array is not mutated later; it says so as a build error, and a
+   * `useMemo` it has skipped is a lie about stability that reads as an optimisation. The first attempt
+   * here WAS a `useMemo` on `[prospects, slots, selectedId]` and it produced exactly that error.
+   * 🔴 SO THE EXPENSIVE WORK WAS MOVED OUT OF THE SLOTS-DEPENDENT PART rather than the error silenced.
+   * `reachable` above holds the 231 context builds and is memoised properly. What is left below is a
+   * filter over ~5 boxes and a switch per condition per contactable truck — 🧪 ~76 contactable rows and
+   * one or two conditions on a real template, so a few hundred `conditionHolds` calls per render of the
+   * editor. That is microseconds, and it is the same price `usedIn` and `slotTemplates` already pay.
+   * ⚠️ IT IS NOT THE DERIVATION v2 DELETED. That one called `chooseTemplate` for all 231 prospects to
+   * produce a number nothing rendered any more. This counts only contactable rows, only for conditions
+   * actually written in the body, and every number it produces is on screen. */
+  const audienceBoxes = selectedId ? slots.filter(s => s.template_id === selectedId) : []
+  // ── 🔴 WHO THIS TEMPLATE ACTUALLY GOES TO ────────────────────────────────────────────────────────
+  //
+  // "Trucks this template goes to" = the CONTACTABLE prospects in the sequence boxes this template
+  // fills. Both halves of that are existing definitions and both are reused rather than restated:
+  //
+  //   • CONTACTABLE is `channelFor`. 🧪 It is the predicate behind the operator's own 76/155 split and
+  //     it gates the work queue; OutreachPanel calls it for the list's reachability ticks. A truck we
+  //     hold no address and no usable WhatsApp number for is not in anybody's audience.
+  //     ⚠️ `channelFor`, NOT `step.channel` — the same trap OutreachPanel documents: `nextStep` returns
+  //     `channel: null` for every STOPPED step, so reading the step would file a reachable truck under
+  //     "cannot be reached" and undercount the audience by exactly the do-not-contact rows.
+  //   • A TRUCK'S TYPE is `effectiveLeadType` — the grid's own call, frozen-value-first, so a truck
+  //     mid-sequence is counted under the type its sequence started in rather than today's derivation.
+  //
+  // A box is (channel, step, lead type). A truck is in it when the channel we would reach it on is the
+  // box's channel and the box's row is either its type or the "All trucks" default.
+  // ⚠️ STEP IS DELIBERATELY NOT PART OF THIS, and it is the one place this differs from the grid's
+  // pills. The grid answers "who is waiting at this box NOW", which is a work queue and changes every
+  // morning. The note under a message box answers "who will ever read this sentence", which is an
+  // AUDIENCE: a truck on rung 1 today reaches rung 3 next week and reads the chase then. Counting only
+  // today's due rows would print a number that shrinks as the work gets done, under copy that did not
+  // change — and the operator would reasonably read that as the line reaching fewer trucks.
+  // 🔴 A TEMPLATE IN NO BOX COUNTS ACROSS EVERY CONTACTABLE TRUCK, AND THE NOTE SAYS SO. It is pickable
+  // by hand in the composer for any of them, so "every contactable truck" is the honest denominator —
+  // but printed without that clause it would read as a sequence audience the template does not have.
+  const audienceRows = audienceBoxes.length === 0
+    ? reachable
+    : reachable.filter(x => audienceBoxes.some(b =>
+      b.channel === x.ch && (b.lead_type === ANY_LEAD || b.lead_type === effectiveLeadType(x.p))))
+  const audience = {
+    rows: audienceRows,
+    inNoBox: audienceBoxes.length === 0,
+    /** 🔴 FALSE UNTIL THE PROSPECT LIST HAS ARRIVED. The fetch is allowed to fail silently, and
+     *  "0 of 0 trucks" is a wrong answer stated confidently — the notes omit the count instead. */
+    loaded: prospects.length > 0,
+  }
+
+  /** The conditional lines as the RENDERER reads them — its own line rule, not a second one. */
+  const condLines = useMemo(() => conditionalLinesIn(draft.body ?? ''), [draft.body])
+
+  /** 🔴 RED #1: A CONDITION NAME THE RESOLVER HAS NO BRANCH FOR. `conditionMet` returns false for it, so
+   *  the line is dropped for EVERY truck, every time, with nothing on screen to say so. A typo here is
+   *  not a style choice — it is a sentence that can never render. */
+  const unknownConds = useMemo(
+    () => [...new Set(condLines.filter(l => !l.known).map(l => l.cond))], [condLines])
+
+  /** 🔴 RED #2: A MARKER THAT IS NOT AT THE START OF ITS LINE — the characters reach the prospect. */
+  const misplaced = useMemo(() => misplacedConditionMarkers(draft.body ?? ''), [draft.body])
+
+  /** 🔴 HOW MANY OF THAT AUDIENCE EACH WRITTEN CONDITION KEEPS. `conditionHolds` is the resolver's own
+   *  `conditionMet`, so the number under the box is produced by the function that decides it at send
+   *  time. ⚠️ Only the conditions actually written in the body are counted — 🧪 one or two on a real
+   *  template, so this is a few hundred switch evaluations per render, not 231 template resolutions. */
+  const keeping: Record<string, number> = {}
+  for (const l of condLines) {
+    if (!l.known || l.cond in keeping) continue
+    let n = 0
+    for (const x of audience.rows) if (conditionHolds(l.cond, x.ctx)) n += 1
+    keeping[l.cond] = n
+  }
+
+  /* 🔴 THE SENTENCES THEMSELVES COME FROM THE RESOLVER MODULE, beside the conditions they describe and
+   * beside `CONDITION_PLAIN`. This component renders them and composes none of them — the same rule it
+   * already follows for substitution, applied to the text that explains substitution. It is also what
+   * lets the harness assert the wording by CALLING it rather than by grepping this file for markup. */
+  const condNotes = conditionNotes(draft.body ?? '', {
+    total: audience.loaded ? audience.rows.length : null,
+    inNoBox: audience.inNoBox,
+    keeping,
+  })
+  const droppedNotes = hiddenLineNotes(draft.body ?? '', preview?.droppedConditions ?? [])
 
   if (denied) return <div className="text-slate-900 p-6"><p className="text-sm text-slate-500">/api/admin/outreach-templates refused this session.</p></div>
 
@@ -1184,12 +1324,19 @@ export default function TemplatesPanel() {
                       <TokenMenu tokens={tokenRef} disabled={!lastFocus}
                         hint={lastFocus ? `Inserts at your cursor in the ${lastFocus}.` : 'Click into the subject or body first.'}
                         onInsert={syntax => insertAtCaret(syntax)} />
-                      {/* ⚠️ THE CONDITIONAL PAIRS KEEP THEIR OWN CONTROL — one click writes BOTH
-                          halves, and a missing half fails silently, which is the whole reason they
-                          were never left to be typed. */}
-                      {condPairs.length > 0 && (
-                        <CondMenu pairs={condPairs} disabled={!lastFocus}
-                          onInsert={c => insertAtCaret(`?${c}: \n?no_${c}: `, { ownLines: true })} />
+                      {/* ── 🔴 EVERY CONDITION, IN PLAIN WORDS, ONE MARKER PER CLICK ──────────────
+                          It offered the PAIRS only, writing both halves in one click. That followed
+                          from treating a one-sided condition as a half-finished one — the same premise
+                          as the red warning that is now gone — and it left `?website:`,
+                          `?contact_name:`, `?order_url:` and the four `?lead_*` lines out of the menu
+                          entirely, because they have no negative half to pair with.
+                          ⚠️ `ownLines` IS KEPT AND STILL MATTERS: a marker is only recognised as the
+                          first thing on its line, so an insert at a mid-line caret would produce a
+                          clause that never fires — and `misplacedConditionMarkers` now calls that out
+                          in red if it is typed by hand. */}
+                      {condRef.length > 0 && (
+                        <CondMenu conds={condRef} disabled={!lastFocus}
+                          onInsert={c => insertAtCaret(`?${c}: `, { ownLines: true })} />
                       )}
                     </div>
                     {/* ── 🔴 (v2 item 3) THE ONE LINE THAT SURVIVED THE NUMBERED HEADINGS ───────────
@@ -1281,14 +1428,52 @@ export default function TemplatesPanel() {
                   )}
                 </div>
 
-                {/* 🔴 (5) A HALF-WRITTEN CONDITIONAL HAS NO VISIBLE FAILURE MODE — the branch just never
-                    fires. This is the only warning that can catch it before an email goes out. */}
-                {halfPairs.length > 0 && (
-                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">
-                    <span className="font-bold">Half of a conditional pair:</span>{' '}
-                    {halfPairs.map(x => x.pos ? `?${x.c}: without ?no_${x.c}:` : `?no_${x.c}: without ?${x.c}:`).join('; ')}.
-                    {' '}Whichever half is missing, that branch never renders — the sentence simply
-                    disappears for those prospects, with nothing on screen to say so.
+                {/* ── 🔴 THE CONDITIONAL LINES, IN PLAIN ENGLISH AND IN GREY ───────────────────────
+                    THIS REPLACED A RED "Half of a conditional pair" ERROR. One half of a pair without
+                    the other is usually the copy as intended — "Hatches Up - map only" names the next
+                    pitch when there is one and says nothing when there is not — so the red box accused
+                    the operator of a mistake every time a correct template was opened. Red that is
+                    usually wrong is worse than no red: the next red thing on this screen is a token
+                    that would reach a real food business as literal braces.
+                    ⚠️ GREY, AND NO HEADING. These are notes, not findings. They say who reads the line
+                    and how many that is today, and leave the decision where it belongs.
+                    ⚠️ THERE IS NO "no conditions" EMPTY STATE, deliberately — a template without a
+                    conditional line has nothing to be told about one. */}
+                {condNotes.length > 0 && (
+                  <div className="shrink-0 space-y-1">
+                    {condNotes.map(n => (
+                      <p key={n.key} className="text-[11px] leading-snug text-slate-500">{n.text}</p>
+                    ))}
+                  </div>
+                )}
+                {/* 🔴 RED #1 — A CONDITION THE RESOLVER HAS NO BRANCH FOR. `conditionMet` returns false
+                    for an unknown name, so the line is dropped for every truck, every time, and nothing
+                    anywhere says so. This is the one-sided-condition case's opposite: not a choice, a
+                    sentence that can never render. */}
+                {unknownConds.length > 0 && (
+                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                    <span className="font-bold">
+                      Unknown condition{unknownConds.length > 1 ? 's' : ''}:
+                    </span>{' '}
+                    <code className="font-mono">{unknownConds.map(c => `?${c}:`).join('  ')}</code>{' '}
+                    — {unknownConds.length > 1 ? 'these are not conditions' : 'that is not a condition'} this
+                    system knows, so the line is dropped for every truck. Use one from “Insert condition ▾”.
+                  </p>
+                )}
+                {/* 🔴 RED #2 — A MARKER THAT IS NOT AT THE START OF ITS LINE. The renderer's line rule is
+                    anchored, so a mid-line marker is not a condition at all: it is prose, and the
+                    characters `?next_event:` are emailed to the prospect. Same class as a malformed
+                    token, and invisible to every other guard here — they all read `{{…}}` or `[[…]]`. */}
+                {misplaced.length > 0 && (
+                  <p className="shrink-0 text-[12px] text-red-800 bg-red-50 border border-red-300 rounded-lg px-2.5 py-2">
+                    <span className="font-bold">
+                      Condition{misplaced.length > 1 ? 's' : ''} in the middle of a line:
+                    </span>{' '}
+                    <code className="font-mono">{misplaced.map(c => `?${c}:`).join('  ')}</code>{' '}
+                    — a condition only works as the FIRST thing on its line, so{' '}
+                    {misplaced.length > 1
+                      ? 'these would be sent as those exact characters. Move each to the start of its own line.'
+                      : 'this one would be sent as those exact characters. Move it to the start of its own line.'}
                   </p>
                 )}
                 {/* 🔴 THE SECOND HARD STOP, SHOWN WHERE THE TEMPLATE IS WRITTEN. Unlike the unreadable-token
@@ -1401,11 +1586,14 @@ export default function TemplatesPanel() {
                             Unresolved: {preview.unresolved.map(u => `[[${u}]]`).join(', ')}
                           </span>
                         )}
-                        {preview.droppedConditions.length > 0 && (
-                          <span className="text-[11px] text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5">
-                            Dropped: {preview.droppedConditions.join(', ')}
+                        {/* ⚠️ THIS CHIP SAID `Dropped: next_event` — the renderer's verb and the
+                            resolver's case label, naming no line. See `droppedNotes`. */}
+                        {droppedNotes.map(d => (
+                          <span key={d.key}
+                            className="text-[11px] text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5">
+                            {d.text}
                           </span>
-                        )}
+                        ))}
                         {/* ⚠️ THIS CHIP SAID "Footer appended above", WHICH HAD NOT BEEN TRUE SINCE
                             the signature stopped being appended automatically (29 September). It now
                             says what the pane is actually doing: the two send-time tokens have been
@@ -1694,9 +1882,26 @@ function TokenMenu({ tokens, disabled, hint, onInsert }: {
   )
 }
 
-/** The conditional pairs, on the same row. ⚠️ One click writes BOTH halves — see the call site. */
-function CondMenu({ pairs, disabled, onInsert }: {
-  pairs: readonly string[]
+/**
+ * Every condition the resolver understands, in plain words. One click inserts ONE marker.
+ *
+ * 🔴 IT LISTS EVERY CONDITION, NOT THE PAIRS. This menu used to offer only the conditions that have a
+ * negative half, and one click wrote BOTH halves — built that way because a half-written pair "fails
+ * silently", which was also the reasoning behind the red warning this task removes. Both followed from
+ * treating a one-sided condition as a mistake, and it is not one: a line that appears only when there
+ * is something to say is the commonest correct use of this whole tier, and `?website:` /
+ * `?contact_name:` / the four `?lead_*` lines have no negative half to write even in principle. Offering
+ * only pairs hid seven of today's nine conditions behind "type it from memory".
+ * ⚠️ SO INSERTING A PAIR IS NOW TWO CLICKS, and that is the right trade. Writing two lines when one was
+ * wanted is visible and deletable; the operator can see both lines appear. The reverse — a menu that
+ * cannot offer `?website:` at all — was invisible.
+ *
+ * 🔴 THE LIST IS `conditionReference()`, THE RESOLVER'S OWN CASE LABELS, and the plain wording travels
+ * with it on the same entry. A condition added to `conditionMet` appears here the day it is written,
+ * worded or not. A second list here is the mistake that shipped `{{truck name}}` on an active template.
+ */
+function CondMenu({ conds, disabled, onInsert }: {
+  conds: readonly ConditionRefEntry[]
   disabled: boolean
   onInsert: (name: string) => void
 }) {
@@ -1710,12 +1915,18 @@ function CondMenu({ pairs, disabled, onInsert }: {
       {open && !disabled && (
         <>
           <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} role="presentation" />
-          <div className="absolute z-30 mt-1 w-72 rounded-lg border border-slate-300 bg-white shadow-lg p-1">
-            {pairs.map(c => (
-              <button key={c} type="button" onClick={() => { onInsert(c); setOpen(false) }}
+          <div className="absolute z-30 mt-1 w-80 max-h-80 overflow-y-auto rounded-lg border border-slate-300 bg-white shadow-lg p-1">
+            <p className="px-2 py-1 text-[11px] text-slate-500">
+              Keeps its line only for the trucks it names. Inserted at the start of the current line.
+            </p>
+            {conds.map(c => (
+              <button key={c.name} type="button" onClick={() => { onInsert(c.name); setOpen(false) }}
                 className="w-full text-left px-2 py-1 rounded hover:bg-slate-100">
-                <span className="block text-[11px] font-mono text-slate-800">{`?${c}: / ?no_${c}:`}</span>
-                <span className="block text-[11px] text-slate-500">Both halves — one renders, the other is dropped.</span>
+                {/* 🔴 THE PLAIN LINE IS THE PROMINENT ONE. The marker is shown under it, smaller: it is
+                    what gets typed into the message, so it has to be visible, but it is not what the
+                    choice is made on. */}
+                <span className="block text-[11px] text-slate-800">{c.only}</span>
+                <span className="block text-[10px] font-mono text-slate-400">{c.syntax.trim()}</span>
               </button>
             ))}
           </div>

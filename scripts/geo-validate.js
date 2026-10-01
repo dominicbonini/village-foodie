@@ -504,8 +504,6 @@ export function assertNoWriteFailures(label, failures) {
 //
 // 🔴 NO THRESHOLD, AND NONE IS WANTED. The existing 76 are historical and will not repair themselves;
 // what must never happen again is a NEW one. One is too many, so the test is `> 0` on this run's rows.
-// (The ratio assertion — this run's empty-village share against a 14-day baseline — is deliberately NOT
-// here: it needs a post-change run to calibrate against, and a guessed threshold fires on noise.)
 //
 // 🔴 IT SEES ONLY WHAT THIS RUN WROTE. Called with the rows the run is about to post; an assertion over
 // the whole table would throw on the existing 76 every night and be switched off within a week.
@@ -513,23 +511,81 @@ export function assertNoWriteFailures(label, failures) {
 // ⚠️ AN EMPTY VILLAGE IS NOT A MATCH, AND THAT IS THE WHOLE POINT OF THE CHANGE. `norm('')` is `''` on
 // both sides, so a naive equality test would flag every honestly-blank row — the exact rows the prompt
 // edit is meant to produce — and turn the fix into a permanently red run. The length check is load-bearing.
+//
+// ── 🔴 CORROBORATION, ADDED 1 OCTOBER 2026 AFTER A FALSE POSITIVE STOPPED THE DAILY SCRAPE ───────────
+//
+// THE RUN THAT FAILED: one Pass A row, `"Holbrook" [Holbrook]`. Nothing was wrong with it. **Holbrook is
+// a real village in Suffolk and an existing, human-reviewed venue in this system** — imported on
+// 9 September 2026 as `('Holbrook', 'Holbrook', 'IP9 2')`, see
+// `docs/sql/migration-step-3-20260909/02-import.sql`. The scrape found an event at an approved venue
+// whose name is simply the name of the place it is in, and the guard called it an invention.
+//
+// 🔴 THE PREMISE WAS INCOMPLETE, NOT THE IMPLEMENTATION. `village === venue_name` has TWO causes and the
+// original diagnosis only had one in view:
+//   1. THE BUG — a real venue name ("Church View Campsite") with the village field echoing it because
+//      the source text carried no village and the prompt gave the model no way to say so.
+//   2. NOT THE BUG — the source names the location ONLY by its settlement, so both fields honestly hold
+//      it. 🧪 7 of the 10 `name == village` venues in the September import are of this kind: Holbrook,
+//      Brandon, St Neots, Dunstable, Great Waldingfield, Salen, Lochbuie. All real places.
+// A test that cannot separate those two fires on correct data roughly as often as on wrong data, and the
+// first thing that happens then is that somebody switches it off. That is the failure being fixed here.
+//
+// 🔴 WHAT SEPARATES THEM IS EVIDENCE FROM OUR OWN APPROVED RECORDS, PASSED IN BY THE CALLER. A row is
+// exempt only when something OTHER than this extraction says the village is a place:
+//   • `venueVillage` — the village recorded on the EXISTING venue this row matched. Holbrook's venue row
+//     says its village is Holbrook, so the extraction agrees with an approved record rather than
+//     inventing against it. ⚠️ `Church View Campsite` matched to a venue recorded in `Shepreth` does NOT
+//     agree, so the invented shape is still caught ON AN EXISTING VENUE — which the narrower fix of
+//     "exempt anything that matched a venue" would have missed.
+//   • `settlementVillages` — villages recorded on venues whose own name is DIFFERENT. 🔴 THE EXCLUSION IS
+//     WHAT MAKES THIS NON-CIRCULAR: a self-named row cannot vouch for itself, so a one-off
+//     `Chilfest [Chilfest]` proves nothing about "Chilfest" being a place, while five venues sitting in
+//     Debenham do prove it about Debenham. Without that exclusion the set would exempt every shape it is
+//     meant to catch.
+//
+// ⚠️ IT FAILS CLOSED. No corroboration supplied ⇒ the old behaviour exactly: `village === venue_name`
+// throws. A caller that forgets to pass evidence gets the strict guard, never a silent pass, which is
+// why the original 12 cases still hold unchanged.
+//
+// 🔴 THE RESIDUAL GAP, STATED RATHER THAN HIDDEN: this trusts the `venues` table. 🧪 3 of those 10 rows
+// are NOT places — `Chilfest`, `Todd In The Hole Festival`, `G's Family Day` — so a repeat event at one
+// of those existing venues is now exempt. They are pre-existing rows in `venues`, the invention already
+// happened, and cleaning them is a data task; blocking every night's scrape on them is not a way to get
+// it done. A BRAND-NEW `Chilfest [Chilfest]` still throws, because nothing corroborates it.
 /**
- * @param {Array<{venue_name?: string|null, village?: string|null}>} rows  rows THIS RUN is writing
+ * @param {Array<{
+ *   venue_name?: string|null,
+ *   village?: string|null,
+ *   venueVillage?: string|null   the matched EXISTING venue's recorded village; null when the venue is new
+ * }>} rows  rows THIS RUN is writing
  * @param {string} label  what to call them in the failure message
- * @throws if any row's village, normalised, equals its venue name
+ * @param {Iterable<string>} [settlementVillages]  villages recorded on DIFFERENTLY-named venues
+ * @throws if any row's village equals its venue name and nothing corroborates it as a place
  */
-export function assertNoInventedVillages(rows, label = 'Pass A') {
+export function assertNoInventedVillages(rows, label = 'Pass A', settlementVillages = []) {
   // Lowercase, strip every non-alphanumeric — the same comparison the diagnosis query uses, so a
   // difference of punctuation or case cannot let one through ("Church View" vs "church-view").
   const norm = (v) => String(v ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const settlements = new Set();
+  for (const v of settlementVillages || []) {
+    const n = norm(v);
+    if (n) settlements.add(n);
+  }
   const bad = (rows || []).filter((r) => {
     const v = norm(r && r.village);
-    return v.length > 0 && v === norm(r && r.venue_name);
+    if (v.length === 0 || v !== norm(r && r.venue_name)) return false;
+    // Corroborated by the approved record of the venue this row matched.
+    if (norm(r && r.venueVillage) === v) return false;
+    // Or corroborated as a settlement by venues that are NOT named after it.
+    return !settlements.has(v);
   });
   if (bad.length > 0) {
     throw new Error(
       `${bad.length} ${label} row(s) have a village that is just the venue name again — the ` +
-      `invented-village behaviour is back. Check the VILLAGE rule in the extraction prompts:\n` +
+      `invented-village behaviour is back. Check the VILLAGE rule in the extraction prompts.\n` +
+      `(A venue genuinely named after its own village is NOT reported: this lists only rows that no ` +
+      `approved venue record corroborates. If one of these is a real place, the venue row for it is ` +
+      `missing or records a different village.)\n` +
       bad.map((r) => `   • "${r.venue_name}" [${r.village}]`).join('\n')
     );
   }
