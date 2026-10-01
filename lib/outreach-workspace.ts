@@ -31,7 +31,11 @@ export type NextAction =
       waitingDays: number
     }
   | { kind: 'chase'; rung: string | null; label: string; cta: string; dueOn: string | null; daysOverdue: number }
-  | { kind: 'follow_up'; due: string; label: string; cta: string; daysOverdue: number }
+  /** 🔴 `dueNow` SEPARATES "due or overdue" FROM "scheduled, still ahead". Both reach this variant —
+   *  branch (3) and branch (3b) — and `daysOverdue: 0` meant BOTH "due today" and "not due yet", which
+   *  is exactly how the banner came to read "Follow up — due today · was due 8 Oct" on 1 October about
+   *  a date a week away. An overloaded zero is not a state; this is. */
+  | { kind: 'follow_up'; due: string; label: string; cta: string; daysOverdue: number; dueNow: boolean }
   | { kind: 'none'; label: string; reason: string | null; cta: null }
 
 /** "15 Sep". Short because the line is a sentence, not a table cell. */
@@ -153,6 +157,7 @@ export function nextAction(input: {
       label: `Follow up — ${dayAndDate(input.nextActionAt)}${late > 0 ? ` · ${late} day${late === 1 ? '' : 's'} overdue` : ''}`,
       cta: 'Follow up →',
       daysOverdue: late,
+      dueNow: true,
     }
   }
 
@@ -169,6 +174,8 @@ export function nextAction(input: {
       label: `Follow up — ${dayAndDate(input.nextActionAt)}`,
       cta: 'Follow up →',
       daysOverdue: 0,
+      // 🔴 NOT DUE. The date is ahead of today, which is the whole point of this branch.
+      dueNow: false,
     }
   }
 

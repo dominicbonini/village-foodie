@@ -13,18 +13,43 @@
 // ⚠️ THE SERVER STILL VALIDATES. This editor is a convenience, not the guard: the document arrives
 // over HTTP and the route re-checks it against the same schema. Nothing here is trusted.
 //
-// Pinned exactly: @tiptap/core, @tiptap/pm, @tiptap/react, and the four extensions, all 3.31.3.
-// Only the extensions named below are loaded — there is no StarterKit, so there is no list, heading,
-// link, image, code block, blockquote or horizontal rule to disable and later forget to disable.
-import { useEffect, useMemo, useRef } from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import { Mark, mergeAttributes } from '@tiptap/core'
+// ── 🔴 WHAT IS LOADED, AND WHAT IS STILL DELIBERATELY ABSENT (rewritten 1 October 2026) ────────────
+// Pinned exactly at 3.31.3, matching every other @tiptap pin: @tiptap/core, @tiptap/pm, @tiptap/react,
+// and these extensions —
+//     Document · Paragraph · Text · HardBreak · Bold · Italic
+//     BulletList · OrderedList · ListItem · ListKeymap   (from @tiptap/extension-list)
+//     Small · Large · Link                              (LOCAL marks, defined in this file)
+//
+// 🔴 LISTS AND ITALIC ARE NOW DELIBERATELY *IN* (1 October 2026, operator decision). The note that stood
+// here said the opposite — "there is no list … to disable and later forget to disable" — and that was a
+// real guarantee, so it is replaced rather than quietly edited: the toolbar now offers bulleted and
+// numbered lists and italic, so the schema has to carry them. ⚠️ AND THE GUARANTEE'S SHAPE SURVIVES:
+// there is STILL no StarterKit. Everything not named above is absent — no heading, image, code block,
+// blockquote, horizontal rule, table, mention, task list, text-align, colour or highlight. Adding one is
+// a deliberate act in this list, not a side effect of a bundle.
+// 🔴 `@tiptap/extension-list` IS THE MAINTAINED v3 FORM — one package exporting BulletList, OrderedList,
+// ListItem and ListKeymap (and TaskList/TaskItem/ListKit, which are NOT imported). The v2-era
+// per-node packages are not what v3 ships.
+// 🔴 AND THE SERVER STILL DOES NOT TRUST ANY OF IT. `validateDoc` in lib/outreach-doc.ts re-checks every
+// node and mark on arrival, so the editor's configuration is a convenience and the schema is the guard.
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { useEditor, useEditorState, EditorContent } from '@tiptap/react'
+import { Extension, Mark, mergeAttributes } from '@tiptap/core'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import HardBreak from '@tiptap/extension-hard-break'
 import Bold from '@tiptap/extension-bold'
-import { P_STYLE, SMALL_STYLE, paragraphsFromLines, type EmailDoc, type DocLine } from '@/lib/outreach-doc'
+// 🔴 THE OFFICIAL ITALIC, NOT A LOCAL MARK, AND THE REASON IS `parseHTML`. A local `em`-only mark would
+// be ~12 lines, but pasted italic arrives as `<i>`, `<em>` OR `font-style: italic` depending on where it
+// came from, and the package already handles all three plus the Cmd+I keymap. Small and Large stay local
+// because their px values are OURS — they mirror the captured Outlook mail — and no package knows them.
+import Italic from '@tiptap/extension-italic'
+import { BulletList, OrderedList, ListItem, ListKeymap } from '@tiptap/extension-list'
+import {
+  P_STYLE, SMALL_STYLE, LARGE_STYLE, paragraphsFromLines, LINK_RE,
+  type EmailDoc, type DocLine,
+} from '@/lib/outreach-doc'
 
 /**
  * The Small mark — 10pt, the size the captured opt-out line uses.
@@ -51,6 +76,68 @@ const Small = Mark.create({
   },
   renderHTML({ HTMLAttributes }) {
     return ['span', mergeAttributes(HTMLAttributes, { style: `font-size: ${SMALL_STYLE.match(/font-size: ([^;]+)/)?.[1] ?? '13.333333px'}` }), 0]
+  },
+})
+
+/**
+ * The Large mark — 14pt, the Size menu's third value.
+ *
+ * 🔴 A MARK, LIKE `Small`, AND FOR THE SAME REASON: a size applies to a run of words as readily as to a
+ * whole line, and `docToHtml` decides which shape of HTML that becomes. 🔴 AND MUTUALLY EXCLUSIVE WITH
+ * `Small` — they are two values of ONE property. `validateDoc` refuses a text node carrying both, and
+ * the Size menu's commands below always clear the other before setting one, so the refusal is a
+ * backstop rather than a behaviour anyone meets.
+ * ⚠️ `parseHTML` DELIBERATELY DOES NOT CLAIM EVERY LARGE PASTE. It takes a font-size at or above the
+ * threshold; anything smaller stays unmarked and inherits the 12pt body, which is the honest default for
+ * text pasted from somewhere with its own type scale.
+ */
+const Large = Mark.create({
+  name: 'large',
+  parseHTML() {
+    return [
+      {
+        style: 'font-size',
+        getAttrs: (value: string) => {
+          // ⚠️ THE SAME TWO UNITS `Small` HANDLES, and the same posture: `false` means "not this mark".
+          const px = /([\d.]+)px/.exec(value)
+          if (px) return Number(px[1]) >= 17 ? {} : false
+          const pt = /([\d.]+)pt/.exec(value)
+          if (pt) return Number(pt[1]) >= 13 ? {} : false
+          return false
+        },
+      },
+    ]
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['span', mergeAttributes(HTMLAttributes, { style: `font-size: ${LARGE_STYLE.match(/font-size: ([^;]+)/)?.[1] ?? '18.666667px'}` }), 0]
+  },
+})
+
+/**
+ * 🔴 TAB DOES NOT NEST A LIST — AND THE EDITOR NOW CANNOT BUILD WHAT THE SEND REFUSES.
+ *
+ * `validateDoc` refuses a list nested inside a list item, because an inline-styled nested list is one of
+ * the least reliable things in Outlook. But `ListKeymap` binds Tab/Shift-Tab to `sinkListItem`/
+ * `liftListItem`, so the EDITOR happily built the one shape the SEND would reject — the operator wrote an
+ * email, pressed Send, and was told to go back and unindent. 🔴 THE FIX IS TO MAKE IT IMPOSSIBLE RATHER
+ * THAN TO EXPLAIN IT AFTERWARDS (operator decision, 1 October 2026). The refusal stays as a backstop, for
+ * a document that arrives over HTTP from something other than this editor.
+ *
+ * ⚠️ IT RETURNS `true`, WHICH MEANS "HANDLED", AND THAT IS THE WHOLE POINT. Returning `false` would let
+ * `ListKeymap` nest, and letting the event through to the browser would move focus out of the editor to
+ * the next control — losing the caret mid-sentence, which is worse than nesting. Handled-and-do-nothing
+ * is the only behaviour that is neither.
+ * ⚠️ OUTSIDE A LIST IT RETURNS `false` ON PURPOSE, so Tab keeps moving focus out of the editor the way it
+ * always has and the way a keyboard user expects.
+ * 🔴 `priority` ABOVE THE DEFAULT (100) SO IT RUNS BEFORE `ListKeymap`. TipTap composes keymaps in
+ * priority order; at the default priority the two would race on array order, which is not a contract.
+ */
+const NoListIndent = Extension.create({
+  name: 'noListIndent',
+  priority: 1000,
+  addKeyboardShortcuts() {
+    const swallowInsideList = () => this.editor.isActive('listItem')
+    return { Tab: swallowInsideList, 'Shift-Tab': swallowInsideList }
   },
 })
 
@@ -132,13 +219,24 @@ export default function RichEmailEditor({
   value, onChange, signatureLines, optOut, disabled, maxHeight, height, onHeightChange, onExpand, expanded,
   toolbarExtra, underToolbar, apiRef,
 }: RichEmailEditorProps) {
+  /* ⚠️ ORDER IS NOT SIGNIFICANT HERE, but the grouping is kept readable: the document shape, then the
+   * marks, then the list nodes and their keymap. `ListKeymap` is what gives Tab / Shift-Tab and the
+   * Enter-on-an-empty-item behaviour; without it the list nodes exist and cannot be navigated. */
   const extensions = useMemo(() => [
-    Document, Paragraph, Text, HardBreak, Bold, Small, Link,
+    Document, Paragraph, Text, HardBreak,
+    Bold, Italic, Small, Large, Link,
+    BulletList, OrderedList, ListItem, ListKeymap,
+    // 🔴 AFTER ListKeymap in the array and ABOVE it in priority — see the note on the extension.
+    NoListIndent,
   ], [])
   /** 🔴 A SHORT PROMPT, NOT AN INSTRUCTION MANUAL. Rendered as an overlay rather than as content,
    *  so it can never be mistaken for text and can never be sent. */
   const showPlaceholder = !docHasText(value)
   const boxRef = useRef<HTMLDivElement | null>(null)
+  /** 🔴 THE EXACT JSON THIS EDITOR LAST SENT UP — the whole of the revert fix. See the effect below. */
+  const lastEmitted = useRef<string | null>(null)
+  /** The Size menu's open state. One menu, so one boolean. */
+  const [sizeOpen, setSizeOpen] = useState(false)
   const dragFrom = useRef<number | null>(null)
   /* ⚠️ THE DRAGGED HEIGHT IS THE BROWSER'S, AND THE PARENT'S IS THE TRUTH. After a drag the
    * element carries an inline `height` the browser wrote; when the parent then sends a different
@@ -175,21 +273,90 @@ export default function RichEmailEditor({
         'aria-label': 'Message',
       },
     },
-    onUpdate: ({ editor: ed }) => { onChange(ed.getJSON() as unknown as EmailDoc) },
+    onUpdate: ({ editor: ed }) => {
+      const json = ed.getJSON()
+      // 🔴 REMEMBER WHAT WE SENT UP. See `lastEmitted`'s declaration — this is half of the fix for the
+      // formatting-reverts bug, and it has to be recorded here, at the moment of emission.
+      lastEmitted.current = JSON.stringify(json)
+      onChange(json as unknown as EmailDoc)
+    },
   }, [extensions])
 
-  // 🔴 A NEW TEMPLATE REPLACES THE DOCUMENT; A KEYSTROKE MUST NOT. `onUpdate` sends the document up
-  // and the parent sends it straight back down, so calling `setContent` on every `value` change would
-  // reset the caret to the start on every character typed. Comparing against what the editor already
-  // holds distinguishes the two exactly: an echo of a keystroke is equal and is skipped; a different
-  // template is not equal and replaces the document.
-  // ⚠️ A REF-FREE COMPARISON ON PURPOSE. A "is this a new document" flag passed from the parent was
-  // the first attempt, and it made the parent responsible for a detail only this component can see.
+  /* ── 🔴 THE FORMATTING-REVERTS BUG, AND WHY THE OLD GUARD COULD NOT HOLD (1 October 2026) ─────────
+   * REPORTED: bold a word, and a moment later it un-bolds itself.
+   *
+   * What stood here compared the editor's own JSON against the incoming `value`:
+   *     if (JSON.stringify(editor.getJSON()) === JSON.stringify(value)) return
+   *     editor.commands.setContent(value, { emitUpdate: false })
+   * The intent was right — "an echo of a keystroke is equal and is skipped; a different template is not
+   * equal and replaces the document" — and the test is not equal to the intent. 🔴 IT ASKS "DOES THE
+   * PARENT'S COPY MATCH MINE?" WHEN THE QUESTION IS "DID THIS COME FROM ME?", and those differ whenever
+   * the document makes a round trip that is semantically identical and textually not: a different key
+   * order, a normalisation, an empty `marks: []`, a re-derived `templateDoc` with the same words. Any of
+   * those makes the strings differ, `setContent` runs, and **the user's own mark is overwritten by an
+   * older copy of their document**. That is the revert, and it fires on a re-render the user did not
+   * cause — which is why it looks spontaneous and arrives "a moment later".
+   *
+   * 🔴 THE FIX IS TO ANSWER THE REAL QUESTION. `lastEmitted` records the exact JSON this editor last
+   * sent up. If the incoming `value` is that string, it is our own echo, however the parent held it —
+   * skip, unconditionally. Only a document that is neither our last emission nor what we already hold
+   * replaces the content, which is exactly "a template change or an explicit reset".
+   * ⚠️ IT IS A REF, NOT STATE: writing it must not re-render, and it must be readable synchronously
+   * inside an effect that runs in the same commit as the change that set it.
+   * ⚠️ AND IT IS UPDATED WHEN WE APPLY, TOO. After `setContent` the editor holds `value`, so recording
+   * it here stops the NEXT render — with the same `value` and a normalised document — from applying it
+   * a second time and moving the caret.
+   */
   useEffect(() => {
     if (!editor) return
-    if (JSON.stringify(editor.getJSON()) === JSON.stringify(value)) return
+    const incoming = JSON.stringify(value)
+    if (incoming === lastEmitted.current) return                      // our own echo
+    if (incoming === JSON.stringify(editor.getJSON())) return         // already identical
     editor.commands.setContent(value as unknown as Record<string, unknown>, { emitUpdate: false })
+    lastEmitted.current = incoming
+    /* ── 🔴 AND THE CARET LANDS AT THE START, WITH NO STORED MARKS (the bold-greeting bug) ──────────
+     * REPORTED: choosing a template shows the greeting in bold, B is already active before anything is
+     * typed, and new typing is bold.
+     * 🔴 THE DOCUMENT IS NOT AT FAULT — proved: `docFromTemplateText` emits a plain greeting, with
+     * `bold` only on the signature line that stores `bold: true`. So the bold is in EDITOR STATE, and
+     * the two things that put it there are where `setContent` leaves the selection and what ProseMirror
+     * keeps in `storedMarks`. A template ends with the signature, whose last line is bold; a selection
+     * resting there makes B active and makes the next character bold, with nothing typed.
+     * ⚠️ `setTextSelection(1)`, NOT `focus()`. Position 1 is inside the first paragraph; focusing here
+     * would steal the caret from whatever the operator was doing — a template can be chosen while the
+     * subject field has focus, and this must not pull it away.
+     * ⚠️ `setStoredMarks(null)` IS THE PART THAT ACTUALLY FIXES "new typing is bold". Moving the caret
+     * does not clear marks ProseMirror has already stored for the next input; this does. */
+    editor.commands.setTextSelection(1)
+    editor.view.dispatch(editor.state.tr.setStoredMarks(null))
   }, [editor, value])
+
+  /* ── 🔴 THE TOOLBAR'S ACTIVE STATES, AND THE BUG THEY WERE (1 October 2026) ──────────────────────
+   * REPORTED: "the B button is already active before anything is typed".
+   * 🔴 PROVEN CAUSE: `useEditor`'s `shouldRerenderOnTransaction` **defaults to `false`** in TipTap v3
+   * (`@tiptap/react/dist/index.d.ts:18-23`, and the implementation returns no subscription when it is
+   * false or undefined). The toolbar read `editor.isActive('bold')` DURING RENDER, so those values were
+   * whatever they had been at the last render React happened to do — never updated by moving the caret.
+   * 🧪 Caught in a real browser: after leaving a list the document was correct (the caret sat in a
+   * `<p>`) while the "• List" button still reported `aria-pressed="true"`.
+   * 🔴 `useEditorState`, NOT `shouldRerenderOnTransaction: true`. That flag works and its own docs call
+   * it "legacy behavior that will be removed in future versions", and it re-renders the whole editor on
+   * every transaction — every keystroke — to keep six booleans fresh. This selector re-renders only when
+   * one of the booleans actually changes, which is the maintained v3 answer and the cheaper one.
+   * ⚠️ IT RETURNS NULL BEFORE THE EDITOR EXISTS, hence the fallbacks; the toolbar is not rendered then.
+   */
+  const active = useEditorState({
+    editor,
+    selector: ({ editor: ed }) => ({
+      bold: !!ed?.isActive('bold'),
+      italic: !!ed?.isActive('italic'),
+      small: !!ed?.isActive('small'),
+      large: !!ed?.isActive('large'),
+      bulletList: !!ed?.isActive('bulletList'),
+      orderedList: !!ed?.isActive('orderedList'),
+      link: !!ed?.isActive('link'),
+    }),
+  }) ?? { bold: false, italic: false, small: false, large: false, bulletList: false, orderedList: false, link: false }
 
   useEffect(() => { editor?.setEditable(!disabled) }, [editor, disabled])
 
@@ -216,9 +383,58 @@ export default function RichEmailEditor({
 
   if (!editor) return <div className="border border-slate-200 rounded-lg" style={{ minHeight: '8.5rem' }} />
 
+  /* ── 🔴 A TOOLBAR BUTTON MUST NOT TAKE THE SELECTION WITH IT ──────────────────────────────────────
+   * Found while verifying the bold fix in a real browser (1 October 2026): in **Chromium**, selecting a
+   * word and clicking **B** did nothing at all — no mark, and the button's own `aria-pressed` stayed
+   * false. In WebKit the same click worked. The cause is the browser default: `mousedown` on a `<button>`
+   * blurs the contenteditable and collapses the DOM selection, so by the time the click handler runs
+   * `chain().focus()` has nothing to apply the mark to. Safari keeps the selection across that blur;
+   * Chrome does not.
+   * 🔴 SO EVERY BUTTON THAT ACTS ON THE SELECTION PREVENTS THE DEFAULT ON MOUSEDOWN, which keeps focus
+   * in the editor and leaves the selection intact. ⚠️ `onMouseDown`, NOT `onClick` — the damage is done
+   * by the time a click fires. ⚠️ AND IT IS NOT `tabIndex={-1}`: the buttons must stay reachable by
+   * keyboard, and preventing the default does not affect a keyboard activation.
+   * ⚠️ THIS PREDATES THE TOOLBAR WORK — B and Small had the same flaw, so "clicking B does nothing" was
+   * already true in Chrome before today. It is reported as part of this task because this is where it
+   * was found. */
+  const keepSelection = (e: ReactMouseEvent) => e.preventDefault()
+
   const tbtn = (active: boolean) =>
     `text-xs font-bold px-2 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-slate-400 ${
       active ? 'bg-slate-800 border-slate-800 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`
+
+  /**
+   * Ask for a URL and wrap the selection in it; an empty answer removes the link.
+   *
+   * 🔴 THE CHECK IS `LINK_RE`, IMPORTED FROM THE SCHEMA — not a copy. The editor refuses exactly what
+   * `validateDoc` would refuse on the way out, so a link that goes in is a link that can be sent. The
+   * alternative — a looser check here — means the operator finds out at send time, having written the
+   * email. ⚠️ A SECOND REGEX HERE WOULD BE A SECOND ANSWER to "what is a safe href", and the whole point
+   * of that constant is that there is one.
+   * ⚠️ `window.prompt`, DELIBERATELY. A modal with its own focus trap is the better control and it is
+   * also the thing that would need measuring at two widths in two engines; the brief asks for a URL to
+   * be ASKED FOR, and this asks. Worth revisiting; recorded rather than dressed up.
+   * ⚠️ IT PREFILLS THE EXISTING HREF when the cursor is already in a link, so "fix the typo in this URL"
+   * does not mean retyping it.
+   */
+  const promptLink = () => {
+    const current = (editor.getAttributes('link').href as string | undefined) ?? ''
+    const answer = window.prompt('Link to (http://…, https://… or mailto:…) — leave empty to remove', current)
+    if (answer === null) return                       // cancelled: change nothing
+    const url = answer.trim()
+    if (url === '') { editor.chain().focus().unsetMark('link').run(); return }
+    if (!LINK_RE.test(url)) {
+      window.alert(`“${url}” is not a link this can send.\n\nIt must start with http://, https:// or mailto:.`)
+      return
+    }
+    // ⚠️ NOTHING SELECTED ⇒ INSERT THE URL AS ITS OWN LINKED WORDS, rather than setting a mark on an
+    // empty selection, which ProseMirror would store for the next character and surprise the operator.
+    if (editor.state.selection.empty) {
+      editor.chain().focus().insertContent([{ type: 'text', text: url.replace(/^mailto:/i, ''), marks: [{ type: 'link', attrs: { href: url } }] }]).run()
+      return
+    }
+    editor.chain().focus().setMark('link', { href: url }).run()
+  }
 
   /** Insert stored lines at the cursor, as paragraphs. The same builder the template path uses. */
   const insertLines = (lines: DocLine[]) => {
@@ -229,23 +445,85 @@ export default function RichEmailEditor({
   return (
     <div className="border border-slate-200 rounded-lg bg-white">
       <div className="flex items-center gap-1.5 border-b border-slate-200 px-2 py-1.5 flex-wrap">
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()}
-          aria-pressed={editor.isActive('bold')} className={tbtn(editor.isActive('bold'))} title="Bold">
+        <button type="button" onMouseDown={keepSelection} onClick={() => editor.chain().focus().toggleBold().run()}
+          aria-pressed={active.bold} className={tbtn(active.bold)} title="Bold (⌘B)">
           B
         </button>
-        <button type="button" onClick={() => editor.chain().focus().toggleMark('small').run()}
-          aria-pressed={editor.isActive('small')} className={tbtn(editor.isActive('small'))}
-          title="Small — 10pt, the size the opt-out line uses">
-          Small
+        {/* 🔴 ITALIC, FROM THE OFFICIAL EXTENSION, so Cmd+I comes with it rather than being bound here. */}
+        <button type="button" onMouseDown={keepSelection} onClick={() => editor.chain().focus().toggleItalic().run()}
+          aria-pressed={active.italic} className={`${tbtn(active.italic)} italic`}
+          title="Italic (⌘I)">
+          I
+        </button>
+        {/* ── 🔴 THE SIZE MENU REPLACES THE "Small" BUTTON ────────────────────────────────────────
+            Three sizes and no more: Normal (10pt→ no mark at all), Small (10pt) and Large (14pt).
+            🔴 NORMAL IS THE ABSENCE OF A MARK, not a third mark meaning "12pt". A document where
+            ordinary text carries an explicit size would put a redundant span on every line of every
+            email, and `P_STYLE` already says 12pt once, on the line.
+            ⚠️ SETTING ONE SIZE CLEARS THE OTHER, in the same chain. They are two values of one
+            property; `validateDoc` refuses a node carrying both, and this is why nobody meets that
+            refusal. ⚠️ THE LABEL SHOWS THE CURRENT SIZE, so the menu answers "what size is this?"
+            without being opened. */}
+        <div className="relative">
+          <button type="button" onMouseDown={keepSelection} onClick={() => setSizeOpen(o => !o)} aria-expanded={sizeOpen}
+            className={tbtn(active.small || active.large)}
+            title="Text size">
+            {active.small ? 'Small' : active.large ? 'Large' : 'Normal'} ▾
+          </button>
+          {sizeOpen && (
+            <>
+              <div className="fixed inset-0 z-20" onClick={() => setSizeOpen(false)} role="presentation" />
+              <div className="absolute z-30 left-0 mt-1 w-32 rounded-lg border border-slate-300 bg-white shadow-lg p-1">
+                {([
+                  ['Normal', () => editor.chain().focus().unsetMark('small').unsetMark('large').run(), !active.small && !active.large],
+                  ['Small', () => editor.chain().focus().unsetMark('large').setMark('small').run(), active.small],
+                  ['Large', () => editor.chain().focus().unsetMark('small').setMark('large').run(), active.large],
+                ] as const).map(([label, run, active]) => (
+                  <button key={label} type="button" onMouseDown={keepSelection} onClick={() => { run(); setSizeOpen(false) }}
+                    className={`w-full text-left px-2 py-1 rounded text-xs ${active ? 'bg-slate-100 font-bold text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <span className="w-px h-4 bg-slate-200 mx-1" />
+        {/* ── 🔴 LISTS. `ListKeymap` CARRIES THE BEHAVIOUR, NOT THESE BUTTONS ──────────────────────
+            Enter makes the next item and Enter on an empty item leaves the list; the buttons only
+            toggle. 🔴 TAB AND SHIFT-TAB DO NOTHING INSIDE A LIST (1 October 2026) — `NoListIndent`
+            swallows them, because a nested list cannot be emailed reliably and the editor must not be
+            able to build what the send refuses. `validateDoc` keeps refusing one as a backstop for a
+            document that did not come from here. */}
+        <button type="button" onMouseDown={keepSelection} onClick={() => editor.chain().focus().toggleBulletList().run()}
+          aria-pressed={active.bulletList} className={tbtn(active.bulletList)}
+          title="Bulleted list">
+          • List
+        </button>
+        <button type="button" onMouseDown={keepSelection} onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          aria-pressed={active.orderedList} className={tbtn(active.orderedList)}
+          title="Numbered list">
+          1. List
+        </button>
+        {/* ── 🔴 LINK — WRAPS THE SELECTION, AND THE URL IS CHECKED HERE AND AGAIN ON THE SERVER ───
+            `LINK_RE` is imported from the schema module, so the editor refuses exactly what the send
+            would refuse: http, https and mailto, and nothing else. A second regex here would be a
+            second answer to "what is a safe href".
+            ⚠️ IT ASKS, AND AN EMPTY ANSWER REMOVES THE LINK — which is the only way to unlink, so it is
+            the same control rather than a second button nobody finds. */}
+        <button type="button" onMouseDown={keepSelection} onClick={() => promptLink()}
+          aria-pressed={active.link} className={tbtn(active.link)}
+          title="Link the selected words (http, https or mailto)">
+          Link
         </button>
         <span className="w-px h-4 bg-slate-200 mx-1" />
-        <button type="button" onClick={() => insertLines(signatureLines)}
+        <button type="button" onMouseDown={keepSelection} onClick={() => insertLines(signatureLines)}
           disabled={!signatureLines.length}
           title="Insert your signature at the cursor, from the Signature tab"
           className={`${tbtn(false)} disabled:opacity-40`}>
           Insert signature
         </button>
-        <button type="button" onClick={() => insertLines(optOut ? [{ text: optOut, small: true }] : [])}
+        <button type="button" onMouseDown={keepSelection} onClick={() => insertLines(optOut ? [{ text: optOut, small: true }] : [])}
           disabled={!optOut}
           title="Insert the opt-out sentence at the cursor, at 10pt"
           className={`${tbtn(false)} disabled:opacity-40`}>

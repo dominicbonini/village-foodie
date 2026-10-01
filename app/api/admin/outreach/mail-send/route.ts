@@ -629,10 +629,33 @@ export async function POST(req: NextRequest) {
     // ⚠️ WIDENED 1 OCTOBER 2026 — the narrower select is why `guardUnattributed` warned about
     // Guerrilla Kitchen's 15 September email: the server could not see the hand-logged contact that
     // email pairs with, so it could only call it unattributed.
-    const { data: cRows } = await supabase
+    /* ── 🔴 THE BUG THAT LOGGED A CHASE AS A SECOND FIRST CONTACT (1 October 2026) ─────────────────
+     * This select named `email_message_id`, AND THERE IS NO SUCH COLUMN ON `outreach_contacts`. Its
+     * columns are id / prospect_id / contacted_at / channel / direction / kind / message / created_at
+     * (supabase/migrations/20260903_outreach_tracking.sql:54). `email_message_id` is DERIVED — the link
+     * lives on `outreach_messages.contact_id`, and the timeline route inverts that map to produce it.
+     *
+     * 🔴 WHAT THAT COST, because the failure was silent in two separate ways:
+     *   ① PostgREST answers an unknown column with error 42703 and `data: null`;
+     *   ② this line destructured `{ data: cRows }` and DISCARDED `error`, so `contacts` became `[]`.
+     * An empty ladder is not an error to `nextStep` — it is a prospect who has never been contacted. So
+     * every non-test send since that change derived `1_first_contact`, wrote that rung, and sailed past
+     * `guardAlreadySent`, which had no priors to compare against. 🧪 Smother Spudders ended up with two
+     * `1_first_contact` rows: one hand-logged 16 Sep, one written by a Chase 1 send on 1 Oct.
+     *
+     * 🔴 SO THE FIX IS TWO THINGS, AND THE SECOND MATTERS MORE THAN THE FIRST. Removing the phantom
+     * column repairs today; CHECKING THE ERROR is what stops the next unreadable ladder deciding a step.
+     * A read that fails must REFUSE THE SEND — the one thing it must never do is guess "never contacted",
+     * because that guess is indistinguishable from the truth and it always picks the lowest rung.
+     * ⚠️ THE SAME POSTURE THE SCRAPER'S MATCHING SETS TAKE: "an unreadable matching set does not fail, it
+     * makes every truck look new" — refuse rather than proceed on an empty read. */
+    const { data: cRows, error: cErr } = await supabase
       .from('outreach_contacts')
-      .select('id, contacted_at, created_at, direction, kind, channel, message, email_message_id')
+      .select('id, contacted_at, created_at, direction, kind, channel, message')
       .eq('prospect_id', prospectId)
+    if (cErr) {
+      return refuse(`I could not read this prospect's contact history, so I don't know which step this is (${cErr.code ?? ''} ${cErr.message}). Nothing was sent.`)
+    }
     const contacts = (cRows ?? []) as (StepContact & {
       id: string; created_at?: string | null; message?: string | null; email_message_id?: string | null
     })[]
@@ -643,10 +666,15 @@ export async function POST(req: NextRequest) {
     // ⚠️ `preview` AND `sent_copy` ARE FOR THE PAIRING'S SECOND RULE — the opening words, used when a
     // day carries more than one email. `direction` is selected rather than assumed because
     // `pairHandLoggedEmails` keys on it.
-    const { data: mRows } = await supabase
+    const { data: mRows, error: mErr } = await supabase
       .from('outreach_messages')
       .select('id, direction, is_test, contact_id, message_date, created_at, status, preview, sent_copy')
       .eq('prospect_id', prospectId).eq('direction', 'outbound')
+    // 🔴 CHECKED FOR THE SAME REASON THE CONTACTS READ IS. `priors` is built from these rows, so an
+    // unreadable mailbox silently removes every prior send from the guards' view.
+    if (mErr) {
+      return refuse(`I could not read this prospect's sent emails, so the duplicate checks cannot run (${mErr.code ?? ''} ${mErr.message}). Nothing was sent.`)
+    }
     const messages = (mRows ?? []) as {
       id: string; direction: string | null; is_test: boolean | null; contact_id: string | null
       message_date: string | null; created_at: string | null; status: string | null
@@ -670,9 +698,18 @@ export async function POST(req: NextRequest) {
      * second one with the same intent. This is the one question ("is this email already a recorded
      * step") answered once, so the guard, the row on screen and the Record button cannot disagree.
      * See the long note in lib/outreach-timeline.ts for the incident that made three answers one. */
+    /* 🔴 `email_message_id` IS DERIVED HERE, NOT SELECTED — it is not a column. The link lives on
+     * `outreach_messages.contact_id`; `pairHandLoggedEmails` reads it off the CONTACT, so the map is
+     * inverted exactly as app/api/admin/outreach/timeline/route.ts does it.
+     * ⚠️ THIS IS WHAT THE PHANTOM COLUMN WAS TRYING TO DO. Selecting it looked like the shorter route
+     * and silently emptied the whole ladder instead; `isUnlinkedEmailContact` needs the field to decide
+     * which contacts can be paired, and without it every contact would look pairable. */
+    const messageOfContact = new Map<string, string>()
+    for (const mm of messages) if (mm.contact_id) messageOfContact.set(mm.contact_id, mm.id)
+    const contactsForPairing = contacts.map(c => ({ ...c, email_message_id: messageOfContact.get(c.id) ?? null }))
     const recordedSteps = recordedStepsFor({
-      messages, contacts, ladderKinds: CONTACT_KINDS,
-      pairing: pairHandLoggedEmails({ messages, contacts }),
+      messages, contacts: contactsForPairing, ladderKinds: CONTACT_KINDS,
+      pairing: pairHandLoggedEmails({ messages, contacts: contactsForPairing }),
     })
     const priors: PriorSend[] = [
       ...contacts.filter(c => c.direction !== 'inbound').map(c => ({

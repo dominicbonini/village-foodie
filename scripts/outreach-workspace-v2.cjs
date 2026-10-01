@@ -268,9 +268,22 @@ const step = (over = {}) => ({
      * nothing and came back as "None". THE RULE IS UNCHANGED: one function writes `next_action_at`,
      * and it is still this one. The `kind` is nullable because a date chosen on its own contacts
      * nobody and must not freeze the lead type. */
+    /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ──────────────────────────────────
+     * This pinned the body `const date = dateOverride === undefined ? followUpDate : dateOverride`.
+     * 🔴 THAT EXPRESSION WAS A BUG FOR A SEND: `followUpDate` is seeded from the step the page thought
+     * was NEXT, so after a Chase 1 send it wrote the AFTER-FIRST-CONTACT interval (+3) instead of the
+     * chase's own (+7). See docs/outreach-step-logging-report.md §5.
+     * 🔴 WHAT THIS CHECK PROTECTED IS UNCHANGED AND IS STILL PINNED, in three parts below: ONE function
+     * writes `next_action_at`; an explicit `dateOverride` still wins (that is how the chips write); and a
+     * date the operator actually chose still wins over the derived one. What is ADDED is that an
+     * untouched control follows the step just logged, through `followUpDateFor` — the same function
+     * `nextStep` uses for `dueOn`, so the two cannot disagree. */
     check(/const applyFollowUp = useCallback\(async \(kind: string \| null, dateOverride\?: string \| null\)/.test(PAGE)
-      && /const date = dateOverride === undefined \? followUpDate : dateOverride/.test(PAGE),
-      '🔴 …the chosen date is written ONLY by `applyFollowUp`, from the one control')
+      && /const date = dateOverride !== undefined \? dateOverride/.test(PAGE)
+      && /: followUp !== null \? followUpDate/.test(PAGE)
+      && /: \(derived \?\? followUpDate\)/.test(PAGE)
+      && /followUpDateFor\(kind as LadderKind, today\)/.test(PAGE),
+      '🔴 …the date is written ONLY by `applyFollowUp` — an override, then the touched control, then the step just logged')
     check(/void onSetFollowUp\(c, date\)/.test(PAGE) && /await applyFollowUp\(null, next\)/.test(PAGE),
       '🔴 …and a chip goes through it rather than writing for itself')
     check(/if \(revertTo !== pr\.next_action_at\) await post\(\{ action: 'update_prospect', id: pr\.id, next_action_at: revertTo \}\)/.test(PAGE),

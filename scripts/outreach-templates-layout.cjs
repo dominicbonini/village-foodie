@@ -37,10 +37,18 @@ function runLibSuite({ S, R, D }) {
 
   // ── THE COLUMN HEADINGS' "WHEN" ──────────────────────────────────────────────────────────────
   t('🔴 first contact is day 0', S.stepOffsetLabel('1_first_contact', DAYS) === 'day 0')
-  t('🔴 …and each later step shows the interval that LEADS to it, from FOLLOW_UP_DAYS',
-    S.stepOffsetLabel('2_chase_1', DAYS) === '+3 days'
-    && S.stepOffsetLabel('3_chase_2', DAYS) === '+7 days'
-    && S.stepOffsetLabel('4_final_chase', DAYS) === '+14 days')
+  /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ────────────────────────────────────
+   * This pinned '+3 days' / '+7 days' / '+14 days'. 🔴 THE PROPERTY IT PROTECTED IS UNCHANGED and is
+   * still asserted below: each column's gap is the interval of the step BEFORE it, read from
+   * FOLLOW_UP_DAYS and never from a second table. What changed is that the label now NAMES the step the
+   * gap runs from — "+7 days" under Chase 2 reads as 7 days after FIRST CONTACT when it is 7 days after
+   * Chase 1, and the heading never said which. Operator decision. */
+  t('🔴 …and each later step names the gap AND the step it runs from, from FOLLOW_UP_DAYS',
+    S.stepOffsetLabel('2_chase_1', DAYS) === '3 days after first contact'
+    && S.stepOffsetLabel('3_chase_2', DAYS) === '7 days after chase 1'
+    && S.stepOffsetLabel('4_final_chase', DAYS) === '14 days after chase 2')
+  t('⚠️ …and it still follows FOLLOW_UP_DAYS rather than a written-out cadence',
+    S.stepOffsetLabel('2_chase_1', { ...DAYS, '1_first_contact': 5 }) === '5 days after first contact')
   t('⚠️ a step whose predecessor has no interval shows nothing, never "+null days"',
     S.stepOffsetLabel('4_final_chase', { ...DAYS, '3_chase_2': null }) === '')
   t('🔴 the grid has FOUR steps and FIVE rows — the default plus the four types',

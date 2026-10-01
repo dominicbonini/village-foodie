@@ -279,9 +279,11 @@ const SIGNATURE =
     // V10 — THE SCHEMA STOPS REFUSING AND STARTS IGNORING. A disallowed mark is dropped instead of
     // stopping the send, which is the sanitiser-shaped mistake `validateDoc` exists to avoid: a
     // blocklist that quietly lets through the first thing nobody thought of.
+    /* ⚠️ RE-ANCHORED (1 October 2026): the paragraph check moved into `validateParagraph` when lists
+     * arrived, so this return is one level shallower — 10 spaces, not 12. */
     const v = variant('v10', 'lib/outreach-doc.ts', src => src.replace(
-      "            return { ok: false, error: `“${String(t)}” formatting is not allowed in an outreach email` }",
-      '            continue'))
+      "          return { ok: false, error: `“${String(t)}” formatting is not allowed in an outreach email` }",
+      '          continue'))
     /* ⚠️ RE-ANCHORED (30 September 2026, polish): `link` IS a mark now — a validated one, https
      * only — so it can no longer stand for "a mark nobody allowed". `strike` can, and the rule this
      * proves is unchanged: an unknown mark REFUSES the send rather than being quietly dropped. */
@@ -326,8 +328,10 @@ const SIGNATURE =
   {
     // V14 — TEXT NODES STOP BEING ESCAPED. A prospect's own name could carry markup, and a pasted
     // `<script>` would stop being four-and-a-bit words of text.
+    /* ⚠️ RE-ANCHORED (1 October 2026): the inline rendering moved into `inlineHtml` when lists arrived —
+     * the same HTML is needed inside an <li> and inside a <div> — so this line is one level shallower. */
     const v = variant('v14', 'lib/outreach-doc.ts', src => src.replace(
-      '      let html = escapeHtml(k.text)', '      let html = k.text'))
+      '    let html = escapeHtml(k.text)', '    let html = k.text'))
     const html = v.D.docToHtml({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '<script>x</script>' }] }] })
     variantFails('V14', html.includes('<script>'),
       'text is no longer escaped: script-like text becomes a tag in the email')
@@ -418,14 +422,34 @@ const SIGNATURE =
     eq(ok.ok, true, 'an allowed document validates')
     // 🔴 REFUSE, NEVER STRIP. A sanitiser that silently drops a node is one nobody ever checks, and the
     // first thing it gets wrong is emailed to a stranger under Dominic's name.
-    const link = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link', attrs: { href: 'http://x' } }] }] }] })
-    eq(link.ok, false, '🔴 a link mark is REFUSED')
-    check(link.error.includes('link'), '…and the refusal names it')
+    /* ── 🔴 THREE ASSERTIONS RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ──────────────────
+     * ① `href: 'http://x'` was REFUSED here, and http is now ALLOWED by explicit instruction (the
+     *    composer's Link button is for a truck's own site, and plenty are still http). This assertion
+     *    did not merely go stale — it CRASHED the harness, because `link.error` is undefined on a
+     *    document that validates. A stale expectation that throws is at least loud.
+     * ② `'a list is refused'` — bullet and numbered lists are now part of the schema, by the same
+     *    instruction, so the opposite is now true.
+     * 🔴 WHAT ALL OF THIS PROTECTED IS UNCHANGED AND IS STILL ASSERTED: the schema REFUSES rather than
+     * strips, and it names what it refused. The dangerous schemes and the nodes outside the schema are
+     * exactly as refused as they were. */
+    const bad = D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }] }] }] })
+    eq(bad.ok, false, '🔴 a link with a scheme outside the allow-list is REFUSED')
+    check(String(bad.error).includes('link'), '…and the refusal names it')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'link', attrs: { href: 'http://x' } }] }] }] }).ok,
+      true, '⚠️ …while http and https are allowed now')
     eq(D.validateDoc({ type: 'doc', content: [{ type: 'image', attrs: { src: 'x' } }] }).ok, false, 'an image node is refused')
     eq(D.validateDoc({ type: 'doc', content: [{ type: 'heading', content: [] }] }).ok, false, 'a heading is refused')
-    eq(D.validateDoc({ type: 'doc', content: [{ type: 'bulletList', content: [] }] }).ok, false, 'a list is refused')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'table', content: [] }] }).ok, false, 'a table is refused')
+    // ⚠️ AN EMPTY LIST IS DROPPED, NOT REFUSED — TipTap can leave one behind as the caret exits it.
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'a' }] }, { type: 'bulletList', content: [] }] }).doc.content.length,
+      1, '⚠️ an EMPTY list is dropped rather than refused')
+    /* 🔴 RESTATED (1 October 2026): italic IS a mark now, by instruction — the toolbar offers it. The
+     * point this made ("the mark list is short on purpose, and a plausible-looking mark is still refused
+     * if it is not on it") is kept, with a mark that is genuinely not on the list. */
     eq(D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'italic' }] }] }] }).ok,
-      false, 'even a harmless-looking italic is refused — the mark list is two long, on purpose')
+      true, '⚠️ italic is an allowed mark now (1 Oct 2026 decision)')
+    eq(D.validateDoc({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'highlight' }] }] }] }).ok,
+      false, 'even a harmless-looking highlight is refused — the mark list is five long, on purpose')
     eq(D.validateDoc(null).ok, false, 'no document at all is refused')
     eq(D.validateDoc({ type: 'doc', content: [] }).ok, false, 'an empty document is refused')
     // ⚠️ SCRIPT-LIKE TEXT IS TEXT. It cannot become markup, because the server ESCAPES every text node.

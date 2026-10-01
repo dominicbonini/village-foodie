@@ -40,6 +40,7 @@
     "outreach-crm-polish.cjs",
     "outreach-crm-today.cjs",
     "outreach-dnc-pool.cjs",
+    "outreach-editor-toolbar.cjs",
     "outreach-list-columns.cjs",
     "outreach-log-once.cjs",
     "outreach-logo-latch.cjs",
@@ -51,6 +52,7 @@
     "outreach-reply-attach.cjs",
     "outreach-sequence.cjs",
     "outreach-stage-advance.cjs",
+    "outreach-step-logging.cjs",
     "outreach-templates-layout.cjs",
     "outreach-upload-refresh.cjs",
     "outreach-workspace-v2.cjs",
@@ -127,8 +129,9 @@
     "needs_a_browser": {
       "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. It is a MODULE (`outreach-workspace-v3-fixes.cjs` requires it behind HG_RENDER=1) and a standalone command. Run it by hand after a build.",
       "files": [
-        "outreach-workspace-render.cjs",
-        "outreach-templates-render.cjs"
+        "outreach-editor-render.cjs",
+        "outreach-templates-render.cjs",
+        "outreach-workspace-render.cjs"
       ]
     }
   }

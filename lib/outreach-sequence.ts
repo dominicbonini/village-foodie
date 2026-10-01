@@ -385,9 +385,19 @@ export function stepOffsetLabel(
   step: LadderKind,
   followUpDays: Partial<Record<LadderKind, number | null>>,
 ): string {
+  /* ── 🔴 THEY READ AS GAPS NOW, NOT AS OFFSETS (1 October 2026, operator decision) ─────────────────
+   * It returned 'day 0' and '+3 days'. Both are true and neither says WHAT the number is measured
+   * from, so a column heading of "+7 days" under Chase 2 reads as "7 days after first contact" — it is
+   * 7 days after CHASE 1. Naming the step the gap runs from is the whole change.
+   * 🔴 STILL DERIVED FROM `FOLLOW_UP_DAYS`, AND STILL FROM THE STEP BEFORE: the interval stored against
+   * a step is the one that LEADS TO the next, so a column's gap is the previous step's interval and the
+   * label names that previous step. No second table, and the label cannot promise a cadence the queue
+   * does not run. ⚠️ `STEP_LABELS` is lower-cased for mid-sentence use — "3 days after first contact",
+   * not "3 days after First contact" — and it is the same map, not a second set of words. */
   const i = CONTACT_KINDS.indexOf(step)
   if (i <= 0) return 'day 0'
   const before = CONTACT_KINDS[i - 1]
   const days = followUpDays[before]
-  return typeof days === 'number' ? `+${days} days` : ''
+  if (typeof days !== 'number') return ''
+  return `${days} days after ${STEP_LABELS[before].toLowerCase()}`
 }

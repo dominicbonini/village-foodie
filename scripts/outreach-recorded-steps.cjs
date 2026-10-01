@@ -197,12 +197,18 @@ function runCensus(over = {}) {
   t('🔴 the history and the panel read `recordedStepsFor` over the history\'s OWN pairing',
     /const recordedSteps = useMemo\(\(\) => recordedStepsFor\(\{/.test(TL)
     && /pairing, ladderKinds: CONTACT_KINDS/.test(TL))
+  /* ⚠️ RE-ANCHORED: the pairing is handed the rows with the DERIVED link on them now
+   * (`contactsForPairing`), because `email_message_id` is not a column. Same function, same one rule —
+   * the argument is the corrected one. */
   t('🔴 the GUARDS read the same function, over the same pairing — not a second rule on the server',
     /const recordedSteps = recordedStepsFor\(\{/.test(SEND)
-    && /pairing: pairHandLoggedEmails\(\{ messages, contacts \}\)/.test(SEND))
-  t('🔴 …and the server reads the columns that pairing needs, or it could not see the hand log',
-    /select\('id, contacted_at, created_at, direction, kind, channel, message, email_message_id'\)/.test(SEND)
-    && /preview, sent_copy/.test(SEND))
+    && /pairing: pairHandLoggedEmails\(\{ messages, contacts: contactsForPairing \}\)/.test(SEND))
+  /* ⚠️ RESTATED: the select must name only REAL columns, and the link is DERIVED. Pinning
+   * `email_message_id` in a select is what this check used to require — and that column does not exist. */
+  t('🔴 …and the server reads real columns only, deriving the link from messages.contact_id',
+    /select\('id, contacted_at, created_at, direction, kind, channel, message'\)/.test(SEND)
+    && /preview, sent_copy/.test(SEND)
+    && /email_message_id: messageOfContact\.get\(c\.id\) \?\? null/.test(SEND))
   t('🔴 a paired message\'s prior carries its RECORDED kind, which is the whole fix',
     /kind: recordedSteps\.get\(m\.id\)\?\.kind \?\? null/.test(SEND))
   t('⚠️ …and a LINKED message is still excluded entirely, so a rung is never doubled',
@@ -309,10 +315,16 @@ function runCensus(over = {}) {
       { TL: changed(TL_SRC, TL_SRC.replace(
         "const unrecorded = !inbound && !m.is_test && m.status === 'sent' && !m.contact_id && !recorded",
         "const unrecorded = !inbound && !m.is_test && m.status === 'sent' && !m.contact_id"), 'W5') }],
-    ['W6 🔴 the server stops reading the columns the pairing needs',
+    /* ⚠️ RE-ANCHORED (1 October 2026), AND THE ANCHOR ITSELF WAS THE BUG. This patched a select that
+     * named `email_message_id` — a column that DOES NOT EXIST on `outreach_contacts`. Selecting it made
+     * PostgREST answer 42703 with `data: null`, and the route discarded the error, so every send derived
+     * its step from an empty ladder and logged a first contact. See docs/outreach-step-logging-report.md.
+     * 🔴 THE FIELD IS DERIVED NOW, from `messages.contact_id`, so the variant breaks THAT instead — which
+     * is the same failure one level down: the pairing loses the link and cannot see a hand-logged rung. */
+    ['W6 🔴 the server stops deriving the link the pairing needs',
       { SEND: changed(SEND_SRC, SEND_SRC.replace(
-        "select('id, contacted_at, created_at, direction, kind, channel, message, email_message_id')",
-        "select('contacted_at, created_at, direction, kind, channel')"), 'W6') }],
+        'const contactsForPairing = contacts.map(c => ({ ...c, email_message_id: messageOfContact.get(c.id) ?? null }))',
+        'const contactsForPairing = contacts'), 'W6') }],
   ]) {
     const r = runCensus(over)
     const caught = r.bad.length > 0

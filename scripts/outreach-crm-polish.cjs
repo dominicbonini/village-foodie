@@ -135,11 +135,23 @@ function runLibSuite({ W, T, D }) {
   t('🔴 an https demo link is allowed', D.validateDoc(withLink('https://www.hatchgrab.com/demo/abc')).ok === true)
   t('🔴 …and renders as a real anchor',
     /<a href="https:\/\/www\.hatchgrab\.com\/demo\/abc">the demo<\/a>/.test(D.docToHtml(withLink('https://www.hatchgrab.com/demo/abc').content ? D.validateDoc(withLink('https://www.hatchgrab.com/demo/abc')).doc : null)))
-  for (const bad of ['javascript:alert(1)', 'http://example.com', '//example.com', 'data:text/html,x', '', 'https://ex ample.com/"onmouseover=x']) {
+  /* ── 🔴 RESTATED (1 October 2026) — NOT SILENTLY RE-POINTED ───────────────────────────────────
+   * `http://example.com` was in this refusal list and is now ALLOWED, by explicit instruction: the
+   * composer's new Link button is for an operator linking to a truck's own site and plenty of those are
+   * still http. 🔴 THE PROPERTY THIS CHECK PROTECTS IS UNCHANGED and is still asserted below — a scheme
+   * OUTSIDE the allow-list is REFUSED rather than stripped, because a sanitiser that quietly drops the
+   * bad half and sends the rest is one nobody ever checks. What moved is the size of the list, and
+   * `mailto:` joined it with http. ⚠️ THE DANGEROUS SCHEMES ARE UNCHANGED AND STILL HERE. */
+  t('⚠️ http and mailto are allowed now (1 Oct 2026 decision), alongside https',
+    D.validateDoc(withLink('http://example.com')).ok === true
+    && D.validateDoc(withLink('mailto:dominic@hatchgrab.com')).ok === true)
+  for (const bad of ['javascript:alert(1)', '//example.com', 'data:text/html,x', 'vbscript:x',
+    'file:///etc/passwd', '', 'https://ex ample.com/"onmouseover=x', 'mailto:nobody',
+    'javascript:alert(1)#https://ok.com']) {
     t(`🔴 "${bad || '(empty)'}" is REFUSED, not stripped`, D.validateDoc(withLink(bad)).ok === false)
   }
   t('⚠️ the refusal names the link rather than saying "invalid"',
-    /is not an https link/.test(D.validateDoc(withLink('javascript:alert(1)')).error ?? ''))
+    /is not a web or email link/.test(D.validateDoc(withLink('javascript:alert(1)')).error ?? ''))
   t('⚠️ an unknown mark is still refused', D.validateDoc({
     type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'x', marks: [{ type: 'strike' }] }] }],
   }).ok === false)
@@ -288,7 +300,10 @@ function runCensus(over = {}) {
     ['v4', 'V4 a note keeps its blank lines and takes six rows', 'lib/outreach-timeline.ts',
       s => s.replace("    .replace(/\\n{2,}/g, '\\n')", '')],
     ['v5', 'V5 🔴 a javascript: href is accepted into an email', 'lib/outreach-doc.ts',
-      s => s.replace('            if (!LINK_RE.test(href)) {', '            if (false) {')],
+      /* ⚠️ RE-ANCHORED (1 October 2026): `validateDoc`'s paragraph logic moved into `validateParagraph`
+       * when lists arrived, so this line is one level shallower — 10 spaces, not 12. The rule it proves
+       * is unchanged: an href outside `LINK_RE` REFUSES the send. */
+      s => s.replace('          if (!LINK_RE.test(href)) {', '          if (false) {')],
   ]) {
     const libs = libVariant(tag, file, patch)
     const r = runLibSuite(libs)

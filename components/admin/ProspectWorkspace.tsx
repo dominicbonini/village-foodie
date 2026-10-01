@@ -44,6 +44,9 @@ import {
 import {
   OUTREACH_STAGES, CONTACT_CHANNELS, CONTACT_DIRECTIONS, kindsForDirection, defaultKindFor,
   kindOrder, kindLabel, channelLabel, directionLabel, followUpDateFor, contactDay, toYMD,
+  // 🔴 FOR THE FOLLOW-UP DERIVATION: `isKind`/`REPLY_KIND` decide whether the thing just logged is a
+  // RUNG (a reply carries no interval), and `LadderKind` is what `followUpDateFor` is keyed on.
+  isKind, REPLY_KIND, type LadderKind,
 } from '@/lib/outreach'
 import { phoneWhatsApp } from '@/lib/whatsapp-hint'
 import { replyRecipientFor } from '@/lib/outreach-reply-rules'
@@ -353,13 +356,29 @@ export default function ProspectWorkspace({ prospectId }: { prospectId: string }
    * and clears the date, so the two cannot be the same signal.
    */
   const applyFollowUp = useCallback(async (kind: string | null, dateOverride?: string | null) => {
-    const date = dateOverride === undefined ? followUpDate : dateOverride
+    /* ── 🔴 THE INTERVAL BELONGS TO THE STEP THAT WAS JUST LOGGED (1 October 2026) ──────────────────
+     * It used to write `followUpDate` — the CONTROL's value — for every call. That value is seeded from
+     * `defaultFollowUpChoice(oneClick, …)`, the step the page thought was NEXT when it rendered, so
+     * after a send it was the interval of the step BEFORE the one that actually went: a Chase 1 send
+     * scheduled +3 (the after-first-contact gap) instead of +7.
+     * 🔴 THE STEP JUST SENT IS THE ONLY HONEST INPUT. `followUpDateFor` is the same function `nextStep`
+     * uses to derive `dueOn`, so the date written here and the date the ladder expects cannot disagree.
+     * ⚠️ AND IT STILL YIELDS TO A DELIBERATE CHOICE. `followUp` is null until the operator touches the
+     * chips (`followUpNow = followUp ?? followUpSeed`), so "untouched" is detectable: touched ⇒ their
+     * date wins, untouched ⇒ the step's own interval. An explicit `dateOverride` always wins, which is
+     * what the chips themselves pass. */
+    const derived = kind && isKind(kind) && kind !== REPLY_KIND
+      ? followUpDateFor(kind as LadderKind, today)
+      : null
+    const date = dateOverride !== undefined ? dateOverride
+      : followUp !== null ? followUpDate
+      : (derived ?? followUpDate)
     const patchAfter: Record<string, unknown> = { next_action_at: date }
     if (kind && prospect && shouldFreezeLeadType(kind, prospect, flags.leadFreeze)) {
       patchAfter.lead_type_at_first_contact = leadTypeOf(prospect)
     }
     await post({ action: 'update_prospect', id: prospectId, ...patchAfter })
-  }, [post, prospectId, followUpDate, prospect, flags.leadFreeze])
+  }, [post, prospectId, followUpDate, followUp, today, prospect, flags.leadFreeze])
 
   /**
    * A chip, or a picked date, SAVED — which is what it always looked as though it did.
@@ -999,6 +1018,13 @@ function bannerHeadline(n: NextAction): string {
       : `${n.label.split(' due')[0]} due today`
   }
   if (n.kind === 'follow_up') {
+    /* 🔴 A FUTURE FOLLOW-UP IS NOT "due today" (1 October 2026). This read `daysOverdue > 0 ? overdue
+     * : 'due today'`, and branch (3b) of `nextAction` deliberately returns a follow-up whose date is
+     * still AHEAD — with `daysOverdue: 0`, which this then printed as "due today". On 1 October the
+     * banner said "Follow up — due today" over a `next_action_at` of 8 October.
+     * ⚠️ THE SCHEDULED CASE USES `n.label`, which `nextAction` has already built correctly
+     * ("Follow up — Wed 8 Oct"). Rebuilding the sentence here is what let the two disagree. */
+    if (!n.dueNow) return n.label
     return n.daysOverdue > 0
       ? `Follow up — ${n.daysOverdue} day${n.daysOverdue === 1 ? '' : 's'} overdue`
       : 'Follow up — due today'
@@ -1015,7 +1041,10 @@ function bannerDetail(n: NextAction, p: Prospect, timeline: TimelinePayload | nu
     : 'no email has been sent yet'
   if (n.kind === 'reply') return `${n.label} · ${lastLine}`
   if (n.kind === 'chase') return `${n.dueOn ? `was due ${shortDate(n.dueOn)}` : 'due now'} · ${lastLine}`
-  if (n.kind === 'follow_up') return `was due ${shortDate(n.due)} · ${lastLine}`
+  // 🔴 "was due" IS PAST TENSE AND WAS PRINTED UNCONDITIONALLY — including for a date in the future.
+  if (n.kind === 'follow_up') {
+    return `${n.dueNow ? `was due ${shortDate(n.due)}` : `scheduled for ${shortDate(n.due)}`} · ${lastLine}`
+  }
   return n.reason ? `${n.reason} · ${lastLine}` : lastLine
 }
 
