@@ -2,7 +2,7 @@
   "$comment": [
     "THE EXPLICIT HARNESS LIST. scripts/run-harnesses.cjs runs exactly these files and nothing else.",
     "WHY THIS FILE EXISTS: on 17 September 2026 a verification sweep written as `ls scripts/*.cjs` ran",
-    "scripts/migrate-from-sheets.cjs against the LIVE database with the service role — 132 rows of",
+    "scripts/migrate-from-sheets.cjs against the LIVE database with the service role \u2014 132 rows of",
     "public.discovery_trucks overwritten and 19 inserted in 1.2 seconds. See",
     "docs/discovery-upsert-incident-report.md. A glob cannot tell a proof from a migration; a list can.",
     "RULE: never glob scripts/. Add a new harness HERE or the runner will report it as unregistered."
@@ -72,6 +72,7 @@
     "printing-transport-contract.cjs",
     "ready-press-one-press.cjs",
     "scraper-invented-village.cjs",
+    "screenshot-truck-details.cjs",
     "seed-demo-grid.cjs",
     "sixteen-pizza-admission.cjs",
     "slot-interval-dots.cjs",
@@ -120,18 +121,19 @@
       ]
     },
     "fixture_generators": {
-      "$why": "🔴 THESE REWRITE THE COMMITTED GOLDEN FIXTURES. Running them in a sweep would silently regenerate the baseline that batch-rolling-identity.cjs and batch-reservation-golden-on.cjs check AGAINST, turning both proofs into tautologies. Run by hand, deliberately, only from a build whose harnesses already pass.",
+      "$why": "\ud83d\udd34 THESE REWRITE THE COMMITTED GOLDEN FIXTURES. Running them in a sweep would silently regenerate the baseline that batch-rolling-identity.cjs and batch-reservation-golden-on.cjs check AGAINST, turning both proofs into tautologies. Run by hand, deliberately, only from a build whose harnesses already pass.",
       "files": [
         "_batch-reservation-golden-on-generate.cjs",
         "_batch-rolling-golden-generate.cjs"
       ]
     },
     "needs_a_browser": {
-      "$why": "🔴 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. It is a MODULE (`outreach-workspace-v3-fixes.cjs` requires it behind HG_RENDER=1) and a standalone command. Run it by hand after a build.",
+      "$why": "\ud83d\udd34 NOT A PROOF THE SWEEP CAN RUN. It needs `.next/static/css` from a completed build and a local Chromium, and a sweep that silently skips when either is missing would be a sweep that reports green for a layout nobody measured. It is a MODULE (`outreach-workspace-v3-fixes.cjs` requires it behind HG_RENDER=1) and a standalone command. Run it by hand after a build.",
       "files": [
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",
-        "outreach-workspace-render.cjs"
+        "outreach-workspace-render.cjs",
+        "screenshot-truck-details-render.cjs"
       ]
     }
   }
