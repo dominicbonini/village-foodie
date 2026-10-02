@@ -271,8 +271,11 @@ function runCensus() {
      * same expression in the composer for what the BUTTON says. */
   t('🔴 the composer logs the STEP, not the template\'s tag',
     /const kindForSend = \(replyTo && inConversation\) \? 'reply' : \(stepKind \?\? logFormKind\)/.test(CW))
+  /* ⚠️ RE-ANCHORED (2 October 2026): `!historyUnreadable` was added to this condition. The server
+   * still overrules the client — it just no longer overrules it with a step derived from a ladder it
+   * could not READ, which is `1_first_contact` for every prospect. See outreach-send-read-failure.cjs. */
   t('🔴 …and the SERVER re-derives it and overrules the client',
-    /if \(step\.kind && \(!replyParent \|\| !inConversation\)\) derivedKind = step\.kind/.test(SEND))
+    /if \(step\.kind && !historyUnreadable && \(!replyParent \|\| !inConversation\)\) derivedKind = step\.kind/.test(SEND))
   t('🔴 the guards run in the send route, for every path', /evaluateGuards\(\{/.test(SEND))
   t('🔴 …and a blocked send writes NOTHING and sends nothing',
     /return NextResponse\.json\(\{\s*ok: false, needsConfirm: true/.test(SEND))

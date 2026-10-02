@@ -146,7 +146,7 @@ export function chooseForStep(input: {
  * is handed one.
  */
 
-export type GuardId = 'already_sent' | 'not_due' | 'shared_address' | 'after_final'
+export type GuardId = 'already_sent' | 'not_due' | 'shared_address' | 'after_final' | 'history_unreadable'
 
 export interface Guard {
   id: GuardId
@@ -239,6 +239,36 @@ export function guardUnattributed(input: {
 }
 
 /**
+ * 🔴 THE HISTORY COULD NOT BE READ, SO IT ASKS INSTEAD OF REFUSING (2 October 2026).
+ *
+ * Every guard below is an answer derived from this prospect's own rows. When the read that produces
+ * those rows fails — a missing column, a timeout, a dropped connection — there are no rows, and an
+ * empty read is INDISTINGUISHABLE FROM "never contacted". That is the shape of the Smother Spudders
+ * incident: a Chase 1 send derived `1_first_contact` from a ladder it could not see.
+ *
+ * 🔴 SO THE READ FAILURE IS NOT SILENT, AND IT IS ALSO NOT A WALL. It used to refuse outright, which
+ * is what blocked every real send for a day after the recorded-steps build named a column that does
+ * not exist (`outreach_messages.preview`, 42703). A schema slip in a DUPLICATE CHECK should not be
+ * able to stop the outreach; the operator knows what they last sent, and the honest thing is to say
+ * what could not be checked and let them decide — exactly as `not_due` does.
+ *
+ * ⚠️ IT CARRIES THE REASON, because "I couldn't check" with no cause is unactionable: a 42703 is a
+ * build to fix and a timeout is a retry, and only the code tells them apart. The sentence is stored in
+ * `outreach_messages.guard_override` when it is waved, so the reason survives in the record.
+ * ⚠️ IT DOES NOT APPLY TO A TEST SEND — the caller never asks, because a test goes to Dominic and
+ * counts towards nothing.
+ */
+export function guardHistoryUnreadable(input: { reason: string | null | undefined }): Guard | null {
+  const reason = String(input.reason ?? '').trim()
+  if (!reason) return null
+  return {
+    id: 'history_unreadable', kind: 'confirm',
+    message: "I couldn't check this truck's earlier emails, so I can't confirm this step hasn't already"
+      + ` gone (reason: ${reason}). Send anyway?`,
+  }
+}
+
+/**
  * 3b — NOT BEFORE IT IS DUE.
  * ⚠️ A `scheduled` step is one with a date in the future; `due` is one whose date has passed. The
  * step's own `dueOn` is the authority, so this cannot disagree with the banner above it.
@@ -299,6 +329,22 @@ export function guardAfterFinal(input: { step: Step; priors: readonly PriorSend[
  * order is the order they are written, which is the order they matter in.
  * ⚠️ 3f — A REPLY IS A CONVERSATION. `already_sent`, `not_due` and `after_final` do not apply to a
  * reply; the shared-address warning still does, because the person at the other end is the point.
+ *
+ * ── 🔴 AND WHEN THE HISTORY COULD NOT BE READ, THE LADDER GUARDS SAY NOTHING ────────────────────
+ * `historyUnreadable` carries the reason the prospect's own rows could not be fetched. With no rows,
+ * `priors` is empty and `step` was derived from an empty ladder — so `already_sent`, `not_due` and
+ * `after_final` would all return null and the send would sail through LOOKING clean. That silence is
+ * the defect, not the absence of a warning: three guards answering "no problem" from rows they never
+ * saw is worse than one guard saying it could not look.
+ * 🔴 SO THEY ARE SKIPPED, NOT TRUSTED, and `history_unreadable` speaks in their place. It is a
+ * `confirm`, so the operator may wave it through — and the override is recorded on the message row
+ * with this sentence in it.
+ * ⚠️ `shared_address` STILL RUNS. It is derived from a DIFFERENT read (the other prospects on this
+ * address), which succeeded or failed on its own; suppressing it here would suppress a warning about
+ * a third party for a reason that has nothing to do with them.
+ * ⚠️ AND IT APPLIES TO A REPLY TOO, unlike the three it replaces. `isReply` comes from
+ * `inConversation`, which is itself derived from the contacts read — so on a failed read it is
+ * `false` whatever the truth is, and exempting a reply would mean trusting the very read that failed.
  */
 export function evaluateGuards(input: {
   isReply: boolean
@@ -308,10 +354,14 @@ export function evaluateGuards(input: {
   address: string | null
   others: readonly { prospectName: string; address: string; lastOutboundAt: string | null }[]
   now: Date
+  /** Why this prospect's contacts/messages could not be read, or null when they were. */
+  historyUnreadable?: string | null
 }): Guard[] {
   const { isReply, step, priors, lastEmailAt, address, others, now } = input
   const out: Guard[] = []
-  if (!isReply) {
+  const unreadable = guardHistoryUnreadable({ reason: input.historyUnreadable })
+  if (unreadable) out.push(unreadable)
+  if (!isReply && !unreadable) {
     const a = guardAlreadySent({ step: step.kind, priors })
     if (a) out.push(a)
     else {

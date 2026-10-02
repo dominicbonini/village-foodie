@@ -245,7 +245,15 @@ export function pairHandLoggedEmails(input: {
     for (const c of cs) {
       const want = openingKey(c.message)
       if (!want) continue
-      const matches = ms.filter(m => openingKey(m.preview ?? m.sent_copy ?? '') === want)
+      /* ⚠️ `?? m.sent_copy` WAS HERE AND WAS NEVER THE EMAIL'S WORDS (removed 2 October 2026).
+       * `outreach_messages.sent_copy` holds 'server_filed' | 'appended' | 'absent' — WHERE the copy in
+       * Sent is, not what the email said. Offered as a fallback for the opening words it could only
+       * ever compare the string "absent" against a hand log's first paragraph, so it matched nothing;
+       * the harm was in reading as though a second source of the words existed, which is how the send
+       * route came to select a `preview` column that does not exist. There is ONE source: `preview`,
+       * derived from `text_body` by `previewOf`. A row whose body was never stored has no opening
+       * words, and no opening words pairs NOTHING — the same exactly-one-or-nothing rule as above. */
+      const matches = ms.filter(m => openingKey(m.preview ?? '') === want)
       if (matches.length !== 1) continue
       // ⚠️ AN EMAIL ALREADY PAIRED WITH ANOTHER LOG IS NOT PAIRED AGAIN.
       if (pairs.has(matches[0].id)) continue

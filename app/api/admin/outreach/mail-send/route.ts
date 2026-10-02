@@ -60,7 +60,10 @@ import { evaluateGuards, loggedKindFor, type Guard, type PriorSend } from '@/lib
 // message's own row now (`guard_override`) and is shown only in that email's reading panel.
 // ⚠️ EXISTING "Sent anyway:" NOTES ARE UNTOUCHED — they are data, and Dominic removes them himself with
 // the note Delete button.
-import { pairHandLoggedEmails, recordedStepsFor } from '@/lib/outreach-timeline'
+// ⚠️ `previewOf` IS IMPORTED FOR THE PAIRING'S OPENING-WORDS RULE. There is no `preview` COLUMN; the
+// first few lines are derived from `text_body` by this one function, which is what the timeline route
+// has always used — so the guards and the rows on screen cannot disagree about what an email opens with.
+import { pairHandLoggedEmails, recordedStepsFor, previewOf } from '@/lib/outreach-timeline'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -649,13 +652,40 @@ export async function POST(req: NextRequest) {
      * because that guess is indistinguishable from the truth and it always picks the lowest rung.
      * ⚠️ THE SAME POSTURE THE SCRAPER'S MATCHING SETS TAKE: "an unreadable matching set does not fail, it
      * makes every truck look new" — refuse rather than proceed on an empty read. */
-    const { data: cRows, error: cErr } = await supabase
-      .from('outreach_contacts')
-      .select('id, contacted_at, created_at, direction, kind, channel, message')
-      .eq('prospect_id', prospectId)
-    if (cErr) {
-      return refuse(`I could not read this prospect's contact history, so I don't know which step this is (${cErr.code ?? ''} ${cErr.message}). Nothing was sent.`)
+    /* ── 🔴 AN UNREADABLE HISTORY ASKS NOW; IT NO LONGER REFUSES (2 October 2026) ─────────────────
+     * Both reads below used to `return refuse(...)`. That posture was right about the DANGER — an empty
+     * read is indistinguishable from "never contacted", and guessing always picks the lowest rung — and
+     * wrong about the REMEDY. The recorded-steps build named a column that does not exist
+     * (`outreach_messages.preview`), so the messages read answered 42703 on every prospect, and the
+     * refusal turned one wrong word in a select into a total outage of the send button: every real send
+     * refused for a day, 3Bros Burgers among them.
+     * 🔴 A DUPLICATE CHECK THAT CANNOT RUN IS A QUESTION, NOT A VERDICT. The reason is collected, the
+     * ladder-derived guards are SKIPPED rather than allowed to answer from rows nobody saw, and
+     * `guardHistoryUnreadable` asks in their place. Waving it through records the sentence in
+     * `guard_override`, exactly like any other waved guard.
+     * ⚠️ AND THE RUNG IS NOT GUESSED. `derivedKind` stays null when this fires, so `loggedKindFor`
+     * falls back to the step the operator chose in the composer instead of the `1_first_contact` an
+     * empty ladder derives. That is the Smother Spudders failure, and it is the half of this that
+     * matters: asking instead of refusing must not re-open the silent-wrong-rung path.
+     * ⚠️ `try`/`catch` AS WELL AS `error`, because "for any reason" includes a thrown one — a DNS
+     * failure or an aborted socket rejects rather than returning an error object. */
+    const unreadable: string[] = []
+    /** PostgREST's `{ code, message }` or a thrown `Error`, as one sentence for the operator. */
+    const readFailure = (e: unknown): string => {
+      const o = (e ?? {}) as { code?: string; message?: string }
+      const code = String(o.code ?? '').trim()
+      const msg = String(o.message ?? '').trim() || (e instanceof Error ? e.message : '') || 'unknown error'
+      return code ? `${code} ${msg}` : msg
     }
+    let cRows: unknown[] | null = null
+    try {
+      const r = await supabase
+        .from('outreach_contacts')
+        .select('id, contacted_at, created_at, direction, kind, channel, message')
+        .eq('prospect_id', prospectId)
+      if (r.error) unreadable.push(`contact history — ${readFailure(r.error)}`)
+      else cRows = r.data
+    } catch (e) { unreadable.push(`contact history — ${readFailure(e)}`) }
     const contacts = (cRows ?? []) as (StepContact & {
       id: string; created_at?: string | null; message?: string | null; email_message_id?: string | null
     })[]
@@ -663,23 +693,38 @@ export async function POST(req: NextRequest) {
     // when the prospect has already replied, and then only as `reply` — so a chase typed by hand
     // leaves a message row and no rung (report §0c). `contact_id` is the join: a message this system
     // sent already has one, and counting it again would double every rung.
-    // ⚠️ `preview` AND `sent_copy` ARE FOR THE PAIRING'S SECOND RULE — the opening words, used when a
-    // day carries more than one email. `direction` is selected rather than assumed because
-    // `pairHandLoggedEmails` keys on it.
-    const { data: mRows, error: mErr } = await supabase
-      .from('outreach_messages')
-      .select('id, direction, is_test, contact_id, message_date, created_at, status, preview, sent_copy')
-      .eq('prospect_id', prospectId).eq('direction', 'outbound')
-    // 🔴 CHECKED FOR THE SAME REASON THE CONTACTS READ IS. `priors` is built from these rows, so an
-    // unreadable mailbox silently removes every prior send from the guards' view.
-    if (mErr) {
-      return refuse(`I could not read this prospect's sent emails, so the duplicate checks cannot run (${mErr.code ?? ''} ${mErr.message}). Nothing was sent.`)
-    }
-    const messages = (mRows ?? []) as {
+    /* ── 🔴 `preview` IS NOT A COLUMN, AND NAMING IT HERE STOPPED EVERY SEND ──────────────────────
+     * This select read `..., status, preview, sent_copy` from 1 October 2026. There is no
+     * `outreach_messages.preview`: the column list is in supabase/migrations/20260928_outreach_messages.sql,
+     * and `preview` is DERIVED — `previewOf(text_body)`, which is what the timeline route has always
+     * done (app/api/admin/outreach/timeline/route.ts). PostgREST answers an unknown column with 42703
+     * for the WHOLE query, so from that build on every non-test send hit the refusal below and nothing
+     * went out. 🧪 3Bros Burgers, 2 October.
+     * 🔴 SO THE FIX IS THE HISTORY'S OWN DERIVATION, NOT A NEW COLUMN. `text_body` is selected — the
+     * flattened text the poll already extracted, the same source the timeline reads — and `previewOf`
+     * turns it into the opening words `pairHandLoggedEmails` compares. One function, one definition of
+     * "the first few lines", and no migration.
+     * ⚠️ `sent_copy` IS A REAL COLUMN AND WAS NEVER THE OPENING WORDS. It holds
+     * 'server_filed' | 'appended' | 'absent' — where the Sent copy is, not what the email said — so it
+     * is no longer selected here and no longer offered to the pairing. See the note in
+     * lib/outreach-timeline.ts.
+     * ⚠️ `direction` is selected rather than assumed because `pairHandLoggedEmails` keys on it. */
+    let mRows: unknown[] | null = null
+    try {
+      const r = await supabase
+        .from('outreach_messages')
+        .select('id, direction, is_test, contact_id, message_date, created_at, status, text_body')
+        .eq('prospect_id', prospectId).eq('direction', 'outbound')
+      if (r.error) unreadable.push(`sent emails — ${readFailure(r.error)}`)
+      else mRows = r.data
+    } catch (e) { unreadable.push(`sent emails — ${readFailure(e)}`) }
+    const messages = ((mRows ?? []) as {
       id: string; direction: string | null; is_test: boolean | null; contact_id: string | null
       message_date: string | null; created_at: string | null; status: string | null
-      preview?: string | null; sent_copy?: string | null
-    }[]
+      text_body?: string | null
+    }[]).map(m => ({ ...m, preview: previewOf(m.text_body) }))
+    /** Why the guards could not see this prospect's own rows, or null when they could. */
+    const historyUnreadable = unreadable.length > 0 ? unreadable.join('; ') : null
 
     const step = nextStep({
       do_not_contact: p.do_not_contact, stage: p.stage,
@@ -782,6 +827,8 @@ export async function POST(req: NextRequest) {
       // exactly the path this build opens up, and would have been a way to send chase 1 twice.
       isReply: inConversation, step, priors, lastEmailAt,
       address: truck?.contact_email ?? null, others, now: new Date(),
+      // 🔴 THE LADDER GUARDS FALL SILENT AND THIS ONE SPEAKS. See the note on `evaluateGuards`.
+      historyUnreadable,
     })
     const blocking = firedGuards.filter(g => !overrides.includes(g.id))
     if (blocking.length > 0) {
@@ -806,7 +853,11 @@ export async function POST(req: NextRequest) {
     // be `selected?.servesKind ?? logFormKind` from the browser, so choosing a template tagged
     // "chase 1" for a first contact logged a chase-1 rung and skipped a step of the ladder.
     // ⚠️ ALSO WHEN REPLYING TO MY OWN EMAIL: the rung is what the ladder says, not `reply`.
-    if (step.kind && (!replyParent || !inConversation)) derivedKind = step.kind
+    // ⚠️ AND NOT WHEN THE LADDER COULD NOT BE READ. `step.kind` is `1_first_contact` for every
+    // prospect whose contacts read failed, because an empty ladder has had no contact — so deriving
+    // the rung from it is the Smother Spudders bug with an asking guard in front of it. Null here
+    // sends `loggedKindFor` to the step the operator chose instead of one this server invented.
+    if (step.kind && !historyUnreadable && (!replyParent || !inConversation)) derivedKind = step.kind
   }
 
   /* 🔴 A REPLY TO SOMEBODY WHO WROTE TO US IS `reply`; EVERYTHING ELSE IS A RUNG. `reply` is

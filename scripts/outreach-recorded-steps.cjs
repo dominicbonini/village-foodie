@@ -203,12 +203,19 @@ function runCensus(over = {}) {
   t('🔴 the GUARDS read the same function, over the same pairing — not a second rule on the server',
     /const recordedSteps = recordedStepsFor\(\{/.test(SEND)
     && /pairing: pairHandLoggedEmails\(\{ messages, contacts: contactsForPairing \}\)/.test(SEND))
-  /* ⚠️ RESTATED: the select must name only REAL columns, and the link is DERIVED. Pinning
-   * `email_message_id` in a select is what this check used to require — and that column does not exist. */
-  t('🔴 …and the server reads real columns only, deriving the link from messages.contact_id',
+  /* ── 🔴 RESTATED A SECOND TIME, AND THIS LINE IS THE LESSON (2 October 2026) ────────────────────
+   * It required `/preview, sent_copy/` — it PINNED IN PLACE a select naming a column that does not
+   * exist, and reported green while every real send refused with 42703 for a day. It had already been
+   * re-anchored once, off `email_message_id`, for exactly the same reason.
+   * 🔴 A HARNESS CANNOT CHECK A COLUMN NAME AGAINST A FIXTURE — the fixture has whatever property the
+   * code asks of it. So this no longer asserts a column list at all; it asserts the two DERIVATIONS,
+   * and the column lists are checked against supabase/migrations/ by
+   * scripts/outreach-schema-census.cjs, which is the only thing that can check them. */
+  t('🔴 …and the server reads real columns only, deriving BOTH the link and the opening words',
     /select\('id, contacted_at, created_at, direction, kind, channel, message'\)/.test(SEND)
-    && /preview, sent_copy/.test(SEND)
-    && /email_message_id: messageOfContact\.get\(c\.id\) \?\? null/.test(SEND))
+    && /email_message_id: messageOfContact\.get\(c\.id\) \?\? null/.test(SEND)
+    && /preview: previewOf\(m\.text_body\)/.test(SEND)
+    && !/select\([^)]*\bpreview\b/.test(SEND))
   t('🔴 a paired message\'s prior carries its RECORDED kind, which is the whole fix',
     /kind: recordedSteps\.get\(m\.id\)\?\.kind \?\? null/.test(SEND))
   t('⚠️ …and a LINKED message is still excluded entirely, so a rung is never doubled',

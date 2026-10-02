@@ -14,7 +14,10 @@
 // 🔴 FAILURE MODE, in the order it would hurt:
 //    A REPEATED RUNG WRITTEN SILENTLY — it corrupts the ladder every later step is derived from, and the
 //    guard that exists to stop it cannot see the data it needs;
-//    an unreadable read deciding a step at all — the empty answer always picks "never contacted";
+//    an unreadable read deciding a step at all — the empty answer always picks "never contacted".
+//    ⚠️ AND, SINCE 2 OCTOBER 2026, ITS MIRROR IMAGE: an unreadable read BLOCKING every send. The fix
+//    for the first was `return refuse(...)`, and one non-existent column then stopped the outreach for
+//    a day. The read now ASKS; what it still never does is decide a step. Both halves are asserted;
 //    a follow-up scheduled from the step BEFORE the one that was sent (+3 instead of +7);
 //    a banner that calls a future date overdue, which sends somebody to do work that is not due.
 
@@ -124,13 +127,31 @@ function census(over = {}) {
   tt('🔴 the contacts select names NO phantom column',
     !/from\('outreach_contacts'\)[\s\S]{0,200}email_message_id/.test(SEND)
     && /select\('id, contacted_at, created_at, direction, kind, channel, message'\)/.test(SEND))
-  /* 🔴 THE LOAD-BEARING HALF. Without this an unreadable ladder silently becomes "never contacted". */
-  tt('🔴 an unreadable contact history REFUSES the send instead of guessing',
-    /const \{ data: cRows, error: cErr \}/.test(SEND)
-    && /if \(cErr\) \{[\s\S]{0,260}return refuse\(/.test(SEND))
+  /* ── 🔴 RESTATED, NOT WEAKENED (2 October 2026) ─────────────────────────────────────────────────
+   * These two required `return refuse(...)` on a failed read. That was the right fear and the wrong
+   * remedy: on 1 October the recorded-steps build named a column that does not exist
+   * (`outreach_messages.preview`), so the messages read answered 42703 for EVERY prospect and the
+   * refusal turned one wrong word into a total outage of the send button. 🧪 3Bros Burgers, 2 October.
+   * 🔴 THE LOAD-BEARING HALF IS UNCHANGED AND IS ASSERTED BELOW: an unreadable ladder still never
+   * DECIDES A STEP. It no longer blocks the send; it asks, and the rung falls back to the one the
+   * operator chose rather than the `1_first_contact` an empty ladder derives.
+   * See docs/outreach-send-read-failure-report.md and scripts/outreach-send-read-failure.cjs. */
+  /* ⚠️ BOTH BRANCHES, NAMED SEPARATELY. A regex that matched either one was satisfied by the `catch`
+   * alone, so deleting the `error` check — the exact September bug — went uncaught. An error object
+   * and a thrown rejection are two different failures and each needs its own push. */
+  tt('🔴 an unreadable contact history ASKS rather than refusing, and its reason is kept',
+    /if \(r\.error\) unreadable\.push\(`contact history — \$\{readFailure\(r\.error\)\}`\)/.test(SEND)
+    && /catch \(e\) \{ unreadable\.push\(`contact history — \$\{readFailure\(e\)\}`\) \}/.test(SEND)
+    && !/could not read this prospect's contact history/.test(SEND))
   tt('🔴 …and so does an unreadable message history, which the guards read',
-    /const \{ data: mRows, error: mErr \}/.test(SEND)
-    && /if \(mErr\) \{[\s\S]{0,260}return refuse\(/.test(SEND))
+    /if \(r\.error\) unreadable\.push\(`sent emails — \$\{readFailure\(r\.error\)\}`\)/.test(SEND)
+    && /catch \(e\) \{ unreadable\.push\(`sent emails — \$\{readFailure\(e\)\}`\) \}/.test(SEND)
+    && !/could not read this prospect's sent emails/.test(SEND))
+  tt('🔴 THE LOAD-BEARING HALF: an unreadable ladder still never decides the step',
+    /if \(step\.kind && !historyUnreadable && \(!replyParent \|\| !inConversation\)\) derivedKind = step\.kind/.test(SEND))
+  tt('⚠️ …and the reason reaches the guards, so the operator is told what could not be checked',
+    /const historyUnreadable = unreadable\.length > 0 \? unreadable\.join\('; '\) : null/.test(SEND)
+    && /historyUnreadable,/.test(SEND))
   tt('🔴 `email_message_id` is DERIVED from messages.contact_id, as the timeline does',
     /const messageOfContact = new Map<string, string>\(\)/.test(SEND)
     && /messageOfContact\.get\(c\.id\) \?\? null/.test(SEND))
@@ -176,12 +197,18 @@ function census(over = {}) {
     ['W1 🔴 the phantom column comes back on the contacts select',
       { SEND: SEND0.replace("select('id, contacted_at, created_at, direction, kind, channel, message')",
         "select('id, contacted_at, created_at, direction, kind, channel, message, email_message_id')") }],
-    ['W2 🔴 the contacts read stops checking its error — an empty ladder decides the step',
-      { SEND: SEND0.replace('const { data: cRows, error: cErr }', 'const { data: cRows }')
-        .replace(/if \(cErr\) \{[\s\S]*?\n    \}\n/, '') }],
-    ['W3 🔴 the messages read stops checking its error',
-      { SEND: SEND0.replace('const { data: mRows, error: mErr }', 'const { data: mRows }')
-        .replace(/if \(mErr\) \{[\s\S]*?\n    \}\n/, '') }],
+    /* 🔴 RE-POINTED AT THE NEW MECHANISM. The old pair deleted the `if (cErr) return refuse(...)`
+     * blocks; those blocks are gone by design now, so the variants break what replaced them — the
+     * collected reason, and the gate that stops an unreadable ladder deciding a step. */
+    ['W2 🔴 the contacts read stops recording that it failed — an empty ladder decides the step',
+      { SEND: SEND0.replace('if (r.error) unreadable.push(`contact history — ${readFailure(r.error)}`)',
+        'if (r.error) { /* shrug */ }') }],
+    ['W3 🔴 the messages read stops recording that it failed',
+      { SEND: SEND0.replace('if (r.error) unreadable.push(`sent emails — ${readFailure(r.error)}`)',
+        'if (r.error) { /* shrug */ }') }],
+    ['W3b 🔴 the rung is derived from a ladder that could not be read (Smother Spudders again)',
+      { SEND: SEND0.replace('if (step.kind && !historyUnreadable && (!replyParent || !inConversation)) derivedKind = step.kind',
+        'if (step.kind && (!replyParent || !inConversation)) derivedKind = step.kind') }],
     ['W4 🔴 the follow-up goes back to the control\'s value whatever was sent',
       { PAGE: PAGE0.replace('      : (derived ?? followUpDate)', '      : followUpDate') }],
     ['W5 🔴 the banner calls a future follow-up "due today" again',
