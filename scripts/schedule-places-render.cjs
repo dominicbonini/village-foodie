@@ -55,8 +55,8 @@ function appCss() {
   // 🔴 THE STALENESS CHECK. Tailwind only emits the classes it finds in the source, so a build from
   // before this component existed has no rule for its grid — and the fixture would then lay out as a
   // single column at EVERY width and report the phone case passing for the wrong reason.
-  if (!/18rem_1fr/.test(css)) {
-    throw new Error('the compiled CSS has no `grid-cols-[18rem_1fr]` rule — the build predates this component; run `npx next build`')
+  if (!/380px_minmax/.test(css)) {
+    throw new Error('the compiled CSS has no `md:grid-cols-[380px_minmax(0,1fr)]` rule — the build predates this modal; run `npx next build`')
   }
   return css
 }
@@ -80,90 +80,71 @@ const filler = (label, h) =>
  *               fixture that only ever renders the correct structure proves the fixture can be built,
  *               not that the component is right.
  */
-function fixture(css, oneCol = false, pillCount = 3) {
-  const grid = lift(TAB, /className="(grid grid-cols-1 lg:grid-cols-\[18rem_1fr\] gap-4 items-start)"/, 'the two-pane grid')
-  // 🔴 THE PILLS NOW LIVE IN THE PAGE, not in the pane — they wrap all three sections, Events included.
-  const pillRow = lift(PAGE, /className="(min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4)"/, 'the pill row')
-  const pillInner = lift(PAGE, /<div className="(flex gap-2 w-max)">/, 'the pill row inner')
-  const card1 = lift(TAB, /className="(p-4 grid grid-cols-1 sm:grid-cols-2 gap-3)"/, 'the identity card grid')
-  const modalForm = lift(PAGE, /<div id="add-event-form" className="(grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the add-event form grid')
-  const g = oneCol ? 'grid grid-cols-1 gap-4 items-start' : grid
-
-  /* The pill row, the list pane, the detail pane's two cards — and a SECOND fixture below for the
-   * Add event modal. Real classes, filler content. The detail pane is the taller of the two, which is
-   * what makes the stacking order visible. */
-  return `${HEAD(css)}
-<div style="max-width:1024px;margin:0 auto;padding:0 16px">
-  <h2 id="heading" style="font-weight:900;margin:12px 0">Schedule</h2>
-  <div id="pills" class="${pillRow}">
-    <div class="${pillInner}">
-      ${['Events', 'Weekly post', 'Places', 'Fourth section', 'Fifth section', 'Sixth section']
-        .slice(0, pillCount)
-        .map((label, i) => `<button style="padding:6px 14px;border-radius:9999px;background:${i === 0 ? '#0f172a;color:#fff' : '#f1f5f9'};white-space:nowrap">${label}</button>`)
-        .join('')}
-    </div>
-  </div>
-  <div id="grid" class="${g}">
-    <div id="list" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3">
-      ${filler('search + new place', 96)}
-      ${filler('FAVOURITES + OTHER PLACES rows', 280)}
-      ${filler('show hidden places', 28)}
-    </div>
-    <div id="detail" class="space-y-4 min-w-0">
-      <div id="card1" class="bg-white rounded-2xl border border-slate-200 shadow-sm ${card1}">
-        ${filler('Name on posts', 56)}${filler('Short name', 56)}
-        <div class="sm:col-span-2">${filler('Address', 56)}</div>
-        ${filler('Area', 56)}${filler('Postcode', 56)}
-      </div>
-      <div id="card2" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">${filler('Events here', 86)}</div>
-      <div id="card3" class="flex flex-wrap gap-2">
-        <span style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:12px;white-space:nowrap">★ Favourite</span>
-        <span style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:12px;white-space:nowrap">Merge into another place</span>
-        <span style="padding:6px 10px;border:1px solid #e2e8f0;border-radius:12px;white-space:nowrap">Hide this place</span>
-      </div>
-    </div>
-  </div>
-</div></body></html>`
-}
-
 /**
- * FIXTURE 2 — THE ADD EVENT MODAL, with the place picker where "Copy a recent event" was.
- * 🔴 THE MODAL'S OWN WRAPPER CLASSES ARE LIFTED FROM THE PAGE, including the `max-h-[90vh]` and the
- * scroll container, because the question at 390px is not only "does it fit across" but "can the
- * operator still reach the Add event button at the bottom".
+ * THE ADD EVENT MODAL. Real class names lifted from the page, filler where the content goes.
+ *
+ * 🔴 THE SHELL IS THE POINT OF THIS FIXTURE. The question is not only "do the two panes sit side by
+ * side" but "is the footer on screen without scrolling" — and that is a flex-column + `shrink-0`
+ * property, which only a layout engine can answer.
+ *
+ * @param oneCol  the control: the responsive grid replaced by a single column, which must measure
+ *                differently at 1440 or the side-by-side assertions prove nothing.
  */
-function modalFixture(css) {
-  const shell = lift(PAGE, /<div className=\{`bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full shadow-2xl (max-h-\[90vh\] overflow-y-auto overscroll-contain touch-pan-y)/, 'the modal shell')
-  const form = lift(PAGE, /<div id="add-event-form" className="(grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the add-event form grid')
-  const picker = 'mt-2'
+function fixture(css, oneCol = false) {
+  const shell = lift(PAGE, /className=\{`(bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden)/, 'the modal shell')
+  const body = lift(PAGE, /className=\{`(flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y) px-5/, 'the scrolling body')
+  const twoPane = lift(PAGE, /\$\{\s*\n?\s*showPicker \? '(md:grid md:grid-cols-\[380px_minmax\(0,1fr\)\] md:gap-5)' : ''\}/, 'the two-pane grid')
+  const footer = lift(PAGE, /<div className="(shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3)/, 'the sticky footer')
+  const form = lift(PAGE, /<div id="add-event-form" className="(grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the form grid')
+  const grid = oneCol ? '' : twoPane
+
+  const field = (label, h = 56) => `<div>${filler(label, h)}</div>`
   return `${HEAD(css)}
-<div class="fixed inset-0" style="background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px">
-  <div id="modal" class="bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full shadow-2xl ${shell} max-w-sm sm:max-w-lg lg:max-w-2xl">
-    <h3 style="font-weight:900;margin-bottom:16px">Add event</h3>
-    <div id="pickerBlock" class="mb-4">
-      <label style="font-size:12px;font-weight:700">Place</label>
-      ${filler('search your places', 40)}
-      <div id="picker" class="${picker}">
-        <div class="flex flex-col gap-2 max-h-56 overflow-y-auto">
-          ${filler('★ Lavenham Village Hall · Last time: Tue 6 Oct · 17:00–20:00', 52)}
-          ${filler('★ Bull &amp; Butcher · Last time: Wed 1 Oct · 17:00–20:00', 52)}
+<div class="fixed inset-0" style="background:rgba(0,0,0,.6);display:flex;align-items:stretch;justify-content:center">
+  <div id="modal" class="${shell} max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh] md:max-w-[1040px]" style="margin:auto">
+
+    <div id="header" class="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
+      <h3 style="font-weight:900;flex:1 1 0%;min-width:0">Add event</h3>
+      <div id="switch" class="shrink-0 flex rounded-xl bg-slate-100 p-0.5">
+        <button style="padding:6px 12px;border-radius:10px;white-space:nowrap;background:#fff">One event</button>
+        <button style="padding:6px 12px;border-radius:10px;white-space:nowrap">Upload schedule</button>
+      </div>
+      <button id="close" aria-label="Close" class="shrink-0 w-8 h-8 rounded-full bg-slate-100" style="line-height:1">×</button>
+    </div>
+
+    <div id="body" class="${body} px-5 sm:px-6 pb-4 md:overflow-hidden">
+      <div id="panes" class="min-h-0 h-full ${grid}">
+        <div id="left" class="min-h-0 md:h-full md:border md:border-slate-200 md:rounded-2xl md:overflow-hidden flex flex-col">
+          ${filler('search places', 64)}
+          ${filler('FAVOURITES + ALL PLACES rows', 420)}
+          <div id="leftFooter" class="shrink-0 border-t border-slate-100 p-3" style="display:flex;justify-content:space-between;gap:12px">
+            <span style="font-size:12px;font-weight:700;white-space:nowrap">+ New place</span>
+            <span style="font-size:12px;font-weight:700;white-space:nowrap">Tidy up places</span>
+          </div>
         </div>
-        <div id="pickerLinks" class="flex flex-wrap items-center gap-3 mt-2">
-          <span style="font-size:12px;font-weight:700;white-space:nowrap">Show all places (14)</span>
-          <span style="font-size:12px;font-weight:700;white-space:nowrap">+ New place</span>
+        <div id="right" class="min-w-0 md:h-full md:overflow-y-auto md:pr-1">
+          <div id="form" class="${form}">
+            <div class="sm:col-span-2 max-md:order-1">${filler('Date', 56)}</div>
+            <div class="md:contents max-md:order-5">
+              <button id="addrToggle" class="md:hidden w-full" style="border:1px solid #e2e8f0;border-radius:12px;padding:8px 12px;text-align:left">Address details ▶</button>
+              <div id="addrFields" class="md:contents max-md:hidden">
+                <div class="sm:col-span-2">${filler('Venue name', 56)}</div>
+                <div class="sm:col-span-2">${filler('Full address', 56)}</div>
+                ${field('Area')}
+                ${field('Postcode')}
+              </div>
+            </div>
+            <div id="times" class="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">${filler('Start', 56)}${filler('End', 56)}</div>
+            <div class="sm:col-span-2 max-md:order-3">${filler('Truck', 56)}</div>
+            <div class="sm:col-span-2 max-md:order-4">${filler('Notes', 56)}</div>
+          </div>
         </div>
       </div>
     </div>
-    <div id="form" class="${form}">
-      <div class="sm:col-span-2">${filler('Date', 56)}</div>
-      <div class="sm:col-span-2">${filler('Venue name', 56)}</div>
-      <div class="sm:col-span-2">${filler('Full address', 56)}</div>
-      ${filler('Area', 56)}
-      ${filler('Postcode', 56)}
-      <div id="times" class="sm:col-span-2 grid grid-cols-2 gap-2">${filler('Start', 56)}${filler('End', 56)}</div>
-      <div class="sm:col-span-2">${filler('Notes', 56)}</div>
-      <p id="filledFrom" class="sm:col-span-2" style="font-size:12px;color:#94a3b8">Filled from Lavenham Village Hall. Change anything for this date only.</p>
-      <div id="actions" class="sm:col-span-2 flex gap-2 pt-1">
+
+    <div id="footer" class="${footer}" style="display:flex;align-items:center;gap:12px">
+      <p id="filledFrom" style="flex:1 1 0%;min-width:0;font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filled from Lavenham Village Hall</p>
+      <div class="shrink-0" style="display:flex;gap:8px">
         <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Cancel</span>
         <span style="padding:8px 16px;border-radius:12px;background:#ea580c;color:#fff;white-space:nowrap">Add event</span>
       </div>
@@ -173,42 +154,58 @@ function modalFixture(css) {
 }
 
 const rects = () => {
-  const ids = ['heading', 'pills', 'grid', 'list', 'detail', 'card1', 'card2', 'card3',
-    'modal', 'pickerBlock', 'picker', 'pickerLinks', 'form', 'times', 'filledFrom', 'actions']
+  const ids = ['modal', 'header', 'switch', 'close', 'body', 'panes', 'left', 'leftFooter',
+    'right', 'form', 'times', 'footer', 'filledFrom', 'addrToggle', 'addrFields']
   const out = {}
   for (const id of ids) {
     const el = document.getElementById(id)
     if (!el) { out[id] = null; continue }
     const r = el.getBoundingClientRect()
+    const cs = getComputedStyle(el)
     out[id] = {
-      top: Math.round(r.top), left: Math.round(r.left),
+      top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right),
       width: Math.round(r.width), height: Math.round(r.height), bottom: Math.round(r.bottom),
-      visible: r.width > 0 && r.height > 0,
+      visible: r.width > 0 && r.height > 0 && cs.display !== 'none',
+      display: cs.display,
     }
   }
   out.docScrollW = document.documentElement.scrollWidth
   out.innerW = window.innerWidth
+  out.innerH = window.innerHeight
+  // 🔴 IS THE FOOTER ON SCREEN WITHOUT SCROLLING? The modal is a flex column, so the footer sits
+  // inside the viewport iff the modal does. Measured, not assumed.
+  const f = document.getElementById('footer').getBoundingClientRect()
+  out.footerOnScreen = f.bottom <= window.innerHeight + 1 && f.top >= -1
+  // Does the BODY scroll rather than the modal?
+  const b = document.getElementById('body')
+  out.bodyScrolls = b.scrollHeight > b.clientHeight + 1
+  const m = document.getElementById('modal')
+  out.modalScrolls = m.scrollHeight > m.clientHeight + 1
   const rowsOf = (id) => {
     const el = document.getElementById(id)
     if (!el) return 0
     return [...new Set([...el.children].map(k => Math.round(k.getBoundingClientRect().top)))].length
   }
-  out.card1Rows = rowsOf('card1')
-  out.controlRows = rowsOf('card3')     // the three place controls: one row or wrapped
-  out.formRows = rowsOf('form')         // the add-event form: one field per row, or two across
-  out.pillRows = (() => {
-    const el = document.getElementById('pills')
-    if (!el) return 0
-    const inner = el.firstElementChild
-    return inner ? [...new Set([...inner.children].map(k => Math.round(k.getBoundingClientRect().top)))].length : 0
-  })()
-  // 🔴 DO THE PILLS SCROLL INSIDE THEIR OWN ROW? Their content is wider than the row, and the row
-  // clips it — which is what "the pills scroll sideways; no page-level sideways scroll" means.
-  out.pillsClip = (() => {
-    const el = document.getElementById('pills')
-    if (!el) return null
-    return { rowW: Math.round(el.clientWidth), contentW: Math.round(el.scrollWidth) }
-  })()
+  /* ⚠️ `rowsOf('form')` COUNTS DOM CHILDREN, NOT VISUAL ROWS — the address wrapper is
+   * `display: contents`, so it is one child holding four fields. It is kept for the log line only.
+   * The claim worth asserting is the PAIRING: Area and Postcode share a row from `sm`, and each take
+   * their own below it. That is measured directly from the two fields' tops. */
+  out.formRows = rowsOf('form')
+  const labelled = (name) => [...document.querySelectorAll('#form [style*="height"]')]
+    .find(el => el.textContent.trim().startsWith(name))
+  const areaEl = labelled('Area'), pcEl = labelled('Postcode')
+  out.areaPostcodeSameRow = !!areaEl && !!pcEl
+    && Math.round(areaEl.getBoundingClientRect().top) === Math.round(pcEl.getBoundingClientRect().top)
+    && areaEl.getBoundingClientRect().width > 0
+  // The form's visual field order, top to bottom — how the two layouts are told apart.
+  /* ⚠️ HIDDEN FIELDS ARE EXCLUDED. A `display: none` element reports a zero rect at top 0, so the
+   * collapsed address fields sorted to the FRONT of this list and the phone order read
+   * "Venue, Address, Area, Postcode, Date, …". The order being measured is the VISUAL one. */
+  out.fieldOrder = [...document.querySelectorAll('#form [style*="height"]')]
+    .map(el => ({ r: el.getBoundingClientRect(), label: el.textContent.trim() }))
+    .filter(x => x.r.width > 0 && x.r.height > 0)
+    .sort((a, b) => a.r.top - b.r.top || a.r.left - b.r.left)
+    .map(x => x.label)
   return out
 }
 
@@ -248,91 +245,71 @@ async function measure() {
 
     for (const [w, h, label] of [[1440, 900, 'desktop'], [820, 1180, 'iPad portrait'], [390, 844, 'phone']]) {
       await eng.setViewport(w, h)
-      await eng.page.goto(write(`p-${w}-${eng.name}.html`, fixture(css)))
+      await eng.page.goto(write(`m-${w}-${eng.name}.html`, fixture(css)))
       const r = await eng.page.evaluate(rects)
-      lines.push(`  ${w}×${h} (${label})  list ${r.list.width}@x${r.list.left}/y${r.list.top} · detail ${r.detail.width}@x${r.detail.left}/y${r.detail.top} · pills row ${r.pillsClip.rowW} content ${r.pillsClip.contentW}`)
+      lines.push(`  ${w}×${h} (${label})  modal ${r.modal.width}×${r.modal.height} · left ${r.left.width}@x${r.left.left} · right ${r.right.width}@x${r.right.left} · footer@${r.footer.top} · form rows ${r.formRows}`)
 
-      // ── THE SUB-TABS ─────────────────────────────────────────────────────────────────────────
-      t(r.pillRows === 1, `🔴 ${w}: the three pills stay on ONE row — they scroll, they do not wrap`)
-      t(r.pills.width <= r.innerW, `🔴 ${w}: the pill row never exceeds the viewport`)
-      t(r.docScrollW <= r.innerW, `🔴 ${w}: NO HORIZONTAL PAGE SCROLL — the brief's requirement`)
+      // ── THE SHELL, AT EVERY WIDTH ────────────────────────────────────────────────────────────
+      t(r.docScrollW <= r.innerW, `🔴 ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(r.modal.width <= r.innerW, `🔴 ${w}: the modal fits across the viewport`)
+      t(r.footerOnScreen, `🔴 ${w}: THE FOOTER IS ON SCREEN WITHOUT SCROLLING — Cancel and Add event always reachable`)
+      t(!r.modalScrolls, `🔴 ${w}: the MODAL itself does not scroll — the body does`)
+      t(r.header.bottom <= r.body.top, `⚠️ ${w}: the header sits above the body`)
+      t(r.body.bottom <= r.footer.top + 1, `⚠️ ${w}: the body ends where the footer begins`)
+      t(r.close.visible && r.close.right <= r.modal.right, `⚠️ ${w}: the close button is inside the modal`)
+      t(r.switch.visible, `⚠️ ${w}: the One event | Upload schedule switch is visible`)
+      t(r.filledFrom.width > 0 && r.footer.height > 0, `⚠️ ${w}: the "Filled from" line shares the footer with the buttons`)
 
-      // ── THE TWO PANES ────────────────────────────────────────────────────────────────────────
-      if (w >= 1024) {
-        t(r.list.top === r.detail.top, `🔴 ${w}: the two panes share a top edge — side by side`)
-        t(r.list.left < r.detail.left && r.list.width === 288, `⚠️ ${w}: the list is the 18rem (288px) column, on the left`)
-        t(r.detail.width > r.list.width, `⚠️ ${w}: the detail pane takes the rest`)
-        t(r.card1Rows === 3, `⚠️ ${w}: Card 1 is three rows — two, a full-width Address, then two`)
+      if (w >= 768) {
+        // ── THE TWO-PANE LAYOUT ────────────────────────────────────────────────────────────────
+        t(r.left.top === r.right.top, `🔴 ${w}: the two panes share a top edge — side by side`)
+        t(r.left.width === 380, `🔴 ${w}: the places pane is 380px, as the mockup asks`)
+        t(r.right.left > r.left.right - 1, `🔴 ${w}: the form is to the RIGHT of the list, not under it`)
+        t(r.right.width >= 300, `⚠️ ${w}: the form still has ${r.right.width}px — wide enough for its pairs`)
+        t(r.addrToggle.display === 'none', `⚠️ ${w}: no "Address details" collapse — the fields are simply there`)
+        t(r.addrFields.display === 'contents', `🔴 ${w}: the address wrapper is \`display: contents\`, so its four fields are grid items`)
+        t(r.areaPostcodeSameRow, `⚠️ ${w}: Area and Postcode share a row (sm:grid-cols-2), the mockup's pairing`)
+        t(r.fieldOrder[0].startsWith('Date') && r.fieldOrder[1].startsWith('Venue'),
+          `🔴 ${w}: desktop order starts Date → Venue name`)
       } else {
-        t(r.list.bottom <= r.detail.top, `🔴 ${w} (${label}): the LIST IS ABOVE the detail`)
-        t(r.list.width === r.detail.width, `⚠️ ${w}: both panes are full width`)
-      }
-      if (w === 390) {
-        t(r.card1Rows === 5, '⚠️ 390: Card 1 is five rows — one field per row on a phone')
-        t(r.card2.top < r.card3.top, '⚠️ 390: the controls sit under "Events here"')
+        // ── THE PHONE SHEET ────────────────────────────────────────────────────────────────────
+        t(r.left.bottom <= r.right.top || !r.left.visible, `🔴 ${w}: one column — the list is not beside the form`)
+        t(r.addrToggle.display !== 'none', `🔴 ${w}: "Address details" IS a collapse on a phone`)
+        t(r.addrFields.display === 'none', `🔴 ${w}: …and it starts COLLAPSED, because the fields are already filled`)
+        t(r.fieldOrder[0].startsWith('Date'), `🔴 ${w}: Date first`)
+        t(r.fieldOrder[1].startsWith('Start') && r.fieldOrder[2].startsWith('End'),
+          `🔴 ${w}: then Start and End side by side — the phone order, from CSS \`order\`, not a second form`)
+        t(r.fieldOrder[3].startsWith('Truck') && r.fieldOrder[4].startsWith('Notes'),
+          `🔴 ${w}: then Truck, then Notes`)
+        t(r.times.width <= r.modal.width, `⚠️ ${w}: start and end stay inside the sheet`)
+        t(r.modal.height <= r.innerH + 1, `⚠️ ${w}: the sheet is exactly the viewport tall`)
       }
     }
 
-    // ── 🔴 THE PILLS SCROLL RATHER THAN WIDENING THE PAGE, measured at the width where it bites ──
-    {
-      await eng.setViewport(320, 844)
-      await eng.page.goto(write(`narrow-${eng.name}.html`, fixture(css)))
+    /* ── 🔴 THE BREAKPOINT ITSELF, MEASURED EITHER SIDE OF IT ───────────────────────────────────
+     * `md` is 768px. 767 must be one column and 768 must be two, or the choice is not the one the
+     * source says it is. iPad portrait (820) is therefore two-pane, which is what the mockup asks
+     * for — and the width either side is what proves the boundary is where it is claimed. */
+    for (const [w, expectTwoPane] of [[767, false], [768, true]]) {
+      await eng.setViewport(w, 1000)
+      await eng.page.goto(write(`bp-${w}-${eng.name}.html`, fixture(css)))
       const r = await eng.page.evaluate(rects)
-      lines.push(`  320×844   pills row ${r.pillsClip.rowW} · content ${r.pillsClip.contentW} · doc ${r.docScrollW} vs viewport ${r.innerW}`)
-      /* ⚠️ AT 320 THE THREE REAL PILLS FIT (content 296 in a 296 row), so there is nothing to scroll
-       * — which is the right outcome and NOT a test of the clipping. An earlier draft asserted they
-       * overflowed here and failed on correct layout. The clipping is tested by the control below,
-       * with a row that genuinely overflows. */
-      t(r.pillsClip.contentW <= r.pillsClip.rowW + 1, '⚠️ 320: the three real pills still fit on one row')
-      t(r.docScrollW <= r.innerW, '🔴 320: and the page does not scroll sideways')
-      t(r.pillRows === 1, '⚠️ 320: and they do not wrap')
-    }
-    {
-      /* 🔴 THE CLIPPING CONTROL. Six pills in the same row at 320px genuinely overflow it. What must
-       * hold is that the OVERFLOW STAYS INSIDE THE ROW — `overflow-x-auto` on a `min-w-0` box — and
-       * the document does not grow. That is the brief's "the pills scroll sideways; no page-level
-       * sideways scroll", and it is only a real measurement when the content does not fit. */
-      await eng.setViewport(320, 844)
-      await eng.page.goto(write(`clip-${eng.name}.html`, fixture(css, false, 6)))
-      const r = await eng.page.evaluate(rects)
-      lines.push(`  320×844 (6 pills)  row ${r.pillsClip.rowW} · content ${r.pillsClip.contentW} · doc ${r.docScrollW}`)
-      t(r.pillsClip.contentW > r.pillsClip.rowW, '🔴 CONTROL: six pills genuinely overflow their row at 320px')
-      t(r.docScrollW <= r.innerW, '🔴 …and the PAGE still does not scroll — the overflow is inside the pill row')
-      t(r.pillRows === 1, '⚠️ …and they scroll rather than wrapping')
-    }
-
-    // ── THE ADD EVENT MODAL ──────────────────────────────────────────────────────────────────
-    for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
-      await eng.setViewport(w, h)
-      await eng.page.goto(write(`m-${w}-${eng.name}.html`, modalFixture(css)))
-      const r = await eng.page.evaluate(rects)
-      lines.push(`  modal ${w}×${h}  shell ${r.modal.width} · picker@${r.picker.top} → form@${r.form.top} → actions@${r.actions.top} · form rows ${r.formRows}`)
-      t(r.pickerBlock.bottom <= r.form.top, `🔴 modal ${w}: the place picker is ABOVE the form, where "Copy a recent event" was`)
-      t(r.filledFrom.top < r.actions.top, `⚠️ modal ${w}: the "Filled from" line sits just above the buttons`)
-      t(r.docScrollW <= r.innerW, `🔴 modal ${w}: no horizontal page scroll`)
-      t(r.modal.width <= r.innerW - 24, `⚠️ modal ${w}: the modal keeps its 16px gutter`)
-      t(r.pickerLinks.width <= r.modal.width, `⚠️ modal ${w}: "Show all places" and "+ New place" fit inside the modal`)
-      /* ⚠️ THE ROW COUNTS ARE THE FIXTURE'S NINE FORM CHILDREN: Date, Venue, Address, Area, Postcode,
-       * the times pair, Notes, the "Filled from" line, the buttons. From `sm` Area and Postcode share
-       * a row, so nine children occupy EIGHT rows; on a phone each takes its own, so nine. An earlier
-       * draft guessed 5 and 7 and failed on correct layout — the numbers are counted, not estimated. */
-      if (w === 390) {
-        t(r.formRows === 9, '⚠️ modal 390: every form field is on its own row (9 of them)')
-        t(r.times.width <= r.modal.width, '⚠️ modal 390: start and end time stay inside the modal')
-      }
-      if (w >= 640) t(r.formRows === 8, `⚠️ modal ${w}: Area and Postcode share a row (sm:grid-cols-2) — 8 rows`)
+      const twoPane = r.left.top === r.right.top && r.right.left > r.left.right - 1
+      lines.push(`  ${w}×1000   two-pane: ${twoPane} (expected ${expectTwoPane}) · doc ${r.docScrollW} vs ${r.innerW}`)
+      t(twoPane === expectTwoPane, `🔴 the breakpoint is exactly md/768px — ${w}px is ${expectTwoPane ? 'two panes' : 'one column'}`)
+      t(r.docScrollW <= r.innerW, `🔴 ${w}: and no horizontal scroll either side of it`)
     }
 
     // ── THE CONTROL ─────────────────────────────────────────────────────────────────────────────
-    /* 🔴 A PLAIN `grid-cols-1` MUST MEASURE DIFFERENTLY AT 1440. Without this the stacking assertions
-     * would pass on a component that never had a two-column layout, and the file would be measuring
-     * that one column is one column. */
+    /* 🔴 WITHOUT THE RESPONSIVE GRID, 1440 MUST STACK. Otherwise the side-by-side assertions above
+     * would pass on a modal that never had two panes, and this file would be measuring that one
+     * column is one column. */
     {
       await eng.setViewport(1440, 900)
       await eng.page.goto(write(`c-${eng.name}.html`, fixture(css, true)))
       const r = await eng.page.evaluate(rects)
-      t(r.list.bottom <= r.detail.top,
-        '🔴 CONTROL: with the responsive grid replaced by grid-cols-1, 1440px stacks — so the measurement can tell them apart')
+      t(r.left.bottom <= r.right.top,
+        '🔴 CONTROL: with the two-pane grid removed, 1440px stacks — so the measurement can tell them apart')
     }
 
     await eng.close()
@@ -346,7 +323,7 @@ async function measure() {
 }
 
 measure().then(({ lines, fails }) => {
-  console.log('── SCHEDULE: SUB-TABS, PLACES AND THE ADD EVENT MODAL, MEASURED ────────────────────────')
+  console.log('── THE ADD EVENT MODAL, MEASURED: TWO PANES, THE PHONE SHEET, THE STICKY FOOTER ───────')
   for (const l of lines) console.log(l)
   console.log(fails === 0 ? '\n✅ layout measured in every available engine' : `\n🔴 ${fails} MEASUREMENT(S) FAILED`)
   process.exit(fails === 0 ? 0 : 1)

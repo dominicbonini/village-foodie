@@ -250,10 +250,45 @@ function runMatchingSuite(P) {
       ev({ event_date: '2026-09-22' }),
       ev({ event_date: TODAY }),
       ev({ event_date: '2026-11-01' }),  // future — out of a past-tense count
-      ev({ event_date: '2026-09-23', status: 'closed' }),  // not trading — out
+      // 🔴 CLOSED COUNTS, and this line used to expect it OUT — which was bug 3 written into the
+      // harness. A closed event is the clearest evidence the truck traded there.
+      ev({ event_date: '2026-09-23', status: 'closed' }),
+      ev({ event_date: '2026-09-24', status: 'cancelled' }),  // cancelled — out
     ]
-    return P.tradedCountInLastYear(evs, TODAY) === 3
+    return P.tradedCountInLastYear(evs, TODAY) === 4
   })())
+
+  // ── 🔴 BUG 3: TWO STATUS RULES, NAMED SEPARATELY ─────────────────────────────────────────────
+  t('🔴 `closed` COUNTS AS TRADED — it is the normal end state of an event that happened',
+    P.countsAsTraded('closed') === true && P.countsAsTraded('confirmed') === true
+    && P.countsAsTraded('unconfirmed') === true && P.countsAsTraded('cancelled') === false)
+  t('🔴 …and `closed` is NOT upcoming — a pitch that is over is never "next"',
+    P.countsAsUpcoming('closed') === false && P.countsAsUpcoming('cancelled') === false
+    && P.countsAsUpcoming('confirmed') === true && P.countsAsUpcoming('unconfirmed') === true)
+  t('🔴 THE REPORTED SYMPTOM, END TO END: a place whose only event is a CLOSED past one shows it as Last',
+    P.lastEventAt([ev({ event_date: '2026-09-22', status: 'closed' })], TODAY)?.event_date === '2026-09-22')
+  t('⚠️ both rules are case- and space-insensitive, because status is free text in the table',
+    P.countsAsTraded(' Cancelled ') === false && P.countsAsUpcoming('CLOSED') === false)
+
+  // ── 🔴 BUG 4: THE MUTED LINE ───────────────────────────────────────────────────────────────────
+  const day = (d) => (d === '2026-10-06' ? 'Mon 6 Oct' : d === '2026-10-20' ? 'Tue 20 Oct' : String(d))
+  t('🔴 THE LINE CARRIES THE TIMES, 24-hour and trimmed to HH:MM',
+    P.placeWhenLine({ last_event_date: '2026-10-06', last_start_time: '17:00:00', last_end_time: '20:00:00' }, day)
+      === 'Last: Mon 6 Oct · 17:00–20:00')
+  t('🔴 LAST FIRST. A place with both a past and a future date shows the PAST one — it is the visit whose times picking the place will copy',
+    P.placeWhenLine({ last_event_date: '2026-10-06', last_start_time: '17:00:00', last_end_time: '20:00:00', next_event_date: '2026-10-20' }, day)
+      .startsWith('Last: Mon 6 Oct'))
+  t('⚠️ …and Next only when there is no past visit',
+    P.placeWhenLine({ next_event_date: '2026-10-20', next_start_time: '12:00:00', next_end_time: '15:00:00' }, day)
+      === 'Next: Tue 20 Oct · 12:00–15:00')
+  t('⚠️ an event with no times shows the date alone rather than a dangling separator',
+    P.placeWhenLine({ last_event_date: '2026-10-06' }, day) === 'Last: Mon 6 Oct')
+  t('⚠️ "No events yet" only when there is genuinely neither',
+    P.placeWhenLine({}, day) === 'No events yet')
+  t('⚠️ `timeRangeLabel` trims seconds and handles a missing end time',
+    P.timeRangeLabel('17:00:00', '20:00:00') === '17:00–20:00'
+    && P.timeRangeLabel('17:00:00', null) === '17:00'
+    && P.timeRangeLabel(null, null) === '')
   t('⚠️ the 365-day boundary is computed in UTC, not through a local timezone',
     P.ymdMinusDays('2026-10-03', 365) === '2025-10-03' && P.ymdMinusDays('2026-03-01', 1) === '2026-02-28')
 
@@ -686,12 +721,20 @@ function runWiringSuite() {
   t('🔴 THE SEPARATE TOP-LEVEL TAB IS GONE', !/id: 'graphics'/.test(P)
     && !/ScheduleGraphicsTab/.test(P)
     && !fs.existsSync(path.join(REPO, 'components/manage/ScheduleGraphicsTab.tsx')))
-  t('🔴 the Schedule tab has three pill sub-tabs, Events first',
+  /* 🔴 TWO PILLS NOW. The Places pill went when the list moved into the Add event modal; a third
+   * pill would be a route to a screen that is part of adding an event. */
+  t('🔴 the Schedule tab has TWO pills — Events, then Weekly post — and no Places pill',
     /\{ id: 'events', label: 'Events' \}/.test(P)
     && /\{ id: 'weekly', label: 'Weekly post' \}/.test(P)
-    && /\{ id: 'places', label: 'Places' \}/.test(P)
+    && !/id: 'places'/.test(P)
     && P.indexOf("id: 'events'") < P.indexOf("id: 'weekly'")
-    && P.indexOf("id: 'weekly'") < P.indexOf("id: 'places'"))
+    && /type ScheduleSection = 'events' \| 'weekly'/.test(P))
+  t("🔴 an old `?section=places` link falls through to Events and does NOT force Tidy up open",
+    /v === 'events' \|\| v === 'weekly'/.test(P)
+    && !/section === 'places'/.test(P)
+    && !/setModalView\('tidy'\)[\s\S]{0,40}sectionParam/.test(P))
+  t('⚠️ …and `?section=` still works for the two that remain',
+    /qs\.get\('section'\)/.test(P) && /url\.searchParams\.delete\('section'\)/.test(P))
   /* ⚠️ ASSERTED ON THE RAW SOURCE, not the stripped one — see `codeOnly`'s note. The loads this checks
    * are one-liners that no comment contains, so raw is both safe and exact here. */
   t("🔴 THE EVENTS SECTION IS THE EXISTING COMPONENT, UNCHANGED — `isActive` still means \"the tab is open\"",
@@ -719,24 +762,53 @@ function runWiringSuite() {
   // ════════════════════════════════════════════════════════════════════════════════════════════
   // THE PICKER
   // ════════════════════════════════════════════════════════════════════════════════════════════
-  t('🔴 "COPY A RECENT EVENT" IS REPLACED BY THE PLACE PICKER',
-    !/Copy a recent event/.test(P) && !/const recentEvents = useMemo/.test(P.slice(0, P.indexOf('function OrdersReport')) || P)
-    && /Search your places/.test(P))
+  t('🔴 "COPY A RECENT EVENT" IS REPLACED BY THE PLACE LIST IN THE LEFT PANE',
+    !/Copy a recent event/.test(P)
+    && /<PlaceList/.test(P)
+    && /label="Search places"/.test(read(PLACES_UI)))
+  /* 🔴 BUG 2: BOTH SECTIONS ALWAYS. There is no `showAll` state and no "No places match" on an empty
+   * search — the only empty states are "nothing matches <typed>" and "no places yet". */
+  /* ⚠️ CODE-ONLY, AND `showAllPlaces` NOT `showAll`. The removal notes in SchedulePlaces.tsx NAME the
+   * old control — that is the record — and `showAll` also matches `showAllergenModal`, which is a
+   * different feature entirely. An earlier draft of this line failed on correct code for both reasons. */
+  t('🔴 BUG 2 CANNOT RETURN: no "Show all places" gate and no favourites-only default',
+    !/Show all places/.test(codeOnly(read(PAGE))) && !/showAllPlaces/.test(codeOnly(read(PAGE)))
+    && !/Show all places/.test(codeOnly(read(PLACES_UI))) && !/showAllPlaces/.test(codeOnly(read(PLACES_UI))))
+  t('🔴 …and FAVOURITES and ALL PLACES are both rendered unconditionally', (() => {
+    const U2 = read(PLACES_UI)
+    return /favourites\.length > 0 && \(/.test(U2) && /others\.length > 0 && \(/.test(U2)
+      && />Favourites</.test(U2) && />All places</.test(U2)
+      // the only "nothing matches" line is behind a typed search
+      && /Nothing matches/.test(U2) && /nothingAtAll \?/.test(U2)
+  })())
+  /* 🔴 BUG 1: THE STAR TOGGLES IN PLACE. The write is optimistic, there is no refetch on either
+   * outcome, and a failure reverts the star and shows one line. */
+  t('🔴 BUG 1 CANNOT RETURN: the star is optimistic and never reloads the list', (() => {
+    const U2 = stripComments(read(PLACES_UI))
+    const fav = U2.slice(U2.indexOf('const setFavourite'), U2.indexOf('return { places:'))
+    return /patchLocal\(p\.id, \{ is_favourite: next \}\)/.test(fav)     // optimistic, before the await
+      && /patchLocal\(p\.id, \{ is_favourite: p\.is_favourite \}\)/.test(fav)  // reverted on failure
+      && /setStarError\(/.test(fav)
+      && !/reload\(/.test(fav)                                            // and NO refetch, either way
+  })())
+  t('⚠️ …and the error is one line in the pane, not a toast that disappears',
+    /\{starError && <p className="text-xs text-red-500/.test(read(PLACES_UI)))
   t('⚠️ …and `handleCopyEvent` SURVIVES for the per-event Copy button in the list',
     /const handleCopyEvent = /.test(P) && /handleCopyEvent\(event\)/.test(P))
   t('🔴 the fill rule is the SHARED function, not a copy in the component',
     /\.\.\.fillFromPlace\(pl, p\)/.test(P) && /from '@\/lib\/schedule-graphics\/places'/.test(P)
     && /export function fillFromPlace/.test(read(LIB)))
   t('🔴 the picker is NEW EVENTS ONLY, and sets `truck_place_id` nowhere else',
-    /const wantPicker = !!editingEvent && !editingEvent\.id/.test(P)
+    /const showPicker = !!editingEvent && !editingEvent\.id && addMode === 'manual' && modalView === 'add'/.test(P)
     && (P.match(/truck_place_id: pl\.id/g) || []).length === 1)
-  t('⚠️ a hidden or merged place is never offered in the picker',
-    /\.filter\(pl => !pl\.is_hidden && !pl\.merged_into_id\)/.test(P))
-  t('⚠️ "Show all places" and "+ New place" are both there, and New place creates nothing yet',
-    /Show all places \(\{found\.length\}\)/.test(P) && /\+ New place/.test(P)
-    && /setEditingEvent\(p => p \? \(\{ \.\.\.p, truck_place_id: null \}\) : p\)/.test(P))
-  t('⚠️ the one muted line, only when a place was picked',
-    /Filled from \{.*\}\. Change anything for this date only\./.test(P))
+  t('⚠️ a hidden or merged place is never offered — the list filters them unless asked',
+    /showHidden \|\| !isRetired\(p\)/.test(read(PLACES_UI))
+    && !/showHidden/.test(P.slice(P.indexOf('<PlaceList'), P.indexOf('<PlaceList') + 600)))
+  t('⚠️ "+ New place" creates nothing until save, and opens the address fields to type into',
+    /\+ New place/.test(P)
+    && /const startNewPlace = \(\) => \{[\s\S]{0,200}truck_place_id: null[\s\S]{0,200}setAddrOpen\(true\)/.test(P))
+  t('⚠️ the one muted line, only when a place was picked, in the sticky footer',
+    /Filled from \$\{pickedPlace\?\.name \?\? 'that place'\}/.test(P))
   t('⚠️ every existing field and the Upload schedule path are still there',
     ['Venue name', 'Full address (optional)', 'Area (village, town or city)', 'Postcode', 'Start time', 'End time', 'Notes', 'Upload schedule']
       .every(f => P.includes(f))
@@ -764,8 +836,8 @@ function runWiringSuite() {
     })())
   t('⚠️ restoring a merged place un-merges it, so it comes back with its own events',
     /if \(body\.is_hidden === false\) patch\.merged_into_id = null/.test(R))
-  t('⚠️ the pane has the two groups, the star toggle and the Show-hidden escape',
-    /Favourites/.test(U) && /Other places/.test(U)
+  t('⚠️ the list has both groups, the star toggle and the Show-hidden escape',
+    /Favourites/.test(U) && /All places/.test(U)
     && /is_favourite \? '★' : '☆'/.test(U)
     && /Show hidden places \(\$\{hiddenCount\}\)/.test(U))
   t('⚠️ the three controls, and Card 1\'s five fields including Area',
@@ -773,8 +845,40 @@ function runWiringSuite() {
     && ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
   t('⚠️ Card 2 names both lines and the count',
     /Events here/.test(U) && /Next: \$\{shortDay/.test(U) && /time\$\{place\.traded_last_year === 1 \? '' : 's'\} in the last year/.test(U))
-  t('⚠️ one column until `lg`, two after — the brief\'s phone requirement',
-    /grid-cols-1 lg:grid-cols-\[18rem_1fr\]/.test(U))
+  /* 🔴 THE BREAKPOINT IS `md` (768px) NOW, NOT `lg`. Measured: at 820px (iPad portrait) the 380px
+   * list sits beside the form with no horizontal scroll, so an iPad gets the two-pane layout the
+   * mockup asks for. See scripts/schedule-places-render.cjs and the report. */
+  t('🔴 the modal is two-pane from `md` (768px), one column below it',
+    /md:grid md:grid-cols-\[380px_minmax\(0,1fr\)\]/.test(P))
+  t('🔴 THE FOOTER IS A FLEX SIBLING, NOT `position: sticky` — which needs a scroll ancestor and would be a no-op here',
+    /shrink-0 border-t border-slate-200 bg-white/.test(P)
+    && /flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y/.test(P)
+    && /flex flex-col min-h-0 overflow-x-hidden/.test(P))
+  t('⚠️ the header carries the One event | Upload schedule switch and a labelled close button',
+    /\[\['manual', 'One event'\], \['upload', 'Upload schedule'\]\]/.test(P)
+    && /aria-label="Close"/.test(P)
+    && !/Add manually<\/button>/.test(P))
+  /* ⚠️ MATCHED ON THE SPECIFIC HANDLER, on RAW source. The file has three other Escape handlers
+   * (category and subcategory inline edits), the first of them 2,300 lines ABOVE `closeAddModal`, so
+   * `indexOf("if (e.key === 'Escape')")` found the wrong one and the ordering check failed on correct
+   * code. And `stripComments` is unreliable on this file — see `codeOnly`'s note. */
+  t('⚠️ Escape closes the modal, and the handler is declared after `closeAddModal`', (() => {
+    const RAW = read(PAGE)
+    const handler = "if (e.key === 'Escape') closeAddModal()"
+    return RAW.includes(handler) && RAW.indexOf('const closeAddModal') < RAW.indexOf(handler)
+  })())
+  t('🔴 the phone layout is two steps, and the address fields collapse behind one control',
+    /setPhoneStep\(2\)/.test(P) && /phoneStep === 1 \? 'max-md:hidden' : ''/.test(P)
+    && /md:contents max-md:order-5/.test(P) && />Address details</.test(P))
+  t('⚠️ …and the collapsed fields stay in the DOM, so validation still sees them',
+    /\$\{addrOpen \? 'max-md:grid max-md:gap-3 max-md:mt-3' : 'max-md:hidden'\}/.test(P))
+  t('🔴 "Tidy up places" opens the existing place detail inside the modal, reusing the components',
+    /Tidy up places/.test(P) && /<TidyUpPlaces ctl=\{placesCtl\}/.test(P)
+    && /export function TidyUpPlaces/.test(U) && /<PlaceDetail/.test(U))
+  t('⚠️ ONE hook owns the list, so Tidy up and the picker cannot seed twice on one screen',
+    (P.match(/usePlaces\(/g) || []).length === 1
+    && /ctl=\{placesCtl\}/.test(P)
+    && (U.match(/api\('sg_places'\)/g) || []).length === 1)
   t('⚠️ stage 2 and 3 are still NOT started — no upload, no canvas, no checklist',
     !/<input[^>]*type="file"/.test(U) && !/canvas|toDataURL|html2canvas/i.test(U) && !/checklist/i.test(U))
 
@@ -824,9 +928,35 @@ function runVariants() {
       P => P.eventMatchesPlace(ev({ venue_id: V_HALL_OTHER }), { id: 'x', venue_id: V_HALL, name_key: 'lavenham village hall' }) === true],
 
     ['W5 🔴 a cancelled date is offered as "next"',
-      changed(LIB_SRC, "export const NON_TRADING_STATUSES = ['cancelled', 'closed'] as const",
-        "export const NON_TRADING_STATUSES = ['closed'] as const", 'W5'),
+      changed(LIB_SRC, "export const NOT_UPCOMING_STATUSES = ['cancelled', 'closed'] as const",
+        "export const NOT_UPCOMING_STATUSES = ['closed'] as const", 'W5'),
       P => P.nextEventAt([ev({ event_date: '2026-10-10', status: 'cancelled' })], '2026-10-03') !== null],
+
+    /* ── 🔴 BUG 3's VARIANT. The single status rule is restored: `closed` excluded from "Last" too.
+     * That is the bug exactly as reported — a place seeded from a real (and therefore closed) event
+     * read "No events yet". */
+    ['W5a 🔴 BUG 3 RETURNS: a CLOSED past event stops counting as "Last"',
+      changed(LIB_SRC, "export const CANCELLED_STATUSES = ['cancelled'] as const",
+        "export const CANCELLED_STATUSES = ['cancelled', 'closed'] as const", 'W5a'),
+      P => P.lastEventAt([ev({ event_date: '2026-09-22', status: 'closed' })], '2026-10-03') === null],
+    ['W5b 🔴 …and stops counting towards "n times in the last year"',
+      changed(LIB_SRC, "export const CANCELLED_STATUSES = ['cancelled'] as const",
+        "export const CANCELLED_STATUSES = ['cancelled', 'closed'] as const", 'W5b'),
+      P => P.tradedCountInLastYear([ev({ event_date: '2026-09-22', status: 'closed' })], '2026-10-03') === 0],
+    ['W5c 🔴 a CLOSED future date is offered as "next" — a pitch that is already over',
+      changed(LIB_SRC, "export const NOT_UPCOMING_STATUSES = ['cancelled', 'closed'] as const",
+        "export const NOT_UPCOMING_STATUSES = ['cancelled'] as const", 'W5c'),
+      P => P.nextEventAt([ev({ event_date: '2026-10-20', status: 'closed' })], '2026-10-03') !== null],
+
+    /* ── 🔴 BUG 4's VARIANTS — the times, and the Last-before-Next order. ── */
+    ['W5d 🔴 BUG 4 RETURNS: the muted line loses the times',
+      changed(LIB_SRC, "    return `Last: ${fmtDay(p.last_event_date)}${t ? ` \u00b7 ${t}` : ''}`",
+        "    return `Last: ${fmtDay(p.last_event_date)}`", 'W5d'),
+      P => !P.placeWhenLine({ last_event_date: '2026-10-06', last_start_time: '17:00:00', last_end_time: '20:00:00' }, d => d).includes('17:00')],
+    ['W5e 🔴 …and goes back to preferring Next over Last',
+      changed(LIB_SRC, "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {\n  if (p.last_event_date) {",
+        "export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {\n  if (p.next_event_date) {\n    const tn = timeRangeLabel(p.next_start_time, p.next_end_time)\n    return `Next: ${fmtDay(p.next_event_date)}${tn ? ` \u00b7 ${tn}` : ''}`\n  }\n  if (p.last_event_date) {", 'W5e'),
+      P => P.placeWhenLine({ last_event_date: '2026-10-06', next_event_date: '2026-10-20' }, d => d).startsWith('Next')],
 
     /* ⚠️ RE-ANCHORED (3 October 2026): the line now carries the retired-row guard
      * (`if (!isRetired(existing)) fillFrom(...)`). Same variant, same meaning — the seeder is made to
@@ -946,6 +1076,34 @@ function runVariants() {
     ['W19 🔴 the staff gate loses the places writes',
       changed(read(ROUTE), "    'sg_places', 'sg_upsert_place', 'sg_merge_place',", "", 'W19'),
       s => /'sg_places', 'sg_upsert_place', 'sg_merge_place',/.test(stripComments(s))],
+    /* ── 🔴 THE FOUR BUGS, EACH WITH A VARIANT THAT REINSTATES IT ───────────────────────────────── */
+    ['W21 🔴 BUG 1 RETURNS: the star refetches the whole list instead of toggling in place',
+      changed(read(PLACES_UI), "      patchLocal(p.id, { is_favourite: p.is_favourite })\n      setStarError(",
+        "      reload()\n      setStarError(", 'W21'),
+      src => { const f = stripComments(src).slice(stripComments(src).indexOf('const setFavourite')); return !/reload\(/.test(f.slice(0, f.indexOf('return { places:') >= 0 ? f.indexOf('}, [api, patchLocal])') : 400)) }],
+    ['W21b 🔴 …or writes first and paints after, so the star lags the tap',
+      changed(read(PLACES_UI),
+        "    patchLocal(p.id, { is_favourite: next })\n    try {\n      await api('sg_upsert_place', { id: p.id, is_favourite: next })",
+        "    try {\n      await api('sg_upsert_place', { id: p.id, is_favourite: next })\n      patchLocal(p.id, { is_favourite: next })", 'W21b'),
+      src => {
+        const f = stripComments(src)
+        const i = f.indexOf('const setFavourite')
+        const body = f.slice(i, i + 500)
+        // the optimistic write must come BEFORE the await
+        return body.indexOf('patchLocal(p.id, { is_favourite: next })') < body.indexOf("await api('sg_upsert_place'")
+      }],
+    ['W22 🔴 BUG 2 RETURNS: the list hides non-favourites behind a flag',
+      changed(read(PLACES_UI), "            {others.length > 0 && (", "            {others.length > 0 && showHidden && (", 'W22'),
+      src => /\{others\.length > 0 && \(/.test(src)],
+    ['W23 🔴 the Places pill comes back, so there are two routes to one screen',
+      changed(read(PAGE), "  { id: 'weekly', label: 'Weekly post' },\n]",
+        "  { id: 'weekly', label: 'Weekly post' },\n  { id: 'places', label: 'Places' },\n]", 'W23'),
+      src => !/id: 'places'/.test(codeOnly(src))],
+    ['W24 🔴 the sticky footer becomes part of the scrolling body again',
+      changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',
+        '              <div className="border-t border-slate-200 bg-white px-5', 'W24'),
+      src => /shrink-0 border-t border-slate-200 bg-white/.test(src)],
+
     ['W20 🔴 the stage-2 migration starts touching existing event rows',
       changed(read(MIGRATION2), 'add column if not exists truck_place_id uuid references public.truck_places(id) on delete set null',
         'add column if not exists truck_place_id uuid references public.truck_places(id) on delete cascade', 'W20'),

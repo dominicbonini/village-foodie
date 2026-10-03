@@ -98,7 +98,9 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { isNativeApp } from '@/lib/native/device'
 // Both store badges, from one component — the order and the colour are vendor rules. See the card below.
 import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
-import { SchedulePlaces, WeeklyPostPane, shortDay as placeShortDay, timeRange as placeTimeRange } from '@/components/manage/SchedulePlaces'
+import {
+  WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
+} from '@/components/manage/SchedulePlaces'
 import { fillFromPlace } from '@/lib/schedule-graphics/places'
 
 // ── Types ─────────────────────────────────────────────────────
@@ -118,14 +120,19 @@ type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 's
  * Back button both work — a section held only in React state is one an operator loses by reloading.
  * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
  * exactly where it always did. */
-type ScheduleSection = 'events' | 'weekly' | 'places'
+type ScheduleSection = 'events' | 'weekly'
 const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
   { id: 'events', label: 'Events' },
   { id: 'weekly', label: 'Weekly post' },
-  { id: 'places', label: 'Places' },
 ]
+/* 🔴 `places` IS NO LONGER A SECTION (3 October 2026). The list lives in the Add event modal's left
+ * pane and the detail behind its "Tidy up places" link, so a third pill would be a route to a screen
+ * that is now part of adding an event.
+ * ⚠️ AN OLD `?section=places` LINK STILL WORKS — it simply does not match, so the default stands and
+ * the operator lands on Events. It does NOT force Tidy up open: a bookmark from yesterday should not
+ * put somebody inside a modal they did not open. */
 const isScheduleSection = (v: unknown): v is ScheduleSection =>
-  v === 'events' || v === 'weekly' || v === 'places'
+  v === 'events' || v === 'weekly'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -6829,13 +6836,9 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-/** The slice of a `sg_places` row the Add event picker needs. */
-type PickerPlace = {
-  id: string; name: string; short_name: string | null
-  address: string | null; area: string | null; postcode: string | null
-  is_favourite: boolean; is_hidden: boolean; merged_into_id: string | null
-  last_event_date: string | null; last_start_time: string | null; last_end_time: string | null
-}
+/* ⛔ `PickerPlace` IS GONE. It was a hand-written slice of a `sg_places` row, which meant two shapes
+ * for one row and two places to remember when a column was added. The modal uses the hook's own
+ * `Place` type (imported as `SgPlaceRow`) and the shared `PlaceList`, so there is one shape. */
 
 function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
   /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
@@ -6865,18 +6868,19 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
-  /* ── THE PLACE PICKER'S OWN STATE ───────────────────────────────────────────────────────────────
-   * 🔴 LOADED WHEN THE ADD-EVENT MODAL OPENS, not when the tab does. `sg_places` seeds, so loading it
-   * on tab activation would write places on every visit to Schedule — including visits that never
-   * open the modal. Opening "Add event" IS a deliberate act, and the picker is useless without the
-   * truck's places, so seeding there is both correct and what makes the list complete. */
-  const [pickerPlaces, setPickerPlaces] = useState<PickerPlace[] | null>(null)
+  /* ── THE PLACES, FOR THE MODAL'S LEFT PANE AND FOR TIDY UP ─────────────────────────────────────
+   * 🔴 LOADED WHEN THE MODAL OPENS, not when the tab does. `sg_places` SEEDS, so loading it on tab
+   * activation would write places on every visit to Schedule — including visits that never open the
+   * modal. Opening "Add event" is the deliberate act that needs the list.
+   * 🔴 ONE HOOK, SHARED WITH TIDY UP. Two components each calling `sg_places` would seed twice on one
+   * screen and race each other's reads. `usePlaces` owns the list; the star writes through it.
+   * ⚠️ IT NEVER BLOCKS THE FORM. The right pane renders immediately — only the left pane shows a
+   * spinner — so the operator can start typing a date before the places have arrived. */
   const [placeSearch, setPlaceSearch] = useState('')
-  const [showAllPlaces, setShowAllPlaces] = useState(false)
-  /** 🔴 THE IN-FLIGHT GUARD IS A REF, NOT STATE. The effect below depends on the modal being open for
-   *  a new event; a state flag would be a dependency that the effect itself sets, which is the loop
-   *  this ref exists to avoid. Reset by `closeAddModal`. */
-  const pickerInFlight = useRef(false)
+  const [modalView, setModalView] = useState<'add' | 'tidy'>('add')
+  /** Phone only: step 1 picks the place, step 2 is the form. Ignored by the two-pane layout. */
+  const [phoneStep, setPhoneStep] = useState<1 | 2>(1)
+  const [addrOpen, setAddrOpen] = useState(false)
   const [editingEventConfirmOnSave, setEditingEventConfirmOnSave] = useState(false)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
@@ -7015,38 +7019,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     }, 50)
   }
 
-  /* ── 🔴 LOAD THE PLACES WHEN THE MODAL OPENS FOR A NEW EVENT ───────────────────────────────────
-   * An async IIFE with a `cancelled` flag — the same pattern as everywhere else here, so a setState
-   * cannot land after the modal is closed. Loaded ONCE per modal opening: `pickerPlaces === null` is
-   * "never loaded", and `closeAddModal` resets it.
-   * ⚠️ IT NEVER BLOCKS THE FORM. A failure leaves `pickerPlaces` as `[]`, the picker shows nothing,
-   * and the operator types the venue exactly as they always have — the place is then created from
-   * what they typed, on save. A places problem must not stop an event being added. */
-  const wantPicker = !!editingEvent && !editingEvent.id
-  /* 🔴 `pickerLoading` IS DERIVED, NOT STORED. A `setPickerLoading(true)` in this effect's body is a
-   * synchronous setState inside an effect — cascading renders, and eslint's
-   * react-hooks/set-state-in-effect catches it (it caught exactly this). "Open for a new event and
-   * the places have not arrived yet" IS the loading state, so there is nothing to store: `null` means
-   * never loaded and both outcomes below replace it with an array. */
-  const pickerLoading = wantPicker && pickerPlaces === null
-  useEffect(() => {
-    if (!wantPicker || pickerPlaces !== null || pickerInFlight.current) return
-    pickerInFlight.current = true
-    let cancelled = false
-    ;(async () => {
-      try {
-        const r = await api('sg_places')
-        if (!cancelled) setPickerPlaces((r?.places ?? []) as PickerPlace[])
-      } catch {
-        // ⚠️ `[]` ON FAILURE, NOT a retry and not a thrown error. The picker shows nothing, the
-        // operator types the venue as they always have, and the place is created from it on save.
-        if (!cancelled) setPickerPlaces([])
-      } finally {
-        pickerInFlight.current = false
-      }
-    })()
-    return () => { cancelled = true }
-  }, [wantPicker, pickerPlaces, api])
+  /* ── 🔴 THE PLACES, LOADED AND SEEDED BY ONE HOOK ──────────────────────────────────────────────
+   * Enabled whenever the modal is open for a NEW event, or Tidy up is showing. An edit never needs
+   * the list — the picker is new-events-only, which is half of why an edit cannot move an event's
+   * place. `usePlaces` owns the load, the seed and the optimistic favourite; see its own notes.
+   * ⚠️ IT NEVER BLOCKS THE FORM. The right pane renders immediately and only the left pane spins, so
+   * the operator can start on the date before the places arrive. A failure resolves the list to `[]`
+   * with one error line, and the venue they type is still saved as a place on submit. */
+  const wantPicker = (!!editingEvent && !editingEvent.id) || modalView === 'tidy'
+  const placesCtl = usePlaces(api, wantPicker)
 
   /* ── 🔴 PICKING A PLACE FILLS THE FORM, AND EVERY FIELD STAYS EDITABLE ─────────────────────────
    * The times come from the LAST event at that place, which is what the operator is almost always
@@ -7056,12 +7037,35 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * from a past event is how an operator ends up adding tonight's pitch to a date in September.
    * ⚠️ A BLANK FIELD ON THE PLACE DOES NOT WIPE WHAT IS TYPED — `|| p!.x` keeps the current value,
    * the same rule the existing venue-suggestions dropdown already follows. */
-  const pickPlace = (pl: PickerPlace) => {
+  const pickPlace = (pl: SgPlaceRow) => {
     // 🔴 THE RULE LIVES IN THE SHARED MODULE (`fillFromPlace`), not here. It is testable there, and the
     // later stages that offer a place will fill a form the same way rather than a similar way.
     setEditingEvent(p => p ? ({ ...p, truck_place_id: pl.id, ...fillFromPlace(pl, p) }) : p)
     setFormErrors({})
+    // Phone: choosing a place is step 1 finishing. ⚠️ Address details stay COLLAPSED here — they are
+    // already filled, and the point of the step is that the operator does not have to look at them.
+    setPhoneStep(2)
+    setAddrOpen(false)
   }
+
+  /** "+ New place": no place picked, straight to the form with the address fields open to type into. */
+  const startNewPlace = () => {
+    setEditingEvent(p => p ? ({ ...p, truck_place_id: null }) : p)
+    setPlaceSearch('')
+    setPhoneStep(2)
+    setAddrOpen(true)
+  }
+
+  const pickedPlace = editingEvent?.truck_place_id
+    ? placesCtl.places.find(p => p.id === editingEvent.truck_place_id) ?? null
+    : null
+
+  /* 🔴 THE LEFT PANE SHOWS FOR A NEW EVENT IN "One event" MODE, AND ONLY THEN.
+   *   • an EDIT never shows it — the picker is new-events-only, which is half of why an edit cannot
+   *     move an event's place (the other half is the server's update naming no such column);
+   *   • UPLOAD mode has its own flow and no single place to choose. */
+  const showPicker = !!editingEvent && !editingEvent.id && addMode === 'manual' && modalView === 'add'
+
 
   const validateEventForm = (form: EditingEvent) => {
     const errors: Record<string, string> = {}
@@ -7083,10 +7087,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     setFormErrors({})
     // ⚠️ THE PICKER IS RESET HERE, so the next opening re-reads (and re-seeds) rather than showing a
     // list from before the operator added three events. `null` is "never loaded", not "empty".
-    setPickerPlaces(null)
-    pickerInFlight.current = false
     setPlaceSearch('')
-    setShowAllPlaces(false)
+    setModalView('add')
+    setPhoneStep(1)
+    setAddrOpen(false)
     setExtractedEvents([])
     setEditedEvents([])
     setSelectedEvents(new Set())
@@ -7137,6 +7141,22 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setEditSaving(false) }
   }
+
+  /* ⚠️ ESCAPE CLOSES THE MODAL. A dialog with `aria-modal` that cannot be dismissed from the keyboard
+   * is the kind of thing that only bites the person who cannot use a mouse.
+   * ⚠️ IT CLOSES THE WHOLE MODAL FROM TIDY UP TOO rather than stepping back — Escape means "get me
+   * out", and the Back link is there for the other intention.
+   * ⚠️ DECLARED AFTER `closeAddModal`, DELIBERATELY. Above it, the effect read a `const` before its
+   * declaration — which React Compiler's immutability rule flags, and which would be a real
+   * temporal-dead-zone error if the effect ever ran during that first pass. `closeAddModal` is in the
+   * dependency list rather than suppressed: it is recreated each render, so the listener is
+   * re-registered each render, which costs nothing and needs no lint exception. */
+  useEffect(() => {
+    if (!editingEvent) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeAddModal() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [editingEvent, closeAddModal])
 
   const processUpload = async () => {
     setUploadProcessing(true)
@@ -8314,141 +8334,141 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       )}
 
       {editingEvent && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
-          <div className={`bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : 'max-w-sm sm:max-w-lg lg:max-w-2xl overflow-x-hidden'}`}>
-            <h3 className="font-black text-slate-900 mb-4">
-              {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
-            </h3>
+        /* ── 🔴 THE MODAL SHELL. A COLUMN, NOT A SCROLLER ─────────────────────────────────────────
+            It was one `overflow-y-auto` box, so the Cancel / Add event buttons were at the bottom of
+            the CONTENT and the operator scrolled to reach them. It is a flex column now with its own
+            scrolling body and a STICKY FOOTER, so the buttons are always on screen — which is the
+            mockup's "always visible without scrolling the modal".
+            ⚠️ `max-w` WIDENS FOR THE TWO-PANE LAYOUT. A 380px list beside the form does not fit the
+            old `lg:max-w-2xl`. The upload flow keeps its own wider cap, unchanged. */
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4"
+          onClick={e => { if (e.target === e.currentTarget) closeAddModal() }}>
+          <div id="add-event-modal" role="dialog" aria-modal="true" aria-label={editingEvent.id ? 'Edit event' : 'Add event'}
+            className={`bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden
+              max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]
+              ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>
 
-            {/* ── 🔴 THE PLACE PICKER — WHAT REPLACED "COPY A RECENT EVENT" ──────────────────────
-                The old block copied a whole past EVENT, which meant the operator picked a date in
-                order to get a venue, and the two were never separable. A place is the thing they are
-                actually choosing; the times come from its last event, which is what "copy" was really
-                for. New events only — an edit never shows it, which is half of why an edit cannot
-                move an event's place. */}
-            {!editingEvent.id && (
-              <div className="mb-4">
-                <label className="block text-xs font-bold text-slate-600 mb-1">Place</label>
-                <input
-                  type="text"
-                  value={placeSearch}
-                  onChange={e => setPlaceSearch(e.target.value)}
-                  placeholder="Search your places"
-                  autoCapitalize="off" autoCorrect="off" spellCheck={false}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-                />
+            {/* ── THE HEADER ROW ───────────────────────────────────────────────────────────────── */}
+            <div className="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
+              <h3 className="font-black text-slate-900 min-w-0 flex-1 truncate">
+                {editingEvent.id ? 'Edit event' : modalView === 'tidy' ? 'Tidy up places' : 'Add event'}
+              </h3>
 
-                {pickerLoading && <div className="py-4 flex justify-center"><Spinner /></div>}
+              {/* 🔴 A TWO-OPTION SWITCH, REPLACING THE "Add manually" BUTTON AND THE "or add manually"
+                  DIVIDER. The form is simply there when "One event" is selected — there was never a
+                  third state for those two controls to express. New events only. */}
+              {!editingEvent.id && modalView === 'add' && (
+                <div role="tablist" aria-label="How to add" className="shrink-0 flex rounded-xl bg-slate-100 p-0.5">
+                  {([['manual', 'One event'], ['upload', 'Upload schedule']] as const).map(([mode, label]) => (
+                    <button key={mode} role="tab" aria-selected={addMode === mode}
+                      onClick={() => { setAddMode(mode); if (mode === 'manual') setExtractedEvents([]) }}
+                      className={`px-2.5 sm:px-3 py-1.5 rounded-[10px] text-xs sm:text-sm font-bold whitespace-nowrap transition-colors ${
+                        addMode === mode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-                {!pickerLoading && (() => {
-                  const all = (pickerPlaces ?? [])
-                    // ⚠️ A HIDDEN OR MERGED PLACE IS NOT OFFERED. The operator took it out of the
-                    // list; offering it here would put it straight back into their schedule.
-                    .filter(pl => !pl.is_hidden && !pl.merged_into_id)
-                  const q = placeSearch.trim().toLowerCase()
-                  const matches = (pl: PickerPlace) => !q
-                    || pl.name.toLowerCase().includes(q)
-                    || String(pl.short_name ?? '').toLowerCase().includes(q)
-                    || String(pl.area ?? '').toLowerCase().includes(q)
-                    || String(pl.postcode ?? '').toLowerCase().includes(q)
-                  const byName = (a: PickerPlace, b: PickerPlace) =>
-                    a.name.localeCompare(b.name, 'en-GB', { sensitivity: 'base' })
-                  const found = all.filter(matches)
-                  /* 🔴 FAVOURITES FIRST, AND ONLY FAVOURITES UNTIL ASKED. A truck with sixty places
-                   * would otherwise bury the four it trades at every week. Searching or pressing
-                   * "Show all places" opens the whole list. */
-                  const favs = found.filter(pl => pl.is_favourite).sort(byName)
-                  const rest = found.filter(pl => !pl.is_favourite).sort(byName)
-                  const expanded = showAllPlaces || q.length > 0
-                  const shown = expanded ? [...favs, ...rest] : favs
+              {/* ⚠️ A REAL CLOSE BUTTON WITH A LABEL. Escape closes too (see the effect above the
+                  modal); a dialog whose only exit is a Cancel button below the fold is the thing the
+                  sticky footer and this are both fixing. */}
+              <button type="button" onClick={closeAddModal} aria-label="Close"
+                className="shrink-0 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-lg leading-none flex items-center justify-center">
+                ×
+              </button>
+            </div>
 
-                  const placeRow = (pl: PickerPlace) => {
-                    const picked = editingEvent!.truck_place_id === pl.id
-                    const when = pl.last_event_date
-                      ? `Last time: ${placeShortDay(pl.last_event_date)}${placeTimeRange(pl.last_start_time, pl.last_end_time) ? ` · ${placeTimeRange(pl.last_start_time, pl.last_end_time)}` : ''}`
-                      : 'Not used yet'
-                    return (
-                      <button
-                        key={pl.id}
-                        type="button"
-                        onClick={() => pickPlace(pl)}
-                        aria-pressed={picked}
-                        className={`flex items-center gap-2 w-full px-3 py-2.5 border rounded-xl text-left transition-colors ${
-                          picked ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/40'}`}
-                      >
-                        <span className="text-orange-500 text-base leading-none shrink-0">{pl.is_favourite ? '★' : '☆'}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-sm font-medium text-slate-800 truncate">{pl.name}</span>
-                          <span className="block text-xs text-slate-400 truncate">{when}</span>
-                        </span>
-                        {picked && <span className="text-xs font-bold text-orange-600 shrink-0">Selected</span>}
-                      </button>
-                    )
-                  }
+            {/* ── TIDY UP PLACES — the list and the existing place detail, in this same modal ───── */}
+            {modalView === 'tidy' ? (
+              <div className="flex-1 min-h-0 flex flex-col px-5 sm:px-6 pb-5 sm:pb-6">
+                <TidyUpPlaces ctl={placesCtl} api={api} showToast={showToast}
+                  onBack={() => setModalView('add')} />
+              </div>
+            ) : (
+            <>
+            {/* ── THE BODY ─────────────────────────────────────────────────────────────────────── */}
+            <div className={`flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y px-5 sm:px-6 pb-4 ${
+              showPicker ? 'md:overflow-hidden' : ''}`}>
+              <div className={`min-h-0 h-full ${showPicker ? 'md:grid md:grid-cols-[380px_minmax(0,1fr)] md:gap-5' : ''}`}>
 
-                  return (
-                    <div className="mt-2">
-                      {!expanded && favs.length > 0 && (
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Favourites</p>
-                      )}
-                      {shown.length > 0 ? (
-                        <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">{shown.map(placeRow)}</div>
-                      ) : (
-                        <p className="text-xs text-slate-400 py-2">
-                          {all.length === 0 ? 'No places yet — type the venue below and it will be saved as one.' : 'No places match.'}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap items-center gap-3 mt-2">
-                        {!expanded && rest.length > 0 && (
-                          <button type="button" onClick={() => setShowAllPlaces(true)}
-                            className="text-xs font-bold text-orange-600 hover:text-orange-700">
-                            Show all places ({found.length})
-                          </button>
-                        )}
-                        {/* 🔴 "+ New place" CLEARS THE PICK AND NOTHING ELSE. It creates no row here:
-                            the place is created on SAVE, from the venue name they type, by the same
-                            idempotent upsert the seeder uses. Creating one now would leave a place
-                            behind for an event the operator then abandoned. */}
-                        <button type="button"
-                          onClick={() => { setEditingEvent(p => p ? ({ ...p, truck_place_id: null }) : p); setPlaceSearch('') }}
-                          className="text-xs font-bold text-slate-500 hover:text-slate-700">
+                {/* ── LEFT PANE · THE PLACES ───────────────────────────────────────────────────
+                    🔴 ITS OWN SCROLL on the two-pane layout, so a truck with sixty places does not
+                    push the form off the screen. On a phone it is STEP 1 and the form is step 2 —
+                    `max-md:hidden` rather than unmounted, so the search text survives "Change". */}
+                {showPicker && (
+                  <div className={`min-h-0 md:h-full md:border md:border-slate-200 md:rounded-2xl md:overflow-hidden flex flex-col ${
+                    phoneStep === 2 ? 'max-md:hidden' : ''}`}>
+                    <p className="md:hidden text-sm font-bold text-slate-700 pt-1 pb-2">Where are you trading?</p>
+                    {placesCtl.loading ? (
+                      <div className="py-10 flex justify-center"><Spinner /></div>
+                    ) : (
+                      <>
+                        {/* 🔴 THE DASHED "+ New place" IS ABOVE THE LIST ON A PHONE, per the mockup —
+                            it is the escape hatch from a list that may not contain the pitch. */}
+                        <button type="button" onClick={startNewPlace}
+                          className="md:hidden w-full border-2 border-dashed border-slate-300 rounded-xl py-2.5 text-sm font-bold text-slate-500 hover:border-orange-300 hover:text-orange-600 mb-2">
                           + New place
                         </button>
-                      </div>
-                    </div>
-                  )
-                })()}
+                        <div className="flex-1 min-h-0">
+                          <PlaceList
+                            places={placesCtl.places}
+                            selectedId={editingEvent.truck_place_id ?? null}
+                            onSelect={pickPlace}
+                            onFavourite={placesCtl.setFavourite}
+                            search={placeSearch}
+                            onSearch={setPlaceSearch}
+                            starError={placesCtl.starError}
+                            emptyHint="No places yet — type the venue on the right and it will be saved as one."
+                            footer={
+                              <div className="flex items-center justify-between gap-3">
+                                <button type="button" onClick={startNewPlace}
+                                  className="text-xs font-bold text-orange-600 hover:text-orange-700 max-md:hidden">
+                                  + New place
+                                </button>
+                                {/* 🔴 "Tidy up places" REPLACED THE Places PILL. Renaming, merging and
+                                    hiding belong beside the list they are about, not in a separate
+                                    tab the operator has to find. */}
+                                <button type="button" onClick={() => setModalView('tidy')}
+                                  className="text-xs font-bold text-slate-400 hover:text-slate-600 max-md:mx-auto">
+                                  Tidy up places
+                                </button>
+                              </div>
+                            }
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
 
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="flex-1 h-px bg-slate-100" />
-                  <span className="text-xs text-slate-400">or add manually</span>
-                  <div className="flex-1 h-px bg-slate-100" />
-                </div>
-              </div>
-            )}
+                {/* ── RIGHT PANE · THE FORM (phone: step 2) ────────────────────────────────────── */}
+                <div className={`min-w-0 md:h-full md:overflow-y-auto md:pr-1 ${
+                  showPicker && phoneStep === 1 ? 'max-md:hidden' : ''}`}>
 
-            {/* Mode toggle — new events only */}
-            {!editingEvent.id && (
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => { setAddMode('manual'); setExtractedEvents([]) }}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium ${addMode === 'manual' ? 'bg-orange-600 text-white' : 'border border-slate-200 text-slate-600'}`}
-                >
-                  Add manually
-                </button>
-                <button
-                  onClick={() => setAddMode('upload')}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium ${addMode === 'upload' ? 'bg-orange-600 text-white' : 'border border-slate-200 text-slate-600'}`}
-                >
-                  Upload schedule
-                </button>
-              </div>
-            )}
+                {/* 🔴 THE CHOSEN PLACE, PINNED — phone only. Step 2 must say which place it is for,
+                    and offer the way back to step 1 without losing what has been typed. */}
+                {showPicker && (
+                  <div className="md:hidden flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
+                    <span className="text-orange-500 text-base leading-none">{pickedPlace?.is_favourite ? '★' : '☆'}</span>
+                    <span className="min-w-0 flex-1 text-sm font-bold text-slate-900 truncate">
+                      {pickedPlace?.name ?? 'New place'}
+                    </span>
+                    <button type="button" onClick={() => setPhoneStep(1)}
+                      className="shrink-0 text-xs font-bold text-orange-600 hover:text-orange-700">Change</button>
+                  </div>
+                )}
 
             {/* Manual form */}
             {(editingEvent.id || addMode === 'manual') && (
+              /* 🔴 ONE FORM, TWO FIELD ORDERS, AND THE ORDER IS CSS — not a second copy of the JSX.
+                 Desktop/iPad reads Date · Venue · Address · Area · Postcode · times · Truck · Notes.
+                 A phone reads Date · times · Truck · Notes, with the four address fields collapsed
+                 underneath, because they are already filled from the place and are not what the
+                 operator came to type. `max-md:order-N` on each wrapper does it; duplicating the
+                 fields would be two sets of validation and two places to add the next one. */
               <div id="add-event-form" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 max-md:order-1">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
                   <div className="relative">
                     <div onClick={() => { const el = document.getElementById('date-input-event') as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-xl px-3 py-2 text-sm cursor-pointer flex items-center justify-between bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
@@ -8461,6 +8481,20 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   </div>
                   {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
                 </div>
+                {/* ── 🔴 THE ADDRESS GROUP · `md:contents` IS WHAT MAKES ONE JSX SERVE BOTH ───────
+                    On md+ this wrapper and its inner div are `display: contents`, so the four fields
+                    are grid items exactly where they were — Venue and Address full width, Area and
+                    Postcode sharing a row. On a phone they are a real block that can be collapsed
+                    behind "Address details", ordered last.
+                    ⚠️ COLLAPSED, NOT UNMOUNTED: the fields stay in the DOM so their values are
+                    submitted and `validateEventForm` sees them whether the section is open or not. */}
+                <div className="md:contents max-md:order-5">
+                  <button type="button" onClick={() => setAddrOpen(o => !o)}
+                    className="md:hidden w-full flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-600">
+                    <span>Address details</span>
+                    <span className={`transition-transform ${addrOpen ? 'rotate-90' : ''}`}>▶</span>
+                  </button>
+                  <div className={`md:contents ${addrOpen ? 'max-md:grid max-md:gap-3 max-md:mt-3' : 'max-md:hidden'}`}>
                 <div className="sm:col-span-2 relative">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
                   <input
@@ -8506,7 +8540,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
                 </div>
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
-                <div className="sm:col-span-2 grid grid-cols-2 gap-2">
+                  </div>
+                </div>
+                <div className="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
                     <EventTimeSelect
@@ -8541,7 +8577,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   </div>
                 </div>
                 {vans.length > 1 && (
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-2 max-md:order-3">
                     <label className="block text-xs font-bold text-slate-600 mb-1">Truck <span className="text-red-500">*</span></label>
                     <select
                       value={editingEvent.van_id || ''}
@@ -8556,7 +8592,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     {formErrors.van_id && <p className="text-xs text-red-500 mt-1">{formErrors.van_id}</p>}
                   </div>
                 )}
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 max-md:order-4">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
@@ -8564,15 +8600,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                     picked. It answers the question the filled fields raise — "will editing this
                     change the place?" — and the answer is no: nothing below writes back to the place.
                     ⚠️ NEW EVENTS ONLY, because `truck_place_id` is only ever set on one. */}
-                {!editingEvent.id && editingEvent.truck_place_id && (
-                  <p className="sm:col-span-2 text-xs text-slate-400 -mt-1">
-                    Filled from {(pickerPlaces ?? []).find(pl => pl.id === editingEvent!.truck_place_id)?.name ?? 'that place'}. Change anything for this date only.
-                  </p>
-                )}
-                <div className="sm:col-span-2 flex gap-2 pt-1">
-                  <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
-                  <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
-                </div>
+                {/* ⛔ THE "Filled from" LINE AND THE TWO BUTTONS ARE NOT HERE ANY MORE. They are in the
+                    modal's STICKY FOOTER below, so the buttons are always on screen rather than at the
+                    bottom of a scrolling form — which on a phone meant scrolling past nine fields to
+                    reach "Add event". */}
               </div>
             )}
 
@@ -8632,6 +8663,36 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 )}
               </div>
             )}
+
+                </div>{/* right pane */}
+              </div>{/* two-pane grid */}
+            </div>{/* body */}
+
+            {/* ── 🔴 THE STICKY FOOTER. ALWAYS VISIBLE, WITHOUT SCROLLING THE MODAL ─────────────
+                A `shrink-0` sibling of the scrolling body in a flex column — not `position: sticky`,
+                which needs a scroll ancestor and would have been a no-op here. The body scrolls; this
+                does not move. ⚠️ `pb-[env(safe-area-inset-bottom)]` so it clears the iPhone home bar
+                on the full-screen sheet.
+                ⚠️ HIDDEN IN UPLOAD MODE, which has its own actions inside its flow (Cancel, and the
+                review screen's own buttons) — two sets of buttons would be two things called Cancel. */}
+            {addMode === 'manual' && (
+              <div className="shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
+                <p className="min-w-0 flex-1 text-xs text-slate-400 truncate">
+                  {/* 🔴 ONE MUTED LINE, only when a place was picked. It answers the question the
+                      filled fields raise — "will editing this change the place?" — and the answer is
+                      no: nothing in the form writes back to the place. New events only. */}
+                  {!editingEvent.id && editingEvent.truck_place_id
+                    ? `Filled from ${pickedPlace?.name ?? 'that place'}`
+                    : ''}
+                </p>
+                <div className="shrink-0 flex gap-2">
+                  <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
+                  <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
+                </div>
+              </div>
+            )}
+            </>
+            )}
           </div>
         </div>
       )}
@@ -8646,11 +8707,9 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
       )}
     </div>
     )}
-    {/* ── THE OTHER TWO SECTIONS ──────────────────────────────────────────────────────────────────
-        🔴 `SchedulePlaces` MOUNTS ONLY WHEN ITS PILL IS SELECTED, which is what makes "opening Places
-        seeds the places" true — and only then. An always-mounted pane would write on every visit to
-        the Schedule tab, including visits that never looked at Places. */}
-    {isActive && section === 'places' && <SchedulePlaces api={api} showToast={showToast} />}
+    {/* ── THE WEEKLY POST SECTION ─────────────────────────────────────────────────────────────────
+        ⚠️ PLACES IS NOT HERE ANY MORE. Seeding now happens when the Add event modal opens, which is
+        the deliberate act that needs the list; the Schedule tab itself writes nothing. */}
     {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}
     {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
     {showImportModal && (

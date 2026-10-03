@@ -259,17 +259,44 @@ export function groupEventsByPlace(
 // 3 · "NEXT" — THE MUTED LINE IN THE LIST
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
-/**
- * 🔴 A CANCELLED OR CLOSED DATE IS NOT A NEXT DATE. Both are explicit statements that the truck is not
- * trading, and offering one as "next" would send the operator to post about a pitch that is off.
- * ⚠️ `unconfirmed` IS INCLUDED. It means "not yet confirmed", not "not happening" — it is the normal
- * state of a scraped date the operator has not reviewed, which is most of them.
+/* ── 🔴 TWO STATUS RULES, NOT ONE. THIS WAS BUG 3 AND IT HID ALMOST EVERY PLACE'S HISTORY ─────────
+ * There used to be a single `isTradingStatus` excluding BOTH 'cancelled' and 'closed', and both
+ * `lastEventAt` and `nextEventAt` used it. 🔴 `closed` IS THE NORMAL END STATE OF AN EVENT THAT
+ * TRADED — the operator closes it at the end of service — so excluding it from "Last" excluded
+ * essentially every past event, and a place seeded from a real event read "No events yet".
+ *
+ * "Did it happen" and "is it still to come" are DIFFERENT QUESTIONS and need different answers:
+ *   • LAST / the count  → anything not 'cancelled'. A closed event is the clearest possible evidence
+ *     that the truck traded there.
+ *   • NEXT              → not 'cancelled' AND not 'closed'. Offering a closed date as the next one
+ *     would send the operator to post about a pitch that is already over.
+ * ⚠️ `unconfirmed` COUNTS FOR BOTH. It means "not reviewed yet", not "not happening" — the normal
+ * state of a scraped date, which is most of them.
  */
-export const NON_TRADING_STATUSES = ['cancelled', 'closed'] as const
 
+/** Never counts as anything: the operator said it is off. */
+export const CANCELLED_STATUSES = ['cancelled'] as const
+/** Cannot be a FUTURE date, on top of the above: it is already over. */
+export const NOT_UPCOMING_STATUSES = ['cancelled', 'closed'] as const
+
+const statusOf = (status: string | null | undefined): string => String(status ?? '').trim().toLowerCase()
+
+/** Did the truck trade here? Used by "Last" and by the count. */
+export function countsAsTraded(status: string | null | undefined): boolean {
+  return !(CANCELLED_STATUSES as readonly string[]).includes(statusOf(status))
+}
+
+/** Could this still be the next visit? Used by "Next" only. */
+export function countsAsUpcoming(status: string | null | undefined): boolean {
+  return !(NOT_UPCOMING_STATUSES as readonly string[]).includes(statusOf(status))
+}
+
+/**
+ * ⚠️ KEPT AS AN ALIAS OF THE UPCOMING RULE, because that is what every existing caller meant by it.
+ * @deprecated Name the question: `countsAsTraded` or `countsAsUpcoming`.
+ */
 export function isTradingStatus(status: string | null | undefined): boolean {
-  const s = String(status ?? '').trim().toLowerCase()
-  return !(NON_TRADING_STATUSES as readonly string[]).includes(s)
+  return countsAsUpcoming(status)
 }
 
 /**
@@ -282,7 +309,8 @@ export function isTradingStatus(status: string | null | undefined): boolean {
  */
 export function nextEventAt(events: readonly PlaceEvent[], todayYmd: string): PlaceEvent | null {
   const upcoming = events
-    .filter(e => isTradingStatus(e.status))
+    // 🔴 `countsAsUpcoming` — a closed date is over, so it is never "next".
+    .filter(e => countsAsUpcoming(e.status))
     .filter(e => typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date) && e.event_date >= todayYmd)
     .sort((a, b) => String(a.event_date).localeCompare(String(b.event_date)))
   return upcoming[0] ?? null
@@ -296,7 +324,9 @@ export function nextEventAt(events: readonly PlaceEvent[], todayYmd: string): Pl
  */
 export function lastEventAt(events: readonly PlaceEvent[], todayYmd: string): PlaceEvent | null {
   const past = events
-    .filter(e => isTradingStatus(e.status))
+    // 🔴 `countsAsTraded` — a CLOSED event is the clearest evidence the truck traded here. This line
+    // read `isTradingStatus` and that was bug 3: it hid almost every place's history.
+    .filter(e => countsAsTraded(e.status))
     .filter(e => typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date) && e.event_date < todayYmd)
     .sort((a, b) => String(b.event_date).localeCompare(String(a.event_date)))
   return past[0] ?? null
@@ -310,7 +340,8 @@ export function lastEventAt(events: readonly PlaceEvent[], todayYmd: string): Pl
 export function tradedCountInLastYear(events: readonly PlaceEvent[], todayYmd: string): number {
   const from = ymdMinusDays(todayYmd, 365)
   return events.filter(e =>
-    isTradingStatus(e.status)
+    // 🔴 `countsAsTraded`, for the same reason as "Last": closed visits are the ones that happened.
+    countsAsTraded(e.status)
     && typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date)
     && e.event_date >= from && e.event_date <= todayYmd).length
 }
@@ -354,6 +385,59 @@ export function visiblePlaces(places: readonly Place[], showHidden = false): Pla
 // Nothing in this build reads or writes it. When the per-event post text ships it gets a resolver
 // back — with a caller, a test, and a two-level chain (truck → built-in), since the per-place override
 // column is dropped.
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 4b · THE ONE MUTED LINE UNDER A PLACE'S NAME
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** A place row as the list and the picker read it — the dates and times already resolved. */
+export interface PlaceWhen {
+  next_event_date?: string | null
+  next_start_time?: string | null
+  next_end_time?: string | null
+  last_event_date?: string | null
+  last_start_time?: string | null
+  last_end_time?: string | null
+}
+
+/**
+ * "17:00–20:00", or '' when the event carries no times.
+ * ⚠️ 24-HOUR, AND TRIMMED TO HH:MM, to match the form's own time controls. `start_time` comes back as
+ * '17:00:00'; showing the seconds beside a form that does not have them reads as a different value.
+ */
+export function timeRangeLabel(start: string | null | undefined, end: string | null | undefined): string {
+  const t = (v: string | null | undefined) => (v ? String(v).slice(0, 5) : '')
+  const a = t(start), b = t(end)
+  if (!a && !b) return ''
+  return b ? `${a}–${b}` : a
+}
+
+/**
+ * The muted line: "Last: Tue 6 Oct · 17:00–20:00", or "Next: …", or "No events yet".
+ *
+ * 🔴 LAST FIRST, NEXT ONLY WHEN THERE IS NO PAST VISIT — and that order is bug 4's other half. It was
+ * Next-first, which is wrong for what this line is FOR: in the Add event picker the operator is
+ * choosing a place to repeat, and "when was I last here, and at what times" is the question. A future
+ * date tells them nothing about the times they are about to copy.
+ *
+ * 🔴 AND IT CARRIES THE TIMES. It did not — `Last: Tue 22 Sep` and nothing else — which is bug 4 as
+ * reported. The times are the whole reason the line is worth reading: they are what picking the place
+ * will put in the form.
+ *
+ * ⚠️ "No events yet" ONLY WHEN THERE IS GENUINELY NEITHER. With bug 3 unfixed almost every place said
+ * this, which is what made the line look broken rather than empty.
+ */
+export function placeWhenLine(p: PlaceWhen, fmtDay: (ymd: string | null) => string): string {
+  if (p.last_event_date) {
+    const t = timeRangeLabel(p.last_start_time, p.last_end_time)
+    return `Last: ${fmtDay(p.last_event_date)}${t ? ` · ${t}` : ''}`
+  }
+  if (p.next_event_date) {
+    const t = timeRangeLabel(p.next_start_time, p.next_end_time)
+    return `Next: ${fmtDay(p.next_event_date)}${t ? ` · ${t}` : ''}`
+  }
+  return 'No events yet'
+}
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 5 · WHAT PICKING A PLACE FILLS INTO THE ADD-EVENT FORM
