@@ -343,9 +343,13 @@ function runMatchingSuite(P) {
       && ev0.startTime === EP.PREVIEW_PLACEHOLDERS.time
       && ev0.endTime === EP.PREVIEW_PLACEHOLDERS.time
   })())
+  /* ⚠️ A COMPLETE DATE NOW COMES OUT AS 'DD/MM/YYYY', NOT 'YYYY-MM-DD' (corrected 5 October 2026).
+   * This check used to assert the ISO string went straight through, which was the bug: the card splits
+   * on '/' and printed "2026-10-13" verbatim. The PARTIAL half of the check is unchanged — a
+   * half-typed date must still become the prompt rather than be handed over to parse. */
   t('🔴 …and a PARTIAL date is the placeholder, never handed to the card to parse',
     EP.previewEventFromForm({ form: { event_date: '2026-10' }, truckName: 'T' }).date === EP.PREVIEW_PLACEHOLDERS.date
-    && EP.previewEventFromForm({ form: { event_date: '2026-10-13' }, truckName: 'T' }).date === '2026-10-13')
+    && EP.previewEventFromForm({ form: { event_date: '2026-10-13' }, truckName: 'T' }).date === '13/10/2026')
   t('⚠️ a filled form maps straight through', (() => {
     const e = EP.previewEventFromForm({
       form: { venue_name: 'Lavenham Village Hall', town: 'Lavenham', postcode: 'CO10 9QT', event_date: '2026-10-13', start_time: '17:00', end_time: '20:00' },
@@ -658,7 +662,10 @@ function runSeedSuite(P) {
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // 3 · THE WIRING — what the planner cannot prove
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-function runWiringSuite() {
+/* ⚠️ `lib` IS THE COMPILED LIBRARY, PASSED IN. This suite's own `P` is the PAGE'S SOURCE TEXT, so the
+ * date check below — which has to RUN `previewEventFromForm` rather than grep for it — needs the real
+ * module. The other two suites already take it; this one did not until the date fix needed it. */
+function runWiringSuite(lib) {
   const ok = [], bad = []
   const t = (n, c) => (c ? ok : bad).push(n)
   const SQL1 = read(MIGRATION1)
@@ -1567,9 +1574,50 @@ function runWiringSuite() {
   t('⚠️ the phone\'s pinned card IS the preview line, and it updates live',
     /data-preview-line/.test(P) && /\{previewOneLine\}/.test(P)
     && /const previewOneLine = editingEvent/.test(P))
+  /* ══ 🔴 THE PREVIEW'S DATE IS IN THE CARD'S OWN FORMAT ═════════════════════════════════
+   * THE BUG (reported 5 October 2026): the preview showed "2026-10-22" where every other surface shows
+   * "Thu 22 Oct". THE CAUSE: `TruckListCard.formatStandardDate` SPLITS ON '/', and handed anything else
+   * falls through to `return dateStr` — printing the database's format, with no error and no warning.
+   * The adapter was passing the form's `event_date` straight through.
+   * 🔴 'DD/MM/YYYY' IS AN EXISTING CONTRACT, not a new convention: /api/events, /api/embed/events and
+   * /api/discovery/events all build their events with `date: toddmmyyyy(e.event_date)`. This asserts
+   * the adapter against the SAME formatter the card uses, lifted from the component so the two cannot
+   * drift. */
+  t('🔴 THE PREVIEW HANDS THE CARD A DATE IT CAN ACTUALLY FORMAT', (() => {
+    const card = read('components/TruckListCard.tsx')
+    // the card really does split on '/' and fall through — if that changes, this check should be revisited
+    if (!/const parts = dateStr\.split\('\/'\)/.test(card) || !/\n    return dateStr;/.test(card)) return false
+    const fmt = (dateStr) => {
+      const parts = dateStr.split('/')
+      if (parts.length === 3) {
+        const d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]))
+        if (!isNaN(d.getTime())) return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+      }
+      return dateStr
+    }
+    const ev = lib.__preview.previewEventFromForm({
+      form: { venue_name: 'Lavenham Village Hall', event_date: '2026-10-22', start_time: '17:00', end_time: '20:00' },
+      truckName: 'Village Spice',
+    })
+    const shown = fmt(ev.date)
+    /* ⛔ THE RAW ISO STRING MUST NOT SURVIVE TO THE SCREEN — that is the whole bug. */
+    return ev.date === '22/10/2026' && shown === 'Thu 22 Oct' && !/\d{4}-\d{2}-\d{2}/.test(shown)
+  })())
+  t('⚠️ …and an unfilled date is still the prompt, which the card passes through unchanged', (() => {
+    const ev = lib.__preview.previewEventFromForm({ form: { venue_name: '', event_date: '' }, truckName: 'V' })
+    return ev.date === 'Pick a date'
+  })())
+  /* ⚠️ THE CONVERSION IS STRING SURGERY, NEVER `new Date()`. A date-only value parsed as a Date is UTC
+   * midnight, which is the PREVIOUS DAY for anyone west of London — so the fix for a formatting bug
+   * must not introduce an off-by-one-day bug. */
+  t('⛔ the conversion never parses the date-only value as a Date', (() => {
+    const lib = read(PREVIEW_LIB)
+    const fn = lib.slice(lib.indexOf('const toDdMmYyyy'), lib.indexOf('const toDdMmYyyy') + 200)
+    return /ymd\.split\('-'\)/.test(fn) && !/new Date\(/.test(fn)
+  })())
   t('🔴 nothing unfilled can render as "undefined" or "Invalid date"',
     /export const PREVIEW_PLACEHOLDERS/.test(read(PREVIEW_LIB))
-    && /const date = isYmd\(form\.event_date\) \? form\.event_date : PREVIEW_PLACEHOLDERS\.date/.test(read(PREVIEW_LIB))
+    && /const date = isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : PREVIEW_PLACEHOLDERS\.date/.test(read(PREVIEW_LIB))
     && !/new Date\(form\./.test(read(PREVIEW_LIB)))
   t('🔴 THE VAN DEFAULT NEVER PRE-SELECTS AN INACTIVE VAN, and never overrides a chosen one',
     /activeVanIds: vans\.map\(v => v\.id\)/.test(P)
@@ -1955,9 +2003,14 @@ function runVariants() {
         '                      compact', 'W35'),
       src => /compact\s*\n?\s*hideOrderButton/.test(src)],
     ['W36 🔴 an unfilled date is handed to the card raw, so it renders "Invalid Date"',
-      changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date",
+      changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date",
         "  const date = String(form.event_date ?? '')", 'W36'),
-      src => /isYmd\(form\.event_date\) \? form\.event_date : PREVIEW_PLACEHOLDERS\.date/.test(src)],
+      src => /isYmd\(form\.event_date\) \? toDdMmYyyy\(form\.event_date\) : PREVIEW_PLACEHOLDERS\.date/.test(src)],
+    ['W51 🔴 the preview hands the card a raw ISO date again — "2026-10-22" on screen',
+      changed(read(PREVIEW_LIB), 'isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date',
+        'isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date', 'W51'),
+      src => /toDdMmYyyy\(form\.event_date\)/.test(src)],
+
     ['W37 🔴 the van default overrides a van the operator already chose',
       changed(read(PAGE), 'van_id: p.van_id ?? vanDefault,', 'van_id: vanDefault,', 'W37'),
       src => /van_id: p\.van_id \?\? vanDefault,/.test(src)],
@@ -1999,7 +2052,7 @@ function runVariants() {
   }
   const a = show('── 1 · THE NORMALISER AND THE MATCHING ─────────────────────────────────────────────────', runMatchingSuite(P))
   const b = show('── 2 · THE SEED, RUN TWICE (and by two tabs at once) ───────────────────────────────────', runSeedSuite(P))
-  const c = show('── 3 · THE WIRING — gate, access pattern, nav, read-only boundary ──────────────────────', runWiringSuite())
+  const c = show('── 3 · THE WIRING — gate, access pattern, nav, read-only boundary ──────────────────────', runWiringSuite(P))
 
   console.log(`\n${fails === 0 ? `✅ all ${a.ok.length + b.ok.length + c.ok.length} passed` : `🔴 ${fails} CHECK(S) FAILED`}`)
   process.exit(fails === 0 ? 0 : 1)

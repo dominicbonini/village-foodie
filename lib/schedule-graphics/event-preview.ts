@@ -45,6 +45,23 @@ export function previewIsComplete(form: PreviewForm): boolean {
 const isYmd = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)
 
 /**
+ * 'YYYY-MM-DD' → 'DD/MM/YYYY', the format `TruckListCard` parses.
+ *
+ * ⚠️ A FOURTH COPY OF A THREE-TIMES-DUPLICATED HELPER, and that is recorded rather than hidden:
+ * `toddmmyyyy` is defined identically and privately in app/api/events/route.ts,
+ * app/api/embed/events/route.ts and app/api/discovery/events/route.ts. None is exported, so there is
+ * nothing to import. Exporting one of them and repointing the other three is a tidy-up worth doing
+ * deliberately, not as a side effect of a date-format fix.
+ * ⚠️ STRING SURGERY, NEVER `new Date()`. A date-only value parsed as a Date is UTC midnight, which
+ * is the previous day for anyone west of London — the exact bug the rest of this file is careful
+ * about.
+ */
+const toDdMmYyyy = (ymd: string): string => {
+  const [y, m, d] = ymd.split('-')
+  return `${d}/${m}/${y}`
+}
+
+/**
  * The form, as a `VillageEvent` for `TruckListCard`.
  *
  * 🔴 EVERY FIELD IS DEFENDED, because the form is half-empty for most of its life. The card formats a
@@ -72,9 +89,19 @@ export function previewEventFromForm(input: {
   const txt = (v: unknown): string => String(v ?? '').trim()
 
   const venueName = txt(form.venue_name) || PREVIEW_PLACEHOLDERS.venue
-  // 🔴 THE DATE IS PASSED THROUGH ONLY WHEN IT IS A REAL 'YYYY-MM-DD'. Anything else — '', a partial
-  // value mid-typing — becomes the prompt, so the card never formats a parse failure.
-  const date = isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date
+  /* 🔴 THE CARD'S DATE CONTRACT IS 'DD/MM/YYYY', NOT 'YYYY-MM-DD' — fixed 5 October 2026.
+   * THE BUG: the preview showed "2026-10-22" where every other surface shows "Thu 22 Oct".
+   * THE CAUSE: `TruckListCard.formatStandardDate` SPLITS ON '/' (components/TruckListCard.tsx:93).
+   * Handed anything else it falls through to `return dateStr` and prints the raw string — no error,
+   * no warning, just the database's format on the operator's screen. The adapter was passing the
+   * form's `event_date` straight through.
+   * ⚠️ THAT IS THE SHAPE THE PUBLIC PAGE ALREADY SENDS: `/api/events` builds its events with
+   * `date: toddmmyyyy(e.event_date)`, as do /api/embed/events and /api/discovery/events. So this is
+   * the adapter meeting an existing contract, not a new convention — which is the whole point of the
+   * preview rendering the public page's own component.
+   * ⚠️ THE PLACEHOLDER IS LEFT ALONE. "Pick a date" has no slashes, so the card returns it verbatim,
+   * which is exactly what an unfilled field should show. */
+  const date = isYmd(form.event_date) ? toDdMmYyyy(form.event_date) : PREVIEW_PLACEHOLDERS.date
   const startTime = txt(form.start_time) || PREVIEW_PLACEHOLDERS.time
   const endTime = txt(form.end_time) || PREVIEW_PLACEHOLDERS.time
 
