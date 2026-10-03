@@ -98,10 +98,9 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { isNativeApp } from '@/lib/native/device'
 // Both store badges, from one component — the order and the colour are vendor rules. See the card below.
 import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
-import { ScheduleGraphicsTab } from '@/components/manage/ScheduleGraphicsTab'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; default_group_post_wording?: string | null }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll' }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -112,7 +111,7 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'graphics' | 'team' | 'settings' | 'payments' | 'billing'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -645,15 +644,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
     { id: 'menu',      label: 'Menu',      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
-    // 🔴 NEXT TO SCHEDULE, BECAUSE IT IS ABOUT THE SCHEDULE. The graphic and the posting list are built
-    // from the truck's own dates, so this belongs beside the tab those dates are kept on rather than at
-    // the end of the row. Same roles as Schedule and Settings: owner and manager, never staff — it
-    // writes places and posting notes, which are not service-time actions.
-    // ⚠️ THE TAB IS ALWAYS LISTED, ON EVERY PLAN. The plan gate is INSIDE the panel (FeatureGate), so a
-    // Starter truck sees the section and a short upgrade line — the brief's "locked plans see the tab
-    // with a short upgrade message, not an error". Filtering it out of this array would hide the
-    // product from the only people who might buy it.
-    { id: 'graphics',  label: 'Schedule graphics', icon: '🎨', roles: ['owner', 'manager'] },
     { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
     { id: 'modifiers', label: 'Extras & Upsells', icon: '⚡', roles: ['owner', 'manager'] },
     { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
@@ -850,7 +840,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
-        {activeTab === 'graphics'  && <ScheduleGraphicsTab truck={truck} api={api} showToast={showToast} />}
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}

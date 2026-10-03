@@ -37,23 +37,10 @@ const ts = require('typescript')
 
 const REPO = path.resolve(__dirname, '..')
 
-/**
- * The tables this census covers. Everything else in the schema is out of scope on purpose.
- *
- * 🔴 A TABLE MAY ONLY BE ADDED HERE IF `supabase/migrations/` CONTAINS ITS `create table`. Most of this
- * schema predates the migrations directory — `trucks`, `truck_events` and `venues` have no create
- * statement in it — so adding one of those would report every column it names as missing and make the
- * census noise rather than a check. The six outreach tables qualify; so do the two schedule-graphics
- * tables, which were created BY a migration on 3 October 2026 and are therefore fully described there.
- * ⚠️ THE MODULE'S NAME IS NOW NARROWER THAN ITS CONTENTS. Renaming it is a separate change — it is
- * required by two harnesses and named in two reports.
- */
+/** The six tables the brief names. Everything else in the schema is out of scope on purpose. */
 const TABLES = [
   'outreach_messages', 'outreach_contacts', 'outreach_events',
   'outreach_prospects', 'outreach_settings', 'outreach_sequence_slots',
-  // Schedule graphics, stage 1 (supabase/migrations/20261003_truck_places.sql). Added at creation
-  // rather than later, so the feature has never had a column named in a select that does not exist.
-  'truck_places', 'truck_place_groups',
 ]
 
 const CODE_DIRS = ['app', 'lib', 'components']
@@ -318,31 +305,6 @@ function arrayLiteralFor(node, sf, seen) {
     const decl = soleDeclaration(node.text, sf)
     if (!decl || !decl.initializer) return null
     return arrayLiteralFor(decl.initializer, sf, new Set([...seen, node.text]))
-  }
-  return null
-}
-
-/**
- * The declaration of `name` that is in scope at `fromNode`, plus the scope it was found in.
- *
- * 🔴 NEAREST ENCLOSING WINS, which is what "in scope" means and is the whole fix for the false
- * positive described in `payloadKeys`. Walking outwards from the USE SITE finds the handler's own
- * `patch` and stops; a file-wide search finds five of them and cannot tell which is meant.
- */
-function declarationInScope(name, fromNode) {
-  for (let scope = fromNode.parent; scope; scope = scope.parent) {
-    let hit = null
-    const walk = (n) => {
-      if (hit) return
-      if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.name.text === name) { hit = n; return }
-      // ⚠️ DO NOT DESCEND INTO A NESTED FUNCTION. A `patch` declared inside a callback is a different
-      // variable from the one this scope is looking for, and claiming it would reintroduce the bug.
-      if (n !== scope && (ts.isFunctionDeclaration(n) || ts.isFunctionExpression(n) || ts.isArrowFunction(n)
-        || ts.isMethodDeclaration(n) || ts.isClassDeclaration(n))) return
-      ts.forEachChild(n, walk)
-    }
-    ts.forEachChild(scope, walk)
-    if (hit) return { decl: hit, scope }
   }
   return null
 }
@@ -614,36 +576,17 @@ function payloadKeys(node, sf, seen = new Set()) {
   if (ts.isIdentifier(node)) {
     if (seen.has(node.text)) return { keys, partial }
     const next = new Set([...seen, node.text])
-    /* ── 🔴 RESOLVED BY SCOPE, NOT BY FILE (3 October 2026) ─────────────────────────────────────────
-     * This read the declaration with `soleDeclaration` (null whenever a name appeared more than once)
-     * and then scanned `sf.text` for EVERY `<name>.<prop> =` in the whole file with a regex. `patch` is
-     * a local in five different handlers of app/api/manage/route.ts, so the embed handler's
-     * `patch.website = url` was attributed to a `truck_places` update three hundred lines away and
-     * reported as `truck_places.website` — a column that does not exist, on a write that never names it.
-     * 🔴 A FALSE POSITIVE IS AS BAD AS A MISS HERE. The whole value of this census is that a finding
-     * means something; one that cries wolf on correct code is one that gets waived, and the waiver is
-     * where the next real `preview` hides. Both halves are now scoped to the nearest enclosing
-     * declaration and read off the AST. */
-    const found = declarationInScope(node.text, node)
+    const decl = soleDeclaration(node.text, sf)
     let read = false
-    if (found) {
-      if (found.decl.initializer) {
-        const r = payloadKeys(found.decl.initializer, sf, next)
-        keys.push(...r.keys); partial.push(...r.partial)
-      }
-      // `patch.contact_first_name = …` — the idiom for a PATCH built from whichever fields arrived.
-      // Collected from `found.scope` ONLY, so another handler's identically-named local cannot leak in.
-      const walk = (n) => {
-        if (ts.isBinaryExpression(n) && n.operatorToken.kind === ts.SyntaxKind.EqualsToken
-          && ts.isPropertyAccessExpression(n.left) && ts.isIdentifier(n.left.expression)
-          && n.left.expression.text === node.text && ts.isIdentifier(n.left.name)) {
-          keys.push(n.left.name.text)
-        }
-        ts.forEachChild(n, walk)
-      }
-      walk(found.scope)
-      read = true
+    if (decl && decl.initializer) {
+      const r = payloadKeys(decl.initializer, sf, next)
+      keys.push(...r.keys); partial.push(...r.partial); read = true
     }
+    /* `patch.contact_first_name = …` — the idiom for a PATCH built from whichever fields arrived.
+     * Those assignments are the column names, so they are read off the file rather than skipped. */
+    const assign = new RegExp(`\\b${node.text}\\.([A-Za-z_][A-Za-z0-9_]*)\\s*=[^=]`, 'g')
+    let m
+    while ((m = assign.exec(sf.text)) !== null) { keys.push(m[1]); read = true }
     if (!read) partial.push(`the payload \`${node.text}\` could not be read`)
     return { keys, partial }
   }
@@ -704,5 +647,4 @@ module.exports = {
   REPO, TABLES, CODE_DIRS, WAIVED, UNRESOLVED,
   census, migrationColumns, codeColumns,
   parseSelectList, parseOrFilter, stripEmbeds, variantsOf, stripSql, splitTopLevel, soleDeclaration,
-  declarationInScope,
 }
