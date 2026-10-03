@@ -28,15 +28,28 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const { compile, REPO } = require('./_slot-interval-compile.cjs')
+const { codeColumns } = require('./_outreach-schema-census.cjs')
 
 let fails = 0
 const stripComments = src => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+/* 🔴 A LINE-BASED COMMENT FILTER, AND IT IS NOT THE SAME TOOL AS `stripComments`. That one pairs each
+ * `/*` with the next `*\/` non-greedily, which MIS-PAIRS on app/manage/[token]/page.tsx — regex
+ * literals and strings in there contain those characters — and silently swallows whole regions. It
+ * cost three false failures in this file. This drops whole comment LINES only: enough to answer "is
+ * this name mentioned in code or only in prose", and it cannot eat a region. */
+const codeOnly = src => src.split('\n')
+  .filter(l => { const t = l.trim(); return t && !t.startsWith('//') && !t.startsWith('*') && !t.startsWith('/*') })
+  .join('\n')
 const read = f => fs.readFileSync(path.join(REPO, f), 'utf8')
 
 const LIB = 'lib/schedule-graphics/places.ts'
 const ROUTE = 'app/api/manage/route.ts'
-const MIGRATION = 'supabase/migrations/20261003_truck_places.sql'
-const TAB = 'components/manage/ScheduleGraphicsTab.tsx'
+const MIGRATION1 = 'supabase/migrations/20261003_truck_places.sql'
+const MIGRATION2 = 'supabase/migrations/20261004_schedule_places_stage2.sql'
+const PLACES_UI = 'components/manage/SchedulePlaces.tsx'
+const PAGE = 'app/manage/[token]/page.tsx'
+const EVENTS_ACTION = 'app/api/events/action/route.ts'
+const DASH_ACTION = 'app/api/dashboard/action/route.ts'
 
 function buildLib(root, tag) {
   const { out, req } = compile(root, [LIB], tag)
@@ -61,6 +74,7 @@ const ev = (over = {}) => ({
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 function runMatchingSuite(P) {
   const ok = [], bad = []
+  const TODAY = '2026-10-03'
   const t = (n, c) => (c ? ok : bad).push(n)
   const k = P.normalisePlaceName
 
@@ -117,7 +131,6 @@ function runMatchingSuite(P) {
   })())
 
   // ── "NEXT" ───────────────────────────────────────────────────────────────────────────────────
-  const TODAY = '2026-10-03'
   t('🔴 next is the SOONEST upcoming date', (() => {
     const n = P.nextEventAt([ev({ event_date: '2026-11-01' }), ev({ event_date: '2026-10-13' })], TODAY)
     return n?.event_date === '2026-10-13'
@@ -134,15 +147,155 @@ function runMatchingSuite(P) {
   t('⚠️ status matching is case- and space-insensitive, because it is free text in the table',
     P.isTradingStatus(' Cancelled ') === false && P.isTradingStatus('CLOSED') === false && P.isTradingStatus('confirmed') === true)
 
-  // ── THE WORDING CHAIN ────────────────────────────────────────────────────────────────────────
-  t('🔴 place wording wins; blank falls to the truck default; blank again falls to the built-in',
-    P.effectiveGroupPostWording({ group_post_wording: 'At {place}!' }, { default_group_post_wording: 'truck words' }) === 'At {place}!'
-    && P.effectiveGroupPostWording({ group_post_wording: null }, { default_group_post_wording: 'truck words' }) === 'truck words'
-    && P.effectiveGroupPostWording(null, null) === P.DEFAULT_GROUP_POST_WORDING)
-  t('⚠️ WHITESPACE IS BLANK. Selecting the text and deleting it leaves "   ", which means the same as never typing anything',
-    P.effectiveGroupPostWording({ group_post_wording: '   ' }, { default_group_post_wording: 'truck words' }) === 'truck words')
-  t('⚠️ the built-in default carries every token the card advertises',
-    P.WORDING_TOKENS.every(tok => P.DEFAULT_GROUP_POST_WORDING.includes(tok)))
+  // ── THE MERGE RESOLUTION ─────────────────────────────────────────────────────────────────────
+  const P_A = { id: 'a', name_key: 'a', name: 'A' }
+  const P_B = { id: 'b', name_key: 'b', name: 'B' }
+  const P_C = { id: 'c', name_key: 'c', name: 'C' }
+  const ids = (arr) => P.placesById(arr)
+
+  t('🔴 a merged place resolves to its target', (() => {
+    const a = { ...P_A, merged_into_id: 'b', is_hidden: true }
+    return P.resolvePlaceMerge(a, ids([a, P_B])).id === 'b'
+  })())
+  t('🔴 A CHAIN IS FOLLOWED TO THE END — A→B→C resolves to C, because nothing rewrites A when B moves', (() => {
+    const a = { ...P_A, merged_into_id: 'b' }
+    const b = { ...P_B, merged_into_id: 'c' }
+    return P.resolvePlaceMerge(a, ids([a, b, P_C])).id === 'c'
+  })())
+  t('🔴 A CYCLE DOES NOT HANG — A→B→A returns a real place instead of looping for ever', (() => {
+    const a = { ...P_A, merged_into_id: 'b' }
+    const b = { ...P_B, merged_into_id: 'a' }
+    const got = P.resolvePlaceMerge(a, ids([a, b]))
+    return !!got && (got.id === 'a' || got.id === 'b')
+  })())
+  t('🔴 …and a chain longer than the cap stops rather than running away', (() => {
+    // 🧪 Twelve places in a line, cap is 10. The answer is "as far as it got", never a throw.
+    const chain = Array.from({ length: 12 }, (_, i) => ({
+      id: `p${i}`, name_key: `p${i}`, name: `P${i}`,
+      merged_into_id: i < 11 ? `p${i + 1}` : null,
+    }))
+    const got = P.resolvePlaceMerge(chain[0], ids(chain))
+    return !!got && got.id === `p${P.MERGE_MAX_DEPTH}`
+  })())
+  t('⚠️ a pointer that cannot be followed keeps the place in hand rather than returning null', (() => {
+    const a = { ...P_A, merged_into_id: 'gone' }
+    return P.resolvePlaceMerge(a, ids([a])).id === 'a'
+  })())
+
+  t('🔴 MERGING A PLACE INTO ITSELF IS REFUSED', (() => {
+    const r = P.mergeRefusal({ fromId: 'a', intoId: 'a', places: [P_A, P_B] })
+    return typeof r === 'string' && /itself/.test(r)
+  })())
+  t('🔴 …and so is merging B into A when A is already merged into B (the cycle, before it is written)', (() => {
+    const a = { ...P_A, merged_into_id: 'b' }
+    return typeof P.mergeRefusal({ fromId: 'b', intoId: 'a', places: [a, P_B] }) === 'string'
+  })())
+  t('⚠️ a merge into a place that is gone is refused rather than written',
+    typeof P.mergeRefusal({ fromId: 'a', intoId: 'nope', places: [P_A] }) === 'string')
+  t('🔴 a legitimate merge is allowed, and the patch hides the merged place in the same write', (() => {
+    const patch = P.mergePatch({ fromId: 'a', intoId: 'b', places: [P_A, P_B] })
+    return P.mergeRefusal({ fromId: 'a', intoId: 'b', places: [P_A, P_B] }) === null
+      && patch.placeId === 'a' && patch.merged_into_id === 'b' && patch.is_hidden === true
+  })())
+  t('🔴 MERGING INTO AN ALREADY-MERGED PLACE LANDS ON THE FINAL TARGET, not on the middle one', (() => {
+    const b = { ...P_B, merged_into_id: 'c' }
+    const patch = P.mergePatch({ fromId: 'a', intoId: 'b', places: [P_A, b, P_C] })
+    // ⚠️ Otherwise the chain grows a step every merge and the depth cap gets closer for no reason.
+    return patch.merged_into_id === 'c'
+  })())
+
+  // ── MATCHING THROUGH A MERGE, AND `truck_place_id` FIRST ─────────────────────────────────────
+  t('🔴 `truck_place_id` OUTRANKS EVERYTHING — including a venue anchor pointing elsewhere', (() => {
+    const picked = { id: 'picked', venue_id: null, name_key: 'somewhere else' }
+    const anchored = { id: 'anchored', venue_id: V_HALL, name_key: 'lavenham village hall' }
+    const e = ev({ truck_place_id: 'picked', venue_id: V_HALL })
+    return P.placeForEvent(e, [anchored, picked])?.id === 'picked'
+  })())
+  t('⚠️ …and a link to a place that is no longer there falls back to the anchor rather than to null', (() => {
+    const anchored = { id: 'anchored', venue_id: V_HALL, name_key: 'lavenham village hall' }
+    return P.placeForEvent(ev({ truck_place_id: 'deleted', venue_id: V_HALL }), [anchored])?.id === 'anchored'
+  })())
+  t('🔴 B GAINS A\'S EVENTS THROUGH MATCHING, with no event row touched', (() => {
+    const a = { id: 'a', venue_id: null, name_key: 'bull and butcher', merged_into_id: 'b', is_hidden: true }
+    const b = { id: 'b', venue_id: null, name_key: 'the bull' }
+    // The old name still resolves — which is the entire point of merging.
+    return P.placeForEvent(ev({ venue_name: 'Bull & Butcher' }), [a, b])?.id === 'b'
+  })())
+  t('⚠️ …including when the event was LINKED to the merged place', (() => {
+    const a = { id: 'a', venue_id: null, name_key: 'a', merged_into_id: 'b', is_hidden: true }
+    const b = { id: 'b', venue_id: null, name_key: 'b' }
+    return P.placeForEvent(ev({ truck_place_id: 'a' }), [a, b])?.id === 'b'
+  })())
+  t('⚠️ …and when it was ANCHORED to it', (() => {
+    const a = { id: 'a', venue_id: V_HALL, name_key: 'a', merged_into_id: 'b', is_hidden: true }
+    const b = { id: 'b', venue_id: null, name_key: 'b' }
+    return P.placeForEvent(ev({ venue_id: V_HALL }), [a, b])?.id === 'b'
+  })())
+
+  // ── LAST, THE COUNT, AND THE LIST ORDER ──────────────────────────────────────────────────────
+  t('🔴 "Last" is the most recent PAST trading date', (() => {
+    const l = P.lastEventAt([ev({ event_date: '2026-09-01' }), ev({ event_date: '2026-09-22' }), ev({ event_date: '2026-10-20' })], TODAY)
+    return l?.event_date === '2026-09-22'
+  })())
+  t('🔴 …and Next and Last never both claim today — Next takes it, Last is strictly before', (() => {
+    const only = [ev({ event_date: TODAY })]
+    return P.nextEventAt(only, TODAY)?.event_date === TODAY && P.lastEventAt(only, TODAY) === null
+  })())
+  t('⚠️ a cancelled past date is not a time the truck traded there',
+    P.lastEventAt([ev({ event_date: '2026-09-22', status: 'cancelled' })], TODAY) === null)
+  t('🔴 the count is the last 365 days, past and today, never the future', (() => {
+    const evs = [
+      ev({ event_date: '2025-09-01' }),  // older than a year — out
+      ev({ event_date: '2026-01-10' }),
+      ev({ event_date: '2026-09-22' }),
+      ev({ event_date: TODAY }),
+      ev({ event_date: '2026-11-01' }),  // future — out of a past-tense count
+      ev({ event_date: '2026-09-23', status: 'closed' }),  // not trading — out
+    ]
+    return P.tradedCountInLastYear(evs, TODAY) === 3
+  })())
+  t('⚠️ the 365-day boundary is computed in UTC, not through a local timezone',
+    P.ymdMinusDays('2026-10-03', 365) === '2025-10-03' && P.ymdMinusDays('2026-03-01', 1) === '2026-02-28')
+
+  t('🔴 FAVOURITES FIRST, each group alphabetical', (() => {
+    const list = [
+      { id: '1', name_key: 'z', name: 'Zebra Field', is_favourite: false },
+      { id: '2', name_key: 'b', name: 'Bull & Butcher', is_favourite: true },
+      { id: '3', name_key: 'a', name: 'Ash Green', is_favourite: false },
+      { id: '4', name_key: 'l', name: 'Lavenham Hall', is_favourite: true },
+    ]
+    return P.visiblePlaces(list).map(x => x.name).join('|') === 'Bull & Butcher|Lavenham Hall|Ash Green|Zebra Field'
+  })())
+  t('🔴 a HIDDEN or MERGED place is not in the list, and `showHidden` brings it back', (() => {
+    const list = [
+      { id: '1', name_key: 'a', name: 'A', is_favourite: false },
+      { id: '2', name_key: 'b', name: 'B', is_favourite: false, is_hidden: true },
+      { id: '3', name_key: 'c', name: 'C', is_favourite: false, merged_into_id: '1' },
+    ]
+    return P.visiblePlaces(list).length === 1 && P.visiblePlaces(list, true).length === 3
+  })())
+
+  // ── WHAT PICKING A PLACE FILLS ───────────────────────────────────────────────────────────────
+  const emptyForm = { venue_name: '', address: '', town: '', postcode: '', start_time: '', end_time: '' }
+  t('🔴 PICKING A PLACE FILLS THE FIVE FIELDS, AND THE TIMES COME FROM ITS LAST EVENT', (() => {
+    const f = P.fillFromPlace({
+      name: 'Lavenham Village Hall', address: 'Church St', area: 'Lavenham', postcode: 'CO10 9QT',
+      last_start_time: '17:00:00', last_end_time: '20:00:00',
+    }, emptyForm)
+    return f.venue_name === 'Lavenham Village Hall' && f.address === 'Church St'
+      && f.town === 'Lavenham' && f.postcode === 'CO10 9QT'
+      && f.start_time === '17:00' && f.end_time === '20:00'
+  })())
+  t('🔴 THE DATE IS NEVER FILLED — a past event\'s date is how tonight\'s pitch lands in September',
+    !('event_date' in P.fillFromPlace({ name: 'X' }, emptyForm)))
+  t('🔴 A BLANK FIELD ON THE PLACE KEEPS WHAT IS ALREADY TYPED', (() => {
+    const typed = { venue_name: 'typed', address: '12 High St', town: 'Clare', postcode: 'CO10 8NY', start_time: '18:00', end_time: '21:00' }
+    const f = P.fillFromPlace({ name: 'The Crown', address: null, area: '', postcode: null, last_start_time: null, last_end_time: null }, typed)
+    return f.venue_name === 'The Crown' && f.address === '12 High St' && f.town === 'Clare'
+      && f.postcode === 'CO10 8NY' && f.start_time === '18:00' && f.end_time === '21:00'
+  })())
+  t('⚠️ seconds are trimmed off the times, because the form holds HH:MM',
+    P.fillFromPlace({ last_start_time: '09:30:00' }, emptyForm).start_time === '09:30')
 
   // ── THE WINDOW ───────────────────────────────────────────────────────────────────────────────
   t('⚠️ the seed window starts 12 months back', P.seedWindowStart(new Date('2026-10-03T12:00:00Z')) === '2025-10-03')
@@ -306,6 +459,61 @@ function runSeedSuite(P) {
     return pl.inserts.length === 1
   })())
 
+  // ── 🔴 THE SEEDER RESPECTS WHAT THE OPERATOR DECIDED ─────────────────────────────────────────
+  /* These four are the rules that stop the seeder undoing a person's work on the next refresh. Each
+   * one is "the seeder found the row and left it alone", which is a different outcome from both
+   * "created a duplicate" and "wrote to it". */
+  const HIDDEN_SCHEDULE = [ev({ venue_name: 'Bull & Butcher', event_date: '2026-10-15', postcode: 'CO10 1AA', town: 'Clare' })]
+
+  t('🔴 A HIDDEN PLACE IS NOT RE-CREATED, and is not written to either', (() => {
+    const hidden = [{ id: 'h', venue_id: null, name_key: 'bull and butcher', name: 'Bull & Butcher', is_hidden: true, address: null, postcode: null, area: null }]
+    const pl = P.planPlaceSeed({ events: HIDDEN_SCHEDULE, places: hidden, now: NOW })
+    const r = applyPlan(hidden, pl)
+    return pl.inserts.length === 0 && pl.fills.length === 0 && pl.adopts.length === 0
+      && r.places.length === 1 && r.places[0].is_hidden === true
+  })())
+  t('🔴 A MERGED PLACE IS NOT RE-CREATED, and its pointer is never cleared', (() => {
+    const merged = [
+      { id: 'a', venue_id: null, name_key: 'bull and butcher', name: 'Bull & Butcher', merged_into_id: 'b', is_hidden: true },
+      { id: 'b', venue_id: null, name_key: 'the bull', name: 'The Bull' },
+    ]
+    const pl = P.planPlaceSeed({ events: HIDDEN_SCHEDULE, places: merged, now: NOW })
+    const r = applyPlan(merged, pl)
+    return pl.inserts.length === 0 && pl.fills.length === 0
+      && r.places.find(x => x.id === 'a').merged_into_id === 'b'
+      && r.places.find(x => x.id === 'a').is_hidden === true
+  })())
+  t('🔴 …AND NOTHING THE SEEDER PLANS EVER NAMES `is_hidden` OR `merged_into_id`', (() => {
+    // The structural version of the two above: whatever the schedule says, those two columns are not
+    // in the seeder's vocabulary at all. A new event arriving is not new information about a decision.
+    const pl = P.planPlaceSeed({ events: SCHEDULE, places: [], now: NOW })
+    const json = JSON.stringify(pl)
+    return !json.includes('is_hidden') && !json.includes('merged_into_id')
+  })())
+  t('⚠️ an ANCHORED event whose name_key belongs to a hidden place does not adopt it either', (() => {
+    const hidden = [{ id: 'h', venue_id: null, name_key: 'lavenham village hall', name: 'Lavenham Village Hall', is_hidden: true }]
+    const pl = P.planPlaceSeed({ events: [ev({ venue_id: V_HALL, event_date: '2026-10-13' })], places: hidden, now: NOW })
+    // 🔴 Adopting would quietly attach a venue anchor to a row the operator removed from view, and an
+    // insert would collide on the unique key. It is reported instead.
+    return pl.adopts.length === 0 && pl.inserts.length === 0 && pl.collisions.length === 1
+  })())
+  t('🔴 A FAVOURITE SURVIVES A RE-SEED — nothing the seeder plans mentions it', (() => {
+    const fav = [{ id: 'f', venue_id: null, name_key: 'bull and butcher', name: 'Bull & Butcher', is_favourite: true, address: null, postcode: null, area: null }]
+    const pl = P.planPlaceSeed({ events: HIDDEN_SCHEDULE, places: fav, now: NOW })
+    const r = applyPlan(fav, pl)
+    return !JSON.stringify(pl).includes('is_favourite') && r.places[0].is_favourite === true
+  })())
+  t('⚠️ …while its blank address and area ARE filled, because those are not decisions', (() => {
+    const fav = [{ id: 'f', venue_id: null, name_key: 'bull and butcher', name: 'Bull & Butcher', is_favourite: true, address: null, postcode: null, area: null }]
+    const pl = P.planPlaceSeed({ events: HIDDEN_SCHEDULE, places: fav, now: NOW })
+    const f = pl.fills.find(x => x.placeId === 'f')
+    return !!f && f.postcode === 'CO10 1AA' && f.area === 'Clare'
+  })())
+  t('🔴 `area` IS SEEDED FROM THE EVENT\'S `town` on a fresh insert', (() => {
+    const pl = P.planPlaceSeed({ events: HIDDEN_SCHEDULE, places: [], now: NOW })
+    return pl.inserts.length === 1 && pl.inserts[0].area === 'Clare'
+  })())
+
   return { ok, bad }
 }
 
@@ -315,114 +523,260 @@ function runSeedSuite(P) {
 function runWiringSuite() {
   const ok = [], bad = []
   const t = (n, c) => (c ? ok : bad).push(n)
-  const SQL = read(MIGRATION)
+  const SQL1 = read(MIGRATION1)
+  const SQL2 = read(MIGRATION2)
   const R = stripComments(read(ROUTE))
-  const T = stripComments(read(TAB))
+  const U = stripComments(read(PLACES_UI))
+  const P = stripComments(read(PAGE))
 
-  // ── THE DATABASE-LEVEL GUARANTEE ─────────────────────────────────────────────────────────────
-  t('🔴 the migration declares the unique index the seed resolves against',
-    /create unique index if not exists truck_places_truck_name_key_uidx\s+on public\.truck_places \(truck_id, name_key\)/.test(SQL))
-  t('🔴 …and the per-anchor unique index, partial on venue_id',
-    /create unique index if not exists truck_places_truck_venue_uidx[\s\S]{0,120}\(truck_id, venue_id\)[\s\S]{0,60}where venue_id is not null/.test(SQL))
-  t('🔴 THE SEED IS `do nothing`, NOT `do update` — an update on conflict would overwrite the operator\'s name every refresh',
-    /onConflict: 'truck_id,name_key', ignoreDuplicates: true/.test(R))
-  t('🔴 the adopt is guarded by `.is(\'venue_id\', null)`, so a second tab cannot overwrite an anchor',
-    /\.update\(\{ venue_id: a\.venue_id[\s\S]{0,140}\.is\('venue_id', null\)/.test(R))
-  t('🔴 the two fills are blank-only, each with its own `.is(col, null)`',
-    /update\(\{ address: f\.address[\s\S]{0,140}\.is\('address', null\)/.test(R)
-    && /update\(\{ postcode: f\.postcode[\s\S]{0,140}\.is\('postcode', null\)/.test(R))
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // 🔴 THE `truck_events` AUDIT — the one that matters, because that table runs live ordering
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  /* Read off the TypeScript AST by the schema census's own payload reader, over `truck_events`
+   * specifically. ⚠️ `truck_events` IS NOT IN THE CENSUS'S `TABLES` and must not be — it predates
+   * supabase/migrations/ and has no `create table` there, so censusing it would report every column
+   * it names as missing. This asks the reader about its WRITES; it checks nothing against SQL. */
+  const ev = codeColumns(REPO, ['app', 'lib', 'components'], { tables: ['truck_events'] })
+  const writes = ev.named.filter(n => ['insert', 'update', 'upsert'].includes(n.method))
+  const placeWrites = writes.filter(n => n.col === 'truck_place_id')
 
-  // ── 🔴 `truck_events` AND `venues` ARE READ-ONLY ──────────────────────────────────────────────
-  // The hard boundary of this stage, asserted from BOTH sides: no SQL statement against either table
-  // in the migration, and no write builder against either in the route's schedule-graphics block.
-  t('🔴 THE MIGRATION TOUCHES NEITHER `truck_events` NOR `venues`',
-    !/\b(alter|insert|update|delete|drop)\b[\s\S]{0,40}\b(truck_events|venues)\b/i.test(stripSqlComments(SQL)))
-  t('🔴 …and it references `venues` only as a FOREIGN KEY', /references public\.venues\(id\) on delete set null/.test(SQL))
-  const sgBlock = R.slice(R.indexOf("const SG_FORBIDDEN"), R.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
-  t('🔴 NOTHING IN THE SCHEDULE-GRAPHICS ACTIONS WRITES `truck_events` OR `venues`',
-    sgBlock.length > 500
-    && !/from\('truck_events'\)\s*\n?\s*\.(insert|update|upsert|delete)/.test(sgBlock)
-    && !/from\('venues'\)/.test(sgBlock))
-  t('⚠️ …and the only `truck_events` access in that block is a select', (() => {
-    const hits = [...sgBlock.matchAll(/from\('truck_events'\)([\s\S]{0,40})/g)].map(m => m[1])
-    return hits.length === 1 && /\.select\(/.test(hits[0])
+  t('🔴 EXACTLY ONE WRITE PATH NAMES `truck_place_id`, and it is an INSERT',
+    placeWrites.length === 1 && placeWrites[0].method === 'insert' && placeWrites[0].file === ROUTE)
+  for (const w of placeWrites) console.log(`      · ${w.method} ${w.file}:${w.line}`)
+  t('🔴 NO `update` OR `upsert` ANYWHERE NAMES IT — an edit cannot move an event\'s place',
+    writes.filter(n => n.col === 'truck_place_id' && n.method !== 'insert').length === 0)
+
+  /* 🔴 THE FOUR PAYLOADS THE AST READER CANNOT FULLY RESOLVE, CHECKED BY HAND AND NAMED. A reader
+   * that cannot read a payload proves nothing about it, so each is asserted on its own terms. These
+   * are listed in the report as the paths that were checked. */
+  const unread = ev.unreadWrites.filter(w => w.method !== 'insert')
+  t(`⚠️ exactly ${unread.length} truck_events write payloads are not literal, and each is checked below`,
+    unread.length === 3)
+  for (const u of unread) console.log(`      ? ${u.file}:${u.line} .${u.method}() — ${u.parts.join('; ').slice(0, 60)}`)
+
+  const D = stripComments(read(DASH_ACTION))
+  const E = stripComments(read(EVENTS_ACTION))
+  t('🔴 (1) dashboard set_paused — a ternary of two LITERAL objects, neither naming the column',
+    /const patch = resuming\s*\n?\s*\? \{ paused_until: null, online_paused_until: null \}\s*\n?\s*: \{ paused_until \}/.test(D))
+  t('🔴 (2) events/action van backfill — a ternary of literals, neither naming the column',
+    /\(!ev\?\.van_id\) \? \{ van_id: soleVanId \} :/.test(E) && !/truck_place_id/.test(E))
+  t('🔴 (3) events/action `update` — an ALLOWLIST of 8 columns, and `truck_place_id` is not one',
+    (() => {
+      const m = E.match(/const allowed = \[([\s\S]*?)\]/)
+      if (!m) return false
+      const cols = m[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')).filter(Boolean)
+      return cols.length === 8 && !cols.includes('truck_place_id')
+    })())
+  t('🔴 …so a client PATCHing `truck_place_id` is DROPPED, not written',
+    /Object\.fromEntries\(\s*\n?\s*Object\.entries\(payload\)\.filter\(\(\[k\]\) => allowed\.includes\(k\)\)/.test(E))
+
+  t('🔴 THE EVENT EDIT BRANCH NAMES ITS COLUMNS AND `truck_place_id` IS NOT AMONG THEM',
+    /from\('truck_events'\)\.update\(\{ venue_name, town: town \?\? null[^}]*\}\)/.test(R)
+    && !/from\('truck_events'\)\.update\(\{[^}]*truck_place_id/.test(R))
+  t('⚠️ …and the handler destructures a FIXED list, so nothing spreads `body` into a write',
+    /const \{ id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude, van_id \} = body/.test(R)
+    && !/from\('truck_events'\)\.(update|insert)\(\{ \.\.\.body/.test(R))
+  t('🔴 NOTHING IN THE TREE UPDATES `truck_events` FROM A SPREAD OF THE REQUEST BODY',
+    !/from\('truck_events'\)[\s\S]{0,60}\.update\(\{?\s*\.\.\.(body|payload)\b/.test(R + D + E))
+
+  /* 🔴 THE INSERT PAYLOAD IS TODAY'S PLUS EXACTLY ONE KEY — compared against the commit this branch
+   * started from, not against a list typed out here. A hand-written expectation would drift. */
+  t('🔴 THE ADD-EVENT INSERT IS BYTE-FOR-BYTE TODAY\'S PLUS `truck_place_id` AND NOTHING ELSE', (() => {
+    const keysOf = (src) => {
+      const i = src.indexOf("from('truck_events').insert({ truck_id: targetTruckId")
+      if (i === -1) return null
+      const open = src.indexOf('{', src.indexOf('insert(', i))
+      let depth = 0, end = open
+      for (let j = open; j < src.length; j++) {
+        if (src[j] === '{') depth++
+        else if (src[j] === '}') { depth--; if (depth === 0) { end = j; break } }
+      }
+      return [...src.slice(open + 1, end).matchAll(/(?:^|,)\s*([a-z_]+)\s*:/g)].map(m => m[1])
+    }
+    const now = keysOf(R)
+    let before = null
+    try {
+      before = keysOf(stripComments(require('child_process')
+        .execFileSync('git', ['show', 'cebc78e:app/api/manage/route.ts'], { cwd: REPO, encoding: 'utf8', maxBuffer: 32e6 })))
+    } catch { return false }
+    if (!now || !before) return false
+    const added = now.filter(k => !before.includes(k))
+    const gone = before.filter(k => !now.includes(k))
+    console.log(`      insert keys: ${before.length} before → ${now.length} now · added [${added.join(', ')}] · removed [${gone.join(', ')}]`)
+    return gone.length === 0 && added.length === 1 && added[0] === 'truck_place_id'
   })())
 
-  // ── THE PLAN GATE ────────────────────────────────────────────────────────────────────────────
-  t('🔴 EVERY schedule-graphics action checks the gate server-side',
-    (sgBlock.match(/if \(!sgAllowed\(\)\) return SG_FORBIDDEN/g) || []).length === 4
-    && (sgBlock.match(/if \(action === 'sg_/g) || []).length === 4)
-  t('🔴 …through `canAccess` with the truck\'s overrides and trial expiry, not the plan alone',
-    /canAccess\(truck\.plan, 'schedule_graphics', truck\.feature_overrides \?\? \{\}, truck\.trial_expires_at\)/.test(R))
-  t('🔴 the Feature is on Pro, so Max and trial inherit it',
-    /'schedule_graphics',/.test(read('lib/features.ts'))
-    && read('lib/features.ts').indexOf("'schedule_graphics',") > read('lib/features.ts').indexOf('const PRO_FEATURES')
-    && read('lib/features.ts').indexOf("'schedule_graphics',") < read('lib/features.ts').indexOf('const MAX_FEATURES'))
-  t('🔴 a locked plan sees the TAB with an upgrade message — the gate wraps the content, not the nav entry',
-    /<FeatureGate/.test(T) && /feature="schedule_graphics"/.test(T)
-    && !/roles: \['owner', 'manager'\] \}.*graphics/.test(read('app/manage/[token]/page.tsx').replace(/\n/g, ' ').replace(/.*graphics'/, 'graphics\'')))
-  t('⚠️ the writes are on the staff-blocked list, including the seeding read',
-    /'sg_places', 'sg_upsert_place', 'sg_upsert_group', 'sg_delete_group',/.test(R))
+  t('🔴 THE STAGE-2 MIGRATION ADDS ONE NULLABLE COLUMN TO `truck_events` AND NOTHING ELSE', (() => {
+    const sql = stripSqlComments(SQL2)
+    const evStmts = [...sql.matchAll(/alter table public\.truck_events([\s\S]*?);/g)].map(m => m[1])
+    return evStmts.length === 1
+      && /add column if not exists truck_place_id uuid references public\.truck_places\(id\) on delete set null/.test(evStmts[0])
+      && !/\bdefault\b/.test(evStmts[0])
+      && !/not null/.test(evStmts[0])
+  })())
+  t('🔴 …and NO update/insert/delete against `truck_events` or `venues` in either migration',
+    !/\b(insert into|update|delete from)\b[\s\S]{0,40}\b(truck_events|venues)\b/i.test(stripSqlComments(SQL1 + SQL2)))
+  t('🔴 `on delete set null`, never cascade — deleting a place must not delete a trading record',
+    /truck_place_id uuid references public\.truck_places\(id\) on delete set null/.test(SQL2)
+    && !/truck_place_id[^;]*on delete cascade/.test(SQL2))
+  t('⚠️ …and the index is on the new column only, so no existing query plan can change',
+    /create index if not exists truck_events_truck_place_idx\s+on public\.truck_events \(truck_place_id\)/.test(SQL2))
 
-  // ── THE NAV ENTRY ────────────────────────────────────────────────────────────────────────────
-  const PAGE = read('app/manage/[token]/page.tsx')
-  t('🔴 the nav entry exists, beside Schedule, for owner and manager',
-    /\{ id: 'graphics',\s+label: 'Schedule graphics', icon: '🎨', roles: \['owner', 'manager'\] \}/.test(PAGE)
-    && PAGE.indexOf("id: 'graphics'") > PAGE.indexOf("id: 'schedule'")
-    && PAGE.indexOf("id: 'graphics'") < PAGE.indexOf("id: 'deals'"))
-  t('⚠️ …and it renders the tab', /activeTab === 'graphics'\s+&& <ScheduleGraphicsTab/.test(PAGE))
-  t('⚠️ the existing nav order is NOT reorganised — the other eight ids keep their relative order', (() => {
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE MIGRATION'S OTHER HALF
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  t('🔴 groups are dropped completely — the table and the per-place wording column',
+    /drop table if exists public\.truck_place_groups/.test(SQL2)
+    && /drop column if exists group_post_wording/.test(SQL2))
+  t('🔴 the four new place columns, with the favourite/hidden booleans NOT NULL DEFAULT false',
+    /add column if not exists area text/.test(SQL2)
+    && /add column if not exists is_favourite boolean not null default false/.test(SQL2)
+    && /add column if not exists is_hidden boolean not null default false/.test(SQL2)
+    && /add column if not exists merged_into_id uuid references public\.truck_places\(id\) on delete set null/.test(SQL2))
+  t('🔴 a place cannot be merged into itself — the one cycle the database CAN forbid',
+    /check \(merged_into_id is null or merged_into_id <> id\)/.test(SQL2)
+    && /drop constraint if exists truck_places_no_self_merge/.test(SQL2))
+  t('🔴 the wording column is RENAMED, guarded both ways so re-running is safe',
+    /rename column default_group_post_wording to event_post_wording/.test(SQL2)
+    && /add column if not exists event_post_wording text/.test(SQL2))
+  t('⚠️ `set lock_timeout` at the top and `notify pgrst` at the end',
+    /^set lock_timeout = '3s';/m.test(SQL2) && /notify pgrst, 'reload schema';\s*$/.test(SQL2.trim() + '\n'))
+  t('⚠️ the stage-2 file sorts AFTER stage 1, so it alters tables that exist',
+    'supabase/migrations/20261004_schedule_places_stage2.sql' > 'supabase/migrations/20261003_truck_places.sql')
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE PLAN GATE MOVED
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  const sgBlock = R.slice(R.indexOf("if (action === 'sg_places')"), R.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
+  t('🔴 NO PLACES ACTION IS PLAN-GATED ANY MORE — Places is on every plan',
+    sgBlock.length > 500 && !/canAccess\(truck\.plan, 'schedule_graphics'/.test(sgBlock)
+    && !/sgAllowed/.test(R) && !/SG_FORBIDDEN/.test(R))
+  /* 🔴 THE FEATURE IS DECLARED IN ONE PLACE AND CONSUMED IN ONE PLACE. Checked over CODE LINES only —
+   * route.ts still explains in a comment that the gate used to be here, and a comment is not a gate. */
+  t('🔴 …and the Feature now gates ONLY the Weekly post pane',
+    (U.match(/feature="schedule_graphics"/g) || []).length === 1
+    && /WeeklyPostPane/.test(U)
+    && (() => {
+      const files = require('child_process').execFileSync('grep',
+        ['-rl', '--include=*.ts', '--include=*.tsx', 'schedule_graphics', 'app', 'lib', 'components'],
+        { cwd: REPO, encoding: 'utf8' }).trim().split('\n')
+      const inCode = files.filter(f => /schedule_graphics/.test(codeOnly(read(f))))
+      return inCode.length === 2 && inCode.includes('lib/features.ts') && inCode.includes(PLACES_UI)
+    })())
+  t('⚠️ `resolveTruckAccess` and the staff gate are UNCHANGED — widening plans never widened roles',
+    /'sg_places', 'sg_upsert_place', 'sg_merge_place',/.test(R)
+    && /const access = await resolveTruckAccess\(req, truck\)/.test(R)
+    && !/sg_upsert_group|sg_delete_group/.test(R))
+  /* 🔴 GONE FROM THE CODE, not from the history. The removal notes in places.ts and the migration
+   * deliberately NAME what was removed — that is the record. What must not exist is a reader. */
+  t('🔴 FACEBOOK GROUPS ARE GONE FROM THE CODE ENTIRELY',
+    (() => {
+      const files = require('child_process').execFileSync('grep',
+        ['-rl', '--include=*.ts', '--include=*.tsx', '-e', 'truck_place_groups', '-e', 'group_post_wording', '-e', 'Facebook group', 'app', 'lib', 'components'],
+        { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+      const files2 = files ? files.split('\n') : []
+      const inCode = files2.filter(f => /truck_place_groups|group_post_wording|Facebook group/.test(codeOnly(read(f))))
+      if (inCode.length) console.log('      still referenced in code: ' + inCode.join(', '))
+      return inCode.length === 0
+    })())
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE NAVIGATION
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  t('🔴 THE SEPARATE TOP-LEVEL TAB IS GONE', !/id: 'graphics'/.test(P)
+    && !/ScheduleGraphicsTab/.test(P)
+    && !fs.existsSync(path.join(REPO, 'components/manage/ScheduleGraphicsTab.tsx')))
+  t('🔴 the Schedule tab has three pill sub-tabs, Events first',
+    /\{ id: 'events', label: 'Events' \}/.test(P)
+    && /\{ id: 'weekly', label: 'Weekly post' \}/.test(P)
+    && /\{ id: 'places', label: 'Places' \}/.test(P)
+    && P.indexOf("id: 'events'") < P.indexOf("id: 'weekly'")
+    && P.indexOf("id: 'weekly'") < P.indexOf("id: 'places'"))
+  /* ⚠️ ASSERTED ON THE RAW SOURCE, not the stripped one — see `codeOnly`'s note. The loads this checks
+   * are one-liners that no comment contains, so raw is both safe and exact here. */
+  t("🔴 THE EVENTS SECTION IS THE EXISTING COMPONENT, UNCHANGED — `isActive` still means \"the tab is open\"",
+    (() => {
+      const RAW = read(PAGE)
+      return /isActive: boolean; section: ScheduleSection/.test(RAW)
+        && /useEffect\(\(\) => \{ if \(isActive\) loadEvents\(\) \}, \[isActive, loadEvents\]\)/.test(RAW)
+        && /\{isActive && section === 'events' && \(/.test(RAW)
+        // the vans read and the conflict scan still key off the TAB, not the section
+        && /if \(isActive\) api\('get_vans'\)/.test(RAW)
+    })())
+  t('⚠️ …so the "Schedule (n)" badge keeps updating while the operator stands on Places',
+    /onPendingCount/.test(P) && !/section === 'events' && loadEvents/.test(P))
+  t('🔴 the section is in the URL, and `events` does not write a param',
+    /qs\.get\('section'\)/.test(P)
+    && /url\.searchParams\.delete\('section'\)/.test(P)
+    && /window\.history\.replaceState/.test(P)
+    && !/pushState/.test(P))
+  t('⚠️ the existing nine top-level tabs keep their relative order', (() => {
     const order = ['menu', 'schedule', 'deals', 'modifiers', 'reports', 'team', 'settings', 'payments', 'billing']
-    const at = order.map(id => PAGE.indexOf(`id: '${id}'`))
+    const at = order.map(id => P.indexOf(`id: '${id}'`))
     return at.every(i => i > 0) && at.every((v, i) => i === 0 || v > at[i - 1])
   })())
 
-  // ── ONE NORMALISER ───────────────────────────────────────────────────────────────────────────
-  t('🔴 THE ROUTE IMPORTS THE NORMALISER RATHER THAN RE-IMPLEMENTING IT',
-    /from '@\/lib\/schedule-graphics\/places'/.test(R)
-    && /normalisePlaceName/.test(R)
-    && !/toLowerCase\(\)[\s\S]{0,80}replace\(\/&/.test(R))
-  t('🔴 …and `name_key` is NOT re-derived when the operator renames a place — that would orphan every event at it',
-    /patch\.name = name/.test(R) && !/patch\.name_key/.test(R))
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE PICKER
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  t('🔴 "COPY A RECENT EVENT" IS REPLACED BY THE PLACE PICKER',
+    !/Copy a recent event/.test(P) && !/const recentEvents = useMemo/.test(P.slice(0, P.indexOf('function OrdersReport')) || P)
+    && /Search your places/.test(P))
+  t('⚠️ …and `handleCopyEvent` SURVIVES for the per-event Copy button in the list',
+    /const handleCopyEvent = /.test(P) && /handleCopyEvent\(event\)/.test(P))
+  t('🔴 the fill rule is the SHARED function, not a copy in the component',
+    /\.\.\.fillFromPlace\(pl, p\)/.test(P) && /from '@\/lib\/schedule-graphics\/places'/.test(P)
+    && /export function fillFromPlace/.test(read(LIB)))
+  t('🔴 the picker is NEW EVENTS ONLY, and sets `truck_place_id` nowhere else',
+    /const wantPicker = !!editingEvent && !editingEvent\.id/.test(P)
+    && (P.match(/truck_place_id: pl\.id/g) || []).length === 1)
+  t('⚠️ a hidden or merged place is never offered in the picker',
+    /\.filter\(pl => !pl\.is_hidden && !pl\.merged_into_id\)/.test(P))
+  t('⚠️ "Show all places" and "+ New place" are both there, and New place creates nothing yet',
+    /Show all places \(\{found\.length\}\)/.test(P) && /\+ New place/.test(P)
+    && /setEditingEvent\(p => p \? \(\{ \.\.\.p, truck_place_id: null \}\) : p\)/.test(P))
+  t('⚠️ the one muted line, only when a place was picked',
+    /Filled from \{.*\}\. Change anything for this date only\./.test(P))
+  t('⚠️ every existing field and the Upload schedule path are still there',
+    ['Venue name', 'Full address (optional)', 'Area (village, town or city)', 'Postcode', 'Start time', 'End time', 'Notes', 'Upload schedule']
+      .every(f => P.includes(f))
+    && /addMode === 'upload'/.test(P) && /process-schedule/.test(P))
+  t('⚠️ …and the form\'s validation is untouched',
+    /const errors = validateEventForm\(editingEvent\)/.test(P) && /hasValidEventTimes/.test(R))
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // PLACES: ONE MODULE, AND THE SHAPE OF THE PANE
+  // ════════════════════════════════════════════════════════════════════════════════════════════
   t('⚠️ exactly one module defines the normaliser, across lib/, app/ and components/', (() => {
     const hits = require('child_process').execFileSync('grep',
       ['-rl', '--include=*.ts', '--include=*.tsx', 'export function normalisePlaceName', 'lib', 'app', 'components'],
       { cwd: REPO, encoding: 'utf8' }).trim().split('\n')
     return hits.length === 1 && hits[0] === LIB
   })())
-
-  // ── THE ACCESS PATTERN ───────────────────────────────────────────────────────────────────────
-  t('🔴 both new tables are RLS-on, service-role-only, with the default grants REVOKED',
-    ['truck_places', 'truck_place_groups'].every(tb =>
-      new RegExp(`alter table public\\.${tb} enable row level security`).test(SQL)
-      && new RegExp(`create policy "service_role only" on public\\.${tb}`).test(SQL)
-      && new RegExp(`revoke all on public\\.${tb} from anon, authenticated, public`).test(SQL)))
-  t('⚠️ the truck FK is TEXT on both, because trucks.id is text',
-    (SQL.match(/truck_id text not null references public\.trucks\(id\) on delete cascade/g) || []).length === 2)
-  t('🔴 the venue FK is `on delete set null`, so a shared venue row being deleted cannot take an operator\'s place with it',
-    /venue_id uuid references public\.venues\(id\) on delete set null/.test(SQL))
-  t('⚠️ the migration reloads the PostgREST schema cache', /notify pgrst, 'reload schema'/.test(SQL))
-  t('⚠️ the truck-level default is a column on `trucks`, the house settings pattern',
-    /alter table public\.trucks\s+add column if not exists default_group_post_wording text/.test(SQL))
-
-  // ── SCOPING ──────────────────────────────────────────────────────────────────────────────────
-  t('🔴 every write is scoped by truck_id as well as id, so knowing a uuid is not enough', (() => {
-    const writes = [...sgBlock.matchAll(/from\('truck_place(?:s|_groups)'\)\s*\n?\s*\.(update|delete)\([\s\S]{0,320}?(?=\n\s*(?:if|const|return|\}|await|for))/g)]
-    return writes.length >= 4 && writes.every(m => /\.eq\('truck_id', truck\.id\)/.test(m[0]))
-  })())
-  t('⚠️ a group insert verifies the place belongs to this truck first',
-    /from\('truck_places'\)[\s\S]{0,160}\.eq\('id', placeId\)\.eq\('truck_id', truck\.id\)[\s\S]{0,200}if \(!owns\)/.test(sgBlock))
-
-  // ── THE SHELL ────────────────────────────────────────────────────────────────────────────────
-  t('⚠️ three sections, with Design and This week as placeholders',
-    /\['design', 'Design'\], \['week', 'This week'\], \['places', 'Places & groups'\]/.test(T)
-    && /Coming next/.test(T))
-  t('⚠️ stage 2 and 3 are NOT started — no upload, no canvas, no checklist',
-    !/<input[^>]*type="file"/.test(T) && !/canvas|toDataURL|html2canvas/i.test(T) && !/checklist/i.test(T))
+  t('🔴 the route imports the merge rules rather than re-implementing them',
+    /mergeRefusal, mergePatch, resolvePlaceMerge, placesById/.test(R)
+    && /const refusal = mergeRefusal\(\{ fromId, intoId, places: all \}\)/.test(R))
+  t('🔴 a merge writes ONE row — the merged place — and no event',
+    (() => {
+      const blk = R.slice(R.indexOf("action === 'sg_merge_place'"), R.indexOf("return NextResponse.json({ error: 'Unknown action' }"))
+      return /from\('truck_places'\)\s*\n?\s*\.update\(\{ merged_into_id: patch\.merged_into_id, is_hidden: true/.test(blk)
+        && !/from\('truck_events'\)/.test(blk)
+    })())
+  t('⚠️ restoring a merged place un-merges it, so it comes back with its own events',
+    /if \(body\.is_hidden === false\) patch\.merged_into_id = null/.test(R))
+  t('⚠️ the pane has the two groups, the star toggle and the Show-hidden escape',
+    /Favourites/.test(U) && /Other places/.test(U)
+    && /is_favourite \? '★' : '☆'/.test(U)
+    && /Show hidden places \(\$\{hiddenCount\}\)/.test(U))
+  t('⚠️ the three controls, and Card 1\'s five fields including Area',
+    /Merge into another place/.test(U) && /Hide this place/.test(U) && /Restore this place/.test(U)
+    && ['Name on posts', 'Short name', 'Address', 'Area', 'Postcode'].every(f => U.includes(`label="${f}"`)))
+  t('⚠️ Card 2 names both lines and the count',
+    /Events here/.test(U) && /Next: \$\{shortDay/.test(U) && /time\$\{place\.traded_last_year === 1 \? '' : 's'\} in the last year/.test(U))
   t('⚠️ one column until `lg`, two after — the brief\'s phone requirement',
-    /grid-cols-1 lg:grid-cols-\[18rem_1fr\]/.test(T))
-  t('⚠️ the group link opens in a new tab with `noopener`',
-    /target="_blank" rel="noopener noreferrer"/.test(T))
+    /grid-cols-1 lg:grid-cols-\[18rem_1fr\]/.test(U))
+  t('⚠️ stage 2 and 3 are still NOT started — no upload, no canvas, no checklist',
+    !/<input[^>]*type="file"/.test(U) && !/canvas|toDataURL|html2canvas/i.test(U) && !/checklist/i.test(U))
 
   return { ok, bad }
 }
@@ -447,6 +801,7 @@ function runVariants() {
     ev({ venue_id: V_HALL, event_date: '2026-10-13' }),
     ev({ venue_name: 'Bull & Butcher', event_date: '2026-10-15' }),
   ]
+  const SCHEDULE_FOR_VARIANTS = [ev({ venue_id: V_HALL, event_date: '2026-10-13', postcode: 'CO10 9QT' })]
 
   // ── BEHAVIOURAL: the library is recompiled with one line broken ──────────────────────────────
   const libVariants = [
@@ -473,10 +828,13 @@ function runVariants() {
         "export const NON_TRADING_STATUSES = ['closed'] as const", 'W5'),
       P => P.nextEventAt([ev({ event_date: '2026-10-10', status: 'cancelled' })], '2026-10-03') !== null],
 
+    /* ⚠️ RE-ANCHORED (3 October 2026): the line now carries the retired-row guard
+     * (`if (!isRetired(existing)) fillFrom(...)`). Same variant, same meaning — the seeder is made to
+     * plan a write against a place a second run must leave entirely alone. */
     ['W6 🔴 THE SEEDER REWRITES `name` ON EVERY RUN — the operator\'s edit is reverted',
       changed(LIB_SRC,
-        "    const existing = byVenue.get(g.venue_id!)\n    if (existing) { fillFrom(existing, g); continue }",
-        "    const existing = byVenue.get(g.venue_id!)\n    if (existing) { plan.fills.push({ placeId: existing.id, address: seedOf(g).name ?? undefined }); fillFrom(existing, g); continue }", 'W6'),
+        "    if (existing) { if (!isRetired(existing)) fillFrom(existing, g); continue }\n\n    // Not anchored",
+        "    if (existing) { plan.fills.push({ placeId: existing.id, address: seedOf(g).name ?? undefined }); continue }\n\n    // Not anchored", 'W6'),
       P => {
         const first = P.planPlaceSeed({ events: SCHEDULE, places: [], now: NOW })
         const r = applyPlan([], first)
@@ -499,6 +857,28 @@ function runVariants() {
     /* ⚠️ A VARIANT MUST STILL COMPILE. An earlier draft of this one wrapped the filter in `true || (`
      * and produced a syntax error — which `buildLib` exits on, so the harness reported a compile
      * failure instead of proving anything. The window is dropped by neutering its COMPARISON. */
+    ['W8a 🔴 THE SEEDER STOPS RESPECTING A HIDDEN PLACE and re-creates it every refresh',
+      changed(LIB_SRC, "  const isRetired = (p: Place): boolean => p.is_hidden === true || !!p.merged_into_id",
+        "  const isRetired = (p: Place): boolean => false", 'W8a'),
+      P => {
+        const hidden = [{ id: 'h', venue_id: null, name_key: 'lavenham village hall', name: 'Lavenham Village Hall', is_hidden: true }]
+        const pl = P.planPlaceSeed({ events: [ev({ venue_id: V_HALL, event_date: '2026-10-13' })], places: hidden, now: NOW })
+        // The broken version adopts the hidden row — quietly putting a venue anchor on a row the
+        // operator removed from view.
+        return pl.adopts.length > 0 || pl.inserts.length > 0
+      }],
+    ['W8b 🔴 the seeder starts writing `is_hidden`, so hiding is undone by the next refresh',
+      // ⚠️ `Object.assign` RATHER THAN A SPREAD LITERAL: a spread into the typed `fills` array is an
+      // excess-property error, and a variant that does not compile proves nothing (see W8's own note).
+      changed(LIB_SRC, "    if (any) plan.fills.push(patch)",
+        "    plan.fills.push(Object.assign({}, patch, { is_hidden: false }))", 'W8b'),
+      P => JSON.stringify(P.planPlaceSeed({ events: SCHEDULE_FOR_VARIANTS, places: [{ id: 'x', venue_id: V_HALL, name_key: 'lavenham village hall', name: 'X' }], now: NOW })).includes('is_hidden')],
+    ['W8c 🔴 `area` stops being seeded from the event town',
+      changed(LIB_SRC, "    area: firstNonBlank(...g.events.map(e => e.town)),", "    area: null,", 'W8c'),
+      P => {
+        const pl = P.planPlaceSeed({ events: [ev({ venue_name: 'Bull & Butcher', town: 'Clare', event_date: '2026-10-15' })], places: [], now: NOW })
+        return pl.inserts.length === 1 && pl.inserts[0].area !== 'Clare'
+      }],
     ['W8 🔴 the 12-month window is dropped, so a pitch from three years ago comes back as a place',
       changed(LIB_SRC, "e.event_date >= windowStart)", "e.event_date >= '0000-00-00')", 'W8'),
       P => {
@@ -513,31 +893,63 @@ function runVariants() {
     fs.mkdirSync(path.join(root, path.dirname(LIB)), { recursive: true })
     fs.writeFileSync(path.join(root, LIB), src)
     let caught = false
-    try { caught = detect(buildLib(root, label.slice(0, 2))) } catch { caught = true }
+    // ⚠️ THE TAG IS THE WHOLE LABEL PREFIX, not `slice(0, 2)`: W8a/W8b/W8c/W8 all read as 'W8'
+    // under that, so a compile failure named the wrong variant.
+    const tag = label.split(' ')[0]
+    try { caught = detect(buildLib(root, tag)) } catch { caught = true }
     console.log(`  ${caught ? '✓ FAILED as required' : '🔴 PASSED — THE HARNESS PROVES NOTHING'}  ${label}`)
     if (!caught) caughtAll = false
   }
 
-  // ── SOURCE: the database-level guarantees the planner cannot express ─────────────────────────
+  // ── SOURCE: the guarantees the planner cannot express ───────────────────────────────────────
   const srcVariants = [
     ['W9 🔴 `ignoreDuplicates` is dropped, so a conflict UPDATES and the operator\'s name is overwritten',
       changed(read(ROUTE), "{ onConflict: 'truck_id,name_key', ignoreDuplicates: true },", "{ onConflict: 'truck_id,name_key' },", 'W9'),
-      s => /onConflict: 'truck_id,name_key', ignoreDuplicates: true/.test(stripComments(s))],
-    ['W10 🔴 the unique index is removed from the migration, so two tabs make two places',
-      changed(read(MIGRATION), 'create unique index if not exists truck_places_truck_name_key_uidx', 'create index if not exists truck_places_truck_name_key_uidx', 'W10'),
+      s => (stripComments(s).match(/onConflict: 'truck_id,name_key', ignoreDuplicates: true/g) || []).length === 2],
+    ['W10 🔴 the unique index is removed from the stage-1 migration, so two tabs make two places',
+      changed(read(MIGRATION1), 'create unique index if not exists truck_places_truck_name_key_uidx', 'create index if not exists truck_places_truck_name_key_uidx', 'W10'),
       s => /create unique index if not exists truck_places_truck_name_key_uidx/.test(s)],
-    ['W11 🔴 a schedule-graphics action loses its plan gate',
-      changed(read(ROUTE), "  if (action === 'sg_upsert_group') {\n    if (!sgAllowed()) return SG_FORBIDDEN", "  if (action === 'sg_upsert_group') {", 'W11'),
-      s => (stripComments(s).match(/if \(!sgAllowed\(\)\) return SG_FORBIDDEN/g) || []).length === 4],
-    ['W12 🔴 renaming a place re-derives `name_key`, orphaning every event at it',
-      changed(read(ROUTE), '      patch.name = name', '      patch.name = name; patch.name_key = normalisePlaceName(name)', 'W12'),
+    ['W11 🔴 renaming a place re-derives `name_key`, orphaning every event at it',
+      changed(read(ROUTE), '      patch.name = name', '      patch.name = name; patch.name_key = normalisePlaceName(name)', 'W11'),
       s => !/patch\.name_key/.test(stripComments(s))],
-    ['W13 🔴 the RLS revoke is dropped from a new table, leaving it reachable with the anon key',
-      changed(read(MIGRATION), 'revoke all on public.truck_place_groups from anon, authenticated, public;', '', 'W13'),
-      s => /revoke all on public\.truck_place_groups from anon, authenticated, public/.test(s)],
-    ['W14 🔴 a write loses its truck_id scope, so knowing a uuid is enough to delete another truck\'s group',
-      changed(read(ROUTE), ".delete().eq('id', String(body.id ?? '')).eq('truck_id', truck.id)", ".delete().eq('id', String(body.id ?? ''))", 'W14'),
-      s => /\.delete\(\)\.eq\('id', String\(body\.id \?\? ''\)\)\.eq\('truck_id', truck\.id\)/.test(stripComments(s))],
+    ['W12 🔴 a write loses its truck_id scope, so knowing a uuid is enough to touch another truck\'s place',
+      changed(read(ROUTE), ".update(patch).eq('id', id).eq('truck_id', truck.id)", ".update(patch).eq('id', id)", 'W12'),
+      s => /\.update\(patch\)\.eq\('id', id\)\.eq\('truck_id', truck\.id\)/.test(stripComments(s))],
+
+    /* ── 🔴 THE truck_events RULES. These are the ones that matter: that table runs live ordering. ── */
+    ['W13 🔴 THE EVENT EDIT PATH STARTS WRITING `truck_place_id` — an edit moves the pitch\'s history',
+      changed(read(ROUTE),
+        "      const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null",
+        "      const { data, error } = await supabase.from('truck_events').update({ truck_place_id: pickedPlaceId, venue_name, town: town ?? null", 'W13'),
+      s => !/from\('truck_events'\)\.update\(\{[^}]*truck_place_id/.test(stripComments(s))],
+    ['W14 🔴 the event-update allowlist admits `truck_place_id`, so a client can move a pitch by PATCH',
+      changed(read(EVENTS_ACTION),
+        "      'customer_note', 'auto_open', 'auto_close', 'notes'",
+        "      'customer_note', 'auto_open', 'auto_close', 'notes', 'truck_place_id'", 'W14'),
+      s => !/'truck_place_id'/.test(stripComments(s))],
+    ['W15 🔴 the insert stops naming the place at all — nothing is ever linked',
+      changed(read(ROUTE), 'auto_close: truck.default_auto_close ?? true, truck_place_id: resolvedPlaceId }',
+        'auto_close: truck.default_auto_close ?? true }', 'W15'),
+      s => /truck_place_id: resolvedPlaceId/.test(stripComments(s))],
+    ['W16 🔴 a place-lookup failure takes the SEND down with it',
+      changed(read(ROUTE), "  } catch (e) {\n    console.warn('[resolveEventPlaceId] no place linked:'",
+        "  } catch (e) {\n    throw e\n    console.warn('[resolveEventPlaceId] no place linked:'", 'W16'),
+      s => !/\n    throw e\n/.test(stripComments(s).slice(stripComments(s).indexOf('resolveEventPlaceId')))],
+
+    /* ── THE PLAN GATE MOVED, AND BOTH HALVES OF THAT ARE VARIANTS ── */
+    ['W17 🔴 Places is gated again, so a Starter truck cannot tidy its own schedule',
+      changed(read(ROUTE), "  if (action === 'sg_places') {", "  if (action === 'sg_places') {\n    if (!canAccess(truck.plan, 'schedule_graphics', truck.feature_overrides ?? {}, truck.trial_expires_at)) return NextResponse.json({ error: 'x' }, { status: 403 })", 'W17'),
+      s => !/action === 'sg_places'\) \{\s*\n\s*if \(!canAccess/.test(stripComments(s))],
+    ['W18 🔴 the Weekly post pane loses its gate, so it is free on every plan',
+      changed(read(PLACES_UI), 'feature="schedule_graphics"', 'feature={undefined as never}', 'W18'),
+      s => /feature="schedule_graphics"/.test(stripComments(s))],
+    ['W19 🔴 the staff gate loses the places writes',
+      changed(read(ROUTE), "    'sg_places', 'sg_upsert_place', 'sg_merge_place',", "", 'W19'),
+      s => /'sg_places', 'sg_upsert_place', 'sg_merge_place',/.test(stripComments(s))],
+    ['W20 🔴 the stage-2 migration starts touching existing event rows',
+      changed(read(MIGRATION2), 'add column if not exists truck_place_id uuid references public.truck_places(id) on delete set null',
+        'add column if not exists truck_place_id uuid references public.truck_places(id) on delete cascade', 'W20'),
+      s => /truck_place_id uuid references public\.truck_places\(id\) on delete set null/.test(s)],
   ]
   for (const [label, src, stillTrue] of srcVariants) {
     const caught = !stillTrue(src)

@@ -22,6 +22,10 @@
 
 /** One `truck_events` row, as the matching reads it. */
 export interface PlaceEvent {
+  /** 🔴 THE OPERATOR'S OWN ANSWER, and the strongest identity there is. Written only on insert by the
+   *  Add event modal, so it is null on every scraped event and on everything created before
+   *  3 October 2026 — which is the normal case, not a gap. */
+  truck_place_id?: string | null
   /** The scraper's / operator's anchor to the shared `venues` row, when there is one. */
   venue_id?: string | null
   /** 🔴 NOT NULL in the table, so this is always something — but '' is possible and matches nothing. */
@@ -36,6 +40,9 @@ export interface PlaceEvent {
   venue_address?: string | null
   address?: string | null
   postcode?: string | null
+  /** The village/town. ⚠️ THE SAME FACT AS `truck_places.area`, under the name the events table uses —
+   *  it is what the Add event form's "Area" field already writes. */
+  town?: string | null
 }
 
 /** One `truck_places` row, as the matching reads it. */
@@ -47,7 +54,13 @@ export interface Place {
   short_name?: string | null
   address?: string | null
   postcode?: string | null
-  group_post_wording?: string | null
+  /** The village, town or city. Seeded from the event's `town`. */
+  area?: string | null
+  is_favourite?: boolean | null
+  /** Out of the list unless "Show hidden places" is on. Still matches its events. */
+  is_hidden?: boolean | null
+  /** Set when this place has been merged into another — its events resolve to the target. */
+  merged_into_id?: string | null
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -93,6 +106,85 @@ export function normalisePlaceName(input: string | null | undefined): string {
 // 2 · MATCHING AN EVENT TO A PLACE
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 
+/** How far a merge chain is followed before it is treated as broken. */
+export const MERGE_MAX_DEPTH = 10
+
+/**
+ * Follow `merged_into_id` to the place a place really is.
+ *
+ * 🔴 A CHAIN IS LEGITIMATE. Merge A into B on Monday and B into C on Tuesday, and A's events belong to
+ * C — nothing rewrites A's pointer when B moves, so the chain has to be walked.
+ *
+ * 🔴 AND A CYCLE IS NOT, SO IT IS CAPPED RATHER THAN TRUSTED. The database forbids the one-step case
+ * (`truck_places_no_self_merge`) but cannot forbid A→B→A across rows. An uncapped walk there is an
+ * infinite loop inside a render or a route — a hung page, not a wrong answer. At the cap this RETURNS
+ * THE LAST PLACE IT REACHED rather than throwing or returning null: a slightly wrong place in a list
+ * is recoverable, a 500 on the Schedule tab is not.
+ * ⚠️ IT ALSO STOPS ON A POINTER IT CANNOT FOLLOW — a target on another truck, or one already deleted —
+ * for the same reason: the place in hand is a better answer than nothing.
+ */
+export function resolvePlaceMerge(place: Place, byId: ReadonlyMap<string, Place>): Place {
+  let cur = place
+  const seen = new Set<string>([cur.id])
+  for (let i = 0; i < MERGE_MAX_DEPTH; i++) {
+    const next = cur.merged_into_id
+    if (!next) return cur
+    const target = byId.get(next)
+    if (!target) return cur          // pointer we cannot follow — keep what we have
+    if (seen.has(target.id)) return cur   // a cycle, caught before the cap
+    seen.add(target.id)
+    cur = target
+  }
+  return cur
+}
+
+/** Index by id, for `resolvePlaceMerge`. */
+export const placesById = (places: readonly Place[]): Map<string, Place> =>
+  new Map(places.map(p => [p.id, p]))
+
+/**
+ * Why a merge is refused, or null when it is allowed.
+ * 🔴 REFUSED RATHER THAN SILENTLY CORRECTED. "Merge into itself" is what a double-tap looks like, and
+ * a merge that quietly did nothing would leave the operator believing two places had become one.
+ */
+export function mergeRefusal(input: {
+  fromId: string
+  intoId: string
+  places: readonly Place[]
+}): string | null {
+  const { fromId, intoId, places } = input
+  if (!fromId || !intoId) return 'Pick a place to merge into.'
+  const byId = placesById(places)
+  const from = byId.get(fromId)
+  const into = byId.get(intoId)
+  if (!from) return 'That place is no longer here.'
+  if (!into) return 'The place you picked is no longer here.'
+  if (fromId === intoId) return "A place can't be merged into itself."
+  /* 🔴 THE TARGET IS RESOLVED FIRST. Merging into a place that is itself merged must land on the FINAL
+   * place, or the chain grows a step every time and the depth cap gets closer for no reason. */
+  const finalInto = resolvePlaceMerge(into, byId)
+  if (finalInto.id === fromId) {
+    // Merging B into A when A is already merged into B — the cycle, refused before it is written.
+    return "Those two are already merged the other way round."
+  }
+  return null
+}
+
+/** `A merged into B` as the write it becomes: A points at B's FINAL target and leaves the list. */
+export function mergePatch(input: {
+  fromId: string
+  intoId: string
+  places: readonly Place[]
+}): { placeId: string; merged_into_id: string; is_hidden: true } | null {
+  if (mergeRefusal(input)) return null
+  const byId = placesById(input.places)
+  const into = byId.get(input.intoId)!
+  const finalInto = resolvePlaceMerge(into, byId)
+  // ⚠️ HIDDEN IN THE SAME WRITE. A merged place that stayed in the list would be a row the operator
+  // just told us is the same as another one, sitting next to it.
+  return { placeId: input.fromId, merged_into_id: finalInto.id, is_hidden: true }
+}
+
 /**
  * Does this event belong to this place?
  *
@@ -104,6 +196,10 @@ export function normalisePlaceName(input: string | null | undefined): string {
  * what is compared. An event with no readable name matches nothing — `''` is not a key.
  */
 export function eventMatchesPlace(event: PlaceEvent, place: Place): boolean {
+  // 🔴 THE OPERATOR'S OWN ANSWER FIRST, AND IT IS FINAL. If they picked this place in Add event, no
+  // name and no anchor gets to disagree — including when they then edited the venue name for that one
+  // date, which the form explicitly allows.
+  if (event.truck_place_id) return event.truck_place_id === place.id
   if (event.venue_id && place.venue_id) return event.venue_id === place.venue_id
   const key = normalisePlaceName(event.venue_name)
   if (!key) return false
@@ -119,11 +215,29 @@ export function eventMatchesPlace(event: PlaceEvent, place: Place): boolean {
  * anchors first gives it to the place that can prove it.
  */
 export function placeForEvent(event: PlaceEvent, places: readonly Place[]): Place | null {
+  const byId = placesById(places)
+  /* 🔴 THREE PASSES, STRONGEST IDENTITY FIRST, AND THE ORDER IS THE WHOLE RULE:
+   *   1. `truck_place_id` — the operator picked it. Nothing outranks that.
+   *   2. the `venues` anchor — the scraper resolved it to a shared venue row.
+   *   3. the normalised name — all that is left for most events, and all stage 1 had.
+   * Scanning the list once in array order would hand an event to whichever row happened to come
+   * first, which is a different answer on a different day for the same data. */
+  if (event.truck_place_id) {
+    const picked = byId.get(event.truck_place_id)
+    // ⚠️ A LINK TO A PLACE THAT IS NO LONGER IN THE LIST FALLS THROUGH rather than returning null.
+    // The event still happened somewhere, and the name still says where.
+    if (picked) return resolvePlaceMerge(picked, byId)
+  }
   if (event.venue_id) {
     const anchored = places.find(p => p.venue_id === event.venue_id)
-    if (anchored) return anchored
+    if (anchored) return resolvePlaceMerge(anchored, byId)
   }
-  return places.find(p => eventMatchesPlace(event, p)) ?? null
+  const key = normalisePlaceName(event.venue_name)
+  if (!key) return null
+  const named = places.find(p => p.name_key === key)
+  // 🔴 AND THE MERGE IS FOLLOWED LAST, NOT FIRST. A merged place keeps its `name_key`, so this is how
+  // the old name's events reach the place the operator merged it into — which is the point of merging.
+  return named ? resolvePlaceMerge(named, byId) : null
 }
 
 /** placeId → its events, in the order given. Events that match no place are returned separately. */
@@ -174,37 +288,132 @@ export function nextEventAt(events: readonly PlaceEvent[], todayYmd: string): Pl
   return upcoming[0] ?? null
 }
 
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-// 4 · THE WORDING CHAIN
-// ════════════════════════════════════════════════════════════════════════════════════════════════
-
-/** The tokens the wording may carry. Stage 2/3 substitute them; stage 1 only shows them. */
-export const WORDING_TOKENS = ['{place}', '{day}', '{date}', '{times}', '{order link}'] as const
+/**
+ * The most recent PAST trading event, or null — the "Last: Tue 22 Sep" line.
+ * ⚠️ STRICTLY BEFORE TODAY, so a place with an event today reads as "Next", never both. The two
+ * functions partition the same list on the same boundary, which is why neither can disagree.
+ * ⚠️ SAME STATUS RULE AS "NEXT": a cancelled or closed date is not a time the truck traded there.
+ */
+export function lastEventAt(events: readonly PlaceEvent[], todayYmd: string): PlaceEvent | null {
+  const past = events
+    .filter(e => isTradingStatus(e.status))
+    .filter(e => typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date) && e.event_date < todayYmd)
+    .sort((a, b) => String(b.event_date).localeCompare(String(a.event_date)))
+  return past[0] ?? null
+}
 
 /**
- * The built-in wording — the last resort, used when neither the place nor the truck has one.
- * 🔴 IT IS A FALLBACK, NOT THE STORED DEFAULT. The truck's own default lives in
- * `trucks.default_group_post_wording`; this exists so a truck that has never set one still produces a
- * sensible post rather than an empty box in stage 3.
+ * How many times the truck has traded here in the last 365 days — the "· 7 times in the last year"
+ * clause. ⚠️ IT COUNTS PAST AND TODAY, NOT THE FUTURE: "times in the last year" is a statement about
+ * what has happened, and including booked dates would make it a forecast under a past-tense label.
  */
-export const DEFAULT_GROUP_POST_WORDING =
-  'We\'re at {place} on {day} {date}, {times}. Pre-order here: {order link}'
+export function tradedCountInLastYear(events: readonly PlaceEvent[], todayYmd: string): number {
+  const from = ymdMinusDays(todayYmd, 365)
+  return events.filter(e =>
+    isTradingStatus(e.status)
+    && typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date)
+    && e.event_date >= from && e.event_date <= todayYmd).length
+}
+
+/** 'YYYY-MM-DD' minus n days, in UTC. ⚠️ Date-only arithmetic never goes through a local timezone. */
+export function ymdMinusDays(ymd: string, days: number): string {
+  const [y, m, d] = String(ymd).split('-').map(Number)
+  const t = Date.UTC(y, (m || 1) - 1, d || 1) - days * 86_400_000
+  return new Date(t).toISOString().slice(0, 10)
+}
 
 /**
- * Place override → truck default → built-in.
- * 🔴 ONE FUNCTION FOR THE WHOLE CHAIN, so "blank means the truck default" is true on every surface that
- * asks. Blank means WHITESPACE-OR-EMPTY, not just null: an operator who selects the text and deletes it
- * leaves `''`, and that is the same intention as never having typed anything.
+ * The list order the mockup asks for: favourites first, then the rest, each alphabetical by name.
+ * 🔴 MERGED AND HIDDEN PLACES ARE NOT IN THE LIST. A merged place is the same pitch as its target, so
+ * showing both is showing one thing twice; `showHidden` brings hidden ones back so a hide can be
+ * undone, which is the only reason that toggle exists.
  */
-export function effectiveGroupPostWording(
-  place: { group_post_wording?: string | null } | null | undefined,
-  truck: { default_group_post_wording?: string | null } | null | undefined,
-): string {
-  const atPlace = String(place?.group_post_wording ?? '').trim()
-  if (atPlace) return atPlace
-  const atTruck = String(truck?.default_group_post_wording ?? '').trim()
-  if (atTruck) return atTruck
-  return DEFAULT_GROUP_POST_WORDING
+export function visiblePlaces(places: readonly Place[], showHidden = false): Place[] {
+  return places
+    .filter(p => showHidden ? true : (!p.is_hidden && !p.merged_into_id))
+    .slice()
+    .sort((a, b) => {
+      const fa = a.is_favourite ? 0 : 1
+      const fb = b.is_favourite ? 0 : 1
+      if (fa !== fb) return fa - fb
+      return String(a.name ?? '').localeCompare(String(b.name ?? ''), 'en-GB', { sensitivity: 'base' })
+    })
+}
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 4 · THE PER-EVENT POST WORDING — REMOVED, AND THE COLUMN IS DORMANT ON PURPOSE
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 `WORDING_TOKENS`, `DEFAULT_GROUP_POST_WORDING` AND `effectiveGroupPostWording` ARE GONE
+// (3 October 2026). Facebook groups were removed from the product, and with them the per-place
+// "Wording for group posts" card — the only caller of the resolution chain. The brief offered a rename
+// instead; removal is the right half of that choice, because a renamed resolver with no caller is an
+// export nothing exercises, and the next person cannot tell whether it is load-bearing.
+//
+// ⚠️ `trucks.event_post_wording` STILL EXISTS and is deliberately dormant: it is renamed from
+// `default_group_post_wording` by 20261004_schedule_places_stage2.sql and keeps whatever it held.
+// Nothing in this build reads or writes it. When the per-event post text ships it gets a resolver
+// back — with a caller, a test, and a two-level chain (truck → built-in), since the per-place override
+// column is dropped.
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// 5 · WHAT PICKING A PLACE FILLS INTO THE ADD-EVENT FORM
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+
+/** The form fields the picker may fill. Everything else on the form is untouched. */
+export interface PlaceFillTarget {
+  venue_name: string
+  address: string
+  town: string
+  postcode: string
+  start_time: string
+  end_time: string
+}
+
+/** A place as the picker reads it — the row plus the times of its last event. */
+export interface PlaceForFill {
+  name?: string | null
+  address?: string | null
+  area?: string | null
+  postcode?: string | null
+  last_start_time?: string | null
+  last_end_time?: string | null
+}
+
+/**
+ * What the form becomes when a place is picked.
+ *
+ * 🔴 A RULE, NOT A COMPONENT, so it can be tested. The times come from the LAST event at that place,
+ * which is what the operator is almost always repeating — it is what "copy a recent event" was really
+ * for, without a date attached that they then had to clear.
+ *
+ * 🔴 `event_date` IS NOT IN `PlaceFillTarget` AND NEVER WILL BE. It is the one thing that differs every
+ * time, and pre-filling it from a past event is how tonight's pitch gets added to a date in September.
+ *
+ * ⚠️ A BLANK FIELD ON THE PLACE KEEPS WHAT IS ALREADY TYPED. An operator who has typed a postcode and
+ * then picks a place that has none must not lose it — the same rule the venue-suggestions dropdown
+ * already follows. `firstNonBlank` semantics, one field at a time.
+ *
+ * ⚠️ EVERY FIELD STAYS EDITABLE AFTERWARDS. This returns a new form state and nothing else; no caller
+ * writes back to the place, which is what makes "change anything for this date only" literally true.
+ */
+export function fillFromPlace(place: PlaceForFill, current: PlaceFillTarget): PlaceFillTarget {
+  const keep = (from: string | null | undefined, now: string): string => {
+    const v = String(from ?? '').trim()
+    return v || now
+  }
+  const hhmm = (from: string | null | undefined, now: string): string => {
+    const v = String(from ?? '').trim()
+    return v ? v.slice(0, 5) : now
+  }
+  return {
+    venue_name: keep(place.name, current.venue_name),
+    address: keep(place.address, current.address),
+    // ⚠️ `area` ON THE PLACE IS `town` ON THE EVENT. Same fact, the name each table uses.
+    town: keep(place.area, current.town),
+    postcode: keep(place.postcode, current.postcode),
+    start_time: hhmm(place.last_start_time, current.start_time),
+    end_time: hhmm(place.last_end_time, current.end_time),
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════════════════════════════════
@@ -227,6 +436,7 @@ export interface PlaceInsert {
   name: string
   address: string | null
   postcode: string | null
+  area: string | null
 }
 
 export interface SeedPlan {
@@ -246,7 +456,7 @@ export interface SeedPlan {
    * never again — which makes an operator's edit survive structurally rather than by comparing it
    * against what the event says.
    */
-  fills: { placeId: string; address?: string; postcode?: string }[]
+  fills: { placeId: string; address?: string; postcode?: string; area?: string }[]
   /**
    * Two different anchors wanting one `name_key`. Kept for the report and the log; nothing is written.
    * 🔴 REPORTED RATHER THAN RESOLVED. Guessing would either merge two real places or invent a
@@ -284,8 +494,8 @@ export function planPlaceSeed(input: {
   // truck's whole history; this filters again so the plan is the same whatever the caller passed —
   // a harness, a later stage, or a route whose `.gte` was dropped in an edit.
   // ⚠️ CANCELLED AND CLOSED EVENTS STILL CREATE A PLACE. A pitch that was cancelled once is still a
-  // pitch the truck trades at, and its Facebook groups are still the right ones. Status decides the
-  // "next" line, not whether the place exists.
+  // pitch the truck trades at, and the operator still wants it in the list and in the Add event
+  // picker. Status decides the "Next" and "Last" lines, not whether the place exists.
   const events = input.events.filter(e =>
     typeof e.event_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.event_date) && e.event_date >= windowStart)
 
@@ -313,7 +523,14 @@ export function planPlaceSeed(input: {
     named.set(key, g)
   }
 
-  // ── WHAT ALREADY EXISTS ──────────────────────────────────────────────────────────────────────
+  /* ── WHAT ALREADY EXISTS ──────────────────────────────────────────────────────────────────────
+   * 🔴 HIDDEN AND MERGED PLACES ARE IN THESE MAPS, AND THAT IS THE POINT. They still hold their
+   * `name_key` and their `venue_id`, so the seeder FINDS them and therefore does not create a second
+   * place with the same key. A seeder that filtered them out would re-create, on the next refresh,
+   * exactly the place the operator just hid or merged away — and would do it every refresh for ever.
+   * ⚠️ NOTHING BELOW EVER WRITES `is_hidden` OR `merged_into_id`. The only outcome for a hidden or
+   * merged match is "leave it alone" (or fill a blank address), never "un-hide" and never "un-merge":
+   * those are decisions a person made, and new events arriving is not new information about them. */
   const byVenue = new Map<string, Place>()
   const byKey = new Map<string, Place>()
   for (const p of input.places) {
@@ -322,9 +539,11 @@ export function planPlaceSeed(input: {
   }
   /** Keys this plan has already claimed — an insert earlier in this same run counts. */
   const claimed = new Set<string>(input.places.map(p => p.name_key))
+  /** Hidden or merged ⇒ matched, left exactly as it is. Not filled, not adopted, not re-created. */
+  const isRetired = (p: Place): boolean => p.is_hidden === true || !!p.merged_into_id
 
   const fillFrom = (place: Place, g: Group) => {
-    const patch: { placeId: string; address?: string; postcode?: string } = { placeId: place.id }
+    const patch: { placeId: string; address?: string; postcode?: string; area?: string } = { placeId: place.id }
     let any = false
     if (!String(place.address ?? '').trim()) {
       const a = firstNonBlank(...g.events.map(e => e.venue_address), ...g.events.map(e => e.address))
@@ -334,12 +553,18 @@ export function planPlaceSeed(input: {
       const pc = firstNonBlank(...g.events.map(e => e.postcode))
       if (pc) { patch.postcode = pc; any = true }
     }
+    // ⚠️ `area` IS THE EVENT'S `town`. Same fact, the name each table uses for it.
+    if (!String(place.area ?? '').trim()) {
+      const ar = firstNonBlank(...g.events.map(e => e.town))
+      if (ar) { patch.area = ar; any = true }
+    }
     if (any) plan.fills.push(patch)
   }
 
   const seedOf = (g: Group): PlaceInsert => ({
     venue_id: g.venue_id,
     name_key: g.name_key,
+    area: firstNonBlank(...g.events.map(e => e.town)),
     // ⚠️ THE RAW `venue_name`, NOT the key. `name_key` is for matching; `name` is what goes on a post,
     // so it keeps the capitals and the ampersand a person wrote.
     name: firstNonBlank(...g.events.map(e => e.venue_name)) ?? g.name_key,
@@ -350,10 +575,20 @@ export function planPlaceSeed(input: {
   for (const g of anchored.values()) {
     if (!g.name_key) continue
     const existing = byVenue.get(g.venue_id!)
-    if (existing) { fillFrom(existing, g); continue }
+    // ⚠️ A RETIRED MATCH IS A MATCH. Nothing is written to it — not even a blank fill, because the
+    // operator has taken it out of the list and a write would be work on a row nobody is looking at.
+    if (existing) { if (!isRetired(existing)) fillFrom(existing, g); continue }
 
     // Not anchored to a place yet. Is there an unanchored place under this name to adopt?
     const sameKey = byKey.get(g.name_key)
+    if (sameKey && isRetired(sameKey)) {
+      /* 🔴 NEVER ADOPT, NEVER RE-CREATE OVER A RETIRED ROW. The key is taken by a place the operator
+       * hid or merged; inserting would collide on `unique (truck_id, name_key)` anyway, and adopting
+       * would quietly attach a venue anchor to a row they removed from view. Recorded as a collision
+       * so it is visible rather than silent. */
+      plan.collisions.push({ name_key: g.name_key, venue_id: g.venue_id!, keptPlaceId: sameKey.id })
+      continue
+    }
     if (sameKey && !sameKey.venue_id) {
       plan.adopts.push({ placeId: sameKey.id, venue_id: g.venue_id! })
       fillFrom(sameKey, g)
@@ -373,7 +608,8 @@ export function planPlaceSeed(input: {
 
   for (const g of named.values()) {
     const existing = byKey.get(g.name_key)
-    if (existing) { fillFrom(existing, g); continue }
+    // ⚠️ Same rule as above: a hidden or merged place under this name is found, and left alone.
+    if (existing) { if (!isRetired(existing)) fillFrom(existing, g); continue }
     // ⚠️ AN ANCHORED INSERT EARLIER IN THIS RUN ALREADY COVERS THIS NAME. The same pitch appearing
     // once with a venue_id and once without is one place, and this is where the two are merged.
     if (claimed.has(g.name_key)) continue

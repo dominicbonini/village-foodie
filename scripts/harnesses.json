@@ -137,7 +137,7 @@
         "outreach-editor-render.cjs",
         "outreach-templates-render.cjs",
         "outreach-workspace-render.cjs",
-        "schedule-graphics-render.cjs",
+        "schedule-places-render.cjs",
         "screenshot-truck-details-render.cjs"
       ]
     }

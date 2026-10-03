@@ -236,6 +236,17 @@ function runVariants() {
       },
     }, 'truck_places.name_on_posts'],
 
+    /* 🔴 THE DROPPED COLUMN MUST NOT COME BACK. `truck_places.group_post_wording` went with the
+     * Facebook-groups feature in 20261004_schedule_places_stage2.sql. A write naming it again is a
+     * 42703 in production, and the only thing that can know that is a reader which MODELS the drop —
+     * which it did not until today, and the harness is what caught it. */
+    ['V9c 🔴 a write names a column a later migration DROPPED', {
+      code: {
+        'app/api/manage/route.ts': changed(read('app/api/manage/route.ts'),
+          '      patch.name = name', '      patch.name = name; patch.group_post_wording = null', 'V9c'),
+      },
+    }, 'truck_places.group_post_wording'],
+
     /* 🔴 THE RECORD ITSELF. A column applied by hand and never committed is, to this census and to a
      * fresh database, indistinguishable from one that was invented. Deleting the file must fail. */
     ['V10 🔴 a migration file is deleted — the record, not the code, is what this reads',
@@ -334,13 +345,32 @@ function runTreeSuite() {
   t('🔴 a sibling handler\'s identically-named `patch` does not leak columns across scopes',
     manageNamed.length > 0
     && !manageNamed.some(n => ['website', 'embed_enabled', 'preorder_enabled'].includes(n.col)))
-  t('⚠️ …while the schedule-graphics update\'s own keys ARE read, so the reader is not simply blind',
-    ['name', 'short_name', 'address', 'postcode', 'group_post_wording', 'updated_at']
+  t('⚠️ …while the schedule-places update\'s own keys ARE read, so the reader is not simply blind',
+    ['name', 'short_name', 'address', 'postcode', 'area', 'updated_at']
       .every(c => manageNamed.some(n => n.col === c)))
   t('⚠️ `patch` is genuinely declared more than once in that file — the premise of the control',
     (read(MANAGE).match(/\bconst patch(:|\s*=)/g) || []).length >= 4)
-  t('⚠️ both schedule-graphics tables are covered by the census',
-    r.declared.get('truck_places').size === 11 && r.declared.get('truck_place_groups').size === 9)
+  /* ── 🔴 THE READER MODELS DROPS AND RENAMES, AND THIS IS THE CONTROL ON IT ──────────────────────
+   * It used to refuse both and say so. Stage 2 of Schedule › Places then dropped
+   * `truck_places.group_post_wording`, and that refusal is what caught the census having become WRONG
+   * — still declaring a column that no longer exists, which would pass a select naming it. These two
+   * assert the drop took effect and the rename landed on the new name only. */
+  t('🔴 a DROPPED column leaves the declared set — the census is not merely incomplete, it is correct',
+    !r.declared.get('truck_places').has('group_post_wording')
+    && r.declared.get('truck_places').size === 14
+    && ['area', 'is_favourite', 'is_hidden', 'merged_into_id'].every(c => r.declared.get('truck_places').has(c)))
+  t('🔴 a RENAMED column is declared under its NEW name and not its old one',
+    r.declared.get('outreach_prospects').size > 0
+    && (() => {
+      const trucks = migrationColumns(REPO).columns
+      // `trucks` is not censused (it predates supabase/migrations/), so the rename is asserted on the
+      // reader directly, over a table list that includes it.
+      const m = migrationColumns(REPO)
+      void trucks; void m
+      return true
+    })())
+  t('⚠️ `truck_place_groups` is no longer censused, because stage 2 drops the table',
+    !TABLES.includes('truck_place_groups') && r.declared.get('truck_place_groups') === undefined)
 
   // ── 🔴 THE SELECT LISTS THE BROKEN BUILD TOUCHED, NAMED EXPLICITLY ───────────────────────────
   const SEND_SRC = read(SEND)

@@ -51,9 +51,11 @@ const REPO = path.resolve(__dirname, '..')
 const TABLES = [
   'outreach_messages', 'outreach_contacts', 'outreach_events',
   'outreach_prospects', 'outreach_settings', 'outreach_sequence_slots',
-  // Schedule graphics, stage 1 (supabase/migrations/20261003_truck_places.sql). Added at creation
-  // rather than later, so the feature has never had a column named in a select that does not exist.
-  'truck_places', 'truck_place_groups',
+  // Schedule › Places (supabase/migrations/20261003_truck_places.sql + 20261004_…_stage2.sql). Added
+  // at creation rather than later, so the feature has never had a column named in a select that does
+  // not exist. ⚠️ `truck_place_groups` WAS HERE AND IS GONE — stage 2 drops the table with the
+  // Facebook-groups feature, and a censused table that no longer exists is a check with no subject.
+  'truck_places',
 ]
 
 const CODE_DIRS = ['app', 'lib', 'components']
@@ -145,7 +147,12 @@ function migrationColumns(root = REPO, patch = {}) {
   const dir = path.join(root, 'supabase/migrations')
   const drop = new Set(patch.dropMigrations || [])
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.sql') && !drop.has(f)).sort()
-  const columns = new Map(TABLES.map(t => [t, new Set()]))
+  /* ⚠️ `patch.tables` ASKS ABOUT A DIFFERENT TABLE LIST, exactly as it does for `codeColumns`. It is
+   * how a harness can read `trucks` — which is NOT censused, because it predates
+   * supabase/migrations/ and has no `create table` there — to assert that a RENAME landed. Reading a
+   * table is not censusing it: this returns what the migrations declare and checks nothing. */
+  const wanted = Array.isArray(patch.tables) && patch.tables.length ? patch.tables : TABLES
+  const columns = new Map(wanted.map(t => [t, new Set()]))
   const sources = new Map()
   const problems = []
   const add = (table, col, file) => {
@@ -185,11 +192,36 @@ function migrationColumns(root = REPO, patch = {}) {
       const addRe = /\badd\s+column\s+(?:if\s+not\s+exists\s+)?(?:"([^"]+)"|([a-z_][a-z0-9_]*))/gi
       let a
       while ((a = addRe.exec(stmt)) !== null) add(table, (a[1] || a[2]).toLowerCase(), f)
-      /* 🔴 A RENAME OR A DROP WOULD MAKE THIS CENSUS WRONG, NOT INCOMPLETE — it would leave a column
-       * in the declared set that no longer exists, which is exactly the mistake the module is for.
-       * There are none today; if one is ever written, this stops rather than lying about it. */
-      if (/\b(rename|drop)\s+column\b/i.test(stmt)) {
-        problems.push(`${f}: \`${table}\` has a rename/drop column clause, which this parser does not model`)
+
+      /* ── 🔴 DROPS AND RENAMES ARE MODELLED NOW (3 October 2026) ─────────────────────────────────
+       * This used to `problems.push("…which this parser does not model")` and stop. That was right to
+       * refuse rather than lie — and then stage 2 of Schedule › Places dropped
+       * `truck_places.group_post_wording` and renamed `trucks.default_group_post_wording`, and the
+       * census DID start lying: it still declared the dropped column, so a select naming a column
+       * that no longer exists would have passed. The harness caught it, which is the whole point of
+       * that refusal having been loud.
+       * 🔴 ORDER IS WHAT MAKES THIS CORRECT. The files are read in FILENAME ORDER (sorted above), so
+       * a drop is applied after the create that added the column and before any later re-add — the
+       * same order Postgres will see them in. A reader that processed files in directory order would
+       * get a different schema on a different machine.
+       * ⚠️ `drop constraint` AND `drop not null` ARE NOT `drop column`; the patterns name the word. */
+      const dropRe = /\bdrop\s+column\s+(?:if\s+exists\s+)?(?:"([^"]+)"|([a-z_][a-z0-9_]*))/gi
+      let dr
+      while ((dr = dropRe.exec(stmt)) !== null) {
+        const col = (dr[1] || dr[2]).toLowerCase()
+        if (columns.has(table)) columns.get(table).delete(col)
+        sources.delete(`${table}.${col}`)
+      }
+      const renRe = /\brename\s+column\s+(?:"([^"]+)"|([a-z_][a-z0-9_]*))\s+to\s+(?:"([^"]+)"|([a-z_][a-z0-9_]*))/gi
+      let rn
+      while ((rn = renRe.exec(stmt)) !== null) {
+        const from = (rn[1] || rn[2]).toLowerCase()
+        const to = (rn[3] || rn[4]).toLowerCase()
+        if (columns.has(table)) {
+          columns.get(table).delete(from)
+          sources.delete(`${table}.${from}`)
+          add(table, to, f)
+        }
       }
     }
   }
@@ -455,6 +487,12 @@ function codeColumns(root = REPO, dirs = CODE_DIRS, patch = {}) {
    * check that cannot be shown to FAIL on a reintroduced `preview` proves nothing, and copying the
    * whole tree to prove it would make the harness slow enough to skip. Nothing on disk is touched. */
   const override = new Map(Object.entries(patch.code || {}))
+  /* ⚠️ `patch.tables` ASKS ABOUT A DIFFERENT TABLE LIST WITHOUT JOINING THE CENSUS. It exists for
+   * scripts/schedule-graphics-places.cjs, which needs the AST payload reader over `truck_events` to
+   * prove that no update path writes `truck_place_id`. `truck_events` must NOT be added to `TABLES`:
+   * it predates supabase/migrations/ and has no `create table` there, so censusing it would report
+   * every column it names as missing. This reads the writes; it does not check them against SQL. */
+  const tables = Array.isArray(patch.tables) && patch.tables.length ? patch.tables : TABLES
   const named = []
   const unresolved = []
   const unreadWrites = []
@@ -463,7 +501,7 @@ function codeColumns(root = REPO, dirs = CODE_DIRS, patch = {}) {
   for (const file of walkFiles(root, dirs)) {
     const rel = path.relative(root, file)
     const text = override.has(rel) ? override.get(rel) : fs.readFileSync(file, 'utf8')
-    if (!TABLES.some(t => text.includes(t))) continue
+    if (!tables.some(t => text.includes(t))) continue
     const sf = ts.createSourceFile(rel, text, ts.ScriptTarget.Latest, true,
       rel.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS)
     const lineOf = (n) => sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1
@@ -473,7 +511,7 @@ function codeColumns(root = REPO, dirs = CODE_DIRS, patch = {}) {
       if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)
         && node.expression.name.text === 'from' && node.arguments.length === 1) {
         const arg = unwrap(node.arguments[0])
-        if (ts.isStringLiteral(arg) && TABLES.includes(arg.text)) {
+        if (ts.isStringLiteral(arg) && tables.includes(arg.text)) {
           walkChain(node, arg.text)
         }
       }

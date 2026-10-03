@@ -98,10 +98,11 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { isNativeApp } from '@/lib/native/device'
 // Both store badges, from one component — the order and the colour are vendor rules. See the card below.
 import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Auto-replies (see SettingsTab)
-import { ScheduleGraphicsTab } from '@/components/manage/ScheduleGraphicsTab'
+import { SchedulePlaces, WeeklyPostPane, shortDay as placeShortDay, timeRange as placeTimeRange } from '@/components/manage/SchedulePlaces'
+import { fillFromPlace } from '@/lib/schedule-graphics/places'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; default_group_post_wording?: string | null }
+interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -112,7 +113,19 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'graphics' | 'team' | 'settings' | 'payments' | 'billing'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
+/* 🔴 THE SCHEDULE TAB'S THREE SECTIONS, kept in the URL (`?section=places`) so refresh and the browser
+ * Back button both work — a section held only in React state is one an operator loses by reloading.
+ * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
+ * exactly where it always did. */
+type ScheduleSection = 'events' | 'weekly' | 'places'
+const SCHEDULE_SECTIONS: { id: ScheduleSection; label: string }[] = [
+  { id: 'events', label: 'Events' },
+  { id: 'weekly', label: 'Weekly post' },
+  { id: 'places', label: 'Places' },
+]
+const isScheduleSection = (v: unknown): v is ScheduleSection =>
+  v === 'events' || v === 'weekly' || v === 'places'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -142,9 +155,12 @@ function imgUrl(path: string | null) {
   if (!path) return null
   return `${SUPABASE_URL}/storage/v1/object/public/truck-media/${path}`
 }
-function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-}
+/* ⛔ `fmtDate` IS GONE (3 October 2026). Its only caller was the "Copy a recent event" block the place
+ * picker replaced. The picker's dates go through `placeShortDay` from components/manage/SchedulePlaces,
+ * which builds the label from the 'YYYY-MM-DD' PARTS — `new Date(d)` on a date-only string is UTC
+ * midnight and renders as the previous day west of here, which is the bug the new helper exists to
+ * avoid. Left as a comment rather than silently deleted: this was a module-level export-shaped helper
+ * and someone will look for it. */
 
 // ── Small UI components ────────────────────────────────────────
 // Spinner / Badge / Btn / Input / Card / EmptyState + the allergen/dietary toggles now live in
@@ -210,6 +226,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const { token } = use(params)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
   const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
   // ── T1: ONE TRIGGER, TWO CALLERS, AND A COMPLETION CALLBACK ONLY THE WIZARD SUPPLIES ─────────────
@@ -496,10 +513,36 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   // Read ?tab= query param on mount and activate that tab
   useEffect(() => {
-    const tabParam = new URLSearchParams(window.location.search).get('tab') as Tab | null
+    const qs = new URLSearchParams(window.location.search)
+    const tabParam = qs.get('tab') as Tab | null
     const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']
     if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
+    /* 🔴 `?section=` IS READ WITH IT, so a link straight to Places works and so does a refresh while
+     * standing on it. ⚠️ IT ALSO IMPLIES THE SCHEDULE TAB: a bare `?section=places` would otherwise
+     * set a section nobody can see, on the Menu tab. */
+    const sectionParam = qs.get('section')
+    if (isScheduleSection(sectionParam)) {
+      setScheduleSection(sectionParam)
+      if (!tabParam) setActiveTab('schedule')
+    }
   }, [])
+
+  /* ── 🔴 THE SECTION, WRITTEN BACK INTO THE URL ───────────────────────────────────────────────────
+   * `replaceState`, not `pushState`: the pills are a view switch inside one tab, and pushing would
+   * make Back walk through every pill the operator tapped before leaving the page.
+   * ⚠️ 'events' REMOVES THE PARAM rather than writing `?section=events`, so the default URL stays the
+   * one that has always been shared, and `?tab=` is left exactly as it was found.
+   * ⚠️ IT ONLY TOUCHES THE URL WHILE THE SCHEDULE TAB IS OPEN — a section is meaningless under any
+   * other tab, and writing it there would put a param on a page it does not describe. */
+  useEffect(() => {
+    if (typeof window === 'undefined' || activeTab !== 'schedule') return
+    const url = new URL(window.location.href)
+    const want = scheduleSection === 'events' ? null : scheduleSection
+    const have = url.searchParams.get('section')
+    if (want === have) return
+    if (want) url.searchParams.set('section', want); else url.searchParams.delete('section')
+    window.history.replaceState(window.history.state, '', url.toString())
+  }, [activeTab, scheduleSection])
 
   // ── ?verify= — the signup confirmation outcome, surfaced here (A2) ────────────────────────────────
   // /api/auth/verify-signup now lands an operator who ALREADY has a truck on this page instead of on
@@ -645,15 +688,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
     { id: 'menu',      label: 'Menu',      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
-    // 🔴 NEXT TO SCHEDULE, BECAUSE IT IS ABOUT THE SCHEDULE. The graphic and the posting list are built
-    // from the truck's own dates, so this belongs beside the tab those dates are kept on rather than at
-    // the end of the row. Same roles as Schedule and Settings: owner and manager, never staff — it
-    // writes places and posting notes, which are not service-time actions.
-    // ⚠️ THE TAB IS ALWAYS LISTED, ON EVERY PLAN. The plan gate is INSIDE the panel (FeatureGate), so a
-    // Starter truck sees the section and a short upgrade line — the brief's "locked plans see the tab
-    // with a short upgrade message, not an error". Filtering it out of this array would hide the
-    // product from the only people who might buy it.
-    { id: 'graphics',  label: 'Schedule graphics', icon: '🎨', roles: ['owner', 'manager'] },
+    /* ⛔ THE SEPARATE 'Schedule graphics' TAB IS GONE (3 October 2026). It sat here, between Schedule
+     * and Deals. Its three sections are sub-tabs INSIDE Schedule now — Events · Weekly post · Places —
+     * because every one of them is about the truck's own dates, and a second top-level tab made the
+     * operator choose between "my schedule" and "posts about my schedule" before they had a reason to.
+     * See ScheduleTab's pill row and docs/schedule-places-report.md. */
     { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
     { id: 'modifiers', label: 'Extras & Upsells', icon: '⚡', roles: ['owner', 'manager'] },
     { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
@@ -849,8 +888,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
-        {activeTab === 'graphics'  && <ScheduleGraphicsTab truck={truck} api={api} showToast={showToast} />}
+        <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -6631,7 +6669,10 @@ function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent
   )
 }
 
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null }
+/* ⚠️ `truck_place_id` IS SET ONLY ON A NEW EVENT, by the place picker. The edit openers below do not
+ * include it, so it arrives `undefined` on every edit — and the server's update branch does not name
+ * the column either. Two independent reasons an edit cannot move an event's place. */
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null; truck_place_id?: string | null }
 
 // ── EVENT TIME CONTROL (V11.15) ──────────────────────────────────────────────────────────────────
 // 🔴 REPLACES `SCHEDULE_TIME_OPTIONS`, which was `Array.from({length: 33}, i => 07:00 + i*30)` — a flat
@@ -6788,8 +6829,22 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
-  isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
+/** The slice of a `sg_places` row the Add event picker needs. */
+type PickerPlace = {
+  id: string; name: string; short_name: string | null
+  address: string | null; area: string | null; postcode: string | null
+  is_favourite: boolean; is_hidden: boolean; merged_into_id: string | null
+  last_event_date: string | null; last_start_time: string | null; last_end_time: string | null
+}
+
+function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles, categories, api, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
+  /* 🔴 `isActive` IS STILL "the Schedule tab is open", NOT "the Events section is showing", and that
+   * is deliberate. Every load in this component keys off it (`loadEvents`, the vans read, the
+   * conflict scan) and `onPendingCount` drives the "Schedule (8)" badge on the tab bar. Narrowing it
+   * to the Events section would stop the badge updating while the operator stands on Places — the
+   * section decides what is RENDERED, never what is LOADED. */
+  isActive: boolean; section: ScheduleSection; onSectionChange: (s: ScheduleSection) => void
+  truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
   api: (a: string, e?: any) => Promise<any>; showToast: ShowToast
   onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
@@ -6810,6 +6865,18 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
   const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
+  /* ── THE PLACE PICKER'S OWN STATE ───────────────────────────────────────────────────────────────
+   * 🔴 LOADED WHEN THE ADD-EVENT MODAL OPENS, not when the tab does. `sg_places` seeds, so loading it
+   * on tab activation would write places on every visit to Schedule — including visits that never
+   * open the modal. Opening "Add event" IS a deliberate act, and the picker is useless without the
+   * truck's places, so seeding there is both correct and what makes the list complete. */
+  const [pickerPlaces, setPickerPlaces] = useState<PickerPlace[] | null>(null)
+  const [placeSearch, setPlaceSearch] = useState('')
+  const [showAllPlaces, setShowAllPlaces] = useState(false)
+  /** 🔴 THE IN-FLIGHT GUARD IS A REF, NOT STATE. The effect below depends on the modal being open for
+   *  a new event; a state flag would be a dependency that the effect itself sets, which is the loop
+   *  this ref exists to avoid. Reset by `closeAddModal`. */
+  const pickerInFlight = useRef(false)
   const [editingEventConfirmOnSave, setEditingEventConfirmOnSave] = useState(false)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
@@ -6899,30 +6966,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
     onClearPendingVerify?.()
   }, [pendingVerifyEvents])
 
-  // 🔴 A TRADED EVENT IS THE MOST LIKELY ONE TO COPY (18 September 2026). This admitted only
-  // 'confirmed' and 'open', so an event dropped out of the list the moment it closed — and 'closed' is
-  // where every event that has actually happened ends up. Pizza Kitchen had 32 closed events since July
-  // and the modal offered exactly ONE template: a 12 July date that was confirmed but never opened,
-  // carrying no start/end time, so it rendered as "Sun 12 Jul · –". Its three siblings were the same
-  // venue on consecutive days, collapsed by the dedupe below.
-  // The list is the operator's OWN history: 'unconfirmed' (an unapproved scraper find) and 'rejected'
-  // stay out because they were never adopted, and 'cancelled' never reaches this page at all
-  // (/api/events/manage filters it out). Copying carries venue, address, times and van only —
-  // handleCopyEvent never touches status or id — so a closed event is a safe template.
-  const recentEvents = useMemo(() => {
-    const COPYABLE = new Set(['confirmed', 'open', 'closed'])
-    const seen = new Set<string>()
-    return [...events]
-      .filter(e => COPYABLE.has(e.status))
-      .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())
-      .filter(e => {
-        const key = `${e.venue_name}-${e.town}`.toLowerCase()
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-      })
-      .slice(0, 5)
-  }, [events])
+  /* ⛔ `recentEvents` IS GONE, WITH THE BLOCK IT FED. It built five de-duplicated past events as
+   * copy-templates for the Add event modal. The place picker replaced that: a place is the thing the
+   * operator is choosing, and the times come from its last event — which is what copying a whole past
+   * event was really for, with a date attached that they then had to clear.
+   * ⚠️ `handleCopyEvent` SURVIVES and is unchanged — the per-event "Copy" button in the list below
+   * still uses it, and that one copies a specific event on purpose. */
 
   const venueSuggestions = useMemo(() => {
     const seen = new Set<string>()
@@ -6966,6 +7015,54 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
     }, 50)
   }
 
+  /* ── 🔴 LOAD THE PLACES WHEN THE MODAL OPENS FOR A NEW EVENT ───────────────────────────────────
+   * An async IIFE with a `cancelled` flag — the same pattern as everywhere else here, so a setState
+   * cannot land after the modal is closed. Loaded ONCE per modal opening: `pickerPlaces === null` is
+   * "never loaded", and `closeAddModal` resets it.
+   * ⚠️ IT NEVER BLOCKS THE FORM. A failure leaves `pickerPlaces` as `[]`, the picker shows nothing,
+   * and the operator types the venue exactly as they always have — the place is then created from
+   * what they typed, on save. A places problem must not stop an event being added. */
+  const wantPicker = !!editingEvent && !editingEvent.id
+  /* 🔴 `pickerLoading` IS DERIVED, NOT STORED. A `setPickerLoading(true)` in this effect's body is a
+   * synchronous setState inside an effect — cascading renders, and eslint's
+   * react-hooks/set-state-in-effect catches it (it caught exactly this). "Open for a new event and
+   * the places have not arrived yet" IS the loading state, so there is nothing to store: `null` means
+   * never loaded and both outcomes below replace it with an array. */
+  const pickerLoading = wantPicker && pickerPlaces === null
+  useEffect(() => {
+    if (!wantPicker || pickerPlaces !== null || pickerInFlight.current) return
+    pickerInFlight.current = true
+    let cancelled = false
+    ;(async () => {
+      try {
+        const r = await api('sg_places')
+        if (!cancelled) setPickerPlaces((r?.places ?? []) as PickerPlace[])
+      } catch {
+        // ⚠️ `[]` ON FAILURE, NOT a retry and not a thrown error. The picker shows nothing, the
+        // operator types the venue as they always have, and the place is created from it on save.
+        if (!cancelled) setPickerPlaces([])
+      } finally {
+        pickerInFlight.current = false
+      }
+    })()
+    return () => { cancelled = true }
+  }, [wantPicker, pickerPlaces, api])
+
+  /* ── 🔴 PICKING A PLACE FILLS THE FORM, AND EVERY FIELD STAYS EDITABLE ─────────────────────────
+   * The times come from the LAST event at that place, which is what the operator is almost always
+   * repeating. The fields are the ordinary controlled inputs afterwards — "Change anything for this
+   * date only" is literally true, because nothing below writes back to the place.
+   * ⚠️ THE DATE IS NEVER FILLED. It is the one thing that is different every time, and pre-filling it
+   * from a past event is how an operator ends up adding tonight's pitch to a date in September.
+   * ⚠️ A BLANK FIELD ON THE PLACE DOES NOT WIPE WHAT IS TYPED — `|| p!.x` keeps the current value,
+   * the same rule the existing venue-suggestions dropdown already follows. */
+  const pickPlace = (pl: PickerPlace) => {
+    // 🔴 THE RULE LIVES IN THE SHARED MODULE (`fillFromPlace`), not here. It is testable there, and the
+    // later stages that offer a place will fill a form the same way rather than a similar way.
+    setEditingEvent(p => p ? ({ ...p, truck_place_id: pl.id, ...fillFromPlace(pl, p) }) : p)
+    setFormErrors({})
+  }
+
   const validateEventForm = (form: EditingEvent) => {
     const errors: Record<string, string> = {}
     if (!form.event_date) errors.event_date = 'Date is required'
@@ -6984,6 +7081,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
     setEditingEvent(null)
     setEditingEventConfirmOnSave(false)
     setFormErrors({})
+    // ⚠️ THE PICKER IS RESET HERE, so the next opening re-reads (and re-seeds) rather than showing a
+    // list from before the operator added three events. `null` is "never loaded", not "empty".
+    setPickerPlaces(null)
+    pickerInFlight.current = false
+    setPlaceSearch('')
+    setShowAllPlaces(false)
     setExtractedEvents([])
     setEditedEvents([])
     setSelectedEvents(new Set())
@@ -8086,7 +8189,28 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
 
   return (
     <>
+    {/* ── 🔴 THE SUB-TABS. Pills, not another underlined row: the tab bar above is the app's one
+        level of underlined navigation, and a second identical row would read as the same level.
+        ⚠️ THE PILLS SCROLL SIDEWAYS, THE PAGE DOES NOT — `overflow-x-auto` on a `min-w-0` row, so
+        three pills at 390px stay reachable without widening the document. Measured in both engines
+        by scripts/schedule-places-render.cjs. */}
     {isActive && (
+      <div role="tablist" aria-label="Schedule sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">
+        <div className="flex gap-2 w-max">
+          {SCHEDULE_SECTIONS.map(sec => (
+            <button key={sec.id} role="tab" aria-selected={section === sec.id}
+              onClick={() => onSectionChange(sec.id)}
+              className={`px-3.5 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+                section === sec.id
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+              {sec.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+    {isActive && section === 'events' && (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -8105,7 +8229,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
             <Btn label="+ Add event" onClick={() => {
               const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
               setFormErrors({})
-              setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id })
+              // ⚠️ `truck_place_id: null` EXPLICITLY. The picker sets it; a new event starts with no
+              // place picked, and an omitted key would inherit nothing but reads as an oversight.
+              setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id, truck_place_id: null })
               setAddMode('manual'); setExtractedEvents([])
             }} />
           </div>
@@ -8194,25 +8320,105 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
               {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
             </h3>
 
-            {/* Recent events quick-copy — new events only */}
-            {!editingEvent.id && recentEvents.length > 0 && (
+            {/* ── 🔴 THE PLACE PICKER — WHAT REPLACED "COPY A RECENT EVENT" ──────────────────────
+                The old block copied a whole past EVENT, which meant the operator picked a date in
+                order to get a venue, and the two were never separable. A place is the thing they are
+                actually choosing; the times come from its last event, which is what "copy" was really
+                for. New events only — an edit never shows it, which is half of why an edit cannot
+                move an event's place. */}
+            {!editingEvent.id && (
               <div className="mb-4">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Copy a recent event</p>
-                <div className="flex flex-col gap-2">
-                  {recentEvents.map(event => (
-                    <button
-                      key={event.id}
-                      onClick={() => handleCopyEvent(event)}
-                      className="flex items-center justify-between w-full px-3 py-2.5 border border-slate-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-colors text-left group"
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-slate-800">{event.venue_name}{event.town ? `, ${event.town}` : ''}</p>
-                        <p className="text-xs text-slate-400">{fmtDate(event.event_date)} · {formatTime(event.start_time)}–{formatTime(event.end_time)}</p>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Place</label>
+                <input
+                  type="text"
+                  value={placeSearch}
+                  onChange={e => setPlaceSearch(e.target.value)}
+                  placeholder="Search your places"
+                  autoCapitalize="off" autoCorrect="off" spellCheck={false}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                />
+
+                {pickerLoading && <div className="py-4 flex justify-center"><Spinner /></div>}
+
+                {!pickerLoading && (() => {
+                  const all = (pickerPlaces ?? [])
+                    // ⚠️ A HIDDEN OR MERGED PLACE IS NOT OFFERED. The operator took it out of the
+                    // list; offering it here would put it straight back into their schedule.
+                    .filter(pl => !pl.is_hidden && !pl.merged_into_id)
+                  const q = placeSearch.trim().toLowerCase()
+                  const matches = (pl: PickerPlace) => !q
+                    || pl.name.toLowerCase().includes(q)
+                    || String(pl.short_name ?? '').toLowerCase().includes(q)
+                    || String(pl.area ?? '').toLowerCase().includes(q)
+                    || String(pl.postcode ?? '').toLowerCase().includes(q)
+                  const byName = (a: PickerPlace, b: PickerPlace) =>
+                    a.name.localeCompare(b.name, 'en-GB', { sensitivity: 'base' })
+                  const found = all.filter(matches)
+                  /* 🔴 FAVOURITES FIRST, AND ONLY FAVOURITES UNTIL ASKED. A truck with sixty places
+                   * would otherwise bury the four it trades at every week. Searching or pressing
+                   * "Show all places" opens the whole list. */
+                  const favs = found.filter(pl => pl.is_favourite).sort(byName)
+                  const rest = found.filter(pl => !pl.is_favourite).sort(byName)
+                  const expanded = showAllPlaces || q.length > 0
+                  const shown = expanded ? [...favs, ...rest] : favs
+
+                  const placeRow = (pl: PickerPlace) => {
+                    const picked = editingEvent!.truck_place_id === pl.id
+                    const when = pl.last_event_date
+                      ? `Last time: ${placeShortDay(pl.last_event_date)}${placeTimeRange(pl.last_start_time, pl.last_end_time) ? ` · ${placeTimeRange(pl.last_start_time, pl.last_end_time)}` : ''}`
+                      : 'Not used yet'
+                    return (
+                      <button
+                        key={pl.id}
+                        type="button"
+                        onClick={() => pickPlace(pl)}
+                        aria-pressed={picked}
+                        className={`flex items-center gap-2 w-full px-3 py-2.5 border rounded-xl text-left transition-colors ${
+                          picked ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/40'}`}
+                      >
+                        <span className="text-orange-500 text-base leading-none shrink-0">{pl.is_favourite ? '★' : '☆'}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-medium text-slate-800 truncate">{pl.name}</span>
+                          <span className="block text-xs text-slate-400 truncate">{when}</span>
+                        </span>
+                        {picked && <span className="text-xs font-bold text-orange-600 shrink-0">Selected</span>}
+                      </button>
+                    )
+                  }
+
+                  return (
+                    <div className="mt-2">
+                      {!expanded && favs.length > 0 && (
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Favourites</p>
+                      )}
+                      {shown.length > 0 ? (
+                        <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">{shown.map(placeRow)}</div>
+                      ) : (
+                        <p className="text-xs text-slate-400 py-2">
+                          {all.length === 0 ? 'No places yet — type the venue below and it will be saved as one.' : 'No places match.'}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap items-center gap-3 mt-2">
+                        {!expanded && rest.length > 0 && (
+                          <button type="button" onClick={() => setShowAllPlaces(true)}
+                            className="text-xs font-bold text-orange-600 hover:text-orange-700">
+                            Show all places ({found.length})
+                          </button>
+                        )}
+                        {/* 🔴 "+ New place" CLEARS THE PICK AND NOTHING ELSE. It creates no row here:
+                            the place is created on SAVE, from the venue name they type, by the same
+                            idempotent upsert the seeder uses. Creating one now would leave a place
+                            behind for an event the operator then abandoned. */}
+                        <button type="button"
+                          onClick={() => { setEditingEvent(p => p ? ({ ...p, truck_place_id: null }) : p); setPlaceSearch('') }}
+                          className="text-xs font-bold text-slate-500 hover:text-slate-700">
+                          + New place
+                        </button>
                       </div>
-                      <span className="text-xs text-orange-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">Copy →</span>
-                    </button>
-                  ))}
-                </div>
+                    </div>
+                  )
+                })()}
+
                 <div className="flex items-center gap-3 mt-3">
                   <div className="flex-1 h-px bg-slate-100" />
                   <span className="text-xs text-slate-400">or add manually</span>
@@ -8354,6 +8560,15 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
+                {/* 🔴 THE ONE LINE OF EXPLANATION THE WHOLE MODAL GETS, and only when a place was
+                    picked. It answers the question the filled fields raise — "will editing this
+                    change the place?" — and the answer is no: nothing below writes back to the place.
+                    ⚠️ NEW EVENTS ONLY, because `truck_place_id` is only ever set on one. */}
+                {!editingEvent.id && editingEvent.truck_place_id && (
+                  <p className="sm:col-span-2 text-xs text-slate-400 -mt-1">
+                    Filled from {(pickerPlaces ?? []).find(pl => pl.id === editingEvent!.truck_place_id)?.name ?? 'that place'}. Change anything for this date only.
+                  </p>
+                )}
                 <div className="sm:col-span-2 flex gap-2 pt-1">
                   <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
                   <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
@@ -8431,6 +8646,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, showToa
       )}
     </div>
     )}
+    {/* ── THE OTHER TWO SECTIONS ──────────────────────────────────────────────────────────────────
+        🔴 `SchedulePlaces` MOUNTS ONLY WHEN ITS PILL IS SELECTED, which is what makes "opening Places
+        seeds the places" true — and only then. An always-mounted pane would write on every visit to
+        the Schedule tab, including visits that never looked at Places. */}
+    {isActive && section === 'places' && <SchedulePlaces api={api} showToast={showToast} />}
+    {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}
     {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
     {showImportModal && (
       <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
