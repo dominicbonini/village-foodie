@@ -2643,6 +2643,11 @@ export async function POST(req: NextRequest) {
         return {
           id: p.id,
           venue_id: p.venue_id ?? null,
+          /* 🔴 `name_key` IS RETURNED SO THE CLIENT CAN USE THE SHARED MATCHING RULE. The Add event
+           * modal needs "which events happened at this place" to default the van, and
+           * `placeForEvent` needs all three identities — the link, the anchor and the key. Sending
+           * only two would have meant a weaker rule on the client than on the server. */
+          name_key: p.name_key,
           name: p.name ?? '',
           short_name: p.short_name ?? null,
           address: p.address ?? null,

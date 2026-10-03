@@ -2,7 +2,7 @@
 // app/manage/[token]/page.tsx
 // Truck management page — menu, modifiers, deals, schedule, settings
 
-import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment, useReducer } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useMemo, use, useRef, Fragment, useReducer } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
@@ -101,7 +101,12 @@ import { StoreBadges } from '@/components/StoreBadges'   // native-only hide: Au
 import {
   WeeklyPostPane, TidyUpPlaces, PlaceList, usePlaces, type Place as SgPlaceRow,
 } from '@/components/manage/SchedulePlaces'
-import { fillFromPlace } from '@/lib/schedule-graphics/places'
+import { fillFromPlace, timeRangeLabel, placeForEvent } from '@/lib/schedule-graphics/places'
+/* 🔴 THE PREVIEW RENDERS THE PUBLIC PAGE'S OWN CARD. `TruckListCard` is what
+ * app/trucks/[slug]/TruckClient.tsx renders for every event on a truck's public schedule; this file
+ * only builds its props, so the preview cannot drift from the thing it previews. */
+import TruckListCard from '@/components/TruckListCard'
+import { previewEventFromForm, previewLine, vanForPlace } from '@/lib/schedule-graphics/event-preview'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { custom_domain?: string | null; custom_domain_verified_at?: string | null; custom_domain_setup_started_at?: string | null; custom_domain_setup_state?: 'choosing' | 'registered' | 'awaiting_dns' | null; custom_domain_last_ok_at?: string | null; custom_domain_confirmed_at?: string | null; embed_enabled?: boolean; id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; whatsapp_monthly_reply_limit?: number | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean; completion_presses?: 'one' | 'two' | null; add_order_layout?: 'tabs' | 'scroll'; event_post_wording?: string | null }
@@ -121,6 +126,48 @@ type Tab = 'menu' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 
  * between "my menu" and "things attached to my menu" before they had a reason to.
  * ⚠️ 'items' IS THE DEFAULT AND WRITES NO PARAM, so the existing /manage/<token> link opens exactly
  * where it always did — the same rule Schedule's pills follow. */
+/* ── 🔴 SETTINGS IS ONE SCROLLING LIST WITH JUMP TABS (3 October 2026) ────────────────────────────
+ * One id per section, used by the tab, by the scroll-spy and by `#hash` deep links. The label IS the
+ * `<h2>`, so a tab and its heading cannot drift apart. */
+/** The one scroll container on Manage. See the note at `<main>`. */
+const MANAGE_SCROLLER_ID = 'manage-scroller'
+
+/* ══ 🔴 THE SUB-TAB BAR, SHARED BY SETTINGS, MENU AND SCHEDULE ══════════════════════════
+ * 🔴 ONE DEFINITION, THREE USERS (3 October 2026). Menu and Schedule used PILLS and Settings used
+ * underlined tabs; the operator asked for one treatment everywhere, so the classes live here once
+ * rather than being copied into three places that would drift apart on the first restyle.
+ *
+ * 🔴 MENU AND SCHEDULE KEEP SWITCHING PAGES — THIS IS STYLE ONLY. Their sub-tabs each render a
+ * DIFFERENT component, and that is deliberately unchanged: no scroll-spy, no `scroll-margin-top`, no
+ * `#hash`, no jumping. Only Settings is one long page whose tabs scroll to a section. Giving Menu and
+ * Schedule the spy would mean merging three separate pages into one, which is not what was asked.
+ *
+ * ⚠️ `data-subtab-bar` IS WHAT THE FLUSH-TOP RULE IN app/globals.css KEYS ON. Removing the attribute
+ * silently reinstates the 24px resting gap, so it is not decoration.
+ * ⚠️ `-mx-4 px-4` CANCELS THE SCROLLER'S PADDING so the pinned bar's background reaches both edges;
+ * without it a 16px strip of content shows through either side as it passes underneath.
+ * ⚠️ `overflow-x-auto` ON A `min-w-0` ROW: the tabs scroll sideways on a phone, the PAGE does not. */
+const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'
+const SUBTAB_ROW = 'flex gap-4 w-max'
+/* ⚠️ `text-slate-600` INACTIVE, NOT `text-slate-400`. At 400 against the slate-50 bar the tabs read
+ * as DISABLED rather than as unselected — these are the primary way around each section, so they have
+ * to look pressable. The active one is `text-slate-900` plus the orange underline, the same contrast
+ * step the top-level tab bar uses. */
+const subtabBtn = (on: boolean) =>
+  `py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${
+    on ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-600 hover:text-slate-900'}`
+
+const SETTINGS_SECTIONS: { id: string; label: string }[] = [
+  { id: 'truck-details', label: 'Truck details' },
+  { id: 'contact', label: 'Contact' },
+  { id: 'order-settings', label: 'Order settings' },
+  { id: 'truck-settings', label: 'Truck settings' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'qr-code', label: 'QR code' },
+  { id: 'auto-replies', label: 'Auto-replies' },
+  { id: 'account-deletion', label: 'Account deletion' },
+]
+
 type MenuSection = 'items' | 'extras' | 'deals'
 const MENU_SECTIONS: { id: MenuSection; label: string }[] = [
   { id: 'items', label: 'Items' },
@@ -829,8 +876,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           CONTENT box, so padding-top here would become a permanent gap above any sticky header (the Billing
           plan/price row). The resting top gap lives on the inner `pt-6` wrapper as SCROLLABLE content
           instead, so `sticky top-0` pins FLUSH under the tabs — no magic offset, desktop + iPad WKWebView. */}
-      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
-        <div className="pt-6">
+      {/* 🔴 `id` ADDED SO SETTINGS' SCROLL-SPY CAN FIND ITS SCROLLER. This is the ONLY scroll container
+          on the page — the shell is `h-dvh overflow-hidden` and the bars are `shrink-0` siblings — so
+          `window.scrollY` is always 0 here and a spy written against the window would never fire.
+          Everything in `useSettingsJumpBar` reads this element's `scrollTop`/`clientHeight`/`scrollHeight`. */}
+      <main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
+        <div className="pt-6 manage-tab-pad">
         {/* ── K2: THE "REMIND ME LATER" STRIP ────────────────────────────────────────────────────────
             Left behind by the done screen's "Remind me later", and persistent until it is taken or
             dismissed — no timer, no timestamp, ONE boolean in the same per-truck localStorage key the
@@ -932,20 +983,22 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           )
         })()}
         {staleBar}
-        {/* ── 🔴 THE MENU PILLS. Same treatment as Schedule's: pills, not a second underlined row,
-            because the bar above is the app's one level of underlined navigation.
-            ⚠️ THE PILLS SCROLL SIDEWAYS, THE PAGE DOES NOT — `overflow-x-auto` on a `min-w-0` row, so
-            three pills stay reachable at 320px without widening the document. */}
+        {/* ── 🔴 THE MENU SUB-TABS ─────────────────────────────────────────────────────
+            🔴 PILLS → THE SHARED UNDERLINED BAR (3 October 2026, operator request). They were pills
+            on the reasoning that the bar above is the app's one underlined row; the operator asked for
+            Settings' treatment on all three, so `SUBTAB_BAR`/`subtabBtn` are used here rather than a
+            second copy of those classes.
+            🔴 STILL THREE SEPARATE PAGES — DELIBERATELY. Each tab swaps which component renders
+            below, exactly as before: same state, same props, same plan gating. It is NOT Settings'
+            one-long-page behaviour, which was explicitly to be left alone. Nothing here scrolls,
+            spies, or reads a `#hash`. */}
         {activeTab === 'menu' && (
-          <div role="tablist" aria-label="Menu sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">
-            <div className="flex gap-2 w-max">
+          <div role="tablist" aria-label="Menu sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
+            <div className={SUBTAB_ROW}>
               {MENU_SECTIONS.map(sec => (
                 <button key={sec.id} role="tab" aria-selected={menuSection === sec.id}
                   onClick={() => setMenuSection(sec.id)}
-                  className={`px-3.5 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
-                    menuSection === sec.id
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  className={subtabBtn(menuSection === sec.id)}>
                   {sec.label}
                 </button>
               ))}
@@ -7102,9 +7155,25 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
    * ⚠️ A BLANK FIELD ON THE PLACE DOES NOT WIPE WHAT IS TYPED — `|| p!.x` keeps the current value,
    * the same rule the existing venue-suggestions dropdown already follows. */
   const pickPlace = (pl: SgPlaceRow) => {
-    // 🔴 THE RULE LIVES IN THE SHARED MODULE (`fillFromPlace`), not here. It is testable there, and the
-    // later stages that offer a place will fill a form the same way rather than a similar way.
-    setEditingEvent(p => p ? ({ ...p, truck_place_id: pl.id, ...fillFromPlace(pl, p) }) : p)
+    /* 🔴 THE VAN DEFAULT. The van used at this place's most recent non-cancelled event, and only if it
+     * is still ACTIVE — otherwise null, which leaves the field exactly as it is today.
+     * ⚠️ ONLY WHEN THE TRUCK HAS MORE THAN ONE VAN, because the field itself only renders then; with
+     * one van the server already auto-assigns it (`getSoleActiveVanId`).
+     * ⚠️ IT DOES NOT OVERRIDE A VAN THE OPERATOR HAS ALREADY CHOSEN in this modal. */
+    const vanDefault = vans.length > 1
+      ? vanForPlace({
+          events: events.filter(e => placeIdOfEvent(e) === pl.id),
+          activeVanIds: vans.map(v => v.id),
+        })
+      : null
+    // 🔴 THE FILL RULE LIVES IN THE SHARED MODULE (`fillFromPlace`), not here. It is testable there,
+    // and the later stages that offer a place will fill a form the same way rather than a similar one.
+    setEditingEvent(p => p ? ({
+      ...p,
+      truck_place_id: pl.id,
+      ...fillFromPlace(pl, p),
+      van_id: p.van_id ?? vanDefault,
+    }) : p)
     setFormErrors({})
     // Phone: choosing a place is step 1 finishing. ⚠️ Address details stay COLLAPSED here — they are
     // already filled, and the point of the step is that the operator does not have to look at them.
@@ -7120,9 +7189,42 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     setAddrOpen(true)
   }
 
+  /** "Tue 13 Oct" — built from the 'YYYY-MM-DD' PARTS, never `new Date(str)`, which on a date-only
+   *  value is UTC midnight and renders as the previous day west of here. */
+  const placeShortDayLocal = (ymd: string | null): string => {
+    if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ''
+    const [y, m, d] = ymd.split('-').map(Number)
+    return new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' })
+      .format(new Date(Date.UTC(y, m - 1, d)))
+  }
+
+  /** Which place an event resolves to — the shared rule, over the places the modal already has. */
+  const placeIdOfEvent = (e: TruckEvent): string | null =>
+    placeForEvent(e as unknown as Parameters<typeof placeForEvent>[0], placesCtl.places)?.id ?? null
+
   const pickedPlace = editingEvent?.truck_place_id
     ? placesCtl.places.find(p => p.id === editingEvent.truck_place_id) ?? null
     : null
+
+  /* ── 🔴 THE LIVE PREVIEW ───────────────────────────────────────────────────────────────────────
+   * Built from the form on every render, so it updates as the operator types. The props go to
+   * `TruckListCard` — the public schedule page's own component — so what they see is what a customer
+   * will see, not an approximation of it.
+   * ⚠️ `compact` AND `hideOrderButton`: this is the same density the order page's selected-event
+   * header uses, and an Order button on an event that does not exist yet would be a lie the operator
+   * could click. `previewEventFromForm` also sets `status: 'unconfirmed'` as the belt to that braces. */
+  const previewVanName = editingEvent?.van_id
+    ? (vans.find(v => v.id === editingEvent.van_id)?.name ?? null)
+    : null
+  const previewEvent = editingEvent
+    ? previewEventFromForm({ form: editingEvent, truckName: truck.name, vanName: previewVanName })
+    : null
+  const previewOneLine = editingEvent
+    ? previewLine({
+        form: editingEvent, vanName: previewVanName,
+        fmtDay: placeShortDayLocal, fmtTimes: timeRangeLabel,
+      })
+    : ''
 
   /* 🔴 THE LEFT PANE SHOWS FOR A NEW EVENT IN "One event" MODE, AND ONLY THEN.
    *   • an EDIT never shows it — the picker is new-events-only, which is half of why an edit cannot
@@ -8273,21 +8375,24 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
 
   return (
     <>
-    {/* ── 🔴 THE SUB-TABS. Pills, not another underlined row: the tab bar above is the app's one
-        level of underlined navigation, and a second identical row would read as the same level.
-        ⚠️ THE PILLS SCROLL SIDEWAYS, THE PAGE DOES NOT — `overflow-x-auto` on a `min-w-0` row, so
-        three pills at 390px stay reachable without widening the document. Measured in both engines
-        by scripts/schedule-places-render.cjs. */}
+    {/* ── 🔴 THE SCHEDULE SUB-TABS ─────────────────────────────────────────────────
+        🔴 PILLS → THE SHARED UNDERLINED BAR (3 October 2026, operator request), from the same
+        `SUBTAB_BAR`/`subtabBtn` Settings and Menu use — one definition, so a restyle cannot leave the
+        three rows looking like three different controls.
+        🔴 STILL SEPARATE PAGES — DELIBERATELY. Each tab swaps the component below it and nothing
+        else; Settings' scroll-spy/jump behaviour was explicitly NOT to be brought here.
+        ⚠️ THE TABS SCROLL SIDEWAYS, THE PAGE DOES NOT — measured at 390px in both engines by
+        scripts/schedule-places-render.cjs.
+        ⚠️ THIS COMPONENT RETURNS A FRAGMENT, so this bar is a DIRECT child of the manage scroller's
+        padded wrapper — which is what lets the `:has(> [data-subtab-bar]:first-child)` rule in
+        app/globals.css sit it flush against the tab bar above. */}
     {isActive && (
-      <div role="tablist" aria-label="Schedule sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">
-        <div className="flex gap-2 w-max">
+      <div role="tablist" aria-label="Schedule sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>
+        <div className={SUBTAB_ROW}>
           {SCHEDULE_SECTIONS.map(sec => (
             <button key={sec.id} role="tab" aria-selected={section === sec.id}
               onClick={() => onSectionChange(sec.id)}
-              className={`px-3.5 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
-                section === sec.id
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+              className={subtabBtn(section === sec.id)}>
               {sec.label}
             </button>
           ))}
@@ -8515,10 +8620,15 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {/* 🔴 THE CHOSEN PLACE, PINNED — phone only. Step 2 must say which place it is for,
                     and offer the way back to step 1 without losing what has been typed. */}
                 {showPicker && (
+                  /* ── 🔴 THE PINNED CARD IS THE PREVIEW ON A PHONE ───────────────────────────────
+                      It was the place's name alone. It now reads place · date · times · van and
+                      updates live, which is the same information the desktop card carries in the one
+                      line a phone has room for. `previewLine` DROPS EMPTY PARTS rather than printing
+                      separators around them, so a half-filled form reads short, never "· · ·". */
                   <div className="md:hidden flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
                     <span className="text-orange-500 text-base leading-none">{pickedPlace?.is_favourite ? '★' : '☆'}</span>
-                    <span className="min-w-0 flex-1 text-sm font-bold text-slate-900 truncate">
-                      {pickedPlace?.name ?? 'New place'}
+                    <span className="min-w-0 flex-1 text-sm font-bold text-slate-900 truncate" data-preview-line>
+                      {previewOneLine}
                     </span>
                     <button type="button" onClick={() => setPhoneStep(1)}
                       className="shrink-0 text-xs font-bold text-orange-600 hover:text-orange-700">Change</button>
@@ -8699,10 +8809,38 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 otherwise hide this footer. */}
             {addMode === 'manual' && (
               <div className="shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
-                <p className="min-w-0 flex-1 text-xs text-slate-400 truncate">
-                  {/* 🔴 ONE MUTED LINE, only when a place was picked. It answers the question the
-                      filled fields raise — "will editing this change the place?" — and the answer is
-                      no: nothing in the form writes back to the place. New events only. */}
+                {/* ── 🔴 THE LIVE PREVIEW, IN THE FOOTER, LEFT OF THE BUTTONS ─────────────────────
+                    It replaced the plain "Filled from <place>" line. `TruckListCard` in its `compact`
+                    variant — the same one the order page's selected-event header uses — so this is the
+                    public schedule page's own card, not a copy of it.
+                    🔴 `md:` ONLY. On a phone the preview is the pinned card at the top of step 2; two
+                    previews on one screen would be two things to keep in step.
+                    ⚠️ "Filled from" SURVIVES AS A MUTED LINE INSIDE THE PREVIEW, which is where the
+                    brief allows it if space permits — it does, because the card is one row tall at
+                    `compact` and the footer has the width.
+                    ⚠️ `max-h` + `overflow-hidden` IS THE GUARD ON THE FOOTER'S HEIGHT. The measurement
+                    (scripts/schedule-places-render.cjs) asserts the form pane stays usable at
+                    820×1180; this is what stops a long venue name wrapping the card into two rows and
+                    eating the form. */}
+                <div className="min-w-0 flex-1 max-md:hidden">
+                  {previewEvent && (
+                    <div className="max-h-[4.75rem] overflow-hidden">
+                      <TruckListCard
+                        event={previewEvent}
+                        slug={truck.slug ?? ''}
+                        compact
+                        hideOrderButton
+                      />
+                      {!editingEvent.id && editingEvent.truck_place_id && (
+                        <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                          Filled from {pickedPlace?.name ?? 'that place'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* The phone keeps a single muted line here — the preview itself is the pinned card. */}
+                <p className="min-w-0 flex-1 text-xs text-slate-400 truncate md:hidden">
                   {!editingEvent.id && editingEvent.truck_place_id
                     ? `Filled from ${pickedPlace?.name ?? 'that place'}`
                     : ''}
@@ -9280,6 +9418,183 @@ function WhatsAppSetupControl({ token, offerReauthorise, showButton, onNotice, o
       )}
     </>
   )
+}
+
+/**
+ * The Settings jump bar: one measured offset, a scroll-spy, and a jump that lands the heading below
+ * everything sticky above it.
+ *
+ * 🔴 THE PATTERN IS LIFTED FROM app/trucks/[slug]/order/page.tsx, which solved this for the customer
+ * order flow — see docs/customer-one-page-build-report.md §"scroll-margin-top vs JS arithmetic". The
+ * rule taken from it: ONE NUMBER, TWO CONSUMERS. `pinnedTop` is both the CSS `scroll-margin-top` on
+ * each section and the spy's pin line, so a re-measure moves the landing position and the pin line
+ * together and they cannot disagree.
+ *
+ * 🔴 AND ONE THING HAD TO CHANGE: that page scrolls the DOCUMENT. Manage does not. The shell is
+ * `h-dvh flex flex-col overflow-hidden` with the header and tab bar as `shrink-0` SIBLINGS, and
+ * `<main>` is the only scroll container — so `window.scrollY` is permanently 0 here and a spy written
+ * against the window would never fire once. Every read below is the scroller's own
+ * `scrollTop` / `clientHeight` / `scrollHeight`, and the listener is attached to it.
+ *
+ * 🔴 WHY `pinnedTop` IS NOT THE HEADER + TAB BAR HEIGHT. Those bars are OUTSIDE the scroller, so they
+ * take up none of its coordinate space: `scrollTop: 0` is already flush under them. The only thing
+ * above a section INSIDE the scroller is this bar — which is why the measured number is the BAR's own
+ * height and nothing else. That is also why `position: sticky; top: 0` pins it flush under the tabs
+ * with no magic offset, exactly as the `<main>` comment describes for the Billing row.
+ *
+ * ⚠️ NO ANCESTOR BREAKS THE STICKY. Checked all four classic causes: the scroller is the intended
+ * containing block (`overflow-y-auto` on `<main>` is what sticky is relative to, not a bug); there is
+ * no `transform`, `filter`, `perspective` or `contain` on any ancestor between the bar and `<main>`;
+ * `<main>` has NO `padding-top` (the resting gap is a `pt-6` child, deliberately, so a sticky child
+ * pins flush rather than 24px down); and the bar is not wrapped in a div of its own, which would
+ * become its containing block and stop it sticking once that div scrolled past.
+ */
+function useSettingsJumpBar(active: boolean) {
+  const barRef = useRef<HTMLDivElement | null>(null)
+  const sectionEls = useRef<Map<string, HTMLElement>>(new Map())
+  const [pinnedTop, setPinnedTop] = useState(0)
+  const [scrollerH, setScrollerH] = useState(0)
+  const [activeId, setActiveId] = useState<string>(SETTINGS_SECTIONS[0].id)
+  /** Live copy for the scroll listener, so it mounts ONCE and is never torn down on a re-measure. */
+  const spyRef = useRef<{ pinnedTop: number; target: number | null }>({ pinnedTop: 0, target: null })
+  const rafRef = useRef(0)
+  const timerRef = useRef<number | null>(null)
+
+  const scroller = () => (typeof document === 'undefined' ? null : document.getElementById(MANAGE_SCROLLER_ID))
+
+  /* ⚠️ MEASURED IN A `useLayoutEffect` WITH NO DEP ARRAY, the shape the order page uses: a card
+   * appearing or the bar wrapping to two rows is a render, so this catches every change without
+   * enumerating the conditions. A guessed constant would be wrong the first time the bar wrapped. */
+  /* ⚠️ NO DEP ARRAY, AND BOTH SETSTATES ARE GUARDED — which is what makes that safe. The rule warns
+   * that a setState in a dep-less effect can loop; both writes below sit behind an inequality, so a
+   * render that measures the same numbers writes nothing and it settles on the second pass. A dep
+   * array would have to enumerate "every condition that can change the bar's height", which is
+   * exactly what this shape exists to avoid. */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    if (!active) return
+    const h = barRef.current?.getBoundingClientRect().height ?? 0
+    const next = Math.round(h)
+    if (next !== pinnedTop) setPinnedTop(next)
+    spyRef.current.pinnedTop = next
+    const sh = Math.round(scroller()?.clientHeight ?? 0)
+    if (sh !== scrollerH) setScrollerH(sh)
+  })
+
+  const releaseLock = useCallback(() => {
+    spyRef.current.target = null
+    if (timerRef.current !== null) { window.clearTimeout(timerRef.current); timerRef.current = null }
+  }, [])
+
+  const onScroll = useCallback(() => {
+    const el = scroller()
+    if (!el) return
+    const line = spyRef.current.pinnedTop
+    const atBottom = () => el.scrollTop + el.clientHeight >= el.scrollHeight - 2
+    /* 🔴 LOCKED WHILE OUR OWN SMOOTH SCROLL IS IN FLIGHT. Without it the active tab repaints for every
+     * section the page travels THROUGH, so the tapped tab lights, flickers through its neighbours, and
+     * only then settles. Released on arrival, at the bottom (where a target past the end can never be
+     * reached), and by a safety timer. */
+    if (spyRef.current.target !== null) {
+      if (Math.abs(el.scrollTop - spyRef.current.target) > 2 && !atBottom()) return
+      releaseLock()
+    }
+    if (rafRef.current) return
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = 0
+      const containerTop = el.getBoundingClientRect().top
+      /* 🔴 THE BOTTOM CLAMP. The last section is short (one card), so it can never bring its heading up
+       * to the pin line and the plain rule would leave its tab permanently unlit. At the bottom of the
+       * list it IS what you are looking at. `lastSectionMinHeight` makes this rare, not redundant. */
+      if (atBottom()) { setActiveId(SETTINGS_SECTIONS[SETTINGS_SECTIONS.length - 1].id); return }
+      let current = SETTINGS_SECTIONS[0].id
+      for (const sec of SETTINGS_SECTIONS) {
+        const node = sectionEls.current.get(sec.id)
+        if (!node) continue
+        // Position WITHIN the scroller, not the viewport — the bars above it are outside its space.
+        if (node.getBoundingClientRect().top - containerTop <= line + 1) current = sec.id
+        else break
+      }
+      setActiveId(current)
+    })
+  }, [releaseLock])
+
+  useEffect(() => {
+    if (!active) return
+    const el = scroller()
+    if (!el) return
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => { el.removeEventListener('scroll', onScroll); releaseLock() }
+  }, [active, onScroll, releaseLock])
+
+  /** Tap a tab: land the heading and its first setting just below the bar. */
+  const jumpTo = useCallback((id: string) => {
+    setActiveId(id)                       // light the tab on the TAP, not when the scroll lands
+    const node = sectionEls.current.get(id)
+    const el = scroller()
+    if (!node || !el) return
+    const target = Math.max(0, el.scrollTop + node.getBoundingClientRect().top - el.getBoundingClientRect().top - spyRef.current.pinnedTop)
+    releaseLock()
+    // ⚠️ ALREADY THERE ⇒ DO NOT LOCK: a scroll to the current position emits no scroll event, so the
+    // lock would have no arrival to release it and would sit until the safety timer expired.
+    if (Math.abs(target - el.scrollTop) > 2) {
+      spyRef.current.target = target
+      timerRef.current = window.setTimeout(releaseLock, 1200)
+    }
+    const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // 🔴 `scrollIntoView` SO THE BROWSER APPLIES EACH SECTION'S OWN `scroll-margin-top`. Scrolling the
+    // container by arithmetic instead would duplicate the offset in a second place.
+    node.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  }, [releaseLock])
+
+  /* 🔴 `#hash` DEEP LINKS, WHICH THE BROWSER CANNOT DO HERE. A fragment scrolls the DOCUMENT, and the
+   * document never scrolls on this page — so `?tab=settings#order-settings` would land at the top with
+   * no indication why. One jump on mount, once the sections have mounted. */
+  const didHash = useRef(false)
+  useEffect(() => {
+    if (!active || didHash.current) return
+    const id = typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, '')
+    if (!id || !SETTINGS_SECTIONS.some(sec => sec.id === id)) return
+    if (!sectionEls.current.has(id)) return      // not mounted yet — try again on the next render
+    didHash.current = true
+    jumpTo(id)
+  }, [active, pinnedTop, jumpTo])
+
+  /* ── 🔴 KEEP THE ACTIVE TAB IN VIEW — HORIZONTALLY, AND ONLY HORIZONTALLY ──────────────────────
+   * THIS IS WHY A TAB NEEDED TWO PRESSES. It was `btn.scrollIntoView({ block: 'nearest' })`, and
+   * `block: 'nearest'` does NOT mean "do not scroll vertically" — it means "scroll the least amount
+   * needed", and `scrollIntoView` walks EVERY scrollable ancestor, `<main>` included. So the sequence
+   * on the first press was: `jumpTo` sets `activeId` and starts a smooth scroll to the section → this
+   * effect fires on that same `activeId` change → it scrolls `<main>` back to bring the BAR BUTTON
+   * into view → the jump is undone. On the second press `activeId` was already that tab, the effect
+   * did not re-run, and the scroll survived. Exactly the "needs a double-click" symptom.
+   * 🔴 SO IT NEVER TOUCHES AN ANCESTOR NOW. The bar's own `scrollLeft` is set directly: one axis, one
+   * element, nothing above it can move. */
+  useEffect(() => {
+    if (!active) return
+    const bar = barRef.current
+    const btn = bar?.querySelector<HTMLElement>(`[data-settings-tab="${activeId}"]`)
+    if (!bar || !btn) return
+    const pad = 16
+    const left = btn.offsetLeft - pad
+    const right = btn.offsetLeft + btn.offsetWidth + pad
+    if (left < bar.scrollLeft) bar.scrollLeft = Math.max(0, left)
+    else if (right > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = right - bar.clientWidth
+  }, [active, activeId])
+
+  /* 🔴 A MEASURED FLOOR FOR THE LAST SECTION, IN PIXELS. It is one card tall, so without a floor it
+   * can never bring its heading up to the pin line and its tab would rely entirely on the bottom
+   * clamp. ⚠️ THE FLOOR IS ON THE SECTION, NOT ON THE LIST — a min-height on the whole list cancels
+   * itself exactly when the content grows long enough to need it
+   * (docs/customer-one-page-build-report.md §A2).
+   * ⚠️ AND IT IS `px`, NOT `calc(100% - …)`: the parent's height is content-driven, so a percentage
+   * has nothing to resolve against and would compute to 0 — the same class of mistake as the
+   * `max-h`/`h-full` bug in docs/manage-tabs-quick-report.md §1. The scroller's own height is
+   * measured in the layout effect above. */
+  const lastSectionMinHeight = scrollerH > 0 ? `${Math.max(0, scrollerH - pinnedTop)}px` : undefined
+
+  return { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight }
 }
 
 function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onConnectionUpdate, token, api, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
@@ -10043,9 +10358,58 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     }
   }
 
+  /* ── THE JUMP BAR. See `useSettingsJumpBar` for why the offset is measured and why the spy reads
+   * the `<main>` scroller rather than the window. */
+  const jump = useSettingsJumpBar(true)
+  const { barRef, sectionEls, pinnedTop, activeId, jumpTo, lastSectionMinHeight } = jump
+
   return (
     <div className="space-y-6">
-      <h2 className="font-black text-slate-900 text-lg">Settings</h2>
+      {/* ── 🔴 THE STICKY JUMP BAR ────────────────────────────────────────────────────────────────
+          UNDERLINED TEXT TABS, not pills — Schedule and Menu own the pill treatment, and a third row
+          of pills would read as the same level of navigation as those.
+          🔴 `sticky top-0` PINS FLUSH UNDER THE TAB BAR with no offset, because `<main>` carries no
+          `padding-top` — the resting gap is a `pt-6` child. That is the property the `<main>` comment
+          spells out for the Billing row, and this reuses it rather than inventing a number.
+          🔴 IT IS ALREADY AT THE TOP ON LOAD, not only after you touch it (fixed 3 October 2026).
+          The bar used to rest 24px down and snap flush on the first scroll or tap — two resting
+          positions — because sticky cannot hold an element ABOVE its flow position and that flow
+          position sat inside the shared `pt-6` wrapper. `data-subtab-bar` + the `:has()` rule in
+          app/globals.css drop the wrapper's padding when a bar is the first thing in it, so flow and
+          pinned are the same pixel. The reasoning, and why it is not a negative margin, is written
+          out at that rule.
+          ⚠️ The measured `pinnedTop` is unaffected — it reads the bar's own
+          `getBoundingClientRect().height`, which no margin or padding on the WRAPPER changes.
+          ⚠️ `-mx-4 px-4` CANCELS THE SCROLLER'S OWN PADDING so the bar's background reaches the edges
+          when pinned; without it a 16px strip of content would show through either side.
+          ⚠️ IT SCROLLS SIDEWAYS ON A PHONE and the page does not: `overflow-x-auto` on a `min-w-0`
+          row, the same construction the Schedule and Menu pills use.
+          🔴 FIRST CHILD OF THE LIST (corrected 3 October 2026). It sat BELOW the "New to HatchGrab?"
+          and "Get the app" cards, so the first thing on the page was two one-time prompts and the
+          navigation was underneath them. Those two cards stay above section 1 — no tab points at
+          them — but the bar is what the operator should meet first. */}
+      <div
+        ref={barRef}
+        role="tablist"
+        aria-label="Settings sections"
+        data-subtab-bar
+        className={SUBTAB_BAR}
+      >
+        <div className={SUBTAB_ROW}>
+          {SETTINGS_SECTIONS.map(sec => (
+            <button
+              key={sec.id}
+              role="tab"
+              data-settings-tab={sec.id}
+              aria-selected={activeId === sec.id}
+              onClick={() => jumpTo(sec.id)}
+              className={subtabBtn(activeId === sec.id)}
+            >
+              {sec.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT ────────────────────────────────────────────────
           🔴 MOVED TO THE TOP, 10 August 2026 (operator review). It sat as the LAST card, after "Your
@@ -10112,9 +10476,49 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </Card>
       )}
 
-      {/* Logo */}
-      <Card className="p-4">
-        <p className="text-base font-bold text-slate-800 mb-3">Logo</p>
+      {/* ⛔ THE "Settings" PAGE TITLE IS GONE (3 October 2026). The tab bar above already says
+          Settings, and with eight section headings below it the word appeared three times before the
+          operator read a single setting. Nothing else about this heading's row existed. */}
+
+      {/* ══ SECTION: Truck details ══ */}
+      <section
+        id="truck-details"
+        ref={el => { if (el) sectionEls.current.set('truck-details', el); else sectionEls.current.delete('truck-details') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        {/* 🔴 EVERY SECTION CARRIES ITS OWN `<h2>` (corrected 3 October 2026). The first pass dropped
+            this one because the card below was titled "Truck details" too, reading the brief's
+            "do not show the same words twice" as "drop the heading". That left the section with no
+            header at all, which is the opposite of what a jump target needs. The HEADING stays and the
+            duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
+        <h2 className="text-lg font-black text-slate-900">Truck details</h2>
+      {/* ── 🔴 LOGO + TRUCK DETAILS, ONE BOX ───────────────────────────────────────────
+          🔴 COMBINED 3 October 2026 (operator request). The logo had a card of its own directly above
+          this one, so the first screen of Settings was two boxes that are both "what my truck is".
+          ⚠️ A MOVE, NOT A REWRITE. Every control below is the one that was in the Logo card — same
+          `uploadLogo`/`removeLogo`, same `ImageDropSlot`, same disabled rules, same copy. The only
+          changes: one `<Card>` instead of two, and a divider under the logo row so the two halves of
+          the box still read as two things.
+          ⚠️ "Logo" KEEPS A LABEL, BUT A FIELD LABEL — see the note on it below. The box's only header
+          is the section's `<h2>`; inside it the upload row still needs naming, or it is an unlabelled
+          avatar and a button. */}
+      <Card className="p-4 space-y-3">
+        {/* ⚠️ A FIELD LABEL, NOT A CARD TITLE (corrected 3 October 2026). Carried over from the Logo
+            card it kept `text-base font-bold text-slate-800` — the CARD-TITLE treatment — so as the
+            first line of the combined box it read as the heading for the whole thing, truck name and
+            description included. These classes are the ones `Input` gives "Truck name" and
+            "Description" in this same card (components/manage/primitives.tsx), so the logo row is now
+            labelled like the fields it sits with and the box's only header is the section's `<h2>`. */}
+        {/* ⚠️ LABEL AND CONTROL IN ONE WRAPPER, the shape `Input` uses: one div holding the label and
+            the thing it labels. Two siblings would take a `space-y-3` gap between the word and the row
+            it names. */}
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1">Logo</label>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
             {form.logo_storage_path
@@ -10146,11 +10550,11 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             )}
           </div>
         </div>
-      </Card>
-
-      {/* Truck details */}
-      <Card className="p-4 space-y-3">
-        <p className="text-base font-bold text-slate-800">Truck details</p>
+        </div>
+        <div className="border-t border-slate-100" />
+        {/* ⛔ THE CARD TITLE "Truck details" IS GONE — the section's own `<h2>` above now carries exactly
+            these words, and printing them twice is what the first pass was trying to avoid by
+            dropping the heading instead. Nothing else in this card changed. */}
         <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} onBlur={() => saveFormField()} />
         <div>
           <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
@@ -10245,7 +10649,19 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           </div>
         </div>
       </Card>
-
+      </section>
+      {/* ══ SECTION: Contact ══ */}
+      <section
+        id="contact"
+        ref={el => { if (el) sectionEls.current.set('contact', el); else sectionEls.current.delete('contact') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        <h2 className="text-lg font-black text-slate-900">Contact</h2>
       {/* Contact (merged: business contact + customer contact) */}
       <Card className="p-4 space-y-3">
         <div>
@@ -10297,11 +10713,337 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           )}
         </div>
 
+      </Card>
+      </section>
+      {/* ══ SECTION: Order settings ══ */}
+      <section
+        id="order-settings"
+        ref={el => { if (el) sectionEls.current.set('order-settings', el); else sectionEls.current.delete('order-settings') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        {/* 🔴 EVERY SECTION CARRIES ITS OWN `<h2>` (corrected 3 October 2026). The first pass dropped
+            this one because the card below was titled "Order settings" too, reading the brief's
+            "do not show the same words twice" as "drop the heading". That left the section with no
+            header at all, which is the opposite of what a jump target needs. The HEADING stays and the
+            duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
+        <h2 className="text-lg font-black text-slate-900">Order settings</h2>
+      {/* Orders */}
+      <Card className="p-4 space-y-3">
+        {/* ⛔ THE CARD TITLE "Order settings" IS GONE — the section's own `<h2>` above now carries exactly
+            these words, and printing them twice is what the first pass was trying to avoid by
+            dropping the heading instead. Nothing else in this card changed. */}
+        {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (notes-review only applies
+            when auto-accept is on — the block below is already conditional on it). Neutral sub-panel, same
+            treatment as Sounds. Toggles use the shared <Toggle> (canonical w-11/h-6/teal) — no bespoke inline. */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+          <div className="pb-3">
+            <p className={SUBCARD_HEADING}>Accepting orders</p>
+            <p className="text-xs text-slate-500 mt-0.5">What happens when a new order arrives.</p>
+          </div>
+          <div className="flex items-center justify-between gap-3 pb-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.autoAccept.label}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.autoAccept.help}</p>
+            </div>
+            <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
+          </div>
+          {/* ⚠️ THE "Review orders with notes" TOGGLE WAS REMOVED FROM THIS BLOCK, and the block stays
+              because the amber capacity notice below is still in it. Holding a NOTED order for a human is
+              now unconditional — see lib/orders/auto-accept. All 16 trucks stored `true`, so no behaviour
+              changed, and the auto-accept help above now says it instead of a switch offering to turn it off. */}
+          {/* pl-4 indents the whole sub-block as a CHILD of auto-accept (only enabled when it's on). */}
+          {form.auto_accept && (
+            <div className="py-3 pl-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
+                ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SOUNDS PANEL REMOVED (V9.5). Sound config is PER-DEVICE (localStorage, lib/sound-prefs.ts) and
+            the dashboard's own Sounds panel is the live control. This panel only ever set the SEED for
+            devices that had never loaded, which made it misleading here.
+            🔴 trucks.sound_config, the /api/dashboard projection and the update_settings allowlist entry
+            are all DELIBERATELY RETAINED — the column is still the seed source. Removing the UI does not
+            remove the seed. The full retirement precondition lives in lib/sound-prefs.ts's header. */}
+
+        {/* ── NOTIFICATIONS — same sub-panel treatment as its three siblings in this card. It was the one
+            LOOSE row left in Order settings, which made it read as an afterthought hanging off the
+            auto-accept group rather than as its own setting. Presentation only: same key, same
+            saveSetting call, same `!== false` default.
+            Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
+            order (formatNewOrderEmail → truck.contact_email) — NOT the customer's confirmation/ready emails. */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className={SUBCARD_HEADING}>Notifications</p>
+              <p className="text-xs text-slate-500 mt-0.5">How you hear about new orders.</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
+                <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
+              </div>
+              <Toggle
+                on={(form as any).truck_order_email_enabled !== false}
+                onToggle={() => { const next = (form as any).truck_order_email_enabled !== false ? false : true; setForm(p => ({...p, truck_order_email_enabled: next} as any)); saveSetting('truck_order_email_enabled', next) }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ── TAKING PAYMENT (V9.5) — one neutral sub-panel, same treatment as Sounds and the
+            auto-accept group, so the two payment settings read as a grouped section rather than loose
+            rows at the bottom of the card.
+            ⚠️ SIBLINGS INSIDE A GROUP, NOT NESTED. They answer different questions — "WHEN do we take
+            money" (show_paid_step, which the dashboard can override per event) and "HOW does it arrive"
+            (takes_cash, truck-level, no override). The cash split was briefly rendered as a CHILD of the
+            paid step; that implied a dependency which does not exist. Do not reintroduce the nesting.
+            Both resolved only by lib/payments/paid-step.ts.
+            ⚠️ Both keys must stay on update_truck's `allowed` list (app/api/manage/route.ts:854) — that
+            list SILENTLY DROPS anything not on it, so a missing key means the toggle appears to save,
+            returns {ok:true}, and writes nothing. This regrouping changes no key and no save path. */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className={SUBCARD_HEADING}>Taking payment</p>
+              <p className="text-xs text-slate-500 mt-0.5">How your team records money for each order.</p>
+            </div>
+            {/* ── SETTING 1 — trucks.show_paid_step, RELABELLED (10 August 2026) ─────────────────────
+                Same column, same save path, same per-event override. Only the words changed, because
+                the old ones ("Separate paid step — splits Paid & collected into Mark paid then
+                Collected") described the COMPLETION behaviour, which is now its own setting below.
+                What this column actually controls is the Add Order panel: on, it offers a Confirm
+                button so an order can be placed unpaid; off, the panel only takes payment.
+                ⚠️ THE NOTE IS DELIBERATELY NOT ELABORATED. "It doesn't affect online orders" is true
+                whatever state online orders arrive in — and Stripe is being integrated, after which they
+                will arrive PAID. A sentence describing what state they arrive in today would go stale at
+                exactly the moment nobody remembers to come back and change it. Leave it as it is. */}
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
+                <p className="text-xs text-slate-500 mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.</p>
+                <p className="text-xs text-slate-400 mt-1">This only affects orders you add. It doesn&apos;t affect online orders.</p>
+              </div>
+              <Toggle
+                on={(form as any).show_paid_step === true}
+                onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
+              />
+            </div>
+            {/* ── SETTING 2 — trucks.completion_presses (NEW, 10 August 2026) ────────────────────────
+                🔴 A SIBLING, NOT A CHILD, AND IT MUST NEVER BE DISABLED BY THE SETTING ABOVE.
+                It looks like a dependency and is not. "Take orders without payment" decides whether the
+                Add Order panel can place an order unpaid; this decides how an unpaid order is COMPLETED.
+                Unpaid orders arrive from the CUSTOMER PATH regardless — every truck has them — so
+                greying this out when the setting above is off would hide the control for a case that
+                still happens every day. The cash row below IS a genuine dependency and is treated as
+                one; this is not, and the two must not be made to look alike.
+                ⚠️ It reads slightly oddly in this group, and that is worth knowing rather than papering
+                over: the group now holds two independent top-level settings plus one nested dependent,
+                so the indentation below no longer means "depends on the row directly above" but
+                "depends on this group". Reported rather than resolved.
+                RADIO, not a toggle: two named alternatives that each need their own explanation, which
+                is the deals "Apply to events" pattern in this same file — the page's existing shape for
+                exactly this. A toggle would need a single label that reads true in one direction only.
+                ⚠️ `completion_presses` must stay on update_truck's `allowed` list
+                (app/api/manage/route.ts) — that list SILENTLY DROPS unlisted keys, so a missing entry
+                means this appears to save, returns {ok:true}, and writes nothing. */}
+            <div className="py-3">
+              <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
+              <p className="text-xs text-slate-500 mt-0.5">What happens when an unpaid order is ready to hand over.</p>
+              <div className="flex flex-col gap-2 mt-2">
+                {([
+                  // ── 🔴 THE BUTTON NAMES HERE ARE QUOTED FROM THE CODE, NOT DESCRIBED ────────────
+                  // “Mark paid & collected”, “Mark paid” and “Collected” are the EXACT `label` strings
+                  // OrderCard renders (components/dashboard/OrderCard.tsx — the one-press branch, the
+                  // two-press unpaid branch and the effectivePaid branch). Copy that names a button an
+                  // operator cannot find sends them looking for it, so **verify these against the code
+                  // before editing either side**, and change the copy to match the button — never the
+                  // button to match the copy.
+                  // ⚠️ TWO RENDERED VARIANTS THIS COPY DELIBERATELY DOES NOT NAME, because they are
+                  // conditional and naming them here would make the common case unreadable: a PART-PAID
+                  // order reads “Mark £X.XX paid” instead of “Mark paid”, and with "Do you take cash?"
+                  // on, the two-press money button splits into “💷 Cash” / “💳 Card”. The cash row below
+                  // is where that second one is explained.
+                  // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
+                  // and cash rows both do it). Not a new convention.
+                  ['one', 'One press (“Mark paid & collected”)',
+                   'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
+                  ['two', 'Two presses (“Mark paid” & “Collected”)',
+                   'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
+                ] as const).map(([v, lbl, help]) => (
+                  /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's
+                     EXISTING two-option-with-descriptions control (button + drawn radio + font-medium
+                     label over a text-xs help line). It replaced a native <input type="radio">, which
+                     was mine and was wrong: it rendered in the browser's own accent rather than this
+                     page's, so it read as a foreign control in a card of matched ones.
+                     ⚠️ ORANGE HERE IS NOT AN INTRODUCTION, IT IS THIS PAGE'S SELECTED STATE. On Manage,
+                     orange is the selection/focus colour throughout — focus:ring-orange-400 on every
+                     input, accent-orange-600 on checkboxes, and border-orange-500 / bg-orange-500 on
+                     exactly this radio. The reserved-meaning rule for orange ("a MONEY action") belongs
+                     to the ORDER CARD's vocabulary, a different surface with a different palette. */
+                  <button type="button" key={v}
+                    onClick={() => { setForm(p => ({...p, completion_presses: v})); saveSetting('completion_presses', v) }}
+                    className="w-full text-left flex items-start gap-2 cursor-pointer">
+                    {/* Absent ⇒ resolve from show_paid_step, the SAME fallback lib/payments/paid-step.ts
+                        uses, so this shows what the cards are actually doing before the column has been
+                        backfilled. Never `?? 'one'` — that would render two-press trucks as one-press
+                        for the length of the deploy window. */}
+                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${completionPresses === v ? 'border-orange-500' : 'border-slate-300'}`}>{completionPresses === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+                    <span className="text-sm">
+                      <span className="font-medium text-slate-700">{lbl}</span>
+                      <span className="block text-xs text-slate-400">{help}</span>
+                      {/* ⚠️ THE SEPARATE BUTTON-NAMES LINE WAS REMOVED, NOT LOST. It rendered
+                          “Mark paid & collected” / “Mark paid” then “Collected” beneath the
+                          description — and the description now names those buttons in its own
+                          sentence, so the line repeated it verbatim on the row directly below.
+                          One fact, one place. The names still have to match the code; see the note
+                          on the options array above. */}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* ── 🔴 DE-NESTED AGAIN ON 10 AUGUST 2026, AND NOT BY REVERSING THE RULE BELOW ──────────
+                READ THIS BEFORE RE-INDENTING IT. The V9.6 note that follows is KEPT because its rule is
+                still right; what changed is that the rule now points the other way.
+                THE RULE: "structure should show the DEPENDENCY, not the semantics." Correct, and it is
+                what put `pl-4` here when the cash split had exactly ONE parent (the paid step).
+                WHAT CHANGED: the cash split now has TWO parents. It renders in two places, and after the
+                settings were split those places answer to different settings — the Add Order panel's
+                "Take payment" button splits on show_paid_step, and the ORDER CARD's "Mark paid" button
+                splits on completion_presses === 'two'. Indentation is a SINGLE-PARENT notation: it can
+                only point at the row directly above it, which is now "Completing an unpaid order" —
+                only one of the two ways to unlock this. So the indent had stopped showing the
+                dependency and started asserting a WRONG one. Applying the rule removes the indent.
+                WHAT CARRIES THE DEPENDENCY INSTEAD: the disabled state plus the inline note, which now
+                NAMES BOTH PARENTS. That is the other half of the V9.6 instruction — "structure shows
+                the relationship, the text explains it. Both, not either" — with the half that can no
+                longer be true dropped rather than left to mislead.
+                ⚠️ SO THE GROUP IS NOW FLAT: two independent settings and one dependent, all at the same
+                level, with the dependent saying in words what it depends on. If the cash split ever goes
+                back to a single parent, re-indent it and restore the note below.
+                ── the V9.6 reasoning, retained ──────────────────────────────────────────────────────
+                ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE, AND THAT WAS REVERSED ON A LAYOUT ARGUMENT.
+                The de-nesting rationale — "they answer different questions: WHEN do we take money vs HOW
+                does it arrive" — is still true and is still in the git history, which is exactly why this
+                note exists. It was the WRONG TEST. Two settings can answer different questions and still
+                have one DEPEND on the other, and structure should show the DEPENDENCY, not the semantics.
+                THE DEPENDENCY IS DRIVEN BY LAYOUT AS MUCH AS BY MEANING. With the paid step OFF, one tap
+                means "paid AND collected" — which is why the button reads `Paid & collected`. Splitting
+                that into Cash/Card would make each button ALSO collect, but "Cash" does not say so, and
+                the honest label `Cash & collected` needs ~110px against a 72px label box at the 240px KDS
+                column. **There is no honest way to render the split when the button also collects.** So a
+                truck wanting the split turns the paid step on — that step is what creates the moment where
+                "how did they pay" is a separate question from "have they got their food".
+                INDENT + TYPE SCALE copied from the notes-review sub-option above (pl-4, same
+                text-sm/text-xs pair), NOT invented — one nesting treatment per card.
+                ⚠️ Unlike that sub-option, this one is NOT conditionally rendered. It stays visible and
+                goes DISABLED with the reason inline: structure shows the relationship, the text explains
+                it. Both, not either. An operator who cannot find this setting is why it exists on two
+                surfaces at all. */}
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
+                {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
+                    The cash split renders in two places, and after the settings were split those two
+                    places answer to DIFFERENT settings:
+                      • the Add Order panel's "Take payment" button splits when show_paid_step is on;
+                      • the ORDER CARD's "Mark paid" button splits when completion_presses is 'two'.
+                    Leaving this disabled on `show_paid_step !== true` alone would have been a real
+                    defect introduced by this change: a truck with entry payment-only but a TWO-press
+                    completion has a live "Mark paid" button that this control would refuse to split.
+                    So the condition is the OR of the two, and the split is inert only when neither
+                    surface can reach it — which is exactly the state it was inert in before.
+                    ⚠️ The card's ONE-press button is still never split, and the reasoning above stands
+                    unchanged: "Cash" that also collects cannot be labelled honestly at a 240px column.
+                    ⚠️ DOES NOT auto-enable either parent. toggleOfflineProtection silently enabling
+                    keep-screen-on is already recorded in the manual as a defect; one is enough.
+                    ⚠️ DOES NOT write takes_cash=false when it becomes inert. The stored value is left
+                    exactly as the operator set it and simply renders inert — never mutate what the
+                    operator chose in order to tidy state. Re-enabling either parent restores it. */}
+                {/* 🔴 THE GATE IS GONE — 10 August 2026. The cash split is now ALWAYS reachable, and
+                    keeping a condition here would disable a toggle whose button is live on screen.
+                    The Add Order confirm bar was rebuilt so that it ALWAYS offers a payment button:
+                    with "Take orders without payment" OFF that is the single button, with it ON it is
+                    the primary one. So the split has a live parent in every configuration, and the
+                    previous OR condition ("paid step on, or completion set to two presses") is stale —
+                    it would have disabled this for the nine trucks on OFF + one press, every one of
+                    which now has a payment button in Add Order.
+                    ⚠️ THE CARD'S ONE-PRESS BUTTON IS STILL NEVER SPLIT — `Cash & collected` cannot be
+                    labelled honestly at a 240px KDS column. The split reaches the Add Order bar in all
+                    states, and the card's `Mark paid` only under two presses. That asymmetry is
+                    deliberate and unchanged. */}
+              </div>
+              <Toggle
+                on={(form as any).takes_cash === true}
+                onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ── OPENING AND CLOSING — same sub-panel treatment. These two were loose rows describing one
+            thing (when an event starts and stops taking online orders), so they group. Presentation
+            only: same columns, same saveSetting calls, same defaults. */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className={SUBCARD_HEADING}>Opening and closing</p>
+              <p className="text-xs text-slate-500 mt-0.5">When your events start and stop taking online orders.</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
+                <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
+              </div>
+              <Toggle
+                on={form.default_auto_open}
+                onToggle={() => { const next = !form.default_auto_open; setForm(p => ({...p, default_auto_open: next})); saveSetting('default_auto_open', next) }}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
+                <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
+              </div>
+              <Toggle
+                on={form.default_auto_close}
+                onToggle={() => { const next = !form.default_auto_close; setForm(p => ({...p, default_auto_close: next})); saveSetting('default_auto_close', next) }}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* 🔴 MOVED HERE FROM Contact Details, UNCHANGED (3 October 2026), THEN MOVED AGAIN TO SIT
+          BELOW THE MAIN ORDER SETTINGS BOX rather than above it (asked for the same day).
+          Cancelling an order is an ORDER setting — it sat under contact details only because that is
+          where the toggle happened to be built. It stays in THIS section, because the brief puts it in
+          Order settings; "the section below" moved it past the box above it, not out of the section.
+          ⚠️ WORDING AND BEHAVIOUR UNTOUCHED THROUGHOUT — only the position and the heading changed. */}
+      <Card className="p-4">
         {/* Cancellation policy */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+        {/* ── 🔴 ITS OWN HEADING, in the same treatment every other card title in Settings uses, and
+            from the SAME `SETTING_COPY` constant — so the words are the setting's own and nothing new
+            was written. The duplicate label line inside the row is gone with it, so "Allow customers
+            to cancel orders" appears exactly once. */}
+        <p className="text-base font-bold text-slate-800">{SETTING_COPY.allowCancellation.label}</p>
+        {/* ⛔ THE TOP DIVIDER IS GONE (the `border-t` row rule used elsewhere in this section). It was
+            separating this group from the contact fields ABOVE it in its old home. Carried into a card
+            of its own there was nothing above it to divide from, so it drew a stray rule across the top
+            of the box, above the first words — which is what the operator reported.
+            ⚠️ `mt-1` replaces it: the heading needs a little air, not a line. */}
+        <div className="flex items-center justify-between mt-1">
           <div>
-            <p className="text-sm text-slate-700">{SETTING_COPY.allowCancellation.label}</p>
-            <p className="text-sm text-slate-700 mt-0.5">
+            <p className="text-sm text-slate-700">
               {SETTING_COPY.allowCancellation.cancelPrefix}{' '}
               <select
                 value={cancellationCutoff}
@@ -10327,6 +11069,1042 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </div>
       </Card>
 
+      {/* ── PRE-ORDERS (V7.8 global-config) — plan-gated; hidden off-plan. SINGLE-SOURCE: the deadline
+          RULE lives ONCE on the truck (gType/gVal/gAction → update_truck), applied to every included
+          item; per-item stores ONLY inclusion (preorder_enabled → trimmed set_item_preorder_bulk).
+          PAGE = master toggle + the one global-config block (stable deadline control + radio action) +
+          a read-only list of included items + "Configure items". POPUP = category → sub-category → item
+          inclusion picker (select-all per level). No per-item timing anywhere. Reuses loaded items +
+          category sort_order; daily_cutoff = minutes-of-day (no UI tz math). */}
+      {preorderCan && (() => {
+        const groups = [
+          ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
+          { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+        ].filter(g => g.items.length > 0)
+        const includedCount = items.filter(i => i.preorder_enabled === true).length
+        const cutoffStr = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+        const ruleSummary = `${describePreorderDeadline({ enabled: true, deadlineType: gType, deadlineValue: gVal, pastAction: gAction })} · ${gAction === 'force_pending' ? 'needs approval' : 'sold out'}`
+        return (
+          <Card className="p-4">
+            {/* Card header (the master toggle moved down to the "Pre-order rule" line). */}
+            <div>
+              <p className="text-base font-bold text-slate-800">Pre-orders</p>
+              <p className="text-xs text-slate-400 mt-0.5">Let customers order ahead of an event. Set when pre-orders open and the deadline rules below — these apply only to the items you select.</p>
+            </div>
+
+            {/* GLOBAL CONFIG — the ONE rule (truck row via update_truck). Stable deadline control + radios. */}
+            <div className="mt-4">
+              {/* OPEN-WINDOW (V8.3): when customers can START pre-ordering — Opens FIRST, 9 fixed options. */}
+              <p className="text-sm font-semibold text-slate-800 mb-2">When pre-orders open</p>
+              <select value={gOpen} onChange={e => saveOpenRule(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 mb-3">
+                <option value="on_confirm">As soon as event is confirmed</option>
+                <option value="7d">7 days before</option>
+                <option value="6d">6 days before</option>
+                <option value="5d">5 days before</option>
+                <option value="4d">4 days before</option>
+                <option value="3d">3 days before</option>
+                <option value="2d">2 days before</option>
+                <option value="1d">1 day before</option>
+                <option value="day_of">On day of event</option>
+              </select>
+              {/* ── 🔴 THE DEADLINE RULES SIT IN THEIR OWN BOX (28 August 2026). ────────────────────────
+                  "When pre-orders open" above is a DIFFERENT question — when customers may START — and
+                  it stays outside. Everything to do with the DEADLINE is inside: the heading, its master
+                  toggle, the explanation, the deadline control and what happens past it.
+                  ⚠️ SHAPE COPIED, NOT INVENTED — `rounded-xl border border-slate-200 bg-slate-50 p-3` is
+                  the inner-box shape this file already uses (see :6064 and :8518).
+                  ⚠️ The `mt-1` moved from the heading row onto the box, so the gap below the Opens select
+                  is unchanged rather than doubled. */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 mt-1">
+              {/* "Pre-order deadline" heading (prominent — matches the other section headings) + the master
+                  toggle on the SAME line; explanatory + scope text below. */}
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
+                <Toggle on={preordersOn} onToggle={() => saveMaster(!preordersOn)} />
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rule to prevent ordering of items after a specified time.</p>
+              {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
+              <div className={preordersOn ? '' : 'opacity-50'}>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
+              <div className="flex items-center gap-2 mb-3">
+                <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
+                  className="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option value="hours_before">Hours before event</option>
+                  <option value="daily_cutoff">Daily cutoff time</option>
+                </select>
+                {/* fixed slot — both controls live here; only one shows → no reflow on type switch */}
+                <div className="w-32 flex-shrink-0">
+                  <select value={gVal} onChange={e => saveGlobalCfg({ value: parseInt(e.target.value) })}
+                    className={gType === 'hours_before' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'}>
+                    {Array.from({ length: 48 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{h} hour{h !== 1 ? 's' : ''}</option>)}
+                  </select>
+                  <input type="time" value={cutoffStr(gVal)} onChange={e => { const [h, m] = e.target.value.split(':').map(Number); saveGlobalCfg({ value: (h || 0) * 60 + (m || 0) }) }}
+                    className={gType === 'daily_cutoff' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'} />
+                </div>
+              </div>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Past the deadline</label>
+              <div className="space-y-1.5">
+                {([['sold_out', 'Mark sold out', "Customers can't order it after the deadline."],
+                   ['force_pending', 'Allow, require approval', "Customers can still order, but the order needs your approval (won't auto-accept)."]] as const).map(([v, lbl, help]) => (
+                  <button type="button" key={v} onClick={() => saveGlobalCfg({ action: v })} className="w-full text-left flex items-start gap-2 cursor-pointer">
+                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${gAction === v ? 'border-orange-500' : 'border-slate-300'}`}>{gAction === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+                    <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
+                  </button>
+                ))}
+              </div>
+              </div>
+
+              {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
+              <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
+                  <button type="button" onClick={() => setPoModalOpen(true)}
+                    className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
+                </div>
+                {includedCount === 0
+                  ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
+                  : (
+                    <>
+                      <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
+                      <div className="space-y-2">
+                        {groups.map(g => {
+                          const inc = g.items.filter(i => i.preorder_enabled === true)
+                          if (inc.length === 0) return null
+                          return (
+                            <div key={g.id}>
+                              <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
+                              <p className="text-sm text-slate-600 truncate">{inc.map(i => i.name).join(', ')}</p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
+              </div>
+              </div>
+            </div>
+
+            {/* POPUP — pure INCLUSION picker: category → sub-category → item, select-all per level.
+                Writes ONLY preorder_enabled via setItemIncluded / set_item_preorder_bulk (enabled-only). */}
+            {poModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPoModalOpen(false)}>
+                <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <h3 className="font-black text-slate-900 mb-1">Choose pre-order items</h3>
+                  <p className="text-xs text-slate-400 mb-4">Tick which items are pre-order. They all use the global rule ({ruleSummary}).</p>
+                  <div className="space-y-4">
+                    {groups.map(g => {
+                      const gIds = g.items.map(i => i.id)
+                      const gAllOn = gIds.length > 0 && g.items.every(i => i.preorder_enabled === true)
+                      const subGroups = groupBySubcategory(g.items, subcategories.filter(s => s.category_id === g.id))
+                      return (
+                        <div key={g.id}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
+                            <button type="button" onClick={() => setGroupIncluded(gIds, !gAllOn)}
+                              className="text-[11px] font-semibold text-orange-600">{gAllOn ? 'Deselect all' : 'Select all'}</button>
+                          </div>
+                          {subGroups.filter(sg => sg.items.length > 0).map(sg => {
+                            const sgIds = sg.items.map(i => i.id)
+                            const sgAllOn = sg.items.every(i => i.preorder_enabled === true)
+                            return (
+                              <div key={sg.id ?? '__none__'} className="mt-1.5 ml-1">
+                                {sg.name && (
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{sg.name}</span>
+                                    <button type="button" onClick={() => setGroupIncluded(sgIds, !sgAllOn)}
+                                      className="text-[10px] font-semibold text-slate-400 hover:text-orange-600">{sgAllOn ? 'Deselect' : 'Select all'}</button>
+                                  </div>
+                                )}
+                                <div className="space-y-1 mt-1">
+                                  {sg.items.map(it => {
+                                    const on = it.preorder_enabled === true
+                                    return (
+                                      <label key={it.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                                        <input type="checkbox" checked={on} onChange={() => setItemIncluded(it.id, !on)} className="w-4 h-4 accent-orange-600" />
+                                        <span className="truncate text-slate-700">{it.name}</span>
+                                      </label>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="flex justify-end mt-5">
+                    <button type="button" onClick={() => setPoModalOpen(false)} className="text-sm font-semibold px-3 py-2 rounded-lg bg-slate-800 text-white">Done</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+        )
+      })()}
+      </section>
+      {/* ══ SECTION: Truck settings ══ */}
+      <section
+        id="truck-settings"
+        ref={el => { if (el) sectionEls.current.set('truck-settings', el); else sectionEls.current.delete('truck-settings') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        <h2 className="text-lg font-black text-slate-900">Truck settings</h2>
+      {/* Your trucks */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-base font-bold text-slate-800">Your trucks</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Manage your trucks. Each has its own order screen and settings.
+            </p>
+          </div>
+          <button
+            onClick={handleAddVanClick}
+            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+          >
+            + Add truck
+          </button>
+        </div>
+
+        {vans.map(van => (
+          <div key={van.id} className="mt-4 border border-slate-200 rounded-2xl p-4">
+            <div className="flex items-center justify-between py-3 border-b border-slate-200 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900">{van.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
+                  className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+                >
+                  Rename
+                </button>
+                {vans.length > 1 && (
+                  <button
+                    onClick={() => setDeletingVan(van)}
+                    className="text-xs px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Offline Order Protection card */}
+            <div className={`mt-2 rounded-xl border p-3 transition-colors ${
+              van.auto_pause_on_offline
+                ? 'border-teal-200 bg-teal-50'
+                : 'border-slate-100 bg-slate-50'
+            }`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <p className={`text-sm font-semibold ${
+                    van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
+                  }`}>
+                    Offline order protection
+                  </p>
+                  {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
+                      Description, then the ⚠️ instruction, then the two modes below — the dashboard's
+                      shape, from the same constants, so an operator meets one explanation of this
+                      feature rather than two that differ by surface.
+                      ⚠️ THE DESCRIPTION IS NO LONGER CONDITIONAL. It previously swapped to "Off — online
+                      orders continue even if this device goes offline" when the switch was off, which
+                      the dashboard never did; the line now says what the setting DECIDES and is true in
+                      both states.
+                      ⚠️ WHAT DOES NOT CHANGE IS THE SCOPE. This card is the VAN default and applies to
+                      every event; the dashboard's is the live event. Same words, same order, and each
+                      still writes what it always wrote. */}
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
+                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
+                </div>
+                <button
+                  onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
+                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 mt-0.5 ${
+                    van.auto_pause_on_offline ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                    van.auto_pause_on_offline ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+
+              {/* ── 🔴 THE TWO MODES — ONLY WHEN THE SWITCH IS ON, AND THE SAME SHAPE AS THE DASHBOARD'S ──
+                  Switch OFF ⇒ this does not render and the card is exactly what it was. Both surfaces map
+                  the SAME `OFFLINE_PROTECTION_MODES` array, so a wording change is one edit in
+                  lib/copy/offlineProtection.ts and neither screen can drift from the other. */}
+              {van.auto_pause_on_offline && (
+                <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
+                  {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as
+                      the options' lead-in rather than as a summary of the whole box. */}
+                  <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                  {OFFLINE_PROTECTION_MODES.map(m => {
+                    const selected = (van.offline_protection_mode ?? 'pause') === m.value
+                    return (
+                      <div key={m.value} className="flex flex-col gap-2">
+                      <button type="button" role="radio" aria-checked={selected}
+                        onClick={() => { if (!selected) {
+                          void updateVanSetting(van.id, 'offline_protection_mode', m.value)
+                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE — the dashboard does the same
+                          // on its own mode row. Choosing this mode IS the operator interaction, so a van
+                          // with no stored delay gets one then, not on render. A van nobody touches keeps
+                          // NULL and nothing auto-rejects for it. Skipped when a delay is already stored.
+                          if (m.value === 'no_auto_accept' && van.offline_auto_reject_mins == null) {
+                            void updateVanSetting(van.id, 'offline_auto_reject_mins', OFFLINE_AUTO_REJECT_DEFAULT_MINS)
+                          }
+                        } }}
+                        className="flex items-start gap-2.5 w-full text-left">
+                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-teal-600' : 'border-slate-300'}`}>
+                          {selected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-xs font-semibold text-teal-800">{m.label}</span>
+                          <span className="block text-xs text-slate-500">{m.help}</span>
+                        </span>
+                      </button>
+                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
+                          Indented under the option's own description and with NO divider above it: a
+                          rule made it read as a separate setting, which is what it looked like before.
+                          `pl-6` clears the 16px radio plus its 10px gap so the control lines up with the
+                          label text — the same "indent a dependent control under its parent" idiom the
+                          buzzer count row uses with `pl-4`.
+                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
+                          without one an order can sit indefinitely while the customer is never told it
+                          was not accepted, which is what the feature exists to prevent.
+                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
+                          and stays NULL until the operator picks; the mode itself has already saved.
+                          ⚠️ SWITCHING TO `pause` DOES NOT CLEAR THE VALUE. Only this select writes the
+                          column, so a stored delay survives a mode change and returns with it. */}
+                      {m.value === 'no_auto_accept' && selected && (
+                        <div className="pl-6">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-xs font-semibold text-teal-800">{OFFLINE_AUTO_REJECT_LABEL}</p>
+                            <select
+                              value={van.offline_auto_reject_mins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
+                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
+                              onChange={e => void updateVanSetting(van.id, 'offline_auto_reject_mins', parseInt(e.target.value))}
+                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            >
+                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* ⚠️ THE ON-ENABLE "Got it" EXPLAINER PANEL WAS REMOVED HERE, and this note is why rather
+                  than a gap. It rendered EXACTLY the LEAD + BODY sentence that now sits permanently near
+                  the top of this card, so enabling the switch printed the same paragraph twice, a few
+                  rows apart. The dashboard's card has no such panel — a permanent line is its
+                  acknowledgement — and matching it is what was asked for. The state that drove it
+                  (`showAutoPauseInfo`) and its two setter calls in handleToggleAutoPause went with it. */}
+            </div>
+            {/* ── VAN-SPECIFIC DISPLAY SETTINGS — its own sub-panel, a SIBLING of Offline order
+                protection and Kitchen capacity rather than a rule-separated run of rows. Display
+                settings and Kitchen capacity were previously ONE div under a single heading, so the
+                capacity grid read as part of "Display settings"; they are separate concerns (what the
+                order screen shows vs. how fast the kitchen can cook) and now box separately.
+                Presentation only — same rows, same updateVanSetting calls, same defaults. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-3">
+              <p className={SUBCARD_HEADING}>Display settings</p>
+
+              {/* Stage 1 (order-ready redesign): the "Show cooking step" toggle was REMOVED here — the
+                  cooking step is now ALWAYS on (the KDS cook-view gate + OrderCard cook-mode were
+                  de-coupled from show_cooking_step). The show_cooking_step column, the update_van_settings
+                  handler for it, and the Van.show_cooking_step field are KEPT DORMANT so re-adding this
+                  toggle later is just restoring this JSX + reverting those two reads. */}
+
+              {/* Order-ready step — the TRUCK DEFAULT (order_ready_enabled). Per-event overrides live on
+                  the dashboard's Menu & Stock tab. Stage 4 of the order-ready redesign. */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.orderReady.label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.orderReady.help}</p>
+                </div>
+                <button
+                  onClick={() => updateVanSetting(van.id, 'order_ready_enabled', !van.order_ready_enabled)}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
+                    van.order_ready_enabled ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                    van.order_ready_enabled ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+
+              {/* ── BUZZERS — VAN-LEVEL, because they are physical stock in one vehicle ──────────────
+                  ⚠️ Writes truck_vans.buzzer_count via update_van_settings, NOT a trucks column. A
+                  two-van truck can have buzzers in one and not the other, and kitchen_capacity /
+                  order_ready_enabled already put per-vehicle service settings here.
+                  ⚠️ update_van_settings' destructure is an ALLOWLIST that drops unlisted keys silently
+                  (app/api/manage/route.ts) — `buzzer_count` was added there AND to get_vans' named
+                  select in the same change, or this would appear to save and write nothing.
+                  Render/save shape copied from the "Order-ready step" row directly above and from the
+                  show_paid_step / takes_cash pair in Order settings: label + explanation on the left,
+                  toggle on the right, optimistic setVans then the write. The count select is nested
+                  beneath as a CHILD because it is meaningless without the toggle — the same nesting
+                  treatment as "Do you take cash?" under the paid step. */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.buzzers.label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {SETTING_COPY.buzzers.help}
+                  </p>
+                </div>
+                <button
+                  onClick={() => updateVanSetting(van.id, 'buzzer_count', van.buzzer_count == null ? BUZZER_DEFAULT_COUNT : null)}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
+                    van.buzzer_count != null ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                    van.buzzer_count != null ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+              {/* CONDITIONALLY RENDERED, unlike the cash row's disabled-with-a-reason treatment: there
+                  is no useful thing to say about a count when the van has no buzzers, and a disabled
+                  1-20 select showing "10" would read as a stored value that is not stored. */}
+              {van.buzzer_count != null && (
+                <div className="flex items-center justify-between gap-3 pl-4">
+                  <p className="text-sm text-slate-700">{SETTING_COPY.buzzers.countLabel}</p>
+                  <select
+                    value={van.buzzer_count}
+                    aria-label="Number of buzzers"
+                    onChange={e => updateVanSetting(van.id, 'buzzer_count', parseInt(e.target.value))}
+                    className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  >
+                    {/* 1..BUZZER_MAX_COUNT, plus the stored value if it is somehow outside that range —
+                        the same append idiom the dashboard's capacity-window select uses, so an
+                        out-of-range stored value is shown rather than silently coerced. */}
+                    {Array.from({ length: BUZZER_MAX_COUNT }, (_, i) => i + 1)
+                      .concat(van.buzzer_count > BUZZER_MAX_COUNT ? [van.buzzer_count] : [])
+                      .map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* ── COLLECTION TIMES — PER VAN, AND ABOVE KITCHEN CAPACITY ON PURPOSE ─────────────────
+                Two settings for WHICH times can be chosen: the customer's grid, and optionally a
+                different one for orders the operator adds. 🔴 THEY ARE NOT CAPACITY SETTINGS — the
+                intro line says so, and nothing in §31's engine reads either column. They sit here, one
+                box above Kitchen capacity, because both are properties of THIS van's service and an
+                operator setting up a van reads down the column.
+                🔴 THE TICKBOX HAS NO COLUMN OF ITS OWN. It is derived from operator_collection_interval_mins
+                being non-null: ticking writes the current customer value, unticking writes NULL. A
+                separate boolean would be a second home for one fact and the two would drift.
+                ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
+                carry these keys, or the value writes and never reads back. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+              <p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>
+              <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
+              {!intervalsAvailable ? (
+                /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the
+                   controls would be lying about what is stored. One line, no controls — and every other
+                   box on this van, Kitchen capacity included, renders exactly as it always does. */
+                <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
+              ) : (() => {
+                const customer = normaliseInterval(van.collection_interval_mins)
+                const overrideOn = van.operator_collection_interval_mins != null
+                const operator = overrideOn ? normaliseInterval(van.operator_collection_interval_mins) : customer
+                return (
+                  <div className="flex flex-col gap-3">
+                    <label className="block">
+                      <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
+                      <select
+                        value={customer}
+                        aria-label="Customer Collection Times"
+                        onChange={e => updateVanSetting(van.id, 'collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
+                        className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                        {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                      </select>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {overrideOn ? 'Customers can pick ' : 'You and your customers can pick '}{intervalExample(customer)}
+                      </p>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={overrideOn}
+                        aria-label="Use different times for orders I add"
+                        onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', e.target.checked ? customer : null)}
+                        className="accent-orange-500"
+                      />
+                      <span className="text-sm text-slate-800">Use different times for orders I add</span>
+                    </label>
+                    {overrideOn && (
+                      <label className="block">
+                        <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
+                        <select
+                          value={operator}
+                          aria-label="Your Collection Times"
+                          onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
+                          className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                          {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
+                      </label>
+                    )}
+                    {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
+                        (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when ticked,
+                        else the customers') is not a whole multiple of a cooking category's prep. Same line,
+                        same rule, on the dashboard. `categories` is the tab's existing prop — no new read. */}
+                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{collectionTimesHint(mc)}</p> : null })()}
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
+                CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
+                aligned under it via the SAME column template. Writes unchanged: updateCatField
+                (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
+                updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
+                lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
+                (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+              <p className={`${SUBCARD_HEADING} mb-3`}>Kitchen capacity</p>
+              {categories.length > 0 && (
+                <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
+                  <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                  {categories.map(cat => {
+                    const hasCap = van.kitchen_capacity != null
+                    const locked = cat.prep_secs > 0
+                    const capDisabled = locked || !hasCap
+                    // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
+                    // header + total-capacity row stay inline (unchanged), so template-driven alignment
+                    // is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).
+                    return (
+                      <KitchenCapacityCategoryRow
+                        key={cat.id}
+                        categoryName={cat.name}
+                        batchSize={cat.batch_size}
+                        prepSecs={cat.prep_secs}
+                        onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}
+                        onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}
+                        showCountsColumn
+                        countsToward={cat.counts_toward_capacity}
+                        locked={locked}
+                        capDisabled={capDisabled}
+                        countsTitle={locked
+                          ? 'Cooked — always counts (its prep & batch set the pace)'
+                          : !hasCap ? 'Set a capacity to choose which categories count'
+                          : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
+                        onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                      />
+                    )
+                  })}
+                </div>
+              )}
+              {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
+                  column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
+              <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
+                <select
+                  value={van.kitchen_capacity ?? ''}
+                  aria-label="Total capacity (items)"
+                  onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
+                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option value="">∞</option>
+                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                  ))}
+                </select>
+                <select
+                  value={van.capacity_window_mins ?? 5}
+                  aria-label="Capacity window (minutes)"
+                  disabled={van.kitchen_capacity == null}
+                  onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
+                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                  {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
+                    <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
+                  ))}
+                </select>
+                <span/>
+              </div>
+              {van.kitchen_capacity == null && categories.length > 0 && (
+                <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
+              )}
+              {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
+                <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+              )}
+              <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
+              <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
+            </div>
+
+            {renamingVanId === van.id && (
+              <div className="mt-2 mb-2 flex gap-2">
+                <input
+                  type="text"
+                  value={renameVanName}
+                  onChange={e => setRenameVanName(e.target.value)}
+                  autoFocus
+                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
+                />
+                <button
+                  onClick={() => confirmRenameVan(van.id)}
+                  disabled={!renameVanName.trim()}
+                  className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => { setRenamingVanId(null); setRenameVanName('') }}
+                  className="px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {addingVan && (
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={newVanName}
+              onChange={e => setNewVanName(e.target.value)}
+              placeholder="e.g. Van 2, Festival Van"
+              autoFocus
+              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            />
+            <button
+              onClick={saveNewVan}
+              disabled={!newVanName.trim()}
+              className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
+            >
+              Add
+            </button>
+            <button
+              onClick={() => { setAddingVan(false); setNewVanName('') }}
+              className="px-4 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </Card>
+      </section>
+      {/* ══ SECTION: Schedule ══ */}
+      <section
+        id="schedule"
+        ref={el => { if (el) sectionEls.current.set('schedule', el); else sectionEls.current.delete('schedule') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        <h2 className="text-lg font-black text-slate-900">Schedule</h2>
+      {/* Your schedule */}
+      <Card className="p-4 space-y-4">
+        <p className="text-base font-bold text-slate-800">Your schedule</p>
+        <div className="space-y-2">
+          {([
+            { value: 'manual', label: "I'll add events myself" },
+            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page." },
+          ] as { value: 'auto' | 'manual'; label: string; desc?: string }[]).map(opt => {
+            const pref = form.scraper_preference ?? 'manual'
+            const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  setForm(p => ({ ...p, scraper_preference: opt.value }))
+                  saveSetting('scraper_preference', opt.value)
+                }}
+                className={`w-full text-left border rounded-xl p-4 transition-colors ${selected ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${selected ? 'border-orange-500' : 'border-slate-300'}`}>
+                    {selected && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
+                    {opt.desc && <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>}
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        {/* Clarifier — applies to BOTH options: found events always come for approval, nothing
+            goes live until confirmed (so a "I'll add events myself" truck isn't surprised). */}
+        <p className="text-xs text-slate-500">
+          Either way, if we find your events listed elsewhere, we&apos;ll still send these to you for approval. Nothing goes live until you confirm it.
+        </p>
+        {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+            <div className="flex gap-2">
+              <input
+                type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+                value={form.schedule_url ?? ''}
+                onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
+                onBlur={e => {
+                  // N1: the blur-save normalises too, not just the Verify button. Otherwise an operator
+                  // who typed `www.…` and tabbed away would have the scheme-less string SAVED and later
+                  // handed to the scraper, which is the same failure one step further downstream.
+                  const raw = e.target.value.trim()
+                  if (!raw) { setVerifyError(null); saveSetting('schedule_url', null); return }
+                  const val = normaliseUrl(raw)
+                  if (!val) { setVerifyError(URL_MALFORMED_MSG); return }
+                  setForm(p => ({ ...p, schedule_url: val }))
+                  if (isBlockedDomain(val)) {
+                    setVerifyError(BLOCKED_DOMAIN_MSG)
+                  } else {
+                    setVerifyError(null)
+                    saveSetting('schedule_url', val)
+                  }
+                }}
+                placeholder="https://yourtruck.co.uk/events"
+                disabled={verifying}
+                className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${verifying ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <button
+                type="button"
+                onClick={handleVerifyUrl}
+                disabled={!form.schedule_url?.trim() || verifying}
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {verifying
+                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking...</>
+                  : 'Verify'}
+              </button>
+            </div>
+            {verifying && (
+              <div className="mt-1 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <svg className="animate-spin h-4 w-4 text-amber-600 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-amber-800">Checking your website...</p>
+                  <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this page open and don't close the tab.</p>
+                </div>
+              </div>
+            )}
+            {!verifying && verifyError && <p className="text-xs text-red-500">{verifyError}</p>}
+            <p className="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
+          </div>
+        )}
+      </Card>
+
+      {/* Import exclusions */}
+      {settingsExclusionList.length > 0 && (
+        <Card className="p-4 space-y-3">
+          <div>
+            <p className="text-base font-bold text-slate-800">Import exclusions</p>
+            <p className="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
+          </div>
+          <div className="space-y-1.5">
+            {settingsExclusionList.map(item => (
+              <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                <span className="text-sm text-slate-700">{item.term}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (item.id) {
+                      try { await api('remove_exclusion_term', { id: item.id }) } catch { /* continue */ }
+                    }
+                    setSettingsExclusionList(prev => prev.filter(t => t.id !== item.id))
+                  }}
+                  className="text-slate-400 hover:text-red-600 transition-colors ml-3"
+                  aria-label={`Remove exclusion for ${item.term}`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* ── 🔴 IMMEDIATELY ABOVE THE QR CODE, AND THE ADJACENCY IS THE POINT (V11.49). ───────────────
+          The QR code below encodes a hatchgrab.com address PERMANENTLY and resolves its destination at
+          scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
+          to the operator's own address. Reading them in this order is what makes that obvious; separated,
+          the two read as unrelated features and the operator assumes a new code is needed. */}
+      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
+      </section>
+      {/* ══ SECTION: QR code ══ */}
+      <section
+        id="qr-code"
+        ref={el => { if (el) sectionEls.current.set('qr-code', el); else sectionEls.current.delete('qr-code') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        <h2 className="text-lg font-black text-slate-900">QR code</h2>
+      {/* QR Code */}
+      <Card className="p-4">
+        <p className="text-base font-bold text-slate-800 mb-1">Order QR code</p>
+        {/* 🔴 WHERE THIS CODE SENDS PEOPLE *NOW*, NOT WHAT IT WILL DO ONE DAY. ────────────────────────
+            This line was future tense for every truck — "once your own web address is set up…" — which is
+            a promise to an operator who has not set one up, and simply WRONG for one whose address is
+            already live. An operator reading a promise about a thing they finished last week concludes
+            the page has not noticed, and the next thing they doubt is whether the code works at all.
+            ⚠️ Plain English: no "redirect", no "resolves", no "static", no "dynamic". What it DOES.
+
+            🔴 THE FIVE CONDITIONS BELOW MIRROR app/trucks/[slug]/order/layout.tsx EXACTLY, AND THAT
+            DUPLICATION IS DEBT — RECORDED, NOT HIDDEN. That file decides where a scan actually goes; this
+            one decides what the operator is TOLD. If the two drift, we tell a truck their code points at
+            their own address while the redirect quietly serves ours — the worst kind of disagreement,
+            because nothing errors. ⚠️ THE RIGHT FIX IS ONE SHARED PREDICATE both call, and it was OUT OF
+            SCOPE here (this brief forbids touching anything outside this card). Extract it next.
+            ⚠️ `STOPPED_AFTER_MS` is imported rather than restated for exactly this reason — the one term
+            most likely to drift is the one that is now impossible to. */}
+        {(() => {
+          const lastOk = truck.custom_domain_last_ok_at ? new Date(truck.custom_domain_last_ok_at).getTime() : null
+          const domainLive = !!truck.custom_domain
+            && !!truck.custom_domain_verified_at
+            && !!truck.custom_domain_confirmed_at
+            && can('embed_schedule')
+            && !!lastOk && Date.now() - lastOk <= STOPPED_AFTER_MS
+          return domainLive ? (
+            <p className="text-xs text-slate-500 mb-3">
+              This QR code now sends customers to{' '}
+              <span className="font-mono text-slate-700">{truck.custom_domain}</span>. You never need to
+              print a new one.
+            </p>
+          ) : (
+            <p className="text-xs text-slate-500 mb-3">
+              This QR code sends customers to your HatchGrab ordering page. If you set up your own web
+              address later, the same QR code will send them there instead — you will not need to print
+              a new one.
+            </p>
+          )
+        })()}
+        <p className="text-xs text-slate-500 mb-4">
+          Print or display this code so customers can scan and pre-order.
+          Place it at your hatch, on your van, or share it online.
+        </p>
+        {orderUrl ? (
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
+            <p className="text-sm text-slate-600 flex-1 truncate font-mono">{orderUrl}</p>
+            <button
+              onClick={handleCopyOrderLink}
+              className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
+            >
+              {copiedOrderLink ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400 mb-4">No order URL — slug not set</p>
+        )}
+        {/* QR code style selector */}
+        <div className="mb-4 space-y-2">
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
+          {/* ── 🔴 SIDE BY SIDE, BECAUSE THEY ARE ALTERNATIVES AND NOT TWO SETTINGS. ─────────────────
+              Stacked full-width they read as independent switches an operator might turn on
+              individually; abreast, the choice is visible as a choice.
+              ⚠️ PATTERN FOLLOWED, NOT INVENTED: `grid grid-cols-1 sm:grid-cols-2 gap-3`, the same shape
+              as the add-event form in this file. It stacks below 640px for the reason the auto-reply
+              input row records at its own comment — at 375px two columns leave each option too narrow
+              for its description, and the branded one carries a second line and a logo preview. */}
+          <div ref={qrSelectorRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Standard — available to all tiers. Custom radio dot (w-4/h-4 orange) — matches the schedule
+              selector + the rest of the page (was a native accent-orange radio, a different size). */}
+          <button
+            type="button"
+            onClick={() => { setQrCodeStyle('standard'); saveSetting('qr_code_style', 'standard') }}
+            className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+          >
+            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'standard' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'standard' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
+            </div>
+            {/* ── 🔴 A PREVIEW, NOT A BUTTON. The card is still the control for CHOOSING a style; this
+                image answers the different question "what will mine look like". Clicking it enlarges —
+                a small image that gets bigger needs no label. `stopPropagation` so enlarging does not
+                also silently change the operator's saved style. */}
+            <QrPreview
+              src={qrPreviews.standard}
+              alt="Standard QR code preview"
+              onOpen={() => openQrView('standard')}
+            />
+          </button>
+
+          {/* Branded — Pro/Max only */}
+          {can('branded_qr_code') ? (
+            <button
+              type="button"
+              onClick={() => { setQrCodeStyle('branded'); saveSetting('qr_code_style', 'branded') }}
+              className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+            >
+              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'branded' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'branded' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
+                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+                {/* ── 🔴 A BLOCKER, NOT A STATUS. ────────────────────────────────────────────────────
+                    This was a badge reading "No logo" sitting beside the option that promises a logo in
+                    the middle. It told an operator who had just chosen branded that the thing they chose
+                    is missing, and stopped there — no cause, no next step, nothing to do. A badge is for
+                    a state you can read past; this is one they have to act on.
+                    ⚠️ BEHAVIOUR IS UNCHANGED — selecting branded without a logo does exactly what it did
+                    before. Only what they are told has changed. */}
+                {!truck.logo_storage_path && (
+                  <p className="text-xs text-amber-700 mt-1">Add your logo to your profile and it will show here.</p>
+                )}
+              </div>
+              {/* ⚠️ THE BRANDED PREVIEW IS THEIR REAL CODE WITH THEIR REAL LOGO — and where there is no
+                  logo it shows exactly what they would get today, which is the unbranded code. That is
+                  the honest answer to "what will mine look like", and it is why the line above about
+                  adding a logo stays: the preview shows the state, the line says what to do about it. */}
+              <QrPreview
+                src={qrPreviews.branded}
+                alt="Branded QR code preview"
+                onOpen={() => openQrView('branded')}
+              />
+            </button>
+          ) : (
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
+              <span className="w-4 h-4 rounded-full border-2 border-slate-300 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
+                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+              </div>
+              {/* 🔴 BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO, AND THAT IS THE POINT — a
+                  locked feature you cannot picture is not a feature anybody upgrades for. What they
+                  cannot do is enlarge it or download it: clicking explains the lock instead. */}
+              <QrPreview
+                src={qrPreviews.branded}
+                alt="Branded QR code preview"
+                locked
+                onOpen={() => openQrView('branded')}
+              />
+              <FeatureGate
+                feature="branded_qr_code"
+                plan={truck.plan}
+                overrides={truck.feature_overrides}
+                trialExpiresAt={truck.trial_expires_at}
+                showUpgrade={true}
+              />
+            </div>
+          )}
+          </div>
+        </div>
+
+        {/* ── ONE BUTTON, AND ITS NAME NOW MATCHES WHAT IT DOES. ────────────────────────────────────
+            It read "Generate QR code", which was true when the code did not exist until you pressed it.
+            The operator can now SEE both codes in the cards above, so "generate" describes nothing they
+            are waiting for — it opens the bigger view of the style they have chosen, and the download
+            lives in there.
+            ⚠️ It follows the SELECTED style, and the selected style can be `branded` on a truck that has
+            since dropped below the plan — `openQrView` refuses that case exactly as a click on the
+            locked preview does, through the same call. One gate, two doors.
+            ⚠️ RIGHT-ALIGNED AND SIZED TO ITS TEXT, unchanged from the previous pass. */}
+        {orderUrl && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => openQrView(qrCodeStyle === 'branded' ? 'branded' : 'standard')}
+              disabled={generatingQR}
+              className="bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm disabled:opacity-40"
+            >
+              {generatingQR ? 'Opening…' : 'View QR code'}
+            </button>
+          </div>
+        )}
+
+        {/* ── THE ENLARGED VIEW, AND THE ONLY PLACE A DOWNLOAD EXISTS. ──────────────────────────────
+            🔴 WHEN LOCKED THERE IS NO IMAGE AND NO DOWNLOAD IN THE MARKUP AT ALL — not a hidden one, not
+            a disabled one. `openQrView` never built the full-size code, so there is nothing here to
+            save. The refusal is the absence of the artefact. */}
+        {qrModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => setQrModal(null)}
+          >
+            <div className="bg-white rounded-2xl p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+              {qrModal.locked ? (
+                <>
+                  <p className="text-base font-bold text-slate-800 mb-1">Branded QR code</p>
+                  <p className="text-sm text-slate-600">
+                    Branded codes are part of a higher plan. Your standard QR code works exactly the same
+                    for customers — the difference is your logo in the middle.
+                  </p>
+                  <div className="mt-3">
+                    <FeatureGate
+                      feature="branded_qr_code"
+                      plan={truck.plan}
+                      overrides={truck.feature_overrides}
+                      trialExpiresAt={truck.trial_expires_at}
+                      showUpgrade={true}
+                    />
+                  </div>
+                </>
+              ) : qrModal.dataUrl ? (
+                <div className="flex flex-col items-center gap-4">
+                  <img src={qrModal.displayUrl ?? qrModal.dataUrl} alt="Order QR code" className="w-64 h-auto rounded-xl border border-slate-100" />
+                  {/* ⛔ THE EXPLANATORY LINE THAT STOOD HERE WAS REMOVED ON REQUEST, 28 August 2026.
+                      ⚠️ WHAT IT DISCLOSED IS STILL TRUE: with no logo the picture above carries the dotted
+                      square and the downloaded file does NOT. That is deliberate — a printed board must
+                      never read "Your logo here" — but it is now UNSTATED, so an operator meets the
+                      difference when they open the file rather than before. `showsPlaceholder` is kept on
+                      the modal state precisely so restoring a line here, or blocking the download in this
+                      state, is a one-line change. */}
+                  <a
+                    href={qrModal.dataUrl}
+                    download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
+                    className="w-full flex items-center justify-center px-4 py-2.5 bg-orange-600 text-white text-sm font-medium rounded-xl"
+                  >
+                    Download PNG
+                  </a>
+                  <p className="text-xs text-slate-400 self-start break-all font-mono">{orderUrl}</p>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">That could not be built just now. Try again shortly.</p>
+              )}
+              <button
+                onClick={() => setQrModal(null)}
+                className="mt-3 w-full px-4 py-2.5 border border-slate-200 text-slate-600 text-sm rounded-xl"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </Card>
+      </section>
+      {/* ══ SECTION: Auto-replies ══ */}
+      <section
+        id="auto-replies"
+        ref={el => { if (el) sectionEls.current.set('auto-replies', el); else sectionEls.current.delete('auto-replies') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop }}
+        className="scroll-mt-0 space-y-6"
+      >
+        {/* 🔴 EVERY SECTION CARRIES ITS OWN `<h2>` (corrected 3 October 2026). The first pass dropped
+            this one because the card below was titled "Auto-replies" too, reading the brief's
+            "do not show the same words twice" as "drop the heading". That left the section with no
+            header at all, which is the opposite of what a jump target needs. The HEADING stays and the
+            duplicate CARD TITLE goes, so the words appear exactly once — as the section's header. */}
+        <h2 className="text-lg font-black text-slate-900">Auto-replies</h2>
       {/* Online presence & social */}
       {/* ── 🔴 THE WHOLE AUTO-REPLIES CARD IS HIDDEN IN THE NATIVE APP (25 August 2026). ─────────────
           ALL account types, ALL plans, heading included — so no empty bordered box is left behind.
@@ -10376,6 +12154,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
             `isRowComingSoon(MESSENGER_INSTAGRAM_ROW)`, which reads lib/plan-features.ts, so they stay
             correct on their own while that row remains `coming_soon`. */}
         <div className="flex items-center gap-2">
+          {/* 🔴 THIS CARD TITLE STAYS, AND IT DELIBERATELY REPEATS THE SECTION'S `<h2>` (asked for
+              3 October 2026). I had removed it to avoid printing "Auto-replies" twice. Restored on
+              request: this card is HIDDEN IN THE NATIVE APP and sits among other cards, so without its
+              own title the box has nothing naming it — the duplication is the lesser cost, and it is
+              the operator's call, not a tidiness rule.
+              ⚠️ DO NOT "DE-DUPLICATE" THIS AGAIN. The repeat is intentional. */}
           <p className="text-base font-bold text-slate-800">Auto-replies</p>
         </div>
         {/* ── THE DESCRIPTION. OUTSIDE THE NATIVE HIDE, WITH THE TITLE AND THE PREVIEW. ───────────────
@@ -10902,1281 +12686,19 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
         </>)}
       </Card>
       )}
-
-      {/* Your schedule */}
-      <Card className="p-4 space-y-4">
-        <p className="text-base font-bold text-slate-800">Your schedule</p>
-        <div className="space-y-2">
-          {([
-            { value: 'manual', label: "I'll add events myself" },
-            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page." },
-          ] as { value: 'auto' | 'manual'; label: string; desc?: string }[]).map(opt => {
-            const pref = form.scraper_preference ?? 'manual'
-            const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => {
-                  setForm(p => ({ ...p, scraper_preference: opt.value }))
-                  saveSetting('scraper_preference', opt.value)
-                }}
-                className={`w-full text-left border rounded-xl p-4 transition-colors ${selected ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${selected ? 'border-orange-500' : 'border-slate-300'}`}>
-                    {selected && <div className="w-2 h-2 rounded-full bg-orange-500" />}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
-                    {opt.desc && <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>}
-                  </div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-        {/* Clarifier — applies to BOTH options: found events always come for approval, nothing
-            goes live until confirmed (so a "I'll add events myself" truck isn't surprised). */}
-        <p className="text-xs text-slate-500">
-          Either way, if we find your events listed elsewhere, we&apos;ll still send these to you for approval. Nothing goes live until you confirm it.
-        </p>
-        {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
-            <div className="flex gap-2">
-              <input
-                type="url" autoCapitalize="none" autoCorrect="off" spellCheck={false}
-                value={form.schedule_url ?? ''}
-                onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
-                onBlur={e => {
-                  // N1: the blur-save normalises too, not just the Verify button. Otherwise an operator
-                  // who typed `www.…` and tabbed away would have the scheme-less string SAVED and later
-                  // handed to the scraper, which is the same failure one step further downstream.
-                  const raw = e.target.value.trim()
-                  if (!raw) { setVerifyError(null); saveSetting('schedule_url', null); return }
-                  const val = normaliseUrl(raw)
-                  if (!val) { setVerifyError(URL_MALFORMED_MSG); return }
-                  setForm(p => ({ ...p, schedule_url: val }))
-                  if (isBlockedDomain(val)) {
-                    setVerifyError(BLOCKED_DOMAIN_MSG)
-                  } else {
-                    setVerifyError(null)
-                    saveSetting('schedule_url', val)
-                  }
-                }}
-                placeholder="https://yourtruck.co.uk/events"
-                disabled={verifying}
-                className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${verifying ? 'opacity-50 cursor-not-allowed' : ''}`}
-              />
-              <button
-                type="button"
-                onClick={handleVerifyUrl}
-                disabled={!form.schedule_url?.trim() || verifying}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                {verifying
-                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking...</>
-                  : 'Verify'}
-              </button>
-            </div>
-            {verifying && (
-              <div className="mt-1 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                <svg className="animate-spin h-4 w-4 text-amber-600 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-amber-800">Checking your website...</p>
-                  <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this page open and don't close the tab.</p>
-                </div>
-              </div>
-            )}
-            {!verifying && verifyError && <p className="text-xs text-red-500">{verifyError}</p>}
-            <p className="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
-          </div>
-        )}
-      </Card>
-
-      {/* Import exclusions */}
-      {settingsExclusionList.length > 0 && (
-        <Card className="p-4 space-y-3">
-          <div>
-            <p className="text-base font-bold text-slate-800">Import exclusions</p>
-            <p className="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
-          </div>
-          <div className="space-y-1.5">
-            {settingsExclusionList.map(item => (
-              <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="text-sm text-slate-700">{item.term}</span>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (item.id) {
-                      try { await api('remove_exclusion_term', { id: item.id }) } catch { /* continue */ }
-                    }
-                    setSettingsExclusionList(prev => prev.filter(t => t.id !== item.id))
-                  }}
-                  className="text-slate-400 hover:text-red-600 transition-colors ml-3"
-                  aria-label={`Remove exclusion for ${item.term}`}
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {/* ── 🔴 IMMEDIATELY ABOVE THE QR CODE, AND THE ADJACENCY IS THE POINT (V11.49). ───────────────
-          The QR code below encodes a hatchgrab.com address PERMANENTLY and resolves its destination at
-          scan time, so once this card's setup is finished the SAME PRINTED CODE starts sending customers
-          to the operator's own address. Reading them in this order is what makes that obvious; separated,
-          the two read as unrelated features and the operator assumes a new code is needed. */}
-      {!isDemoIdentifier(token) && truck && <CustomDomainSetup token={token} plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} truckName={truck.name} slug={truck.slug ?? null} website={truck.website ?? null} customDomain={truck.custom_domain ?? null} setupState={truck.custom_domain_setup_state ?? null} setupStartedAt={truck.custom_domain_setup_started_at ?? null} verifiedAt={truck.custom_domain_verified_at ?? null} confirmedAt={truck.custom_domain_confirmed_at ?? null} />}
-
-      {/* QR Code */}
-      <Card className="p-4">
-        <p className="text-base font-bold text-slate-800 mb-1">Order QR code</p>
-        {/* 🔴 WHERE THIS CODE SENDS PEOPLE *NOW*, NOT WHAT IT WILL DO ONE DAY. ────────────────────────
-            This line was future tense for every truck — "once your own web address is set up…" — which is
-            a promise to an operator who has not set one up, and simply WRONG for one whose address is
-            already live. An operator reading a promise about a thing they finished last week concludes
-            the page has not noticed, and the next thing they doubt is whether the code works at all.
-            ⚠️ Plain English: no "redirect", no "resolves", no "static", no "dynamic". What it DOES.
-
-            🔴 THE FIVE CONDITIONS BELOW MIRROR app/trucks/[slug]/order/layout.tsx EXACTLY, AND THAT
-            DUPLICATION IS DEBT — RECORDED, NOT HIDDEN. That file decides where a scan actually goes; this
-            one decides what the operator is TOLD. If the two drift, we tell a truck their code points at
-            their own address while the redirect quietly serves ours — the worst kind of disagreement,
-            because nothing errors. ⚠️ THE RIGHT FIX IS ONE SHARED PREDICATE both call, and it was OUT OF
-            SCOPE here (this brief forbids touching anything outside this card). Extract it next.
-            ⚠️ `STOPPED_AFTER_MS` is imported rather than restated for exactly this reason — the one term
-            most likely to drift is the one that is now impossible to. */}
-        {(() => {
-          const lastOk = truck.custom_domain_last_ok_at ? new Date(truck.custom_domain_last_ok_at).getTime() : null
-          const domainLive = !!truck.custom_domain
-            && !!truck.custom_domain_verified_at
-            && !!truck.custom_domain_confirmed_at
-            && can('embed_schedule')
-            && !!lastOk && Date.now() - lastOk <= STOPPED_AFTER_MS
-          return domainLive ? (
-            <p className="text-xs text-slate-500 mb-3">
-              This QR code now sends customers to{' '}
-              <span className="font-mono text-slate-700">{truck.custom_domain}</span>. You never need to
-              print a new one.
-            </p>
-          ) : (
-            <p className="text-xs text-slate-500 mb-3">
-              This QR code sends customers to your HatchGrab ordering page. If you set up your own web
-              address later, the same QR code will send them there instead — you will not need to print
-              a new one.
-            </p>
-          )
-        })()}
-        <p className="text-xs text-slate-500 mb-4">
-          Print or display this code so customers can scan and pre-order.
-          Place it at your hatch, on your van, or share it online.
-        </p>
-        {orderUrl ? (
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
-            <p className="text-sm text-slate-600 flex-1 truncate font-mono">{orderUrl}</p>
-            <button
-              onClick={handleCopyOrderLink}
-              className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
-            >
-              {copiedOrderLink ? '✓ Copied' : 'Copy'}
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm text-slate-400 mb-4">No order URL — slug not set</p>
-        )}
-        {/* QR code style selector */}
-        <div className="mb-4 space-y-2">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
-          {/* ── 🔴 SIDE BY SIDE, BECAUSE THEY ARE ALTERNATIVES AND NOT TWO SETTINGS. ─────────────────
-              Stacked full-width they read as independent switches an operator might turn on
-              individually; abreast, the choice is visible as a choice.
-              ⚠️ PATTERN FOLLOWED, NOT INVENTED: `grid grid-cols-1 sm:grid-cols-2 gap-3`, the same shape
-              as the add-event form in this file. It stacks below 640px for the reason the auto-reply
-              input row records at its own comment — at 375px two columns leave each option too narrow
-              for its description, and the branded one carries a second line and a logo preview. */}
-          <div ref={qrSelectorRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Standard — available to all tiers. Custom radio dot (w-4/h-4 orange) — matches the schedule
-              selector + the rest of the page (was a native accent-orange radio, a different size). */}
-          <button
-            type="button"
-            onClick={() => { setQrCodeStyle('standard'); saveSetting('qr_code_style', 'standard') }}
-            className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
-          >
-            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'standard' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'standard' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
-            </div>
-            {/* ── 🔴 A PREVIEW, NOT A BUTTON. The card is still the control for CHOOSING a style; this
-                image answers the different question "what will mine look like". Clicking it enlarges —
-                a small image that gets bigger needs no label. `stopPropagation` so enlarging does not
-                also silently change the operator's saved style. */}
-            <QrPreview
-              src={qrPreviews.standard}
-              alt="Standard QR code preview"
-              onOpen={() => openQrView('standard')}
-            />
-          </button>
-
-          {/* Branded — Pro/Max only */}
-          {can('branded_qr_code') ? (
-            <button
-              type="button"
-              onClick={() => { setQrCodeStyle('branded'); saveSetting('qr_code_style', 'branded') }}
-              className={`w-full h-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
-            >
-              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'branded' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'branded' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
-                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
-                {/* ── 🔴 A BLOCKER, NOT A STATUS. ────────────────────────────────────────────────────
-                    This was a badge reading "No logo" sitting beside the option that promises a logo in
-                    the middle. It told an operator who had just chosen branded that the thing they chose
-                    is missing, and stopped there — no cause, no next step, nothing to do. A badge is for
-                    a state you can read past; this is one they have to act on.
-                    ⚠️ BEHAVIOUR IS UNCHANGED — selecting branded without a logo does exactly what it did
-                    before. Only what they are told has changed. */}
-                {!truck.logo_storage_path && (
-                  <p className="text-xs text-amber-700 mt-1">Add your logo to your profile and it will show here.</p>
-                )}
-              </div>
-              {/* ⚠️ THE BRANDED PREVIEW IS THEIR REAL CODE WITH THEIR REAL LOGO — and where there is no
-                  logo it shows exactly what they would get today, which is the unbranded code. That is
-                  the honest answer to "what will mine look like", and it is why the line above about
-                  adding a logo stays: the preview shows the state, the line says what to do about it. */}
-              <QrPreview
-                src={qrPreviews.branded}
-                alt="Branded QR code preview"
-                onOpen={() => openQrView('branded')}
-              />
-            </button>
-          ) : (
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
-              <span className="w-4 h-4 rounded-full border-2 border-slate-300 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
-                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
-              </div>
-              {/* 🔴 BELOW THE PLAN THEY STILL SEE IT, WITH THEIR OWN LOGO, AND THAT IS THE POINT — a
-                  locked feature you cannot picture is not a feature anybody upgrades for. What they
-                  cannot do is enlarge it or download it: clicking explains the lock instead. */}
-              <QrPreview
-                src={qrPreviews.branded}
-                alt="Branded QR code preview"
-                locked
-                onOpen={() => openQrView('branded')}
-              />
-              <FeatureGate
-                feature="branded_qr_code"
-                plan={truck.plan}
-                overrides={truck.feature_overrides}
-                trialExpiresAt={truck.trial_expires_at}
-                showUpgrade={true}
-              />
-            </div>
-          )}
-          </div>
-        </div>
-
-        {/* ── ONE BUTTON, AND ITS NAME NOW MATCHES WHAT IT DOES. ────────────────────────────────────
-            It read "Generate QR code", which was true when the code did not exist until you pressed it.
-            The operator can now SEE both codes in the cards above, so "generate" describes nothing they
-            are waiting for — it opens the bigger view of the style they have chosen, and the download
-            lives in there.
-            ⚠️ It follows the SELECTED style, and the selected style can be `branded` on a truck that has
-            since dropped below the plan — `openQrView` refuses that case exactly as a click on the
-            locked preview does, through the same call. One gate, two doors.
-            ⚠️ RIGHT-ALIGNED AND SIZED TO ITS TEXT, unchanged from the previous pass. */}
-        {orderUrl && (
-          <div className="flex justify-end">
-            <button
-              onClick={() => openQrView(qrCodeStyle === 'branded' ? 'branded' : 'standard')}
-              disabled={generatingQR}
-              className="bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm disabled:opacity-40"
-            >
-              {generatingQR ? 'Opening…' : 'View QR code'}
-            </button>
-          </div>
-        )}
-
-        {/* ── THE ENLARGED VIEW, AND THE ONLY PLACE A DOWNLOAD EXISTS. ──────────────────────────────
-            🔴 WHEN LOCKED THERE IS NO IMAGE AND NO DOWNLOAD IN THE MARKUP AT ALL — not a hidden one, not
-            a disabled one. `openQrView` never built the full-size code, so there is nothing here to
-            save. The refusal is the absence of the artefact. */}
-        {qrModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-            onClick={() => setQrModal(null)}
-          >
-            <div className="bg-white rounded-2xl p-5 max-w-sm w-full" onClick={e => e.stopPropagation()}>
-              {qrModal.locked ? (
-                <>
-                  <p className="text-base font-bold text-slate-800 mb-1">Branded QR code</p>
-                  <p className="text-sm text-slate-600">
-                    Branded codes are part of a higher plan. Your standard QR code works exactly the same
-                    for customers — the difference is your logo in the middle.
-                  </p>
-                  <div className="mt-3">
-                    <FeatureGate
-                      feature="branded_qr_code"
-                      plan={truck.plan}
-                      overrides={truck.feature_overrides}
-                      trialExpiresAt={truck.trial_expires_at}
-                      showUpgrade={true}
-                    />
-                  </div>
-                </>
-              ) : qrModal.dataUrl ? (
-                <div className="flex flex-col items-center gap-4">
-                  <img src={qrModal.displayUrl ?? qrModal.dataUrl} alt="Order QR code" className="w-64 h-auto rounded-xl border border-slate-100" />
-                  {/* ⛔ THE EXPLANATORY LINE THAT STOOD HERE WAS REMOVED ON REQUEST, 28 August 2026.
-                      ⚠️ WHAT IT DISCLOSED IS STILL TRUE: with no logo the picture above carries the dotted
-                      square and the downloaded file does NOT. That is deliberate — a printed board must
-                      never read "Your logo here" — but it is now UNSTATED, so an operator meets the
-                      difference when they open the file rather than before. `showsPlaceholder` is kept on
-                      the modal state precisely so restoring a line here, or blocking the download in this
-                      state, is a one-line change. */}
-                  <a
-                    href={qrModal.dataUrl}
-                    download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
-                    className="w-full flex items-center justify-center px-4 py-2.5 bg-orange-600 text-white text-sm font-medium rounded-xl"
-                  >
-                    Download PNG
-                  </a>
-                  <p className="text-xs text-slate-400 self-start break-all font-mono">{orderUrl}</p>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-500">That could not be built just now. Try again shortly.</p>
-              )}
-              <button
-                onClick={() => setQrModal(null)}
-                className="mt-3 w-full px-4 py-2.5 border border-slate-200 text-slate-600 text-sm rounded-xl"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* Orders */}
-      <Card className="p-4 space-y-3">
-        <p className="text-base font-bold text-slate-800">Order settings</p>
-        {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (notes-review only applies
-            when auto-accept is on — the block below is already conditional on it). Neutral sub-panel, same
-            treatment as Sounds. Toggles use the shared <Toggle> (canonical w-11/h-6/teal) — no bespoke inline. */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-          <div className="pb-3">
-            <p className={SUBCARD_HEADING}>Accepting orders</p>
-            <p className="text-xs text-slate-500 mt-0.5">What happens when a new order arrives.</p>
-          </div>
-          <div className="flex items-center justify-between gap-3 pb-3">
-            <div>
-              <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.autoAccept.label}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.autoAccept.help}</p>
-            </div>
-            <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
-          </div>
-          {/* ⚠️ THE "Review orders with notes" TOGGLE WAS REMOVED FROM THIS BLOCK, and the block stays
-              because the amber capacity notice below is still in it. Holding a NOTED order for a human is
-              now unconditional — see lib/orders/auto-accept. All 16 trucks stored `true`, so no behaviour
-              changed, and the auto-accept help above now says it instead of a switch offering to turn it off. */}
-          {/* pl-4 indents the whole sub-block as a CHILD of auto-accept (only enabled when it's on). */}
-          {form.auto_accept && (
-            <div className="py-3 pl-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
-                ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* SOUNDS PANEL REMOVED (V9.5). Sound config is PER-DEVICE (localStorage, lib/sound-prefs.ts) and
-            the dashboard's own Sounds panel is the live control. This panel only ever set the SEED for
-            devices that had never loaded, which made it misleading here.
-            🔴 trucks.sound_config, the /api/dashboard projection and the update_settings allowlist entry
-            are all DELIBERATELY RETAINED — the column is still the seed source. Removing the UI does not
-            remove the seed. The full retirement precondition lives in lib/sound-prefs.ts's header. */}
-
-        {/* ── NOTIFICATIONS — same sub-panel treatment as its three siblings in this card. It was the one
-            LOOSE row left in Order settings, which made it read as an afterthought hanging off the
-            auto-accept group rather than as its own setting. Presentation only: same key, same
-            saveSetting call, same `!== false` default.
-            Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
-            order (formatNewOrderEmail → truck.contact_email) — NOT the customer's confirmation/ready emails. */}
-        <div className="pt-3 border-t border-slate-100">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-            <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Notifications</p>
-              <p className="text-xs text-slate-500 mt-0.5">How you hear about new orders.</p>
-            </div>
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
-                <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
-              </div>
-              <Toggle
-                on={(form as any).truck_order_email_enabled !== false}
-                onToggle={() => { const next = (form as any).truck_order_email_enabled !== false ? false : true; setForm(p => ({...p, truck_order_email_enabled: next} as any)); saveSetting('truck_order_email_enabled', next) }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ── TAKING PAYMENT (V9.5) — one neutral sub-panel, same treatment as Sounds and the
-            auto-accept group, so the two payment settings read as a grouped section rather than loose
-            rows at the bottom of the card.
-            ⚠️ SIBLINGS INSIDE A GROUP, NOT NESTED. They answer different questions — "WHEN do we take
-            money" (show_paid_step, which the dashboard can override per event) and "HOW does it arrive"
-            (takes_cash, truck-level, no override). The cash split was briefly rendered as a CHILD of the
-            paid step; that implied a dependency which does not exist. Do not reintroduce the nesting.
-            Both resolved only by lib/payments/paid-step.ts.
-            ⚠️ Both keys must stay on update_truck's `allowed` list (app/api/manage/route.ts:854) — that
-            list SILENTLY DROPS anything not on it, so a missing key means the toggle appears to save,
-            returns {ok:true}, and writes nothing. This regrouping changes no key and no save path. */}
-        <div className="pt-3 border-t border-slate-100">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-            <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Taking payment</p>
-              <p className="text-xs text-slate-500 mt-0.5">How your team records money for each order.</p>
-            </div>
-            {/* ── SETTING 1 — trucks.show_paid_step, RELABELLED (10 August 2026) ─────────────────────
-                Same column, same save path, same per-event override. Only the words changed, because
-                the old ones ("Separate paid step — splits Paid & collected into Mark paid then
-                Collected") described the COMPLETION behaviour, which is now its own setting below.
-                What this column actually controls is the Add Order panel: on, it offers a Confirm
-                button so an order can be placed unpaid; off, the panel only takes payment.
-                ⚠️ THE NOTE IS DELIBERATELY NOT ELABORATED. "It doesn't affect online orders" is true
-                whatever state online orders arrive in — and Stripe is being integrated, after which they
-                will arrive PAID. A sentence describing what state they arrive in today would go stale at
-                exactly the moment nobody remembers to come back and change it. Leave it as it is. */}
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Take orders without payment</p>
-                <p className="text-xs text-slate-500 mt-0.5">Adds a Confirm button when you add an order yourself, so you can place it now and take payment later. Turn this on if you take phone or advance orders.</p>
-                <p className="text-xs text-slate-400 mt-1">This only affects orders you add. It doesn&apos;t affect online orders.</p>
-              </div>
-              <Toggle
-                on={(form as any).show_paid_step === true}
-                onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
-              />
-            </div>
-            {/* ── SETTING 2 — trucks.completion_presses (NEW, 10 August 2026) ────────────────────────
-                🔴 A SIBLING, NOT A CHILD, AND IT MUST NEVER BE DISABLED BY THE SETTING ABOVE.
-                It looks like a dependency and is not. "Take orders without payment" decides whether the
-                Add Order panel can place an order unpaid; this decides how an unpaid order is COMPLETED.
-                Unpaid orders arrive from the CUSTOMER PATH regardless — every truck has them — so
-                greying this out when the setting above is off would hide the control for a case that
-                still happens every day. The cash row below IS a genuine dependency and is treated as
-                one; this is not, and the two must not be made to look alike.
-                ⚠️ It reads slightly oddly in this group, and that is worth knowing rather than papering
-                over: the group now holds two independent top-level settings plus one nested dependent,
-                so the indentation below no longer means "depends on the row directly above" but
-                "depends on this group". Reported rather than resolved.
-                RADIO, not a toggle: two named alternatives that each need their own explanation, which
-                is the deals "Apply to events" pattern in this same file — the page's existing shape for
-                exactly this. A toggle would need a single label that reads true in one direction only.
-                ⚠️ `completion_presses` must stay on update_truck's `allowed` list
-                (app/api/manage/route.ts) — that list SILENTLY DROPS unlisted keys, so a missing entry
-                means this appears to save, returns {ok:true}, and writes nothing. */}
-            <div className="py-3">
-              <p className="text-sm font-semibold text-slate-800">Completing an unpaid order</p>
-              <p className="text-xs text-slate-500 mt-0.5">What happens when an unpaid order is ready to hand over.</p>
-              <div className="flex flex-col gap-2 mt-2">
-                {([
-                  // ── 🔴 THE BUTTON NAMES HERE ARE QUOTED FROM THE CODE, NOT DESCRIBED ────────────
-                  // “Mark paid & collected”, “Mark paid” and “Collected” are the EXACT `label` strings
-                  // OrderCard renders (components/dashboard/OrderCard.tsx — the one-press branch, the
-                  // two-press unpaid branch and the effectivePaid branch). Copy that names a button an
-                  // operator cannot find sends them looking for it, so **verify these against the code
-                  // before editing either side**, and change the copy to match the button — never the
-                  // button to match the copy.
-                  // ⚠️ TWO RENDERED VARIANTS THIS COPY DELIBERATELY DOES NOT NAME, because they are
-                  // conditional and naming them here would make the common case unreadable: a PART-PAID
-                  // order reads “Mark £X.XX paid” instead of “Mark paid”, and with "Do you take cash?"
-                  // on, the two-press money button splits into “💷 Cash” / “💳 Card”. The cash row below
-                  // is where that second one is explained.
-                  // ⚠️ CURLY QUOTES, matching how this file already names a button inline (the paid-step
-                  // and cash rows both do it). Not a new convention.
-                  ['one', 'One press (“Mark paid & collected”)',
-                   'Best when you take the money as you hand the food over. You get a single button, “Mark paid & collected”, which records the payment and clears the order together.'],
-                  ['two', 'Two presses (“Mark paid” & “Collected”)',
-                   'Best when payment and handover happen at different moments — someone pays at the hatch, then collects when it’s ready. You get two buttons: “Mark paid” first, then “Collected” when they take the food.'],
-                ] as const).map(([v, lbl, help]) => (
-                  /* 🔴 SHAPE COPIED VERBATIM FROM "Past the deadline" IN THIS SAME FILE — the page's
-                     EXISTING two-option-with-descriptions control (button + drawn radio + font-medium
-                     label over a text-xs help line). It replaced a native <input type="radio">, which
-                     was mine and was wrong: it rendered in the browser's own accent rather than this
-                     page's, so it read as a foreign control in a card of matched ones.
-                     ⚠️ ORANGE HERE IS NOT AN INTRODUCTION, IT IS THIS PAGE'S SELECTED STATE. On Manage,
-                     orange is the selection/focus colour throughout — focus:ring-orange-400 on every
-                     input, accent-orange-600 on checkboxes, and border-orange-500 / bg-orange-500 on
-                     exactly this radio. The reserved-meaning rule for orange ("a MONEY action") belongs
-                     to the ORDER CARD's vocabulary, a different surface with a different palette. */
-                  <button type="button" key={v}
-                    onClick={() => { setForm(p => ({...p, completion_presses: v})); saveSetting('completion_presses', v) }}
-                    className="w-full text-left flex items-start gap-2 cursor-pointer">
-                    {/* Absent ⇒ resolve from show_paid_step, the SAME fallback lib/payments/paid-step.ts
-                        uses, so this shows what the cards are actually doing before the column has been
-                        backfilled. Never `?? 'one'` — that would render two-press trucks as one-press
-                        for the length of the deploy window. */}
-                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${completionPresses === v ? 'border-orange-500' : 'border-slate-300'}`}>{completionPresses === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-                    <span className="text-sm">
-                      <span className="font-medium text-slate-700">{lbl}</span>
-                      <span className="block text-xs text-slate-400">{help}</span>
-                      {/* ⚠️ THE SEPARATE BUTTON-NAMES LINE WAS REMOVED, NOT LOST. It rendered
-                          “Mark paid & collected” / “Mark paid” then “Collected” beneath the
-                          description — and the description now names those buttons in its own
-                          sentence, so the line repeated it verbatim on the row directly below.
-                          One fact, one place. The names still have to match the code; see the note
-                          on the options array above. */}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* ── 🔴 DE-NESTED AGAIN ON 10 AUGUST 2026, AND NOT BY REVERSING THE RULE BELOW ──────────
-                READ THIS BEFORE RE-INDENTING IT. The V9.6 note that follows is KEPT because its rule is
-                still right; what changed is that the rule now points the other way.
-                THE RULE: "structure should show the DEPENDENCY, not the semantics." Correct, and it is
-                what put `pl-4` here when the cash split had exactly ONE parent (the paid step).
-                WHAT CHANGED: the cash split now has TWO parents. It renders in two places, and after the
-                settings were split those places answer to different settings — the Add Order panel's
-                "Take payment" button splits on show_paid_step, and the ORDER CARD's "Mark paid" button
-                splits on completion_presses === 'two'. Indentation is a SINGLE-PARENT notation: it can
-                only point at the row directly above it, which is now "Completing an unpaid order" —
-                only one of the two ways to unlock this. So the indent had stopped showing the
-                dependency and started asserting a WRONG one. Applying the rule removes the indent.
-                WHAT CARRIES THE DEPENDENCY INSTEAD: the disabled state plus the inline note, which now
-                NAMES BOTH PARENTS. That is the other half of the V9.6 instruction — "structure shows
-                the relationship, the text explains it. Both, not either" — with the half that can no
-                longer be true dropped rather than left to mislead.
-                ⚠️ SO THE GROUP IS NOW FLAT: two independent settings and one dependent, all at the same
-                level, with the dependent saying in words what it depends on. If the cash split ever goes
-                back to a single parent, re-indent it and restore the note below.
-                ── the V9.6 reasoning, retained ──────────────────────────────────────────────────────
-                ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE, AND THAT WAS REVERSED ON A LAYOUT ARGUMENT.
-                The de-nesting rationale — "they answer different questions: WHEN do we take money vs HOW
-                does it arrive" — is still true and is still in the git history, which is exactly why this
-                note exists. It was the WRONG TEST. Two settings can answer different questions and still
-                have one DEPEND on the other, and structure should show the DEPENDENCY, not the semantics.
-                THE DEPENDENCY IS DRIVEN BY LAYOUT AS MUCH AS BY MEANING. With the paid step OFF, one tap
-                means "paid AND collected" — which is why the button reads `Paid & collected`. Splitting
-                that into Cash/Card would make each button ALSO collect, but "Cash" does not say so, and
-                the honest label `Cash & collected` needs ~110px against a 72px label box at the 240px KDS
-                column. **There is no honest way to render the split when the button also collects.** So a
-                truck wanting the split turns the paid step on — that step is what creates the moment where
-                "how did they pay" is a separate question from "have they got their food".
-                INDENT + TYPE SCALE copied from the notes-review sub-option above (pl-4, same
-                text-sm/text-xs pair), NOT invented — one nesting treatment per card.
-                ⚠️ Unlike that sub-option, this one is NOT conditionally rendered. It stays visible and
-                goes DISABLED with the reason inline: structure shows the relationship, the text explains
-                it. Both, not either. An operator who cannot find this setting is why it exists on two
-                surfaces at all. */}
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
-                {/* ── 🔴 THE GATE NOW HAS TWO PARENTS, AND IT HAD TO (10 August 2026) ─────────────
-                    The cash split renders in two places, and after the settings were split those two
-                    places answer to DIFFERENT settings:
-                      • the Add Order panel's "Take payment" button splits when show_paid_step is on;
-                      • the ORDER CARD's "Mark paid" button splits when completion_presses is 'two'.
-                    Leaving this disabled on `show_paid_step !== true` alone would have been a real
-                    defect introduced by this change: a truck with entry payment-only but a TWO-press
-                    completion has a live "Mark paid" button that this control would refuse to split.
-                    So the condition is the OR of the two, and the split is inert only when neither
-                    surface can reach it — which is exactly the state it was inert in before.
-                    ⚠️ The card's ONE-press button is still never split, and the reasoning above stands
-                    unchanged: "Cash" that also collects cannot be labelled honestly at a 240px column.
-                    ⚠️ DOES NOT auto-enable either parent. toggleOfflineProtection silently enabling
-                    keep-screen-on is already recorded in the manual as a defect; one is enough.
-                    ⚠️ DOES NOT write takes_cash=false when it becomes inert. The stored value is left
-                    exactly as the operator set it and simply renders inert — never mutate what the
-                    operator chose in order to tidy state. Re-enabling either parent restores it. */}
-                {/* 🔴 THE GATE IS GONE — 10 August 2026. The cash split is now ALWAYS reachable, and
-                    keeping a condition here would disable a toggle whose button is live on screen.
-                    The Add Order confirm bar was rebuilt so that it ALWAYS offers a payment button:
-                    with "Take orders without payment" OFF that is the single button, with it ON it is
-                    the primary one. So the split has a live parent in every configuration, and the
-                    previous OR condition ("paid step on, or completion set to two presses") is stale —
-                    it would have disabled this for the nine trucks on OFF + one press, every one of
-                    which now has a payment button in Add Order.
-                    ⚠️ THE CARD'S ONE-PRESS BUTTON IS STILL NEVER SPLIT — `Cash & collected` cannot be
-                    labelled honestly at a 240px KDS column. The split reaches the Add Order bar in all
-                    states, and the card's `Mark paid` only under two presses. That asymmetry is
-                    deliberate and unchanged. */}
-              </div>
-              <Toggle
-                on={(form as any).takes_cash === true}
-                onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ── OPENING AND CLOSING — same sub-panel treatment. These two were loose rows describing one
-            thing (when an event starts and stops taking online orders), so they group. Presentation
-            only: same columns, same saveSetting calls, same defaults. */}
-        <div className="pt-3 border-t border-slate-100">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-            <div className="pb-3">
-              <p className={SUBCARD_HEADING}>Opening and closing</p>
-              <p className="text-xs text-slate-500 mt-0.5">When your events start and stop taking online orders.</p>
-            </div>
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
-                <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
-              </div>
-              <Toggle
-                on={form.default_auto_open}
-                onToggle={() => { const next = !form.default_auto_open; setForm(p => ({...p, default_auto_open: next})); saveSetting('default_auto_open', next) }}
-              />
-            </div>
-            <div className="flex items-center justify-between gap-3 py-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
-                <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
-              </div>
-              <Toggle
-                on={form.default_auto_close}
-                onToggle={() => { const next = !form.default_auto_close; setForm(p => ({...p, default_auto_close: next})); saveSetting('default_auto_close', next) }}
-              />
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* ── PRE-ORDERS (V7.8 global-config) — plan-gated; hidden off-plan. SINGLE-SOURCE: the deadline
-          RULE lives ONCE on the truck (gType/gVal/gAction → update_truck), applied to every included
-          item; per-item stores ONLY inclusion (preorder_enabled → trimmed set_item_preorder_bulk).
-          PAGE = master toggle + the one global-config block (stable deadline control + radio action) +
-          a read-only list of included items + "Configure items". POPUP = category → sub-category → item
-          inclusion picker (select-all per level). No per-item timing anywhere. Reuses loaded items +
-          category sort_order; daily_cutoff = minutes-of-day (no UI tz math). */}
-      {preorderCan && (() => {
-        const groups = [
-          ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
-          { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
-        ].filter(g => g.items.length > 0)
-        const includedCount = items.filter(i => i.preorder_enabled === true).length
-        const cutoffStr = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
-        const ruleSummary = `${describePreorderDeadline({ enabled: true, deadlineType: gType, deadlineValue: gVal, pastAction: gAction })} · ${gAction === 'force_pending' ? 'needs approval' : 'sold out'}`
-        return (
-          <Card className="p-4">
-            {/* Card header (the master toggle moved down to the "Pre-order rule" line). */}
-            <div>
-              <p className="text-base font-bold text-slate-800">Pre-orders</p>
-              <p className="text-xs text-slate-400 mt-0.5">Let customers order ahead of an event. Set when pre-orders open and the deadline rules below — these apply only to the items you select.</p>
-            </div>
-
-            {/* GLOBAL CONFIG — the ONE rule (truck row via update_truck). Stable deadline control + radios. */}
-            <div className="mt-4">
-              {/* OPEN-WINDOW (V8.3): when customers can START pre-ordering — Opens FIRST, 9 fixed options. */}
-              <p className="text-sm font-semibold text-slate-800 mb-2">When pre-orders open</p>
-              <select value={gOpen} onChange={e => saveOpenRule(e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 mb-3">
-                <option value="on_confirm">As soon as event is confirmed</option>
-                <option value="7d">7 days before</option>
-                <option value="6d">6 days before</option>
-                <option value="5d">5 days before</option>
-                <option value="4d">4 days before</option>
-                <option value="3d">3 days before</option>
-                <option value="2d">2 days before</option>
-                <option value="1d">1 day before</option>
-                <option value="day_of">On day of event</option>
-              </select>
-              {/* ── 🔴 THE DEADLINE RULES SIT IN THEIR OWN BOX (28 August 2026). ────────────────────────
-                  "When pre-orders open" above is a DIFFERENT question — when customers may START — and
-                  it stays outside. Everything to do with the DEADLINE is inside: the heading, its master
-                  toggle, the explanation, the deadline control and what happens past it.
-                  ⚠️ SHAPE COPIED, NOT INVENTED — `rounded-xl border border-slate-200 bg-slate-50 p-3` is
-                  the inner-box shape this file already uses (see :6064 and :8518).
-                  ⚠️ The `mt-1` moved from the heading row onto the box, so the gap below the Opens select
-                  is unchanged rather than doubled. */}
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 mt-1">
-              {/* "Pre-order deadline" heading (prominent — matches the other section headings) + the master
-                  toggle on the SAME line; explanatory + scope text below. */}
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
-                <Toggle on={preordersOn} onToggle={() => saveMaster(!preordersOn)} />
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rule to prevent ordering of items after a specified time.</p>
-              {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
-              <div className={preordersOn ? '' : 'opacity-50'}>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
-              <div className="flex items-center gap-2 mb-3">
-                <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
-                  className="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  <option value="hours_before">Hours before event</option>
-                  <option value="daily_cutoff">Daily cutoff time</option>
-                </select>
-                {/* fixed slot — both controls live here; only one shows → no reflow on type switch */}
-                <div className="w-32 flex-shrink-0">
-                  <select value={gVal} onChange={e => saveGlobalCfg({ value: parseInt(e.target.value) })}
-                    className={gType === 'hours_before' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'}>
-                    {Array.from({ length: 48 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{h} hour{h !== 1 ? 's' : ''}</option>)}
-                  </select>
-                  <input type="time" value={cutoffStr(gVal)} onChange={e => { const [h, m] = e.target.value.split(':').map(Number); saveGlobalCfg({ value: (h || 0) * 60 + (m || 0) }) }}
-                    className={gType === 'daily_cutoff' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'} />
-                </div>
-              </div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">Past the deadline</label>
-              <div className="space-y-1.5">
-                {([['sold_out', 'Mark sold out', "Customers can't order it after the deadline."],
-                   ['force_pending', 'Allow, require approval', "Customers can still order, but the order needs your approval (won't auto-accept)."]] as const).map(([v, lbl, help]) => (
-                  <button type="button" key={v} onClick={() => saveGlobalCfg({ action: v })} className="w-full text-left flex items-start gap-2 cursor-pointer">
-                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${gAction === v ? 'border-orange-500' : 'border-slate-300'}`}>{gAction === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-                    <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
-                  </button>
-                ))}
-              </div>
-              </div>
-
-              {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
-              <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
-                  <button type="button" onClick={() => setPoModalOpen(true)}
-                    className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
-                </div>
-                {includedCount === 0
-                  ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
-                  : (
-                    <>
-                      <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
-                      <div className="space-y-2">
-                        {groups.map(g => {
-                          const inc = g.items.filter(i => i.preorder_enabled === true)
-                          if (inc.length === 0) return null
-                          return (
-                            <div key={g.id}>
-                              <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
-                              <p className="text-sm text-slate-600 truncate">{inc.map(i => i.name).join(', ')}</p>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </>
-                  )}
-              </div>
-              </div>
-            </div>
-
-            {/* POPUP — pure INCLUSION picker: category → sub-category → item, select-all per level.
-                Writes ONLY preorder_enabled via setItemIncluded / set_item_preorder_bulk (enabled-only). */}
-            {poModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPoModalOpen(false)}>
-                <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                  <h3 className="font-black text-slate-900 mb-1">Choose pre-order items</h3>
-                  <p className="text-xs text-slate-400 mb-4">Tick which items are pre-order. They all use the global rule ({ruleSummary}).</p>
-                  <div className="space-y-4">
-                    {groups.map(g => {
-                      const gIds = g.items.map(i => i.id)
-                      const gAllOn = gIds.length > 0 && g.items.every(i => i.preorder_enabled === true)
-                      const subGroups = groupBySubcategory(g.items, subcategories.filter(s => s.category_id === g.id))
-                      return (
-                        <div key={g.id}>
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
-                            <button type="button" onClick={() => setGroupIncluded(gIds, !gAllOn)}
-                              className="text-[11px] font-semibold text-orange-600">{gAllOn ? 'Deselect all' : 'Select all'}</button>
-                          </div>
-                          {subGroups.filter(sg => sg.items.length > 0).map(sg => {
-                            const sgIds = sg.items.map(i => i.id)
-                            const sgAllOn = sg.items.every(i => i.preorder_enabled === true)
-                            return (
-                              <div key={sg.id ?? '__none__'} className="mt-1.5 ml-1">
-                                {sg.name && (
-                                  <div className="flex items-center justify-between gap-2">
-                                    <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{sg.name}</span>
-                                    <button type="button" onClick={() => setGroupIncluded(sgIds, !sgAllOn)}
-                                      className="text-[10px] font-semibold text-slate-400 hover:text-orange-600">{sgAllOn ? 'Deselect' : 'Select all'}</button>
-                                  </div>
-                                )}
-                                <div className="space-y-1 mt-1">
-                                  {sg.items.map(it => {
-                                    const on = it.preorder_enabled === true
-                                    return (
-                                      <label key={it.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                                        <input type="checkbox" checked={on} onChange={() => setItemIncluded(it.id, !on)} className="w-4 h-4 accent-orange-600" />
-                                        <span className="truncate text-slate-700">{it.name}</span>
-                                      </label>
-                                    )
-                                  })}
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className="flex justify-end mt-5">
-                    <button type="button" onClick={() => setPoModalOpen(false)} className="text-sm font-semibold px-3 py-2 rounded-lg bg-slate-800 text-white">Done</button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Card>
-        )
-      })()}
-
-
-      {/* Your trucks */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-base font-bold text-slate-800">Your trucks</p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Manage your trucks. Each has its own order screen and settings.
-            </p>
-          </div>
-          <button
-            onClick={handleAddVanClick}
-            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
-          >
-            + Add truck
-          </button>
-        </div>
-
-        {vans.map(van => (
-          <div key={van.id} className="mt-4 border border-slate-200 rounded-2xl p-4">
-            <div className="flex items-center justify-between py-3 border-b border-slate-200 mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-slate-900">{van.name}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
-                  className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-                >
-                  Rename
-                </button>
-                {vans.length > 1 && (
-                  <button
-                    onClick={() => setDeletingVan(van)}
-                    className="text-xs px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Offline Order Protection card */}
-            <div className={`mt-2 rounded-xl border p-3 transition-colors ${
-              van.auto_pause_on_offline
-                ? 'border-teal-200 bg-teal-50'
-                : 'border-slate-100 bg-slate-50'
-            }`}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <p className={`text-sm font-semibold ${
-                    van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
-                  }`}>
-                    Offline order protection
-                  </p>
-                  {/* ── 🔴 THE SAME THREE LINES AS THE DASHBOARD'S CARD, IN THE SAME ORDER. ──────────
-                      Description, then the ⚠️ instruction, then the two modes below — the dashboard's
-                      shape, from the same constants, so an operator meets one explanation of this
-                      feature rather than two that differ by surface.
-                      ⚠️ THE DESCRIPTION IS NO LONGER CONDITIONAL. It previously swapped to "Off — online
-                      orders continue even if this device goes offline" when the switch was off, which
-                      the dashboard never did; the line now says what the setting DECIDES and is true in
-                      both states.
-                      ⚠️ WHAT DOES NOT CHANGE IS THE SCOPE. This card is the VAN default and applies to
-                      every event; the dashboard's is the live event. Same words, same order, and each
-                      still writes what it always wrote. */}
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_PURPOSE}</p>
-                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
-                </div>
-                <button
-                  onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
-                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 mt-0.5 ${
-                    van.auto_pause_on_offline ? 'bg-green-500' : 'bg-slate-300'
-                  }`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                    van.auto_pause_on_offline ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-
-              {/* ── 🔴 THE TWO MODES — ONLY WHEN THE SWITCH IS ON, AND THE SAME SHAPE AS THE DASHBOARD'S ──
-                  Switch OFF ⇒ this does not render and the card is exactly what it was. Both surfaces map
-                  the SAME `OFFLINE_PROTECTION_MODES` array, so a wording change is one edit in
-                  lib/copy/offlineProtection.ts and neither screen can drift from the other. */}
-              {van.auto_pause_on_offline && (
-                <div role="radiogroup" aria-label={OFFLINE_PROTECTION_SWITCH_LABEL} className="mt-3 pt-3 border-t border-teal-200 flex flex-col gap-2">
-                  {/* MOVED DOWN FROM THE HEADING. It describes the CHOICE below it, so it reads as
-                      the options' lead-in rather than as a summary of the whole box. */}
-                  <p className="text-xs text-slate-500">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
-                  {OFFLINE_PROTECTION_MODES.map(m => {
-                    const selected = (van.offline_protection_mode ?? 'pause') === m.value
-                    return (
-                      <div key={m.value} className="flex flex-col gap-2">
-                      <button type="button" role="radio" aria-checked={selected}
-                        onClick={() => { if (!selected) {
-                          void updateVanSetting(van.id, 'offline_protection_mode', m.value)
-                          // 🔴 THE DEFAULT IS WRITTEN HERE, AND ONLY HERE — the dashboard does the same
-                          // on its own mode row. Choosing this mode IS the operator interaction, so a van
-                          // with no stored delay gets one then, not on render. A van nobody touches keeps
-                          // NULL and nothing auto-rejects for it. Skipped when a delay is already stored.
-                          if (m.value === 'no_auto_accept' && van.offline_auto_reject_mins == null) {
-                            void updateVanSetting(van.id, 'offline_auto_reject_mins', OFFLINE_AUTO_REJECT_DEFAULT_MINS)
-                          }
-                        } }}
-                        className="flex items-start gap-2.5 w-full text-left">
-                        <span className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-teal-600' : 'border-slate-300'}`}>
-                          {selected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-xs font-semibold text-teal-800">{m.label}</span>
-                          <span className="block text-xs text-slate-500">{m.help}</span>
-                        </span>
-                      </button>
-                      {/* ── 🔴 THE DELAY BELONGS TO THIS OPTION, SO IT SITS INSIDE IT. ────────────────
-                          Indented under the option's own description and with NO divider above it: a
-                          rule made it read as a separate setting, which is what it looked like before.
-                          `pl-6` clears the 16px radio plus its 10px gap so the control lines up with the
-                          label text — the same "indent a dependent control under its parent" idiom the
-                          buzzer count row uses with `pl-4`.
-                          🔴 THERE IS NO "OFF". An operator choosing this mode must choose a delay —
-                          without one an order can sit indefinitely while the customer is never told it
-                          was not accepted, which is what the feature exists to prevent.
-                          ⚠️ AND NOTHING IS WRITTEN ON RENDER. A van storing NULL shows the placeholder
-                          and stays NULL until the operator picks; the mode itself has already saved.
-                          ⚠️ SWITCHING TO `pause` DOES NOT CLEAR THE VALUE. Only this select writes the
-                          column, so a stored delay survives a mode change and returns with it. */}
-                      {m.value === 'no_auto_accept' && selected && (
-                        <div className="pl-6">
-                          <div className="flex items-center justify-between gap-3">
-                            <p className="text-xs font-semibold text-teal-800">{OFFLINE_AUTO_REJECT_LABEL}</p>
-                            <select
-                              value={van.offline_auto_reject_mins ?? OFFLINE_AUTO_REJECT_DEFAULT_MINS}
-                              aria-label={OFFLINE_AUTO_REJECT_LABEL}
-                              onChange={e => void updateVanSetting(van.id, 'offline_auto_reject_mins', parseInt(e.target.value))}
-                              className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                            >
-                              {OFFLINE_AUTO_REJECT_OPTIONS.map(n => <option key={n} value={n}>{offlineAutoRejectLabel(n)}</option>)}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* ⚠️ THE ON-ENABLE "Got it" EXPLAINER PANEL WAS REMOVED HERE, and this note is why rather
-                  than a gap. It rendered EXACTLY the LEAD + BODY sentence that now sits permanently near
-                  the top of this card, so enabling the switch printed the same paragraph twice, a few
-                  rows apart. The dashboard's card has no such panel — a permanent line is its
-                  acknowledgement — and matching it is what was asked for. The state that drove it
-                  (`showAutoPauseInfo`) and its two setter calls in handleToggleAutoPause went with it. */}
-            </div>
-            {/* ── VAN-SPECIFIC DISPLAY SETTINGS — its own sub-panel, a SIBLING of Offline order
-                protection and Kitchen capacity rather than a rule-separated run of rows. Display
-                settings and Kitchen capacity were previously ONE div under a single heading, so the
-                capacity grid read as part of "Display settings"; they are separate concerns (what the
-                order screen shows vs. how fast the kitchen can cook) and now box separately.
-                Presentation only — same rows, same updateVanSetting calls, same defaults. */}
-            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-3">
-              <p className={SUBCARD_HEADING}>Display settings</p>
-
-              {/* Stage 1 (order-ready redesign): the "Show cooking step" toggle was REMOVED here — the
-                  cooking step is now ALWAYS on (the KDS cook-view gate + OrderCard cook-mode were
-                  de-coupled from show_cooking_step). The show_cooking_step column, the update_van_settings
-                  handler for it, and the Van.show_cooking_step field are KEPT DORMANT so re-adding this
-                  toggle later is just restoring this JSX + reverting those two reads. */}
-
-              {/* Order-ready step — the TRUCK DEFAULT (order_ready_enabled). Per-event overrides live on
-                  the dashboard's Menu & Stock tab. Stage 4 of the order-ready redesign. */}
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.orderReady.label}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.orderReady.help}</p>
-                </div>
-                <button
-                  onClick={() => updateVanSetting(van.id, 'order_ready_enabled', !van.order_ready_enabled)}
-                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
-                    van.order_ready_enabled ? 'bg-green-500' : 'bg-slate-300'
-                  }`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-                    van.order_ready_enabled ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-
-              {/* ── BUZZERS — VAN-LEVEL, because they are physical stock in one vehicle ──────────────
-                  ⚠️ Writes truck_vans.buzzer_count via update_van_settings, NOT a trucks column. A
-                  two-van truck can have buzzers in one and not the other, and kitchen_capacity /
-                  order_ready_enabled already put per-vehicle service settings here.
-                  ⚠️ update_van_settings' destructure is an ALLOWLIST that drops unlisted keys silently
-                  (app/api/manage/route.ts) — `buzzer_count` was added there AND to get_vans' named
-                  select in the same change, or this would appear to save and write nothing.
-                  Render/save shape copied from the "Order-ready step" row directly above and from the
-                  show_paid_step / takes_cash pair in Order settings: label + explanation on the left,
-                  toggle on the right, optimistic setVans then the write. The count select is nested
-                  beneath as a CHILD because it is meaningless without the toggle — the same nesting
-                  treatment as "Do you take cash?" under the paid step. */}
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.buzzers.label}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {SETTING_COPY.buzzers.help}
-                  </p>
-                </div>
-                <button
-                  onClick={() => updateVanSetting(van.id, 'buzzer_count', van.buzzer_count == null ? BUZZER_DEFAULT_COUNT : null)}
-                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
-                    van.buzzer_count != null ? 'bg-green-500' : 'bg-slate-300'
-                  }`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-                    van.buzzer_count != null ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-              {/* CONDITIONALLY RENDERED, unlike the cash row's disabled-with-a-reason treatment: there
-                  is no useful thing to say about a count when the van has no buzzers, and a disabled
-                  1-20 select showing "10" would read as a stored value that is not stored. */}
-              {van.buzzer_count != null && (
-                <div className="flex items-center justify-between gap-3 pl-4">
-                  <p className="text-sm text-slate-700">{SETTING_COPY.buzzers.countLabel}</p>
-                  <select
-                    value={van.buzzer_count}
-                    aria-label="Number of buzzers"
-                    onChange={e => updateVanSetting(van.id, 'buzzer_count', parseInt(e.target.value))}
-                    className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  >
-                    {/* 1..BUZZER_MAX_COUNT, plus the stored value if it is somehow outside that range —
-                        the same append idiom the dashboard's capacity-window select uses, so an
-                        out-of-range stored value is shown rather than silently coerced. */}
-                    {Array.from({ length: BUZZER_MAX_COUNT }, (_, i) => i + 1)
-                      .concat(van.buzzer_count > BUZZER_MAX_COUNT ? [van.buzzer_count] : [])
-                      .map(n => <option key={n} value={n}>{n}</option>)}
-                  </select>
-                </div>
-              )}
-            </div>
-
-            {/* ── COLLECTION TIMES — PER VAN, AND ABOVE KITCHEN CAPACITY ON PURPOSE ─────────────────
-                Two settings for WHICH times can be chosen: the customer's grid, and optionally a
-                different one for orders the operator adds. 🔴 THEY ARE NOT CAPACITY SETTINGS — the
-                intro line says so, and nothing in §31's engine reads either column. They sit here, one
-                box above Kitchen capacity, because both are properties of THIS van's service and an
-                operator setting up a van reads down the column.
-                🔴 THE TICKBOX HAS NO COLUMN OF ITS OWN. It is derived from operator_collection_interval_mins
-                being non-null: ticking writes the current customer value, unticking writes NULL. A
-                separate boolean would be a second home for one fact and the two would drift.
-                ⚠️ update_van_settings' destructure is an ALLOWLIST and get_vans' select is NAMED — both
-                carry these keys, or the value writes and never reads back. */}
-            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-1`}>Collection times</p>
-              <p className="text-xs text-slate-500 mb-3">How far apart collection times are. This doesn&apos;t change kitchen capacity or prep times.</p>
-              {!intervalsAvailable ? (
-                /* 🔴 THE BOX DEGRADES; THE VAN DOES NOT. The interval columns could not be read, so the
-                   controls would be lying about what is stored. One line, no controls — and every other
-                   box on this van, Kitchen capacity included, renders exactly as it always does. */
-                <p className="text-xs text-slate-500">Collection times are unavailable right now.</p>
-              ) : (() => {
-                const customer = normaliseInterval(van.collection_interval_mins)
-                const overrideOn = van.operator_collection_interval_mins != null
-                const operator = overrideOn ? normaliseInterval(van.operator_collection_interval_mins) : customer
-                return (
-                  <div className="flex flex-col gap-3">
-                    <label className="block">
-                      <span className="text-sm font-semibold text-slate-800">Customer Collection Times</span>
-                      <select
-                        value={customer}
-                        aria-label="Customer Collection Times"
-                        onChange={e => updateVanSetting(van.id, 'collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
-                        className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                        {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
-                      </select>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {overrideOn ? 'Customers can pick ' : 'You and your customers can pick '}{intervalExample(customer)}
-                      </p>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={overrideOn}
-                        aria-label="Use different times for orders I add"
-                        onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', e.target.checked ? customer : null)}
-                        className="accent-orange-500"
-                      />
-                      <span className="text-sm text-slate-800">Use different times for orders I add</span>
-                    </label>
-                    {overrideOn && (
-                      <label className="block">
-                        <span className="text-sm font-semibold text-slate-800">Your Collection Times</span>
-                        <select
-                          value={operator}
-                          aria-label="Your Collection Times"
-                          onChange={e => updateVanSetting(van.id, 'operator_collection_interval_mins', normaliseInterval(parseInt(e.target.value)))}
-                          className="mt-1 w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                          {INTERVAL_CHOICES.map(n => <option key={n} value={n}>Every {n} minutes</option>)}
-                        </select>
-                        <p className="text-xs text-slate-500 mt-1">You can pick {intervalExample(operator)}</p>
-                      </label>
-                    )}
-                    {/* 18 September 2026: ONE conditional line under the selects, from the shared rule
-                        (misalignedCookingCategory) — shown only when the EFFECTIVE interval (yours when ticked,
-                        else the customers') is not a whole multiple of a cooking category's prep. Same line,
-                        same rule, on the dashboard. `categories` is the tab's existing prop — no new read. */}
-                    {(() => { const mc = misalignedCookingCategory(overrideOn ? operator : customer, categories); return mc ? <p className="text-xs text-amber-700 mt-1">{collectionTimesHint(mc)}</p> : null })()}
-                  </div>
-                )
-              })()}
-            </div>
-
-            {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
-                CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
-                aligned under it via the SAME column template. Writes unchanged: updateCatField
-                (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
-                updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
-                lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
-                (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
-            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-              <p className={`${SUBCARD_HEADING} mb-3`}>Kitchen capacity</p>
-              {categories.length > 0 && (
-                <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-                  <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
-                  {categories.map(cat => {
-                    const hasCap = van.kitchen_capacity != null
-                    const locked = cat.prep_secs > 0
-                    const capDisabled = locked || !hasCap
-                    // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
-                    // header + total-capacity row stay inline (unchanged), so template-driven alignment
-                    // is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).
-                    return (
-                      <KitchenCapacityCategoryRow
-                        key={cat.id}
-                        categoryName={cat.name}
-                        batchSize={cat.batch_size}
-                        prepSecs={cat.prep_secs}
-                        onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}
-                        onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}
-                        showCountsColumn
-                        countsToward={cat.counts_toward_capacity}
-                        locked={locked}
-                        capDisabled={capDisabled}
-                        countsTitle={locked
-                          ? 'Cooked — always counts (its prep & batch set the pace)'
-                          : !hasCap ? 'Set a capacity to choose which categories count'
-                          : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
-                        onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
-                      />
-                    )
-                  })}
-                </div>
-              )}
-              {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
-                  column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
-              <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
-                <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
-                <select
-                  value={van.kitchen_capacity ?? ''}
-                  aria-label="Total capacity (items)"
-                  onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
-                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  <option value="">∞</option>
-                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                  ))}
-                </select>
-                <select
-                  value={van.capacity_window_mins ?? 5}
-                  aria-label="Capacity window (minutes)"
-                  disabled={van.kitchen_capacity == null}
-                  onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
-                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                  {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
-                    <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
-                  ))}
-                </select>
-                <span/>
-              </div>
-              {van.kitchen_capacity == null && categories.length > 0 && (
-                <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
-              )}
-              {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
-                <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
-              )}
-              <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
-              <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
-            </div>
-
-            {renamingVanId === van.id && (
-              <div className="mt-2 mb-2 flex gap-2">
-                <input
-                  type="text"
-                  value={renameVanName}
-                  onChange={e => setRenameVanName(e.target.value)}
-                  autoFocus
-                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
-                />
-                <button
-                  onClick={() => confirmRenameVan(van.id)}
-                  disabled={!renameVanName.trim()}
-                  className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => { setRenamingVanId(null); setRenameVanName('') }}
-                  className="px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-
-        {addingVan && (
-          <div className="mt-3 flex gap-2">
-            <input
-              type="text"
-              value={newVanName}
-              onChange={e => setNewVanName(e.target.value)}
-              placeholder="e.g. Van 2, Festival Van"
-              autoFocus
-              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
-            />
-            <button
-              onClick={saveNewVan}
-              disabled={!newVanName.trim()}
-              className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
-            >
-              Add
-            </button>
-            <button
-              onClick={() => { setAddingVan(false); setNewVanName('') }}
-              className="px-4 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </Card>
-
-
+      </section>
+      {/* ── ⛔ RESTORED 3 October 2026 — THIS WAS DROPPED BY A BAD REORDER ────────────────────
+          ⛔ WHAT HAPPENED: reordering the eight Settings sections was done by cutting each block from
+          its own banner comment to its own `</section>` and re-joining them in the new order. Every
+          byte BETWEEN one `</section>` and the next marker — content that belongs to no section — was
+          silently discarded. 189 lines went: the remove-van confirmation, the van billing and van
+          upgrade modals, the emoji picker, and the "put your schedule on your own website" card.
+          ⛔ WHY IT WAS INVISIBLE: it still type-checked and still rendered, because everything lost was
+          either a MODAL (hidden until its state is set) or one card below the fold. A reorder is not a
+          safe refactor just because `tsc` passes.
+          🔴 THE GUARD: scripts/schedule-graphics-places.cjs now diffs every line of SettingsTab
+          against the commit this work started from and fails on any line that went missing — the check
+          that would have caught this immediately. */}
       {/* Remove van confirmation modal */}
       {deletingVan && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -12361,12 +12883,25 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
           ahead of both mounts in the opposite order to the components they described, so a reader met the
           embed comment immediately above the domain card. */}
 
+      {/* ══ SECTION: Account deletion ══ */}
+      <section
+        id="account-deletion"
+        ref={el => { if (el) sectionEls.current.set('account-deletion', el); else sectionEls.current.delete('account-deletion') }}
+        /* 🔴 `scrollMarginTop` IS THE SAME MEASURED `pinnedTop` THE SPY USES AS ITS PIN LINE. The jump
+         * calls `scrollIntoView({ block: 'start' })` and lets the BROWSER apply this margin — no
+         * `rect.top + scrollTop - offset` arithmetic to go stale between a re-measure and a paint.
+         * One number, two consumers, so the landing position and the pin line cannot disagree. */
+        style={{ scrollMarginTop: pinnedTop, minHeight: lastSectionMinHeight }}
+        className="scroll-mt-0 space-y-6"
+      >
+        <h2 className="text-lg font-black text-slate-900">Account deletion</h2>
       {/* ── 🔴 DANGER ZONE — LAST, OWNER ONLY ──────────────────────────────────────────────────────
           The Settings tab is owner+manager; this narrows to OWNER, so a manager sees nothing at all —
           not a disabled control, which would only advertise the action and invite a support ticket.
           Bottom of the tab: findable by scrolling (5.1.1(v) wants a reasonable path) without sitting
           anywhere near the settings an operator changes routinely. */}
       {userRole === 'owner' && <DeleteAccountSection truckName={truck?.name ?? ''} showToast={showToast} />}
+      </section>
 
       {/* ── 🔴 THERE IS NO LEGAL CARD HERE, AND THAT IS DELIBERATE — 10 August 2026. ────────────────
           A "Legal" card briefly sat at the foot of this tab, after the danger zone. It was removed the

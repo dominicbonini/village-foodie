@@ -23,6 +23,9 @@ import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
 export interface Place {
   id: string
   venue_id: string | null
+  /** The normalised venue name. Carried so the client can use the SHARED `placeForEvent` rule rather
+   *  than a weaker two-identity copy of it — see the note at the API's `name_key` line. */
+  name_key: string
   name: string
   short_name: string | null
   address: string | null

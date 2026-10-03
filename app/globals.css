@@ -140,3 +140,27 @@ details[open] > summary .details-arrow {
    ⚠ villagefoodie.co.uk keeps the Village Foodie mark — that is the whole point of the switch. */
 html[data-brand="hatchgrab"] .brand-mark-vf { display: none; }
 html:not([data-brand="hatchgrab"]) .brand-mark-hg { display: none; }
+
+/* ── 🔴 THE SUB-TAB BAR SITS AT THE TOP OF THE SCROLLER — ONE RESTING POSITION, NOT TWO ─────────────
+   THE BUG THIS FIXES (reported 3 October 2026): the Settings jump bar rendered ~24px down the page on
+   load and SNAPPED FLUSH the moment you scrolled or tapped a tab.
+   THE CAUSE: `position: sticky` can only hold an element at or BELOW where it sits in normal flow. The
+   bar is `top-0` inside the manage scroller, but its flow position is 24px lower because every tab's
+   content sits in a shared `pt-6` wrapper. At scrollTop 0 the pin had nothing to do, so the gap showed;
+   any scroll then let it pin flush. Two resting positions for one bar.
+   THE FIX: when a sub-tab bar IS the first thing in the wrapper, the wrapper gives up its top padding,
+   so the bar's flow position and its pinned position are the same pixel and it never moves.
+
+   ⚠️ WHY `:has()` AND NOT A `-mt-6` ON THE BAR. Six different notification banners can render ABOVE the
+   tab content in this wrapper (walkthrough, approvals, allergens, domain, Stripe, missing fields) and a
+   fixed negative margin would pull the bar up THROUGH whichever one is showing. This rule applies only
+   when the bar really is the first child, so a banner day degrades to the ordinary padded layout
+   instead of an overlap. It also cannot drift: no boolean to keep in sync with those six conditions.
+
+   ⚠️ TWO SELECTORS BECAUSE THE BARS SIT AT TWO DEPTHS. Menu's row and Schedule's row are direct
+   children of the wrapper (Schedule's component returns a fragment, so its children are hoisted);
+   Settings' bar is one level deeper, inside `SettingsTab`'s own `space-y-6` root. */
+.manage-tab-pad:has(> [data-subtab-bar]:first-child),
+.manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) {
+  padding-top: 0;
+}

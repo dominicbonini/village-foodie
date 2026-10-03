@@ -49,12 +49,31 @@ const MIGRATION2 = 'supabase/migrations/20261004_schedule_places_stage2.sql'
 const PLACES_UI = 'components/manage/SchedulePlaces.tsx'
 const PAGE = 'app/manage/[token]/page.tsx'
 const EVENTS_ACTION = 'app/api/events/action/route.ts'
+const PREVIEW_LIB = 'lib/schedule-graphics/event-preview.ts'
+/** The eight section labels — the ONLY new user-visible words Settings is allowed to have gained. */
+/* 🔴 THE ORDER CHANGED 3 October 2026 (operator request): Order settings and Truck settings moved
+ * up to just after Contact, and Auto-replies moved down to just after QR code. The list, the markup
+ * and this array are the three places the order is written, and the two checks below pin all three
+ * to each other — the bug this guards is a tab that jumps to the wrong part of the page. */
+const SETTINGS_LABELS = ['Truck details', 'Contact', 'Order settings', 'Truck settings',
+  'Schedule', 'QR code', 'Auto-replies', 'Account deletion']
+const SETTINGS_IDS = ['truck-details', 'contact', 'order-settings', 'truck-settings',
+  'schedule', 'qr-code', 'auto-replies', 'account-deletion']
 const DASH_ACTION = 'app/api/dashboard/action/route.ts'
 
+/** Every TS file the suites need compiled. ⚠️ The variant loop copies the unpatched ones verbatim. */
+const LIB_FILES = [LIB, PREVIEW_LIB]
+/** Files the compiled ones IMPORT. `@/types` is mapped to the root, so it has to be there. */
+const LIB_DEPS = ['types.ts']
+
 function buildLib(root, tag) {
-  const { out, req } = compile(root, [LIB], tag)
+  const { out, req } = compile(root, LIB_FILES, tag)
   try { fs.symlinkSync(path.join(REPO, 'node_modules'), path.join(out, 'node_modules')) } catch { /* already */ }
-  return req('lib/schedule-graphics/places.js')
+  const P = req('lib/schedule-graphics/places.js')
+  // ⚠️ ATTACHED RATHER THAN RETURNED SEPARATELY, so every existing `runXSuite(P)` keeps its one
+  // argument and the broken variants keep their one-module `detect(P)` signature.
+  P.__preview = req('lib/schedule-graphics/event-preview.js')
+  return P
 }
 
 // 🧪 REAL-LOOKING ROWS. The villages and the pub are the shape of this truck's actual schedule; the
@@ -309,6 +328,90 @@ function runMatchingSuite(P) {
     ]
     return P.visiblePlaces(list).length === 1 && P.visiblePlaces(list, true).length === 3
   })())
+
+  // ── 🔴 THE LIVE PREVIEW, AS A RULE ───────────────────────────────────────────────────────────
+  const EP = P.__preview
+  // ⚠️ `pDay`, not `day` — the bug-4 suite above already declares a `day` in this scope.
+  const pDay = (d) => (d === '2026-10-13' ? 'Tue 13 Oct' : String(d))
+
+  t('🔴 A HALF-EMPTY FORM NEVER YIELDS "undefined" OR "Invalid date"', (() => {
+    const ev0 = EP.previewEventFromForm({ form: {}, truckName: '' })
+    const vals = Object.values(ev0).filter(v => typeof v === 'string')
+    return vals.every(v => !/undefined|Invalid|NaN|null/i.test(v))
+      && ev0.venueName === EP.PREVIEW_PLACEHOLDERS.venue
+      && ev0.date === EP.PREVIEW_PLACEHOLDERS.date
+      && ev0.startTime === EP.PREVIEW_PLACEHOLDERS.time
+      && ev0.endTime === EP.PREVIEW_PLACEHOLDERS.time
+  })())
+  t('🔴 …and a PARTIAL date is the placeholder, never handed to the card to parse',
+    EP.previewEventFromForm({ form: { event_date: '2026-10' }, truckName: 'T' }).date === EP.PREVIEW_PLACEHOLDERS.date
+    && EP.previewEventFromForm({ form: { event_date: '2026-10-13' }, truckName: 'T' }).date === '2026-10-13')
+  t('⚠️ a filled form maps straight through', (() => {
+    const e = EP.previewEventFromForm({
+      form: { venue_name: 'Lavenham Village Hall', town: 'Lavenham', postcode: 'CO10 9QT', event_date: '2026-10-13', start_time: '17:00', end_time: '20:00' },
+      truckName: 'Village Spice',
+    })
+    return e.venueName === 'Lavenham Village Hall' && e.town === 'Lavenham'
+      && e.postcode === 'CO10 9QT' && e.startTime === '17:00' && e.truckName === 'Village Spice'
+  })())
+  t('🔴 the preview is never ORDERABLE — an unsaved event must not offer a working CTA',
+    EP.previewEventFromForm({ form: {}, truckName: 'T' }).status === 'unconfirmed')
+  t('⚠️ the `id` is a FIXED sentinel, so typing does not remount the card',
+    EP.previewEventFromForm({ form: { venue_name: 'a' }, truckName: 'T' }).id
+      === EP.previewEventFromForm({ form: { venue_name: 'b' }, truckName: 'T' }).id)
+  t('⚠️ `previewIsComplete` needs all four of venue, date and both times',
+    EP.previewIsComplete({ venue_name: 'X', event_date: '2026-10-13', start_time: '17:00', end_time: '20:00' }) === true
+    && EP.previewIsComplete({ venue_name: 'X', event_date: '2026-10-13', start_time: '17:00' }) === false
+    && EP.previewIsComplete({}) === false)
+
+  t('🔴 THE PHONE LINE DROPS EMPTY PARTS rather than printing separators around them', (() => {
+    const only = EP.previewLine({ form: { venue_name: 'Lavenham Village Hall' }, fmtDay: pDay, fmtTimes: P.timeRangeLabel })
+    return only === 'Lavenham Village Hall'
+  })())
+  t('⚠️ …and builds the whole line when the form is filled',
+    EP.previewLine({
+      form: { venue_name: 'Lavenham Village Hall', event_date: '2026-10-13', start_time: '17:00:00', end_time: '20:00:00' },
+      vanName: 'Van 2', fmtDay: pDay, fmtTimes: P.timeRangeLabel,
+    }) === 'Lavenham Village Hall · Tue 13 Oct · 17:00–20:00 · Van 2')
+  t('⚠️ …with the venue placeholder when nothing is typed yet',
+    EP.previewLine({ form: {}, fmtDay: pDay, fmtTimes: P.timeRangeLabel }) === EP.PREVIEW_PLACEHOLDERS.venue)
+
+  // ── 🔴 THE VAN DEFAULT ───────────────────────────────────────────────────────────────────────
+  const VA = 'van-a', VB = 'van-b', VGONE = 'van-gone'
+  t('🔴 the van is the one used at the MOST RECENT non-cancelled event here',
+    EP.vanForPlace({
+      events: [
+        { event_date: '2026-09-01', status: 'closed', van_id: VA },
+        { event_date: '2026-09-22', status: 'closed', van_id: VB },
+      ],
+      activeVanIds: [VA, VB],
+    }) === VB)
+  t('🔴 A CANCELLED EVENT NEVER DECIDES IT',
+    EP.vanForPlace({
+      events: [
+        { event_date: '2026-09-30', status: 'cancelled', van_id: VA },
+        { event_date: '2026-09-01', status: 'closed', van_id: VB },
+      ],
+      activeVanIds: [VA, VB],
+    }) === VB)
+  t('🔴 AN INACTIVE VAN IS NEVER PRE-SELECTED — a new event must not land on a screen nobody watches',
+    EP.vanForPlace({
+      events: [{ event_date: '2026-09-30', status: 'closed', van_id: VGONE }],
+      activeVanIds: [VA],
+    }) === null)
+  t('🔴 …and no history at all returns null, so the field stays "Select a van"',
+    EP.vanForPlace({ events: [], activeVanIds: [VA] }) === null
+    && EP.vanForPlace({ events: [{ event_date: '2026-09-30', status: 'closed', van_id: null }], activeVanIds: [VA] }) === null)
+  t('⚠️ `closed` DOES decide it — the same split as Last/Next: a closed event is what actually traded',
+    EP.vanForPlace({ events: [{ event_date: '2026-09-30', status: 'closed', van_id: VA }], activeVanIds: [VA] }) === VA)
+  /* ⚠️ CODE ONLY: the comment inside `vanForPlace` explains why `new Date()` is wrong, so it contains
+   * the very string being searched for. A comment is not a call. */
+  t('⚠️ the ordering is string comparison on the date, never `new Date()` on a date-only value',
+    (() => {
+      const src = read(PREVIEW_LIB)
+      const fn = codeOnly(src.slice(src.indexOf('export function vanForPlace')))
+      return !/new Date\(/.test(fn) && /localeCompare\(String\(a\.event_date\)\)/.test(fn)
+    })())
 
   // ── WHAT PICKING A PLACE FILLS ───────────────────────────────────────────────────────────────
   const emptyForm = { venue_name: '', address: '', town: '', postcode: '', start_time: '', end_time: '' }
@@ -1010,6 +1113,390 @@ function runWiringSuite() {
     !/setActiveTab\('deals'\)/.test(P) && !/setActiveTab\('modifiers'\)/.test(P)
     && !/onSwitchTab\('deals'\)/.test(P) && !/onSwitchTab\('modifiers'\)/.test(P))
 
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // PART A · SETTINGS AS ONE LIST WITH STICKY JUMP TABS
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  const RAWP = read(PAGE)
+
+  t('🔴 eight sections, in the brief\'s order, each id matching its label',
+    /const SETTINGS_SECTIONS: \{ id: string; label: string \}\[\] = \[/.test(P)
+    && SETTINGS_IDS.every((id, i) => P.includes(`{ id: '${id}', label: '${SETTINGS_LABELS[i]}' }`))
+    /* ⚠️ AND IN THAT ORDER IN THE SOURCE, not merely all present — the eight entries must appear in
+     * the array in the same sequence, or the bar would read in one order and the page in another. */
+    && (() => {
+      const at = SETTINGS_IDS.map(id => P.indexOf(`{ id: '${id}',`))
+      return at.every(i => i > 0) && at.every((v, i) => i === 0 || v > at[i - 1])
+    })()
+    && (RAWP.match(/══ SECTION: /g) || []).length === 8)
+  t('⚠️ …and the eight `<section id>` elements are in that same order in the markup', (() => {
+    const at = SETTINGS_IDS.map(id => RAWP.indexOf(`id="${id}"`))
+    return at.every(i => i > 0) && at.every((v, i) => i === 0 || v > at[i - 1])
+  })())
+
+  /* 🔴 ONE MEASURED NUMBER, TWO CONSUMERS — the rule taken from
+   * docs/customer-one-page-build-report.md. If the jump used CSS and the spy used a different
+   * number, a re-measure would move one and not the other. */
+  t('🔴 `pinnedTop` is MEASURED, and is both the scroll-margin and the spy\'s pin line',
+    /const h = barRef\.current\?\.getBoundingClientRect\(\)\.height \?\? 0/.test(P)
+    && /style=\{\{ scrollMarginTop: pinnedTop/.test(P)
+    && /spyRef\.current\.pinnedTop = next/.test(P)
+    && /const line = spyRef\.current\.pinnedTop/.test(P))
+  t('🔴 THE SPY READS THE `<main>` SCROLLER, NOT THE WINDOW — `window.scrollY` is always 0 on this page',
+    /document\.getElementById\(MANAGE_SCROLLER_ID\)/.test(P)
+    && /el\.scrollTop \+ el\.clientHeight >= el\.scrollHeight - 2/.test(P)
+    && /el\.addEventListener\('scroll', onScroll, \{ passive: true \}\)/.test(P)
+    && (() => {
+      // no window-scroll reads inside the hook
+      const i = RAWP.indexOf('function useSettingsJumpBar')
+      const hook = RAWP.slice(i, RAWP.indexOf('function SettingsTab', i))
+      return !/window\.scrollY|document\.documentElement\.scrollHeight/.test(hook)
+    })())
+  t('🔴 the bar is `sticky top-0` and is NOT wrapped in a div of its own',
+    /const SUBTAB_BAR = 'sticky top-0 z-30 -mx-4 px-4 bg-slate-50 border-b border-slate-200 min-w-0 overflow-x-auto'/.test(P)
+    && /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
+    && /ref=\{barRef\}/.test(P)
+    && /<main id=\{MANAGE_SCROLLER_ID\}/.test(P)
+    // `<main>` must keep NO padding-top, or a sticky child pins 24px down
+    && !/<main id=\{MANAGE_SCROLLER_ID\}[^>]*\bpt-/.test(P))
+  t('⚠️ the jump uses `scrollIntoView` so the BROWSER applies each section\'s own margin',
+    /node\.scrollIntoView\(\{ behavior: reduce \? 'auto' : 'smooth', block: 'start' \}\)/.test(P))
+  t('⚠️ the spy is LOCKED during our own smooth scroll, so the tapped tab does not flicker',
+    /if \(spyRef\.current\.target !== null\)/.test(P) && /releaseLock/.test(P))
+  t('🔴 the LAST section becomes active at the bottom even though it is short',
+    /if \(atBottom\(\)\) \{ setActiveId\(SETTINGS_SECTIONS\[SETTINGS_SECTIONS\.length - 1\]\.id\); return \}/.test(P)
+    && /minHeight: lastSectionMinHeight/.test(P))
+  t('🔴 …and that floor is MEASURED PIXELS, not a percentage that would compute to 0',
+    /const lastSectionMinHeight = scrollerH > 0 \? `\$\{Math\.max\(0, scrollerH - pinnedTop\)\}px` : undefined/.test(P)
+    && !/calc\(100% - \$\{Math\.round\(pinnedTop\)\}px\)/.test(P))
+  t('🔴 `#hash` deep links are handled in JS, because a fragment scrolls the DOCUMENT and it never scrolls here',
+    /window\.location\.hash\.replace\(\/\^#\/, ''\)/.test(P)
+    && /SETTINGS_SECTIONS\.some\(sec => sec\.id === id\)/.test(P)
+    && /didHash/.test(P))
+  t('⚠️ the active tab scrolls ITSELF into view on a phone, by the BAR\'s own scrollLeft',
+    /data-settings-tab="\$\{activeId\}"/.test(P)
+    && /bar\.scrollLeft = Math\.max\(0, left\)/.test(P))
+  t('⚠️ the jump bar scrolls sideways inside its row; the page does not',
+    /min-w-0 overflow-x-auto/.test(P) && /const SUBTAB_ROW = 'flex gap-4 w-max'/.test(P)
+    && (P.match(/className=\{SUBTAB_ROW\}/g) || []).length === 3)
+
+  /* 🔴 NO SETTINGS WORDING CHANGED. Asserted by DIFFING EVERY QUOTED STRING in SettingsTab against
+   * the commit this build started from — not by reading. The only additions allowed are the eight
+   * section labels. */
+  t('🔴 NOT ONE WORD OF SETTINGS COPY CHANGED, beyond the eight new headings', (() => {
+    const base = require('child_process')
+      .execFileSync('git', ['show', '197cb8c:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+    const strings = (src) => {
+      const i = src.indexOf('function SettingsTab({ userRole, truck,')
+      const seg = src.slice(i, src.indexOf('\nfunction ', i + 50))
+      // user-visible text: JSX text nodes and quoted strings, comments stripped first
+      return new Set((codeOnly(seg).match(/>[^<>{}\n]{3,}</g) || []).map(x => x.slice(1, -1).trim()).filter(Boolean))
+    }
+    const before = strings(base), after = strings(RAWP)
+    const added = [...after].filter(x => !before.has(x))
+    const allowed = new Set(SETTINGS_LABELS)
+    /* ⚠️ THE THREE REMOVALS THAT ARE ALLOWED, AND ONLY THOSE THREE: a card title that said exactly
+     * what its section's new `<h2>` says. The words did not leave Settings — they moved up one level.
+     * Any OTHER removal is a wording change and fails. */
+    /* ⚠️ "Settings" IS ALSO AN ALLOWED REMOVAL: it was a page title duplicating the tab the operator
+     * just pressed to get here. Every OTHER removal is a wording change and fails. */
+    const removable = new Set([...allowed, 'Settings'])
+    const removed = [...before].filter(x => !after.has(x)).filter(x => !removable.has(x))
+    const badAdded = added.filter(x => !allowed.has(x))
+    if (badAdded.length || removed.length) {
+      console.log('      added: ' + JSON.stringify(badAdded.slice(0, 6)))
+      console.log('      removed: ' + JSON.stringify(removed.slice(0, 6)))
+    }
+    return badAdded.length === 0 && removed.length === 0
+  })())
+
+  /* ══ ⛔ NOTHING WENT MISSING ═══════════════════════════════════════════════════════
+   * ⛔ THE BUG THIS EXISTS FOR, 3 October 2026. Reordering the eight sections was done by cutting
+   * each block from its `══ SECTION ══` marker to its own `</section>` and re-joining them in the new
+   * order. Everything BETWEEN one `</section>` and the next marker — content belonging to no section —
+   * was dropped on the floor: 189 lines, including the remove-van confirmation, the van billing and
+   * van upgrade modals, the emoji picker and the website-embed card.
+   * ⛔ IT TYPE-CHECKED AND IT RENDERED. Everything lost was a modal (invisible until its state is
+   * set) or a card below the fold, so every other check in this file still passed.
+   * 🔴 THE CHECK: every LINE of the page as it stood at the start of this work must still be
+   * present, except an explicit allowlist of the lines this work deliberately changed. Line-level and
+   * whole-file, because the loss was in the gaps BETWEEN the things the other checks look at. */
+  t('⛔ NO LINE OF THE PAGE WAS LOST — the reorder dropped 189 of them once', (() => {
+    const base = require('child_process')
+      .execFileSync('git', ['show', '197cb8c:app/manage/[token]/page.tsx'],
+        { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }).split('\n')
+    const now = RAWP.split('\n')
+    /* ⚠️ A MULTISET, NOT A SET. `</div>` appears hundreds of times; counting occurrences means a line
+     * deleted from one place is not excused by an identical line somewhere else. */
+    const left = new Map()
+    for (const l of now) left.set(l, (left.get(l) || 0) + 1)
+    const gone = []
+    for (const l of base) {
+      const n = left.get(l) || 0
+      if (n > 0) left.set(l, n - 1)
+      else gone.push(l.trim())
+    }
+    /* ⚠️ THE ALLOWLIST IS WHAT THIS WORK MEANT TO CHANGE, each one asserted on its own elsewhere in
+     * this file: the removed page title, the two de-duplicated card titles, the old pill rows, the
+     * logo's card-title treatment, the cancellation group's stray divider and duplicate label, and the
+     * lines that gained an id/import. Anything NOT on it is a loss. */
+    const allowed = [
+      '<h2 className="font-black text-slate-900 text-lg">Settings</h2>',
+      '<p className="text-base font-bold text-slate-800">Truck details</p>',
+      '<p className="text-base font-bold text-slate-800">Order settings</p>',
+      '<p className="text-base font-bold text-slate-800 mb-3">Logo</p>',
+      '{/* Truck details */}',
+      '<div className="flex items-center justify-between pt-3 border-t border-slate-100">',
+      '<p className="text-sm text-slate-700">{SETTING_COPY.allowCancellation.label}</p>',
+      '<p className="text-sm text-slate-700 mt-0.5">',
+      '<div className="pt-6">',                       // gained `manage-tab-pad`
+      'menuSection === sec.id',                       // the pill ternaries, now `subtabBtn(…)`
+      'section === sec.id',
+      "{pickedPlace?.name ?? 'New place'}",           // replaced by the live preview line
+      'setEditingEvent(p => p ? ({ ...p, truck_place_id: pl.id, ...fillFromPlace(pl, p) }) : p)',
+      /* ⚠️ TWO CONTINUATION LINES of a comment this work rewrote. Listed rather than pattern-matched:
+       * a rule loose enough to skip "any line that looks like prose" would also skip real copy. */
+      'filled fields raise — "will editing this change the place?" — and the answer is',
+      'no: nothing in the form writes back to the place. New events only. */}',
+    ]
+    const unexplained = gone.filter(l => {
+      if (!l) return false
+      if (allowed.includes(l)) return false
+      // the two pill rows and their button classes, replaced by the shared bar
+      if (/rounded-full text-sm font-bold whitespace-nowrap transition-colors/.test(l)) return false
+      if (/role="tablist" aria-label="(Menu|Schedule) sections"/.test(l)) return false
+      if (/^(bg-slate-900 text-white|\? 'bg-slate-900 text-white')/.test(l)) return false
+      if (/'bg-slate-100 text-slate-600 hover:bg-slate-200'\}`\}>?$/.test(l)) return false
+      if (/^<div className="flex gap-2 w-max">$/.test(l)) return false
+      // comment lines and the import/`<main>` lines that gained a token
+      if (/^(\/\/|\*|\{\/\*|\u2500|\u26a0|\U0001f534)/.test(l)) return false
+      if (/^(THE PILLS|three pills|because the bar|level of underlined|by scripts\/)/.test(l)) return false
+      if (/^import \{ useState/.test(l) || /^import \{ fillFromPlace/.test(l)) return false
+      if (/^<main className=/.test(l)) return false
+      if (/^(uses for explanatory|and "Upgrade to add more vans")/.test(l)) return false
+      if (/^(<span className="min-w-0 flex-1 text-sm|<p className="min-w-0 flex-1 text-xs)/.test(l)) return false
+      if (/^(\{(place|ev)|\{timeRangeLabel|\)\}|<\/(span|p)>)$/.test(l)) return false
+      return true
+    })
+    if (unexplained.length) {
+      console.log('      LINES LOST: ' + unexplained.length)
+      for (const l of unexplained.slice(0, 8)) console.log('        • ' + l.slice(0, 96))
+    }
+    return unexplained.length === 0
+  })())
+
+  t('🔴 THE CANCELLATION GROUP MOVED TO ORDER SETTINGS, UNCHANGED', (() => {
+    const i = RAWP.indexOf('id="order-settings"')
+    const j = RAWP.indexOf('id="truck-settings"')
+    const sec = RAWP.slice(i, j)
+    /* ⚠️ THE SLICE ENDS AT WHATEVER SECTION NOW FOLLOWS CONTACT, read from SETTINGS_IDS. It was
+     * hard-coded to `auto-replies`, and when the 3 October reorder moved Auto-replies to seventh this
+     * "Contact" slice silently grew to cover four sections — so the check that the group had LEFT
+     * Contact started reading the group in its new home and failed. */
+    const after = SETTINGS_IDS[SETTINGS_IDS.indexOf('contact') + 1]
+    const contact = RAWP.slice(RAWP.indexOf('id="contact"'), RAWP.indexOf(`id="${after}"`))
+    return /\{\/\* Cancellation policy \*\/\}/.test(sec)
+      && /allow_customer_cancellation/.test(sec)
+      && /SETTING_COPY\.allowCancellation\.label/.test(sec)      // the wording is the same constant
+      && !/Cancellation policy/.test(contact)                    // and it is no longer in Contact
+      && i > 0 && j > i
+  })())
+  /* 🔴 IT HAS ITS OWN HEADING, AND IT COMES FROM THE SAME CONSTANT. Asked for 3 October 2026:
+   * moved into a box of its own the group had no title, just a sentence starting "Customers can cancel
+   * up to". The heading is `SETTING_COPY.allowCancellation.label`, so it is the setting's OWN words and
+   * no new wording was invented — and the duplicate label line inside the row went with it, so the
+   * words appear exactly once. */
+  t('🔴 "Allow customers to cancel orders" HAS ITS OWN HEADING, from SETTING_COPY', (() => {
+    const sec = RAWP.slice(RAWP.indexOf('id="order-settings"'), RAWP.indexOf('id="truck-settings"'))
+    const head = /<p className="text-base font-bold text-slate-800">\{SETTING_COPY\.allowCancellation\.label\}<\/p>/
+    return head.test(sec)
+      // ⚠️ ONCE, not twice — the row's own duplicate label line is gone.
+      && (sec.match(/SETTING_COPY\.allowCancellation\.label/g) || []).length === 1
+  })())
+  /* ⛔ THE STRAY LINE ABOVE THE WORDING. `pt-3 border-t border-slate-100` was a DIVIDER separating
+   * this group from the contact fields above it in its old home. Carried into a card of its own it drew
+   * a rule across the top of the box, above the first words — which is what the operator reported. */
+  t('⛔ NO LEFTOVER DIVIDER ABOVE THE CANCELLATION WORDING', (() => {
+    /* ⚠️ SCOPED TO THE CANCELLATION CARD, NOT THE SECTION. `pt-3 border-t border-slate-100` is the
+     * ordinary row divider used four more times inside the main Order settings box, where it is doing
+     * its job. Only THIS group's copy was stray, because it had nothing above it to divide from.
+     * ⚠️ `codeOnly` — the comment recording the removal names the class it removed. */
+    const a = RAWP.indexOf('MOVED HERE FROM Contact Details')
+    const b = RAWP.indexOf('{/* ── PRE-ORDERS (V7.8 global-config)', a)
+    if (a < 0 || b < a) return false
+    return !/pt-3 border-t border-slate-100/.test(codeOnly(RAWP.slice(a, b)))
+  })())
+  /* 🔴 AND IT SITS BELOW THE MAIN ORDER SETTINGS BOX, not above it ("put it in the section
+   * below", 3 October 2026). Still inside the Order settings SECTION — the brief puts it there — just
+   * past the box it was sitting on top of. */
+  t('🔴 THE CANCELLATION BOX IS BELOW THE MAIN ORDER SETTINGS BOX', (() => {
+    const sec = RAWP.slice(RAWP.indexOf('id="order-settings"'), RAWP.indexOf('id="truck-settings"'))
+    const mainCard = sec.indexOf('<Card className="p-4 space-y-3">')
+    const cancel = sec.indexOf('MOVED HERE FROM Contact Details')
+    return mainCard > 0 && cancel > mainCard
+  })())
+  /* 🔴 EVERY SECTION HAS ITS OWN HEADER. The first pass dropped the `<h2>` for the three sections
+   * whose card title already said the same words — which left Auto-replies with no header at all.
+   * Corrected: the HEADING stays on all eight and the duplicate CARD TITLE goes, so each wording
+   * appears exactly once. */
+  t('🔴 ALL EIGHT SECTIONS CARRY THEIR OWN `<h2>`, none missing',
+    (RAWP.match(/<h2 className="text-lg font-black text-slate-900">/g) || []).length === 8
+    && SETTINGS_LABELS.every(l => RAWP.includes(`<h2 className="text-lg font-black text-slate-900">${l}</h2>`)))
+  t('⚠️ …and the two card titles that duplicated a heading are gone, so nothing reads twice',
+    (RAWP.match(/THE CARD TITLE "/g) || []).length === 2
+    && !/<p className="text-base font-bold text-slate-800">Truck details<\/p>/.test(RAWP)
+    && !/<p className="text-base font-bold text-slate-800">Order settings<\/p>/.test(RAWP))
+  /* 🔴 AUTO-REPLIES IS THE DELIBERATE EXCEPTION (asked for 3 October 2026). Its card title was
+   * removed with the other two; the operator asked for it back, repeat and all. That card is hidden in
+   * the native app and sits among other cards, so without its own title nothing names the box — the
+   * duplication is the lesser cost, and it is the operator's call rather than a tidiness rule.
+   * ⚠️ THIS ASSERTION EXISTS SO A LATER "de-duplicate" PASS CANNOT QUIETLY TAKE IT AGAIN. */
+  t('🔴 THE AUTO-REPLIES CARD KEEPS ITS OWN TITLE, repeating the heading on purpose',
+    /<p className="text-base font-bold text-slate-800">Auto-replies<\/p>/.test(RAWP)
+    && /DELIBERATELY REPEATS THE SECTION'S `<h2>`/.test(RAWP))
+  /* 🔴 THE BAR HAS ONE RESTING POSITION, NOT TWO. THE BUG (reported 3 October 2026): on load the
+   * bar sat 24px down the page and snapped flush the instant you scrolled or tapped a tab. THE CAUSE:
+   * sticky can only hold an element at or BELOW its position IN FLOW, and that position is 24px down
+   * because every tab's content sits in a shared `pt-6` wrapper — so at scrollTop 0 the pin had
+   * nothing to do. THE FIX: the wrapper gives up its padding when a sub-tab bar is the first thing in
+   * it. Measured in both engines by scripts/schedule-places-render.cjs AT scrollTop 0. */
+  t('🔴 THE JUMP BAR IS FLUSH AT THE TOP ON LOAD, not only after scrolling', (() => {
+    const css = read('app/globals.css')
+    return /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(P)
+      && /<div className="pt-6 manage-tab-pad">/.test(RAWP)
+      && /\.manage-tab-pad:has\(> \[data-subtab-bar\]:first-child\)/.test(css)
+      && /\.manage-tab-pad:has\(> \*:first-child > \[data-subtab-bar\]:first-child\)/.test(css)
+      /* ⛔ AND NOT BY A NEGATIVE MARGIN. `-mt-6` was the first fix and it was wrong: SIX different
+       * banners can render above the tab content in that wrapper, and the margin pulled the bar up
+       * through whichever one was showing. The `:has()` rule applies only when the bar really is
+       * first, so a banner day degrades to the ordinary padded layout instead of an overlap. */
+      && !/sticky top-0 z-30 -mt-6/.test(P)
+  })())
+  /* 🔴 ALL THREE SUB-TAB ROWS ARE THE SAME CONTROL (3 October 2026 request). Menu and Schedule were
+   * pills; the operator asked for Settings' underlined treatment everywhere. ONE definition, so a
+   * restyle cannot leave three rows looking like three different things. */
+  t('🔴 MENU AND SCHEDULE USE THE SHARED BAR, not their old pills', (() => {
+    const shared = (RAWP.match(/className=\{`\$\{SUBTAB_BAR\} mb-4`\}/g) || []).length
+    return shared === 2
+      && /data-subtab-bar className=\{`\$\{SUBTAB_BAR\} mb-4`\}/.test(P)
+      && (P.match(/className=\{subtabBtn\(/g) || []).length === 3
+      /* ⚠️ THE PILL CLASS IS CHECKED, NOT `bg-slate-900 text-white` — that one is still used
+       * legitimately by the walkthrough's step chips, so asserting its absence would fail on code this
+       * work never touched. */
+      && !/px-3\.5 py-1\.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors/.test(P)
+  })())
+  /* 🔴 …BUT MENU AND SCHEDULE STILL SWITCH PAGES. "they have separate pages though keep that dont
+   * have the scrolling like settings" — the style came across and the scroll-spy did NOT. This check
+   * is what stops a later tidy-up "unifying" them into Settings' one-long-page behaviour. */
+  t('🔴 MENU AND SCHEDULE DID NOT GAIN SETTINGS\' SCROLL BEHAVIOUR', (() => {
+    const menu = RAWP.slice(RAWP.indexOf('THE MENU SUB-TABS'), RAWP.indexOf("{activeTab === 'menu' && menuSection === 'items'"))
+    const sched = RAWP.slice(RAWP.indexOf('THE SCHEDULE SUB-TABS'), RAWP.indexOf("{isActive && section === 'events' && ("))
+    const clean = (seg) => !/useSettingsJumpBar|scrollMarginTop|scrollIntoView|data-settings-tab|jumpTo\(/.test(codeOnly(seg))
+    return menu.length > 100 && sched.length > 100 && clean(menu) && clean(sched)
+      && /onClick=\{\(\) => setMenuSection\(sec\.id\)\}/.test(P)
+      && /onClick=\{\(\) => onSectionChange\(sec\.id\)\}/.test(P)
+  })())
+  /* 🔴 THE LOGO IS IN THE TRUCK DETAILS BOX (3 October 2026 request). It had a card of its own
+   * directly above, so Settings opened with two boxes that are both "what my truck is". */
+  t('🔴 THE LOGO IS COMBINED INTO THE TRUCK DETAILS CARD', (() => {
+    const sec = RAWP.slice(RAWP.indexOf('id="truck-details"'), RAWP.indexOf('id="contact"'))
+    return (sec.match(/<Card className="p-4/g) || []).length === 1
+      && /Upload logo/.test(sec) && /logo_storage_path/.test(sec)
+      && /label="Truck name"/.test(sec)
+      // ⚠️ A MOVE, NOT A REWRITE — the same handlers, still exactly once each.
+      && (sec.match(/void uploadLogo\(f\)/g) || []).length === 1
+      && (sec.match(/void removeLogo\(\)/g) || []).length === 1
+  })())
+  t('🔴 THE JUMP TABS ARE NOT GREYED OUT LIKE DISABLED CONTROLS',
+    /border-transparent text-slate-600 hover:text-slate-900/.test(P)
+    && !/border-transparent text-slate-400 hover:text-slate-600/.test(P))
+  /* 🔴 ONE PRESS, NOT TWO. `scrollIntoView` on the tab BUTTON walked every scrollable ancestor —
+   * `<main>` included — so keeping the tab in view scrolled the page back and undid the jump that had
+   * just started. The bar's own `scrollLeft` is set directly now: one axis, one element. */
+  t('🔴 A TAB TAKES ONE PRESS: keeping it in view cannot move the page',
+    /bar\.scrollLeft = Math\.max\(0, left\)/.test(P)
+    && /bar\.scrollLeft = right - bar\.clientWidth/.test(P)
+    && (() => {
+      // ⚠️ CODE ONLY — the comment above the effect explains the `scrollIntoView` bug by name.
+      const i = RAWP.indexOf('KEEP THE ACTIVE TAB IN VIEW')
+      const eff = codeOnly(RAWP.slice(i, RAWP.indexOf('}, [active, activeId])', i)))
+      return !/scrollIntoView/.test(eff)
+    })())
+  /* 🔴 THE BAR IS THE FIRST THING ON THE PAGE (corrected 3 October 2026). It was below the two
+   * one-time prompt cards, so the navigation sat under them. The cards are still above section 1 and
+   * still outside the tabs — no tab points at them — but the bar comes first. */
+  t('🔴 THE JUMP BAR IS THE FIRST CHILD, above the two intro cards',
+    RAWP.indexOf('THE STICKY JUMP BAR') < RAWP.indexOf('New to HatchGrab?')
+    && RAWP.indexOf('THE STICKY JUMP BAR') < RAWP.indexOf('Get the app'))
+  t('⚠️ …and the two intro cards are still above section 1, with no tab pointing at them',
+    RAWP.indexOf('New to HatchGrab?') < RAWP.indexOf('══ SECTION: Truck details')
+    && RAWP.indexOf('Get the app') < RAWP.indexOf('══ SECTION: Truck details')
+    && !/id: 'new-to-hatchgrab'|id: 'get-the-app'/.test(P))
+  /* 🔴 THE WORD "Settings" APPEARED THREE TIMES before the operator read a setting: the tab, a page
+   * title, and the section headings. The page title is gone. */
+  t('🔴 the duplicate "Settings" page title is gone',
+    !/<h2 className="font-black text-slate-900 text-lg">Settings<\/h2>/.test(RAWP))
+  t('⚠️ the walkthrough and `onSwitchTab(\'settings\')` still reach Settings unchanged',
+    /tabIds: \['settings'\]/.test(read('lib/walkthrough.ts'))
+    && /data-tab-id=\{t\.id\}/.test(P)
+    && /onSwitchTab\('settings'\)/.test(P))
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // PART A.4 · "SAME AS VAN1" — NOT BUILT, AND THE HARNESS PINS THAT
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  /* 🔴 STOPPED, NOT SKIPPED. Three fields rendered inside every van's card are TRUCK-level, not
+   * per-van — `menu_categories.prep_secs`, `.batch_size` and `.counts_toward_capacity`, all written by
+   * `upsert_category` scoped `.eq('truck_id', …)`. The brief says STOP in that case. This asserts
+   * nothing was half-built, so the report's claim is checkable rather than trusted. */
+  t('🔴 NOTHING OF "Same as Van1" WAS BUILT — no column, no switch, no migration',
+    (() => {
+      try {
+        require('child_process').execFileSync('grep',
+          ['-rl', '--include=*.ts', '--include=*.tsx', '--include=*.sql', 'same_as_first_van', 'app', 'lib', 'components', 'supabase'],
+          { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+        return false
+      } catch { return true }
+    })())
+  t('🔴 …and the three truck-level fields are still written by `upsert_category`, truck-scoped',
+    /api\('upsert_category', \{/.test(P)
+    && /counts_toward_capacity: newVal,/.test(P)
+    && /from\('menu_categories'\)[\s\S]{0,200}\.eq\('truck_id', truck\.id\)/.test(stripComments(read(ROUTE))))
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // PART B · THE LIVE PREVIEW AND THE VAN DEFAULT
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  t('🔴 THE PREVIEW RENDERS THE PUBLIC PAGE\'S OWN CARD, not a copy of its markup',
+    /import TruckListCard from '@\/components\/TruckListCard'/.test(P)
+    && /<TruckListCard\s*\n?\s*event=\{previewEvent\}/.test(P)
+    && /<TruckListCard key=\{event\.id\} event=\{event\} slug=\{slug\} \/>/.test(read('app/trucks/[slug]/TruckClient.tsx')))
+  t('⚠️ …in the `compact` variant with no Order CTA — an unsaved event must not offer one',
+    /compact\s*\n?\s*hideOrderButton/.test(P)
+    && /status: 'unconfirmed'/.test(read(PREVIEW_LIB)))
+  t('🔴 it is in the FOOTER, left of the buttons, replacing the plain "Filled from" line',
+    (() => {
+      const i = RAWP.indexOf('shrink-0 border-t border-slate-200 bg-white px-5')
+      const foot = RAWP.slice(i, i + 2600)
+      return /<TruckListCard/.test(foot)
+        && foot.indexOf('<TruckListCard') < foot.indexOf('label="Cancel"')
+        && /Filled from \{pickedPlace\?\.name/.test(foot)   // kept as a muted line inside the preview
+    })())
+  t('⚠️ the phone\'s pinned card IS the preview line, and it updates live',
+    /data-preview-line/.test(P) && /\{previewOneLine\}/.test(P)
+    && /const previewOneLine = editingEvent/.test(P))
+  t('🔴 nothing unfilled can render as "undefined" or "Invalid date"',
+    /export const PREVIEW_PLACEHOLDERS/.test(read(PREVIEW_LIB))
+    && /const date = isYmd\(form\.event_date\) \? form\.event_date : PREVIEW_PLACEHOLDERS\.date/.test(read(PREVIEW_LIB))
+    && !/new Date\(form\./.test(read(PREVIEW_LIB)))
+  t('🔴 THE VAN DEFAULT NEVER PRE-SELECTS AN INACTIVE VAN, and never overrides a chosen one',
+    /activeVanIds: vans\.map\(v => v\.id\)/.test(P)
+    && /van_id: p\.van_id \?\? vanDefault/.test(P)
+    && /const active = new Set\(input\.activeVanIds\)/.test(read(PREVIEW_LIB)))
+  t('⚠️ …and only when the truck has more than one van',
+    /const vanDefault = vans\.length > 1/.test(P))
+  t('⚠️ "which events happened at this place" uses the SHARED rule, not a weaker local copy',
+    /placeForEvent\(e as unknown/.test(P)
+    && /name_key: p\.name_key,/.test(read(ROUTE))
+    && /name_key: string/.test(read(PLACES_UI)))
+
   t('⚠️ stage 2 and 3 are still NOT started — no upload, no canvas, no checklist',
     !/<input[^>]*type="file"/.test(U) && !/canvas|toDataURL|html2canvas/i.test(U) && !/checklist/i.test(U))
 
@@ -1153,6 +1640,14 @@ function runVariants() {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sgplaces-'))
     fs.mkdirSync(path.join(root, path.dirname(LIB)), { recursive: true })
     fs.writeFileSync(path.join(root, LIB), src)
+    /* ⚠️ EVERY FILE `buildLib` COMPILES MUST EXIST IN THE VARIANT ROOT, not just the patched one.
+     * `LIB_FILES` gained event-preview.ts and this loop wrote only places.ts, so the compile died
+     * with MODULE_NOT_FOUND — which a `catch` would have counted as "caught as required" and passed
+     * every variant for the wrong reason. The unpatched siblings are copied verbatim. */
+    for (const f of [...LIB_FILES.filter(f => f !== LIB), ...LIB_DEPS]) {
+      fs.mkdirSync(path.join(root, path.dirname(f)), { recursive: true })
+      fs.copyFileSync(path.join(REPO, f), path.join(root, f))
+    }
     let caught = false
     // ⚠️ THE TAG IS THE WHOLE LABEL PREFIX, not `slice(0, 2)`: W8a/W8b/W8c/W8 all read as 'W8'
     // under that, so a compile failure named the wrong variant.
@@ -1234,6 +1729,161 @@ function runVariants() {
       changed(read(PAGE), '              <div className="shrink-0 border-t border-slate-200 bg-white px-5',
         '              <div className="border-t border-slate-200 bg-white px-5', 'W24'),
       src => /shrink-0 border-t border-slate-200 bg-white/.test(src)],
+
+    /* ── 🔴 PART A · THE SETTINGS JUMP BAR ──────────────────────────────────────────────────────── */
+    ['W25 🔴 the spy goes back to reading the WINDOW, which never scrolls on this page',
+      changed(read(PAGE), 'const atBottom = () => el.scrollTop + el.clientHeight >= el.scrollHeight - 2',
+        'const atBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2', 'W25'),
+      src => {
+        const i = src.indexOf('function useSettingsJumpBar')
+        const hook = src.slice(i, src.indexOf('function SettingsTab', i))
+        return !/window\.scrollY|document\.documentElement\.scrollHeight/.test(hook)
+      }],
+    ['W26 🔴 the jump offset becomes a GUESSED constant instead of the measured bar height',
+      changed(read(PAGE), 'const h = barRef.current?.getBoundingClientRect().height ?? 0',
+        'const h = 44', 'W26'),
+      src => /const h = barRef\.current\?\.getBoundingClientRect\(\)\.height \?\? 0/.test(src)],
+    ['W27 🔴 the scroll-margin and the spy stop sharing one number',
+      changed(read(PAGE), 'style={{ scrollMarginTop: pinnedTop, minHeight: lastSectionMinHeight }}',
+        'style={{ scrollMarginTop: 60, minHeight: lastSectionMinHeight }}', 'W27'),
+      src => (src.match(/scrollMarginTop: pinnedTop/g) || []).length === 8],
+    ['W28 🔴 the last section loses its floor, so its tab can never light from the heading rule',
+      changed(read(PAGE), ', minHeight: lastSectionMinHeight }}', ' }}', 'W28'),
+      src => /minHeight: lastSectionMinHeight/.test(src)],
+    ['W29 🔴 the floor goes back to a percentage, which has nothing to resolve against',
+      changed(read(PAGE), 'const lastSectionMinHeight = scrollerH > 0 ? `${Math.max(0, scrollerH - pinnedTop)}px` : undefined',
+        'const lastSectionMinHeight = `calc(100% - ${Math.round(pinnedTop)}px)`', 'W29'),
+      src => /scrollerH > 0 \? `\$\{Math\.max\(0, scrollerH - pinnedTop\)\}px`/.test(src)],
+    ['W30 🔴 `<main>` gains a padding-top, so every sticky child pins 24px down the page',
+      changed(read(PAGE), '<main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>',
+        '<main id={MANAGE_SCROLLER_ID} className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pt-6 pb-6"}>', 'W30'),
+      src => !/<main id=\{MANAGE_SCROLLER_ID\}[^>]*\bpt-/.test(src)],
+    ['W31 🔴 the `#hash` deep link is dropped — a fragment cannot scroll a non-document scroller',
+      changed(read(PAGE), "    const id = typeof window === 'undefined' ? '' : window.location.hash.replace(/^#/, '')",
+        "    const id = ''", 'W31'),
+      src => /window\.location\.hash\.replace\(\/\^#\/, ''\)/.test(src)],
+    /* 🔴 THE WORDING GUARD. One word changed in Settings must fail, or "no wording changed" is a
+     * claim rather than a check. */
+    ['W32 🔴 ONE WORD OF SETTINGS COPY IS CHANGED',
+      changed(read(PAGE), '>New to HatchGrab?<', '>New to Hatchgrab?<', 'W32'),
+      src => {
+        const base = require('child_process')
+          .execFileSync('git', ['show', '197cb8c:app/manage/[token]/page.tsx'], { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+        const strings = (x) => {
+          const i = x.indexOf('function SettingsTab({ userRole, truck,')
+          const seg = x.slice(i, x.indexOf('\nfunction ', i + 50))
+          return new Set((codeOnly(seg).match(/>[^<>{}\n]{3,}</g) || []).map(y => y.slice(1, -1).trim()).filter(Boolean))
+        }
+        const before = strings(base), after = strings(src)
+        const allowed = new Set(SETTINGS_LABELS)
+        return [...after].filter(y => !before.has(y) && !allowed.has(y)).length === 0
+          && [...before].filter(y => !after.has(y)).length === 0
+      }],
+    ['W33 🔴 the cancellation group is left in Contact instead of moving to Order settings',
+      changed(read(PAGE), '      {/* Cancellation policy */}', '      {/* Cancellation policy (moved) */}', 'W33'),
+      src => /\{\/\* Cancellation policy \*\/\}/.test(src)],
+
+    /* ── 🔴 THE THREE CORRECTIONS FROM THE OPERATOR, each with the bug it reinstates ────────────── */
+    ['W40 🔴 THE DOUBLE-CLICK RETURNS: keeping the tab in view scrolls the page back',
+      changed(read(PAGE), "    const pad = 16",
+        "    btn.scrollIntoView({ block: 'nearest', inline: 'nearest' })\n    const pad = 16", 'W40'),
+      src => {
+        const i = src.indexOf('KEEP THE ACTIVE TAB IN VIEW')
+        const eff = codeOnly(src.slice(i, src.indexOf('}, [active, activeId])', i)))
+        return !/scrollIntoView/.test(eff)
+      }],
+    ['W41 🔴 a section loses its own header — which is how Auto-replies ended up with none',
+      changed(read(PAGE), '        <h2 className="text-lg font-black text-slate-900">Auto-replies</h2>\n', '', 'W41'),
+      src => (src.match(/<h2 className="text-lg font-black text-slate-900">/g) || []).length === 8],
+    ['W42 🔴 the jump bar drops back below the two intro cards',
+      (() => {
+        const src = read(PAGE)
+        const a = src.indexOf('      {/* ── 🔴 THE STICKY JUMP BAR ──')
+        const b = src.indexOf('      {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT', a)
+        const bar = src.slice(a, b)
+        const rest = src.slice(0, a) + src.slice(b)
+        const at = rest.indexOf('      {/* ══ SECTION: Truck details ══ */}')
+        return rest.slice(0, at) + bar + rest.slice(at)
+      })(),
+      src => src.indexOf('THE STICKY JUMP BAR') < src.indexOf('New to HatchGrab?')],
+    ['W43 🔴 the tabs go back to looking disabled',
+      changed(read(PAGE), 'border-transparent text-slate-600 hover:text-slate-900',
+        'border-transparent text-slate-400 hover:text-slate-600', 'W43'),
+      src => /border-transparent text-slate-600 hover:text-slate-900/.test(src)],
+
+    ['W44 🔴 the jump bar goes back to resting 24px down and snapping flush on first scroll',
+      changed(read(PAGE), '        data-subtab-bar\n        className={SUBTAB_BAR}',
+        '        className={SUBTAB_BAR}', 'W44'),
+      src => /data-subtab-bar\n        className=\{SUBTAB_BAR\}/.test(src)],
+    ['W48 🔴 Menu and Schedule go back to pills, so the three rows look like two controls',
+      changed(read(PAGE), '          <div role="tablist" aria-label="Menu sections" data-subtab-bar className={`${SUBTAB_BAR} mb-4`}>',
+        '          <div role="tablist" aria-label="Menu sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">', 'W48'),
+      src => (src.match(/className=\{`\$\{SUBTAB_BAR\} mb-4`\}/g) || []).length === 2],
+    ['W49 🔴 the Settings section order is scrambled, so a tab jumps to the wrong part of the page',
+      changed(read(PAGE), "  { id: 'order-settings', label: 'Order settings' },\n  { id: 'truck-settings', label: 'Truck settings' },\n",
+        '', 'W49'),
+      src => {
+        const ids = ['truck-details', 'contact', 'order-settings', 'truck-settings',
+          'schedule', 'qr-code', 'auto-replies', 'account-deletion']
+        const at = ids.map(id => src.indexOf(`{ id: '${id}',`))
+        return at.every(i => i > 0) && at.every((v, i) => i === 0 || v > at[i - 1])
+      }],
+    ['W50 🔴 the logo gets its own card back, above truck details',
+      changed(read(PAGE), '        <div className="border-t border-slate-100" />\n        {/* ⛔ THE CARD TITLE "Truck details" IS GONE',
+        '        </Card>\n      <Card className="p-4 space-y-3">\n        {/* ⛔ THE CARD TITLE "Truck details" IS GONE', 'W50'),
+      src => {
+        const sec = src.slice(src.indexOf('id="truck-details"'), src.indexOf('id="contact"'))
+        return (sec.match(/<Card className="p-4/g) || []).length === 1
+      }],
+    ['W45 🔴 the Auto-replies card title is "de-duplicated" away again',
+      changed(read(PAGE), '          <p className="text-base font-bold text-slate-800">Auto-replies</p>\n', '', 'W45'),
+      src => /<p className="text-base font-bold text-slate-800">Auto-replies<\/p>/.test(src)],
+    ['W46 🔴 the stray divider returns above the cancellation wording',
+      changed(read(PAGE), '        <div className="flex items-center justify-between mt-1">',
+        '        <div className="flex items-center justify-between pt-3 border-t border-slate-100">', 'W46'),
+      src => {
+        const a = src.indexOf('MOVED HERE FROM Contact Details')
+        const b = src.indexOf('{/* ── PRE-ORDERS (V7.8 global-config)', a)
+        return a >= 0 && b > a && !/pt-3 border-t border-slate-100/.test(codeOnly(src.slice(a, b)))
+      }],
+    ['W47 🔴 the cancellation box goes back on TOP of the main Order settings box',
+      (() => {
+        const src = read(PAGE)
+        const a = src.indexOf('      {/* 🔴 MOVED HERE FROM Contact Details')
+        const b = src.indexOf('      {/* ── PRE-ORDERS (V7.8 global-config)', a)
+        const blk = src.slice(a, b)
+        const rest = src.slice(0, a) + src.slice(b)
+        const at = rest.indexOf('      <Card className="p-4 space-y-3">')
+        return rest.slice(0, at) + blk + rest.slice(at)
+      })(),
+      src => {
+        const sec = src.slice(src.indexOf('id="order-settings"'), src.indexOf('id="truck-settings"'))
+        return sec.indexOf('MOVED HERE FROM Contact Details') > sec.indexOf('<Card className="p-4 space-y-3">')
+      }],
+
+    /* ── 🔴 PART B · THE PREVIEW AND THE VAN DEFAULT ─────────────────────────────────────────────── */
+    ['W34 🔴 the preview stops using the public page\'s card',
+      changed(read(PAGE), "import TruckListCard from '@/components/TruckListCard'", '', 'W34'),
+      src => /import TruckListCard from '@\/components\/TruckListCard'/.test(src)],
+    ['W35 🔴 the preview offers an Order button on an event that does not exist',
+      changed(read(PAGE), '                        compact\n                        hideOrderButton',
+        '                        compact', 'W35'),
+      src => /compact\s*\n?\s*hideOrderButton/.test(src)],
+    ['W36 🔴 an unfilled date is handed to the card raw, so it renders "Invalid Date"',
+      changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date",
+        "  const date = String(form.event_date ?? '')", 'W36'),
+      src => /isYmd\(form\.event_date\) \? form\.event_date : PREVIEW_PLACEHOLDERS\.date/.test(src)],
+    ['W37 🔴 the van default overrides a van the operator already chose',
+      changed(read(PAGE), 'van_id: p.van_id ?? vanDefault,', 'van_id: vanDefault,', 'W37'),
+      src => /van_id: p\.van_id \?\? vanDefault,/.test(src)],
+    ['W38 🔴 the van default stops checking that the van is still ACTIVE',
+      changed(read(PREVIEW_LIB), "    .filter(e => !!e.van_id && active.has(e.van_id as string))",
+        "    .filter(e => !!e.van_id)", 'W38'),
+      src => /active\.has\(e\.van_id as string\)/.test(src)],
+    ['W39 🔴 a CANCELLED event is allowed to decide the van',
+      changed(read(PREVIEW_LIB), "    .filter(e => String(e.status ?? '').trim().toLowerCase() !== 'cancelled')",
+        '    .filter(() => true)', 'W39'),
+      src => /!== 'cancelled'\)/.test(src)],
 
     ['W20 🔴 the stage-2 migration starts touching existing event rows',
       changed(read(MIGRATION2), 'add column if not exists truck_place_id uuid references public.truck_places(id) on delete set null',

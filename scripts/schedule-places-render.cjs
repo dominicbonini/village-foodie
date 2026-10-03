@@ -113,6 +113,9 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
   const body = lift(PAGE, /className=\{`(flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y) px-5/, 'the scrolling body')
   const twoPane = lift(PAGE, /\$\{\s*\n?\s*showPicker \? '(md:grid md:grid-cols-\[380px_minmax\(0,1fr\)\] md:gap-5)' : ''\}/, 'the two-pane grid')
   const footer = lift(PAGE, /<div className="(shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3)/, 'the sticky footer')
+  /* 🔴 THE CAP ON THE PREVIEW'S HEIGHT, lifted from the page. It is what stops a long venue name
+   * wrapping the card into two rows and eating the form pane — the thing the brief asks to measure. */
+  const previewCap = lift(PAGE, /<div className="(max-h-\[4\.75rem\] overflow-hidden)">/, 'the preview height cap')
   const form = lift(PAGE, /<div id="add-event-form" className="(grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the form grid')
   const grid = oneCol ? '' : twoPane
 
@@ -170,7 +173,15 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
     </div>
 
     <div id="footer" class="${footer}" style="display:flex;align-items:center;gap:12px">
-      <p id="filledFrom" style="flex:1 1 0%;min-width:0;font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filled from Lavenham Village Hall</p>
+      <!-- the live preview, with the page's own height cap -->
+      <div id="preview" class="min-w-0 flex-1 max-md:hidden">
+        <div class="${previewCap}">
+          ${filler('TruckListCard (compact) — Lavenham Village Hall · Tue 13 Oct · 17:00–20:00', 56)}
+          <p id="filledFrom" style="font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">Filled from Lavenham Village Hall</p>
+        </div>
+      </div>
+      <!-- the phone keeps a single muted line here; the preview itself is the pinned card up top -->
+      <p id="filledFromPhone" class="min-w-0 flex-1 md:hidden" style="font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filled from Lavenham Village Hall</p>
       <div class="shrink-0" style="display:flex;gap:8px">
         <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Cancel</span>
         <span style="padding:8px 16px;border-radius:12px;background:#ea580c;color:#fff;white-space:nowrap">Add event</span>
@@ -181,30 +192,107 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
 }
 
 /**
- * THE MENU PILL ROW. Three pills in the same treatment Schedule's use.
- * 🔴 THE QUESTION IS THE SAME ONE: do they scroll INSIDE their row, or widen the page? Measured with
- * the real class strings, and with a six-pill control at 320px where the row genuinely overflows.
+ * THE MENU SUB-TAB ROW.
+ * 🔴 PILLS → THE SHARED UNDERLINED BAR, 3 October 2026. The classes are lifted from the SAME
+ * `SUBTAB_BAR`/`SUBTAB_ROW` constants Settings and Schedule use, so this measures one control rather
+ * than a copy of it — and `lift` throws if those constants are renamed.
+ * 🔴 THE QUESTION IS UNCHANGED: do the tabs scroll INSIDE their row, or widen the page? Measured with
+ * the real class strings, and with a six-tab control at 320px where the row genuinely overflows.
  */
 function menuPillFixture(css, pillCount = 3) {
-  const row = lift(PAGE, /className="(min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4)"/, 'the pill row')
-  const inner = lift(PAGE, /<div className="(flex gap-2 w-max)">/, 'the pill row inner')
+  const row = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
+  const inner = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the sub-tab row')
   const labels = ['Items', 'Extras & upsells', 'Deals', 'Fourth section', 'Fifth section', 'Sixth section']
   return `${HEAD(css)}
 <div style="max-width:1024px;margin:0 auto;padding:0 16px">
-  <div id="menuPills" class="${row}">
+  <div id="menuPills" class="${row} mb-4">
     <div class="${inner}">
       ${labels.slice(0, pillCount).map((l, i) =>
-        `<button style="padding:6px 14px;border-radius:9999px;white-space:nowrap;background:${i === 0 ? '#0f172a;color:#fff' : '#f1f5f9'}">${l}</button>`).join('')}
+        `<button style="padding:10px 0;font-weight:700;font-size:14px;white-space:nowrap;border-bottom:2px solid ${i === 0 ? '#f97316' : 'transparent'};background:none">${l}</button>`).join('')}
     </div>
   </div>
   <div id="menuBody">${filler('the selected section', 400)}</div>
 </div></body></html>`
 }
 
+/**
+ * SETTINGS AS ONE LIST WITH A STICKY JUMP BAR.
+ *
+ * 🔴 THE SHELL IS REBUILT HERE, NOT JUST THE LIST, because the thing being measured is a `position:
+ * sticky` child of a NON-DOCUMENT scroller. The real page is `h-dvh flex flex-col overflow-hidden`
+ * with the header and tab bar as `shrink-0` siblings and `<main>` as the only scroller; a fixture that
+ * scrolled the document instead would answer a different question — the bar would stick to the
+ * viewport and every assertion would pass for the wrong reason.
+ *
+ * @param breakSticky the broken variant: `<main>` gains a `pt-6`, which is the mistake the real
+ *                    `<main>` comment warns about — a sticky child then pins 24px down, so the bar
+ *                    detaches from the top of the scroller and content shows above it.
+ */
+function settingsFixture(css, breakSticky = false, breakFlush = false, withBanner = false, direct = false) {
+  /* 🔴 LIFTED FROM THE SHARED CONSTANT all three sub-tab rows now use. If the real class list
+   * changes, `lift` throws rather than quietly measuring a bar the page no longer has. */
+  const bar = lift(PAGE, /const SUBTAB_BAR = '(.+?)'/, 'the shared sub-tab bar')
+  const barInnerC = lift(PAGE, /const SUBTAB_ROW = '(.+?)'/, 'the sub-tab row')
+  /* 🔴 AND THE WRAPPER CLASS, because the flush-top fix is a RULE ON THE WRAPPER keyed on
+   * `data-subtab-bar`, not a margin on the bar. Measuring the bar alone would not exercise it. */
+  const pad = lift(PAGE, /<div className="(pt-6 manage-tab-pad)">/, 'the padded tab wrapper')
+  // ⚠️ THE BROKEN-FLUSH VARIANT DROPS EXACTLY THE ATTRIBUTE THE RULE KEYS ON, nothing else.
+  const barInner = barInnerC
+  const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
+  const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6)"\}>/, 'the scroller')
+  const labels = ['Truck details', 'Contact', 'Auto-replies', 'Schedule', 'QR code',
+    'Order settings', 'Truck settings', 'Account deletion']
+  const ids = ['truck-details', 'contact', 'auto-replies', 'schedule', 'qr-code',
+    'order-settings', 'truck-settings', 'account-deletion']
+
+  // Each section: an h2 plus a card. The LAST one is short on purpose — that is the case the bottom
+  // clamp and the measured floor exist for.
+  const section = (id, label, i) => `
+      <section id="${id}" data-settings-section style="scroll-margin-top:var(--pin);${i === ids.length - 1 ? 'min-height:var(--lastmin);' : ''}">
+        <h2 data-settings-heading style="font-weight:900;font-size:18px;margin:0 0 12px">${label}</h2>
+        ${filler('first setting in ' + label, 72)}
+        ${i === ids.length - 1 ? '' : filler('more of ' + label, 420)}
+      </section>`
+
+  return `${HEAD(css)}
+<div class="${shell}">
+  <div style="height:56px;background:#0f172a;color:#fff;display:flex;align-items:center;padding:0 16px" class="shrink-0">header</div>
+  <div style="height:44px;background:#0f172a;color:#94a3b8;display:flex;align-items:center;padding:0 16px" class="shrink-0">tab bar</div>
+  <main id="scroller" class="${main}${breakSticky ? ' pt-6' : ''}">
+    <div class="${pad}">
+      ${withBanner ? `<div id="banner" style="background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px" class="mb-4">a notification banner</div>` : ''}
+      ${direct ? '' : '<div class="space-y-6">'}
+        <div id="jumpbar" ${breakFlush ? '' : 'data-subtab-bar'} class="${bar}">
+          <div class="${barInner}">
+            ${labels.map((l, i) => `<button data-settings-tab="${ids[i]}" style="padding:10px 0;font-weight:700;font-size:14px;white-space:nowrap;border-bottom:2px solid ${i === 0 ? '#f97316' : 'transparent'};background:none">${l}</button>`).join('')}
+          </div>
+        </div>
+        ${filler('New to HatchGrab?', 90)}
+        ${filler('Get the app', 90)}
+        ${ids.map((id, i) => section(id, labels[i], i)).join('')}
+      ${direct ? '' : '</div>'}
+    </div>
+  </main>
+</div>
+<script>
+  // 🔴 THE SAME TWO NUMBERS THE PAGE COMPUTES, measured the same way: the bar's own height, and the
+  // scroller's height minus it. The fixture does not guess them.
+  (function () {
+    var bar = document.getElementById('jumpbar')
+    var sc = document.getElementById('scroller')
+    var pin = Math.round(bar.getBoundingClientRect().height)
+    document.documentElement.style.setProperty('--pin', pin + 'px')
+    document.documentElement.style.setProperty('--lastmin', Math.max(0, sc.clientHeight - pin) + 'px')
+    window.__pin = pin
+  })()
+</script>
+</body></html>`
+}
+
 const rects = () => {
   const ids = ['modal', 'header', 'switch', 'close', 'body', 'panes', 'left', 'leftFooter',
     'right', 'form', 'times', 'footer', 'filledFrom', 'addrToggle', 'addrFields',
-    'listRoot', 'listSearch', 'listScroll']
+    'listRoot', 'listSearch', 'listScroll', 'preview', 'filledFromPhone']
   const out = {}
   for (const id of ids) {
     const el = document.getElementById(id)
@@ -221,6 +309,21 @@ const rects = () => {
   out.docScrollW = document.documentElement.scrollWidth
   out.innerW = window.innerWidth
   out.innerH = window.innerHeight
+  // ── SETTINGS ────────────────────────────────────────────────────────────────────────────────
+  // ⚠️ `setScroller` / `setBar`, not `sc` / `jb` — the list-scroll metrics below already declare `sc`
+  // in this same function scope, and a duplicate `const` is a syntax error that takes the whole file.
+  const setScroller = document.getElementById('scroller')
+  const setBar = document.getElementById('jumpbar')
+  if (setScroller && setBar) {
+    out.settings = {
+      pin: window.__pin,
+      barTop: Math.round(setBar.getBoundingClientRect().top),
+      scrollerTop: Math.round(setScroller.getBoundingClientRect().top),
+      barW: Math.round(setBar.getBoundingClientRect().width),
+      rows: [...new Set([...setBar.firstElementChild.children].map(k => Math.round(k.getBoundingClientRect().top)))].length,
+      contentW: Math.round(setBar.scrollWidth), rowW: Math.round(setBar.clientWidth),
+    }
+  } else { out.settings = null }
   const mp = document.getElementById('menuPills')
   if (mp) {
     const innerEl = mp.firstElementChild
@@ -281,6 +384,8 @@ const rects = () => {
   } else {
     out.listOverflows = null; out.lastReachable = null
   }
+  const pv = document.getElementById('preview')
+  out.preview = pv ? { h: Math.round(pv.getBoundingClientRect().height), w: Math.round(pv.getBoundingClientRect().width) } : { h: 0, w: 0 }
   out.formRows = document.getElementById('form') ? rowsOf('form') : 0
   const labelled = (name) => [...document.querySelectorAll('#form [style*="height"]')]
     .find(el => el.textContent.trim().startsWith(name))
@@ -349,7 +454,22 @@ async function measure() {
       t(r.body.bottom <= r.footer.top + 1, `⚠️ ${w}: the body ends where the footer begins`)
       t(r.close.visible && r.close.right <= r.modal.right, `⚠️ ${w}: the close button is inside the modal`)
       t(r.switch.visible, `⚠️ ${w}: the One event | Upload schedule switch is visible`)
-      t(r.filledFrom.width > 0 && r.footer.height > 0, `⚠️ ${w}: the "Filled from" line shares the footer with the buttons`)
+      /* ⚠️ TWO DIFFERENT ELEMENTS BY WIDTH, which is what the page does: on md+ "Filled from" is a
+       * muted line INSIDE the preview; on a phone the preview is the pinned card at the top of step 2
+       * and the footer keeps a single line of its own. */
+      t(w >= 768 ? r.filledFrom.visible : r.filledFromPhone.visible,
+        `⚠️ ${w}: the "Filled from" line is present${w >= 768 ? ', inside the preview' : ' as the phone footer line'}`)
+      t(w >= 768 ? !r.filledFromPhone.visible : !r.preview.w,
+        `⚠️ ${w}: …and only one of the two is shown`)
+      if (w >= 768) {
+        /* 🔴 THE FOOTER MUST NOT EAT THE FORM. The preview is capped at 4.75rem (76px), so the footer
+         * stays about one card tall and the form pane keeps a usable height — which is the brief's
+         * "must not grow so tall that the form area becomes cramped at 820×1180". */
+        t(r.preview.h <= 80, `🔴 ${w}: the preview is capped at one card — footer ${r.footer.height}px, preview ${r.preview.h}px`)
+        t(r.footer.height <= 120, `🔴 ${w}: the whole footer stays under 120px`)
+        t(r.right.height >= 300, `🔴 ${w}: THE FORM PANE IS NOT CRAMPED — ${r.right.height}px of form`)
+        t(r.preview.w > 0 && r.preview.w < r.footer.width, `⚠️ ${w}: the preview shares the footer rather than filling it`)
+      }
 
       if (w >= 768) {
         // ── THE TWO-PANE LAYOUT ────────────────────────────────────────────────────────────────
@@ -453,6 +573,181 @@ async function measure() {
       t(r.menuPills.contentW > r.menuPills.rowW, '🔴 CONTROL: six menu pills genuinely overflow their row at 320px')
       t(r.docScrollW <= r.innerW, '🔴 …and the PAGE still does not scroll — the overflow is inside the pill row')
       t(r.menuPills.rows === 1, '⚠️ …and they scroll rather than wrapping')
+    }
+
+    /* ── 🔴 SETTINGS: THE BAR STICKS, THE JUMPS LAND, THE LAST TAB LIGHTS ───────────────────────── */
+    for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+      await eng.setViewport(w, h)
+      await eng.page.goto(write(`set-${w}-${eng.name}.html`, settingsFixture(css)))
+      let r = await eng.page.evaluate(rects)
+      lines.push(`  settings ${w}×${h}  pin ${r.settings.pin} · bar@${r.settings.barTop} scroller@${r.settings.scrollerTop} · rows ${r.settings.rows} · doc ${r.docScrollW} vs ${r.innerW}`)
+      t(r.settings.rows === 1, `🔴 settings ${w}: the eight tabs stay on ONE row — they scroll, they do not wrap`)
+      t(r.docScrollW <= r.innerW, `🔴 settings ${w}: NO HORIZONTAL PAGE SCROLL`)
+      t(r.settings.barW <= r.innerW, `⚠️ settings ${w}: the bar never exceeds the viewport`)
+
+      /* 🔴 FLUSH AT REST — AT scrollTop 0, BEFORE ANYTHING IS TOUCHED. THIS ASSERTION IS THE WHOLE
+       * POINT OF THE 3 OCTOBER FIX, and the earlier version of this file is why the bug shipped: it
+       * recorded `bar@124 scroller@100` at rest and only ASSERTED flushness AFTER scrolling 1200px, so
+       * a 24px resting gap measured green. The operator saw it immediately — the bar sat low on load
+       * and jumped to the top on the first tap.
+       * ⚠️ A LOG LINE IS NOT A CHECK. The number was printed every run and nothing failed on it. */
+      t(Math.abs(r.settings.barTop - r.settings.scrollerTop) <= 1,
+        `🔴 settings ${w}: THE BAR IS FLUSH TO THE SCROLLER'S TOP AT REST (scrollTop 0), not only after scrolling — bar@${r.settings.barTop} scroller@${r.settings.scrollerTop}`)
+
+      /* 🔴 THE BAR STAYS STUCK WHILE SCROLLING, AND PINS FLUSH TO THE SCROLLER'S TOP. `scrollerTop`
+       * is where the scroller's content box starts — i.e. just under the tab bar — so bar === scroller
+       * is "flush under the tabs with no magic offset". */
+      const stuck = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        sc.scrollTop = 1200
+        const jb = document.getElementById('jumpbar')
+        return {
+          barTop: Math.round(jb.getBoundingClientRect().top),
+          scrollerTop: Math.round(sc.getBoundingClientRect().top),
+          scrolled: Math.round(sc.scrollTop),
+        }
+      })
+      lines.push(`    after scrolling ${stuck.scrolled}px: bar@${stuck.barTop} scroller@${stuck.scrollerTop}`)
+      t(stuck.scrolled > 0 && Math.abs(stuck.barTop - stuck.scrollerTop) <= 1,
+        `🔴 settings ${w}: THE BAR IS STILL STUCK FLUSH TO THE SCROLLER'S TOP after scrolling 1200px`)
+
+      /* 🔴 EVERY JUMP LANDS THE HEADING AND ITS FIRST SETTING FULLY BELOW THE BAR. Not "near" it —
+       * the heading's top must be at or below the bar's bottom, and the first setting must be inside
+       * the scroller's visible box. Checked for all eight, which is the only way to catch one section
+       * whose offset happens to be wrong. */
+      const jumps = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        const out = []
+        for (const sec of document.querySelectorAll('[data-settings-section]')) {
+          sc.scrollTop = 0
+          sec.scrollIntoView({ behavior: 'auto', block: 'start' })
+          const barBottom = jb.getBoundingClientRect().bottom
+          const hd = sec.querySelector('[data-settings-heading]').getBoundingClientRect()
+          const first = sec.children[1].getBoundingClientRect()
+          const scBox = sc.getBoundingClientRect()
+          out.push({
+            id: sec.id,
+            headingBelowBar: hd.top >= barBottom - 1,
+            firstSettingVisible: first.top >= barBottom - 1 && first.bottom <= scBox.bottom + 1,
+          })
+        }
+        return out
+      })
+      const badHeading = jumps.filter(j => !j.headingBelowBar).map(j => j.id)
+      const badFirst = jumps.filter(j => !j.firstSettingVisible).map(j => j.id)
+      lines.push(`    jumps: ${jumps.length} sections · heading below bar ${jumps.length - badHeading.length}/${jumps.length} · first setting visible ${jumps.length - badFirst.length}/${jumps.length}`)
+      t(jumps.length === 8 && badHeading.length === 0,
+        `🔴 settings ${w}: EVERY section's heading lands fully below the bar${badHeading.length ? ' — failed: ' + badHeading.join(', ') : ''}`)
+      t(badFirst.length === 0,
+        `🔴 settings ${w}: …and its FIRST SETTING is fully visible too${badFirst.length ? ' — failed: ' + badFirst.join(', ') : ''}`)
+
+      /* 🔴 THE LAST SECTION AT THE BOTTOM. Its measured floor must make it tall enough to reach the
+       * pin line, which is what lets its tab light from the heading rule rather than only from the
+       * bottom clamp. */
+      const last = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        sc.scrollTop = sc.scrollHeight
+        const jb = document.getElementById('jumpbar')
+        const secs = [...document.querySelectorAll('[data-settings-section]')]
+        const lastSec = secs[secs.length - 1]
+        return {
+          atBottom: sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2,
+          lastTopAbovePin: lastSec.getBoundingClientRect().top - sc.getBoundingClientRect().top <= jb.getBoundingClientRect().height + 1,
+          lastH: Math.round(lastSec.getBoundingClientRect().height),
+        }
+      })
+      lines.push(`    at the bottom: last section ${last.lastH}px tall · reaches the pin line: ${last.lastTopAbovePin}`)
+      t(last.atBottom && last.lastTopAbovePin,
+        `🔴 settings ${w}: THE LAST SECTION REACHES THE PIN LINE AT THE BOTTOM, so its tab lights`)
+      void r
+    }
+
+    /* ── 🔴 THE STICKY BROKEN VARIANT ────────────────────────────────────────────────────────────
+     * `<main>` gains a `pt-6`. That is the exact mistake the real `<main>` comment warns about: a
+     * sticky child pins at the scroll container's CONTENT box, so the padding becomes a permanent gap
+     * ABOVE the bar and content scrolls through it. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-broken-${eng.name}.html`, settingsFixture(css, true)))
+      const broken = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        sc.scrollTop = 1200
+        const jb = document.getElementById('jumpbar')
+        return {
+          gap: Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top),
+        }
+      })
+      lines.push(`  settings BROKEN (<main> has pt-6)  bar sits ${broken.gap}px below the scroller's top`)
+      t(broken.gap > 1,
+        '🔴 BROKEN VARIANT: a padding-top on `<main>` detaches the bar from the top — the bug the comment warns about, reproduced')
+    }
+
+    /* ── 🔴 THE BANNER CASE — THE REASON THE FIX IS A `:has()` RULE ─────────────────────
+     * Six notification banners can render above the tab content. With one showing, the bar is NOT the
+     * first child, the wrapper KEEPS its padding, and the bar must sit BELOW the banner — not pulled up
+     * through it, which is exactly what the first `-mt-6` fix did. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-banner-${eng.name}.html`, settingsFixture(css, false, false, true)))
+      const b = await eng.page.evaluate(() => {
+        const bn = document.getElementById('banner')
+        const jb = document.getElementById('jumpbar')
+        return {
+          overlap: Math.round(bn.getBoundingClientRect().bottom - jb.getBoundingClientRect().top),
+          bannerTop: Math.round(bn.getBoundingClientRect().top),
+          scrollerTop: Math.round(document.getElementById('scroller').getBoundingClientRect().top),
+        }
+      })
+      lines.push(`  settings WITH A BANNER  banner@${b.bannerTop} scroller@${b.scrollerTop} · banner/bar overlap ${b.overlap}px`)
+      t(b.overlap <= 0,
+        '🔴 settings: with a banner above it the bar does NOT overlap it — the `-mt-6` fix did, the `:has()` rule does not')
+      t(b.bannerTop > b.scrollerTop,
+        '⚠️ …and the wrapper keeps its top padding in that case, so the banner is not jammed against the tab bar')
+    }
+
+    /* ── 🔴 THE OTHER DEPTH — MENU AND SCHEDULE ─────────────────────────────────────
+     * 🔴 THE TWO BARS SIT AT DIFFERENT DEPTHS and the flush rule needs a selector for each: Settings'
+     * bar is inside `SettingsTab`'s own root (depth 2), while Menu's row and Schedule's row are DIRECT
+     * children of the padded wrapper (Schedule's component returns a fragment, so its children are
+     * hoisted). A rule that only covered Settings would leave the other two resting 24px down — which
+     * is the half of the bug the operator reported second. Both selectors are measured. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-direct-${eng.name}.html`, settingsFixture(css, false, false, false, true)))
+      const d = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        const at = () => Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+        const rest = at()
+        sc.scrollTop = 1200
+        return { rest, scrolled: at() }
+      })
+      lines.push(`  settings DIRECT CHILD (as Menu/Schedule)  at rest ${d.rest}px, after scrolling ${d.scrolled}px`)
+      t(d.rest <= 1 && d.scrolled <= 1,
+        '🔴 A BAR THAT IS A DIRECT CHILD (Menu/Schedule) IS ALSO FLUSH AT REST — the second `:has()` selector works')
+    }
+
+    /* ── 🔴 THE RESTING-GAP BROKEN VARIANT ──────────────────────────────────────
+     * The bar loses `data-subtab-bar`, so the wrapper's `:has()` rule stops matching and keeps its
+     * padding — the exact bug the operator reported. Sticky cannot hold an element ABOVE its flow
+     * position, so at scrollTop 0 the pin has nothing to do and the 24px gap shows.
+     * 🔴 IT MUST SHOW AT REST AND VANISH AFTER SCROLLING — both halves, because "two resting
+     * positions" is the defect, and a variant that was simply always-offset would not reproduce it. */
+    {
+      await eng.setViewport(1440, 900)
+      await eng.page.goto(write(`set-gap-${eng.name}.html`, settingsFixture(css, false, true)))
+      const gapV = await eng.page.evaluate(() => {
+        const sc = document.getElementById('scroller')
+        const jb = document.getElementById('jumpbar')
+        const at = () => Math.round(jb.getBoundingClientRect().top - sc.getBoundingClientRect().top)
+        const rest = at()
+        sc.scrollTop = 1200
+        return { rest, scrolled: at() }
+      })
+      lines.push(`  settings BROKEN (no data-subtab-bar)  at rest ${gapV.rest}px below the top, after scrolling ${gapV.scrolled}px`)
+      t(gapV.rest > 1 && gapV.scrolled <= 1,
+        '🔴 BROKEN VARIANT: without `data-subtab-bar` the bar rests below the top and snaps flush once scrolled — the two resting positions, reproduced')
     }
 
     // ── THE CONTROL ─────────────────────────────────────────────────────────────────────────────
