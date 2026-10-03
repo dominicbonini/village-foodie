@@ -3,6 +3,7 @@
 // Used by: truck dashboard (client), slots API (server), customer order form (client)
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { readVanCategorySettings, resolveCategories } from '@/lib/van-category-settings'
 
 export interface CatConfig {
     secs: number
@@ -170,19 +171,38 @@ export interface CatConfig {
   }
 
   /**
-   * Fetch and normalise per-category prep configs from the DB for a given truck.
+   * Fetch and normalise per-category prep configs from the DB for a given truck, FOR ONE VAN.
    * Canonical single source — used by both the manual-order and customer-order paths.
+   *
+   * 🔴 `vanId` IS THE PER-VAN RESOLUTION, AND IT IS OPTIONAL FOR A REASON. Prep, batch and
+   * "counts toward capacity" are per-van settings (`van_category_settings`); a van with no rows of its
+   * own — which is every van in the database until an operator edits one — reads `menu_categories`
+   * exactly as this function always has. Omitting `vanId`, or passing null for an event with no van
+   * assigned, is therefore not a degraded call: it is the truck default, which is what "no van" means.
+   *
+   * ⚠️ `id` WAS ADDED TO THE SELECT so overrides can be keyed by `category_id`. Widening a named
+   * select is safe here — `id` is the primary key — whereas keying by NAME would have made two
+   * categories renamed into each other silently swap their capacity rules.
+   *
+   * ⚠️ THE 999 BATCH DEFAULT IS UNCHANGED, and it differs from the `|| 1` that /api/slots and
+   * /api/dashboard use. That split is pre-existing; it is reported, not quietly harmonised here, because
+   * changing it would alter order acceptance on a path this work is only meant to make per-van.
    */
   export async function buildCatConfigs(
     supabase: SupabaseClient,
-    truckId: string
+    truckId: string,
+    vanId?: string | null
   ): Promise<Record<string, CatConfig>> {
     const { data: categories } = await supabase
       .from('menu_categories')
-      .select('name, prep_secs, batch_size, counts_toward_capacity')
+      .select('id, name, prep_secs, batch_size, counts_toward_capacity')
       .eq('truck_id', truckId)
+    // 🔴 ONE RESOLVER. No per-van rows (or any read failure) ⇒ the categories pass through
+    // untouched, so this function returns exactly what it returned before per-van settings existed.
+    const { byCategoryId } = await readVanCategorySettings(supabase, vanId)
+    const resolved = resolveCategories(categories ?? [], byCategoryId)
     const catConfigs: Record<string, CatConfig> = {}
-    ;(categories || []).forEach(c => {
+    ;(resolved || []).forEach(c => {
       catConfigs[c.name.toLowerCase()] = {
         secs: c.prep_secs || 0,
         batch: c.batch_size && c.batch_size > 0 ? c.batch_size : 999,

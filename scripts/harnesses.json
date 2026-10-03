@@ -51,6 +51,7 @@
     "outreach-reply-any-notes.cjs",
     "outreach-reply-attach.cjs",
     "outreach-schema-census.cjs",
+    "van-category-settings.cjs",
     "outreach-send-read-failure.cjs",
     "outreach-sequence.cjs",
     "outreach-stage-advance.cjs",

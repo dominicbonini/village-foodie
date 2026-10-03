@@ -116,7 +116,11 @@ interface Subcategory { id: string; category_id: string; name: string; sort_orde
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null }
+/* ⚠️ `categorySettings` AND `same_as_first_van` COME FROM TWO SEPARATE PROBED READS in `get_vans`,
+ * not from its named select, so both are optional here: before the migration they arrive as `[]` and
+ * `false`, which is exactly the pre-migration truth rather than a guess. */
+interface VanCategorySetting { category_id: string; prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: 'pause' | 'no_auto_accept'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null; categorySettings?: VanCategorySetting[]; same_as_first_van?: boolean }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -8776,10 +8780,43 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
-                {/* 🔴 THE ONE LINE OF EXPLANATION THE WHOLE MODAL GETS, and only when a place was
-                    picked. It answers the question the filled fields raise — "will editing this
-                    change the place?" — and the answer is no: nothing below writes back to the place.
-                    ⚠️ NEW EVENTS ONLY, because `truck_place_id` is only ever set on one. */}
+                {/* ══ 🔴 THE LIVE PREVIEW — IN THE FORM PANE, BELOW NOTES ════════════════════════
+                    🔴 MOVED OUT OF THE STICKY FOOTER (5 October 2026). In the footer it had to be
+                    capped at `max-h-[4.75rem]` and share a row with the buttons, so a long venue name
+                    was clipped rather than shown — a preview that could not show the thing it previews.
+                    Here it has the full width of the pane and the footer is back to just the buttons.
+                    🔴 IT RENDERS `TruckListCard`, the PUBLIC schedule page's own component, through the
+                    adapter in lib/schedule-graphics/event-preview.ts — not a copy of its markup, so it
+                    cannot drift from the card a customer sees.
+                    🔴 THE VAN GOES IN THE CARD'S OWN `cornerAction` SLOT, which is the component's
+                    documented top-right slot for exactly this. Smuggling the van into `truckName` or
+                    `village` would have put it in a field the public card uses for something else, and
+                    it would then show wherever that field is rendered.
+                    ⚠️ `max-md:hidden` — ON A PHONE THE PREVIEW IS THE PINNED CARD at the top of step 2.
+                    Two previews on one screen would be two things to keep in step.
+                    ⚠️ "Filled from" IS THE MUTED LINE INSIDE THE CARD, new events only (`truck_place_id`
+                    is only ever set on one). It answers the question the filled fields raise — "will
+                    editing this change the place?" — and the answer is no: nothing in this form writes
+                    back to the place. */}
+                {previewEvent && (
+                  <div className="sm:col-span-2 max-md:hidden" data-preview-pane>
+                    <p className="block text-xs font-bold text-slate-400 mb-1">Preview</p>
+                    <TruckListCard
+                      event={previewEvent}
+                      slug={truck.slug ?? ''}
+                      compact
+                      hideOrderButton
+                      cornerAction={previewVanName
+                        ? <span className="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">{previewVanName}</span>
+                        : undefined}
+                    />
+                    {!editingEvent.id && editingEvent.truck_place_id && (
+                      <p className="text-[11px] text-slate-400 truncate -mt-1">
+                        Filled from {pickedPlace?.name ?? 'that place'}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {/* ⛔ THE "Filled from" LINE AND THE TWO BUTTONS ARE NOT HERE ANY MORE. They are in the
                     modal's STICKY FOOTER below, so the buttons are always on screen rather than at the
                     bottom of a scrolling form — which on a phone meant scrolling past nine fields to
@@ -8809,43 +8846,25 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 otherwise hide this footer. */}
             {addMode === 'manual' && (
               <div className="shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
-                {/* ── 🔴 THE LIVE PREVIEW, IN THE FOOTER, LEFT OF THE BUTTONS ─────────────────────
-                    It replaced the plain "Filled from <place>" line. `TruckListCard` in its `compact`
-                    variant — the same one the order page's selected-event header uses — so this is the
-                    public schedule page's own card, not a copy of it.
-                    🔴 `md:` ONLY. On a phone the preview is the pinned card at the top of step 2; two
-                    previews on one screen would be two things to keep in step.
-                    ⚠️ "Filled from" SURVIVES AS A MUTED LINE INSIDE THE PREVIEW, which is where the
-                    brief allows it if space permits — it does, because the card is one row tall at
-                    `compact` and the footer has the width.
-                    ⚠️ `max-h` + `overflow-hidden` IS THE GUARD ON THE FOOTER'S HEIGHT. The measurement
-                    (scripts/schedule-places-render.cjs) asserts the form pane stays usable at
-                    820×1180; this is what stops a long venue name wrapping the card into two rows and
-                    eating the form. */}
-                <div className="min-w-0 flex-1 max-md:hidden">
-                  {previewEvent && (
-                    <div className="max-h-[4.75rem] overflow-hidden">
-                      <TruckListCard
-                        event={previewEvent}
-                        slug={truck.slug ?? ''}
-                        compact
-                        hideOrderButton
-                      />
-                      {!editingEvent.id && editingEvent.truck_place_id && (
-                        <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                          Filled from {pickedPlace?.name ?? 'that place'}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+                {/* ⛔ THE PREVIEW IS NOT IN THE FOOTER ANY MORE (5 October 2026). It is in the FORM PANE,
+                    below Notes, at the full width of that pane — see the block there for why. The
+                    footer at ≥768 is back to exactly what it was before the preview arrived: the two
+                    buttons, and nothing competing with them for height.
+                    ⚠️ `max-h-[4.75rem] overflow-hidden` WENT WITH IT. That cap existed only to stop the
+                    card wrapping and eating the form; in the pane there is room, so a long venue name
+                    is SHOWN rather than clipped. The measurement that guarded the cap now asserts the
+                    footer is no taller than before AND that the preview needs no scrolling. */}
                 {/* The phone keeps a single muted line here — the preview itself is the pinned card. */}
                 <p className="min-w-0 flex-1 text-xs text-slate-400 truncate md:hidden">
                   {!editingEvent.id && editingEvent.truck_place_id
                     ? `Filled from ${pickedPlace?.name ?? 'that place'}`
                     : ''}
                 </p>
-                <div className="shrink-0 flex gap-2">
+                {/* ⚠️ `ml-auto` KEEPS THE BUTTONS RIGHT-ALIGNED NOW THE PREVIEW HAS GONE. On a phone the
+                    muted line above is `flex-1` and pushes them over; at ≥768 that line is hidden, so
+                    without this they would sit at the LEFT edge of the footer — which is not where
+                    anyone looks for "Add event". */}
+                <div className="shrink-0 ml-auto flex gap-2">
                   <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
                   <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
                 </div>
@@ -9653,6 +9672,12 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
   // flag behaves exactly as before; get_vans sets it false only when its separate, probed read failed.
   // The van list itself is NEVER gated on this — that is the whole point of the hardening.
   const [intervalsAvailable, setIntervalsAvailable] = useState(true)
+  /* 🔴 PER-VAN CATEGORY CAPACITY SETTINGS. `firstVanId` names the van the "Same as …" switch
+   * follows; `perVanCategoriesAvailable` is false only when the migration has not been applied, and the
+   * card then says so rather than offering a control that silently writes nothing. */
+  const [firstVanId, setFirstVanId] = useState<string | null>(null)
+  const [perVanCategoriesAvailable, setPerVanCategoriesAvailable] = useState(true)
+  const [savingSameAsFirst, setSavingSameAsFirst] = useState<string | null>(null)
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
   const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
@@ -9761,6 +9786,14 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
       // Absent ⇒ true (an older response shape), never false — a missing flag must not disable a
       // working setting.
       setIntervalsAvailable(r.intervalsAvailable !== false)
+      /* 🔴 THE FIRST VAN IS THE SERVER'S ANSWER, NOT A CLIENT GUESS. It is derived from the same
+       * ordered list `get_vans` returns (oldest ACTIVE van by created_at), so the switch's label names
+       * the van at the top of this list and the fan-out writes agree with what the operator reads.
+       * ⚠️ FALLBACK TO THE FIRST ROW only if the server sent none — same van in practice, and it
+       * keeps the switch rendering rather than hiding it on an older response shape. */
+      setFirstVanId(r.firstVanId ?? (r.vans || [])[0]?.id ?? null)
+      // Absent ⇒ true, like intervalsAvailable: a missing flag must not disable a working control.
+      setPerVanCategoriesAvailable(r.perVanCategoriesAvailable !== false)
     }).catch(() => {})
     api('get_exclusion_terms').then(r => setSettingsExclusionList(r.terms || [])).catch(() => {})
   }, [])
@@ -10333,6 +10366,81 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
     } catch (e: any) {
       onCategoriesPatch([cat.id], { counts_toward_capacity: prior })
       showToast(e.message, 'error')
+    }
+  }
+
+  /* ══ 🔴 THE PER-VAN CATEGORY WRITES ═════════════════════════════════════════════════
+   * 🔴 WHY THESE EXIST SEPARATELY FROM `updateCatField`/`toggleCatCapacity` BELOW. Those two write
+   * `menu_categories` through `upsert_category`, which is TRUCK-level — and that is correct for the
+   * MENU tab's category editor, where the operator is setting the truck's default. It was wrong for the
+   * controls on a VAN's card, where it meant editing Van 2 also edited Van 1. These write
+   * `van_category_settings` for one van and nothing else.
+   *
+   * 🔴 THE OPTIMISTIC PATCH IS ON THE VAN, NOT ON `categories`. The old write patched the shared
+   * truck-level category list, which would now show one van's number on every van's card. Each van
+   * carries its own `categorySettings`, so the patch lands there and the other vans do not move.
+   *
+   * ⚠️ THE ROW IS SEEDED FROM THE EFFECTIVE VALUES, SERVER-SIDE, so a first edit cannot change the
+   * two fields the operator did not touch. The optimistic patch below mirrors that seeding exactly —
+   * if it did not, the card would show a different number from the one that was saved until the next
+   * load. */
+  const effectiveVanCat = (van: Van, cat: Category): { prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean } => {
+    const own = (van.categorySettings || []).find(r => r.category_id === cat.id)
+    return own
+      ? { prep_secs: own.prep_secs, batch_size: own.batch_size, counts_toward_capacity: !!own.counts_toward_capacity }
+      : { prep_secs: cat.prep_secs, batch_size: cat.batch_size, counts_toward_capacity: !!cat.counts_toward_capacity }
+  }
+
+  const patchVanCat = (vanId: string, categoryId: string, next: { prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }) => {
+    setVans(prev => prev.map(v => {
+      if (v.id !== vanId) return v
+      const rows = (v.categorySettings || []).filter(r => r.category_id !== categoryId)
+      return { ...v, categorySettings: [...rows, { category_id: categoryId, ...next }] }
+    }))
+  }
+
+  const writeVanCat = async (van: Van, cat: Category, patch: Partial<{ prep_secs: number | null; batch_size: number | null; counts_toward_capacity: boolean }>) => {
+    const prior = (van.categorySettings || []).find(r => r.category_id === cat.id) ?? null
+    const next = { ...effectiveVanCat(van, cat), ...patch }
+    patchVanCat(van.id, cat.id, next)
+    try {
+      const res = await api('upsert_van_category', { vanId: van.id, categoryId: cat.id, ...patch })
+      /* 🔴 THE FAN-OUT IS REFLECTED LOCALLY. When this van is the first van, the server also wrote
+       * every van following it; without mirroring that, those cards would keep showing their old
+       * numbers until a reload and the operator would think the switch had not worked. */
+      const fannedTo: string[] = Array.isArray(res?.fannedTo) ? res.fannedTo : []
+      for (const fid of fannedTo) patchVanCat(fid, cat.id, next)
+    } catch (e) {
+      // Revert to EXACTLY what was there: the van's own row, or no row at all if it had none.
+      setVans(prev => prev.map(v => {
+        if (v.id !== van.id) return v
+        const rows = (v.categorySettings || []).filter(r => r.category_id !== cat.id)
+        return { ...v, categorySettings: prior ? [...rows, prior] : rows }
+      }))
+      // ⚠️ `unknown`, not `any`. The surrounding writers predate the lint rule; new code does not
+      // need to inherit it, and a non-Error throw would otherwise read as "undefined" in the toast.
+      showToast(e instanceof Error ? e.message : String(e), 'error')
+    }
+  }
+
+  /* 🔴 THE "SAME AS <first van>" SWITCH. Turning it ON copies everything the first van owns into
+   * this van in ONE request — its own `truck_vans` fields and its `van_category_settings` rows — and
+   * then this van's values are its own. Turning it OFF writes only the switch: the copied values stay,
+   * which is what "stop following" means. Both paths reload the vans, because a copy changes many
+   * fields at once and reproducing all of them optimistically would be a second copy implementation. */
+  const setVanSameAsFirst = async (van: Van, on: boolean) => {
+    setSavingSameAsFirst(van.id)
+    setVans(prev => prev.map(v => v.id === van.id ? { ...v, same_as_first_van: on } : v))
+    try {
+      await api('set_van_same_as_first', { vanId: van.id, on })
+      const r = await api('get_vans')
+      setVans(r.vans || [])
+      setFirstVanId(r.firstVanId ?? (r.vans || [])[0]?.id ?? null)
+    } catch (e) {
+      setVans(prev => prev.map(v => v.id === van.id ? { ...v, same_as_first_van: !on } : v))
+      showToast(e instanceof Error ? e.message : String(e), 'error')
+    } finally {
+      setSavingSameAsFirst(null)
     }
   }
 
@@ -11297,6 +11405,41 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               </div>
             </div>
 
+            {/* ══ 🔴 "SAME AS <first van>" ══════════════════════════════════════════════
+                🔴 ON VANS 2+ ONLY. The first van is the one at the TOP of this list — the oldest
+                active van — and it is named by the server (`firstVanId` from `get_vans`, computed from
+                the same ordered query that produced this list), never guessed here.
+                🔴 A COPY, NOT A LOOKUP. Switching on copies everything the first van owns into this
+                van in one request; its values are then its OWN, so nothing on the order path has to
+                resolve through this switch. Switching off keeps the copied values — "stop following",
+                not "revert".
+                ⚠️ COLLAPSED, NOT DISABLED, while it is on: the controls are hidden rather than shown
+                greyed out, because a greyed-out number invites the question "is that this van's or
+                Van 1's?" — and the answer would be "both", which no control can express.
+                ⚠️ RENAME AND DELETE STAY OUTSIDE THE COLLAPSE. A following van must still be
+                nameable and removable; its NAME is deliberately not one of the copied fields. */}
+            {perVanCategoriesAvailable && firstVanId && van.id !== firstVanId && (
+              <div className="flex items-center justify-between gap-3 mb-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">
+                    Same as {vans.find(v => v.id === firstVanId)?.name ?? 'the first van'}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {van.same_as_first_van
+                      ? 'This van uses the same settings. Changes to the first van are copied here.'
+                      : 'Copy the first van\u2019s settings and keep them in step.'}
+                  </p>
+                </div>
+                <Toggle
+                  on={!!van.same_as_first_van}
+                  onToggle={() => { if (savingSameAsFirst !== van.id) void setVanSameAsFirst(van, !van.same_as_first_van) }}
+                />
+              </div>
+            )}
+
+            {/* ⚠️ THE COLLAPSE. Everything from here to the end of the capacity card is this van's own
+                settings, and it is hidden while the van is following the first one. */}
+            {!van.same_as_first_van && (<>
             {/* Offline Order Protection card */}
             <div className={`mt-2 rounded-xl border p-3 transition-colors ${
               van.auto_pause_on_offline
@@ -11584,29 +11727,36 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
                   <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                   <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
                   {categories.map(cat => {
+                    /* 🔴 THIS VAN'S OWN VALUES, NOT THE TRUCK'S. `effectiveVanCat` is the same
+                     * resolution the server uses: this van's `van_category_settings` row if it has one,
+                     * otherwise the category's own values. A van with no rows — every van until an
+                     * operator edits one — shows exactly what this card showed before. */
+                    const eff = effectiveVanCat(van, cat)
                     const hasCap = van.kitchen_capacity != null
-                    const locked = cat.prep_secs > 0
-                    const capDisabled = locked || !hasCap
+                    const locked = (eff.prep_secs ?? 0) > 0
+                    const capDisabled = locked || !hasCap || !perVanCategoriesAvailable
                     // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
                     // header + total-capacity row stay inline (unchanged), so template-driven alignment
-                    // is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).
+                    // is preserved. 🔴 THE WRITES ARE NOW PER-VAN (`writeVanCat`), not the truck-level
+                    // updateCatField/toggleCatCapacity those two remain the Menu tab's.
                     return (
                       <KitchenCapacityCategoryRow
                         key={cat.id}
                         categoryName={cat.name}
-                        batchSize={cat.batch_size}
-                        prepSecs={cat.prep_secs}
-                        onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}
-                        onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}
+                        batchSize={eff.batch_size ?? 0}
+                        prepSecs={eff.prep_secs ?? 0}
+                        onBatchChange={val => void writeVanCat(van, cat, { batch_size: val ?? 0 })}
+                        onPrepChange={secs => void writeVanCat(van, cat, { prep_secs: secs })}
                         showCountsColumn
-                        countsToward={cat.counts_toward_capacity}
+                        countsToward={eff.counts_toward_capacity}
                         locked={locked}
                         capDisabled={capDisabled}
                         countsTitle={locked
                           ? 'Cooked — always counts (its prep & batch set the pace)'
                           : !hasCap ? 'Set a capacity to choose which categories count'
+                          : !perVanCategoriesAvailable ? 'Unavailable until the database is updated'
                           : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
-                        onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                        onCountsChange={() => { if (!locked && hasCap && perVanCategoriesAvailable) void writeVanCat(van, cat, { counts_toward_capacity: !eff.counts_toward_capacity }) }}
                       />
                     )
                   })}
@@ -11647,6 +11797,7 @@ function SettingsTab({ userRole, truck, whatsappConnection, whatsappUsage, onCon
               <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
               <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
             </div>
+            </>)}
 
             {renamingVanId === van.id && (
               <div className="mt-2 mb-2 flex gap-2">

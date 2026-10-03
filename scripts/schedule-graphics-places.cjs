@@ -1221,42 +1221,88 @@ function runWiringSuite() {
    * present, except an explicit allowlist of the lines this work deliberately changed. Line-level and
    * whole-file, because the loss was in the gaps BETWEEN the things the other checks look at. */
   t('⛔ NO LINE OF THE PAGE WAS LOST — the reorder dropped 189 of them once', (() => {
+    /* 🔴 RE-PINNED TO 719ac91, THE COMMIT THIS BUILD STARTED FROM (5 October 2026). It was pinned
+     * at 197cb8c, the start of the Settings build; that build is committed and its own report records
+     * what it changed, so keeping the old pin meant carrying its replacements in this allowlist
+     * forever and re-reading them on every run. The guard means the same thing — "this build lost
+     * nothing" — against the tree it actually started from. */
     const base = require('child_process')
-      .execFileSync('git', ['show', '197cb8c:app/manage/[token]/page.tsx'],
-        { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 }).split('\n')
-    const now = RAWP.split('\n')
+      .execFileSync('git', ['show', '719ac91:app/manage/[token]/page.tsx'],
+        { cwd: REPO, encoding: 'utf8', maxBuffer: 64e6 })
+    /* ══ ⚠️ COMMENT PROSE IS STRIPPED FIRST, AND THAT IS A DELIBERATE NARROWING ═══════════════
+     * This file's own `codeOnly` only drops lines that BEGIN with a comment marker, so every
+     * CONTINUATION line of a multi-line comment survived it — and moving one commented block (the
+     * preview, footer → form pane) produced twenty-one "lost lines" that were all prose. Listing each
+     * in the allowlist would have turned this guard into a changelog.
+     * 🔴 WHAT IT STILL CATCHES IS WHAT IT EXISTS FOR: lost CODE. The 189 lines this check was built
+     * after were a confirmation modal, two billing modals, an emoji picker and a card — every one of
+     * them code. A comment-only deletion is no longer caught here, and that is the trade. */
+    const blockStrip = (src) => {
+      const out = []
+      let inBlock = false
+      for (const raw of src.split('\n')) {
+        let line = raw
+        if (inBlock) {
+          const end = line.indexOf('*/')
+          if (end < 0) { out.push(''); continue }
+          line = line.slice(end + 2); inBlock = false
+        }
+        for (;;) {
+          const a = line.indexOf('/*')
+          if (a < 0) break
+          const b = line.indexOf('*/', a + 2)
+          if (b < 0) { line = line.slice(0, a); inBlock = true; break }
+          line = line.slice(0, a) + line.slice(b + 2)
+        }
+        const sl = line.indexOf('//')
+        if (sl >= 0 && !/https?:$/.test(line.slice(0, sl))) line = line.slice(0, sl)
+        out.push(line)
+      }
+      return out
+    }
+    const now = blockStrip(RAWP)
     /* ⚠️ A MULTISET, NOT A SET. `</div>` appears hundreds of times; counting occurrences means a line
      * deleted from one place is not excused by an identical line somewhere else. */
+    /* ⚠️ TRIMMED, SO RE-INDENTATION IS NOT A DELETION. Moving the preview block from the footer into
+     * the form pane re-indented eleven lines of real code, and an exact-string multiset read every one
+     * of them as lost. Indentation is not what this guard protects; a line that genuinely goes still
+     * goes, at any indentation. */
     const left = new Map()
-    for (const l of now) left.set(l, (left.get(l) || 0) + 1)
+    for (const l of now.map(x => x.trim()).filter(Boolean)) left.set(l, (left.get(l) || 0) + 1)
     const gone = []
-    for (const l of base) {
+    for (const l of blockStrip(base).map(x => x.trim()).filter(Boolean)) {
       const n = left.get(l) || 0
       if (n > 0) left.set(l, n - 1)
-      else gone.push(l.trim())
+      else gone.push(l)
     }
     /* ⚠️ THE ALLOWLIST IS WHAT THIS WORK MEANT TO CHANGE, each one asserted on its own elsewhere in
      * this file: the removed page title, the two de-duplicated card titles, the old pill rows, the
      * logo's card-title treatment, the cancellation group's stray divider and duplicate label, and the
      * lines that gained an id/import. Anything NOT on it is a loss. */
     const allowed = [
-      '<h2 className="font-black text-slate-900 text-lg">Settings</h2>',
-      '<p className="text-base font-bold text-slate-800">Truck details</p>',
-      '<p className="text-base font-bold text-slate-800">Order settings</p>',
-      '<p className="text-base font-bold text-slate-800 mb-3">Logo</p>',
-      '{/* Truck details */}',
-      '<div className="flex items-center justify-between pt-3 border-t border-slate-100">',
-      '<p className="text-sm text-slate-700">{SETTING_COPY.allowCancellation.label}</p>',
-      '<p className="text-sm text-slate-700 mt-0.5">',
-      '<div className="pt-6">',                       // gained `manage-tab-pad`
-      'menuSection === sec.id',                       // the pill ternaries, now `subtabBtn(…)`
-      'section === sec.id',
-      "{pickedPlace?.name ?? 'New place'}",           // replaced by the live preview line
-      'setEditingEvent(p => p ? ({ ...p, truck_place_id: pl.id, ...fillFromPlace(pl, p) }) : p)',
-      /* ⚠️ TWO CONTINUATION LINES of a comment this work rewrote. Listed rather than pattern-matched:
-       * a rule loose enough to skip "any line that looks like prose" would also skip real copy. */
-      'filled fields raise — "will editing this change the place?" — and the answer is',
-      'no: nothing in the form writes back to the place. New events only. */}',
+      /* ⚠️ WHAT THIS BUILD DELIBERATELY REPLACED, each asserted on its own elsewhere:
+       *   • `Van` gained `categorySettings` and `same_as_first_van` (per-van settings);
+       *   • the van card's capacity grid now reads THIS van's values, not the truck's;
+       *   • the Add event preview moved from the footer into the form pane.
+       * Anything NOT listed here is a loss. */
+      'interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; offline_protection_mode?: \'pause\' | \'no_auto_accept\'; offline_auto_reject_mins?: number | null; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null; collection_interval_mins?: number | null; operator_collection_interval_mins?: number | null }',
+      'const locked = cat.prep_secs > 0',
+      'const capDisabled = locked || !hasCap',
+      'batchSize={cat.batch_size}',
+      'prepSecs={cat.prep_secs}',
+      'countsToward={cat.counts_toward_capacity}',
+      'onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}',
+      'onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}',
+      'onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}',
+      '// is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).',
+      '<div className="shrink-0 flex gap-2">',
+      '<div className="min-w-0 flex-1 max-md:hidden">',
+      '<div className="max-h-[4.75rem] overflow-hidden">',
+      /* ⚠️ the muted "Filled from" line kept its words and changed its MARGIN: in the footer it needed
+       * `mt-0.5` under a capped card; in the pane the card already carries `mb-2`, so it pulls up. */
+      '<p className="text-[11px] text-slate-400 truncate mt-0.5">',
+      'picked. It answers the question the filled fields raise — "will editing this',
+      'change the place?" — and the answer is no: nothing below writes back to the place.'
     ]
     const unexplained = gone.filter(l => {
       if (!l) return false
@@ -1447,16 +1493,19 @@ function runWiringSuite() {
    * per-van — `menu_categories.prep_secs`, `.batch_size` and `.counts_toward_capacity`, all written by
    * `upsert_category` scoped `.eq('truck_id', …)`. The brief says STOP in that case. This asserts
    * nothing was half-built, so the report's claim is checkable rather than trusted. */
-  t('🔴 NOTHING OF "Same as Van1" WAS BUILT — no column, no switch, no migration',
-    (() => {
-      try {
-        require('child_process').execFileSync('grep',
-          ['-rl', '--include=*.ts', '--include=*.tsx', '--include=*.sql', 'same_as_first_van', 'app', 'lib', 'components', 'supabase'],
-          { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
-        return false
-      } catch { return true }
-    })())
-  t('🔴 …and the three truck-level fields are still written by `upsert_category`, truck-scoped',
+  /* ══ 🔴 A.4 WAS STOPPED ON 3 OCTOBER AND BUILT ON 5 OCTOBER ════════════════════════════
+   * This check used to assert that NOTHING of "Same as Van1" existed — because the three fields on each
+   * van's card were truck-level (`menu_categories` has no `van_id`), so the switch would have collapsed
+   * controls that were not that van's. That finding is docs/settings-and-preview-report.md §4.
+   * 🔴 IT HAS SINCE BEEN FIXED PROPERLY: `van_category_settings` makes the three fields per van, and
+   * the switch is a write fan-out. So the assertion INVERTS — and the real guarding lives in
+   * scripts/van-category-settings.cjs, which proves equivalence by compiling both trees. What this
+   * check keeps is the boundary that must not move: the MENU tab still writes the truck default. */
+  t('🔴 A.4 IS NOW BUILT, and its own harness exists to guard it',
+    /same_as_first_van/.test(read('supabase/migrations/20261005_van_category_settings.sql'))
+    && fs.existsSync(path.join(REPO, 'scripts/van-category-settings.cjs'))
+    && /"van-category-settings\.cjs"/.test(read('scripts/harnesses.json')))
+  t('🔴 …and the MENU tab still writes the three fields truck-scoped, as the DEFAULT for every van',
     /api\('upsert_category', \{/.test(P)
     && /counts_toward_capacity: newVal,/.test(P)
     && /from\('menu_categories'\)[\s\S]{0,200}\.eq\('truck_id', truck\.id\)/.test(stripComments(read(ROUTE))))
@@ -1471,14 +1520,40 @@ function runWiringSuite() {
   t('⚠️ …in the `compact` variant with no Order CTA — an unsaved event must not offer one',
     /compact\s*\n?\s*hideOrderButton/.test(P)
     && /status: 'unconfirmed'/.test(read(PREVIEW_LIB)))
-  t('🔴 it is in the FOOTER, left of the buttons, replacing the plain "Filled from" line',
-    (() => {
-      const i = RAWP.indexOf('shrink-0 border-t border-slate-200 bg-white px-5')
-      const foot = RAWP.slice(i, i + 2600)
-      return /<TruckListCard/.test(foot)
-        && foot.indexOf('<TruckListCard') < foot.indexOf('label="Cancel"')
-        && /Filled from \{pickedPlace\?\.name/.test(foot)   // kept as a muted line inside the preview
-    })())
+  /* 🔴 MOVED OUT OF THE FOOTER INTO THE FORM PANE, 5 October 2026. In the footer it shared a row
+   * with the buttons and had to be capped at `max-h-[4.75rem]`, so a long venue name was CLIPPED — a
+   * preview that could not show the thing it previews. This check inverted with the move: the card must
+   * now be in the PANE, below Notes, and must NOT be in the footer. */
+  t('🔴 the preview is in the FORM PANE below Notes, at the pane\'s full width', (() => {
+    const pane = RAWP.indexOf('data-preview-pane')
+    const notes = RAWP.indexOf('<label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>')
+    return pane > 0 && notes > 0 && pane > notes
+      && /<div className="sm:col-span-2 max-md:hidden" data-preview-pane>/.test(RAWP)
+      && /<p className="block text-xs font-bold text-slate-400 mb-1">Preview<\/p>/.test(RAWP)
+      // the muted "Filled from" line lives inside the preview, as the brief asks
+      && /Filled from \{pickedPlace\?\.name/.test(RAWP.slice(pane, pane + 1400))
+  })())
+  t('⛔ …and the FOOTER is back to just Cancel and Add event', (() => {
+    const i = RAWP.indexOf('shrink-0 border-t border-slate-200 bg-white px-5')
+    const foot = RAWP.slice(i, i + 2600)
+    return i > 0
+      /* ⚠️ MATCHED AS JSX, NOT AS PROSE. This file's `codeOnly` only drops lines that BEGIN with a
+       * comment marker, so the continuation lines of the ⛔ note below — which names
+       * `max-h-[4.75rem]` to record its removal — survive stripping. Matching the class WITH its
+       * closing `">` matches only a real className and never the backticked mention. */
+      && !/<TruckListCard/.test(foot)                        // the card has gone
+      && !/max-h-\[4\.75rem\] overflow-hidden">/.test(foot) // and so has its height cap
+      && /label="Cancel"/.test(foot) && /Add event/.test(foot)
+      // ⚠️ the buttons must still sit at the RIGHT: nothing is flex-1 beside them at ≥768 now
+      && /<div className="shrink-0 ml-auto flex gap-2">/.test(foot)
+  })())
+  /* 🔴 THE VAN SHOWS IN THE PREVIEW (the brief's explicit requirement), through the card's own
+   * documented `cornerAction` slot — not smuggled into `truckName` or `village`, which the public card
+   * uses for other things and renders elsewhere. */
+  t('🔴 the preview SHOWS THE VAN when one is chosen, via the card\'s own corner slot',
+    /cornerAction=\{previewVanName/.test(P)
+    && /cornerAction\?: ReactNode/.test(read('components/TruckListCard.tsx'))
+    && /const previewVanName = editingEvent\?\.van_id/.test(P))
   t('⚠️ the phone\'s pinned card IS the preview line, and it updates live',
     /data-preview-line/.test(P) && /\{previewOneLine\}/.test(P)
     && /const previewOneLine = editingEvent/.test(P))
@@ -1866,8 +1941,8 @@ function runVariants() {
       changed(read(PAGE), "import TruckListCard from '@/components/TruckListCard'", '', 'W34'),
       src => /import TruckListCard from '@\/components\/TruckListCard'/.test(src)],
     ['W35 🔴 the preview offers an Order button on an event that does not exist',
-      changed(read(PAGE), '                        compact\n                        hideOrderButton',
-        '                        compact', 'W35'),
+      changed(read(PAGE), '                      compact\n                      hideOrderButton',
+        '                      compact', 'W35'),
       src => /compact\s*\n?\s*hideOrderButton/.test(src)],
     ['W36 🔴 an unfilled date is handed to the card raw, so it renders "Invalid Date"',
       changed(read(PREVIEW_LIB), "  const date = isYmd(form.event_date) ? form.event_date : PREVIEW_PLACEHOLDERS.date",

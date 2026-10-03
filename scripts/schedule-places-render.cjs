@@ -115,7 +115,10 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
   const footer = lift(PAGE, /<div className="(shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3)/, 'the sticky footer')
   /* 🔴 THE CAP ON THE PREVIEW'S HEIGHT, lifted from the page. It is what stops a long venue name
    * wrapping the card into two rows and eating the form pane — the thing the brief asks to measure. */
-  const previewCap = lift(PAGE, /<div className="(max-h-\[4\.75rem\] overflow-hidden)">/, 'the preview height cap')
+  /* 🔴 THE PREVIEW IS IN THE FORM PANE NOW, NOT THE FOOTER (5 October 2026), so the class lifted
+   * here is its PANE wrapper rather than the old `max-h-[4.75rem]` footer cap — which is gone, because
+   * in the pane there is room to show a long venue name instead of clipping it. */
+  const previewPane = lift(PAGE, /<div className="(sm:col-span-2 max-md:hidden)" data-preview-pane>/, 'the preview pane wrapper')
   const form = lift(PAGE, /<div id="add-event-form" className="(grid grid-cols-1 sm:grid-cols-2 gap-3)">/, 'the form grid')
   const grid = oneCol ? '' : twoPane
 
@@ -167,22 +170,21 @@ function fixture(css, oneCol = false, placeCount = 6, breakScroll = false) {
             <div id="times" class="sm:col-span-2 max-md:order-2 grid grid-cols-2 gap-2">${filler('Start', 56)}${filler('End', 56)}</div>
             <div class="sm:col-span-2 max-md:order-3">${filler('Truck', 56)}</div>
             <div class="sm:col-span-2 max-md:order-4">${filler('Notes', 56)}</div>
+            <!-- the live preview, at the full width of the pane, below Notes -->
+            <div id="preview" class="${previewPane}">
+              <p style="font-size:12px;font-weight:700;color:#94a3b8;margin-bottom:4px">Preview</p>
+              ${filler('TruckListCard (compact) — Lavenham Village Hall · Tue 13 Oct · 17:00–20:00', 56)}
+              <p id="filledFrom" style="font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filled from Lavenham Village Hall</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div id="footer" class="${footer}" style="display:flex;align-items:center;gap:12px">
-      <!-- the live preview, with the page's own height cap -->
-      <div id="preview" class="min-w-0 flex-1 max-md:hidden">
-        <div class="${previewCap}">
-          ${filler('TruckListCard (compact) — Lavenham Village Hall · Tue 13 Oct · 17:00–20:00', 56)}
-          <p id="filledFrom" style="font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">Filled from Lavenham Village Hall</p>
-        </div>
-      </div>
       <!-- the phone keeps a single muted line here; the preview itself is the pinned card up top -->
       <p id="filledFromPhone" class="min-w-0 flex-1 md:hidden" style="font-size:12px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filled from Lavenham Village Hall</p>
-      <div class="shrink-0" style="display:flex;gap:8px">
+      <div id="footerBtns" class="shrink-0 ml-auto" style="display:flex;gap:8px">
         <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Cancel</span>
         <span style="padding:8px 16px;border-radius:12px;background:#ea580c;color:#fff;white-space:nowrap">Add event</span>
       </div>
@@ -292,7 +294,7 @@ function settingsFixture(css, breakSticky = false, breakFlush = false, withBanne
 const rects = () => {
   const ids = ['modal', 'header', 'switch', 'close', 'body', 'panes', 'left', 'leftFooter',
     'right', 'form', 'times', 'footer', 'filledFrom', 'addrToggle', 'addrFields',
-    'listRoot', 'listSearch', 'listScroll', 'preview', 'filledFromPhone']
+    'listRoot', 'listSearch', 'listScroll', 'filledFromPhone', 'footerBtns']
   const out = {}
   for (const id of ids) {
     const el = document.getElementById(id)
@@ -385,7 +387,17 @@ const rects = () => {
     out.listOverflows = null; out.lastReachable = null
   }
   const pv = document.getElementById('preview')
-  out.preview = pv ? { h: Math.round(pv.getBoundingClientRect().height), w: Math.round(pv.getBoundingClientRect().width) } : { h: 0, w: 0 }
+  out.preview = pv ? {
+    h: Math.round(pv.getBoundingClientRect().height),
+    w: Math.round(pv.getBoundingClientRect().width),
+    bottom: Math.round(pv.getBoundingClientRect().bottom),
+    visible: pv.getBoundingClientRect().width > 0 && pv.getBoundingClientRect().height > 0,
+  } : { h: 0, w: 0, bottom: 0, visible: false }
+  /* 🔴 DID THE PANE HAVE TO SCROLL? Measured, not assumed: the body is `overflow-y-auto`, so a
+   * preview that only becomes visible after scrolling would still report a sane rect. True here means
+   * the form is taller than its pane with every field filled — which is the thing the brief forbids. */
+  const bodyEl = document.getElementById('body')
+  out.previewScrolledTo = !!(bodyEl && bodyEl.scrollHeight > bodyEl.clientHeight + 1)
   out.formRows = document.getElementById('form') ? rowsOf('form') : 0
   const labelled = (name) => [...document.querySelectorAll('#form [style*="height"]')]
     .find(el => el.textContent.trim().startsWith(name))
@@ -462,13 +474,26 @@ async function measure() {
       t(w >= 768 ? !r.filledFromPhone.visible : !r.preview.w,
         `⚠️ ${w}: …and only one of the two is shown`)
       if (w >= 768) {
-        /* 🔴 THE FOOTER MUST NOT EAT THE FORM. The preview is capped at 4.75rem (76px), so the footer
-         * stays about one card tall and the form pane keeps a usable height — which is the brief's
-         * "must not grow so tall that the form area becomes cramped at 820×1180". */
-        t(r.preview.h <= 80, `🔴 ${w}: the preview is capped at one card — footer ${r.footer.height}px, preview ${r.preview.h}px`)
-        t(r.footer.height <= 120, `🔴 ${w}: the whole footer stays under 120px`)
+        /* ══ 🔴 THE PREVIEW IS IN THE FORM PANE, AND THE FOOTER SHRANK ══════════════════════
+         * 🔴 THE FOOTER IS NO TALLER THAN BEFORE THE MOVE, which is the brief's test. 100px was the
+         * measured footer height with the preview inside it (docs/settings-and-preview-report.md §8);
+         * with only the buttons left it must be at or under that, never more. */
+        t(r.footer.height <= 100,
+          `🔴 ${w}: THE FOOTER IS NO TALLER THAN BEFORE — ${r.footer.height}px, against 100px with the preview in it`)
+        t(r.footerBtns.visible && r.footerBtns.right <= r.footer.right,
+          `⚠️ ${w}: Cancel and Add event are in the footer and inside it`)
+        /* 🔴 THE PREVIEW IS REACHABLE WITHOUT SCROLLING THE FORM. The brief's words. `body` is the
+         * scrolling pane, so the preview's bottom has to sit inside it — not merely exist below the
+         * fold — with every field above it filled. */
+        t(r.preview.visible && r.preview.bottom <= r.body.bottom + 1,
+          `🔴 ${w}: THE PREVIEW IS VISIBLE WITHOUT SCROLLING the filled form — preview bottom ${r.preview.bottom}, pane bottom ${r.body.bottom}`)
+        t(!r.previewScrolledTo,
+          `🔴 ${w}: …and the pane did not have to scroll to reveal it`)
+        /* 🔴 FULL WIDTH OF THE PANE, which is what it gained by moving. In the footer it shared a row
+         * with the buttons and was capped; here it spans the form. */
+        t(r.preview.w > 0 && Math.abs(r.preview.w - r.right.width) <= 56,
+          `🔴 ${w}: the preview spans the form pane — preview ${r.preview.w}px, pane ${r.right.width}px`)
         t(r.right.height >= 300, `🔴 ${w}: THE FORM PANE IS NOT CRAMPED — ${r.right.height}px of form`)
-        t(r.preview.w > 0 && r.preview.w < r.footer.width, `⚠️ ${w}: the preview shares the footer rather than filling it`)
       }
 
       if (w >= 768) {

@@ -2422,33 +2422,51 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingCat(false)}
   }
 
+  /* ══ 🔴 THE KITCHEN-CAPACITY WRITES ARE PER VAN ═════════════════════════════════════
+   * 🔴 THEY USED TO WRITE `update_category`, WHICH IS TRUCK-LEVEL. This card is the ACTIVE EVENT's
+   * VAN's card — the Total-capacity select beside it writes `update_van_settings` for
+   * `activeEvent.van_id`, and the tickbox is disabled when there is no van — so a truck with two vans
+   * had Van 2's prep time silently overwrite Van 1's. See docs/van-settings-report.md.
+   * 🔴 `saveCatEdit` ABOVE IS DELIBERATELY UNCHANGED and still writes `menu_categories`: that is the
+   * category EDITOR (name, prep, batch, notes), which sets the truck's DEFAULT for any van without its
+   * own values. Its wording is untouched.
+   * ⚠️ NO VAN ⇒ NO WRITE. With no van on the event there is nothing to scope the setting to, and
+   * falling back to the truck-level write is exactly the bug. The controls are already disabled in that
+   * case (`capDisabled` includes `!activeEvent.van_id`); this is the guard behind that.
+   * ⚠️ /api/manage, NOT /api/dashboard/action — the same route and the same `nativeAuthHeader()` this
+   * file already uses for `update_van_settings` two functions above, so there is one per-van writer on
+   * the server rather than a second copy of the seeding rule. */
   const updateCategoryField=async(catId:string,field:'prep_secs'|'batch_size',value:number|null)=>{
     if(!truck)return
+    const vanId=activeEvent?.van_id
+    if(!vanId)return
     const catData=truckMenu?.categories?.find(c=>c.id===catId)
     if(!catData)return
     const key=catData.name.toLowerCase()
-    const allowNotes=categoryAllowNotes[key]??false
     const prepSecs=field==='prep_secs'?(value??0):(catData.prep_secs??0)
     const batchSize=field==='batch_size'?value:(catData.batch_size??null)
+    // Optimistic, on the SELECTED event's menu — which /api/menu already resolves for this van.
+    setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catId?{...c,[field]:value}:c)}:prev)
     try{
-      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'update_category',categoryId:catId,
-          name:catData.name,prep_secs:prepSecs,batch_size:batchSize,allow_notes:allowNotes})})
+      await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
+        body:JSON.stringify({token,action:'upsert_van_category',vanId,categoryId:catId,
+          ...(field==='prep_secs'?{prep_secs:prepSecs}:{batch_size:batchSize})})})
       setCategoryConfigs(prev=>({...prev,[key]:{secs:prepSecs,batch:batchSize??1}}))
     }catch{}
   }
 
   // Toggle a no-prep category's "counts toward kitchen capacity" flag from the dashboard's
-  // Kitchen Capacity tickbox list. Optimistic truckMenu update + update_category (carries
-  // counts_toward_capacity; omitting prep/batch leaves them untouched). Truck-wide flag.
+  // Kitchen Capacity tickbox list. Optimistic truckMenu update + the PER-VAN write (see above).
   const toggleCatCapacityDash=async(catId:string,newVal:boolean)=>{
     if(!truck)return
+    const vanId=activeEvent?.van_id
+    if(!vanId)return
     const catData=truckMenu?.categories?.find(c=>c.id===catId)
     if(!catData)return
     setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catId?{...c,counts_toward_capacity:newVal}:c)}:prev)
     try{
-      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'update_category',categoryId:catId,name:catData.name,counts_toward_capacity:newVal})})
+      await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json',...await nativeAuthHeader()},
+        body:JSON.stringify({token,action:'upsert_van_category',vanId,categoryId:catId,counts_toward_capacity:newVal})})
     }catch{}
   }
 

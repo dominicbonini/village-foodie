@@ -12,6 +12,7 @@ import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { resolveIntervalsFor, readEventIntervalsForTruck } from '@/lib/slot-interval'
+import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
@@ -486,8 +487,17 @@ export async function GET(req: NextRequest) {
   if (catsErr)  console.error('[dashboard] menu_categories fetch failed — prep secs read 0 and NOTHING counts toward capacity this poll:', catsErr.message)
   if (itemsErr) console.error('[dashboard] menu_items_db fetch failed — items cannot be mapped to categories this poll:', itemsErr.message)
 
+  /* 🔴 PER-VAN CATEGORY SETTINGS, FROM THE SELECTED EVENT'S VAN — the SAME `van_id` this route
+   * reads `kitchen_capacity`, `capacity_window_mins` and the collection intervals from. The operator's
+   * board, the capacity dots and the KDS (which takes `catConfigs` straight from this payload) then all
+   * describe the van that is actually trading.
+   * ⚠️ ONLY `catConfigs` USES THE RESOLVED LIST. `categoryOrder` and `catById` below stay on the raw
+   * `categories` — they read name, id and sort_order, which per-van settings never touch, and keeping
+   * them on the original makes that obvious rather than merely true.
+   * ⚠️ NO VAN OR NO ROWS ⇒ UNTOUCHED, so a truck with one van behaves exactly as before. */
+  const vanCategories = await resolveCategoriesForVan(supabase, selectedEvent?.van_id ?? null, categories)
   const catConfigs: Record<string, CatConfig> = {}
-  ;(categories || []).forEach(c => {
+  ;(vanCategories.categories || []).forEach(c => {
     catConfigs[c.name.toLowerCase()] = {
       secs: c.prep_secs || 0,
       batch: c.batch_size || 1,

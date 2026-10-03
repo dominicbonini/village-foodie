@@ -100,7 +100,15 @@ check(!/collection_interval_mins/.test(nowSelect), `the van-list select does not
 check(!/operator_collection_interval_mins/.test(nowSelect), '…nor operator_collection_interval_mins')
 check(nowSelect === headSelect, '🔴 it is BYTE-IDENTICAL to HEAD\'s column list (compared against `git show`, not retyped)')
 check(/const intervals = await readVanIntervalsForTruck\(supabase, truck\.id\)/.test(manage), 'the intervals come from a SEPARATE probed read')
-check(/return NextResponse\.json\(\{ vans, intervalsAvailable: intervals\.ok \}\)/.test(manage), '…and the response says whether that read succeeded')
+/* ⚠️ THE FLAG, NOT THE WHOLE RETURN LITERAL (5 October 2026). This pinned the exact object
+ * `{ vans, intervalsAvailable: intervals.ok }`, so it broke when `get_vans` gained `firstVanId` and
+ * `perVanCategoriesAvailable` — a change that leaves the interval contract untouched. What matters is
+ * that the response still reports whether the probed interval read succeeded. */
+check(/intervalsAvailable: intervals\.ok/.test(manage), '…and the response says whether that read succeeded')
+/* ⚠️ AND THE VAN LIST IS STILL WHAT THE PROBED READ MERGED ONTO, not the raw select — the per-van
+ * category settings are merged on top of `vans`, so `vansOut` must derive from it. */
+check(/const vansOut = vans\.map\(v => \(\{/.test(manage) && /vans: vansOut/.test(manage),
+  '…and the per-van additions are merged ONTO that list, not instead of it')
 
 console.log('\n── A 42703 ON THE INTERVAL READ STILL YIELDS EVERY VAN, AT 5/null ──────────────────────')
 {

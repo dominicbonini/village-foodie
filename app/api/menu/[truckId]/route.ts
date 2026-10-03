@@ -10,6 +10,7 @@ import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
+import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 // ⚠️ TEMPORARY — delete with the online-payments switch. See the migration named in that file.
 import { resolveOnlineCardPayments } from '@/lib/payments/online-payments-switch'
 
@@ -239,6 +240,11 @@ export async function GET(
   // isPreorderDeadlinePassed. Null when no event resolves ⇒ the deadline term stays inert.
   let preorderEventStartMins: number | null = null
   let preorderEventDate: string | null = null
+  /* 🔴 THE EVENT'S VAN, HOISTED OUT OF THE `if (ev)` BLOCK so the category payload below can be
+   * resolved against it. Prep, batch and "counts toward capacity" are per-van settings now
+   * (`van_category_settings`), and this route already reads `van_id` from the event for the
+   * offline-protection check — this is the same id, used once more rather than resolved twice. */
+  let eventVanId: string | null = null
 
   if (effectiveEventId) {
     const { data: ev } = await supabase
@@ -259,6 +265,7 @@ export async function GET(
         preorderEventStartMins = (sh || 0) * 60 + (sm || 0)
       }
       preorderEventDate = ev.event_date ?? null
+      eventVanId = ev.van_id ?? null
       let vanAutoPause = false
       if (ev.van_id) {
         const { data: van } = await supabase
@@ -489,9 +496,17 @@ export async function GET(
     catSold[cat] = (catSold[cat] || 0) + n
   }
 
+  /* 🔴 PER-VAN CATEGORY SETTINGS. The customer's ASAP estimate falls back to these three fields
+   * when /api/slots has not answered yet (app/trucks/[slug]/order/page.tsx:1560), and the dashboard's
+   * menu editor reads them too — so this payload has to describe the van that is trading, not the
+   * truck average.
+   * ⚠️ NO `event_id`, NO VAN, NO ROWS, OR A FAILED READ ⇒ UNTOUCHED, so a request without an event
+   * (the plain menu) returns exactly what it always has. */
+  const vanCategories = await resolveCategoriesForVan(supabase, eventVanId, categories)
+
   // Build menu response
   const menu = {
-    categories: (categories || []).map(c => ({
+    categories: (vanCategories.categories || []).map(c => ({
       id: c.id,
       name: c.name,
       prep_secs: c.prep_secs ?? null,

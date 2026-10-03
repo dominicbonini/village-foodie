@@ -164,7 +164,11 @@ for (const n of INTERVAL_CHOICES) {
 check(!/'18:00, 18:15/.test(managePage) && !/18:05, 18:10/.test(managePage), 'the page hard-codes no example string of its own')
 
 console.log('\n── types ───────────────────────────────────────────────────────────────────────────────')
-check(/collection_interval_mins\?: number \| null; operator_collection_interval_mins\?: number \| null \}/.test(managePage), 'the Van interface carries both')
+/* ⚠️ PRESENCE, NOT POSITION (5 October 2026). This matched the two fields followed by the
+ * interface's CLOSING BRACE, so it broke the moment `Van` gained `categorySettings` and
+ * `same_as_first_van` after them — on a change that has nothing to do with intervals. The check's
+ * meaning is "the Van interface carries both interval fields"; that is what it now asserts. */
+check(/collection_interval_mins\?: number \| null; operator_collection_interval_mins\?: number \| null/.test(managePage), 'the Van interface carries both')
 check(!/operator_collection_interval_mins: number/.test(supa), 'lib/supabase Truck no longer declares the dropped column')
 
 console.log(`\n${fails ? '🔴 ' + fails + ' FAILED' : '✅ settings proven at van level'}`)

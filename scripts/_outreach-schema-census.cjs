@@ -56,6 +56,10 @@ const TABLES = [
   // not exist. ⚠️ `truck_place_groups` WAS HERE AND IS GONE — stage 2 drops the table with the
   // Facebook-groups feature, and a censused table that no longer exists is a check with no subject.
   'truck_places',
+  /* Per-van category capacity settings (supabase/migrations/20261005_van_category_settings.sql).
+   * Added at creation, like truck_places, so the feature can never name a column that does not exist
+   * — which on this table would mean the capacity engine reading undefined prep times. */
+  'van_category_settings',
 ]
 
 const CODE_DIRS = ['app', 'lib', 'components']

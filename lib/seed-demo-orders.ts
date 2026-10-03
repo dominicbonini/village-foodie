@@ -23,6 +23,7 @@ import { toMinor } from '@/lib/order-repricing'
 import { randomUUID } from 'crypto'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { resolveIntervalsFor } from '@/lib/slot-interval'
+import { readVanCategorySettings, resolveCategory } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
 import { admitForManual, writeReservationRecord, writeCookingReservation } from '@/lib/orders/cooking-reservation'
 import { generateCollectionTimes } from '@/lib/slot-generation'
@@ -388,17 +389,34 @@ export async function seedDemoOrders(
   // 🔴 `batch_size` AND `prep_secs` AND `counts_toward_capacity`, NOT just `prep_secs`. The planner's
   // ceiling now comes from the committed category row, and the post-condition needs the same three
   // columns to build the catConfigs the engine reads. One select, three more columns.
+  // 🔴 `id` ON THE JOINED CATEGORY, so the PER-VAN overrides below can be keyed by `category_id`
+  // rather than by a name two categories could be renamed into.
   const { data: itemRows } = await supabase
     .from('menu_items_db')
-    .select('id, name, price, menu_categories!category_id(name, prep_secs, batch_size, counts_toward_capacity)')
+    .select('id, name, price, menu_categories!category_id(id, name, prep_secs, batch_size, counts_toward_capacity)')
     .eq('truck_id', args.truckId).eq('is_active', true).limit(120)
+
+  /* 🔴 THE EVENT'S VAN, READ HERE RATHER THAN WITH THE TRUCK ROW BELOW. Prep, batch and "counts
+   * toward capacity" are PER-VAN settings now, and the planner uses all three BEFORE that point — so
+   * the van has to be known before the lines are built, or the demo would be planned against the truck
+   * defaults and then checked against the van's. The later read is now the truck row only.
+   * ⚠️ NO VAN, NO ROWS, OR A FAILED READ ⇒ the category values pass through untouched, so a demo
+   * truck with one van seeds exactly as it did before. */
+  const { data: seedEvRow } = await supabase
+    .from('truck_events').select('van_id').eq('id', args.eventId).maybeSingle()
+  const vanId = (seedEvRow as { van_id?: string | null } | null)?.van_id ?? null
+  const vanCatRows = await readVanCategorySettings(supabase, vanId)
 
   const requiredMods = await resolveRequiredMods(
     supabase, args.truckId, (itemRows ?? []).map(r => (r as Record<string, any>).id as string))
 
   const all: MenuLine[] = (itemRows ?? []).map(r => {
     const row = r as Record<string, any>
+    /* 🔴 ONE RESOLVER. `resolveCategory` returns the SAME object when the van has no rows, so this
+     * line is a no-op for every demo truck that has not been given per-van settings. */
     const cat = row.menu_categories
+      ? resolveCategory(row.menu_categories as { id: string } & Record<string, unknown>, vanCatRows.byCategoryId)
+      : row.menu_categories
     const name = String(cat?.name ?? '')
     return {
       id: String(row.id),
@@ -443,11 +461,11 @@ export async function seedDemoOrders(
   // Clamping the floor to now+10 pushes the busy front into the near-future. Ceil-to-5 keeps it on grid.
   // The event's van, the truck's switch and the resolved grid — ONE read each, reused by the post-condition
   // and the admission loop below. The van id comes from the event, exactly as eventKitchenCapacity resolves it.
-  const [{ data: evRow }, { data: truckRow }] = await Promise.all([
-    supabase.from('truck_events').select('van_id').eq('id', args.eventId).maybeSingle(),
-    supabase.from('trucks').select('plan, feature_overrides, slot_duration_mins').eq('id', args.truckId).maybeSingle(),
-  ])
-  const vanId = (evRow as { van_id?: string | null } | null)?.van_id ?? null
+  /* ⚠️ `vanId` IS ALREADY RESOLVED ABOVE — it had to be, because the per-van category settings shape
+   * the lines the planner builds. This read is the truck row only; the duplicate event read went with
+   * the hoist rather than being left to drift from it. */
+  const { data: truckRow } = await supabase
+    .from('trucks').select('plan, feature_overrides, slot_duration_mins').eq('id', args.truckId).maybeSingle()
   // The van's ceiling is needed at PLANNING time now (the two-batch probe asks the engine, and the engine
   // needs the same inputs it will be given later), not only by the post-condition. One read, reused.
   let kitchenCapacityForPlan: number | null = null

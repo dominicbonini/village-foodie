@@ -351,10 +351,14 @@ export async function POST(req: NextRequest) {
     }
 
     const orderLines = normaliseOrderLines(items, deals)
-    const [itemCatMap, catConfigs] = await Promise.all([
-      buildItemCatMap(supabase, resolvedTruckId),
-      buildCatConfigs(supabase, resolvedTruckId),
-    ])
+    /* 🔴 `catConfigs` IS NO LONGER BUILT HERE — IT IS BUILT ONCE THE VAN IS KNOWN. Prep, batch and
+     * "counts toward capacity" are PER-VAN settings now, and this point in the route is before
+     * `eventRow` is resolved (below), so the van is not yet known. Its ONLY consumer is
+     * `placeOrderInSlotLocked`, inside the `if (eventDate)` block that already resolves `vanId` for
+     * `kitchen_capacity` — so the build moved there rather than running truck-level here and being
+     * corrected afterwards. Same number of queries, and no window in which the wrong van's prep times
+     * could reach the capacity engine. */
+    const itemCatMap = await buildItemCatMap(supabase, resolvedTruckId)
 
     // NOTE: the old "slot full → 409" hard-block is removed for the customer path.
     // A full slot now never rejects — capacity is resolved at booking time by
@@ -939,6 +943,11 @@ export async function POST(req: NextRequest) {
         // Live kitchen_capacity (items) from the event's van — same source as the operator traffic
         // light, so customer placement and the dot agree on "full".
         const { kitchenCapacity, capacityWindowMins, vanId } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
+        /* 🔴 THE CATEGORY SETTINGS COME FROM THE SAME VAN THE CAPACITY DID. One van, one
+         * resolution — the rule /api/slots already states for its four settings. A van with no
+         * `van_category_settings` rows (every van until an operator edits one) resolves to
+         * `menu_categories`, which is what this route has always used. */
+        const catConfigs = await buildCatConfigs(supabase, resolvedTruckId, vanId)
         // 🔴 THE CUSTOMER GRID COMES FROM THE SAME VAN THE CAPACITY DID. No van ⇒ the legacy read of
         // trucks.collection_interval_mins, including its 0-means-"use collection_times" contract,
         // exactly as before. A resolved van always yields 5-30.

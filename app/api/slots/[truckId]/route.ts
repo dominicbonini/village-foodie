@@ -10,6 +10,7 @@ import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { normaliseInterval, resolveIntervalsFor } from '@/lib/slot-interval'
+import { resolveCategoriesForVan } from '@/lib/van-category-settings'
 import { resolveBatchReservations } from '@/lib/features'
 
 const supabase = createClient(
@@ -197,8 +198,16 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   }))
 
   // ── Build category config map (always needed for ASAP calculation) ────────
+  /* 🔴 PER-VAN CATEGORY SETTINGS, FROM THE SAME `van_id` THIS ROUTE ALREADY RESOLVED. Prep, batch
+   * and "counts toward capacity" are per-van (`van_category_settings`); the comment above
+   * `resolveIntervalsFor` calls this "one van, one resolution, four settings" — it is now seven, from
+   * the same single `todayEvent.van_id`.
+   * ⚠️ NO VAN, NO ROWS, OR A FAILED READ ⇒ `categories` PASSES THROUGH UNTOUCHED, so the map built
+   * below is byte-for-byte what it was before per-van settings existed. The `|| 1` batch default and
+   * every other expression here are deliberately unchanged. */
+  const vanCategories = await resolveCategoriesForVan(supabase, todayEvent?.van_id ?? null, categories)
   const catConfigs: Record<string, CatConfig> = {}
-  ;(categories || []).forEach(c => {
+  ;(vanCategories.categories || []).forEach(c => {
     catConfigs[c.name.toLowerCase()] = {
       secs: c.prep_secs || 0,
       batch: c.batch_size || 1,
