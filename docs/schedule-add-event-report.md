@@ -278,7 +278,7 @@ New this build, among them:
   collapsed-but-present fields, Tidy up reusing `PlaceDetail`, one hook;
 - the pills: **two**, no `id: 'places'`, and `?section=places` falling through without forcing Tidy up.
 
-### 28 broken variants — **every one fails as required**
+### 33 broken variants — **every one fails as required**
 
 Including one per bug: **W5a/W5b** (closed stops counting as Last / in the count) · **W5c** (a closed
 future date offered as next) · **W5d/W5e** (the line loses its times / prefers Next) · **W21** (the
