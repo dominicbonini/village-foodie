@@ -52,6 +52,7 @@
     "outreach-reply-attach.cjs",
     "outreach-schema-census.cjs",
     "van-category-settings.cjs",
+    "weekly-post.cjs",
     "outreach-send-read-failure.cjs",
     "outreach-sequence.cjs",
     "outreach-stage-advance.cjs",

@@ -8889,7 +8889,7 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
     {/* ── THE WEEKLY POST SECTION ─────────────────────────────────────────────────────────────────
         ⚠️ PLACES IS NOT HERE ANY MORE. Seeding now happens when the Add event modal opens, which is
         the deliberate act that needs the list; the Schedule tab itself writes nothing. */}
-    {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}
+    {isActive && section === 'weekly' && <WeeklyPostPane truck={truck} token={token} />}
     {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
     {showImportModal && (
       <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">

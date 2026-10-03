@@ -39,6 +39,70 @@ function lift(src, re, what) {
   return m[1]
 }
 
+const WP = read('components/manage/WeeklyPost.tsx')
+
+/**
+ * THE WEEKLY POST'S TWO SCREENS.
+ *
+ * 🔴 THE GRID TEMPLATES ARE LIFTED FROM THE COMPONENT, so a restyle breaks the fixture rather than
+ * quietly leaving it measuring a layout nobody is served — the lesson from the Settings build, where a
+ * fixture went on measuring the old shell.
+ * ⚠️ THE PREVIEW IS A PLACEHOLDER BOX AT THE POSTER'S ASPECT RATIO, not a rendered PNG. What is being
+ * measured here is the SCREEN: whether the preview and the controls fit and are reachable at three
+ * widths. The poster's own pixels are measured by scripts/weekly-post.cjs, which is where that
+ * question belongs.
+ */
+function weeklyPostFixture(css, which, w) {
+  const setupGrid = lift(WP, /<div className="(grid grid-cols-1 lg:grid-cols-\[220px_minmax\(0,1fr\)_260px\] gap-4)">/, 'the setup grid')
+  const postGrid = lift(WP, /<div className="(grid grid-cols-1 lg:grid-cols-\[minmax\(0,1fr\)_320px\] gap-4)">/, 'the post grid')
+  const panel = lift(WP, /<div className="(rounded-xl border border-slate-200 bg-white p-3)">/, 'a control panel')
+  const stage = lift(WP, /<div ref=\{stageRef\} className="(relative w-full select-none touch-none bg-slate-100 rounded-xl overflow-hidden)"/, 'the editor stage')
+
+  const panels = (n, idPrefix) => Array.from({ length: n }, (_, i) =>
+    `<div id="${idPrefix}${i}" class="${panel}" style="margin-bottom:12px">
+       <p style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:8px">PANEL ${i + 1}</p>
+       ${filler('a control', 34)}${filler('another control', 34)}
+     </div>`).join('')
+
+  const body = which === 'setup'
+    ? `<div class="${setupGrid}">
+         <div id="leftCol">${panels(4, 'L')}</div>
+         <div>
+           <div id="stage" class="${stage}" style="aspect-ratio: 1080 / 1350"></div>
+           <p style="font-size:12px;color:#94a3b8;margin-top:8px">Place row 1's three boxes: Date · Location · Time. The other six days copy it.</p>
+         </div>
+         <div id="rightCol">${panels(4, 'R')}</div>
+       </div>`
+    : `<div class="${postGrid}">
+         <div>
+           <div id="weekPicker" style="display:flex;gap:8px;margin-bottom:12px">
+             <span style="padding:6px 12px;border-radius:8px;border:1px solid #f97316;white-space:nowrap">This week</span>
+             <span style="padding:6px 12px;border-radius:8px;border:1px solid #e2e8f0;white-space:nowrap">Next week</span>
+           </div>
+           <div id="stage" class="relative rounded-xl overflow-hidden bg-slate-100" style="aspect-ratio: 1080 / 1350"></div>
+           <div id="actions" style="display:flex;gap:8px;margin-top:12px">
+             <span style="padding:8px 16px;border-radius:12px;background:#ea580c;color:#fff;white-space:nowrap">Download image</span>
+             <span style="padding:8px 16px;border-radius:12px;background:#f1f5f9;white-space:nowrap">Share</span>
+           </div>
+         </div>
+         <div id="rightCol">${panels(4, 'R')}</div>
+       </div>`
+
+  /* ⚠️ THE REAL APP SHELL, because the screen lives inside the manage scroller — `h-dvh`,
+   * `overflow-hidden`, and `<main>` as the only scrolling element. Measuring it in a plain document
+   * would answer a different question about what scrolls. */
+  const shell = lift(PAGE, /<div className="(bg-slate-50 h-dvh flex flex-col overflow-hidden)">/, 'the app shell')
+  const main = lift(PAGE, /<main id=\{MANAGE_SCROLLER_ID\} className=\{"(w-full min-\[1400px\]:max-w-5xl min-\[1400px\]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6)"\}>/, 'the scroller')
+  return `${HEAD(css)}
+<div class="${shell}">
+  <div style="height:56px;background:#0f172a" class="shrink-0"></div>
+  <div style="height:44px;background:#0f172a" class="shrink-0"></div>
+  <main id="scroller" class="${main}">
+    <div class="pt-6 manage-tab-pad">${body}</div>
+  </main>
+</div></body></html>`
+}
+
 // ── THE APP'S OWN STYLESHEET ────────────────────────────────────────────────────────────────────────
 function appCss() {
   // ⚠️ `.next/static`, NOT `.next/dev`: the dev CSS is a different, unminified artefact and measuring
@@ -773,6 +837,70 @@ async function measure() {
       lines.push(`  settings BROKEN (no data-subtab-bar)  at rest ${gapV.rest}px below the top, after scrolling ${gapV.scrolled}px`)
       t(gapV.rest > 1 && gapV.scrolled <= 1,
         '🔴 BROKEN VARIANT: without `data-subtab-bar` the bar rests below the top and snaps flush once scrolled — the two resting positions, reproduced')
+    }
+
+    /* ══ 🔴 THE WEEKLY POST'S TWO SCREENS ════════════════════════════════════════════
+     * Three widths, two screens, both engines. The questions are the brief's: no horizontal page
+     * scroll, the preview visible, the controls reachable.
+     * ⚠️ "REACHABLE" IS MEASURED AS "INSIDE THE SCROLLER AND NOT CLIPPED SIDEWAYS", not as "on screen
+     * without scrolling" — a settings screen is expected to scroll vertically. What must never happen
+     * is a column pushed off the side where no scroll can reach it, which is what a three-column grid
+     * does on a phone if it is not allowed to stack. */
+    for (const which of ['setup', 'post']) {
+      for (const [w, h] of [[1440, 900], [820, 1180], [390, 844]]) {
+        await eng.setViewport(w, h)
+        await eng.page.goto(write(`wp-${which}-${w}-${eng.name}.html`, weeklyPostFixture(css, which, w)))
+        const r = await eng.page.evaluate(() => {
+          const box = (id) => {
+            const el = document.getElementById(id)
+            if (!el) return null
+            const b = el.getBoundingClientRect()
+            return { left: Math.round(b.left), right: Math.round(b.right), top: Math.round(b.top),
+              bottom: Math.round(b.bottom), width: Math.round(b.width), height: Math.round(b.height) }
+          }
+          const sc = document.getElementById('scroller')
+          return {
+            stage: box('stage'), left: box('leftCol'), right: box('rightCol'),
+            picker: box('weekPicker'), actions: box('actions'), r0: box('R0'), r3: box('R3'),
+            docScrollW: document.documentElement.scrollWidth,
+            innerW: window.innerWidth,
+            scrollerW: sc ? Math.round(sc.getBoundingClientRect().width) : 0,
+            scrollerLeft: sc ? Math.round(sc.getBoundingClientRect().left) : 0,
+            scrollerRight: sc ? Math.round(sc.getBoundingClientRect().right) : 0,
+            pageScrollsSideways: document.documentElement.scrollWidth > window.innerWidth + 1,
+          }
+        })
+        lines.push(`  weekly ${which} ${w}×${h}  stage ${r.stage.width}×${r.stage.height} · right col ${r.right.width}px · doc ${r.docScrollW} vs ${r.innerW}`)
+        t(!r.pageScrollsSideways, `🔴 weekly ${which} ${w}: NO HORIZONTAL PAGE SCROLL`)
+        t(r.stage.width > 0 && r.stage.height > 0, `🔴 weekly ${which} ${w}: the preview is visible`)
+        /* 🔴 THE PREVIEW KEEPS THE POSTER'S SHAPE, so what the operator judges is the proportions they
+         * will get. 1080×1350 is 0.8; a stage that had gone square would show them a lie. */
+        t(Math.abs(r.stage.width / r.stage.height - 1080 / 1350) < 0.02,
+          `🔴 weekly ${which} ${w}: …at the poster's own aspect ratio`)
+        t(r.stage.left >= r.scrollerLeft - 1 && r.stage.right <= r.scrollerRight + 1,
+          `⚠️ weekly ${which} ${w}: the preview is inside the scroller, not clipped sideways`)
+        /* 🔴 EVERY CONTROL PANEL IS REACHABLE. On a phone the columns must STACK — a three-column
+         * grid that did not would push the right-hand controls off the side, where no amount of
+         * scrolling reaches them. */
+        for (const [name, el] of [['first', r.r0], ['last', r.r3]]) {
+          t(!!el && el.left >= r.scrollerLeft - 1 && el.right <= r.scrollerRight + 1 && el.width > 60,
+            `🔴 weekly ${which} ${w}: the ${name} control panel is reachable (${el ? el.width : 0}px wide)`)
+        }
+        if (w < 1024) {
+          t(r.right.top > r.stage.top, `🔴 weekly ${which} ${w}: the columns STACK below 1024 — nothing is pushed off the side`)
+        } else {
+          t(r.right.left > r.stage.left, `⚠️ weekly ${which} ${w}: the controls sit beside the preview on a wide screen`)
+          if (which === 'setup') {
+            t(r.left.right <= r.stage.left + 1, `⚠️ weekly setup ${w}: three columns in order — what to place, the preview, the controls`)
+          }
+        }
+        if (which === 'post') {
+          t(!!r.picker && r.picker.width > 0 && r.picker.right <= r.scrollerRight + 1,
+            `⚠️ weekly post ${w}: the This week / Next week picker fits`)
+          t(!!r.actions && r.actions.right <= r.scrollerRight + 1,
+            `⚠️ weekly post ${w}: Download and Share fit on one row`)
+        }
+      }
     }
 
     // ── THE CONTROL ─────────────────────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ import { Btn, Card, Input, Spinner } from '@/components/manage/primitives'
 import { FeatureGate } from '@/components/FeatureGate'
 import type { Plan } from '@/lib/features'
 import { placeWhenLine, timeRangeLabel } from '@/lib/schedule-graphics/places'
+import { WeeklyPostApp } from './WeeklyPost'
 
 export interface Place {
   id: string
@@ -429,8 +430,18 @@ export function TidyUpPlaces({ ctl, api, showToast, onBack }: {
 // ════════════════════════════════════════════════════════════════════════════════════════════════
 // THE WEEKLY POST PANE — the only thing still gated, and still a placeholder
 // ════════════════════════════════════════════════════════════════════════════════════════════════
-export function WeeklyPostPane({ truck }: {
-  truck: { plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null } | null
+/**
+ * ⚠️ THE GATE STAYS HERE AND THE SCREENS MOVED OUT. This file is the places feature; the weekly post
+ * is a large screen of its own and lives in components/manage/WeeklyPost.tsx. What remains here is the
+ * plan gate and the truck→token plumbing, so `page.tsx`'s import does not change.
+ *
+ * 🔴 THE GATE IS ALSO ENFORCED SERVER-SIDE in app/api/weekly-post/route.ts. This one decides what is
+ * DRAWN; that one decides what is DONE. Without both, the whole feature is reachable by posting to the
+ * route with a dashboard token, and this would be decoration.
+ */
+export function WeeklyPostPane({ truck, token }: {
+  truck: { plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; name?: string | null } | null
+  token: string
 }) {
   return (
     <FeatureGate
@@ -440,11 +451,7 @@ export function WeeklyPostPane({ truck }: {
       trialExpiresAt={truck?.trial_expires_at}
       upgradeMessage="The weekly post is on Pro and Max"
     >
-      <Card className="p-8 text-center">
-        <p className="text-3xl mb-2">🎨</p>
-        <p className="font-bold text-slate-700">Your weekly post</p>
-        <p className="text-sm text-slate-400 mt-1">Coming next</p>
-      </Card>
+      <WeeklyPostApp token={token} truckName={truck?.name ?? 'Your truck'} />
     </FeatureGate>
   )
 }

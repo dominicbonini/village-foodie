@@ -791,7 +791,12 @@ function runWiringSuite() {
     && !/sgAllowed/.test(R) && !/SG_FORBIDDEN/.test(R))
   /* 🔴 THE FEATURE IS DECLARED IN ONE PLACE AND CONSUMED IN ONE PLACE. Checked over CODE LINES only —
    * route.ts still explains in a comment that the gate used to be here, and a comment is not a gate. */
-  t('🔴 …and the Feature now gates ONLY the Weekly post pane',
+  /* 🔴 THE FEATURE IS NAMED IN THREE PLACES NOW, AND THE THIRD IS THE IMPORTANT ONE (5 October
+   * 2026). It used to be two — the declaration and the UI gate — and the weekly post added
+   * app/api/weekly-post/route.ts, which gates the SERVER. Without it the whole feature is reachable by
+   * posting to that route with a dashboard token and the UI gate is decoration. The count is pinned at
+   * three so a FOURTH consumer still has to be deliberate. */
+  t('🔴 …and the Feature gates the Weekly post pane AND its route, and nothing else',
     (U.match(/feature="schedule_graphics"/g) || []).length === 1
     && /WeeklyPostPane/.test(U)
     && (() => {
@@ -799,7 +804,10 @@ function runWiringSuite() {
         ['-rl', '--include=*.ts', '--include=*.tsx', 'schedule_graphics', 'app', 'lib', 'components'],
         { cwd: REPO, encoding: 'utf8' }).trim().split('\n')
       const inCode = files.filter(f => /schedule_graphics/.test(codeOnly(read(f))))
-      return inCode.length === 2 && inCode.includes('lib/features.ts') && inCode.includes(PLACES_UI)
+      return inCode.length === 3
+        && inCode.includes('lib/features.ts')
+        && inCode.includes(PLACES_UI)
+        && inCode.includes('app/api/weekly-post/route.ts')
     })())
   t('⚠️ `resolveTruckAccess` and the staff gate are UNCHANGED — widening plans never widened roles',
     /'sg_places', 'sg_upsert_place', 'sg_merge_place',/.test(R)
@@ -1301,6 +1309,8 @@ function runWiringSuite() {
       /* ⚠️ the muted "Filled from" line kept its words and changed its MARGIN: in the footer it needed
        * `mt-0.5` under a capped card; in the pane the card already carries `mb-2`, so it pulls up. */
       '<p className="text-[11px] text-slate-400 truncate mt-0.5">',
+      /* ⚠️ the Weekly post pane gained the `token` it needs to call its own route. */
+      "{isActive && section === 'weekly' && <WeeklyPostPane truck={truck} />}",
       'picked. It answers the question the filled fields raise — "will editing this',
       'change the place?" — and the answer is no: nothing below writes back to the place.'
     ]

@@ -1,0 +1,330 @@
+{
+  "note": "Written by scripts/_fetch-weekly-post-fonts.cjs. The renderer reads these files from disk; nothing is fetched at render time.",
+  "fetchedAt": "2026-10-03",
+  "fonts": [
+    {
+      "family": "Oswald",
+      "group": "Bold condensed",
+      "weight": 400,
+      "file": "oswald-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/oswald/v57/TK3_WkUHHAIjg75cFRf3bXL8LICs1_FvgUE.ttf",
+      "bytes": 86068
+    },
+    {
+      "family": "Oswald",
+      "group": "Bold condensed",
+      "weight": 700,
+      "file": "oswald-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/oswald/v57/TK3_WkUHHAIjg75cFRf3bXL8LICs1xZogUE.ttf",
+      "bytes": 86416
+    },
+    {
+      "family": "Bebas Neue",
+      "group": "Bold condensed",
+      "weight": 400,
+      "file": "bebasneue-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXooxW4.ttf",
+      "bytes": 56136
+    },
+    {
+      "family": "Anton",
+      "group": "Bold condensed",
+      "weight": 400,
+      "file": "anton-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm0K0.ttf",
+      "bytes": 130324
+    },
+    {
+      "family": "Archivo Black",
+      "group": "Bold condensed",
+      "weight": 400,
+      "file": "archivoblack-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/archivoblack/v23/HTxqL289NzCGg4MzN6KJ7eW6OYs.ttf",
+      "bytes": 87996
+    },
+    {
+      "family": "Teko",
+      "group": "Bold condensed",
+      "weight": 400,
+      "file": "teko-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/teko/v23/LYjYdG7kmE0gV69VVPPdFl06VN8XG7Sy.ttf",
+      "bytes": 153772
+    },
+    {
+      "family": "Teko",
+      "group": "Bold condensed",
+      "weight": 700,
+      "file": "teko-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/teko/v23/LYjYdG7kmE0gV69VVPPdFl06VN_wHLSy.ttf",
+      "bytes": 153944
+    },
+    {
+      "family": "Roboto Slab",
+      "group": "Slab & serif",
+      "weight": 400,
+      "file": "robotoslab-400.ttf",
+      "licence": "Apache-2.0",
+      "source": "https://fonts.gstatic.com/s/robotoslab/v36/BngbUXZYTXPIvIBgJJSb6s3BzlRRfKOFbvjojISWaA.ttf",
+      "bytes": 101564
+    },
+    {
+      "family": "Roboto Slab",
+      "group": "Slab & serif",
+      "weight": 700,
+      "file": "robotoslab-700.ttf",
+      "licence": "Apache-2.0",
+      "source": "https://fonts.gstatic.com/s/robotoslab/v36/BngbUXZYTXPIvIBgJJSb6s3BzlRRfKOFbvjoa4OWaA.ttf",
+      "bytes": 102236
+    },
+    {
+      "family": "Playfair Display",
+      "group": "Slab & serif",
+      "weight": 400,
+      "file": "playfairdisplay-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvUDQ.ttf",
+      "bytes": 123240
+    },
+    {
+      "family": "Playfair Display",
+      "group": "Slab & serif",
+      "weight": 700,
+      "file": "playfairdisplay-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKeiukDQ.ttf",
+      "bytes": 123536
+    },
+    {
+      "family": "Merriweather",
+      "group": "Slab & serif",
+      "weight": 400,
+      "file": "merriweather-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/merriweather/v33/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icqEw.ttf",
+      "bytes": 585976
+    },
+    {
+      "family": "Merriweather",
+      "group": "Slab & serif",
+      "weight": 700,
+      "file": "merriweather-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/merriweather/v33/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDrOSAqEw.ttf",
+      "bytes": 586052
+    },
+    {
+      "family": "Bitter",
+      "group": "Slab & serif",
+      "weight": 400,
+      "file": "bitter-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/bitter/v42/raxhHiqOu8IVPmnRc6SY1KXhnF_Y8fbfCL8.ttf",
+      "bytes": 149332
+    },
+    {
+      "family": "Bitter",
+      "group": "Slab & serif",
+      "weight": 700,
+      "file": "bitter-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/bitter/v42/raxhHiqOu8IVPmnRc6SY1KXhnF_Y8RHYCL8.ttf",
+      "bytes": 150600
+    },
+    {
+      "family": "Abril Fatface",
+      "group": "Slab & serif",
+      "weight": 400,
+      "file": "abrilfatface-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/abrilfatface/v25/zOL64pLDlL1D99S8g8PtiKchm-A.ttf",
+      "bytes": 56308
+    },
+    {
+      "family": "Kalam",
+      "group": "Handwritten",
+      "weight": 400,
+      "file": "kalam-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/kalam/v18/YA9dr0Wd4kDdMuhW.ttf",
+      "bytes": 426488
+    },
+    {
+      "family": "Kalam",
+      "group": "Handwritten",
+      "weight": 700,
+      "file": "kalam-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/kalam/v18/YA9Qr0Wd4kDdMtDqHQLL.ttf",
+      "bytes": 460024
+    },
+    {
+      "family": "Caveat",
+      "group": "Handwritten",
+      "weight": 400,
+      "file": "caveat-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/caveat/v23/WnznHAc5bAfYB2QRah7pcpNvOx-pjfJ9SII.ttf",
+      "bytes": 251024
+    },
+    {
+      "family": "Caveat",
+      "group": "Handwritten",
+      "weight": 700,
+      "file": "caveat-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/caveat/v23/WnznHAc5bAfYB2QRah7pcpNvOx-pjRV6SII.ttf",
+      "bytes": 251256
+    },
+    {
+      "family": "Pacifico",
+      "group": "Handwritten",
+      "weight": 400,
+      "file": "pacifico-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/pacifico/v23/FwZY7-Qmy14u9lezJ96A.ttf",
+      "bytes": 251232
+    },
+    {
+      "family": "Permanent Marker",
+      "group": "Handwritten",
+      "weight": 400,
+      "file": "permanentmarker-400.ttf",
+      "licence": "Apache-2.0",
+      "source": "https://fonts.gstatic.com/s/permanentmarker/v16/Fh4uPib9Iyv2ucM6pGQMWimMp004Hao.ttf",
+      "bytes": 73276
+    },
+    {
+      "family": "Dancing Script",
+      "group": "Handwritten",
+      "weight": 400,
+      "file": "dancingscript-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/dancingscript/v29/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSoHTQ.ttf",
+      "bytes": 76340
+    },
+    {
+      "family": "Dancing Script",
+      "group": "Handwritten",
+      "weight": 700,
+      "file": "dancingscript-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/dancingscript/v29/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7B1i0HTQ.ttf",
+      "bytes": 76596
+    },
+    {
+      "family": "Inter",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "inter-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf",
+      "bytes": 324820
+    },
+    {
+      "family": "Inter",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "inter-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf",
+      "bytes": 326468
+    },
+    {
+      "family": "Montserrat",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "montserrat-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Ew-.ttf",
+      "bytes": 180068
+    },
+    {
+      "family": "Montserrat",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "montserrat-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/montserrat/v31/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM70w-.ttf",
+      "bytes": 181028
+    },
+    {
+      "family": "Poppins",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "poppins-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrFJA.ttf",
+      "bytes": 154628
+    },
+    {
+      "family": "Poppins",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "poppins-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7V1s.ttf",
+      "bytes": 150292
+    },
+    {
+      "family": "Raleway",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "raleway-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/raleway/v37/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVvaooCP.ttf",
+      "bytes": 138808
+    },
+    {
+      "family": "Raleway",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "raleway-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/raleway/v37/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVs9pYCP.ttf",
+      "bytes": 138748
+    },
+    {
+      "family": "Work Sans",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "worksans-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNig.ttf",
+      "bytes": 114144
+    },
+    {
+      "family": "Work Sans",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "worksans-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNig.ttf",
+      "bytes": 115632
+    },
+    {
+      "family": "Lato",
+      "group": "Clean sans",
+      "weight": 400,
+      "file": "lato-400.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/lato/v25/S6uyw4BMUTPHvxk.ttf",
+      "bytes": 72312
+    },
+    {
+      "family": "Lato",
+      "group": "Clean sans",
+      "weight": 700,
+      "file": "lato-700.ttf",
+      "licence": "OFL-1.1",
+      "source": "https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh6UVew8.ttf",
+      "bytes": 70576
+    }
+  ]
+}
