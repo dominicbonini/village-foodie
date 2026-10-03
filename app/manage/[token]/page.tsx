@@ -115,7 +115,27 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
+type Tab = 'menu' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
+/* 🔴 THE MENU TAB'S THREE SECTIONS. Deals and Extras & Upsells were top-level tabs; all three are
+ * about what a customer can order, and splitting them across the tab bar made the operator choose
+ * between "my menu" and "things attached to my menu" before they had a reason to.
+ * ⚠️ 'items' IS THE DEFAULT AND WRITES NO PARAM, so the existing /manage/<token> link opens exactly
+ * where it always did — the same rule Schedule's pills follow. */
+type MenuSection = 'items' | 'extras' | 'deals'
+const MENU_SECTIONS: { id: MenuSection; label: string }[] = [
+  { id: 'items', label: 'Items' },
+  { id: 'extras', label: 'Extras & upsells' },
+  { id: 'deals', label: 'Deals' },
+]
+const isMenuSection = (v: unknown): v is MenuSection =>
+  v === 'items' || v === 'extras' || v === 'deals'
+/* 🔴 THE OLD TAB KEYS, MAPPED. `?tab=deals` and `?tab=modifiers` are links that exist in the wild —
+ * bookmarks, and anything that was ever pasted. They must land on Menu with the right pill, not on
+ * the default tab with no explanation. */
+const LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = {
+  deals: 'deals',
+  modifiers: 'extras',
+}
 /* 🔴 THE SCHEDULE TAB'S THREE SECTIONS, kept in the URL (`?section=places`) so refresh and the browser
  * Back button both work — a section held only in React state is one an operator loses by reloading.
  * ⚠️ 'events' IS THE DEFAULT AND IS NOT WRITTEN TO THE URL, so the existing /manage/<token> link opens
@@ -234,6 +254,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
   const [scheduleSection, setScheduleSection] = useState<ScheduleSection>('events')
+  const [menuSection, setMenuSection] = useState<MenuSection>('items')
   const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
   // ── T1: ONE TRIGGER, TWO CALLERS, AND A COMPLETION CALLBACK ONLY THE WIZARD SUPPLIES ─────────────
@@ -521,16 +542,29 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Read ?tab= query param on mount and activate that tab
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
-    const tabParam = qs.get('tab') as Tab | null
-    const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']
-    if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
+    const tabParam = qs.get('tab')
+    const allTabIds: Tab[] = ['menu', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']
+    if (tabParam && allTabIds.includes(tabParam as Tab)) setActiveTab(tabParam as Tab)
+    /* 🔴 THE TWO RETIRED TAB KEYS. `?tab=deals` / `?tab=modifiers` now open MENU with that pill
+     * selected — the content is still there, one level in. Without this they would fall through to
+     * the Menu default and the operator would land somewhere they did not ask for. */
+    else if (tabParam && LEGACY_TAB_TO_MENU_SECTION[tabParam]) {
+      setActiveTab('menu')
+      setMenuSection(LEGACY_TAB_TO_MENU_SECTION[tabParam])
+    }
     /* 🔴 `?section=` IS READ WITH IT, so a link straight to Places works and so does a refresh while
      * standing on it. ⚠️ IT ALSO IMPLIES THE SCHEDULE TAB: a bare `?section=places` would otherwise
      * set a section nobody can see, on the Menu tab. */
+    /* ⚠️ ONE `?section=` PARAM, TWO TABS, AND THE VALUES CANNOT COLLIDE. Schedule's are
+     * events|weekly and Menu's are items|extras|deals, so each validator recognises only its own —
+     * and each implies its tab when `?tab=` was not given. */
     const sectionParam = qs.get('section')
     if (isScheduleSection(sectionParam)) {
       setScheduleSection(sectionParam)
       if (!tabParam) setActiveTab('schedule')
+    } else if (isMenuSection(sectionParam)) {
+      setMenuSection(sectionParam)
+      if (!tabParam) setActiveTab('menu')
     }
   }, [])
 
@@ -542,14 +576,20 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
    * ⚠️ IT ONLY TOUCHES THE URL WHILE THE SCHEDULE TAB IS OPEN — a section is meaningless under any
    * other tab, and writing it there would put a param on a page it does not describe. */
   useEffect(() => {
-    if (typeof window === 'undefined' || activeTab !== 'schedule') return
+    if (typeof window === 'undefined') return
+    // ⚠️ THE DEFAULT OF EACH TAB WRITES NO PARAM, and a tab with no sections clears it entirely — so a
+    // `?section=` left over from Schedule cannot follow the operator onto Reports.
+    const want = activeTab === 'schedule'
+      ? (scheduleSection === 'events' ? null : scheduleSection)
+      : activeTab === 'menu'
+        ? (menuSection === 'items' ? null : menuSection)
+        : null
     const url = new URL(window.location.href)
-    const want = scheduleSection === 'events' ? null : scheduleSection
     const have = url.searchParams.get('section')
     if (want === have) return
     if (want) url.searchParams.set('section', want); else url.searchParams.delete('section')
     window.history.replaceState(window.history.state, '', url.toString())
-  }, [activeTab, scheduleSection])
+  }, [activeTab, scheduleSection, menuSection])
 
   // ── ?verify= — the signup confirmation outcome, surfaced here (A2) ────────────────────────────────
   // /api/auth/verify-signup now lands an operator who ALREADY has a truck on this page instead of on
@@ -700,8 +740,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
      * because every one of them is about the truck's own dates, and a second top-level tab made the
      * operator choose between "my schedule" and "posts about my schedule" before they had a reason to.
      * See ScheduleTab's pill row and docs/schedule-places-report.md. */
-    { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
-    { id: 'modifiers', label: 'Extras & Upsells', icon: '⚡', roles: ['owner', 'manager'] },
+    /* ⛔ 'Deals' AND 'Extras & Upsells' WERE HERE. Both are pills inside Menu now — see
+     * `MENU_SECTIONS`. Neither carried a badge or a count, so nothing moved with them; the only
+     * badge on this half of the bar is Menu's own allergens `(!)`, which is unchanged. */
     { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
@@ -891,9 +932,32 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           )
         })()}
         {staleBar}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
-        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
-        {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
+        {/* ── 🔴 THE MENU PILLS. Same treatment as Schedule's: pills, not a second underlined row,
+            because the bar above is the app's one level of underlined navigation.
+            ⚠️ THE PILLS SCROLL SIDEWAYS, THE PAGE DOES NOT — `overflow-x-auto` on a `min-w-0` row, so
+            three pills stay reachable at 320px without widening the document. */}
+        {activeTab === 'menu' && (
+          <div role="tablist" aria-label="Menu sections" className="min-w-0 overflow-x-auto -mx-1 px-1 pb-1 mb-4">
+            <div className="flex gap-2 w-max">
+              {MENU_SECTIONS.map(sec => (
+                <button key={sec.id} role="tab" aria-selected={menuSection === sec.id}
+                  onClick={() => setMenuSection(sec.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
+                    menuSection === sec.id
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                  {sec.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* 🔴 EACH PILL RENDERS THE EXISTING COMPONENT, BODY UNEDITED — same props, same behaviour,
+            same plan gating (each of these three already gates its own content where it needs to, and
+            none of that is touched). The only change is which of them is on screen. */}
+        {activeTab === 'menu' && menuSection === 'items' && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); refresh() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
+        {activeTab === 'menu' && menuSection === 'extras' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={refresh} showToast={showToast} />}
+        {activeTab === 'menu' && menuSection === 'deals' && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={refresh} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} section={scheduleSection} onSectionChange={setScheduleSection} truck={truck} token={token} bundles={bundles} categories={categories} api={api} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} showToast={showToast}
@@ -8344,9 +8408,21 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
         <div className="fixed inset-0 bg-black/60 z-50 flex items-stretch sm:items-center justify-center sm:p-4"
           onClick={e => { if (e.target === e.currentTarget) closeAddModal() }}>
           <div id="add-event-modal" role="dialog" aria-modal="true" aria-label={editingEvent.id ? 'Edit event' : 'Add event'}
+            /* ── 🔴 `md:h-[90vh]` IS THE FIX FOR THE PANE THAT WOULD NOT SCROLL ─────────────────────
+             * This read `sm:max-h-[90vh]` alone, and a MAX-height does not make a flex container's
+             * height DEFINITE. So `h-full` further down — on the grid inside the `flex-1` body —
+             * had nothing to resolve against and fell back to `auto`: the places pane sized to its
+             * own content (measured at 1881px inside an 810px modal), the body's `overflow-hidden`
+             * clipped the overflow, and NOTHING SCROLLED. Every place below the fold was unreachable.
+             * 🔴 A DEFINITE HEIGHT ONLY WHERE TWO PANES NEED ONE. `showPicker` is the two-pane case,
+             * where the list and the form must scroll independently. The edit form and the upload
+             * flow keep `max-h`, so a short modal is still short rather than always 90vh tall.
+             * ⚠️ THE PHONE IS ALREADY DEFINITE (`h-dvh`) and deliberately scrolls its BODY: step 1 is
+             * the whole screen, so there is no form beside the list to keep still. */
             className={`bg-white w-full shadow-2xl flex flex-col min-h-0 overflow-x-hidden
               max-sm:h-dvh sm:rounded-2xl sm:max-h-[90vh]
-              ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>
+              ${showPicker ? 'md:h-[90vh]' : ''}
+              ${showPicker ? 'md:max-w-[1040px]' : 'sm:max-w-lg lg:max-w-2xl'}`}>
 
             {/* ── THE HEADER ROW ───────────────────────────────────────────────────────────────── */}
             <div className="shrink-0 flex items-center gap-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-3">
@@ -8354,22 +8430,12 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 {editingEvent.id ? 'Edit event' : modalView === 'tidy' ? 'Tidy up places' : 'Add event'}
               </h3>
 
-              {/* 🔴 A TWO-OPTION SWITCH, REPLACING THE "Add manually" BUTTON AND THE "or add manually"
-                  DIVIDER. The form is simply there when "One event" is selected — there was never a
-                  third state for those two controls to express. New events only. */}
-              {!editingEvent.id && modalView === 'add' && (
-                <div role="tablist" aria-label="How to add" className="shrink-0 flex rounded-xl bg-slate-100 p-0.5">
-                  {([['manual', 'One event'], ['upload', 'Upload schedule']] as const).map(([mode, label]) => (
-                    <button key={mode} role="tab" aria-selected={addMode === mode}
-                      onClick={() => { setAddMode(mode); if (mode === 'manual') setExtractedEvents([]) }}
-                      className={`px-2.5 sm:px-3 py-1.5 rounded-[10px] text-xs sm:text-sm font-bold whitespace-nowrap transition-colors ${
-                        addMode === mode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              )}
-
+              {/* ⛔ THE One event | Upload schedule SWITCH IS GONE (3 October 2026). The upload flow was
+                  never only here: the Schedule header's own "✨ Import schedule" button opens a
+                  SEPARATE modal (`showImportModal`) carrying a complete copy of the same flow — drop
+                  zone, paste box and review screen. Two doors to one room, and this one also changed
+                  the modal's width as you toggled it. The header is now the title and the close
+                  button, and this modal has ONE size. */}
               {/* ⚠️ A REAL CLOSE BUTTON WITH A LABEL. Escape closes too (see the effect above the
                   modal); a dialog whose only exit is a Cancel button below the fold is the thing the
                   sticky footer and this are both fixing. */}
@@ -8578,13 +8644,17 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 </div>
                 {vans.length > 1 && (
                   <div className="sm:col-span-2 max-md:order-3">
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck <span className="text-red-500">*</span></label>
+                    {/* 🔴 "Van", NOT "Truck". This control writes `truck_events.van_id` and its options
+                        come from `truck_vans` scoped to THIS truck — so it asks which VEHICLE, and an
+                        operator with two trucks on one account read it as "which of my businesses".
+                        Copy only; the value, the column and the options are untouched. */}
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Van <span className="text-red-500">*</span></label>
                     <select
                       value={editingEvent.van_id || ''}
                       onChange={e => { setEditingEvent(p => ({ ...p!, van_id: e.target.value || null })); if (formErrors.van_id) setFormErrors(p => ({ ...p, van_id: '' })) }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.van_id ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                     >
-                      <option value="">Select a truck</option>
+                      <option value="">Select a van</option>
                       {vans.map(van => (
                         <option key={van.id} value={van.id}>{van.name}</option>
                       ))}
@@ -8607,62 +8677,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
               </div>
             )}
 
-            {/* Upload mode — new events only */}
-            {!editingEvent.id && addMode === 'upload' && (
-              <div className="flex flex-col gap-4">
-                {extractedEvents.length === 0 && (
-                  <>
-                    <p className="text-sm text-slate-500">
-                      Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
-                      Our AI will extract your events for you to review.
-                    </p>
-
-                    <label
-                      {...scheduleDragProps}
-                      className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
-                    >
-                      <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
-                      <span className="text-sm text-slate-500 text-center">
-                        {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
-                      </span>
-                      {!isScheduleDragging && !uploadFile && (
-                        <span className="text-xs text-slate-400">Image or PDF</span>
-                      )}
-                      <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
-                    </label>
-
-                    <div>
-                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        Or paste schedule text
-                      </label>
-                      <textarea
-                        value={uploadText}
-                        onChange={e => setUploadText(e.target.value)}
-                        placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
-                        rows={4}
-                        className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                      />
-                    </div>
-
-                    <button
-                      onClick={processUpload}
-                      disabled={(!uploadFile && !uploadText) || uploadProcessing}
-                      className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
-                    >
-                      {uploadProcessing ? 'Analysing...' : 'Process schedule'}
-                    </button>
-                  </>
-                )}
-
-                {extractedEvents.length > 0 && renderScheduleReview(closeAddModal)}
-
-                {extractedEvents.length === 0 && (
-                  <button onClick={closeAddModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
-                    Cancel
-                  </button>
-                )}
-              </div>
-            )}
+            {/* ⛔ THE UPLOAD BRANCH THAT STOOD HERE IS GONE WITH THE SWITCH. It was a second copy of
+                the import flow, reachable only by a control that no longer exists. The surviving copy
+                is the `showImportModal` modal below, opened by the Schedule header's "✨ Import
+                schedule" button — unchanged, and still the only upload path. */}
 
                 </div>{/* right pane */}
               </div>{/* two-pane grid */}
@@ -8675,6 +8693,10 @@ function ScheduleTab({ isActive, section, onSectionChange, truck, token, bundles
                 on the full-screen sheet.
                 ⚠️ HIDDEN IN UPLOAD MODE, which has its own actions inside its flow (Cancel, and the
                 review screen's own buttons) — two sets of buttons would be two things called Cancel. */}
+            {/* ⚠️ `addMode` IS ALWAYS 'manual' IN THIS MODAL NOW — the switch that could set 'upload' is
+                gone and the opener sets 'manual'. The guard is kept because `addMode` still drives the
+                `showImportModal` flow, and a stale 'upload' left over from a previous import would
+                otherwise hide this footer. */}
             {addMode === 'manual' && (
               <div className="shrink-0 border-t border-slate-200 bg-white px-5 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
                 <p className="min-w-0 flex-1 text-xs text-slate-400 truncate">
@@ -13013,7 +13035,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   //
   // ⚠️ AN ORDER WITH NO event_id IS IN NO VAN'S REPORT — NOT EVEN "Unassigned". "Unassigned" means an
   // EVENT that has no van; an order with no EVENT is a different thing, and folding the two together
-  // would invent a bucket that misrepresents both. Such orders appear under "All trucks" ONLY, which is
+  // would invent a bucket that misrepresents both. Such orders appear under "All vans" ONLY, which is
   // the default, so they are never hidden from an unfiltered report — but they ARE unreachable while a
   // van filter is active. That is stated, not silent.
   const orderInScope = (o: any) => {

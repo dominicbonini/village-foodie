@@ -46,11 +46,16 @@ export function matchesVanFilter(vanId: string | null | undefined, filter: VanFi
   return vanId === filter
 }
 
-/** The human label for the current filter — used to state the active filter in output (e.g. Reports). */
+/** The human label for the current filter — used to state the active filter in output (e.g. Reports).
+ *  🔴 "VANS", NOT "TRUCKS" (3 October 2026). Every function in this file predicates on `van_id`, and
+ *  the filter chooses between this truck's VEHICLES — yet it said "All trucks", which on a
+ *  multi-truck account reads as "all my businesses". ⚠️ THIS STRING REACHES EXPORTED CSVs through
+ *  Reports, so the rename changes the text at the top of a file somebody may already have on disk.
+ *  Copy only: `VAN_FILTER_ALL`, the predicate and the filename suffix are untouched. */
 export function vanFilterLabel(vans: VanOption[], filter: VanFilterValue): string {
-  if (filter === VAN_FILTER_ALL) return 'All trucks'
+  if (filter === VAN_FILTER_ALL) return 'All vans'
   if (filter === VAN_FILTER_UNASSIGNED) return 'Unassigned'
-  return vans.find(v => v.id === filter)?.name ?? 'Unknown truck'
+  return vans.find(v => v.id === filter)?.name ?? 'Unknown van'
 }
 
 /**
@@ -106,12 +111,12 @@ export function VanFilter({
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      aria-label="Filter by truck"
+      aria-label="Filter by van"
       // Class string matched to the existing filter dropdowns in Manage (the Reports event picker and
       // the event-edit Van picker), NOT invented — one select treatment per surface.
       className={`border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${className}`}
     >
-      <option value={VAN_FILTER_ALL}>All trucks</option>
+      <option value={VAN_FILTER_ALL}>All vans</option>
       {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
       {showUnassigned && <option value={VAN_FILTER_UNASSIGNED}>Unassigned</option>}
     </select>

@@ -90,8 +90,13 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
   },
   {
     id: 'build',
-    tabIds: ['deals', 'modifiers'],
-    title: 'Deals and Extras & Upsells',
+    /* 🔴 RE-POINTED AT 'menu' (3 October 2026). Both tabs this stop highlighted are gone — Deals and
+     * Extras & upsells are PILLS INSIDE Menu now. ⚠️ AND THIS WAS NOT A COSMETIC BREAK: `Walkthrough`
+     * filters out any stop whose `tabIds` resolve to nothing in the live DOM, so leaving the old ids
+     * here would have SILENTLY DROPPED this step from the tour — no error, one fewer stop, and the
+     * operator never told the deals and extras screens exist. */
+    tabIds: ['menu'],
+    title: 'Deals and Extras & upsells',
     // ⚠️ THE ORIGINAL DRAFT OF THIS LINE ENDED "…nothing you do here goes live until you want it to."
     // That clause was FALSE and was withdrawn before shipping. Verified against the code, for whoever
     // edits this next:
@@ -102,8 +107,9 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
     //   • An upsell rule is fetched with `.from('upsell_rules').select('*').eq('truck_id', …)` and NO
     //     visibility filter whatsoever, then rendered by the customer order page. It is live the moment
     //     it saves.
-    // Both tabs PUBLISH ON SAVE. Do not reintroduce any form of "this is only a draft" here.
-    body: 'Deals, upsells and customisations live in these tabs — have a play around.',
+    // Both PUBLISH ON SAVE. Do not reintroduce any form of "this is only a draft" here.
+    // ⚠️ "these tabs" WAS TRUE AND IS NOT ANY MORE — they are pills inside Menu, so the copy says so.
+    body: 'Deals, upsells and customisations live under Menu — have a play around.',
   },
   {
     id: 'settings',

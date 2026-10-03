@@ -753,10 +753,16 @@ function runWiringSuite() {
     && /url\.searchParams\.delete\('section'\)/.test(P)
     && /window\.history\.replaceState/.test(P)
     && !/pushState/.test(P))
-  t('⚠️ the existing nine top-level tabs keep their relative order', (() => {
-    const order = ['menu', 'schedule', 'deals', 'modifiers', 'reports', 'team', 'settings', 'payments', 'billing']
-    const at = order.map(id => P.indexOf(`id: '${id}'`))
+  /* ⚠️ SEVEN TABS NOW — Deals and Extras & Upsells became Menu pills. The surviving seven keep their
+   * relative order, which is what "do not reorganise existing navigation" means. Matched inside the
+   * `allTabs` array only, because `id: 'deals'` also appears in `MENU_SECTIONS`. */
+  t('⚠️ the seven remaining top-level tabs keep their relative order', (() => {
+    const RAW = read(PAGE)
+    const arr = RAW.slice(RAW.indexOf('const allTabs:'), RAW.indexOf('const tabs = allTabs.filter'))
+    const order = ['menu', 'schedule', 'reports', 'team', 'settings', 'payments', 'billing']
+    const at = order.map(id => arr.indexOf(`id: '${id}'`))
     return at.every(i => i > 0) && at.every((v, i) => i === 0 || v > at[i - 1])
+      && !arr.includes("id: 'deals'") && !arr.includes("id: 'modifiers'")
   })())
 
   // ════════════════════════════════════════════════════════════════════════════════════════════
@@ -809,10 +815,12 @@ function runWiringSuite() {
     && /const startNewPlace = \(\) => \{[\s\S]{0,200}truck_place_id: null[\s\S]{0,200}setAddrOpen\(true\)/.test(P))
   t('⚠️ the one muted line, only when a place was picked, in the sticky footer',
     /Filled from \$\{pickedPlace\?\.name \?\? 'that place'\}/.test(P))
-  t('⚠️ every existing field and the Upload schedule path are still there',
-    ['Venue name', 'Full address (optional)', 'Area (village, town or city)', 'Postcode', 'Start time', 'End time', 'Notes', 'Upload schedule']
+  /* ⚠️ RE-POINTED: "Upload schedule" is no longer a label in this modal — the flow lives behind the
+   * Schedule header's own "✨ Import schedule" button. The FORM's fields are unchanged. */
+  t('⚠️ every existing form field is still there, and the upload flow still exists',
+    ['Venue name', 'Full address (optional)', 'Area (village, town or city)', 'Postcode', 'Start time', 'End time', 'Notes']
       .every(f => P.includes(f))
-    && /addMode === 'upload'/.test(P) && /process-schedule/.test(P))
+    && /✨ Import schedule/.test(P) && /process-schedule/.test(P))
   t('⚠️ …and the form\'s validation is untouched',
     /const errors = validateEventForm\(editingEvent\)/.test(P) && /hasValidEventTimes/.test(R))
 
@@ -854,10 +862,10 @@ function runWiringSuite() {
     /shrink-0 border-t border-slate-200 bg-white/.test(P)
     && /flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y/.test(P)
     && /flex flex-col min-h-0 overflow-x-hidden/.test(P))
-  t('⚠️ the header carries the One event | Upload schedule switch and a labelled close button',
-    /\[\['manual', 'One event'\], \['upload', 'Upload schedule'\]\]/.test(P)
-    && /aria-label="Close"/.test(P)
-    && !/Add manually<\/button>/.test(P))
+  t('⚠️ the header is the title and a labelled close button — no switch, no "Add manually"',
+    /aria-label="Close"/.test(P)
+    && !/Add manually<\/button>/.test(P)
+    && !/'One event'/.test(codeOnly(read(PAGE))))
   /* ⚠️ MATCHED ON THE SPECIFIC HANDLER, on RAW source. The file has three other Escape handlers
    * (category and subcategory inline edits), the first of them 2,300 lines ABOVE `closeAddModal`, so
    * `indexOf("if (e.key === 'Escape')")` found the wrong one and the ordering check failed on correct
@@ -879,6 +887,129 @@ function runWiringSuite() {
     (P.match(/usePlaces\(/g) || []).length === 1
     && /ctl=\{placesCtl\}/.test(P)
     && (U.match(/api\('sg_places'\)/g) || []).length === 1)
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  // THE QUICK FIXES (3 October 2026): the pane scroll, the upload switch, Van, the Menu pills
+  // ════════════════════════════════════════════════════════════════════════════════════════════
+  /* 🔴 THE SCROLL FIX. `max-h` alone leaves a flex container's height INDEFINITE, so `h-full` below
+   * it cannot resolve and the pane sizes to its content. The measurement is in
+   * scripts/schedule-places-render.cjs (with a broken variant); this pins the class that fixes it. */
+  t('🔴 the two-pane modal has a DEFINITE height, so the places pane can be constrained and scroll',
+    /\$\{showPicker \? 'md:h-\[90vh\]' : ''\}/.test(P)
+    && /sm:max-h-\[90vh\]/.test(P))
+  /* ⚠️ THE DEFINITE HEIGHT IS CONDITIONAL. A short modal (the edit form) must stay short, and the
+   * import modal is a different element entirely — it keeps `max-h-[90vh]` with no `h-`. */
+  t('⚠️ …and only where two panes need one — the edit form and the import modal keep `max-h` alone',
+    (() => {
+      const RAW = read(PAGE)
+      /* ⚠️ MATCHED AS `md:h-[90vh]`, NOT `h-[90vh]`. The latter is a SUBSTRING of `max-h-[90vh]`,
+       * which appears sixteen times across this file's unrelated modals — the first draft of this
+       * line counted those and failed on correct code. */
+      // ⚠️ CODE ONLY: the comment explaining the fix names the class too, and a comment is not a class.
+      const definite = codeOnly(RAW).match(/md:h-\[90vh\]/g) || []
+      const i = RAW.indexOf('{showImportModal && (')
+      const importShell = RAW.slice(i, i + 400)
+      return definite.length === 1
+        && /max-h-\[90vh\]/.test(importShell)
+        && !/(^|[^-])\bh-\[90vh\]/.test(importShell.replace(/max-h-\[90vh\]/g, ''))
+    })())
+  t('🔴 the list keeps its own scroller between a `min-h-0` pane and a `min-h-0` wrapper',
+    /<div className="flex-1 min-h-0">\s*\n\s*<PlaceList/.test(read(PAGE))
+    && /<div className="flex flex-col min-h-0 h-full">/.test(U)
+    && /<div className="flex-1 min-h-0 overflow-y-auto px-3 pb-2">/.test(U))
+  t('⚠️ …with the search box `shrink-0` at the top and the footer `shrink-0` at the bottom',
+    /<div className="p-3 pb-2 shrink-0">/.test(U)
+    && /<div className="shrink-0 border-t border-slate-100 p-3">\{footer\}<\/div>/.test(U))
+
+  /* 🔴 THE UPLOAD SWITCH IS GONE, AND SO IS THE SECOND COPY OF THE FLOW IT REVEALED. */
+  t('🔴 THE One event | Upload schedule SWITCH IS GONE from the Add event modal',
+    !/'One event'/.test(codeOnly(read(PAGE)))
+    && !/\[\['manual', 'One event'\]/.test(codeOnly(read(PAGE))))
+  t('🔴 …and the duplicate upload branch inside that modal with it',
+    !/addMode === 'upload' && \(/.test(codeOnly(read(PAGE))))
+  t('🔴 THE SURVIVING UPLOAD PATH IS THE SCHEDULE HEADER\'S OWN BUTTON, untouched',
+    /onClick=\{\(\) => setShowImportModal\(true\)\}/.test(P)
+    && /✨ Import schedule/.test(P)
+    && /\{showImportModal && \(/.test(P)
+    && /process-schedule/.test(P))
+  t('⚠️ …and it still carries the whole flow: drop zone, paste box and review',
+    (() => {
+      const RAW = read(PAGE)
+      const i = RAW.indexOf('{showImportModal && (')
+      const blk = RAW.slice(i, i + 6000)
+      return /type="file" accept="image\/\*,\.pdf"/.test(blk)
+        && /Or paste schedule text/.test(blk)
+        && /renderScheduleReview/.test(blk)
+    })())
+  t('🔴 the Add event modal is ONE SIZE — its width no longer depends on `extractedEvents`',
+    /\$\{showPicker \? 'md:max-w-\[1040px\]' : 'sm:max-w-lg lg:max-w-2xl'\}/.test(P)
+    && !/extractedEvents\.length > 0 \? 'md:max-w-\[980px\]' : showPicker/.test(P))
+
+  /* 🔴 "VAN", WHEREVER A VAN IS CHOSEN. Copy only — the column, the options and the predicate are
+   * untouched, which is what these assert alongside the labels. */
+  t('🔴 the event form\'s van picker says "Van", and still writes `van_id`',
+    /<label className="block text-xs font-bold text-slate-600 mb-1">Van <span className="text-red-500">\*<\/span><\/label>/.test(P)
+    && /<option value="">Select a van<\/option>/.test(P)
+    && /setEditingEvent\(p => \(\{ \.\.\.p!, van_id: e\.target\.value \|\| null \}\)\)/.test(P))
+  t('🔴 the van FILTER says "vans" — it predicates on `van_id`, so "All trucks" was simply wrong',
+    (() => {
+      const V = read('components/manage/VanFilter.tsx')
+      return /return 'All vans'/.test(V) && /\?\? 'Unknown van'/.test(V)
+        && /<option value=\{VAN_FILTER_ALL\}>All vans<\/option>/.test(V)
+        && /aria-label="Filter by van"/.test(V)
+        && !/All trucks<\/option>/.test(V)
+        // and the LOGIC is untouched
+        && /if \(filter === VAN_FILTER_ALL\) return true/.test(V)
+        && /return vanId === filter/.test(V)
+    })())
+  t('⚠️ nothing that genuinely means a TRUCK was renamed',
+    /per truck \/ month/.test(P) && /Truck details/.test(P) && /Truck access/.test(P))
+
+  /* 🔴 THE MENU PILLS. */
+  /* ⚠️ MATCHED INSIDE `allTabs` ONLY. `{ id: 'deals', label: 'Deals' }` is the new PILL, so a
+   * file-wide search for it fails on correct code — which it did on the first draft of this line. */
+  t('🔴 the Deals and Extras & Upsells TOP-LEVEL TABS ARE GONE', (() => {
+    const RAW = read(PAGE)
+    const arr = RAW.slice(RAW.indexOf('const allTabs:'), RAW.indexOf('const tabs = allTabs.filter'))
+    return !arr.includes("id: 'deals'") && !arr.includes("id: 'modifiers'")
+      && !/type Tab = [^\n]*'modifiers'/.test(RAW)
+  })())
+  t('🔴 …replaced by three pills inside Menu, Items first and default',
+    /\{ id: 'items', label: 'Items' \}/.test(P)
+    && /\{ id: 'extras', label: 'Extras & upsells' \}/.test(P)
+    && /\{ id: 'deals', label: 'Deals' \}/.test(P)
+    && /useState<MenuSection>\('items'\)/.test(P))
+  t('🔴 each pill renders THE EXISTING COMPONENT, props unchanged',
+    /menuSection === 'items' && <MenuTab/.test(P)
+    && /menuSection === 'extras' && <ModifiersTab/.test(P)
+    && /menuSection === 'deals' && <DealsTab/.test(P))
+  t('🔴 `?tab=deals` AND `?tab=modifiers` LAND ON MENU WITH THE RIGHT PILL',
+    /LEGACY_TAB_TO_MENU_SECTION: Record<string, MenuSection> = \{\s*\n\s*deals: 'deals',\s*\n\s*modifiers: 'extras',/.test(P)
+    && /setActiveTab\('menu'\)\s*\n\s*setMenuSection\(LEGACY_TAB_TO_MENU_SECTION\[tabParam\]\)/.test(P))
+  t('🔴 THE WALKTHROUGH STOP SURVIVES — it pointed at two tabs that no longer exist', (() => {
+    const W = read('lib/walkthrough.ts')
+    // `Walkthrough` DROPS any stop whose tabIds resolve to nothing, so a stale id here is a silently
+    // missing step rather than an error.
+    return /tabIds: \['menu'\],\s*\n\s*title: 'Deals and Extras & upsells'/.test(W)
+      && !/tabIds: \['deals', 'modifiers'\]/.test(W)
+      && /live under Menu/.test(W)
+      && /stops\.filter\(s => measure\(s\.tabIds\) !== null\)/.test(read('components/manage/Walkthrough.tsx'))
+  })())
+  t('⚠️ neither retired tab carried a badge, so nothing moved with them',
+    /t\.id === 'schedule' && pendingApprovalCount > 0/.test(P)
+    && /t\.id === 'payments' && stripeActionRequired/.test(P)
+    && /t\.id === 'menu' && allergensUnverified/.test(P)
+    && !/t\.id === 'deals'/.test(P) && !/t\.id === 'modifiers'/.test(P))
+  t('🔴 ONE `?section=` PARAM SERVES BOTH TABS, and the values cannot collide',
+    /v === 'events' \|\| v === 'weekly'/.test(P)
+    && /v === 'items' \|\| v === 'extras' \|\| v === 'deals'/.test(P)
+    && /isMenuSection\(sectionParam\)/.test(P)
+    && /window\.history\.replaceState/.test(P) && !/pushState/.test(P))
+  t('⚠️ …and a tab with no sections CLEARS the param, so one cannot follow the operator onto Reports',
+    /: null\s*\n\s*const url = new URL\(window\.location\.href\)/.test(P))
+  t('⚠️ no internal link or tab-switch still targets the retired tabs',
+    !/setActiveTab\('deals'\)/.test(P) && !/setActiveTab\('modifiers'\)/.test(P)
+    && !/onSwitchTab\('deals'\)/.test(P) && !/onSwitchTab\('modifiers'\)/.test(P))
+
   t('⚠️ stage 2 and 3 are still NOT started — no upload, no canvas, no checklist',
     !/<input[^>]*type="file"/.test(U) && !/canvas|toDataURL|html2canvas/i.test(U) && !/checklist/i.test(U))
 
