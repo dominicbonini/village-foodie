@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V13.7
+HatchGrab Engineering Reference Manual · V13.8
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 13.7**
+**Version 13.8**
 
 September 2026
 
@@ -25,6 +25,148 @@ delta from V11.56 onward updated the header alone. **Anyone reading the cover pa
 version of the document they were holding.** ⚠️ **Grep before finishing:** `grep -nE "V11\.|Version 11\." docs/reference-manual.md | head` — the front matter and the header must agree.
 
 # Changelog
+
+## V13.8 — 1–3 October 2026 — OUTREACH FIXES; AND A LARGE BODY OF OPERATOR WORK ON THE `schedule-graphics` BRANCH (NOT DEPLOYED): PLACES, A NEW ADD EVENT, SUB-TAB NAVIGATION, SETTINGS AS ONE LIST, PER-VAN CAPACITY, AND THE WEEKLY SCHEDULE POST
+
+**Status — read this first.**
+- The **outreach fixes of 1–2 October** are on `main` and **deployed**.
+- Everything else in this block is **built, committed and pushed to the `schedule-graphics` branch only.
+  None of it is live.** It is tested on localhost by Dominic and will be deployed by him, by hand.
+- ⚠️ **The migrations for that branch HAVE been applied to the production database** (§63.3). So the
+  tables and columns exist in production while the code that uses them does not. Nothing on `main` reads
+  or writes them; they are inert until the branch is merged.
+- Harness sweep at the latest `schedule-graphics` commit (`5160abf`): **84 run · 84 passed** (one
+  known-flaky harness, §63.5).
+
+**Covers:** new **§63** (the branch workflow and its standing rule), **§64** (places and the new Add event),
+**§65** (sub-tab navigation, Settings as one list), **§66** (per-van category capacity and "Same as Van 1"),
+**§67** (the weekly schedule post), **§68** (designed and decided, not built: single-event post, event types,
+private events, Facebook posting, place pictures, a design feature); additions in place to **§60** and **§62**.
+
+### The decisions (Dominic's, recorded so they are not re-litigated)
+
+| Decision | Recorded |
+|---|---|
+| **Nothing goes to the live site without Dominic saying so.** New operator work is built on a branch and tested on localhost; Dominic deploys by hand | 3 Oct |
+| Focus on **sales**; hold non-essential features — but schedule tools are worth building because every truck does this chore weekly | 2–3 Oct |
+| **Facebook groups dropped** from the product. Meta closed the Groups API in 2024; trucks share into groups themselves. HatchGrab writes the **wording** for each event and offers a phone **Share** | 3 Oct |
+| **Places** are the truck's address book, available on **every plan**; the separate Places tab was removed — places live **down the side of Add event** | 3 Oct |
+| **Favourites** are a manual star | 3 Oct |
+| A place link on events (`truck_events.truck_place_id`) is **approved**, written **only on insert** by Add event | 3 Oct |
+| **Upload schedule** is not in the Add event window — it stays on its own **Import schedule** button | 3 Oct |
+| The event-form field that picks a van is labelled **Van**, not Truck. "Your trucks / + Add truck" in Settings **stays as it is for now** (to be reviewed) | 3 Oct |
+| **Deals** and **Extras & upsells** live under **Menu** as sub-tabs; **Payments** and **Billing** stay separate | 3 Oct |
+| **Settings is one scrolling list** with sticky jump tabs, not pills. **No Settings wording may change.** Sections in this order: Truck details · Contact · Order settings · Truck settings · Schedule · QR code · Auto-replies · Account deletion | 3 Oct |
+| "Allow customers to cancel" moves from Contact to **Order settings**, unchanged | 3 Oct |
+| **Vans are fully independent.** Changing one van must never change another | 3 Oct |
+| Vans 2+ get **"Same as Van 1"** (a copy, not a lookup) | 3 Oct |
+| Weekly post: **their own design first** (upload the blank they already make in Canva), ready-made designs later | 3 Oct |
+| Weekly post = **seven rows, Monday–Sunday**, three boxes per row: **Date · Location · Time** | 3 Oct |
+| **"Powered by HatchGrab"** on every generated image | 3 Oct |
+| **Trucks review and publish posts themselves**; automatic posting to their own Facebook Page/Instagram is a later stage | 3 Oct |
+| Single-event post: the truck uploads the **full picture** they use (default, per place, or one-off) and HatchGrab adds date, place and time | 3 Oct |
+| **Event types** go on **their own branch** from `main`, so they can be deployed independently and possibly first | 3 Oct |
+
+### The builds, in order
+
+> Every hash below was checked against `git log` on both branches on 3 October 2026. Where two are
+> shown they are **code / report**; where one is shown, that commit carries both.
+
+| Date | Branch | Build | Commit(s) |
+|---|---|---|---|
+| 1 Oct | main | **Recorded steps** — one rule for "this email is already a recorded step" | `6447120` (code + report) |
+| 1 Oct | main | **Conditional lines** — the red "half of a pair" warning replaced by a grey note (§62.10) | `ea0bf9c` (code + report) |
+| 2 Oct | main | **Send must not fail because the history cannot be read** — a select named a column that does not exist; new asking guard; the schema census | `29e1b74` / `6d951a5` |
+| 3 Oct | main → **reverted** | Schedule graphics stage 1 went live by mistake, then was **reverted on `main`** | `d9e3484` / `a7391d8`; revert `deec9f5` |
+| 3 Oct | schedule-graphics | Branch created at `a7391d8`; standing rule recorded | `cebc78e` |
+| 3 Oct | schedule-graphics | Places: sub-tabs, every plan, favourites, merge/hide, Add event picker, `truck_place_id` | `1f98f22` / `d94479a` |
+| 3 Oct | schedule-graphics | Add event with places down the side; Places tab removed; four bugs | `17b4ad1` / `78db793` (+ `cf44818`, a correction to that report) |
+| 3 Oct | schedule-graphics | Place list scroll fix; upload switch removed; Truck→Van label; Menu pills | `8cab840` / `197cb8c` |
+| 3 Oct | schedule-graphics | Settings as one list with sticky jump tabs; Add event live preview; van default | `d058162` / `719ac91` |
+| 3 Oct | schedule-graphics | Per-van category capacity; "Same as Van 1"; preview moved into the form pane | `415210a` / `3a96448` |
+| 3 Oct | schedule-graphics | Weekly post stage 1 | `497ec99` / `1510aa9` |
+| 3 Oct | schedule-graphics | Add event preview: the date given to the card in the format it parses | `5160abf` (code + checks) |
+
+⚠️ **The stale-stage SQL is NOT a V13.8 item.** An earlier draft of this changelog listed it here as
+"1 Oct — stale stages corrected by hand (SQL; `created_at` = first inbound)". The repository says
+otherwise on every count: the only such SQL is in `docs/outreach-crm-polish-report.md` §8 (commit
+`35b791d`, **30 September**), it sets **`stage = 'replied'`** for prospects with an inbound message
+(it does not touch `created_at`), and **V13.7's own open items already record it as "Not reviewed, not
+run"**. Neither 1 October report mentions it, and the recorded-steps report states plainly that its
+build ran no SQL. **Whether it has since been run cannot be established from the repository** — running
+SQL leaves no trace in git — so it stays an open item below rather than a completed build.
+
+### Migrations — all applied by hand to PRODUCTION; code only on `schedule-graphics`
+
+| File | What it does | Applied |
+|---|---|---|
+| `20261003_truck_places.sql` | `truck_places`, `truck_place_groups`, `trucks.default_group_post_wording` | ✅ |
+| `20261004_schedule_places_stage2.sql` | drops `truck_place_groups`; `truck_places` + `area`, `is_favourite`, `is_hidden`, `merged_into_id`; renames to `trucks.event_post_wording`; **`truck_events.truck_place_id`** (nullable, no default, FK `on delete set null`) | ✅ |
+| `20261005_van_category_settings.sql` | `van_category_settings` (per-van overrides of prep/batch/counts); `truck_vans.same_as_first_van` | ✅ — verification selects 4, 6, 7 **not yet reported back** |
+| `20261006_truck_post_designs.sql` | private `post-designs` storage bucket (first bucket ever created in SQL in this repo); `truck_post_designs` | ✅ — **bucket must be confirmed `public = false`** |
+
+⚠️ **`main`'s migrations directory does not describe the production schema.** Verified on 3 October:
+`main` contains **none** of the four files above (`20261003` went with the revert; the other three were
+never on it), while `schedule-graphics` contains all four. The schema census reads code → migrations,
+never database → migrations, so nothing fails on this. Known and accepted until the branch merges.
+
+### The failure classes this work found
+
+1. 🔴 **A PUSH TO `main` IS A DEPLOY.** Stage 1 of schedule graphics went live on 3 October because the
+   build prompt said "commit, push". Vercel's production branch is `main` (read from the project record).
+   Fixed by revert `deec9f5` and the §63 standing rule. **CLOSED by process.**
+2. 🔴 **A LARGE MECHANICAL EDIT CAN DELETE CODE SILENTLY.** The Settings reorder cut each section from
+   its banner comment to its `</section>` and dropped everything between: **189 lines** — the remove-van
+   dialog, the add-van billing and upgrade dialogs, the emoji picker and the website card. It type-checked
+   and rendered, because everything lost was a modal or below the fold. Restored; a **line-level multiset
+   diff** against a pinned commit now fails on any unexplained missing line. **Rule:** after any reorder
+   or large move in `page.tsx`, run the multiset diff. **CLOSED for `page.tsx`; OPEN elsewhere.**
+3. 🔴 **ONE PREDICATE DOING TWO JOBS.** "Last" and "Next" for a place both excluded `closed` events — but
+   `closed` is the **normal end state of an event that traded**, so nearly every place read "No events
+   yet". Now two rules: `countsAsTraded` (not cancelled) and `countsAsUpcoming` (not cancelled or closed).
+   **CLOSED.**
+4. **A MAX-HEIGHT IS NOT A HEIGHT.** The place list would not scroll because the modal had only
+   `max-h-[90vh]`; `h-full` below it had nothing to resolve against. Fixed with a definite `md:h-[90vh]`
+   where two panes need it. **CLOSED.**
+5. **STICKY CANNOT HOLD AN ELEMENT ABOVE ITS FLOW POSITION.** The Settings jump bar had two resting
+   positions because the shared wrapper's `pt-6` put its flow position 24px down. A `:has()` rule removes
+   that padding only when a sub-tab bar is genuinely first (§65.4). A fixed negative margin was tried and
+   rejected — it would have pulled the bar through the notification banners. **CLOSED.**
+6. **A VAN CARD THAT EDITED THE TRUCK.** Prep, Items and "Counts to total capacity" were shown inside
+   each van's card but stored once per truck on `menu_categories`, so editing Van 2 silently changed
+   Van 1 — on the fields that decide whether an order is accepted. Fixed with per-van overrides (§66).
+   **CLOSED.**
+7. **A SCHEMA CENSUS CAN BECOME WRONG, NOT JUST INCOMPLETE.** It did not model `drop column`/`rename
+   column`, so after stage 2 dropped a column the census still declared it and a select naming it would
+   have passed. It now models drops and renames in filename order. Separately, its write-payload reader
+   scanned file-wide and attributed one handler's `patch.website` to another table; now scope-resolved.
+   **CLOSED.**
+8. **A BROKEN VARIANT THAT CANNOT FAIL PROVES NOTHING.** Several harness variants this week passed on
+   the bug they claimed to reinstate (e.g. a throw inside a `try` that the `catch` turned back into a
+   clean degrade). Each was rewritten until it failed. One could not be made to fail at all, and that
+   was the finding: the classic "+24 hours per day" DST bug **cannot** occur for a UK Monday-start week,
+   because the clocks always change on the Sunday, after the last day's midnight (§67.4). **Rule:** a
+   variant is only accepted once it has been seen to fail. **Standing.**
+9. **A PRODUCTION BUILD CATCHES WHAT TSC AND HARNESSES DO NOT.** The weekly post's font list pulled
+   `node:fs` into the browser bundle through a client component; `tsc` and every harness were clean, only
+   `npm run build` failed. **Rule:** a build that adds server-only modules runs `npm run build` once.
+
+### Open items
+
+| Item | State |
+|---|---|
+| **Deploy of `schedule-graphics`** | Not deployed. Dominic tests on localhost, then deploys by hand. Testing checklists are in each report's last section |
+| **Stale stages** | Carried forward from V13.7, still unresolved there. The SQL (polish report §8, `35b791d`) sets `stage = 'replied'` for prospects with an inbound message. V13.7 records it as "Not reviewed, not run"; **nothing in the repository shows it has been run since**, and a run would leave no trace in git. Needs confirming by hand |
+| **Single-event post (stage 2)** | Mockup approved; build prompt written, about to run (§68.1) |
+| **Event types** | Designed and mocked up; architecture decided (§68.2); to be built on a separate `event-types` branch from `main` |
+| **Weekly post — real artwork** | Pizzeria Gusto to be asked for their blank Canva template (with permission) to test against on Village Spice, localhost only |
+| **Verification results outstanding** | `van_category_settings` selects 4/6/7; `post-designs` bucket `public = false` |
+| **Settings wording "Your trucks / + Add truck"** | Means vans. Kept for now; Dominic to review |
+| **Truck-level capacity editors not labelled as defaults** | Menu tab / Dashboard category editors now set the default for vans with no override; nothing on screen says so (§66.5) |
+| **`batch_size` unset = 999 in one reader, 1 in two others** | Pre-existing inconsistency on the order path; preserved exactly; needs a deliberate decision (§66.5) |
+| **`add-order-refresh` harnesses intermittently flaky** | Timing-sensitive under CPU load; worth making deterministic |
+| **`page.tsx` 14,912 lines** | The reason a 189-line loss was possible. `SettingsTab` (~3,100 lines) would split cleanly along its eight sections |
+| **From V13.7, still open** | Unwritten templates (Chase 2, Final chase, first contact for Not listed); shared-address guard untested; received-email appearance checks; missing addresses (Buffalo Joe's, Pizza Mondo) |
 
 ## V13.7 — 28–30 September 2026 — OUTREACH EMAIL MOVES INTO THE ADMIN: SENT FROM DOMINIC'S OWN MAILBOX, REPLIES PICKED UP OVER IMAP, A FULL-PAGE CRM FOR EACH PROSPECT, AND A ONE-TEMPLATE-PER-BOX SEQUENCE THAT REFUSES TO SEND THE SAME STEP TWICE
 
@@ -26402,6 +26544,21 @@ directly from the mailbox, so the message is exactly what a mail client would pr
 
 ---
 
+## 60.7 A send must not fail because the history cannot be read (V13.8 — 2 October 2026)
+
+3Bros Burgers could not be emailed: a select on `outreach_messages` named a column that does not exist
+(`preview`, plus a misuse of `sent_copy`), so PostgREST failed the whole query (42703), the history read
+failed, and the send route refused. Fixed at the cause. When the history genuinely cannot be read, the
+new **`guardHistoryUnreadable`** guard **asks** rather than refuses (an override, recorded in
+`outreach_messages.guard_override`), skips the ladder guards, and does not take the step from an
+unreadable ladder. Test sends bypass guards. A **schema census** harness
+(`scripts/outreach-schema-census.cjs`) now asserts every column named in code on the outreach tables
+exists in `supabase/migrations/`.
+
+⚠️ The `guard_override` column's migration (`20261001_outreach_messages_guard_override.sql`) was written
+and published a day earlier, in the recorded-steps report (§62.9), where it is marked "not applied —
+nothing above waits on it". It ships in this build's commit, `29e1b74`.
+
 # 61. The outreach CRM — Today, the prospect page and the history (V13.7 — 29–30 September 2026)
 
 ## 61.1 Today (the default tab of Outreach)
@@ -26649,5 +26806,423 @@ was nothing to send. The composer now says so in words: *"No step to send: repli
 - **A one-sided condition is often intentional**, e.g. mentioning the next pitch only when there is one.
 - The editor currently shows it as a red "half of a conditional pair" error. A build to make it a grey note
   naming the trucks that will not see the line is **written, not built** (open items).
+
+## 62.9 Recorded steps (V13.8 — 1 October 2026)
+
+The send guard, the history and the Record button disagreed about whether an email was already a
+recorded step. There is now **one rule**, `recordedStepsFor`: an email is a recorded step if it has
+`contact_id` set, or it is paired with a hand-logged contact of a step kind (`pairHandLoggedEmails`).
+"Record as ▾" offers the four steps. **A reply is not a rung** — replies sit outside the ladder on
+purpose, so an email logged as a reply has had no rung recorded for it. `contact_id` set but the
+contact row unread ⇒ the step is not named: the link proves a rung was written, not which one.
+
+⚠️ **Which kind a send is logged as is decided elsewhere and earlier.** `loggedKindFor` is **not** part
+of this build — it was introduced on 30 September (`e796e07`) and is documented at **§62.3**. The two
+are easy to confuse because both concern "what step is this email": §62.3 decides the kind of a send
+*being made*; this section decides whether an email *already sent* counts as a step.
+
+⚠️ This build ran **no SQL** and wrote no rows (see the open items for the separate, still-unresolved
+stale-stage correction, which belongs to V13.7).
+
+## 62.10 Conditional lines — the grey note (V13.8 — 1 October 2026, `ea0bf9c`)
+
+**This supersedes the last bullet of §62.8**, which records the belief, correct on the day it was
+written, that this build was "written, not built". It was built on 1 October; the §62.8 text is kept
+because this manual records what was believed and when.
+
+The red "half of a conditional pair" warning rested on a premise that was wrong in the common case:
+a one-sided condition — a line that appears only when there is something to say, like naming the next
+pitch when there is one — is the ordinary, correct use of the whole tier, so the editor was accusing
+the operator of a mistake on every view of a correct template. That mattered beyond tidiness, because
+the next red thing on that screen is a malformed `{{truck name}}` heading for a real business, and an
+eye trained to skip red skips that too. The warning is now a **grey note** under the message box,
+naming the line by its opening words and stating who reads it and how many that is today ("…only
+appears for trucks with an upcoming event. Right now that's 12 of the 105 trucks this template goes
+to — the other 93 won't see this line"). A **pair** gets **one** note — "This part changes depending on
+whether the truck has an upcoming event" — because a pair has no non-readers and naming an audience
+for each half would be misleading about the pair. An **unknown** condition gets no grey note at all;
+unknown names still go to red. Two things that descended from the same premise were fixed with it: the
+**Insert condition menu** offered pairs only, so seven of the nine conditions were not in it, and
+`condPairs` in the panel was a second, untestable copy of "which conditions have a negative half".
+`conditionMet` is byte-for-byte unchanged — one thin wrapper was added beside it. No template row was
+created, edited, seeded or deactivated; no SQL was run; no email was sent.
+
+---
+
+# 63. The `schedule-graphics` branch, localhost on the production database, and the standing rule (V13.8 — 3 October 2026)
+
+## 63.1 Why there is a branch
+
+On 3 October the first schedule-graphics build was pushed to `main` and went live. Vercel's production
+branch is `main` (`link.productionBranch = main` in the project record), so **any push to `main` is a
+deploy**. The build was reverted on `main` (`deec9f5`) and all the work moved to the `schedule-graphics`
+branch, created at `a7391d8` and pushed before `main` was touched. No preview deployment appeared for the
+branch; that does not matter — only `main` is served.
+
+## 63.2 The standing rule
+
+1. All schedule work (and anything Dominic says belongs with it) is committed to **`schedule-graphics`**.
+2. **Never push to, merge into, or rebase onto `main`** unless the prompt contains the word **"deploy"**.
+3. Reports end with **how to test on localhost**, not "check Vercel".
+4. Before work: `git checkout schedule-graphics && git status`. Before committing:
+   `git branch --show-current` must print `schedule-graphics`.
+5. **Event types** will use a **second branch, `event-types`, cut from `main`**, so they can be deployed
+   independently (§68.2). The two branches both touch `app/manage/[token]/page.tsx`; keeping event-types
+   code in separate files keeps the eventual merge small.
+
+## 63.3 Localhost uses the production database
+
+There is one Supabase project, `ffphgwonshgxamtvefcv`. `.env.local` points localhost at it. **Anything
+done on localhost writes real production rows.** So:
+- test on **Village Spice** only; **Pizzeria Gusto must not be touched** (live trading truck);
+- migrations for the branch are applied to production by hand and are **inert** until the code is merged
+  (§V13.8 changelog, Migrations).
+
+## 63.4 Running it
+
+```bash
+cd ~/dev/village-foodie
+git checkout schedule-graphics && git status
+npm run dev
+```
+
+Sign in once at `http://localhost:3000/login` (a manage token alone is **not** enough —
+`resolveTruckAccess` is deny-by-default), then open `http://localhost:3000/manage/<token>`. Sessions are
+per-origin: signing in on hatchgrab.com does not sign you in on localhost.
+
+## 63.5 Known flaky harness
+
+`scripts/add-order-refresh*.cjs` has failed intermittently under CPU load (a different variant each time)
+and then passed repeatedly in isolation. Sweeps are reported from a run with nothing else competing.
+
+---
+
+# 64. Places and the new Add event (V13.8 — 3 October 2026, branch only)
+
+## 64.1 What a place is
+
+A **place** is a truck's saved pitch: `truck_places` (per truck — never on the shared `venues` table).
+Fields: `name` ("Name on posts"), `short_name`, `address`, `area`, `postcode`, `is_favourite`,
+`is_hidden`, `merged_into_id`, `venue_id` (optional anchor to the shared venue), `name_key` (the
+normalised name events are matched on). Available on **every plan**.
+
+## 64.2 One matching module
+
+`lib/schedule-graphics/places.ts` is the **only** place events are matched to places (asserted: one
+normaliser in the tree). Order, first match wins:
+
+1. `event.truck_place_id` — the operator picked it in Add event;
+2. `event.venue_id = place.venue_id` — anchors beat names, including when the ids disagree;
+3. `normalise(event.venue_name) = place.name_key`.
+
+Then follow `merged_into_id` to the final place (cycle guard, depth cap 10).
+`normalisePlaceName`: lower-case → fold accents → `&` → " and " → delete apostrophes → other punctuation
+to a space → collapse whitespace. **The order is load-bearing** and each step is tested.
+
+**Renaming a place never re-derives `name_key`** — that would orphan every event at it.
+
+## 64.3 Seeding
+
+Places are created automatically, idempotently, from the truck's events of the last 12 months and all
+future events, when the places list is opened. `unique (truck_id, name_key)` with `on conflict do
+nothing` makes two tabs produce one row. `name` and `short_name` are written **once** and never again;
+`address`, `area` (from the event's `town`) and `postcode` are filled only while blank. The seeder never
+un-hides, un-merges or adopts a hidden row. Opening the list is therefore a **write** (staff-blocked).
+
+## 64.4 Last and Next
+
+- **Last** = most recent event before today whose status is **not cancelled** (`closed`, `confirmed`,
+  `unconfirmed` all count) — `countsAsTraded`.
+- **Next** = soonest event today or later, **not cancelled and not closed** — `countsAsUpcoming`.
+- Lines read "Last: Tue 6 Oct · 17:00–20:00" (Last preferred; Next only when there is no past visit).
+- Date-only values are compared as strings, never via `new Date()`.
+
+## 64.5 Merge and hide
+
+Merging A into B writes **one row**: `A.merged_into_id = B.id`, `A.is_hidden = true`. B gains A's events
+**through matching** — no event is rewritten. Restoring a merged place also un-merges it. Self-merge is
+refused by a `CHECK` and in code.
+
+## 64.6 `truck_events.truck_place_id`
+
+Nullable, no default, FK `on delete set null`. **Written only on INSERT by the Add event window.** Zero
+update paths touch it — all 19 `truck_events` write paths were audited and the harness asserts it. The
+Add event insert payload equals the pre-branch payload plus exactly this one key (proved by diffing key
+sets against `cebc78e`). A place-lookup failure never fails the insert; it just leaves the link null.
+Scraped, uploaded and copied events have no link and match by venue/name.
+
+## 64.7 The Add event window
+
+- **Computer/iPad (≥768px):** a wide window, round close button, Escape closes. **Left pane (380px, its
+  own scroll):** search (name, area or postcode), FAVOURITES then ALL PLACES (always shown, no "show
+  all"), star toggles **optimistically** (no reload, revert + one error line on failure), "+ New place",
+  "Tidy up places". **Right pane:** Date · Venue name · Full address · Area · Postcode · Start · End ·
+  **Van** · Notes, then a **live preview** below Notes. Footer: Cancel · Add event only.
+- **Phone (<768px):** full-screen, two steps — "Where are you trading?" (search, + New place,
+  favourites, all places), then the form with the chosen place pinned at the top as the preview line and a
+  collapsed "Address details".
+- Picking a place fills venue, address, area, postcode and **the times of the last event there**; never
+  the date. Every field stays editable for this date only.
+- **Van default:** the van used at that place's most recent non-cancelled event, if still active;
+  otherwise unchanged ("Select a van"). Never overrides a choice.
+- **The preview** renders `components/TruckListCard` — the public schedule page's own card — through an
+  adapter (`lib/schedule-graphics/event-preview.ts`), with placeholders for empty fields, no Order button,
+  and the van in the corner slot. The adapter converts the date to **`DD/MM/YYYY`**, which is the format
+  that card parses (it splits on `/` and otherwise prints the string unchanged); `/api/events`,
+  `/api/embed/events` and `/api/discovery/events` all feed it the same shape.
+- **Tidy up places** (inside the window) shows the place detail: Name on posts · Short name · Address ·
+  Area · Postcode · Events here · Favourite · Merge into another place · Hide this place · Show hidden.
+- The modal needs a **definite** height (`md:h-[90vh]`) for the panes to scroll (V13.8 failure class 4).
+- **Upload schedule** is not in this window; the Schedule page's **Import schedule** button opens the
+  existing upload flow unchanged.
+
+## 64.8 Facebook groups — removed
+
+Stage 1 built Facebook group storage per place. It was removed: Meta's Groups API was switched off in 2024,
+so nothing can post to a group, and storing group links saved trucks almost nothing. `truck_place_groups`
+was dropped. The per-truck post wording column survives as `trucks.event_post_wording` (dormant).
+
+---
+
+# 65. Navigation: sub-tabs, and Settings as one list (V13.8 — 3 October 2026, branch only)
+
+## 65.1 The top tab bar
+
+Menu · Schedule · Reports · Team · Settings · Payments · Billing. **Deals** and **Extras & Upsells** are no
+longer top-level tabs.
+
+## 65.2 One sub-tab bar style
+
+One underlined bar style is shared by Menu, Schedule and Settings (`SUBTAB_BAR`, `SUBTAB_ROW`,
+`subtabBtn()`), so the three cannot drift apart.
+
+- **Menu:** Items (default) · Extras & upsells · Deals. Each renders the existing component, unedited.
+- **Schedule:** Events (default) · Weekly post. (Event types will be a third, §68.2.)
+- Menu and Schedule sub-tabs **swap the page**; they do not scroll.
+- The section is in the URL as `?section=` (Schedule: `events|weekly`; Menu: `items|extras|deals`);
+  defaults write no parameter; `replaceState`, never `pushState`. A tab with no sections clears it.
+- Old links keep working: `?tab=deals` → Menu › Deals; `?tab=modifiers` → Menu › Extras & upsells;
+  `?section=places` → Events with nothing forced open.
+- The walkthrough drops any stop whose tab is not in the DOM, so its "deals and extras" stop was
+  re-pointed at Menu. **Any future tab removal can silently shorten the tour.**
+
+## 65.3 Settings — one scrolling list with sticky jump tabs
+
+No wording changed except eight new section headings. Order: **Truck details** (logo folded in as a field
+label) · **Contact** · **Order settings** (with "Allow customers to cancel orders" moved here, unchanged,
+below the main box) · **Truck settings** · **Schedule** · **QR code** · **Auto-replies** (keeps its own
+card title too) · **Account deletion**. "New to HatchGrab?" and "Get the app" sit below the bar, above
+section 1.
+
+- The bar sits flush under the manage header **from load** and stays there.
+- `<main>` is the **only** scroller (`window.scrollY` is always 0); scroll-spy reads `<main>`.
+- One measured height is used **both** as `scroll-margin-top` and as the spy's pin line.
+- Tapping a tab jumps on the first press; the active tab is kept in view with `bar.scrollLeft`, **not**
+  `scrollIntoView` (which walked up to `<main>` and undid the jump).
+- Deep links: `#truck-details` … `#account-deletion`.
+
+## 65.4 The sticky rule
+
+`position: sticky` cannot hold an element above its normal-flow position. `<main>` deliberately has no
+padding-top (the Billing-row lesson); the resting gap lives in a `pt-6` child. When a sub-tab bar is the
+first thing in that child, the padding is removed:
+
+```css
+.manage-tab-pad:has(> [data-subtab-bar]:first-child),
+.manage-tab-pad:has(> *:first-child > [data-subtab-bar]:first-child) { padding-top: 0 }
+```
+
+Two selectors because the bars sit at two depths. When a notification banner is first, the padding stays,
+so the bar never overlaps a banner.
+
+## 65.5 "Van", not "Truck"
+
+The event form's field writes `truck_events.van_id`, so it is labelled **Van**; the van filter reads "All
+vans" (this string reaches exported CSVs). Labels that genuinely mean a truck were not renamed.
+
+---
+
+# 66. Per-van category capacity and "Same as Van 1" (V13.8 — 3 October 2026, branch only)
+
+## 66.1 The problem
+
+Prep, Items and "Counts to total capacity" were shown in each van's card but stored once per truck on
+`menu_categories` (no `van_id`), so editing one van changed every van — on the fields that decide whether
+an order is accepted and when it is ready.
+
+## 66.2 The fix — overrides plus one resolver
+
+`van_category_settings` (`van_id`, `category_id`, `prep_secs`, `batch_size`, `counts_toward_capacity`;
+unique `(van_id, category_id)`; cascades from van and category). **A row means "this van has its own
+values for this category" and carries all three.** No row = the van reads `menu_categories`, exactly as
+before. The table shipped **empty**: no backfill.
+
+`lib/van-category-settings.ts` is the **only** resolver. All five readers go through it, each using the van
+it already resolved: `/api/slots`, `/api/dashboard` (and so the KDS), `buildCatConfigs` (order acceptance
+via `/api/orders/submit`), `/api/menu`, demo seeding. An event with no van reads the truck defaults. With
+no rows it returns **the same object** it was given, and it **fails open** to today's behaviour on any
+error.
+
+**Equivalence was proved** by compiling `prep-utils` from the pre-change commit and the new tree and
+comparing outputs byte for byte, then running both through the real capacity engine.
+
+## 66.3 Writers
+
+- Manage › Truck settings van card and the Dashboard van card write `van_category_settings` for **that
+  van**. The first edit seeds the row from the values that van already resolves, so nothing jumps.
+- The **Menu tab** and **Dashboard category editors** still write `menu_categories`, which is now the
+  **default** for vans with no override.
+
+## 66.4 "Same as Van 1"
+
+- Van 1 = the oldest **active** van (the order the list shows). Derived on every read, never stored.
+- Vans 2+ have a switch. **On** copies all of Van 1's per-van settings (`truck_vans` fields and its
+  `van_category_settings` rows, delete-then-insert) in one request, and from then on every change to Van 1
+  is also written to followers in the same request. **Off** keeps the copied values.
+- **It is a copy, never a lookup.** No reader references `same_as_first_van` (asserted).
+- Not copied: `name`, `kds_token`, printer address/device, `display_layout`, `split_screen`.
+- Delete Van 1 → the next-oldest becomes first; followers keep their values and stay on.
+- The switch exists only in Manage, not on the Dashboard van card.
+
+## 66.5 Noticed, not changed
+
+- An unset `batch_size` resolves to **999** in `buildCatConfigs` (acceptance) and to **1** in
+  `/api/slots` and `/api/dashboard`. Preserved exactly; needs a decision.
+- `buildCatConfigs` and `/api/slots` do not filter `is_active` categories; `/api/dashboard` does.
+- `event_category_stock` keys categories by **name**, not id.
+- The truck-level editors are not labelled as defaults; a van with an override looks the same as one
+  inheriting.
+
+---
+
+# 67. The weekly schedule post (V13.8 — 3 October 2026, branch only)
+
+## 67.1 What it does
+
+Schedule › **Weekly post**. A truck uploads the **blank** of the schedule graphic they already make (Canva:
+remove the text boxes, download as PNG), places three boxes on row 1 — **Date · Location · Time** — and
+HatchGrab fills the week from their schedule. Rows 2–7 are row 1 offset by the row spacing (stored once,
+so they cannot drift). Gated by `schedule_graphics` (Pro, Max, trial) **in the UI and again in
+`app/api/weekly-post/route.ts`** — without the second gate the first is decoration.
+
+## 67.2 One renderer
+
+`renderWeeklyPost()` — satori + resvg through `next/og` (WASM, no native binary, no new dependency).
+~40ms warm, ~330ms cold for 1080×1350. **The setup preview, the post preview and the download are all
+this PNG**; there is no HTML imitation. Output is the blank's native size, longest side capped at 2160px.
+The browser draws only the dashed box outlines on top.
+
+## 67.3 Fonts
+
+21 families, 36 files, 6.3MB, bundled under `assets/fonts/weekly-post/` with `MANIFEST.json`; **never
+fetched at render time**. Two are Apache-2.0 (Roboto Slab, Permanent Marker), the rest OFL-1.1.
+`next.config.ts` has an `outputFileTracingIncludes` entry for `/api/weekly-post` — without it the fonts
+would be missing in production. `font-list.ts` (pure data) is split from `fonts.ts` (server-only bytes) so
+`node:fs` never reaches the browser bundle.
+
+## 67.4 What the boxes show
+
+- **Heading:** "Week commencing {start} to {end}", dates like "Monday 28th September".
+- **Date:** two lines ("MONDAY" / "28TH SEPTEMBER") or one; capitals; **raised ordinals** drawn as separate
+  runs (never Unicode superscripts); ordinals check the teens first.
+- **Location:** `placeForEvent` → `short_name` / Name on posts → `venue_name`; town on a second line when
+  known and not already in the name.
+- **Time:** "5pm – 8pm" (minutes only when not :00) or "17:00 – 20:00".
+- **Day off:** the days-off text in Location, no time; optional days-off background behind the date.
+- **Cancelled:** that entry struck through, Time reads CANCELLED ("Show cancelled events", default on).
+- **Several events in a day:** stacked by start time, shrunk to fit; lines dropped (and reported) rather
+  than overflowing.
+- Statuses confirmed, unconfirmed and **closed** all trade.
+- **Week:** Monday–Sunday, Europe/London, calendar arithmetic at UTC noon. Picker defaults to **next week
+  from Friday**. The clocks always change at 02:00 on a **Sunday** — the last day of the week — so a
+  Monday-start week can never lose a day to DST, whatever arithmetic is used (failure class 8).
+- **"Powered by HatchGrab"** always, bottom centre.
+
+## 67.5 Fitting and readability
+
+Shrink to fit using the fonts' own metrics (`lib/weekly-post/ttf-metrics.ts`); floor at 35% of the chosen
+size (min 8px) with **height winning** over width; then truncate by code point with the ellipsis width
+reserved; then **warn the truck, naming the day**. Readability: the editor samples the blank under each
+box in the browser; the server applies a soft shadow in the opposite tone when WCAG contrast is below
+4.5:1 (sRGB luminance, not a plain average). **The truck's colour is never changed.** No sample → no
+shadow.
+
+## 67.6 Storage and data
+
+- `truck_post_designs` (`truck_id`, `kind` = `'week'`, `blank_path`, `example_path`, `width`, `height`,
+  `layout` jsonb; unique `(truck_id, kind)`). Layout coordinates are in **the blank's own pixels**;
+  validated by `validateLayout()` before every write and render; the image size always comes from the
+  server, never the payload.
+- Images in the **private** `post-designs` bucket; the browser gets 1-hour signed URLs only.
+- Uploads: PNG/JPG, ≤10MB, ≥600px short side.
+
+## 67.7 The post screen
+
+This week / Next week · tick events off · Show cancelled · Note (image and caption) · preview · Download ·
+**Share** (copies the caption first, then the phone share sheet with the PNG; falls back to download +
+"caption copied") · Caption (editable) · **Post for each event** (today / tonight from 17:00 / tomorrow /
+"on Tue 13 Oct", with the pre-order link; an apology and no link for a cancelled event).
+
+---
+
+# 68. Designed and decided, not built (V13.8 — 3 October 2026)
+
+## 68.1 Single-event post (stage 2 — prompt written)
+
+The truck uploads the **full picture** they use for one event, without date, place or time, and HatchGrab
+adds them. Backgrounds: a **default**, an optional **picture per place** (e.g. their artwork with that
+venue's photo in it), or a **one-off for this event**; all must match the default's aspect ratio. Time can
+read "From 5pm" or "5pm – 9pm". Opened from **Make post** on an event and from the weekly post's
+per-event list (whose Share then attaches the image). Planned storage: `truck_post_designs.kind` gains
+`'event'`; `truck_places.event_bg_*`; a new `event_post_backgrounds` table keyed by event.
+
+## 68.2 Event types (mocked up; separate `event-types` branch)
+
+Schedule › **Event types**: columns side by side — **Standard** (default) plus types from suggestions
+(Festival, Pub, Market, Private hire) or a custom name. Each column has **"Changes" tags** (Prices · Items
+· Stock · Service · Deals); unticked parts show Standard's values in grey. A **price box** per column:
+None / + £ / + %, rounding (none · 10p · 50p · £1; nearest by default, "always round up" option), applies
+to all items / food only / chosen categories; any price can be **typed** (shown as TYPED, × to return to
+the rule). Stock per category **and** per item. Service: buzzers, cash, ready step, collection times.
+Deals: on/off per type. **Private**. Each event picks a type in Add event (later remembered per place);
+the **dashboard** can switch an event's type (new orders use the new type; placed orders keep their prices;
+the event's own changes stay unless cleared). Phones show one column at a time.
+
+**Architecture (decided):** an event type is a **preset that fills the existing per-event tables** —
+`event_price_overrides`, `event_item_stock`, `event_category_stock`, `event_option_stock`, `event_deals`
+(which already has `overridden`), and the per-event override columns on `truck_events`. Checkout, stock,
+KDS and deals keep reading those tables, so the order path barely changes. Values written by a type are
+marked as such; hand changes are marked as the truck's and survive a type switch. `bundles_db.
+apply_to_new_events` stays; deals gain "and these event types". Before building: confirm how checkout uses
+`event_price_overrides` (including its `event_name`, `valid_from`, `valid_until` columns), the menu items
+table name and item default stock, and that orders store their price at the time of ordering.
+
+## 68.3 Private events
+
+Hidden from the map and Village Foodie discovery. The public schedule shows **"Private event"** with date
+and times only — no venue or address. Ordering by a **private link** (long random URL, can be regenerated)
+and its **QR code**. A numeric code was considered and deferred (guessable, needs attempt limits).
+
+## 68.4 Posting to Facebook
+
+Groups: **impossible** (API closed 2024). Personal profiles: impossible. **Pages and Instagram
+professional accounts:** possible via Meta's Pages API and Instagram content publishing, after Meta app
+review (Dominic's business verification for WhatsApp already exists). Planned as a later stage: "Connect
+Facebook & Instagram", scheduled or one-click posting, email on failure. Alternative: a posting service
+that already holds Meta approval (paid per account).
+
+## 68.5 Place pictures and AI
+
+Per place: **Add picture** → use as is (optional background removal) · turn into a drawing with AI (one
+style per truck, the truck approves) · later, blend into the poster with AI. The truck confirms they own
+the photo; photos are never taken from Google Maps. AI images need a third-party image service with plan
+limits.
+
+## 68.6 Getting trucks off Canva
+
+The goal: win the handful of jobs trucks open Canva for (weekly schedule, event posts, menu boards,
+posters). Path: import their blank (now) → ready-made templates with a brand kit → AI-made backgrounds
+with our text placed on top → a small editor (move/resize text, swap picture, colours) — **not** a full
+Canva rival.
 
 *End of manual. The version is stated once, in the header — deliberately not repeated here.*
